@@ -119,7 +119,7 @@ The BMAD-METHOD™ includes a powerful codebase flattener tool designed to prepa
 ### Features
 
 - **AI-Optimized Output**: Generates clean XML format specifically designed for AI model consumption
-- **Smart Filtering**: Automatically respects `.gitignore` patterns to exclude unnecessary files
+- **Smart Filtering**: Automatically respects `.gitignore` patterns to exclude unnecessary files, plus optional project-level `.bmad-flattenignore` for additional exclusions
 - **Binary File Detection**: Intelligently identifies and excludes binary files, focusing on source code
 - **Progress Tracking**: Real-time progress indicators and comprehensive completion statistics
 - **Flexible Output**: Customizable output file location and naming
@@ -170,6 +170,18 @@ The generated XML file contains your project's text-based source files in a stru
 - File discovery and ignoring
   - Uses `git ls-files` when inside a git repository for speed and correctness; otherwise falls back to a glob-based scan.
   - Applies your `.gitignore` plus a curated set of default ignore patterns (e.g., `node_modules`, build outputs, caches, logs, IDE folders, lockfiles, large media/binaries, `.env*`, and previously generated XML outputs).
+  - Supports an optional `.bmad-flattenignore` file at the project root for additional ignore patterns (gitignore-style). If present, its rules are applied after `.gitignore` and the defaults.
+
+##### `.bmad-flattenignore` example
+
+Create a `.bmad-flattenignore` file in the root of your project to exclude files that must remain in git but should not be included in the flattened XML:
+
+```text
+seeds/**
+scripts/private/**
+**/*.snap
+```
+
 - Binary handling
   - Binary files are detected and excluded from the XML content. They are counted in the final summary but not embedded in the output.
 - XML format and safety
