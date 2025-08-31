@@ -20,6 +20,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    if: github.event.repository.fork != true || vars.ENABLE_CI_IN_FORK == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
