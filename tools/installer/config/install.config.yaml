@@ -121,3 +121,25 @@ ide-configurations:
       # 2. It concatenates all agent files into a single QWEN.md file.
       # 3. Simply mention the agent in your prompt (e.g., "As *dev, ...").
       # 4. The Qwen Code CLI will automatically have the context for that agent.
+
+  codex:
+    name: Codex CLI
+    format: project-memory
+    file: AGENTS.md
+    instructions: |
+      # To use BMAD agents with Codex CLI:
+      # 1. The installer updates/creates AGENTS.md at your project root with BMAD agents and tasks.
+      # 2. Run `codex` in your project. Codex automatically reads AGENTS.md as project memory.
+      # 3. Mention agents in your prompt (e.g., "As dev, please implement ...") or reference tasks.
+      # 4. You can further customize global Codex behavior via ~/.codex/config.toml.
+
+  codex-web:
+    name: Codex Web Enabled
+    format: project-memory
+    file: AGENTS.md
+    instructions: |
+      # To enable BMAD agents for Codex Web (cloud):
+      # 1. The installer updates/creates AGENTS.md and ensures `.bmad-core` is NOT ignored by git.
+      # 2. Commit `.bmad-core/` and `AGENTS.md` to your repository.
+      # 3. Open the repo in Codex Web and reference agents naturally (e.g., "As dev, ...").
+      # 4. Re-run this installer to refresh agent sections when the core changes.
