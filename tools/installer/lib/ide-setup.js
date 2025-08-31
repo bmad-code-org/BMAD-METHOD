@@ -74,8 +74,8 @@ class IdeSetup extends BaseIdeSetup {
       case 'qwen-code': {
         return this.setupQwenCode(installDir, selectedAgent);
       }
-      case 'augment-code': {
-        return this.setupAugmentCode(installDir, selectedAgent, spinner, preConfiguredSettings);
+      case 'auggie-cli': {
+        return this.setupAuggieCLI(installDir, selectedAgent, spinner, preConfiguredSettings);
       }
       default: {
         console.log(chalk.yellow(`\nIDE ${ide} not yet supported`));
@@ -1440,13 +1440,13 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
     console.log(chalk.dim('You can modify these settings anytime in .vscode/settings.json'));
   }
 
-  async setupAugmentCode(installDir, selectedAgent, spinner = null, preConfiguredSettings = null) {
+  async setupAuggieCLI(installDir, selectedAgent, spinner = null, preConfiguredSettings = null) {
     const os = require('node:os');
     const inquirer = require('inquirer');
     const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
 
     // Get the IDE configuration to access location options
-    const ideConfig = await configLoader.getIdeConfiguration('augment-code');
+    const ideConfig = await configLoader.getIdeConfiguration('auggie-cli');
     const locations = ideConfig.locations;
 
     // Use pre-configured settings if provided, otherwise prompt
@@ -1454,7 +1454,9 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
     if (preConfiguredSettings && preConfiguredSettings.selectedLocations) {
       selectedLocations = preConfiguredSettings.selectedLocations;
       console.log(
-        chalk.dim(`Using pre-configured Augment Code locations: ${selectedLocations.join(', ')}`),
+        chalk.dim(
+          `Using pre-configured Auggie CLI (Augment Code) locations: ${selectedLocations.join(', ')}`,
+        ),
       );
     } else {
       // Pause spinner during location selection to avoid UI conflicts
@@ -1466,15 +1468,15 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
 
       // Clear any previous output and add spacing to avoid conflicts with loaders
       console.log('\n'.repeat(2));
-      console.log(chalk.blue('📍 Augment Code Location Configuration'));
-      console.log(chalk.dim('Choose where to install BMad agents for Augment Code access.'));
+      console.log(chalk.blue('📍 Auggie CLI Location Configuration'));
+      console.log(chalk.dim('Choose where to install BMad agents for Auggie CLI access.'));
       console.log(''); // Add extra spacing
 
       const response = await inquirer.prompt([
         {
           type: 'checkbox',
           name: 'selectedLocations',
-          message: 'Select Augment Code command locations:',
+          message: 'Select Auggie CLI command locations:',
           choices: Object.entries(locations).map(([key, location]) => ({
             name: `${location.name}: ${location.description}`,
             value: key,
@@ -1521,7 +1523,7 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
         }
       }
 
-      console.log(chalk.green(`\n✓ Created Augment Code commands in ${commandsDir}`));
+      console.log(chalk.green(`\n✓ Created Auggie CLI commands in ${commandsDir}`));
       console.log(chalk.dim(`  Location: ${location.name} - ${location.description}`));
     }
 

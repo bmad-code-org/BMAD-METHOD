@@ -411,7 +411,7 @@ class Installer {
         let preConfiguredSettings = null;
         if (ide === 'github-copilot') {
           preConfiguredSettings = config.githubCopilotConfig;
-        } else if (ide === 'augment-code') {
+        } else if (ide === 'auggie-cli') {
           preConfiguredSettings = config.augmentCodeConfig;
         }
         await ideSetup.setup(ide, installDir, config.agent, spinner, preConfiguredSettings);

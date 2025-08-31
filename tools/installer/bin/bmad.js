@@ -49,7 +49,7 @@ program
   .option('-d, --directory <path>', 'Installation directory')
   .option(
     '-i, --ide <ide...>',
-    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, augment-code, other)',
+    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, auggie-cli, other)',
   )
   .option(
     '-e, --expansion-packs <packs...>',
@@ -406,7 +406,7 @@ async function promptInstallation() {
           { name: 'Qwen Code', value: 'qwen-code' },
           { name: 'Crush', value: 'crush' },
           { name: 'Github Copilot', value: 'github-copilot' },
-          { name: 'Augment Code', value: 'augment-code' },
+          { name: 'Auggie CLI (Augment Code)', value: 'auggie-cli' },
         ],
       },
     ]);
@@ -475,16 +475,16 @@ async function promptInstallation() {
     answers.githubCopilotConfig = { configChoice };
   }
 
-  // Configure Augment Code immediately if selected
-  if (ides.includes('augment-code')) {
-    console.log(chalk.cyan('\n📍 Augment Code Location Configuration'));
-    console.log(chalk.dim('Choose where to install BMad agents for Augment Code access.\n'));
+  // Configure Auggie CLI (Augment Code) immediately if selected
+  if (ides.includes('auggie-cli')) {
+    console.log(chalk.cyan('\n📍 Auggie CLI Location Configuration'));
+    console.log(chalk.dim('Choose where to install BMad agents for Auggie CLI access.\n'));
 
     const { selectedLocations } = await inquirer.prompt([
       {
         type: 'checkbox',
         name: 'selectedLocations',
-        message: 'Select Augment Code command locations:',
+        message: 'Select Auggie CLI command locations:',
         choices: [
           {
             name: 'User Commands (Global): Available across all your projects (user-wide)',
