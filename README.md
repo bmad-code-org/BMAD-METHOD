@@ -212,6 +212,26 @@ The generated XML file contains your project's text-based source files in a stru
 
 📋 **[Read CONTRIBUTING.md](CONTRIBUTING.md)** - Complete guide to contributing, including guidelines, process, and requirements
 
+### Working with Forks
+
+When you fork this repository, CI/CD workflows are **disabled by default** to save resources. This is intentional and helps keep your fork clean.
+
+#### Need CI/CD in Your Fork?
+
+See our [Fork CI/CD Guide](.github/FORK_GUIDE.md) for instructions on enabling workflows in your fork.
+
+#### Contributing Workflow
+
+1. **Fork the repository** - Click the Fork button on GitHub
+2. **Clone your fork** - `git clone https://github.com/YOUR-USERNAME/BMAD-METHOD.git`
+3. **Create a feature branch** - `git checkout -b feature/amazing-feature`
+4. **Make your changes** - Test locally with `npm test`
+5. **Commit your changes** - `git commit -m 'feat: add amazing feature'`
+6. **Push to your fork** - `git push origin feature/amazing-feature`
+7. **Open a Pull Request** - CI/CD will run automatically on the PR
+
+Your contributions are tested when you submit a PR - no need to enable CI in your fork!
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
