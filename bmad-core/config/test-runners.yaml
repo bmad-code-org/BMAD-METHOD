@@ -1,0 +1,296 @@
+# <!-- Powered by BMAD™ Core -->
+# Test Runner Auto-Detection Configuration
+# Used by BMAD TDD framework to detect and configure test runners
+
+detection_rules:
+  # JavaScript/TypeScript ecosystem
+  javascript:
+    priority: 1
+    detection_files:
+      - "package.json"
+    detection_logic:
+      - check_dependencies: ["jest", "vitest", "mocha", "cypress", "@testing-library"]
+      - check_scripts: ["test", "test:unit", "test:integration"]
+
+    runners:
+      jest:
+        detection_patterns:
+          - dependency: "jest"
+          - config_file: ["jest.config.js", "jest.config.json"]
+        commands:
+          test: "npm test"
+          test_single_file: "npm test -- {file_path}"
+          test_watch: "npm test -- --watch"
+          test_coverage: "npm test -- --coverage"
+        file_patterns:
+          unit: ["**/*.test.js", "**/*.spec.js", "**/*.test.ts", "**/*.spec.ts"]
+          integration: ["**/*.integration.test.js", "**/*.int.test.js"]
+        report_paths:
+          coverage: "coverage/lcov-report/index.html"
+          junit: "coverage/junit.xml"
+
+      vitest:
+        detection_patterns:
+          - dependency: "vitest"
+          - config_file: ["vitest.config.js", "vitest.config.ts"]
+        commands:
+          test: "npm run test"
+          test_single_file: "npx vitest run {file_path}"
+          test_watch: "npx vitest"
+          test_coverage: "npx vitest run --coverage"
+        file_patterns:
+          unit: ["**/*.test.js", "**/*.spec.js", "**/*.test.ts", "**/*.spec.ts"]
+          integration: ["**/*.integration.test.js", "**/*.int.test.js"]
+        report_paths:
+          coverage: "coverage/index.html"
+
+      mocha:
+        detection_patterns:
+          - dependency: "mocha"
+          - config_file: [".mocharc.json", ".mocharc.yml"]
+        commands:
+          test: "npx mocha"
+          test_single_file: "npx mocha {file_path}"
+          test_watch: "npx mocha --watch"
+          test_coverage: "npx nyc mocha"
+        file_patterns:
+          unit: ["test/**/*.js", "test/**/*.ts"]
+          integration: ["test/integration/**/*.js"]
+        report_paths:
+          coverage: "coverage/index.html"
+
+  # Python ecosystem
+  python:
+    priority: 2
+    detection_files:
+      - "requirements.txt"
+      - "requirements-dev.txt"
+      - "pyproject.toml"
+      - "setup.py"
+      - "pytest.ini"
+      - "tox.ini"
+    detection_logic:
+      - check_requirements: ["pytest", "unittest2", "nose2"]
+      - check_pyproject: ["pytest", "unittest"]
+
+    runners:
+      pytest:
+        detection_patterns:
+          - requirement: "pytest"
+          - config_file: ["pytest.ini", "pyproject.toml", "setup.cfg"]
+        commands:
+          test: "pytest"
+          test_single_file: "pytest {file_path}"
+          test_watch: "pytest-watch"
+          test_coverage: "pytest --cov=."
+        file_patterns:
+          unit: ["test_*.py", "*_test.py", "tests/unit/**/*.py"]
+          integration: ["tests/integration/**/*.py", "tests/int/**/*.py"]
+        report_paths:
+          coverage: "htmlcov/index.html"
+          junit: "pytest-report.xml"
+
+      unittest:
+        detection_patterns:
+          - python_version: ">=2.7"
+          - fallback: true
+        commands:
+          test: "python -m unittest discover"
+          test_single_file: "python -m unittest {module_path}"
+          test_coverage: "coverage run -m unittest discover && coverage html"
+        file_patterns:
+          unit: ["test_*.py", "*_test.py"]
+          integration: ["integration_test_*.py"]
+        report_paths:
+          coverage: "htmlcov/index.html"
+
+  # Go ecosystem
+  go:
+    priority: 3
+    detection_files:
+      - "go.mod"
+      - "go.sum"
+    detection_logic:
+      - check_go_files: ["*_test.go"]
+
+    runners:
+      go_test:
+        detection_patterns:
+          - files_exist: ["*.go", "*_test.go"]
+        commands:
+          test: "go test ./..."
+          test_single_package: "go test {package_path}"
+          test_single_file: "go test -run {test_function}"
+          test_coverage: "go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out"
+          test_watch: "gotestsum --watch"
+        file_patterns:
+          unit: ["*_test.go"]
+          integration: ["*_integration_test.go", "*_int_test.go"]
+        report_paths:
+          coverage: "coverage.html"
+
+  # Java ecosystem
+  java:
+    priority: 4
+    detection_files:
+      - "pom.xml"
+      - "build.gradle"
+      - "build.gradle.kts"
+    detection_logic:
+      - check_maven_dependencies: ["junit", "testng", "junit-jupiter"]
+      - check_gradle_dependencies: ["junit", "testng", "junit-platform"]
+
+    runners:
+      maven:
+        detection_patterns:
+          - file: "pom.xml"
+        commands:
+          test: "mvn test"
+          test_single_class: "mvn test -Dtest={class_name}"
+          test_coverage: "mvn clean jacoco:prepare-agent test jacoco:report"
+        file_patterns:
+          unit: ["src/test/java/**/*Test.java", "src/test/java/**/*Tests.java"]
+          integration: ["src/test/java/**/*IT.java", "src/integration-test/java/**/*.java"]
+        report_paths:
+          coverage: "target/site/jacoco/index.html"
+          surefire: "target/surefire-reports"
+
+      gradle:
+        detection_patterns:
+          - file: ["build.gradle", "build.gradle.kts"]
+        commands:
+          test: "gradle test"
+          test_single_class: "gradle test --tests {class_name}"
+          test_coverage: "gradle test jacocoTestReport"
+        file_patterns:
+          unit: ["src/test/java/**/*Test.java", "src/test/java/**/*Tests.java"]
+          integration: ["src/integrationTest/java/**/*.java"]
+        report_paths:
+          coverage: "build/reports/jacoco/test/html/index.html"
+          junit: "build/test-results/test"
+
+  # .NET ecosystem
+  dotnet:
+    priority: 5
+    detection_files:
+      - "*.csproj"
+      - "*.sln"
+      - "global.json"
+    detection_logic:
+      - check_project_references: ["Microsoft.NET.Test.Sdk", "xunit", "NUnit", "MSTest"]
+
+    runners:
+      dotnet_test:
+        detection_patterns:
+          - files_exist: ["*.csproj"]
+          - test_project_reference: ["Microsoft.NET.Test.Sdk"]
+        commands:
+          test: "dotnet test"
+          test_single_project: "dotnet test {project_path}"
+          test_coverage: 'dotnet test --collect:"XPlat Code Coverage"'
+          test_watch: "dotnet watch test"
+        file_patterns:
+          unit: ["**/*Tests.cs", "**/*Test.cs"]
+          integration: ["**/*IntegrationTests.cs", "**/*.Integration.Tests.cs"]
+        report_paths:
+          coverage: "TestResults/*/coverage.cobertura.xml"
+          trx: "TestResults/*.trx"
+
+  # Ruby ecosystem
+  ruby:
+    priority: 6
+    detection_files:
+      - "Gemfile"
+      - "*.gemspec"
+    detection_logic:
+      - check_gems: ["rspec", "minitest", "test-unit"]
+
+    runners:
+      rspec:
+        detection_patterns:
+          - gem: "rspec"
+          - config_file: [".rspec", "spec/spec_helper.rb"]
+        commands:
+          test: "rspec"
+          test_single_file: "rspec {file_path}"
+          test_coverage: "rspec --coverage"
+        file_patterns:
+          unit: ["spec/**/*_spec.rb"]
+          integration: ["spec/integration/**/*_spec.rb"]
+        report_paths:
+          coverage: "coverage/index.html"
+
+      minitest:
+        detection_patterns:
+          - gem: "minitest"
+        commands:
+          test: "ruby -Itest test/test_*.rb"
+          test_single_file: "ruby -Itest {file_path}"
+        file_patterns:
+          unit: ["test/test_*.rb", "test/*_test.rb"]
+        report_paths:
+          coverage: "coverage/index.html"
+
+# Auto-detection algorithm
+detection_algorithm:
+  steps:
+    1. scan_project_root: "Look for detection files in project root"
+    2. check_subdirectories: "Scan up to 2 levels deep for test indicators"
+    3. apply_priority_rules: "Higher priority languages checked first"
+    4. validate_runner: "Ensure detected runner actually works"
+    5. fallback_to_custom: "Use custom command if no runner detected"
+
+  validation_commands:
+    - run_help_command: "Check if runner responds to --help"
+    - run_version_command: "Verify runner version"
+    - check_sample_test: "Try to run a simple test if available"
+
+# Fallback configuration
+fallback:
+  enabled: true
+  custom_command: null # Will be prompted from user or config
+
+  prompt_user:
+    - "No test runner detected. Please specify test command:"
+    - "Example: 'npm test' or 'pytest' or 'go test ./...'"
+    - "Leave blank to skip test execution"
+
+# TDD-specific settings
+tdd_configuration:
+  preferred_test_types:
+    - unit # Fastest, most isolated
+    - integration # Component interactions
+    - e2e # Full user journeys
+
+  test_execution_timeout: 300 # 5 minutes max per test run
+
+  coverage_thresholds:
+    minimum: 0.0 # No minimum by default
+    warning: 70.0 # Warn below 70%
+    target: 80.0 # Target 80%
+    excellent: 90.0 # Excellent above 90%
+
+  watch_mode:
+    enabled: true
+    file_patterns: ["src/**/*", "test/**/*", "tests/**/*"]
+    ignore_patterns: ["node_modules/**", "coverage/**", "dist/**"]
+
+# Integration with BMAD agents
+agent_integration:
+  qa_agent:
+    commands_available:
+      - "run_failing_tests"
+      - "verify_test_isolation"
+      - "check_mocking_strategy"
+
+  dev_agent:
+    commands_available:
+      - "run_tests_for_implementation"
+      - "check_coverage_improvement"
+      - "validate_no_feature_creep"
+
+  both_agents:
+    commands_available:
+      - "run_full_regression_suite"
+      - "generate_coverage_report"
+      - "validate_test_performance"

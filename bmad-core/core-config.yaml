@@ -21,3 +21,14 @@ devLoadAlwaysFiles:
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
+tdd:
+  enabled: false # Default: false for backward compatibility
+  require_for_new_stories: true
+  allow_red_phase_ci_failures: true
+  default_test_type: unit
+  test_runner:
+    auto_detect: true
+    custom_command: null
+  coverage:
+    min_threshold: 0.0
+    report_format: lcov
