@@ -406,6 +406,8 @@ async function promptInstallation() {
           { name: 'Qwen Code', value: 'qwen-code' },
           { name: 'Crush', value: 'crush' },
           { name: 'Github Copilot', value: 'github-copilot' },
+          { name: 'Codex CLI', value: 'codex' },
+          { name: 'Codex Web', value: 'codex-web' },
         ],
       },
     ]);
