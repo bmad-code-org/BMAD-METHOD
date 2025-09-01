@@ -2,7 +2,7 @@
 
 # test-design
 
-Create comprehensive test scenarios with appropriate test level recommendations for story implementation.
+Create comprehensive test scenarios with appropriate test level recommendations for story implementation. Supports both traditional testing and Test-Driven Development (TDD) first approaches.
 
 ## Inputs
 
@@ -12,11 +12,16 @@ required:
   - story_path: '{devStoryLocation}/{epic}.{story}.*.md' # Path from core-config.yaml
   - story_title: '{title}' # If missing, derive from story file H1
   - story_slug: '{slug}' # If missing, derive from title (lowercase, hyphenated)
+optional:
+  - tdd_mode: boolean # If true, design tests for TDD Red phase (before implementation)
+  - existing_tests: array # List of existing tests to consider for gap analysis
 ```
 
 ## Purpose
 
 Design a complete test strategy that identifies what to test, at which level (unit/integration/e2e), and why. This ensures efficient test coverage without redundancy while maintaining appropriate test boundaries.
+
+**TDD Mode**: When `tdd_mode=true`, design tests that will be written BEFORE implementation (Red phase), focusing on smallest testable behavior slices and proper mocking strategies.
 
 ## Dependencies
 
@@ -71,6 +76,46 @@ test_scenario:
   description: 'What is being tested'
   justification: 'Why this level was chosen'
   mitigates_risks: ['RISK-001'] # If risk profile exists
+  # TDD-specific fields (when tdd_mode=true)
+  tdd_phase: red|green|refactor # When this test should be written
+  mocking_strategy: mock|fake|stub|none # How to handle dependencies
+  test_data_approach: fixed|builder|random # How to generate test data
+```
+
+### 4a. TDD-Specific Test Design (when tdd_mode=true)
+
+**Smallest-Next-Test Principle:**
+
+- Design tests for the absolute smallest behavior increment
+- Each test should drive a single, focused implementation change
+- Avoid tests that require multiple features to pass
+
+**Mocking Strategy Selection Matrix:**
+
+| Dependency Type | Recommended Approach | Justification                          |
+| --------------- | -------------------- | -------------------------------------- |
+| External API    | Mock                 | Control responses, avoid network calls |
+| Database        | Fake                 | In-memory implementation for speed     |
+| File System     | Stub                 | Return fixed responses                 |
+| Time/Date       | Mock                 | Deterministic time control             |
+| Random Numbers  | Stub                 | Predictable test outcomes              |
+| Other Services  | Mock/Fake            | Depends on complexity and speed needs  |
+
+**Test Data Strategy:**
+
+```yaml
+test_data_approaches:
+  fixed_data:
+    when: 'Simple, predictable scenarios'
+    example: "const userId = 'test-user-123'"
+
+  builder_pattern:
+    when: 'Complex objects with variations'
+    example: "new UserBuilder().withEmail('test@example.com').build()"
+
+  avoid_random:
+    why: 'Makes tests non-deterministic and hard to debug'
+    instead: 'Use meaningful, fixed test data'
 ```
 
 ### 5. Validate Coverage
