@@ -17,6 +17,47 @@ Also note, we use the discussions feature in GitHub to have a community to discu
 
 By participating in this project, you agree to abide by our Code of Conduct. Please read it before participating.
 
+## Before Submitting a PR
+
+**IMPORTANT**: All PRs must pass validation checks before they can be merged.
+
+### Required Checks
+
+Before submitting your PR, run these commands locally:
+
+```bash
+# Run all validation checks
+npm run pre-release
+
+# Or run them individually:
+npm run validate     # Validate agent/team configs
+npm run format:check # Check code formatting
+npm run lint        # Check for linting issues
+```
+
+### Fixing Issues
+
+If any checks fail, use these commands to fix them:
+
+```bash
+# Fix all issues automatically
+npm run fix
+
+# Or fix individually:
+npm run format      # Fix formatting issues
+npm run lint:fix    # Fix linting issues
+```
+
+### Setup Git Hooks (Optional but Recommended)
+
+To catch issues before committing:
+
+```bash
+# Run this once after cloning
+chmod +x tools/setup-hooks.sh
+./tools/setup-hooks.sh
+```
+
 ## How to Contribute
 
 ### Reporting Bugs

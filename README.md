@@ -212,6 +212,26 @@ The generated XML file contains your project's text-based source files in a stru
 
 📋 **[Read CONTRIBUTING.md](CONTRIBUTING.md)** - Complete guide to contributing, including guidelines, process, and requirements
 
+### Working with Forks
+
+When you fork this repository, CI/CD workflows are **disabled by default** to save resources. This is intentional and helps keep your fork clean.
+
+#### Need CI/CD in Your Fork?
+
+See our [Fork CI/CD Guide](.github/FORK_GUIDE.md) for instructions on enabling workflows in your fork.
+
+#### Contributing Workflow
+
+1. **Fork the repository** - Click the Fork button on GitHub
+2. **Clone your fork** - `git clone https://github.com/YOUR-USERNAME/BMAD-METHOD.git`
+3. **Create a feature branch** - `git checkout -b feature/amazing-feature`
+4. **Make your changes** - Test locally with `npm test`
+5. **Commit your changes** - `git commit -m 'feat: add amazing feature'`
+6. **Push to your fork** - `git push origin feature/amazing-feature`
+7. **Open a Pull Request** - CI/CD will run automatically on the PR
+
+Your contributions are tested when you submit a PR - no need to enable CI in your fork!
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
@@ -223,3 +243,19 @@ BMAD™ and BMAD-METHOD™ are trademarks of BMad Code, LLC. All rights reserved
 [![Contributors](https://contrib.rocks/image?repo=bmadcode/bmad-method)](https://github.com/bmadcode/bmad-method/graphs/contributors)
 
 <sub>Built with ❤️ for the AI-assisted development community</sub>
+
+#### Codex (CLI & Web)
+
+- Two modes are supported:
+  - Codex (local only): `npx bmad-method install -f -i codex -d .` — keeps `.bmad-core/` ignored via `.gitignore` for local development.
+  - Codex Web Enabled: `npx bmad-method install -f -i codex-web -d .` — ensures `.bmad-core/` is tracked (not ignored) so it can be committed for Codex Web.
+- For Codex Web, commit both `.bmad-core/` and `AGENTS.md` to the repository.
+- Codex CLI: run `codex` at your project root; reference agents naturally, e.g., “As dev, implement …”.
+- Codex Web: open your repo in Codex and prompt the same way — it reads `AGENTS.md` automatically.
+- Refresh after changes: rerun the appropriate install command (`codex` or `codex-web`) to regenerate the BMAD section inside `AGENTS.md`.
+
+If a `package.json` exists in your project, the installer will add helpful scripts:
+
+- `bmad:refresh` → `bmad-method install -f -i codex`
+- `bmad:list` → `bmad-method list:agents`
+- `bmad:validate` → `bmad-method validate`

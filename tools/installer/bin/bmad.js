@@ -49,7 +49,7 @@ program
   .option('-d, --directory <path>', 'Installation directory')
   .option(
     '-i, --ide <ide...>',
-    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, iflow-cli, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, other)',
+    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, iflow-cli, other)',
   )
   .option(
     '-e, --expansion-packs <packs...>',
