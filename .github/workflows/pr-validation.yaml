@@ -1,0 +1,55 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    if: github.event.repository.fork != true || vars.ENABLE_CI_IN_FORK == 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run validation
+        run: npm run validate
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests (if available)
+        run: npm test --if-present
+
+      - name: Comment on PR if checks fail
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `❌ **PR Validation Failed**
+              
+              This PR has validation errors that must be fixed before merging:
+              - Run \`npm run validate\` to check agent/team configs
+              - Run \`npm run format:check\` to check formatting (fix with \`npm run format\`)
+              - Run \`npm run lint\` to check linting issues (fix with \`npm run lint:fix\`)
+              
+              Please fix these issues and push the changes.`
+            })
