@@ -60,6 +60,7 @@ npm run build
 ### Pull Request CI
 
 When you open a Pull Request to the main repository:
+
 - All CI/CD workflows automatically run
 - You get full validation of your changes
 - No configuration needed
@@ -67,6 +68,7 @@ When you open a Pull Request to the main repository:
 ### GitHub Codespaces
 
 Use GitHub Codespaces for a full development environment:
+
 - All tools pre-configured
 - Same environment as CI/CD
 - No local setup required

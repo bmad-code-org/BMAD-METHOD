@@ -187,6 +187,32 @@ If you want to do the planning on the web with Claude (Sonnet 4 or Opus), Gemini
 npx bmad-method install
 ```
 
+### Codex (CLI & Web)
+
+BMAD integrates with OpenAI Codex via `AGENTS.md` and committed core agent files.
+
+- Two installation modes:
+  - Codex (local only): keeps `.bmad-core/` ignored for local dev.
+    - `npx bmad-method install -f -i codex -d .`
+  - Codex Web Enabled: ensures `.bmad-core/` is tracked so you can commit it for Codex Web.
+    - `npx bmad-method install -f -i codex-web -d .`
+
+- What gets generated:
+  - `AGENTS.md` at the project root with a BMAD section containing
+    - How-to-use with Codex (CLI & Web)
+    - Agent Directory (Title, ID, When To Use)
+    - Detailed per‑agent sections with source path, when-to-use, activation phrasing, and YAML
+    - Tasks with quick usage notes
+  - If a `package.json` exists, helpful scripts are added:
+    - `bmad:refresh`, `bmad:list`, `bmad:validate`
+
+- Using Codex:
+  - CLI: run `codex` in the project root and prompt naturally, e.g., “As dev, implement …”.
+  - Web: commit `.bmad-core/` and `AGENTS.md`, then open the repo in Codex and prompt the same way.
+
+- Refresh after changes:
+  - Re-run the appropriate install mode (`codex` or `codex-web`) to update the BMAD block in `AGENTS.md`.
+
 ## Special Agents
 
 There are two BMad agents — in the future they'll be consolidated into a single BMad-Master.
