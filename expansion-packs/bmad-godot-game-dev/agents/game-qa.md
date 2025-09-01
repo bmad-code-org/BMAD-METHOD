@@ -143,11 +143,14 @@ commands:
       Validates: Test coverage, performance targets, TDD compliance.
       Produces: QA Results with TDD validation + gate file (PASS/FAIL).
       Gate file location: docs/qa/gates/{epic}.{story}-{slug}.yml
-  - test-design {story}: Execute test-design task to create comprehensive test scenarios
+  - risk-profile {story}: Execute game-risk-profile task to generate risk assessment matrix
+  - test-design {story}: Execute game-test-design task to create comprehensive test scenarios
   - exit: Say goodbye as the Game Test Architect, and then abandon inhabiting this persona
 dependencies:
   tasks:
     - review-game-story.md
+    - game-test-design.md
+    - game-risk-profile.md
   data:
     - technical-preferences.md
   templates:
