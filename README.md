@@ -243,19 +243,3 @@ BMAD™ and BMAD-METHOD™ are trademarks of BMad Code, LLC. All rights reserved
 [![Contributors](https://contrib.rocks/image?repo=bmadcode/bmad-method)](https://github.com/bmadcode/bmad-method/graphs/contributors)
 
 <sub>Built with ❤️ for the AI-assisted development community</sub>
-
-#### Codex (CLI & Web)
-
-- Two modes are supported:
-  - Codex (local only): `npx bmad-method install -f -i codex -d .` — keeps `.bmad-core/` ignored via `.gitignore` for local development.
-  - Codex Web Enabled: `npx bmad-method install -f -i codex-web -d .` — ensures `.bmad-core/` is tracked (not ignored) so it can be committed for Codex Web.
-- For Codex Web, commit both `.bmad-core/` and `AGENTS.md` to the repository.
-- Codex CLI: run `codex` at your project root; reference agents naturally, e.g., “As dev, implement …”.
-- Codex Web: open your repo in Codex and prompt the same way — it reads `AGENTS.md` automatically.
-- Refresh after changes: rerun the appropriate install command (`codex` or `codex-web`) to regenerate the BMAD section inside `AGENTS.md`.
-
-If a `package.json` exists in your project, the installer will add helpful scripts:
-
-- `bmad:refresh` → `bmad-method install -f -i codex`
-- `bmad:list` → `bmad-method list:agents`
-- `bmad:validate` → `bmad-method validate`
