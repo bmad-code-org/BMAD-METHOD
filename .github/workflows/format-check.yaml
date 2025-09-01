@@ -7,6 +7,7 @@ name: format-check
 jobs:
   prettier:
     runs-on: ubuntu-latest
+    if: github.event.repository.fork != true || vars.ENABLE_CI_IN_FORK == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,6 +26,7 @@ jobs:
 
   eslint:
     runs-on: ubuntu-latest
+    if: github.event.repository.fork != true || vars.ENABLE_CI_IN_FORK == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4

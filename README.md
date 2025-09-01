@@ -40,7 +40,7 @@ This two-phase approach eliminates both **planning inconsistency** and **context
 
 - **[Install and Build software with Full Stack Agile AI Team](#quick-start)** → Quick Start Instruction
 - **[Learn how to use BMad](docs/user-guide.md)** → Complete user guide and walkthrough
-- **[See available AI agents](/bmad-core/agents))** → Specialized roles for your team
+- **[See available AI agents](/bmad-core/agents)** → Specialized roles for your team
 - **[Explore non-technical uses](#-beyond-software-development---expansion-packs)** → Creative writing, business, wellness, education
 - **[Create my own AI agents](docs/expansion-packs.md)** → Build agents for your domain
 - **[Browse ready-made expansion packs](expansion-packs/)** → Game dev, DevOps, infrastructure and get inspired with ideas and examples
@@ -211,6 +211,26 @@ The generated XML file contains your project's text-based source files in a stru
 **We're excited about contributions and welcome your ideas, improvements, and expansion packs!** 🎉
 
 📋 **[Read CONTRIBUTING.md](CONTRIBUTING.md)** - Complete guide to contributing, including guidelines, process, and requirements
+
+### Working with Forks
+
+When you fork this repository, CI/CD workflows are **disabled by default** to save resources. This is intentional and helps keep your fork clean.
+
+#### Need CI/CD in Your Fork?
+
+See our [Fork CI/CD Guide](.github/FORK_GUIDE.md) for instructions on enabling workflows in your fork.
+
+#### Contributing Workflow
+
+1. **Fork the repository** - Click the Fork button on GitHub
+2. **Clone your fork** - `git clone https://github.com/YOUR-USERNAME/BMAD-METHOD.git`
+3. **Create a feature branch** - `git checkout -b feature/amazing-feature`
+4. **Make your changes** - Test locally with `npm test`
+5. **Commit your changes** - `git commit -m 'feat: add amazing feature'`
+6. **Push to your fork** - `git push origin feature/amazing-feature`
+7. **Open a Pull Request** - CI/CD will run automatically on the PR
+
+Your contributions are tested when you submit a PR - no need to enable CI in your fork!
 
 ## License
 
