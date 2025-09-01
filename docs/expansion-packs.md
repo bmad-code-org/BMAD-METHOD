@@ -18,7 +18,7 @@ Each expansion pack provides deep, specialized knowledge without bloating the co
 
 Anyone can create and share expansion packs, fostering a ecosystem of AI-powered solutions across all industries and interests.
 
-## Technical Expansion Packs
+## Technical Expansion Packs (Examples of possible expansions to come)
 
 ### Game Development Pack
 
@@ -191,90 +191,10 @@ Research acceleration tools:
 
 ## Creating Your Own Expansion Pack
 
-### Step 1: Define Your Domain
-
-What expertise are you capturing? What problems will it solve?
-
-### Step 2: Design Your Agents
-
-Each agent should have:
-
-- Clear expertise area
-- Specific personality traits
-- Defined capabilities
-- Knowledge boundaries
-
-### Step 3: Create Tasks
-
-Tasks should be:
-
-- Step-by-step procedures
-- Reusable across scenarios
-- Clear and actionable
-- Domain-specific
-
-### Step 4: Build Templates
-
-Templates need:
-
-- Structured output format
-- Embedded LLM instructions
-- Placeholders for customization
-- Professional formatting
-
-### Step 5: Test & Iterate
-
-- Use with real scenarios
-- Gather user feedback
-- Refine agent responses
-- Improve task clarity
-
-### Step 6: Package & Share
-
-- Create clear documentation
-- Include usage examples
-- Add to expansion-packs directory
-- Share with community
-
-## The Future of Expansion Packs
-
-### Marketplace Potential
-
-Imagine a future where:
-
-- Professional expansion packs are sold
-- Certified packs for regulated industries
-- Community ratings and reviews
-- Automatic updates and improvements
-
-### AI Agent Ecosystems
-
-Expansion packs could enable:
-
-- Cross-pack agent collaboration
-- Industry-standard agent protocols
-- Interoperable AI workflows
-- Universal agent languages
-
-### Democratizing Expertise
-
-Every expansion pack:
-
-- Makes expert knowledge accessible
-- Reduces barriers to entry
-- Enables solo entrepreneurs
-- Empowers small teams
-
-## Getting Started
-
-1. **Browse existing packs**: Check `expansion-packs/` directory
-2. **Install what you need**: Use the installer's expansion pack option
-3. **Create your own**: Use the expansion-creator pack
-4. **Share with others**: Submit PRs with new packs
-5. **Build the future**: Help shape AI-assisted work
+The next major release will include a new agent and expansion pack builder and a new expansion format.
 
 ## Remember
 
-The BMad Method is more than a development framework - it's a platform for structuring human expertise into AI-accessible formats. Every expansion pack you create makes specialized knowledge more accessible to everyone.
+The BMad Method is more than a Software Development Agile Framework! Every expansion pack makes specialized knowledge and workflows more accessible to everyone.
 
 **What expertise will you share with the world?**
