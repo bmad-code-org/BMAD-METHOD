@@ -156,7 +156,7 @@ npx bmad-method install
 - Game story management and implementation workflow
 - Godot testing with GUT/GoDotTest, profiling, and debugging
 
-**Cost-Saving Tip for Game Development**: Create large game design documents in web UI, then copy to `docs/game-design-doc.md` and `docs/game-architecture.md` in your Godot project before switching to IDE for development.
+**Cost-Saving Tip for Game Development**: Create large game design documents in web UI, then copy to `docs/game-design-doc.md` and `docs/architecture.md` in your Godot project before switching to IDE for development.
 
 ### IDE-Only Game Development Workflow Considerations
 
@@ -214,9 +214,9 @@ gdd:
 gamearchitecture:
   gamearchitectureFile: docs/architecture.md
   gamearchitectureVersion: v3
-  gamearchitectureLocation: docs/game-architecture.md
+  gamearchitectureLocation: docs/architecture.md
   gamearchitectureSharded: true
-  gamearchitectureShardedLocation: docs/game-architecture
+  gamearchitectureShardedLocation: docs/architecture
 gamebriefdocLocation: docs/game-brief.md
 levelDesignLocation: docs/level-design.md
 # Specify Godot executable location if needed
@@ -227,9 +227,9 @@ devStoryLocation: docs/stories
 slashPrefix: BmadG
 # Sharded architecture files for developer reference
 devLoadAlwaysFiles:
-  - docs/game-architecture/9-coding-standards.md
-  - docs/game-architecture/3-tech-stack.md
-  - docs/game-architecture/8-godot-project-structure.md
+  - docs/architecture/9-coding-standards.md
+  - docs/architecture/3-tech-stack.md
+  - docs/architecture/8-godot-project-structure.md
 ```
 
 ## Complete Game Development Workflow
@@ -245,7 +245,7 @@ devLoadAlwaysFiles:
 3. **Game Design Document Creation**: `/bmadg/game-designer` - Use `game-design-doc-tmpl` for comprehensive game requirements
 4. **Game Architecture Design**: `/bmadg/game-architect` - Use `game-architecture-tmpl` for Godot technical foundation
 5. **Level Design Framework**: `/bmadg/game-designer` - Use `level-design-doc-tmpl` for level structure planning
-6. **Document Preparation**: Copy final documents to Godot project as `docs/game-design-doc.md`, `docs/game-brief.md`, `docs/level-design.md` and `docs/game-architecture.md`
+6. **Document Preparation**: Copy final documents to Godot project as `docs/game-design-doc.md`, `docs/game-brief.md`, `docs/level-design.md` and `docs/architecture.md`
 
 #### Example Game Planning Prompts
 
@@ -270,7 +270,7 @@ Consider both GDScript and C# for appropriate systems."
 
 - **Why**: Godot development workflow requires scene operations, GDScript/C# coding, and real-time testing
 - **Cost Benefit**: Web UI is more cost-effective for large game design creation; IDE is optimized for Godot development
-- **Required Files**: Ensure `docs/game-design-doc.md` and `docs/game-architecture.md` exist in your Godot project
+- **Required Files**: Ensure `docs/game-design-doc.md` and `docs/architecture.md` exist in your Godot project
 
 ### Godot IDE Development Workflow
 
@@ -282,7 +282,7 @@ Consider both GDScript and C# for appropriate systems."
      a) **Manual**: Use core BMad `shard-doc` task if available
      b) **Agent**: Ask core `@bmad-master` agent to shard documents
    - Shards `docs/game-design-doc.md` → `docs/game-design/` folder
-   - Shards `docs/game-architecture.md` → `docs/game-architecture/` folder
+   - Shards `docs/architecture.md` → `docs/architecture/` folder
    - **WARNING**: Do NOT shard in Web UI - copying many small files to Godot is painful!
 
 2. **Verify Sharded Game Content**:
@@ -293,7 +293,7 @@ Consider both GDScript and C# for appropriate systems."
 Resulting Godot Project Folder Structure:
 
 - `docs/game-design/` - Broken down game design sections
-- `docs/game-architecture/` - Broken down Godot architecture sections
+- `docs/architecture/` - Broken down Godot architecture sections
 - `docs/game-stories/` - Generated game development stories
 
 3. **Game Development Cycle** (Sequential, one game story at a time):
@@ -387,7 +387,7 @@ Each status change requires user verification and approval before proceeding.
 ### Required File Naming for Game Framework Integration
 
 - `docs/game-design-doc.md` - Game Design Document
-- `docs/game-architecture.md` - Godot System Architecture Document
+- `docs/architecture.md` - Godot System Architecture Document
 
 **Why These Names Matter for Game Development**:
 
@@ -401,7 +401,7 @@ Each status change requires user verification and approval before proceeding.
 
 1. **Use Web UI**: Create game documents in web interface for cost efficiency
 2. **Copy Final Output**: Save complete markdown to your Godot project
-3. **Standard Names**: Save as `docs/game-design-doc.md` and `docs/game-architecture.md`
+3. **Standard Names**: Save as `docs/game-design-doc.md` and `docs/architecture.md`
 4. **Switch to Godot IDE**: Use IDE agents for Godot development and smaller game documents
 
 ### Game Document Sharding

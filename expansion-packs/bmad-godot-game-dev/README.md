@@ -24,11 +24,13 @@ graph TD
     G -->|No| E2["Game-Designer: Interactive GDD Creation (More Questions)"]
     E --> F["GDD Created with FRs, NFRs, Epics & Stories"]
     E2 --> F
-    F["Game-Architect: Create GameArchitecture from GDD"] --> I["PO: Run game-po-validation-checklist"]
+    F --> F2["Game-PM: Create PRD from GDD"]
+    F2 --> F3["Game-Architect: Create Game Architecture from GDD and PRD"]
+    F3 --> I["PO: Run game-po-validation-checklist"]
     I --> J{"Documents Aligned?"}
     J -->|Yes| K["Planning Complete"]
     J -->|No| L["Game-Designer: Update Epics & Stories"]
-    L --> M["Update GDD/GameArchitecture as needed"]
+    L --> M["Update GDD/Game Architecture as needed"]
     M --> I
     K --> N["📁 Switch to IDE (If in a Web Agent Platform)"]
     N --> O["Game-PO: Shard Documents"]
@@ -44,8 +46,7 @@ graph TD
     style E2 fill:#fff3e0,color:#000
     style F fill:#fff3e0,color:#000
     style F2 fill:#e3f2fd,color:#000
-    style F3 fill:#e1f5fe,color:#000
-    style F4 fill:#e1f5fe,color:#000
+    style F3 fill:#f3e5f5,color:#000
     style G fill:#e3f2fd,color:#000
     style H fill:#f3e5f5,color:#000
     style H2 fill:#f3e5f5,color:#000
