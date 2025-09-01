@@ -1,0 +1,6 @@
+name: bmad-godot-game-dev
+version: 1.0.0
+short-title: Godot Game Dev Pack
+description: Game Development expansion pack for BMad Method - Godot GDscript & C# focused
+author: sjennings (Lum), based on BMAD Unity Game Dev expansion pack by pbean (PinkyD)
+slashPrefix: BmadG

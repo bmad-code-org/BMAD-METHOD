@@ -1,0 +1,218 @@
+workflow:
+  id: godot-game-dev-greenfield
+  name: Godot Game Development - Greenfield Project
+  description: Specialized workflow for creating games from concept to implementation using Godot Engine 4.x with GDScript and C#. Guides teams through Godot-specific design patterns, node-based architecture, scene composition, signal systems, and resource management. Emphasizes Godot's unique features like AnimationTree, shader language, and built-in physics while maintaining 60+ FPS performance targets.
+  type: greenfield
+  project_types:
+    - godot-2d-game
+    - godot-3d-game
+    - godot-mobile-game
+    - godot-web-export
+    - godot-vr-game
+    - godot-multiplayer-game
+  full_game_sequence:
+    - agent: game-designer
+      creates: game-brief.md
+      optional_steps:
+        - godot_genre_analysis
+        - godot_asset_store_research
+        - target_platform_capabilities
+      notes: "Define game concept with Godot's strengths in mind (2D pixel-perfect, procedural generation, shader effects). Consider Godot's export targets and platform-specific features. SAVE OUTPUT: Copy final game-brief.md to your project's docs/design/ folder."
+    - agent: game-designer
+      creates: game-design-doc.md
+      requires: game-brief.md
+      optional_steps:
+        - godot_node_system_planning
+        - scene_hierarchy_design
+        - input_map_configuration
+      notes: "Create Godot-specific GDD defining node hierarchies, scene transitions, input actions, and resource preloading strategies. Map mechanics to Godot's built-in nodes (Area2D, CharacterBody2D, RigidBody2D). SAVE OUTPUT: Copy final game-design-doc.md to your project's docs/design/ folder."
+    - agent: game-designer
+      creates: level-design-doc.md
+      requires: game-design-doc.md
+      optional_steps:
+        - tilemap_system_design
+        - scene_instancing_strategy
+        - godot_room_system_planning
+      notes: "Design levels using Godot's TileMap, GridMap, or modular scene approach. Define scene instancing patterns, resource groups, and level streaming strategy. SAVE OUTPUT: Copy final level-design-doc.md to your project's docs/design/ folder."
+    - agent: game-architect
+      creates: game-architecture.md
+      requires:
+        - game-design-doc.md
+        - level-design-doc.md
+      optional_steps:
+        - godot_autoload_architecture
+        - signal_bus_design
+        - resource_loading_strategy
+        - gdextension_evaluation
+      notes: "Design Godot-specific architecture: autoload singletons, signal bus patterns, scene tree organization, resource loading (preload vs load), and GDScript/C#/GDExtension strategy. Define custom nodes, resources, and editor tools. SAVE OUTPUT: Copy final game-architecture.md to your project's docs/architecture/ folder."
+    - agent: game-designer
+      validates: design_consistency
+      requires: all_design_documents
+      uses: game-design-checklist
+      notes: Validate all design documents for consistency, completeness, and implementability. May require updates to any design document.
+    - agent: various
+      updates: flagged_design_documents
+      condition: design_validation_issues
+      notes: If design validation finds issues, return to relevant agent to fix and re-export updated documents to docs/ folder.
+  project_setup_guidance:
+    action: initialize_godot_project
+    notes: "Create Godot 4.x project with proper folder structure: scenes/, scripts/, resources/, shaders/, addons/. Configure project settings: rendering (Forward+/Mobile), physics tick rate, input map, autoloads. Install GUT for GDScript testing, configure export presets for target platforms."
+  workflow_end:
+    action: move_to_story_development
+    notes: All design artifacts complete. Begin story-driven development phase. Use Game Scrum Master to create implementation stories from design documents.
+  prototype_sequence:
+    - step: prototype_scope
+      action: assess_prototype_complexity
+      notes: First, assess if this needs full game design (use full_game_sequence) or can be a rapid prototype.
+    - agent: game-designer
+      creates: game-brief.md
+      optional_steps:
+        - godot_rapid_prototyping
+        - built_in_node_selection
+      notes: "Create focused brief leveraging Godot's rapid prototyping capabilities. Use built-in nodes and CSG for quick iteration. SAVE OUTPUT: Copy final game-brief.md to your project's docs/ folder."
+    - agent: game-designer
+      creates: prototype-design.md
+      uses: create-doc prototype-design OR create-game-story
+      requires: game-brief.md
+      notes: "Define minimal viable scenes and node structure. Focus on Godot's built-in nodes for rapid development. Use @tool scripts for in-editor prototyping."
+  prototype_workflow_end:
+    action: move_to_rapid_implementation
+    notes: Prototype defined. Begin immediate implementation with Game Developer. Focus on core mechanics first, then iterate based on playtesting.
+  flow_diagram: |
+    ```mermaid
+    graph TD
+        A[Start: Game Development Project] --> B{Project Scope?}
+        B -->|Full Game/Production| C[game-designer: game-brief.md]
+        B -->|Prototype/Game Jam| D[game-designer: focused game-brief.md]
+
+        C --> E[game-designer: game-design-doc.md]
+        E --> F[game-designer: level-design-doc.md]
+        F --> G[game-architect: game-architecture.md]
+        G --> H[game-designer: validate design consistency]
+        H --> I{Design validation issues?}
+        I -->|Yes| J[Return to relevant agent for fixes]
+        I -->|No| K[Set up game project structure]
+        J --> H
+        K --> L[Move to Story Development Phase]
+
+        D --> M[game-designer: prototype-design.md]
+        M --> N[Move to Rapid Implementation]
+
+        C -.-> C1[Optional: brainstorming]
+        C -.-> C2[Optional: game research]
+        E -.-> E1[Optional: competitive analysis]
+        F -.-> F1[Optional: level prototyping]
+        G -.-> G1[Optional: technical research]
+        D -.-> D1[Optional: quick brainstorming]
+
+        style L fill:#90EE90
+        style N fill:#90EE90
+        style C fill:#FFE4B5
+        style E fill:#FFE4B5
+        style F fill:#FFE4B5
+        style G fill:#FFE4B5
+        style D fill:#FFB6C1
+        style M fill:#FFB6C1
+    ```
+  godot_specific_guidance:
+    scene_organization:
+      - Main.tscn as root scene with game state management
+      - Modular scenes for reusable components
+      - Inherited scenes for variations
+      - Packed scenes for dynamic instantiation
+    node_patterns:
+      - Use Area2D for triggers and detection zones
+      - CharacterBody2D for player and NPCs
+      - RigidBody2D for physics objects
+      - Control nodes for all UI elements
+      - Node2D for logical grouping
+    resource_management:
+      - Custom resources (.tres) for game data
+      - Preload vs dynamic loading strategies
+      - Resource groups for batch loading
+      - Import settings optimization per asset type
+    godot_tools:
+      - Use Godot's built-in profiler throughout development
+      - Debug with remote scene tree inspection
+      - Leverage editor plugins for workflow enhancement
+      - Create @tool scripts for design-time helpers
+  decision_guidance:
+    use_full_sequence_when:
+      - Building complex Godot games with multiple scenes
+      - Implementing networked multiplayer with Godot's high-level API
+      - Creating games with complex shader pipelines
+      - Developing for multiple Godot export targets (Desktop, Mobile, Web)
+      - Using GDExtension for performance-critical systems
+      - Building modular games with Godot's resource system
+      - Requiring custom editor tools and plugins
+    use_prototype_sequence_when:
+      - Game jams using Godot's rapid development features
+      - Testing Godot-specific mechanics (physics, particles, shaders)
+      - Leveraging Godot's built-in nodes without custom code
+      - Single-scene prototypes or tech demos
+      - Learning Godot's node and signal systems
+      - Quick experiments with Godot's animation tools
+  handoff_prompts:
+    designer_to_gdd: Game brief is complete. Save it as docs/design/game-brief.md in your project, then create the comprehensive Game Design Document.
+    gdd_to_level: Game Design Document ready. Save it as docs/design/game-design-doc.md, then create the level design framework.
+    level_to_architect: Level design complete. Save it as docs/design/level-design-doc.md, then create the technical architecture.
+    architect_review: Architecture complete. Save it as docs/architecture/game-architecture.md. Please validate all design documents for consistency.
+    validation_issues: Design validation found issues with [document]. Please return to [agent] to fix and re-save the updated document.
+    full_complete: All design artifacts validated and saved. Set up game project structure and move to story development phase.
+    prototype_designer_to_dev: Prototype brief complete. Save it as docs/game-brief.md, then create minimal design or jump directly to implementation stories.
+    prototype_complete: Prototype defined. Begin rapid implementation focusing on core mechanics and immediate playability.
+  story_development_guidance:
+    epic_breakdown:
+      - Godot Scene Architecture" - Main scene tree, autoloads, and scene transitions
+      - Node Systems" - Player controllers, enemies, pickups using Godot nodes
+      - Physics & Collision" - Godot physics layers, areas, and collision shapes
+      - UI & Control Nodes" - Godot Control nodes, themes, and responsive UI
+      - Audio with AudioStreamPlayer" - Godot audio buses, effects, and 3D audio
+      - Shader & Visual Effects" - Godot shader language, particles, and post-processing
+      - Platform Export & Optimization" - Export templates, platform-specific features
+    story_creation_process:
+      - Create stories with specific Godot node types and scene structures
+      - Reference Godot documentation and built-in class requirements
+      - Include Godot performance monitors targets (draw calls, physics process)
+      - Specify signal connections and node paths
+      - Define resource types (.tres, .tscn, .gdshader)
+      - Enforce GUT test creation before implementation
+      - Include export settings and platform considerations
+      - Reference Godot's scene inheritance and composition patterns
+  godot_development_best_practices:
+    performance_targets:
+      - Monitor Godot Profiler: 60+ FPS, <1000 draw calls, <16ms frame time
+      - Use Godot's performance monitors for memory tracking
+      - Optimize with Godot's occlusion culling and LOD systems
+      - Leverage Godot's threading (WorkerThreadPool) for heavy operations
+    godot_technical_standards:
+      - Use @export annotations for inspector variables
+      - Implement _ready(), _process(), _physics_process() correctly
+      - Prefer signals over hard references between nodes
+      - Use Godot's resource system for data-driven design
+      - Implement @tool scripts for editor functionality
+      - Configure Project Settings for target platform optimization
+      - Use Godot's built-in pooling (PackedArrays) for performance
+    godot_specific_patterns:
+      - Scene inheritance for variant creation
+      - Composition over inheritance with scene instancing
+      - Resource scripts for custom data types
+      - AnimationTree for complex state machines
+      - Navigation2D/3D for pathfinding
+      - MultiplayerAPI for networking
+  success_criteria:
+    design_phase_complete:
+      - Godot-specific design documents validated
+      - Node hierarchy and scene structure defined
+      - Signal architecture documented
+      - Resource loading strategy established
+      - Autoload singletons identified
+    godot_implementation_readiness:
+      - Godot 4.x installed with required export templates
+      - Project settings configured (rendering, physics, input)
+      - GUT addon installed and test structure created
+      - Version control configured with .gitignore for Godot
+      - Editor settings standardized across team
+      - Custom editor tools/plugins identified
+      - First scene structure and node hierarchy created
+      - Base scripts with proper Godot lifecycle methods ready

@@ -1,0 +1,724 @@
+template:
+  id: game-design-doc-template-v3
+  name: Game Design Document (GDD)
+  version: 4.0
+  output:
+    format: markdown
+    filename: docs/game-design-document.md
+    title: "{{game_title}} Game Design Document (GDD)"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: goals-context
+    title: Goals and Background Context
+    instruction: |
+      Ask if Project Brief document is available. If NO Project Brief exists, STRONGLY recommend creating one first using project-brief-tmpl (it provides essential foundation: problem statement, target users, success metrics, MVP scope, constraints). If user insists on GDD without brief, gather this information during Goals section. If Project Brief exists, review and use it to populate Goals (bullet list of desired game development outcomes) and Background Context (1-2 paragraphs on what game concept this will deliver and why) so we can determine what is and is not in scope for the GDD. Include Change Log table for version tracking.
+    sections:
+      - id: goals
+        title: Goals
+        type: bullet-list
+        instruction: Bullet list of 1 line desired outcomes the GDD will deliver if successful - game development and player experience goals
+        examples:
+          - Create an engaging 2D platformer that teaches players basic programming concepts
+          - Deliver a polished mobile game that runs smoothly on low-end Android devices
+          - Build a foundation for future expansion packs and content updates
+      - id: background
+        title: Background Context
+        type: paragraphs
+        instruction: 1-2 short paragraphs summarizing the game concept background, target audience needs, market opportunity, and what problem this game solves
+      - id: changelog
+        title: Change Log
+        type: table
+        columns: [Date, Version, Description, Author]
+        instruction: Track document versions and changes
+
+  - id: executive-summary
+    title: Executive Summary
+    instruction: Create a compelling overview that captures the essence of the game. Present this section first and get user feedback before proceeding.
+    elicit: true
+    sections:
+      - id: core-concept
+        title: Core Concept
+        instruction: 2-3 sentences that clearly describe what the game is and why players will love it
+        examples:
+          - A fast-paced 2D platformer where players manipulate gravity to solve puzzles and defeat enemies in a hand-drawn world.
+          - An educational puzzle game that teaches coding concepts through visual programming blocks in a fantasy adventure setting.
+      - id: target-audience
+        title: Target Audience
+        instruction: Define the primary and secondary audience with demographics and gaming preferences
+        template: |
+          **Primary:** {{age_range}}, {{player_type}}, {{platform_preference}}
+          **Secondary:** {{secondary_audience}}
+        examples:
+          - "Primary: Ages 8-16, casual mobile gamers, prefer short play sessions"
+          - "Secondary: Adult puzzle enthusiasts, educators looking for teaching tools"
+      - id: platform-technical
+        title: Platform & Technical Requirements
+        instruction: Based on the technical preferences or user input, define the target platforms and Godot-specific requirements
+        template: |
+          **Primary Platform:** {{platform}}
+          **Engine:** Godot {{godot_version}} with GDScript & C#
+          **Language Strategy:** {{gdscript_for}} (GDScript), {{csharp_for}} (C#)
+          **Performance Target:** 60+ FPS minimum on {{minimum_device}}
+          **Screen Support:** {{resolution_range}}
+          **Export Templates:** {{export_targets}}
+          **TDD Approach:** GUT for GDScript, GoDotTest for C#
+        examples:
+          - "Primary Platform: Mobile (iOS/Android), Engine: Godot 4.3, Performance: 60+ FPS on iPhone 8/Galaxy S8"
+          - "Language Strategy: Game logic/UI (GDScript), Physics/AI systems (C#)"
+      - id: unique-selling-points
+        title: Unique Selling Points
+        instruction: List 3-5 key features that differentiate this game from competitors
+        type: numbered-list
+        examples:
+          - Innovative gravity manipulation mechanic that affects both player and environment
+          - Seamless integration of educational content without compromising fun gameplay
+          - Adaptive difficulty system that learns from player behavior
+
+  - id: core-gameplay
+    title: Core Gameplay
+    instruction: This section defines the fundamental game mechanics. After presenting each subsection, apply advanced elicitation to ensure completeness and gather additional details.
+    elicit: true
+    sections:
+      - id: game-pillars
+        title: Game Pillars
+        instruction: Define 3-5 core pillars that guide all design decisions. These should be specific and actionable for Godot development.
+        type: numbered-list
+        template: |
+          **{{pillar_name}}** - {{description}}
+        examples:
+          - Performance First - Maintain 60+ FPS across all target platforms
+          - Intuitive Controls - All interactions learnable within 30 seconds using InputMap
+          - Immediate Feedback - Every player action provides signal response within 50ms
+          - Progressive Challenge - Difficulty increases through mechanic complexity, not unfair timing
+      - id: core-gameplay-loop
+        title: Core Gameplay Loop
+        instruction: Define the 30-60 second loop that players will repeat. Be specific about timing and player actions for Godot implementation.
+        template: |
+          **Primary Loop ({{duration}} seconds):**
+
+          1. {{action_1}} ({{time_1}}s) - {{godot_node}}
+          2. {{action_2}} ({{time_2}}s) - {{godot_node}}
+          3. {{action_3}} ({{time_3}}s) - {{godot_node}}
+          4. {{reward_feedback}} ({{time_4}}s) - {{godot_node}}
+
+          **Performance Target:** Loop maintains 60+ FPS
+        examples:
+          - Observe environment (2s) - Camera2D node, Identify puzzle elements (3s) - Area2D detection
+      - id: win-loss-conditions
+        title: Win/Loss Conditions
+        instruction: Clearly define success and failure states with Godot-specific implementation notes
+        template: |
+          **Victory Conditions:**
+
+          - {{win_condition_1}} - Godot Signal: {{signal_name}}
+          - {{win_condition_2}} - Godot Signal: {{signal_name}}
+
+          **Failure States:**
+
+          - {{loss_condition_1}} - Trigger: {{godot_trigger}}
+          - {{loss_condition_2}} - Trigger: {{godot_trigger}}
+        examples:
+          - "Victory: Player reaches exit portal - Signal: area_entered from Area2D"
+          - "Failure: Health reaches zero - Trigger: health_depleted signal"
+
+  - id: game-mechanics
+    title: Game Mechanics
+    instruction: Detail each major mechanic that will need Godot implementation. Each mechanic should be specific enough for developers to create nodes, scripts (GDScript/C#), and scenes with TDD approach.
+    elicit: true
+    sections:
+      - id: primary-mechanics
+        title: Primary Mechanics
+        repeatable: true
+        sections:
+          - id: mechanic
+            title: "{{mechanic_name}}"
+            template: |
+              **Description:** {{detailed_description}}
+
+              **Player Input:** {{input_method}} - InputMap Action: {{input_action}}
+
+              **System Response:** {{game_response}}
+
+              **Godot Implementation Notes:**
+
+              - **Nodes Needed:** {{node_list}}
+              - **Language Choice:** {{gdscript_or_csharp}} - {{language_rationale}}
+              - **Physics Requirements:** {{physics_2d_3d_setup}}
+              - **Animation:** {{animation_player_states}}
+              - **Performance:** Must maintain 60+ FPS
+              - **Object Pooling:** {{pooling_requirements}}
+
+              **Dependencies:** {{other_mechanics_needed}}
+
+              **Script Architecture:**
+
+              - {{script_name}}.gd/.cs - {{responsibility}}
+              - {{autoload_script}}.gd/.cs - {{singleton_role}}
+
+              **TDD Requirements:**
+              - GUT tests for GDScript components
+              - GoDotTest for C# components
+            examples:
+              - "Nodes Needed: RigidBody2D, CollisionShape2D, PlayerController node"
+              - "Language: GDScript for game logic, C# for physics calculations"
+              - "Physics Requirements: Physics material for friction, gravity scale 3"
+      - id: controls
+        title: Controls
+        instruction: Define all input methods for different platforms using Godot's InputMap
+        type: table
+        template: |
+          | Action | Desktop | Mobile | Gamepad | InputMap Action |
+          | ------ | ------- | ------ | ------- | --------------- |
+          | {{action}} | {{key}} | {{gesture}} | {{button}} | {{action_name}} |
+        examples:
+          - Move Left, A/Left Arrow, Touch Left, Left Stick, move_left
+
+  - id: progression-balance
+    title: Progression & Balance
+    instruction: Define how players advance and how difficulty scales. This section should provide clear parameters for Godot implementation with Resources and language strategy.
+    elicit: true
+    sections:
+      - id: player-progression
+        title: Player Progression
+        template: |
+          **Progression Type:** {{linear|branching|metroidvania}}
+
+          **Key Milestones:**
+
+          1. **{{milestone_1}}** - {{unlock_description}} - Godot: {{resource_update}}
+          2. **{{milestone_2}}** - {{unlock_description}} - Godot: {{resource_update}}
+          3. **{{milestone_3}}** - {{unlock_description}} - Godot: {{resource_update}}
+
+          **Save Data Structure:**
+
+          ```csharp
+          [System.Serializable]
+          public class PlayerProgress
+          {
+              {{progress_fields}}
+          }
+          ```
+        examples:
+          - public int currentLevel, public bool[] unlockedAbilities, public float totalPlayTime
+      - id: difficulty-curve
+        title: Difficulty Curve
+        instruction: Provide specific parameters for balancing that can be implemented as Godot Resources with performance focus
+        template: |
+          **Tutorial Phase:** {{duration}} - {{difficulty_description}}
+          - Godot Config: {{resource_values}} - Language: {{gdscript_or_csharp}}
+
+          **Early Game:** {{duration}} - {{difficulty_description}}
+          - Godot Config: {{resource_values}} - Must maintain 60+ FPS
+
+          **Mid Game:** {{duration}} - {{difficulty_description}}
+          - Godot Config: {{resource_values}} - Object pooling required
+
+          **Late Game:** {{duration}} - {{difficulty_description}}
+          - Godot Config: {{resource_values}} - C# optimization for performance
+        examples:
+          - "enemy speed: 2.0f, jump height: 4.5f, obstacle density: 0.3f"
+      - id: economy-resources
+        title: Economy & Resources
+        condition: has_economy
+        instruction: Define any in-game currencies, resources, or collectibles with Godot implementation details
+        type: table
+        template: |
+          | Resource | Earn Rate | Spend Rate | Purpose | Cap | Godot Resource |
+          | -------- | --------- | ---------- | ------- | --- | --------------- |
+          | {{resource}} | {{rate}} | {{rate}} | {{use}} | {{max}} | {{resource_name}} |
+        examples:
+          - Coins, 1-3 per enemy, 10-50 per upgrade, Buy abilities, 9999, CurrencyData
+
+  - id: level-design-framework
+    title: Level Design Framework
+    instruction: Provide guidelines for level creation that developers can use to create Godot scenes and nodes. Focus on modular design, scene inheritance, and performance optimization.
+    elicit: true
+    sections:
+      - id: level-types
+        title: Level Types
+        repeatable: true
+        sections:
+          - id: level-type
+            title: "{{level_type_name}}"
+            template: |
+              **Purpose:** {{gameplay_purpose}}
+              **Target Duration:** {{target_time}}
+              **Key Elements:** {{required_mechanics}}
+              **Difficulty Rating:** {{relative_difficulty}}
+
+              **Godot Scene Structure:**
+
+              - **Environment:** {{tilemap_setup}}
+              - **Gameplay Objects:** {{node_list}}
+              - **Lighting:** {{lighting_setup}}
+              - **Audio:** {{audio_sources}}
+
+              **Level Flow Template:**
+
+              - **Introduction:** {{intro_description}} - Area: {{godot_area_bounds}}
+              - **Challenge:** {{main_challenge}} - Mechanics: {{active_components}}
+              - **Resolution:** {{completion_requirement}} - Trigger: {{completion_trigger}}
+
+              **Reusable Scenes:**
+
+              - {{scene_name}}.tscn - {{scene_purpose}}
+            examples:
+              - "Environment: TileMap node with Platform tileset, Lighting: DirectionalLight2D + PointLight2D nodes"
+      - id: level-progression
+        title: Level Progression
+        template: |
+          **World Structure:** {{linear|hub|open}}
+          **Total Levels:** {{number}}
+          **Unlock Pattern:** {{progression_method}}
+          **Scene Management:** {{godot_scene_loading}}
+
+          **Godot Scene Organization:**
+
+          - Scene Naming: {{naming_convention}}
+          - Resource Preloading: {{preload_groups}}
+          - Loading Screens: {{loading_implementation}}
+        examples:
+          - "Scene Naming: world_{x}_level_{y}_name.tscn, Preload Groups: levels_world1.tres, world_environments.tres"
+
+  - id: technical-specifications
+    title: Technical Specifications
+    instruction: Define Godot-specific technical requirements that will guide architecture and implementation decisions. Reference Godot documentation and best practices.
+    elicit: true
+    choices:
+      renderer: [Forward+, Mobile, Compatibility]
+      language_primary: [GDScript, C#, Both]
+      physics: [2D Only, 3D Only, Hybrid]
+    sections:
+      - id: godot-configuration
+        title: Godot Project Configuration
+        template: |
+          **Godot Version:** {{godot_version}} (4.3+ recommended)
+          **Renderer:** {{Forward+|Mobile|Compatibility}}
+          **Primary Language:** {{GDScript|C#|Both}}
+          **Physics:** {{2D Only|3D Only|Hybrid}}
+          **Export Templates:** {{platforms}}
+          **.NET Version:** {{.NET 6.0|.NET 7.0}} (if using C#)
+
+          **Language Strategy:**
+          - GDScript: {{gdscript_usage}} (with static typing mandatory)
+          - C#: {{csharp_usage}} (for performance-critical systems)
+
+          **Project Settings:**
+
+          - Rendering Method: {{rendering_method}}
+          - MSAA: {{msaa_setting}}
+          - Physics Settings: {{physics_config}}
+          - Object Pooling: Required for spawned entities
+        examples:
+          - GDScript for game logic and UI (10-20% performance gain with static typing)
+          - C# for physics simulation and procedural generation (no LINQ in hot paths)
+          - "Color Space: Linear, Quality: Mobile/Desktop presets, Gravity: -20"
+      - id: performance-requirements
+        title: Performance Requirements
+        template: |
+          **Frame Rate:** {{fps_target}} FPS (minimum {{min_fps}} on low-end devices)
+          **Memory Usage:** <{{memory_limit}}MB heap, <{{texture_memory}}MB textures
+          **Load Times:** <{{load_time}}s initial, <{{level_load}}s between levels
+          **Battery Usage:** Optimized for mobile devices - {{battery_target}} hours gameplay
+
+          **Godot Profiler Targets:**
+
+          - Frame Time: <16.67ms (60+ FPS mandatory)
+          - CPU Time: <{{cpu_time}}ms
+          - GPU Time: <{{gpu_time}}ms
+          - Physics Frame: <{{physics_time}}ms
+          - Draw Calls: <{{draw_calls}} per frame
+          - Object Pools: Active for all spawned entities
+        examples:
+          - "60 FPS (minimum 30), CPU: <16.67ms, GPU: <16.67ms, GC: <4KB, Draws: <50"
+      - id: platform-specific
+        title: Platform Specific Requirements
+        template: |
+          **Desktop:**
+
+          - Resolution: {{min_resolution}} - {{max_resolution}}
+          - Input: Keyboard, Mouse, Gamepad ({{gamepad_support}})
+          - Build Target: {{desktop_targets}}
+
+          **Mobile:**
+
+          - Resolution: {{mobile_min}} - {{mobile_max}}
+          - Input: Touch, Accelerometer ({{sensor_support}})
+          - OS: iOS {{ios_min}}+, Android {{android_min}}+ (API {{api_level}})
+          - Device Requirements: {{device_specs}}
+
+          **Web (if applicable):**
+
+          - WebGL Version: {{webgl_version}}
+          - Browser Support: {{browser_list}}
+          - Compression: {{compression_format}}
+        examples:
+          - "Resolution: 1280x720 - 4K, Gamepad: Xbox/PlayStation controllers via Input System"
+      - id: asset-requirements
+        title: Asset Requirements
+        instruction: Define asset specifications for Godot pipeline optimization with performance focus
+        template: |
+          **2D Art Assets:**
+
+          - Sprites: {{sprite_resolution}} at {{ppu}} PPU
+          - Texture Format: {{texture_compression}}
+          - Atlas Strategy: {{sprite_atlas_setup}}
+          - Animation: {{animation_type}} at {{framerate}} FPS
+
+          **Audio Assets:**
+
+          - Music: {{audio_format}} at {{sample_rate}} Hz
+          - SFX: {{sfx_format}} at {{sfx_sample_rate}} Hz
+          - Compression: {{audio_compression}}
+          - 3D Audio: {{spatial_audio}}
+
+          **UI Assets:**
+
+          - Canvas Resolution: {{ui_resolution}}
+          - UI Scale Mode: {{scale_mode}}
+          - Font: {{font_requirements}}
+          - Icon Sizes: {{icon_specifications}}
+        examples:
+          - "Sprites: 32x32 to 256x256 at 16 PPU, Format: RGBA32 for quality/RGBA16 for performance"
+
+  - id: technical-architecture-requirements
+    title: Technical Architecture Requirements
+    instruction: Define high-level Godot architecture patterns and systems that the game must support. Focus on scalability, TDD, and 60+ FPS performance.
+    elicit: true
+    choices:
+      architecture_pattern: [Node-Based, MVC, Component-Based, Signal-Driven]
+      save_system: [ConfigFile, JSON, Binary, Cloud]
+      audio_system: [Godot Audio, FMOD]
+    sections:
+      - id: code-architecture
+        title: Code Architecture Pattern
+        template: |
+          **Architecture Pattern:** {{MVC|MVVM|ECS|Component-Based|Custom}}
+
+          **Core Systems Required:**
+
+          - **Scene Management:** {{scene_manager_approach}}
+          - **State Management:** {{state_pattern_implementation}}
+          - **Event System:** {{event_system_choice}}
+          - **Object Pooling:** {{pooling_strategy}}
+          - **Save/Load System:** {{save_system_approach}}
+
+          **Folder Structure:**
+
+          ```
+          Assets/
+          ├── _Project/
+          │   ├── Scripts/
+          │   │   ├── {{folder_structure}}
+          │   ├── Scenes/
+          │   ├── Scenes/
+          │   └── {{additional_folders}}
+          ```
+
+          **Naming Conventions:**
+
+          - Scripts: {{script_naming}}
+          - Scenes: {{scene_naming}}
+          - Scenes: {{scene_naming}}
+        examples:
+          - "Architecture: Node-Based with Resource (.tres) data containers"
+          - "Scripts: PascalCase (PlayerController.gd), snake_case (player_controller.gd), Scenes: player.tscn, level_01_forest.tscn"
+      - id: godot-systems-integration
+        title: Godot Systems Integration
+        template: |
+          **Required Godot Systems:**
+
+          - **Input System:** {{input_implementation}}
+          - **Animation System:** {{animation_approach}}
+          - **Physics Integration:** {{physics_usage}}
+          - **Rendering Features:** {{rendering_requirements}}
+          - **Asset Streaming:** {{asset_loading_strategy}}
+
+          **Third-Party Integrations:**
+
+          - {{integration_name}}: {{integration_purpose}}
+
+          **Performance Systems:**
+
+          - **Profiling Integration:** {{profiling_setup}}
+          - **Memory Management:** {{memory_strategy}}
+          - **Build Pipeline:** {{build_automation}}
+        examples:
+          - "Input System: Action Maps for Menu/Gameplay contexts with device switching"
+          - "DOTween: Smooth UI transitions and gameplay animations"
+      - id: data-management
+        title: Data Management
+        template: |
+          **Save Data Architecture:**
+
+          - **Format:** {{PlayerPrefs|JSON|Binary|Cloud}}
+          - **Structure:** {{save_data_organization}}
+          - **Encryption:** {{security_approach}}
+          - **Cloud Sync:** {{cloud_integration}}
+
+          **Configuration Data:**
+
+          - **Resources:** {{resource_usage}}
+          - **Settings Management:** {{settings_system}}
+          - **Localization:** {{localization_approach}}
+
+          **Runtime Data:**
+
+          - **Caching Strategy:** {{cache_implementation}}
+          - **Memory Pools:** {{pooling_objects}}
+          - **Asset References:** {{asset_reference_system}}
+        examples:
+          - "Save Data: JSON format with AES encryption, stored in persistent data path"
+          - "Resources: Game settings (.tres), level configurations, character data with static typing"
+
+  - id: development-phases
+    title: Development Phases & Epic Planning
+    instruction: Break down the Godot development into phases that can be converted to agile epics. Each phase should deliver deployable functionality following TDD practices with 60+ FPS performance.
+    elicit: true
+    sections:
+      - id: phases-overview
+        title: Phases Overview
+        instruction: Present a high-level list of all phases for user approval. Each phase's design should deliver significant Godot functionality with TDD and performance validation.
+        type: numbered-list
+        examples:
+          - "Phase 1: Godot Foundation & Core Systems: Project setup with TDD (GUT/GoDotTest), node architecture, InputMap configuration"
+          - "Phase 2: Core Game Mechanics: Player controller (GDScript), physics systems (C# for performance), 60+ FPS validation"
+          - "Phase 3: Level Systems & Content Pipeline: Scene loading, inheritance patterns, object pooling implementation"
+          - "Phase 4: Polish & Platform Optimization: Performance profiling to 60+ FPS, export templates, platform deployment"
+      - id: phase-1-foundation
+        title: "Phase 1: Godot Foundation & Core Systems ({{duration}})"
+        sections:
+          - id: foundation-design
+            title: "Design: Godot Project Foundation"
+            type: bullet-list
+            template: |
+              - Godot project setup with node hierarchy and resource organization
+              - Core architecture implementation ({{architecture_pattern}}) with TDD setup
+              - InputMap configuration for cross-platform input handling
+              - Node-based scene management with signal system
+              - GUT (GDScript) and GoDotTest (C#) test framework setup
+              - Profiler integration for 60+ FPS validation
+              - Export template configuration for target platforms
+            examples:
+              - "Input System: Configure PlayerInput component with Action Maps for movement and UI"
+          - id: core-systems-design
+            title: "Design: Essential Game Systems"
+            type: bullet-list
+            template: |
+              - Save/Load system using user:// path with {{save_format}} format
+              - Audio bus system setup with {{audio_system}} integration
+              - Signal system for decoupled node communication
+              - Object pooling system for spawned entities (mandatory)
+              - Control node UI framework with anchoring and themes
+              - Settings and configuration management with Resources (.tres)
+      - id: phase-2-gameplay
+        title: "Phase 2: Core Gameplay Implementation ({{duration}})"
+        sections:
+          - id: gameplay-mechanics-design
+            title: "Design: Primary Game Mechanics"
+            type: bullet-list
+            template: |
+              - Player controller with {{movement_type}} using GDScript (static typing)
+              - {{primary_mechanic}} implementation with Godot physics (C# if performance-critical)
+              - {{secondary_mechanic}} system with 60+ FPS maintained
+              - Game state management (playing, paused, game over)
+              - Collision detection with Area2D/3D and physics bodies
+              - AnimationPlayer and AnimationTree integration with blend spaces
+          - id: level-systems-design
+            title: "Design: Level & Content Systems"
+            type: bullet-list
+            template: |
+              - Scene loading with transitions <3 seconds
+              - Level progression with Resource-based unlock system
+              - Scene inheritance and composition patterns
+              - {{level_generation}} level creation with TDD tests
+              - Collectibles with object pooling for performance
+              - Victory/defeat conditions with signal emissions
+      - id: phase-3-polish
+        title: "Phase 3: Polish & Optimization ({{duration}})"
+        sections:
+          - id: performance-design
+            title: "Design: Performance & Platform Optimization"
+            type: bullet-list
+            template: |
+              - Godot Profiler analysis to ensure 60+ FPS
+              - Memory management and garbage collection optimization
+              - Asset optimization (import settings, compression)
+              - Platform-specific performance tuning for 60+ FPS
+              - Export size optimization with stripping
+              - Renderer settings for different device tiers
+          - id: user-experience-design
+            title: "Design: User Experience & Polish"
+            type: bullet-list
+            template: |
+              - Control node UI with responsive anchoring
+              - Audio bus system with dynamic mixing
+              - GPUParticles2D/3D with object pooling
+              - Accessibility features with InputMap remapping
+              - Tutorial flow with GUT test coverage
+              - Cross-platform testing for 60+ FPS on all targets
+
+  - id: epic-list
+    title: Epic List
+    instruction: |
+      Present a high-level list of all epics for user approval. Each epic should have a title and a short (1 sentence) goal statement. This allows the user to review the overall structure before diving into details.
+
+      CRITICAL: Epics MUST be logically sequential following agile best practices:
+
+      - Each epic should be focused on a single phase and it's design from the development-phases section and deliver a significant, end-to-end, fully deployable increment of testable functionality
+      - Epic 1 must establish Phase 1: Godot Foundation & Core Systems (Project setup with TDD, node architecture, InputMap) unless we are adding new functionality to an existing app, while also delivering an initial piece of functionality with 60+ FPS performance!
+      - Each subsequent epic builds upon previous epics' functionality delivering major blocks of functionality that provide tangible value to users or business when deployed
+      - Not every project needs multiple epics, an epic needs to deliver value. For example, an API, component, or Resource completed can deliver value even if a scene or node is not complete and planned for a separate epic.
+      - Err on the side of less epics, but let the user know your rationale and offer options for splitting them if it seems some are too large or focused on disparate things.
+      - Cross Cutting Concerns should flow through epics and stories and not be final stories. For example, adding a logging framework as a last story of an epic, or at the end of a project as a final epic or story would be terrible as we would not have logging from the beginning.
+    elicit: true
+    examples:
+      - "Epic 1: Godot Foundation & Core Systems: TDD setup (GUT/GoDotTest), node architecture, InputMap configuration"
+      - "Epic 2: Core Game Mechanics: Player controller (GDScript), physics (C# if needed), 60+ FPS validation"
+      - "Epic 3: Level Systems & Content Pipeline: Scene inheritance, resource preloading, object pooling"
+      - "Epic 4: Polish & Platform Optimization: Performance profiling to 60+ FPS, export templates, deployment"
+
+  - id: epic-details
+    title: Epic {{epic_number}} {{epic_title}}
+    repeatable: true
+    instruction: |
+      After the epic list is approved, present each epic with all its stories and acceptance criteria as a complete review unit.
+
+      For each epic provide expanded goal (2-3 sentences describing the objective and value all the stories will achieve).
+
+      CRITICAL STORY SEQUENCING REQUIREMENTS:
+
+      - Stories within each epic MUST be logically sequential
+      - Each story should be a "vertical slice" delivering complete functionality aside from early enabler stories for project foundation
+      - No story should depend on work from a later story or epic
+      - Identify and note any direct prerequisite stories
+      - Focus on "what" and "why" not "how" (leave technical implementation to Architect) yet be precise enough to support a logical sequential order of operations from story to story.
+      - Ensure each story delivers clear user or business value, try to avoid enablers and build them into stories that deliver value.
+      - Size stories for AI agent execution: Each story must be completable by a single AI agent in one focused session without context overflow
+      - Think "junior developer working for 2-4 hours" - stories must be small, focused, and self-contained
+      - If a story seems complex, break it down further as long as it can deliver a vertical slice
+    elicit: true
+    template: "{{epic_goal}}"
+    sections:
+      - id: story
+        title: Story {{epic_number}}.{{story_number}} {{story_title}}
+        repeatable: true
+        instruction: Provide a clear, concise description of what this story implements. Focus on the specific game feature or system being built. Reference the GDD section that defines this feature and reference the gamearchitecture section for additional implementation and integration specifics.
+        template: "{{clear_description_of_what_needs_to_be_implemented}}"
+        sections:
+          - id: acceptance-criteria
+            title: Acceptance Criteria
+            instruction: Define specific, testable conditions that must be met for the story to be considered complete. Each criterion should be verifiable and directly related to gameplay functionality.
+            sections:
+              - id: functional-requirements
+                title: Functional Requirements
+                type: checklist
+                items:
+                  - "{{specific_functional_requirement}}"
+              - id: technical-requirements
+                title: Technical Requirements
+                type: checklist
+                items:
+                  - Code follows GDScript/C# best practices with static typing
+                  - Maintains 60+ FPS on all target devices
+                  - No memory leaks, proper signal cleanup, object pooling active
+                  - "{{specific_technical_requirement}}"
+              - id: game-design-requirements
+                title: Game Design Requirements
+                type: checklist
+                items:
+                  - "{{gameplay_requirement_from_gdd}}"
+                  - "{{balance_requirement_if_applicable}}"
+                  - "{{player_experience_requirement}}"
+
+  - id: success-metrics
+    title: Success Metrics & Quality Assurance
+    instruction: Define measurable goals for the Godot game development project with specific targets that can be validated through Godot profiler and performance monitoring.
+    elicit: true
+    sections:
+      - id: technical-metrics
+        title: Technical Performance Metrics
+        type: bullet-list
+        template: |
+          - **Frame Rate:** Consistent {{fps_target}} FPS with <5% drops below {{min_fps}}
+          - **Load Times:** Initial load <{{initial_load}}s, level transitions <{{level_load}}s
+          - **Memory Usage:** Heap memory <{{heap_limit}}MB, texture memory <{{texture_limit}}MB
+          - **Crash Rate:** <{{crash_threshold}}% across all supported platforms
+          - **Build Size:** Final build <{{size_limit}}MB for mobile, <{{desktop_limit}}MB for desktop
+          - **Battery Life:** Mobile gameplay sessions >{{battery_target}} hours on average device
+        examples:
+          - "Frame Rate: Consistent 60 FPS with <5% drops below 45 FPS on target hardware"
+          - "Crash Rate: <0.5% across iOS/Android, <0.1% on desktop platforms"
+      - id: gameplay-metrics
+        title: Gameplay & User Engagement Metrics
+        type: bullet-list
+        template: |
+          - **Tutorial Completion:** {{tutorial_rate}}% of players complete basic tutorial
+          - **Level Progression:** {{progression_rate}}% reach level {{target_level}} within first session
+          - **Session Duration:** Average session length {{session_target}} minutes
+          - **Player Retention:** Day 1: {{d1_retention}}%, Day 7: {{d7_retention}}%, Day 30: {{d30_retention}}%
+          - **Gameplay Completion:** {{completion_rate}}% complete main game content
+          - **Control Responsiveness:** Input lag <{{input_lag}}ms on all platforms
+        examples:
+          - "Tutorial Completion: 85% of players complete movement and basic mechanics tutorial"
+          - "Session Duration: Average 15-20 minutes per session for mobile, 30-45 minutes for desktop"
+      - id: platform-specific-metrics
+        title: Platform-Specific Quality Metrics
+        type: table
+        template: |
+          | Platform | Frame Rate | Load Time | Memory | Build Size | Battery |
+          | -------- | ---------- | --------- | ------ | ---------- | ------- |
+          | {{platform}} | {{fps}} | {{load}} | {{memory}} | {{size}} | {{battery}} |
+        examples:
+          - iOS, 60 FPS, <3s, <150MB, <80MB, 3+ hours
+          - Android, 60 FPS, <5s, <200MB, <100MB, 2.5+ hours
+
+  - id: next-steps-integration
+    title: Next Steps & BMad Integration
+    instruction: Define how this GDD integrates with BMad's agent workflow and what follow-up documents or processes are needed.
+    sections:
+      - id: architecture-handoff
+        title: Godot Architecture Requirements
+        instruction: Summary of key architectural decisions that need to be implemented in Godot project setup with TDD and performance focus
+        type: bullet-list
+        template: |
+          - Godot {{godot_version}} project with {{renderer}} renderer
+          - {{architecture_pattern}} node architecture with {{folder_structure}}
+          - Language strategy: GDScript for {{gdscript_use}}, C# for {{csharp_use}}
+          - Performance targets: 60+ FPS mandatory, {{key_performance_metrics}}
+          - Platform exports: {{deployment_targets}} with export templates
+      - id: story-creation-guidance
+        title: Story Creation Guidance for SM Agent
+        instruction: Provide guidance for the Story Manager (SM) agent on how to break down this GDD into implementable user stories
+        template: |
+          **Epic Prioritization:** {{epic_order_rationale}}
+
+          **Story Sizing Guidelines:**
+
+          - Foundation stories: {{foundation_story_scope}}
+          - Feature stories: {{feature_story_scope}}
+          - Polish stories: {{polish_story_scope}}
+
+          **Godot-Specific Story Considerations:**
+
+          - Each story should result in testable Godot scenes with GUT/GoDotTest coverage
+          - Include specific node hierarchies and signal flows in acceptance criteria
+          - Enforce 60+ FPS performance validation in each story
+          - Account for export template configuration and deployment
+          - Specify language choice (GDScript vs C#) for each component
+        examples:
+          - "Foundation stories: Individual Godot systems with TDD (InputMap, Audio Bus, Scene Tree) - 1-2 days each"
+          - "Feature stories: Complete gameplay mechanics with 60+ FPS validation - 2-4 days each"
+      - id: recommended-agents
+        title: Recommended BMad Agent Sequence
+        type: numbered-list
+        template: |
+          1. **{{agent_name}}**: {{agent_responsibility}}
+        examples:
+          - "Godot Architect: Create detailed technical architecture with node patterns and language strategy"
+          - "Godot Developer: Implement systems with TDD (GUT/GoDotTest) maintaining 60+ FPS"
+          - "QA Tester: Validate performance targets, signal cleanup, and platform exports"
