@@ -6,7 +6,7 @@ This checklist serves as a comprehensive framework for the Game Architect to val
 
 Before proceeding with this checklist, ensure you have access to:
 
-1. game-architecture.md - The primary game architecture document (check docs/game-architecture.md)
+1. architecture.md - The primary game architecture document (check docs/architecture.md)
 2. game-design-doc.md - Game Design Document for game requirements alignment (check docs/game-design-doc.md)
 3. Any system diagrams referenced in the architecture
 4. Godot project structure documentation

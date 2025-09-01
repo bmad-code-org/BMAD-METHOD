@@ -9,7 +9,7 @@ First, determine the game project type by checking:
 
 1. Is this a NEW GAME project (greenfield)?
    - Look for: New Godot project initialization, no existing game code
-   - Check for: game-design-doc.md, game-architecture.md, new game setup
+   - Check for: game-design-doc.md, architecture.md, new game setup
    - Godot version selection (4.x vs 3.x)
 
 2. Is this an EXISTING GAME enhancement (brownfield)?
@@ -29,7 +29,7 @@ Based on project type, ensure you have access to:
 For NEW GAME projects:
 
 - game-design-doc.md - The Game Design Document
-- game-architecture.md - The technical architecture
+- architecture.md - The technical architecture
 - platform-requirements.md - Platform specifications
 - All epic and story definitions
 

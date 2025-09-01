@@ -11,6 +11,7 @@ agents:
   - game-qa
   - game-sm
   - game-po
+  - game-pm
   - game-ux-expert
 workflows:
   - game-dev-greenfield.md

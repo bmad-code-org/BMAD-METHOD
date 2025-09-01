@@ -4,7 +4,7 @@ template:
   version: 3.0
   output:
     format: markdown
-    filename: docs/game-architecture.md
+    filename: docs/architecture.md
     title: "{{project_name}} Game Architecture Document"
 
 workflow:
