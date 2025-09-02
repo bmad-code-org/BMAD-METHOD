@@ -10,7 +10,7 @@ To identify the next logical game story based on project progress and epic defin
 
 - Load `.bmad-godot-game-dev/config.yaml` from the project root
 - If the file does not exist, HALT and inform the user: "core-config.yaml not found. This file is required for story creation. You can either: 1) Copy core-config.yaml from GITHUB bmad-core/ and configure it for your game project OR 2) Run the BMad installer against your project to upgrade and add the file automatically. Please add and configure before proceeding."
-- Extract key configurations: `devStoryLocation`, `gdd.*`, `gamearchitecture.*`, `workflow.*`
+- Extract key configurations: `devStoryLocation`, `prd.*`, `architecture.*`, `workflow.*`
 
 ### 1. Identify Next Story for Preparation
 
@@ -47,17 +47,17 @@ To identify the next logical game story based on project progress and epic defin
 
 #### 3.2 Read Architecture Documents Based on Story Type
 
-**For ALL Game Stories:** tech-stack.md, godot-project-structure.md, coding-standards.md, testing-resilience-architecture.md, language-strategy.md
+**For ALL Game Stories:** tech-stack.md, godot-project-structure.md, coding-standards.md, test-strategy and standards.md, language-strategy.md
 
-**For Gameplay/Mechanics Stories, additionally:** gameplay-systems-architecture.md, node-architecture-details.md, physics-2d-config.md, input-map-system.md, state-machines.md, game-resources.md
+**For Gameplay/Mechanics Stories, additionally:** gameplay-systems-architecture.md, node-architecture-details.md, physics-configuration.md, input-system-architecture.md, state-machine-architecture.md, resource-architecture.md
 
-**For UI/UX Stories, additionally:** control-node-architecture.md, ui-theme-system.md, ui-state-management.md, scene-management.md
+**For UI/UX Stories, additionally:** node-architecture-details.md, ui-architecture.md, ui-component-system.md, ui-state-management.md, scene-management-architecture.md
 
-**For Backend/Services Stories, additionally:** game-resources.md, data-persistence.md, save-system.md, analytics-integration.md, multiplayer-architecture.md
+**For Backend/Services Stories, additionally:** resource-architecture.md, data-persistence-architecture.md, save-system-implementation.md, analytics-integration.md, multiplayer-architecture.md
 
 **For Graphics/Rendering Stories, additionally:** rendering-settings.md, shader-guidelines.md, sprite-management.md, particle-systems.md
 
-**For Audio Stories, additionally:** audio-bus-architecture.md, audio-stream-players.md, sound-pools.md
+**For Audio Stories, additionally:** audio-architecture.md, audio-mixing-configuration.md, sound-bank-management.md
 
 #### 3.3 Extract Story-Specific Technical Details
 
