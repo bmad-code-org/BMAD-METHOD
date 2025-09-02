@@ -1,0 +1,60 @@
+#!/bin/bash
+
+echo "🚀 NEXT-METHOD Demo: Iterative Development Workflow"
+echo "=================================================="
+echo ""
+echo "This demo shows how NEXT-METHOD guides you through development"
+echo "by suggesting the next logical step at each phase."
+echo ""
+
+echo "📋 Step 1: Show initial project status"
+echo "Command: next status"
+echo "Expected: Shows empty project context"
+echo ""
+
+echo "📋 Step 2: Start the iterative process"
+echo "Command: next"
+echo "Expected: Detects project type and suggests next steps"
+echo ""
+
+echo "📋 Step 3: Continue with next suggestion"
+echo "Command: next"
+echo "Expected: Executes next suggested action"
+echo ""
+
+echo "📋 Step 4: See all available options"
+echo "Command: next --suggest"
+echo "Expected: Shows all available next steps"
+echo ""
+
+echo "📋 Step 5: Auto-execute next step"
+echo "Command: next --auto"
+echo "Expected: Automatically executes most logical next step"
+echo ""
+
+echo "📋 Step 6: Check progress"
+echo "Command: next status"
+echo "Expected: Shows updated project context and history"
+echo ""
+
+echo "🎯 Key Benefits:"
+echo "- No need to remember what to do next"
+echo "- Context-aware suggestions based on project phase"
+echo "- Automatic progress tracking"
+echo "- Full access to all BMAD-METHOD features"
+echo "- Simple iterative workflow: just type 'next'"
+echo ""
+
+echo "💡 Try it yourself:"
+echo "1. Run: next status"
+echo "2. Run: next"
+echo "3. Keep running: next"
+echo "4. Use: next --auto for hands-free development"
+echo ""
+
+echo "🔗 Integration with BMAD-METHOD:"
+echo "- All existing BMAD features are preserved"
+echo "- Commands like 'next install' wrap 'bmad install'"
+echo "- Full access to agents, teams, and workflows"
+echo "- Context persistence across sessions"
+echo ""

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "bmad-method",
+  "name": "next-method",
   "version": "4.42.1",
-  "description": "Breakthrough Method of Agile AI-driven Development",
+  "description": "Next Method - Iterative AI-driven development with BMAD-METHOD™",
   "keywords": [
     "agile",
     "ai",
@@ -10,7 +10,9 @@
     "development",
     "methodology",
     "agents",
-    "bmad"
+    "bmad",
+    "next",
+    "iterative"
   ],
   "repository": {
     "type": "git",
@@ -21,9 +23,13 @@
   "main": "tools/cli.js",
   "bin": {
     "bmad": "tools/bmad-npx-wrapper.js",
-    "bmad-method": "tools/bmad-npx-wrapper.js"
+    "bmad-method": "tools/bmad-npx-wrapper.js",
+    "next": "tools/next-npx-wrapper.js"
   },
   "scripts": {
+    "next": "node tools/installer/bin/next.js",
+    "next:auto": "node tools/installer/bin/next.js next --auto",
+    "next:suggest": "node tools/installer/bin/next.js next --suggest",
     "build": "node tools/cli.js build",
     "build:agents": "node tools/cli.js build --agents-only",
     "build:teams": "node tools/cli.js build --teams-only",
