@@ -1,0 +1,261 @@
+# <!-- Powered by BMAD™ Core -->
+name: TDD Story Development Workflow
+description: Test-Driven Development workflow for story implementation
+version: "1.0"
+type: story_workflow
+
+# TDD-specific workflow that orchestrates Red-Green-Refactor cycles
+workflow:
+  prerequisites:
+    - tdd.enabled: true
+    - story.status: ["ready", "inprogress"]
+    - story.acceptance_criteria: "defined"
+
+  phases:
+    # Phase 1: RED - Write failing tests first
+    red_phase:
+      description: "Write failing tests that describe expected behavior"
+      agent: qa
+      status_check: "tdd.status != 'red'"
+
+      tasks:
+        - name: test-design
+          description: "Design comprehensive test strategy"
+          inputs:
+            - story_id
+            - acceptance_criteria
+          outputs:
+            - test_design_document
+            - test_scenarios
+
+        - name: write-failing-tests
+          description: "Implement failing tests for story scope"
+          inputs:
+            - story_id
+            - test_scenarios
+            - codebase_context
+          outputs:
+            - test_files
+            - failing_test_report
+
+      completion_criteria:
+        - "At least one test is failing"
+        - "Tests fail for correct reasons (missing implementation)"
+        - "All external dependencies mocked"
+        - "Story tdd.status = 'red'"
+
+      gates:
+        pass_conditions:
+          - tests_created: true
+          - tests_failing_correctly: true
+          - mocking_strategy_applied: true
+          - story_metadata_updated: true
+
+        fail_conditions:
+          - tests_passing_unexpectedly: true
+          - syntax_errors_in_tests: true
+          - missing_test_runner: true
+
+    # Phase 2: GREEN - Make tests pass with minimal code
+    green_phase:
+      description: "Implement minimal code to make all tests pass"
+      agent: dev
+      status_check: "tdd.status != 'green'"
+
+      prerequisites:
+        - "tdd.status == 'red'"
+        - "failing_tests.count > 0"
+
+      tasks:
+        - name: tdd-implement
+          description: "Write simplest code to make tests pass"
+          inputs:
+            - story_id
+            - failing_tests
+            - codebase_context
+          outputs:
+            - implementation_files
+            - passing_test_report
+
+      completion_criteria:
+        - "All tests are passing"
+        - "No feature creep beyond test requirements"
+        - "Code follows basic standards"
+        - "Story tdd.status = 'green'"
+
+      gates:
+        pass_conditions:
+          - all_tests_passing: true
+          - implementation_minimal: true
+          - no_breaking_changes: true
+          - story_metadata_updated: true
+
+        fail_conditions:
+          - tests_still_failing: true
+          - feature_creep_detected: true
+          - regression_introduced: true
+
+    # Phase 3: REFACTOR - Improve code quality while keeping tests green
+    refactor_phase:
+      description: "Improve code quality while maintaining green tests"
+      agents: [dev, qa] # Collaborative phase
+      status_check: "tdd.status != 'refactor'"
+
+      prerequisites:
+        - "tdd.status == 'green'"
+        - "all_tests_passing == true"
+
+      tasks:
+        - name: tdd-refactor
+          description: "Safely refactor code with test coverage"
+          inputs:
+            - story_id
+            - passing_tests
+            - implementation_files
+            - code_quality_metrics
+          outputs:
+            - refactored_files
+            - quality_improvements
+            - maintained_test_coverage
+
+      completion_criteria:
+        - "All tests remain green throughout"
+        - "Code quality improved"
+        - "Technical debt addressed"
+        - "Story tdd.status = 'done' or ready for next cycle"
+
+      gates:
+        pass_conditions:
+          - tests_remain_green: true
+          - quality_metrics_improved: true
+          - refactoring_documented: true
+          - commits_atomic: true
+
+        fail_conditions:
+          - tests_broken_by_refactoring: true
+          - code_quality_degraded: true
+          - feature_changes_during_refactor: true
+
+  # Cycle management - can repeat Red-Green-Refactor for complex stories
+  cycle_management:
+    max_cycles: 5 # Reasonable limit to prevent infinite cycles
+
+    next_cycle_conditions:
+      - "More acceptance criteria remain unimplemented"
+      - "Story scope requires additional functionality"
+      - "Technical complexity requires iterative approach"
+
+    cycle_completion_check:
+      - "All acceptance criteria have tests and implementation"
+      - "Code quality meets project standards"
+      - "No remaining technical debt from TDD cycles"
+
+  # Quality gates for phase transitions
+  transition_gates:
+    red_to_green:
+      required:
+        - failing_tests_exist: true
+        - tests_fail_for_right_reasons: true
+        - external_dependencies_mocked: true
+      blocked_by:
+        - no_failing_tests: true
+        - syntax_errors: true
+        - missing_test_infrastructure: true
+
+    green_to_refactor:
+      required:
+        - all_tests_passing: true
+        - implementation_complete: true
+        - basic_quality_standards_met: true
+      blocked_by:
+        - failing_tests: true
+        - incomplete_implementation: true
+        - major_quality_violations: true
+
+    refactor_to_done:
+      required:
+        - tests_remain_green: true
+        - code_quality_improved: true
+        - all_acceptance_criteria_met: true
+      blocked_by:
+        - broken_tests: true
+        - degraded_code_quality: true
+        - incomplete_acceptance_criteria: true
+
+  # Error handling and recovery
+  error_handling:
+    phase_failures:
+      red_phase_failure:
+        - "Review acceptance criteria clarity"
+        - "Check test runner configuration"
+        - "Verify mocking strategy"
+        - "Consult with SM for requirements clarification"
+
+      green_phase_failure:
+        - "Review test expectations vs implementation"
+        - "Check for missing dependencies"
+        - "Verify implementation approach"
+        - "Consider breaking down into smaller cycles"
+
+      refactor_phase_failure:
+        - "Immediately revert breaking changes"
+        - "Use smaller refactoring steps"
+        - "Review test coverage adequacy"
+        - "Consider technical debt acceptance"
+
+  # Agent coordination
+  agent_handoffs:
+    qa_to_dev:
+      trigger: "tdd.status == 'red'"
+      handoff_artifacts:
+        - failing_test_suite
+        - test_execution_report
+        - story_with_updated_metadata
+        - mocking_strategy_documentation
+
+    dev_back_to_qa:
+      trigger: "questions about test expectations or refactoring safety"
+      collaboration_points:
+        - test_clarification_needed
+        - refactoring_impact_assessment
+        - additional_test_coverage_discussion
+
+    both_agents:
+      trigger: "tdd.status == 'refactor'"
+      joint_activities:
+        - code_quality_assessment
+        - refactoring_safety_validation
+        - test_maintenance_discussion
+
+# Integration with existing BMAD workflows
+bmad_integration:
+  extends: "story_workflow_base"
+
+  modified_sections:
+    story_creation:
+      - "Use story-tdd-template.md when tdd.enabled=true"
+      - "Initialize TDD metadata in story frontmatter"
+
+    quality_gates:
+      - "Apply tdd-dod-checklist.md instead of standard DoD"
+      - "Include TDD-specific review criteria"
+
+    agent_selection:
+      - "Route to QA agent first for Red phase"
+      - "Enforce phase-based agent assignment"
+
+# Configuration and customization
+configuration:
+  tdd_settings:
+    cycle_timeout: "2 days" # Maximum time per TDD cycle
+    required_coverage_minimum: 0.8 # 80% default
+    max_failing_tests_per_cycle: 10 # Prevent scope creep
+
+  quality_thresholds:
+    complexity_increase_limit: 10 # Max complexity increase per cycle
+    duplication_tolerance: 5 # Max acceptable code duplication %
+
+  automation_hooks:
+    test_execution: "Run tests automatically on file changes"
+    coverage_reporting: "Generate coverage reports per cycle"
+    quality_metrics: "Track metrics before/after refactoring"

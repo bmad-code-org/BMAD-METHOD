@@ -1,0 +1,11 @@
+# <!-- Powered by BMAD™ Core -->
+name: bmad-tdd-methodology
+version: 1.0.0
+short-title: TDD Methodology
+description: >-
+  Comprehensive Test-Driven Development (TDD) framework that enhances the BMAD-METHOD
+  with Red-Green-Refactor methodology. Includes enhanced QA and Dev agents with TDD
+  capabilities, specialized TDD commands, quality gates, guard scripts, and workflow
+  templates for implementing TDD practices within the BMAD agile framework.
+author: faiqnau
+slashPrefix: bmad-tdd
