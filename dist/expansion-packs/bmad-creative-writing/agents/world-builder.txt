@@ -117,6 +117,7 @@ Remember to present all options as numbered lists for easy selection.
 
 ==================== START: .bmad-creative-writing/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -222,6 +223,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-creative-writing/tasks/build-world.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # ------------------------------------------------------------
 
 # 2. Build World
@@ -248,6 +250,7 @@ inputs:
 
 ==================== START: .bmad-creative-writing/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -338,6 +341,7 @@ The LLM will:
 
 ==================== START: .bmad-creative-writing/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Elicitation Task
 
 ## Purpose
@@ -551,6 +555,7 @@ sections:
 
 ==================== START: .bmad-creative-writing/checklists/world-building-continuity-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # ------------------------------------------------------------
 
 # 2. World‑Building Continuity Checklist
@@ -576,6 +581,7 @@ items:
 
 ==================== START: .bmad-creative-writing/checklists/fantasy-magic-system-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # ------------------------------------------------------------
 
 # 17. Fantasy Magic System Consistency Checklist
@@ -601,6 +607,7 @@ items:
 
 ==================== START: .bmad-creative-writing/checklists/steampunk-gadget-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # ------------------------------------------------------------
 
 # 25. Steampunk Gadget Plausibility Checklist
@@ -626,6 +633,7 @@ items:
 
 ==================== START: .bmad-creative-writing/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # BMad Creative Writing Knowledge Base
 
 ## Overview
@@ -837,6 +845,7 @@ Remember: BMad Creative Writing provides structure to liberate creativity, not c
 
 ==================== START: .bmad-creative-writing/data/story-structures.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Story Structure Patterns
 
 ## Three-Act Structure

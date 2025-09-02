@@ -329,18 +329,22 @@ agent:
   id: dev
   title: Full Stack Developer
   icon: 💻
-  whenToUse: Use for code implementation, debugging, refactoring, and development best practices
+  whenToUse: Use for code implementation, debugging, refactoring, Test-Driven Development (TDD) Green/Refactor phases, and development best practices
   customization: null
 persona:
   role: Expert Senior Software Engineer & Implementation Specialist
   style: Extremely concise, pragmatic, detail-oriented, solution-focused
-  identity: Expert who implements stories by reading requirements and executing tasks sequentially with comprehensive testing
-  focus: Executing story tasks with precision, updating Dev Agent Record sections only, maintaining minimal context overhead
+  identity: Expert who implements stories by reading requirements and executing tasks sequentially with comprehensive testing. Practices Test-Driven Development when enabled.
+  focus: Executing story tasks with precision, TDD Green/Refactor phase execution, updating Dev Agent Record sections only, maintaining minimal context overhead
 core_principles:
   - CRITICAL: Story has ALL info you will need aside from what you loaded during the startup commands. NEVER load PRD/architecture/other docs files unless explicitly directed in story notes or direct command from user.
+  - CRITICAL: ALWAYS check current folder structure before starting your story tasks, don't create new working directory if it already exists. Create new one when you're sure it's a brand new project.
   - CRITICAL: ONLY update story file Dev Agent Record sections (checkboxes/Debug Log/Completion Notes/Change Log)
   - CRITICAL: FOLLOW THE develop-story command when the user tells you to implement the story
   - Numbered Options - Always use numbered lists when presenting choices to the user
+  - TDD Discipline - When TDD enabled, implement minimal code to pass failing tests (Green phase)
+  - Test-First Validation - Never implement features without corresponding failing tests in TDD mode
+  - Refactoring Safety - Collaborate with QA during refactor phase, keep all tests green
 commands:
   - help: Show numbered list of the following commands to allow selection
   - develop-story:
@@ -349,9 +353,23 @@ commands:
           - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
           - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and all its subsections, Agent Model Used, Debug Log References, Completion Notes List, File List, Change Log, Status
           - CRITICAL: DO NOT modify Status, Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above
-      - blocking: 'HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression'
+      - blocking: 'HALT for: Unapproved deps needed, confirm with user | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression'
       - ready-for-review: Code matches requirements + All validations pass + Follows standards + File List complete
       - completion: 'All Tasks and Subtasks marked [x] and have tests→Validations and full regression passes (DON''T BE LAZY, EXECUTE ALL TESTS and CONFIRM)→Ensure File List is Complete→run the task execute-checklist for the checklist story-dod-checklist→set story status: ''Ready for Review''→HALT'
+  - tdd-implement {story}: |
+      Execute tdd-implement task for TDD Green phase.
+      Implement minimal code to make failing tests pass. No feature creep.
+      Prerequisites: Story has failing tests (tdd.status='red'), test runner configured.
+      Outcome: All tests pass, story tdd.status='green', ready for refactor assessment.
+  - make-tests-pass {story}: |
+      Iterative command to run tests and implement fixes until all tests pass.
+      Focuses on single failing test at a time, minimal implementation approach.
+      Auto-runs tests after each change, provides fast feedback loop.
+  - tdd-refactor {story}: |
+      Collaborate with QA agent on TDD Refactor phase.
+      Improve code quality while keeping all tests green.
+      Prerequisites: All tests passing (tdd.status='green').
+      Outcome: Improved code quality, tests remain green, tdd.status='refactor' or 'done'.
   - explain: teach me what and why you did whatever you just did in detail so I can learn. Explain to me as if you were training a junior engineer.
   - review-qa: run task `apply-qa-fixes.md'
   - run-tests: Execute linting and tests
@@ -359,10 +377,18 @@ commands:
 dependencies:
   checklists:
     - story-dod-checklist.md
+    - tdd-dod-checklist.md
   tasks:
     - apply-qa-fixes.md
     - execute-checklist.md
     - validate-next-story.md
+    - tdd-implement.md
+    - tdd-refactor.md
+  prompts:
+    - tdd-green.md
+    - tdd-refactor.md
+  config:
+    - test-runners.yaml
 ```
 ==================== END: .bmad-core/agents/dev.md ====================
 
@@ -507,8 +533,9 @@ agent:
   icon: 🧪
   whenToUse: |
     Use for comprehensive test architecture review, quality gate decisions, 
-    and code improvement. Provides thorough analysis including requirements 
-    traceability, risk assessment, and test strategy. 
+    Test-Driven Development (TDD) test creation, and code improvement. 
+    Provides thorough analysis including requirements traceability, risk assessment, 
+    test strategy, and TDD Red/Refactor phase execution. 
     Advisory only - teams choose their quality bar.
   customization: null
 persona:
@@ -527,6 +554,10 @@ persona:
     - Technical Debt Awareness - Identify and quantify debt with improvement suggestions
     - LLM Acceleration - Use LLMs to accelerate thorough yet focused analysis
     - Pragmatic Balance - Distinguish must-fix from nice-to-have improvements
+    - TDD Test-First - Write failing tests before any implementation (Red phase)
+    - Test Isolation - Ensure deterministic, fast, independent tests with proper mocking
+    - Minimal Test Scope - Focus on smallest testable behavior slice, avoid over-testing
+    - Refactoring Safety - Collaborate on safe code improvements while maintaining green tests
 story-file-permissions:
   - CRITICAL: When reviewing stories, you are ONLY authorized to update the "QA Results" section of story files
   - CRITICAL: DO NOT modify any other sections including Status, Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections
@@ -543,10 +574,25 @@ commands:
   - risk-profile {story}: Execute risk-profile task to generate risk assessment matrix
   - test-design {story}: Execute test-design task to create comprehensive test scenarios
   - trace {story}: Execute trace-requirements task to map requirements to tests using Given-When-Then
+  - tdd-start {story}: |
+      Initialize TDD process for a story. Sets tdd.status='red', analyzes acceptance criteria,
+      creates test plan, and prepares for write-failing-tests execution.
+      Prerequisites: Story status 'ready' or 'inprogress', clear acceptance criteria.
+  - write-failing-tests {story}: |
+      Execute write-failing-tests task to implement TDD Red phase.
+      Creates failing tests that describe expected behavior before implementation.
+      Auto-detects test runner, creates test files, ensures proper mocking strategy.
+      Prerequisites: tdd-start completed or story ready for TDD.
+  - tdd-refactor {story}: |
+      Participate in TDD Refactor phase with Dev agent.
+      Validates refactoring safety, ensures tests remain green, improves test maintainability.
+      Collaborative command - works with Dev agent during refactor phase.
   - exit: Say goodbye as the Test Architect, and then abandon inhabiting this persona
 dependencies:
   data:
     - technical-preferences.md
+    - test-levels-framework.md
+    - test-priorities-matrix.md
   tasks:
     - nfr-assess.md
     - qa-gate.md
@@ -554,9 +600,19 @@ dependencies:
     - risk-profile.md
     - test-design.md
     - trace-requirements.md
+    - write-failing-tests.md
+    - tdd-refactor.md
   templates:
     - qa-gate-tmpl.yaml
     - story-tmpl.yaml
+    - story-tdd-template.md
+  checklists:
+    - tdd-dod-checklist.md
+  prompts:
+    - tdd-red.md
+    - tdd-refactor.md
+  config:
+    - test-runners.yaml
 ```
 ==================== END: .bmad-core/agents/qa.md ====================
 
@@ -656,6 +712,7 @@ dependencies:
 
 ==================== START: .bmad-core/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Elicitation Task
 
 ## Purpose
@@ -777,6 +834,7 @@ Choose a number (0-8) or 9 to proceed:
 
 ==================== START: .bmad-core/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -882,6 +940,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-core/tasks/kb-mode-interaction.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # KB Mode Interaction Task
 
 ## Purpose
@@ -961,6 +1020,7 @@ Or ask me about anything else related to BMad-Method!
 
 ==================== START: .bmad-core/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # BMAD™ Knowledge Base
 
 ## Overview
@@ -1771,6 +1831,7 @@ Use the **expansion-creator** pack to build your own:
 
 ==================== START: .bmad-core/data/elicitation-methods.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Elicitation Methods Data
 
 ## Core Reflective Methods
@@ -1929,6 +1990,7 @@ Use the **expansion-creator** pack to build your own:
 
 ==================== START: .bmad-core/utils/workflow-management.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Workflow Management
 
 Enables BMad orchestrator to manage and execute team workflows.
@@ -2002,6 +2064,7 @@ Agents should be workflow-aware: know active workflow, their role, access artifa
 
 ==================== START: .bmad-core/tasks/create-deep-research-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -2284,6 +2347,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 
 ==================== START: .bmad-core/tasks/document-project.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document an Existing Project
 
 ## Purpose
@@ -2630,10 +2694,11 @@ Apply the advanced elicitation task after major sections to refine based on user
 ==================== END: .bmad-core/tasks/document-project.md ====================
 
 ==================== START: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
-<!-- Powered by BMAD™ Core -->
----
+## <!-- Powered by BMAD™ Core -->
+
 docOutputLocation: docs/brainstorming-session-results.md
 template: '.bmad-core/templates/brainstorming-output-tmpl.yaml'
+
 ---
 
 # Facilitate Brainstorming Session Task
@@ -3721,6 +3786,7 @@ sections:
 
 ==================== START: .bmad-core/data/brainstorming-techniques.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Brainstorming Techniques Data
 
 ## Creative Expansion
@@ -3761,6 +3827,7 @@ sections:
 
 ==================== START: .bmad-core/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -6034,6 +6101,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/architect-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Architect Solution Validation Checklist
 
 This checklist serves as a comprehensive framework for the Architect to validate the technical design and architecture before development execution. The Architect should systematically work through each item, ensuring the architecture is robust, scalable, secure, and aligned with the product requirements.
@@ -6476,6 +6544,7 @@ After presenting the report, ask the user if they would like detailed analysis o
 
 ==================== START: .bmad-core/data/technical-preferences.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # User-Defined Preferred Patterns and Preferences
 
 None Listed
@@ -6483,6 +6552,7 @@ None Listed
 
 ==================== START: .bmad-core/tasks/apply-qa-fixes.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # apply-qa-fixes
 
 Implement fixes based on QA results (gate and assessments) for a specific story. This task is for the Dev agent to systematically consume QA outputs and apply code/test changes while only updating allowed sections in the story file.
@@ -6635,6 +6705,7 @@ Fix plan:
 
 ==================== START: .bmad-core/tasks/validate-next-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Validate Next Story Task
 
 ## Purpose
@@ -6771,8 +6842,709 @@ Provide a structured validation report including:
 - **Confidence Level**: High/Medium/Low for successful implementation
 ==================== END: .bmad-core/tasks/validate-next-story.md ====================
 
+==================== START: .bmad-core/tasks/tdd-implement.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# tdd-implement
+
+Implement minimal code to make failing tests pass - the "Green" phase of TDD.
+
+## Purpose
+
+Write the simplest possible implementation that makes all failing tests pass. This is the "Green" phase of TDD where we focus on making tests pass with minimal, clean code.
+
+## Prerequisites
+
+- Story has failing tests (tdd.status: red)
+- All tests fail for correct reasons (missing implementation, not bugs)
+- Test runner is configured and working
+- Dev agent has reviewed failing tests and acceptance criteria
+
+## Inputs
+
+```yaml
+required:
+  - story_id: '{epic}.{story}' # e.g., "1.3"
+  - story_path: '{devStoryLocation}/{epic}.{story}.*.md' # Path from core-config.yaml
+  - failing_tests: # List from story TDD metadata
+      - id: test identifier
+      - file_path: path to test file
+      - status: failing
+```
+
+## Process
+
+### 1. Review Failing Tests
+
+Before writing any code:
+
+- Read each failing test to understand expected behavior
+- Identify the interfaces/classes/functions that need to be created
+- Note expected inputs, outputs, and error conditions
+- Understand the test's mocking strategy
+
+### 2. Design Minimal Implementation
+
+**TDD Green Phase Principles:**
+
+- **Make it work first, then make it right**
+- **Simplest thing that could possibly work**
+- **No feature without a failing test**
+- **Avoid premature abstraction**
+- **Prefer duplication over wrong abstraction**
+
+### 3. Implement Code
+
+**Implementation Strategy:**
+
+```yaml
+approach: 1. Start with simplest happy path test
+  2. Write minimal code to pass that test
+  3. Run tests frequently (after each small change)
+  4. Move to next failing test
+  5. Repeat until all tests pass
+
+avoid:
+  - Adding features not covered by tests
+  - Complex algorithms when simple ones suffice
+  - Premature optimization
+  - Over-engineering the solution
+```
+
+**Example Implementation Progression:**
+
+```javascript
+// First test: should return user with id
+// Minimal implementation:
+function createUser(userData) {
+  return { id: 1, ...userData };
+}
+
+// Second test: should validate email format
+// Expand implementation:
+function createUser(userData) {
+  if (!userData.email.includes('@')) {
+    throw new Error('Invalid email format');
+  }
+  return { id: 1, ...userData };
+}
+```
+
+### 4. Run Tests Continuously
+
+**Test-Driven Workflow:**
+
+1. Run specific failing test
+2. Write minimal code to make it pass
+3. Run that test again to confirm green
+4. Run full test suite to ensure no regressions
+5. Move to next failing test
+
+**Test Execution Commands:**
+
+```bash
+# Run specific test file
+npm test -- user-service.test.js
+pytest tests/unit/test_user_service.py
+go test ./services/user_test.go
+
+# Run full test suite
+npm test
+pytest
+go test ./...
+```
+
+### 5. Handle Edge Cases
+
+Implement only edge cases that have corresponding tests:
+
+- Input validation as tested
+- Error conditions as specified in tests
+- Boundary conditions covered by tests
+- Nothing more, nothing less
+
+### 6. Maintain Test-Code Traceability
+
+**Commit Strategy:**
+
+```bash
+git add tests/ src/
+git commit -m "GREEN: Implement user creation [UC-001, UC-002]"
+```
+
+Link implementation to specific test IDs in commits for traceability.
+
+### 7. Update Story Metadata
+
+Update TDD status to green:
+
+```yaml
+tdd:
+  status: green
+  cycle: 1
+  tests:
+    - id: 'UC-001'
+      name: 'should create user with valid email'
+      type: unit
+      status: passing
+      file_path: 'tests/unit/user-service.test.js'
+    - id: 'UC-002'
+      name: 'should reject user with invalid email'
+      type: unit
+      status: passing
+      file_path: 'tests/unit/user-service.test.js'
+```
+
+## Output Requirements
+
+### 1. Working Implementation
+
+Create source files that:
+
+- Make all failing tests pass
+- Follow project coding standards
+- Are minimal and focused
+- Have clear, intention-revealing names
+
+### 2. Test Execution Report
+
+```bash
+Running tests...
+✅ UserService > should create user with valid email
+✅ UserService > should reject user with invalid email
+
+2 passing, 0 failing
+```
+
+### 3. Story File Updates
+
+Append to TDD section:
+
+```markdown
+## TDD Progress
+
+### Green Phase - Cycle 1
+
+**Date:** {current_date}
+**Agent:** James (Dev Agent)
+
+**Implementation Summary:**
+
+- Created UserService class with create() method
+- Added email validation for @ symbol
+- All tests now passing ✅
+
+**Files Modified:**
+
+- src/services/user-service.js (created)
+
+**Test Results:**
+
+- UC-001: should create user with valid email (PASSING ✅)
+- UC-002: should reject user with invalid email (PASSING ✅)
+
+**Next Step:** Review implementation for refactoring opportunities
+```
+
+## Implementation Guidelines
+
+### Code Quality Standards
+
+**During Green Phase:**
+
+- **Readable:** Clear variable and function names
+- **Simple:** Avoid complex logic when simple works
+- **Testable:** Code structure supports the tests
+- **Focused:** Each function has single responsibility
+
+**Acceptable Technical Debt (to be addressed in Refactor phase):**
+
+- Code duplication if it keeps tests green
+- Hardcoded values if they make tests pass
+- Simple algorithms even if inefficient
+- Minimal error handling beyond what tests require
+
+### Common Patterns
+
+**Factory Functions:**
+
+```javascript
+function createUser(data) {
+  // Minimal validation
+  return { id: generateId(), ...data };
+}
+```
+
+**Error Handling:**
+
+```javascript
+function validateEmail(email) {
+  if (!email.includes('@')) {
+    throw new Error('Invalid email');
+  }
+}
+```
+
+**State Management:**
+
+```javascript
+class UserService {
+  constructor(database) {
+    this.db = database; // Accept injected dependency
+  }
+}
+```
+
+## Error Handling
+
+**If tests still fail after implementation:**
+
+- Review test expectations vs actual implementation
+- Check for typos in function/method names
+- Verify correct imports/exports
+- Ensure proper handling of async operations
+
+**If tests pass unexpectedly without changes:**
+
+- Implementation might already exist
+- Test might be incorrect
+- Review git status for unexpected changes
+
+**If new tests start failing:**
+
+- Implementation may have broken existing functionality
+- Review change impact
+- Fix regressions before continuing
+
+## Anti-Patterns to Avoid
+
+**Feature Creep:**
+
+- Don't implement features without failing tests
+- Don't add "obviously needed" functionality
+
+**Premature Optimization:**
+
+- Don't optimize for performance in green phase
+- Focus on correctness first
+
+**Over-Engineering:**
+
+- Don't add abstraction layers without tests requiring them
+- Avoid complex design patterns in initial implementation
+
+## Completion Criteria
+
+- [ ] All previously failing tests now pass
+- [ ] No existing tests broken (regression check)
+- [ ] Implementation is minimal and focused
+- [ ] Code follows project standards
+- [ ] Story TDD status updated to 'green'
+- [ ] Files properly committed with test traceability
+- [ ] Ready for refactor phase assessment
+
+## Validation Commands
+
+```bash
+# Verify all tests pass
+npm test
+pytest
+go test ./...
+mvn test
+dotnet test
+
+# Check code quality (basic)
+npm run lint
+flake8 .
+golint ./...
+```
+
+## Key Principles
+
+- **Make it work:** Green tests are the only measure of success
+- **Keep it simple:** Resist urge to make it elegant yet
+- **One test at a time:** Focus on single failing test
+- **Fast feedback:** Run tests frequently during development
+- **No speculation:** Only implement what tests require
+==================== END: .bmad-core/tasks/tdd-implement.md ====================
+
+==================== START: .bmad-core/tasks/tdd-refactor.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# tdd-refactor
+
+Safely refactor code while keeping all tests green - the "Refactor" phase of TDD.
+
+## Purpose
+
+Improve code quality, eliminate duplication, and enhance design while maintaining all existing functionality. This is the "Refactor" phase of TDD where we make the code clean and maintainable.
+
+## Prerequisites
+
+- All tests are passing (tdd.status: green)
+- Implementation is complete and functional
+- Test suite provides safety net for refactoring
+- Code follows basic project standards
+
+## Inputs
+
+```yaml
+required:
+  - story_id: '{epic}.{story}' # e.g., "1.3"
+  - story_path: '{devStoryLocation}/{epic}.{story}.*.md' # Path from core-config.yaml
+  - passing_tests: # All tests should be green
+      - id: test identifier
+      - status: passing
+  - implementation_files: # Source files to potentially refactor
+      - path: file path
+      - purpose: what it does
+```
+
+## Process
+
+### 1. Identify Refactoring Opportunities
+
+**Code Smells to Look For:**
+
+```yaml
+common_smells:
+  duplication:
+    - Repeated code blocks
+    - Similar logic in different places
+    - Copy-paste patterns
+
+  complexity:
+    - Long methods/functions (>10-15 lines)
+    - Too many parameters (>3-4)
+    - Nested conditions (>2-3 levels)
+    - Complex boolean expressions
+
+  naming:
+    - Unclear variable names
+    - Non-descriptive function names
+    - Inconsistent naming conventions
+
+  structure:
+    - God objects/classes doing too much
+    - Primitive obsession
+    - Feature envy (method using more from other class)
+    - Long parameter lists
+```
+
+### 2. Plan Refactoring Steps
+
+**Refactoring Strategy:**
+
+- **One change at a time:** Make small, atomic improvements
+- **Run tests after each change:** Ensure no functionality breaks
+- **Commit frequently:** Create checkpoints for easy rollback
+- **Improve design:** Move toward better architecture
+
+**Common Refactoring Techniques:**
+
+```yaml
+extract_methods:
+  when: 'Function is too long or doing multiple things'
+  technique: 'Extract complex logic into named methods'
+
+rename_variables:
+  when: "Names don't clearly express intent"
+  technique: 'Use intention-revealing names'
+
+eliminate_duplication:
+  when: 'Same code appears in multiple places'
+  technique: 'Extract to shared function/method'
+
+simplify_conditionals:
+  when: 'Complex boolean logic is hard to understand'
+  technique: 'Extract to well-named boolean methods'
+
+introduce_constants:
+  when: 'Magic numbers or strings appear repeatedly'
+  technique: 'Create named constants'
+```
+
+### 3. Execute Refactoring
+
+**Step-by-Step Process:**
+
+1. **Choose smallest improvement**
+2. **Make the change**
+3. **Run all tests**
+4. **Commit if green**
+5. **Repeat**
+
+**Example Refactoring Sequence:**
+
+```javascript
+// Before refactoring
+function createUser(data) {
+  if (!data.email.includes('@') || data.email.length < 5) {
+    throw new Error('Invalid email format');
+  }
+  if (!data.name || data.name.trim().length === 0) {
+    throw new Error('Name is required');
+  }
+  return {
+    id: Math.floor(Math.random() * 1000000),
+    ...data,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+// After refactoring - Step 1: Extract validation
+function validateEmail(email) {
+  return email.includes('@') && email.length >= 5;
+}
+
+function validateName(name) {
+  return name && name.trim().length > 0;
+}
+
+function createUser(data) {
+  if (!validateEmail(data.email)) {
+    throw new Error('Invalid email format');
+  }
+  if (!validateName(data.name)) {
+    throw new Error('Name is required');
+  }
+  return {
+    id: Math.floor(Math.random() * 1000000),
+    ...data,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+// After refactoring - Step 2: Extract ID generation
+function generateUserId() {
+  return Math.floor(Math.random() * 1000000);
+}
+
+function createUser(data) {
+  if (!validateEmail(data.email)) {
+    throw new Error('Invalid email format');
+  }
+  if (!validateName(data.name)) {
+    throw new Error('Name is required');
+  }
+  return {
+    id: generateUserId(),
+    ...data,
+    createdAt: new Date().toISOString(),
+  };
+}
+```
+
+### 4. Test After Each Change
+
+**Critical Rule:** Never proceed without green tests
+
+```bash
+# Run tests after each refactoring step
+npm test
+pytest
+go test ./...
+
+# If tests fail:
+# 1. Undo the change
+# 2. Understand what broke
+# 3. Try smaller refactoring
+# 4. Fix tests if they need updating (rare)
+```
+
+### 5. Collaborate with QA Agent
+
+**When to involve QA:**
+
+- Tests need updating due to interface changes
+- New test cases identified during refactoring
+- Questions about test coverage adequacy
+- Validation of refactoring safety
+
+### 6. Update Story Documentation
+
+Track refactoring progress:
+
+```yaml
+tdd:
+  status: refactor # or done if complete
+  cycle: 1
+  refactoring_notes:
+    - extracted_methods: ['validateEmail', 'validateName', 'generateUserId']
+    - eliminated_duplication: 'Email validation logic'
+    - improved_readability: 'Function names now express intent'
+```
+
+## Output Requirements
+
+### 1. Improved Code Quality
+
+**Measurable Improvements:**
+
+- Reduced code duplication
+- Clearer naming and structure
+- Smaller, focused functions
+- Better separation of concerns
+
+### 2. Maintained Test Coverage
+
+```bash
+# All tests still passing
+✅ UserService > should create user with valid email
+✅ UserService > should reject user with invalid email
+✅ UserService > should require valid name
+
+3 passing, 0 failing
+```
+
+### 3. Story File Updates
+
+Append to TDD section:
+
+```markdown
+## TDD Progress
+
+### Refactor Phase - Cycle 1
+
+**Date:** {current_date}
+**Agents:** James (Dev) & Quinn (QA)
+
+**Refactoring Completed:**
+
+- ✅ Extracted validation functions for better readability
+- ✅ Eliminated duplicate email validation logic
+- ✅ Introduced generateUserId() for testability
+- ✅ Simplified createUser() main logic
+
+**Code Quality Improvements:**
+
+- Function length reduced from 12 to 6 lines
+- Three reusable validation functions created
+- Magic numbers eliminated
+- Test coverage maintained at 100%
+
+**Files Modified:**
+
+- src/services/user-service.js (refactored)
+
+**All Tests Passing:** ✅
+
+**Next Step:** Story ready for review or next TDD cycle
+```
+
+## Refactoring Guidelines
+
+### Safe Refactoring Practices
+
+**Always Safe:**
+
+- Rename variables/functions
+- Extract methods
+- Inline temporary variables
+- Replace magic numbers with constants
+
+**Potentially Risky:**
+
+- Changing method signatures
+- Modifying class hierarchies
+- Altering error handling
+- Changing async/sync behavior
+
+**Never Do During Refactor:**
+
+- Add new features
+- Change external behavior
+- Remove existing functionality
+- Skip running tests
+
+### Code Quality Metrics
+
+**Before/After Comparison:**
+
+```yaml
+metrics_to_track:
+  cyclomatic_complexity: 'Lower is better'
+  function_length: 'Shorter is generally better'
+  duplication_percentage: 'Should decrease'
+  test_coverage: 'Should maintain 100%'
+
+acceptable_ranges:
+  function_length: '5-15 lines for most functions'
+  parameters: '0-4 parameters per function'
+  nesting_depth: 'Maximum 3 levels'
+```
+
+## Advanced Refactoring Techniques
+
+### Design Pattern Introduction
+
+**When appropriate:**
+
+- Template Method for algorithmic variations
+- Strategy Pattern for behavior selection
+- Factory Pattern for object creation
+- Observer Pattern for event handling
+
+**Caution:** Only introduce patterns if they simplify the code
+
+### Architecture Improvements
+
+```yaml
+layering:
+  - Separate business logic from presentation
+  - Extract data access concerns
+  - Isolate external dependencies
+
+dependency_injection:
+  - Make dependencies explicit
+  - Enable easier testing
+  - Improve modularity
+
+error_handling:
+  - Consistent error types
+  - Meaningful error messages
+  - Proper error propagation
+```
+
+## Error Handling
+
+**If tests fail during refactoring:**
+
+1. **Undo immediately** - Use git to revert
+2. **Analyze the failure** - What assumption was wrong?
+3. **Try smaller steps** - More atomic refactoring
+4. **Consider test updates** - Only if interface must change
+
+**If code becomes more complex:**
+
+- Refactoring went wrong direction
+- Revert and try different approach
+- Consider if change is actually needed
+
+## Completion Criteria
+
+- [ ] All identified code smells addressed or documented
+- [ ] All tests remain green throughout process
+- [ ] Code is more readable and maintainable
+- [ ] No new functionality added during refactoring
+- [ ] Story TDD status updated appropriately
+- [ ] Refactoring changes committed with clear messages
+- [ ] Code quality metrics improved or maintained
+- [ ] Ready for story completion or next TDD cycle
+
+## Key Principles
+
+- **Green Bar:** Never proceed with failing tests
+- **Small Steps:** Make incremental improvements
+- **Behavior Preservation:** External behavior must remain identical
+- **Frequent Commits:** Create rollback points
+- **Test First:** Let tests guide refactoring safety
+- **Collaborative:** Work with QA when test updates needed
+==================== END: .bmad-core/tasks/tdd-refactor.md ====================
+
 ==================== START: .bmad-core/checklists/story-dod-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Story Definition of Done (DoD) Checklist
 
 ## Instructions for Developer Agent
@@ -6869,8 +7641,200 @@ Be honest - it's better to flag issues now than have them discovered later.]]
 - [ ] I, the Developer Agent, confirm that all applicable items above have been addressed.
 ==================== END: .bmad-core/checklists/story-dod-checklist.md ====================
 
+==================== START: .bmad-core/checklists/tdd-dod-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# TDD Story Definition of Done Checklist
+
+## Instructions for Agents
+
+This checklist ensures TDD stories meet quality standards across all Red-Green-Refactor cycles. Both QA and Dev agents should validate completion before marking a story as Done.
+
+[[LLM: TDD DOD VALIDATION INSTRUCTIONS
+
+This is a specialized DoD checklist for Test-Driven Development stories. It extends the standard DoD with TDD-specific quality gates.
+
+EXECUTION APPROACH:
+
+1. Verify TDD cycle progression (Red → Green → Refactor → Done)
+2. Validate test-first approach was followed
+3. Ensure proper test isolation and determinism
+4. Check code quality improvements from refactoring
+5. Confirm coverage targets are met
+
+CRITICAL: Never mark a TDD story as Done without completing all TDD phases.]]
+
+## TDD Cycle Validation
+
+### Red Phase Completion
+
+[[LLM: Verify tests were written BEFORE implementation]]
+
+- [ ] **Tests written first:** All tests were created before any implementation code
+- [ ] **Failing correctly:** Tests fail for the right reasons (missing functionality, not bugs)
+- [ ] **Proper test structure:** Tests follow Given-When-Then or Arrange-Act-Assert patterns
+- [ ] **Deterministic tests:** No random values, network calls, or time dependencies
+- [ ] **External dependencies mocked:** All external services, databases, APIs properly mocked
+- [ ] **Test naming:** Clear, descriptive test names that express intent
+- [ ] **Story metadata updated:** TDD status set to 'red' and test list populated
+
+### Green Phase Completion
+
+[[LLM: Ensure minimal implementation that makes tests pass]]
+
+- [ ] **All tests passing:** 100% of tests pass consistently
+- [ ] **Minimal implementation:** Only code necessary to make tests pass was written
+- [ ] **No feature creep:** No functionality added without corresponding failing tests
+- [ ] **Test-code traceability:** Implementation clearly addresses specific test requirements
+- [ ] **Regression protection:** All previously passing tests remain green
+- [ ] **Story metadata updated:** TDD status set to 'green' and test results documented
+
+### Refactor Phase Completion
+
+[[LLM: Verify code quality improvements while maintaining green tests]]
+
+- [ ] **Tests remain green:** All tests continue to pass after refactoring
+- [ ] **Code quality improved:** Duplication eliminated, naming improved, structure clarified
+- [ ] **Design enhanced:** Better separation of concerns, cleaner interfaces
+- [ ] **Technical debt addressed:** Known code smells identified and resolved
+- [ ] **Commit discipline:** Small, incremental commits with green tests after each
+- [ ] **Story metadata updated:** Refactoring notes and improvements documented
+
+## Test Quality Standards
+
+### Test Implementation Quality
+
+[[LLM: Ensure tests are maintainable and reliable]]
+
+- [ ] **Fast execution:** Unit tests complete in <100ms each
+- [ ] **Isolated tests:** Each test can run independently in any order
+- [ ] **Single responsibility:** Each test validates one specific behavior
+- [ ] **Clear assertions:** Test failures provide meaningful error messages
+- [ ] **Appropriate test types:** Right mix of unit/integration/e2e tests
+- [ ] **Mock strategy:** Appropriate use of mocks vs fakes vs stubs
+
+### Coverage and Completeness
+
+[[LLM: Validate comprehensive test coverage]]
+
+- [ ] **Coverage target met:** Code coverage meets story's target percentage
+- [ ] **Acceptance criteria covered:** All ACs have corresponding tests
+- [ ] **Edge cases tested:** Boundary conditions and error scenarios included
+- [ ] **Happy path validated:** Primary success scenarios thoroughly tested
+- [ ] **Error handling tested:** Exception paths and error recovery validated
+
+## Implementation Quality
+
+### Code Standards Compliance
+
+[[LLM: Ensure production-ready code quality]]
+
+- [ ] **Coding standards followed:** Code adheres to project style guidelines
+- [ ] **Architecture alignment:** Implementation follows established patterns
+- [ ] **Security practices:** Input validation, error handling, no hardcoded secrets
+- [ ] **Performance considerations:** No obvious performance bottlenecks introduced
+- [ ] **Documentation updated:** Code comments and documentation reflect changes
+
+### File Organization and Management
+
+[[LLM: Verify proper project structure]]
+
+- [ ] **Test file organization:** Tests follow project's testing folder structure
+- [ ] **Naming conventions:** Files and functions follow established patterns
+- [ ] **Dependencies managed:** New dependencies properly declared and justified
+- [ ] **Import/export clarity:** Clear module interfaces and dependencies
+- [ ] **File list accuracy:** All created/modified files documented in story
+
+## TDD Process Adherence
+
+### Methodology Compliance
+
+[[LLM: Confirm true TDD practice was followed]]
+
+- [ ] **Test-first discipline:** No implementation code written before tests
+- [ ] **Minimal cycles:** Small Red-Green-Refactor iterations maintained
+- [ ] **Refactoring safety:** Only refactored with green test coverage
+- [ ] **Requirements traceability:** Clear mapping from tests to acceptance criteria
+- [ ] **Collaboration evidence:** QA and Dev agent coordination documented
+
+### Documentation and Traceability
+
+[[LLM: Ensure proper tracking and communication]]
+
+- [ ] **TDD progress tracked:** Story shows progression through all TDD phases
+- [ ] **Test execution logged:** Evidence of test runs and results captured
+- [ ] **Refactoring documented:** Changes made during refactor phase explained
+- [ ] **Agent collaboration:** Clear handoffs between QA (Red) and Dev (Green/Refactor)
+- [ ] **Story metadata complete:** All TDD fields properly populated
+
+## Integration and Deployment Readiness
+
+### Build and Deployment
+
+[[LLM: Ensure story integrates properly with project]]
+
+- [ ] **Project builds successfully:** Code compiles without errors or warnings
+- [ ] **All tests pass in CI:** Automated test suite runs successfully
+- [ ] **No breaking changes:** Existing functionality remains intact
+- [ ] **Environment compatibility:** Code works across development environments
+- [ ] **Configuration managed:** Any new config values properly documented
+
+### Review Readiness
+
+[[LLM: Story is ready for peer review]]
+
+- [ ] **Complete implementation:** All acceptance criteria fully implemented
+- [ ] **Clean commit history:** Clear, logical progression of changes
+- [ ] **Review artifacts:** All necessary files and documentation available
+- [ ] **No temporary code:** Debug code, TODOs, and temporary hacks removed
+- [ ] **Quality gates passed:** All automated quality checks successful
+
+## Final TDD Validation
+
+### Holistic Assessment
+
+[[LLM: Overall TDD process and outcome validation]]
+
+- [ ] **TDD value delivered:** Process improved code design and quality
+- [ ] **Test suite value:** Tests provide reliable safety net for changes
+- [ ] **Knowledge captured:** Future developers can understand and maintain code
+- [ ] **Standards elevated:** Code quality meets or exceeds project standards
+- [ ] **Learning documented:** Any insights or patterns discovered are captured
+
+### Story Completion Criteria
+
+[[LLM: Final checklist before marking Done]]
+
+- [ ] **Business value delivered:** Story provides promised user value
+- [ ] **Technical debt managed:** Any remaining debt is documented and acceptable
+- [ ] **Future maintainability:** Code can be easily modified and extended
+- [ ] **Production readiness:** Code is ready for production deployment
+- [ ] **TDD story complete:** All TDD-specific requirements fulfilled
+
+## Completion Declaration
+
+**Agent Validation:**
+
+- [ ] **QA Agent confirms:** Test strategy executed successfully, coverage adequate
+- [ ] **Dev Agent confirms:** Implementation complete, code quality satisfactory
+
+**Final Status:**
+
+- [ ] **Story marked Done:** All DoD criteria met and verified
+- [ ] **TDD status complete:** Story TDD metadata shows 'done' status
+- [ ] **Ready for review:** Story package complete for stakeholder review
+
+---
+
+**Validation Date:** {date}  
+**Validating Agents:** {qa_agent} & {dev_agent}  
+**TDD Cycles Completed:** {cycle_count}  
+**Final Test Status:** {passing_count} passing, {failing_count} failing
+==================== END: .bmad-core/checklists/tdd-dod-checklist.md ====================
+
 ==================== START: .bmad-core/tasks/brownfield-create-epic.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Brownfield Epic Task
 
 ## Purpose
@@ -7035,6 +7999,7 @@ The epic creation is successful when:
 
 ==================== START: .bmad-core/tasks/brownfield-create-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Brownfield Story Task
 
 ## Purpose
@@ -7186,6 +8151,7 @@ The story creation is successful when:
 
 ==================== START: .bmad-core/tasks/correct-course.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Correct Course Task
 
 ## Purpose
@@ -7260,6 +8226,7 @@ The story creation is successful when:
 
 ==================== START: .bmad-core/tasks/shard-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document Sharding Task
 
 ## Purpose
@@ -7939,6 +8906,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/change-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Change Navigation Checklist
 
 **Purpose:** To systematically guide the selected Agent and user through the analysis and planning required when a significant change (pivot, tech issue, missing requirement, failed story) is identified during the BMad workflow.
@@ -8125,6 +9093,7 @@ Keep it action-oriented and forward-looking.]]
 
 ==================== START: .bmad-core/checklists/pm-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Product Manager (PM) Requirements Checklist
 
 This checklist serves as a comprehensive framework to ensure the Product Requirements Document (PRD) and Epic definitions are complete, well-structured, and appropriately scoped for MVP development. The PM should systematically work through each item during the product definition process.
@@ -8640,6 +9609,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/po-master-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Product Owner (PO) Master Validation Checklist
 
 This checklist serves as a comprehensive framework for the Product Owner to validate project plans before development execution. It adapts intelligently based on project type (greenfield vs brownfield) and includes UI/UX considerations when applicable.
@@ -9076,6 +10046,7 @@ After presenting the report, ask if the user wants:
 
 ==================== START: .bmad-core/tasks/nfr-assess.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # nfr-assess
 
 Quick NFR validation focused on the core four: security, performance, reliability, maintainability.
@@ -9423,6 +10394,7 @@ performance_deep_dive:
 
 ==================== START: .bmad-core/tasks/qa-gate.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # qa-gate
 
 Create or update a quality gate decision file for a story based on review findings.
@@ -9588,6 +10560,7 @@ Gate: CONCERNS → qa.qaLocation/gates/{epic}.{story}-{slug}.yml
 
 ==================== START: .bmad-core/tasks/review-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # review-story
 
 Perform a comprehensive test architecture review with quality gate decision. This adaptive, risk-aware review creates both a story update and a detailed gate file.
@@ -9906,6 +10879,7 @@ After review:
 
 ==================== START: .bmad-core/tasks/risk-profile.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # risk-profile
 
 Generate a comprehensive risk assessment matrix for a story implementation using probability × impact analysis.
@@ -10263,9 +11237,10 @@ Risk profile: qa.qaLocation/assessments/{epic}.{story}-risk-{YYYYMMDD}.md
 
 ==================== START: .bmad-core/tasks/test-design.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # test-design
 
-Create comprehensive test scenarios with appropriate test level recommendations for story implementation.
+Create comprehensive test scenarios with appropriate test level recommendations for story implementation. Supports both traditional testing and Test-Driven Development (TDD) first approaches.
 
 ## Inputs
 
@@ -10275,11 +11250,16 @@ required:
   - story_path: '{devStoryLocation}/{epic}.{story}.*.md' # Path from core-config.yaml
   - story_title: '{title}' # If missing, derive from story file H1
   - story_slug: '{slug}' # If missing, derive from title (lowercase, hyphenated)
+optional:
+  - tdd_mode: boolean # If true, design tests for TDD Red phase (before implementation)
+  - existing_tests: array # List of existing tests to consider for gap analysis
 ```
 
 ## Purpose
 
 Design a complete test strategy that identifies what to test, at which level (unit/integration/e2e), and why. This ensures efficient test coverage without redundancy while maintaining appropriate test boundaries.
+
+**TDD Mode**: When `tdd_mode=true`, design tests that will be written BEFORE implementation (Red phase), focusing on smallest testable behavior slices and proper mocking strategies.
 
 ## Dependencies
 
@@ -10334,6 +11314,46 @@ test_scenario:
   description: 'What is being tested'
   justification: 'Why this level was chosen'
   mitigates_risks: ['RISK-001'] # If risk profile exists
+  # TDD-specific fields (when tdd_mode=true)
+  tdd_phase: red|green|refactor # When this test should be written
+  mocking_strategy: mock|fake|stub|none # How to handle dependencies
+  test_data_approach: fixed|builder|random # How to generate test data
+```
+
+### 4a. TDD-Specific Test Design (when tdd_mode=true)
+
+**Smallest-Next-Test Principle:**
+
+- Design tests for the absolute smallest behavior increment
+- Each test should drive a single, focused implementation change
+- Avoid tests that require multiple features to pass
+
+**Mocking Strategy Selection Matrix:**
+
+| Dependency Type | Recommended Approach | Justification                          |
+| --------------- | -------------------- | -------------------------------------- |
+| External API    | Mock                 | Control responses, avoid network calls |
+| Database        | Fake                 | In-memory implementation for speed     |
+| File System     | Stub                 | Return fixed responses                 |
+| Time/Date       | Mock                 | Deterministic time control             |
+| Random Numbers  | Stub                 | Predictable test outcomes              |
+| Other Services  | Mock/Fake            | Depends on complexity and speed needs  |
+
+**Test Data Strategy:**
+
+```yaml
+test_data_approaches:
+  fixed_data:
+    when: 'Simple, predictable scenarios'
+    example: "const userId = 'test-user-123'"
+
+  builder_pattern:
+    when: 'Complex objects with variations'
+    example: "new UserBuilder().withEmail('test@example.com').build()"
+
+  avoid_random:
+    why: 'Makes tests non-deterministic and hard to debug'
+    instead: 'Use meaningful, fixed test data'
 ```
 
 ### 5. Validate Coverage
@@ -10441,6 +11461,7 @@ Before finalizing, verify:
 
 ==================== START: .bmad-core/tasks/trace-requirements.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # trace-requirements
 
 Map story requirements to test cases using Given-When-Then patterns for comprehensive traceability.
@@ -10707,6 +11728,267 @@ Trace matrix: qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.md
 - Make recommendations actionable
 ==================== END: .bmad-core/tasks/trace-requirements.md ====================
 
+==================== START: .bmad-core/tasks/write-failing-tests.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# write-failing-tests
+
+Write failing tests first to drive development using Test-Driven Development (TDD) Red phase.
+
+## Purpose
+
+Generate failing unit tests that describe expected behavior before implementation. This is the "Red" phase of TDD where we define what success looks like through tests that initially fail.
+
+## Prerequisites
+
+- Story status must be "InProgress" or "Ready"
+- TDD must be enabled in core-config.yaml (`tdd.enabled: true`)
+- Acceptance criteria are clearly defined
+- Test runner is configured or auto-detected
+
+## Inputs
+
+```yaml
+required:
+  - story_id: '{epic}.{story}' # e.g., "1.3"
+  - story_path: '{devStoryLocation}/{epic}.{story}.*.md' # Path from core-config.yaml
+  - story_title: '{title}' # If missing, derive from story file H1
+  - story_slug: '{slug}' # If missing, derive from title (lowercase, hyphenated)
+```
+
+## Process
+
+### 1. Analyze Story Requirements
+
+Read the story file and extract:
+
+- Acceptance criteria (AC) that define success
+- Business rules and constraints
+- Edge cases and error conditions
+- Data inputs and expected outputs
+
+### 2. Design Test Strategy
+
+For each acceptance criterion:
+
+- Identify the smallest testable unit
+- Choose appropriate test type (unit/integration/e2e)
+- Plan test data and scenarios
+- Consider mocking strategy for external dependencies
+
+### 3. Detect/Configure Test Runner
+
+```yaml
+detection_order:
+  - Check project files for known patterns
+  - JavaScript: package.json dependencies (jest, vitest, mocha)
+  - Python: requirements files (pytest, unittest)
+  - Java: pom.xml, build.gradle (junit, testng)
+  - Go: go.mod (built-in testing)
+  - .NET: *.csproj (xunit, nunit, mstest)
+  - Fallback: tdd.test_runner.custom_command from config
+```
+
+### 4. Write Failing Tests
+
+**Test Quality Guidelines:**
+
+- **Deterministic**: No random values, dates, or network calls
+- **Isolated**: Each test is independent and can run alone
+- **Fast**: Unit tests should run in milliseconds
+- **Readable**: Test names describe the behavior being tested
+- **Focused**: One assertion per test when possible
+
+**Mocking Strategy:**
+
+```yaml
+mock_vs_fake_vs_stub:
+  mock: 'Verify interactions (calls, parameters)'
+  fake: 'Simplified working implementation'
+  stub: 'Predefined responses to calls'
+
+use_mocks_for:
+  - External APIs and web services
+  - Database connections
+  - File system operations
+  - Time-dependent operations
+  - Random number generation
+```
+
+**Test Structure (Given-When-Then):**
+
+```typescript
+// Example structure
+describe('UserService', () => {
+  it('should create user with valid email', async () => {
+    // Given (Arrange)
+    const userData = { email: 'test@example.com', name: 'Test User' };
+    const mockDb = jest.fn().mockResolvedValue({ id: 1, ...userData });
+
+    // When (Act)
+    const result = await userService.create(userData);
+
+    // Then (Assert)
+    expect(result).toEqual({ id: 1, ...userData });
+    expect(mockDb).toHaveBeenCalledWith(userData);
+  });
+});
+```
+
+### 5. Create Test Files
+
+**Naming Conventions:**
+
+```yaml
+patterns:
+  javascript: '{module}.test.js' or '{module}.spec.js'
+  python: 'test_{module}.py' or '{module}_test.py'
+  java: '{Module}Test.java'
+  go: '{module}_test.go'
+  csharp: '{Module}Tests.cs'
+```
+
+**File Organization:**
+
+```
+tests/
+├── unit/           # Fast, isolated tests
+├── integration/    # Component interaction tests
+└── e2e/           # End-to-end user journey tests
+```
+
+### 6. Verify Tests Fail
+
+**Critical Step:** Run tests to ensure they fail for the RIGHT reason:
+
+- ✅ Fail because functionality is not implemented
+- ❌ Fail because of syntax errors, import issues, or test bugs
+
+**Test Run Command:** Use auto-detected or configured test runner
+
+### 7. Update Story Metadata
+
+Update story file frontmatter:
+
+```yaml
+tdd:
+  status: red
+  cycle: 1
+  tests:
+    - id: 'UC-001'
+      name: 'should create user with valid email'
+      type: unit
+      status: failing
+      file_path: 'tests/unit/user-service.test.js'
+    - id: 'UC-002'
+      name: 'should reject user with invalid email'
+      type: unit
+      status: failing
+      file_path: 'tests/unit/user-service.test.js'
+```
+
+## Output Requirements
+
+### 1. Test Files Created
+
+Generate test files with:
+
+- Clear, descriptive test names
+- Proper setup/teardown
+- Mock configurations
+- Expected assertions
+
+### 2. Test Execution Report
+
+```bash
+Running tests...
+❌ UserService > should create user with valid email
+❌ UserService > should reject user with invalid email
+
+2 failing, 0 passing
+```
+
+### 3. Story File Updates
+
+Append to TDD section:
+
+```markdown
+## TDD Progress
+
+### Red Phase - Cycle 1
+
+**Date:** {current_date}
+**Agent:** Quinn (QA Agent)
+
+**Tests Written:**
+
+- UC-001: should create user with valid email (FAILING ✅)
+- UC-002: should reject user with invalid email (FAILING ✅)
+
+**Test Files:**
+
+- tests/unit/user-service.test.js
+
+**Next Step:** Dev Agent to implement minimal code to make tests pass
+```
+
+## Constraints & Best Practices
+
+### Constraints
+
+- **Minimal Scope:** Write tests for the smallest possible feature slice
+- **No Implementation:** Do not implement the actual functionality
+- **External Dependencies:** Always mock external services, databases, APIs
+- **Deterministic Data:** Use fixed test data, mock time/random functions
+- **Fast Execution:** Unit tests must complete quickly (< 100ms each)
+
+### Anti-Patterns to Avoid
+
+- Testing implementation details instead of behavior
+- Writing tests after the code is written
+- Complex test setup that obscures intent
+- Tests that depend on external systems
+- Overly broad tests covering multiple behaviors
+
+## Error Handling
+
+**If tests pass unexpectedly:**
+
+- Implementation may already exist
+- Test may be testing wrong behavior
+- HALT and clarify requirements
+
+**If tests fail for wrong reasons:**
+
+- Fix syntax/import errors
+- Verify mocks are properly configured
+- Check test runner configuration
+
+**If no test runner detected:**
+
+- Fallback to tdd.test_runner.custom_command
+- If not configured, prompt user for test command
+- Document setup in story notes
+
+## Completion Criteria
+
+- [ ] All planned tests are written and failing
+- [ ] Tests fail for correct reasons (missing implementation)
+- [ ] Story TDD metadata updated with test list
+- [ ] Test files follow project conventions
+- [ ] All external dependencies are properly mocked
+- [ ] Tests run deterministically and quickly
+- [ ] Ready to hand off to Dev Agent for implementation
+
+## Key Principles
+
+- **Fail First:** Tests must fail before any implementation
+- **Describe Behavior:** Tests define what "done" looks like
+- **Start Small:** Begin with simplest happy path scenario
+- **Isolate Dependencies:** External systems should be mocked
+- **Fast Feedback:** Tests should run quickly to enable rapid iteration
+==================== END: .bmad-core/tasks/write-failing-tests.md ====================
+
 ==================== START: .bmad-core/templates/qa-gate-tmpl.yaml ====================
 # <!-- Powered by BMAD™ Core -->
 template:
@@ -10813,8 +12095,511 @@ optional_fields_examples:
           refs: ["services/data.service.ts"]
 ==================== END: .bmad-core/templates/qa-gate-tmpl.yaml ====================
 
+==================== START: .bmad-core/templates/story-tdd-template.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Story {epic}.{story}: {title}
+
+## Story Metadata
+
+```yaml
+story:
+  epic: '{epic}'
+  number: '{story}'
+  title: '{title}'
+  status: 'draft'
+  priority: 'medium'
+
+# TDD Configuration (only when tdd.enabled=true)
+tdd:
+  status: 'red' # red|green|refactor|done
+  cycle: 1
+  coverage_target: 80.0
+  tests: [] # Will be populated by QA agent during Red phase
+```
+
+## Story Description
+
+**As a** {user_type}  
+**I want** {capability}  
+**So that** {business_value}
+
+### Context
+
+{Provide context about why this story is needed, what problem it solves, and how it fits into the larger epic/project}
+
+## Acceptance Criteria
+
+```gherkin
+Feature: {Feature name}
+
+Scenario: {Primary happy path}
+  Given {initial conditions}
+  When {action performed}
+  Then {expected outcome}
+
+Scenario: {Error condition 1}
+  Given {error setup}
+  When {action that causes error}
+  Then {expected error handling}
+
+Scenario: {Edge case}
+  Given {edge case setup}
+  When {edge case action}
+  Then {edge case outcome}
+```
+
+## Technical Requirements
+
+### Functional Requirements
+
+- {Requirement 1}
+- {Requirement 2}
+- {Requirement 3}
+
+### Non-Functional Requirements
+
+- **Performance:** {Response time, throughput requirements}
+- **Security:** {Authentication, authorization, data protection}
+- **Reliability:** {Error handling, recovery requirements}
+- **Maintainability:** {Code quality, documentation standards}
+
+## TDD Test Plan (QA Agent Responsibility)
+
+### Test Strategy
+
+- **Primary Test Type:** {unit|integration|e2e}
+- **Mocking Approach:** {mock external services, databases, etc.}
+- **Test Data:** {how test data will be managed}
+
+### Planned Test Scenarios
+
+| ID     | Scenario           | Type        | Priority | AC Reference |
+| ------ | ------------------ | ----------- | -------- | ------------ |
+| TC-001 | {test description} | unit        | P0       | AC1          |
+| TC-002 | {test description} | unit        | P0       | AC2          |
+| TC-003 | {test description} | integration | P1       | AC3          |
+
+_(This section will be populated by QA agent during test planning)_
+
+## TDD Progress
+
+### Current Phase: {RED|GREEN|REFACTOR|DONE}
+
+**Cycle:** {cycle_number}
+**Last Updated:** {date}
+
+_(TDD progress will be tracked here through Red-Green-Refactor cycles)_
+
+---
+
+## Implementation Tasks (Dev Agent)
+
+### Primary Tasks
+
+- [ ] {Main implementation task 1}
+- [ ] {Main implementation task 2}
+- [ ] {Main implementation task 3}
+
+### Subtasks
+
+- [ ] {Detailed subtask}
+- [ ] {Another subtask}
+
+## Definition of Done
+
+### TDD-Specific DoD
+
+- [ ] Tests written first (Red phase completed)
+- [ ] All tests passing (Green phase completed)
+- [ ] Code refactored for quality (Refactor phase completed)
+- [ ] Test coverage meets target ({coverage_target}%)
+- [ ] All external dependencies properly mocked
+- [ ] No features implemented without corresponding tests
+
+### General DoD
+
+- [ ] All acceptance criteria met
+- [ ] Code follows project standards
+- [ ] Documentation updated
+- [ ] Ready for review
+
+## Dev Agent Record
+
+### Implementation Notes
+
+_(Dev agent will document implementation decisions here)_
+
+### TDD Cycle Log
+
+_(Automatic tracking of Red-Green-Refactor progression)_
+
+**Cycle 1:**
+
+- Red Phase: {date} - {test count} failing tests written
+- Green Phase: {date} - Implementation completed, all tests pass
+- Refactor Phase: {date} - {refactoring summary}
+
+### File List
+
+_(Dev agent will list all files created/modified)_
+
+- {file1}
+- {file2}
+
+### Test Execution Log
+
+```bash
+# Test runs will be logged here during development
+```
+
+## QA Results
+
+_(QA agent will populate this during review)_
+
+## Change Log
+
+- **{date}**: Story created from TDD template
+- **{date}**: {change description}
+
+---
+
+**TDD Status:** 🔴 RED | ⚫ Not Started
+**Agent Assigned:** {agent_name}  
+**Estimated Effort:** {hours} hours
+==================== END: .bmad-core/templates/story-tdd-template.md ====================
+
+==================== START: .bmad-core/data/test-levels-framework.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Test Levels Framework
+
+Comprehensive guide for determining appropriate test levels (unit, integration, E2E) for different scenarios.
+
+## Test Level Decision Matrix
+
+### Unit Tests
+
+**When to use:**
+
+- Testing pure functions and business logic
+- Algorithm correctness
+- Input validation and data transformation
+- Error handling in isolated components
+- Complex calculations or state machines
+
+**Characteristics:**
+
+- Fast execution (immediate feedback)
+- No external dependencies (DB, API, file system)
+- Highly maintainable and stable
+- Easy to debug failures
+
+**Example scenarios:**
+
+```yaml
+unit_test:
+  component: 'PriceCalculator'
+  scenario: 'Calculate discount with multiple rules'
+  justification: 'Complex business logic with multiple branches'
+  mock_requirements: 'None - pure function'
+```
+
+### Integration Tests
+
+**When to use:**
+
+- Component interaction verification
+- Database operations and transactions
+- API endpoint contracts
+- Service-to-service communication
+- Middleware and interceptor behavior
+
+**Characteristics:**
+
+- Moderate execution time
+- Tests component boundaries
+- May use test databases or containers
+- Validates system integration points
+
+**Example scenarios:**
+
+```yaml
+integration_test:
+  components: ['UserService', 'AuthRepository']
+  scenario: 'Create user with role assignment'
+  justification: 'Critical data flow between service and persistence'
+  test_environment: 'In-memory database'
+```
+
+### End-to-End Tests
+
+**When to use:**
+
+- Critical user journeys
+- Cross-system workflows
+- Visual regression testing
+- Compliance and regulatory requirements
+- Final validation before release
+
+**Characteristics:**
+
+- Slower execution
+- Tests complete workflows
+- Requires full environment setup
+- Most realistic but most brittle
+
+**Example scenarios:**
+
+```yaml
+e2e_test:
+  journey: 'Complete checkout process'
+  scenario: 'User purchases with saved payment method'
+  justification: 'Revenue-critical path requiring full validation'
+  environment: 'Staging with test payment gateway'
+```
+
+## Test Level Selection Rules
+
+### Favor Unit Tests When:
+
+- Logic can be isolated
+- No side effects involved
+- Fast feedback needed
+- High cyclomatic complexity
+
+### Favor Integration Tests When:
+
+- Testing persistence layer
+- Validating service contracts
+- Testing middleware/interceptors
+- Component boundaries critical
+
+### Favor E2E Tests When:
+
+- User-facing critical paths
+- Multi-system interactions
+- Regulatory compliance scenarios
+- Visual regression important
+
+## Anti-patterns to Avoid
+
+- E2E testing for business logic validation
+- Unit testing framework behavior
+- Integration testing third-party libraries
+- Duplicate coverage across levels
+
+## Duplicate Coverage Guard
+
+**Before adding any test, check:**
+
+1. Is this already tested at a lower level?
+2. Can a unit test cover this instead of integration?
+3. Can an integration test cover this instead of E2E?
+
+**Coverage overlap is only acceptable when:**
+
+- Testing different aspects (unit: logic, integration: interaction, e2e: user experience)
+- Critical paths requiring defense in depth
+- Regression prevention for previously broken functionality
+
+## Test Naming Conventions
+
+- Unit: `test_{component}_{scenario}`
+- Integration: `test_{flow}_{interaction}`
+- E2E: `test_{journey}_{outcome}`
+
+## Test ID Format
+
+`{EPIC}.{STORY}-{LEVEL}-{SEQ}`
+
+Examples:
+
+- `1.3-UNIT-001`
+- `1.3-INT-002`
+- `1.3-E2E-001`
+==================== END: .bmad-core/data/test-levels-framework.md ====================
+
+==================== START: .bmad-core/data/test-priorities-matrix.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Test Priorities Matrix
+
+Guide for prioritizing test scenarios based on risk, criticality, and business impact.
+
+## Priority Levels
+
+### P0 - Critical (Must Test)
+
+**Criteria:**
+
+- Revenue-impacting functionality
+- Security-critical paths
+- Data integrity operations
+- Regulatory compliance requirements
+- Previously broken functionality (regression prevention)
+
+**Examples:**
+
+- Payment processing
+- Authentication/authorization
+- User data creation/deletion
+- Financial calculations
+- GDPR/privacy compliance
+
+**Testing Requirements:**
+
+- Comprehensive coverage at all levels
+- Both happy and unhappy paths
+- Edge cases and error scenarios
+- Performance under load
+
+### P1 - High (Should Test)
+
+**Criteria:**
+
+- Core user journeys
+- Frequently used features
+- Features with complex logic
+- Integration points between systems
+- Features affecting user experience
+
+**Examples:**
+
+- User registration flow
+- Search functionality
+- Data import/export
+- Notification systems
+- Dashboard displays
+
+**Testing Requirements:**
+
+- Primary happy paths required
+- Key error scenarios
+- Critical edge cases
+- Basic performance validation
+
+### P2 - Medium (Nice to Test)
+
+**Criteria:**
+
+- Secondary features
+- Admin functionality
+- Reporting features
+- Configuration options
+- UI polish and aesthetics
+
+**Examples:**
+
+- Admin settings panels
+- Report generation
+- Theme customization
+- Help documentation
+- Analytics tracking
+
+**Testing Requirements:**
+
+- Happy path coverage
+- Basic error handling
+- Can defer edge cases
+
+### P3 - Low (Test if Time Permits)
+
+**Criteria:**
+
+- Rarely used features
+- Nice-to-have functionality
+- Cosmetic issues
+- Non-critical optimizations
+
+**Examples:**
+
+- Advanced preferences
+- Legacy feature support
+- Experimental features
+- Debug utilities
+
+**Testing Requirements:**
+
+- Smoke tests only
+- Can rely on manual testing
+- Document known limitations
+
+## Risk-Based Priority Adjustments
+
+### Increase Priority When:
+
+- High user impact (affects >50% of users)
+- High financial impact (>$10K potential loss)
+- Security vulnerability potential
+- Compliance/legal requirements
+- Customer-reported issues
+- Complex implementation (>500 LOC)
+- Multiple system dependencies
+
+### Decrease Priority When:
+
+- Feature flag protected
+- Gradual rollout planned
+- Strong monitoring in place
+- Easy rollback capability
+- Low usage metrics
+- Simple implementation
+- Well-isolated component
+
+## Test Coverage by Priority
+
+| Priority | Unit Coverage | Integration Coverage | E2E Coverage       |
+| -------- | ------------- | -------------------- | ------------------ |
+| P0       | >90%          | >80%                 | All critical paths |
+| P1       | >80%          | >60%                 | Main happy paths   |
+| P2       | >60%          | >40%                 | Smoke tests        |
+| P3       | Best effort   | Best effort          | Manual only        |
+
+## Priority Assignment Rules
+
+1. **Start with business impact** - What happens if this fails?
+2. **Consider probability** - How likely is failure?
+3. **Factor in detectability** - Would we know if it failed?
+4. **Account for recoverability** - Can we fix it quickly?
+
+## Priority Decision Tree
+
+```
+Is it revenue-critical?
+├─ YES → P0
+└─ NO → Does it affect core user journey?
+    ├─ YES → Is it high-risk?
+    │   ├─ YES → P0
+    │   └─ NO → P1
+    └─ NO → Is it frequently used?
+        ├─ YES → P1
+        └─ NO → Is it customer-facing?
+            ├─ YES → P2
+            └─ NO → P3
+```
+
+## Test Execution Order
+
+1. Execute P0 tests first (fail fast on critical issues)
+2. Execute P1 tests second (core functionality)
+3. Execute P2 tests if time permits
+4. P3 tests only in full regression cycles
+
+## Continuous Adjustment
+
+Review and adjust priorities based on:
+
+- Production incident patterns
+- User feedback and complaints
+- Usage analytics
+- Test failure history
+- Business priority changes
+==================== END: .bmad-core/data/test-priorities-matrix.md ====================
+
 ==================== START: .bmad-core/tasks/create-next-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Next Story Task
 
 ## Purpose
@@ -10931,6 +12716,7 @@ ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
 
 ==================== START: .bmad-core/checklists/story-draft-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Story Draft Checklist
 
 The Scrum Master should use this checklist to validate that each story contains sufficient context for a developer agent to implement it successfully, while assuming the dev agent has reasonable capabilities to figure things out.
@@ -11088,6 +12874,7 @@ Be pragmatic - perfect documentation doesn't exist, but it must be enough to pro
 
 ==================== START: .bmad-core/tasks/generate-ai-frontend-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create AI Frontend Prompt Task
 
 ## Purpose
@@ -11657,7 +13444,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -11674,7 +13461,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -11904,7 +13691,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -11921,7 +13708,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -12102,7 +13889,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -12119,7 +13906,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -12255,12 +14042,12 @@ workflow:
       condition: po_checklist_issues
       notes: "If PO finds issues, return to relevant agent to fix and re-export updated documents to docs/ folder."
 
-    - project_setup_guidance:
+    - step: project_setup_guidance
       action: guide_project_structure
       condition: user_has_generated_ui
       notes: "If user generated UI with v0/Lovable: For polyrepo setup, place downloaded project in separate frontend repo alongside backend repo. For monorepo, place in apps/web or packages/frontend directory. Review architecture document for specific guidance."
 
-    - development_order_guidance:
+    - step: development_order_guidance
       action: guide_development_sequence
       notes: "Based on PRD stories: If stories are frontend-heavy, start with frontend project/directory first. If backend-heavy or API-first, start with backend. For tightly coupled features, follow story sequence in monorepo setup. Reference sharded PRD epics for development order."
 
@@ -12328,7 +14115,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -12345,7 +14132,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -12548,7 +14335,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -12565,7 +14352,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -12708,7 +14495,7 @@ workflow:
       condition: po_checklist_issues
       notes: "If PO finds issues, return to relevant agent to fix and re-export updated documents to docs/ folder."
 
-    - project_setup_guidance:
+    - step: project_setup_guidance
       action: guide_project_structure
       condition: user_has_generated_ui
       notes: "If user generated UI with v0/Lovable: For polyrepo setup, place downloaded project in separate frontend repo. For monorepo, place in apps/web or frontend/ directory. Review architecture document for specific guidance."
@@ -12777,7 +14564,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -12794,7 +14581,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!

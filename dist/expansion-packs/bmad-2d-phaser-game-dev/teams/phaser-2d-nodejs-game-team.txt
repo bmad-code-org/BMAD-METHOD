@@ -414,6 +414,7 @@ dependencies:
 
 ==================== START: .bmad-2d-phaser-game-dev/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development BMad Knowledge Base
 
 ## Overview
@@ -668,6 +669,7 @@ This knowledge base provides the foundation for effective game development using
 
 ==================== START: .bmad-2d-phaser-game-dev/data/brainstorming-techniques.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Brainstorming Techniques Data
 
 ## Creative Expansion
@@ -708,6 +710,7 @@ This knowledge base provides the foundation for effective game development using
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Game Design Elicitation Task
 
 ## Purpose
@@ -822,6 +825,7 @@ The questions and perspectives offered should always consider:
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/create-deep-research-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -1104,6 +1108,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -1209,6 +1214,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/document-project.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document an Existing Project
 
 ## Purpose
@@ -1555,10 +1561,11 @@ Apply the advanced elicitation task after major sections to refine based on user
 ==================== END: .bmad-2d-phaser-game-dev/tasks/document-project.md ====================
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/facilitate-brainstorming-session.md ====================
-<!-- Powered by BMAD™ Core -->
----
+## <!-- Powered by BMAD™ Core -->
+
 docOutputLocation: docs/brainstorming-session-results.md
 template: '.bmad-2d-phaser-game-dev/templates/brainstorming-output-tmpl.yaml'
+
 ---
 
 # Facilitate Brainstorming Session Task
@@ -2646,6 +2653,7 @@ sections:
 
 ==================== START: .bmad-2d-phaser-game-dev/data/elicitation-methods.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Elicitation Methods Data
 
 ## Core Reflective Methods
@@ -2804,6 +2812,7 @@ sections:
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/kb-mode-interaction.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # KB Mode Interaction Task
 
 ## Purpose
@@ -2883,6 +2892,7 @@ Or ask me about anything else related to BMad-Method!
 
 ==================== START: .bmad-2d-phaser-game-dev/utils/workflow-management.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Workflow Management
 
 Enables BMad orchestrator to manage and execute team workflows.
@@ -2956,6 +2966,7 @@ Agents should be workflow-aware: know active workflow, their role, access artifa
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -3046,6 +3057,7 @@ The LLM will:
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/game-design-brainstorming.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Brainstorming Techniques Task
 
 This task provides a comprehensive toolkit of creative brainstorming techniques specifically designed for game design ideation and innovative thinking. The game designer can use these techniques to facilitate productive brainstorming sessions focused on game mechanics, player experience, and creative concepts.
@@ -4535,6 +4547,7 @@ sections:
 
 ==================== START: .bmad-2d-phaser-game-dev/checklists/game-design-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Document Quality Checklist
 
 ## Document Completeness
@@ -5357,6 +5370,7 @@ sections:
 
 ==================== START: .bmad-2d-phaser-game-dev/checklists/game-story-dod-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Story Definition of Done Checklist
 
 ## Story Completeness
@@ -5521,6 +5535,7 @@ _Any specific concerns, recommendations, or clarifications needed before develop
 
 ==================== START: .bmad-2d-phaser-game-dev/data/development-guidelines.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Guidelines
 
 ## Overview
@@ -6172,6 +6187,7 @@ These guidelines ensure consistent, high-quality game development that meets per
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/create-game-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Game Development Story Task
 
 ## Purpose
@@ -8718,6 +8734,7 @@ sections:
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Game Design Elicitation Task
 
 ## Purpose
@@ -8832,6 +8849,7 @@ The questions and perspectives offered should always consider:
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/create-game-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Game Development Story Task
 
 ## Purpose
@@ -9052,6 +9070,7 @@ This task ensures game development stories are immediately actionable and enable
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/game-design-brainstorming.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Brainstorming Techniques Task
 
 This task provides a comprehensive toolkit of creative brainstorming techniques specifically designed for game design ideation and innovative thinking. The game designer can use these techniques to facilitate productive brainstorming sessions focused on game mechanics, player experience, and creative concepts.
@@ -9346,6 +9365,7 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 ==================== START: .bmad-2d-phaser-game-dev/checklists/game-design-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Document Quality Checklist
 
 ## Document Completeness
@@ -9551,6 +9571,7 @@ _Outline immediate next actions for the team based on this assessment._
 
 ==================== START: .bmad-2d-phaser-game-dev/checklists/game-story-dod-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Story Definition of Done Checklist
 
 ## Story Completeness
@@ -10081,6 +10102,7 @@ workflow:
 
 ==================== START: .bmad-2d-phaser-game-dev/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development BMad Knowledge Base
 
 ## Overview
@@ -10335,6 +10357,7 @@ This knowledge base provides the foundation for effective game development using
 
 ==================== START: .bmad-2d-phaser-game-dev/data/development-guidelines.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Guidelines
 
 ## Overview

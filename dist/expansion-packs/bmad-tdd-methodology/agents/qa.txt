@@ -8,13 +8,13 @@ You are now operating as a specialized AI agent from the BMad-Method framework. 
 
 2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
 
-- `==================== START: .bmad-core/folder/filename.md ====================`
-- `==================== END: .bmad-core/folder/filename.md ====================`
+- `==================== START: .bmad-tdd-methodology/folder/filename.md ====================`
+- `==================== END: .bmad-tdd-methodology/folder/filename.md ====================`
 
 When you need to reference a resource mentioned in your instructions:
 
 - Look for the corresponding START/END tags
-- The format is always the full path with dot prefix (e.g., `.bmad-core/personas/analyst.md`, `.bmad-core/tasks/create-story.md`)
+- The format is always the full path with dot prefix (e.g., `.bmad-tdd-methodology/personas/analyst.md`, `.bmad-tdd-methodology/tasks/create-story.md`)
 - If a section is specified (e.g., `{root}/tasks/create-story.md#section-name`), navigate to that section within the file
 
 **Understanding YAML References**: In the agent configuration, resources are referenced in the dependencies section. For example:
@@ -29,8 +29,8 @@ dependencies:
 
 These references map directly to bundle sections:
 
-- `utils: template-format` → Look for `==================== START: .bmad-core/utils/template-format.md ====================`
-- `tasks: create-story` → Look for `==================== START: .bmad-core/tasks/create-story.md ====================`
+- `utils: template-format` → Look for `==================== START: .bmad-tdd-methodology/utils/template-format.md ====================`
+- `tasks: create-story` → Look for `==================== START: .bmad-tdd-methodology/tasks/create-story.md ====================`
 
 3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
 
@@ -39,7 +39,7 @@ These references map directly to bundle sections:
 ---
 
 
-==================== START: .bmad-core/agents/qa.md ====================
+==================== START: .bmad-tdd-methodology/agents/qa.md ====================
 # qa
 
 CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
@@ -138,9 +138,345 @@ dependencies:
   config:
     - test-runners.yaml
 ```
-==================== END: .bmad-core/agents/qa.md ====================
+==================== END: .bmad-tdd-methodology/agents/qa.md ====================
 
-==================== START: .bmad-core/tasks/nfr-assess.md ====================
+==================== START: .bmad-tdd-methodology/data/technical-preferences.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# User-Defined Preferred Patterns and Preferences
+
+None Listed
+==================== END: .bmad-tdd-methodology/data/technical-preferences.md ====================
+
+==================== START: .bmad-tdd-methodology/data/test-levels-framework.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Test Levels Framework
+
+Comprehensive guide for determining appropriate test levels (unit, integration, E2E) for different scenarios.
+
+## Test Level Decision Matrix
+
+### Unit Tests
+
+**When to use:**
+
+- Testing pure functions and business logic
+- Algorithm correctness
+- Input validation and data transformation
+- Error handling in isolated components
+- Complex calculations or state machines
+
+**Characteristics:**
+
+- Fast execution (immediate feedback)
+- No external dependencies (DB, API, file system)
+- Highly maintainable and stable
+- Easy to debug failures
+
+**Example scenarios:**
+
+```yaml
+unit_test:
+  component: 'PriceCalculator'
+  scenario: 'Calculate discount with multiple rules'
+  justification: 'Complex business logic with multiple branches'
+  mock_requirements: 'None - pure function'
+```
+
+### Integration Tests
+
+**When to use:**
+
+- Component interaction verification
+- Database operations and transactions
+- API endpoint contracts
+- Service-to-service communication
+- Middleware and interceptor behavior
+
+**Characteristics:**
+
+- Moderate execution time
+- Tests component boundaries
+- May use test databases or containers
+- Validates system integration points
+
+**Example scenarios:**
+
+```yaml
+integration_test:
+  components: ['UserService', 'AuthRepository']
+  scenario: 'Create user with role assignment'
+  justification: 'Critical data flow between service and persistence'
+  test_environment: 'In-memory database'
+```
+
+### End-to-End Tests
+
+**When to use:**
+
+- Critical user journeys
+- Cross-system workflows
+- Visual regression testing
+- Compliance and regulatory requirements
+- Final validation before release
+
+**Characteristics:**
+
+- Slower execution
+- Tests complete workflows
+- Requires full environment setup
+- Most realistic but most brittle
+
+**Example scenarios:**
+
+```yaml
+e2e_test:
+  journey: 'Complete checkout process'
+  scenario: 'User purchases with saved payment method'
+  justification: 'Revenue-critical path requiring full validation'
+  environment: 'Staging with test payment gateway'
+```
+
+## Test Level Selection Rules
+
+### Favor Unit Tests When:
+
+- Logic can be isolated
+- No side effects involved
+- Fast feedback needed
+- High cyclomatic complexity
+
+### Favor Integration Tests When:
+
+- Testing persistence layer
+- Validating service contracts
+- Testing middleware/interceptors
+- Component boundaries critical
+
+### Favor E2E Tests When:
+
+- User-facing critical paths
+- Multi-system interactions
+- Regulatory compliance scenarios
+- Visual regression important
+
+## Anti-patterns to Avoid
+
+- E2E testing for business logic validation
+- Unit testing framework behavior
+- Integration testing third-party libraries
+- Duplicate coverage across levels
+
+## Duplicate Coverage Guard
+
+**Before adding any test, check:**
+
+1. Is this already tested at a lower level?
+2. Can a unit test cover this instead of integration?
+3. Can an integration test cover this instead of E2E?
+
+**Coverage overlap is only acceptable when:**
+
+- Testing different aspects (unit: logic, integration: interaction, e2e: user experience)
+- Critical paths requiring defense in depth
+- Regression prevention for previously broken functionality
+
+## Test Naming Conventions
+
+- Unit: `test_{component}_{scenario}`
+- Integration: `test_{flow}_{interaction}`
+- E2E: `test_{journey}_{outcome}`
+
+## Test ID Format
+
+`{EPIC}.{STORY}-{LEVEL}-{SEQ}`
+
+Examples:
+
+- `1.3-UNIT-001`
+- `1.3-INT-002`
+- `1.3-E2E-001`
+==================== END: .bmad-tdd-methodology/data/test-levels-framework.md ====================
+
+==================== START: .bmad-tdd-methodology/data/test-priorities-matrix.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Test Priorities Matrix
+
+Guide for prioritizing test scenarios based on risk, criticality, and business impact.
+
+## Priority Levels
+
+### P0 - Critical (Must Test)
+
+**Criteria:**
+
+- Revenue-impacting functionality
+- Security-critical paths
+- Data integrity operations
+- Regulatory compliance requirements
+- Previously broken functionality (regression prevention)
+
+**Examples:**
+
+- Payment processing
+- Authentication/authorization
+- User data creation/deletion
+- Financial calculations
+- GDPR/privacy compliance
+
+**Testing Requirements:**
+
+- Comprehensive coverage at all levels
+- Both happy and unhappy paths
+- Edge cases and error scenarios
+- Performance under load
+
+### P1 - High (Should Test)
+
+**Criteria:**
+
+- Core user journeys
+- Frequently used features
+- Features with complex logic
+- Integration points between systems
+- Features affecting user experience
+
+**Examples:**
+
+- User registration flow
+- Search functionality
+- Data import/export
+- Notification systems
+- Dashboard displays
+
+**Testing Requirements:**
+
+- Primary happy paths required
+- Key error scenarios
+- Critical edge cases
+- Basic performance validation
+
+### P2 - Medium (Nice to Test)
+
+**Criteria:**
+
+- Secondary features
+- Admin functionality
+- Reporting features
+- Configuration options
+- UI polish and aesthetics
+
+**Examples:**
+
+- Admin settings panels
+- Report generation
+- Theme customization
+- Help documentation
+- Analytics tracking
+
+**Testing Requirements:**
+
+- Happy path coverage
+- Basic error handling
+- Can defer edge cases
+
+### P3 - Low (Test if Time Permits)
+
+**Criteria:**
+
+- Rarely used features
+- Nice-to-have functionality
+- Cosmetic issues
+- Non-critical optimizations
+
+**Examples:**
+
+- Advanced preferences
+- Legacy feature support
+- Experimental features
+- Debug utilities
+
+**Testing Requirements:**
+
+- Smoke tests only
+- Can rely on manual testing
+- Document known limitations
+
+## Risk-Based Priority Adjustments
+
+### Increase Priority When:
+
+- High user impact (affects >50% of users)
+- High financial impact (>$10K potential loss)
+- Security vulnerability potential
+- Compliance/legal requirements
+- Customer-reported issues
+- Complex implementation (>500 LOC)
+- Multiple system dependencies
+
+### Decrease Priority When:
+
+- Feature flag protected
+- Gradual rollout planned
+- Strong monitoring in place
+- Easy rollback capability
+- Low usage metrics
+- Simple implementation
+- Well-isolated component
+
+## Test Coverage by Priority
+
+| Priority | Unit Coverage | Integration Coverage | E2E Coverage       |
+| -------- | ------------- | -------------------- | ------------------ |
+| P0       | >90%          | >80%                 | All critical paths |
+| P1       | >80%          | >60%                 | Main happy paths   |
+| P2       | >60%          | >40%                 | Smoke tests        |
+| P3       | Best effort   | Best effort          | Manual only        |
+
+## Priority Assignment Rules
+
+1. **Start with business impact** - What happens if this fails?
+2. **Consider probability** - How likely is failure?
+3. **Factor in detectability** - Would we know if it failed?
+4. **Account for recoverability** - Can we fix it quickly?
+
+## Priority Decision Tree
+
+```
+Is it revenue-critical?
+├─ YES → P0
+└─ NO → Does it affect core user journey?
+    ├─ YES → Is it high-risk?
+    │   ├─ YES → P0
+    │   └─ NO → P1
+    └─ NO → Is it frequently used?
+        ├─ YES → P1
+        └─ NO → Is it customer-facing?
+            ├─ YES → P2
+            └─ NO → P3
+```
+
+## Test Execution Order
+
+1. Execute P0 tests first (fail fast on critical issues)
+2. Execute P1 tests second (core functionality)
+3. Execute P2 tests if time permits
+4. P3 tests only in full regression cycles
+
+## Continuous Adjustment
+
+Review and adjust priorities based on:
+
+- Production incident patterns
+- User feedback and complaints
+- Usage analytics
+- Test failure history
+- Business priority changes
+==================== END: .bmad-tdd-methodology/data/test-priorities-matrix.md ====================
+
+==================== START: .bmad-tdd-methodology/tasks/nfr-assess.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # nfr-assess
@@ -486,9 +822,9 @@ performance_deep_dive:
 ```
 
 </details>
-==================== END: .bmad-core/tasks/nfr-assess.md ====================
+==================== END: .bmad-tdd-methodology/tasks/nfr-assess.md ====================
 
-==================== START: .bmad-core/tasks/qa-gate.md ====================
+==================== START: .bmad-tdd-methodology/tasks/qa-gate.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # qa-gate
@@ -652,9 +988,9 @@ Gate: CONCERNS → qa.qaLocation/gates/{epic}.{story}-{slug}.yml
 - Always write to standard path
 - Always update story with gate reference
 - Clear, actionable findings
-==================== END: .bmad-core/tasks/qa-gate.md ====================
+==================== END: .bmad-tdd-methodology/tasks/qa-gate.md ====================
 
-==================== START: .bmad-core/tasks/review-story.md ====================
+==================== START: .bmad-tdd-methodology/tasks/review-story.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # review-story
@@ -971,9 +1307,9 @@ After review:
 3. Recommend status: "Ready for Done" or "Changes Required" (owner decides)
 4. If files were modified, list them in QA Results and ask Dev to update File List
 5. Always provide constructive feedback and actionable recommendations
-==================== END: .bmad-core/tasks/review-story.md ====================
+==================== END: .bmad-tdd-methodology/tasks/review-story.md ====================
 
-==================== START: .bmad-core/tasks/risk-profile.md ====================
+==================== START: .bmad-tdd-methodology/tasks/risk-profile.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # risk-profile
@@ -1329,9 +1665,9 @@ Risk profile: qa.qaLocation/assessments/{epic}.{story}-risk-{YYYYMMDD}.md
 - Link risks to specific test requirements
 - Track residual risk after mitigation
 - Update risk profile as story evolves
-==================== END: .bmad-core/tasks/risk-profile.md ====================
+==================== END: .bmad-tdd-methodology/tasks/risk-profile.md ====================
 
-==================== START: .bmad-core/tasks/test-design.md ====================
+==================== START: .bmad-tdd-methodology/tasks/test-design.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # test-design
@@ -1553,9 +1889,9 @@ Before finalizing, verify:
 - **Efficient coverage**: Test once at the right level
 - **Maintainability**: Consider long-term test maintenance
 - **Fast feedback**: Quick tests run first
-==================== END: .bmad-core/tasks/test-design.md ====================
+==================== END: .bmad-tdd-methodology/tasks/test-design.md ====================
 
-==================== START: .bmad-core/tasks/trace-requirements.md ====================
+==================== START: .bmad-tdd-methodology/tasks/trace-requirements.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # trace-requirements
@@ -1822,9 +2158,9 @@ Trace matrix: qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.md
 - Identify both presence and absence
 - Prioritize based on risk
 - Make recommendations actionable
-==================== END: .bmad-core/tasks/trace-requirements.md ====================
+==================== END: .bmad-tdd-methodology/tasks/trace-requirements.md ====================
 
-==================== START: .bmad-core/tasks/write-failing-tests.md ====================
+==================== START: .bmad-tdd-methodology/tasks/write-failing-tests.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # write-failing-tests
@@ -2083,9 +2419,9 @@ Append to TDD section:
 - **Start Small:** Begin with simplest happy path scenario
 - **Isolate Dependencies:** External systems should be mocked
 - **Fast Feedback:** Tests should run quickly to enable rapid iteration
-==================== END: .bmad-core/tasks/write-failing-tests.md ====================
+==================== END: .bmad-tdd-methodology/tasks/write-failing-tests.md ====================
 
-==================== START: .bmad-core/tasks/tdd-refactor.md ====================
+==================== START: .bmad-tdd-methodology/tasks/tdd-refactor.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # tdd-refactor
@@ -2457,9 +2793,9 @@ error_handling:
 - **Frequent Commits:** Create rollback points
 - **Test First:** Let tests guide refactoring safety
 - **Collaborative:** Work with QA when test updates needed
-==================== END: .bmad-core/tasks/tdd-refactor.md ====================
+==================== END: .bmad-tdd-methodology/tasks/tdd-refactor.md ====================
 
-==================== START: .bmad-core/templates/qa-gate-tmpl.yaml ====================
+==================== START: .bmad-tdd-methodology/templates/qa-gate-tmpl.yaml ====================
 # <!-- Powered by BMAD™ Core -->
 template:
   id: qa-gate-template-v1
@@ -2563,9 +2899,9 @@ optional_fields_examples:
       future:  # Can be addressed later
         - action: "Consider caching for better performance"
           refs: ["services/data.service.ts"]
-==================== END: .bmad-core/templates/qa-gate-tmpl.yaml ====================
+==================== END: .bmad-tdd-methodology/templates/qa-gate-tmpl.yaml ====================
 
-==================== START: .bmad-core/templates/story-tmpl.yaml ====================
+==================== START: .bmad-tdd-methodology/templates/story-tmpl.yaml ====================
 # <!-- Powered by BMAD™ Core -->
 template:
   id: story-template-v2
@@ -2704,9 +3040,9 @@ sections:
     instruction: Results from QA Agent QA review of the completed story implementation
     owner: qa-agent
     editors: [qa-agent]
-==================== END: .bmad-core/templates/story-tmpl.yaml ====================
+==================== END: .bmad-tdd-methodology/templates/story-tmpl.yaml ====================
 
-==================== START: .bmad-core/templates/story-tdd-template.md ====================
+==================== START: .bmad-tdd-methodology/templates/story-tdd-template.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # Story {epic}.{story}: {title}
@@ -2878,9 +3214,9 @@ _(QA agent will populate this during review)_
 **TDD Status:** 🔴 RED | ⚫ Not Started
 **Agent Assigned:** {agent_name}  
 **Estimated Effort:** {hours} hours
-==================== END: .bmad-core/templates/story-tdd-template.md ====================
+==================== END: .bmad-tdd-methodology/templates/story-tdd-template.md ====================
 
-==================== START: .bmad-core/checklists/tdd-dod-checklist.md ====================
+==================== START: .bmad-tdd-methodology/checklists/tdd-dod-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
 
 # TDD Story Definition of Done Checklist
@@ -3069,340 +3405,1191 @@ CRITICAL: Never mark a TDD story as Done without completing all TDD phases.]]
 **Validating Agents:** {qa_agent} & {dev_agent}  
 **TDD Cycles Completed:** {cycle_count}  
 **Final Test Status:** {passing_count} passing, {failing_count} failing
-==================== END: .bmad-core/checklists/tdd-dod-checklist.md ====================
+==================== END: .bmad-tdd-methodology/checklists/tdd-dod-checklist.md ====================
 
-==================== START: .bmad-core/data/technical-preferences.md ====================
+==================== START: .bmad-tdd-methodology/prompts/tdd-red.md ====================
 <!-- Powered by BMAD™ Core -->
 
-# User-Defined Preferred Patterns and Preferences
+# TDD Red Phase Prompts
 
-None Listed
-==================== END: .bmad-core/data/technical-preferences.md ====================
+Instructions for QA agents when writing failing tests first in Test-Driven Development.
 
-==================== START: .bmad-core/data/test-levels-framework.md ====================
+## Core Red Phase Mindset
+
+**You are a QA Agent in TDD RED PHASE. Your mission is to write failing tests BEFORE any implementation exists. These tests define what success looks like.**
+
+### Primary Objectives
+
+1. **Test First, Always:** Write tests before any production code
+2. **Describe Behavior:** Tests should express user/system expectations
+3. **Fail for Right Reasons:** Tests should fail due to missing functionality, not bugs
+4. **Minimal Scope:** Start with the smallest possible feature slice
+5. **External Isolation:** Mock all external dependencies
+
+## Test Writing Guidelines
+
+### Test Structure Template
+
+```javascript
+describe('{ComponentName}', () => {
+  describe('{specific_behavior}', () => {
+    it('should {expected_behavior} when {condition}', () => {
+      // Given (Arrange) - Set up test conditions
+      const input = createTestInput();
+      const mockDependency = createMock();
+
+      // When (Act) - Perform the action
+      const result = systemUnderTest.performAction(input);
+
+      // Then (Assert) - Verify expectations
+      expect(result).toEqual(expectedOutput);
+      expect(mockDependency).toHaveBeenCalledWith(expectedArgs);
+    });
+  });
+});
+```
+
+### Test Naming Conventions
+
+**Pattern:** `should {expected_behavior} when {condition}`
+
+**Good Examples:**
+
+- `should return user profile when valid ID provided`
+- `should throw validation error when email is invalid`
+- `should create empty cart when user first visits`
+
+**Avoid:**
+
+- `testUserCreation` (not descriptive)
+- `should work correctly` (too vague)
+- `test_valid_input` (focuses on input, not behavior)
+
+## Mocking Strategy
+
+### When to Mock
+
+```yaml
+always_mock:
+  - External APIs and web services
+  - Database connections and queries
+  - File system operations
+  - Network requests
+  - Current time/date functions
+  - Random number generators
+  - Third-party libraries
+
+never_mock:
+  - Pure functions without side effects
+  - Simple data structures
+  - Language built-ins (unless time/random)
+  - Domain objects under test
+```
+
+### Mock Implementation Examples
+
+```javascript
+// Mock external API
+const mockApiClient = {
+  getUserById: jest.fn().mockResolvedValue({ id: 1, name: 'Test User' }),
+  createUser: jest.fn().mockResolvedValue({ id: 2, name: 'New User' }),
+};
+
+// Mock time for deterministic tests
+const mockDate = new Date('2025-01-01T10:00:00Z');
+jest.useFakeTimers().setSystemTime(mockDate);
+
+// Mock database
+const mockDb = {
+  users: {
+    findById: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+  },
+};
+```
+
+## Test Data Management
+
+### Deterministic Test Data
+
+```javascript
+// Good: Predictable, meaningful test data
+const testUser = {
+  id: 'user-123',
+  email: 'test@example.com',
+  name: 'Test User',
+  createdAt: '2025-01-01T10:00:00Z',
+};
+
+// Avoid: Random or meaningless data
+const testUser = {
+  id: Math.random(),
+  email: 'a@b.com',
+  name: 'x',
+};
+```
+
+### Test Data Builders
+
+```javascript
+class UserBuilder {
+  constructor() {
+    this.user = {
+      id: 'default-id',
+      email: 'default@example.com',
+      name: 'Default User',
+    };
+  }
+
+  withEmail(email) {
+    this.user.email = email;
+    return this;
+  }
+
+  withId(id) {
+    this.user.id = id;
+    return this;
+  }
+
+  build() {
+    return { ...this.user };
+  }
+}
+
+// Usage
+const validUser = new UserBuilder().withEmail('valid@email.com').build();
+const invalidUser = new UserBuilder().withEmail('invalid-email').build();
+```
+
+## Edge Cases and Error Scenarios
+
+### Prioritize Error Conditions
+
+```javascript
+// Test error conditions first - they're often forgotten
+describe('UserService.createUser', () => {
+  it('should throw error when email is missing', () => {
+    expect(() => userService.createUser({ name: 'Test' })).toThrow('Email is required');
+  });
+
+  it('should throw error when email format is invalid', () => {
+    expect(() => userService.createUser({ email: 'invalid' })).toThrow('Invalid email format');
+  });
+
+  // Happy path comes after error conditions
+  it('should create user when all data is valid', () => {
+    const userData = { email: 'test@example.com', name: 'Test' };
+    const result = userService.createUser(userData);
+    expect(result).toEqual(expect.objectContaining(userData));
+  });
+});
+```
+
+### Boundary Value Testing
+
+```javascript
+describe('validateAge', () => {
+  it('should reject age below minimum (17)', () => {
+    expect(() => validateAge(17)).toThrow('Age must be 18 or older');
+  });
+
+  it('should accept minimum valid age (18)', () => {
+    expect(validateAge(18)).toBe(true);
+  });
+
+  it('should accept maximum reasonable age (120)', () => {
+    expect(validateAge(120)).toBe(true);
+  });
+
+  it('should reject unreasonable age (121)', () => {
+    expect(() => validateAge(121)).toThrow('Invalid age');
+  });
+});
+```
+
+## Test Organization
+
+### File Structure
+
+```
+tests/
+├── unit/
+│   ├── services/
+│   │   ├── user-service.test.js
+│   │   └── order-service.test.js
+│   ├── utils/
+│   │   └── validation.test.js
+├── integration/
+│   ├── api/
+│   │   └── user-api.integration.test.js
+└── fixtures/
+    ├── users.js
+    └── orders.js
+```
+
+### Test Suite Organization
+
+```javascript
+describe('UserService', () => {
+  // Setup once per test suite
+  beforeAll(() => {
+    // Expensive setup that can be shared
+  });
+
+  // Setup before each test
+  beforeEach(() => {
+    // Fresh state for each test
+    mockDb.reset();
+  });
+
+  describe('createUser', () => {
+    // Group related tests
+  });
+
+  describe('updateUser', () => {
+    // Another behavior group
+  });
+});
+```
+
+## Red Phase Checklist
+
+Before handing off to Dev Agent, ensure:
+
+- [ ] **Tests written first** - No implementation code exists yet
+- [ ] **Tests are failing** - Confirmed by running test suite
+- [ ] **Fail for right reasons** - Missing functionality, not syntax errors
+- [ ] **External dependencies mocked** - No network/DB/file system calls
+- [ ] **Deterministic data** - No random values or current time
+- [ ] **Clear test names** - Behavior is obvious from test name
+- [ ] **Proper assertions** - Tests verify expected outcomes
+- [ ] **Error scenarios included** - Edge cases and validation errors
+- [ ] **Minimal scope** - Tests cover smallest useful feature
+- [ ] **Story metadata updated** - TDD status set to 'red', test list populated
+
+## Common Red Phase Mistakes
+
+### Mistake: Writing Tests After Code
+
+```javascript
+// Wrong: Implementation already exists
+function createUser(data) {
+  return { id: 1, ...data }; // Code exists
+}
+
+it('should create user', () => {
+  // Writing test after implementation
+});
+```
+
+### Mistake: Testing Implementation Details
+
+```javascript
+// Wrong: Testing how it works
+it('should call database.insert with user data', () => {
+  // Testing internal implementation
+});
+
+// Right: Testing what it does
+it('should return created user with ID', () => {
+  // Testing observable behavior
+});
+```
+
+### Mistake: Non-Deterministic Tests
+
+```javascript
+// Wrong: Random data
+const userId = Math.random();
+const createdAt = new Date(); // Current time
+
+// Right: Fixed data
+const userId = 'test-user-123';
+const createdAt = '2025-01-01T10:00:00Z';
+```
+
+## Success Indicators
+
+**You know you're succeeding in Red phase when:**
+
+1. **Tests clearly describe expected behavior**
+2. **All tests fail with meaningful error messages**
+3. **No external dependencies cause test failures**
+4. **Tests can be understood without seeing implementation**
+5. **Error conditions are tested first**
+6. **Test names tell a story of what the system should do**
+
+**Red phase is complete when:**
+
+- All planned tests are written and failing
+- Failure messages clearly indicate missing functionality
+- Dev Agent can understand exactly what to implement
+- Story metadata reflects current TDD state
+
+Remember: Your tests are the specification. Make them clear, complete, and compelling!
+==================== END: .bmad-tdd-methodology/prompts/tdd-red.md ====================
+
+==================== START: .bmad-tdd-methodology/prompts/tdd-refactor.md ====================
 <!-- Powered by BMAD™ Core -->
 
-# Test Levels Framework
+# TDD Refactor Phase Prompts
 
-Comprehensive guide for determining appropriate test levels (unit, integration, E2E) for different scenarios.
+Instructions for Dev and QA agents when refactoring code while maintaining green tests in Test-Driven Development.
 
-## Test Level Decision Matrix
+## Core Refactor Phase Mindset
 
-### Unit Tests
+**You are in TDD REFACTOR PHASE. Your mission is to improve code quality while keeping ALL tests green. Every change must preserve existing behavior.**
 
-**When to use:**
+### Primary Objectives
 
-- Testing pure functions and business logic
-- Algorithm correctness
-- Input validation and data transformation
-- Error handling in isolated components
-- Complex calculations or state machines
+1. **Preserve behavior** - External behavior must remain exactly the same
+2. **Improve design** - Make code more readable, maintainable, and extensible
+3. **Eliminate technical debt** - Remove duplication, improve naming, fix code smells
+4. **Maintain test coverage** - All tests must stay green throughout
+5. **Small steps** - Make incremental improvements with frequent test runs
 
-**Characteristics:**
+## Refactoring Safety Rules
 
-- Fast execution (immediate feedback)
-- No external dependencies (DB, API, file system)
-- Highly maintainable and stable
-- Easy to debug failures
+### The Golden Rule
 
-**Example scenarios:**
+**NEVER proceed with a refactoring step if tests are red.** Always revert and try smaller changes.
 
-```yaml
-unit_test:
-  component: 'PriceCalculator'
-  scenario: 'Calculate discount with multiple rules'
-  justification: 'Complex business logic with multiple branches'
-  mock_requirements: 'None - pure function'
-```
-
-### Integration Tests
-
-**When to use:**
-
-- Component interaction verification
-- Database operations and transactions
-- API endpoint contracts
-- Service-to-service communication
-- Middleware and interceptor behavior
-
-**Characteristics:**
-
-- Moderate execution time
-- Tests component boundaries
-- May use test databases or containers
-- Validates system integration points
-
-**Example scenarios:**
+### Safe Refactoring Workflow
 
 ```yaml
-integration_test:
-  components: ['UserService', 'AuthRepository']
-  scenario: 'Create user with role assignment'
-  justification: 'Critical data flow between service and persistence'
-  test_environment: 'In-memory database'
+refactoring_cycle:
+  1. identify_smell: 'Find specific code smell to address'
+  2. plan_change: 'Decide on minimal improvement step'
+  3. run_tests: 'Ensure all tests are green before starting'
+  4. make_change: 'Apply single, small refactoring'
+  5. run_tests: 'Verify tests are still green'
+  6. commit: 'Save progress if tests pass'
+  7. repeat: 'Move to next improvement'
+
+abort_conditions:
+  - tests_turn_red: 'Immediately revert and try smaller step'
+  - behavior_changes: 'Revert if external interface changes'
+  - complexity_increases: 'Revert if code becomes harder to understand'
 ```
 
-### End-to-End Tests
+## Code Smells and Refactoring Techniques
 
-**When to use:**
+### Duplication Elimination
 
-- Critical user journeys
-- Cross-system workflows
-- Visual regression testing
-- Compliance and regulatory requirements
-- Final validation before release
+**Before: Repeated validation logic**
 
-**Characteristics:**
+```javascript
+function createUser(data) {
+  if (!data.email.includes('@')) {
+    throw new Error('Invalid email format');
+  }
+  return { id: generateId(), ...data };
+}
 
-- Slower execution
-- Tests complete workflows
-- Requires full environment setup
-- Most realistic but most brittle
+function updateUser(id, data) {
+  if (!data.email.includes('@')) {
+    throw new Error('Invalid email format');
+  }
+  return { id, ...data };
+}
+```
 
-**Example scenarios:**
+**After: Extract validation function**
+
+```javascript
+function validateEmail(email) {
+  if (!email.includes('@')) {
+    throw new Error('Invalid email format');
+  }
+}
+
+function createUser(data) {
+  validateEmail(data.email);
+  return { id: generateId(), ...data };
+}
+
+function updateUser(id, data) {
+  validateEmail(data.email);
+  return { id, ...data };
+}
+```
+
+### Long Method Refactoring
+
+**Before: Method doing too much**
+
+```javascript
+function processUserRegistration(userData) {
+  // Validation (5 lines)
+  if (!userData.email.includes('@')) throw new Error('Invalid email');
+  if (!userData.name || userData.name.trim().length === 0) throw new Error('Name required');
+  if (userData.age < 18) throw new Error('Must be 18 or older');
+
+  // Data transformation (4 lines)
+  const user = {
+    id: generateId(),
+    email: userData.email.toLowerCase(),
+    name: userData.name.trim(),
+    age: userData.age,
+  };
+
+  // Business logic (3 lines)
+  if (userData.age >= 65) {
+    user.discountEligible = true;
+  }
+
+  return user;
+}
+```
+
+**After: Extract methods**
+
+```javascript
+function validateUserData(userData) {
+  if (!userData.email.includes('@')) throw new Error('Invalid email');
+  if (!userData.name || userData.name.trim().length === 0) throw new Error('Name required');
+  if (userData.age < 18) throw new Error('Must be 18 or older');
+}
+
+function normalizeUserData(userData) {
+  return {
+    id: generateId(),
+    email: userData.email.toLowerCase(),
+    name: userData.name.trim(),
+    age: userData.age,
+  };
+}
+
+function applyBusinessRules(user) {
+  if (user.age >= 65) {
+    user.discountEligible = true;
+  }
+  return user;
+}
+
+function processUserRegistration(userData) {
+  validateUserData(userData);
+  const user = normalizeUserData(userData);
+  return applyBusinessRules(user);
+}
+```
+
+### Magic Numbers and Constants
+
+**Before: Magic numbers scattered**
+
+```javascript
+function calculateShipping(weight) {
+  if (weight < 5) {
+    return 4.99;
+  } else if (weight < 20) {
+    return 9.99;
+  } else {
+    return 19.99;
+  }
+}
+```
+
+**After: Named constants**
+
+```javascript
+const SHIPPING_RATES = {
+  LIGHT_WEIGHT_THRESHOLD: 5,
+  MEDIUM_WEIGHT_THRESHOLD: 20,
+  LIGHT_SHIPPING_COST: 4.99,
+  MEDIUM_SHIPPING_COST: 9.99,
+  HEAVY_SHIPPING_COST: 19.99,
+};
+
+function calculateShipping(weight) {
+  if (weight < SHIPPING_RATES.LIGHT_WEIGHT_THRESHOLD) {
+    return SHIPPING_RATES.LIGHT_SHIPPING_COST;
+  } else if (weight < SHIPPING_RATES.MEDIUM_WEIGHT_THRESHOLD) {
+    return SHIPPING_RATES.MEDIUM_SHIPPING_COST;
+  } else {
+    return SHIPPING_RATES.HEAVY_SHIPPING_COST;
+  }
+}
+```
+
+### Variable Naming Improvements
+
+**Before: Unclear names**
+
+```javascript
+function calc(u, p) {
+  const t = u * p;
+  const d = t * 0.1;
+  return t - d;
+}
+```
+
+**After: Intention-revealing names**
+
+```javascript
+function calculateNetPrice(unitPrice, quantity) {
+  const totalPrice = unitPrice * quantity;
+  const discount = totalPrice * 0.1;
+  return totalPrice - discount;
+}
+```
+
+## Refactoring Strategies by Code Smell
+
+### Complex Conditionals
+
+**Before: Nested conditions**
+
+```javascript
+function determineUserType(user) {
+  if (user.age >= 18) {
+    if (user.hasAccount) {
+      if (user.isPremium) {
+        return 'premium-member';
+      } else {
+        return 'basic-member';
+      }
+    } else {
+      return 'guest-adult';
+    }
+  } else {
+    return 'minor';
+  }
+}
+```
+
+**After: Guard clauses and early returns**
+
+```javascript
+function determineUserType(user) {
+  if (user.age < 18) {
+    return 'minor';
+  }
+
+  if (!user.hasAccount) {
+    return 'guest-adult';
+  }
+
+  return user.isPremium ? 'premium-member' : 'basic-member';
+}
+```
+
+### Large Classes (God Object)
+
+**Before: Class doing too much**
+
+```javascript
+class UserManager {
+  validateUser(data) {
+    /* validation logic */
+  }
+  createUser(data) {
+    /* creation logic */
+  }
+  sendWelcomeEmail(user) {
+    /* email logic */
+  }
+  logUserActivity(user, action) {
+    /* logging logic */
+  }
+  calculateUserStats(user) {
+    /* analytics logic */
+  }
+}
+```
+
+**After: Single responsibility classes**
+
+```javascript
+class UserValidator {
+  validate(data) {
+    /* validation logic */
+  }
+}
+
+class UserService {
+  create(data) {
+    /* creation logic */
+  }
+}
+
+class EmailService {
+  sendWelcome(user) {
+    /* email logic */
+  }
+}
+
+class ActivityLogger {
+  log(user, action) {
+    /* logging logic */
+  }
+}
+
+class UserAnalytics {
+  calculateStats(user) {
+    /* analytics logic */
+  }
+}
+```
+
+## Collaborative Refactoring (Dev + QA)
+
+### When to Involve QA Agent
+
+**QA Agent should participate when:**
 
 ```yaml
-e2e_test:
-  journey: 'Complete checkout process'
-  scenario: 'User purchases with saved payment method'
-  justification: 'Revenue-critical path requiring full validation'
-  environment: 'Staging with test payment gateway'
+qa_involvement_triggers:
+  test_modification_needed:
+    - 'Test expectations need updating'
+    - 'New test cases discovered during refactoring'
+    - 'Mock strategies need adjustment'
+
+  coverage_assessment:
+    - 'Refactoring exposes untested code paths'
+    - 'New methods need test coverage'
+    - 'Test organization needs improvement'
+
+  design_validation:
+    - 'Interface changes affect test structure'
+    - 'Mocking strategy becomes complex'
+    - 'Test maintainability concerns'
 ```
 
-## Test Level Selection Rules
+### Dev-QA Collaboration Workflow
 
-### Favor Unit Tests When:
-
-- Logic can be isolated
-- No side effects involved
-- Fast feedback needed
-- High cyclomatic complexity
-
-### Favor Integration Tests When:
-
-- Testing persistence layer
-- Validating service contracts
-- Testing middleware/interceptors
-- Component boundaries critical
-
-### Favor E2E Tests When:
-
-- User-facing critical paths
-- Multi-system interactions
-- Regulatory compliance scenarios
-- Visual regression important
-
-## Anti-patterns to Avoid
-
-- E2E testing for business logic validation
-- Unit testing framework behavior
-- Integration testing third-party libraries
-- Duplicate coverage across levels
-
-## Duplicate Coverage Guard
-
-**Before adding any test, check:**
-
-1. Is this already tested at a lower level?
-2. Can a unit test cover this instead of integration?
-3. Can an integration test cover this instead of E2E?
-
-**Coverage overlap is only acceptable when:**
-
-- Testing different aspects (unit: logic, integration: interaction, e2e: user experience)
-- Critical paths requiring defense in depth
-- Regression prevention for previously broken functionality
-
-## Test Naming Conventions
-
-- Unit: `test_{component}_{scenario}`
-- Integration: `test_{flow}_{interaction}`
-- E2E: `test_{journey}_{outcome}`
-
-## Test ID Format
-
-`{EPIC}.{STORY}-{LEVEL}-{SEQ}`
-
-Examples:
-
-- `1.3-UNIT-001`
-- `1.3-INT-002`
-- `1.3-E2E-001`
-==================== END: .bmad-core/data/test-levels-framework.md ====================
-
-==================== START: .bmad-core/data/test-priorities-matrix.md ====================
-<!-- Powered by BMAD™ Core -->
-
-# Test Priorities Matrix
-
-Guide for prioritizing test scenarios based on risk, criticality, and business impact.
-
-## Priority Levels
-
-### P0 - Critical (Must Test)
-
-**Criteria:**
-
-- Revenue-impacting functionality
-- Security-critical paths
-- Data integrity operations
-- Regulatory compliance requirements
-- Previously broken functionality (regression prevention)
-
-**Examples:**
-
-- Payment processing
-- Authentication/authorization
-- User data creation/deletion
-- Financial calculations
-- GDPR/privacy compliance
-
-**Testing Requirements:**
-
-- Comprehensive coverage at all levels
-- Both happy and unhappy paths
-- Edge cases and error scenarios
-- Performance under load
-
-### P1 - High (Should Test)
-
-**Criteria:**
-
-- Core user journeys
-- Frequently used features
-- Features with complex logic
-- Integration points between systems
-- Features affecting user experience
-
-**Examples:**
-
-- User registration flow
-- Search functionality
-- Data import/export
-- Notification systems
-- Dashboard displays
-
-**Testing Requirements:**
-
-- Primary happy paths required
-- Key error scenarios
-- Critical edge cases
-- Basic performance validation
-
-### P2 - Medium (Nice to Test)
-
-**Criteria:**
-
-- Secondary features
-- Admin functionality
-- Reporting features
-- Configuration options
-- UI polish and aesthetics
-
-**Examples:**
-
-- Admin settings panels
-- Report generation
-- Theme customization
-- Help documentation
-- Analytics tracking
-
-**Testing Requirements:**
-
-- Happy path coverage
-- Basic error handling
-- Can defer edge cases
-
-### P3 - Low (Test if Time Permits)
-
-**Criteria:**
-
-- Rarely used features
-- Nice-to-have functionality
-- Cosmetic issues
-- Non-critical optimizations
-
-**Examples:**
-
-- Advanced preferences
-- Legacy feature support
-- Experimental features
-- Debug utilities
-
-**Testing Requirements:**
-
-- Smoke tests only
-- Can rely on manual testing
-- Document known limitations
-
-## Risk-Based Priority Adjustments
-
-### Increase Priority When:
-
-- High user impact (affects >50% of users)
-- High financial impact (>$10K potential loss)
-- Security vulnerability potential
-- Compliance/legal requirements
-- Customer-reported issues
-- Complex implementation (>500 LOC)
-- Multiple system dependencies
-
-### Decrease Priority When:
-
-- Feature flag protected
-- Gradual rollout planned
-- Strong monitoring in place
-- Easy rollback capability
-- Low usage metrics
-- Simple implementation
-- Well-isolated component
-
-## Test Coverage by Priority
-
-| Priority | Unit Coverage | Integration Coverage | E2E Coverage       |
-| -------- | ------------- | -------------------- | ------------------ |
-| P0       | >90%          | >80%                 | All critical paths |
-| P1       | >80%          | >60%                 | Main happy paths   |
-| P2       | >60%          | >40%                 | Smoke tests        |
-| P3       | Best effort   | Best effort          | Manual only        |
-
-## Priority Assignment Rules
-
-1. **Start with business impact** - What happens if this fails?
-2. **Consider probability** - How likely is failure?
-3. **Factor in detectability** - Would we know if it failed?
-4. **Account for recoverability** - Can we fix it quickly?
-
-## Priority Decision Tree
-
-```
-Is it revenue-critical?
-├─ YES → P0
-└─ NO → Does it affect core user journey?
-    ├─ YES → Is it high-risk?
-    │   ├─ YES → P0
-    │   └─ NO → P1
-    └─ NO → Is it frequently used?
-        ├─ YES → P1
-        └─ NO → Is it customer-facing?
-            ├─ YES → P2
-            └─ NO → P3
+```yaml
+collaborative_steps:
+  1. dev_identifies_refactoring: 'Dev spots code smell'
+  2. assess_test_impact: 'Both agents review test implications'
+  3. plan_refactoring: 'Agree on approach and steps'
+  4. dev_refactors: 'Dev makes incremental changes'
+  5. qa_validates_tests: 'QA ensures tests remain valid'
+  6. both_review: 'Joint review of improved code and tests'
 ```
 
-## Test Execution Order
+## Advanced Refactoring Patterns
 
-1. Execute P0 tests first (fail fast on critical issues)
-2. Execute P1 tests second (core functionality)
-3. Execute P2 tests if time permits
-4. P3 tests only in full regression cycles
+### Extract Interface for Testability
 
-## Continuous Adjustment
+**Before: Hard to test due to dependencies**
 
-Review and adjust priorities based on:
+```javascript
+class OrderService {
+  constructor() {
+    this.emailSender = new EmailSender();
+    this.paymentProcessor = new PaymentProcessor();
+  }
 
-- Production incident patterns
-- User feedback and complaints
-- Usage analytics
-- Test failure history
-- Business priority changes
-==================== END: .bmad-core/data/test-priorities-matrix.md ====================
+  processOrder(order) {
+    const result = this.paymentProcessor.charge(order.total);
+    this.emailSender.sendConfirmation(order.customerEmail);
+    return result;
+  }
+}
+```
+
+**After: Dependency injection for testability**
+
+```javascript
+class OrderService {
+  constructor(emailSender, paymentProcessor) {
+    this.emailSender = emailSender;
+    this.paymentProcessor = paymentProcessor;
+  }
+
+  processOrder(order) {
+    const result = this.paymentProcessor.charge(order.total);
+    this.emailSender.sendConfirmation(order.customerEmail);
+    return result;
+  }
+}
+
+// Usage in production:
+const orderService = new OrderService(new EmailSender(), new PaymentProcessor());
+
+// Usage in tests:
+const mockEmail = { sendConfirmation: jest.fn() };
+const mockPayment = { charge: jest.fn().mockReturnValue('success') };
+const orderService = new OrderService(mockEmail, mockPayment);
+```
+
+### Replace Conditional with Polymorphism
+
+**Before: Switch statement**
+
+```javascript
+function calculateArea(shape) {
+  switch (shape.type) {
+    case 'circle':
+      return Math.PI * shape.radius * shape.radius;
+    case 'rectangle':
+      return shape.width * shape.height;
+    case 'triangle':
+      return 0.5 * shape.base * shape.height;
+    default:
+      throw new Error('Unknown shape type');
+  }
+}
+```
+
+**After: Polymorphic classes**
+
+```javascript
+class Circle {
+  constructor(radius) {
+    this.radius = radius;
+  }
+
+  calculateArea() {
+    return Math.PI * this.radius * this.radius;
+  }
+}
+
+class Rectangle {
+  constructor(width, height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  calculateArea() {
+    return this.width * this.height;
+  }
+}
+
+class Triangle {
+  constructor(base, height) {
+    this.base = base;
+    this.height = height;
+  }
+
+  calculateArea() {
+    return 0.5 * this.base * this.height;
+  }
+}
+```
+
+## Refactoring Safety Checks
+
+### Before Each Refactoring Step
+
+```bash
+# 1. Ensure all tests are green
+npm test
+pytest
+go test ./...
+
+# 2. Consider impact
+# - Will this change external interfaces?
+# - Are there hidden dependencies?
+# - Could this affect performance significantly?
+
+# 3. Plan the smallest possible step
+# - What's the minimal change that improves code?
+# - Can this be broken into smaller steps?
+```
+
+### After Each Refactoring Step
+
+```bash
+# 1. Run tests immediately
+npm test
+
+# 2. If tests fail:
+git checkout -- .  # Revert changes
+# Plan smaller refactoring step
+
+# 3. If tests pass:
+git add .
+git commit -m "REFACTOR: Extract validateEmail function [maintains UC-001, UC-002]"
+```
+
+## Refactoring Anti-Patterns
+
+### Don't Change Behavior
+
+```javascript
+// Wrong: Changing logic during refactoring
+function calculateDiscount(amount) {
+  // Original: 10% discount
+  return amount * 0.1;
+
+  // Refactored: DON'T change the discount rate
+  return amount * 0.15; // This changes behavior!
+}
+
+// Right: Only improve structure
+const DISCOUNT_RATE = 0.1; // Extract constant
+function calculateDiscount(amount) {
+  return amount * DISCOUNT_RATE; // Same behavior
+}
+```
+
+### Don't Add Features
+
+```javascript
+// Wrong: Adding features during refactoring
+function validateUser(userData) {
+  validateEmail(userData.email); // Existing
+  validateName(userData.name); // Existing
+  validateAge(userData.age); // DON'T add new validation
+}
+
+// Right: Only improve existing code
+function validateUser(userData) {
+  validateEmail(userData.email);
+  validateName(userData.name);
+  // Age validation needs its own failing test first
+}
+```
+
+### Don't Make Large Changes
+
+```javascript
+// Wrong: Massive refactoring in one step
+class UserService {
+  // Completely rewrite entire class structure
+}
+
+// Right: Small, incremental improvements
+class UserService {
+  // Extract one method at a time
+  // Rename one variable at a time
+  // Improve one code smell at a time
+}
+```
+
+## Refactor Phase Checklist
+
+Before considering refactoring complete:
+
+- [ ] **All tests remain green** - No test failures introduced
+- [ ] **Code quality improved** - Measurable improvement in readability/maintainability
+- [ ] **No behavior changes** - External behavior is identical
+- [ ] **Technical debt reduced** - Specific code smells addressed
+- [ ] **Small commits made** - Each improvement committed separately
+- [ ] **Documentation updated** - Comments and docs reflect changes
+- [ ] **Performance maintained** - No significant performance degradation
+- [ ] **Story metadata updated** - Refactoring notes and improvements documented
+
+## Success Indicators
+
+**Refactoring is successful when:**
+
+1. **All tests consistently pass** throughout the process
+2. **Code is noticeably easier to read** and understand
+3. **Duplication has been eliminated** or significantly reduced
+4. **Method/class sizes are more reasonable** (functions < 15 lines)
+5. **Variable and function names clearly express intent**
+6. **Code complexity has decreased** (fewer nested conditions)
+7. **Future changes will be easier** due to better structure
+
+**Refactoring is complete when:**
+
+- No obvious code smells remain in the story scope
+- Code quality metrics show improvement
+- Tests provide comprehensive safety net
+- Ready for next TDD cycle or story completion
+
+Remember: Refactoring is about improving design, not adding features. Keep tests green, make small changes, and focus on making the code better for the next developer!
+==================== END: .bmad-tdd-methodology/prompts/tdd-refactor.md ====================
+
+==================== START: .bmad-tdd-methodology/config/test-runners.yaml ====================
+# <!-- Powered by BMAD™ Core -->
+# Test Runner Auto-Detection Configuration
+# Used by BMAD TDD framework to detect and configure test runners
+
+detection_rules:
+  # JavaScript/TypeScript ecosystem
+  javascript:
+    priority: 1
+    detection_files:
+      - "package.json"
+    detection_logic:
+      - check_dependencies: ["jest", "vitest", "mocha", "cypress", "@testing-library"]
+      - check_scripts: ["test", "test:unit", "test:integration"]
+
+    runners:
+      jest:
+        detection_patterns:
+          - dependency: "jest"
+          - config_file: ["jest.config.js", "jest.config.json"]
+        commands:
+          test: "npm test"
+          test_single_file: "npm test -- {file_path}"
+          test_watch: "npm test -- --watch"
+          test_coverage: "npm test -- --coverage"
+        file_patterns:
+          unit: ["**/*.test.js", "**/*.spec.js", "**/*.test.ts", "**/*.spec.ts"]
+          integration: ["**/*.integration.test.js", "**/*.int.test.js"]
+        report_paths:
+          coverage: "coverage/lcov-report/index.html"
+          junit: "coverage/junit.xml"
+
+      vitest:
+        detection_patterns:
+          - dependency: "vitest"
+          - config_file: ["vitest.config.js", "vitest.config.ts"]
+        commands:
+          test: "npm run test"
+          test_single_file: "npx vitest run {file_path}"
+          test_watch: "npx vitest"
+          test_coverage: "npx vitest run --coverage"
+        file_patterns:
+          unit: ["**/*.test.js", "**/*.spec.js", "**/*.test.ts", "**/*.spec.ts"]
+          integration: ["**/*.integration.test.js", "**/*.int.test.js"]
+        report_paths:
+          coverage: "coverage/index.html"
+
+      mocha:
+        detection_patterns:
+          - dependency: "mocha"
+          - config_file: [".mocharc.json", ".mocharc.yml"]
+        commands:
+          test: "npx mocha"
+          test_single_file: "npx mocha {file_path}"
+          test_watch: "npx mocha --watch"
+          test_coverage: "npx nyc mocha"
+        file_patterns:
+          unit: ["test/**/*.js", "test/**/*.ts"]
+          integration: ["test/integration/**/*.js"]
+        report_paths:
+          coverage: "coverage/index.html"
+
+  # Python ecosystem
+  python:
+    priority: 2
+    detection_files:
+      - "requirements.txt"
+      - "requirements-dev.txt"
+      - "pyproject.toml"
+      - "setup.py"
+      - "pytest.ini"
+      - "tox.ini"
+    detection_logic:
+      - check_requirements: ["pytest", "unittest2", "nose2"]
+      - check_pyproject: ["pytest", "unittest"]
+
+    runners:
+      pytest:
+        detection_patterns:
+          - requirement: "pytest"
+          - config_file: ["pytest.ini", "pyproject.toml", "setup.cfg"]
+        commands:
+          test: "pytest"
+          test_single_file: "pytest {file_path}"
+          test_watch: "pytest-watch"
+          test_coverage: "pytest --cov=."
+        file_patterns:
+          unit: ["test_*.py", "*_test.py", "tests/unit/**/*.py"]
+          integration: ["tests/integration/**/*.py", "tests/int/**/*.py"]
+        report_paths:
+          coverage: "htmlcov/index.html"
+          junit: "pytest-report.xml"
+
+      unittest:
+        detection_patterns:
+          - python_version: ">=2.7"
+          - fallback: true
+        commands:
+          test: "python -m unittest discover"
+          test_single_file: "python -m unittest {module_path}"
+          test_coverage: "coverage run -m unittest discover && coverage html"
+        file_patterns:
+          unit: ["test_*.py", "*_test.py"]
+          integration: ["integration_test_*.py"]
+        report_paths:
+          coverage: "htmlcov/index.html"
+
+  # Go ecosystem
+  go:
+    priority: 3
+    detection_files:
+      - "go.mod"
+      - "go.sum"
+    detection_logic:
+      - check_go_files: ["*_test.go"]
+
+    runners:
+      go_test:
+        detection_patterns:
+          - files_exist: ["*.go", "*_test.go"]
+        commands:
+          test: "go test ./..."
+          test_single_package: "go test {package_path}"
+          test_single_file: "go test -run {test_function}"
+          test_coverage: "go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out"
+          test_watch: "gotestsum --watch"
+        file_patterns:
+          unit: ["*_test.go"]
+          integration: ["*_integration_test.go", "*_int_test.go"]
+        report_paths:
+          coverage: "coverage.html"
+
+  # Java ecosystem
+  java:
+    priority: 4
+    detection_files:
+      - "pom.xml"
+      - "build.gradle"
+      - "build.gradle.kts"
+    detection_logic:
+      - check_maven_dependencies: ["junit", "testng", "junit-jupiter"]
+      - check_gradle_dependencies: ["junit", "testng", "junit-platform"]
+
+    runners:
+      maven:
+        detection_patterns:
+          - file: "pom.xml"
+        commands:
+          test: "mvn test"
+          test_single_class: "mvn test -Dtest={class_name}"
+          test_coverage: "mvn clean jacoco:prepare-agent test jacoco:report"
+        file_patterns:
+          unit: ["src/test/java/**/*Test.java", "src/test/java/**/*Tests.java"]
+          integration: ["src/test/java/**/*IT.java", "src/integration-test/java/**/*.java"]
+        report_paths:
+          coverage: "target/site/jacoco/index.html"
+          surefire: "target/surefire-reports"
+
+      gradle:
+        detection_patterns:
+          - file: ["build.gradle", "build.gradle.kts"]
+        commands:
+          test: "gradle test"
+          test_single_class: "gradle test --tests {class_name}"
+          test_coverage: "gradle test jacocoTestReport"
+        file_patterns:
+          unit: ["src/test/java/**/*Test.java", "src/test/java/**/*Tests.java"]
+          integration: ["src/integrationTest/java/**/*.java"]
+        report_paths:
+          coverage: "build/reports/jacoco/test/html/index.html"
+          junit: "build/test-results/test"
+
+  # .NET ecosystem
+  dotnet:
+    priority: 5
+    detection_files:
+      - "*.csproj"
+      - "*.sln"
+      - "global.json"
+    detection_logic:
+      - check_project_references: ["Microsoft.NET.Test.Sdk", "xunit", "NUnit", "MSTest"]
+
+    runners:
+      dotnet_test:
+        detection_patterns:
+          - files_exist: ["*.csproj"]
+          - test_project_reference: ["Microsoft.NET.Test.Sdk"]
+        commands:
+          test: "dotnet test"
+          test_single_project: "dotnet test {project_path}"
+          test_coverage: 'dotnet test --collect:"XPlat Code Coverage"'
+          test_watch: "dotnet watch test"
+        file_patterns:
+          unit: ["**/*Tests.cs", "**/*Test.cs"]
+          integration: ["**/*IntegrationTests.cs", "**/*.Integration.Tests.cs"]
+        report_paths:
+          coverage: "TestResults/*/coverage.cobertura.xml"
+          trx: "TestResults/*.trx"
+
+  # Ruby ecosystem
+  ruby:
+    priority: 6
+    detection_files:
+      - "Gemfile"
+      - "*.gemspec"
+    detection_logic:
+      - check_gems: ["rspec", "minitest", "test-unit"]
+
+    runners:
+      rspec:
+        detection_patterns:
+          - gem: "rspec"
+          - config_file: [".rspec", "spec/spec_helper.rb"]
+        commands:
+          test: "rspec"
+          test_single_file: "rspec {file_path}"
+          test_coverage: "rspec --coverage"
+        file_patterns:
+          unit: ["spec/**/*_spec.rb"]
+          integration: ["spec/integration/**/*_spec.rb"]
+        report_paths:
+          coverage: "coverage/index.html"
+
+      minitest:
+        detection_patterns:
+          - gem: "minitest"
+        commands:
+          test: "ruby -Itest test/test_*.rb"
+          test_single_file: "ruby -Itest {file_path}"
+        file_patterns:
+          unit: ["test/test_*.rb", "test/*_test.rb"]
+        report_paths:
+          coverage: "coverage/index.html"
+
+# Auto-detection algorithm
+detection_algorithm:
+  steps:
+    1. scan_project_root: "Look for detection files in project root"
+    2. check_subdirectories: "Scan up to 2 levels deep for test indicators"
+    3. apply_priority_rules: "Higher priority languages checked first"
+    4. validate_runner: "Ensure detected runner actually works"
+    5. fallback_to_custom: "Use custom command if no runner detected"
+
+  validation_commands:
+    - run_help_command: "Check if runner responds to --help"
+    - run_version_command: "Verify runner version"
+    - check_sample_test: "Try to run a simple test if available"
+
+# Fallback configuration
+fallback:
+  enabled: true
+  custom_command: null # Will be prompted from user or config
+
+  prompt_user:
+    - "No test runner detected. Please specify test command:"
+    - "Example: 'npm test' or 'pytest' or 'go test ./...'"
+    - "Leave blank to skip test execution"
+
+# TDD-specific settings
+tdd_configuration:
+  preferred_test_types:
+    - unit # Fastest, most isolated
+    - integration # Component interactions
+    - e2e # Full user journeys
+
+  test_execution_timeout: 300 # 5 minutes max per test run
+
+  coverage_thresholds:
+    minimum: 0.0 # No minimum by default
+    warning: 70.0 # Warn below 70%
+    target: 80.0 # Target 80%
+    excellent: 90.0 # Excellent above 90%
+
+  watch_mode:
+    enabled: true
+    file_patterns: ["src/**/*", "test/**/*", "tests/**/*"]
+    ignore_patterns: ["node_modules/**", "coverage/**", "dist/**"]
+
+# Integration with BMAD agents
+agent_integration:
+  qa_agent:
+    commands_available:
+      - "run_failing_tests"
+      - "verify_test_isolation"
+      - "check_mocking_strategy"
+
+  dev_agent:
+    commands_available:
+      - "run_tests_for_implementation"
+      - "check_coverage_improvement"
+      - "validate_no_feature_creep"
+
+  both_agents:
+    commands_available:
+      - "run_full_regression_suite"
+      - "generate_coverage_report"
+      - "validate_test_performance"
+==================== END: .bmad-tdd-methodology/config/test-runners.yaml ====================
