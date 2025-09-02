@@ -407,6 +407,8 @@ async function promptInstallation() {
           { name: 'Crush', value: 'crush' },
           { name: 'Github Copilot', value: 'github-copilot' },
           { name: 'Auggie CLI (Augment Code)', value: 'auggie-cli' },
+          { name: 'Codex CLI', value: 'codex' },
+          { name: 'Codex Web', value: 'codex-web' },
         ],
       },
     ]);
