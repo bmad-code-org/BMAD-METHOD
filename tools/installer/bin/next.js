@@ -249,6 +249,152 @@ program
     }
   });
 
+program
+  .command('start')
+  .description('Initialize a new Next Method project or reset existing project')
+  .option('-f, --force', 'Force reset even if project already exists')
+  .option('-t, --type <type>', 'Specify project type (greenfield/brownfield)')
+  .action(async (options) => {
+    try {
+      console.log(chalk.blue('🚀 Initializing Next Method project...'));
+      
+      // Check if project already exists
+      if (nextContext.context.projectType && !options.force) {
+        const { confirmReset } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'confirmReset',
+            message: 'Project already exists. Do you want to reset and start over?',
+            default: false
+          }
+        ]);
+        
+        if (!confirmReset) {
+          console.log(chalk.yellow('Project initialization cancelled.'));
+          return;
+        }
+      }
+
+      // Reset context
+      nextContext.updateContext({
+        currentPhase: 'start',
+        projectType: null,
+        lastAction: null,
+        suggestions: [],
+        history: [],
+        metadata: {}
+      });
+
+      // Detect or set project type
+      let projectType = options.type;
+      if (!projectType) {
+        const { detectedType } = await detectProjectType();
+        projectType = detectedType;
+      }
+
+      // Update context with detected type
+      nextContext.updateContext({ projectType });
+      
+      // Add to history
+      nextContext.addToHistory('start', {
+        status: 'project_initialized',
+        type: projectType,
+        timestamp: new Date().toISOString()
+      });
+
+      console.log(chalk.green(`✅ Project initialized successfully!`));
+      console.log(chalk.cyan(`   Project Type: ${projectType}`));
+      console.log(chalk.cyan(`   Current Phase: start`));
+      
+      // Show next suggestions
+      const suggestions = nextContext.getNextSuggestions();
+      if (suggestions.length > 0) {
+        console.log(chalk.blue('\n💡 Next suggested steps:'));
+        suggestions.slice(0, 3).forEach((s, index) => {
+          console.log(chalk.cyan(`  ${index + 1}. ${s.title}`));
+        });
+        console.log(chalk.gray('\nRun "next" to continue or "next --suggest" to see all options'));
+      }
+
+    } catch (error) {
+      console.error(chalk.red('Project initialization failed:'), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('init')
+  .description('Initialize a new Next Method project or reset existing project')
+  .option('-f, --force', 'Force reset even if project already exists')
+  .option('-t, --type <type>', 'Specify project type (greenfield/brownfield)')
+  .action(async (options) => {
+    try {
+      console.log(chalk.blue('🚀 Initializing Next Method project...'));
+      
+      // Check if project already exists
+      if (nextContext.context.projectType && !options.force) {
+        const { confirmReset } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'confirmReset',
+            message: 'Project already exists. Do you want to reset and start over?',
+            default: false
+          }
+        ]);
+        
+        if (!confirmReset) {
+          console.log(chalk.yellow('Project initialization cancelled.'));
+          return;
+        }
+      }
+
+      // Reset context
+      nextContext.updateContext({
+        currentPhase: 'start',
+        projectType: null,
+        lastAction: null,
+        suggestions: [],
+        history: [],
+        metadata: {}
+      });
+
+      // Detect or set project type
+      let projectType = options.type;
+      if (!projectType) {
+        const { detectedType } = await detectProjectType();
+        projectType = detectedType;
+      }
+
+      // Update context with detected type
+      nextContext.updateContext({ projectType });
+      
+      // Add to history
+      nextContext.addToHistory('start', {
+        status: 'project_initialized',
+        type: projectType,
+        timestamp: new Date().toISOString()
+      });
+
+      console.log(chalk.green(`✅ Project initialized successfully!`));
+      console.log(chalk.cyan(`   Project Type: ${projectType}`));
+      console.log(chalk.cyan(`   Current Phase: start`));
+      
+      // Show next suggestions
+      const suggestions = nextContext.getNextSuggestions();
+      if (suggestions.length > 0) {
+        console.log(chalk.blue('\n💡 Next suggested steps:'));
+        suggestions.slice(0, 3).forEach((s, index) => {
+          console.log(chalk.cyan(`  ${index + 1}. ${s.title}`));
+        });
+        console.log(chalk.gray('\nRun "next" to continue or "next --suggest" to see all options'));
+      }
+
+    } catch (error) {
+      console.error(chalk.red('Project initialization failed:'), error.message);
+      process.exit(1);
+    }
+  });
+
 async function executeSuggestion(suggestion) {
   console.log(chalk.green(`\n▶️  Executing: ${suggestion.title}`));
   
@@ -332,6 +478,7 @@ async function detectProjectType() {
   
   return {
     type: projectType,
+    detectedType: projectType,
     files: files.filter(f => !f.startsWith('.') && !f.includes('node_modules'))
   };
 }

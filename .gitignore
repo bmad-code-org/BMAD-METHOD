@@ -44,3 +44,4 @@ test-project-install/*
 sample-project/*
 flattened-codebase.xml
 *.stats.md
+.next-context.json

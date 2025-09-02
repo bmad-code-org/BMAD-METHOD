@@ -30,6 +30,8 @@
     "next": "node tools/installer/bin/next.js",
     "next:auto": "node tools/installer/bin/next.js next --auto",
     "next:suggest": "node tools/installer/bin/next.js next --suggest",
+    "start": "node tools/installer/bin/next.js start",
+    "init": "node tools/installer/bin/next.js start",
     "build": "node tools/cli.js build",
     "build:agents": "node tools/cli.js build --agents-only",
     "build:teams": "node tools/cli.js build --teams-only",
