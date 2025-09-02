@@ -491,14 +491,7 @@ class IdeSetup extends BaseIdeSetup {
     return true;
   }
 
-  async setupIFlowCliForPackage(
-    installDir,
-    packageName,
-    slashPrefix,
-    agentIds,
-    taskIds,
-    rootPath,
-  ) {
+  async setupIFlowCliForPackage(installDir, packageName, slashPrefix, agentIds, taskIds, rootPath) {
     const commandsBaseDir = path.join(installDir, '.iflow', 'commands', slashPrefix);
     const agentsDir = path.join(commandsBaseDir, 'agents');
     const tasksDir = path.join(commandsBaseDir, 'tasks');
