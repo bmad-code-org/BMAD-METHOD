@@ -1,0 +1,34 @@
+# <!-- Powered by BMAD™ Core -->
+markdownExploder: true
+qa:
+  qaLocation: docs/qa
+prd:
+  prdFile: docs/prd.md
+  prdVersion: v4
+  prdSharded: true
+  prdShardedLocation: docs/prd
+  epicFilePattern: epic-{n}*.md
+architecture:
+  architectureFile: docs/architecture.md
+  architectureVersion: v4
+  architectureSharded: true
+  architectureShardedLocation: docs/architecture
+customTechnicalDocuments: null
+devLoadAlwaysFiles:
+  - docs/architecture/coding-standards.md
+  - docs/architecture/tech-stack.md
+  - docs/architecture/source-tree.md
+devDebugLog: .ai/debug-log.md
+devStoryLocation: docs/stories
+slashPrefix: BMad
+tdd:
+  enabled: false # Default: false for backward compatibility
+  require_for_new_stories: true
+  allow_red_phase_ci_failures: true
+  default_test_type: unit
+  test_runner:
+    auto_detect: true
+    custom_command: null
+  coverage:
+    min_threshold: 0.0
+    report_format: lcov

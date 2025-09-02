@@ -1,0 +1,34 @@
+{
+  "name": "bmad-tdd-demo-calculator",
+  "version": "1.0.0",
+  "description": "A simple calculator to demonstrate BMAD TDD methodology",
+  "main": "src/calculator.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "install:bmad": "npx bmad-method install"
+  },
+  "keywords": ["bmad", "tdd", "calculator", "demo"],
+  "author": "BMAD-METHOD TDD Demo",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "dependencies": {},
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    }
+  }
+}

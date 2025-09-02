@@ -1,0 +1,89 @@
+# <!-- Powered by BMAD™ Core -->
+# Story Frontmatter Schema - Defines optional metadata fields for story files
+
+# Core story metadata (existing)
+story:
+  epic:
+    type: string
+    required: true
+    description: "Epic number (e.g., '1')"
+  number:
+    type: string
+    required: true
+    description: "Story number within epic (e.g., '3')"
+  title:
+    type: string
+    required: true
+    description: "Human-readable story title"
+  status:
+    type: enum
+    values: [draft, ready, inprogress, review, done]
+    default: draft
+    description: "Current story status"
+  priority:
+    type: enum
+    values: [low, medium, high, critical]
+    default: medium
+    description: "Story priority level"
+
+# TDD-specific metadata (optional - only when tdd.enabled=true)
+tdd:
+  status:
+    type: enum
+    values: [red, green, refactor, done]
+    required: false
+    description: "Current TDD cycle phase"
+  cycle:
+    type: integer
+    default: 1
+    description: "Current red-green-refactor cycle number"
+  tests:
+    type: array
+    items:
+      id:
+        type: string
+        description: "Unique test identifier"
+      name:
+        type: string
+        description: "Human-readable test name"
+      type:
+        type: enum
+        values: [unit, integration, e2e]
+        default: unit
+      status:
+        type: enum
+        values: [planned, failing, passing, skipped]
+        default: planned
+      file_path:
+        type: string
+        description: "Test file path relative to project root"
+    description: "Array of planned/implemented test cases"
+  coverage_target:
+    type: float
+    minimum: 0.0
+    maximum: 100.0
+    description: "Target code coverage percentage for this story"
+  coverage_actual:
+    type: float
+    minimum: 0.0
+    maximum: 100.0
+    description: "Actual code coverage achieved"
+
+# Tracking metadata
+tracking:
+  created_date:
+    type: string
+    format: iso8601
+    description: "When story was created"
+  updated_date:
+    type: string
+    format: iso8601
+    description: "When story was last updated"
+  estimated_hours:
+    type: float
+    minimum: 0.0
+    description: "Estimated development hours"
+  actual_hours:
+    type: float
+    minimum: 0.0
+    description: "Actual development hours spent"

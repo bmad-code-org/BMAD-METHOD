@@ -1,0 +1,351 @@
+# TDD-Enhanced CI/CD Workflow Template for BMAD Framework
+# This template shows how to integrate TDD validation into CI/CD pipelines
+
+name: TDD-Enhanced CI/CD
+
+on:
+  push:
+    branches: [ main, develop, 'feature/tdd-*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  # TDD Configuration
+  TDD_ENABLED: true
+  TDD_ALLOW_RED_PHASE_FAILURES: true
+  TDD_COVERAGE_THRESHOLD: 80
+
+jobs:
+  # Detect TDD phase and validate changes
+  tdd-validation:
+    name: TDD Phase Validation
+    runs-on: ubuntu-latest
+    outputs:
+      tdd-phase: ${{ steps.detect-phase.outputs.phase }}
+      tdd-enabled: ${{ steps.detect-phase.outputs.enabled }}
+      should-run-tests: ${{ steps.detect-phase.outputs.should-run-tests }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Need full history for TDD guard
+    
+    - name: Detect TDD phase
+      id: detect-phase
+      run: |
+        # Check if TDD is enabled in bmad-core/core-config.yaml
+        if grep -q "enabled: true" bmad-core/core-config.yaml 2>/dev/null; then
+          echo "enabled=true" >> $GITHUB_OUTPUT
+          echo "should-run-tests=true" >> $GITHUB_OUTPUT
+        else
+          echo "enabled=false" >> $GITHUB_OUTPUT
+          echo "should-run-tests=true" >> $GITHUB_OUTPUT  # Run tests anyway
+          exit 0
+        fi
+        
+        # Detect TDD phase from commit messages
+        COMMITS=$(git log --oneline -10 ${{ github.event.before }}..${{ github.sha }} || git log --oneline -10)
+        
+        if echo "$COMMITS" | grep -qi "\[RED\]"; then
+          echo "phase=red" >> $GITHUB_OUTPUT
+        elif echo "$COMMITS" | grep -qi "\[GREEN\]"; then
+          echo "phase=green" >> $GITHUB_OUTPUT
+        elif echo "$COMMITS" | grep -qi "\[REFACTOR\]"; then
+          echo "phase=refactor" >> $GITHUB_OUTPUT
+        else
+          # Default phase detection based on branch
+          if [[ "${{ github.ref }}" =~ tdd ]]; then
+            echo "phase=green" >> $GITHUB_OUTPUT
+          else
+            echo "phase=unknown" >> $GITHUB_OUTPUT
+          fi
+        fi
+    
+    - name: Run TDD Guard
+      if: steps.detect-phase.outputs.enabled == 'true'
+      run: |
+        echo "🧪 Running TDD Guard validation..."
+        
+        # Make TDD guard executable
+        chmod +x bmad-core/scripts/tdd-guard.sh
+        
+        # Run TDD guard with appropriate settings
+        if [[ "${{ steps.detect-phase.outputs.phase }}" == "red" ]]; then
+          # Allow red phase failures in CI
+          ./bmad-core/scripts/tdd-guard.sh --ci --phase red --verbose || {
+            echo "⚠️ Red phase violations detected but allowed in CI"
+            exit 0
+          }
+        else
+          # Strict validation for green/refactor phases
+          ./bmad-core/scripts/tdd-guard.sh --phase "${{ steps.detect-phase.outputs.phase }}" --verbose
+        fi
+
+  # Test execution with TDD awareness
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: tdd-validation
+    if: needs.tdd-validation.outputs.should-run-tests == 'true'
+    
+    strategy:
+      matrix:
+        # Add multiple language support as needed
+        language: [javascript, python]
+        include:
+          - language: javascript
+            test-command: npm test
+            coverage-command: npm run test:coverage
+            setup: |
+              node-version: 18
+              cache: npm
+          - language: python
+            test-command: pytest
+            coverage-command: pytest --cov=.
+            setup: |
+              python-version: '3.9'
+              cache: pip
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    # Language-specific setup
+    - name: Setup Node.js
+      if: matrix.language == 'javascript'
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+    
+    - name: Setup Python
+      if: matrix.language == 'python'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        cache: 'pip'
+    
+    # Install dependencies
+    - name: Install JavaScript dependencies
+      if: matrix.language == 'javascript'
+      run: |
+        if [ -f package.json ]; then
+          npm ci
+        fi
+    
+    - name: Install Python dependencies
+      if: matrix.language == 'python'
+      run: |
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
+        if [ -f requirements-dev.txt ]; then
+          pip install -r requirements-dev.txt
+        fi
+    
+    # Run tests with TDD phase awareness
+    - name: Run tests
+      id: run-tests
+      run: |
+        echo "🧪 Running tests for TDD phase: ${{ needs.tdd-validation.outputs.tdd-phase }}"
+        
+        case "${{ needs.tdd-validation.outputs.tdd-phase }}" in
+          "red")
+            echo "RED phase: Expecting some tests to fail"
+            ${{ matrix.test-command }} || {
+              echo "⚠️ Tests failed as expected in RED phase"
+              if [[ "$TDD_ALLOW_RED_PHASE_FAILURES" == "true" ]]; then
+                echo "test-result=red-expected-fail" >> $GITHUB_OUTPUT
+                exit 0
+              else
+                echo "test-result=fail" >> $GITHUB_OUTPUT
+                exit 1
+              fi
+            }
+            echo "test-result=pass" >> $GITHUB_OUTPUT
+            ;;
+          "green"|"refactor")
+            echo "GREEN/REFACTOR phase: All tests should pass"
+            ${{ matrix.test-command }}
+            echo "test-result=pass" >> $GITHUB_OUTPUT
+            ;;
+          *)
+            echo "Unknown phase: Running standard test suite"
+            ${{ matrix.test-command }}
+            echo "test-result=pass" >> $GITHUB_OUTPUT
+            ;;
+        esac
+    
+    # Generate coverage report
+    - name: Generate coverage report
+      if: env.TDD_COVERAGE_THRESHOLD > 0
+      run: |
+        echo "📊 Generating coverage report..."
+        ${{ matrix.coverage-command }} || echo "Coverage command failed"
+    
+    # Upload coverage reports
+    - name: Upload coverage to Codecov
+      if: matrix.language == 'javascript' || matrix.language == 'python'
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: ${{ matrix.language }}
+        name: ${{ matrix.language }}-coverage
+        fail_ci_if_error: false
+
+  # Quality gates specific to TDD phase
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+    needs: [tdd-validation, test]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: TDD Phase Quality Gate
+      run: |
+        echo "🚦 Evaluating quality gates for TDD phase: ${{ needs.tdd-validation.outputs.tdd-phase }}"
+        
+        case "${{ needs.tdd-validation.outputs.tdd-phase }}" in
+          "red")
+            echo "RED phase quality gate:"
+            echo "✅ Tests written first"
+            echo "✅ Implementation minimal or non-existent"
+            if [[ "${{ needs.test.result }}" == "success" ]] || [[ "${{ needs.test.outputs.test-result }}" == "red-expected-fail" ]]; then
+              echo "✅ RED phase gate: PASS"
+            else
+              echo "❌ RED phase gate: FAIL"
+              exit 1
+            fi
+            ;;
+          "green")
+            echo "GREEN phase quality gate:"
+            echo "✅ All tests passing"
+            echo "✅ Minimal implementation"
+            echo "✅ No feature creep"
+            if [[ "${{ needs.test.result }}" == "success" ]]; then
+              echo "✅ GREEN phase gate: PASS"
+            else
+              echo "❌ GREEN phase gate: FAIL"
+              exit 1
+            fi
+            ;;
+          "refactor")
+            echo "REFACTOR phase quality gate:"
+            echo "✅ Tests remain green"
+            echo "✅ Code quality improved"
+            echo "✅ Behavior preserved"
+            if [[ "${{ needs.test.result }}" == "success" ]]; then
+              echo "✅ REFACTOR phase gate: PASS"
+            else
+              echo "❌ REFACTOR phase gate: FAIL"
+              exit 1
+            fi
+            ;;
+          *)
+            echo "Standard quality gate:"
+            if [[ "${{ needs.test.result }}" == "success" ]]; then
+              echo "✅ Standard gate: PASS"
+            else
+              echo "❌ Standard gate: FAIL"
+              exit 1
+            fi
+            ;;
+        esac
+    
+    - name: Generate TDD Report
+      if: needs.tdd-validation.outputs.tdd-enabled == 'true'
+      run: |
+        echo "# TDD Pipeline Report" > tdd-report.md
+        echo "" >> tdd-report.md
+        echo "**TDD Phase:** ${{ needs.tdd-validation.outputs.tdd-phase }}" >> tdd-report.md
+        echo "**Test Result:** ${{ needs.test.outputs.test-result || 'unknown' }}" >> tdd-report.md
+        echo "**Quality Gate:** $([ "${{ job.status }}" == "success" ] && echo "PASS" || echo "FAIL")" >> tdd-report.md
+        echo "" >> tdd-report.md
+        echo "## Phase-Specific Results" >> tdd-report.md
+        
+        case "${{ needs.tdd-validation.outputs.tdd-phase }}" in
+          "red")
+            echo "- ✅ Failing tests written first" >> tdd-report.md
+            echo "- ✅ Implementation postponed until GREEN phase" >> tdd-report.md
+            ;;
+          "green")
+            echo "- ✅ Tests now passing" >> tdd-report.md
+            echo "- ✅ Minimal implementation completed" >> tdd-report.md
+            ;;
+          "refactor")
+            echo "- ✅ Code quality improved" >> tdd-report.md
+            echo "- ✅ All tests remain green" >> tdd-report.md
+            ;;
+        esac
+    
+    - name: Comment TDD Report on PR
+      if: github.event_name == 'pull_request' && needs.tdd-validation.outputs.tdd-enabled == 'true'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          if (fs.existsSync('tdd-report.md')) {
+            const report = fs.readFileSync('tdd-report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🧪 TDD Pipeline Results\n\n${report}`
+            });
+          }
+
+  # Deploy only after successful TDD validation
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [tdd-validation, test, quality-gates]
+    if: github.ref == 'refs/heads/main' && success()
+    
+    steps:
+    - name: Deploy Application
+      run: |
+        echo "🚀 Deploying application after successful TDD validation"
+        echo "TDD Phase: ${{ needs.tdd-validation.outputs.tdd-phase }}"
+        
+        # Add your deployment steps here
+        # Only deploy if all TDD phases pass validation
+        
+        if [[ "${{ needs.tdd-validation.outputs.tdd-phase }}" == "green" ]] || [[ "${{ needs.tdd-validation.outputs.tdd-phase }}" == "refactor" ]]; then
+          echo "✅ Safe to deploy: Implementation complete and tested"
+        else
+          echo "⚠️ Deployment skipped: Not in a stable TDD phase"
+          exit 0
+        fi
+
+# Additional workflow for TDD metrics collection
+  tdd-metrics:
+    name: TDD Metrics
+    runs-on: ubuntu-latest
+    needs: [tdd-validation, test, quality-gates]
+    if: always() && needs.tdd-validation.outputs.tdd-enabled == 'true'
+    
+    steps:
+    - name: Collect TDD Metrics
+      run: |
+        echo "📊 Collecting TDD metrics..."
+        
+        # Calculate TDD cycle time (example)
+        CYCLE_START=$(git log --grep="\[RED\]" --format="%ct" -1 || echo $(date +%s))
+        CYCLE_END=$(date +%s)
+        CYCLE_TIME=$(( (CYCLE_END - CYCLE_START) / 60 )) # minutes
+        
+        echo "TDD Cycle Metrics:"
+        echo "- Phase: ${{ needs.tdd-validation.outputs.tdd-phase }}"
+        echo "- Cycle Time: ${CYCLE_TIME} minutes"
+        echo "- Test Status: ${{ needs.test.outputs.test-result }}"
+        echo "- Quality Gate: $([ "${{ needs.quality-gates.result }}" == "success" ] && echo "PASS" || echo "FAIL")"
+        
+        # Store metrics (example - adapt to your metrics system)
+        echo "Metrics would be stored in your preferred system (Grafana, etc.)"

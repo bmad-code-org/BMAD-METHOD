@@ -1,0 +1,7 @@
+node_modules/
+coverage/
+*.log
+.npm
+.eslintcache
+*.tgz
+.nyc_output
