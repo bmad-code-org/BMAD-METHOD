@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "next-method",
+  "name": "@abdshomad/next-method",
   "version": "4.42.2",
   "description": "Next Method - Iterative AI-driven development with BMAD-METHOD™",
   "keywords": [
