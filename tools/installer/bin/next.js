@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const { program } = require('commander');
 const path = require('node:path');
 const fs = require('node:fs');
@@ -51,17 +49,17 @@ class NextMethodContext {
         const data = fs.readFileSync(this.contextFile, 'utf8');
         return JSON.parse(data);
       }
-    } catch (error) {
+    } catch {
       console.log('Creating new context...');
     }
-    
+
     return {
       currentPhase: 'start',
       projectType: null,
       lastAction: null,
       suggestions: [],
       history: [],
-      metadata: {}
+      metadata: {},
     };
   }
 
@@ -83,20 +81,20 @@ class NextMethodContext {
       timestamp: new Date().toISOString(),
       action,
       result,
-      phase: this.context.currentPhase
+      phase: this.context.currentPhase,
     });
     this.saveContext();
   }
 
   getNextSuggestions() {
     const suggestions = [];
-    
+
     if (!this.context.projectType) {
       suggestions.push({
         id: 'detect-project',
         title: 'Detect Project Type',
         description: 'Analyze current directory to determine project type',
-        action: 'detect'
+        action: 'detect',
       });
     }
 
@@ -105,7 +103,7 @@ class NextMethodContext {
         id: 'create-project',
         title: 'Create New Project',
         description: 'Start a new project from scratch',
-        action: 'create'
+        action: 'create',
       });
     }
 
@@ -114,7 +112,7 @@ class NextMethodContext {
         id: 'analyze-existing',
         title: 'Analyze Existing Project',
         description: 'Analyze current codebase and requirements',
-        action: 'analyze'
+        action: 'analyze',
       });
     }
 
@@ -123,7 +121,7 @@ class NextMethodContext {
         id: 'generate-requirements',
         title: 'Generate Requirements',
         description: 'Create user stories and requirements',
-        action: 'requirements'
+        action: 'requirements',
       });
     }
 
@@ -132,7 +130,7 @@ class NextMethodContext {
         id: 'design-architecture',
         title: 'Design Architecture',
         description: 'Create technical architecture and design',
-        action: 'architecture'
+        action: 'architecture',
       });
     }
 
@@ -141,7 +139,7 @@ class NextMethodContext {
         id: 'implement-features',
         title: 'Implement Features',
         description: 'Start coding and implementation',
-        action: 'implement'
+        action: 'implement',
       });
     }
 
@@ -150,7 +148,7 @@ class NextMethodContext {
         id: 'test-and-validate',
         title: 'Test and Validate',
         description: 'Run tests and validate implementation',
-        action: 'test'
+        action: 'test',
       });
     }
 
@@ -159,24 +157,25 @@ class NextMethodContext {
         id: 'deploy',
         title: 'Deploy',
         description: 'Deploy the application',
-        action: 'deploy'
+        action: 'deploy',
       });
     }
 
     // Always show these options
-    suggestions.push({
-      id: 'custom-command',
-      title: 'Run Custom Command',
-      description: 'Execute a specific BMAD command',
-      action: 'custom'
-    });
-
-    suggestions.push({
-      id: 'show-status',
-      title: 'Show Project Status',
-      description: 'Display current project context and progress',
-      action: 'status'
-    });
+    suggestions.push(
+      {
+        id: 'custom-command',
+        title: 'Run Custom Command',
+        description: 'Execute a specific BMAD command',
+        action: 'custom',
+      },
+      {
+        id: 'show-status',
+        title: 'Show Project Status',
+        description: 'Display current project context and progress',
+        action: 'status',
+      },
+    );
 
     return suggestions;
   }
@@ -186,7 +185,7 @@ const nextContext = new NextMethodContext();
 
 program
   .version(version)
-  .description('Next Method - Iterative AI-driven development with BMAD-METHOD™');
+  .description('Lazy Method - Iterative AI-driven development with BMAD-METHOD™');
 
 program
   .command('next')
@@ -196,7 +195,7 @@ program
   .action(async (options) => {
     try {
       const suggestions = nextContext.getNextSuggestions();
-      
+
       if (suggestions.length === 0) {
         console.log(chalk.green('🎉 Project completed! All phases finished.'));
         return;
@@ -204,10 +203,10 @@ program
 
       if (options.suggest) {
         console.log(chalk.blue('\n📋 Available next steps:'));
-        suggestions.forEach((suggestion, index) => {
+        for (const [index, suggestion] of suggestions.entries()) {
           console.log(chalk.cyan(`  ${index + 1}. ${suggestion.title}`));
           console.log(chalk.gray(`     ${suggestion.description}`));
-        });
+        }
         return;
       }
 
@@ -221,11 +220,11 @@ program
 
       // Interactive mode
       console.log(chalk.blue('\n🚀 What would you like to do next?'));
-      
+
       const choices = suggestions.map((suggestion, index) => ({
         name: `${suggestion.title} - ${suggestion.description}`,
         value: suggestion.id,
-        short: suggestion.title
+        short: suggestion.title,
       }));
 
       const { selectedAction } = await inquirer.prompt([
@@ -234,15 +233,14 @@ program
           name: 'selectedAction',
           message: 'Choose the next step:',
           choices,
-          pageSize: 10
-        }
+          pageSize: 10,
+        },
       ]);
 
-      const suggestion = suggestions.find(s => s.id === selectedAction);
+      const suggestion = suggestions.find((s) => s.id === selectedAction);
       if (suggestion) {
         await executeSuggestion(suggestion);
       }
-
     } catch (error) {
       console.error(chalk.red('Next command failed:'), error.message);
       process.exit(1);
@@ -257,7 +255,7 @@ program
   .action(async (options) => {
     try {
       console.log(chalk.blue('🚀 Initializing Next Method project...'));
-      
+
       // Check if project already exists
       if (nextContext.context.projectType && !options.force) {
         const { confirmReset } = await inquirer.prompt([
@@ -265,10 +263,10 @@ program
             type: 'confirm',
             name: 'confirmReset',
             message: 'Project already exists. Do you want to reset and start over?',
-            default: false
-          }
+            default: false,
+          },
         ]);
-        
+
         if (!confirmReset) {
           console.log(chalk.yellow('Project initialization cancelled.'));
           return;
@@ -282,7 +280,7 @@ program
         lastAction: null,
         suggestions: [],
         history: [],
-        metadata: {}
+        metadata: {},
       });
 
       // Detect or set project type
@@ -294,28 +292,27 @@ program
 
       // Update context with detected type
       nextContext.updateContext({ projectType });
-      
+
       // Add to history
       nextContext.addToHistory('start', {
         status: 'project_initialized',
         type: projectType,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       console.log(chalk.green(`✅ Project initialized successfully!`));
       console.log(chalk.cyan(`   Project Type: ${projectType}`));
       console.log(chalk.cyan(`   Current Phase: start`));
-      
+
       // Show next suggestions
       const suggestions = nextContext.getNextSuggestions();
       if (suggestions.length > 0) {
         console.log(chalk.blue('\n💡 Next suggested steps:'));
-        suggestions.slice(0, 3).forEach((s, index) => {
+        for (const [index, s] of suggestions.slice(0, 3).entries()) {
           console.log(chalk.cyan(`  ${index + 1}. ${s.title}`));
-        });
+        }
         console.log(chalk.gray('\nRun "next" to continue or "next --suggest" to see all options'));
       }
-
     } catch (error) {
       console.error(chalk.red('Project initialization failed:'), error.message);
       process.exit(1);
@@ -330,7 +327,7 @@ program
   .action(async (options) => {
     try {
       console.log(chalk.blue('🚀 Initializing Next Method project...'));
-      
+
       // Check if project already exists
       if (nextContext.context.projectType && !options.force) {
         const { confirmReset } = await inquirer.prompt([
@@ -338,10 +335,10 @@ program
             type: 'confirm',
             name: 'confirmReset',
             message: 'Project already exists. Do you want to reset and start over?',
-            default: false
-          }
+            default: false,
+          },
         ]);
-        
+
         if (!confirmReset) {
           console.log(chalk.yellow('Project initialization cancelled.'));
           return;
@@ -355,7 +352,7 @@ program
         lastAction: null,
         suggestions: [],
         history: [],
-        metadata: {}
+        metadata: {},
       });
 
       // Detect or set project type
@@ -367,28 +364,27 @@ program
 
       // Update context with detected type
       nextContext.updateContext({ projectType });
-      
+
       // Add to history
       nextContext.addToHistory('start', {
         status: 'project_initialized',
         type: projectType,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       console.log(chalk.green(`✅ Project initialized successfully!`));
       console.log(chalk.cyan(`   Project Type: ${projectType}`));
       console.log(chalk.cyan(`   Current Phase: start`));
-      
+
       // Show next suggestions
       const suggestions = nextContext.getNextSuggestions();
       if (suggestions.length > 0) {
         console.log(chalk.blue('\n💡 Next suggested steps:'));
-        suggestions.slice(0, 3).forEach((s, index) => {
+        for (const [index, s] of suggestions.slice(0, 3).entries()) {
           console.log(chalk.cyan(`  ${index + 1}. ${s.title}`));
-        });
+        }
         console.log(chalk.gray('\nRun "next" to continue or "next --suggest" to see all options'));
       }
-
     } catch (error) {
       console.error(chalk.red('Project initialization failed:'), error.message);
       process.exit(1);
@@ -397,61 +393,71 @@ program
 
 async function executeSuggestion(suggestion) {
   console.log(chalk.green(`\n▶️  Executing: ${suggestion.title}`));
-  
+
   try {
     let result;
-    
+
     switch (suggestion.action) {
-      case 'detect':
+      case 'detect': {
         result = await detectProjectType();
         break;
-      case 'create':
+      }
+      case 'create': {
         result = await createProject();
         break;
-      case 'analyze':
+      }
+      case 'analyze': {
         result = await analyzeProject();
         break;
-      case 'requirements':
+      }
+      case 'requirements': {
         result = await generateRequirements();
         break;
-      case 'architecture':
+      }
+      case 'architecture': {
         result = await designArchitecture();
         break;
-      case 'implement':
+      }
+      case 'implement': {
         result = await implementFeatures();
         break;
-      case 'test':
+      }
+      case 'test': {
         result = await testAndValidate();
         break;
-      case 'deploy':
+      }
+      case 'deploy': {
         result = await deployProject();
         break;
-      case 'custom':
+      }
+      case 'custom': {
         result = await runCustomCommand();
         break;
-      case 'status':
+      }
+      case 'status': {
         result = await showStatus();
         break;
-      default:
+      }
+      default: {
         console.log(chalk.yellow(`Unknown action: ${suggestion.action}`));
         return;
+      }
     }
 
     nextContext.addToHistory(suggestion.action, result);
     nextContext.updateContext({ lastAction: suggestion.action });
-    
+
     console.log(chalk.green(`✅ ${suggestion.title} completed successfully!`));
-    
+
     // Show next suggestions
     const nextSuggestions = nextContext.getNextSuggestions();
     if (nextSuggestions.length > 0) {
       console.log(chalk.blue('\n💡 Next suggested steps:'));
-      nextSuggestions.slice(0, 3).forEach((s, index) => {
+      for (const [index, s] of nextSuggestions.slice(0, 3).entries()) {
         console.log(chalk.cyan(`  ${index + 1}. ${s.title}`));
-      });
+      }
       console.log(chalk.gray('\nRun "next" to continue or "next --suggest" to see all options'));
     }
-
   } catch (error) {
     console.error(chalk.red(`❌ ${suggestion.title} failed:`), error.message);
     nextContext.addToHistory(suggestion.action, { error: error.message });
@@ -463,8 +469,10 @@ async function detectProjectType() {
   const files = await fsPromises.readdir(process.cwd());
   const hasPackageJson = files.includes('package.json');
   const hasGit = files.includes('.git');
-  const hasSourceFiles = files.some(f => f.endsWith('.js') || f.endsWith('.ts') || f.endsWith('.py') || f.endsWith('.java'));
-  
+  const hasSourceFiles = files.some(
+    (f) => f.endsWith('.js') || f.endsWith('.ts') || f.endsWith('.py') || f.endsWith('.java'),
+  );
+
   let projectType = 'empty';
   if (hasSourceFiles && hasPackageJson) {
     projectType = 'brownfield';
@@ -473,13 +481,13 @@ async function detectProjectType() {
   } else if (hasGit || hasSourceFiles) {
     projectType = 'greenfield';
   }
-  
+
   nextContext.updateContext({ projectType });
-  
+
   return {
     type: projectType,
     detectedType: projectType,
-    files: files.filter(f => !f.startsWith('.') && !f.includes('node_modules'))
+    files: files.filter((f) => !f.startsWith('.') && !f.includes('node_modules')),
   };
 }
 
@@ -531,10 +539,10 @@ async function runCustomCommand() {
       type: 'input',
       name: 'command',
       message: 'Enter BMAD command to execute:',
-      default: 'bmad install'
-    }
+      default: 'bmad install',
+    },
   ]);
-  
+
   console.log(chalk.blue(`Executing: ${command}`));
   // This would execute the BMAD command
   return { command, status: 'executed' };
@@ -545,15 +553,15 @@ async function showStatus() {
   console.log(chalk.cyan(`  Current Phase: ${nextContext.context.currentPhase}`));
   console.log(chalk.cyan(`  Project Type: ${nextContext.context.projectType || 'Not determined'}`));
   console.log(chalk.cyan(`  Last Action: ${nextContext.context.lastAction || 'None'}`));
-  
+
   if (nextContext.context.history.length > 0) {
     console.log(chalk.blue('\n📝 Recent Actions:'));
-    nextContext.context.history.slice(-5).forEach((entry, index) => {
+    for (const [index, entry] of nextContext.context.history.slice(-5).entries()) {
       const status = entry.result?.error ? '❌' : '✅';
       console.log(chalk.gray(`  ${status} ${entry.action} (${entry.timestamp})`));
-    });
+    }
   }
-  
+
   return { status: 'status_displayed' };
 }
 
@@ -569,11 +577,11 @@ program
   .action(async (options) => {
     try {
       // Forward to BMAD installer
-      const { execSync } = require('child_process');
+      const { execSync } = require('node:child_process');
       const args = process.argv.slice(3).join(' ');
       execSync(`node "${path.join(__dirname, 'bmad.js')}" install ${args}`, {
         stdio: 'inherit',
-        cwd: process.cwd()
+        cwd: process.cwd(),
       });
     } catch (error) {
       console.error(chalk.red('Installation failed:'), error.message);
@@ -588,11 +596,11 @@ program
   .option('--dry-run', 'Show what would be updated without making changes')
   .action(async (options) => {
     try {
-      const { execSync } = require('child_process');
+      const { execSync } = require('node:child_process');
       const args = process.argv.slice(3).join(' ');
       execSync(`node "${path.join(__dirname, 'bmad.js')}" update ${args}`, {
         stdio: 'inherit',
-        cwd: process.cwd()
+        cwd: process.cwd(),
       });
     } catch (error) {
       console.error(chalk.red('Update failed:'), error.message);
@@ -616,16 +624,16 @@ program
         type: 'confirm',
         name: 'confirm',
         message: 'Are you sure you want to reset the Next Method context?',
-        default: false
-      }
+        default: false,
+      },
     ]);
-    
+
     if (confirm) {
       try {
         fs.unlinkSync(nextContext.contextFile);
         nextContext.context = nextContext.loadContext();
         console.log(chalk.green('✅ Context reset successfully!'));
-      } catch (error) {
+      } catch {
         console.log(chalk.blue('Context file not found, already reset.'));
       }
     }

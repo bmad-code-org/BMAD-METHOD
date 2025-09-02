@@ -1,14 +1,14 @@
-# NEXT-METHOD™
+# LAZY-METHOD™
 
-**Next Method - Iterative AI-driven development with BMAD-METHOD™**
+**LAZY-METHOD - Iterative AI-driven development with BMAD-METHOD™**
 
-NEXT-METHOD is an intelligent wrapper around BMAD-METHOD that provides an iterative, guided development experience. Instead of manually choosing which tasks or commands to run, you simply type `next` repeatedly, and the system intelligently suggests and executes the next appropriate step.
+LAZY-METHOD is an intelligent wrapper around BMAD-METHOD that provides an iterative, guided development experience. Instead of manually choosing which tasks or commands to run, you simply type `lazy` or `next` repeatedly, and the system intelligently suggests and executes the next appropriate step.
 
-## 🧠 The Philosophy of "Next": Beyond Vanilla BMAD
+## 🧠 The Philosophy of "LAZY-METHOD": Beyond Vanilla BMAD
 
 ### The Evolution from Method
 
-The choice of "Next Method" over vanilla BMAD method represents a fundamental philosophical shift in how we approach AI-driven development. While BMAD (Brainstorming, Modeling, Analysis, and Development) provides a robust framework for systematic software creation, it operates within the traditional paradigm of explicit choice and conscious decision-making.
+The choice of "LAZY-METHOD" over vanilla BMAD method represents a fundamental philosophical shift in how we approach AI-driven development. While BMAD (Brainstorming, Modeling, Analysis, and Development) provides a robust framework for systematic software creation, it operates within the traditional paradigm of explicit choice and conscious decision-making.
 
 ### The Paradox of Choice in Development
 
@@ -22,9 +22,9 @@ Vanilla BMAD method, despite its sophistication, presents developers with what p
 - **Emergent Intelligence Arises**: The system's suggestions become more sophisticated as context accumulates, creating a form of collective intelligence
 - **Serendipity is Amplified**: Unexpected connections and insights emerge through the iterative process rather than upfront planning
 
-### The Zen of "Just Next"
+### The Zen of "Just Lazy/Next"
 
-The name "Next" carries profound philosophical weight. It represents:
+The commands "lazy" and "next" carry profound philosophical weight. They represent:
 
 1. **Present-Moment Focus**: Unlike comprehensive planning that spans the entire project lifecycle, "Next" keeps us anchored in the current moment
 2. **Trust in Emergence**: It embodies the belief that the right path reveals itself through iteration, not through exhaustive upfront analysis
@@ -32,7 +32,7 @@ The name "Next" carries profound philosophical weight. It represents:
 
 ### Beyond Method: The Meta-Method
 
-"Next Method" is not merely a method; it's a meta-method that transcends the traditional boundaries of development methodology. It represents:
+"LAZY-METHOD" is not merely a method; it's a meta-method that transcends the traditional boundaries of development methodology. It represents:
 
 - **Methodological Evolution**: Moving from static frameworks to adaptive, context-aware systems
 - **Cognitive Enhancement**: Augmenting human decision-making rather than replacing it
@@ -48,18 +48,18 @@ This approach is grounded in several philosophical traditions:
 
 ### Why Not Vanilla BMAD?
 
-Vanilla BMAD method, while excellent, represents the culmination of 20th-century software engineering thinking - comprehensive, systematic, and deterministic. "Next Method" represents 21st-century thinking - adaptive, emergent, and contextually intelligent.
+Vanilla BMAD method, while excellent, represents the culmination of 20th-century software engineering thinking - comprehensive, systematic, and deterministic. "LAZY-METHOD" represents 21st-century thinking - adaptive, emergent, and contextually intelligent.
 
-The difference is not in capability but in philosophy: vanilla BMAD gives you all the tools and asks you to choose wisely; "Next Method" gives you the next tool and trusts that wisdom emerges through use.
+The difference is not in capability but in philosophy: vanilla BMAD gives you all the tools and asks you to choose wisely; "LAZY-METHOD" gives you the next tool and trusts that wisdom emerges through use.
 
 ## 🚀 Quick Start
 
 ```bash
-# Install NEXT-METHOD
-npm install -g next-method
+# Install LAZY-METHOD
+npm install -g lazy-method
 
 # Or use npx
-npx next-method install
+npx lazy-method install
 
 # Initialize a new project
 start
@@ -67,6 +67,8 @@ start
 init
 
 # Start the iterative development process
+lazy
+# or
 next
 ```
 
@@ -101,22 +103,25 @@ next --auto
 ## 📋 Available Commands
 
 ### Core Commands
-- `start` or `init` - Initialize a new Next Method project or reset existing project
-- `next` - Get next suggested action and execute it
-- `next --auto` - Automatically execute the most logical next step
-- `next --suggest` - Show all available next steps without executing
-- `next status` - Show current project status and context
-- `next reset` - Reset the Next Method context
+
+- `start` or `init` - Initialize a new LAZY-METHOD project or reset existing project
+- `lazy` or `next` - Get next suggested action and execute it
+- `lazy --auto` or `next --auto` - Automatically execute the most logical next step
+- `lazy --suggest` or `next --suggest` - Show all available next steps without executing
+- `lazy status` or `next status` - Show current project status and context
+- `lazy reset` or `next reset` - Reset the LAZY-METHOD context
 
 ### BMAD-METHOD Wrappers
+
 - `next install` - Install BMAD Method (wraps bmad install)
 - `next update` - Update existing BMAD installation (wraps bmad update)
 
 ### NPM Scripts
-- `npm run start` or `npm run init` - Initialize a new Next Method project
-- `npm run next` - Run the next command locally
-- `npm run next:auto` - Auto-execute next step
-- `npm run next:suggest` - Show suggestions only
+
+- `npm run start` or `npm run init` - Initialize a new LAZY-METHOD project
+- `npm run lazy` or `npm run next` - Run the lazy/next command locally
+- `npm run lazy:auto` or `npm run next:auto` - Auto-execute next step
+- `npm run lazy:suggest` or `npm run next:suggest` - Show suggestions only
 
 ## 🏗️ Project Phases
 
@@ -133,16 +138,19 @@ NEXT-METHOD guides you through these development phases:
 ## 🎯 Use Cases
 
 ### Greenfield Development
+
 - Start with `next` to detect empty directory
 - Follow suggestions to create new project structure
 - Progress through requirements, architecture, and implementation
 
 ### Brownfield Development
+
 - Start with `next` to analyze existing codebase
 - Get suggestions for improving or extending current project
 - Follow iterative improvement workflow
 
 ### Learning & Exploration
+
 - Use `next --suggest` to see all available options
 - Understand the development workflow step by step
 - Learn BMAD-METHOD concepts through guided execution
@@ -174,16 +182,19 @@ NEXT-METHOD creates a `.next-context.json` file in your project directory to mai
 ## 🚀 Getting Started
 
 1. **Install NEXT-METHOD:**
+
    ```bash
    npm install -g next-method
    ```
 
 2. **Navigate to your project directory:**
+
    ```bash
    cd your-project
    ```
 
 3. **Initialize the project:**
+
    ```bash
    start
    # or
@@ -191,6 +202,7 @@ NEXT-METHOD creates a `.next-context.json` file in your project directory to mai
    ```
 
 4. **Start the iterative process:**
+
    ```bash
    next
    ```
@@ -204,7 +216,8 @@ NEXT-METHOD creates a `.next-context.json` file in your project directory to mai
 
 ## 🔗 Integration with BMAD-METHOD
 
-NEXT-METHOD is built on top of BMAD-METHOD and provides:
+LAZY-METHOD is built on top of BMAD-METHOD and provides:
+
 - All BMAD-METHOD features and capabilities
 - Intelligent workflow orchestration
 - Context-aware development guidance
@@ -227,4 +240,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**NEXT-METHOD™** - Making AI-driven development as simple as typing "next" repeatedly! 🚀
+**LAZY-METHOD™** - Making AI-driven development as simple as typing "lazy" or "next" repeatedly! 🚀
+
+> **Note**: Both `lazy` and `next` commands work identically - choose whichever feels more natural to you!

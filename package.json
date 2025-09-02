@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@abdshomad/next-method",
+  "name": "lazy-method",
   "version": "4.42.2",
-  "description": "Next Method - Iterative AI-driven development with BMAD-METHOD™",
+  "description": "Lazy Method - Iterative AI-driven development with BMAD-METHOD™",
   "keywords": [
     "agile",
     "ai",
@@ -12,11 +12,12 @@
     "agents",
     "bmad",
     "next",
+    "lazy",
     "iterative"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/abdshomad/NEXT-METHOD.git"
+    "url": "git+https://github.com/abdshomad/LAZY-METHOD.git"
   },
   "license": "MIT",
   "author": "Brian (BMad) Madison",
@@ -24,14 +25,10 @@
   "bin": {
     "bmad": "tools/bmad-npx-wrapper.js",
     "bmad-method": "tools/bmad-npx-wrapper.js",
+    "lazy": "tools/next-npx-wrapper.js",
     "next": "tools/next-npx-wrapper.js"
   },
   "scripts": {
-    "next": "node tools/installer/bin/next.js",
-    "next:auto": "node tools/installer/bin/next.js next --auto",
-    "next:suggest": "node tools/installer/bin/next.js next --suggest",
-    "start": "node tools/installer/bin/next.js start",
-    "init": "node tools/installer/bin/next.js start",
     "build": "node tools/cli.js build",
     "build:agents": "node tools/cli.js build --agents-only",
     "build:teams": "node tools/cli.js build --teams-only",
@@ -39,10 +36,17 @@
     "flatten": "node tools/flattener/main.js",
     "format": "prettier --write \"**/*.{js,cjs,mjs,json,md,yaml}\"",
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,md,yaml}\"",
+    "init": "node tools/installer/bin/next.js start",
     "install:bmad": "node tools/installer/bin/bmad.js install",
+    "lazy": "node tools/installer/bin/next.js next",
+    "lazy:auto": "node tools/installer/bin/next.js next --auto",
+    "lazy:suggest": "node tools/installer/bin/next.js next --suggest",
     "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
     "list:agents": "node tools/cli.js list:agents",
+    "next": "node tools/installer/bin/next.js",
+    "next:auto": "node tools/installer/bin/next.js next --auto",
+    "next:suggest": "node tools/installer/bin/next.js next --suggest",
     "pre-release": "npm run validate && npm run format:check && npm run lint",
     "prepare": "husky",
     "preview:release": "node tools/preview-release-notes.js",
@@ -51,6 +55,7 @@
     "release:patch": "gh workflow run \"Manual Release\" -f version_bump=patch",
     "release:watch": "gh run watch",
     "setup:hooks": "chmod +x tools/setup-hooks.sh && ./tools/setup-hooks.sh",
+    "start": "node tools/installer/bin/next.js start",
     "validate": "node tools/cli.js validate",
     "version:all": "node tools/bump-all-versions.js",
     "version:all:major": "node tools/bump-all-versions.js major",
