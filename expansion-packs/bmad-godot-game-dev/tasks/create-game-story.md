@@ -10,7 +10,7 @@ To identify the next logical game story based on project progress and epic defin
 
 - Load `.bmad-godot-game-dev/config.yaml` from the project root
 - If the file does not exist, HALT and inform the user: "core-config.yaml not found. This file is required for story creation. You can either: 1) Copy core-config.yaml from GITHUB bmad-core/ and configure it for your game project OR 2) Run the BMad installer against your project to upgrade and add the file automatically. Please add and configure before proceeding."
-- Extract key configurations: `devStoryLocation`, `gdd.*`, `gamearchitecture.*`, `workflow.*`
+- Extract key configurations: `devStoryLocation`, `prd.*`, `architecture.*`, `workflow.*`
 
 ### 1. Identify Next Story for Preparation
 
@@ -28,7 +28,7 @@ To identify the next logical game story based on project progress and epic defin
 
 ### 2. Gather Story Requirements and Previous Story Context
 
-- Extract story requirements from the identified epic file or GDD section
+- Extract story requirements from the identified epic file or PRD section
 - If previous story exists, review Dev Agent Record sections for:
   - Completion Notes and Debug Log References
   - Implementation deviations and technical decisions
@@ -42,22 +42,22 @@ To identify the next logical game story based on project progress and epic defin
 
 #### 3.1 Determine Architecture Reading Strategy
 
-- **If `gamearchitectureVersion: >= v3` and `gamearchitectureSharded: true`**: Read `{gamearchitectureShardedLocation}/index.md` then follow structured reading order below
-- **Else**: Use monolithic `gamearchitectureFile` for similar sections
+- **If `architectureVersion: >= v3` and `architectureSharded: true`**: Read `{architectureShardedLocation}/index.md` then follow structured reading order below
+- **Else**: Use monolithic `architectureFile` for similar sections
 
 #### 3.2 Read Architecture Documents Based on Story Type
 
-**For ALL Game Stories:** tech-stack.md, godot-project-structure.md, coding-standards.md, testing-resilience-architecture.md, language-strategy.md
+**For ALL Game Stories:** tech-stack.md, godot-project-structure.md, coding-standards.md, test-strategy and standards.md, language-strategy.md
 
-**For Gameplay/Mechanics Stories, additionally:** gameplay-systems-architecture.md, node-architecture-details.md, physics-2d-config.md, input-map-system.md, state-machines.md, game-resources.md
+**For Gameplay/Mechanics Stories, additionally:** gameplay-systems-architecture.md, node-architecture-details.md, physics-configuration.md, input-system-architecture.md, state-machine-architecture.md, resource-architecture.md
 
-**For UI/UX Stories, additionally:** control-node-architecture.md, ui-theme-system.md, ui-state-management.md, scene-management.md
+**For UI/UX Stories, additionally:** node-architecture-details.md, ui-architecture.md, ui-component-system.md, ui-state-management.md, scene-management-architecture.md
 
-**For Backend/Services Stories, additionally:** game-resources.md, data-persistence.md, save-system.md, analytics-integration.md, multiplayer-architecture.md
+**For Backend/Services Stories, additionally:** resource-architecture.md, data-persistence-architecture.md, save-system-implementation.md, analytics-integration.md, multiplayer-architecture.md
 
 **For Graphics/Rendering Stories, additionally:** rendering-settings.md, shader-guidelines.md, sprite-management.md, particle-systems.md
 
-**For Audio Stories, additionally:** audio-bus-architecture.md, audio-stream-players.md, sound-pools.md
+**For Audio Stories, additionally:** audio-architecture.md, audio-mixing-configuration.md, sound-bank-management.md
 
 #### 3.3 Extract Story-Specific Technical Details
 
@@ -77,7 +77,7 @@ Extract:
 - Platform export settings (desktop, mobile, web)
 - TDD requirements with GUT (GDScript) and GoDotTest (C#)
 
-ALWAYS cite source documents: `[Source: gamearchitecture/{filename}.md#{section}]`
+ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
 
 ### 4. Godot-Specific Technical Analysis
 
@@ -122,9 +122,9 @@ ALWAYS cite source documents: `[Source: gamearchitecture/{filename}.md#{section}
 ### 5. Populate Story Template with Full Context
 
 - Create new story file: `{devStoryLocation}/{epicNum}.{storyNum}.story.md` using Game Story Template
-- Fill in basic story information: Title, Status (Draft), Story statement, Acceptance Criteria from Epic/GDD
+- Fill in basic story information: Title, Status (Draft), Story statement, Acceptance Criteria from Epic/PRD
 - **`Dev Notes` section (CRITICAL):**
-  - CRITICAL: This section MUST contain ONLY information extracted from gamearchitecture documents and GDD. NEVER invent or assume technical details.
+  - CRITICAL: This section MUST contain ONLY information extracted from architecture documents and PRD. NEVER invent or assume technical details.
   - Include ALL relevant technical details from Steps 2-4, organized by category:
     - **Previous Story Insights**: Key learnings from previous story implementation
     - **Language Strategy**: GDScript vs C# decisions for each component [with source references]
@@ -136,10 +136,10 @@ ALWAYS cite source documents: `[Source: gamearchitecture/{filename}.md#{section}
     - **Performance Targets**: 60+ FPS requirement, frame time budget, profiler metrics
     - **Platform Considerations**: Export template differences, platform-specific code
     - **TDD Requirements**: GUT tests for GDScript, GoDotTest for C#, test-first development
-  - Every technical detail MUST include its source reference: `[Source: gamearchitecture/{filename}.md#{section}]`
-  - If information for a category is not found in the gamearchitecture docs, explicitly state: "No specific guidance found in gamearchitecture docs"
+  - Every technical detail MUST include its source reference: `[Source: architecture/{filename}.md#{section}]`
+  - If information for a category is not found in the architecture docs, explicitly state: "No specific guidance found in architecture docs"
 - **`Tasks / Subtasks` section:**
-  - Generate detailed, sequential list of technical tasks based ONLY on: Epic/GDD Requirements, Story AC, Reviewed GameArchitecture Information
+  - Generate detailed, sequential list of technical tasks based ONLY on: Epic/PRD Requirements, Story AC, Reviewed Architecture Information
   - Include Godot-specific tasks:
     - Write failing tests FIRST (TDD Red phase)
     - Scene setup and node hierarchy creation
@@ -151,7 +151,7 @@ ALWAYS cite source documents: `[Source: gamearchitecture/{filename}.md#{section}
     - Performance profiling (maintain 60+ FPS)
     - Make tests pass (TDD Green phase)
     - Refactor while keeping tests green (TDD Refactor phase)
-  - Each task must reference relevant gamearchitecture documentation
+  - Each task must reference relevant architecture documentation
   - Include GUT/GoDotTest testing as explicit subtasks
   - Link tasks to ACs where applicable (e.g., `Task 1 (AC: 1, 3)`)
 - Add notes on Godot project structure alignment or discrepancies found in Step 4
@@ -178,7 +178,7 @@ ALWAYS cite source documents: `[Source: gamearchitecture/{filename}.md#{section}
   - Resource requirements identified
   - TDD test coverage planned
   - Performance impact assessment (60+ FPS maintained?)
-  - Any deviations or conflicts noted between GDD and gamearchitecture
+  - Any deviations or conflicts noted between PRD and architecture
   - Checklist Results
   - Next steps: For complex Godot features, suggest the user review the story draft and optionally test critical assumptions in Godot Editor
 
