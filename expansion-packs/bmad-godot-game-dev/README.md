@@ -213,7 +213,7 @@ When creating custom web bundles or uploading to AI platforms, include your `tec
 
 ## Core Configuration
 
-The `.bmad-core/core-config.yaml` and for this expansion-pack the `.bmad-godot-game-dev/core-config.yaml` files are a critical config that enables BMad to work seamlessly with differing project structures, more options will be made available in the future. Currently the most important is the devLoadAlwaysFiles list section in the yaml.
+The `.bmad-core/core-config.yaml` and for this expansion-pack the `.bmad-godot-game-dev/config.yaml` files are a critical config that enables BMad to work seamlessly with differing project structures, more options will be made available in the future. Currently the most important is the devLoadAlwaysFiles list section in the yaml.
 
 For the expansion pack ensure you either copy the core-config.yaml.example from the expansion pack directory to replace your .bmad-core/core-config.yaml and copy it to the .bmad-unit-game-dev/ expansion pack as core-config.yaml and at the very least update the gameDimension variable to the dimension your game will be in.
 

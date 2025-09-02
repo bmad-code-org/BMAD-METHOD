@@ -8,7 +8,7 @@ To comprehensively validate a Godot game development story draft before implemen
 
 ### 0. Load Core Configuration and Inputs
 
-- Load `.bmad-godot-game-dev/core-config.yaml` from the project root
+- Load `.bmad-godot-game-dev/config.yaml` from the project root
 - If the file does not exist, HALT and inform the user: "core-config.yaml not found. This file is required for story validation."
 - Extract key configurations: `devStoryLocation`, `gdd.*`, `gamearchitecture.*`, `workflow.*`
 - Identify and load the following inputs:

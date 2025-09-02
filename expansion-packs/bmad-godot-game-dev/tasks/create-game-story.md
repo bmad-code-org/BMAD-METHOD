@@ -8,7 +8,7 @@ To identify the next logical game story based on project progress and epic defin
 
 ### 0. Load Core Configuration and Check Workflow
 
-- Load `.bmad-godot-game-dev/core-config.yaml` from the project root
+- Load `.bmad-godot-game-dev/config.yaml` from the project root
 - If the file does not exist, HALT and inform the user: "core-config.yaml not found. This file is required for story creation. You can either: 1) Copy core-config.yaml from GITHUB bmad-core/ and configure it for your game project OR 2) Run the BMad installer against your project to upgrade and add the file automatically. Please add and configure before proceeding."
 - Extract key configurations: `devStoryLocation`, `gdd.*`, `gamearchitecture.*`, `workflow.*`
 
@@ -16,7 +16,7 @@ To identify the next logical game story based on project progress and epic defin
 
 #### 1.1 Locate Epic Files and Review Existing Stories
 
-- Based on `gddSharded` from config, locate epic files (sharded location/pattern or monolithic GDD sections)
+- Based on `prdSharded` from config, locate epic files (sharded location/pattern or monolithic PRD sections)
 - If `devStoryLocation` has story files, load the highest `{epicNum}.{storyNum}.story.md` file
 - **If highest story exists:**
   - Verify status is 'Done'. If not, alert user: "ALERT: Found incomplete story! File: {lastEpicNum}.{lastStoryNum}.story.md Status: [current status] Check if TDD tests are passing (GUT/GoDotTest). You should fix this story first, but would you like to accept risk & override to create the next story in draft?"
