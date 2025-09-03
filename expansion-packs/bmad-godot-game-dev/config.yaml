@@ -23,5 +23,8 @@ devLoadAlwaysFiles:
   - docs/architecture/coding-standards.md
   - docs/architecture/tech-stack.md
   - docs/architecture/source-tree.md
+  - docs/architecture/testing-strategy-and-standards.md
+qaLoadAlwaysFiles:
+  - docs/architecture/testing-strategy-and-standards.md
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories

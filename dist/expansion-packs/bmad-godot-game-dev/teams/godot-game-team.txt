@@ -481,7 +481,7 @@ performance_philosophy:
     - Measure, don't guess - Profile everything, trust only data
     - Premature optimization is fine if you know what you're doing - Apply known patterns from day one
     - The best code is no code - Simplicity beats cleverness
-    - Think about cache misses, not instruction counts - Memory access patterns matter most
+    - Look for cache misses, not instruction counts - Memory access patterns matter most
     - 60 FPS is the minimum, not the target - Design for headroom
   testing_practices:
     - Red-Green-Refactor cycle for all new features
@@ -6671,7 +6671,7 @@ sections:
         title: Technology Stack Table
         type: table
         columns: [Category, Technology, Version, Purpose, Rationale]
-        instruction: Populate the technology stack table with all relevant Unity technologies
+        instruction: Populate the technology stack table with all relevant Godot technologies
         examples:
           - "| **Game Engine** | Godot | 4.3.0 | Core game development platform | Latest stable, excellent 2D/3D support, 60+ FPS capable |"
           - "| **Primary Language** | GDScript | 2.0 | Game logic and rapid iteration | Native to Godot, static typing for 10-20% performance gain |"
@@ -6770,8 +6770,8 @@ sections:
           Create Mermaid diagrams to visualize game system relationships. Options:
           - System architecture diagram for high-level view
           - Component interaction diagram for detailed relationships
-          - Sequence diagrams for complex game loops (Update, FixedUpdate flows)
-          Choose the most appropriate for clarity and Unity-specific understanding
+          - Sequence diagrams for complex game loops (_process, _physics_process flows)
+          Choose the most appropriate for clarity and Godot-specific understanding
 
   - id: gameplay-systems
     title: Gameplay Systems Architecture
@@ -7101,13 +7101,13 @@ sections:
   - id: rendering-pipeline
     title: Rendering Pipeline Configuration
     instruction: |
-      Define Unity rendering pipeline setup and optimization.
+      Define Godot rendering pipeline setup and optimization.
     elicit: true
     sections:
       - id: render-pipeline-setup
         title: Render Pipeline Setup
         template: |
-          **Pipeline Choice:** {{render_pipeline_choice}} (URP/Built-in)
+          **Pipeline Choice:** {{render_pipeline_choice}} (Forward+/Mobile/Compatibility)
 
           **Pipeline Asset:** {{render_pipeline_asset_config}}
 
@@ -7178,7 +7178,7 @@ sections:
         template: |
           **Effect Categories:** {{particle_effect_categories}}
 
-          **Prefab Organization:** {{particle_prefab_organization}}
+          **Scene Organization:** {{particle_scene_organization}}
 
           **Pooling Strategy:** {{particle_pooling_implementation}}
       - id: particle-performance
@@ -7216,7 +7216,7 @@ sections:
   - id: audio-mixing
     title: Audio Mixing Configuration
     instruction: |
-      Define Unity Audio Mixer setup and configuration.
+      Define Godot AudioServer bus setup and configuration.
     elicit: true
     sections:
       - id: mixer-setup
@@ -7259,28 +7259,28 @@ sections:
 
           **Platform Considerations:** {{platform_audio_considerations}}
 
-  - id: unity-conventions
-    title: Unity Development Conventions
+  - id: godot-conventions
+    title: Godot Development Conventions
     instruction: |
-      Define Unity-specific development conventions and best practices.
+      Define Godot-specific development conventions and best practices.
     elicit: true
     sections:
-      - id: unity-best-practices
-        title: Unity Best Practices
+      - id: godot-best-practices
+        title: Godot Best Practices
         template: |
-          **Component Design:** {{unity_component_best_practices}}
+          **Node Design:** {{godot_node_best_practices}}
 
-          **Performance Guidelines:** {{unity_performance_guidelines}}
+          **Performance Guidelines:** {{godot_performance_guidelines}}
 
-          **Memory Management:** {{unity_memory_best_practices}}
-      - id: unity-workflow
-        title: Unity Workflow Conventions
+          **Memory Management:** {{godot_memory_best_practices}}
+      - id: godot-workflow
+        title: Godot Workflow Conventions
         template: |
           **Scene Workflow:** {{scene_workflow_conventions}}
 
-          **Prefab Workflow:** {{prefab_workflow_conventions}}
+          **Node Workflow:** {{node_workflow_conventions}}
 
-          **Asset Workflow:** {{asset_workflow_conventions}}
+          **Resource Workflow:** {{resource_workflow_conventions}}
 
   - id: external-integrations
     title: External Integrations
@@ -7290,9 +7290,9 @@ sections:
 
       1. Identify services needed based on GDD requirements and platform needs
       2. If documentation URLs are unknown, ask user for specifics
-      3. Document authentication methods and Unity-specific integration approaches
+      3. Document authentication methods and Godot-specific integration approaches
       4. List specific APIs that will be used
-      5. Note any platform-specific SDKs or Unity packages required
+      5. Note any platform-specific SDKs or Godot plugins required
 
       If no external integrations are needed, state this explicitly and skip to next section.
     elicit: true
@@ -7303,7 +7303,7 @@ sections:
         template: |
           - **Purpose:** {{service_purpose}}
           - **Documentation:** {{service_docs_url}}
-          - **Unity Package:** {{unity_package_name}} {{version}}
+          - **Godot Plugin:** {{godot_plugin_name}} {{version}}
           - **Platform SDK:** {{platform_sdk_requirements}}
           - **Authentication:** {{auth_method}}
 
@@ -7311,7 +7311,7 @@ sections:
           - {{feature_1}} - {{feature_purpose}}
           - {{feature_2}} - {{feature_purpose}}
 
-          **Unity Implementation Notes:** {{unity_integration_details}}
+          **Godot Implementation Notes:** {{godot_integration_details}}
 
   - id: core-workflows
     title: Core Game Workflows
@@ -7321,12 +7321,12 @@ sections:
       Illustrate key game workflows using sequence diagrams:
 
       1. Identify critical player journeys from GDD (game loop, level progression, etc.)
-      2. Show system interactions including Unity lifecycle methods
+      2. Show system interactions including Godot lifecycle methods (_ready, _process, etc.)
       3. Include error handling paths and state transitions
-      4. Document async operations (scene loading, asset loading)
+      4. Document async operations (scene loading, resource loading)
       5. Create both high-level game flow and detailed system interaction diagrams
 
-      Focus on workflows that clarify Unity-specific architecture decisions or complex system interactions.
+      Focus on workflows that clarify Godot-specific architecture decisions or complex system interactions.
     elicit: true
 
   - id: godot-project-structure
@@ -7492,7 +7492,7 @@ sections:
     instruction: |
       Work with user to define MANDATORY TDD strategy for Godot:
 
-      1. Use GUT for GDScript tests, GoDotTest for C# tests
+      1. Use GUT for GDScript tests (see https://gut.readthedocs.io/en/latest/Command-Line.html), GoDotTest for C# tests (see https://github.com/chickensoft-games/GoDotTest), and optionally GodotTestDriver for UI testing (see https://github.com/chickensoft-games/GodotTestDriver)
       2. TDD is MANDATORY - tests must be written FIRST (Red-Green-Refactor)
       3. Define test organization for both languages
       4. Establish 80% minimum coverage goal
@@ -7507,8 +7507,9 @@ sections:
         template: |
           - **Approach:** Test-Driven Development (MANDATORY)
           - **Coverage Goals:** 80% minimum
-          - **GDScript Tests:** GUT framework
-          - **C# Tests:** GoDotTest framework
+          - **GDScript Tests:** GUT framework (https://gut.readthedocs.io/en/latest/Command-Line.html)
+          - **C# Tests:** GoDotTest framework (https://github.com/chickensoft-games/GoDotTest)
+          - **UI Tests (optional):** GodotTestDriver (https://github.com/chickensoft-games/GodotTestDriver)
           - **Performance Tests:** Validate 60+ FPS maintained
       - id: godot-test-types
         title: Godot Test Types and Organization
@@ -7516,7 +7517,7 @@ sections:
           - id: gdscript-tests
             title: GDScript Tests (GUT)
             template: |
-              - **Framework:** GUT (Godot Unit Test)
+              - **Framework:** GUT (Godot Unit Test) - see https://gut.readthedocs.io/en/latest/Command-Line.html
               - **File Convention:** test_*.gd
               - **Location:** `res://tests/gut/`
               - **Purpose:** Testing GDScript game logic
@@ -7531,10 +7532,11 @@ sections:
           - id: csharp-tests
             title: C# Tests (GoDotTest)
             template: |
-              - **Framework:** GoDotTest
+              - **Framework:** GoDotTest - see https://github.com/chickensoft-games/GoDotTest
               - **Location:** `res://tests/godottest/`
               - **Purpose:** Testing C# performance-critical code
               - **Coverage Requirement:** 80% minimum
+              - **UI Testing (optional):** GodotTestDriver - see https://github.com/chickensoft-games/GodotTestDriver
 
               **AI Agent TDD Requirements:**
               - Write tests FIRST (Red phase)
@@ -7595,7 +7597,7 @@ sections:
 
       1. Review with Game Designer and technical stakeholders
       2. Begin story implementation with Game Developer agent
-      3. Set up Unity project structure and initial configuration
+      3. Set up Godot project structure and initial configuration
       4. Configure version control and build pipeline
 
       Include specific prompts for next agents if needed.
@@ -15248,7 +15250,7 @@ sections:
         title: Technology Stack Table
         type: table
         columns: [Category, Technology, Version, Purpose, Rationale]
-        instruction: Populate the technology stack table with all relevant Unity technologies
+        instruction: Populate the technology stack table with all relevant Godot technologies
         examples:
           - "| **Game Engine** | Godot | 4.3.0 | Core game development platform | Latest stable, excellent 2D/3D support, 60+ FPS capable |"
           - "| **Primary Language** | GDScript | 2.0 | Game logic and rapid iteration | Native to Godot, static typing for 10-20% performance gain |"
@@ -15347,8 +15349,8 @@ sections:
           Create Mermaid diagrams to visualize game system relationships. Options:
           - System architecture diagram for high-level view
           - Component interaction diagram for detailed relationships
-          - Sequence diagrams for complex game loops (Update, FixedUpdate flows)
-          Choose the most appropriate for clarity and Unity-specific understanding
+          - Sequence diagrams for complex game loops (_process, _physics_process flows)
+          Choose the most appropriate for clarity and Godot-specific understanding
 
   - id: gameplay-systems
     title: Gameplay Systems Architecture
@@ -15678,13 +15680,13 @@ sections:
   - id: rendering-pipeline
     title: Rendering Pipeline Configuration
     instruction: |
-      Define Unity rendering pipeline setup and optimization.
+      Define Godot rendering pipeline setup and optimization.
     elicit: true
     sections:
       - id: render-pipeline-setup
         title: Render Pipeline Setup
         template: |
-          **Pipeline Choice:** {{render_pipeline_choice}} (URP/Built-in)
+          **Pipeline Choice:** {{render_pipeline_choice}} (Forward+/Mobile/Compatibility)
 
           **Pipeline Asset:** {{render_pipeline_asset_config}}
 
@@ -15755,7 +15757,7 @@ sections:
         template: |
           **Effect Categories:** {{particle_effect_categories}}
 
-          **Prefab Organization:** {{particle_prefab_organization}}
+          **Scene Organization:** {{particle_scene_organization}}
 
           **Pooling Strategy:** {{particle_pooling_implementation}}
       - id: particle-performance
@@ -15793,7 +15795,7 @@ sections:
   - id: audio-mixing
     title: Audio Mixing Configuration
     instruction: |
-      Define Unity Audio Mixer setup and configuration.
+      Define Godot AudioServer bus setup and configuration.
     elicit: true
     sections:
       - id: mixer-setup
@@ -15836,28 +15838,28 @@ sections:
 
           **Platform Considerations:** {{platform_audio_considerations}}
 
-  - id: unity-conventions
-    title: Unity Development Conventions
+  - id: godot-conventions
+    title: Godot Development Conventions
     instruction: |
-      Define Unity-specific development conventions and best practices.
+      Define Godot-specific development conventions and best practices.
     elicit: true
     sections:
-      - id: unity-best-practices
-        title: Unity Best Practices
+      - id: godot-best-practices
+        title: Godot Best Practices
         template: |
-          **Component Design:** {{unity_component_best_practices}}
+          **Node Design:** {{godot_node_best_practices}}
 
-          **Performance Guidelines:** {{unity_performance_guidelines}}
+          **Performance Guidelines:** {{godot_performance_guidelines}}
 
-          **Memory Management:** {{unity_memory_best_practices}}
-      - id: unity-workflow
-        title: Unity Workflow Conventions
+          **Memory Management:** {{godot_memory_best_practices}}
+      - id: godot-workflow
+        title: Godot Workflow Conventions
         template: |
           **Scene Workflow:** {{scene_workflow_conventions}}
 
-          **Prefab Workflow:** {{prefab_workflow_conventions}}
+          **Node Workflow:** {{node_workflow_conventions}}
 
-          **Asset Workflow:** {{asset_workflow_conventions}}
+          **Resource Workflow:** {{resource_workflow_conventions}}
 
   - id: external-integrations
     title: External Integrations
@@ -15867,9 +15869,9 @@ sections:
 
       1. Identify services needed based on GDD requirements and platform needs
       2. If documentation URLs are unknown, ask user for specifics
-      3. Document authentication methods and Unity-specific integration approaches
+      3. Document authentication methods and Godot-specific integration approaches
       4. List specific APIs that will be used
-      5. Note any platform-specific SDKs or Unity packages required
+      5. Note any platform-specific SDKs or Godot plugins required
 
       If no external integrations are needed, state this explicitly and skip to next section.
     elicit: true
@@ -15880,7 +15882,7 @@ sections:
         template: |
           - **Purpose:** {{service_purpose}}
           - **Documentation:** {{service_docs_url}}
-          - **Unity Package:** {{unity_package_name}} {{version}}
+          - **Godot Plugin:** {{godot_plugin_name}} {{version}}
           - **Platform SDK:** {{platform_sdk_requirements}}
           - **Authentication:** {{auth_method}}
 
@@ -15888,7 +15890,7 @@ sections:
           - {{feature_1}} - {{feature_purpose}}
           - {{feature_2}} - {{feature_purpose}}
 
-          **Unity Implementation Notes:** {{unity_integration_details}}
+          **Godot Implementation Notes:** {{godot_integration_details}}
 
   - id: core-workflows
     title: Core Game Workflows
@@ -15898,12 +15900,12 @@ sections:
       Illustrate key game workflows using sequence diagrams:
 
       1. Identify critical player journeys from GDD (game loop, level progression, etc.)
-      2. Show system interactions including Unity lifecycle methods
+      2. Show system interactions including Godot lifecycle methods (_ready, _process, etc.)
       3. Include error handling paths and state transitions
-      4. Document async operations (scene loading, asset loading)
+      4. Document async operations (scene loading, resource loading)
       5. Create both high-level game flow and detailed system interaction diagrams
 
-      Focus on workflows that clarify Unity-specific architecture decisions or complex system interactions.
+      Focus on workflows that clarify Godot-specific architecture decisions or complex system interactions.
     elicit: true
 
   - id: godot-project-structure
@@ -16069,7 +16071,7 @@ sections:
     instruction: |
       Work with user to define MANDATORY TDD strategy for Godot:
 
-      1. Use GUT for GDScript tests, GoDotTest for C# tests
+      1. Use GUT for GDScript tests (see https://gut.readthedocs.io/en/latest/Command-Line.html), GoDotTest for C# tests (see https://github.com/chickensoft-games/GoDotTest), and optionally GodotTestDriver for UI testing (see https://github.com/chickensoft-games/GodotTestDriver)
       2. TDD is MANDATORY - tests must be written FIRST (Red-Green-Refactor)
       3. Define test organization for both languages
       4. Establish 80% minimum coverage goal
@@ -16084,8 +16086,9 @@ sections:
         template: |
           - **Approach:** Test-Driven Development (MANDATORY)
           - **Coverage Goals:** 80% minimum
-          - **GDScript Tests:** GUT framework
-          - **C# Tests:** GoDotTest framework
+          - **GDScript Tests:** GUT framework (https://gut.readthedocs.io/en/latest/Command-Line.html)
+          - **C# Tests:** GoDotTest framework (https://github.com/chickensoft-games/GoDotTest)
+          - **UI Tests (optional):** GodotTestDriver (https://github.com/chickensoft-games/GodotTestDriver)
           - **Performance Tests:** Validate 60+ FPS maintained
       - id: godot-test-types
         title: Godot Test Types and Organization
@@ -16093,7 +16096,7 @@ sections:
           - id: gdscript-tests
             title: GDScript Tests (GUT)
             template: |
-              - **Framework:** GUT (Godot Unit Test)
+              - **Framework:** GUT (Godot Unit Test) - see https://gut.readthedocs.io/en/latest/Command-Line.html
               - **File Convention:** test_*.gd
               - **Location:** `res://tests/gut/`
               - **Purpose:** Testing GDScript game logic
@@ -16108,10 +16111,11 @@ sections:
           - id: csharp-tests
             title: C# Tests (GoDotTest)
             template: |
-              - **Framework:** GoDotTest
+              - **Framework:** GoDotTest - see https://github.com/chickensoft-games/GoDotTest
               - **Location:** `res://tests/godottest/`
               - **Purpose:** Testing C# performance-critical code
               - **Coverage Requirement:** 80% minimum
+              - **UI Testing (optional):** GodotTestDriver - see https://github.com/chickensoft-games/GodotTestDriver
 
               **AI Agent TDD Requirements:**
               - Write tests FIRST (Red phase)
@@ -16172,7 +16176,7 @@ sections:
 
       1. Review with Game Designer and technical stakeholders
       2. Begin story implementation with Game Developer agent
-      3. Set up Unity project structure and initial configuration
+      3. Set up Godot project structure and initial configuration
       4. Configure version control and build pipeline
 
       Include specific prompts for next agents if needed.

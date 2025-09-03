@@ -81,7 +81,7 @@ performance_philosophy:
     - Measure, don't guess - Profile everything, trust only data
     - Premature optimization is fine if you know what you're doing - Apply known patterns from day one
     - The best code is no code - Simplicity beats cleverness
-    - Think about cache misses, not instruction counts - Memory access patterns matter most
+    - Look for cache misses, not instruction counts - Memory access patterns matter most
     - 60 FPS is the minimum, not the target - Design for headroom
   testing_practices:
     - Red-Green-Refactor cycle for all new features
