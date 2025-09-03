@@ -408,7 +408,12 @@ class Installer {
     if (ides.length > 0) {
       for (const ide of ides) {
         spinner.text = `Setting up ${ide} integration...`;
-        const preConfiguredSettings = ide === 'github-copilot' ? config.githubCopilotConfig : null;
+        let preConfiguredSettings = null;
+        if (ide === 'github-copilot') {
+          preConfiguredSettings = config.githubCopilotConfig;
+        } else if (ide === 'auggie-cli') {
+          preConfiguredSettings = config.augmentCodeConfig;
+        }
         await ideSetup.setup(ide, installDir, config.agent, spinner, preConfiguredSettings);
       }
     }
