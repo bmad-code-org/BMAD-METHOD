@@ -1,0 +1,212 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: evaluation-report-template
+  name: Evaluation Report Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/evaluation-report.md
+    title: "{{rfq_number}} Evaluation Report"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for simulating government evaluator reviews of proposal content. It helps identify strengths, weaknesses, and compliance issues before submission to maximize evaluation scores.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Select proposal section(s) for evaluation
+      2. Apply relevant Section M evaluation criteria
+      3. Conduct objective assessment from evaluator perspective
+      4. Document findings and recommendations
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: report-header
+        title: Report Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Evaluation Report
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+          # [Review Type: Pink Team / Red Team / Gold Team]
+
+  - id: executive-summary
+    title: Executive Summary
+    elicit: true
+    sections:
+      - id: overall-assessment
+        title: Overall Assessment
+        template: |
+          **Adjectival Rating**: {{adjectival_rating}}
+
+          **Summary Assessment**:
+          {{summary_assessment}}
+
+          **Key Strengths**:
+
+          - {{strength_1}}
+          - {{strength_2}}
+          - {{strength_3}}
+
+          **Critical Weaknesses**:
+
+          - {{weakness_1}}
+          - {{weakness_2}}
+          - {{weakness_3}}
+
+          **Recommendation**:
+          {{recommendation}}
+        instruction: Provide overall assessment, strengths, weaknesses, and recommendation
+        examples:
+          - "**Adjectival Rating**: Outstanding / Good / Acceptable / Marginal / Unacceptable"
+          - "**Recommendation**: Submit as is / Minor revisions needed / Major revisions needed / Significant rework required"
+
+  - id: detailed-evaluation
+    title: Detailed Evaluation
+    elicit: true
+    sections:
+      - id: technical-factor-template
+        title: Technical Factor [Factor Name]
+        template: |
+          **Adjectival Rating**: {{factor_rating}}
+
+          **Strengths**:
+
+          1. {{strength_description_1}}
+             - **Impact**: {{strength_impact_1}}
+             - **Evidence**: {{strength_evidence_1}}
+
+          2. {{strength_description_2}}
+             - **Impact**: {{strength_impact_2}}
+             - **Evidence**: {{strength_evidence_2}}
+
+          **Weaknesses**:
+
+          1. {{weakness_description_1}}
+             - **Impact**: {{weakness_impact_1}}
+             - **Recommendation**: {{weakness_recommendation_1}}
+
+          2. {{weakness_description_2}}
+             - **Impact**: {{weakness_impact_2}}
+             - **Recommendation**: {{weakness_recommendation_2}}
+
+          **Risks**:
+
+          1. {{risk_description_1}}
+             - **Impact**: {{risk_impact_1}}
+             - **Mitigation Recommendation**: {{risk_mitigation_1}}
+
+          **Deficiencies**:
+
+          1. {{deficiency_description_1}}
+             - **Impact**: {{deficiency_impact_1}}
+             - **Correction Required**: {{deficiency_correction_1}}
+        instruction: Repeat this section structure for each evaluation factor
+        examples:
+          - "**Adjectival Rating**: Outstanding / Good / Acceptable / Marginal / Unacceptable"
+
+  - id: compliance-assessment
+    title: Compliance Assessment
+    elicit: true
+    sections:
+      - id: section-l-compliance
+        title: Section L Compliance
+        type: table
+        columns: [Requirement, Compliant, Notes]
+        instruction: Fill in the compliance assessment table
+        examples:
+          - "| [Requirement] | [Yes/No/Partial] | [Notes] |"
+          - "| [Requirement] | [Yes/No/Partial] | [Notes] |"
+          - "| [Requirement] | [Yes/No/Partial] | [Notes] |"
+
+      - id: section-m-alignment
+        title: Section M Alignment
+        type: table
+        columns: [Evaluation Factor, Addressed, Effectiveness, Notes]
+        instruction: Fill in the alignment assessment table
+        examples:
+          - "| [Factor] | [Yes/No/Partial] | [High/Medium/Low] | [Notes] |"
+          - "| [Factor] | [Yes/No/Partial] | [High/Medium/Low] | [Notes] |"
+          - "| [Factor] | [Yes/No/Partial] | [High/Medium/Low] | [Notes] |"
+
+  - id: win-theme-assessment
+    title: Win Theme Assessment
+    elicit: true
+    sections:
+      - id: win-theme-table
+        title: Win Theme Incorporation
+        type: table
+        columns: [Win Theme, Effectively Incorporated, Notes]
+        instruction: Fill in the win theme assessment table
+        examples:
+          - "| [Theme] | [Yes/No/Partial] | [Notes] |"
+          - "| [Theme] | [Yes/No/Partial] | [Notes] |"
+          - "| [Theme] | [Yes/No/Partial] | [Notes] |"
+
+  - id: improvement-recommendations
+    title: Improvement Recommendations
+    elicit: true
+    sections:
+      - id: priority-1
+        title: Priority 1 (Critical)
+        template: |
+          - {{critical_recommendation_1}}
+          - {{critical_recommendation_2}}
+          - {{critical_recommendation_3}}
+        instruction: Provide specific critical recommendations with reference to proposal sections
+
+      - id: priority-2
+        title: Priority 2 (Important)
+        template: |
+          - {{important_recommendation_1}}
+          - {{important_recommendation_2}}
+          - {{important_recommendation_3}}
+        instruction: Provide specific important recommendations with reference to proposal sections
+
+      - id: priority-3
+        title: Priority 3 (Enhancement)
+        template: |
+          - {{enhancement_recommendation_1}}
+          - {{enhancement_recommendation_2}}
+          - {{enhancement_recommendation_3}}
+        instruction: Provide specific enhancement recommendations with reference to proposal sections
+
+  - id: evaluator-perspective
+    title: Evaluator Perspective Notes
+    elicit: true
+    template: |
+      {{evaluator_notes}}
+    instruction: Provide additional notes from evaluator perspective, including overall impressions, potential scoring considerations, and comparative assessment against likely competitors
+
+  - id: review-team
+    title: Review Team
+    elicit: true
+    type: table
+    columns: [Role, Name, Section Reviewed]
+    instruction: Fill in the review team information
+    examples:
+      - "| [Role] | [Name] | [Section] |"
+      - "| [Role] | [Name] | [Section] |"
+      - "| [Role] | [Name] | [Section] |"
+
+  - id: best-practices
+    title: Best Practices for Evaluation Simulation
+    content: |
+      - **Evaluator Mindset**: Review from the perspective of government evaluators, not proposal authors
+      - **Criteria Focus**: Base all evaluations strictly on Section M criteria
+      - **Evidence-Based**: Provide specific examples for all findings
+      - **Constructive Approach**: Frame weaknesses with actionable improvement recommendations
+      - **Prioritized Feedback**: Focus on highest-impact improvements first
+      - **Objective Assessment**: Evaluate based on what's actually in the proposal, not what authors intended
+      - **Comprehensive Coverage**: Review all sections against all applicable criteria
+      - **Documentation Discipline**: Maintain detailed records of all findings and recommendations

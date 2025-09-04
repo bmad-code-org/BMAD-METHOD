@@ -1,0 +1,238 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: proposal-outline-template
+  name: Proposal Outline Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/proposal-outline.md
+    title: "{{rfq_number}} Proposal Outline"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for creating a comprehensive proposal outline based on RFQ requirements. It helps organize proposal content to ensure compliance with Section L instructions and alignment with Section M evaluation criteria.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Review RFQ Section L for proposal organization requirements
+      2. Use this template to create a structured outline
+      3. Map compliance matrix requirements to outline sections
+      4. Allocate page counts based on evaluation importance
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: proposal-header
+        title: Proposal Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Proposal Outline
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+
+  - id: volume-structure
+    title: Volume Structure
+    sections:
+      - id: volume-1-technical
+        title: "Volume 1 - Technical Proposal"
+        sections:
+          - id: cover-letter
+            title: Cover Letter
+            content: |
+              - Purpose: Brief introduction of the proposal
+              - Page Limit: 1 page
+              - Key Elements:
+                - Company introduction
+                - RFQ reference
+                - Point of contact information
+                - Acknowledgment of amendments
+                - Signature of authorized representative
+
+          - id: executive-summary
+            title: Executive Summary
+            elicit: true
+            content: |
+              - Purpose: Overview of key themes and value proposition
+              - Page Limit: {{executive_summary_page_limit}} pages
+              - Key Elements:
+                - Customer mission understanding
+                - Solution overview
+                - Key discriminators
+                - Risk mitigation approach
+                - Value proposition
+
+          - id: technical-approach
+            title: Technical Approach
+            elicit: true
+            content: |
+              - Purpose: Detailed solution methodology
+              - Page Limit: {{technical_approach_page_limit}} pages
+              - Key Elements:
+                - Understanding of requirements
+                - Technical solution details
+                - Methodologies and frameworks
+                - Tools and technologies
+                - Technical innovations
+                - Requirements traceability
+
+          - id: management-approach
+            title: Management Approach
+            elicit: true
+            content: |
+              - Purpose: Project governance and oversight
+              - Page Limit: {{management_approach_page_limit}} pages
+              - Key Elements:
+                - Program management methodology
+                - Organizational structure
+                - Roles and responsibilities
+                - Communication plan
+                - Quality assurance approach
+                - Risk management
+
+          - id: staffing-plan
+            title: Staffing Plan
+            elicit: true
+            content: |
+              - Purpose: Personnel and resource allocation
+              - Page Limit: {{staffing_plan_page_limit}} pages
+              - Key Elements:
+                - Staffing methodology
+                - Key personnel qualifications
+                - Labor category mapping
+                - Recruitment and retention
+                - Training and development
+                - Organizational chart
+
+          - id: past-performance
+            title: Past Performance
+            elicit: true
+            content: |
+              - Purpose: Relevant experience demonstration
+              - Page Limit: {{past_performance_page_limit}} pages
+              - Key Elements:
+                - Past performance references
+                - Project descriptions
+                - Relevance to current requirement
+                - Performance outcomes
+                - Customer satisfaction
+                - Lessons learned
+
+      - id: volume-2-price
+        title: "Volume 2 - Price Proposal"
+        sections:
+          - id: price-summary
+            title: Price Summary
+            elicit: true
+            content: |
+              - Purpose: Overview of pricing approach
+              - Page Limit: {{price_summary_page_limit}} pages
+              - Key Elements:
+                - Total price summary
+                - Pricing by CLIN
+                - Pricing assumptions
+                - Price reasonableness justification
+
+          - id: detailed-pricing
+            title: Detailed Pricing
+            elicit: true
+            content: |
+              - Purpose: Breakdown of all cost elements
+              - Page Limit: {{detailed_pricing_page_limit}} pages
+              - Key Elements:
+                - Labor rates by category
+                - Labor hours by task
+                - Other direct costs
+                - Indirect rates
+                - Profit/fee structure
+                - Escalation approach
+
+          - id: cost-narrative
+            title: Cost Narrative
+            elicit: true
+            content: |
+              - Purpose: Explanation of pricing methodology
+              - Page Limit: {{cost_narrative_page_limit}} pages
+              - Key Elements:
+                - Basis of estimate
+                - Cost assumptions
+                - Rate development
+                - Cost realism justification
+                - Price competitiveness strategy
+
+  - id: section-mapping-guidelines
+    title: Section Mapping Guidelines
+    sections:
+      - id: requirement-mapping
+        title: Requirement Mapping
+        content: |
+          - Map each compliance matrix requirement to specific outline section
+          - Ensure all requirements have a designated location
+          - Note cross-cutting requirements that appear in multiple sections
+
+      - id: evaluation-criteria-alignment
+        title: Evaluation Criteria Alignment
+        content: |
+          - Map Section M evaluation factors to outline sections
+          - Ensure high-value evaluation factors receive appropriate emphasis
+          - Include evaluation criteria references in section guidance
+
+      - id: page-allocation-strategy
+        title: Page Allocation Strategy
+        content: |
+          - Allocate pages based on evaluation importance
+          - Consider complexity of requirements
+          - Reserve space for graphics and tables
+          - Include buffer for page count limits
+
+  - id: best-practices
+    title: Best Practices
+    content: |
+      - **RFQ Alignment**: Structure outline to match RFQ organization when possible
+      - **Evaluator Focus**: Organize for ease of evaluation against Section M criteria
+      - **Clear Hierarchy**: Use consistent numbering and heading structure
+      - **Content Guidance**: Include key points to address in each section
+      - **Win Theme Integration**: Note where key win themes should appear
+      - **Graphics Planning**: Identify opportunities for visual elements
+      - **Cross-References**: Include cross-reference strategy between volumes/sections
+      - **Compliance Verification**: Map outline back to compliance matrix for verification
+
+  - id: example-section
+    title: Example Section
+    type: code
+    language: markdown
+    content: |
+      ### 3.2 Technical Solution Architecture
+
+      **Page Allocation**: 5 pages
+      **Mapped Requirements**: R-012, R-013, R-014, R-018, R-022
+      **Evaluation Criteria**: Technical Factor 1, Subfactor 2
+      **Win Themes**: Scalable Architecture, Cloud Innovation
+
+      **Key Content Elements**:
+      - System architecture diagram
+      - Component descriptions and interactions
+      - Technology stack and justification
+      - Scalability and performance features
+      - Security architecture
+      - Integration approach
+      - Standards compliance
+
+      **Graphics Opportunities**:
+      - High-level architecture diagram
+      - Security framework illustration
+      - Scalability model
+      - Technology stack visualization
+
+      **SME Input Required**:
+      - Chief Architect
+      - Security Lead
+      - Cloud Solutions Architect

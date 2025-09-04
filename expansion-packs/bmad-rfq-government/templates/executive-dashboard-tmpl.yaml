@@ -1,0 +1,277 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: executive-dashboard-template
+  name: Executive Dashboard Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/executive-dashboard.md
+    title: "{{rfq_number}} Executive Dashboard"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for creating executive dashboards that support strategic bid decisions. It presents key opportunity information in a visual, easy-to-digest format for executive decision-makers.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Complete this template during the early bid decision phase
+      2. Focus on key metrics and decision factors
+      3. Use visual elements to enhance understanding
+      4. Keep content concise and actionable
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: dashboard-header
+        title: Dashboard Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Executive Dashboard
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+
+  - id: opportunity-summary
+    title: Opportunity Summary
+    elicit: true
+    sections:
+      - id: key-information
+        title: Key Information
+        type: table
+        columns: [Parameter, Value, Notes]
+        instruction: Fill in the key information table with opportunity details
+        examples:
+          - "| Agency | [Agency Name] | [Additional context] |"
+          - "| Program | [Program Name] | [Additional context] |"
+          - "| RFQ Number | [RFQ Number] | [Additional context] |"
+          - "| Contract Type | [FFP, T&M, CPFF, etc.] | [Additional context] |"
+          - "| Period of Performance | [Duration] | [Additional context] |"
+          - "| Response Due Date | [Date] | [Days remaining] |"
+          - "| Estimated Value | [Dollar amount] | [Annual value / total value] |"
+          - "| Set-Aside Type | [Small business, 8(a), etc.] | [Additional context] |"
+          - "| NAICS Code | [Code] | [Size standard] |"
+
+      - id: strategic-alignment
+        title: Strategic Alignment
+        type: table
+        columns: [Strategic Goal, Alignment, Notes]
+        instruction: Fill in the strategic alignment table with corporate goals
+        examples:
+          - "| [Goal 1] | [High/Medium/Low] | [Explanation] |"
+          - "| [Goal 2] | [High/Medium/Low] | [Explanation] |"
+          - "| [Goal 3] | [High/Medium/Low] | [Explanation] |"
+          - "| [Goal 4] | [High/Medium/Low] | [Explanation] |"
+          - "| [Goal 5] | [High/Medium/Low] | [Explanation] |"
+
+  - id: opportunity-assessment
+    title: Opportunity Assessment
+    elicit: true
+    sections:
+      - id: win-probability-analysis
+        title: Win Probability Analysis
+        type: table
+        columns: [Factor, Rating, Notes]
+        instruction: Fill in the win probability analysis table
+        examples:
+          - "| Customer Relationship | [Strong/Moderate/Weak] | [Explanation] |"
+          - "| Incumbent Status | [Incumbent/New entrant] | [Explanation] |"
+          - "| Solution Strength | [Strong/Moderate/Weak] | [Explanation] |"
+          - "| Price Competitiveness | [Strong/Moderate/Weak] | [Explanation] |"
+          - "| Team Capabilities | [Strong/Moderate/Weak] | [Explanation] |"
+          - "| Competitive Landscape | [Favorable/Neutral/Challenging] | [Explanation] |"
+        template: |
+          **Overall Win Probability**: {{win_probability}}%
+
+      - id: swot-analysis
+        title: SWOT Analysis
+        sections:
+          - id: strengths
+            title: Strengths
+            template: |
+              - {{strength_1}}
+              - {{strength_2}}
+              - {{strength_3}}
+            instruction: List key strengths for this opportunity
+
+          - id: weaknesses
+            title: Weaknesses
+            template: |
+              - {{weakness_1}}
+              - {{weakness_2}}
+              - {{weakness_3}}
+            instruction: List key weaknesses for this opportunity
+
+          - id: opportunities
+            title: Opportunities
+            template: |
+              - {{opportunity_1}}
+              - {{opportunity_2}}
+              - {{opportunity_3}}
+            instruction: List key opportunities for this bid
+
+          - id: threats
+            title: Threats
+            template: |
+              - {{threat_1}}
+              - {{threat_2}}
+              - {{threat_3}}
+            instruction: List key threats to winning this opportunity
+
+  - id: risk-reward-profile
+    title: Risk/Reward Profile
+    elicit: true
+    sections:
+      - id: opportunity-risks
+        title: Opportunity Risks
+        type: table
+        columns: [Risk, Probability, Impact, Mitigation]
+        instruction: Fill in the opportunity risks table
+        examples:
+          - "| [Risk 1] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation strategy] |"
+          - "| [Risk 2] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation strategy] |"
+          - "| [Risk 3] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation strategy] |"
+          - "| [Risk 4] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation strategy] |"
+          - "| [Risk 5] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation strategy] |"
+
+      - id: financial-analysis
+        title: Financial Analysis
+        type: table
+        columns: [Metric, Value, Notes]
+        instruction: Fill in the financial analysis table
+        examples:
+          - "| Estimated Contract Value | [Dollar amount] | [Explanation] |"
+          - "| Estimated Bid & Proposal Cost | [Dollar amount] | [Explanation] |"
+          - "| Expected Profit Margin | [Percentage] | [Explanation] |"
+          - "| Return on Investment | [Percentage] | [Explanation] |"
+          - "| Break-even Timeline | [Timeframe] | [Explanation] |"
+
+  - id: competitive-assessment
+    title: Competitive Assessment
+    elicit: true
+    sections:
+      - id: competitor-analysis
+        title: Competitor Analysis
+        type: table
+        columns: [Competitor, Strengths, Weaknesses, Win Strategy]
+        instruction: Fill in the competitor analysis table
+        examples:
+          - "| [Competitor 1] | [Strengths] | [Weaknesses] | [Strategy] |"
+          - "| [Competitor 2] | [Strengths] | [Weaknesses] | [Strategy] |"
+          - "| [Competitor 3] | [Strengths] | [Weaknesses] | [Strategy] |"
+
+      - id: incumbent-analysis
+        title: Incumbent Analysis
+        type: table
+        columns: [Parameter, Value, Notes]
+        instruction: Fill in the incumbent analysis table
+        examples:
+          - "| Incumbent | [Company name] | [Additional context] |"
+          - "| Contract Performance | [Strong/Moderate/Weak] | [Evidence] |"
+          - "| Customer Satisfaction | [High/Medium/Low] | [Evidence] |"
+          - "| Known Issues | [Issues] | [Evidence] |"
+          - "| Recompete Strategy | [Strategy] | [Explanation] |"
+
+  - id: customer-intelligence
+    title: Customer Intelligence
+    elicit: true
+    sections:
+      - id: key-decision-makers
+        title: Key Decision Makers
+        type: table
+        columns: [Role, Name, Relationship, Priority]
+        instruction: Fill in the key decision makers table
+        examples:
+          - "| [Role] | [Name] | [Strong/Neutral/None] | [Priority] |"
+          - "| [Role] | [Name] | [Strong/Neutral/None] | [Priority] |"
+          - "| [Role] | [Name] | [Strong/Neutral/None] | [Priority] |"
+
+      - id: customer-hot-buttons
+        title: Customer Hot Buttons
+        type: table
+        columns: [Priority, Hot Button, Our Solution, Competitor Approach]
+        instruction: Fill in the customer hot buttons table
+        examples:
+          - "| [High/Medium/Low] | [Hot button 1] | [Solution] | [Competitor approach] |"
+          - "| [High/Medium/Low] | [Hot button 2] | [Solution] | [Competitor approach] |"
+          - "| [High/Medium/Low] | [Hot button 3] | [Solution] | [Competitor approach] |"
+
+  - id: bid-decision-recommendation
+    title: Bid Decision Recommendation
+    elicit: true
+    sections:
+      - id: decision-factors
+        title: Decision Factors
+        type: table
+        columns: [Factor, Assessment, Weight, Score]
+        instruction: Fill in the decision factors table
+        examples:
+          - "| Strategic Alignment | [High/Medium/Low] | [Weight] | [Score] |"
+          - "| Win Probability | [High/Medium/Low] | [Weight] | [Score] |"
+          - "| Financial Return | [High/Medium/Low] | [Weight] | [Score] |"
+          - "| Resource Availability | [High/Medium/Low] | [Weight] | [Score] |"
+          - "| Risk Level | [High/Medium/Low] | [Weight] | [Score] |"
+        template: |
+          **Total Score**: {{total_score}}
+
+      - id: recommendation
+        title: Recommendation
+        template: |
+          **Bid Decision**: {{bid_decision}}
+
+          **Rationale**:
+          {{rationale}}
+
+          **Conditions** (if applicable):
+
+          - {{condition_1}}
+          - {{condition_2}}
+          - {{condition_3}}
+        instruction: Provide bid decision, rationale and any conditions
+        examples:
+          - "**Bid Decision**: Bid / No Bid / Bid with conditions"
+
+  - id: next-steps
+    title: Next Steps
+    elicit: true
+    type: table
+    columns: [Action, Owner, Due Date, Status]
+    instruction: Fill in the next steps table with specific actions to move forward
+    examples:
+      - "| [Action 1] | [Owner] | [Date] | [Status] |"
+      - "| [Action 2] | [Owner] | [Date] | [Status] |"
+      - "| [Action 3] | [Owner] | [Date] | [Status] |"
+      - "| [Action 4] | [Owner] | [Date] | [Status] |"
+      - "| [Action 5] | [Owner] | [Date] | [Status] |"
+
+  - id: executive-dashboard-best-practices
+    title: Executive Dashboard Best Practices
+    content: |
+      - **Visual Focus**: Use charts, graphs, and visual indicators where possible
+      - **Executive Perspective**: Focus on strategic factors that matter to executives
+      - **Data-Driven**: Base assessments on objective data when available
+      - **Balanced View**: Present both opportunities and risks honestly
+      - **Action-Oriented**: Ensure the dashboard leads to clear decisions
+      - **Concise Format**: Keep content brief and focused on key decision factors
+      - **Forward-Looking**: Include projections and expected outcomes
+      - **Comparative Context**: Provide competitive context for decision-making
+      - **Strategic Alignment**: Clearly show alignment with corporate strategy
+      - **Risk Transparency**: Be transparent about risks and mitigation approaches
+
+  - id: recommended-graphics
+    title: Recommended Graphics
+    content: |
+      Include 3-5 high-impact graphics that support key messages:
+
+      1. **Win Probability Gauge**: Visual representation of win probability
+      2. **Risk/Reward Matrix**: Plot showing risk vs. reward positioning
+      3. **Competitive Position**: Visual showing relative position against competitors
+      4. **Financial Return Chart**: Graph showing expected financial returns
+      5. **Strategic Alignment Radar**: Radar chart showing alignment with strategic goals

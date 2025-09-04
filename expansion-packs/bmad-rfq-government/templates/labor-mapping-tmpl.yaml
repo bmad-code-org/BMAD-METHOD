@@ -1,0 +1,292 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: labor-mapping-template
+  name: Labor Mapping Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/labor-mapping.md
+    title: "{{rfq_number}} Labor Category Mapping"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for mapping labor categories to RFQ requirements, ensuring appropriate staffing and pricing for government proposals. It helps align labor categories with technical requirements while supporting cost realism.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Review RFQ labor category requirements
+      2. Map company labor categories to RFQ categories
+      3. Align labor categories with technical requirements
+      4. Document qualifications and rates for each category
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: mapping-header
+        title: Mapping Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Labor Category Mapping
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+
+  - id: labor-category-crosswalk
+    title: Labor Category Crosswalk
+    elicit: true
+    sections:
+      - id: rfq-company-mapping
+        title: RFQ to Company Labor Category Mapping
+        type: table
+        columns:
+          [
+            "RFQ Labor Category",
+            "Company Labor Category",
+            "Qualification Alignment",
+            "Rate Alignment",
+            "Notes",
+          ]
+        instruction: Fill in the RFQ to Company labor category mapping table
+        examples:
+          - "| [RFQ Category 1] | [Company Category] | [Full/Partial/Gap] | [Within range/Above/Below] | [Notes] |"
+          - "| [RFQ Category 2] | [Company Category] | [Full/Partial/Gap] | [Within range/Above/Below] | [Notes] |"
+          - "| [RFQ Category 3] | [Company Category] | [Full/Partial/Gap] | [Within range/Above/Below] | [Notes] |"
+          - "| [RFQ Category 4] | [Company Category] | [Full/Partial/Gap] | [Within range/Above/Below] | [Notes] |"
+          - "| [RFQ Category 5] | [Company Category] | [Full/Partial/Gap] | [Within range/Above/Below] | [Notes] |"
+
+      - id: qualification-alignment
+        title: Qualification Alignment Details
+        type: table
+        columns:
+          [
+            "RFQ Labor Category",
+            "RFQ Qualifications",
+            "Company Qualifications",
+            "Gap Analysis",
+            "Mitigation",
+          ]
+        instruction: Fill in the qualification alignment details table
+        examples:
+          - "| [RFQ Category 1] | [Requirements] | [Qualifications] | [Gaps] | [Mitigation] |"
+          - "| [RFQ Category 2] | [Requirements] | [Qualifications] | [Gaps] | [Mitigation] |"
+          - "| [RFQ Category 3] | [Requirements] | [Qualifications] | [Gaps] | [Mitigation] |"
+          - "| [RFQ Category 4] | [Requirements] | [Qualifications] | [Gaps] | [Mitigation] |"
+          - "| [RFQ Category 5] | [Requirements] | [Qualifications] | [Gaps] | [Mitigation] |"
+
+  - id: technical-requirement-mapping
+    title: Technical Requirement Mapping
+    elicit: true
+    sections:
+      - id: labor-to-requirements
+        title: Labor Category to Technical Requirement Mapping
+        type: table
+        columns:
+          [
+            "Technical Requirement",
+            "Primary Labor Categories",
+            "Supporting Labor Categories",
+            "Notes",
+          ]
+        instruction: Fill in the labor category to technical requirement mapping table
+        examples:
+          - "| [Requirement 1] | [Categories] | [Categories] | [Notes] |"
+          - "| [Requirement 2] | [Categories] | [Categories] | [Notes] |"
+          - "| [Requirement 3] | [Categories] | [Categories] | [Notes] |"
+          - "| [Requirement 4] | [Categories] | [Categories] | [Notes] |"
+          - "| [Requirement 5] | [Categories] | [Categories] | [Notes] |"
+
+      - id: labor-utilization
+        title: Labor Category Utilization by Task
+        type: table
+        columns: ["Task/Deliverable", "Labor Categories", "Level of Effort", "Justification"]
+        instruction: Fill in the labor category utilization by task table
+        examples:
+          - "| [Task 1] | [Categories] | [Hours/FTEs] | [Justification] |"
+          - "| [Task 2] | [Categories] | [Hours/FTEs] | [Justification] |"
+          - "| [Task 3] | [Categories] | [Hours/FTEs] | [Justification] |"
+          - "| [Task 4] | [Categories] | [Hours/FTEs] | [Justification] |"
+          - "| [Task 5] | [Categories] | [Hours/FTEs] | [Justification] |"
+
+  - id: labor-category-details
+    title: Labor Category Details
+    elicit: true
+    sections:
+      - id: key-personnel
+        title: Key Personnel Categories
+        type: table
+        columns:
+          [
+            "Labor Category",
+            "Qualification Summary",
+            "Key Responsibilities",
+            "Proposed Personnel",
+            "Notes",
+          ]
+        instruction: Fill in the key personnel categories table
+        examples:
+          - "| [Category 1] | [Qualifications] | [Responsibilities] | [Name(s)] | [Notes] |"
+          - "| [Category 2] | [Qualifications] | [Responsibilities] | [Name(s)] | [Notes] |"
+          - "| [Category 3] | [Qualifications] | [Responsibilities] | [Name(s)] | [Notes] |"
+
+      - id: non-key-personnel
+        title: Non-Key Personnel Categories
+        type: table
+        columns:
+          [
+            "Labor Category",
+            "Qualification Summary",
+            "Key Responsibilities",
+            "Staffing Approach",
+            "Notes",
+          ]
+        instruction: Fill in the non-key personnel categories table
+        examples:
+          - "| [Category 1] | [Qualifications] | [Responsibilities] | [Approach] | [Notes] |"
+          - "| [Category 2] | [Qualifications] | [Responsibilities] | [Approach] | [Notes] |"
+          - "| [Category 3] | [Qualifications] | [Responsibilities] | [Approach] | [Notes] |"
+          - "| [Category 4] | [Qualifications] | [Responsibilities] | [Approach] | [Notes] |"
+          - "| [Category 5] | [Qualifications] | [Responsibilities] | [Approach] | [Notes] |"
+
+  - id: rate-analysis
+    title: Rate Analysis
+    elicit: true
+    sections:
+      - id: labor-rate-comparison
+        title: Labor Rate Comparison
+        type: table
+        columns:
+          [
+            "Labor Category",
+            "RFQ Rate Range",
+            "Company Rate",
+            "Market Rate",
+            "Competitiveness",
+            "Notes",
+          ]
+        instruction: Fill in the labor rate comparison table
+        examples:
+          - "| [Category 1] | [Range] | [Rate] | [Rate] | [High/Medium/Low] | [Notes] |"
+          - "| [Category 2] | [Range] | [Rate] | [Rate] | [High/Medium/Low] | [Notes] |"
+          - "| [Category 3] | [Range] | [Rate] | [Rate] | [High/Medium/Low] | [Notes] |"
+          - "| [Category 4] | [Range] | [Rate] | [Rate] | [High/Medium/Low] | [Notes] |"
+          - "| [Category 5] | [Range] | [Rate] | [Rate] | [High/Medium/Low] | [Notes] |"
+
+      - id: rate-escalation
+        title: Rate Escalation Approach
+        type: table
+        columns:
+          [
+            "Labor Category",
+            "Base Year Rate",
+            "Option Year 1",
+            "Option Year 2",
+            "Option Year 3",
+            "Option Year 4",
+            "Escalation %",
+          ]
+        instruction: Fill in the rate escalation approach table
+        examples:
+          - "| [Category 1] | [Rate] | [Rate] | [Rate] | [Rate] | [Rate] | [Percentage] |"
+          - "| [Category 2] | [Rate] | [Rate] | [Rate] | [Rate] | [Rate] | [Percentage] |"
+          - "| [Category 3] | [Rate] | [Rate] | [Rate] | [Rate] | [Rate] | [Percentage] |"
+          - "| [Category 4] | [Rate] | [Rate] | [Rate] | [Rate] | [Rate] | [Percentage] |"
+          - "| [Category 5] | [Rate] | [Rate] | [Rate] | [Rate] | [Rate] | [Percentage] |"
+
+  - id: staffing-plan-summary
+    title: Staffing Plan Summary
+    elicit: true
+    sections:
+      - id: staffing-level
+        title: Staffing Level by Period
+        type: table
+        columns:
+          [
+            "Labor Category",
+            "Base Year",
+            "Option Year 1",
+            "Option Year 2",
+            "Option Year 3",
+            "Option Year 4",
+            "Notes",
+          ]
+        instruction: Fill in the staffing level by period table
+        examples:
+          - "| [Category 1] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [Notes] |"
+          - "| [Category 2] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [Notes] |"
+          - "| [Category 3] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [Notes] |"
+          - "| [Category 4] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [Notes] |"
+          - "| [Category 5] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [FTEs] | [Notes] |"
+
+      - id: staffing-ramp
+        title: Staffing Ramp-Up/Ramp-Down
+        type: table
+        columns: ["Phase", "Timeframe", "Staffing Approach", "Labor Categories Affected", "Notes"]
+        instruction: Fill in the staffing ramp-up/ramp-down table
+        examples:
+          - "| Transition In | [Timeframe] | [Approach] | [Categories] | [Notes] |"
+          - "| Steady State | [Timeframe] | [Approach] | [Categories] | [Notes] |"
+          - "| Surge Periods | [Timeframe] | [Approach] | [Categories] | [Notes] |"
+          - "| Transition Out | [Timeframe] | [Approach] | [Categories] | [Notes] |"
+
+  - id: cost-narrative-elements
+    title: Cost Narrative Elements
+    elicit: true
+    sections:
+      - id: labor-category-justification
+        title: Labor Category Justification
+        type: table
+        columns:
+          [
+            "Labor Category",
+            "Justification for Inclusion",
+            "Value to Government",
+            "Cost Realism Factors",
+          ]
+        instruction: Fill in the labor category justification table
+        examples:
+          - "| [Category 1] | [Justification] | [Value] | [Factors] |"
+          - "| [Category 2] | [Justification] | [Value] | [Factors] |"
+          - "| [Category 3] | [Justification] | [Value] | [Factors] |"
+          - "| [Category 4] | [Justification] | [Value] | [Factors] |"
+          - "| [Category 5] | [Justification] | [Value] | [Factors] |"
+
+      - id: staffing-level-justification
+        title: Staffing Level Justification
+        type: table
+        columns:
+          [
+            "Task Area",
+            "Staffing Level",
+            "Justification",
+            "Efficiency Measures",
+            "Risk if Understaffed",
+          ]
+        instruction: Fill in the staffing level justification table
+        examples:
+          - "| [Task Area 1] | [Level] | [Justification] | [Measures] | [Risk] |"
+          - "| [Task Area 2] | [Level] | [Justification] | [Measures] | [Risk] |"
+          - "| [Task Area 3] | [Level] | [Justification] | [Measures] | [Risk] |"
+          - "| [Task Area 4] | [Level] | [Justification] | [Measures] | [Risk] |"
+          - "| [Task Area 5] | [Level] | [Justification] | [Measures] | [Risk] |"
+
+  - id: labor-mapping-best-practices
+    title: Labor Mapping Best Practices
+    content: |
+      - **Requirements Alignment**: Ensure labor categories align with all technical requirements
+      - **Qualification Matching**: Match or exceed RFQ qualification requirements
+      - **Cost Realism**: Ensure rates and staffing levels are realistic and defensible
+      - **Competitive Pricing**: Balance competitive rates with appropriate qualifications
+      - **Clear Justification**: Document rationale for all labor category selections
+      - **Efficient Staffing**: Demonstrate efficient use of labor resources
+      - **Skill Coverage**: Ensure all required skills are covered by selected labor categories
+      - **Compliance Focus**: Verify compliance with all labor-related RFQ requirements
+      - **Market Awareness**: Consider market rates and availability for specialized skills
+      - **Risk Mitigation**: Identify and address staffing risks in the mapping

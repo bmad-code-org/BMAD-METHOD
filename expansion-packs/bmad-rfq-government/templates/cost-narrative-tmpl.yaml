@@ -1,0 +1,349 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: cost-narrative-template
+  name: Cost Narrative Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/cost-narrative.md
+    title: "{{rfq_number}} Cost Narrative"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for developing a comprehensive cost narrative that explains and justifies your pricing approach. A well-crafted cost narrative demonstrates cost realism, reasonableness, and competitiveness to government evaluators.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Complete this template after developing your pricing strategy
+      2. Provide clear justification for all cost elements
+      3. Ensure alignment with technical approach
+      4. Focus on demonstrating cost realism and value
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: narrative-header
+        title: Narrative Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Cost Narrative
+          # [Agency Name]
+          # [RFQ Title]
+          # [Company Name]
+          # [Date]
+
+  - id: executive-summary
+    title: Executive Summary
+    elicit: true
+    sections:
+      - id: pricing-approach-overview
+        title: Pricing Approach Overview
+        template: |
+          **Total Proposed Price**: ${{total_amount}}
+
+          **Summary of Pricing Approach**:
+          {{pricing_approach_summary}}
+
+          **Key Pricing Features**:
+
+          - {{feature_1}}
+          - {{feature_2}}
+          - {{feature_3}}
+
+  - id: price-summary
+    title: Price Summary
+    elicit: true
+    sections:
+      - id: price-by-clin
+        title: Price by Contract Line Item Number (CLIN)
+        type: table
+        columns:
+          [
+            CLIN,
+            Description,
+            "Base Year",
+            "Option Year 1",
+            "Option Year 2",
+            "Option Year 3",
+            "Option Year 4",
+            "Total",
+          ]
+        instruction: Fill in the CLIN pricing table with all relevant contract line items
+        examples:
+          - "| 0001 | [Description] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] |"
+          - "| 0002 | [Description] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] |"
+          - "| **Total** | | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] |"
+
+      - id: price-by-cost-element
+        title: Price by Cost Element
+        type: table
+        columns:
+          [
+            Cost Element,
+            "Base Year",
+            "Option Year 1",
+            "Option Year 2",
+            "Option Year 3",
+            "Option Year 4",
+            "Total",
+            "% of Total",
+          ]
+        instruction: Fill in the cost element pricing table with all relevant cost categories
+        examples:
+          - "| Direct Labor | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | [%] |"
+          - "| Fringe Benefits | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | [%] |"
+          - "| **Total** | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | $[Amount] | 100% |"
+
+  - id: direct-labor
+    title: Direct Labor
+    elicit: true
+    sections:
+      - id: labor-category-justification
+        title: Labor Category Justification
+        template: |
+          {{labor_category_approach}}
+        instruction: Provide 1-2 paragraphs explaining your overall labor category approach and alignment with technical requirements
+
+      - id: labor-category-table
+        title: Labor Category Table
+        type: table
+        columns: [Labor Category, Justification, Qualifications, Rate Basis, Cost Realism Factors]
+        instruction: Fill in the labor category justification table
+        examples:
+          - "| [Category 1] | [Justification] | [Qualifications] | [Basis] | [Factors] |"
+          - "| [Category 2] | [Justification] | [Qualifications] | [Basis] | [Factors] |"
+
+      - id: labor-hours-justification
+        title: Labor Hours Justification
+        template: |
+          {{labor_hours_approach}}
+        instruction: Provide 1-2 paragraphs explaining your overall labor hour estimation approach
+
+      - id: labor-hours-table
+        title: Labor Hours Table
+        type: table
+        columns: [Task, Labor Categories, Hours, Justification, Efficiency Measures]
+        instruction: Fill in the labor hours justification table
+        examples:
+          - "| [Task 1] | [Categories] | [Hours] | [Justification] | [Measures] |"
+          - "| [Task 2] | [Categories] | [Hours] | [Justification] | [Measures] |"
+
+      - id: labor-rate-development
+        title: Labor Rate Development
+        template: |
+          {{labor_rate_approach}}
+        instruction: Provide 1-2 paragraphs explaining your labor rate development methodology
+
+      - id: labor-rate-table
+        title: Labor Rate Table
+        type: table
+        columns: [Labor Category, Base Rate, Source/Basis, Competitiveness, Market Comparison]
+        instruction: Fill in the labor rate development table
+        examples:
+          - "| [Category 1] | $[Rate] | [Source] | [Assessment] | [Comparison] |"
+          - "| [Category 2] | $[Rate] | [Source] | [Assessment] | [Comparison] |"
+
+  - id: indirect-rates
+    title: Indirect Rates
+    elicit: true
+    sections:
+      - id: fringe-benefits
+        title: Fringe Benefits
+        template: |
+          **Fringe Rate**: {{fringe_rate}}%
+
+          **Rate Composition**:
+
+          - {{fringe_component_1}}: {{fringe_rate_1}}%
+          - {{fringe_component_2}}: {{fringe_rate_2}}%
+          - {{fringe_component_3}}: {{fringe_rate_3}}%
+
+          **Rate Basis**: {{fringe_rate_basis}}
+
+          **Historical Comparison**: {{fringe_historical_comparison}}
+
+          **Forward Pricing**: {{fringe_forward_pricing}}
+
+      - id: overhead
+        title: Overhead
+        template: |
+          **Overhead Rate**: {{overhead_rate}}%
+
+          **Rate Composition**:
+
+          - {{overhead_component_1}}: {{overhead_rate_1}}%
+          - {{overhead_component_2}}: {{overhead_rate_2}}%
+          - {{overhead_component_3}}: {{overhead_rate_3}}%
+
+          **Rate Basis**: {{overhead_rate_basis}}
+
+          **Historical Comparison**: {{overhead_historical_comparison}}
+
+          **Forward Pricing**: {{overhead_forward_pricing}}
+
+      - id: general-and-admin
+        title: General & Administrative (G&A)
+        template: |
+          **G&A Rate**: {{gna_rate}}%
+
+          **Rate Composition**:
+
+          - {{gna_component_1}}: {{gna_rate_1}}%
+          - {{gna_component_2}}: {{gna_rate_2}}%
+          - {{gna_component_3}}: {{gna_rate_3}}%
+
+          **Rate Basis**: {{gna_rate_basis}}
+
+          **Historical Comparison**: {{gna_historical_comparison}}
+
+          **Forward Pricing**: {{gna_forward_pricing}}
+
+  - id: subcontractor-costs
+    title: Subcontractor Costs
+    elicit: true
+    sections:
+      - id: subcontractor-approach
+        title: Subcontractor Approach
+        template: |
+          {{subcontractor_approach}}
+        instruction: Provide 1-2 paragraphs explaining your subcontractor management approach
+
+      - id: subcontractor-table
+        title: Subcontractor Table
+        type: table
+        columns: [Subcontractor, Role, Value, Selection Justification, Cost Analysis]
+        instruction: Fill in the subcontractor costs table
+        examples:
+          - "| [Subcontractor 1] | [Role] | $[Amount] | [Justification] | [Analysis] |"
+          - "| [Subcontractor 2] | [Role] | $[Amount] | [Justification] | [Analysis] |"
+
+  - id: other-direct-costs
+    title: Other Direct Costs (ODCs)
+    elicit: true
+    sections:
+      - id: odc-justification
+        title: ODC Justification
+        template: |
+          {{odc_approach}}
+        instruction: Provide 1-2 paragraphs explaining your approach to ODCs
+
+      - id: odc-table
+        title: ODC Table
+        type: table
+        columns: [ODC Category, Amount, Basis of Estimate, Justification, Cost Control Measures]
+        instruction: Fill in the ODC justification table
+        examples:
+          - "| [Category 1] | $[Amount] | [Basis] | [Justification] | [Measures] |"
+          - "| [Category 2] | $[Amount] | [Basis] | [Justification] | [Measures] |"
+
+  - id: fee-profit-structure
+    title: Fee/Profit Structure
+    elicit: true
+    sections:
+      - id: fee-approach
+        title: Fee Approach
+        template: |
+          **Overall Fee/Profit**: {{fee_rate}}%
+
+          **Fee Justification**:
+          {{fee_justification}}
+        instruction: Provide 1-2 paragraphs explaining your fee/profit approach and justification
+
+      - id: fee-risk-factors
+        title: Fee Risk Factors
+        type: table
+        columns: [Risk Factor, Assessment, Impact on Fee]
+        instruction: Fill in the fee risk factors table
+        examples:
+          - "| [Factor 1] | [Assessment] | [Impact] |"
+          - "| [Factor 2] | [Assessment] | [Impact] |"
+
+  - id: cost-realism-reasonableness
+    title: Cost Realism and Reasonableness
+    elicit: true
+    sections:
+      - id: cost-realism-approach
+        title: Cost Realism Approach
+        template: |
+          {{realism_approach}}
+        instruction: Provide 1-2 paragraphs explaining your approach to ensuring cost realism
+
+      - id: cost-realism-table
+        title: Cost Realism Table
+        type: table
+        columns: [Cost Element, Realism Measures, Supporting Evidence, Risk Mitigation]
+        instruction: Fill in the cost realism table
+        examples:
+          - "| Direct Labor | [Measures] | [Evidence] | [Mitigation] |"
+          - "| Indirect Rates | [Measures] | [Evidence] | [Mitigation] |"
+
+      - id: cost-reasonableness-demonstration
+        title: Cost Reasonableness Demonstration
+        template: |
+          {{reasonableness_approach}}
+        instruction: Provide 1-2 paragraphs explaining your approach to demonstrating cost reasonableness
+
+      - id: cost-reasonableness-table
+        title: Cost Reasonableness Table
+        type: table
+        columns: [Cost Element, Reasonableness Approach, Comparative Data, Justification]
+        instruction: Fill in the cost reasonableness table
+        examples:
+          - "| Direct Labor | [Approach] | [Data] | [Justification] |"
+          - "| Indirect Rates | [Approach] | [Data] | [Justification] |"
+
+  - id: cost-savings-efficiencies
+    title: Cost Savings and Efficiencies
+    elicit: true
+    sections:
+      - id: efficiency-measures
+        title: Efficiency Measures
+        template: |
+          {{efficiency_approach}}
+        instruction: Provide 1-2 paragraphs explaining your overall approach to cost efficiency
+
+      - id: efficiency-measures-table
+        title: Efficiency Measures Table
+        type: table
+        columns: [Efficiency Measure, Cost Impact, Technical Benefit, Implementation Approach]
+        instruction: Fill in the efficiency measures table
+        examples:
+          - "| [Measure 1] | $[Amount] | [Benefit] | [Approach] |"
+          - "| [Measure 2] | $[Amount] | [Benefit] | [Approach] |"
+
+      - id: value-proposition
+        title: Value Proposition
+        template: |
+          {{value_proposition}}
+        instruction: Provide 1-2 paragraphs explaining your overall value proposition
+
+      - id: value-proposition-table
+        title: Value Proposition Table
+        type: table
+        columns: [Value Element, Cost Impact, Customer Benefit, Competitive Advantage]
+        instruction: Fill in the value proposition table
+        examples:
+          - "| [Element 1] | [Impact] | [Benefit] | [Advantage] |"
+          - "| [Element 2] | [Impact] | [Benefit] | [Advantage] |"
+
+  - id: cost-narrative-best-practices
+    title: Cost Narrative Best Practices
+    content: |
+      - **Technical Alignment**: Ensure cost narrative aligns with technical approach
+      - **Clear Justification**: Provide clear rationale for all cost elements
+      - **Evidence-Based**: Support cost claims with specific data and evidence
+      - **Transparency**: Be transparent about cost development methodology
+      - **Cost Realism**: Demonstrate that costs are realistic for the proposed approach
+      - **Competitive Awareness**: Show awareness of competitive pricing factors
+      - **Efficiency Focus**: Highlight cost efficiencies and value-added elements
+      - **Risk Mitigation**: Address cost risks and mitigation approaches
+      - **Customer Perspective**: Consider cost narrative from the customer's viewpoint
+      - **Compliance Focus**: Ensure compliance with all pricing instructions

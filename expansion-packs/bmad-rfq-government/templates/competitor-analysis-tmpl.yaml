@@ -1,0 +1,508 @@
+template_name: "Competitor Analysis Template"
+template_id: "competitor-analysis-tmpl"
+template_type: "document"
+template_category: "proposal"
+template_description: "A structured format for conducting a comprehensive competitor analysis for government RFQ responses"
+template_help: "This template helps proposal teams understand the competitive landscape, identify strengths and weaknesses, and develop effective strategies to differentiate their proposal."
+template_tags:
+  - "competitor analysis"
+  - "competitive intelligence"
+  - "market positioning"
+  - "SWOT analysis"
+  - "competitive strategy"
+  - "differentiation"
+
+usage_instructions: |
+  1. Complete this template early in the proposal development process
+  2. Involve business development, capture managers, and technical SMEs
+  3. Use objective data and intelligence rather than assumptions
+  4. Update the analysis as new information becomes available
+  5. Use the analysis to inform win themes and proposal strategy
+
+sections:
+  - section_id: "document_header"
+    section_title: "Document Header"
+    section_type: "header"
+    section_template: |
+      # [RFQ Number] Competitor Analysis
+      # [Agency Name]
+      # [RFQ Title]
+      # [Date]
+      # [Version]
+    elicitation_questions:
+      - "What is the RFQ number for this opportunity?"
+      - "What is the name of the agency issuing this RFQ?"
+      - "What is the title of this RFQ?"
+      - "What is today's date?"
+      - "What is the current version of this document?"
+
+  - section_id: "executive_summary"
+    section_title: "Executive Summary"
+    section_type: "content"
+    subsections:
+      - subsection_id: "competitive_landscape_overview"
+        subsection_title: "Competitive Landscape Overview"
+        subsection_type: "content"
+        subsection_template: |
+          **Market Position Summary**:
+          [1-2 paragraphs summarizing the overall competitive landscape and our position]
+
+          **Key Competitors**:
+          [Brief list of the primary competitors and their significance]
+
+          **Competitive Assessment**:
+          [Brief assessment of our competitive position and key differentiators]
+        elicitation_questions:
+          - "How would you summarize the overall competitive landscape for this opportunity?"
+          - "Who are the primary competitors for this opportunity?"
+          - "What is your competitive position and what are your key differentiators?"
+
+  - section_id: "competitor_profiles"
+    section_title: "Competitor Profiles"
+    section_type: "content"
+    subsections:
+      - subsection_id: "competitor_1"
+        subsection_title: "Competitor 1: [Competitor Name]"
+        subsection_type: "content"
+        subsection_template: |
+          **Company Overview**:
+          [Brief description of the competitor, including size, capabilities, and market position]
+
+          **Relationship with Customer**:
+          [Description of the competitor's relationship with the customer agency]
+
+          **Past Performance**:
+          [Summary of relevant past performance with this customer or similar work]
+
+          **Core Capabilities**:
+
+          - [Capability 1]
+          - [Capability 2]
+          - [Capability 3]
+          - [Capability 4]
+          - [Capability 5]
+
+          **Key Personnel**:
+          [Information about key personnel likely to be proposed]
+
+          **Strengths**:
+
+          - [Strength 1]
+          - [Strength 2]
+          - [Strength 3]
+          - [Strength 4]
+          - [Strength 5]
+
+          **Weaknesses**:
+
+          - [Weakness 1]
+          - [Weakness 2]
+          - [Weakness 3]
+          - [Weakness 4]
+          - [Weakness 5]
+
+          **Likely Approach**:
+          [Assessment of the competitor's likely technical and management approach]
+
+          **Pricing Strategy**:
+          [Assessment of the competitor's likely pricing strategy]
+
+          **Win Strategy**:
+          [Assessment of the competitor's likely win strategy and themes]
+        elicitation_questions:
+          - "Who is the first key competitor for this opportunity?"
+          - "What is this competitor's relationship with the customer agency?"
+          - "What relevant past performance does this competitor have?"
+          - "What are this competitor's core capabilities?"
+          - "Who are the key personnel this competitor is likely to propose?"
+          - "What are this competitor's strengths and weaknesses?"
+          - "What technical and management approach is this competitor likely to take?"
+          - "What pricing strategy is this competitor likely to use?"
+          - "What win strategy and themes is this competitor likely to use?"
+
+      - subsection_id: "competitor_2"
+        subsection_title: "Competitor 2: [Competitor Name]"
+        subsection_type: "content"
+        subsection_template: |
+          **Company Overview**:
+          [Brief description of the competitor, including size, capabilities, and market position]
+
+          **Relationship with Customer**:
+          [Description of the competitor's relationship with the customer agency]
+
+          **Past Performance**:
+          [Summary of relevant past performance with this customer or similar work]
+
+          **Core Capabilities**:
+
+          - [Capability 1]
+          - [Capability 2]
+          - [Capability 3]
+          - [Capability 4]
+          - [Capability 5]
+
+          **Key Personnel**:
+          [Information about key personnel likely to be proposed]
+
+          **Strengths**:
+
+          - [Strength 1]
+          - [Strength 2]
+          - [Strength 3]
+          - [Strength 4]
+          - [Strength 5]
+
+          **Weaknesses**:
+
+          - [Weakness 1]
+          - [Weakness 2]
+          - [Weakness 3]
+          - [Weakness 4]
+          - [Weakness 5]
+
+          **Likely Approach**:
+          [Assessment of the competitor's likely technical and management approach]
+
+          **Pricing Strategy**:
+          [Assessment of the competitor's likely pricing strategy]
+
+          **Win Strategy**:
+          [Assessment of the competitor's likely win strategy and themes]
+        elicitation_questions:
+          - "Who is the second key competitor for this opportunity?"
+          - "What is this competitor's relationship with the customer agency?"
+          - "What relevant past performance does this competitor have?"
+          - "What are this competitor's core capabilities?"
+          - "Who are the key personnel this competitor is likely to propose?"
+          - "What are this competitor's strengths and weaknesses?"
+          - "What technical and management approach is this competitor likely to take?"
+          - "What pricing strategy is this competitor likely to use?"
+          - "What win strategy and themes is this competitor likely to use?"
+
+      - subsection_id: "competitor_3"
+        subsection_title: "Competitor 3: [Competitor Name]"
+        subsection_type: "content"
+        subsection_template: |
+          **Company Overview**:
+          [Brief description of the competitor, including size, capabilities, and market position]
+
+          **Relationship with Customer**:
+          [Description of the competitor's relationship with the customer agency]
+
+          **Past Performance**:
+          [Summary of relevant past performance with this customer or similar work]
+
+          **Core Capabilities**:
+
+          - [Capability 1]
+          - [Capability 2]
+          - [Capability 3]
+          - [Capability 4]
+          - [Capability 5]
+
+          **Key Personnel**:
+          [Information about key personnel likely to be proposed]
+
+          **Strengths**:
+
+          - [Strength 1]
+          - [Strength 2]
+          - [Strength 3]
+          - [Strength 4]
+          - [Strength 5]
+
+          **Weaknesses**:
+
+          - [Weakness 1]
+          - [Weakness 2]
+          - [Weakness 3]
+          - [Weakness 4]
+          - [Weakness 5]
+
+          **Likely Approach**:
+          [Assessment of the competitor's likely technical and management approach]
+
+          **Pricing Strategy**:
+          [Assessment of the competitor's likely pricing strategy]
+
+          **Win Strategy**:
+          [Assessment of the competitor's likely win strategy and themes]
+        elicitation_questions:
+          - "Who is the third key competitor for this opportunity?"
+          - "What is this competitor's relationship with the customer agency?"
+          - "What relevant past performance does this competitor have?"
+          - "What are this competitor's core capabilities?"
+          - "Who are the key personnel this competitor is likely to propose?"
+          - "What are this competitor's strengths and weaknesses?"
+          - "What technical and management approach is this competitor likely to take?"
+          - "What pricing strategy is this competitor likely to use?"
+          - "What win strategy and themes is this competitor likely to use?"
+
+  - section_id: "comparative_analysis"
+    section_title: "Comparative Analysis"
+    section_type: "content"
+    subsections:
+      - subsection_id: "capability_comparison"
+        subsection_title: "Capability Comparison"
+        subsection_type: "content"
+        subsection_template: |
+          | Capability Area | Our Company | Competitor 1 | Competitor 2 | Competitor 3 | Our Position |
+          | --------------- | ----------- | ------------ | ------------ | ------------ | ------------ |
+          | [Capability 1]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 2]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 3]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 4]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 5]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 6]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 7]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 8]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 9]  | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Capability 10] | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+
+          **Rating Scale**: 1 (Poor) to 5 (Excellent)
+        elicitation_questions:
+          - "What are the key capability areas to compare for this opportunity?"
+          - "How would you rate your company and each competitor in each capability area?"
+          - "What is your competitive position in each capability area?"
+
+      - subsection_id: "past_performance_comparison"
+        subsection_title: "Past Performance Comparison"
+        subsection_type: "content"
+        subsection_template: |
+          | Performance Area | Our Company | Competitor 1 | Competitor 2 | Competitor 3 | Our Position |
+          | ---------------- | ----------- | ------------ | ------------ | ------------ | ------------ |
+          | [Area 1]         | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Area 2]         | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Area 3]         | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Area 4]         | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Area 5]         | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+
+          **Rating Scale**: 1 (Poor) to 5 (Excellent)
+        elicitation_questions:
+          - "What are the key past performance areas to compare for this opportunity?"
+          - "How would you rate your company and each competitor in each past performance area?"
+          - "What is your competitive position in each past performance area?"
+
+      - subsection_id: "customer_relationship_comparison"
+        subsection_title: "Customer Relationship Comparison"
+        subsection_type: "content"
+        subsection_template: |
+          | Relationship Factor | Our Company | Competitor 1 | Competitor 2 | Competitor 3 | Our Position |
+          | ------------------- | ----------- | ------------ | ------------ | ------------ | ------------ |
+          | [Factor 1]          | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Factor 2]          | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Factor 3]          | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Factor 4]          | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Factor 5]          | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+
+          **Rating Scale**: 1 (Poor) to 5 (Excellent)
+        elicitation_questions:
+          - "What are the key customer relationship factors to compare for this opportunity?"
+          - "How would you rate your company and each competitor in each relationship factor?"
+          - "What is your competitive position in each relationship factor?"
+
+      - subsection_id: "pricing_comparison"
+        subsection_title: "Pricing Comparison"
+        subsection_type: "content"
+        subsection_template: |
+          | Pricing Factor | Our Company | Competitor 1 | Competitor 2 | Competitor 3 | Our Position |
+          | -------------- | ----------- | ------------ | ------------ | ------------ | ------------ |
+          | [Factor 1]     | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Factor 2]     | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Factor 3]     | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Factor 4]     | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+          | [Factor 5]     | [Rating]    | [Rating]     | [Rating]     | [Rating]     | [Position]   |
+
+          **Rating Scale**: 1 (Poor) to 5 (Excellent)
+        elicitation_questions:
+          - "What are the key pricing factors to compare for this opportunity?"
+          - "How would you rate your company and each competitor in each pricing factor?"
+          - "What is your competitive position in each pricing factor?"
+
+  - section_id: "competitive_strategy"
+    section_title: "Competitive Strategy"
+    section_type: "content"
+    subsections:
+      - subsection_id: "swot_analysis"
+        subsection_title: "Strengths, Weaknesses, Opportunities, and Threats"
+        subsection_type: "content"
+        subsection_template: |
+          **Our Strengths**:
+
+          - [Strength 1]
+          - [Strength 2]
+          - [Strength 3]
+          - [Strength 4]
+          - [Strength 5]
+
+          **Our Weaknesses**:
+
+          - [Weakness 1]
+          - [Weakness 2]
+          - [Weakness 3]
+          - [Weakness 4]
+          - [Weakness 5]
+
+          **Opportunities**:
+
+          - [Opportunity 1]
+          - [Opportunity 2]
+          - [Opportunity 3]
+          - [Opportunity 4]
+          - [Opportunity 5]
+
+          **Threats**:
+
+          - [Threat 1]
+          - [Threat 2]
+          - [Threat 3]
+          - [Threat 4]
+          - [Threat 5]
+        elicitation_questions:
+          - "What are your organization's strengths for this opportunity?"
+          - "What are your organization's weaknesses for this opportunity?"
+          - "What opportunities exist for your organization in this opportunity?"
+          - "What threats does your organization face in this opportunity?"
+
+      - subsection_id: "competitive_positioning"
+        subsection_title: "Competitive Positioning"
+        subsection_type: "content"
+        subsection_template: |
+          **Key Discriminators**:
+
+          - [Discriminator 1]
+          - [Discriminator 2]
+          - [Discriminator 3]
+          - [Discriminator 4]
+          - [Discriminator 5]
+
+          **Positioning Strategy**:
+          [Description of our positioning strategy relative to competitors]
+
+          **Ghost Strategy**:
+          [Description of our strategy to "ghost" competitors by highlighting their weaknesses]
+        elicitation_questions:
+          - "What are your key discriminators for this opportunity?"
+          - "What is your positioning strategy relative to competitors?"
+          - "What is your strategy to 'ghost' competitors by highlighting their weaknesses?"
+
+      - subsection_id: "competitor_specific_strategies"
+        subsection_title: "Competitor-Specific Strategies"
+        subsection_type: "content"
+        subsection_template: |
+          #### Strategy for Competitor 1: [Competitor Name]
+
+          **Key Weaknesses to Exploit**:
+
+          - [Weakness 1]
+          - [Weakness 2]
+          - [Weakness 3]
+
+          **Neutralization Strategy**:
+          [Description of how to neutralize this competitor's strengths]
+
+          **Messaging Approach**:
+          [Description of messaging approach to position against this competitor]
+
+          #### Strategy for Competitor 2: [Competitor Name]
+
+          **Key Weaknesses to Exploit**:
+
+          - [Weakness 1]
+          - [Weakness 2]
+          - [Weakness 3]
+
+          **Neutralization Strategy**:
+          [Description of how to neutralize this competitor's strengths]
+
+          **Messaging Approach**:
+          [Description of messaging approach to position against this competitor]
+
+          #### Strategy for Competitor 3: [Competitor Name]
+
+          **Key Weaknesses to Exploit**:
+
+          - [Weakness 1]
+          - [Weakness 2]
+          - [Weakness 3]
+
+          **Neutralization Strategy**:
+          [Description of how to neutralize this competitor's strengths]
+
+          **Messaging Approach**:
+          [Description of messaging approach to position against this competitor]
+        elicitation_questions:
+          - "What weaknesses of each competitor can you exploit?"
+          - "How will you neutralize each competitor's strengths?"
+          - "What messaging approach will you use to position against each competitor?"
+
+  - section_id: "competitive_intelligence"
+    section_title: "Competitive Intelligence"
+    section_type: "content"
+    subsections:
+      - subsection_id: "intelligence_gaps"
+        subsection_title: "Intelligence Gaps"
+        subsection_type: "content"
+        subsection_template: |
+          **Key Information Needs**:
+
+          - [Information Need 1]
+          - [Information Need 2]
+          - [Information Need 3]
+          - [Information Need 4]
+          - [Information Need 5]
+
+          **Intelligence Collection Plan**:
+
+          | Information Need | Potential Sources | Collection Method | Priority          | Status   |
+          | ---------------- | ----------------- | ----------------- | ----------------- | -------- |
+          | [Need 1]         | [Sources]         | [Method]          | [High/Medium/Low] | [Status] |
+          | [Need 2]         | [Sources]         | [Method]          | [High/Medium/Low] | [Status] |
+          | [Need 3]         | [Sources]         | [Method]          | [High/Medium/Low] | [Status] |
+          | [Need 4]         | [Sources]         | [Method]          | [High/Medium/Low] | [Status] |
+          | [Need 5]         | [Sources]         | [Method]          | [High/Medium/Low] | [Status] |
+        elicitation_questions:
+          - "What key information do you still need about competitors?"
+          - "What are the potential sources for this information?"
+          - "What methods will you use to collect this information?"
+          - "What is the priority of each information need?"
+          - "What is the status of each information need?"
+
+      - subsection_id: "intelligence_updates"
+        subsection_title: "Intelligence Updates"
+        subsection_type: "content"
+        subsection_template: |
+          **Recent Intelligence**:
+          [Summary of recent competitive intelligence]
+
+          **Impact Assessment**:
+          [Assessment of how recent intelligence impacts our strategy]
+        elicitation_questions:
+          - "What recent competitive intelligence have you gathered?"
+          - "How does this intelligence impact your strategy?"
+
+  - section_id: "competitor_analysis_best_practices"
+    section_title: "Competitor Analysis Best Practices"
+    section_type: "content"
+    section_template: |
+      - **Objectivity**: Base analysis on facts and data, not assumptions or biases
+      - **Comprehensive Coverage**: Analyze all likely competitors, not just the obvious ones
+      - **Customer Perspective**: View competitors from the customer's perspective
+      - **Specific Insights**: Develop specific insights rather than generic observations
+      - **Actionable Intelligence**: Ensure analysis leads to actionable competitive strategies
+      - **Regular Updates**: Update the analysis as new information becomes available
+      - **Multiple Sources**: Use multiple sources to validate competitive intelligence
+      - **Ethical Collection**: Ensure all intelligence is collected through ethical and legal means
+      - **Strategic Application**: Apply competitive insights to proposal strategy and win themes
+      - **Continuous Monitoring**: Monitor competitor activities throughout the proposal process
+    elicitation_questions:
+      - "How will you ensure objectivity in your competitor analysis?"
+      - "How will you ensure comprehensive coverage of all likely competitors?"
+      - "How will you view competitors from the customer's perspective?"
+      - "How will you develop specific insights rather than generic observations?"
+      - "How will you ensure your analysis leads to actionable competitive strategies?"
+      - "How will you update the analysis as new information becomes available?"
+      - "How will you use multiple sources to validate competitive intelligence?"
+      - "How will you ensure all intelligence is collected through ethical and legal means?"
+      - "How will you apply competitive insights to proposal strategy and win themes?"
+      - "How will you monitor competitor activities throughout the proposal process?"

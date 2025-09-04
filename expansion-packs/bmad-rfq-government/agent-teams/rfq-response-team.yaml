@@ -1,0 +1,33 @@
+# <!-- Powered by BMAD™ Core -->
+team:
+  id: rfq-response-team
+  name: Government RFQ Response Team
+  description: >-
+    A specialized team for government RFQ response preparation, analysis, and submission.
+    Includes agents focused on opportunity qualification, win theme development, compliance
+    tracking, narrative development, and proposal review.
+
+  recommended_workflow: rfq-response-workflow
+
+  agents:
+    - rfq-opportunity-summarizer
+    - win-theme-generator
+    - compliance-matrix-builder
+    - technical-narrative-drafter
+    - labor-mapping-assistant
+    - executive-summary-generator
+    - evaluator-simulator
+
+  use_cases:
+    - Federal RFQ responses
+    - State/local government procurement responses
+    - IDIQ task order responses
+    - GSA Schedule responses
+    - Competitive procurements requiring formal proposals
+    - Multiple-volume proposal development
+
+  guidance: >-
+    This team works best when RFQ documents are available for analysis. Start with the
+    opportunity summarizer agent to qualify the opportunity, then use the win theme
+    generator to develop discriminators before moving to compliance tracking and content
+    development. Use the evaluator simulator for proposal review before finalizing.

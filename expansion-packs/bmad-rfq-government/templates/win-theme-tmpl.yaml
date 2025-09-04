@@ -1,0 +1,473 @@
+template_name: "Win Theme Development Template"
+template_id: "win-theme-tmpl"
+template_type: "document"
+template_category: "proposal"
+template_description: "A structured format for developing compelling win themes for government RFQ responses"
+template_help: "Win themes are the key messages that differentiate your proposal and resonate with the customer's needs, priorities, and hot buttons."
+template_tags:
+  - "win themes"
+  - "capture strategy"
+  - "competitive analysis"
+  - "customer understanding"
+  - "proposal messaging"
+  - "differentiation"
+
+usage_instructions: |
+  1. Complete this template early in the proposal development process
+  2. Involve business development, capture managers, and technical SMEs
+  3. Ensure alignment with customer needs and evaluation criteria
+  4. Develop themes that are specific, measurable, and provable
+  5. Incorporate win themes throughout the proposal
+
+sections:
+  - section_id: "document_header"
+    section_title: "Document Header"
+    section_type: "header"
+    section_template: |
+      # [RFQ Number] Win Theme Development
+      # [Agency Name]
+      # [RFQ Title]
+      # [Date]
+      # [Version]
+    elicitation_questions:
+      - "What is the RFQ number for this opportunity?"
+      - "What is the name of the agency issuing this RFQ?"
+      - "What is the title of this RFQ?"
+      - "What is today's date?"
+      - "What is the current version of this document?"
+
+  - section_id: "executive_summary"
+    section_title: "Executive Summary"
+    section_type: "content"
+    subsections:
+      - subsection_id: "win_strategy_overview"
+        subsection_title: "Win Strategy Overview"
+        subsection_type: "content"
+        subsection_template: |
+          **Capture Strategy Summary**:
+          [1-2 paragraphs summarizing the overall capture strategy and approach]
+
+          **Win Probability Assessment**:
+          [Current assessment of win probability and key factors]
+
+          **Strategic Importance**:
+          [Brief explanation of the strategic importance of this opportunity]
+        elicitation_questions:
+          - "What is your overall capture strategy and approach for this opportunity?"
+          - "What is your current assessment of win probability and what are the key factors?"
+          - "Why is this opportunity strategically important to your organization?"
+
+  - section_id: "customer_understanding"
+    section_title: "Customer Understanding"
+    section_type: "content"
+    subsections:
+      - subsection_id: "customer_profile"
+        subsection_title: "Customer Profile"
+        subsection_type: "content"
+        subsection_template: |
+          **Agency Mission**:
+          [Description of the agency's mission and objectives]
+
+          **Program Objectives**:
+          [Description of the specific program objectives]
+
+          **Key Stakeholders**:
+
+          | Stakeholder     | Role   | Influence         | Key Concerns | Hot Buttons   |
+          | --------------- | ------ | ----------------- | ------------ | ------------- |
+          | [Stakeholder 1] | [Role] | [High/Medium/Low] | [Concerns]   | [Hot Buttons] |
+          | [Stakeholder 2] | [Role] | [High/Medium/Low] | [Concerns]   | [Hot Buttons] |
+          | [Stakeholder 3] | [Role] | [High/Medium/Low] | [Concerns]   | [Hot Buttons] |
+          | [Stakeholder 4] | [Role] | [High/Medium/Low] | [Concerns]   | [Hot Buttons] |
+          | [Stakeholder 5] | [Role] | [High/Medium/Low] | [Concerns]   | [Hot Buttons] |
+        elicitation_questions:
+          - "What is the mission and objectives of the agency issuing this RFQ?"
+          - "What are the specific objectives of the program this RFQ is supporting?"
+          - "Who are the key stakeholders for this opportunity?"
+          - "What are the roles, influence levels, key concerns, and hot buttons of each stakeholder?"
+
+      - subsection_id: "customer_pain_points"
+        subsection_title: "Customer Pain Points"
+        subsection_type: "content"
+        subsection_template: |
+          **Current Challenges**:
+
+          | Challenge     | Description   | Impact   | Priority          |
+          | ------------- | ------------- | -------- | ----------------- |
+          | [Challenge 1] | [Description] | [Impact] | [High/Medium/Low] |
+          | [Challenge 2] | [Description] | [Impact] | [High/Medium/Low] |
+          | [Challenge 3] | [Description] | [Impact] | [High/Medium/Low] |
+          | [Challenge 4] | [Description] | [Impact] | [High/Medium/Low] |
+          | [Challenge 5] | [Description] | [Impact] | [High/Medium/Low] |
+
+          **Desired Outcomes**:
+
+          | Outcome     | Description   | Priority          | Success Criteria |
+          | ----------- | ------------- | ----------------- | ---------------- |
+          | [Outcome 1] | [Description] | [High/Medium/Low] | [Criteria]       |
+          | [Outcome 2] | [Description] | [High/Medium/Low] | [Criteria]       |
+          | [Outcome 3] | [Description] | [High/Medium/Low] | [Criteria]       |
+          | [Outcome 4] | [Description] | [High/Medium/Low] | [Criteria]       |
+          | [Outcome 5] | [Description] | [High/Medium/Low] | [Criteria]       |
+        elicitation_questions:
+          - "What are the current challenges the customer is facing?"
+          - "What is the impact of each challenge and how would you prioritize them?"
+          - "What outcomes is the customer seeking from this procurement?"
+          - "How would you prioritize these desired outcomes and what are the success criteria for each?"
+
+  - section_id: "competitive_analysis"
+    section_title: "Competitive Analysis"
+    section_type: "content"
+    subsections:
+      - subsection_id: "competitive_landscape"
+        subsection_title: "Competitive Landscape"
+        subsection_type: "content"
+        subsection_template: |
+          **Known Competitors**:
+
+          | Competitor     | Strengths   | Weaknesses   | Past Performance   | Relationship with Customer |
+          | -------------- | ----------- | ------------ | ------------------ | -------------------------- |
+          | [Competitor 1] | [Strengths] | [Weaknesses] | [Past Performance] | [Relationship]             |
+          | [Competitor 2] | [Strengths] | [Weaknesses] | [Past Performance] | [Relationship]             |
+          | [Competitor 3] | [Strengths] | [Weaknesses] | [Past Performance] | [Relationship]             |
+          | [Competitor 4] | [Strengths] | [Weaknesses] | [Past Performance] | [Relationship]             |
+          | [Competitor 5] | [Strengths] | [Weaknesses] | [Past Performance] | [Relationship]             |
+        elicitation_questions:
+          - "Who are the known competitors for this opportunity?"
+          - "What are the strengths and weaknesses of each competitor?"
+          - "What is the past performance record of each competitor with this customer?"
+          - "What is the relationship of each competitor with the customer?"
+
+      - subsection_id: "competitive_position"
+        subsection_title: "Competitive Position"
+        subsection_type: "content"
+        subsection_template: |
+          **Our Strengths**:
+
+          - [Strength 1]
+          - [Strength 2]
+          - [Strength 3]
+          - [Strength 4]
+          - [Strength 5]
+
+          **Our Weaknesses**:
+
+          - [Weakness 1]
+          - [Weakness 2]
+          - [Weakness 3]
+          - [Weakness 4]
+          - [Weakness 5]
+
+          **Discriminators**:
+
+          - [Discriminator 1]
+          - [Discriminator 2]
+          - [Discriminator 3]
+          - [Discriminator 4]
+          - [Discriminator 5]
+        elicitation_questions:
+          - "What are your organization's strengths relative to this opportunity?"
+          - "What are your organization's weaknesses relative to this opportunity?"
+          - "What are your key discriminators that set you apart from the competition?"
+
+  - section_id: "win_theme_development"
+    section_title: "Win Theme Development"
+    section_type: "content"
+    subsections:
+      - subsection_id: "primary_win_theme"
+        subsection_title: "Primary Win Theme"
+        subsection_type: "content"
+        subsection_template: |
+          **Theme Statement**:
+          [Clear, concise statement of the primary win theme]
+
+          **Supporting Evidence**:
+
+          - [Evidence 1]
+          - [Evidence 2]
+          - [Evidence 3]
+
+          **Customer Benefits**:
+
+          - [Benefit 1]
+          - [Benefit 2]
+          - [Benefit 3]
+
+          **Alignment with Evaluation Criteria**:
+          [Explanation of how this theme aligns with key evaluation criteria]
+
+          **Visual Representation**:
+          [Description of how this theme could be visually represented]
+        elicitation_questions:
+          - "What is your primary win theme for this opportunity?"
+          - "What evidence supports this theme?"
+          - "What benefits does this theme provide to the customer?"
+          - "How does this theme align with the evaluation criteria?"
+          - "How could this theme be visually represented in the proposal?"
+
+      - subsection_id: "secondary_win_themes"
+        subsection_title: "Secondary Win Themes"
+        subsection_type: "content"
+        subsection_template: |
+          #### Theme 1: [Theme Name]
+
+          **Theme Statement**:
+          [Clear, concise statement of the theme]
+
+          **Supporting Evidence**:
+
+          - [Evidence 1]
+          - [Evidence 2]
+          - [Evidence 3]
+
+          **Customer Benefits**:
+
+          - [Benefit 1]
+          - [Benefit 2]
+          - [Benefit 3]
+
+          **Alignment with Evaluation Criteria**:
+          [Explanation of how this theme aligns with key evaluation criteria]
+
+          **Visual Representation**:
+          [Description of how this theme could be visually represented]
+
+          #### Theme 2: [Theme Name]
+
+          **Theme Statement**:
+          [Clear, concise statement of the theme]
+
+          **Supporting Evidence**:
+
+          - [Evidence 1]
+          - [Evidence 2]
+          - [Evidence 3]
+
+          **Customer Benefits**:
+
+          - [Benefit 1]
+          - [Benefit 2]
+          - [Benefit 3]
+
+          **Alignment with Evaluation Criteria**:
+          [Explanation of how this theme aligns with key evaluation criteria]
+
+          **Visual Representation**:
+          [Description of how this theme could be visually represented]
+
+          #### Theme 3: [Theme Name]
+
+          **Theme Statement**:
+          [Clear, concise statement of the theme]
+
+          **Supporting Evidence**:
+
+          - [Evidence 1]
+          - [Evidence 2]
+          - [Evidence 3]
+
+          **Customer Benefits**:
+
+          - [Benefit 1]
+          - [Benefit 2]
+          - [Benefit 3]
+
+          **Alignment with Evaluation Criteria**:
+          [Explanation of how this theme aligns with key evaluation criteria]
+
+          **Visual Representation**:
+          [Description of how this theme could be visually represented]
+        elicitation_questions:
+          - "What are your secondary win themes for this opportunity?"
+          - "What evidence supports each theme?"
+          - "What benefits does each theme provide to the customer?"
+          - "How does each theme align with the evaluation criteria?"
+          - "How could each theme be visually represented in the proposal?"
+
+      - subsection_id: "technical_win_themes"
+        subsection_title: "Technical Win Themes"
+        subsection_type: "content"
+        subsection_template: |
+          #### Technical Theme 1: [Theme Name]
+
+          **Theme Statement**:
+          [Clear, concise statement of the theme]
+
+          **Supporting Evidence**:
+
+          - [Evidence 1]
+          - [Evidence 2]
+          - [Evidence 3]
+
+          **Technical Approach Alignment**:
+          [Explanation of how this theme aligns with the technical approach]
+
+          **Customer Benefits**:
+
+          - [Benefit 1]
+          - [Benefit 2]
+          - [Benefit 3]
+
+          #### Technical Theme 2: [Theme Name]
+
+          **Theme Statement**:
+          [Clear, concise statement of the theme]
+
+          **Supporting Evidence**:
+
+          - [Evidence 1]
+          - [Evidence 2]
+          - [Evidence 3]
+
+          **Technical Approach Alignment**:
+          [Explanation of how this theme aligns with the technical approach]
+
+          **Customer Benefits**:
+
+          - [Benefit 1]
+          - [Benefit 2]
+          - [Benefit 3]
+        elicitation_questions:
+          - "What are your technical win themes for this opportunity?"
+          - "What evidence supports each technical theme?"
+          - "How does each theme align with your technical approach?"
+          - "What benefits does each technical theme provide to the customer?"
+
+      - subsection_id: "management_win_themes"
+        subsection_title: "Management Win Themes"
+        subsection_type: "content"
+        subsection_template: |
+          #### Management Theme 1: [Theme Name]
+
+          **Theme Statement**:
+          [Clear, concise statement of the theme]
+
+          **Supporting Evidence**:
+
+          - [Evidence 1]
+          - [Evidence 2]
+          - [Evidence 3]
+
+          **Management Approach Alignment**:
+          [Explanation of how this theme aligns with the management approach]
+
+          **Customer Benefits**:
+
+          - [Benefit 1]
+          - [Benefit 2]
+          - [Benefit 3]
+
+          #### Management Theme 2: [Theme Name]
+
+          **Theme Statement**:
+          [Clear, concise statement of the theme]
+
+          **Supporting Evidence**:
+
+          - [Evidence 1]
+          - [Evidence 2]
+          - [Evidence 3]
+
+          **Management Approach Alignment**:
+          [Explanation of how this theme aligns with the management approach]
+
+          **Customer Benefits**:
+
+          - [Benefit 1]
+          - [Benefit 2]
+          - [Benefit 3]
+        elicitation_questions:
+          - "What are your management win themes for this opportunity?"
+          - "What evidence supports each management theme?"
+          - "How does each theme align with your management approach?"
+          - "What benefits does each management theme provide to the customer?"
+
+  - section_id: "win_theme_implementation"
+    section_title: "Win Theme Implementation"
+    section_type: "content"
+    subsections:
+      - subsection_id: "theme_integration"
+        subsection_title: "Theme Integration"
+        subsection_type: "content"
+        subsection_template: |
+          **Proposal Section Mapping**:
+
+          | Proposal Section | Applicable Win Themes | Integration Approach |
+          | ---------------- | --------------------- | -------------------- |
+          | [Section]        | [Themes]              | [Approach]           |
+          | [Section]        | [Themes]              | [Approach]           |
+          | [Section]        | [Themes]              | [Approach]           |
+          | [Section]        | [Themes]              | [Approach]           |
+          | [Section]        | [Themes]              | [Approach]           |
+
+          **Theme Messaging Matrix**:
+
+          | Audience   | Key Messages | Supporting Evidence | Delivery Method |
+          | ---------- | ------------ | ------------------- | --------------- |
+          | [Audience] | [Messages]   | [Evidence]          | [Method]        |
+          | [Audience] | [Messages]   | [Evidence]          | [Method]        |
+          | [Audience] | [Messages]   | [Evidence]          | [Method]        |
+          | [Audience] | [Messages]   | [Evidence]          | [Method]        |
+          | [Audience] | [Messages]   | [Evidence]          | [Method]        |
+        elicitation_questions:
+          - "How will you integrate win themes into each section of the proposal?"
+          - "What key messages will you deliver to each audience?"
+          - "What evidence will support these messages?"
+          - "What methods will you use to deliver these messages?"
+
+      - subsection_id: "theme_validation"
+        subsection_title: "Theme Validation"
+        subsection_type: "content"
+        subsection_template: |
+          **Validation Approach**:
+          [Description of the approach to validating win themes]
+
+          **Validation Criteria**:
+
+          - [Criterion 1]
+          - [Criterion 2]
+          - [Criterion 3]
+          - [Criterion 4]
+          - [Criterion 5]
+
+          **Validation Results**:
+
+          | Win Theme | Validation Status | Feedback   | Adjustments Needed |
+          | --------- | ----------------- | ---------- | ------------------ |
+          | [Theme]   | [Status]          | [Feedback] | [Adjustments]      |
+          | [Theme]   | [Status]          | [Feedback] | [Adjustments]      |
+          | [Theme]   | [Status]          | [Feedback] | [Adjustments]      |
+          | [Theme]   | [Status]          | [Feedback] | [Adjustments]      |
+          | [Theme]   | [Status]          | [Feedback] | [Adjustments]      |
+        elicitation_questions:
+          - "How will you validate your win themes?"
+          - "What criteria will you use to validate win themes?"
+          - "What is the status of each win theme's validation?"
+          - "What feedback have you received on each win theme?"
+          - "What adjustments are needed for each win theme based on validation results?"
+
+  - section_id: "win_theme_best_practices"
+    section_title: "Win Theme Best Practices"
+    section_type: "content"
+    section_template: |
+      - **Customer Focus**: Ensure win themes address specific customer needs and priorities
+      - **Specificity**: Develop specific, concrete themes rather than generic statements
+      - **Evidence-Based**: Support all themes with specific, measurable evidence
+      - **Benefit-Oriented**: Clearly articulate the benefits to the customer
+      - **Differentiation**: Ensure themes highlight your unique strengths and discriminators
+      - **Consistency**: Maintain consistent messaging throughout the proposal
+      - **Visual Support**: Develop visual elements that reinforce key themes
+      - **Evaluation Alignment**: Align themes with evaluation criteria and scoring
+      - **Validation**: Validate themes with customer insights and feedback
+      - **Integration**: Integrate themes throughout the proposal, not just in the executive summary
+    elicitation_questions:
+      - "How will you ensure your win themes are customer-focused?"
+      - "How will you make your win themes specific and concrete?"
+      - "What evidence will you use to support your win themes?"
+      - "How will you articulate the benefits of your solution to the customer?"
+      - "How will your win themes highlight your unique strengths and discriminators?"
+      - "How will you maintain consistent messaging throughout the proposal?"
+      - "What visual elements will you use to reinforce your key themes?"
+      - "How will you align your win themes with the evaluation criteria and scoring?"
+      - "How will you validate your win themes with customer insights and feedback?"
+      - "How will you integrate your win themes throughout the proposal?"

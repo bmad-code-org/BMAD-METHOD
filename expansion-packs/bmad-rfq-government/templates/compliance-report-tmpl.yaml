@@ -1,0 +1,257 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: compliance-report-template-v1
+  name: Compliance Report
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/compliance-report.md
+    title: "{{rfq_number}} Compliance Report"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for verifying and documenting proposal compliance with all RFQ requirements. It helps identify compliance gaps and issues before submission to reduce the risk of disqualification.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Review proposal content against compliance matrix
+      2. Verify all requirements are addressed
+      3. Document compliance status and issues
+      4. Provide recommendations for addressing gaps
+
+  - id: report-header
+    title: Report Header
+    instruction: |
+      Complete the header information for the compliance report.
+    elicit: true
+    template: |
+      # {{rfq_number}} Compliance Report
+      # {{agency_name}}
+      # {{rfq_title}}
+      # {{date}}
+      # {{review_phase}}
+    sections:
+      - id: review-phase
+        title: Review Phase
+        choices: ["Pink Team", "Red Team", "Gold Team", "Final"]
+
+  - id: executive-summary
+    title: Executive Summary
+    instruction: |
+      Provide a high-level assessment of the proposal's compliance status.
+    elicit: true
+    sections:
+      - id: compliance-status
+        title: Overall Compliance Assessment
+        choices: ["Fully Compliant", "Partially Compliant", "Non-Compliant"]
+        template: |
+          **Compliance Status**: {{compliance_status}}
+
+          **Summary Assessment**:
+          {{summary_assessment}}
+
+          **Critical Issues**:
+
+          - {{critical_issue_1}}
+          - {{critical_issue_2}}
+          - {{critical_issue_3}}
+
+          **Recommendation**:
+          {{recommendation}}
+        examples:
+          - "Submit as is"
+          - "Address critical issues"
+          - "Major compliance rework needed"
+
+  - id: detailed-compliance-assessment
+    title: Detailed Compliance Assessment
+    instruction: |
+      Assess compliance with each section of the RFQ requirements.
+    elicit: true
+    sections:
+      - id: section-l-compliance
+        title: Section L Compliance
+        sections:
+          - id: l1-general-instructions
+            title: L.1 General Instructions
+            type: table
+            columns: [Requirement, Compliant, Location, Notes]
+            instruction: Document compliance with general instructions in Section L.1.
+            examples:
+              - "| [Requirement] | [Yes/No/Partial] | [Section reference] | [Notes] |"
+            repeatable: true
+
+          - id: l2-technical-proposal
+            title: L.2 Volume I - Technical Proposal
+            type: table
+            columns: [Requirement, Compliant, Location, Notes]
+            instruction: Document compliance with technical proposal requirements in Section L.2.
+            examples:
+              - "| [Requirement] | [Yes/No/Partial] | [Section reference] | [Notes] |"
+            repeatable: true
+
+          - id: l3-price-proposal
+            title: L.3 Volume II - Price Proposal
+            type: table
+            columns: [Requirement, Compliant, Location, Notes]
+            instruction: Document compliance with price proposal requirements in Section L.3.
+            examples:
+              - "| [Requirement] | [Yes/No/Partial] | [Section reference] | [Notes] |"
+            repeatable: true
+
+      - id: sow-pws-requirements
+        title: SOW/PWS Requirements
+        sections:
+          - id: technical-requirements
+            title: Technical Requirements
+            type: table
+            columns: [Requirement ID, Compliant, Location, Notes]
+            instruction: Document compliance with technical requirements in the SOW/PWS.
+            examples:
+              - "| [Req ID] | [Yes/No/Partial] | [Section reference] | [Notes] |"
+            repeatable: true
+
+          - id: management-requirements
+            title: Management Requirements
+            type: table
+            columns: [Requirement ID, Compliant, Location, Notes]
+            instruction: Document compliance with management requirements in the SOW/PWS.
+            examples:
+              - "| [Req ID] | [Yes/No/Partial] | [Section reference] | [Notes] |"
+            repeatable: true
+
+          - id: deliverable-requirements
+            title: Deliverable Requirements
+            type: table
+            columns: [Requirement ID, Compliant, Location, Notes]
+            instruction: Document compliance with deliverable requirements in the SOW/PWS.
+            examples:
+              - "| [Req ID] | [Yes/No/Partial] | [Section reference] | [Notes] |"
+            repeatable: true
+
+      - id: formatting-submission-requirements
+        title: Formatting and Submission Requirements
+        type: table
+        columns: [Requirement, Compliant, Notes]
+        instruction: Document compliance with formatting and submission requirements.
+        examples:
+          - "| Page limits | [Yes/No/Partial] | [Notes] |"
+          - "| Font/margins | [Yes/No/Partial] | [Notes] |"
+          - "| File formats | [Yes/No/Partial] | [Notes] |"
+          - "| Organization | [Yes/No/Partial] | [Notes] |"
+          - "| Required forms | [Yes/No/Partial] | [Notes] |"
+          - "| Submission method | [Yes/No/Partial] | [Notes] |"
+        repeatable: true
+
+  - id: compliance-gap-analysis
+    title: Compliance Gap Analysis
+    instruction: |
+      Identify and analyze gaps in compliance with RFQ requirements.
+    elicit: true
+    sections:
+      - id: critical-compliance-gaps
+        title: Critical Compliance Gaps
+        type: table
+        columns: [Requirement, Issue, Impact, Recommendation]
+        instruction: Document critical gaps in compliance that could impact proposal evaluation.
+        examples:
+          - "| [Requirement] | [Description of gap] | [Potential impact] | [Specific recommendation] |"
+        repeatable: true
+
+      - id: partial-compliance-issues
+        title: Partial Compliance Issues
+        type: table
+        columns: [Requirement, Issue, Impact, Recommendation]
+        instruction: Document areas of partial compliance that could be improved.
+        examples:
+          - "| [Requirement] | [Description of issue] | [Potential impact] | [Specific recommendation] |"
+        repeatable: true
+
+      - id: formatting-organization-issues
+        title: Formatting and Organization Issues
+        type: table
+        columns: [Issue, Location, Recommendation]
+        instruction: Document issues with formatting and organization that could impact readability or evaluation.
+        examples:
+          - "| [Issue description] | [Section reference] | [Specific recommendation] |"
+        repeatable: true
+
+  - id: compliance-improvement-plan
+    title: Compliance Improvement Plan
+    instruction: |
+      Develop a plan to address compliance issues identified in the gap analysis.
+    elicit: true
+    sections:
+      - id: priority-1
+        title: Priority 1 (Critical - Must Address)
+        type: bullet-list
+        instruction: List actions that must be taken to address critical compliance issues.
+        examples:
+          - "[Specific action with reference to requirement]"
+        repeatable: true
+
+      - id: priority-2
+        title: Priority 2 (Important - Should Address)
+        type: bullet-list
+        instruction: List actions that should be taken to address important compliance issues.
+        examples:
+          - "[Specific action with reference to requirement]"
+        repeatable: true
+
+      - id: priority-3
+        title: Priority 3 (Enhancement - Consider Addressing)
+        type: bullet-list
+        instruction: List actions that could be taken to enhance compliance.
+        examples:
+          - "[Specific action with reference to requirement]"
+        repeatable: true
+
+  - id: compliance-verification-process
+    title: Compliance Verification Process
+    instruction: |
+      Document the process used to verify compliance with RFQ requirements.
+    elicit: true
+    sections:
+      - id: verification-methodology
+        title: Verification Methodology
+        template: |
+          **Verification Methodology**:
+          {{verification_methodology}}
+
+      - id: documentation-reviewed
+        title: Documentation Reviewed
+        type: bullet-list
+        instruction: List the documents that were reviewed during the compliance verification process.
+        examples:
+          - "[Document 1]"
+          - "[Document 2]"
+          - "[Document 3]"
+        repeatable: true
+
+      - id: verification-team
+        title: Verification Team
+        type: table
+        columns: [Role, Name, Sections Verified]
+        instruction: Document the team that performed the compliance verification.
+        examples:
+          - "| [Role] | [Name] | [Sections] |"
+        repeatable: true
+
+  - id: best-practices
+    title: Best Practices for Compliance Verification
+    type: bullet-list
+    content: |
+      - **Complete Coverage**: Verify every requirement is addressed, no matter how minor
+      - **Verbatim Verification**: Compare proposal language to actual requirement text
+      - **Location Tracking**: Document exactly where each requirement is addressed
+      - **Independent Review**: Have multiple reviewers verify critical requirements
+      - **Evidence Focus**: Ensure claims of compliance are supported by evidence
+      - **Evaluator Perspective**: Consider how evaluators will assess compliance
+      - **Documentation Discipline**: Maintain detailed records of compliance verification

@@ -1,0 +1,265 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: sward-analysis-template
+  name: SWARD Analysis Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/sward-analysis.md
+    title: "{{rfq_number}} SWARD Analysis"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for conducting a Strengths, Weaknesses, Risks, and Deficiencies (SWARD) analysis of proposal content. It helps identify areas for improvement before submission to maximize evaluation scores.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Review proposal content against evaluation criteria
+      2. Identify strengths, weaknesses, risks, and deficiencies
+      3. Categorize findings by impact level
+      4. Provide specific recommendations for improvement
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: analysis-header
+        title: Analysis Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] SWARD Analysis
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+          # [Review Phase: Pink Team / Red Team / Gold Team / Final]
+          # [Section(s) Analyzed: Specify section(s)]
+
+  - id: executive-summary
+    title: Executive Summary
+    sections:
+      - id: overall-assessment
+        title: Overall Assessment
+        content: |
+          **Summary Assessment**:
+          [Brief 2-3 sentence summary of overall findings]
+
+          **Key Findings**:
+
+          - [Most significant strength]
+          - [Most critical weakness]
+          - [Most serious risk]
+          - [Most important deficiency]
+
+          **Recommendation**:
+          [Submit as is / Address critical issues / Major rework needed]
+
+  - id: strengths-analysis
+    title: Strengths Analysis
+    sections:
+      - id: major-strengths
+        title: Major Strengths (High Evaluation Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Strength                  | Location            | Evaluation Factor   | Impact                                   |
+          | --- | ------------------------- | ------------------- | ------------------- | ---------------------------------------- |
+          | S1  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+          | S2  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+          | S3  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+
+      - id: moderate-strengths
+        title: Moderate Strengths (Medium Evaluation Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Strength                  | Location            | Evaluation Factor   | Impact                                   |
+          | --- | ------------------------- | ------------------- | ------------------- | ---------------------------------------- |
+          | S4  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+          | S5  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+          | S6  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+
+      - id: minor-strengths
+        title: Minor Strengths (Low Evaluation Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Strength                  | Location            | Evaluation Factor   | Impact                                   |
+          | --- | ------------------------- | ------------------- | ------------------- | ---------------------------------------- |
+          | S7  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+          | S8  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+          | S9  | [Description of strength] | [Section reference] | [Evaluation factor] | [How this positively impacts evaluation] |
+
+  - id: weaknesses-analysis
+    title: Weaknesses Analysis
+    sections:
+      - id: critical-weaknesses
+        title: Critical Weaknesses (Significant Negative Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Weakness                  | Location            | Evaluation Factor   | Impact                                   | Recommendation            |
+          | --- | ------------------------- | ------------------- | ------------------- | ---------------------------------------- | ------------------------- |
+          | W1  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+          | W2  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+          | W3  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+
+      - id: moderate-weaknesses
+        title: Moderate Weaknesses (Medium Negative Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Weakness                  | Location            | Evaluation Factor   | Impact                                   | Recommendation            |
+          | --- | ------------------------- | ------------------- | ------------------- | ---------------------------------------- | ------------------------- |
+          | W4  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+          | W5  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+          | W6  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+
+      - id: minor-weaknesses
+        title: Minor Weaknesses (Low Negative Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Weakness                  | Location            | Evaluation Factor   | Impact                                   | Recommendation            |
+          | --- | ------------------------- | ------------------- | ------------------- | ---------------------------------------- | ------------------------- |
+          | W7  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+          | W8  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+          | W9  | [Description of weakness] | [Section reference] | [Evaluation factor] | [How this negatively impacts evaluation] | [Specific recommendation] |
+
+  - id: risk-analysis
+    title: Risk Analysis
+    sections:
+      - id: high-risks
+        title: High Risks (Significant Potential Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Risk                  | Location            | Risk Type                            | Potential Impact                 | Mitigation Recommendation      |
+          | --- | --------------------- | ------------------- | ------------------------------------ | -------------------------------- | ------------------------------ |
+          | R1  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+          | R2  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+          | R3  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+
+      - id: moderate-risks
+        title: Moderate Risks (Medium Potential Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Risk                  | Location            | Risk Type                            | Potential Impact                 | Mitigation Recommendation      |
+          | --- | --------------------- | ------------------- | ------------------------------------ | -------------------------------- | ------------------------------ |
+          | R4  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+          | R5  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+          | R6  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+
+      - id: low-risks
+        title: Low Risks (Minor Potential Impact)
+        type: code
+        language: markdown
+        content: |
+          | #   | Risk                  | Location            | Risk Type                            | Potential Impact                 | Mitigation Recommendation      |
+          | --- | --------------------- | ------------------- | ------------------------------------ | -------------------------------- | ------------------------------ |
+          | R7  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+          | R8  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+          | R9  | [Description of risk] | [Section reference] | [Technical/Management/Cost/Schedule] | [Potential negative consequence] | [Specific mitigation strategy] |
+
+  - id: deficiencies-analysis
+    title: Deficiencies Analysis
+    sections:
+      - id: critical-deficiencies
+        title: Critical Deficiencies (Non-Compliance)
+        type: code
+        language: markdown
+        content: |
+          | #   | Deficiency                  | Location            | Requirement            | Impact                        | Correction Required          |
+          | --- | --------------------------- | ------------------- | ---------------------- | ----------------------------- | ---------------------------- |
+          | D1  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+          | D2  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+          | D3  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+
+      - id: significant-deficiencies
+        title: Significant Deficiencies (Partial Compliance)
+        type: code
+        language: markdown
+        content: |
+          | #   | Deficiency                  | Location            | Requirement            | Impact                        | Correction Required          |
+          | --- | --------------------------- | ------------------- | ---------------------- | ----------------------------- | ---------------------------- |
+          | D4  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+          | D5  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+          | D6  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+
+      - id: minor-deficiencies
+        title: Minor Deficiencies (Technical Compliance Issues)
+        type: code
+        language: markdown
+        content: |
+          | #   | Deficiency                  | Location            | Requirement            | Impact                        | Correction Required          |
+          | --- | --------------------------- | ------------------- | ---------------------- | ----------------------------- | ---------------------------- |
+          | D7  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+          | D8  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+          | D9  | [Description of deficiency] | [Section reference] | [Specific requirement] | [How this affects compliance] | [Specific correction needed] |
+
+  - id: improvement-action-plan
+    title: Improvement Action Plan
+    sections:
+      - id: priority-1
+        title: Priority 1 (Critical - Must Address)
+        content: |
+          - [Specific action with reference to finding]
+          - [Specific action with reference to finding]
+          - [Specific action with reference to finding]
+
+      - id: priority-2
+        title: Priority 2 (Important - Should Address)
+        content: |
+          - [Specific action with reference to finding]
+          - [Specific action with reference to finding]
+          - [Specific action with reference to finding]
+
+      - id: priority-3
+        title: Priority 3 (Enhancement - Consider Addressing)
+        content: |
+          - [Specific action with reference to finding]
+          - [Specific action with reference to finding]
+          - [Specific action with reference to finding]
+
+  - id: analysis-methodology
+    title: Analysis Methodology
+    sections:
+      - id: review-approach
+        title: Review Approach
+        content: |
+          [Brief description of how the analysis was conducted]
+
+          **Evaluation Criteria Applied**:
+
+          - [Evaluation factor 1]
+          - [Evaluation factor 2]
+          - [Evaluation factor 3]
+
+      - id: analysis-team
+        title: Analysis Team
+        type: code
+        language: markdown
+        content: |
+          | Role   | Name   | Sections Analyzed |
+          | ------ | ------ | ----------------- |
+          | [Role] | [Name] | [Sections]        |
+          | [Role] | [Name] | [Sections]        |
+          | [Role] | [Name] | [Sections]        |
+
+  - id: best-practices
+    title: Best Practices for SWARD Analysis
+    content: |
+      - **Evaluator Perspective**: Analyze from the perspective of government evaluators
+      - **Criteria Focus**: Base analysis strictly on Section M evaluation criteria
+      - **Evidence-Based**: Provide specific examples for all findings
+      - **Balanced Assessment**: Identify both strengths and areas for improvement
+      - **Actionable Recommendations**: Provide specific, implementable suggestions
+      - **Prioritized Findings**: Focus on highest-impact items first
+      - **Objective Analysis**: Base findings on what's actually in the proposal

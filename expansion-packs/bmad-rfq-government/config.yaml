@@ -1,0 +1,86 @@
+# <!-- Powered by BMAD™ Core -->
+config:
+  id: bmad-rfq-government
+  name: BMAD RFQ Government Response Pack
+  version: 1.1.0
+  description: >-
+    A specialized expansion pack for government RFQ response and proposal development.
+    Provides agents, templates, and workflows for efficient preparation of compliant
+    and compelling government proposals.
+
+  core_dependencies:
+    - bmad-core
+
+  agent_teams:
+    - rfq-response-team
+
+  workflows:
+    - rfq-response-workflow
+
+  default_team: rfq-response-team
+  default_workflow: rfq-response-workflow
+
+  integration_points:
+    - name: document-generation
+      description: "Uses bmad-core's document generation capabilities"
+      core_component: create-doc.md
+
+    - name: checklist-execution
+      description: "Uses bmad-core's checklist execution functionality"
+      core_component: execute-checklist.md
+
+    - name: advanced-elicitation
+      description: "Uses bmad-core's advanced elicitation techniques"
+      core_component: advanced-elicitation.md
+
+    - name: document-sharding
+      description: "Uses bmad-core's document sharding capabilities"
+      core_component: shard-doc.md
+
+  maintained_by: "BMAD Core Team"
+  license: "MIT"
+  documentation: "README.md"
+
+  template_categories:
+    - category: Opportunity Assessment
+      templates:
+        - opportunity-summary-tmpl.yaml
+        - bid-no-bid-tmpl.yaml
+        - strategic-alignment-tmpl.yaml
+
+    - category: Win Strategy
+      templates:
+        - competitor-analysis-tmpl.yaml
+        - swot-analysis-tmpl.yaml
+        - win-theme-tmpl.yaml
+
+    - category: Compliance
+      templates:
+        - compliance-matrix-tmpl.yaml
+        - proposal-outline-tmpl.yaml
+        - requirements-matrix-tmpl.yaml
+        - requirement-mapping-tmpl.yaml
+
+    - category: Technical Content
+      templates:
+        - technical-approach-tmpl.yaml
+        - management-approach-tmpl.yaml
+        - staffing-plan-tmpl.yaml
+
+    - category: Pricing
+      templates:
+        - pricing-strategy-tmpl.yaml
+        - cost-narrative-tmpl.yaml
+        - labor-mapping-tmpl.yaml
+
+    - category: Executive
+      templates:
+        - executive-summary-tmpl.yaml
+        - executive-dashboard-tmpl.yaml
+        - sward-analysis-tmpl.yaml
+
+    - category: Review
+      templates:
+        - evaluation-report-tmpl.yaml
+        - risk-mitigation-tmpl.yaml
+        - compliance-report-tmpl.yaml

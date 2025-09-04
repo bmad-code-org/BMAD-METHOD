@@ -1,0 +1,101 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: compliance-matrix-template
+  name: Compliance Matrix Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/compliance-matrix.md
+    title: "{{rfq_number}} Compliance Matrix"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for creating a comprehensive compliance matrix that ensures all RFQ requirements are captured, tracked, and addressed in the proposal.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Import RFQ requirements using the RFQ Document Import task
+      2. Use this template to organize requirements in a structured matrix
+      3. Map requirements to proposal sections and assign owners
+      4. Track status throughout proposal development
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: matrix-header
+        title: Matrix Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Compliance Matrix
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+
+      - id: matrix-fields
+        title: Matrix Fields
+        type: code
+        language: markdown
+        content: |
+          | Req ID | Requirement Text | Source Reference | Proposal Section | Owner  | Status   | Evidence/Proof Points |
+          | ------ | ---------------- | ---------------- | ---------------- | ------ | -------- | --------------------- |
+          | R-001  | [Verbatim text]  | [Doc/Sec/Page]   | [Section]        | [Name] | [Status] | [Evidence]            |
+          | R-002  | [Verbatim text]  | [Doc/Sec/Page]   | [Section]        | [Name] | [Status] | [Evidence]            |
+          | R-003  | [Verbatim text]  | [Doc/Sec/Page]   | [Section]        | [Name] | [Status] | [Evidence]            |
+
+  - id: status-codes
+    title: Status Codes
+    content: |
+      - NS: Not Started
+      - IP: In Progress
+      - DC: Draft Complete
+      - RV: Reviewed
+      - FN: Final
+      - GI: Gap/Issue Identified
+
+  - id: organization-guidelines
+    title: Organization Guidelines
+    content: |
+      1. **Group by RFQ Section**:
+         - Organize requirements by RFQ section (L.1, L.2, M.1, etc.)
+         - Use clear section headers to separate groups
+
+      2. **Alternate Organization**:
+         - Can be reorganized by proposal volume/section
+         - Include cross-references to original RFQ sections
+
+      3. **Hierarchical Structure**:
+         - Use indentation or numbering for nested requirements
+         - Maintain parent-child relationships
+
+      4. **Visual Distinction**:
+         - Use color coding for different requirement types
+         - Highlight critical requirements
+
+  - id: best-practices
+    title: Best Practices
+    content: |
+      - **Complete Coverage**: Ensure every requirement is captured, no matter how minor
+      - **Atomic Requirements**: Break compound requirements into discrete, trackable items
+      - **Verbatim Extraction**: Use exact requirement language from the RFQ
+      - **Clear Ownership**: Assign specific owners to each requirement
+      - **Strategic Organization**: Organize requirements to facilitate efficient response development
+      - **Regular Updates**: Maintain the matrix as a living document throughout proposal development
+      - **Multiple Validations**: Conduct independent reviews to verify completeness
+      - **Visual Indicators**: Use color coding or icons to highlight status and priority
+
+  - id: example-entry
+    title: Example Entry
+    type: code
+    language: markdown
+    content: |
+      | Req ID | Requirement Text                                                                                                       | Source Reference | Proposal Section                | Owner    | Status | Evidence/Proof Points                                                                                             |
+      | ------ | ---------------------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------- | -------- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+      | R-042  | "The contractor shall provide 24/7 help desk support with response times of less than 30 minutes for critical issues." | RFQ/SOW/p.12     | Technical Approach, Section 3.2 | J. Smith | IP     | - ISO 20000 certification<br>- Current SLA performance: 15 min avg response<br>- 24/7 NOC with 3 tiers of support |

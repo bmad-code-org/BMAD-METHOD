@@ -1,0 +1,515 @@
+template_name: "SWOT Analysis Template"
+template_id: "swot-analysis-tmpl"
+template_type: "document"
+template_category: "proposal"
+template_description: "A structured format for conducting a comprehensive SWOT analysis for government RFQ responses"
+template_help: "This template helps proposal teams objectively assess their competitive position and develop effective strategies to leverage strengths, address weaknesses, capitalize on opportunities, and mitigate threats."
+template_tags:
+  - "SWOT analysis"
+  - "strengths"
+  - "weaknesses"
+  - "opportunities"
+  - "threats"
+  - "competitive analysis"
+  - "strategic planning"
+
+usage_instructions: |
+  1. Complete this template early in the proposal development process
+  2. Involve business development, capture managers, and technical SMEs
+  3. Be honest and objective in your assessment
+  4. Use specific, evidence-based insights rather than generalizations
+  5. Use the analysis to inform win themes and proposal strategy
+
+sections:
+  - section_id: "document_header"
+    section_title: "Document Header"
+    section_type: "header"
+    section_template: |
+      # [RFQ Number] SWOT Analysis
+      # [Agency Name]
+      # [RFQ Title]
+      # [Date]
+      # [Version]
+    elicitation_questions:
+      - "What is the RFQ number for this opportunity?"
+      - "What is the name of the agency issuing this RFQ?"
+      - "What is the title of this RFQ?"
+      - "What is today's date?"
+      - "What is the current version of this document?"
+
+  - section_id: "executive_summary"
+    section_title: "Executive Summary"
+    section_type: "content"
+    subsections:
+      - subsection_id: "swot_overview"
+        subsection_title: "SWOT Overview"
+        subsection_type: "content"
+        subsection_template: |
+          **Analysis Summary**:
+          [1-2 paragraphs summarizing the key findings from the SWOT analysis]
+
+          **Strategic Implications**:
+          [Brief explanation of the strategic implications of the SWOT analysis for this opportunity]
+
+          **Recommended Focus Areas**:
+          [Brief list of recommended focus areas based on the SWOT analysis]
+        elicitation_questions:
+          - "What are the key findings from your SWOT analysis?"
+          - "What are the strategic implications of your SWOT analysis for this opportunity?"
+          - "What focus areas would you recommend based on your SWOT analysis?"
+
+  - section_id: "strengths_analysis"
+    section_title: "Strengths Analysis"
+    section_type: "content"
+    subsections:
+      - subsection_id: "internal_strengths"
+        subsection_title: "Internal Strengths"
+        subsection_type: "content"
+        subsection_template: |
+          **Technical Strengths**:
+
+          | Strength     | Description   | Evidence   | Relevance to RFQ | Competitive Advantage |
+          | ------------ | ------------- | ---------- | ---------------- | --------------------- |
+          | [Strength 1] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 2] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 3] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 4] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 5] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+
+          **Management Strengths**:
+
+          | Strength     | Description   | Evidence   | Relevance to RFQ | Competitive Advantage |
+          | ------------ | ------------- | ---------- | ---------------- | --------------------- |
+          | [Strength 1] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 2] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 3] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 4] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 5] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+
+          **Past Performance Strengths**:
+
+          | Strength     | Description   | Evidence   | Relevance to RFQ | Competitive Advantage |
+          | ------------ | ------------- | ---------- | ---------------- | --------------------- |
+          | [Strength 1] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 2] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 3] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 4] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 5] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+
+          **Staffing Strengths**:
+
+          | Strength     | Description   | Evidence   | Relevance to RFQ | Competitive Advantage |
+          | ------------ | ------------- | ---------- | ---------------- | --------------------- |
+          | [Strength 1] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 2] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 3] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 4] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 5] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+
+          **Pricing Strengths**:
+
+          | Strength     | Description   | Evidence   | Relevance to RFQ | Competitive Advantage |
+          | ------------ | ------------- | ---------- | ---------------- | --------------------- |
+          | [Strength 1] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 2] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 3] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 4] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+          | [Strength 5] | [Description] | [Evidence] | [Relevance]      | [Advantage]           |
+        elicitation_questions:
+          - "What are your technical strengths for this opportunity?"
+          - "What are your management strengths for this opportunity?"
+          - "What are your past performance strengths for this opportunity?"
+          - "What are your staffing strengths for this opportunity?"
+          - "What are your pricing strengths for this opportunity?"
+
+      - subsection_id: "strength_prioritization"
+        subsection_title: "Strength Prioritization"
+        subsection_type: "content"
+        subsection_template: |
+          **Top Strengths**:
+
+          | Strength     | Relevance Score (1-10) | Evidence Strength (1-10) | Competitive Advantage (1-10) | Total Score | Priority          |
+          | ------------ | ---------------------- | ------------------------ | ---------------------------- | ----------- | ----------------- |
+          | [Strength 1] | [Score]                | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Strength 2] | [Score]                | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Strength 3] | [Score]                | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Strength 4] | [Score]                | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Strength 5] | [Score]                | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+
+          **Strength Leverage Strategy**:
+          [Description of how to leverage the identified strengths in the proposal]
+        elicitation_questions:
+          - "What are your top strengths for this opportunity?"
+          - "How would you score each strength in terms of relevance, evidence strength, and competitive advantage?"
+          - "How would you prioritize these strengths?"
+          - "How will you leverage these strengths in your proposal?"
+
+  - section_id: "weaknesses_analysis"
+    section_title: "Weaknesses Analysis"
+    section_type: "content"
+    subsections:
+      - subsection_id: "internal_weaknesses"
+        subsection_title: "Internal Weaknesses"
+        subsection_type: "content"
+        subsection_template: |
+          **Technical Weaknesses**:
+
+          | Weakness     | Description   | Impact   | Relevance to RFQ | Mitigation Strategy |
+          | ------------ | ------------- | -------- | ---------------- | ------------------- |
+          | [Weakness 1] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 2] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 3] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 4] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 5] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+
+          **Management Weaknesses**:
+
+          | Weakness     | Description   | Impact   | Relevance to RFQ | Mitigation Strategy |
+          | ------------ | ------------- | -------- | ---------------- | ------------------- |
+          | [Weakness 1] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 2] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 3] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 4] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 5] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+
+          **Past Performance Weaknesses**:
+
+          | Weakness     | Description   | Impact   | Relevance to RFQ | Mitigation Strategy |
+          | ------------ | ------------- | -------- | ---------------- | ------------------- |
+          | [Weakness 1] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 2] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 3] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 4] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 5] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+
+          **Staffing Weaknesses**:
+
+          | Weakness     | Description   | Impact   | Relevance to RFQ | Mitigation Strategy |
+          | ------------ | ------------- | -------- | ---------------- | ------------------- |
+          | [Weakness 1] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 2] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 3] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 4] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 5] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+
+          **Pricing Weaknesses**:
+
+          | Weakness     | Description   | Impact   | Relevance to RFQ | Mitigation Strategy |
+          | ------------ | ------------- | -------- | ---------------- | ------------------- |
+          | [Weakness 1] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 2] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 3] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 4] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+          | [Weakness 5] | [Description] | [Impact] | [Relevance]      | [Strategy]          |
+        elicitation_questions:
+          - "What are your technical weaknesses for this opportunity?"
+          - "What are your management weaknesses for this opportunity?"
+          - "What are your past performance weaknesses for this opportunity?"
+          - "What are your staffing weaknesses for this opportunity?"
+          - "What are your pricing weaknesses for this opportunity?"
+
+      - subsection_id: "weakness_prioritization"
+        subsection_title: "Weakness Prioritization"
+        subsection_type: "content"
+        subsection_template: |
+          **Critical Weaknesses**:
+
+          | Weakness     | Impact Score (1-10) | Relevance Score (1-10) | Mitigation Difficulty (1-10) | Total Score | Priority          |
+          | ------------ | ------------------- | ---------------------- | ---------------------------- | ----------- | ----------------- |
+          | [Weakness 1] | [Score]             | [Score]                | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Weakness 2] | [Score]             | [Score]                | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Weakness 3] | [Score]             | [Score]                | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Weakness 4] | [Score]             | [Score]                | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Weakness 5] | [Score]             | [Score]                | [Score]                      | [Total]     | [High/Medium/Low] |
+
+          **Weakness Mitigation Strategy**:
+          [Description of the overall strategy to mitigate identified weaknesses]
+        elicitation_questions:
+          - "What are your critical weaknesses for this opportunity?"
+          - "How would you score each weakness in terms of impact, relevance, and mitigation difficulty?"
+          - "How would you prioritize these weaknesses?"
+          - "What is your overall strategy to mitigate these weaknesses?"
+
+  - section_id: "opportunities_analysis"
+    section_title: "Opportunities Analysis"
+    section_type: "content"
+    subsections:
+      - subsection_id: "external_opportunities"
+        subsection_title: "External Opportunities"
+        subsection_type: "content"
+        subsection_template: |
+          **Customer-Related Opportunities**:
+
+          | Opportunity     | Description   | Potential Benefit | Probability       | Strategy to Capitalize |
+          | --------------- | ------------- | ----------------- | ----------------- | ---------------------- |
+          | [Opportunity 1] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 2] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 3] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 4] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 5] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+
+          **Competitor-Related Opportunities**:
+
+          | Opportunity     | Description   | Potential Benefit | Probability       | Strategy to Capitalize |
+          | --------------- | ------------- | ----------------- | ----------------- | ---------------------- |
+          | [Opportunity 1] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 2] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 3] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 4] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 5] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+
+          **Market-Related Opportunities**:
+
+          | Opportunity     | Description   | Potential Benefit | Probability       | Strategy to Capitalize |
+          | --------------- | ------------- | ----------------- | ----------------- | ---------------------- |
+          | [Opportunity 1] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 2] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 3] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 4] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 5] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+
+          **Technology-Related Opportunities**:
+
+          | Opportunity     | Description   | Potential Benefit | Probability       | Strategy to Capitalize |
+          | --------------- | ------------- | ----------------- | ----------------- | ---------------------- |
+          | [Opportunity 1] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 2] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 3] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 4] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+          | [Opportunity 5] | [Description] | [Benefit]         | [High/Medium/Low] | [Strategy]             |
+        elicitation_questions:
+          - "What customer-related opportunities exist for this opportunity?"
+          - "What competitor-related opportunities exist for this opportunity?"
+          - "What market-related opportunities exist for this opportunity?"
+          - "What technology-related opportunities exist for this opportunity?"
+
+      - subsection_id: "opportunity_prioritization"
+        subsection_title: "Opportunity Prioritization"
+        subsection_type: "content"
+        subsection_template: |
+          **Key Opportunities**:
+
+          | Opportunity     | Benefit Score (1-10) | Probability Score (1-10) | Alignment with Strengths (1-10) | Total Score | Priority          |
+          | --------------- | -------------------- | ------------------------ | ------------------------------- | ----------- | ----------------- |
+          | [Opportunity 1] | [Score]              | [Score]                  | [Score]                         | [Total]     | [High/Medium/Low] |
+          | [Opportunity 2] | [Score]              | [Score]                  | [Score]                         | [Total]     | [High/Medium/Low] |
+          | [Opportunity 3] | [Score]              | [Score]                  | [Score]                         | [Total]     | [High/Medium/Low] |
+          | [Opportunity 4] | [Score]              | [Score]                  | [Score]                         | [Total]     | [High/Medium/Low] |
+          | [Opportunity 5] | [Score]              | [Score]                  | [Score]                         | [Total]     | [High/Medium/Low] |
+
+          **Opportunity Exploitation Strategy**:
+          [Description of the overall strategy to exploit identified opportunities]
+        elicitation_questions:
+          - "What are your key opportunities for this opportunity?"
+          - "How would you score each opportunity in terms of benefit, probability, and alignment with strengths?"
+          - "How would you prioritize these opportunities?"
+          - "What is your overall strategy to exploit these opportunities?"
+
+  - section_id: "threats_analysis"
+    section_title: "Threats Analysis"
+    section_type: "content"
+    subsections:
+      - subsection_id: "external_threats"
+        subsection_title: "External Threats"
+        subsection_type: "content"
+        subsection_template: |
+          **Competitor-Related Threats**:
+
+          | Threat     | Description   | Potential Impact | Probability       | Mitigation Strategy |
+          | ---------- | ------------- | ---------------- | ----------------- | ------------------- |
+          | [Threat 1] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 2] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 3] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 4] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 5] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+
+          **Customer-Related Threats**:
+
+          | Threat     | Description   | Potential Impact | Probability       | Mitigation Strategy |
+          | ---------- | ------------- | ---------------- | ----------------- | ------------------- |
+          | [Threat 1] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 2] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 3] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 4] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 5] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+
+          **Market-Related Threats**:
+
+          | Threat     | Description   | Potential Impact | Probability       | Mitigation Strategy |
+          | ---------- | ------------- | ---------------- | ----------------- | ------------------- |
+          | [Threat 1] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 2] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 3] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 4] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 5] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+
+          **Regulatory/Political Threats**:
+
+          | Threat     | Description   | Potential Impact | Probability       | Mitigation Strategy |
+          | ---------- | ------------- | ---------------- | ----------------- | ------------------- |
+          | [Threat 1] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 2] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 3] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 4] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+          | [Threat 5] | [Description] | [Impact]         | [High/Medium/Low] | [Strategy]          |
+        elicitation_questions:
+          - "What competitor-related threats exist for this opportunity?"
+          - "What customer-related threats exist for this opportunity?"
+          - "What market-related threats exist for this opportunity?"
+          - "What regulatory or political threats exist for this opportunity?"
+
+      - subsection_id: "threat_prioritization"
+        subsection_title: "Threat Prioritization"
+        subsection_type: "content"
+        subsection_template: |
+          **Critical Threats**:
+
+          | Threat     | Impact Score (1-10) | Probability Score (1-10) | Mitigation Difficulty (1-10) | Total Score | Priority          |
+          | ---------- | ------------------- | ------------------------ | ---------------------------- | ----------- | ----------------- |
+          | [Threat 1] | [Score]             | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Threat 2] | [Score]             | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Threat 3] | [Score]             | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Threat 4] | [Score]             | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+          | [Threat 5] | [Score]             | [Score]                  | [Score]                      | [Total]     | [High/Medium/Low] |
+
+          **Threat Mitigation Strategy**:
+          [Description of the overall strategy to mitigate identified threats]
+        elicitation_questions:
+          - "What are your critical threats for this opportunity?"
+          - "How would you score each threat in terms of impact, probability, and mitigation difficulty?"
+          - "How would you prioritize these threats?"
+          - "What is your overall strategy to mitigate these threats?"
+
+  - section_id: "swot_integration"
+    section_title: "SWOT Integration"
+    section_type: "content"
+    subsections:
+      - subsection_id: "swot_matrix"
+        subsection_title: "SWOT Matrix"
+        subsection_type: "content"
+        subsection_template: |
+          |                   | Strengths                                                                    | Weaknesses                                                                           |
+          | ----------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+          | **Opportunities** | **SO Strategies**: [How to use strengths to take advantage of opportunities] | **WO Strategies**: [How to overcome weaknesses by taking advantage of opportunities] |
+          | **Threats**       | **ST Strategies**: [How to use strengths to avoid threats]                   | **WT Strategies**: [How to minimize weaknesses and avoid threats]                    |
+        elicitation_questions:
+          - "How can you use your strengths to take advantage of opportunities?"
+          - "How can you overcome weaknesses by taking advantage of opportunities?"
+          - "How can you use your strengths to avoid threats?"
+          - "How can you minimize weaknesses and avoid threats?"
+
+      - subsection_id: "strategic_implications"
+        subsection_title: "Strategic Implications"
+        subsection_type: "content"
+        subsection_template: |
+          **SO (Strength-Opportunity) Strategies**:
+
+          - [Strategy 1]
+          - [Strategy 2]
+          - [Strategy 3]
+          - [Strategy 4]
+          - [Strategy 5]
+
+          **WO (Weakness-Opportunity) Strategies**:
+
+          - [Strategy 1]
+          - [Strategy 2]
+          - [Strategy 3]
+          - [Strategy 4]
+          - [Strategy 5]
+
+          **ST (Strength-Threat) Strategies**:
+
+          - [Strategy 1]
+          - [Strategy 2]
+          - [Strategy 3]
+          - [Strategy 4]
+          - [Strategy 5]
+
+          **WT (Weakness-Threat) Strategies**:
+
+          - [Strategy 1]
+          - [Strategy 2]
+          - [Strategy 3]
+          - [Strategy 4]
+          - [Strategy 5]
+        elicitation_questions:
+          - "What strategies will you use to leverage strengths and capitalize on opportunities?"
+          - "What strategies will you use to overcome weaknesses by taking advantage of opportunities?"
+          - "What strategies will you use to leverage strengths to mitigate threats?"
+          - "What strategies will you use to minimize weaknesses and avoid threats?"
+
+  - section_id: "strategic_recommendations"
+    section_title: "Strategic Recommendations"
+    section_type: "content"
+    subsections:
+      - subsection_id: "proposal_strategy_recommendations"
+        subsection_title: "Proposal Strategy Recommendations"
+        subsection_type: "content"
+        subsection_template: |
+          **Technical Approach Recommendations**:
+
+          - [Recommendation 1]
+          - [Recommendation 2]
+          - [Recommendation 3]
+          - [Recommendation 4]
+          - [Recommendation 5]
+
+          **Management Approach Recommendations**:
+
+          - [Recommendation 1]
+          - [Recommendation 2]
+          - [Recommendation 3]
+          - [Recommendation 4]
+          - [Recommendation 5]
+
+          **Staffing Approach Recommendations**:
+
+          - [Recommendation 1]
+          - [Recommendation 2]
+          - [Recommendation 3]
+          - [Recommendation 4]
+          - [Recommendation 5]
+
+          **Pricing Strategy Recommendations**:
+
+          - [Recommendation 1]
+          - [Recommendation 2]
+          - [Recommendation 3]
+          - [Recommendation 4]
+          - [Recommendation 5]
+        elicitation_questions:
+          - "What recommendations do you have for the technical approach based on the SWOT analysis?"
+          - "What recommendations do you have for the management approach based on the SWOT analysis?"
+          - "What recommendations do you have for the staffing approach based on the SWOT analysis?"
+          - "What recommendations do you have for the pricing strategy based on the SWOT analysis?"
+
+      - subsection_id: "win_theme_recommendations"
+        subsection_title: "Win Theme Recommendations"
+        subsection_type: "content"
+        subsection_template: |
+          **Recommended Win Themes**:
+
+          - [Theme 1]: [Rationale]
+          - [Theme 2]: [Rationale]
+          - [Theme 3]: [Rationale]
+          - [Theme 4]: [Rationale]
+          - [Theme 5]: [Rationale]
+        elicitation_questions:
+          - "What win themes would you recommend based on the SWOT analysis?"
+          - "What is the rationale for each recommended win theme?"
+
+  - section_id: "swot_analysis_best_practices"
+    section_title: "SWOT Analysis Best Practices"
+    section_type: "content"
+    section_template: |
+      - **Objectivity**: Base analysis on facts and data, not assumptions or biases
+      - **Specificity**: Develop specific insights rather than generic observations
+      - **Evidence-Based**: Support all SWOT elements with concrete evidence
+      - **Prioritization**: Focus on the most significant strengths, weaknesses, opportunities, and threats
+      - **Integration**: Analyze the relationships between different SWOT elements
+      - **Strategic Alignment**: Ensure SWOT analysis aligns with overall capture strategy
+      - **Actionable Insights**: Develop actionable recommendations based on the analysis
+      - **Regular Updates**: Update the analysis as new information becomes available
+      - **Team Input**: Involve multiple perspectives in the SWOT analysis process
+      - **

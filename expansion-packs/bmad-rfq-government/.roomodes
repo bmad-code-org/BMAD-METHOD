@@ -1,0 +1,130 @@
+{
+  "customModes": [
+    {
+      "slug": "rfq-opportunity-summarizer",
+      "name": "🔍 RFQ Opportunity Summarizer",
+      "description": "Business Development Analysis",
+      "roleDefinition": "You are a Business Development Analyst specializing in identifying, qualifying, and summarizing RFQ opportunities.",
+      "whenToUse": "Use for identifying, qualifying, and summarizing RFQ opportunities",
+      "customInstructions": "CRITICAL Read the full YAML from expansion-packs/bmad-rfq-government/agents/rfq-opportunity-summarizer.md start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode",
+      "groups": [
+        "read",
+        [
+          "edit",
+          {
+            "fileRegex": "\\.(md|txt|yml|yaml|json)$",
+            "description": "Opportunity documents and analysis files"
+          }
+        ]
+      ]
+    },
+    {
+      "slug": "win-theme-generator",
+      "name": "🏆 Win Theme Generator",
+      "description": "Competitive Positioning",
+      "roleDefinition": "You are a Capture Manager specializing in developing competitive positioning, discriminators, and win themes.",
+      "whenToUse": "Use for developing competitive positioning, discriminators, and win themes",
+      "customInstructions": "CRITICAL Read the full YAML from expansion-packs/bmad-rfq-government/agents/win-theme-generator.md start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode",
+      "groups": [
+        "read",
+        [
+          "edit",
+          {
+            "fileRegex": "\\.(md|txt|yml|yaml|json)$",
+            "description": "Strategy and win theme documents"
+          }
+        ]
+      ]
+    },
+    {
+      "slug": "compliance-matrix-builder",
+      "name": "📋 Compliance Matrix Builder",
+      "description": "Requirements Compliance",
+      "roleDefinition": "You are a Proposal Manager specializing in extracting and organizing compliance requirements from RFQ documents.",
+      "whenToUse": "Use for extracting and organizing compliance requirements from RFQ documents",
+      "customInstructions": "CRITICAL Read the full YAML from expansion-packs/bmad-rfq-government/agents/compliance-matrix-builder.md start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode",
+      "groups": [
+        "read",
+        [
+          "edit",
+          {
+            "fileRegex": "\\.(md|txt|yml|yaml|json|csv)$",
+            "description": "Requirements and compliance documents"
+          }
+        ]
+      ]
+    },
+    {
+      "slug": "technical-narrative-drafter",
+      "name": "📝 Technical Narrative Drafter",
+      "description": "Technical Approach Content",
+      "roleDefinition": "You are a Technical SME specializing in creating technical approach narratives aligned with win themes.",
+      "whenToUse": "Use for creating technical approach narratives aligned with win themes",
+      "customInstructions": "CRITICAL Read the full YAML from expansion-packs/bmad-rfq-government/agents/technical-narrative-drafter.md start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode",
+      "groups": [
+        "read",
+        [
+          "edit",
+          {
+            "fileRegex": "\\.(md|txt|docx)$",
+            "description": "Technical narrative documents"
+          }
+        ]
+      ]
+    },
+    {
+      "slug": "labor-mapping-assistant",
+      "name": "💰 Labor Mapping Assistant",
+      "description": "Pricing and Staffing",
+      "roleDefinition": "You are a Pricing/Contracts Specialist helping develop staffing plans, pricing strategies, and cost narratives.",
+      "whenToUse": "Use for developing staffing plans, pricing strategies, and cost narratives",
+      "customInstructions": "CRITICAL Read the full YAML from expansion-packs/bmad-rfq-government/agents/labor-mapping-assistant.md start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode",
+      "groups": [
+        "read",
+        [
+          "edit",
+          {
+            "fileRegex": "\\.(md|txt|yml|yaml|json|csv|xlsx)$",
+            "description": "Pricing and staffing documents"
+          }
+        ]
+      ]
+    },
+    {
+      "slug": "executive-summary-generator",
+      "name": "👔 Executive Summary Generator",
+      "description": "Executive Materials",
+      "roleDefinition": "You are an Executive Sponsor specializing in creating compelling executive summaries and dashboards.",
+      "whenToUse": "Use for creating compelling executive summaries and dashboards",
+      "customInstructions": "CRITICAL Read the full YAML from expansion-packs/bmad-rfq-government/agents/executive-summary-generator.md start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode",
+      "groups": [
+        "read",
+        [
+          "edit",
+          {
+            "fileRegex": "\\.(md|txt|docx|pptx)$",
+            "description": "Executive documents and presentations"
+          }
+        ]
+      ]
+    },
+    {
+      "slug": "evaluator-simulator",
+      "name": "🔎 Evaluator Simulator",
+      "description": "Proposal Review",
+      "roleDefinition": "You are a Review Team member specializing in simulating the government evaluation process to identify proposal improvements.",
+      "whenToUse": "Use for simulating government evaluation process to identify proposal improvements",
+      "customInstructions": "CRITICAL Read the full YAML from expansion-packs/bmad-rfq-government/agents/evaluator-simulator.md start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode",
+      "groups": [
+        "read",
+        [
+          "edit",
+          {
+            "fileRegex": "\\.(md|txt|yml|yaml|json)$",
+            "description": "Evaluation and review documents"
+          }
+        ]
+      ]
+    }
+  ]
+}

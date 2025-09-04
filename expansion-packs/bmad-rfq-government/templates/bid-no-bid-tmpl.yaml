@@ -1,0 +1,268 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: bid-no-bid
+  name: Bid/No-Bid Decision Template
+  version: 1.0
+  description: Structured format for making and documenting bid/no-bid decisions for government RFQ opportunities
+  output:
+    format: markdown
+    filename: "{{rfq_number}}-bid-no-bid-decision.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: overview
+    title: Overview
+    instruction: |
+      This template provides a structured format for making and documenting bid/no-bid decisions for government RFQ opportunities. It helps teams evaluate opportunities objectively and make strategic pursuit decisions.
+
+  - id: usage_instructions
+    title: Usage Instructions
+    instruction: |
+      1. Complete this template during the early opportunity assessment phase
+      2. Involve both business development and technical leadership
+      3. Be objective in your assessment of each factor
+      4. Document rationale for the final decision
+
+  - id: decision_header
+    title: Decision Header
+    instruction: |
+      ```
+      # [RFQ Number] Bid/No-Bid Decision
+      # [Agency Name]
+      # [RFQ Title]
+      # [Date]
+      ```
+
+  - id: executive_summary
+    title: Executive Summary
+    instruction: |
+      ### Decision Overview
+
+      **Decision**: [Bid / No-Bid / Bid with conditions]
+
+      **Decision Date**: [Date]
+
+      **Summary Rationale**:
+      [2-3 paragraphs summarizing the key factors that led to this decision]
+
+      **Decision Score**: [Score] out of 100
+
+      **Key Decision Drivers**:
+      - [Driver 1]
+      - [Driver 2]
+      - [Driver 3]
+    elicit: true
+
+  - id: opportunity_summary
+    title: Opportunity Summary
+    instruction: |
+      ### Key Information
+
+      | Parameter             | Value                        | Notes                        |
+      | --------------------- | ---------------------------- | ---------------------------- |
+      | Agency                | [Agency Name]                | [Additional context]         |
+      | RFQ Number            | [Number]                     | [Additional context]         |
+      | Contract Vehicle      | [Vehicle]                    | [Additional context]         |
+      | Contract Type         | [FFP, T&M, CPFF, etc.]       | [Additional context]         |
+      | Estimated Value       | $[Amount]                    | [Annual value / total value] |
+      | Period of Performance | [Duration]                   | [Base + options]             |
+      | Response Due Date     | [Date]                       | [Days remaining]             |
+      | Set-Aside Type        | [Small business, 8(a), etc.] | [Additional context]         |
+      | NAICS Code            | [Code]                       | [Size standard]              |
+
+      ### Scope Summary
+
+      **Scope Description**:
+      [1-2 paragraphs summarizing the scope of work]
+
+      **Key Requirements**:
+      - [Requirement 1]
+      - [Requirement 2]
+      - [Requirement 3]
+      - [Requirement 4]
+      - [Requirement 5]
+    elicit: true
+
+  - id: decision_factors
+    title: Decision Factors
+    instruction: |
+      ### Strategic Alignment
+
+      | Strategic Factor                  | Weight   | Score (1-10) | Weighted Score   | Rationale   |
+      | --------------------------------- | -------- | ------------ | ---------------- | ----------- |
+      | Alignment with corporate strategy | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Market positioning value          | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Customer relationship value       | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Long-term growth potential        | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Portfolio diversification         | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | **Strategic Alignment Total**     |          |              | [Total Score]    |             |
+
+      ### Competitive Position
+
+      | Competitive Factor             | Weight   | Score (1-10) | Weighted Score   | Rationale   |
+      | ------------------------------ | -------- | ------------ | ---------------- | ----------- |
+      | Incumbent status               | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Customer relationship          | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Technical differentiation      | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Past performance relevance     | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Competitive landscape          | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | **Competitive Position Total** |          |              | [Total Score]    |             |
+
+      ### Technical Capability
+
+      | Technical Factor                     | Weight   | Score (1-10) | Weighted Score   | Rationale   |
+      | ------------------------------------ | -------- | ------------ | ---------------- | ----------- |
+      | Technical solution readiness         | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Experience with similar requirements | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Technical staff availability         | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Technical discriminators             | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Technical risk assessment            | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | **Technical Capability Total**       |          |              | [Total Score]    |             |
+
+      ### Financial Considerations
+
+      | Financial Factor                   | Weight   | Score (1-10) | Weighted Score   | Rationale   |
+      | ---------------------------------- | -------- | ------------ | ---------------- | ----------- |
+      | Potential profit margin            | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | B&P investment required            | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Price competitiveness              | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Financial risk assessment          | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Return on investment               | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | **Financial Considerations Total** |          |              | [Total Score]    |             |
+
+      ### Operational Factors
+
+      | Operational Factor                    | Weight   | Score (1-10) | Weighted Score   | Rationale   |
+      | ------------------------------------- | -------- | ------------ | ---------------- | ----------- |
+      | Proposal resources availability       | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Implementation resources availability | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Timeline feasibility                  | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Operational risk assessment           | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | Organizational capacity               | [Weight] | [Score]      | [Weighted Score] | [Rationale] |
+      | **Operational Factors Total**         |          |              | [Total Score]    |             |
+    elicit: true
+
+  - id: overall_assessment
+    title: Overall Assessment
+    instruction: |
+      ### Decision Matrix
+
+      | Category                 | Weight   | Category Score | Weighted Category Score |
+      | ------------------------ | -------- | -------------- | ----------------------- |
+      | Strategic Alignment      | [Weight] | [Score]        | [Weighted Score]        |
+      | Competitive Position     | [Weight] | [Score]        | [Weighted Score]        |
+      | Technical Capability     | [Weight] | [Score]        | [Weighted Score]        |
+      | Financial Considerations | [Weight] | [Score]        | [Weighted Score]        |
+      | Operational Factors      | [Weight] | [Score]        | [Weighted Score]        |
+      | **Overall Score**        |          |                | [Total Score]           |
+
+      ### Decision Thresholds
+
+      - **Bid**: Score > 70
+      - **Bid with conditions**: Score 50-70
+      - **No-Bid**: Score < 50
+    elicit: true
+
+  - id: risk_assessment
+    title: Risk Assessment
+    instruction: |
+      ### Key Risks
+
+      | Risk     | Probability       | Impact            | Risk Score | Mitigation Strategy |
+      | -------- | ----------------- | ----------------- | ---------- | ------------------- |
+      | [Risk 1] | [High/Medium/Low] | [High/Medium/Low] | [Score]    | [Strategy]          |
+      | [Risk 2] | [High/Medium/Low] | [High/Medium/Low] | [Score]    | [Strategy]          |
+      | [Risk 3] | [High/Medium/Low] | [High/Medium/Low] | [Score]    | [Strategy]          |
+      | [Risk 4] | [High/Medium/Low] | [High/Medium/Low] | [Score]    | [Strategy]          |
+      | [Risk 5] | [High/Medium/Low] | [High/Medium/Low] | [Score]    | [Strategy]          |
+
+      ### Overall Risk Assessment
+
+      **Risk Level**: [High / Moderate / Low]
+
+      **Risk Tolerance**: [High / Moderate / Low]
+
+      **Risk Mitigation Feasibility**: [High / Moderate / Low]
+    elicit: true
+
+  - id: decision_rationale
+    title: Decision Rationale
+    instruction: |
+      ### Bid Decision Factors
+
+      **Factors Supporting Bid Decision**:
+      - [Factor 1]
+      - [Factor 2]
+      - [Factor 3]
+      - [Factor 4]
+      - [Factor 5]
+
+      **Factors Against Bid Decision**:
+      - [Factor 1]
+      - [Factor 2]
+      - [Factor 3]
+      - [Factor 4]
+      - [Factor 5]
+
+      ### Conditions (if applicable)
+
+      | Condition     | Required Action | Owner   | Due Date | Status   |
+      | ------------- | --------------- | ------- | -------- | -------- |
+      | [Condition 1] | [Action]        | [Owner] | [Date]   | [Status] |
+      | [Condition 2] | [Action]        | [Owner] | [Date]   | [Status] |
+      | [Condition 3] | [Action]        | [Owner] | [Date]   | [Status] |
+    elicit: true
+
+  - id: implementation_plan
+    title: Implementation Plan
+    instruction: |
+      ### Next Steps
+
+      | Action     | Owner   | Due Date | Priority          |
+      | ---------- | ------- | -------- | ----------------- |
+      | [Action 1] | [Owner] | [Date]   | [High/Medium/Low] |
+      | [Action 2] | [Owner] | [Date]   | [High/Medium/Low] |
+      | [Action 3] | [Owner] | [Date]   | [High/Medium/Low] |
+      | [Action 4] | [Owner] | [Date]   | [High/Medium/Low] |
+      | [Action 5] | [Owner] | [Date]   | [High/Medium/Low] |
+
+      ### Resource Allocation
+
+      | Resource Category    | Allocation   | Timeline   | Notes   |
+      | -------------------- | ------------ | ---------- | ------- |
+      | Proposal team        | [Allocation] | [Timeline] | [Notes] |
+      | Technical SMEs       | [Allocation] | [Timeline] | [Notes] |
+      | Management resources | [Allocation] | [Timeline] | [Notes] |
+      | B&P budget           | $[Amount]    | [Timeline] | [Notes] |
+      | Other resources      | [Allocation] | [Timeline] | [Notes] |
+    elicit: true
+
+  - id: decision_approval
+    title: Decision Approval
+    instruction: |
+      | Role                      | Name   | Decision         | Date   | Comments   |
+      | ------------------------- | ------ | ---------------- | ------ | ---------- |
+      | Business Development Lead | [Name] | [Approve/Reject] | [Date] | [Comments] |
+      | Technical Lead            | [Name] | [Approve/Reject] | [Date] | [Comments] |
+      | Pricing Lead              | [Name] | [Approve/Reject] | [Date] | [Comments] |
+      | Operations Lead           | [Name] | [Approve/Reject] | [Date] | [Comments] |
+      | Executive Sponsor         | [Name] | [Approve/Reject] | [Date] | [Comments] |
+    elicit: true
+
+  - id: best_practices
+    title: Bid/No-Bid Best Practices
+    instruction: |
+      - **Objective Assessment**: Base decisions on objective criteria, not emotions
+      - **Strategic Focus**: Consider long-term strategic implications, not just immediate fit
+      - **Resource Reality**: Be realistic about resource availability and constraints
+      - **Risk Awareness**: Thoroughly assess and document risks
+      - **Competitive Intelligence**: Base decisions on solid competitive intelligence
+      - **Customer Insight**: Demonstrate understanding of customer needs and priorities
+      - **Financial Discipline**: Consider all financial implications, including opportunity costs
+      - **Team Consensus**: Involve key stakeholders in the decision process
+      - **Clear Documentation**: Document rationale for future reference and lessons learned
+      - **Continuous Improvement**: Use bid/no-bid decisions to refine pursuit strategy

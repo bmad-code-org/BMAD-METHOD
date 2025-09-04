@@ -1,0 +1,217 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: requirements-matrix
+  name: Requirements Matrix Template
+  version: 1.0
+  description: Structured format for capturing, analyzing, and tracking all requirements from an RFQ document
+  output:
+    format: markdown
+    filename: "{{rfq_number}}-requirements-matrix.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: overview
+    title: Overview
+    instruction: |
+      This template provides a structured format for capturing, analyzing, and tracking all requirements from an RFQ document. It helps ensure comprehensive requirements identification and traceability throughout the proposal development process.
+
+  - id: usage_instructions
+    title: Usage Instructions
+    instruction: |
+      1. Extract all requirements from the RFQ document
+      2. Categorize requirements by type and section
+      3. Assign unique IDs to each requirement
+      4. Track compliance status for each requirement
+      5. Link requirements to proposal sections and SMEs
+
+  - id: matrix_header
+    title: Matrix Header
+    instruction: |
+      ```
+      # [RFQ Number] Requirements Matrix
+      # [Agency Name]
+      # [RFQ Title]
+      # [Date]
+      # [Version]
+      ```
+
+  - id: executive_summary
+    title: Executive Summary
+    instruction: |
+      ### Matrix Overview
+
+      **Total Requirements**: [Number]
+
+      **Requirements by Category**:
+      - Technical: [Number]
+      - Management: [Number]
+      - Staffing: [Number]
+      - Past Performance: [Number]
+      - Pricing: [Number]
+      - Administrative: [Number]
+      - Other: [Number]
+
+      **Requirements by Priority**:
+      - Critical: [Number]
+      - High: [Number]
+      - Medium: [Number]
+      - Low: [Number]
+
+      **Compliance Status**:
+      - Compliant: [Number] ([Percentage]%)
+      - Partially Compliant: [Number] ([Percentage]%)
+      - Non-Compliant: [Number] ([Percentage]%)
+      - To Be Determined: [Number] ([Percentage]%)
+    elicit: true
+
+  - id: requirements_matrix
+    title: Requirements Matrix
+    instruction: |
+      ### Technical Requirements
+
+      | Req ID | RFQ Section | Requirement Description | Priority                   | Compliance Status                     | Proposal Section | Assigned SME | Notes   |
+      | ------ | ----------- | ----------------------- | -------------------------- | ------------------------------------- | ---------------- | ------------ | ------- |
+      | T-001  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | T-002  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | T-003  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | T-004  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | T-005  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+
+      ### Management Requirements
+
+      | Req ID | RFQ Section | Requirement Description | Priority                   | Compliance Status                     | Proposal Section | Assigned SME | Notes   |
+      | ------ | ----------- | ----------------------- | -------------------------- | ------------------------------------- | ---------------- | ------------ | ------- |
+      | M-001  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | M-002  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | M-003  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | M-004  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | M-005  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+
+      ### Staffing Requirements
+
+      | Req ID | RFQ Section | Requirement Description | Priority                   | Compliance Status                     | Proposal Section | Assigned SME | Notes   |
+      | ------ | ----------- | ----------------------- | -------------------------- | ------------------------------------- | ---------------- | ------------ | ------- |
+      | S-001  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | S-002  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | S-003  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | S-004  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | S-005  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+
+      ### Past Performance Requirements
+
+      | Req ID | RFQ Section | Requirement Description | Priority                   | Compliance Status                     | Proposal Section | Assigned SME | Notes   |
+      | ------ | ----------- | ----------------------- | -------------------------- | ------------------------------------- | ---------------- | ------------ | ------- |
+      | P-001  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | P-002  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | P-003  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | P-004  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | P-005  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+
+      ### Pricing Requirements
+
+      | Req ID | RFQ Section | Requirement Description | Priority                   | Compliance Status                     | Proposal Section | Assigned SME | Notes   |
+      | ------ | ----------- | ----------------------- | -------------------------- | ------------------------------------- | ---------------- | ------------ | ------- |
+      | PR-001 | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | PR-002 | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | PR-003 | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | PR-004 | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | PR-005 | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+
+      ### Administrative Requirements
+
+      | Req ID | RFQ Section | Requirement Description | Priority                   | Compliance Status                     | Proposal Section | Assigned SME | Notes   |
+      | ------ | ----------- | ----------------------- | -------------------------- | ------------------------------------- | ---------------- | ------------ | ------- |
+      | A-001  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | A-002  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | A-003  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | A-004  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+      | A-005  | [Section]   | [Requirement text]      | [Critical/High/Medium/Low] | [Compliant/Partial/Non-Compliant/TBD] | [Section]        | [Name]       | [Notes] |
+    elicit: true
+
+  - id: requirements_analysis
+    title: Requirements Analysis
+    instruction: |
+      ### Critical Requirements
+
+      | Req ID | Requirement Description | Compliance Strategy | Risk Level        | Mitigation Plan |
+      | ------ | ----------------------- | ------------------- | ----------------- | --------------- |
+      | [ID]   | [Requirement text]      | [Strategy]          | [High/Medium/Low] | [Plan]          |
+      | [ID]   | [Requirement text]      | [Strategy]          | [High/Medium/Low] | [Plan]          |
+      | [ID]   | [Requirement text]      | [Strategy]          | [High/Medium/Low] | [Plan]          |
+      | [ID]   | [Requirement text]      | [Strategy]          | [High/Medium/Low] | [Plan]          |
+      | [ID]   | [Requirement text]      | [Strategy]          | [High/Medium/Low] | [Plan]          |
+
+      ### Non-Compliant Requirements
+
+      | Req ID | Requirement Description | Reason for Non-Compliance | Alternative Approach | Risk Level        |
+      | ------ | ----------------------- | ------------------------- | -------------------- | ----------------- |
+      | [ID]   | [Requirement text]      | [Reason]                  | [Approach]           | [High/Medium/Low] |
+      | [ID]   | [Requirement text]      | [Reason]                  | [Approach]           | [High/Medium/Low] |
+      | [ID]   | [Requirement text]      | [Reason]                  | [Approach]           | [High/Medium/Low] |
+      | [ID]   | [Requirement text]      | [Reason]                  | [Approach]           | [High/Medium/Low] |
+      | [ID]   | [Requirement text]      | [Reason]                  | [Approach]           | [High/Medium/Low] |
+
+      ### Requirements Dependencies
+
+      | Primary Req ID | Dependent Req ID | Dependency Type | Notes   |
+      | -------------- | ---------------- | --------------- | ------- |
+      | [ID]           | [ID]             | [Type]          | [Notes] |
+      | [ID]           | [ID]             | [Type]          | [Notes] |
+      | [ID]           | [ID]             | [Type]          | [Notes] |
+      | [ID]           | [ID]             | [Type]          | [Notes] |
+      | [ID]           | [ID]             | [Type]          | [Notes] |
+    elicit: true
+
+  - id: requirements_traceability
+    title: Requirements Traceability
+    instruction: |
+      ### Proposal Section Mapping
+
+      | Proposal Section | Requirements Addressed | SME Responsible | Status   |
+      | ---------------- | ---------------------- | --------------- | -------- |
+      | [Section]        | [IDs]                  | [Name]          | [Status] |
+      | [Section]        | [IDs]                  | [Name]          | [Status] |
+      | [Section]        | [IDs]                  | [Name]          | [Status] |
+      | [Section]        | [IDs]                  | [Name]          | [Status] |
+      | [Section]        | [IDs]                  | [Name]          | [Status] |
+
+      ### Evaluation Criteria Mapping
+
+      | Evaluation Factor | Requirements Addressed | Proposal Sections | Status   |
+      | ----------------- | ---------------------- | ----------------- | -------- |
+      | [Factor]          | [IDs]                  | [Sections]        | [Status] |
+      | [Factor]          | [IDs]                  | [Sections]        | [Status] |
+      | [Factor]          | [IDs]                  | [Sections]        | [Status] |
+      | [Factor]          | [IDs]                  | [Sections]        | [Status] |
+      | [Factor]          | [IDs]                  | [Sections]        | [Status] |
+    elicit: true
+
+  - id: action_items
+    title: Action Items
+    instruction: |
+      | Item   | Description   | Owner   | Due Date | Status   |
+      | ------ | ------------- | ------- | -------- | -------- |
+      | [Item] | [Description] | [Owner] | [Date]   | [Status] |
+      | [Item] | [Description] | [Owner] | [Date]   | [Status] |
+      | [Item] | [Description] | [Owner] | [Date]   | [Status] |
+      | [Item] | [Description] | [Owner] | [Date]   | [Status] |
+      | [Item] | [Description] | [Owner] | [Date]   | [Status] |
+    elicit: true
+
+  - id: best_practices
+    title: Requirements Matrix Best Practices
+    instruction: |
+      - **Comprehensive Extraction**: Ensure all requirements are extracted from the RFQ
+      - **Clear Categorization**: Categorize requirements logically for easier management
+      - **Unique Identification**: Assign unique IDs to each requirement for traceability
+      - **Objective Assessment**: Be honest about compliance status
+      - **Clear Ownership**: Assign specific owners to each requirement
+      - **Regular Updates**: Update the matrix regularly throughout proposal development
+      - **Risk Identification**: Identify and document risks associated with requirements
+      - **Traceability**: Maintain clear links between requirements and proposal sections
+      - **Prioritization**: Clearly identify critical requirements that must be addressed
+      - **Documentation**: Document rationale for compliance approaches and decisions

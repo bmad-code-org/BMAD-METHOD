@@ -1,0 +1,227 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: executive-summary-template
+  name: Executive Summary Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/executive-summary.md
+    title: "{{rfq_number}} Executive Summary"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for creating compelling executive summaries that highlight key win themes, discriminators, and value propositions. The executive summary is often the first and most important section evaluators read.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Complete this template after win themes are developed
+      2. Focus on customer benefits and discriminators
+      3. Align content with evaluation criteria
+      4. Keep language clear, concise, and compelling
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: summary-header
+        title: Summary Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Executive Summary
+          # [Agency Name]
+          # [RFQ Title]
+          # [Company Name]
+          # [Date]
+
+  - id: opening-statement
+    title: Opening Statement
+    elicit: true
+    template: |
+      {{opening_statement}}
+    instruction: Provide 1-2 sentences that acknowledge the customer's mission and express your commitment to their success
+
+  - id: understanding-of-customer-need
+    title: Understanding of Customer Need
+    elicit: true
+    sections:
+      - id: mission-understanding
+        title: Mission Understanding
+        template: |
+          {{mission_understanding}}
+        instruction: Provide 2-3 paragraphs demonstrating your understanding of the customer's mission, challenges, and specific needs addressed by this RFQ
+        content: |
+          - **Mission Alignment**: {{mission_alignment}}
+          - **Pain Points Addressed**: {{pain_points}}
+          - **Strategic Objectives**: {{strategic_objectives}}
+
+      - id: key-requirements
+        title: Key Requirements
+        template: |
+          {{requirements_summary}}
+        instruction: Provide a brief summary of the most critical requirements and how your solution addresses them
+        type: table
+        columns: [Key Requirement, Our Approach, Customer Benefit]
+        table_guidance: Fill in the key requirements table
+        examples:
+          - "| [Requirement 1] | [Approach 1] | [Benefit 1] |"
+          - "| [Requirement 2] | [Approach 2] | [Benefit 2] |"
+          - "| [Requirement 3] | [Approach 3] | [Benefit 3] |"
+
+  - id: solution-overview
+    title: Solution Overview
+    elicit: true
+    sections:
+      - id: solution-highlights
+        title: Solution Highlights
+        template: |
+          {{solution_overview}}
+        instruction: Provide 2-3 paragraphs providing a high-level overview of your proposed solution
+        content: |
+          **Key Solution Elements**:
+
+          - {{solution_element_1}}
+          - {{solution_element_2}}
+          - {{solution_element_3}}
+          - {{solution_element_4}}
+          - {{solution_element_5}}
+
+      - id: primary-win-themes
+        title: Primary Win Themes
+        instruction: For each win theme, provide a clear statement, supporting evidence, and customer benefit
+        sections:
+          - id: win-theme-1
+            title: "Win Theme 1: {{theme_title_1}}"
+            content: |
+              - **Claim**: {{claim_1}}
+              - **Proof**: {{proof_1}}
+              - **Benefit**: {{benefit_1}}
+
+          - id: win-theme-2
+            title: "Win Theme 2: {{theme_title_2}}"
+            content: |
+              - **Claim**: {{claim_2}}
+              - **Proof**: {{proof_2}}
+              - **Benefit**: {{benefit_2}}
+
+          - id: win-theme-3
+            title: "Win Theme 3: {{theme_title_3}}"
+            content: |
+              - **Claim**: {{claim_3}}
+              - **Proof**: {{proof_3}}
+              - **Benefit**: {{benefit_3}}
+
+  - id: key-discriminators
+    title: Key Discriminators
+    elicit: true
+    instruction: Highlight 3-5 specific discriminators that set your solution apart from competitors
+    sections:
+      - id: discriminator-1
+        title: "Discriminator 1: {{discriminator_title_1}}"
+        template: |
+          {{discriminator_description_1}}
+        instruction: Provide a brief description of discriminator and why it matters to the customer
+
+      - id: discriminator-2
+        title: "Discriminator 2: {{discriminator_title_2}}"
+        template: |
+          {{discriminator_description_2}}
+        instruction: Provide a brief description of discriminator and why it matters to the customer
+
+      - id: discriminator-3
+        title: "Discriminator 3: {{discriminator_title_3}}"
+        template: |
+          {{discriminator_description_3}}
+        instruction: Provide a brief description of discriminator and why it matters to the customer
+
+  - id: risk-mitigation
+    title: Risk Mitigation
+    elicit: true
+    template: |
+      {{risk_mitigation_overview}}
+    instruction: Provide a brief overview of your approach to managing key risks
+    type: table
+    columns: [Risk, Mitigation Approach, Customer Benefit]
+    table_guidance: Fill in the risk mitigation table
+    examples:
+      - "| [Risk 1] | [Mitigation 1] | [Benefit 1] |"
+      - "| [Risk 2] | [Mitigation 2] | [Benefit 2] |"
+      - "| [Risk 3] | [Mitigation 3] | [Benefit 3] |"
+
+  - id: team-qualifications
+    title: Team Qualifications
+    elicit: true
+    template: |
+      {{team_qualifications_overview}}
+    instruction: Provide a brief overview of your team's qualifications and experience
+    content: |
+      - **Team Experience**: {{team_experience}}
+      - **Key Personnel**: {{key_personnel}}
+      - **Past Performance**: {{past_performance}}
+      - **Certifications**: {{certifications}}
+
+  - id: value-proposition
+    title: Value Proposition
+    elicit: true
+    template: |
+      {{value_proposition}}
+    instruction: Provide a clear, compelling statement of the overall value your solution provides
+    sections:
+      - id: cost-benefit-summary
+        title: Cost-Benefit Summary
+        type: table
+        columns: [Investment, Return/Benefit]
+        instruction: Fill in the cost-benefit summary table
+        examples:
+          - "| [Cost element 1] | [Benefit 1] |"
+          - "| [Cost element 2] | [Benefit 2] |"
+          - "| [Cost element 3] | [Benefit 3] |"
+
+  - id: closing-statement
+    title: Closing Statement
+    elicit: true
+    template: |
+      {{closing_statement}}
+    instruction: Provide a strong closing statement that reinforces commitment and value proposition
+
+  - id: executive-summary-best-practices
+    title: Executive Summary Best Practices
+    content: |
+      - **Customer Focus**: Write from the customer's perspective, emphasizing benefits to their mission
+      - **Strategic Alignment**: Demonstrate understanding of agency priorities and strategic goals
+      - **Clear Value Proposition**: Articulate a compelling and differentiated value proposition
+      - **Evidence-Based**: Support all claims with specific, quantifiable evidence
+      - **Evaluation Alignment**: Address key evaluation factors from Section M
+      - **Visual Appeal**: Use graphics, callouts, and formatting to enhance readability
+      - **Concise Language**: Use clear, direct language without jargon or unnecessary complexity
+      - **Compelling Narrative**: Tell a cohesive story that flows logically and engages the reader
+      - **Forward-Looking**: Focus on outcomes and future benefits, not just features
+      - **Memorable Messaging**: Create clear, memorable statements that evaluators will remember
+
+  - id: graphics-recommendations
+    title: Graphics Recommendations
+    content: |
+      Include 2-3 high-impact graphics that support key messages:
+
+      1. **Solution Overview Graphic**: Visual representation of your overall solution
+      2. **Value Proposition Graphic**: Visual representation of customer benefits
+      3. **Discriminator Graphic**: Visual highlighting of key differentiators
+
+  - id: example-executive-summary-section
+    title: Example Executive Summary Section
+    type: code
+    language: markdown
+    content: |
+      ## Understanding of Customer Need
+
+      The Department of Veterans Affairs (VA) faces increasing demands on its healthcare scheduling systems, with over 9 million veterans seeking timely access to care. Current legacy systems create appointment backlogs, reduce provider efficiency, and limit veterans' access to critical services.
+
+      Our VetSchedule solution directly addresses these challenges by providing an intuitive, cloud-based scheduling platform that reduces appointment wait times by 47% while increasing provider utilization by 32%. Built on our proven HealthConnect framework—currently serving 12 federal healthcare agencies—VetSchedule seamlessly integrates with the VA's existing VistA infrastructure while providing a modern, mobile-friendly interface for both veterans and providers.
+
+      By implementing VetSchedule, the VA will achieve its strategic goals of improving veteran satisfaction, increasing care accessibility, and optimizing resource utilization across all 1,255 VA healthcare facilities.

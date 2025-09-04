@@ -1,0 +1,327 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: technical-approach
+  name: Technical Approach Template
+  version: 1.0
+  description: Structured format for developing a comprehensive technical approach for government RFQ responses
+  output:
+    format: markdown
+    filename: "{{rfq_number}}-technical-approach.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: overview
+    title: Overview
+    instruction: |
+      This template provides a structured format for developing a comprehensive technical approach for government RFQ responses. It helps proposal teams articulate a clear, compelling, and compliant technical solution that addresses all RFQ requirements.
+
+  - id: usage_instructions
+    title: Usage Instructions
+    instruction: |
+      1. Complete this template after reviewing the RFQ requirements and compliance matrix
+      2. Involve technical SMEs in developing each section
+      3. Ensure alignment with win themes and evaluation criteria
+      4. Include specific, measurable benefits and discriminators
+      5. Incorporate graphics and visuals to enhance understanding
+
+  - id: document_header
+    title: Document Header
+    instruction: |
+      ```
+      # [RFQ Number] Technical Approach
+      # [Agency Name]
+      # [RFQ Title]
+      # [Date]
+      # [Version]
+      ```
+
+  - id: executive_summary
+    title: Executive Summary
+    instruction: |
+      ### Technical Approach Overview
+
+      **Solution Summary**:
+      [1-2 paragraphs summarizing the overall technical approach and key benefits]
+
+      **Key Differentiators**:
+      - [Differentiator 1]
+      - [Differentiator 2]
+      - [Differentiator 3]
+      - [Differentiator 4]
+      - [Differentiator 5]
+
+      **Alignment with Customer Objectives**:
+      [Brief explanation of how the technical approach aligns with and supports the customer's mission and objectives]
+    elicit: true
+
+  - id: understanding_of_requirements
+    title: Understanding of Requirements
+    instruction: |
+      ### Mission Understanding
+
+      **Customer Mission**:
+      [Description of the customer's mission and how the technical solution supports it]
+
+      **Key Challenges**:
+      - [Challenge 1]: [How solution addresses it]
+      - [Challenge 2]: [How solution addresses it]
+      - [Challenge 3]: [How solution addresses it]
+      - [Challenge 4]: [How solution addresses it]
+      - [Challenge 5]: [How solution addresses it]
+
+      ### Requirements Summary
+
+      **Key Technical Requirements**:
+      - [Requirement 1]: [How solution addresses it]
+      - [Requirement 2]: [How solution addresses it]
+      - [Requirement 3]: [How solution addresses it]
+      - [Requirement 4]: [How solution addresses it]
+      - [Requirement 5]: [How solution addresses it]
+    elicit: true
+
+  - id: technical_solution
+    title: Technical Solution
+    instruction: |
+      ### Solution Architecture
+
+      **Architecture Overview**:
+      [Description of the overall solution architecture, including key components and their relationships]
+
+      **Architecture Diagram**:
+      [Insert architecture diagram here]
+
+      **Key Components**:
+      - [Component 1]: [Description and purpose]
+      - [Component 2]: [Description and purpose]
+      - [Component 3]: [Description and purpose]
+      - [Component 4]: [Description and purpose]
+      - [Component 5]: [Description and purpose]
+
+      ### Technical Approach by Functional Area
+
+      #### [Functional Area 1]
+
+      **Requirements Addressed**:
+      - [Requirement ID]: [Requirement description]
+      - [Requirement ID]: [Requirement description]
+      - [Requirement ID]: [Requirement description]
+
+      **Approach**:
+      [Detailed description of the technical approach for this functional area]
+
+      **Key Technologies**:
+      - [Technology 1]: [Purpose and benefits]
+      - [Technology 2]: [Purpose and benefits]
+      - [Technology 3]: [Purpose and benefits]
+
+      **Implementation Considerations**:
+      [Description of implementation considerations, including any phasing, dependencies, or risks]
+
+      **Benefits**:
+      - [Benefit 1]
+      - [Benefit 2]
+      - [Benefit 3]
+
+      #### [Functional Area 2]
+
+      **Requirements Addressed**:
+      - [Requirement ID]: [Requirement description]
+      - [Requirement ID]: [Requirement description]
+      - [Requirement ID]: [Requirement description]
+
+      **Approach**:
+      [Detailed description of the technical approach for this functional area]
+
+      **Key Technologies**:
+      - [Technology 1]: [Purpose and benefits]
+      - [Technology 2]: [Purpose and benefits]
+      - [Technology 3]: [Purpose and benefits]
+
+      **Implementation Considerations**:
+      [Description of implementation considerations, including any phasing, dependencies, or risks]
+
+      **Benefits**:
+      - [Benefit 1]
+      - [Benefit 2]
+      - [Benefit 3]
+
+      #### [Functional Area 3]
+
+      **Requirements Addressed**:
+      - [Requirement ID]: [Requirement description]
+      - [Requirement ID]: [Requirement description]
+      - [Requirement ID]: [Requirement description]
+
+      **Approach**:
+      [Detailed description of the technical approach for this functional area]
+
+      **Key Technologies**:
+      - [Technology 1]: [Purpose and benefits]
+      - [Technology 2]: [Purpose and benefits]
+      - [Technology 3]: [Purpose and benefits]
+
+      **Implementation Considerations**:
+      [Description of implementation considerations, including any phasing, dependencies, or risks]
+
+      **Benefits**:
+      - [Benefit 1]
+      - [Benefit 2]
+      - [Benefit 3]
+
+      ### Technology Stack
+
+      **Core Technologies**:
+
+      | Technology     | Purpose   | Benefits   | Experience   |
+      | -------------- | --------- | ---------- | ------------ |
+      | [Technology 1] | [Purpose] | [Benefits] | [Experience] |
+      | [Technology 2] | [Purpose] | [Benefits] | [Experience] |
+      | [Technology 3] | [Purpose] | [Benefits] | [Experience] |
+      | [Technology 4] | [Purpose] | [Benefits] | [Experience] |
+      | [Technology 5] | [Purpose] | [Benefits] | [Experience] |
+
+      **Standards Compliance**:
+      [Description of how the solution complies with relevant technical standards and requirements]
+
+      **Technology Justification**:
+      [Explanation of why the selected technologies are the best fit for the customer's requirements]
+    elicit: true
+
+  - id: implementation_approach
+    title: Implementation Approach
+    instruction: |
+      ### Implementation Methodology
+
+      **Methodology Overview**:
+      [Description of the implementation methodology (e.g., Agile, DevSecOps, etc.)]
+
+      **Key Phases**:
+      1. [Phase 1]: [Description]
+      2. [Phase 2]: [Description]
+      3. [Phase 3]: [Description]
+      4. [Phase 4]: [Description]
+      5. [Phase 5]: [Description]
+
+      **Timeline**:
+      [High-level implementation timeline]
+
+      ### Development Approach
+
+      **Development Methodology**:
+      [Description of the development methodology]
+
+      **Quality Assurance**:
+      [Description of the quality assurance approach]
+
+      **Testing Strategy**:
+      [Description of the testing strategy, including types of testing and test environments]
+
+      **Configuration Management**:
+      [Description of the configuration management approach]
+
+      ### Deployment Approach
+
+      **Deployment Strategy**:
+      [Description of the deployment strategy]
+
+      **Environment Setup**:
+      [Description of the environment setup and configuration]
+
+      **Cutover Plan**:
+      [Description of the cutover plan and approach]
+
+      **Rollback Procedures**:
+      [Description of rollback procedures in case of deployment issues]
+    elicit: true
+
+  - id: technical_risk_management
+    title: Technical Risk Management
+    instruction: |
+      ### Risk Identification
+
+      | Risk ID | Risk Description   | Probability       | Impact            | Risk Level        |
+      | ------- | ------------------ | ----------------- | ----------------- | ----------------- |
+      | TR-001  | [Risk description] | [High/Medium/Low] | [High/Medium/Low] | [High/Medium/Low] |
+      | TR-002  | [Risk description] | [High/Medium/Low] | [High/Medium/Low] | [High/Medium/Low] |
+      | TR-003  | [Risk description] | [High/Medium/Low] | [High/Medium/Low] | [High/Medium/Low] |
+      | TR-004  | [Risk description] | [High/Medium/Low] | [High/Medium/Low] | [High/Medium/Low] |
+      | TR-005  | [Risk description] | [High/Medium/Low] | [High/Medium/Low] | [High/Medium/Low] |
+
+      ### Risk Mitigation
+
+      | Risk ID | Mitigation Strategy | Contingency Plan | Owner  |
+      | ------- | ------------------- | ---------------- | ------ |
+      | TR-001  | [Strategy]          | [Plan]           | [Role] |
+      | TR-002  | [Strategy]          | [Plan]           | [Role] |
+      | TR-003  | [Strategy]          | [Plan]           | [Role] |
+      | TR-004  | [Strategy]          | [Plan]           | [Role] |
+      | TR-005  | [Strategy]          | [Plan]           | [Role] |
+    elicit: true
+
+  - id: technical_performance_measurement
+    title: Technical Performance Measurement
+    instruction: |
+      ### Key Performance Indicators
+
+      | KPI     | Description   | Target   | Measurement Method |
+      | ------- | ------------- | -------- | ------------------ |
+      | [KPI 1] | [Description] | [Target] | [Method]           |
+      | [KPI 2] | [Description] | [Target] | [Method]           |
+      | [KPI 3] | [Description] | [Target] | [Method]           |
+      | [KPI 4] | [Description] | [Target] | [Method]           |
+      | [KPI 5] | [Description] | [Target] | [Method]           |
+
+      ### Service Level Agreements
+
+      | Service     | SLA   | Measurement   | Reporting   | Remediation   |
+      | ----------- | ----- | ------------- | ----------- | ------------- |
+      | [Service 1] | [SLA] | [Measurement] | [Reporting] | [Remediation] |
+      | [Service 2] | [SLA] | [Measurement] | [Reporting] | [Remediation] |
+      | [Service 3] | [SLA] | [Measurement] | [Reporting] | [Remediation] |
+      | [Service 4] | [SLA] | [Measurement] | [Reporting] | [Remediation] |
+      | [Service 5] | [SLA] | [Measurement] | [Reporting] | [Remediation] |
+    elicit: true
+
+  - id: innovation_and_continuous_improvement
+    title: Innovation and Continuous Improvement
+    instruction: |
+      ### Innovation Approach
+
+      **Innovation Strategy**:
+      [Description of the innovation strategy and approach]
+
+      **Emerging Technologies**:
+      [Description of relevant emerging technologies and how they might be incorporated]
+
+      **Research and Development**:
+      [Description of any relevant research and development activities]
+
+      ### Continuous Improvement
+
+      **Continuous Improvement Process**:
+      [Description of the continuous improvement process]
+
+      **Feedback Mechanisms**:
+      [Description of feedback mechanisms to identify improvement opportunities]
+
+      **Technology Refresh Strategy**:
+      [Description of the technology refresh strategy and approach]
+    elicit: true
+
+  - id: best_practices
+    title: Technical Approach Best Practices
+    instruction: |
+      - **Requirements Alignment**: Ensure the technical approach directly addresses all RFQ requirements
+      - **Customer Focus**: Demonstrate understanding of the customer's mission and objectives
+      - **Clear Architecture**: Present a clear, logical architecture with well-defined components
+      - **Proven Technologies**: Emphasize proven technologies and approaches with relevant past performance
+      - **Specific Benefits**: Articulate specific, measurable benefits of the technical approach
+      - **Risk Awareness**: Acknowledge technical risks and provide credible mitigation strategies
+      - **Visual Communication**: Use diagrams, flowcharts, and other visuals to enhance understanding
+      - **Discriminators**: Clearly highlight technical discriminators and competitive advantages
+      - **Implementation Clarity**: Provide a clear, realistic implementation approach
+      - **Performance Measurement**: Define how technical performance will be measured and reported

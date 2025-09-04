@@ -1,0 +1,424 @@
+template_name: "Staffing Plan Template"
+template_id: "staffing-plan-tmpl"
+template_type: "document"
+template_category: "proposal"
+template_description: "A structured format for developing a comprehensive staffing plan for government RFQ responses"
+template_help: "This template helps proposal teams articulate a clear, effective, and compliant staffing approach that demonstrates the ability to provide qualified personnel to successfully execute the contract."
+template_tags:
+  - "staffing"
+  - "personnel"
+  - "recruitment"
+  - "retention"
+  - "labor categories"
+  - "key personnel"
+  - "subcontracting"
+
+usage_instructions: |
+  1. Complete this template after reviewing the RFQ requirements, labor categories, and compliance matrix
+  2. Involve HR, recruiting, and technical SMEs in developing each section
+  3. Ensure alignment with technical and management approaches
+  4. Include specific staffing strategies, recruitment plans, and retention approaches
+  5. Incorporate organizational charts and visual representations of staffing structures
+
+sections:
+  - section_id: "document_header"
+    section_title: "Document Header"
+    section_type: "header"
+    section_template: |
+      # [RFQ Number] Staffing Plan
+      # [Agency Name]
+      # [RFQ Title]
+      # [Date]
+      # [Version]
+    elicitation_questions:
+      - "What is the RFQ number for this opportunity?"
+      - "What is the name of the agency issuing this RFQ?"
+      - "What is the title of this RFQ?"
+      - "What is today's date?"
+      - "What is the current version of this document?"
+
+  - section_id: "executive_summary"
+    section_title: "Executive Summary"
+    section_type: "content"
+    subsections:
+      - subsection_id: "staffing_approach_overview"
+        subsection_title: "Staffing Approach Overview"
+        subsection_type: "content"
+        subsection_template: |
+          **Approach Summary**:
+          [1-2 paragraphs summarizing the overall staffing approach and key benefits]
+
+          **Key Differentiators**:
+
+          - [Differentiator 1]
+          - [Differentiator 2]
+          - [Differentiator 3]
+          - [Differentiator 4]
+          - [Differentiator 5]
+
+          **Alignment with Customer Objectives**:
+          [Brief explanation of how the staffing approach aligns with and supports the customer's mission and objectives]
+        elicitation_questions:
+          - "What is your overall staffing approach for this opportunity?"
+          - "What are the key benefits of your staffing approach?"
+          - "What are your key differentiators in terms of staffing capabilities?"
+          - "How does your staffing approach align with the customer's mission and objectives?"
+
+  - section_id: "staffing_organization"
+    section_title: "Staffing Organization"
+    section_type: "content"
+    subsections:
+      - subsection_id: "organizational_structure"
+        subsection_title: "Organizational Structure"
+        subsection_type: "content"
+        subsection_template: |
+          **Organization Chart**:
+          [Insert organization chart here]
+
+          **Key Roles and Responsibilities**:
+
+          | Role     | Responsibilities   | Required Skills | Required Experience | Labor Category   |
+          | -------- | ------------------ | --------------- | ------------------- | ---------------- |
+          | [Role 1] | [Responsibilities] | [Skills]        | [Experience]        | [Labor Category] |
+          | [Role 2] | [Responsibilities] | [Skills]        | [Experience]        | [Labor Category] |
+          | [Role 3] | [Responsibilities] | [Skills]        | [Experience]        | [Labor Category] |
+          | [Role 4] | [Responsibilities] | [Skills]        | [Experience]        | [Labor Category] |
+          | [Role 5] | [Responsibilities] | [Skills]        | [Experience]        | [Labor Category] |
+
+          **Reporting Structure**:
+          [Description of the reporting structure and lines of authority]
+        elicitation_questions:
+          - "What is the organizational structure for this program?"
+          - "What are the key roles and responsibilities in your staffing plan?"
+          - "What skills and experience are required for each role?"
+          - "What is the reporting structure for your staffing organization?"
+
+      - subsection_id: "key_personnel"
+        subsection_title: "Key Personnel"
+        subsection_type: "content"
+        subsection_template: |
+          **Key Personnel Summary**:
+
+          | Position     | Name   | Qualifications   | Relevant Experience | Certifications   |
+          | ------------ | ------ | ---------------- | ------------------- | ---------------- |
+          | [Position 1] | [Name] | [Qualifications] | [Experience]        | [Certifications] |
+          | [Position 2] | [Name] | [Qualifications] | [Experience]        | [Certifications] |
+          | [Position 3] | [Name] | [Qualifications] | [Experience]        | [Certifications] |
+          | [Position 4] | [Name] | [Qualifications] | [Experience]        | [Certifications] |
+          | [Position 5] | [Name] | [Qualifications] | [Experience]        | [Certifications] |
+
+          **Key Personnel Resumes**:
+          [Reference to attached resumes or summary of key personnel qualifications]
+        elicitation_questions:
+          - "Who are the key personnel for this program?"
+          - "What are their qualifications and relevant experience?"
+          - "What certifications do they hold?"
+          - "Are resumes available for these key personnel?"
+
+  - section_id: "staffing_requirements"
+    section_title: "Staffing Requirements"
+    section_type: "content"
+    subsections:
+      - subsection_id: "labor_category_requirements"
+        subsection_title: "Labor Category Requirements"
+        subsection_type: "content"
+        subsection_template: |
+          **Labor Category Summary**:
+
+          | Labor Category | Description   | Quantity   | Required Skills | Required Experience | Required Certifications |
+          | -------------- | ------------- | ---------- | --------------- | ------------------- | ----------------------- |
+          | [Category 1]   | [Description] | [Quantity] | [Skills]        | [Experience]        | [Certifications]        |
+          | [Category 2]   | [Description] | [Quantity] | [Skills]        | [Experience]        | [Certifications]        |
+          | [Category 3]   | [Description] | [Quantity] | [Skills]        | [Experience]        | [Certifications]        |
+          | [Category 4]   | [Description] | [Quantity] | [Skills]        | [Experience]        | [Certifications]        |
+          | [Category 5]   | [Description] | [Quantity] | [Skills]        | [Experience]        | [Certifications]        |
+
+          **Labor Category Mapping**:
+          [Description of how labor categories map to contract requirements]
+        elicitation_questions:
+          - "What labor categories are required for this program?"
+          - "How many personnel are needed for each labor category?"
+          - "What skills, experience, and certifications are required for each labor category?"
+          - "How do these labor categories map to the contract requirements?"
+
+      - subsection_id: "staffing_levels"
+        subsection_title: "Staffing Levels"
+        subsection_type: "content"
+        subsection_template: |
+          **Staffing Level Summary**:
+
+          | Contract Phase | Total FTEs | Key Personnel | Support Staff | Subcontractor Staff |
+          | -------------- | ---------- | ------------- | ------------- | ------------------- |
+          | [Phase 1]      | [Total]    | [Number]      | [Number]      | [Number]            |
+          | [Phase 2]      | [Total]    | [Number]      | [Number]      | [Number]            |
+          | [Phase 3]      | [Total]    | [Number]      | [Number]      | [Number]            |
+          | [Phase 4]      | [Total]    | [Number]      | [Number]      | [Number]            |
+          | [Phase 5]      | [Total]    | [Number]      | [Number]      | [Number]            |
+
+          **Staffing Ramp-Up/Ramp-Down Plan**:
+          [Description of the staffing ramp-up and ramp-down approach]
+
+          **Staffing Flexibility**:
+          [Description of the approach to staffing flexibility and surge capacity]
+        elicitation_questions:
+          - "What are the staffing levels for each phase of the contract?"
+          - "How will you ramp up and ramp down staffing throughout the contract?"
+          - "How will you ensure staffing flexibility and surge capacity?"
+
+  - section_id: "staffing_strategy"
+    section_title: "Staffing Strategy"
+    section_type: "content"
+    subsections:
+      - subsection_id: "recruitment_strategy"
+        subsection_title: "Recruitment Strategy"
+        subsection_type: "content"
+        subsection_template: |
+          **Recruitment Approach**:
+          [Description of the overall recruitment approach]
+
+          **Sourcing Channels**:
+          [Description of the sourcing channels and recruitment methods]
+
+          **Screening and Selection Process**:
+          [Description of the screening and selection process]
+
+          **Timeline**:
+          [Description of the recruitment timeline]
+        elicitation_questions:
+          - "What is your overall recruitment approach?"
+          - "What sourcing channels and recruitment methods will you use?"
+          - "What is your screening and selection process?"
+          - "What is your recruitment timeline?"
+
+      - subsection_id: "retention_strategy"
+        subsection_title: "Retention Strategy"
+        subsection_type: "content"
+        subsection_template: |
+          **Retention Approach**:
+          [Description of the overall retention approach]
+
+          **Compensation and Benefits**:
+          [Description of the compensation and benefits approach]
+
+          **Professional Development**:
+          [Description of the professional development opportunities]
+
+          **Career Advancement**:
+          [Description of the career advancement opportunities]
+
+          **Employee Engagement**:
+          [Description of the employee engagement approach]
+        elicitation_questions:
+          - "What is your overall retention approach?"
+          - "What compensation and benefits will you offer?"
+          - "What professional development opportunities will you provide?"
+          - "What career advancement opportunities will you offer?"
+          - "How will you ensure employee engagement?"
+
+      - subsection_id: "subcontracting_strategy"
+        subsection_title: "Subcontracting Strategy"
+        subsection_type: "content"
+        subsection_template: |
+          **Subcontractor Approach**:
+          [Description of the overall subcontracting approach]
+
+          **Subcontractor Team**:
+
+          | Subcontractor     | Role   | Percentage of Work | Qualifications   | Past Performance   |
+          | ----------------- | ------ | ------------------ | ---------------- | ------------------ |
+          | [Subcontractor 1] | [Role] | [Percentage]       | [Qualifications] | [Past Performance] |
+          | [Subcontractor 2] | [Role] | [Percentage]       | [Qualifications] | [Past Performance] |
+          | [Subcontractor 3] | [Role] | [Percentage]       | [Qualifications] | [Past Performance] |
+          | [Subcontractor 4] | [Role] | [Percentage]       | [Qualifications] | [Past Performance] |
+          | [Subcontractor 5] | [Role] | [Percentage]       | [Qualifications] | [Past Performance] |
+
+          **Subcontractor Management**:
+          [Description of the subcontractor management approach]
+        elicitation_questions:
+          - "What is your overall subcontracting approach?"
+          - "Who are your subcontractors and what roles will they play?"
+          - "What percentage of work will each subcontractor perform?"
+          - "What are the qualifications and past performance of your subcontractors?"
+          - "How will you manage your subcontractors?"
+
+  - section_id: "staffing_management"
+    section_title: "Staffing Management"
+    section_type: "content"
+    subsections:
+      - subsection_id: "onboarding_process"
+        subsection_title: "Onboarding Process"
+        subsection_type: "content"
+        subsection_template: |
+          **Onboarding Approach**:
+          [Description of the onboarding approach]
+
+          **Onboarding Timeline**:
+          [Description of the onboarding timeline]
+
+          **Training Requirements**:
+          [Description of the training requirements and approach]
+
+          **Security Clearance Process**:
+          [Description of the security clearance process]
+        elicitation_questions:
+          - "What is your onboarding approach?"
+          - "What is your onboarding timeline?"
+          - "What training requirements will you have in place?"
+          - "What is your security clearance process?"
+
+      - subsection_id: "performance_management"
+        subsection_title: "Performance Management"
+        subsection_type: "content"
+        subsection_template: |
+          **Performance Evaluation**:
+          [Description of the performance evaluation approach]
+
+          **Performance Metrics**:
+
+          | Role     | Performance Metric | Target   | Measurement Method | Frequency   |
+          | -------- | ------------------ | -------- | ------------------ | ----------- |
+          | [Role 1] | [Metric]           | [Target] | [Method]           | [Frequency] |
+          | [Role 2] | [Metric]           | [Target] | [Method]           | [Frequency] |
+          | [Role 3] | [Metric]           | [Target] | [Method]           | [Frequency] |
+          | [Role 4] | [Metric]           | [Target] | [Method]           | [Frequency] |
+          | [Role 5] | [Metric]           | [Target] | [Method]           | [Frequency] |
+
+          **Continuous Improvement**:
+          [Description of the continuous improvement approach]
+
+          **Remediation Process**:
+          [Description of the remediation process for performance issues]
+        elicitation_questions:
+          - "What is your performance evaluation approach?"
+          - "What performance metrics will you track for each role?"
+          - "How will you implement continuous improvement?"
+          - "What remediation process will you have for performance issues?"
+
+      - subsection_id: "staff_development"
+        subsection_title: "Staff Development"
+        subsection_type: "content"
+        subsection_template: |
+          **Training and Development**:
+          [Description of the training and development approach]
+
+          **Certification Support**:
+          [Description of the certification support approach]
+
+          **Mentoring Program**:
+          [Description of the mentoring program]
+
+          **Knowledge Management**:
+          [Description of the knowledge management approach]
+        elicitation_questions:
+          - "What is your training and development approach?"
+          - "How will you support staff certifications?"
+          - "What mentoring program will you implement?"
+          - "What is your knowledge management approach?"
+
+  - section_id: "staffing_risk_management"
+    section_title: "Staffing Risk Management"
+    section_type: "content"
+    subsections:
+      - subsection_id: "risk_identification"
+        subsection_title: "Risk Identification"
+        subsection_type: "content"
+        subsection_template: |
+          | Risk ID | Risk Description   | Probability | Impact  | Risk Level |
+          | ------- | ------------------ | ----------- | ------- | ---------- |
+          | SR-001  | [Risk description] | [H/M/L]     | [H/M/L] | [H/M/L]    |
+          | SR-002  | [Risk description] | [H/M/L]     | [H/M/L] | [H/M/L]    |
+          | SR-003  | [Risk description] | [H/M/L]     | [H/M/L] | [H/M/L]    |
+          | SR-004  | [Risk description] | [H/M/L]     | [H/M/L] | [H/M/L]    |
+          | SR-005  | [Risk description] | [H/M/L]     | [H/M/L] | [H/M/L]    |
+        elicitation_questions:
+          - "What are the key staffing risks for this program?"
+          - "What is the probability and impact of each risk?"
+          - "How would you categorize the overall risk level for each risk?"
+
+      - subsection_id: "risk_mitigation"
+        subsection_title: "Risk Mitigation"
+        subsection_type: "content"
+        subsection_template: |
+          | Risk ID | Mitigation Strategy | Contingency Plan | Owner  |
+          | ------- | ------------------- | ---------------- | ------ |
+          | SR-001  | [Strategy]          | [Plan]           | [Role] |
+          | SR-002  | [Strategy]          | [Plan]           | [Role] |
+          | SR-003  | [Strategy]          | [Plan]           | [Role] |
+          | SR-004  | [Strategy]          | [Plan]           | [Role] |
+          | SR-005  | [Strategy]          | [Plan]           | [Role] |
+        elicitation_questions:
+          - "What strategies will you use to mitigate each identified risk?"
+          - "What contingency plans will you have in place?"
+          - "Who will be responsible for managing each risk?"
+
+  - section_id: "transition_staffing"
+    section_title: "Transition Staffing"
+    section_type: "content"
+    subsections:
+      - subsection_id: "transition_approach"
+        subsection_title: "Transition Approach"
+        subsection_type: "content"
+        subsection_template: |
+          **Transition Strategy**:
+          [Description of the transition staffing strategy]
+
+          **Transition Timeline**:
+          [Description of the transition timeline]
+
+          **Incumbent Capture Strategy**:
+          [Description of the incumbent capture strategy, if applicable]
+
+          **Knowledge Transfer**:
+          [Description of the knowledge transfer approach]
+        elicitation_questions:
+          - "What is your transition staffing strategy?"
+          - "What is your transition timeline?"
+          - "Do you have an incumbent capture strategy?"
+          - "How will you approach knowledge transfer?"
+
+      - subsection_id: "transition_plan"
+        subsection_title: "Transition Plan"
+        subsection_type: "content"
+        subsection_template: |
+          **Phase 1: Preparation**:
+          [Description of the preparation phase staffing activities]
+
+          **Phase 2: Transition Execution**:
+          [Description of the transition execution phase staffing activities]
+
+          **Phase 3: Stabilization**:
+          [Description of the stabilization phase staffing activities]
+
+          **Phase 4: Optimization**:
+          [Description of the optimization phase staffing activities]
+        elicitation_questions:
+          - "What staffing activities will you perform during the preparation phase?"
+          - "What staffing activities will you perform during the transition execution phase?"
+          - "What staffing activities will you perform during the stabilization phase?"
+          - "What staffing activities will you perform during the optimization phase?"
+
+  - section_id: "staffing_plan_best_practices"
+    section_title: "Staffing Plan Best Practices"
+    section_type: "content"
+    section_template: |
+      - **Requirements Alignment**: Ensure the staffing plan directly addresses all RFQ requirements
+      - **Qualification Focus**: Demonstrate that proposed staff meet or exceed requirements
+      - **Recruitment Reality**: Present a realistic recruitment and retention strategy
+      - **Key Personnel Strength**: Highlight the qualifications and experience of key personnel
+      - **Transition Planning**: Provide a clear, realistic transition staffing approach
+      - **Risk Awareness**: Acknowledge staffing risks and provide credible mitigation strategies
+      - **Subcontractor Integration**: Clearly define subcontractor roles and management approach
+      - **Performance Management**: Define how staff performance will be measured and managed
+      - **Development Commitment**: Demonstrate commitment to staff development and growth
+      - **Flexibility**: Show ability to adapt staffing levels to changing requirements
+    elicitation_questions:
+      - "How will you ensure your staffing plan addresses all RFQ requirements?"
+      - "How will you demonstrate that your proposed staff meet or exceed requirements?"
+      - "How will you present a realistic recruitment and retention strategy?"
+      - "How will you highlight the qualifications and experience of key personnel?"
+      - "How will you provide a clear, realistic transition staffing approach?"
+      - "How will you acknowledge and mitigate staffing risks?"
+      - "How will you define and manage subcontractor roles?"
+      - "How will you measure and manage staff performance?"
+      - "How will you demonstrate commitment to staff development and growth?"
+      - "How will you show ability to adapt staffing levels to changing requirements?"

@@ -1,0 +1,324 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: pricing-strategy-template
+  name: Pricing Strategy Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/pricing-strategy.md
+    title: "{{rfq_number}} Pricing Strategy"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for developing a comprehensive pricing strategy for government RFQ responses. It helps teams create competitive yet realistic pricing approaches that balance win probability with profitability.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Complete this template during the early proposal planning phase
+      2. Involve both business development and pricing teams
+      3. Align pricing strategy with technical approach and win themes
+      4. Update as new information becomes available
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: strategy-header
+        title: Strategy Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Pricing Strategy
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+
+  - id: executive-summary
+    title: Executive Summary
+    elicit: true
+    sections:
+      - id: strategy-overview
+        title: Strategy Overview
+        template: |
+          **Pricing Approach**: {{pricing_approach}}
+
+          **Target Price Range**: ${{lower_bound}} - ${{upper_bound}}
+
+          **Summary Strategy**:
+          {{summary_strategy}}
+
+          **Key Strategy Elements**:
+
+          - {{element_1}}
+          - {{element_2}}
+          - {{element_3}}
+        instruction: Provide an overview of your pricing strategy, including approach, target price range, summary, and key elements
+
+  - id: market-analysis
+    title: Market Analysis
+    elicit: true
+    sections:
+      - id: customer-budget-analysis
+        title: Customer Budget Analysis
+        type: table
+        columns: [Budget Factor, Assessment, Source, Impact on Strategy]
+        instruction: Analyze the customer budget factors and their impact on your pricing strategy
+        examples:
+          - "| Published budget | $[Amount] | [Source] | [Impact] |"
+          - "| Historical contract value | $[Amount] | [Source] | [Impact] |"
+          - "| Market intelligence | $[Amount] | [Source] | [Impact] |"
+          - "| Customer constraints | [Constraints] | [Source] | [Impact] |"
+          - "| Budget cycle factors | [Factors] | [Source] | [Impact] |"
+
+      - id: competitive-analysis
+        title: Competitive Analysis
+        type: table
+        columns: [Competitor, Pricing Approach, Strengths, Vulnerabilities, Our Strategy]
+        instruction: Analyze competitors and develop strategic responses to their pricing approaches
+        examples:
+          - "| [Competitor 1] | [Approach] | [Strengths] | [Vulnerabilities] | [Strategy] |"
+          - "| [Competitor 2] | [Approach] | [Strengths] | [Vulnerabilities] | [Strategy] |"
+          - "| [Competitor 3] | [Approach] | [Strengths] | [Vulnerabilities] | [Strategy] |"
+          - "| [Competitor 4] | [Approach] | [Strengths] | [Vulnerabilities] | [Strategy] |"
+          - "| [Competitor 5] | [Approach] | [Strengths] | [Vulnerabilities] | [Strategy] |"
+
+      - id: price-sensitivity-analysis
+        title: Price Sensitivity Analysis
+        type: table
+        columns: [Factor, Assessment, Evidence, Strategy Implication]
+        instruction: Analyze factors affecting price sensitivity and their implications for your strategy
+        examples:
+          - "| Budget constraints | [High/Medium/Low] | [Evidence] | [Implication] |"
+          - "| Technical emphasis | [High/Medium/Low] | [Evidence] | [Implication] |"
+          - "| Incumbent pricing | [High/Medium/Low] | [Evidence] | [Implication] |"
+          - "| Value sensitivity | [High/Medium/Low] | [Evidence] | [Implication] |"
+          - "| LPTA vs. best value | [High/Medium/Low] | [Evidence] | [Implication] |"
+
+  - id: pricing-approach
+    title: Pricing Approach
+    elicit: true
+    sections:
+      - id: contract-type-strategy
+        title: Contract Type Strategy
+        template: |
+          **Contract Type**: {{contract_type}}
+
+          **Rationale**:
+          {{contract_rationale}}
+
+          **Risk Considerations**:
+
+          - {{risk_1}}
+          - {{risk_2}}
+          - {{risk_3}}
+        instruction: Specify the contract type, provide rationale, and list risk considerations
+
+      - id: labor-rate-strategy
+        title: Labor Rate Strategy
+        type: table
+        columns: [Labor Category, Market Position, Rationale, Risk Assessment]
+        instruction: Detail your labor rate strategy for key categories
+        examples:
+          - "| [Category 1] | [Above/At/Below market] | [Rationale] | [Risk] |"
+          - "| [Category 2] | [Above/At/Below market] | [Rationale] | [Risk] |"
+          - "| [Category 3] | [Above/At/Below market] | [Rationale] | [Risk] |"
+          - "| [Category 4] | [Above/At/Below market] | [Rationale] | [Risk] |"
+          - "| [Category 5] | [Above/At/Below market] | [Rationale] | [Risk] |"
+
+      - id: indirect-rate-strategy
+        title: Indirect Rate Strategy
+        type: table
+        columns: [Rate Category, Rate, Market Position, Rationale, Risk Assessment]
+        instruction: Detail your indirect rate strategy
+        examples:
+          - "| Fringe | [Rate]% | [Above/At/Below market] | [Rationale] | [Risk] |"
+          - "| Overhead | [Rate]% | [Above/At/Below market] | [Rationale] | [Risk] |"
+          - "| G&A | [Rate]% | [Above/At/Below market] | [Rationale] | [Risk] |"
+          - "| Fee/Profit | [Rate]% | [Above/At/Below market] | [Rationale] | [Risk] |"
+
+      - id: subcontractor-pricing-strategy
+        title: Subcontractor Pricing Strategy
+        type: table
+        columns: [Subcontractor, Pricing Approach, Negotiation Strategy, Risk Management]
+        instruction: Detail your strategy for each subcontractor
+        examples:
+          - "| [Subcontractor 1] | [Approach] | [Strategy] | [Risk Management] |"
+          - "| [Subcontractor 2] | [Approach] | [Strategy] | [Risk Management] |"
+          - "| [Subcontractor 3] | [Approach] | [Strategy] | [Risk Management] |"
+
+  - id: cost-reduction-strategies
+    title: Cost Reduction Strategies
+    elicit: true
+    sections:
+      - id: efficiency-measures
+        title: Efficiency Measures
+        type: table
+        columns: [Efficiency Measure, Cost Impact, Implementation Approach, Technical Risk]
+        instruction: Identify efficiency measures to reduce costs
+        examples:
+          - "| [Measure 1] | $[Amount] | [Approach] | [Risk] |"
+          - "| [Measure 2] | $[Amount] | [Approach] | [Risk] |"
+          - "| [Measure 3] | $[Amount] | [Approach] | [Risk] |"
+          - "| [Measure 4] | $[Amount] | [Approach] | [Risk] |"
+          - "| [Measure 5] | $[Amount] | [Approach] | [Risk] |"
+
+      - id: alternative-approaches
+        title: Alternative Approaches
+        type: table
+        columns: [Alternative, Cost Impact, Technical Impact, Risk Assessment, Recommendation]
+        instruction: Identify alternative approaches that could reduce costs
+        examples:
+          - "| [Alternative 1] | $[Amount] | [Impact] | [Risk] | [Recommendation] |"
+          - "| [Alternative 2] | $[Amount] | [Impact] | [Risk] | [Recommendation] |"
+          - "| [Alternative 3] | $[Amount] | [Impact] | [Risk] | [Recommendation] |"
+
+  - id: pricing-scenarios
+    title: Pricing Scenarios
+    elicit: true
+    sections:
+      - id: base-case-scenario
+        title: Base Case Scenario
+        type: table
+        columns: [Element, Approach, Price Impact, Win Probability, Profit Impact]
+        instruction: Detail your base case pricing scenario
+        examples:
+          - "| Labor rates | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Staffing levels | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Indirect rates | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Subcontractors | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| ODCs | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Fee/Profit | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| **Total** | | $[Amount] | [Probability]% | [Margin]% |"
+
+      - id: aggressive-scenario
+        title: Aggressive Scenario
+        type: table
+        columns: [Element, Approach, Price Impact, Win Probability, Profit Impact]
+        instruction: Detail your aggressive pricing scenario
+        examples:
+          - "| Labor rates | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Staffing levels | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Indirect rates | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Subcontractors | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| ODCs | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Fee/Profit | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| **Total** | | $[Amount] | [Probability]% | [Margin]% |"
+
+      - id: conservative-scenario
+        title: Conservative Scenario
+        type: table
+        columns: [Element, Approach, Price Impact, Win Probability, Profit Impact]
+        instruction: Detail your conservative pricing scenario
+        examples:
+          - "| Labor rates | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Staffing levels | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Indirect rates | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Subcontractors | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| ODCs | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| Fee/Profit | [Approach] | $[Amount] | [Impact] | [Impact] |"
+          - "| **Total** | | $[Amount] | [Probability]% | [Margin]% |"
+
+  - id: risk-management
+    title: Risk Management
+    elicit: true
+    sections:
+      - id: pricing-risks
+        title: Pricing Risks
+        type: table
+        columns: [Risk, Probability, Impact, Mitigation Strategy]
+        instruction: Identify and analyze pricing risks
+        examples:
+          - "| [Risk 1] | [High/Medium/Low] | [High/Medium/Low] | [Strategy] |"
+          - "| [Risk 2] | [High/Medium/Low] | [High/Medium/Low] | [Strategy] |"
+          - "| [Risk 3] | [High/Medium/Low] | [High/Medium/Low] | [Strategy] |"
+          - "| [Risk 4] | [High/Medium/Low] | [High/Medium/Low] | [Strategy] |"
+          - "| [Risk 5] | [High/Medium/Low] | [High/Medium/Low] | [Strategy] |"
+
+      - id: cost-realism-strategy
+        title: Cost Realism Strategy
+        type: table
+        columns: [Element, Realism Approach, Evidence, Narrative Strategy]
+        instruction: Detail your approach to ensuring cost realism
+        examples:
+          - "| Labor rates | [Approach] | [Evidence] | [Strategy] |"
+          - "| Labor hours | [Approach] | [Evidence] | [Strategy] |"
+          - "| Indirect rates | [Approach] | [Evidence] | [Strategy] |"
+          - "| Subcontractors | [Approach] | [Evidence] | [Strategy] |"
+          - "| ODCs | [Approach] | [Evidence] | [Strategy] |"
+
+  - id: value-proposition
+    title: Value Proposition
+    elicit: true
+    sections:
+      - id: price-to-win-strategy
+        title: Price-to-Win Strategy
+        template: |
+          **Target Price Point**: ${{target_price_point}}
+
+          **Rationale**:
+          {{price_rationale}}
+
+          **Competitive Positioning**:
+          {{competitive_positioning}}
+        instruction: Specify the target price point, provide rationale, and explain competitive positioning
+
+      - id: value-messaging
+        title: Value Messaging
+        type: table
+        columns: [Value Element, Cost Impact, Customer Benefit, Messaging Approach]
+        instruction: Identify and describe value elements that justify your pricing
+        examples:
+          - "| [Element 1] | $[Amount] | [Benefit] | [Approach] |"
+          - "| [Element 2] | $[Amount] | [Benefit] | [Approach] |"
+          - "| [Element 3] | $[Amount] | [Benefit] | [Approach] |"
+          - "| [Element 4] | $[Amount] | [Benefit] | [Approach] |"
+          - "| [Element 5] | $[Amount] | [Benefit] | [Approach] |"
+
+  - id: implementation-plan
+    title: Implementation Plan
+    elicit: true
+    sections:
+      - id: pricing-development-timeline
+        title: Pricing Development Timeline
+        type: table
+        columns: [Milestone, Date, Owner, Deliverables]
+        instruction: Detail the timeline for developing and finalizing your pricing
+        examples:
+          - "| Initial strategy | [Date] | [Owner] | [Deliverables] |"
+          - "| Technical alignment | [Date] | [Owner] | [Deliverables] |"
+          - "| Subcontractor pricing | [Date] | [Owner] | [Deliverables] |"
+          - "| Draft pricing | [Date] | [Owner] | [Deliverables] |"
+          - "| Review and adjustment | [Date] | [Owner] | [Deliverables] |"
+          - "| Final pricing | [Date] | [Owner] | [Deliverables] |"
+
+      - id: pricing-team
+        title: Pricing Team
+        type: table
+        columns: [Role, Name, Responsibilities]
+        instruction: Identify team members and their responsibilities
+        examples:
+          - "| [Role] | [Name] | [Responsibilities] |"
+          - "| [Role] | [Name] | [Responsibilities] |"
+          - "| [Role] | [Name] | [Responsibilities] |"
+          - "| [Role] | [Name] | [Responsibilities] |"
+          - "| [Role] | [Name] | [Responsibilities] |"
+
+  - id: pricing-strategy-best-practices
+    title: Pricing Strategy Best Practices
+    content: |
+      - **Customer Focus**: Understand customer budget constraints and priorities
+      - **Competitive Awareness**: Position pricing strategically against competitors
+      - **Technical Alignment**: Ensure pricing strategy aligns with technical approach
+      - **Risk Balance**: Balance competitive pricing with appropriate risk management
+      - **Value Emphasis**: Emphasize value over lowest price when appropriate
+      - **Cost Realism**: Ensure pricing is realistic and defensible
+      - **Scenario Planning**: Develop multiple pricing scenarios for flexibility
+      - **Win Theme Integration**: Align pricing strategy with overall win themes
+      - **Data-Driven**: Base pricing decisions on market data and intelligence
+      - **Strategic Flexibility**: Build in flexibility to adjust as new information emerges

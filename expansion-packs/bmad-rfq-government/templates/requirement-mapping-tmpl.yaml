@@ -1,0 +1,179 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: requirement-mapping-template
+  name: Requirement Mapping Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/requirement-mapping.md
+    title: "{{rfq_number}} Requirement Mapping"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for mapping RFQ requirements to proposal sections, ensuring complete coverage and traceability throughout the proposal development process.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Import requirements from the compliance matrix
+      2. Map each requirement to specific proposal sections
+      3. Assign ownership and track status
+      4. Use this mapping to verify complete requirement coverage
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: mapping-header
+        title: Mapping Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Requirement Mapping
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+
+      - id: mapping-table
+        title: Mapping Table
+        type: code
+        language: markdown
+        content: |
+          | Req ID | Requirement Summary | Primary Section | Secondary Sections | Owner  | Status   | Notes   |
+          | ------ | ------------------- | --------------- | ------------------ | ------ | -------- | ------- |
+          | R-001  | [Brief summary]     | [Section]       | [Other sections]   | [Name] | [Status] | [Notes] |
+          | R-002  | [Brief summary]     | [Section]       | [Other sections]   | [Name] | [Status] | [Notes] |
+          | R-003  | [Brief summary]     | [Section]       | [Other sections]   | [Name] | [Status] | [Notes] |
+
+      - id: status-codes
+        title: Status Codes
+        content: |
+          - NS: Not Started
+          - IP: In Progress
+          - DC: Draft Complete
+          - RV: Reviewed
+          - FN: Final
+          - GI: Gap/Issue Identified
+
+  - id: section-mapping-guidelines
+    title: Section Mapping Guidelines
+    sections:
+      - id: technical-volume-sections
+        title: Technical Volume Sections
+        sections:
+          - id: executive-summary
+            title: Executive Summary
+            content: |
+              - High-level requirements
+              - Key discriminators
+              - Major solution elements
+              - Critical compliance elements
+
+          - id: technical-approach
+            title: Technical Approach
+            content: |
+              - Technical requirements
+              - Solution methodology
+              - Technical specifications
+              - Performance requirements
+              - Implementation approach
+              - Technical standards
+
+          - id: management-approach
+            title: Management Approach
+            content: |
+              - Program management requirements
+              - Governance requirements
+              - Communication requirements
+              - Quality assurance requirements
+              - Risk management requirements
+
+          - id: staffing-plan
+            title: Staffing Plan
+            content: |
+              - Personnel requirements
+              - Labor category requirements
+              - Qualification requirements
+              - Certification requirements
+              - Staffing level requirements
+
+          - id: past-performance
+            title: Past Performance
+            content: |
+              - Experience requirements
+              - Past performance relevance requirements
+              - Customer reference requirements
+
+      - id: price-volume-sections
+        title: Price Volume Sections
+        sections:
+          - id: price-summary
+            title: Price Summary
+            content: |
+              - Pricing structure requirements
+              - Format requirements
+              - Summary level requirements
+
+          - id: detailed-pricing
+            title: Detailed Pricing
+            content: |
+              - Cost element requirements
+              - Rate requirements
+              - Pricing breakdown requirements
+
+          - id: cost-narrative
+            title: Cost Narrative
+            content: |
+              - Cost justification requirements
+              - Assumption requirements
+              - Cost realism requirements
+
+  - id: cross-cutting-requirements
+    title: Cross-Cutting Requirements
+    content: |
+      Some requirements may need to be addressed in multiple sections. Use the "Secondary Sections" column to indicate all locations where a requirement should be addressed.
+
+    sections:
+      - id: common-cross-cutting-requirements
+        title: Common Cross-Cutting Requirements
+        content: |
+          - Security requirements
+          - Compliance requirements
+          - Quality requirements
+          - Reporting requirements
+          - Transition requirements
+
+  - id: requirement-prioritization
+    title: Requirement Prioritization
+    content: |
+      Use the Notes column to indicate priority level:
+
+      - **Critical**: Must be addressed prominently
+      - **High**: Requires significant attention
+      - **Standard**: Normal treatment
+      - **Low**: Brief mention sufficient
+
+  - id: best-practices
+    title: Best Practices
+    content: |
+      - **Complete Coverage**: Ensure every requirement has at least one section mapping
+      - **Appropriate Placement**: Map requirements to the most relevant section
+      - **Cross-References**: Note when requirements should be referenced in multiple sections
+      - **Clear Ownership**: Assign specific owners to each requirement
+      - **Status Tracking**: Update status regularly throughout proposal development
+      - **Verification Process**: Use this mapping for final compliance check
+      - **Evaluator Perspective**: Consider how evaluators will score each requirement
+
+  - id: example-entry
+    title: Example Entry
+    type: code
+    language: markdown
+    content: |
+      | Req ID | Requirement Summary                          | Primary Section        | Secondary Sections                         | Owner    | Status | Notes                                                                  |
+      | ------ | -------------------------------------------- | ---------------------- | ------------------------------------------ | -------- | ------ | ---------------------------------------------------------------------- |
+      | R-042  | 24/7 help desk support with <30 min response | Technical Approach 3.2 | Management Approach 2.3, Staffing Plan 1.4 | J. Smith | IP     | Critical - Key discriminator, include metrics from current performance |

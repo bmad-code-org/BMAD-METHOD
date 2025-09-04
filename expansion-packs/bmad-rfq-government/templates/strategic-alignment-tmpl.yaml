@@ -1,0 +1,281 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: strategic-alignment-template
+  name: Strategic Alignment Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/strategic-alignment.md
+    title: "{{rfq_number}} Strategic Alignment Assessment"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    content: |
+      This template provides a structured format for assessing how well an RFQ opportunity aligns with your organization's strategic goals and capabilities. It helps inform bid/no-bid decisions and shapes proposal strategy.
+
+  - id: usage-instructions
+    title: Usage Instructions
+    content: |
+      1. Complete this template during the early opportunity assessment phase
+      2. Involve both business development and technical leadership
+      3. Be objective in your assessment of alignment
+      4. Use results to inform bid strategy or no-bid decisions
+
+  - id: template-structure
+    title: Template Structure
+    sections:
+      - id: assessment-header
+        title: Assessment Header
+        type: code
+        language: markdown
+        content: |
+          # [RFQ Number] Strategic Alignment Assessment
+          # [Agency Name]
+          # [RFQ Title]
+          # [Date]
+
+  - id: executive-summary
+    title: Executive Summary
+    sections:
+      - id: alignment-overview
+        title: Alignment Overview
+        content: |
+          **Overall Strategic Alignment**: [Strong / Moderate / Weak]
+
+          **Summary Assessment**:
+          [2-3 sentences summarizing the strategic alignment of this opportunity]
+
+          **Key Alignment Strengths**:
+
+          - [Strength 1]
+          - [Strength 2]
+          - [Strength 3]
+
+          **Key Alignment Gaps**:
+
+          - [Gap 1]
+          - [Gap 2]
+          - [Gap 3]
+
+          **Recommendation**:
+          [Pursue / Pursue with conditions / Do not pursue]
+
+  - id: corporate-strategy-alignment
+    title: Corporate Strategy Alignment
+    sections:
+      - id: mission-alignment
+        title: Mission Alignment
+        type: code
+        language: markdown
+        content: |
+          | Corporate Mission Element | Alignment         | Evidence   | Notes   |
+          | ------------------------- | ----------------- | ---------- | ------- |
+          | [Mission element 1]       | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Mission element 2]       | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Mission element 3]       | [High/Medium/Low] | [Evidence] | [Notes] |
+
+      - id: strategic-goals-alignment
+        title: Strategic Goals Alignment
+        type: code
+        language: markdown
+        content: |
+          | Strategic Goal | Alignment         | Evidence   | Notes   |
+          | -------------- | ----------------- | ---------- | ------- |
+          | [Goal 1]       | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Goal 2]       | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Goal 3]       | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Goal 4]       | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Goal 5]       | [High/Medium/Low] | [Evidence] | [Notes] |
+
+      - id: growth-strategy-alignment
+        title: Growth Strategy Alignment
+        type: code
+        language: markdown
+        content: |
+          | Growth Strategy Element   | Alignment         | Evidence   | Notes   |
+          | ------------------------- | ----------------- | ---------- | ------- |
+          | Target markets            | [High/Medium/Low] | [Evidence] | [Notes] |
+          | Service expansion         | [High/Medium/Low] | [Evidence] | [Notes] |
+          | Customer diversification  | [High/Medium/Low] | [Evidence] | [Notes] |
+          | Geographic expansion      | [High/Medium/Low] | [Evidence] | [Notes] |
+          | Contract vehicle strategy | [High/Medium/Low] | [Evidence] | [Notes] |
+
+  - id: capability-alignment
+    title: Capability Alignment
+    sections:
+      - id: technical-capability-alignment
+        title: Technical Capability Alignment
+        type: code
+        language: markdown
+        content: |
+          | Technical Capability | Alignment         | Evidence   | Gap Analysis   |
+          | -------------------- | ----------------- | ---------- | -------------- |
+          | [Capability 1]       | [High/Medium/Low] | [Evidence] | [Gap analysis] |
+          | [Capability 2]       | [High/Medium/Low] | [Evidence] | [Gap analysis] |
+          | [Capability 3]       | [High/Medium/Low] | [Evidence] | [Gap analysis] |
+          | [Capability 4]       | [High/Medium/Low] | [Evidence] | [Gap analysis] |
+          | [Capability 5]       | [High/Medium/Low] | [Evidence] | [Gap analysis] |
+
+      - id: past-performance-alignment
+        title: Past Performance Alignment
+        type: code
+        language: markdown
+        content: |
+          | Past Performance | Relevance         | Evidence   | Notes   |
+          | ---------------- | ----------------- | ---------- | ------- |
+          | [Project 1]      | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Project 2]      | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Project 3]      | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Project 4]      | [High/Medium/Low] | [Evidence] | [Notes] |
+          | [Project 5]      | [High/Medium/Low] | [Evidence] | [Notes] |
+
+      - id: resource-alignment
+        title: Resource Alignment
+        type: code
+        language: markdown
+        content: |
+          | Resource Category    | Availability      | Gap Analysis   | Mitigation   |
+          | -------------------- | ----------------- | -------------- | ------------ |
+          | Technical SMEs       | [High/Medium/Low] | [Gap analysis] | [Mitigation] |
+          | Management personnel | [High/Medium/Low] | [Gap analysis] | [Mitigation] |
+          | Proposal resources   | [High/Medium/Low] | [Gap analysis] | [Mitigation] |
+          | Implementation staff | [High/Medium/Low] | [Gap analysis] | [Mitigation] |
+          | Financial resources  | [High/Medium/Low] | [Gap analysis] | [Mitigation] |
+
+  - id: customer-relationship-alignment
+    title: Customer Relationship Alignment
+    sections:
+      - id: agency-relationship
+        title: Agency Relationship
+        type: code
+        language: markdown
+        content: |
+          | Relationship Factor          | Assessment             | Evidence   | Notes   |
+          | ---------------------------- | ---------------------- | ---------- | ------- |
+          | Agency familiarity           | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+          | Past performance with agency | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+          | Current contracts            | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+          | Key personnel relationships  | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+          | Agency mission understanding | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+
+      - id: competitive-position
+        title: Competitive Position
+        type: code
+        language: markdown
+        content: |
+          | Competitive Factor          | Position               | Evidence   | Notes   |
+          | --------------------------- | ---------------------- | ---------- | ------- |
+          | Incumbent relationship      | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+          | Competitive differentiators | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+          | Price competitiveness       | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+          | Technical advantage         | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+          | Past performance advantage  | [Strong/Moderate/Weak] | [Evidence] | [Notes] |
+
+  - id: financial-alignment
+    title: Financial Alignment
+    sections:
+      - id: financial-metrics
+        title: Financial Metrics
+        type: code
+        language: markdown
+        content: |
+          | Financial Metric            | Assessment   | Target   | Notes   |
+          | --------------------------- | ------------ | -------- | ------- |
+          | Contract value              | [Value]      | [Target] | [Notes] |
+          | Profit margin               | [Percentage] | [Target] | [Notes] |
+          | Revenue growth contribution | [Percentage] | [Target] | [Notes] |
+          | B&P investment              | [Value]      | [Target] | [Notes] |
+          | ROI                         | [Value]      | [Target] | [Notes] |
+
+      - id: long-term-value
+        title: Long-term Value
+        type: code
+        language: markdown
+        content: |
+          | Value Factor                   | Assessment        | Evidence   | Notes   |
+          | ------------------------------ | ----------------- | ---------- | ------- |
+          | Follow-on potential            | [High/Medium/Low] | [Evidence] | [Notes] |
+          | New capability development     | [High/Medium/Low] | [Evidence] | [Notes] |
+          | Market positioning             | [High/Medium/Low] | [Evidence] | [Notes] |
+          | Customer relationship building | [High/Medium/Low] | [Evidence] | [Notes] |
+          | Team development               | [High/Medium/Low] | [Evidence] | [Notes] |
+
+  - id: strategic-alignment-score
+    title: Strategic Alignment Score
+    type: code
+    language: markdown
+    content: |
+      | Alignment Category              | Weight   | Score (1-10) | Weighted Score   |
+      | ------------------------------- | -------- | ------------ | ---------------- |
+      | Corporate Strategy Alignment    | [Weight] | [Score]      | [Weighted Score] |
+      | Capability Alignment            | [Weight] | [Score]      | [Weighted Score] |
+      | Customer Relationship Alignment | [Weight] | [Score]      | [Weighted Score] |
+      | Financial Alignment             | [Weight] | [Score]      | [Weighted Score] |
+
+      **Total Alignment Score**: [Score] out of 10
+
+  - id: strategic-recommendations
+    title: Strategic Recommendations
+    sections:
+      - id: pursuit-strategy
+        title: Pursuit Strategy
+        content: |
+          **Recommended Approach**:
+          [Pursue aggressively / Pursue selectively / Pursue with partners / Do not pursue]
+
+          **Strategic Rationale**:
+          [2-3 paragraphs explaining the strategic rationale for the recommendation]
+
+      - id: gap-mitigation-strategy
+        title: Gap Mitigation Strategy
+        type: code
+        language: markdown
+        content: |
+          | Strategic Gap | Mitigation Approach | Resources Required | Timeline   |
+          | ------------- | ------------------- | ------------------ | ---------- |
+          | [Gap 1]       | [Approach]          | [Resources]        | [Timeline] |
+          | [Gap 2]       | [Approach]          | [Resources]        | [Timeline] |
+          | [Gap 3]       | [Approach]          | [Resources]        | [Timeline] |
+
+      - id: win-strategy-implications
+        title: Win Strategy Implications
+        type: code
+        language: markdown
+        content: |
+          | Strategic Element | Implication for Win Strategy |
+          | ----------------- | ---------------------------- |
+          | [Element 1]       | [Implication]                |
+          | [Element 2]       | [Implication]                |
+          | [Element 3]       | [Implication]                |
+          | [Element 4]       | [Implication]                |
+          | [Element 5]       | [Implication]                |
+
+  - id: assessment-team
+    title: Assessment Team
+    type: code
+    language: markdown
+    content: |
+      | Role   | Name   | Input Provided |
+      | ------ | ------ | -------------- |
+      | [Role] | [Name] | [Input areas]  |
+      | [Role] | [Name] | [Input areas]  |
+      | [Role] | [Name] | [Input areas]  |
+
+  - id: strategic-alignment-best-practices
+    title: Strategic Alignment Best Practices
+    content: |
+      - **Objective Assessment**: Be honest about alignment strengths and weaknesses
+      - **Evidence-Based**: Support all alignment claims with specific evidence
+      - **Forward-Looking**: Consider long-term strategic implications, not just immediate fit
+      - **Comprehensive View**: Assess all dimensions of strategic alignment
+      - **Gap Identification**: Clearly identify and address alignment gaps
+      - **Executive Input**: Involve executive leadership in strategic alignment assessment
+      - **Regular Updates**: Revisit alignment assessment as the opportunity develops
+      - **Competitive Context**: Consider alignment in the context of competitive positioning
+      - **Resource Reality**: Be realistic about resource availability and constraints
+      - **Strategic Prioritization**: Use alignment assessment to prioritize pursuit resources

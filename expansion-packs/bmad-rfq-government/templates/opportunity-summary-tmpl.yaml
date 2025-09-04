@@ -1,0 +1,327 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: opportunity-summary
+  name: Opportunity Summary Template
+  version: 1.0
+  description: Structured format for summarizing government RFQ opportunities
+  output:
+    format: markdown
+    filename: "{{rfq_number}}-opportunity-summary.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: overview
+    title: Overview
+    instruction: |
+      This template provides a structured format for summarizing government RFQ opportunities. It helps capture key information to support bid/no-bid decisions and initial proposal planning.
+
+  - id: usage_instructions
+    title: Usage Instructions
+    instruction: |
+      1. Complete this template immediately after RFQ document import
+      2. Focus on extracting key information for decision-makers
+      3. Identify critical requirements and evaluation factors
+      4. Highlight potential win themes and discriminators
+
+  - id: summary_header
+    title: Summary Header
+    instruction: |
+      ```
+      # [RFQ Number] Opportunity Summary
+      # [Agency Name]
+      # [RFQ Title]
+      # [Date]
+      ```
+
+  - id: executive_summary
+    title: Executive Summary
+    instruction: |
+      ### Opportunity Overview
+
+      **Opportunity Description**:
+      [2-3 paragraphs summarizing the opportunity, customer need, and scope of work]
+
+      **Key Dates**:
+
+      - RFQ Release Date: [Date]
+      - Questions Due: [Date]
+      - Proposal Due: [Date]
+      - Estimated Award Date: [Date]
+      - Period of Performance: [Duration]
+
+      **Strategic Fit Assessment**: [Strong / Moderate / Weak]
+
+      **Win Probability Assessment**: [Percentage]
+
+      **Recommendation**: [Pursue / Pursue with conditions / Do not pursue]
+    elicit: true
+
+  - id: customer_information
+    title: Customer Information
+    instruction: |
+      ### Agency Profile
+
+      | Parameter          | Value          | Notes                |
+      | ------------------ | -------------- | -------------------- |
+      | Agency             | [Agency Name]  | [Additional context] |
+      | Sub-agency/Program | [Program Name] | [Additional context] |
+      | Mission Focus      | [Mission]      | [Additional context] |
+      | Contracting Office | [Office]       | [Additional context] |
+      | End User           | [End User]     | [Additional context] |
+      | Location(s)        | [Locations]    | [Additional context] |
+
+      ### Customer Priorities
+
+      | Priority     | Importance        | Evidence   | Alignment with Capabilities |
+      | ------------ | ----------------- | ---------- | --------------------------- |
+      | [Priority 1] | [High/Medium/Low] | [Evidence] | [Alignment]                 |
+      | [Priority 2] | [High/Medium/Low] | [Evidence] | [Alignment]                 |
+      | [Priority 3] | [High/Medium/Low] | [Evidence] | [Alignment]                 |
+      | [Priority 4] | [High/Medium/Low] | [Evidence] | [Alignment]                 |
+      | [Priority 5] | [High/Medium/Low] | [Evidence] | [Alignment]                 |
+
+      ### Customer Relationship
+
+      | Relationship Factor         | Assessment             | Evidence   | Strategy   |
+      | --------------------------- | ---------------------- | ---------- | ---------- |
+      | Prior work with agency      | [Strong/Moderate/None] | [Evidence] | [Strategy] |
+      | Key personnel relationships | [Strong/Moderate/None] | [Evidence] | [Strategy] |
+      | Agency familiarity          | [Strong/Moderate/None] | [Evidence] | [Strategy] |
+      | Past performance relevance  | [Strong/Moderate/None] | [Evidence] | [Strategy] |
+      | Competitive positioning     | [Strong/Moderate/None] | [Evidence] | [Strategy] |
+    elicit: true
+
+  - id: opportunity_details
+    title: Opportunity Details
+    instruction: |
+      ### Contract Information
+
+      | Parameter               | Value                        | Notes                        |
+      | ----------------------- | ---------------------------- | ---------------------------- |
+      | RFQ/Solicitation Number | [Number]                     | [Additional context]         |
+      | Contract Type           | [FFP, T&M, CPFF, etc.]       | [Additional context]         |
+      | Contract Vehicle        | [Vehicle]                    | [Additional context]         |
+      | NAICS Code              | [Code]                       | [Size standard]              |
+      | Set-Aside Type          | [Small business, 8(a), etc.] | [Additional context]         |
+      | Estimated Value         | $[Amount]                    | [Annual value / total value] |
+      | Period of Performance   | [Duration]                   | [Base + options]             |
+      | Place of Performance    | [Location]                   | [Additional context]         |
+
+      ### Scope of Work
+
+      **Summary Scope**:
+      [1-2 paragraphs summarizing the scope of work]
+
+      **Key Deliverables**:
+
+      - [Deliverable 1]
+      - [Deliverable 2]
+      - [Deliverable 3]
+      - [Deliverable 4]
+      - [Deliverable 5]
+
+      **Technical Requirements Summary**:
+      [1-2 paragraphs summarizing key technical requirements]
+
+      **Management Requirements Summary**:
+      [1-2 paragraphs summarizing key management requirements]
+
+      **Staffing Requirements Summary**:
+      [1-2 paragraphs summarizing key staffing requirements]
+    elicit: true
+
+  - id: evaluation_factors
+    title: Evaluation Factors
+    instruction: |
+      ### Section M Summary
+
+      | Evaluation Factor | Weight/Importance | Key Requirements | Our Capability Alignment |
+      | ----------------- | ----------------- | ---------------- | ------------------------ |
+      | [Factor 1]        | [Weight]          | [Requirements]   | [Alignment]              |
+      | [Factor 2]        | [Weight]          | [Requirements]   | [Alignment]              |
+      | [Factor 3]        | [Weight]          | [Requirements]   | [Alignment]              |
+      | [Factor 4]        | [Weight]          | [Requirements]   | [Alignment]              |
+      | [Factor 5]        | [Weight]          | [Requirements]   | [Alignment]              |
+
+      ### Evaluation Methodology
+
+      **Evaluation Approach**: [Best value / LPTA / Other]
+
+      **Scoring Method**: [Adjectival / Numerical / Other]
+
+      **Key Evaluation Considerations**:
+
+      - [Consideration 1]
+      - [Consideration 2]
+      - [Consideration 3]
+      - [Consideration 4]
+      - [Consideration 5]
+    elicit: true
+
+  - id: competitive_assessment
+    title: Competitive Assessment
+    instruction: |
+      ### Incumbent Analysis
+
+      | Parameter             | Value                  | Notes                |
+      | --------------------- | ---------------------- | -------------------- |
+      | Incumbent             | [Company name]         | [Additional context] |
+      | Contract Performance  | [Strong/Moderate/Weak] | [Evidence]           |
+      | Customer Satisfaction | [High/Medium/Low]      | [Evidence]           |
+      | Known Issues          | [Issues]               | [Evidence]           |
+      | Recompete Strategy    | [Strategy]             | [Explanation]        |
+
+      ### Competitive Landscape
+
+      | Likely Competitor | Strengths   | Weaknesses   | Win Strategy Against |
+      | ----------------- | ----------- | ------------ | -------------------- |
+      | [Competitor 1]    | [Strengths] | [Weaknesses] | [Strategy]           |
+      | [Competitor 2]    | [Strengths] | [Weaknesses] | [Strategy]           |
+      | [Competitor 3]    | [Strengths] | [Weaknesses] | [Strategy]           |
+      | [Competitor 4]    | [Strengths] | [Weaknesses] | [Strategy]           |
+      | [Competitor 5]    | [Strengths] | [Weaknesses] | [Strategy]           |
+    elicit: true
+
+  - id: capability_assessment
+    title: Capability Assessment
+    instruction: |
+      ### Technical Capability Alignment
+
+      | Technical Requirement | Capability Assessment  | Gap Analysis | Strategy   |
+      | --------------------- | ---------------------- | ------------ | ---------- |
+      | [Requirement 1]       | [Strong/Moderate/Weak] | [Gaps]       | [Strategy] |
+      | [Requirement 2]       | [Strong/Moderate/Weak] | [Gaps]       | [Strategy] |
+      | [Requirement 3]       | [Strong/Moderate/Weak] | [Gaps]       | [Strategy] |
+      | [Requirement 4]       | [Strong/Moderate/Weak] | [Gaps]       | [Strategy] |
+      | [Requirement 5]       | [Strong/Moderate/Weak] | [Gaps]       | [Strategy] |
+
+      ### Past Performance Alignment
+
+      | Past Performance | Relevance         | Customer   | Value     | Outcome   | Alignment   |
+      | ---------------- | ----------------- | ---------- | --------- | --------- | ----------- |
+      | [Project 1]      | [High/Medium/Low] | [Customer] | $[Amount] | [Outcome] | [Alignment] |
+      | [Project 2]      | [High/Medium/Low] | [Customer] | $[Amount] | [Outcome] | [Alignment] |
+      | [Project 3]      | [High/Medium/Low] | [Customer] | $[Amount] | [Outcome] | [Alignment] |
+      | [Project 4]      | [High/Medium/Low] | [Customer] | $[Amount] | [Outcome] | [Alignment] |
+      | [Project 5]      | [High/Medium/Low] | [Customer] | $[Amount] | [Outcome] | [Alignment] |
+    elicit: true
+
+  - id: strategic_assessment
+    title: Strategic Assessment
+    instruction: |
+      ### SWOT Analysis
+
+      #### Strengths
+
+      - [Strength 1]
+      - [Strength 2]
+      - [Strength 3]
+      - [Strength 4]
+      - [Strength 5]
+
+      #### Weaknesses
+
+      - [Weakness 1]
+      - [Weakness 2]
+      - [Weakness 3]
+      - [Weakness 4]
+      - [Weakness 5]
+
+      #### Opportunities
+
+      - [Opportunity 1]
+      - [Opportunity 2]
+      - [Opportunity 3]
+      - [Opportunity 4]
+      - [Opportunity 5]
+
+      #### Threats
+
+      - [Threat 1]
+      - [Threat 2]
+      - [Threat 3]
+      - [Threat 4]
+      - [Threat 5]
+
+      ### Win Themes
+
+      | Potential Win Theme | Supporting Evidence | Customer Value | Discriminator |
+      | ------------------- | ------------------- | -------------- | ------------- |
+      | [Theme 1]           | [Evidence]          | [Value]        | [Yes/No]      |
+      | [Theme 2]           | [Evidence]          | [Value]        | [Yes/No]      |
+      | [Theme 3]           | [Evidence]          | [Value]        | [Yes/No]      |
+      | [Theme 4]           | [Evidence]          | [Value]        | [Yes/No]      |
+      | [Theme 5]           | [Evidence]          | [Value]        | [Yes/No]      |
+    elicit: true
+
+  - id: bid_decision_factors
+    title: Bid Decision Factors
+    instruction: |
+      ### Strategic Value Assessment
+
+      | Strategic Factor            | Assessment        | Weight   | Score   |
+      | --------------------------- | ----------------- | -------- | ------- |
+      | Strategic alignment         | [High/Medium/Low] | [Weight] | [Score] |
+      | Win probability             | [High/Medium/Low] | [Weight] | [Score] |
+      | Financial return            | [High/Medium/Low] | [Weight] | [Score] |
+      | Past performance impact     | [High/Medium/Low] | [Weight] | [Score] |
+      | Customer relationship value | [High/Medium/Low] | [Weight] | [Score] |
+      | Capability development      | [High/Medium/Low] | [Weight] | [Score] |
+
+      **Total Score**: [Score]
+
+      ### Risk Assessment
+
+      | Risk     | Probability       | Impact            | Mitigation   |
+      | -------- | ----------------- | ----------------- | ------------ |
+      | [Risk 1] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation] |
+      | [Risk 2] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation] |
+      | [Risk 3] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation] |
+      | [Risk 4] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation] |
+      | [Risk 5] | [High/Medium/Low] | [High/Medium/Low] | [Mitigation] |
+    elicit: true
+
+  - id: recommendation_next_steps
+    title: Recommendation and Next Steps
+    instruction: |
+      ### Bid Recommendation
+
+      **Recommendation**: [Pursue / Pursue with conditions / Do not pursue]
+
+      **Rationale**:
+      [2-3 paragraphs explaining the rationale for the recommendation]
+
+      **Conditions** (if applicable):
+
+      - [Condition 1]
+      - [Condition 2]
+      - [Condition 3]
+
+      ### Next Steps
+
+      | Action     | Owner   | Due Date | Priority          |
+      | ---------- | ------- | -------- | ----------------- |
+      | [Action 1] | [Owner] | [Date]   | [High/Medium/Low] |
+      | [Action 2] | [Owner] | [Date]   | [High/Medium/Low] |
+      | [Action 3] | [Owner] | [Date]   | [High/Medium/Low] |
+      | [Action 4] | [Owner] | [Date]   | [High/Medium/Low] |
+      | [Action 5] | [Owner] | [Date]   | [High/Medium/Low] |
+    elicit: true
+
+  - id: best_practices
+    title: Opportunity Summary Best Practices
+    instruction: |
+      - **Comprehensive Coverage**: Ensure all key RFQ elements are captured
+      - **Strategic Focus**: Emphasize strategic implications over tactical details
+      - **Objective Assessment**: Provide honest assessment of strengths and weaknesses
+      - **Evidence-Based**: Support all claims and assessments with specific evidence
+      - **Customer Perspective**: Consider the opportunity from the customer's viewpoint
+      - **Competitive Awareness**: Demonstrate understanding of competitive landscape
+      - **Risk Transparency**: Be transparent about risks and challenges
+      - **Clear Recommendation**: Provide clear, actionable recommendation
+      - **Executive-Ready**: Format for quick review by executive decision-makers
+      - **Forward-Looking**: Include clear next steps and action items

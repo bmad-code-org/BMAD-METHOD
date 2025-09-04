@@ -1,0 +1,370 @@
+# <!-- Powered by BMAD™ Core -->
+workflow:
+  id: rfq-response-workflow
+  name: Government RFQ Response Workflow
+  description: >-
+    Agent workflow for efficiently responding to government RFQs by analyzing requirements,
+    developing win strategies, creating compliant proposal content, and preparing submissions.
+  type: proposal
+  project_types:
+    - federal-rfq
+    - state-rfq
+    - local-rfq
+    - idiq-task-order
+    - gsaSchedule
+    - blanket-purchase-agreement
+
+  sequence:
+    - agent: rfq-opportunity-summarizer
+      creates: opportunity-summary.md
+      uses: opportunity-summary-tmpl.yaml
+      notes: "Analyze RFQ documents and create opportunity summary. SAVE OUTPUT: Copy final opportunity-summary.md to your project's docs/ folder."
+
+    - agent: rfq-opportunity-summarizer
+      creates: bid-no-bid.md
+      uses: bid-no-bid-tmpl.yaml
+      requires: opportunity-summary.md
+      notes: "Assess opportunity fit and create bid/no-bid decision document. SAVE OUTPUT: Copy final bid-no-bid.md to your project's docs/ folder."
+
+    - bid_decision_gate:
+      action: decide_to_proceed
+      condition: bid_decision_is_positive
+      notes: "If bid-no-bid decision is negative, workflow stops here. Only proceed if pursuing the opportunity."
+
+    - agent: win-theme-generator
+      creates: strategic-alignment.md
+      uses: strategic-alignment-tmpl.yaml
+      requires: opportunity-summary.md
+      notes: "Analyze strategic alignment of opportunity with corporate capabilities. SAVE OUTPUT: Copy final strategic-alignment.md to your project's docs/ folder."
+
+    - agent: win-theme-generator
+      creates: competitor-analysis.md
+      uses: competitor-analysis-tmpl.yaml
+      requires: strategic-alignment.md
+      notes: "Analyze competitive landscape and incumbent position. SAVE OUTPUT: Copy final competitor-analysis.md to your project's docs/ folder."
+
+    - agent: win-theme-generator
+      creates: swot-analysis.md
+      uses: swot-analysis-tmpl.yaml
+      requires: competitor-analysis.md
+      notes: "Create SWOT analysis for opportunity positioning. SAVE OUTPUT: Copy final swot-analysis.md to your project's docs/ folder."
+
+    - agent: win-theme-generator
+      creates: win-themes.md
+      uses: win-theme-tmpl.yaml
+      requires:
+        - strategic-alignment.md
+        - competitor-analysis.md
+        - swot-analysis.md
+      uses_task: win-theme-development.md
+      notes: "Develop compelling win themes and discriminators. SAVE OUTPUT: Copy final win-themes.md to your project's docs/ folder."
+
+    - step_name: win_theme_integration
+      uses: bmad-flatten
+      creates: theme-coverage-report.md
+      requires:
+        - win-themes.md
+      notes: "Ensure consistent application of win themes across all proposal sections."
+
+    - agent: compliance-matrix-builder
+      creates: rfq-imported-content
+      uses_task: rfq-document-import.md
+      notes: "Import and organize RFQ documents for compliance tracking."
+
+    - step_name: flatten_rfq_documents
+      uses: bmad-flatten
+      creates: unified-rfq.xml
+      requires: rfq-imported-content
+      notes: "Aggregate all RFQ documents into a single analyzable corpus for improved analysis and traceability."
+
+    - step_name: rfq_sharding
+      uses: bmad-flatten
+      creates: rfq-shards-manifest.json
+      requires: rfq-imported-content
+      notes: "Break down large RFQ documents into manageable shards for improved processing."
+
+    - agent: compliance-matrix-builder
+      creates: compliance-matrix.md
+      uses: compliance-matrix-tmpl.yaml
+      requires: rfq-imported-content
+      uses_task: compliance-matrix-generation.md
+      notes: "Generate comprehensive compliance matrix from RFQ. SAVE OUTPUT: Copy final compliance-matrix.md to your project's docs/ folder."
+
+    - step_name: requirements_traceability
+      uses: bmad-flatten
+      creates: requirements-database.json
+      requires:
+        - unified-rfq.xml
+        - compliance-matrix.md
+      notes: "Create comprehensive traceability between RFQ requirements and proposal elements."
+
+    - agent: compliance-matrix-builder
+      creates: proposal-outline.md
+      uses: proposal-outline-tmpl.yaml
+      requires: compliance-matrix.md
+      notes: "Create structured proposal outline with section assignments. SAVE OUTPUT: Copy final proposal-outline.md to your project's docs/ folder."
+
+    - agent: technical-narrative-drafter
+      creates: technical-approach.md
+      uses: technical-approach-tmpl.yaml
+      requires:
+        - win-themes.md
+        - compliance-matrix.md
+        - proposal-outline.md
+      uses_task: proposal-content-generation.md
+      notes: "Draft technical approach narrative with win themes. SAVE OUTPUT: Copy final technical-approach.md to your project's docs/ folder."
+
+    - agent: technical-narrative-drafter
+      creates: management-approach.md
+      uses: management-approach-tmpl.yaml
+      requires:
+        - win-themes.md
+        - compliance-matrix.md
+        - proposal-outline.md
+      uses_task: proposal-content-generation.md
+      notes: "Draft management approach narrative with win themes. SAVE OUTPUT: Copy final management-approach.md to your project's docs/ folder."
+
+    - step_name: proposal_content_sharding
+      uses: bmad-flatten
+      creates: proposal-shards-manifest.json
+      requires:
+        - technical-approach.md
+        - management-approach.md
+      notes: "Shard large proposal content for improved analysis and review."
+
+    - agent: labor-mapping-assistant
+      creates: staffing-plan.md
+      uses: staffing-plan-tmpl.yaml
+      requires:
+        - management-approach.md
+        - compliance-matrix.md
+      notes: "Create staffing plan with labor categories mapping. SAVE OUTPUT: Copy final staffing-plan.md to your project's docs/ folder."
+
+    - agent: labor-mapping-assistant
+      creates: pricing-strategy.md
+      uses: pricing-strategy-tmpl.yaml
+      requires: staffing-plan.md
+      notes: "Develop pricing strategy and approach. SAVE OUTPUT: Copy final pricing-strategy.md to your project's docs/ folder."
+
+    - agent: labor-mapping-assistant
+      creates: cost-narrative.md
+      uses: cost-narrative-tmpl.yaml
+      requires: pricing-strategy.md
+      notes: "Create cost narrative explaining pricing approach. SAVE OUTPUT: Copy final cost-narrative.md to your project's docs/ folder."
+
+    - agent: executive-summary-generator
+      creates: executive-summary.md
+      uses: executive-summary-tmpl.yaml
+      requires:
+        - win-themes.md
+        - technical-approach.md
+        - management-approach.md
+      uses_task: proposal-content-generation.md
+      notes: "Create compelling executive summary. SAVE OUTPUT: Copy final executive-summary.md to your project's docs/ folder."
+
+    - agent: executive-summary-generator
+      creates: executive-dashboard.md
+      uses: executive-dashboard-tmpl.yaml
+      requires: executive-summary.md
+      notes: "Create executive dashboard for decision makers. SAVE OUTPUT: Copy final executive-dashboard.md to your project's docs/ folder."
+
+    - agent: evaluator-simulator
+      creates: sward-analysis.md
+      uses: sward-analysis-tmpl.yaml
+      requires:
+        - executive-summary.md
+        - technical-approach.md
+        - management-approach.md
+        - staffing-plan.md
+        - cost-narrative.md
+      uses_task: review-simulation.md
+      notes: "Conduct SWARD analysis to identify strengths, weaknesses, risks, and deficiencies. SAVE OUTPUT: Copy final sward-analysis.md to your project's docs/ folder."
+
+    - agent: evaluator-simulator
+      creates: evaluation-report.md
+      uses: evaluation-report-tmpl.yaml
+      requires: sward-analysis.md
+      uses_task: review-simulation.md
+      notes: "Simulate evaluator assessment and identify improvements. SAVE OUTPUT: Copy final evaluation-report.md to your project's docs/ folder."
+
+    - step_name: evaluation_flattening
+      uses: bmad-flatten
+      creates: evaluation-flattened.xml
+      requires:
+        - unified-rfq.xml
+        - sward-analysis.md
+        - evaluation-report.md
+      notes: "Enable comprehensive cross-document evaluation with unified SWARD analysis and consistency verification."
+
+    - revision_cycle:
+      agent: various
+      updates: proposal_content
+      requires: evaluation-report.md
+      condition: issues_identified
+      notes: "Address issues identified in evaluation report. Return to appropriate agent to update content."
+
+    - agent: compliance-matrix-builder
+      creates: compliance-report.md
+      uses: compliance-report-tmpl.yaml
+      requires:
+        - compliance-matrix.md
+        - executive-summary.md
+        - technical-approach.md
+        - management-approach.md
+        - staffing-plan.md
+        - cost-narrative.md
+      notes: "Verify all requirements are addressed in proposal. SAVE OUTPUT: Copy final compliance-report.md to your project's docs/ folder."
+
+    - step_name: workflow_optimization
+      uses: bmad-flatten
+      creates: workflow-status.json
+      requires: all_proposal_documents
+      notes: "Provide unified status tracking and dependency management for the proposal workflow."
+
+    - final_review_gate:
+      action: executive_review
+      uses_checklist: executive-review-checklist.md
+      requires: all_proposal_documents
+      notes: "Conduct executive review of all proposal materials before submission."
+
+    - agent: rfq-opportunity-summarizer
+      creates: submission-package
+      uses_task: submission-preparation.md
+      requires: all_approved_documents
+      notes: "Prepare final submission package according to RFQ instructions."
+
+    - workflow_end:
+      action: project_complete
+      notes: |
+        Proposal response complete!
+        Follow submission instructions from the RFQ.
+
+  flattener_tools:
+    - name: rfq-flattener
+      description: "Aggregate all RFQ documents into a single analyzable corpus"
+      implements:
+        - Document structure recognition
+        - Automated extraction of requirements, evaluation criteria, and instructions
+        - RFQ content de-duplication and cross-referencing
+        - Unified search across all RFQ materials
+      priority: high
+
+    - name: requirements-flattener
+      description: "Create comprehensive traceability between RFQ requirements and proposal elements"
+      implements:
+        - Automated requirement extraction and classification
+        - Unique identifier assignment to each requirement
+        - Traceability matrix generation
+        - Compliance verification across all proposal documents
+      priority: high
+
+    - name: theme-flattener
+      description: "Ensure consistent application of win themes across all proposal sections"
+      implements:
+        - Theme extraction and classification
+        - Theme coverage analysis across all proposal sections
+        - Heat map visualization showing theme implementation
+        - Automatic suggestions for improved theme integration
+      priority: medium
+
+    - name: evaluation-flattener
+      description: "Enable comprehensive cross-document evaluation"
+      implements:
+        - Unified SWARD analysis across all proposal components
+        - Cross-document consistency verification
+        - Automated evaluation against RFQ criteria
+        - Issue prioritization and remediation recommendations
+      priority: medium
+
+    - name: workflow-flattener
+      description: "Provide unified status tracking and dependency management"
+      implements:
+        - Real-time status dashboard for all proposal components
+        - Dependency tracking between sections
+        - Parallel workstream enablement
+        - Impact analysis for proposed changes
+      priority: low
+
+    - name: rfq-sharding-flattener
+      description: "Process and shard large RFQ documents into manageable, context-preserving chunks"
+      implements:
+        - RFQ document structure recognition
+        - Semantic sharding based on requirement boundaries
+        - Metadata preservation across shards
+        - Shard manifest generation
+        - Cross-shard reference tracking
+      priority: high
+
+    - name: proposal-sharding-flattener
+      description: "Enable efficient development of lengthy technical and management narratives through sharding"
+      implements:
+        - Logical content segmentation
+        - Context preservation between shards
+        - Win theme and requirement tracking across shards
+        - Parallel development workflow support
+        - Content reassembly process
+      priority: high
+
+  flow_diagram: |
+    ```mermaid
+    graph TD
+        A[Start: RFQ Response] --> B[rfq-opportunity-summarizer: opportunity-summary.md]
+        B --> C[rfq-opportunity-summarizer: bid-no-bid.md]
+        C --> D{Bid decision}
+        D -->|No-Bid| E[End: No-Bid]
+        D -->|Proceed| F[win-theme-generator: strategic-alignment.md]
+        F --> G[win-theme-generator: competitor-analysis.md]
+        G --> H[win-theme-generator: swot-analysis.md]
+        H --> I[win-theme-generator: win-themes.md]
+        I --> J[compliance-matrix-builder: Import RFQ]
+        J --> K[compliance-matrix-builder: compliance-matrix.md]
+        K --> L[compliance-matrix-builder: proposal-outline.md]
+        L --> M1[technical-narrative-drafter: technical-approach.md]
+        L --> M2[technical-narrative-drafter: management-approach.md]
+        M1 --> N[labor-mapping-assistant: staffing-plan.md]
+        M2 --> N
+        N --> O[labor-mapping-assistant: pricing-strategy.md]
+        O --> P[labor-mapping-assistant: cost-narrative.md]
+        P --> Q[executive-summary-generator: executive-summary.md]
+        Q --> R[executive-summary-generator: executive-dashboard.md]
+        R --> S[evaluator-simulator: sward-analysis.md]
+        S --> T[evaluator-simulator: evaluation-report.md]
+        T --> U{Issues identified?}
+        U -->|Yes| V[Return to relevant agent for fixes]
+        V --> S
+        U -->|No| W[compliance-matrix-builder: compliance-report.md]
+        W --> X[Executive review]
+        X --> Y[rfq-opportunity-summarizer: submission preparation]
+        Y --> Z[End: Proposal Complete]
+        
+        style Z fill:#90EE90
+        style E fill:#FFA07A
+        style B fill:#ADD8E6
+        style F fill:#FFD700
+        style I fill:#FFD700
+        style K fill:#ADD8E6
+        style M1 fill:#98FB98
+        style M2 fill:#98FB98
+        style Q fill:#F0E68C
+        style S fill:#F5DEB3
+    ```
+
+  decision_guidance:
+    when_to_use:
+      - Responding to formal government RFQs
+      - Federal, state, or local government procurements
+      - Competitive bid situations requiring win themes
+      - Multiple proposal volumes required
+      - Section L/M compliance critical
+      - Formal evaluation criteria in RFQ
+
+  handoff_prompts:
+    opportunity_to_bid: "Opportunity summary complete. Now assess bid/no-bid decision."
+    bid_to_win: "Bid decision made. Now develop strategic alignment assessment."
+    win_to_compliance: "Win themes developed. Now create compliance matrix from RFQ."
+    compliance_to_content: "Compliance matrix and proposal outline complete. Now draft technical approach."
+    content_to_price: "Technical and management narratives complete. Now develop staffing and pricing plan."
+    content_to_executive: "Core content complete. Now create executive summary."
+    evaluation_results: "Evaluation simulation complete. Review identified issues and revise content."
+    final_review: "All proposal elements complete and compliant. Prepare for executive review."
+    complete: "Proposal package complete and ready for submission."
