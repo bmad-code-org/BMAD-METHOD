@@ -49,7 +49,7 @@ program
   .option('-d, --directory <path>', 'Installation directory')
   .option(
     '-i, --ide <ide...>',
-    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, other)',
+    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, auggie-cli, other)',
   )
   .option(
     '-e, --expansion-packs <packs...>',
@@ -406,6 +406,9 @@ async function promptInstallation() {
           { name: 'Qwen Code', value: 'qwen-code' },
           { name: 'Crush', value: 'crush' },
           { name: 'Github Copilot', value: 'github-copilot' },
+          { name: 'Auggie CLI (Augment Code)', value: 'auggie-cli' },
+          { name: 'Codex CLI', value: 'codex' },
+          { name: 'Codex Web', value: 'codex-web' },
         ],
       },
     ]);
@@ -472,6 +475,38 @@ async function promptInstallation() {
     ]);
 
     answers.githubCopilotConfig = { configChoice };
+  }
+
+  // Configure Auggie CLI (Augment Code) immediately if selected
+  if (ides.includes('auggie-cli')) {
+    console.log(chalk.cyan('\n📍 Auggie CLI Location Configuration'));
+    console.log(chalk.dim('Choose where to install BMad agents for Auggie CLI access.\n'));
+
+    const { selectedLocations } = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'selectedLocations',
+        message: 'Select Auggie CLI command locations:',
+        choices: [
+          {
+            name: 'User Commands (Global): Available across all your projects (user-wide)',
+            value: 'user',
+          },
+          {
+            name: 'Workspace Commands (Project): Stored in repository, shared with team',
+            value: 'workspace',
+          },
+        ],
+        validate: (selected) => {
+          if (selected.length === 0) {
+            return 'Please select at least one location';
+          }
+          return true;
+        },
+      },
+    ]);
+
+    answers.augmentCodeConfig = { selectedLocations };
   }
 
   // Ask for web bundles installation

@@ -74,6 +74,9 @@ class IdeSetup extends BaseIdeSetup {
       case 'qwen-code': {
         return this.setupQwenCode(installDir, selectedAgent);
       }
+      case 'auggie-cli': {
+        return this.setupAuggieCLI(installDir, selectedAgent, spinner, preConfiguredSettings);
+      }
       case 'codex': {
         return this.setupCodex(installDir, selectedAgent, { webEnabled: false });
       }
@@ -1610,6 +1613,96 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
     }
     console.log(chalk.dim(''));
     console.log(chalk.dim('You can modify these settings anytime in .vscode/settings.json'));
+  }
+
+  async setupAuggieCLI(installDir, selectedAgent, spinner = null, preConfiguredSettings = null) {
+    const os = require('node:os');
+    const inquirer = require('inquirer');
+    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
+
+    // Get the IDE configuration to access location options
+    const ideConfig = await configLoader.getIdeConfiguration('auggie-cli');
+    const locations = ideConfig.locations;
+
+    // Use pre-configured settings if provided, otherwise prompt
+    let selectedLocations;
+    if (preConfiguredSettings && preConfiguredSettings.selectedLocations) {
+      selectedLocations = preConfiguredSettings.selectedLocations;
+      console.log(
+        chalk.dim(
+          `Using pre-configured Auggie CLI (Augment Code) locations: ${selectedLocations.join(', ')}`,
+        ),
+      );
+    } else {
+      // Pause spinner during location selection to avoid UI conflicts
+      let spinnerWasActive = false;
+      if (spinner && spinner.isSpinning) {
+        spinner.stop();
+        spinnerWasActive = true;
+      }
+
+      // Clear any previous output and add spacing to avoid conflicts with loaders
+      console.log('\n'.repeat(2));
+      console.log(chalk.blue('📍 Auggie CLI Location Configuration'));
+      console.log(chalk.dim('Choose where to install BMad agents for Auggie CLI access.'));
+      console.log(''); // Add extra spacing
+
+      const response = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'selectedLocations',
+          message: 'Select Auggie CLI command locations:',
+          choices: Object.entries(locations).map(([key, location]) => ({
+            name: `${location.name}: ${location.description}`,
+            value: key,
+          })),
+          validate: (selected) => {
+            if (selected.length === 0) {
+              return 'Please select at least one location';
+            }
+            return true;
+          },
+        },
+      ]);
+      selectedLocations = response.selectedLocations;
+
+      // Restart spinner if it was active before prompts
+      if (spinner && spinnerWasActive) {
+        spinner.start();
+      }
+    }
+
+    // Install to each selected location
+    for (const locationKey of selectedLocations) {
+      const location = locations[locationKey];
+      let commandsDir = location['rule-dir'];
+
+      // Handle tilde expansion for user directory
+      if (commandsDir.startsWith('~/')) {
+        commandsDir = path.join(os.homedir(), commandsDir.slice(2));
+      } else if (commandsDir.startsWith('./')) {
+        commandsDir = path.join(installDir, commandsDir.slice(2));
+      }
+
+      await fileManager.ensureDirectory(commandsDir);
+
+      for (const agentId of agents) {
+        // Find the agent file
+        const agentPath = await this.findAgentPath(agentId, installDir);
+
+        if (agentPath) {
+          const agentContent = await fileManager.readFile(agentPath);
+          const mdPath = path.join(commandsDir, `${agentId}.md`);
+          await fileManager.writeFile(mdPath, agentContent);
+          console.log(chalk.green(`✓ Created command: ${agentId}.md in ${location.name}`));
+        }
+      }
+
+      console.log(chalk.green(`\n✓ Created Auggie CLI commands in ${commandsDir}`));
+      console.log(chalk.dim(`  Location: ${location.name} - ${location.description}`));
+    }
+
+    return true;
   }
 }
 
