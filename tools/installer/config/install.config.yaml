@@ -78,14 +78,14 @@ ide-configurations:
       # 4. Rules are stored in .clinerules/ directory in your project
   gemini:
     name: Gemini CLI
-    rule-dir: .gemini/commands/bmad/
+    rule-dir: .gemini/commands/BMad/
     format: multi-file
     command-suffix: .toml
     instructions: |
       # To use BMad agents with the Gemini CLI:
-      # 1. The installer creates a `bmad` extension in `.gemini/extensions/`.
+      # 1. The installer creates a `BMad` folder in `.gemini/commands`.
       # 2. This adds custom commands for each agent and task.
-      # 3. Type /bmad:agents:<agent-name> (e.g., "/bmad:agents:dev", "/bmad:agents:pm") or /bmad:tasks:<task-name> (e.g., "/bmad:tasks:create-doc").
+      # 3. Type /BMad:agents:<agent-name> (e.g., "/BMad:agents:dev", "/BMad:agents:pm") or /BMad:tasks:<task-name> (e.g., "/BMad:tasks:create-doc").
       # 4. The agent will adopt that persona for the conversation or preform the task.
   github-copilot:
     name: Github Copilot
