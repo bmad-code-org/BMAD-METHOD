@@ -1217,16 +1217,6 @@ class IdeSetup extends BaseIdeSetup {
     await fileManager.ensureDirectory(agentCommandsDir);
     await fileManager.ensureDirectory(taskCommandsDir);
 
-    // Create gemini-extension.json manifest
-    const manifestPath = path.join(bmadCommandsDir, 'gemini-extension.json');
-    const manifestContent = {
-      name: 'bmad',
-      version: '1.0.0',
-      description: 'BMAD Method Agents and Tasks and Commands',
-    };
-    await fileManager.writeFile(manifestPath, JSON.stringify(manifestContent, null, 2));
-    console.log(chalk.green('✓ Created gemini-extension.json manifest'));
-
     // Process Agents
     const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
     for (const agentId of agents) {
