@@ -1210,16 +1210,15 @@ class IdeSetup extends BaseIdeSetup {
 
   async setupGeminiCli(installDir, selectedAgent) {
     const ideConfig = await configLoader.getIdeConfiguration('gemini');
-    const extensionDir = path.join(installDir, ideConfig['rule-dir']);
-    const baseCommandsDir = path.join(extensionDir, 'commands');
+    const bmadCommandsDir = path.join(installDir, ideConfig['rule-dir']);
 
-    const agentCommandsDir = path.join(baseCommandsDir, 'agents');
-    const taskCommandsDir = path.join(baseCommandsDir, 'tasks');
+    const agentCommandsDir = path.join(bmadCommandsDir, 'agents');
+    const taskCommandsDir = path.join(bmadCommandsDir, 'tasks');
     await fileManager.ensureDirectory(agentCommandsDir);
     await fileManager.ensureDirectory(taskCommandsDir);
 
     // Create gemini-extension.json manifest
-    const manifestPath = path.join(extensionDir, 'gemini-extension.json');
+    const manifestPath = path.join(bmadCommandsDir, 'gemini-extension.json');
     const manifestContent = {
       name: 'bmad',
       version: '1.0.0',
@@ -1237,21 +1236,20 @@ class IdeSetup extends BaseIdeSetup {
         continue;
       }
 
-      const agentContent = await fileManager.readFile(agentPath);
       const agentTitle = await this.getAgentTitle(agentId, installDir);
-      const commandPath = path.join(agentCommandsDir, `${agentId}${ideConfig['command-suffix']}`);
-      const escapedAgentContent = agentContent.replaceAll("'''", String.raw`\'\'\'`);
-      const tomlContent = `
-description = "Activates the ${agentTitle} agent from the BMad Method."
+      const commandPath = path.join(agentCommandsDir, `${agentId}.toml`);
+
+      // Get relative path from installDir to agent file for @{file} reference
+      const relativeAgentPath = path.relative(installDir, agentPath).replaceAll('\\', '/');
+
+      const tomlContent = `description = "Activates the ${agentTitle} agent from the BMad Method."
 prompt = """
 CRITICAL: You are now the BMad '${agentTitle}' agent. Adopt its persona, follow its instructions, and use its capabilities. The full agent definition is below.
 
----
-${escapedAgentContent}
----
-"""
-`;
-      await fileManager.writeFile(commandPath, tomlContent.trim());
+@{${relativeAgentPath}}
+"""`;
+
+      await fileManager.writeFile(commandPath, tomlContent);
       console.log(chalk.green(`✓ Created agent command: /bmad:agents:${agentId}`));
     }
 
@@ -1264,30 +1262,29 @@ ${escapedAgentContent}
         continue;
       }
 
-      const taskContent = await fileManager.readFile(taskPath);
       const taskTitle = taskId
         .split('-')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
-      const commandPath = path.join(taskCommandsDir, `${taskId}${ideConfig['command-suffix']}`);
-      const escapedTaskContent = taskContent.replaceAll("'''", String.raw`\'\'\'`);
-      const tomlContent = `
-description = "Executes the BMad Task: ${taskTitle}"
+      const commandPath = path.join(taskCommandsDir, `${taskId}.toml`);
+
+      // Get relative path from installDir to task file for @{file} reference
+      const relativeTaskPath = path.relative(installDir, taskPath).replaceAll('\\', '/');
+
+      const tomlContent = `description = "Executes the BMad Task: ${taskTitle}"
 prompt = """
 CRITICAL: You are to execute the BMad Task defined below.
 
----
-${escapedTaskContent}
----
-"""
-`;
-      await fileManager.writeFile(commandPath, tomlContent.trim());
+@{${relativeTaskPath}}
+"""`;
+
+      await fileManager.writeFile(commandPath, tomlContent);
       console.log(chalk.green(`✓ Created task command: /bmad:tasks:${taskId}`));
     }
 
     console.log(
       chalk.green(`
-✓ Created Gemini CLI extension in ${extensionDir}`),
+✓ Created Gemini CLI extension in ${bmadCommandsDir}`),
     );
     console.log(
       chalk.dim('You can now use commands like /bmad:agents:dev or /bmad:tasks:create-doc.'),
