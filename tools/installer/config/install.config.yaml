@@ -122,6 +122,25 @@ ide-configurations:
       # 3. Simply mention the agent in your prompt (e.g., "As *dev, ...").
       # 4. The Qwen Code CLI will automatically have the context for that agent.
 
+  auggie-cli:
+    name: Auggie CLI (Augment Code)
+    format: multi-location
+    locations:
+      user:
+        name: User Commands (Global)
+        rule-dir: ~/.augment/commands/bmad/
+        description: Available across all your projects (user-wide)
+      workspace:
+        name: Workspace Commands (Project)
+        rule-dir: ./.augment/commands/bmad/
+        description: Stored in your repository and shared with your team
+    command-suffix: .md
+    instructions: |
+      # To use BMad agents in Auggie CLI (Augment Code):
+      # 1. Type /bmad:agent-name (e.g., "/bmad:dev", "/bmad:pm", "/bmad:architect")
+      # 2. The agent will adopt that persona for the conversation
+      # 3. Commands are available based on your selected location(s)
+
   codex:
     name: Codex CLI
     format: project-memory
