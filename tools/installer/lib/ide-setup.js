@@ -1327,13 +1327,16 @@ class IdeSetup extends BaseIdeSetup {
       // Get relative path from installDir to agent file for @{file} reference
       const relativeAgentPath = path.relative(installDir, agentPath).replaceAll('\\', '/');
 
+      // Read the agent content
+      const agentContent = await fileManager.readFile(agentPath);
+
       const tomlContent = `description = " Activates the ${agentTitle} agent from the BMad Method."
 prompt = """
 CRITICAL: You are now the BMad '${agentTitle}' agent. Adopt its persona, follow its instructions, and use its capabilities. 
 
-READ THIS FILE BEFORE ANSWERING AS THE PERSONA!
+READ THIS BEFORE ANSWERING AS THE PERSONA!
 
-@${relativeAgentPath}
+${agentContent}
 """`;
 
       await fileManager.writeFile(commandPath, tomlContent);
@@ -1358,13 +1361,16 @@ READ THIS FILE BEFORE ANSWERING AS THE PERSONA!
       // Get relative path from installDir to task file for @{file} reference
       const relativeTaskPath = path.relative(installDir, taskPath).replaceAll('\\', '/');
 
+      // Read the task content
+      const taskContent = await fileManager.readFile(taskPath);
+
       const tomlContent = `description = " Executes the BMad Task: ${taskTitle}"
 prompt = """
 CRITICAL: You are to execute the BMad Task defined below.
 
-READ THIS FILE BEFORE EXECUTING THE TASK AS THE INSTRUCTIONS SPECIFIED!
+READ THIS BEFORE EXECUTING THE TASK AS THE INSTRUCTIONS SPECIFIED!
 
-@${relativeTaskPath}
+${taskContent}
 """`;
 
       await fileManager.writeFile(commandPath, tomlContent);
