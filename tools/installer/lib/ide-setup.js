@@ -1208,97 +1208,90 @@ class IdeSetup extends BaseIdeSetup {
     return true;
   }
 
-  async setupGeminiCli(installDir) {
-    const geminiDir = path.join(installDir, '.gemini');
-    const bmadMethodDir = path.join(geminiDir, 'bmad-method');
-    await fileManager.ensureDirectory(bmadMethodDir);
+  async setupGeminiCli(installDir, selectedAgent) {
+    const ideConfig = await configLoader.getIdeConfiguration('gemini');
+    const extensionDir = path.join(installDir, ideConfig['rule-dir']);
+    const baseCommandsDir = path.join(extensionDir, 'commands');
 
-    // Update logic for existing settings.json
-    const settingsPath = path.join(geminiDir, 'settings.json');
-    if (await fileManager.pathExists(settingsPath)) {
-      try {
-        const settingsContent = await fileManager.readFile(settingsPath);
-        const settings = JSON.parse(settingsContent);
-        let updated = false;
+    const agentCommandsDir = path.join(baseCommandsDir, 'agents');
+    const taskCommandsDir = path.join(baseCommandsDir, 'tasks');
+    await fileManager.ensureDirectory(agentCommandsDir);
+    await fileManager.ensureDirectory(taskCommandsDir);
 
-        // Handle contextFileName property
-        if (settings.contextFileName && Array.isArray(settings.contextFileName)) {
-          const originalLength = settings.contextFileName.length;
-          settings.contextFileName = settings.contextFileName.filter(
-            (fileName) => !fileName.startsWith('agents/'),
-          );
-          if (settings.contextFileName.length !== originalLength) {
-            updated = true;
-          }
-        }
+    // Create gemini-extension.json manifest
+    const manifestPath = path.join(extensionDir, 'gemini-extension.json');
+    const manifestContent = {
+      name: 'bmad',
+      version: '1.0.0',
+      description: 'BMAD Method Agents and Tasks and Commands',
+    };
+    await fileManager.writeFile(manifestPath, JSON.stringify(manifestContent, null, 2));
+    console.log(chalk.green('✓ Created gemini-extension.json manifest'));
 
-        if (updated) {
-          await fileManager.writeFile(settingsPath, JSON.stringify(settings, null, 2));
-          console.log(
-            chalk.green('✓ Updated .gemini/settings.json - removed agent file references'),
-          );
-        }
-      } catch (error) {
-        console.warn(chalk.yellow('Could not update .gemini/settings.json'), error);
-      }
-    }
-
-    // Remove old agents directory
-    const agentsDir = path.join(geminiDir, 'agents');
-    if (await fileManager.pathExists(agentsDir)) {
-      await fileManager.removeDirectory(agentsDir);
-      console.log(chalk.green('✓ Removed old .gemini/agents directory'));
-    }
-
-    // Get all available agents
-    const agents = await this.getAllAgentIds(installDir);
-    let concatenatedContent = '';
-
+    // Process Agents
+    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
     for (const agentId of agents) {
-      // Find the source agent file
       const agentPath = await this.findAgentPath(agentId, installDir);
-
-      if (agentPath) {
-        const agentContent = await fileManager.readFile(agentPath);
-
-        // Create properly formatted agent rule content (similar to trae)
-        let agentRuleContent = `# ${agentId.toUpperCase()} Agent Rule\n\n`;
-        agentRuleContent += `This rule is triggered when the user types \`*${agentId}\` and activates the ${await this.getAgentTitle(
-          agentId,
-          installDir,
-        )} agent persona.\n\n`;
-        agentRuleContent += '## Agent Activation\n\n';
-        agentRuleContent +=
-          'CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n';
-        agentRuleContent += '```yaml\n';
-        // Extract just the YAML content from the agent file
-        const yamlContent = extractYamlFromAgent(agentContent);
-        if (yamlContent) {
-          agentRuleContent += yamlContent;
-        } else {
-          // If no YAML found, include the whole content minus the header
-          agentRuleContent += agentContent.replace(/^#.*$/m, '').trim();
-        }
-        agentRuleContent += '\n```\n\n';
-        agentRuleContent += '## File Reference\n\n';
-        const relativePath = path.relative(installDir, agentPath).replaceAll('\\', '/');
-        agentRuleContent += `The complete agent definition is available in [${relativePath}](${relativePath}).\n\n`;
-        agentRuleContent += '## Usage\n\n';
-        agentRuleContent += `When the user types \`*${agentId}\`, activate this ${await this.getAgentTitle(
-          agentId,
-          installDir,
-        )} persona and follow all instructions defined in the YAML configuration above.\n`;
-
-        // Add to concatenated content with separator
-        concatenatedContent += agentRuleContent + '\n\n---\n\n';
-        console.log(chalk.green(`✓ Added context for @${agentId}`));
+      if (!agentPath) {
+        console.log(chalk.yellow(`✗ Agent file not found for ${agentId}, skipping.`));
+        continue;
       }
+
+      const agentContent = await fileManager.readFile(agentPath);
+      const agentTitle = await this.getAgentTitle(agentId, installDir);
+      const commandPath = path.join(agentCommandsDir, `${agentId}${ideConfig['command-suffix']}`);
+      const escapedAgentContent = agentContent.replaceAll("'''", String.raw`\'\'\'`);
+      const tomlContent = `
+description = "Activates the ${agentTitle} agent from the BMad Method."
+prompt = """
+CRITICAL: You are now the BMad '${agentTitle}' agent. Adopt its persona, follow its instructions, and use its capabilities. The full agent definition is below.
+
+---
+${escapedAgentContent}
+---
+"""
+`;
+      await fileManager.writeFile(commandPath, tomlContent.trim());
+      console.log(chalk.green(`✓ Created agent command: /bmad:agents:${agentId}`));
     }
 
-    // Write the concatenated content to GEMINI.md
-    const geminiMdPath = path.join(bmadMethodDir, 'GEMINI.md');
-    await fileManager.writeFile(geminiMdPath, concatenatedContent);
-    console.log(chalk.green(`\n✓ Created GEMINI.md in ${bmadMethodDir}`));
+    // Process Tasks
+    const tasks = await this.getAllTaskIds(installDir);
+    for (const taskId of tasks) {
+      const taskPath = await this.findTaskPath(taskId, installDir);
+      if (!taskPath) {
+        console.log(chalk.yellow(`✗ Task file not found for ${taskId}, skipping.`));
+        continue;
+      }
+
+      const taskContent = await fileManager.readFile(taskPath);
+      const taskTitle = taskId
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      const commandPath = path.join(taskCommandsDir, `${taskId}${ideConfig['command-suffix']}`);
+      const escapedTaskContent = taskContent.replaceAll("'''", String.raw`\'\'\'`);
+      const tomlContent = `
+description = "Executes the BMad Task: ${taskTitle}"
+prompt = """
+CRITICAL: You are to execute the BMad Task defined below.
+
+---
+${escapedTaskContent}
+---
+"""
+`;
+      await fileManager.writeFile(commandPath, tomlContent.trim());
+      console.log(chalk.green(`✓ Created task command: /bmad:tasks:${taskId}`));
+    }
+
+    console.log(
+      chalk.green(`
+✓ Created Gemini CLI extension in ${extensionDir}`),
+    );
+    console.log(
+      chalk.dim('You can now use commands like /bmad:agents:dev or /bmad:tasks:create-doc.'),
+    );
 
     return true;
   }
