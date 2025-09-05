@@ -112,15 +112,15 @@ ide-configurations:
 
   qwen-code:
     name: Qwen Code
-    rule-dir: .qwen/bmad-method/
-    format: single-file
-    command-suffix: .md
+    rule-dir: .qwen/commands/BMad/
+    format: multi-file
+    command-suffix: .toml
     instructions: |
       # To use BMad agents with Qwen Code:
-      # 1. The installer creates a .qwen/bmad-method/ directory in your project.
-      # 2. It concatenates all agent files into a single QWEN.md file.
-      # 3. Simply mention the agent in your prompt (e.g., "As *dev, ...").
-      # 4. The Qwen Code CLI will automatically have the context for that agent.
+      # 1. The installer creates a `BMad` folder in `.qwen/commands`.
+      # 2. This adds custom commands for each agent and task.
+      # 3. Type /BMad:agents:<agent-name> (e.g., "/BMad:agents:dev", "/BMad:agents:pm") or /BMad:tasks:<task-name> (e.g., "/BMad:tasks:create-doc").
+      # 4. The agent will adopt that persona for the conversation or perform the task.
 
   auggie-cli:
     name: Auggie CLI (Augment Code)
