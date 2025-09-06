@@ -690,6 +690,7 @@ class IdeSetup extends BaseIdeSetup {
 
   async getCoreTaskIds(installDir) {
     const allTaskIds = [];
+    const glob = require('glob');
 
     // Check core tasks in .bmad-core or root only
     let tasksDir = path.join(installDir, '.bmad-core', 'tasks');
@@ -698,7 +699,6 @@ class IdeSetup extends BaseIdeSetup {
     }
 
     if (await fileManager.pathExists(tasksDir)) {
-      const glob = require('glob');
       const taskFiles = glob.sync('*.md', { cwd: tasksDir });
       allTaskIds.push(...taskFiles.map((file) => path.basename(file, '.md')));
     }

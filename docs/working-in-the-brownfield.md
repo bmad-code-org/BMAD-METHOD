@@ -5,7 +5,13 @@
 > Gemini Web's 1M+ token context window or Gemini CLI (when it's working) can analyze your ENTIRE codebase, or critical sections of it, all at once (obviously within reason):
 >
 > - Upload via GitHub URL or use gemini cli in the project folder
-> - If working in the web: use `npx bmad-method flatten` to flatten your project into a single file, then upload that file to your web agent.
+> - If working in the web: use `npx bmad-method flatten` to flatten your project into a single file, then upload that file to your web agent. To exclude additional files that must remain in git but shouldn't be sent to the AI, add a `.bmad-flattenignore` file at the project root (gitignore-style), e.g.:
+>
+> ```text
+> seeds/**
+> scripts/private/**
+> **/*.snap
+> ```
 
 ## What is Brownfield Development?
 
