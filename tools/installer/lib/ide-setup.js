@@ -74,6 +74,9 @@ class IdeSetup extends BaseIdeSetup {
       case 'qwen-code': {
         return this.setupQwenCode(installDir, selectedAgent);
       }
+      case 'auggie-cli': {
+        return this.setupAuggieCLI(installDir, selectedAgent, spinner, preConfiguredSettings);
+      }
       case 'codex': {
         return this.setupCodex(installDir, selectedAgent, { webEnabled: false });
       }
@@ -687,6 +690,7 @@ class IdeSetup extends BaseIdeSetup {
 
   async getCoreTaskIds(installDir) {
     const allTaskIds = [];
+    const glob = require('glob');
 
     // Check core tasks in .bmad-core or root only
     let tasksDir = path.join(installDir, '.bmad-core', 'tasks');
@@ -695,7 +699,6 @@ class IdeSetup extends BaseIdeSetup {
     }
 
     if (await fileManager.pathExists(tasksDir)) {
-      const glob = require('glob');
       const taskFiles = glob.sync('*.md', { cwd: tasksDir });
       allTaskIds.push(...taskFiles.map((file) => path.basename(file, '.md')));
     }
@@ -1205,97 +1208,77 @@ class IdeSetup extends BaseIdeSetup {
     return true;
   }
 
-  async setupGeminiCli(installDir) {
-    const geminiDir = path.join(installDir, '.gemini');
-    const bmadMethodDir = path.join(geminiDir, 'bmad-method');
-    await fileManager.ensureDirectory(bmadMethodDir);
+  async setupGeminiCli(installDir, selectedAgent) {
+    const ideConfig = await configLoader.getIdeConfiguration('gemini');
+    const bmadCommandsDir = path.join(installDir, ideConfig['rule-dir']);
 
-    // Update logic for existing settings.json
-    const settingsPath = path.join(geminiDir, 'settings.json');
-    if (await fileManager.pathExists(settingsPath)) {
-      try {
-        const settingsContent = await fileManager.readFile(settingsPath);
-        const settings = JSON.parse(settingsContent);
-        let updated = false;
+    const agentCommandsDir = path.join(bmadCommandsDir, 'agents');
+    const taskCommandsDir = path.join(bmadCommandsDir, 'tasks');
+    await fileManager.ensureDirectory(agentCommandsDir);
+    await fileManager.ensureDirectory(taskCommandsDir);
 
-        // Handle contextFileName property
-        if (settings.contextFileName && Array.isArray(settings.contextFileName)) {
-          const originalLength = settings.contextFileName.length;
-          settings.contextFileName = settings.contextFileName.filter(
-            (fileName) => !fileName.startsWith('agents/'),
-          );
-          if (settings.contextFileName.length !== originalLength) {
-            updated = true;
-          }
-        }
-
-        if (updated) {
-          await fileManager.writeFile(settingsPath, JSON.stringify(settings, null, 2));
-          console.log(
-            chalk.green('✓ Updated .gemini/settings.json - removed agent file references'),
-          );
-        }
-      } catch (error) {
-        console.warn(chalk.yellow('Could not update .gemini/settings.json'), error);
-      }
-    }
-
-    // Remove old agents directory
-    const agentsDir = path.join(geminiDir, 'agents');
-    if (await fileManager.pathExists(agentsDir)) {
-      await fileManager.removeDirectory(agentsDir);
-      console.log(chalk.green('✓ Removed old .gemini/agents directory'));
-    }
-
-    // Get all available agents
-    const agents = await this.getAllAgentIds(installDir);
-    let concatenatedContent = '';
-
+    // Process Agents
+    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
     for (const agentId of agents) {
-      // Find the source agent file
       const agentPath = await this.findAgentPath(agentId, installDir);
-
-      if (agentPath) {
-        const agentContent = await fileManager.readFile(agentPath);
-
-        // Create properly formatted agent rule content (similar to trae)
-        let agentRuleContent = `# ${agentId.toUpperCase()} Agent Rule\n\n`;
-        agentRuleContent += `This rule is triggered when the user types \`*${agentId}\` and activates the ${await this.getAgentTitle(
-          agentId,
-          installDir,
-        )} agent persona.\n\n`;
-        agentRuleContent += '## Agent Activation\n\n';
-        agentRuleContent +=
-          'CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n';
-        agentRuleContent += '```yaml\n';
-        // Extract just the YAML content from the agent file
-        const yamlContent = extractYamlFromAgent(agentContent);
-        if (yamlContent) {
-          agentRuleContent += yamlContent;
-        } else {
-          // If no YAML found, include the whole content minus the header
-          agentRuleContent += agentContent.replace(/^#.*$/m, '').trim();
-        }
-        agentRuleContent += '\n```\n\n';
-        agentRuleContent += '## File Reference\n\n';
-        const relativePath = path.relative(installDir, agentPath).replaceAll('\\', '/');
-        agentRuleContent += `The complete agent definition is available in [${relativePath}](${relativePath}).\n\n`;
-        agentRuleContent += '## Usage\n\n';
-        agentRuleContent += `When the user types \`*${agentId}\`, activate this ${await this.getAgentTitle(
-          agentId,
-          installDir,
-        )} persona and follow all instructions defined in the YAML configuration above.\n`;
-
-        // Add to concatenated content with separator
-        concatenatedContent += agentRuleContent + '\n\n---\n\n';
-        console.log(chalk.green(`✓ Added context for @${agentId}`));
+      if (!agentPath) {
+        console.log(chalk.yellow(`✗ Agent file not found for ${agentId}, skipping.`));
+        continue;
       }
+
+      const agentTitle = await this.getAgentTitle(agentId, installDir);
+      const commandPath = path.join(agentCommandsDir, `${agentId}.toml`);
+
+      // Get relative path from installDir to agent file for @{file} reference
+      const relativeAgentPath = path.relative(installDir, agentPath).replaceAll('\\', '/');
+
+      const tomlContent = `description = "Activates the ${agentTitle} agent from the BMad Method."
+prompt = """
+CRITICAL: You are now the BMad '${agentTitle}' agent. Adopt its persona, follow its instructions, and use its capabilities. The full agent definition is below.
+
+@{${relativeAgentPath}}
+"""`;
+
+      await fileManager.writeFile(commandPath, tomlContent);
+      console.log(chalk.green(`✓ Created agent command: /bmad:agents:${agentId}`));
     }
 
-    // Write the concatenated content to GEMINI.md
-    const geminiMdPath = path.join(bmadMethodDir, 'GEMINI.md');
-    await fileManager.writeFile(geminiMdPath, concatenatedContent);
-    console.log(chalk.green(`\n✓ Created GEMINI.md in ${bmadMethodDir}`));
+    // Process Tasks
+    const tasks = await this.getAllTaskIds(installDir);
+    for (const taskId of tasks) {
+      const taskPath = await this.findTaskPath(taskId, installDir);
+      if (!taskPath) {
+        console.log(chalk.yellow(`✗ Task file not found for ${taskId}, skipping.`));
+        continue;
+      }
+
+      const taskTitle = taskId
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      const commandPath = path.join(taskCommandsDir, `${taskId}.toml`);
+
+      // Get relative path from installDir to task file for @{file} reference
+      const relativeTaskPath = path.relative(installDir, taskPath).replaceAll('\\', '/');
+
+      const tomlContent = `description = "Executes the BMad Task: ${taskTitle}"
+prompt = """
+CRITICAL: You are to execute the BMad Task defined below.
+
+@{${relativeTaskPath}}
+"""`;
+
+      await fileManager.writeFile(commandPath, tomlContent);
+      console.log(chalk.green(`✓ Created task command: /bmad:tasks:${taskId}`));
+    }
+
+    console.log(
+      chalk.green(`
+✓ Created Gemini CLI extension in ${bmadCommandsDir}`),
+    );
+    console.log(
+      chalk.dim('You can now use commands like /bmad:agents:dev or /bmad:tasks:create-doc.'),
+    );
 
     return true;
   }
@@ -1610,6 +1593,96 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
     }
     console.log(chalk.dim(''));
     console.log(chalk.dim('You can modify these settings anytime in .vscode/settings.json'));
+  }
+
+  async setupAuggieCLI(installDir, selectedAgent, spinner = null, preConfiguredSettings = null) {
+    const os = require('node:os');
+    const inquirer = require('inquirer');
+    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
+
+    // Get the IDE configuration to access location options
+    const ideConfig = await configLoader.getIdeConfiguration('auggie-cli');
+    const locations = ideConfig.locations;
+
+    // Use pre-configured settings if provided, otherwise prompt
+    let selectedLocations;
+    if (preConfiguredSettings && preConfiguredSettings.selectedLocations) {
+      selectedLocations = preConfiguredSettings.selectedLocations;
+      console.log(
+        chalk.dim(
+          `Using pre-configured Auggie CLI (Augment Code) locations: ${selectedLocations.join(', ')}`,
+        ),
+      );
+    } else {
+      // Pause spinner during location selection to avoid UI conflicts
+      let spinnerWasActive = false;
+      if (spinner && spinner.isSpinning) {
+        spinner.stop();
+        spinnerWasActive = true;
+      }
+
+      // Clear any previous output and add spacing to avoid conflicts with loaders
+      console.log('\n'.repeat(2));
+      console.log(chalk.blue('📍 Auggie CLI Location Configuration'));
+      console.log(chalk.dim('Choose where to install BMad agents for Auggie CLI access.'));
+      console.log(''); // Add extra spacing
+
+      const response = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'selectedLocations',
+          message: 'Select Auggie CLI command locations:',
+          choices: Object.entries(locations).map(([key, location]) => ({
+            name: `${location.name}: ${location.description}`,
+            value: key,
+          })),
+          validate: (selected) => {
+            if (selected.length === 0) {
+              return 'Please select at least one location';
+            }
+            return true;
+          },
+        },
+      ]);
+      selectedLocations = response.selectedLocations;
+
+      // Restart spinner if it was active before prompts
+      if (spinner && spinnerWasActive) {
+        spinner.start();
+      }
+    }
+
+    // Install to each selected location
+    for (const locationKey of selectedLocations) {
+      const location = locations[locationKey];
+      let commandsDir = location['rule-dir'];
+
+      // Handle tilde expansion for user directory
+      if (commandsDir.startsWith('~/')) {
+        commandsDir = path.join(os.homedir(), commandsDir.slice(2));
+      } else if (commandsDir.startsWith('./')) {
+        commandsDir = path.join(installDir, commandsDir.slice(2));
+      }
+
+      await fileManager.ensureDirectory(commandsDir);
+
+      for (const agentId of agents) {
+        // Find the agent file
+        const agentPath = await this.findAgentPath(agentId, installDir);
+
+        if (agentPath) {
+          const agentContent = await fileManager.readFile(agentPath);
+          const mdPath = path.join(commandsDir, `${agentId}.md`);
+          await fileManager.writeFile(mdPath, agentContent);
+          console.log(chalk.green(`✓ Created command: ${agentId}.md in ${location.name}`));
+        }
+      }
+
+      console.log(chalk.green(`\n✓ Created Auggie CLI commands in ${commandsDir}`));
+      console.log(chalk.dim(`  Location: ${location.name} - ${location.description}`));
+    }
+
+    return true;
   }
 }
 
