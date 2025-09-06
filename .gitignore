@@ -29,13 +29,15 @@ Thumbs.db
 # IDE and editor configs
 .windsurf/
 .trae/
-.bmad*/.cursor/
+.bmad*/
+.cursor/
 
 # AI assistant files
 CLAUDE.md
 .ai/*
 .claude
 .gemini
+.iflow
 
 # Project-specific
 .bmad-core

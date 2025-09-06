@@ -49,7 +49,7 @@ program
   .option('-d, --directory <path>', 'Installation directory')
   .option(
     '-i, --ide <ide...>',
-    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, auggie-cli, other)',
+    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, auggie-cli, iflow-cli, other)',
   )
   .option(
     '-e, --expansion-packs <packs...>',
@@ -397,6 +397,7 @@ async function promptInstallation() {
         choices: [
           { name: 'Cursor', value: 'cursor' },
           { name: 'Claude Code', value: 'claude-code' },
+          { name: 'iFlow CLI', value: 'iflow-cli' },
           { name: 'Windsurf', value: 'windsurf' },
           { name: 'Trae', value: 'trae' }, // { name: 'Trae', value: 'trae'}
           { name: 'Roo Code', value: 'roo' },

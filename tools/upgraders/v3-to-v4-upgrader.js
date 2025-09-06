@@ -492,6 +492,7 @@ class V3ToV4Upgrader {
       const ideMessages = {
         cursor: 'Rules created in .cursor/rules/bmad/',
         'claude-code': 'Commands created in .claude/commands/BMad/',
+        'iflow-cli': 'Commands created in .iflow/commands/BMad/',
         windsurf: 'Rules created in .windsurf/workflows/',
         trae: 'Rules created in.trae/rules/',
         roo: 'Custom modes created in .roomodes',
