@@ -154,9 +154,11 @@ async function parseGitignore(gitignorePath) {
 async function loadIgnore(rootDir, extraPatterns = []) {
   const ig = ignore();
   const gitignorePath = path.join(rootDir, '.gitignore');
+  const flattenIgnorePath = path.join(rootDir, '.bmad-flattenignore');
   const patterns = [
     ...(await readIgnoreFile(gitignorePath)),
     ...DEFAULT_PATTERNS,
+    ...(await readIgnoreFile(flattenIgnorePath)),
     ...extraPatterns,
   ];
   // De-duplicate
