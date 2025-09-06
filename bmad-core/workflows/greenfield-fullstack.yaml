@@ -65,12 +65,12 @@ workflow:
       condition: po_checklist_issues
       notes: "If PO finds issues, return to relevant agent to fix and re-export updated documents to docs/ folder."
 
-    - project_setup_guidance:
+    - step: project_setup_guidance
       action: guide_project_structure
       condition: user_has_generated_ui
       notes: "If user generated UI with v0/Lovable: For polyrepo setup, place downloaded project in separate frontend repo alongside backend repo. For monorepo, place in apps/web or packages/frontend directory. Review architecture document for specific guidance."
 
-    - development_order_guidance:
+    - step: development_order_guidance
       action: guide_development_sequence
       notes: "Based on PRD stories: If stories are frontend-heavy, start with frontend project/directory first. If backend-heavy or API-first, start with backend. For tightly coupled features, follow story sequence in monorepo setup. Reference sharded PRD epics for development order."
 
@@ -138,7 +138,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -155,7 +155,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
