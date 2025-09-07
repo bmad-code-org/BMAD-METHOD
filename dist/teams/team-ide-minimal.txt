@@ -1930,21 +1930,18 @@ The LLM will:
 
 ## Primary Method: Automatic with markdown-tree
 
-[[LLM: First, check if markdownExploder is set to true in .bmad-core/core-config.yaml. If it is, attempt to run the command: `md-tree explode {input file} {output path}`.
+[[LLM: First, check if markdownExploder is set to true in .bmad-core/core-config.yaml. If it is, attempt to run the command: `npx @kayvan/markdown-tree-parser explode {input file} {output path}`.
 
 If the command succeeds, inform the user that the document has been sharded successfully and STOP - do not proceed further.
 
-If the command fails (especially with an error indicating the command is not found or not available), inform the user: "The markdownExploder setting is enabled but the md-tree command is not available. Please either:
+If the command fails (especially with an error indicating the command is not found or not available), inform the user: "The markdownExploder setting is enabled but the md-tree command failed. This could be due to package installation issues. Try using: `npx @kayvan/markdown-tree-parser explode {input file} {output path}` to automatically install and run the tool.
 
-1. Install @kayvan/markdown-tree-parser globally with: `npm install -g @kayvan/markdown-tree-parser`
-2. Or set markdownExploder to false in .bmad-core/core-config.yaml
-
-**IMPORTANT: STOP HERE - do not proceed with manual sharding until one of the above actions is taken.**"
+**IMPORTANT: STOP HERE - do not proceed with manual sharding until the npx command is attempted.**"
 
 If markdownExploder is set to false, inform the user: "The markdownExploder setting is currently false. For better performance and reliability, you should:
 
 1. Set markdownExploder to true in .bmad-core/core-config.yaml
-2. Install @kayvan/markdown-tree-parser globally with: `npm install -g @kayvan/markdown-tree-parser`
+2. Use `npx @kayvan/markdown-tree-parser explode {input file} {output path}` to automatically install and run the tool
 
 I will now proceed with the manual sharding process."
 
@@ -1952,22 +1949,25 @@ Then proceed with the manual method below ONLY if markdownExploder is false.]]
 
 ### Installation and Usage
 
-1. **Install globally**:
-
-   ```bash
-   npm install -g @kayvan/markdown-tree-parser
-   ```
-
-2. **Use the explode command**:
+1. **Use npx (recommended - no installation needed)**:
 
    ```bash
    # For PRD
-   md-tree explode docs/prd.md docs/prd
+   npx @kayvan/markdown-tree-parser explode docs/prd.md docs/prd
 
    # For Architecture
-   md-tree explode docs/architecture.md docs/architecture
+   npx @kayvan/markdown-tree-parser explode docs/architecture.md docs/architecture
 
    # For any document
+   npx @kayvan/markdown-tree-parser explode [source-document] [destination-folder]
+   ```
+
+2. **Alternative: Install globally** (if you prefer):
+
+   ```bash
+   npm install -g @kayvan/markdown-tree-parser
+   
+   # Then use the shorter command
    md-tree explode [source-document] [destination-folder]
    ```
 
@@ -1977,7 +1977,7 @@ Then proceed with the manual method below ONLY if markdownExploder is false.]]
    - Adjusts heading levels appropriately
    - Handles all edge cases with code blocks and special markdown
 
-If the user has @kayvan/markdown-tree-parser installed, use it and skip the manual process below.
+If the user has @kayvan/markdown-tree-parser available (either via npx or global install), use it and skip the manual process below.
 
 ---
 
