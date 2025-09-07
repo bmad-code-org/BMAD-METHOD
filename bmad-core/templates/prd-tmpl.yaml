@@ -14,38 +14,38 @@ workflow:
 
 sections:
   - id: goals-context
-    title: Goals and Background Context
+    title: 1. Goals and Background Context
     instruction: |
       Ask if Project Brief document is available. If NO Project Brief exists, STRONGLY recommend creating one first using project-brief-tmpl (it provides essential foundation: problem statement, target users, success metrics, MVP scope, constraints). If user insists on PRD without brief, gather this information during Goals section. If Project Brief exists, review and use it to populate Goals (bullet list of desired outcomes) and Background Context (1-2 paragraphs on what this solves and why) so we can determine what is and is not in scope for PRD mvp. Either way this is critical to determine the requirements. Include Change Log table.
     sections:
       - id: goals
-        title: Goals
+        title: 1.1. Goals
         type: bullet-list
         instruction: Bullet list of 1 line desired outcomes the PRD will deliver if successful - user and project desires
       - id: background
-        title: Background Context
+        title: 1.2. Background Context
         type: paragraphs
         instruction: 1-2 short paragraphs summarizing the background context, such as what we learned in the brief without being redundant with the goals, what and why this solves a problem, what the current landscape or need is
       - id: changelog
-        title: Change Log
+        title: 1.3. Change Log
         type: table
         columns: [Date, Version, Description, Author]
         instruction: Track document versions and changes
 
   - id: requirements
-    title: Requirements
+    title: 2. Requirements
     instruction: Draft the list of functional and non functional requirements under the two child sections
     elicit: true
     sections:
       - id: functional
-        title: Functional
+        title: 2.1. Functional
         type: numbered-list
         prefix: FR
         instruction: Each Requirement will be a bullet markdown and an identifier sequence starting with FR
         examples:
           - "FR6: The Todo List uses AI to detect and warn against potentially duplicate todo items that are worded differently."
       - id: non-functional
-        title: Non Functional
+        title: 2.2. Non Functional
         type: numbered-list
         prefix: NFR
         instruction: Each Requirement will be a bullet markdown and an identifier sequence starting with NFR
@@ -53,7 +53,7 @@ sections:
           - "NFR1: AWS service usage must aim to stay within free-tier limits where feasible."
 
   - id: ui-goals
-    title: User Interface Design Goals
+    title: 3. User Interface Design Goals
     condition: PRD has UX/UI requirements
     instruction: |
       Capture high-level UI/UX vision to guide Design Architect and to inform story creation. Steps:
@@ -69,11 +69,11 @@ sections:
       platforms: [Web Responsive, Mobile Only, Desktop Only, Cross-Platform]
     sections:
       - id: ux-vision
-        title: Overall UX Vision
+        title: 3.1. Overall UX Vision
       - id: interaction-paradigms
-        title: Key Interaction Paradigms
+        title: 3.2. Key Interaction Paradigms
       - id: core-screens
-        title: Core Screens and Views
+        title: 3.3. Core Screens and Views
         instruction: From a product perspective, what are the most critical screens or views necessary to deliver the the PRD values and goals? This is meant to be Conceptual High Level to Drive Rough Epic or User Stories
         examples:
           - "Login Screen"
@@ -81,22 +81,22 @@ sections:
           - "Item Detail Page"
           - "Settings Page"
       - id: accessibility
-        title: "Accessibility: {None|WCAG AA|WCAG AAA|Custom Requirements}"
+        title: "3.4. Accessibility: {None|WCAG AA|WCAG AAA|Custom Requirements}"
       - id: branding
-        title: Branding
+        title: 3.5. Branding
         instruction: Any known branding elements or style guides that must be incorporated?
         examples:
           - "Replicate the look and feel of early 1900s black and white cinema, including animated effects replicating film damage or projector glitches during page or state transitions."
           - "Attached is the full color pallet and tokens for our corporate branding."
       - id: target-platforms
-        title: "Target Device and Platforms: {Web Responsive|Mobile Only|Desktop Only|Cross-Platform}"
+        title: "3.6. Target Device and Platforms: {Web Responsive|Mobile Only|Desktop Only|Cross-Platform}"
         examples:
           - "Web Responsive, and all mobile platforms"
           - "iPhone Only"
           - "ASCII Windows Desktop"
 
   - id: technical-assumptions
-    title: Technical Assumptions
+    title: 4. Technical Assumptions
     instruction: |
       Gather technical decisions that will guide the Architect. Steps:
 
@@ -112,19 +112,19 @@ sections:
       testing: [Unit Only, Unit + Integration, Full Testing Pyramid]
     sections:
       - id: repository-structure
-        title: "Repository Structure: {Monorepo|Polyrepo|Multi-repo}"
+        title: "4.1. Repository Structure: {Monorepo|Polyrepo|Multi-repo}"
       - id: service-architecture
-        title: Service Architecture
+        title: 4.2. Service Architecture
         instruction: "CRITICAL DECISION - Document the high-level service architecture (e.g., Monolith, Microservices, Serverless functions within a Monorepo)."
       - id: testing-requirements
-        title: Testing Requirements
+        title: 4.3. Testing Requirements
         instruction: "CRITICAL DECISION - Document the testing requirements, unit only, integration, e2e, manual, need for manual testing convenience methods)."
       - id: additional-assumptions
-        title: Additional Technical Assumptions and Requests
+        title: 4.4. Additional Technical Assumptions and Requests
         instruction: Throughout the entire process of drafting this document, if any other technical assumptions are raised or discovered appropriate for the architect, add them here as additional bulleted items
 
   - id: epic-list
-    title: Epic List
+    title: 5. Epic List
     instruction: |
       Present a high-level list of all epics for user approval. Each epic should have a title and a short (1 sentence) goal statement. This allows the user to review the overall structure before diving into details.
 
@@ -144,7 +144,7 @@ sections:
       - "Epic 4: Reporting & Analytics: Provide insights and data visualization for users"
 
   - id: epic-details
-    title: Epic {{epic_number}} {{epic_title}}
+    title: 6. Epic {{epic_number}} {{epic_title}}
     repeatable: true
     instruction: |
       After the epic list is approved, present each epic with all its stories and acceptance criteria as a complete review unit.
@@ -166,7 +166,7 @@ sections:
     template: "{{epic_goal}}"
     sections:
       - id: story
-        title: Story {{epic_number}}.{{story_number}} {{story_title}}
+        title: 6.{{epic_number}}.{{story_number}} Story {{epic_number}}.{{story_number}} {{story_title}}
         repeatable: true
         template: |
           As a {{user_type}},
@@ -174,7 +174,7 @@ sections:
           so that {{benefit}}.
         sections:
           - id: acceptance-criteria
-            title: Acceptance Criteria
+            title: 6.{{epic_number}}.{{story_number}}.1. Acceptance Criteria
             type: numbered-list
             item_template: "{{criterion_number}}: {{criteria}}"
             repeatable: true
@@ -189,15 +189,15 @@ sections:
               - Avoid cross-cutting concerns that should be in other stories or PRD sections
 
   - id: checklist-results
-    title: Checklist Results Report
+    title: 7. Checklist Results Report
     instruction: Before running the checklist and drafting the prompts, offer to output the full updated PRD. If outputting it, confirm with the user that you will be proceeding to run the checklist and produce the report. Once the user confirms, execute the pm-checklist and populate the results in this section.
 
   - id: next-steps
-    title: Next Steps
+    title: 8. Next Steps
     sections:
       - id: ux-expert-prompt
-        title: UX Expert Prompt
+        title: 8.1. UX Expert Prompt
         instruction: This section will contain the prompt for the UX Expert, keep it short and to the point to initiate create architecture mode using this document as input.
       - id: architect-prompt
-        title: Architect Prompt
+        title: 8.2. Architect Prompt
         instruction: This section will contain the prompt for the Architect, keep it short and to the point to initiate create architecture mode using this document as input.

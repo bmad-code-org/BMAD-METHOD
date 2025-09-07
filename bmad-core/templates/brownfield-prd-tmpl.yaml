@@ -14,7 +14,7 @@ workflow:
 
 sections:
   - id: intro-analysis
-    title: Intro Project Analysis and Context
+    title: 1. Intro Project Analysis and Context
     instruction: |
       IMPORTANT - SCOPE ASSESSMENT REQUIRED:
 
@@ -33,23 +33,23 @@ sections:
       Do not proceed with any recommendations until the user has validated your understanding of the existing system.
     sections:
       - id: existing-project-overview
-        title: Existing Project Overview
+        title: 1.1. Existing Project Overview
         instruction: Check if document-project analysis was already performed. If yes, reference that output instead of re-analyzing.
         sections:
           - id: analysis-source
-            title: Analysis Source
+            title: 1.1.1. Analysis Source
             instruction: |
               Indicate one of the following:
               - Document-project output available at: {{path}}
               - IDE-based fresh analysis
               - User-provided information
           - id: current-state
-            title: Current Project State
+            title: 1.1.2. Current Project State
             instruction: |
               - If document-project output exists: Extract summary from "High Level Architecture" and "Technical Summary" sections
               - Otherwise: Brief description of what the project currently does and its primary purpose
       - id: documentation-analysis
-        title: Available Documentation Analysis
+        title: 1.2. Available Documentation Analysis
         instruction: |
           If document-project was run:
           - Note: "Document-project analysis available - using existing technical documentation"
@@ -59,7 +59,7 @@ sections:
           Otherwise, check for existing documentation:
         sections:
           - id: available-docs
-            title: Available Documentation
+            title: 1.2.1. Available Documentation
             type: checklist
             items:
               - Tech Stack Documentation [[LLM: If from document-project, check ✓]]
@@ -74,11 +74,11 @@ sections:
               - If document-project was already run: "Using existing project analysis from document-project output."
               - If critical documentation is missing and no document-project: "I recommend running the document-project task first..."
       - id: enhancement-scope
-        title: Enhancement Scope Definition
+        title: 1.3. Enhancement Scope Definition
         instruction: Work with user to clearly define what type of enhancement this is. This is critical for scoping and approach.
         sections:
           - id: enhancement-type
-            title: Enhancement Type
+            title: 1.3.1. Enhancement Type
             type: checklist
             instruction: Determine with user which applies
             items:
@@ -91,10 +91,10 @@ sections:
               - Bug Fix and Stability Improvements
               - "Other: {{other_type}}"
           - id: enhancement-description
-            title: Enhancement Description
+            title: 1.3.2. Enhancement Description
             instruction: 2-3 sentences describing what the user wants to add or change
           - id: impact-assessment
-            title: Impact Assessment
+            title: 1.3.3. Impact Assessment
             type: checklist
             instruction: Assess the scope of impact on existing codebase
             items:
@@ -103,43 +103,43 @@ sections:
               - Significant Impact (substantial existing code changes)
               - Major Impact (architectural changes required)
       - id: goals-context
-        title: Goals and Background Context
+        title: 1.4. Goals and Background Context
         sections:
           - id: goals
-            title: Goals
+            title: 1.4.1. Goals
             type: bullet-list
             instruction: Bullet list of 1-line desired outcomes this enhancement will deliver if successful
           - id: background
-            title: Background Context
+            title: 1.4.2. Background Context
             type: paragraphs
             instruction: 1-2 short paragraphs explaining why this enhancement is needed, what problem it solves, and how it fits with the existing project
       - id: changelog
-        title: Change Log
+        title: 1.5. Change Log
         type: table
         columns: [Change, Date, Version, Description, Author]
 
   - id: requirements
-    title: Requirements
+    title: 2. Requirements
     instruction: |
       Draft functional and non-functional requirements based on your validated understanding of the existing project. Before presenting requirements, confirm: "These requirements are based on my understanding of your existing system. Please review carefully and confirm they align with your project's reality."
     elicit: true
     sections:
       - id: functional
-        title: Functional
+        title: 2.1. Functional
         type: numbered-list
         prefix: FR
         instruction: Each Requirement will be a bullet markdown with identifier starting with FR
         examples:
           - "FR1: The existing Todo List will integrate with the new AI duplicate detection service without breaking current functionality."
       - id: non-functional
-        title: Non Functional
+        title: 2.2. Non Functional
         type: numbered-list
         prefix: NFR
         instruction: Each Requirement will be a bullet markdown with identifier starting with NFR. Include constraints from existing system
         examples:
           - "NFR1: Enhancement must maintain existing performance characteristics and not exceed current memory usage by more than 20%."
       - id: compatibility
-        title: Compatibility Requirements
+        title: 2.3. Compatibility Requirements
         instruction: Critical for brownfield - what must remain compatible
         type: numbered-list
         prefix: CR
@@ -155,26 +155,26 @@ sections:
             template: "CR4: {{integration_compatibility}}"
 
   - id: ui-enhancement-goals
-    title: User Interface Enhancement Goals
+    title: 3. User Interface Enhancement Goals
     condition: Enhancement includes UI changes
     instruction: For UI changes, capture how they will integrate with existing UI patterns and design systems
     sections:
       - id: existing-ui-integration
-        title: Integration with Existing UI
+        title: 3.1. Integration with Existing UI
         instruction: Describe how new UI elements will fit with existing design patterns, style guides, and component libraries
       - id: modified-screens
-        title: Modified/New Screens and Views
+        title: 3.2. Modified/New Screens and Views
         instruction: List only the screens/views that will be modified or added
       - id: ui-consistency
-        title: UI Consistency Requirements
+        title: 3.3. UI Consistency Requirements
         instruction: Specific requirements for maintaining visual and interaction consistency with existing application
 
   - id: technical-constraints
-    title: Technical Constraints and Integration Requirements
+    title: 4. Technical Constraints and Integration Requirements
     instruction: This section replaces separate architecture documentation. Gather detailed technical constraints from existing project analysis.
     sections:
       - id: existing-tech-stack
-        title: Existing Technology Stack
+        title: 4.1. Existing Technology Stack
         instruction: |
           If document-project output available:
           - Extract from "Actual Tech Stack" table in High Level Architecture section
@@ -188,7 +188,7 @@ sections:
           **Infrastructure**: {{infrastructure}}
           **External Dependencies**: {{external_dependencies}}
       - id: integration-approach
-        title: Integration Approach
+        title: 4.2. Integration Approach
         instruction: Define how the enhancement will integrate with existing architecture
         template: |
           **Database Integration Strategy**: {{database_integration}}
@@ -196,7 +196,7 @@ sections:
           **Frontend Integration Strategy**: {{frontend_integration}}
           **Testing Integration Strategy**: {{testing_integration}}
       - id: code-organization
-        title: Code Organization and Standards
+        title: 4.3. Code Organization and Standards
         instruction: Based on existing project analysis, define how new code will fit existing patterns
         template: |
           **File Structure Approach**: {{file_structure}}
@@ -204,7 +204,7 @@ sections:
           **Coding Standards**: {{coding_standards}}
           **Documentation Standards**: {{documentation_standards}}
       - id: deployment-operations
-        title: Deployment and Operations
+        title: 4.4. Deployment and Operations
         instruction: How the enhancement fits existing deployment pipeline
         template: |
           **Build Process Integration**: {{build_integration}}
@@ -212,7 +212,7 @@ sections:
           **Monitoring and Logging**: {{monitoring_logging}}
           **Configuration Management**: {{config_management}}
       - id: risk-assessment
-        title: Risk Assessment and Mitigation
+        title: 4.5. Risk Assessment and Mitigation
         instruction: |
           If document-project output available:
           - Reference "Technical Debt and Known Issues" section
@@ -227,18 +227,18 @@ sections:
           **Mitigation Strategies**: {{mitigation_strategies}}
 
   - id: epic-structure
-    title: Epic and Story Structure
+    title: 5. Epic and Story Structure
     instruction: |
       For brownfield projects, favor a single comprehensive epic unless the user is clearly requesting multiple unrelated enhancements. Before presenting the epic structure, confirm: "Based on my analysis of your existing project, I believe this enhancement should be structured as [single epic/multiple epics] because [rationale based on actual project analysis]. Does this align with your understanding of the work required?"
     elicit: true
     sections:
       - id: epic-approach
-        title: Epic Approach
+        title: 5.1. Epic Approach
         instruction: Explain the rationale for epic structure - typically single epic for brownfield unless multiple unrelated features
         template: "**Epic Structure Decision**: {{epic_decision}} with rationale"
 
   - id: epic-details
-    title: "Epic 1: {{enhancement_title}}"
+    title: "6. Epic 1: {{enhancement_title}}"
     instruction: |
       Comprehensive epic that delivers the brownfield enhancement while maintaining existing functionality
 
@@ -258,7 +258,7 @@ sections:
       **Integration Requirements**: {{integration_requirements}}
     sections:
       - id: story
-        title: "Story 1.{{story_number}} {{story_title}}"
+        title: "6.1. Story 1.{{story_number}} {{story_title}}"
         repeatable: true
         template: |
           As a {{user_type}},
@@ -266,12 +266,12 @@ sections:
           so that {{benefit}}.
         sections:
           - id: acceptance-criteria
-            title: Acceptance Criteria
+            title: 6.1.1. Acceptance Criteria
             type: numbered-list
             instruction: Define criteria that include both new functionality and existing system integrity
             item_template: "{{criterion_number}}: {{criteria}}"
           - id: integration-verification
-            title: Integration Verification
+            title: 6.1.2. Integration Verification
             instruction: Specific verification steps to ensure existing functionality remains intact
             type: numbered-list
             prefix: IV
