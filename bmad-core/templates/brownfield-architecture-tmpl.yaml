@@ -342,7 +342,7 @@ sections:
           **Monitoring:** {{monitoring_approach}}
 
   - id: coding-standards
-    title: Coding Standards and Conventions
+    title: Coding Standards
     instruction: |
       Ensure new code follows existing project conventions:
 
