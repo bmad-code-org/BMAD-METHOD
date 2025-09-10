@@ -1609,7 +1609,10 @@ class IdeSetup extends BaseIdeSetup {
 			}
 
 			const agentTitle = await this.getAgentTitle(agentId, installDir);
-			const commandPath = path.join(agentCommandsDir, `${agentId}.toml`);
+			const commandPath = path.join(
+				taskCommandsDir,
+				`BMad:agents:${agentId}.md`,
+			);
 
 			// Get relative path from installDir to agent file for @{file} reference
 			const relativeAgentPath = path
@@ -1617,16 +1620,16 @@ class IdeSetup extends BaseIdeSetup {
 				.replaceAll("\\", "/");
 
 			const tomlContent = `---
-description = "Activates the ${agentTitle} agent from the BMad Method."
+description:  "Activates the ${agentTitle} agent from the BMad Method."
 ---
 CRITICAL: You are now the BMad '${agentTitle}' agent. Adopt its persona, follow its instructions, and use its capabilities. The full agent definition is below.
 
-@{${relativeAgentPath}}
+@${relativeAgentPath}
 `;
 
 			await fileManager.writeFile(commandPath, tomlContent);
 			console.log(
-				chalk.green(`✓ Created agent command: /bmad:agents:${agentId}`),
+				chalk.green(`✓ Created agent command: /BMad:agents:${agentId}`),
 			);
 		}
 
@@ -1645,22 +1648,23 @@ CRITICAL: You are now the BMad '${agentTitle}' agent. Adopt its persona, follow 
 				.split("-")
 				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 				.join(" ");
-			const commandPath = path.join(taskCommandsDir, `${taskId}.toml`);
+			const commandPath = path.join(taskCommandsDir, `BMad:tasks:${taskId}.md`);
 
 			// Get relative path from installDir to task file for @{file} reference
 			const relativeTaskPath = path
 				.relative(installDir, taskPath)
 				.replaceAll("\\", "/");
 
-			const tomlContent = `description = "Executes the BMad Task: ${taskTitle}"
-prompt = """
+			const tomlContent = `---
+description: "Executes the BMad Task: ${taskTitle}"
+---
 CRITICAL: You are to execute the BMad Task defined below.
 
-@{${relativeTaskPath}}
-"""`;
+@${relativeTaskPath}
+`;
 
 			await fileManager.writeFile(commandPath, tomlContent);
-			console.log(chalk.green(`✓ Created task command: /bmad:tasks:${taskId}`));
+			console.log(chalk.green(`✓ Created task command: /BMad:tasks:${taskId}`));
 		}
 
 		console.log(
@@ -1669,7 +1673,7 @@ CRITICAL: You are to execute the BMad Task defined below.
 		);
 		console.log(
 			chalk.dim(
-				"You can now use commands like /bmad:agents:dev or /bmad:tasks:create-doc.",
+				"You can now use commands like /BMad:agents:dev or /BMad:tasks:create-doc.",
 			),
 		);
 
