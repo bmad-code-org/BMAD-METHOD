@@ -83,7 +83,7 @@ class IdeSetup extends BaseIdeSetup {
 				return this.setupGeminiCli(installDir, selectedAgent);
 			}
 			case "opencode": {
-				return this.setupGeminiCli(installDir, selectedAgent);
+				return this.setupOpencodeCli(installDir, selectedAgent);
 			}
 			case "github-copilot": {
 				return this.setupGitHubCopilot(
