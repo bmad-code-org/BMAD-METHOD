@@ -1621,7 +1621,9 @@ class IdeSetup extends BaseIdeSetup {
 
 			const tomlContent = `---
 description:  "Activates the ${agentTitle} agent from the BMad Method."
+agent: build
 ---
+
 CRITICAL: You are now the BMad '${agentTitle}' agent. Adopt its persona, follow its instructions, and use its capabilities. The full agent definition is below.
 
 @${relativeAgentPath}
@@ -1657,7 +1659,9 @@ CRITICAL: You are now the BMad '${agentTitle}' agent. Adopt its persona, follow 
 
 			const tomlContent = `---
 description: "Executes the BMad Task: ${taskTitle}"
+agent: build
 ---
+
 CRITICAL: You are to execute the BMad Task defined below.
 
 @${relativeTaskPath}
