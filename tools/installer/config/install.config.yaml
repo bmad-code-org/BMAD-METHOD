@@ -85,6 +85,17 @@ ide-configurations:
       # 2. Type @agent-name (e.g., "@dev", "@pm", "@architect")
       # 3. The agent will adopt that persona for the conversation
       # 4. Rules are stored in .clinerules/ directory in your project
+  opencode:
+    name: Opencode CLI
+    rule-dir: .opencode/
+    format: multi-file
+    command-suffix: .md
+    instructions: |
+      # To use BMad agents with the Opencode CLI:
+      # 1. The installer creates a `agent` and `command` folder in `.opencode/`.
+      # 2. This adds custom commands for each agent and task.
+      # 3. Type /BMad:agents:<agent-name> (e.g., "/BMad:agents:dev", "/BMad:agents:pm") or /BMad:tasks:<task-name> (e.g., "/BMad:tasks:create-doc").
+      # 4. The agent will adopt that persona for the conversation or preform the task.
   gemini:
     name: Gemini CLI
     rule-dir: .gemini/commands/BMad/
