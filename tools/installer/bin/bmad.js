@@ -49,7 +49,7 @@ program
   .option('-d, --directory <path>', 'Installation directory')
   .option(
     '-i, --ide <ide...>',
-    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, auggie-cli, iflow-cli, other)',
+    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, auggie-cli, amazon-q-cli, iflow-cli, other)',
   )
   .option(
     '-e, --expansion-packs <packs...>',
@@ -410,6 +410,7 @@ async function promptInstallation() {
           { name: 'Auggie CLI (Augment Code)', value: 'auggie-cli' },
           { name: 'Codex CLI', value: 'codex' },
           { name: 'Codex Web', value: 'codex-web' },
+          { name: 'Amazon Q CLI', value: 'amazon-q-cli' },
         ],
       },
     ]);

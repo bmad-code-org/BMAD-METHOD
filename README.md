@@ -90,6 +90,8 @@ This single command handles:
 
 **Prerequisites**: [Node.js](https://nodejs.org) v20+ required
 
+**Supported Agentic IDEs**: Cursor, Claude Code, Windsurf, Amazon Q CLI, Cline, GitHub Copilot, and 10+ others
+
 ### Fastest Start: Web UI Full Stack Team at your disposal (2 minutes)
 
 1. **Get the bundle**: Save or clone the [full stack team file](dist/teams/team-fullstack.txt) or choose another team

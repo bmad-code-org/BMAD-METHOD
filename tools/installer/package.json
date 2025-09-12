@@ -27,16 +27,26 @@
     "bmad-method": "./bin/bmad.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --config=test/jest.config.js",
+    "test:amazon-q-cli": "node test/run-validation-tests.js",
+    "test:ci": "jest --config=test/jest.config.js --ci --coverage --watchAll=false",
+    "test:coverage": "jest --config=test/jest.config.js --coverage",
+    "test:watch": "jest --config=test/jest.config.js --watch",
+    "validate:amazon-q-cli": "node test/run-validation-tests.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^14.0.0",
     "fs-extra": "^11.3.0",
+    "glob": "^10.3.0",
     "inquirer": "^8.2.6",
     "js-yaml": "^4.1.0",
     "ora": "^5.4.1",
     "semver": "^7.6.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0"
   },
   "engines": {
     "node": ">=20.0.0"

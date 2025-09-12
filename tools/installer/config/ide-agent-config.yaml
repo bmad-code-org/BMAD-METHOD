@@ -56,3 +56,24 @@ cline-order:
   game-developer: 13
   game-sm: 14
   infra-devops-platform: 15
+
+# Amazon Q CLI agent ordering
+# Lower numbers appear first in generated configurations
+amazon-q-cli-order:
+  # Core agents
+  bmad-master: 1
+  bmad-orchestrator: 2
+  pm: 3
+  analyst: 4
+  architect: 5
+  po: 6
+  sm: 7
+  dev: 8
+  qa: 9
+  ux-expert: 10
+  # Expansion pack agents
+  bmad-the-creator: 11
+  game-designer: 12
+  game-developer: 13
+  game-sm: 14
+  infra-devops-platform: 15

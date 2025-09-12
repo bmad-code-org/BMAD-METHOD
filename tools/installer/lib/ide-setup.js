@@ -80,6 +80,9 @@ class IdeSetup extends BaseIdeSetup {
       case 'auggie-cli': {
         return this.setupAuggieCLI(installDir, selectedAgent, spinner, preConfiguredSettings);
       }
+      case 'amazon-q-cli': {
+        return this.setupAmazonQCli(installDir, selectedAgent, spinner, preConfiguredSettings);
+      }
       case 'codex': {
         return this.setupCodex(installDir, selectedAgent, { webEnabled: false });
       }
@@ -775,7 +778,6 @@ class IdeSetup extends BaseIdeSetup {
   }
 
   async getAllAgentIds(installDir) {
-    const glob = require('glob');
     const allAgentIds = [];
 
     // Check core agents in .bmad-core or root
@@ -785,16 +787,27 @@ class IdeSetup extends BaseIdeSetup {
     }
 
     if (await fileManager.pathExists(agentsDir)) {
-      const agentFiles = glob.sync('*.md', { cwd: agentsDir });
+      const files = await fs.readdir(agentsDir);
+      const agentFiles = files.filter((file) => file.endsWith('.md'));
       allAgentIds.push(...agentFiles.map((file) => path.basename(file, '.md')));
     }
 
     // Also check for expansion pack agents in dot folders
-    const expansionDirectories = glob.sync('.*/agents', { cwd: installDir });
-    for (const expDir of expansionDirectories) {
-      const fullExpDir = path.join(installDir, expDir);
-      const expAgentFiles = glob.sync('*.md', { cwd: fullExpDir });
-      allAgentIds.push(...expAgentFiles.map((file) => path.basename(file, '.md')));
+    try {
+      const entries = await fs.readdir(installDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory() && entry.name.startsWith('.') && entry.name !== '.bmad-core') {
+          const expAgentsDir = path.join(installDir, entry.name, 'agents');
+          if (await fileManager.pathExists(expAgentsDir)) {
+            const expFiles = await fs.readdir(expAgentsDir);
+            const expAgentFiles = expFiles.filter((file) => file.endsWith('.md'));
+            allAgentIds.push(...expAgentFiles.map((file) => path.basename(file, '.md')));
+          }
+        }
+      }
+    } catch (error) {
+      // Directory read error, skip expansion packs
+      console.log(chalk.dim(`Note: Could not check for expansion pack agents: ${error.message}`));
     }
 
     // Remove duplicates
@@ -886,7 +899,6 @@ class IdeSetup extends BaseIdeSetup {
   }
 
   async getAllTaskIds(installDir) {
-    const glob = require('glob');
     const allTaskIds = [];
 
     // Check core tasks in .bmad-core or root
@@ -896,33 +908,54 @@ class IdeSetup extends BaseIdeSetup {
     }
 
     if (await fileManager.pathExists(tasksDir)) {
-      const taskFiles = glob.sync('*.md', { cwd: tasksDir });
+      const files = await fs.readdir(tasksDir);
+      const taskFiles = files.filter((file) => file.endsWith('.md'));
       allTaskIds.push(...taskFiles.map((file) => path.basename(file, '.md')));
     }
 
     // Check common tasks
     const commonTasksDir = path.join(installDir, 'common', 'tasks');
     if (await fileManager.pathExists(commonTasksDir)) {
-      const commonTaskFiles = glob.sync('*.md', { cwd: commonTasksDir });
+      const files = await fs.readdir(commonTasksDir);
+      const commonTaskFiles = files.filter((file) => file.endsWith('.md'));
       allTaskIds.push(...commonTaskFiles.map((file) => path.basename(file, '.md')));
     }
 
     // Also check for expansion pack tasks in dot folders
-    const expansionDirectories = glob.sync('.*/tasks', { cwd: installDir });
-    for (const expDir of expansionDirectories) {
-      const fullExpDir = path.join(installDir, expDir);
-      const expTaskFiles = glob.sync('*.md', { cwd: fullExpDir });
-      allTaskIds.push(...expTaskFiles.map((file) => path.basename(file, '.md')));
+    try {
+      const entries = await fs.readdir(installDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory() && entry.name.startsWith('.') && entry.name !== '.bmad-core') {
+          const expTasksDir = path.join(installDir, entry.name, 'tasks');
+          if (await fileManager.pathExists(expTasksDir)) {
+            const expFiles = await fs.readdir(expTasksDir);
+            const expTaskFiles = expFiles.filter((file) => file.endsWith('.md'));
+            allTaskIds.push(...expTaskFiles.map((file) => path.basename(file, '.md')));
+          }
+        }
+      }
+    } catch (error) {
+      // Directory read error, skip expansion packs
+      console.log(chalk.dim(`Note: Could not check for expansion pack tasks: ${error.message}`));
     }
 
     // Check expansion-packs folder tasks
     const expansionPacksDir = path.join(installDir, 'expansion-packs');
     if (await fileManager.pathExists(expansionPacksDir)) {
-      const expPackDirectories = glob.sync('*/tasks', { cwd: expansionPacksDir });
-      for (const expDir of expPackDirectories) {
-        const fullExpDir = path.join(expansionPacksDir, expDir);
-        const expTaskFiles = glob.sync('*.md', { cwd: fullExpDir });
-        allTaskIds.push(...expTaskFiles.map((file) => path.basename(file, '.md')));
+      try {
+        const expansionEntries = await fs.readdir(expansionPacksDir, { withFileTypes: true });
+        for (const expEntry of expansionEntries) {
+          if (expEntry.isDirectory()) {
+            const expTasksDir = path.join(expansionPacksDir, expEntry.name, 'tasks');
+            if (await fileManager.pathExists(expTasksDir)) {
+              const expFiles = await fs.readdir(expTasksDir);
+              const expTaskFiles = expFiles.filter((file) => file.endsWith('.md'));
+              allTaskIds.push(...expTaskFiles.map((file) => path.basename(file, '.md')));
+            }
+          }
+        }
+      } catch (error) {
+        console.log(chalk.dim(`Note: Could not check expansion-packs tasks: ${error.message}`));
       }
     }
 
@@ -1815,6 +1848,219 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
     }
 
     return true;
+  }
+
+  async setupAmazonQCli(installDir, selectedAgent, spinner = null, preConfiguredSettings = null) {
+    const os = require('node:os');
+    const AmazonQCliValidator = require('./amazon-q-cli-validator');
+    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
+
+    // Get the IDE configuration to access location options
+    const ideConfig = await configLoader.getIdeConfiguration('amazon-q-cli');
+    const locations = ideConfig.locations;
+
+    // Use pre-configured settings if provided, otherwise prompt
+    let selectedLocations;
+    if (preConfiguredSettings && preConfiguredSettings.selectedLocations) {
+      selectedLocations = preConfiguredSettings.selectedLocations;
+      console.log(
+        chalk.dim(`Using pre-configured Amazon Q CLI locations: ${selectedLocations.join(', ')}`),
+      );
+    } else {
+      // Pause spinner during location selection to avoid UI conflicts
+      let spinnerWasActive = false;
+      if (spinner && spinner.isSpinning) {
+        spinner.stop();
+        spinnerWasActive = true;
+      }
+
+      // Clear any previous output and add spacing to avoid conflicts with loaders
+      console.log('\n'.repeat(2));
+      console.log(chalk.blue('📍 Amazon Q CLI Location Configuration'));
+      console.log(chalk.dim('Choose where to install BMAD agents for Amazon Q CLI access.'));
+      console.log(''); // Add extra spacing
+
+      const response = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'selectedLocations',
+          message: 'Select Amazon Q CLI agent locations:',
+          choices: Object.entries(locations).map(([key, location]) => ({
+            name: `${location.name}: ${location.description}`,
+            value: key,
+          })),
+          validate: (selected) => {
+            if (selected.length === 0) {
+              return 'Please select at least one location';
+            }
+            return true;
+          },
+        },
+      ]);
+      selectedLocations = response.selectedLocations;
+
+      // Restart spinner if it was active before prompts
+      if (spinner && spinnerWasActive) {
+        spinner.start();
+      }
+    }
+
+    // Install to each selected location
+    for (const locationKey of selectedLocations) {
+      const location = locations[locationKey];
+      let agentsDir = location['rule-dir'];
+
+      // Handle tilde expansion for user directory
+      if (agentsDir.startsWith('~/')) {
+        agentsDir = path.join(os.homedir(), agentsDir.slice(2));
+      } else if (agentsDir.startsWith('./')) {
+        agentsDir = path.join(installDir, agentsDir.slice(2));
+      }
+
+      await fileManager.ensureDirectory(agentsDir);
+
+      for (const agentId of agents) {
+        // Find the agent file
+        const agentPath = await this.findAgentPath(agentId, installDir);
+
+        if (agentPath) {
+          const agentConfigJson = await this.createAmazonQAgentConfig(
+            agentId,
+            agentPath,
+            installDir,
+          );
+          const agentFileName = agentId.startsWith('bmad-')
+            ? `${agentId}.json`
+            : `bmad-${agentId}.json`;
+          const jsonPath = path.join(agentsDir, agentFileName);
+
+          await fileManager.writeFile(jsonPath, agentConfigJson);
+          const displayName = agentId.startsWith('bmad-') ? agentId : `bmad-${agentId}`;
+          console.log(
+            chalk.green(`✓ Created agent config: ${displayName}.json in ${location.name}`),
+          );
+        }
+      }
+
+      console.log(chalk.green(`\n✓ Created Amazon Q CLI agents in ${agentsDir}`));
+      console.log(chalk.dim(`  Location: ${location.name} - ${location.description}`));
+    }
+
+    // Perform installation validation
+    const validator = new AmazonQCliValidator();
+    const validationSuccess = await validator.validateInstallation(
+      installDir,
+      selectedLocations,
+      agents,
+    );
+
+    if (validationSuccess) {
+      console.log(chalk.green(`\n✅ Amazon Q CLI setup complete and verified!`));
+      console.log(chalk.dim('You can now use agents with: q chat --agent bmad-{agent}'));
+      console.log(chalk.dim('Use /agent bmad-{agent} to switch between agents within sessions'));
+    } else {
+      console.log(chalk.yellow(`\n⚠️  Amazon Q CLI setup completed with validation issues`));
+      console.log(chalk.dim('Please review the validation report above for details'));
+      console.log(
+        chalk.dim(
+          'You may still be able to use the agents, but some features might not work correctly',
+        ),
+      );
+    }
+
+    return validationSuccess;
+  }
+
+  async createAmazonQAgentConfig(agentId, agentPath, installDir) {
+    // Read the agent file content
+    const agentContent = await fileManager.readFile(agentPath);
+
+    // Extract YAML metadata from agent file
+    const yamlMatch = agentContent.match(/```ya?ml\r?\n([\s\S]*?)```/);
+    let agentMetadata = {};
+
+    if (yamlMatch) {
+      try {
+        agentMetadata = yaml.load(yamlMatch[1]) || {};
+      } catch (error) {
+        console.warn(`Failed to parse YAML metadata for ${agentId}: ${error.message}`);
+      }
+    }
+
+    // Extract title, description and other metadata
+    const title = agentMetadata.title || this.formatAgentTitle(agentId);
+    const whenToUse = agentMetadata.whenToUse || `Use for ${title.toLowerCase()} tasks`;
+    const roleDefinition =
+      agentMetadata.roleDefinition ||
+      `You are a ${title} specializing in ${title.toLowerCase()} tasks and responsibilities.`;
+
+    // Generate Amazon Q CLI agent name with bmad- prefix
+    const agentName = agentId.startsWith('bmad-') ? agentId : `bmad-${agentId}`;
+
+    // Build the system prompt that includes full agent content
+    const systemPrompt = `${roleDefinition}
+
+CRITICAL: You are now the BMAD ${title} agent. Follow all instructions and guidelines defined in your agent definition below.
+
+${agentContent}
+
+Key Instructions:
+- Always maintain your agent persona and specialization
+- Reference project context from .bmad-core/ directory when available
+- Follow BMAD methodology and best practices
+- Stay in character as the ${title} until explicitly told to switch roles`;
+
+    // Create the Amazon Q CLI YAML configuration
+    const amazonQConfig = {
+      $schema:
+        'https://raw.githubusercontent.com/aws/amazon-q-developer-cli/refs/heads/main/schemas/agent-v1.json',
+      name: agentName,
+      description: `${title}: ${whenToUse}`,
+      prompt: systemPrompt,
+      tools: this.mapAgentTools(agentId, agentMetadata),
+      resources: [
+        'file://.bmad-core/**/*',
+        'file://README.md',
+        'file://package.json',
+        'file://.gitignore',
+      ],
+    };
+
+    // Convert to JSON string
+    return JSON.stringify(amazonQConfig, null, 2);
+  }
+
+  formatAgentTitle(agentId) {
+    // Remove bmad- prefix if present and format as title
+    const cleanId = agentId.replace(/^bmad-/, '');
+    return cleanId
+      .split('-')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  mapAgentTools(agentId, agentMetadata) {
+    // Map to Amazon Q CLI built-in tools that BMAD agents need
+    // All these tools are trusted and available in Amazon Q CLI
+    const bmadRequiredTools = [
+      'fs_read', // Reading configuration files, stories, tasks
+      'fs_write', // Writing/editing files, updating stories
+      'execute_bash', // Running tests, builds, git commands
+      'introspect', // Self-analysis and context understanding
+    ];
+
+    // Add specialized tools based on agent type
+    const cleanId = agentId.replace(/^bmad-/, '');
+
+    switch (cleanId) {
+      case 'architect':
+      case 'aws-expert': {
+        return [...bmadRequiredTools, 'use_aws'];
+      } // Add AWS operations
+      default: {
+        return bmadRequiredTools;
+      }
+    }
   }
 }
 

@@ -171,3 +171,25 @@ ide-configurations:
       # 2. Commit `.bmad-core/` and `AGENTS.md` to your repository.
       # 3. Open the repo in Codex Web and reference agents naturally (e.g., "As dev, ...").
       # 4. Re-run this installer to refresh agent sections when the core changes.
+
+  amazon-q-cli:
+    name: Amazon Q CLI
+    format: multi-location
+    locations:
+      user:
+        name: User Global (~/.aws/amazonq/cli-agents/)
+        rule-dir: ~/.aws/amazonq/cli-agents/
+        description: Available across all your projects (user-wide)
+      project:
+        name: Project Local (./.amazonq/cli-agents/)
+        rule-dir: ./.amazonq/cli-agents/
+        description: Stored in your repository and shared with your team
+    command-suffix: .json
+    instructions: |
+      # To use BMAD agents with Amazon Q CLI:
+      # 1. The installer generates JSON configurations for all BMAD agents
+      # 2. Type `q chat --agent bmad-{agent}` (e.g., "q chat --agent bmad-dev", "q chat --agent bmad-architect")
+      # 3. Use `q agent list` to see all available agents
+      # 4. To switch agents, exit current session and start new one with different --agent
+      # 5. Project context from .bmad-core/ is automatically loaded
+      # 6. Agents are available based on your selected location(s)
