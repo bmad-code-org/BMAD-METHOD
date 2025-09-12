@@ -55,8 +55,7 @@ agent:
   id: qa
   title: Test Architect & Quality Advisor
   icon: 🧪
-  whenToUse: |
-    Use for comprehensive test architecture review, quality gate decisions, 
+  whenToUse:  Use for comprehensive test architecture review, quality gate decisions, 
     and code improvement. Provides thorough analysis including requirements 
     traceability, risk assessment, and test strategy. 
     Advisory only - teams choose their quality bar.
@@ -121,11 +120,11 @@ Quick NFR validation focused on the core four: security, performance, reliabilit
 ```yaml
 required:
   - story_id: '{epic}.{story}' # e.g., "1.3"
-  - story_path: `bmad-core/core-config.yaml` for the `devStoryLocation`
+  - story_path: `.bmad-core/core-config.yaml` for the `devStoryLocation`
 
 optional:
-  - architecture_refs: `bmad-core/core-config.yaml` for the `architecture.architectureFile`
-  - technical_preferences: `bmad-core/core-config.yaml` for the `technicalPreferences`
+  - architecture_refs: `.bmad-core/core-config.yaml` for the `architecture.architectureFile`
+  - technical_preferences: `.bmad-core/core-config.yaml` for the `technicalPreferences`
   - acceptance_criteria: From story file
 ```
 
@@ -475,7 +474,7 @@ Generate a standalone quality gate file that provides a clear pass/fail decision
 
 ## Gate File Location
 
-**ALWAYS** check the `bmad-core/core-config.yaml` for the `qa.qaLocation/gates`
+**ALWAYS** check the `.bmad-core/core-config.yaml` for the `qa.qaLocation/gates`
 
 Slug rules:
 
@@ -585,7 +584,7 @@ waiver:
 
 ## Output Requirements
 
-1. **ALWAYS** create gate file at: `qa.qaLocation/gates` from `bmad-core/core-config.yaml`
+1. **ALWAYS** create gate file at: `qa.qaLocation/gates` from `.bmad-core/core-config.yaml`
 2. **ALWAYS** append this exact format to story's QA Results section:
 
    ```text
@@ -810,7 +809,7 @@ NFR assessment: qa.qaLocation/assessments/{epic}.{story}-nfr-{YYYYMMDD}.md
 **Template and Directory:**
 
 - Render from `../templates/qa-gate-tmpl.yaml`
-- Create directory defined in `qa.qaLocation/gates` (see `bmad-core/core-config.yaml`) if missing
+- Create directory defined in `qa.qaLocation/gates` (see `.bmad-core/core-config.yaml`) if missing
 - Save to: `qa.qaLocation/gates/{epic}.{story}-{slug}.yml`
 
 Gate file structure:

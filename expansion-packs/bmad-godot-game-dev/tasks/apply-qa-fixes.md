@@ -50,7 +50,7 @@ optional:
 
 ### 0) Load Core Config & Locate Story
 
-- Read `bmad-core/core-config.yaml` and resolve `qa_root`, `story_root`, and `project_root`
+- Read `.bmad-core/core-config.yaml` and resolve `qa_root`, `story_root`, and `project_root`
 - Locate story file in `{story_root}/{epic}.{story}.*.md`
   - HALT if missing and ask for correct story id/path
 
@@ -150,7 +150,7 @@ Status Rule:
 
 ## Blocking Conditions
 
-- Missing `bmad-core/core-config.yaml`
+- Missing `.bmad-core/core-config.yaml`
 - Story file not found for `story_id`
 - No QA artifacts found (neither gate nor assessments)
   - HALT and request QA to generate at least a gate file (or proceed only with clear developer-provided fix list)

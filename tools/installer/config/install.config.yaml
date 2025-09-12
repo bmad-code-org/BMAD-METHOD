@@ -193,3 +193,14 @@ ide-configurations:
       # 4. To switch agents, exit current session and start new one with different --agent
       # 5. Project context from .bmad-core/ is automatically loaded
       # 6. Agents are available based on your selected location(s)
+
+  opencode:
+    name: OpenCode CLI
+    format: jsonc-config
+    file: opencode.jsonc
+    instructions: |
+      # To use BMAD agents with OpenCode CLI:
+      # 1. The installer creates/updates `opencode.jsonc` at your project root.
+      # 2. It ensures the BMAD core instructions file is referenced: `./.bmad-core/core-config.yaml`.
+      # 3. If an existing `opencode.json` or `opencode.jsonc` is present, it is preserved and only `instructions` are minimally merged.
+      # 4. Run `opencode` in this project to use your configured agents and commands.

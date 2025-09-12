@@ -187,6 +187,53 @@ If you want to do the planning on the web with Claude (Sonnet 4 or Opus), Gemini
 npx bmad-method install
 ```
 
+### OpenCode
+
+BMAD integrates with OpenCode via a project-level `opencode.jsonc`/`opencode.json` (JSON-only, no Markdown fallback).
+
+- Installation:
+  - Run `npx bmad-method install` and choose `OpenCode` in the IDE list.
+  - The installer will detect an existing `opencode.jsonc`/`opencode.json` or create a minimal `opencode.jsonc` if missing.
+  - It will:
+    - Ensure `instructions` includes `.bmad-core/core-config.yaml` (and each selected expansion pack’s `config.yaml`).
+    - Merge BMAD agents and commands using file references (`{file:./.bmad-core/...}`), idempotently.
+    - Preserve other top-level fields and user-defined entries.
+
+- Prefixes and collisions:
+  - You can opt-in to prefix agent keys with `bmad-` and command keys with `bmad:tasks:` to avoid name collisions.
+  - If a key already exists and is not BMAD-managed, the installer will skip it and suggest enabling prefixes.
+
+- What gets added:
+  - `instructions`: `.bmad-core/core-config.yaml` plus any selected expansion pack `config.yaml` files.
+  - `agent`: BMAD agents from core and selected packs.
+    - `prompt`: `{file:./.bmad-core/agents/<id>.md}` (or pack path)
+    - `mode`: `primary` for orchestrators, otherwise `all`
+    - `tools`: `{ write: true, edit: true, bash: true }`
+    - `description`: extracted from the agent’s `whenToUse`
+  - `command`: BMAD tasks from core and selected packs.
+    - `template`: `{file:./.bmad-core/tasks/<id>.md}` (or pack path)
+    - `description`: extracted from the task’s “Purpose” section
+
+- Selected Packages Only:
+  - The installer includes agents and tasks only from the packages you selected in the earlier step (core and chosen packs).
+
+- Refresh after changes:
+  - Re-run:
+    ```bash
+    npx bmad-method install -f -i opencode
+    ```
+  - The installer safely updates entries without duplication and preserves your custom fields and comments.
+
+- Optional convenience script:
+  - You can add a script to your project’s `package.json` for quick refreshes:
+    ```json
+    {
+      "scripts": {
+        "bmad:opencode": "bmad-method install -f -i opencode"
+      }
+    }
+    ```
+
 ### Codex (CLI & Web)
 
 BMAD integrates with OpenAI Codex via `AGENTS.md` and committed core agent files.
@@ -501,7 +548,7 @@ When creating custom web bundles or uploading to AI platforms, include your `tec
 
 ## Core Configuration
 
-The `bmad-core/core-config.yaml` file is a critical config that enables BMad to work seamlessly with differing project structures, more options will be made available in the future. Currently the most important is the devLoadAlwaysFiles list section in the yaml.
+The `.bmad-core/core-config.yaml` file is a critical config that enables BMad to work seamlessly with differing project structures, more options will be made available in the future. Currently the most important is the devLoadAlwaysFiles list section in the yaml.
 
 ### Developer Context Files
 
