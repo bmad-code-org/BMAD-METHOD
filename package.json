@@ -43,6 +43,7 @@
     "release:patch": "gh workflow run \"Manual Release\" -f version_bump=patch",
     "release:watch": "gh run watch",
     "setup:hooks": "chmod +x tools/setup-hooks.sh && ./tools/setup-hooks.sh",
+    "test": "npm run lint && npm run validate",
     "validate": "node tools/cli.js validate",
     "version:all": "node tools/bump-all-versions.js",
     "version:all:major": "node tools/bump-all-versions.js major",

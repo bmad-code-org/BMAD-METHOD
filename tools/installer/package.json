@@ -27,12 +27,7 @@
     "bmad-method": "./bin/bmad.js"
   },
   "scripts": {
-    "test": "jest --config=test/jest.config.js",
-    "test:amazon-q-cli": "node test/run-validation-tests.js",
-    "test:ci": "jest --config=test/jest.config.js --ci --coverage --watchAll=false",
-    "test:coverage": "jest --config=test/jest.config.js --coverage",
-    "test:watch": "jest --config=test/jest.config.js --watch",
-    "validate:amazon-q-cli": "node test/run-validation-tests.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "chalk": "^4.1.2",
