@@ -46,7 +46,7 @@ Then proceed with the manual method below ONLY if markdownExploder is false.]]
 
    ```bash
    npm install -g @kayvan/markdown-tree-parser
-   
+
    # Then use the shorter command
    md-tree explode [source-document] [destination-folder]
    ```
