@@ -75,8 +75,6 @@ This makes it easy to benefit from the latest improvements, bug fixes, and new a
 
 ```bash
 npx bmad-method install
-# OR explicitly use stable tag:
-npx bmad-method@stable install
 # OR if you already have BMad installed:
 git pull
 npm run install:bmad

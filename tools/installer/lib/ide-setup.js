@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const yaml = require('js-yaml');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const cjson = require('comment-json');
 const fileManager = require('./file-manager');
 const configLoader = require('./config-loader');
 const { extractYamlFromAgent } = require('../../lib/yaml-utils');
@@ -43,6 +44,9 @@ class IdeSetup extends BaseIdeSetup {
     switch (ide) {
       case 'cursor': {
         return this.setupCursor(installDir, selectedAgent);
+      }
+      case 'opencode': {
+        return this.setupOpenCode(installDir, selectedAgent, spinner, preConfiguredSettings);
       }
       case 'claude-code': {
         return this.setupClaudeCode(installDir, selectedAgent);
@@ -90,6 +94,643 @@ class IdeSetup extends BaseIdeSetup {
         console.log(chalk.yellow(`\nIDE ${ide} not yet supported`));
         return false;
       }
+    }
+  }
+
+  async setupOpenCode(installDir, selectedAgent, spinner = null, preConfiguredSettings = null) {
+    // Minimal JSON-only integration per plan:
+    // - If opencode.json or opencode.jsonc exists: only ensure instructions include .bmad-core/core-config.yaml
+    // - If none exists: create minimal opencode.jsonc with $schema and instructions array including that file
+
+    const jsonPath = path.join(installDir, 'opencode.json');
+    const jsoncPath = path.join(installDir, 'opencode.jsonc');
+    const hasJson = await fileManager.pathExists(jsonPath);
+    const hasJsonc = await fileManager.pathExists(jsoncPath);
+
+    // Determine key prefix preferences (with sensible defaults)
+    // Defaults: non-prefixed (agents = "dev", commands = "create-doc")
+    let useAgentPrefix = false;
+    let useCommandPrefix = false;
+
+    // Allow pre-configuration (if passed) to skip prompts
+    const pre = preConfiguredSettings && preConfiguredSettings.opencode;
+    if (pre && typeof pre.useAgentPrefix === 'boolean') useAgentPrefix = pre.useAgentPrefix;
+    if (pre && typeof pre.useCommandPrefix === 'boolean') useCommandPrefix = pre.useCommandPrefix;
+
+    // If no pre-config and in interactive mode, prompt the user
+    if (!pre) {
+      // Pause spinner during prompts if active
+      let spinnerWasActive = false;
+      if (spinner && spinner.isSpinning) {
+        spinner.stop();
+        spinnerWasActive = true;
+      }
+
+      try {
+        const resp = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'useAgentPrefix',
+            message:
+              "Prefix agent keys with 'bmad-'? (Recommended to avoid collisions, e.g., 'bmad-dev')",
+            default: true,
+          },
+          {
+            type: 'confirm',
+            name: 'useCommandPrefix',
+            message:
+              "Prefix command keys with 'bmad:tasks:'? (Recommended, e.g., 'bmad:tasks:create-doc')",
+            default: true,
+          },
+        ]);
+        useAgentPrefix = resp.useAgentPrefix;
+        useCommandPrefix = resp.useCommandPrefix;
+      } catch {
+        // Keep defaults if prompt fails or is not interactive
+      } finally {
+        if (spinner && spinnerWasActive) spinner.start();
+      }
+    }
+
+    const ensureInstructionRef = (obj) => {
+      const preferred = '.bmad-core/core-config.yaml';
+      const alt = './.bmad-core/core-config.yaml';
+      if (!obj.instructions) obj.instructions = [];
+      if (!Array.isArray(obj.instructions)) obj.instructions = [obj.instructions];
+      // Normalize alternative form (with './') to preferred without './'
+      obj.instructions = obj.instructions.map((it) =>
+        typeof it === 'string' && it === alt ? preferred : it,
+      );
+      const hasPreferred = obj.instructions.some(
+        (it) => typeof it === 'string' && it === preferred,
+      );
+      if (!hasPreferred) obj.instructions.push(preferred);
+      return obj;
+    };
+
+    const mergeBmadAgentsAndCommands = async (configObj) => {
+      // Ensure objects exist
+      if (!configObj.agent || typeof configObj.agent !== 'object') configObj.agent = {};
+      if (!configObj.command || typeof configObj.command !== 'object') configObj.command = {};
+      if (!configObj.instructions) configObj.instructions = [];
+      if (!Array.isArray(configObj.instructions)) configObj.instructions = [configObj.instructions];
+
+      // Track a concise summary of changes
+      const summary = {
+        target: null,
+        created: false,
+        agentsAdded: 0,
+        agentsUpdated: 0,
+        agentsSkipped: 0,
+        commandsAdded: 0,
+        commandsUpdated: 0,
+        commandsSkipped: 0,
+      };
+
+      // Determine package scope: previously SELECTED packages in installer UI
+      const selectedPackages = preConfiguredSettings?.selectedPackages || {
+        includeCore: true,
+        packs: [],
+      };
+
+      // Helper: ensure an instruction path is present without './' prefix, de-duplicating './' variants
+      const ensureInstructionPath = (pathNoDot) => {
+        const withDot = `./${pathNoDot}`;
+        // Normalize any existing './' variant to non './'
+        configObj.instructions = configObj.instructions.map((it) =>
+          typeof it === 'string' && it === withDot ? pathNoDot : it,
+        );
+        const has = configObj.instructions.some((it) => typeof it === 'string' && it === pathNoDot);
+        if (!has) configObj.instructions.push(pathNoDot);
+      };
+
+      // Helper: detect orchestrator agents to set as primary mode
+      const isOrchestratorAgent = (agentId) => /(^|-)orchestrator$/i.test(agentId);
+
+      // Helper: extract whenToUse string from an agent markdown file
+      const extractWhenToUseFromFile = async (absPath) => {
+        try {
+          const raw = await fileManager.readFile(absPath);
+          const yamlMatch = raw.match(/```ya?ml\r?\n([\s\S]*?)```/);
+          const yamlBlock = yamlMatch ? yamlMatch[1].trim() : null;
+          if (!yamlBlock) return null;
+          // Try quoted first, then unquoted
+          const quoted = yamlBlock.match(/whenToUse:\s*"([^"]+)"/i);
+          if (quoted && quoted[1]) return quoted[1].trim();
+          const unquoted = yamlBlock.match(/whenToUse:\s*([^\n\r]+)/i);
+          if (unquoted && unquoted[1]) return unquoted[1].trim();
+        } catch {
+          // ignore
+        }
+        return null;
+      };
+
+      // Helper: extract Purpose string from a task file (YAML fenced block, Markdown heading, or inline 'Purpose:')
+      const extractTaskPurposeFromFile = async (absPath) => {
+        const cleanupAndSummarize = (text) => {
+          if (!text) return null;
+          let t = String(text);
+          // Drop code fences and HTML comments
+          t = t.replaceAll(/```[\s\S]*?```/g, '');
+          t = t.replaceAll(/<!--([\s\S]*?)-->/g, '');
+          // Normalize line endings
+          t = t.replaceAll(/\r\n?/g, '\n');
+          // Take the first non-empty paragraph
+          const paragraphs = t.split(/\n\s*\n/g).map((p) => p.trim());
+          let first = paragraphs.find((p) => p.length > 0) || '';
+          // Remove leading list markers, quotes, and headings remnants
+          first = first.replaceAll(/^\s*[>*-]\s+/gm, '');
+          first = first.replaceAll(/^#{1,6}\s+/gm, '');
+          // Strip simple Markdown formatting
+          first = first.replaceAll(/\*\*([^*]+)\*\*/g, '$1').replaceAll(/\*([^*]+)\*/g, '$1');
+          first = first.replaceAll(/`([^`]+)`/g, '$1');
+          // Collapse whitespace
+          first = first.replaceAll(/\s+/g, ' ').trim();
+          if (!first) return null;
+          // Prefer ending at a sentence boundary if long
+          const maxLen = 320;
+          if (first.length > maxLen) {
+            const boundary = first.slice(0, maxLen + 40).match(/^[\s\S]*?[.!?](\s|$)/);
+            const cut = boundary ? boundary[0] : first.slice(0, maxLen);
+            return cut.trim();
+          }
+          return first;
+        };
+
+        try {
+          const raw = await fileManager.readFile(absPath);
+          // 1) YAML fenced block: look for Purpose fields
+          const yamlMatch = raw.match(/```ya?ml\r?\n([\s\S]*?)```/);
+          const yamlBlock = yamlMatch ? yamlMatch[1].trim() : null;
+          if (yamlBlock) {
+            try {
+              const data = yaml.load(yamlBlock);
+              if (data) {
+                let val = data.Purpose ?? data.purpose;
+                if (!val && data.task && (data.task.Purpose || data.task.purpose)) {
+                  val = data.task.Purpose ?? data.task.purpose;
+                }
+                if (typeof val === 'string') {
+                  const cleaned = cleanupAndSummarize(val);
+                  if (cleaned) return cleaned;
+                }
+              }
+            } catch {
+              // ignore YAML parse errors
+            }
+            // Fallback regex inside YAML block
+            const quoted = yamlBlock.match(/(?:^|\n)\s*(?:Purpose|purpose):\s*"([^"]+)"/);
+            if (quoted && quoted[1]) {
+              const cleaned = cleanupAndSummarize(quoted[1]);
+              if (cleaned) return cleaned;
+            }
+            const unquoted = yamlBlock.match(/(?:^|\n)\s*(?:Purpose|purpose):\s*([^\n\r]+)/);
+            if (unquoted && unquoted[1]) {
+              const cleaned = cleanupAndSummarize(unquoted[1]);
+              if (cleaned) return cleaned;
+            }
+          }
+
+          // 2) Markdown heading section: ## Purpose (any level >= 2)
+          const headingRe = /^(#{2,6})\s*Purpose\s*$/im;
+          const headingMatch = headingRe.exec(raw);
+          if (headingMatch) {
+            const headingLevel = headingMatch[1].length;
+            const sectionStart = headingMatch.index + headingMatch[0].length;
+            const rest = raw.slice(sectionStart);
+            // Next heading of same or higher level ends the section
+            const nextHeadingRe = new RegExp(`^#{1,${headingLevel}}\\s+[^\n]+`, 'im');
+            const nextMatch = nextHeadingRe.exec(rest);
+            const section = nextMatch ? rest.slice(0, nextMatch.index) : rest;
+            const cleaned = cleanupAndSummarize(section);
+            if (cleaned) return cleaned;
+          }
+
+          // 3) Inline single-line fallback: Purpose: ...
+          const inline = raw.match(/(?:^|\n)\s*Purpose\s*:\s*([^\n\r]+)/i);
+          if (inline && inline[1]) {
+            const cleaned = cleanupAndSummarize(inline[1]);
+            if (cleaned) return cleaned;
+          }
+        } catch {
+          // ignore
+        }
+        return null;
+      };
+
+      // Build core sets
+      const coreAgentIds = new Set();
+      const coreTaskIds = new Set();
+      if (selectedPackages.includeCore) {
+        for (const id of await this.getCoreAgentIds(installDir)) coreAgentIds.add(id);
+        for (const id of await this.getCoreTaskIds(installDir)) coreTaskIds.add(id);
+      }
+
+      // Build packs info: { packId, packPath, packKey, agents:Set, tasks:Set }
+      const packsInfo = [];
+      if (Array.isArray(selectedPackages.packs)) {
+        for (const packId of selectedPackages.packs) {
+          const dotPackPath = path.join(installDir, `.${packId}`);
+          const altPackPath = path.join(installDir, 'expansion-packs', packId);
+          const packPath = (await fileManager.pathExists(dotPackPath))
+            ? dotPackPath
+            : (await fileManager.pathExists(altPackPath))
+              ? altPackPath
+              : null;
+          if (!packPath) continue;
+
+          // Ensure pack config.yaml is added to instructions (relative path, no './')
+          const packConfigAbs = path.join(packPath, 'config.yaml');
+          if (await fileManager.pathExists(packConfigAbs)) {
+            const relCfg = path.relative(installDir, packConfigAbs).replaceAll('\\', '/');
+            ensureInstructionPath(relCfg);
+          }
+
+          const packKey = packId.replace(/^bmad-/, '').replaceAll('/', '-');
+          const info = { packId, packPath, packKey, agents: new Set(), tasks: new Set() };
+
+          const glob = require('glob');
+          const agentsDir = path.join(packPath, 'agents');
+          if (await fileManager.pathExists(agentsDir)) {
+            const files = glob.sync('*.md', { cwd: agentsDir });
+            for (const f of files) info.agents.add(path.basename(f, '.md'));
+          }
+          const tasksDir = path.join(packPath, 'tasks');
+          if (await fileManager.pathExists(tasksDir)) {
+            const files = glob.sync('*.md', { cwd: tasksDir });
+            for (const f of files) info.tasks.add(path.basename(f, '.md'));
+          }
+          packsInfo.push(info);
+        }
+      }
+
+      // Generate agents - core first (respect optional agent prefix)
+      for (const agentId of coreAgentIds) {
+        const p = await this.findAgentPath(agentId, installDir); // prefers core
+        if (!p) continue;
+        const rel = path.relative(installDir, p).replaceAll('\\', '/');
+        const fileRef = `{file:./${rel}}`;
+        const baseKey = agentId;
+        const key = useAgentPrefix
+          ? baseKey.startsWith('bmad-')
+            ? baseKey
+            : `bmad-${baseKey}`
+          : baseKey;
+        const existing = configObj.agent[key];
+        const whenToUse = await extractWhenToUseFromFile(p);
+        const agentDef = {
+          prompt: fileRef,
+          mode: isOrchestratorAgent(agentId) ? 'primary' : 'all',
+          tools: { write: true, edit: true, bash: true },
+          ...(whenToUse ? { description: whenToUse } : {}),
+        };
+        if (!existing) {
+          configObj.agent[key] = agentDef;
+          summary.agentsAdded++;
+        } else if (
+          existing &&
+          typeof existing === 'object' &&
+          typeof existing.prompt === 'string' &&
+          existing.prompt.includes(rel)
+        ) {
+          existing.prompt = agentDef.prompt;
+          existing.mode = agentDef.mode;
+          if (whenToUse) existing.description = whenToUse;
+          existing.tools = { write: true, edit: true, bash: true };
+          configObj.agent[key] = existing;
+          summary.agentsUpdated++;
+        } else {
+          summary.agentsSkipped++;
+          // Collision warning: key exists but does not appear BMAD-managed (different prompt path)
+          console.log(
+            chalk.yellow(
+              `⚠︎ Skipped agent key '${key}' (existing entry not BMAD-managed). Tip: enable agent prefixes to avoid collisions.`,
+            ),
+          );
+        }
+      }
+
+      // Generate agents - expansion packs (forced pack-specific prefix)
+      for (const pack of packsInfo) {
+        for (const agentId of pack.agents) {
+          const p = path.join(pack.packPath, 'agents', `${agentId}.md`);
+          if (!(await fileManager.pathExists(p))) continue;
+          const rel = path.relative(installDir, p).replaceAll('\\', '/');
+          const fileRef = `{file:./${rel}}`;
+          const prefixedKey = `bmad-${pack.packKey}-${agentId}`;
+          const existing = configObj.agent[prefixedKey];
+          const whenToUse = await extractWhenToUseFromFile(p);
+          const agentDef = {
+            prompt: fileRef,
+            mode: isOrchestratorAgent(agentId) ? 'primary' : 'all',
+            tools: { write: true, edit: true, bash: true },
+            ...(whenToUse ? { description: whenToUse } : {}),
+          };
+          if (!existing) {
+            configObj.agent[prefixedKey] = agentDef;
+            summary.agentsAdded++;
+          } else if (
+            existing &&
+            typeof existing === 'object' &&
+            typeof existing.prompt === 'string' &&
+            existing.prompt.includes(rel)
+          ) {
+            existing.prompt = agentDef.prompt;
+            existing.mode = agentDef.mode;
+            if (whenToUse) existing.description = whenToUse;
+            existing.tools = { write: true, edit: true, bash: true };
+            configObj.agent[prefixedKey] = existing;
+            summary.agentsUpdated++;
+          } else {
+            summary.agentsSkipped++;
+            console.log(
+              chalk.yellow(
+                `⚠︎ Skipped agent key '${prefixedKey}' (existing entry not BMAD-managed). Tip: enable agent prefixes to avoid collisions.`,
+              ),
+            );
+          }
+        }
+      }
+
+      // Generate commands - core first (respect optional command prefix)
+      for (const taskId of coreTaskIds) {
+        const p = await this.findTaskPath(taskId, installDir); // prefers core/common
+        if (!p) continue;
+        const rel = path.relative(installDir, p).replaceAll('\\', '/');
+        const fileRef = `{file:./${rel}}`;
+        const key = useCommandPrefix ? `bmad:tasks:${taskId}` : `${taskId}`;
+        const existing = configObj.command[key];
+        const purpose = await extractTaskPurposeFromFile(p);
+        const cmdDef = { template: fileRef, ...(purpose ? { description: purpose } : {}) };
+        if (!existing) {
+          configObj.command[key] = cmdDef;
+          summary.commandsAdded++;
+        } else if (
+          existing &&
+          typeof existing === 'object' &&
+          typeof existing.template === 'string' &&
+          existing.template.includes(rel)
+        ) {
+          existing.template = cmdDef.template;
+          if (purpose) existing.description = purpose;
+          configObj.command[key] = existing;
+          summary.commandsUpdated++;
+        } else {
+          summary.commandsSkipped++;
+          console.log(
+            chalk.yellow(
+              `⚠︎ Skipped command key '${key}' (existing entry not BMAD-managed). Tip: enable command prefixes to avoid collisions.`,
+            ),
+          );
+        }
+      }
+
+      // Generate commands - expansion packs (forced pack-specific prefix)
+      for (const pack of packsInfo) {
+        for (const taskId of pack.tasks) {
+          const p = path.join(pack.packPath, 'tasks', `${taskId}.md`);
+          if (!(await fileManager.pathExists(p))) continue;
+          const rel = path.relative(installDir, p).replaceAll('\\', '/');
+          const fileRef = `{file:./${rel}}`;
+          const prefixedKey = `bmad:${pack.packKey}:${taskId}`;
+          const existing = configObj.command[prefixedKey];
+          const purpose = await extractTaskPurposeFromFile(p);
+          const cmdDef = { template: fileRef, ...(purpose ? { description: purpose } : {}) };
+          if (!existing) {
+            configObj.command[prefixedKey] = cmdDef;
+            summary.commandsAdded++;
+          } else if (
+            existing &&
+            typeof existing === 'object' &&
+            typeof existing.template === 'string' &&
+            existing.template.includes(rel)
+          ) {
+            existing.template = cmdDef.template;
+            if (purpose) existing.description = purpose;
+            configObj.command[prefixedKey] = existing;
+            summary.commandsUpdated++;
+          } else {
+            summary.commandsSkipped++;
+            console.log(
+              chalk.yellow(
+                `⚠︎ Skipped command key '${prefixedKey}' (existing entry not BMAD-managed). Tip: enable command prefixes to avoid collisions.`,
+              ),
+            );
+          }
+        }
+      }
+
+      return { configObj, summary };
+    };
+
+    // Helper: generate AGENTS.md section for OpenCode (acts as system prompt memory)
+    const generateOpenCodeAgentsMd = async () => {
+      try {
+        const filePath = path.join(installDir, 'AGENTS.md');
+        const startMarker = '<!-- BEGIN: BMAD-AGENTS-OPENCODE -->';
+        const endMarker = '<!-- END: BMAD-AGENTS-OPENCODE -->';
+
+        const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
+        const tasks = await this.getAllTaskIds(installDir);
+
+        let section = '';
+        section += `${startMarker}\n`;
+        section += `# BMAD-METHOD Agents and Tasks (OpenCode)\n\n`;
+        section += `OpenCode reads AGENTS.md during initialization and uses it as part of its system prompt for the session. This section is auto-generated by BMAD-METHOD for OpenCode.\n\n`;
+        section += `## How To Use With OpenCode\n\n`;
+        section += `- Run \`opencode\` in this project. OpenCode will read \`AGENTS.md\` and your OpenCode config (opencode.json[c]).\n`;
+        section += `- Reference a role naturally, e.g., "As dev, implement ..." or use commands defined in your BMAD tasks.\n`;
+        section += `- Commit \`.bmad-core\` and \`AGENTS.md\` if you want teammates to share the same configuration.\n`;
+        section += `- Refresh this section after BMAD updates: \`npx bmad-method install -f -i opencode\`.\n\n`;
+
+        section += `### Helpful Commands\n\n`;
+        section += `- List agents: \`npx bmad-method list:agents\`\n`;
+        section += `- Reinstall BMAD core and regenerate this section: \`npx bmad-method install -f -i opencode\`\n`;
+        section += `- Validate configuration: \`npx bmad-method validate\`\n\n`;
+
+        // Brief context note for modes and tools
+        section += `Note\n`;
+        section += `- Orchestrators run as mode: primary; other agents as all.\n`;
+        section += `- All agents have tools enabled: write, edit, bash.\n\n`;
+
+        section += `## Agents\n\n`;
+        section += `### Directory\n\n`;
+        section += `| Title | ID | When To Use |\n|---|---|---|\n`;
+
+        // Fallback descriptions for core agents (used if whenToUse is missing)
+        const fallbackDescriptions = {
+          'ux-expert':
+            'Use for UI/UX design, wireframes, prototypes, front-end specs, and user experience optimization',
+          sm: 'Use for story creation, epic management, retrospectives in party-mode, and agile process guidance',
+          qa: 'Ensure quality strategy, test design, risk profiling, and QA gates across features',
+          po: 'Backlog management, story refinement, acceptance criteria, sprint planning, prioritization decisions',
+          pm: 'PRDs, product strategy, feature prioritization, roadmap planning, and stakeholder communication',
+          dev: 'Code implementation, debugging, refactoring, and development best practices',
+          'bmad-orchestrator':
+            'Workflow coordination, multi-agent tasks, role switching guidance, and when unsure which specialist to consult',
+          'bmad-master':
+            'Comprehensive cross-domain execution for tasks that do not require a specific persona',
+          architect:
+            'System design, architecture docs, technology selection, API design, and infrastructure planning',
+          analyst:
+            'Discovery/research, competitive analysis, project briefs, initial discovery, and brownfield documentation',
+        };
+
+        const sanitizeDesc = (s) => {
+          if (!s) return '';
+          let t = String(s).trim();
+          // Drop surrounding single/double/backtick quotes
+          t = t.replaceAll(/^['"`]+|['"`]+$/g, '');
+          // Collapse whitespace
+          t = t.replaceAll(/\s+/g, ' ').trim();
+          return t;
+        };
+        const agentSummaries = [];
+        for (const agentId of agents) {
+          const agentPath = await this.findAgentPath(agentId, installDir);
+          if (!agentPath) continue;
+          let whenToUse = '';
+          try {
+            const raw = await fileManager.readFile(agentPath);
+            const yamlMatch = raw.match(/```ya?ml\r?\n([\s\S]*?)```/);
+            const yamlBlock = yamlMatch ? yamlMatch[1].trim() : null;
+            if (yamlBlock) {
+              try {
+                const data = yaml.load(yamlBlock);
+                if (data && typeof data.whenToUse === 'string') {
+                  whenToUse = data.whenToUse;
+                }
+              } catch {
+                // ignore YAML parse errors
+              }
+              if (!whenToUse) {
+                // Fallback regex supporting single or double quotes
+                const m1 = yamlBlock.match(/whenToUse:\s*"([^\n"]+)"/i);
+                const m2 = yamlBlock.match(/whenToUse:\s*'([^\n']+)'/i);
+                const m3 = yamlBlock.match(/whenToUse:\s*([^\n\r]+)/i);
+                whenToUse = (m1?.[1] || m2?.[1] || m3?.[1] || '').trim();
+              }
+            }
+          } catch {
+            // ignore read/parse errors for agent metadata extraction
+          }
+          const title = await this.getAgentTitle(agentId, installDir);
+          const finalDesc = sanitizeDesc(whenToUse) || fallbackDescriptions[agentId] || '—';
+          agentSummaries.push({ agentId, title, whenToUse: finalDesc, path: agentPath });
+          // Strict 3-column row
+          section += `| ${title} | ${agentId} | ${finalDesc} |\n`;
+        }
+        section += `\n`;
+
+        for (const { agentId, title, whenToUse, path: agentPath } of agentSummaries) {
+          const relativePath = path.relative(installDir, agentPath).replaceAll('\\', '/');
+          section += `### ${title} (id: ${agentId})\n`;
+          section += `Source: [${relativePath}](${relativePath})\n\n`;
+          if (whenToUse) section += `- When to use: ${whenToUse}\n`;
+          section += `- How to activate: Mention "As ${agentId}, ..." to get role-aligned behavior\n`;
+          section += `- Full definition: open the source file above (content not embedded)\n\n`;
+        }
+
+        if (tasks && tasks.length > 0) {
+          section += `## Tasks\n\n`;
+          section += `These are reusable task briefs; use the paths to open them as needed.\n\n`;
+          for (const taskId of tasks) {
+            const taskPath = await this.findTaskPath(taskId, installDir);
+            if (!taskPath) continue;
+            const relativePath = path.relative(installDir, taskPath).replaceAll('\\', '/');
+            section += `### Task: ${taskId}\n`;
+            section += `Source: [${relativePath}](${relativePath})\n`;
+            section += `- How to use: Reference the task in your prompt or execute via your configured commands.\n`;
+            section += `- Full brief: open the source file above (content not embedded)\n\n`;
+          }
+        }
+
+        section += `${endMarker}\n`;
+
+        let finalContent = '';
+        if (await fileManager.pathExists(filePath)) {
+          const existing = await fileManager.readFile(filePath);
+          if (existing.includes(startMarker) && existing.includes(endMarker)) {
+            const pattern = String.raw`${startMarker}[\s\S]*?${endMarker}`;
+            const replaced = existing.replace(new RegExp(pattern, 'm'), section);
+            finalContent = replaced;
+          } else {
+            finalContent = existing.trimEnd() + `\n\n` + section;
+          }
+        } else {
+          finalContent += '# Project Agents\n\n';
+          finalContent += 'This file provides guidance and memory for your coding CLI.\n\n';
+          finalContent += section;
+        }
+
+        await fileManager.writeFile(filePath, finalContent);
+        console.log(chalk.green('✓ Created/updated AGENTS.md for OpenCode CLI integration'));
+        console.log(
+          chalk.dim(
+            'OpenCode reads AGENTS.md automatically on init. Run `opencode` in this project to use BMAD agents.',
+          ),
+        );
+      } catch {
+        console.log(chalk.yellow('⚠︎ Skipped creating AGENTS.md for OpenCode (write failed)'));
+      }
+    };
+
+    if (hasJson || hasJsonc) {
+      // Preserve existing top-level fields; only touch instructions
+      const targetPath = hasJsonc ? jsoncPath : jsonPath;
+      try {
+        const raw = await fs.readFile(targetPath, 'utf8');
+        // Use comment-json for both .json and .jsonc for resilience
+        const parsed = cjson.parse(raw, undefined, true);
+        ensureInstructionRef(parsed);
+        const { configObj, summary } = await mergeBmadAgentsAndCommands(parsed);
+        const output = cjson.stringify(parsed, null, 2);
+        await fs.writeFile(targetPath, output + (output.endsWith('\n') ? '' : '\n'));
+        console.log(
+          chalk.green(
+            '✓ Updated OpenCode config: ensured BMAD instructions and merged agents/commands',
+          ),
+        );
+        // Summary output
+        console.log(
+          chalk.dim(
+            `  File: ${path.basename(targetPath)} | Agents +${summary.agentsAdded} ~${summary.agentsUpdated} ⨯${summary.agentsSkipped} | Commands +${summary.commandsAdded} ~${summary.commandsUpdated} ⨯${summary.commandsSkipped}`,
+          ),
+        );
+        // Ensure AGENTS.md is created/updated for OpenCode as well
+        await generateOpenCodeAgentsMd();
+      } catch (error) {
+        console.log(chalk.red('✗ Failed to update existing OpenCode config'), error.message);
+        return false;
+      }
+      return true;
+    }
+
+    // Create minimal opencode.jsonc
+    const minimal = {
+      $schema: 'https://opencode.ai/config.json',
+      instructions: ['.bmad-core/core-config.yaml'],
+      agent: {},
+      command: {},
+    };
+    try {
+      const { configObj, summary } = await mergeBmadAgentsAndCommands(minimal);
+      const output = cjson.stringify(minimal, null, 2);
+      await fs.writeFile(jsoncPath, output + (output.endsWith('\n') ? '' : '\n'));
+      console.log(
+        chalk.green('✓ Created opencode.jsonc with BMAD instructions, agents, and commands'),
+      );
+      console.log(
+        chalk.dim(
+          `  File: opencode.jsonc | Agents +${summary.agentsAdded} | Commands +${summary.commandsAdded}`,
+        ),
+      );
+      // Also create/update AGENTS.md for OpenCode on new-config path
+      await generateOpenCodeAgentsMd();
+      return true;
+    } catch (error) {
+      console.log(chalk.red('✗ Failed to create opencode.jsonc'), error.message);
+      return false;
     }
   }
 
@@ -230,7 +871,6 @@ class IdeSetup extends BaseIdeSetup {
       if (options.webEnabled) {
         if (exists) {
           let gi = await fileManager.readFile(gitignorePath);
-          // Remove lines that ignore BMAD dot-folders
           const updated = gi
             .split(/\r?\n/)
             .filter((l) => !/^\s*\.bmad-core\/?\s*$/.test(l) && !/^\s*\.bmad-\*\/?\s*$/.test(l))
