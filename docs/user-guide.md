@@ -93,10 +93,11 @@ QA Assessments   → docs/qa/assessments/
 QA Gates         → docs/qa/gates/
 ```
 
-### The Core Development Cycle (IDE)
+### The Core Development Cycle (IDE) - Enhanced with Production QA
 
-Once planning is complete and documents are sharded, BMad follows a structured development workflow:
+Once planning is complete and documents are sharded, BMad follows a structured development workflow with integrated QA automation:
 
+#### Traditional BMad Core Development Cycle
 ```mermaid
 graph TD
     A["Development Phase Start"] --> B["SM: Reviews Previous Story Dev/QA Notes"]
@@ -159,6 +160,83 @@ graph TD
     style Y fill:#e3f2fd,color:#000
     style Z fill:#ffd54f,color:#000
 ```
+
+#### Enhanced Production QA Development Cycle (bmad-production-qa)
+```mermaid
+graph TD
+    A[Planning Complete] --> B[qa-test-lead: Create Test Strategy]
+    B --> C[qa-test-lead: Setup Testing Infrastructure]
+    C --> D[sm: Create Story with QA Requirements]
+    D --> E{QA Review Needed?}
+    E -->|Yes| F[qa-test-engineer: Validate Test Requirements]
+    E -->|No| G{PO Approval?}
+    F --> G
+    G -->|Yes| H[po: Approve Story]
+    G -->|No| I[Begin Parallel Development]
+    H --> I
+
+    I --> J[dev: Implement Story]
+    I --> K[qa-test-engineer: Create Test Suites]
+
+    J --> L{Dev Complete?}
+    K --> M{Tests Ready?}
+    L -->|Yes| N[qa-test-engineer: Execute Test Suites]
+    M -->|Yes| N
+
+    N --> O[Evaluate Quality Gates]
+    O --> P{Quality Gate Decision}
+
+    P -->|PASS| Q[Production Ready]
+    P -->|FAIL| R[dev: Fix Issues]
+    P -->|CONDITIONAL| S{Security Check Needed?}
+
+    R --> N
+
+    S -->|Yes| T[qa-security-engineer: Security Validation]
+    S -->|No| U{Performance Check?}
+    T --> U
+    U -->|Yes| V[qa-performance-engineer: Performance Validation]
+    U -->|No| Q
+    V --> Q
+
+    Q --> W{More Stories?}
+    W -->|Yes| D
+    W -->|No| X[qa-test-lead: Epic Quality Report]
+    X --> Y[Epic Complete - Production Ready]
+
+    style A fill:#e3f2fd
+    style B fill:#fff3e0
+    style C fill:#fff3e0
+    style D fill:#e8f5e9
+    style I fill:#f3e5f5
+    style J fill:#e3f2fd
+    style K fill:#ffd54f
+    style N fill:#ffd54f
+    style O fill:#f9ab00
+    style Q fill:#34a853,color:#fff
+    style R fill:#f44336,color:#fff
+    style Y fill:#34a853,color:#fff
+```
+
+### QA Agent Evolution: Traditional vs Production QA
+
+**Traditional BMAD QA Agent (Quinn):**
+- Test Architect & Quality Advisor
+- Strategic guidance and quality gates
+- Requirements tracing and risk assessment
+- Advisory role with high-level recommendations
+
+**Production QA Expansion Pack:**
+- **QA Test Engineer** - Hands-on test automation and implementation
+- **Performance Engineer** - Specialized load and stress testing
+- **Security Engineer** - Comprehensive security scanning and compliance
+- **QA Test Lead** - Strategic coordination across all QA activities
+
+**Working Together:**
+Both approaches can coexist. The traditional QA agent provides strategic oversight while the Production QA agents handle implementation. Choose the approach that fits your project:
+- **Traditional QA**: Use Quinn for advisory guidance and manual quality reviews
+- **Production QA**: Use specialized agents for automated testing and comprehensive quality gates
+- **Hybrid**: Use both - Quinn for strategy and specialized agents for implementation
 
 ## Prerequisites
 

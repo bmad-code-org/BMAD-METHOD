@@ -15,13 +15,15 @@ Foundations in Agentic Agile Driven Development, known as the Breakthrough Metho
 
 ## Overview
 
-**BMAD-METHOD™'s Two Key Innovations:**
+**BMAD-METHOD™'s Three Key Innovations:**
 
 **1. Agentic Planning:** Dedicated agents (Analyst, PM, Architect) collaborate with you to create detailed, consistent PRDs and Architecture documents. Through advanced prompt engineering and human-in-the-loop refinement, these planning agents produce comprehensive specifications that go far beyond generic AI task generation.
 
 **2. Context-Engineered Development:** The Scrum Master agent then transforms these detailed plans into hyper-detailed development stories that contain everything the Dev agent needs - full context, implementation details, and architectural guidance embedded directly in story files.
 
-This two-phase approach eliminates both **planning inconsistency** and **context loss** - the biggest problems in AI-assisted development. Your Dev agent opens a story file with complete understanding of what to build, how to build it, and why.
+**3. Production-Ready QA Integration:** Specialized QA agents create comprehensive test suites in parallel with development, implementing automated quality gates, performance validation, security scanning, and accessibility testing - ensuring enterprise-grade quality without slowing development velocity.
+
+This three-phase approach eliminates **planning inconsistency**, **context loss**, and **quality gaps** - the biggest problems in AI-assisted development. Your Dev agent opens a story file with complete understanding of what to build, how to build it, and why, while QA agents ensure production readiness.
 
 **📖 [See the complete workflow in the User Guide](docs/user-guide.md)** - Planning phase, development cycle, and all agent roles
 
@@ -43,7 +45,7 @@ This two-phase approach eliminates both **planning inconsistency** and **context
 - **[See available AI agents](/bmad-core/agents)** → Specialized roles for your team
 - **[Explore non-technical uses](#-beyond-software-development---expansion-packs)** → Creative writing, business, wellness, education
 - **[Create my own AI agents](docs/expansion-packs.md)** → Build agents for your domain
-- **[Browse ready-made expansion packs](expansion-packs/)** → Game dev, DevOps, infrastructure and get inspired with ideas and examples
+- **[Browse ready-made expansion packs](expansion-packs/)** → Game dev, DevOps, infrastructure, **Production QA**, and get inspired with ideas and examples
 - **[Understand the architecture](docs/core-architecture.md)** → Technical deep dive
 - **[Join the community](https://discord.gg/gk8jAdXWmj)** → Get help and share ideas
 
@@ -105,6 +107,25 @@ This single command handles:
 git clone https://github.com/bmadcode/bmad-method.git
 npm run install:bmad # build and install all to a destination folder
 ```
+
+## 🧪 Production QA & Testing (NEW!)
+
+**Enterprise-grade QA integration with comprehensive testing automation:**
+
+### Specialized QA Agents
+- **QA Test Engineer** - E2E, API, integration testing specialist
+- **Performance Engineer** - Load, stress, capacity testing expert
+- **Security Engineer** - Vulnerability scanning, OWASP compliance
+- **QA Test Lead** - Strategic coordination and quality oversight
+
+### Quality Features
+- ✅ **Automated Quality Gates** - 80%+ coverage, security clean, performance validated
+- ✅ **Tool-Agnostic Testing** - Supports Playwright, Cypress, k6, OWASP ZAP, and more
+- ✅ **Parallel Development** - QA creates tests while Dev implements features
+- ✅ **CI/CD Integration** - Automated testing pipelines with GitHub Actions
+- ✅ **Comprehensive Coverage** - E2E, API, Performance, Security, Visual, Accessibility
+
+**[📖 See Production QA Guide](expansion-packs/bmad-production-qa/README.md)**
 
 ## 🌟 Beyond Software Development - Expansion Packs
 
