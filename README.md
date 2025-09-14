@@ -4,8 +4,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
+[![Production QA](https://img.shields.io/badge/Enhanced-Production%20QA-success)](expansion-packs/bmad-production-qa/README.md)
 
 Foundations in Agentic Agile Driven Development, known as the Breakthrough Method of Agile AI-Driven Development, yet so much more. Transform any domain with specialized AI expertise: software development, entertainment, creative writing, business strategy to personal wellness just to name a few.
+
+> 🧪 **This fork includes the Production QA Expansion Pack** - Enterprise-grade testing automation with specialized QA agents, automated quality gates, and comprehensive test coverage. Works alongside traditional BMAD workflow. [Learn more →](#-production-qa--testing-enhancement)
 
 **[Subscribe to BMadCode on YouTube](https://www.youtube.com/@BMadCode?sub_confirmation=1)**
 
@@ -38,9 +41,14 @@ This three-phase approach eliminates **planning inconsistency**, **context loss*
 
 > ⚠️ **These diagrams explain 90% of BMad Method Agentic Agile flow confusion** - Understanding the PRD+Architecture creation and the SM/Dev/QA workflow and how agents pass notes through story files is essential - and also explains why this is NOT taskmaster or just a simple task runner!
 
+#### 🆕 Choose Your Development Approach:
+- **Traditional BMAD** - Rapid prototyping with advisory QA (original workflow)
+- **Production QA Enhanced** - Enterprise-grade with automated testing ([see enhanced workflow](docs/user-guide.md#enhanced-production-qa-development-cycle-bmad-production-qa))
+
 ### What would you like to do?
 
 - **[Install and Build software with Full Stack Agile AI Team](#quick-start)** → Quick Start Instruction
+- 🧪 **[Use Production QA Testing](docs/production-qa-guide.md)** → Enterprise-grade testing automation
 - **[Learn how to use BMad](docs/user-guide.md)** → Complete user guide and walkthrough
 - **[See available AI agents](/bmad-core/agents)** → Specialized roles for your team
 - **[Explore non-technical uses](#-beyond-software-development---expansion-packs)** → Creative writing, business, wellness, education
@@ -108,24 +116,22 @@ git clone https://github.com/bmadcode/bmad-method.git
 npm run install:bmad # build and install all to a destination folder
 ```
 
-## 🧪 Production QA & Testing (NEW!)
+## 🧪 Production QA Enhancement
 
-**Enterprise-grade QA integration with comprehensive testing automation:**
+This fork includes **Production QA** - enterprise-grade testing automation that works alongside traditional BMAD.
 
-### Specialized QA Agents
-- **QA Test Engineer** - E2E, API, integration testing specialist
-- **Performance Engineer** - Load, stress, capacity testing expert
-- **Security Engineer** - Vulnerability scanning, OWASP compliance
-- **QA Test Lead** - Strategic coordination and quality oversight
+### Quick Overview
+- ✅ **4 Specialized QA Agents** - Test Engineer, Performance, Security, Test Lead
+- ✅ **Automated Testing** - E2E, API, Performance, Security tests
+- ✅ **Quality Gates** - Automated pass/fail criteria
+- ✅ **Tool Agnostic** - Works with any testing framework
+- ✅ **Parallel Workflow** - QA creates tests while Dev implements
 
-### Quality Features
-- ✅ **Automated Quality Gates** - 80%+ coverage, security clean, performance validated
-- ✅ **Tool-Agnostic Testing** - Supports Playwright, Cypress, k6, OWASP ZAP, and more
-- ✅ **Parallel Development** - QA creates tests while Dev implements features
-- ✅ **CI/CD Integration** - Automated testing pipelines with GitHub Actions
-- ✅ **Comprehensive Coverage** - E2E, API, Performance, Security, Visual, Accessibility
+### Choose Your Approach
+- **Traditional BMAD** - Rapid prototyping with advisory QA
+- **Production QA** - Enterprise applications with automated testing
 
-**[📖 See Production QA Guide](expansion-packs/bmad-production-qa/README.md)**
+**[📖 Complete Production QA Guide](docs/production-qa-guide.md)** - Everything you need to know about Production QA
 
 ## 🌟 Beyond Software Development - Expansion Packs
 
