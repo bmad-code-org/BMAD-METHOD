@@ -75,6 +75,12 @@ jobs:
           # Backup our enhanced tasks
           cp bmad-core/tasks/create-next-story-with-qa.md /tmp/qa-backup/ || true
 
+          # Backup our documentation
+          cp docs/production-qa-guide.md /tmp/qa-backup/ || true
+
+          # Backup modified core files
+          cp bmad-core/agents/sm.md /tmp/qa-backup/ || true
+
           # Backup any modified core files
           cp -r .github /tmp/qa-backup/ || true
 
@@ -107,8 +113,24 @@ jobs:
           # Restore our enhanced task
           cp /tmp/qa-backup/create-next-story-with-qa.md bmad-core/tasks/ || true
 
+          # Restore our documentation
+          cp /tmp/qa-backup/production-qa-guide.md docs/ || true
+
+          # Restore modified SM agent
+          cp /tmp/qa-backup/sm.md bmad-core/agents/ || true
+
           # Restore workflows
           cp -r /tmp/qa-backup/.github . || true
+
+          # Ensure our QA enhancements are in README
+          if ! grep -q "Production QA Enhancement" README.md; then
+            echo "Re-adding Production QA section to README..."
+            # Add our Production QA badge if missing
+            sed -i '7a[![Production QA](https://img.shields.io/badge/Enhanced-Production%20QA-success)](expansion-packs/bmad-production-qa/README.md)' README.md || true
+
+            # Add our enhancement notice if missing
+            sed -i '/Transform any domain/a\\n> 🧪 **This fork includes the Production QA Expansion Pack** - Enterprise-grade testing automation with specialized QA agents, automated quality gates, and comprehensive test coverage. Works alongside traditional BMAD workflow. [Learn more →](#-production-qa-enhancement)' README.md || true
+          fi
 
           echo "QA integration restored"
 
@@ -124,6 +146,10 @@ jobs:
           if [ -f "tools/cli.js" ]; then
             node tools/cli.js validate || echo "BMAD validation not available"
           fi
+
+          # Validate QA integration
+          echo "Validating QA integration..."
+          .github/scripts/validate-qa-integration.sh
 
       - name: Commit integration
         if: steps.check_changes.outputs.has_changes == 'true'
@@ -165,10 +191,12 @@ jobs:
             ```
 
             ### QA Integration Status
-            - ✅ `bmad-production-qa` expansion pack preserved
-            - ✅ Enhanced story creation task maintained
-            - ✅ Production QA workflows intact
-            - ✅ GitHub workflows preserved
+            - ✅ `expansion-packs/bmad-production-qa/` - Expansion pack preserved
+            - ✅ `bmad-core/tasks/create-next-story-with-qa.md` - Enhanced task maintained
+            - ✅ `bmad-core/agents/sm.md` - Modified SM agent preserved
+            - ✅ `docs/production-qa-guide.md` - Documentation maintained
+            - ✅ `README.md` - QA enhancements preserved
+            - ✅ `.github/workflows/` - GitHub workflows intact
 
             ### Review Checklist
             - [ ] Verify no conflicts with core BMAD functionality

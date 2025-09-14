@@ -1,0 +1,48 @@
+# <!-- Powered by BMAD™ Core -->
+name: bmad-production-qa
+version: 1.0.0
+short-title: Production QA & Testing
+description: >-
+  Comprehensive production-ready QA and testing expansion pack for BMAD Method.
+  Provides specialized testing agents, automation workflows, and quality gates
+  for enterprise-grade software development. Covers E2E testing, API testing,
+  performance testing, security testing, and CI/CD integration with tool-agnostic
+  approach supporting popular frameworks.
+author: Production QA Team
+slashPrefix: qa-prod
+markdownExploder: true
+qa:
+  qaLocation: docs/qa
+  testLocation: tests
+  testReportsLocation: test-reports
+  testPlansLocation: docs/test-plans
+prd:
+  prdFile: docs/prd.md
+  prdVersion: v4
+  prdSharded: true
+  prdShardedLocation: docs/prd
+  epicFilePattern: epic-{n}*.md
+architecture:
+  architectureFile: docs/architecture.md
+  architectureVersion: v4
+  architectureSharded: true
+  architectureShardedLocation: docs/architecture
+customTechnicalDocuments:
+  - docs/test-strategy.md
+  - docs/testing-standards.md
+devLoadAlwaysFiles:
+  - docs/architecture/coding-standards.md
+  - docs/architecture/tech-stack.md
+  - docs/architecture/source-tree.md
+  - docs/testing-standards.md
+qaLoadAlwaysFiles:
+  - docs/test-strategy.md
+  - docs/testing-standards.md
+  - docs/architecture/testing-strategy-and-standards.md
+devDebugLog: .ai/debug-log.md
+devStoryLocation: docs/stories
+testCoverageThreshold: 80
+performanceBaselineRequired: true
+securityScanningEnabled: true
+visualRegressionEnabled: true
+accessibilityTestingEnabled: true

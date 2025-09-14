@@ -1,0 +1,227 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: production-qa-story-template
+  name: Production QA Enhanced Story Document
+  version: 2.1
+  output:
+    format: markdown
+    filename: docs/stories/{{epic_num}}.{{story_num}}.{{story_title_short}}.md
+    title: "Story {{epic_num}}.{{story_num}}: {{story_title_short}}"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+agent_config:
+  editable_sections:
+    - Status
+    - Story
+    - Acceptance Criteria
+    - Tasks / Subtasks
+    - Dev Notes
+    - Testing Requirements
+    - Test Coverage
+    - Test Results
+    - Change Log
+
+sections:
+  - id: status
+    title: Status
+    type: choice
+    choices: [Draft, TestPlanned, Approved, InProgress, Review, TestReview, Done]
+    instruction: Select the current status of the story
+    owner: scrum-master
+    editors: [scrum-master, dev-agent, qa-test-engineer]
+
+  - id: story
+    title: Story
+    type: template-text
+    template: |
+      **As a** {{role}},
+      **I want** {{action}},
+      **so that** {{benefit}}
+    instruction: Define the user story using the standard format with role, action, and benefit
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: acceptance-criteria
+    title: Acceptance Criteria
+    type: numbered-list
+    instruction: Copy the acceptance criteria numbered list from the epic file
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: tasks-subtasks
+    title: Tasks / Subtasks
+    type: bullet-list
+    instruction: |
+      Break down the story into specific tasks and subtasks needed for implementation.
+      Reference applicable acceptance criteria numbers where relevant.
+    template: |
+      - [ ] Task 1 (AC: # if applicable)
+        - [ ] Subtask1.1...
+      - [ ] Task 2 (AC: # if applicable)
+        - [ ] Subtask 2.1...
+      - [ ] Task 3 (AC: # if applicable)
+        - [ ] Subtask 3.1...
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master, dev-agent]
+
+  - id: testing-requirements
+    title: Testing Requirements
+    type: structured-list
+    instruction: |
+      Define comprehensive testing requirements in natural language:
+      - E2E scenarios (user journey testing)
+      - API scenarios (backend functionality)
+      - Performance criteria (response times, load capacity)
+      - Security considerations (authentication, authorization, data protection)
+      - Accessibility requirements (WCAG compliance, screen readers)
+      - Visual regression (UI consistency across browsers)
+      - Edge cases and error handling
+    template: |
+      ## E2E Testing Scenarios
+      - [ ] Primary user journey: {describe main workflow}
+      - [ ] Alternative paths: {describe alternative workflows}
+      - [ ] Error scenarios: {describe error conditions}
+
+      ## API Testing Requirements
+      - [ ] Endpoint validation: {list endpoints to test}
+      - [ ] Data validation: {describe data integrity checks}
+      - [ ] Authentication testing: {describe auth scenarios}
+
+      ## Performance Requirements
+      - [ ] Response time: {define acceptable response times}
+      - [ ] Load capacity: {define concurrent user limits}
+      - [ ] Resource usage: {define memory/CPU constraints}
+
+      ## Security Testing
+      - [ ] Input validation: {describe validation requirements}
+      - [ ] Authorization: {describe permission checks}
+      - [ ] Data protection: {describe sensitive data handling}
+
+      ## Accessibility Testing
+      - [ ] Screen reader compatibility
+      - [ ] Keyboard navigation
+      - [ ] Color contrast compliance
+
+      ## Visual Regression
+      - [ ] Cross-browser compatibility
+      - [ ] Responsive design validation
+      - [ ] UI component consistency
+    elicit: true
+    owner: qa-test-engineer
+    editors: [qa-test-engineer, scrum-master]
+
+  - id: test-coverage
+    title: Test Coverage
+    type: structured-table
+    columns: [Test Type, Framework, Status, Coverage, Location]
+    instruction: Track actual test implementation and coverage
+    owner: qa-test-engineer
+    editors: [qa-test-engineer, dev-agent]
+
+  - id: dev-notes
+    title: Dev Notes
+    instruction: |
+      Populate relevant information, only what was pulled from actual artifacts from docs folder, relevant to this story:
+      - Do not invent information
+      - If known add Relevant Source Tree info that relates to this story
+      - If there were important notes from previous story that are relevant to this one, include them here
+      - Put enough information in this section so that the dev agent should NEVER need to read the architecture documents, these notes along with the tasks and subtasks must give the Dev Agent the complete context it needs to comprehend with the least amount of overhead the information to complete the story, meeting all AC and completing all tasks+subtasks
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+    sections:
+      - id: testing-standards
+        title: Testing Standards
+        instruction: |
+          List Relevant Testing Standards from Architecture the Developer needs to conform to:
+          - Test file location patterns
+          - Test naming conventions
+          - Testing frameworks and patterns to use
+          - Code coverage requirements
+          - Any specific testing requirements for this story
+        elicit: true
+        owner: scrum-master
+        editors: [scrum-master]
+
+  - id: test-results
+    title: Test Execution Results
+    type: structured-table
+    columns: [Test Suite, Status, Coverage %, Passed, Failed, Report Link, Last Run]
+    instruction: Results from automated test execution
+    owner: qa-test-engineer
+    editors: [qa-test-engineer, dev-agent]
+
+  - id: change-log
+    title: Change Log
+    type: table
+    columns: [Date, Version, Description, Author]
+    instruction: Track changes made to this story document
+    owner: scrum-master
+    editors: [scrum-master, dev-agent, qa-test-engineer]
+
+  - id: dev-agent-record
+    title: Dev Agent Record
+    instruction: This section is populated by the development agent during implementation
+    owner: dev-agent
+    editors: [dev-agent]
+    sections:
+      - id: agent-model
+        title: Agent Model Used
+        template: "{{agent_model_name_version}}"
+        instruction: Record the specific AI agent model and version used for development
+        owner: dev-agent
+        editors: [dev-agent]
+
+      - id: debug-log-references
+        title: Debug Log References
+        instruction: Reference any debug logs or traces generated during development
+        owner: dev-agent
+        editors: [dev-agent]
+
+      - id: completion-notes
+        title: Completion Notes List
+        instruction: Notes about the completion of tasks and any issues encountered
+        owner: dev-agent
+        editors: [dev-agent]
+
+      - id: file-list
+        title: File List
+        instruction: List all files created, modified, or affected during story implementation
+        owner: dev-agent
+        editors: [dev-agent]
+
+      - id: test-implementation-notes
+        title: Test Implementation Notes
+        instruction: Notes about test implementation, any deviations from test requirements, and testing decisions made during development
+        owner: dev-agent
+        editors: [dev-agent]
+
+  - id: qa-results
+    title: QA Results
+    instruction: Results from QA Agent QA review of the completed story implementation
+    owner: qa-agent
+    editors: [qa-agent]
+    sections:
+      - id: test-execution-summary
+        title: Test Execution Summary
+        instruction: Summary of all test executions and results
+        owner: qa-test-engineer
+        editors: [qa-test-engineer]
+
+      - id: quality-gate-status
+        title: Quality Gate Status
+        instruction: Pass/Fail status for each quality gate with rationale
+        owner: qa-test-engineer
+        editors: [qa-test-engineer]
+
+      - id: production-readiness
+        title: Production Readiness Assessment
+        instruction: Assessment of story's readiness for production deployment
+        owner: qa-test-engineer
+        editors: [qa-test-engineer]

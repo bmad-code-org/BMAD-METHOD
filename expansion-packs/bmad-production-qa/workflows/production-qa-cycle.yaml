@@ -1,0 +1,311 @@
+# <!-- Powered by BMAD™ Core -->
+workflow:
+  id: production-qa-cycle
+  name: Production QA Development Cycle
+  description: >-
+    Comprehensive development workflow that integrates production-ready QA and testing
+    at every stage. Ensures high-quality delivery through automated testing, quality gates,
+    and comprehensive validation before production deployment.
+  type: enhanced-development
+  project_types:
+    - web-app
+    - api
+    - saas
+    - enterprise-app
+    - mobile-app
+
+  sequence:
+    - step: planning_complete
+      action: validate_planning_artifacts
+      condition: planning_phase_complete
+      notes: "Assumes PRD, Architecture, and optional UX specs are complete and sharded"
+
+    - agent: qa-test-lead
+      action: create_test_strategy
+      creates: test-strategy.md
+      requires: [prd.md, architecture.md]
+      notes: |
+        Create comprehensive test strategy document covering:
+        - Testing approach for each epic
+        - Quality gates and criteria
+        - Testing tools and frameworks
+        - Resource allocation and timelines
+        SAVE OUTPUT: Copy test-strategy.md to docs/
+
+    - agent: qa-test-lead
+      action: setup_testing_infrastructure
+      creates: testing_framework_setup
+      requires: test-strategy.md
+      notes: |
+        Initialize testing infrastructure:
+        - Set up testing frameworks (E2E, API, Performance)
+        - Configure CI/CD testing pipelines
+        - Create test environments
+        - Set up reporting and dashboards
+
+    - step: development_cycle_start
+      action: begin_story_development
+      notes: "Start the enhanced story development cycle with integrated QA"
+
+    - agent: sm
+      action: create_story_with_qa
+      creates: story.md
+      requires: [sharded_docs, test-strategy.md]
+      uses_task: create-next-story-with-qa.md
+      notes: |
+        Enhanced story creation with QA integration:
+        - Creates story with comprehensive testing requirements
+        - Includes natural language test scenarios
+        - Links to test strategy and quality gates
+        Story includes both dev and testing requirements
+
+    - agent: qa-test-engineer
+      action: validate_test_requirements
+      updates: story.md
+      requires: story.md
+      optional: true
+      condition: complex_story_or_high_risk
+      notes: |
+        Optional QA review of test requirements:
+        - Validate test scenarios completeness
+        - Ensure coverage of all acceptance criteria
+        - Add additional test considerations if needed
+        - Update story status: Draft → TestPlanned
+
+    - agent: po
+      action: approve_story
+      updates: story.md
+      requires: story.md
+      optional: true
+      notes: |
+        Optional PO review and approval:
+        - Validate story completeness
+        - Approve test requirements
+        - Update story status: TestPlanned → Approved
+
+    - step: parallel_development_testing
+      action: begin_parallel_tracks
+      notes: "Development and test creation happen in parallel"
+
+    - agent: dev
+      action: implement_story
+      creates: implementation_files
+      requires: story.md
+      notes: |
+        Dev implements story with test awareness:
+        - Implements feature according to AC
+        - Creates unit tests as part of implementation
+        - Ensures code follows testing standards
+        - Updates story File List with all changes
+
+    - agent: qa-test-engineer
+      action: create_test_suites
+      creates: [e2e_tests, api_tests, performance_tests]
+      requires: story.md
+      runs_parallel_with: dev_implementation
+      notes: |
+        QA creates comprehensive test suites:
+        - E2E tests for user journeys
+        - API tests for backend functionality
+        - Performance tests for load scenarios
+        - Security tests for vulnerability checks
+        Updates story Test Coverage section
+
+    - step: development_complete
+      action: validate_implementation
+      condition: dev_marks_story_review
+      notes: "Dev has completed implementation and marked story for review"
+
+    - agent: qa-test-engineer
+      action: execute_test_suites
+      updates: [test_results, story.md]
+      requires: [implementation_files, test_suites]
+      notes: |
+        Execute all automated tests:
+        - Run E2E test suite
+        - Execute API test suite
+        - Run performance tests
+        - Execute security scans
+        Updates story Test Results section with outcomes
+
+    - step: quality_gate_evaluation
+      action: evaluate_quality_gates
+      requires: test_results
+      notes: "Automated quality gate evaluation based on test results"
+
+    - agent: qa-test-engineer
+      action: quality_gate_decision
+      creates: quality_gate_report
+      requires: test_results
+      notes: |
+        Make quality gate decision:
+        - PASS: All tests pass, coverage meets requirements
+        - FAIL: Critical tests failing or coverage insufficient
+        - CONDITIONAL: Minor issues, deployment with monitoring
+        Updates story with quality gate status
+
+    - step: quality_gate_pass
+      action: approve_for_production
+      condition: quality_gate_pass
+      notes: "Quality gates passed, story approved for production"
+
+    - step: quality_gate_fail
+      action: return_to_development
+      condition: quality_gate_fail
+      notes: "Quality gates failed, return to development for fixes"
+
+    - agent: dev
+      action: fix_quality_issues
+      updates: implementation_files
+      requires: quality_gate_report
+      condition: quality_gate_fail
+      notes: |
+        Fix issues identified in quality gate:
+        - Address failing tests
+        - Improve test coverage if needed
+        - Fix performance or security issues
+        Return to test execution step
+
+    - agent: qa-security-engineer
+      action: security_validation
+      creates: security_scan_results
+      requires: implementation_files
+      optional: true
+      condition: security_sensitive_story
+      notes: |
+        Optional security validation for sensitive stories:
+        - Vulnerability scanning
+        - Penetration testing
+        - Security compliance checks
+
+    - agent: qa-performance-engineer
+      action: performance_validation
+      creates: performance_test_results
+      requires: implementation_files
+      optional: true
+      condition: performance_critical_story
+      notes: |
+        Optional performance validation for critical stories:
+        - Load testing
+        - Stress testing
+        - Performance profiling
+
+    - step: production_deployment_ready
+      action: mark_story_complete
+      condition: all_quality_gates_pass
+      notes: |
+        Story is ready for production deployment:
+        - All tests passing
+        - Quality gates satisfied
+        - Security and performance validated
+        Update story status: Review → Done
+
+    - step: repeat_for_next_story
+      action: continue_development_cycle
+      notes: |
+        Continue with next story in epic:
+        Repeat cycle (SM → QA → Dev → QA) for all stories
+        Maintain quality standards throughout
+
+    - agent: qa-test-lead
+      action: epic_quality_report
+      creates: epic-quality-report.md
+      condition: epic_complete
+      optional: true
+      notes: |
+        Generate comprehensive quality report for completed epic:
+        - Test execution summary
+        - Quality metrics and trends
+        - Recommendations for improvement
+
+    - step: workflow_complete
+      action: epic_ready_for_production
+      notes: |
+        Epic development complete with comprehensive QA:
+        - All stories tested and validated
+        - Quality gates passed
+        - Production deployment ready
+
+  flow_diagram: |
+    ```mermaid
+    graph TD
+        A[Planning Complete] --> B[qa-test-lead: Create Test Strategy]
+        B --> C[qa-test-lead: Setup Testing Infrastructure]
+        C --> D[sm: Create Story with QA Requirements]
+        D --> E{QA Review Needed?}
+        E -->|Yes| F[qa-test-engineer: Validate Test Requirements]
+        E -->|No| G{PO Approval?}
+        F --> G
+        G -->|Yes| H[po: Approve Story]
+        G -->|No| I[Begin Parallel Development]
+        H --> I
+
+        I --> J[dev: Implement Story]
+        I --> K[qa-test-engineer: Create Test Suites]
+
+        J --> L{Dev Complete?}
+        K --> M{Tests Ready?}
+        L -->|Yes| N[qa-test-engineer: Execute Test Suites]
+        M -->|Yes| N
+
+        N --> O[Evaluate Quality Gates]
+        O --> P{Quality Gate Decision}
+
+        P -->|PASS| Q[Production Ready]
+        P -->|FAIL| R[dev: Fix Issues]
+        P -->|CONDITIONAL| S{Security Check Needed?}
+
+        R --> N
+
+        S -->|Yes| T[qa-security-engineer: Security Validation]
+        S -->|No| U{Performance Check?}
+        T --> U
+        U -->|Yes| V[qa-performance-engineer: Performance Validation]
+        U -->|No| Q
+        V --> Q
+
+        Q --> W{More Stories?}
+        W -->|Yes| D
+        W -->|No| X[qa-test-lead: Epic Quality Report]
+        X --> Y[Epic Complete - Production Ready]
+
+        style A fill:#e3f2fd
+        style B fill:#fff3e0
+        style C fill:#fff3e0
+        style D fill:#e8f5e9
+        style I fill:#f3e5f5
+        style J fill:#e3f2fd
+        style K fill:#ffd54f
+        style N fill:#ffd54f
+        style O fill:#f9ab00
+        style Q fill:#34a853,color:#fff
+        style R fill:#f44336,color:#fff
+        style Y fill:#34a853,color:#fff
+    ```
+
+  decision_guidance:
+    when_to_use:
+      - Production applications requiring high quality
+      - Applications with strict performance requirements
+      - Security-sensitive applications
+      - Applications requiring comprehensive test coverage
+      - Teams wanting to integrate QA throughout development
+      - Projects with dedicated QA resources
+
+    quality_gates:
+      - Unit test coverage ≥ 80%
+      - All E2E tests pass
+      - API tests pass with proper error handling
+      - Performance meets defined SLAs
+      - Security scans show no critical vulnerabilities
+      - Accessibility standards met (if applicable)
+
+  handoff_prompts:
+    planning_to_qa_lead: "Planning artifacts ready. Create comprehensive test strategy covering all epics and testing requirements."
+    test_strategy_to_sm: "Test strategy complete. Begin creating stories with integrated QA requirements."
+    story_to_qa_engineer: "Story created with test requirements. Review and validate test scenarios for completeness."
+    story_to_dev: "Story approved with comprehensive test requirements. Implement feature with test awareness."
+    dev_to_qa_execution: "Implementation complete. Execute comprehensive test suite and evaluate quality gates."
+    quality_gate_pass: "All quality gates passed. Story ready for production deployment."
+    quality_gate_fail: "Quality gates failed. Review test results and fix identified issues."
+    epic_complete: "All stories complete with full QA validation. Generate epic quality report."
