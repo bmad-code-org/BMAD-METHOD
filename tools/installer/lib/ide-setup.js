@@ -1924,97 +1924,127 @@ class IdeSetup extends BaseIdeSetup {
     return true;
   }
 
-  async setupAICockpit(installDir, selectedAgent) {
-    const filePath = path.join(installDir, '.aicockpitmodes');
+async setupAICockpit(installDir, selectedAgent) {
+    const ideConfig = await configLoader.getIdeConfiguration('aicockpit');
+    if (!ideConfig) {
+      console.log(chalk.red('✗ AI Cockpit configuration not found in install.config.yaml'));
+      return false;
+    }
+
     const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
+    const tasks = await this.getAllTaskIds(installDir);
 
-    let existingModes = [],
-      existingContent = '';
-    if (await fileManager.pathExists(filePath)) {
-      existingContent = await fileManager.readFile(filePath);
-      for (const match of existingContent.matchAll(/- slug: ([\w-]+)/g)) {
-        existingModes.push(match[1]);
+    // 1. Setup .aicockpitmodes file
+    const modesFilePath = path.join(installDir, ideConfig['modes-file']);
+    try {
+      let existingModes = [],
+        existingContent = '';
+      if (await fileManager.pathExists(modesFilePath)) {
+        existingContent = await fileManager.readFile(modesFilePath);
+        for (const match of existingContent.matchAll(/- slug: ([\w-]+)/g)) {
+          existingModes.push(match[1]);
+        }
       }
-      console.log(
-        chalk.yellow(`Found existing .aicockpitmodes file with ${existingModes.length} modes`),
-      );
+
+      let newModesContent = '';
+
+      for (const agentId of agents) {
+        const slug = agentId.startsWith('bmad-') ? agentId : `bmad-${agentId}`;
+        if (existingModes.includes(slug)) {
+            console.log(chalk.dim(`Skipping ${agentId} - already exists in .aicockpitmodes`));
+            continue;
+        }
+
+        const agentPath = await this.findAgentPath(agentId, installDir);
+        if (!agentPath) {
+            console.log(chalk.red(`✗ Could not find agent file for ${agentId}`));
+            continue;
+        }
+
+        const agentContent = await fileManager.readFile(agentPath);
+        const yamlMatch = agentContent.match(/```ya?ml\r?\n([\s\S]*?)```/);
+        if (!yamlMatch) {
+            console.log(chalk.red(`✗ Could not extract YAML block for ${agentId}`));
+            continue;
+        }
+
+        const yamlContent = yamlMatch[1];
+        const parsedYaml = yaml.load(yamlContent);
+
+        const title = parsedYaml?.agent?.title || (await this.getAgentTitle(agentId, installDir));
+        const icon = parsedYaml?.agent?.icon || '🤖';
+        const roleDefinition = parsedYaml?.persona?.role || `You are a ${title}.`;
+
+        // The custom instructions are the entire agent file content.
+        const customInstructions = agentContent; 
+
+        // Indent a string for YAML block scalar
+        const indent = (str) => str.split('\n').map(s => `      ${s}`).join('\n');
+
+        newModesContent += ` - slug: ${slug}\n`;
+        newModesContent += `   name: '${icon} ${title}'\n`;
+        newModesContent += `   roleDefinition: |\n`;
+        newModesContent += `${indent(roleDefinition)}\n`;
+        newModesContent += `   groups:\n`;
+        newModesContent += `    - read\n`;
+        newModesContent += `    - browser\n`;
+        newModesContent += `    - edit\n`;
+        newModesContent += `    - mcp\n`;
+        newModesContent += `   customInstructions: |\n`;
+        newModesContent += `${indent(customInstructions)}\n`;
+      }
+
+      const finalModesContent = existingContent
+        ? existingContent.trim() + '\n' + newModesContent
+        : 'customModes:\n' + newModesContent;
+
+      await fileManager.writeFile(modesFilePath, finalModesContent);
+      console.log(chalk.green(`✓ Created/updated ${ideConfig['modes-file']} file in project root`));
+    } catch (error) {
+      console.log(chalk.red(`✗ Failed to create ${ideConfig['modes-file']}:`, error.message));
+      return false;
     }
 
-    const config = await this.loadIdeAgentConfig();
-    const permissions = config['roo-permissions'] || {}; // reuse same roo permissions block (AICockpit understands same mode schema as Kilo Code)
-
-    let newContent = '';
-
-    for (const agentId of agents) {
-      const slug = agentId.startsWith('bmad-') ? agentId : `bmad-${agentId}`;
-      if (existingModes.includes(slug)) {
-        console.log(chalk.dim(`Skipping ${agentId} - already exists in .aicockpitmodes`));
-        continue;
+    // 2. Setup .aicockpit/rules/ directory
+    try {
+      const rulesDir = path.join(installDir, ideConfig['rules-dir']);
+      await fileManager.ensureDirectory(rulesDir);
+      for (const agentId of agents) {
+        const agentPath = await this.findAgentPath(agentId, installDir);
+        if (agentPath) {
+          const agentContent = await fileManager.readFile(agentPath);
+          const rulePath = path.join(rulesDir, `${agentId}.md`);
+          await fileManager.writeFile(rulePath, agentContent);
+          console.log(chalk.green(`✓ Created agent rule: ${agentId}.md`));
+        }
       }
-
-      const agentPath = await this.findAgentPath(agentId, installDir);
-      if (!agentPath) {
-        console.log(chalk.red(`✗ Could not find agent file for ${agentId}`));
-        continue;
-      }
-
-      const agentContent = await fileManager.readFile(agentPath);
-      const yamlMatch = agentContent.match(/```ya?ml\r?\n([\s\S]*?)```/);
-      if (!yamlMatch) {
-        console.log(chalk.red(`✗ Could not extract YAML block for ${agentId}`));
-        continue;
-      }
-
-      const yaml = yamlMatch[1];
-
-      // Robust fallback for title and icon
-      const title =
-        yaml.match(/title:\s*(.+)/)?.[1]?.trim() || (await this.getAgentTitle(agentId, installDir));
-      const icon = yaml.match(/icon:\s*(.+)/)?.[1]?.trim() || '🤖';
-      const whenToUse = yaml.match(/whenToUse:\s*"(.+)"/)?.[1]?.trim() || `Use for ${title} tasks`;
-      const roleDefinition =
-        yaml.match(/roleDefinition:\s*"(.+)"/)?.[1]?.trim() ||
-        `You are a ${title} specializing in ${title.toLowerCase()} tasks and responsibilities.`;
-
-      const relativePath = path.relative(installDir, agentPath).replaceAll('\\', '/');
-      const customInstructions = `CRITICAL Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode`;
-
-      // Add permissions from config if they exist
-      const agentPermission = permissions[agentId];
-
-      // Begin .aicockpitmodes block
-      newContent += ` - slug: ${slug}\n`;
-      newContent += `   name: '${icon} ${title}'\n`;
-      if (agentPermission) {
-        newContent += `   description: '${agentPermission.description}'\n`;
-      }
-
-      newContent += `   roleDefinition: ${roleDefinition}\n`;
-      newContent += `   whenToUse: ${whenToUse}\n`;
-      newContent += `   customInstructions: ${customInstructions}\n`;
-      newContent += `   groups:\n`;
-      newContent += `    - read\n`;
-
-      if (agentPermission) {
-        newContent += `    - - edit\n`;
-        newContent += `      - fileRegex: ${agentPermission.fileRegex}\n`;
-        newContent += `        description: ${agentPermission.description}\n`;
-      } else {
-        // Fallback to generic edit
-        newContent += `    - edit\n`;
-      }
-
-      console.log(chalk.green(`✓ Added AICockpit mode: ${slug} (${icon} ${title})`));
+      console.log(chalk.green(`✓ Created agent rules in ${ideConfig['rules-dir']}`));
+    } catch (error) {
+      console.log(chalk.red(`✗ Failed to create agent rules:`, error.message));
+      return false;
     }
 
-    const finalContent = existingContent
-      ? existingContent.trim() + '\n' + newContent
-      : 'customModes:\n' + newContent;
+    // 3. Setup .aicockpit/workflows/ directory
+    try {
+      const workflowsDir = path.join(installDir, ideConfig['workflows-dir']);
+      await fileManager.ensureDirectory(workflowsDir);
+      for (const taskId of tasks) {
+        const taskPath = await this.findTaskPath(taskId, installDir);
+        if (taskPath) {
+          const taskContent = await fileManager.readFile(taskPath);
+          const workflowPath = path.join(workflowsDir, `${taskId}.md`);
+          await fileManager.writeFile(workflowPath, taskContent);
+          console.log(chalk.green(`✓ Created task workflow: ${taskId}.md`));
+        }
+      }
+      console.log(chalk.green(`✓ Created task workflows in ${ideConfig['workflows-dir']}`));
+    } catch (error) {
+      console.log(chalk.red(`✗ Failed to create task workflows:`, error.message));
+      return false;
+    }
 
-    await fileManager.writeFile(filePath, finalContent);
-    console.log(chalk.green('✓ Created .aicockpitmodes file in project root'));
-    console.log(chalk.green(`✓ AICockpit setup complete!`));
-    console.log(chalk.dim('Custom modes will be available when you open this project in AICockpit'));
+    console.log(chalk.green(`✓ AI Cockpit setup complete!`));
+    console.log(chalk.dim('Custom modes, agent rules, and task workflows are now available in AI Cockpit'));
 
     return true;
   }
