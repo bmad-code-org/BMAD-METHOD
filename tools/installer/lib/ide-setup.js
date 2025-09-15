@@ -2658,12 +2658,7 @@ Key Instructions:
       description: `${title}: ${whenToUse}`,
       prompt: systemPrompt,
       tools: this.mapAgentTools(agentId, agentMetadata),
-      resources: [
-        'file://.bmad-core/**/*',
-        'file://README.md',
-        'file://package.json',
-        'file://.gitignore',
-      ],
+      resources: [],
     };
 
     // Convert to JSON string
