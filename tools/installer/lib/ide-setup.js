@@ -72,6 +72,9 @@ class IdeSetup extends BaseIdeSetup {
       case 'kilo': {
         return this.setupKilocode(installDir, selectedAgent);
       }
+      case 'aicockpit': {
+        return this.setupAICockpit(installDir, selectedAgent);
+      }
       case 'gemini': {
         return this.setupGeminiCli(installDir, selectedAgent);
       }
@@ -1917,6 +1920,101 @@ class IdeSetup extends BaseIdeSetup {
     console.log(chalk.green('✓ Created .kilocodemodes file in project root'));
     console.log(chalk.green(`✓ KiloCode setup complete!`));
     console.log(chalk.dim('Custom modes will be available when you open this project in KiloCode'));
+
+    return true;
+  }
+
+  async setupAICockpit(installDir, selectedAgent) {
+    const filePath = path.join(installDir, '.aicockpitmodes');
+    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
+
+    let existingModes = [],
+      existingContent = '';
+    if (await fileManager.pathExists(filePath)) {
+      existingContent = await fileManager.readFile(filePath);
+      for (const match of existingContent.matchAll(/- slug: ([\w-]+)/g)) {
+        existingModes.push(match[1]);
+      }
+      console.log(
+        chalk.yellow(`Found existing .aicockpitmodes file with ${existingModes.length} modes`),
+      );
+    }
+
+    const config = await this.loadIdeAgentConfig();
+    const permissions = config['roo-permissions'] || {}; // reuse same roo permissions block (AICockpit understands same mode schema as Kilo Code)
+
+    let newContent = '';
+
+    for (const agentId of agents) {
+      const slug = agentId.startsWith('bmad-') ? agentId : `bmad-${agentId}`;
+      if (existingModes.includes(slug)) {
+        console.log(chalk.dim(`Skipping ${agentId} - already exists in .aicockpitmodes`));
+        continue;
+      }
+
+      const agentPath = await this.findAgentPath(agentId, installDir);
+      if (!agentPath) {
+        console.log(chalk.red(`✗ Could not find agent file for ${agentId}`));
+        continue;
+      }
+
+      const agentContent = await fileManager.readFile(agentPath);
+      const yamlMatch = agentContent.match(/```ya?ml\r?\n([\s\S]*?)```/);
+      if (!yamlMatch) {
+        console.log(chalk.red(`✗ Could not extract YAML block for ${agentId}`));
+        continue;
+      }
+
+      const yaml = yamlMatch[1];
+
+      // Robust fallback for title and icon
+      const title =
+        yaml.match(/title:\s*(.+)/)?.[1]?.trim() || (await this.getAgentTitle(agentId, installDir));
+      const icon = yaml.match(/icon:\s*(.+)/)?.[1]?.trim() || '🤖';
+      const whenToUse = yaml.match(/whenToUse:\s*"(.+)"/)?.[1]?.trim() || `Use for ${title} tasks`;
+      const roleDefinition =
+        yaml.match(/roleDefinition:\s*"(.+)"/)?.[1]?.trim() ||
+        `You are a ${title} specializing in ${title.toLowerCase()} tasks and responsibilities.`;
+
+      const relativePath = path.relative(installDir, agentPath).replaceAll('\\', '/');
+      const customInstructions = `CRITICAL Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode`;
+
+      // Add permissions from config if they exist
+      const agentPermission = permissions[agentId];
+
+      // Begin .aicockpitmodes block
+      newContent += ` - slug: ${slug}\n`;
+      newContent += `   name: '${icon} ${title}'\n`;
+      if (agentPermission) {
+        newContent += `   description: '${agentPermission.description}'\n`;
+      }
+
+      newContent += `   roleDefinition: ${roleDefinition}\n`;
+      newContent += `   whenToUse: ${whenToUse}\n`;
+      newContent += `   customInstructions: ${customInstructions}\n`;
+      newContent += `   groups:\n`;
+      newContent += `    - read\n`;
+
+      if (agentPermission) {
+        newContent += `    - - edit\n`;
+        newContent += `      - fileRegex: ${agentPermission.fileRegex}\n`;
+        newContent += `        description: ${agentPermission.description}\n`;
+      } else {
+        // Fallback to generic edit
+        newContent += `    - edit\n`;
+      }
+
+      console.log(chalk.green(`✓ Added AICockpit mode: ${slug} (${icon} ${title})`));
+    }
+
+    const finalContent = existingContent
+      ? existingContent.trim() + '\n' + newContent
+      : 'customModes:\n' + newContent;
+
+    await fileManager.writeFile(filePath, finalContent);
+    console.log(chalk.green('✓ Created .aicockpitmodes file in project root'));
+    console.log(chalk.green(`✓ AICockpit setup complete!`));
+    console.log(chalk.dim('Custom modes will be available when you open this project in AICockpit'));
 
     return true;
   }
