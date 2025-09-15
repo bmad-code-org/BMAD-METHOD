@@ -71,7 +71,7 @@ program
 
         const config = {
           installType,
-          directory: options.directory || '.',
+          directory: path.resolve(options.directory || process.cwd()),
           ides: (options.ide || []).filter((ide) => ide !== 'other'),
           expansionPacks: options.expansionPacks || [],
         };
