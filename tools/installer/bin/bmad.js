@@ -47,6 +47,7 @@ program
   .option('-f, --full', 'Install complete BMad Method')
   .option('-x, --expansion-only', 'Install only expansion packs (no bmad-core)')
   .option('-d, --directory <path>', 'Installation directory')
+  .option('--update-manifest-only', 'Only rebuild/update the install-manifest.yaml file')
   .option(
     '-i, --ide <ide...>',
     'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, auggie-cli, iflow-cli, opencode, other)',
@@ -57,7 +58,15 @@ program
   )
   .action(async (options) => {
     try {
-      if (!options.full && !options.expansionOnly) {
+      if (options.updateManifestOnly) {
+        // Manifest-only update mode
+        const config = {
+          directory: options.directory || '.',
+          updateManifestOnly: true,
+        };
+        await installer.updateManifestOnly(config);
+        process.exit(0);
+      } else if (!options.full && !options.expansionOnly) {
         // Interactive mode
         const answers = await promptInstallation();
         if (!answers._alreadyInstalled) {
@@ -196,12 +205,12 @@ async function promptInstallation() {
   // Display ASCII logo
   console.log(
     chalk.bold.cyan(`
-██████╗ ███╗   ███╗ █████╗ ██████╗       ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗ 
+██████╗ ███╗   ███╗ █████╗ ██████╗       ███╗   ███╗███████╗████████╗██╗  ██╗ ██████╗ ██████╗
 ██╔══██╗████╗ ████║██╔══██╗██╔══██╗      ████╗ ████║██╔════╝╚══██╔══╝██║  ██║██╔═══██╗██╔══██╗
 ██████╔╝██╔████╔██║███████║██║  ██║█████╗██╔████╔██║█████╗     ██║   ███████║██║   ██║██║  ██║
 ██╔══██╗██║╚██╔╝██║██╔══██║██║  ██║╚════╝██║╚██╔╝██║██╔══╝     ██║   ██╔══██║██║   ██║██║  ██║
 ██████╔╝██║ ╚═╝ ██║██║  ██║██████╔╝      ██║ ╚═╝ ██║███████╗   ██║   ██║  ██║╚██████╔╝██████╔╝
-╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═════╝       ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═════╝       ╚═╝     ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝
   `),
   );
 
