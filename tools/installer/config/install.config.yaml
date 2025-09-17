@@ -190,7 +190,7 @@ ide-configurations:
       # 1. The installer generates JSON configurations for all BMAD agents
       # 2. Type `q chat --agent bmad-{agent}` (e.g., "q chat --agent bmad-dev", "q chat --agent bmad-architect")
       # 3. Use `q agent list` to see all available agents
-      # 4. To switch agents, exit current session and start new one with different --agent
+      # 4. To switch agents, exit current session and start new one with different --agent, or use `/agent swap bmad-{agent}`
       # 5. Project context from .bmad-core/ is automatically loaded
       # 6. Agents are available based on your selected location(s)
 
