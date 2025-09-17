@@ -2597,7 +2597,7 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
     if (validationSuccess) {
       console.log(chalk.green(`\n✅ Amazon Q CLI setup complete and verified!`));
       console.log(chalk.dim('You can now use agents with: q chat --agent bmad-{agent}'));
-      console.log(chalk.dim('Use /agent bmad-{agent} to switch between agents within sessions'));
+      console.log(chalk.dim('Use /agent swap bmad-{agent} to switch between agents within sessions'));
     } else {
       console.log(chalk.yellow(`\n⚠️  Amazon Q CLI setup completed with validation issues`));
       console.log(chalk.dim('Please review the validation report above for details'));
