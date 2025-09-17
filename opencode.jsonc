@@ -1,0 +1,198 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    ".bmad-core/core-config.yaml"
+  ],
+  "agent": {
+    "bmad-ux-expert": {
+      "prompt": "{file:./.bmad-core/agents/ux-expert.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for UI/UX design, wireframes, prototypes, front-end specifications, and user experience optimization"
+    },
+    "bmad-sm": {
+      "prompt": "{file:./.bmad-core/agents/sm.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for story creation, epic management, retrospectives in party-mode, and agile process guidance"
+    },
+    "bmad-qa": {
+      "prompt": "{file:./.bmad-core/agents/qa.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for comprehensive test architecture review, quality gate decisions, and code improvement. Provides thorough analysis including requirements traceability, risk assessment, and test strategy. Advisory only - teams choose their quality bar."
+    },
+    "bmad-po": {
+      "prompt": "{file:./.bmad-core/agents/po.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for backlog management, story refinement, acceptance criteria, sprint planning, and prioritization decisions"
+    },
+    "bmad-pm": {
+      "prompt": "{file:./.bmad-core/agents/pm.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for creating PRDs, product strategy, feature prioritization, roadmap planning, and stakeholder communication"
+    },
+    "bmad-dev": {
+      "prompt": "{file:./.bmad-core/agents/dev.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "'Use for code implementation, debugging, refactoring, and development best practices'"
+    },
+    "bmad-orchestrator": {
+      "prompt": "{file:./.bmad-core/agents/bmad-orchestrator.md}",
+      "mode": "primary",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for workflow coordination, multi-agent tasks, role switching guidance, and when unsure which specialist to consult"
+    },
+    "bmad-master": {
+      "prompt": "{file:./.bmad-core/agents/bmad-master.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use when you need comprehensive expertise across all domains, running 1 off tasks that do not require a persona, or just wanting to use the same agent for many things."
+    },
+    "bmad-architect": {
+      "prompt": "{file:./.bmad-core/agents/architect.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for system design, architecture documents, technology selection, API design, and infrastructure planning"
+    },
+    "bmad-analyst": {
+      "prompt": "{file:./.bmad-core/agents/analyst.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for market research, brainstorming, competitive analysis, creating project briefs, initial project discovery, and documenting existing projects (brownfield)"
+    }
+  },
+  "command": {
+    "bmad:tasks:validate-next-story": {
+      "template": "{file:./.bmad-core/tasks/validate-next-story.md}",
+      "description": "To comprehensively validate a story draft before implementation begins, ensuring it is complete, accurate, and provides sufficient context for successful development. This task identifies issues and gaps that need to be addressed, preventing hallucinations and ensuring implementation readiness."
+    },
+    "bmad:tasks:trace-requirements": {
+      "template": "{file:./.bmad-core/tasks/trace-requirements.md}",
+      "description": "Create a requirements traceability matrix that ensures every acceptance criterion has corresponding test coverage. This task helps identify gaps in testing and ensures all requirements are validated."
+    },
+    "bmad:tasks:test-design": {
+      "template": "{file:./.bmad-core/tasks/test-design.md}",
+      "description": "Design a complete test strategy that identifies what to test, at which level (unit/integration/e2e), and why. This ensures efficient test coverage without redundancy while maintaining appropriate test boundaries."
+    },
+    "bmad:tasks:shard-doc": {
+      "template": "{file:./.bmad-core/tasks/shard-doc.md}",
+      "description": "Split a large document into multiple smaller documents based on level 2 sections Create a folder structure to organize the sharded documents Maintain all content integrity including code blocks, diagrams, and markdown formatting"
+    },
+    "bmad:tasks:risk-profile": {
+      "template": "{file:./.bmad-core/tasks/risk-profile.md}",
+      "description": "Identify, assess, and prioritize risks in the story implementation. Provide risk mitigation strategies and testing focus areas based on risk levels."
+    },
+    "bmad:tasks:review-story": {
+      "template": "{file:./.bmad-core/tasks/review-story.md}"
+    },
+    "bmad:tasks:qa-gate": {
+      "template": "{file:./.bmad-core/tasks/qa-gate.md}",
+      "description": "Generate a standalone quality gate file that provides a clear pass/fail decision with actionable feedback. This gate serves as an advisory checkpoint for teams to understand quality status."
+    },
+    "bmad:tasks:nfr-assess": {
+      "template": "{file:./.bmad-core/tasks/nfr-assess.md}",
+      "description": "Assess non-functional requirements for a story and generate:"
+    },
+    "bmad:tasks:kb-mode-interaction": {
+      "template": "{file:./.bmad-core/tasks/kb-mode-interaction.md}",
+      "description": "Provide a user-friendly interface to the BMad knowledge base without overwhelming users with information upfront."
+    },
+    "bmad:tasks:index-docs": {
+      "template": "{file:./.bmad-core/tasks/index-docs.md}",
+      "description": "This task maintains the integrity and completeness of the docs/index.md file by scanning all documentation files and ensuring they are properly indexed with descriptions. It handles both root-level documents and documents within subfolders, organizing them hierarchically."
+    },
+    "bmad:tasks:generate-ai-frontend-prompt": {
+      "template": "{file:./.bmad-core/tasks/generate-ai-frontend-prompt.md}",
+      "description": "To generate a masterful, comprehensive, and optimized prompt that can be used with any AI-driven frontend development tool (e.g., Vercel v0, Lovable.ai, or similar) to scaffold or generate significant portions of a frontend application."
+    },
+    "bmad:tasks:facilitate-brainstorming-session": {
+      "template": "{file:./.bmad-core/tasks/facilitate-brainstorming-session.md}"
+    },
+    "bmad:tasks:execute-checklist": {
+      "template": "{file:./.bmad-core/tasks/execute-checklist.md}"
+    },
+    "bmad:tasks:document-project": {
+      "template": "{file:./.bmad-core/tasks/document-project.md}",
+      "description": "Generate comprehensive documentation for existing projects optimized for AI development agents. This task creates structured reference materials that enable AI agents to understand project context, conventions, and patterns for effective contribution to any codebase."
+    },
+    "bmad:tasks:create-next-story": {
+      "template": "{file:./.bmad-core/tasks/create-next-story.md}",
+      "description": "To identify the next logical story based on project progress and epic definitions, and then to prepare a comprehensive, self-contained, and actionable story file using the Story Template."
+    },
+    "bmad:tasks:create-doc": {
+      "template": "{file:./.bmad-core/tasks/create-doc.md}"
+    },
+    "bmad:tasks:create-deep-research-prompt": {
+      "template": "{file:./.bmad-core/tasks/create-deep-research-prompt.md}",
+      "description": "Generate well-structured research prompts that:"
+    },
+    "bmad:tasks:create-brownfield-story": {
+      "template": "{file:./.bmad-core/tasks/create-brownfield-story.md}",
+      "description": "Create detailed, implementation-ready stories for brownfield projects where traditional sharded PRD/architecture documents may not exist. This task bridges the gap between various documentation formats (document-project output, brownfield PRDs, epics, or user documentation) and executable stories for the Dev agent."
+    },
+    "bmad:tasks:correct-course": {
+      "template": "{file:./.bmad-core/tasks/correct-course.md}",
+      "description": "Guide a structured response to a change trigger using the .bmad-core/checklists/change-checklist."
+    },
+    "bmad:tasks:brownfield-create-story": {
+      "template": "{file:./.bmad-core/tasks/brownfield-create-story.md}",
+      "description": "Create a single user story for very small brownfield enhancements that can be completed in one focused development session. This task is for minimal additions or bug fixes that require existing system integration awareness."
+    },
+    "bmad:tasks:brownfield-create-epic": {
+      "template": "{file:./.bmad-core/tasks/brownfield-create-epic.md}",
+      "description": "Create a single epic for smaller brownfield enhancements that don't require the full PRD and Architecture documentation process. This task is for isolated features or modifications that can be completed within a focused scope."
+    },
+    "bmad:tasks:apply-qa-fixes": {
+      "template": "{file:./.bmad-core/tasks/apply-qa-fixes.md}",
+      "description": "Read QA outputs for a story (gate YAML + assessment markdowns) Create a prioritized, deterministic fix plan Apply code and test changes to close gaps and address issues Update only the allowed story sections for the Dev agent"
+    },
+    "bmad:tasks:advanced-elicitation": {
+      "template": "{file:./.bmad-core/tasks/advanced-elicitation.md}",
+      "description": "Provide optional reflective and brainstorming actions to enhance content quality Enable deeper exploration of ideas through structured elicitation techniques Support iterative refinement through multiple analytical perspectives Usable during template-driven document creation or any chat conversation"
+    }
+  }
+}
