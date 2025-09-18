@@ -1,0 +1,25 @@
+name: "Architecture Team"
+description: "Complete architecture team with C4 model visualization capabilities"
+version: "1.0.0"
+
+agents:
+  - "architect" # Core system architect
+  - "c4-architect" # C4 model specialist
+
+workflows:
+  - "architecture-design"
+  - "c4-visualization"
+  - "architecture-review"
+
+capabilities:
+  - "System architecture design"
+  - "C4 model diagram creation"
+  - "Architecture documentation"
+  - "Visual communication"
+  - "Stakeholder presentations"
+
+use_cases:
+  - "Complete system architecture design with visual diagrams"
+  - "Architecture review and validation"
+  - "Stakeholder communication and presentations"
+  - "Documentation and knowledge transfer"

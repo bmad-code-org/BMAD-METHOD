@@ -1,0 +1,87 @@
+name: "C4 Context Diagram Template"
+description: "Template for creating C4 Context diagrams using Structurizr DSL"
+version: "1.0"
+
+sections:
+  - id: system-overview
+    title: "System Overview"
+    instruction: "Define the basic system information"
+    fields:
+      - id: system-name
+        title: "System Name"
+        type: "text"
+        required: true
+        placeholder: "e.g., E-commerce Platform"
+      - id: system-description
+        title: "System Description"
+        type: "textarea"
+        required: true
+        placeholder: "Brief description of what the system does"
+      - id: business-context
+        title: "Business Context"
+        type: "textarea"
+        required: false
+        placeholder: "Business goals, constraints, and context"
+
+  - id: users
+    title: "Users and Actors"
+    instruction: "Identify all users and external actors"
+    fields:
+      - id: primary-users
+        title: "Primary Users"
+        type: "list"
+        required: true
+        placeholder: "List of primary users (e.g., Customers, Administrators)"
+      - id: user-goals
+        title: "User Goals"
+        type: "textarea"
+        required: true
+        placeholder: "What do users want to achieve with this system?"
+
+  - id: external-systems
+    title: "External Systems"
+    instruction: "Identify external systems and services"
+    fields:
+      - id: external-systems-list
+        title: "External Systems"
+        type: "list"
+        required: false
+        placeholder: "List external systems (e.g., Payment Gateway, Email Service)"
+      - id: integration-requirements
+        title: "Integration Requirements"
+        type: "textarea"
+        required: false
+        placeholder: "How does the system integrate with external systems?"
+
+  - id: relationships
+    title: "Key Relationships"
+    instruction: "Define the main interactions"
+    fields:
+      - id: user-interactions
+        title: "User Interactions"
+        type: "textarea"
+        required: true
+        placeholder: "How do users interact with the system?"
+      - id: external-interactions
+        title: "External System Interactions"
+        type: "textarea"
+        required: false
+        placeholder: "How does the system interact with external systems?"
+
+  - id: llm-instructions
+    title: "LLM Instructions"
+    instruction: "AI processing instructions for generating the DSL"
+    content: |
+      Based on the provided information, generate a complete Structurizr DSL workspace that creates a C4 Context diagram. Follow these guidelines:
+
+      1. Use the system name and description for the workspace title
+      2. Create person elements for each user type identified
+      3. Create a software system element for the main system
+      4. Create external software system elements for external systems
+      5. Define relationships between users and the system, and between the system and external systems
+      6. Include a systemContext view that shows all elements
+      7. Use appropriate technology labels for relationships (e.g., "HTTPS", "API", "Database")
+      8. Apply autolayout for better diagram appearance
+      9. Use the default theme
+
+      The DSL should be complete and ready to use with Structurizr Lite.

@@ -1,0 +1,32 @@
+name: "Full Development Team with C4"
+description: "Complete development team including C4 model visualization capabilities"
+version: "1.0.0"
+
+agents:
+  - "analyst" # Business analysis
+  - "pm" # Product management
+  - "architect" # System architecture
+  - "c4-architect" # C4 model visualization
+  - "dev" # Development
+  - "qa" # Quality assurance
+
+workflows:
+  - "greenfield-fullstack"
+  - "brownfield-fullstack"
+  - "c4-visualization"
+  - "architecture-review"
+
+capabilities:
+  - "Complete development lifecycle"
+  - "C4 model diagram creation"
+  - "Architecture visualization"
+  - "Stakeholder communication"
+  - "Quality assurance"
+  - "Documentation generation"
+
+use_cases:
+  - "End-to-end project development with visual architecture"
+  - "Complex system design and implementation"
+  - "Architecture documentation and communication"
+  - "Stakeholder presentations and reviews"
+  - "Knowledge transfer and onboarding"

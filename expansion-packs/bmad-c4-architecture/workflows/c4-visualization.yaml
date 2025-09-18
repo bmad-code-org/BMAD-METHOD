@@ -1,0 +1,95 @@
+name: "C4 Model Visualization Workflow"
+description: "Complete workflow for creating C4 model diagrams using Structurizr DSL"
+version: "1.0.0"
+
+phases:
+  - id: "planning"
+    name: "Planning and Information Gathering"
+    description: "Gather requirements and system information for C4 diagrams"
+    steps:
+      - agent: "c4-architect"
+        task: "create-workspace"
+        description: "Create new Structurizr workspace"
+        prerequisites: []
+        outputs: ["structurizr-workspace.dsl"]
+
+      - agent: "c4-architect"
+        task: "create-context"
+        description: "Create C4 Context diagram (Level 1)"
+        prerequisites: ["workspace-created"]
+        outputs: ["context-diagram.dsl", "context-diagram.png"]
+
+      - agent: "c4-architect"
+        task: "create-container"
+        description: "Create C4 Container diagram (Level 2)"
+        prerequisites: ["context-diagram-complete"]
+        outputs: ["container-diagram.dsl", "container-diagram.png"]
+
+      - agent: "c4-architect"
+        task: "create-component"
+        description: "Create C4 Component diagram (Level 3)"
+        prerequisites: ["container-diagram-complete"]
+        outputs: ["component-diagram.dsl", "component-diagram.png"]
+
+  - id: "validation"
+    name: "Validation and Review"
+    description: "Validate diagrams and ensure quality"
+    steps:
+      - agent: "c4-architect"
+        task: "validate-model"
+        description: "Validate C4 model consistency and completeness"
+        prerequisites: ["all-diagrams-created"]
+        outputs: ["validation-report.md"]
+
+      - agent: "c4-architect"
+        task: "review-architecture"
+        description: "Review architecture and suggest improvements"
+        prerequisites: ["validation-complete"]
+        outputs: ["review-report.md", "improvement-suggestions.md"]
+
+  - id: "export"
+    name: "Export and Documentation"
+    description: "Export diagrams and create documentation"
+    steps:
+      - agent: "c4-architect"
+        task: "export-diagrams"
+        description: "Export diagrams in various formats"
+        prerequisites: ["validation-complete"]
+        outputs: ["diagrams-png/", "diagrams-svg/", "diagrams-pdf/"]
+
+      - agent: "c4-architect"
+        task: "generate-dsl"
+        description: "Generate complete Structurizr DSL workspace"
+        prerequisites: ["all-diagrams-validated"]
+        outputs: ["complete-workspace.dsl"]
+
+# Workflow conditions
+conditions:
+  - name: "All diagrams created"
+    check: "all-diagrams-created"
+    description: "Context, container, and component diagrams are complete"
+
+  - name: "Validation passed"
+    check: "validation-complete"
+    description: "All diagrams pass validation checks"
+
+  - name: "Export ready"
+    check: "export-ready"
+    description: "All diagrams are ready for export"
+
+# Error handling
+error_handling:
+  - condition: "validation-failed"
+    action: "return-to-creation"
+    description: "Return to diagram creation phase to fix issues"
+
+  - condition: "export-failed"
+    action: "retry-export"
+    description: "Retry export with different settings"
+
+# Success criteria
+success_criteria:
+  - "All C4 model levels are represented"
+  - "Diagrams pass validation checks"
+  - "Export formats are generated successfully"
+  - "Documentation is complete and accurate"

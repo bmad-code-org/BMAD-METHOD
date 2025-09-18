@@ -1,0 +1,106 @@
+name: "C4 Component Diagram Template"
+description: "Template for creating C4 Component diagrams using Structurizr DSL"
+version: "1.0"
+
+sections:
+  - id: container-context
+    title: "Container Context"
+    instruction: "Reference the container from container diagram"
+    fields:
+      - id: container-name
+        title: "Container Name"
+        type: "text"
+        required: true
+        placeholder: "Must match a container from container diagram"
+      - id: container-description
+        title: "Container Description"
+        type: "textarea"
+        required: true
+        placeholder: "Brief description of the container"
+
+  - id: components
+    title: "Components"
+    instruction: "Define the components within the container"
+    fields:
+      - id: controllers
+        title: "Controllers and Handlers"
+        type: "list"
+        required: false
+        placeholder: "List controllers (e.g., UserController, OrderController)"
+      - id: services
+        title: "Services and Business Logic"
+        type: "list"
+        required: false
+        placeholder: "List services (e.g., UserService, PaymentService)"
+      - id: repositories
+        title: "Data Access Layers"
+        type: "list"
+        required: false
+        placeholder: "List repositories (e.g., UserRepository, OrderRepository)"
+      - id: external-interfaces
+        title: "External Interfaces"
+        type: "list"
+        required: false
+        placeholder: "List external interfaces (e.g., PaymentGateway, EmailService)"
+      - id: utilities
+        title: "Utilities and Shared Libraries"
+        type: "list"
+        required: false
+        placeholder: "List utilities (e.g., Logger, Validator, Cache)"
+
+  - id: technologies
+    title: "Component Technologies"
+    instruction: "Specify technologies for each component type"
+    fields:
+      - id: controller-tech
+        title: "Controller Technologies"
+        type: "textarea"
+        required: false
+        placeholder: "Technologies for controllers (e.g., Spring MVC, Express.js)"
+      - id: service-tech
+        title: "Service Technologies"
+        type: "textarea"
+        required: false
+        placeholder: "Technologies for services (e.g., Java, Node.js, Python)"
+      - id: data-tech
+        title: "Data Access Technologies"
+        type: "textarea"
+        required: false
+        placeholder: "Technologies for data access (e.g., JPA, Hibernate, Mongoose)"
+
+  - id: relationships
+    title: "Component Relationships"
+    instruction: "Define how components interact"
+    fields:
+      - id: component-interactions
+        title: "Component Interactions"
+        type: "textarea"
+        required: true
+        placeholder: "How do components interact? (e.g., method calls, events)"
+      - id: data-flow
+        title: "Data Flow"
+        type: "textarea"
+        required: true
+        placeholder: "How does data flow between components?"
+      - id: interfaces
+        title: "Key Interfaces"
+        type: "textarea"
+        required: true
+        placeholder: "What are the key interfaces and APIs?"
+
+  - id: llm-instructions
+    title: "LLM Instructions"
+    instruction: "AI processing instructions for generating the DSL"
+    content: |
+      Based on the provided information, generate a complete Structurizr DSL workspace that creates a C4 Component diagram. Follow these guidelines:
+
+      1. Use the container name and description from the container diagram
+      2. Create component elements for each identified component
+      3. Specify appropriate technologies for each component
+      4. Define relationships between components with proper technology labels
+      5. Include relationships to external systems and databases
+      6. Create a component view that shows all components within the container
+      7. Apply autolayout for better diagram appearance
+      8. Use the default theme
+
+      The DSL should be complete and ready to use with Structurizr Lite.

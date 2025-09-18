@@ -1,0 +1,103 @@
+name: "BMAD C4 Architecture"
+description: "C4 Model and Structurizr DSL specialist expansion pack for architecture visualization"
+version: "1.0.0"
+author: "BMAD-METHOD"
+compatibility: "BMAD-METHOD v4+"
+
+# Expansion pack metadata
+metadata:
+  category: "Architecture & Visualization"
+  tags: ["c4-model", "structurizr", "architecture", "diagrams", "visualization"]
+  target_audience: ["architects", "developers", "technical-leads", "stakeholders"]
+  complexity: "intermediate"
+
+# Core dependencies
+dependencies:
+  core_agents:
+    - "architect" # Integrates with existing architect agent
+  core_templates:
+    - "architecture-tmpl.yaml" # May reference core architecture templates
+  core_tasks:
+    - "create-doc.md" # Uses core document creation task
+
+# Expansion pack structure
+structure:
+  agents:
+    - "c4-architect.md"
+  tasks:
+    - "create-c4-context.md"
+    - "create-c4-container.md"
+    - "create-c4-component.md"
+    - "generate-structurizr-dsl.md"
+    - "validate-c4-model.md"
+    - "create-structurizr-workspace.md"
+    - "update-c4-diagram.md"
+    - "export-c4-diagrams.md"
+    - "review-c4-architecture.md"
+  templates:
+    - "c4-context-tmpl.yaml"
+    - "c4-container-tmpl.yaml"
+    - "c4-component-tmpl.yaml"
+    - "structurizr-workspace-tmpl.yaml"
+  checklists:
+    - "c4-model-checklist.md"
+  data:
+    - "c4-model-guidelines.md"
+
+# Installation configuration
+installation:
+  target_directory: ".bmad-c4-architecture"
+  merge_strategy: "copy" # Copy files to target directory
+  backup_existing: true
+  update_core_config: true
+
+# Integration points with core BMad workflow
+integration:
+  planning_phase:
+    - "create-context" # Can be used during planning
+  architecture_phase:
+    - "create-container"
+    - "create-component"
+    - "generate-dsl"
+  development_phase:
+    - "update-diagram"
+    - "validate-model"
+  review_phase:
+    - "review-architecture"
+    - "export-diagrams"
+
+# Agent team configurations
+teams:
+  architecture_team:
+    description: "Complete architecture team with C4 visualization"
+    agents: ["architect", "c4-architect"]
+  visualization_team:
+    description: "Focused on architecture visualization and documentation"
+    agents: ["c4-architect"]
+  full_team:
+    description: "Complete development team including C4 visualization"
+    agents: ["analyst", "pm", "architect", "c4-architect", "dev", "qa"]
+
+# External dependencies
+external_dependencies:
+  tools:
+    - "Structurizr Lite" # For diagram visualization
+    - "Java 11+" # Required for Structurizr Lite
+  services:
+    - "Structurizr Cloud (optional)" # For cloud-based diagram management
+
+# Configuration options
+config_options:
+  structurizr_lite_url: "http://localhost:8080"
+  default_theme: "default"
+  export_formats: ["png", "svg", "pdf", "dsl"]
+  auto_layout: true
+  validation_strict: true
+
+# Usage examples
+usage_examples:
+  - "Create C4 context diagram for new system"
+  - "Generate container diagram for microservices architecture"
+  - "Create component diagram for complex service"
+  - "Export diagrams for documentation"
+  - "Validate architecture against C4 best practices"
