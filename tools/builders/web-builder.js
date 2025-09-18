@@ -5,7 +5,7 @@ const yamlUtilities = require('../lib/yaml-utils');
 
 class WebBuilder {
   constructor(options = {}) {
-    this.rootDir = options.rootDir || process.cwd();
+    this.rootDir = options.rootDir || process.env.INIT_CWD || process.cwd();
     this.outputDirs = options.outputDirs || [path.join(this.rootDir, 'dist')];
     this.resolver = new DependencyResolver(this.rootDir);
     this.templatePath = path.join(

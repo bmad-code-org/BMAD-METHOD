@@ -181,7 +181,7 @@ program
 program
   .command('flatten')
   .description('Flatten codebase to XML format')
-  .option('-i, --input <path>', 'Input directory to flatten', process.cwd())
+  .option('-i, --input <path>', 'Input directory to flatten', process.env.INIT_CWD || process.cwd())
   .option('-o, --output <path>', 'Output file path', 'flattened-codebase.xml')
   .action(async (options) => {
     try {
@@ -216,7 +216,7 @@ async function promptInstallation() {
       type: 'input',
       name: 'directory',
       message: 'Enter the full path to your project directory where BMad should be installed:',
-      default: path.resolve('.'),
+      default: path.resolve(process.env.INIT_CWD || '.'),
       validate: (input) => {
         if (!input.trim()) {
           return 'Please enter a valid project path';

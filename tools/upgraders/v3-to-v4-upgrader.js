@@ -109,7 +109,7 @@ class V3ToV4Upgrader {
         type: 'input',
         name: 'projectPath',
         message: 'Please enter the path to your V3 project:',
-        default: process.cwd(),
+        default: process.env.INIT_CWD || process.cwd(),
       },
     ]);
 
