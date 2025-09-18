@@ -12,6 +12,21 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Check for Windows line endings and fix them
+if [ -f "install.sh" ] && file install.sh | grep -q "CRLF"; then
+    echo -e "${BLUE}🔧 Detected Windows line endings - fixing...${NC}"
+    # Convert Windows line endings to Unix line endings using sed
+    sed -i 's/\r$//' install.sh
+    echo -e "${GREEN}✅ Line endings converted successfully${NC}"
+fi
+
+# Check if we're running in PowerShell and provide instructions
+if [ -n "$PSVersionTable" ] || [ -n "$POWERSHELL_DISTRIBUTION_CHANNEL" ]; then
+    echo -e "${YELLOW}⚠️  PowerShell detected. If you get line ending errors, run:${NC}"
+    echo -e "${BLUE}   (Get-Content install.sh -Raw) -replace \"\`r\`n\", \"\`n\" | Set-Content install.sh -NoNewline${NC}"
+    echo
+fi
+
 # Configuration
 EXPANSION_PACK_NAME="bmad-c4-architecture"
 TARGET_DIR=".bmad-c4-architecture"
@@ -20,10 +35,18 @@ SOURCE_DIR="$(dirname "$0")"
 echo -e "${BLUE}🏛️  BMAD C4 Architecture Expansion Pack Installer${NC}"
 echo "=================================================="
 
-# Check if we're in a BMAD-METHOD project
-if [ ! -f "package.json" ] || ! grep -q "bmad-method" package.json; then
-    echo -e "${RED}❌ Error: This doesn't appear to be a BMAD-METHOD project.${NC}"
-    echo "Please run this script from the root of a BMAD-METHOD project."
+# Check if we're in the expansion pack directory and BMAD-METHOD root exists
+if [ ! -f "agents/c4-architect.md" ]; then
+    echo -e "${RED}❌ Error: Please run this script from the bmad-c4-architecture directory${NC}"
+    echo "Current directory: $(pwd)"
+    exit 1
+fi
+
+# Check if BMAD-METHOD root exists
+if [ ! -d "../../bmad-core" ]; then
+    echo -e "${RED}❌ Error: BMAD-METHOD root directory not found${NC}"
+    echo "Expected: ../../bmad-core"
+    echo "Current directory: $(pwd)"
     exit 1
 fi
 
@@ -40,16 +63,25 @@ if [ -d "$TARGET_DIR" ]; then
     rm -rf "$TARGET_DIR"
 fi
 
-# Create target directory
-echo -e "${BLUE}📁 Creating target directory...${NC}"
-mkdir -p "$TARGET_DIR"
+# Create BMAD-METHOD directories if they don't exist
+echo -e "${BLUE}📁 Creating BMAD-METHOD directories...${NC}"
+mkdir -p "../../bmad-core/agents"
+mkdir -p "../../bmad-core/tasks"
+mkdir -p "../../bmad-core/templates"
+mkdir -p "../../bmad-core/data"
+mkdir -p "../../bmad-core/checklists"
+mkdir -p "../../bmad-core/agent-teams"
+mkdir -p "../../bmad-core/workflows"
 
-# Copy expansion pack files
-echo -e "${BLUE}📋 Copying expansion pack files...${NC}"
-cp -r "$SOURCE_DIR"/* "$TARGET_DIR/"
-
-# Remove the install script from target
-rm -f "$TARGET_DIR/install.sh"
+# Copy expansion pack files to BMAD-METHOD
+echo -e "${BLUE}📋 Copying expansion pack files to BMAD-METHOD...${NC}"
+cp agents/*.md "../../bmad-core/agents/"
+cp tasks/*.md "../../bmad-core/tasks/"
+cp templates/*.yaml "../../bmad-core/templates/"
+cp data/*.md "../../bmad-core/data/"
+cp checklists/*.md "../../bmad-core/checklists/"
+cp agent-teams/*.yaml "../../bmad-core/agent-teams/"
+cp workflows/*.yaml "../../bmad-core/workflows/"
 
 # Update core configuration
 echo -e "${BLUE}⚙️  Updating core configuration...${NC}"
