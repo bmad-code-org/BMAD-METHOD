@@ -1,0 +1,40 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: research-log-entry-template-v1
+  name: Research Log Entry
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/research/research-index.md
+    title: "Research Index"
+    append_mode: true
+
+workflow:
+  mode: automated
+  trigger: research_completion
+
+sections:
+  - id: new-entry
+    title: Research Index Entry
+    instruction: |
+      Add a new entry to the research index with essential information for future reference:
+      - Date and topic for chronological organization
+      - Brief description of research focus
+      - Domain tags for categorization
+      - Key insights summary for quick reference
+    template: |
+      - [{{research_date}}: {{research_topic}}]({{research_filename}}) - {{brief_description}}
+        - **Domains**: {{domain_tags}}
+        - **Key Insight**: {{key_insight_summary}}
+        - **Requested by**: {{requesting_agent}}
+
+  - id: category-update
+    title: Category Index Update
+    instruction: |
+      Update the category sections based on the research domain tags:
+      - Add to appropriate domain categories
+      - Create new categories if needed
+      - Maintain alphabetical organization within categories
+    template: |
+      ### {{primary_domain}} Research
+      - {{research_topic}} ({{research_date}})

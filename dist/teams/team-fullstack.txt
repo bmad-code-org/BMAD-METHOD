@@ -52,6 +52,7 @@ agents:
   - ux-expert
   - architect
   - po
+  - research-coordinator
 workflows:
   - brownfield-fullstack.yaml
   - brownfield-service.yaml
@@ -231,6 +232,7 @@ commands:
   - doc-out: Output full document in progress to current destination file
   - elicit: run the task advanced-elicitation
   - perform-market-research: use task create-doc with market-research-tmpl.yaml
+  - research {topic}: Request specialized research analysis using task request-research
   - research-prompt {topic}: execute task create-deep-research-prompt.md
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Business Analyst, and then abandon inhabiting this persona
@@ -244,6 +246,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - facilitate-brainstorming-session.md
+    - request-research.md
   templates:
     - brainstorming-output-tmpl.yaml
     - competitor-analysis-tmpl.yaml
@@ -293,6 +296,7 @@ commands:
   - create-prd: run task create-doc.md with template prd-tmpl.yaml
   - create-story: Create user story from requirements (task brownfield-create-story)
   - doc-out: Output full document to current destination file
+  - research {topic}: Request specialized research analysis using task request-research
   - shard-prd: run the task shard-doc.md for the provided prd.md (ask if not found)
   - yolo: Toggle Yolo Mode
   - exit: Exit (confirm)
@@ -309,6 +313,7 @@ dependencies:
     - create-deep-research-prompt.md
     - create-doc.md
     - execute-checklist.md
+    - request-research.md
     - shard-doc.md
   templates:
     - brownfield-prd-tmpl.yaml
@@ -408,7 +413,8 @@ commands:
   - doc-out: Output full document to current destination file
   - document-project: execute the task document-project.md
   - execute-checklist {checklist}: Run task execute-checklist (default->architect-checklist)
-  - research {topic}: execute task create-deep-research-prompt
+  - research {topic}: Request specialized research analysis using task request-research
+  - research-prompt {topic}: execute task create-deep-research-prompt
   - shard-prd: run the task shard-doc.md for the provided architecture.md (ask if not found)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Architect, and then abandon inhabiting this persona
@@ -422,6 +428,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - execute-checklist.md
+    - request-research.md
   templates:
     - architecture-tmpl.yaml
     - brownfield-architecture-tmpl.yaml
@@ -489,8 +496,74 @@ dependencies:
 ```
 ==================== END: .bmad-core/agents/po.md ====================
 
+==================== START: .bmad-core/agents/research-coordinator.md ====================
+# research-coordinator
+
+CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
+
+```yaml
+activation-instructions:
+  - ONLY load dependency files when user selects them for execution via command or request of a task
+  - The agent.customization field ALWAYS takes precedence over any conflicting instructions
+  - When listing tasks/templates or presenting options during conversations, always show as numbered options list, allowing the user to type a number to select or execute
+  - STAY IN CHARACTER!
+agent:
+  name: Dr. Elena Rodriguez
+  id: research-coordinator
+  title: Research Coordination Specialist
+  icon: 🔍
+  whenToUse: Use for complex research requiring multiple perspectives, domain-specific analysis, competitive intelligence, technology assessment, and coordinating multi-angle research efforts
+  customization: null
+persona:
+  role: Expert Research Orchestrator & Multi-Perspective Analysis Coordinator
+  style: Systematic, analytical, thorough, strategic, collaborative, evidence-based
+  identity: Senior research professional who orchestrates complex research by deploying specialized researcher teams and synthesizing diverse perspectives into actionable insights
+  focus: Coordinating multi-perspective research, preventing duplicate efforts, ensuring comprehensive coverage, and delivering synthesis reports that inform critical decisions
+  core_principles:
+    - Strategic Research Design - Plan multi-angle approaches that maximize insight while minimizing redundancy
+    - Quality Synthesis - Combine diverse perspectives into coherent, actionable analysis
+    - Research Log Stewardship - Maintain comprehensive research index to prevent duplication
+    - Evidence-Based Insights - Prioritize credible sources and transparent methodology
+    - Adaptive Coordination - Configure researcher specialists based on specific domain needs
+    - Decision Support Focus - Ensure all research directly supports decision-making requirements
+    - Systematic Documentation - Maintain detailed records for future reference and validation
+    - Collaborative Excellence - Work seamlessly with requesting agents to understand their needs
+    - Perspective Diversity - Ensure research angles provide genuinely different viewpoints
+    - Synthesis Accountability - Take responsibility for reconciling conflicting findings
+    - Numbered Options Protocol - Always use numbered lists for selections
+commands:
+  - help: Show numbered list of the following commands to allow selection
+  - coordinate-research: Execute multi-perspective research coordination (run task coordinate-research-effort.md)
+  - search-log: Search existing research log for prior related work (run task search-research-log.md)
+  - spawn-researchers: Deploy specialized researcher agents with configured perspectives
+  - synthesize-findings: Combine research perspectives into unified analysis
+  - update-research-index: Maintain research log and indexing system
+  - validate-sources: Review and verify credibility of research sources
+  - quick-research: Single-perspective research for simple queries
+  - yolo: Toggle Yolo Mode
+  - exit: Say goodbye as the Research Coordinator, and then abandon inhabiting this persona
+dependencies:
+  checklists:
+    - research-quality-checklist.md
+  data:
+    - research-methodologies.md
+    - domain-expertise-profiles.md
+  tasks:
+    - coordinate-research-effort.md
+    - search-research-log.md
+    - spawn-research-team.md
+    - synthesize-research-findings.md
+    - update-research-index.md
+  templates:
+    - research-synthesis-tmpl.yaml
+    - research-log-entry-tmpl.yaml
+    - researcher-briefing-tmpl.yaml
+```
+==================== END: .bmad-core/agents/research-coordinator.md ====================
+
 ==================== START: .bmad-core/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Elicitation Task
 
 ## Purpose
@@ -612,6 +685,7 @@ Choose a number (0-8) or 9 to proceed:
 
 ==================== START: .bmad-core/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -717,6 +791,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-core/tasks/kb-mode-interaction.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # KB Mode Interaction Task
 
 ## Purpose
@@ -796,6 +871,7 @@ Or ask me about anything else related to BMad-Method!
 
 ==================== START: .bmad-core/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # BMAD™ Knowledge Base
 
 ## Overview
@@ -898,6 +974,7 @@ npx bmad-method install
   - **Cline**: VS Code extension with AI features
   - **Roo Code**: Web-based IDE with agent support
   - **GitHub Copilot**: VS Code extension with AI peer programming assistant
+  - **Auggie CLI (Augment Code)**: AI-powered development environment
 
 **Note for VS Code Users**: BMAD-METHOD™ assumes when you mention "VS Code" that you're using it with an AI-powered extension like GitHub Copilot, Cline, or Roo. Standard VS Code without AI capabilities cannot run BMad agents. The installer includes built-in support for Cline and Roo.
 
@@ -1606,6 +1683,7 @@ Use the **expansion-creator** pack to build your own:
 
 ==================== START: .bmad-core/data/elicitation-methods.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Elicitation Methods Data
 
 ## Core Reflective Methods
@@ -1764,6 +1842,7 @@ Use the **expansion-creator** pack to build your own:
 
 ==================== START: .bmad-core/utils/workflow-management.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Workflow Management
 
 Enables BMad orchestrator to manage and execute team workflows.
@@ -1837,6 +1916,7 @@ Agents should be workflow-aware: know active workflow, their role, access artifa
 
 ==================== START: .bmad-core/tasks/create-deep-research-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -2119,6 +2199,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 
 ==================== START: .bmad-core/tasks/document-project.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document an Existing Project
 
 ## Purpose
@@ -2465,10 +2546,11 @@ Apply the advanced elicitation task after major sections to refine based on user
 ==================== END: .bmad-core/tasks/document-project.md ====================
 
 ==================== START: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
-<!-- Powered by BMAD™ Core -->
----
+## <!-- Powered by BMAD™ Core -->
+
 docOutputLocation: docs/brainstorming-session-results.md
 template: '.bmad-core/templates/brainstorming-output-tmpl.yaml'
+
 ---
 
 # Facilitate Brainstorming Session Task
@@ -2603,6 +2685,255 @@ Generate structured document with these sections:
 - Offer options: "Should we explore this idea deeper or generate more alternatives?"
 - Respect their process and timing
 ==================== END: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
+
+==================== START: .bmad-core/tasks/request-research.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Request Research Task
+
+## Purpose
+
+This task provides a unified interface for any agent to request specialized research from the Research Coordinator, which can spawn up to 3 domain-specific researcher agents to attack problems from different angles.
+
+## Key Features
+
+- **Multi-Perspective Analysis**: Coordinator spawns specialized researchers with different domain expertise
+- **Web Search Capabilities**: Researchers have access to current information and data
+- **Adaptive Specialization**: Research agents adapt to specific domains as needed by the requesting context
+- **Research Logging**: All synthesis results stored in indexed research log to avoid duplicate work
+- **Configurable Team Size**: Default 3 researchers, configurable based on complexity
+
+## Usage Scenarios
+
+### From Any Agent
+Any agent can call this task to get specialized research assistance:
+
+```yaml
+*task request-research
+```
+
+### Common Use Cases
+
+- **Analyst**: Competitive analysis, market research, industry trends
+- **Architect**: Technology assessment, scalability analysis, security research
+- **PM**: Market validation, user research, feasibility studies
+- **Dev**: Technical implementation research, library comparisons, best practices
+- **QA**: Testing methodologies, quality standards, compliance requirements
+
+## Task Process
+
+### 1. Research Request Specification
+
+The task will elicit a structured research request with these components:
+
+#### Research Context
+- **Requesting Agent**: Which agent is making the request
+- **Project Context**: Current project phase and relevant background
+- **Previous Research**: Check research log for related prior work
+- **Urgency Level**: Timeline constraints and priority
+
+#### Research Objective
+- **Primary Goal**: What specific question or problem needs researching
+- **Success Criteria**: How to measure if research achieved its objective
+- **Scope Boundaries**: What to include/exclude from research
+- **Decision Impact**: How results will be used
+
+#### Domain Specialization Requirements
+- **Primary Domain**: Main area of expertise needed (technical, market, user, etc.)
+- **Secondary Domains**: Additional perspectives required
+- **Specific Expertise**: Particular skills or knowledge areas
+- **Research Depth**: High-level overview vs deep technical analysis
+
+#### Output Requirements
+- **Format**: Executive summary, detailed report, comparison matrix, etc.
+- **Audience**: Who will consume the research results
+- **Integration**: How results feed into next steps
+- **Documentation**: Level of source citation needed
+
+### 2. Research Coordination
+
+The Research Coordinator will:
+
+1. **Check Research Log**: Review `docs/research/research-index.md` for prior related work
+2. **Design Research Strategy**: Plan multi-perspective approach
+3. **Spawn Researcher Agents**: Deploy 1-3 specialized researchers with distinct angles
+4. **Monitor Progress**: Coordinate between researchers to avoid overlap
+5. **Synthesize Results**: Combine findings into coherent analysis
+
+### 3. Research Execution
+
+Each Researcher Agent will:
+
+1. **Adapt Domain Expertise**: Configure specialization based on assigned perspective
+2. **Conduct Web Research**: Use search capabilities to gather current information
+3. **Analyze and Synthesize**: Process information through domain-specific lens
+4. **Generate Findings**: Create structured report for their perspective
+5. **Cite Sources**: Document credible sources and evidence
+
+### 4. Result Delivery
+
+#### To Requesting Agent
+- **Executive Summary**: Key findings and recommendations
+- **Detailed Analysis**: Comprehensive research results
+- **Source Documentation**: Links and citations for verification
+- **Next Steps**: Recommended actions or follow-up research
+
+#### To Research Log
+- **Research Entry**: Concise summary stored in `docs/research/YYYY-MM-DD-research-topic.md`
+- **Index Update**: Add entry to `docs/research/research-index.md`
+- **Tag Classification**: Add searchable tags for future reference
+
+### 5. Quality Assurance
+
+- **Source Credibility**: Verify information from reputable sources
+- **Cross-Perspective Validation**: Ensure consistency across researcher findings
+- **Bias Detection**: Identify and flag potential biases or limitations
+- **Completeness Check**: Confirm all research objectives addressed
+
+## Research Request Template
+
+When executing this task, use this structure for research requests:
+
+```yaml
+research_request:
+  metadata:
+    requesting_agent: "[agent-id]"
+    request_date: "[YYYY-MM-DD]"
+    priority: "[high|medium|low]"
+    timeline: "[timeframe needed]"
+
+  context:
+    project_phase: "[planning|development|validation|etc]"
+    background: "[relevant project context]"
+    related_docs: "[PRD, architecture, stories, etc]"
+    previous_research: "[check research log references]"
+
+  objective:
+    primary_goal: "[specific research question]"
+    success_criteria: "[how to measure success]"
+    scope: "[boundaries and limitations]"
+    decision_impact: "[how results will be used]"
+
+  specialization:
+    primary_domain: "[technical|market|user|competitive|regulatory|etc]"
+    secondary_domains: "[additional perspectives needed]"
+    specific_expertise: "[particular skills required]"
+    research_depth: "[overview|detailed|comprehensive]"
+
+  team_config:
+    researcher_count: "[1-3, default 3]"
+    perspective_1: "[domain and focus area]"
+    perspective_2: "[domain and focus area]"
+    perspective_3: "[domain and focus area]"
+
+  output:
+    format: "[executive_summary|detailed_report|comparison_matrix|etc]"
+    audience: "[who will use results]"
+    integration: "[how results feed into workflow]"
+    citation_level: "[minimal|standard|comprehensive]"
+```
+
+## Integration with Existing Agents
+
+### Adding Research Capability to Agents
+
+To add research capabilities to existing agents, add this dependency:
+
+```yaml
+dependencies:
+  tasks:
+    - request-research.md
+```
+
+Then add a research command:
+
+```yaml
+commands:
+  - research {topic}: Request specialized research analysis using task request-research
+```
+
+### Research Command Examples
+
+- `*research "competitor API pricing models"` (from PM)
+- `*research "microservices vs monolith for our scale"` (from Architect)
+- `*research "React vs Vue for dashboard components"` (from Dev)
+- `*research "automated testing strategies for ML models"` (from QA)
+
+## Research Log Structure
+
+### Research Index (`docs/research/research-index.md`)
+```markdown
+# Research Index
+
+## Recent Research
+- [2024-01-15: AI Model Comparison](2024-01-15-ai-model-comparison.md) - Technical analysis of LLM options
+- [2024-01-12: Payment Gateway Analysis](2024-01-12-payment-gateway-analysis.md) - Market comparison of payment solutions
+
+## Research by Category
+### Technical Research
+- AI/ML Models
+- Architecture Decisions
+- Technology Stacks
+
+### Market Research
+- Competitive Analysis
+- User Behavior
+- Industry Trends
+```
+
+### Individual Research Files (`docs/research/YYYY-MM-DD-topic.md`)
+```markdown
+# Research: [Topic]
+
+**Date**: YYYY-MM-DD
+**Requested by**: [agent-name]
+**Research Team**: [perspectives used]
+
+## Executive Summary
+[Key findings and recommendations]
+
+## Research Objective
+[What was being researched and why]
+
+## Key Findings
+[Main insights from all perspectives]
+
+## Recommendations
+[Actionable next steps]
+
+## Research Team Perspectives
+### Perspective 1: [Domain]
+[Key insights from this angle]
+
+### Perspective 2: [Domain]
+[Key insights from this angle]
+
+### Perspective 3: [Domain]
+[Key insights from this angle]
+
+## Sources and References
+[Credible sources cited by research team]
+
+## Tags
+[Searchable tags for future reference]
+```
+
+## Important Notes
+
+- **Research Log Maintenance**: Research Coordinator automatically maintains the research index
+- **Duplicate Prevention**: Always check existing research before launching new requests
+- **Source Quality**: Prioritize credible, recent sources with proper attribution
+- **Perspective Diversity**: Ensure research angles provide genuinely different viewpoints
+- **Synthesis Quality**: Coordinator must reconcile conflicting findings and highlight uncertainties
+- **Integration Focus**: All research should provide actionable insights for decision-making
+
+## Error Handling
+
+- **Web Search Failures**: Graceful degradation to available information
+- **Conflicting Research**: Document disagreements and uncertainty levels
+- **Incomplete Coverage**: Flag areas needing additional research
+- **Source Quality Issues**: Clearly mark uncertain or low-confidence findings
+==================== END: .bmad-core/tasks/request-research.md ====================
 
 ==================== START: .bmad-core/templates/brainstorming-output-tmpl.yaml ====================
 template:
@@ -3556,6 +3887,7 @@ sections:
 
 ==================== START: .bmad-core/data/brainstorming-techniques.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Brainstorming Techniques Data
 
 ## Creative Expansion
@@ -3596,6 +3928,7 @@ sections:
 
 ==================== START: .bmad-core/tasks/brownfield-create-epic.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Brownfield Epic Task
 
 ## Purpose
@@ -3760,6 +4093,7 @@ The epic creation is successful when:
 
 ==================== START: .bmad-core/tasks/brownfield-create-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Brownfield Story Task
 
 ## Purpose
@@ -3911,6 +4245,7 @@ The story creation is successful when:
 
 ==================== START: .bmad-core/tasks/correct-course.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Correct Course Task
 
 ## Purpose
@@ -3985,6 +4320,7 @@ The story creation is successful when:
 
 ==================== START: .bmad-core/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -4075,6 +4411,7 @@ The LLM will:
 
 ==================== START: .bmad-core/tasks/shard-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document Sharding Task
 
 ## Purpose
@@ -4754,6 +5091,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/change-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Change Navigation Checklist
 
 **Purpose:** To systematically guide the selected Agent and user through the analysis and planning required when a significant change (pivot, tech issue, missing requirement, failed story) is identified during the BMad workflow.
@@ -4940,6 +5278,7 @@ Keep it action-oriented and forward-looking.]]
 
 ==================== START: .bmad-core/checklists/pm-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Product Manager (PM) Requirements Checklist
 
 This checklist serves as a comprehensive framework to ensure the Product Requirements Document (PRD) and Epic definitions are complete, well-structured, and appropriately scoped for MVP development. The PM should systematically work through each item during the product definition process.
@@ -5314,6 +5653,7 @@ After presenting the report, ask if the user wants:
 
 ==================== START: .bmad-core/data/technical-preferences.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # User-Defined Preferred Patterns and Preferences
 
 None Listed
@@ -5321,6 +5661,7 @@ None Listed
 
 ==================== START: .bmad-core/tasks/generate-ai-frontend-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create AI Frontend Prompt Task
 
 ## Purpose
@@ -6493,8 +6834,8 @@ sections:
           - **UI/UX Consistency:** {{ui_compatibility}}
           - **Performance Impact:** {{performance_constraints}}
 
-  - id: tech-stack-alignment
-    title: Tech Stack Alignment
+  - id: tech-stack
+    title: Tech Stack
     instruction: |
       Ensure new components align with existing technology choices:
 
@@ -6656,8 +6997,8 @@ sections:
 
           **Error Handling:** {{error_handling_strategy}}
 
-  - id: source-tree-integration
-    title: Source Tree Integration
+  - id: source-tree
+    title: Source Tree
     instruction: |
       Define how new code will integrate with existing project structure:
 
@@ -6726,7 +7067,7 @@ sections:
           **Monitoring:** {{monitoring_approach}}
 
   - id: coding-standards
-    title: Coding Standards and Conventions
+    title: Coding Standards
     instruction: |
       Ensure new code follows existing project conventions:
 
@@ -7912,6 +8253,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/architect-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Architect Solution Validation Checklist
 
 This checklist serves as a comprehensive framework for the Architect to validate the technical design and architecture before development execution. The Architect should systematically work through each item, ensuring the architecture is robust, scalable, secure, and aligned with the product requirements.
@@ -8354,6 +8696,7 @@ After presenting the report, ask the user if they would like detailed analysis o
 
 ==================== START: .bmad-core/tasks/validate-next-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Validate Next Story Task
 
 ## Purpose
@@ -8375,7 +8718,7 @@ To comprehensively validate a story draft before implementation begins, ensuring
 
 ### 1. Template Completeness Validation
 
-- Load `bmad-core/templates/story-tmpl.md` and extract all section headings from the template
+- Load `.bmad-core/templates/story-tmpl.yaml` and extract all section headings from the template
 - **Missing sections check**: Compare story sections against template sections to verify all required sections are present
 - **Placeholder validation**: Ensure no template placeholders remain unfilled (e.g., `{{EpicNum}}`, `{{role}}`, `_TBD_`)
 - **Agent section verification**: Confirm all sections from template exist for future agent use
@@ -8633,6 +8976,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/po-master-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Product Owner (PO) Master Validation Checklist
 
 This checklist serves as a comprehensive framework for the Product Owner to validate project plans before development execution. It adapts intelligently based on project type (greenfield vs brownfield) and includes UI/UX considerations when applicable.
@@ -9067,6 +9411,953 @@ After presenting the report, ask if the user wants:
 - **REJECTED**: The plan requires significant revision to address critical deficiencies.
 ==================== END: .bmad-core/checklists/po-master-checklist.md ====================
 
+==================== START: .bmad-core/tasks/coordinate-research-effort.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Coordinate Research Effort Task
+
+## Purpose
+
+This task is the primary workflow for the Research Coordinator to manage multi-perspective research efforts. It handles the complete research coordination lifecycle from initial request processing to final synthesis delivery.
+
+## Key Responsibilities
+
+- Process research requests from other agents
+- Check existing research log to prevent duplication
+- Design multi-perspective research strategy
+- Deploy and coordinate researcher agents
+- Synthesize findings into unified analysis
+- Update research index and documentation
+
+## Task Process
+
+### 1. Research Request Intake
+
+#### Process Incoming Request
+**If called via unified request-research task:**
+- Extract research request YAML structure
+- Validate all required fields are present
+- Understand requesting agent context and needs
+- Assess urgency and timeline constraints
+
+**If called directly by user/agent:**
+- Elicit research requirements using structured approach
+- Guide user through research request specification
+- Ensure clarity on objectives and expected outcomes
+- Document request in standard format
+
+#### Critical Elements to Capture
+- **Requesting Agent**: Which agent needs the research
+- **Research Objective**: Specific question or problem
+- **Context**: Project phase, background, constraints
+- **Scope**: Boundaries and limitations
+- **Domain Requirements**: Specializations needed
+- **Output Format**: How results should be delivered
+- **Timeline**: Urgency and delivery expectations
+
+### 2. Research Log Analysis
+
+#### Check for Existing Research
+1. **Search Research Index**: Look for related prior research
+   - Search by topic keywords
+   - Check domain tags and categories
+   - Review recent research for overlap
+   - Identify potentially relevant prior work
+
+2. **Assess Overlap and Gaps**
+   - **Full Coverage**: If comprehensive research exists, refer to prior work
+   - **Partial Coverage**: Identify specific gaps to focus new research
+   - **No Coverage**: Proceed with full research effort
+   - **Outdated Coverage**: Assess if refresh/update needed
+
+3. **Integration Strategy**
+   - How to build on prior research
+   - What new perspectives are needed
+   - How to avoid duplicating effort
+   - Whether to update existing research or create new
+
+### 3. Research Strategy Design
+
+#### Multi-Perspective Planning
+1. **Determine Research Team Size**
+   - Default: 3 researchers for comprehensive coverage
+   - Configurable based on complexity and timeline
+   - Consider: 1 for simple queries, 2-3 for complex analysis
+
+2. **Assign Domain Specializations**
+   - **Primary Perspective**: Most critical domain expertise needed
+   - **Secondary Perspectives**: Complementary viewpoints
+   - **Avoid Overlap**: Ensure each researcher has distinct angle
+   - **Maximize Coverage**: Balance breadth vs depth
+
+#### Common Research Team Configurations
+- **Technology Assessment**: Technical + Scalability + Security
+- **Market Analysis**: Market + Competitive + User
+- **Product Decision**: Technical + Business + User
+- **Strategic Planning**: Market + Business + Innovation
+- **Risk Assessment**: Technical + Regulatory + Business
+
+### 4. Researcher Deployment
+
+#### Configure Research Teams
+For each researcher agent:
+
+1. **Specialization Configuration**
+   - Assign specific domain expertise
+   - Configure perspective lens and focus areas
+   - Set source priorities and analysis frameworks
+   - Define role within overall research strategy
+
+2. **Research Briefing**
+   - Provide context from original request
+   - Clarify specific angle to investigate
+   - Set expectations for depth and format
+   - Define coordination checkpoints
+
+3. **Coordination Guidelines**
+   - How to avoid duplicating other researchers' work
+   - When to communicate with coordinator
+   - How to handle conflicting information
+   - Quality standards and source requirements
+
+#### Research Assignment Template
+```yaml
+researcher_briefing:
+  research_context: "[Context from original request]"
+  assigned_domain: "[Primary specialization]"
+  perspective_focus: "[Specific angle to investigate]"
+  research_questions: "[Domain-specific questions to address]"
+  source_priorities: "[Types of sources to prioritize]"
+  analysis_framework: "[How to analyze information]"
+  coordination_role: "[How this fits with other researchers]"
+  deliverable_format: "[Expected output structure]"
+  timeline: "[Deadlines and checkpoints]"
+```
+
+### 5. Research Coordination
+
+#### Monitor Research Progress
+- **Progress Checkpoints**: Regular status updates from researchers
+- **Quality Review**: Interim assessment of findings quality
+- **Coordination Adjustments**: Modify approach based on early findings
+- **Conflict Resolution**: Address disagreements between researchers
+
+#### Handle Research Challenges
+- **Information Gaps**: Redirect research focus if sources unavailable
+- **Conflicting Findings**: Document disagreements for synthesis
+- **Scope Creep**: Keep research focused on original objectives
+- **Quality Issues**: Address source credibility or analysis problems
+
+### 6. Findings Synthesis
+
+#### Synthesis Process
+1. **Gather Individual Reports**
+   - Collect findings from each researcher
+   - Review quality and completeness
+   - Identify areas needing clarification
+   - Validate source credibility across reports
+
+2. **Identify Patterns and Themes**
+   - **Convergent Findings**: Where researchers agree
+   - **Divergent Perspectives**: Different viewpoints on same issue
+   - **Conflicting Evidence**: Contradictory information to reconcile
+   - **Unique Insights**: Perspective-specific discoveries
+
+3. **Reconcile Conflicts and Gaps**
+   - Analyze reasons for conflicting findings
+   - Assess source credibility and evidence quality
+   - Document uncertainties and limitations
+   - Identify areas needing additional research
+
+#### Synthesis Output Structure
+Using research-synthesis-tmpl.yaml:
+
+1. **Executive Summary**: Key insights and recommendations
+2. **Methodology**: Research approach and team configuration
+3. **Key Findings**: Synthesized insights across perspectives
+4. **Detailed Analysis**: Findings from each domain perspective
+5. **Recommendations**: Actionable next steps
+6. **Sources and Evidence**: Documentation and verification
+7. **Limitations**: Constraints and uncertainties
+
+### 7. Delivery and Documentation
+
+#### Deliver to Requesting Agent
+1. **Primary Deliverable**: Synthesized research report
+2. **Executive Summary**: Key findings and recommendations
+3. **Supporting Detail**: Access to full analysis as needed
+4. **Next Steps**: Recommended actions and follow-up research
+
+#### Update Research Index
+Using research-log-entry-tmpl.yaml:
+
+1. **Add Index Entry**: New research to chronological list
+2. **Update Categories**: Add to appropriate domain sections
+3. **Tag Classification**: Add searchable tags for future reference
+4. **Cross-References**: Link to related prior research
+
+#### Store Research Artifacts
+- **Primary Report**: Store in docs/research/ with date-topic filename
+- **Research Index**: Update research-index.md with new entry
+- **Source Documentation**: Preserve links and references
+- **Research Metadata**: Track team configuration and approach
+
+### 8. Quality Assurance
+
+#### Research Quality Checklist
+- **Objective Completion**: All research questions addressed
+- **Source Credibility**: Reliable, recent, and relevant sources
+- **Perspective Diversity**: Genuinely different analytical angles
+- **Evidence Quality**: Strong support for key findings
+- **Synthesis Coherence**: Logical integration of perspectives
+- **Actionable Insights**: Clear implications for decision-making
+- **Uncertainty Documentation**: Limitations and gaps clearly stated
+
+#### Validation Steps
+1. **Internal Review**: Coordinator validates synthesis quality
+2. **Source Verification**: Spot-check key sources and evidence
+3. **Logic Check**: Ensure recommendations follow from findings
+4. **Completeness Assessment**: Confirm all objectives addressed
+
+### 9. Error Handling and Edge Cases
+
+#### Common Challenges
+- **Researcher Unavailability**: Adjust team size or perspective assignments
+- **Source Access Issues**: Graceful degradation to available information
+- **Conflicting Deadlines**: Prioritize critical research elements
+- **Quality Problems**: Reassign research or adjust scope
+
+#### Escalation Triggers
+- **Irreconcilable Conflicts**: Major disagreements between researchers
+- **Missing Critical Information**: Gaps that prevent objective completion
+- **Quality Failures**: Repeated issues with source credibility or analysis
+- **Timeline Pressures**: Cannot deliver quality research in time available
+
+### 10. Continuous Improvement
+
+#### Research Process Optimization
+- **Track Research Effectiveness**: Monitor how research informs decisions
+- **Identify Common Patterns**: Frequently requested research types
+- **Optimize Team Configurations**: Most effective perspective combinations
+- **Improve Synthesis Quality**: Better integration techniques
+
+#### Knowledge Base Enhancement
+- **Update Domain Profiles**: Refine specialization descriptions
+- **Expand Source Directories**: Add new credible source types
+- **Improve Methodologies**: Better research and analysis frameworks
+- **Enhance Templates**: More effective output structures
+
+## Integration Notes
+
+- **Task Dependencies**: This task coordinates with researcher agent tasks
+- **Template Usage**: Leverages research-synthesis-tmpl.yaml for output
+- **Index Maintenance**: Updates research-index.md via research-log-entry-tmpl.yaml
+- **Quality Control**: Uses research-quality-checklist.md for validation
+- **Agent Coordination**: Manages researcher.md agents with specialized configurations
+==================== END: .bmad-core/tasks/coordinate-research-effort.md ====================
+
+==================== START: .bmad-core/tasks/search-research-log.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Search Research Log Task
+
+## Purpose
+
+This task enables the Research Coordinator to search existing research logs to identify prior related work and prevent duplicate research efforts.
+
+## Process
+
+### 1. Search Strategy
+
+#### Check Research Index
+1. **Load Research Index**: Read `docs/research/research-index.md`
+2. **Keyword Search**: Search for related terms in:
+   - Research titles and descriptions
+   - Domain tags and categories
+   - Key insights summaries
+   - Requesting agent information
+
+#### Search Parameters
+- **Topic Keywords**: Core subject terms from research request
+- **Domain Tags**: Technical, market, user, competitive, etc.
+- **Date Range**: Recent research vs historical
+- **Requesting Agent**: Previous requests from same agent
+
+### 2. Analysis Process
+
+#### Evaluate Matches
+For each potential match:
+
+1. **Relevance Assessment**
+   - How closely does it match current request?
+   - What aspects are covered vs missing?
+   - Is the perspective angle similar or different?
+
+2. **Currency Evaluation**
+   - When was the research conducted?
+   - Is the information still current and relevant?
+   - Have market/technical conditions changed significantly?
+
+3. **Quality Review**
+   - What was the depth and scope of prior research?
+   - Quality of sources and analysis
+   - Confidence levels in findings
+
+### 3. Output Options
+
+#### Full Coverage Exists
+- **Recommendation**: Refer to existing research
+- **Action**: Provide link and summary of relevant findings
+- **Update Strategy**: Consider if refresh needed due to age
+
+#### Partial Coverage Available
+- **Recommendation**: Build on existing research
+- **Action**: Identify specific gaps to focus new research
+- **Integration Strategy**: How to combine old and new findings
+
+#### No Relevant Coverage
+- **Recommendation**: Proceed with full research effort
+- **Action**: Document search results to avoid future confusion
+- **Baseline**: Use existing research as context background
+
+#### Outdated Coverage
+- **Recommendation**: Update/refresh existing research
+- **Action**: Compare current request to prior research scope
+- **Strategy**: Full refresh vs targeted updates
+
+### 4. Documentation
+
+#### Search Results Summary
+```markdown
+## Research Log Search Results
+
+**Search Terms**: [keywords used]
+**Date Range**: [search period]
+**Matches Found**: [number of potential matches]
+
+### Relevant Prior Research
+1. **[Research Title]** (Date: YYYY-MM-DD)
+   - **Relevance**: [how closely it matches]
+   - **Coverage**: [what aspects are covered]
+   - **Currency**: [how recent/relevant]
+   - **Quality**: [assessment of depth/sources]
+   - **Recommendation**: [use as-is/build-on/refresh/ignore]
+
+### Search Conclusion
+- **Overall Assessment**: [full/partial/no/outdated coverage]
+- **Recommended Action**: [refer/build-on/proceed/refresh]
+- **Integration Strategy**: [how to use prior work]
+```
+
+### 5. Integration Recommendations
+
+#### Building on Prior Research
+- **Reference Strategy**: How to cite and build upon existing work
+- **Gap Focus**: Specific areas to concentrate new research efforts
+- **Perspective Additions**: New angles not covered in prior research
+- **Update Requirements**: Refresh outdated information
+
+#### Avoiding Duplication
+- **Scope Differentiation**: How current request differs from prior work
+- **Methodology Variation**: Different research approaches to try
+- **Source Expansion**: New information sources to explore
+- **Analysis Enhancement**: Deeper or alternative analytical frameworks
+
+## Integration with Research Workflow
+
+This task is typically called at the beginning of the research coordination process to inform strategy and prevent unnecessary duplication of effort.
+==================== END: .bmad-core/tasks/search-research-log.md ====================
+
+==================== START: .bmad-core/templates/research-synthesis-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: research-synthesis-template-v1
+  name: Research Synthesis Report
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/research/{{date}}-{{research_topic}}.md
+    title: "Research: {{research_topic}}"
+
+workflow:
+  mode: structured
+  validation: research-quality-checklist
+
+sections:
+  - id: metadata
+    title: Research Metadata
+    instruction: |
+      Capture essential metadata about the research effort:
+      - Date and requesting agent
+      - Research team composition and perspectives
+      - Original research objective and scope
+      - Priority level and timeline constraints
+    template: |
+      **Date**: {{research_date}}
+      **Requested by**: {{requesting_agent}}
+      **Research Team**: {{research_perspectives}}
+      **Priority**: {{priority_level}}
+      **Timeline**: {{timeline_constraints}}
+
+  - id: executive-summary
+    title: Executive Summary
+    instruction: |
+      Provide a concise overview synthesizing all research perspectives:
+      - Key findings from all research angles
+      - Primary recommendations and next steps
+      - Critical insights that inform decision-making
+      - Confidence levels and uncertainty areas
+    template: |
+      ## Executive Summary
+
+      {{executive_summary_content}}
+
+      ### Key Recommendations
+      {{key_recommendations}}
+
+      ### Confidence Assessment
+      {{confidence_levels}}
+
+  - id: research-objective
+    title: Research Objective
+    instruction: |
+      Document the original research request and objectives:
+      - Primary research question or problem
+      - Success criteria and scope boundaries
+      - Decision context and expected impact
+      - Background and requesting agent context
+    template: |
+      ## Research Objective
+
+      ### Primary Goal
+      {{primary_research_goal}}
+
+      ### Success Criteria
+      {{success_criteria}}
+
+      ### Decision Context
+      {{decision_context}}
+
+      ### Background
+      {{research_background}}
+
+  - id: methodology
+    title: Research Methodology
+    instruction: |
+      Describe the research approach and team structure:
+      - Number and types of research perspectives used
+      - Specialization configuration for each researcher
+      - Research methods and source types prioritized
+      - Quality assurance and validation processes
+    template: |
+      ## Research Methodology
+
+      ### Research Team Configuration
+      {{research_team_config}}
+
+      ### Research Approaches
+      {{research_approaches}}
+
+      ### Source Types and Priorities
+      {{source_priorities}}
+
+      ### Quality Assurance
+      {{quality_assurance_methods}}
+
+  - id: key-findings
+    title: Key Findings
+    instruction: |
+      Present the synthesized findings from all research perspectives:
+      - Major insights that emerged across perspectives
+      - Convergent findings where researchers agreed
+      - Divergent findings and conflicting information
+      - Gaps and areas requiring additional research
+    template: |
+      ## Key Findings
+
+      ### Convergent Insights
+      {{convergent_findings}}
+
+      ### Perspective-Specific Insights
+      {{perspective_specific_findings}}
+
+      ### Conflicting Information
+      {{conflicting_findings}}
+
+      ### Research Gaps Identified
+      {{research_gaps}}
+
+  - id: detailed-analysis
+    title: Detailed Analysis by Perspective
+    instruction: |
+      Provide detailed findings from each research perspective:
+      - Findings from each domain specialization
+      - Evidence and sources supporting each perspective
+      - Domain-specific recommendations
+      - Limitations and uncertainties for each angle
+    template: |
+      ## Detailed Analysis by Perspective
+
+      ### Perspective 1: {{perspective_1_domain}}
+      {{perspective_1_findings}}
+
+      **Key Sources**: {{perspective_1_sources}}
+      **Confidence Level**: {{perspective_1_confidence}}
+
+      ### Perspective 2: {{perspective_2_domain}}
+      {{perspective_2_findings}}
+
+      **Key Sources**: {{perspective_2_sources}}
+      **Confidence Level**: {{perspective_2_confidence}}
+
+      ### Perspective 3: {{perspective_3_domain}}
+      {{perspective_3_findings}}
+
+      **Key Sources**: {{perspective_3_sources}}
+      **Confidence Level**: {{perspective_3_confidence}}
+
+  - id: recommendations
+    title: Recommendations and Next Steps
+    instruction: |
+      Provide actionable recommendations based on research synthesis:
+      - Immediate actions based on high-confidence findings
+      - Strategic recommendations for medium-term planning
+      - Areas requiring additional research or validation
+      - Risk mitigation strategies based on findings
+    template: |
+      ## Recommendations and Next Steps
+
+      ### Immediate Actions (High Confidence)
+      {{immediate_actions}}
+
+      ### Strategic Recommendations
+      {{strategic_recommendations}}
+
+      ### Additional Research Needed
+      {{additional_research_needed}}
+
+      ### Risk Mitigation
+      {{risk_mitigation_strategies}}
+
+  - id: sources-and-evidence
+    title: Sources and Evidence
+    instruction: |
+      Document all sources and evidence used in the research:
+      - Primary sources cited by each researcher
+      - Source credibility assessments
+      - Evidence quality and recency evaluation
+      - Links and references for verification
+    template: |
+      ## Sources and Evidence
+
+      ### Primary Sources by Perspective
+      {{sources_by_perspective}}
+
+      ### Source Credibility Assessment
+      {{source_credibility_evaluation}}
+
+      ### Evidence Quality Notes
+      {{evidence_quality_notes}}
+
+      ### Reference Links
+      {{reference_links}}
+
+  - id: limitations-and-uncertainties
+    title: Limitations and Uncertainties
+    instruction: |
+      Clearly document research limitations and areas of uncertainty:
+      - Scope limitations and boundary constraints
+      - Information gaps and unavailable data
+      - Conflicting evidence and uncertainty areas
+      - Temporal constraints and information recency
+    template: |
+      ## Limitations and Uncertainties
+
+      ### Scope Limitations
+      {{scope_limitations}}
+
+      ### Information Gaps
+      {{information_gaps}}
+
+      ### Areas of Uncertainty
+      {{uncertainty_areas}}
+
+      ### Temporal Constraints
+      {{temporal_constraints}}
+
+  - id: research-tags
+    title: Research Classification
+    instruction: |
+      Add classification tags for future searchability:
+      - Domain tags (technical, market, user, etc.)
+      - Topic tags (specific subject areas)
+      - Project phase tags (planning, development, etc.)
+      - Decision type tags (architecture, feature, strategy, etc.)
+    template: |
+      ## Research Classification
+
+      ### Domain Tags
+      {{domain_tags}}
+
+      ### Topic Tags
+      {{topic_tags}}
+
+      ### Project Phase Tags
+      {{project_phase_tags}}
+
+      ### Decision Type Tags
+      {{decision_type_tags}}
+==================== END: .bmad-core/templates/research-synthesis-tmpl.yaml ====================
+
+==================== START: .bmad-core/templates/research-log-entry-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: research-log-entry-template-v1
+  name: Research Log Entry
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/research/research-index.md
+    title: "Research Index"
+    append_mode: true
+
+workflow:
+  mode: automated
+  trigger: research_completion
+
+sections:
+  - id: new-entry
+    title: Research Index Entry
+    instruction: |
+      Add a new entry to the research index with essential information for future reference:
+      - Date and topic for chronological organization
+      - Brief description of research focus
+      - Domain tags for categorization
+      - Key insights summary for quick reference
+    template: |
+      - [{{research_date}}: {{research_topic}}]({{research_filename}}) - {{brief_description}}
+        - **Domains**: {{domain_tags}}
+        - **Key Insight**: {{key_insight_summary}}
+        - **Requested by**: {{requesting_agent}}
+
+  - id: category-update
+    title: Category Index Update
+    instruction: |
+      Update the category sections based on the research domain tags:
+      - Add to appropriate domain categories
+      - Create new categories if needed
+      - Maintain alphabetical organization within categories
+    template: |
+      ### {{primary_domain}} Research
+      - {{research_topic}} ({{research_date}})
+==================== END: .bmad-core/templates/research-log-entry-tmpl.yaml ====================
+
+==================== START: .bmad-core/checklists/research-quality-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Research Quality Checklist
+
+## Pre-Research Planning
+
+### Research Objective Clarity
+- [ ] Research objective is specific and measurable
+- [ ] Success criteria are clearly defined
+- [ ] Scope boundaries are explicitly stated
+- [ ] Decision context and impact are understood
+- [ ] Timeline and priority constraints are documented
+
+### Research Strategy Design
+- [ ] Multi-perspective approach is appropriate for complexity
+- [ ] Domain specializations are properly assigned
+- [ ] Research team size matches scope and timeline
+- [ ] Potential overlap between perspectives is minimized
+- [ ] Research methodologies are appropriate for objectives
+
+### Prior Research Review
+- [ ] Research log has been searched for related work
+- [ ] Prior research relevance has been assessed
+- [ ] Strategy for building on existing work is defined
+- [ ] Duplication prevention measures are in place
+
+## During Research Execution
+
+### Source Quality and Credibility
+- [ ] Sources are credible and authoritative
+- [ ] Information recency is appropriate for topic
+- [ ] Source diversity provides multiple viewpoints
+- [ ] Potential bias in sources is identified and noted
+- [ ] Primary sources are prioritized over secondary when available
+
+### Research Methodology
+- [ ] Research approach is systematic and thorough
+- [ ] Domain expertise lens is consistently applied
+- [ ] Web search capabilities are effectively utilized
+- [ ] Information gathering covers all assigned perspective areas
+- [ ] Analysis frameworks are appropriate for domain
+
+### Quality Assurance
+- [ ] Key findings are supported by multiple sources
+- [ ] Conflicting information is properly documented
+- [ ] Uncertainty levels are clearly identified
+- [ ] Source citations are complete and verifiable
+- [ ] Analysis stays within assigned domain perspective
+
+## Synthesis and Integration
+
+### Multi-Perspective Synthesis
+- [ ] Findings from all researchers are properly integrated
+- [ ] Convergent insights are clearly identified
+- [ ] Divergent viewpoints are fairly represented
+- [ ] Conflicts between perspectives are analyzed and explained
+- [ ] Gaps requiring additional research are documented
+
+### Analysis Quality
+- [ ] Key findings directly address research objectives
+- [ ] Evidence supports conclusions and recommendations
+- [ ] Limitations and uncertainties are transparently documented
+- [ ] Alternative interpretations are considered
+- [ ] Recommendations are actionable and specific
+
+### Documentation Standards
+- [ ] Executive summary captures key insights effectively
+- [ ] Detailed analysis is well-organized and comprehensive
+- [ ] Source documentation enables verification
+- [ ] Research methodology is clearly explained
+- [ ] Classification tags are accurate and complete
+
+## Final Deliverable Review
+
+### Completeness
+- [ ] All research questions have been addressed
+- [ ] Success criteria have been met
+- [ ] Output format matches requestor requirements
+- [ ] Supporting documentation is complete
+- [ ] Next steps and follow-up needs are identified
+
+### Decision Support Quality
+- [ ] Findings directly inform decision-making needs
+- [ ] Confidence levels help assess decision risk
+- [ ] Recommendations are prioritized and actionable
+- [ ] Implementation considerations are addressed
+- [ ] Risk factors and mitigation strategies are provided
+
+### Integration and Handoff
+- [ ] Results are properly formatted for requesting agent
+- [ ] Research log has been updated with new entry
+- [ ] Index categorization is accurate and searchable
+- [ ] Cross-references to related research are included
+- [ ] Handoff communication includes key highlights
+
+## Post-Research Evaluation
+
+### Research Effectiveness
+- [ ] Research objectives were successfully achieved
+- [ ] Timeline and resource constraints were managed effectively
+- [ ] Quality standards were maintained throughout process
+- [ ] Research contributed meaningfully to decision-making
+- [ ] Lessons learned are documented for process improvement
+
+### Knowledge Management
+- [ ] Research artifacts are properly stored and indexed
+- [ ] Key insights are preserved for future reference
+- [ ] Research methodology insights can inform future efforts
+- [ ] Source directories and contacts are updated
+- [ ] Process improvements are identified and documented
+
+## Quality Escalation Triggers
+
+### Immediate Review Required
+- [ ] Major conflicts between research perspectives cannot be reconciled
+- [ ] Key sources are found to be unreliable or biased
+- [ ] Research scope significantly exceeds original boundaries
+- [ ] Critical information gaps prevent objective completion
+- [ ] Timeline constraints threaten quality standards
+
+### Process Improvement Needed
+- [ ] Repeated issues with source credibility or access
+- [ ] Frequent scope creep or objective changes
+- [ ] Consistent challenges with perspective coordination
+- [ ] Quality standards frequently not met on first attempt
+- [ ] Research effectiveness below expectations
+
+## Continuous Improvement
+
+### Research Process Enhancement
+- [ ] Track research effectiveness and decision impact
+- [ ] Identify patterns in research requests and optimize approaches
+- [ ] Refine domain specialization profiles based on experience
+- [ ] Improve synthesis techniques and template effectiveness
+- [ ] Enhance coordination methods between research perspectives
+
+### Knowledge Base Development
+- [ ] Update research methodologies based on lessons learned
+- [ ] Expand credible source directories with new discoveries
+- [ ] Improve domain expertise profiles with refined specializations
+- [ ] Enhance template structures based on user feedback
+- [ ] Develop best practices guides for complex research scenarios
+==================== END: .bmad-core/checklists/research-quality-checklist.md ====================
+
+==================== START: .bmad-core/data/research-methodologies.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Research Methodologies
+
+## Domain-Specific Research Approaches
+
+### Technical Research Methodologies
+
+#### Technology Assessment Framework
+- **Capability Analysis**: Feature sets, performance characteristics, scalability limits
+- **Implementation Evaluation**: Complexity, learning curve, integration requirements
+- **Ecosystem Assessment**: Community support, documentation quality, maintenance status
+- **Performance Benchmarking**: Speed, resource usage, throughput comparisons
+- **Security Analysis**: Vulnerability assessment, security model evaluation
+
+#### Technical Source Priorities
+1. **Official Documentation**: Primary source for capabilities and limitations
+2. **GitHub Repositories**: Code quality, activity level, issue resolution patterns
+3. **Technical Blogs**: Implementation experiences, best practices, lessons learned
+4. **Stack Overflow**: Common problems, community solutions, adoption challenges
+5. **Benchmark Studies**: Performance comparisons, scalability test results
+
+### Market Research Methodologies
+
+#### Market Analysis Framework
+- **Market Sizing**: TAM/SAM/SOM analysis, growth rate assessment
+- **Competitive Landscape**: Player mapping, market share analysis, positioning
+- **Customer Segmentation**: Demographics, psychographics, behavioral patterns
+- **Trend Analysis**: Market direction, disruption potential, timing factors
+- **Opportunity Assessment**: Market gaps, underserved segments, entry barriers
+
+#### Market Source Priorities
+1. **Industry Reports**: Analyst research, market studies, trend analyses
+2. **Financial Data**: Public company reports, funding announcements, valuations
+3. **Survey Data**: Customer research, market studies, adoption surveys
+4. **Trade Publications**: Industry news, expert opinions, market insights
+5. **Government Data**: Economic indicators, regulatory information, statistics
+
+### User Research Methodologies
+
+#### User-Centered Research Framework
+- **Behavioral Analysis**: User journey mapping, interaction patterns, pain points
+- **Needs Assessment**: Jobs-to-be-done analysis, unmet needs identification
+- **Experience Evaluation**: Usability assessment, satisfaction measurement
+- **Preference Research**: Feature prioritization, willingness to pay, adoption factors
+- **Context Analysis**: Use case scenarios, environmental factors, constraints
+
+#### User Research Source Priorities
+1. **User Studies**: Direct research, surveys, interviews, focus groups
+2. **Product Reviews**: Customer feedback, ratings, detailed experiences
+3. **Social Media**: User discussions, complaints, feature requests
+4. **Support Forums**: Common issues, user questions, community solutions
+5. **Analytics Data**: Usage patterns, conversion rates, engagement metrics
+
+### Competitive Research Methodologies
+
+#### Competitive Intelligence Framework
+- **Feature Comparison**: Capability matrices, feature gap analysis
+- **Strategic Analysis**: Business model evaluation, positioning assessment
+- **Performance Benchmarking**: Speed, reliability, user experience comparisons
+- **Market Position**: Share analysis, customer perception, brand strength
+- **Innovation Tracking**: Product roadmaps, patent filings, investment areas
+
+#### Competitive Source Priorities
+1. **Competitor Websites**: Product information, pricing, positioning messages
+2. **Product Demos**: Hands-on evaluation, feature testing, user experience
+3. **Press Releases**: Strategic announcements, product launches, partnerships
+4. **Analyst Reports**: Third-party assessments, market positioning studies
+5. **Customer Feedback**: Reviews comparing competitors, switching reasons
+
+### Scientific Research Methodologies
+
+#### Scientific Analysis Framework
+- **Literature Review**: Peer-reviewed research, citation analysis, consensus building
+- **Methodology Assessment**: Research design quality, statistical validity, reproducibility
+- **Evidence Evaluation**: Study quality, sample sizes, control factors
+- **Consensus Analysis**: Scientific agreement levels, controversial areas
+- **Application Assessment**: Practical implications, implementation feasibility
+
+#### Scientific Source Priorities
+1. **Peer-Reviewed Journals**: Primary research, systematic reviews, meta-analyses
+2. **Academic Databases**: Research repositories, citation networks, preprints
+3. **Conference Proceedings**: Latest research, emerging trends, expert presentations
+4. **Expert Opinions**: Thought leader insights, expert interviews, panel discussions
+5. **Research Institutions**: University studies, lab reports, institutional research
+
+## Research Quality Standards
+
+### Source Credibility Assessment
+
+#### Primary Source Evaluation
+- **Authority**: Expertise of authors, institutional affiliation, credentials
+- **Accuracy**: Fact-checking, peer review process, error correction mechanisms
+- **Objectivity**: Bias assessment, funding sources, conflict of interest disclosure
+- **Currency**: Publication date, information recency, update frequency
+- **Coverage**: Scope comprehensiveness, detail level, methodology transparency
+
+#### Secondary Source Validation
+- **Citation Quality**: Primary source references, citation accuracy, source diversity
+- **Synthesis Quality**: Analysis depth, logical coherence, balanced perspective
+- **Author Expertise**: Subject matter knowledge, track record, reputation
+- **Publication Standards**: Editorial process, fact-checking procedures, corrections policy
+- **Bias Assessment**: Perspective limitations, stakeholder influences, agenda identification
+
+### Information Synthesis Approaches
+
+#### Multi-Perspective Integration
+- **Convergence Analysis**: Identify areas where sources agree consistently
+- **Divergence Documentation**: Note significant disagreements and analyze causes
+- **Confidence Weighting**: Assign confidence levels based on source quality and consensus
+- **Gap Identification**: Recognize areas lacking sufficient information or research
+- **Uncertainty Quantification**: Document limitations and areas of unclear evidence
+
+#### Evidence Hierarchy
+1. **High Confidence**: Multiple credible sources, recent information, expert consensus
+2. **Medium Confidence**: Some credible sources, mixed consensus, moderate currency
+3. **Low Confidence**: Limited sources, significant disagreement, dated information
+4. **Speculative**: Minimal evidence, high uncertainty, expert opinion only
+5. **Unknown**: Insufficient information available for assessment
+
+## Domain-Specific Analysis Frameworks
+
+### Technical Analysis Framework
+- **Feasibility Assessment**: Technical viability, implementation complexity, resource requirements
+- **Scalability Analysis**: Performance under load, growth accommodation, architectural limits
+- **Integration Evaluation**: Compatibility assessment, integration complexity, ecosystem fit
+- **Maintenance Considerations**: Support requirements, update frequency, long-term viability
+- **Risk Assessment**: Technical risks, dependency risks, obsolescence potential
+
+### Business Analysis Framework
+- **Value Proposition**: Customer value delivery, competitive advantage, market differentiation
+- **Financial Impact**: Cost analysis, revenue potential, ROI assessment, budget implications
+- **Strategic Alignment**: Goal consistency, priority alignment, resource allocation fit
+- **Implementation Feasibility**: Resource requirements, timeline considerations, capability gaps
+- **Risk-Benefit Analysis**: Potential rewards vs implementation risks and costs
+
+### User Impact Framework
+- **User Experience**: Ease of use, learning curve, satisfaction factors, accessibility
+- **Adoption Factors**: Barriers to adoption, motivation drivers, change management needs
+- **Value Delivery**: User benefit realization, problem solving effectiveness, outcome achievement
+- **Support Requirements**: Training needs, documentation requirements, ongoing support
+- **Success Metrics**: User satisfaction measures, adoption rates, outcome indicators
+
+## Research Coordination Best Practices
+
+### Multi-Researcher Coordination
+- **Perspective Assignment**: Clear domain boundaries, minimal overlap, comprehensive coverage
+- **Communication Protocols**: Regular check-ins, conflict resolution processes, coordination methods
+- **Quality Standards**: Consistent source credibility requirements, analysis depth expectations
+- **Timeline Management**: Milestone coordination, dependency management, delivery synchronization
+- **Integration Planning**: Synthesis approach design, conflict resolution strategies, gap handling
+
+### Research Efficiency Optimization
+- **Source Sharing**: Avoid duplicate source evaluation across researchers
+- **Finding Coordination**: Share relevant discoveries between perspectives
+- **Quality Checks**: Cross-validation of key findings, source verification collaboration
+- **Scope Management**: Prevent research scope creep, maintain focus on objectives
+- **Resource Optimization**: Leverage each researcher's domain expertise most effectively
+==================== END: .bmad-core/data/research-methodologies.md ====================
+
 ==================== START: .bmad-core/workflows/brownfield-fullstack.yaml ====================
 # <!-- Powered by BMAD™ Core -->
 workflow:
@@ -9230,7 +10521,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -9247,7 +10538,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -9477,7 +10768,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -9494,7 +10785,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -9675,7 +10966,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -9692,7 +10983,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -9828,12 +11119,12 @@ workflow:
       condition: po_checklist_issues
       notes: "If PO finds issues, return to relevant agent to fix and re-export updated documents to docs/ folder."
 
-    - project_setup_guidance:
+    - step: project_setup_guidance
       action: guide_project_structure
       condition: user_has_generated_ui
       notes: "If user generated UI with v0/Lovable: For polyrepo setup, place downloaded project in separate frontend repo alongside backend repo. For monorepo, place in apps/web or packages/frontend directory. Review architecture document for specific guidance."
 
-    - development_order_guidance:
+    - step: development_order_guidance
       action: guide_development_sequence
       notes: "Based on PRD stories: If stories are frontend-heavy, start with frontend project/directory first. If backend-heavy or API-first, start with backend. For tightly coupled features, follow story sequence in monorepo setup. Reference sharded PRD epics for development order."
 
@@ -9901,7 +11192,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -9918,7 +11209,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -10121,7 +11412,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -10138,7 +11429,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
@@ -10281,7 +11572,7 @@ workflow:
       condition: po_checklist_issues
       notes: "If PO finds issues, return to relevant agent to fix and re-export updated documents to docs/ folder."
 
-    - project_setup_guidance:
+    - step: project_setup_guidance
       action: guide_project_structure
       condition: user_has_generated_ui
       notes: "If user generated UI with v0/Lovable: For polyrepo setup, place downloaded project in separate frontend repo. For monorepo, place in apps/web or frontend/ directory. Review architecture document for specific guidance."
@@ -10350,7 +11641,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -10367,7 +11658,7 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!

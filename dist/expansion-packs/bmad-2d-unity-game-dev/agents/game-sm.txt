@@ -89,6 +89,7 @@ dependencies:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-game-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Game Story Task
 
 ## Purpose
@@ -277,6 +278,7 @@ This task ensures game development stories are immediately actionable and enable
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -367,6 +369,7 @@ The LLM will:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/correct-course-game.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Correct Course Task - Game Development
 
 ## Purpose
@@ -772,6 +775,7 @@ sections:
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-change-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Change Navigation Checklist
 
 **Purpose:** To systematically guide the Game SM agent and user through analysis and planning when a significant change (performance issue, platform constraint, technical blocker, gameplay feedback) is identified during Unity game development.

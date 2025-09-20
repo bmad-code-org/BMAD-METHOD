@@ -100,6 +100,7 @@ commands:
   - doc-out: Output full document in progress to current destination file
   - elicit: run the task advanced-elicitation
   - perform-market-research: use task create-doc with market-research-tmpl.yaml
+  - research {topic}: Request specialized research analysis using task request-research
   - research-prompt {topic}: execute task create-deep-research-prompt.md
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Business Analyst, and then abandon inhabiting this persona
@@ -113,6 +114,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - facilitate-brainstorming-session.md
+    - request-research.md
   templates:
     - brainstorming-output-tmpl.yaml
     - competitor-analysis-tmpl.yaml
@@ -478,6 +480,7 @@ dependencies:
 
 ==================== START: .bmad-2d-unity-game-dev/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # BMad Knowledge Base - 2D Unity Game Development
 
 ## Overview
@@ -1251,6 +1254,7 @@ This knowledge base provides the foundation for effective game development using
 
 ==================== START: .bmad-2d-unity-game-dev/data/brainstorming-techniques.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Brainstorming Techniques Data
 
 ## Creative Expansion
@@ -1291,6 +1295,7 @@ This knowledge base provides the foundation for effective game development using
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Game Design Elicitation Task
 
 ## Purpose
@@ -1405,6 +1410,7 @@ The questions and perspectives offered should always consider:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-deep-research-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -1687,6 +1693,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -1792,6 +1799,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/document-project.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document an Existing Project
 
 ## Purpose
@@ -2138,10 +2146,11 @@ Apply the advanced elicitation task after major sections to refine based on user
 ==================== END: .bmad-2d-unity-game-dev/tasks/document-project.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/facilitate-brainstorming-session.md ====================
-<!-- Powered by BMAD™ Core -->
----
+## <!-- Powered by BMAD™ Core -->
+
 docOutputLocation: docs/brainstorming-session-results.md
 template: '.bmad-2d-unity-game-dev/templates/brainstorming-output-tmpl.yaml'
+
 ---
 
 # Facilitate Brainstorming Session Task
@@ -2276,6 +2285,255 @@ Generate structured document with these sections:
 - Offer options: "Should we explore this idea deeper or generate more alternatives?"
 - Respect their process and timing
 ==================== END: .bmad-2d-unity-game-dev/tasks/facilitate-brainstorming-session.md ====================
+
+==================== START: .bmad-2d-unity-game-dev/tasks/request-research.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Request Research Task
+
+## Purpose
+
+This task provides a unified interface for any agent to request specialized research from the Research Coordinator, which can spawn up to 3 domain-specific researcher agents to attack problems from different angles.
+
+## Key Features
+
+- **Multi-Perspective Analysis**: Coordinator spawns specialized researchers with different domain expertise
+- **Web Search Capabilities**: Researchers have access to current information and data
+- **Adaptive Specialization**: Research agents adapt to specific domains as needed by the requesting context
+- **Research Logging**: All synthesis results stored in indexed research log to avoid duplicate work
+- **Configurable Team Size**: Default 3 researchers, configurable based on complexity
+
+## Usage Scenarios
+
+### From Any Agent
+Any agent can call this task to get specialized research assistance:
+
+```yaml
+*task request-research
+```
+
+### Common Use Cases
+
+- **Analyst**: Competitive analysis, market research, industry trends
+- **Architect**: Technology assessment, scalability analysis, security research
+- **PM**: Market validation, user research, feasibility studies
+- **Dev**: Technical implementation research, library comparisons, best practices
+- **QA**: Testing methodologies, quality standards, compliance requirements
+
+## Task Process
+
+### 1. Research Request Specification
+
+The task will elicit a structured research request with these components:
+
+#### Research Context
+- **Requesting Agent**: Which agent is making the request
+- **Project Context**: Current project phase and relevant background
+- **Previous Research**: Check research log for related prior work
+- **Urgency Level**: Timeline constraints and priority
+
+#### Research Objective
+- **Primary Goal**: What specific question or problem needs researching
+- **Success Criteria**: How to measure if research achieved its objective
+- **Scope Boundaries**: What to include/exclude from research
+- **Decision Impact**: How results will be used
+
+#### Domain Specialization Requirements
+- **Primary Domain**: Main area of expertise needed (technical, market, user, etc.)
+- **Secondary Domains**: Additional perspectives required
+- **Specific Expertise**: Particular skills or knowledge areas
+- **Research Depth**: High-level overview vs deep technical analysis
+
+#### Output Requirements
+- **Format**: Executive summary, detailed report, comparison matrix, etc.
+- **Audience**: Who will consume the research results
+- **Integration**: How results feed into next steps
+- **Documentation**: Level of source citation needed
+
+### 2. Research Coordination
+
+The Research Coordinator will:
+
+1. **Check Research Log**: Review `docs/research/research-index.md` for prior related work
+2. **Design Research Strategy**: Plan multi-perspective approach
+3. **Spawn Researcher Agents**: Deploy 1-3 specialized researchers with distinct angles
+4. **Monitor Progress**: Coordinate between researchers to avoid overlap
+5. **Synthesize Results**: Combine findings into coherent analysis
+
+### 3. Research Execution
+
+Each Researcher Agent will:
+
+1. **Adapt Domain Expertise**: Configure specialization based on assigned perspective
+2. **Conduct Web Research**: Use search capabilities to gather current information
+3. **Analyze and Synthesize**: Process information through domain-specific lens
+4. **Generate Findings**: Create structured report for their perspective
+5. **Cite Sources**: Document credible sources and evidence
+
+### 4. Result Delivery
+
+#### To Requesting Agent
+- **Executive Summary**: Key findings and recommendations
+- **Detailed Analysis**: Comprehensive research results
+- **Source Documentation**: Links and citations for verification
+- **Next Steps**: Recommended actions or follow-up research
+
+#### To Research Log
+- **Research Entry**: Concise summary stored in `docs/research/YYYY-MM-DD-research-topic.md`
+- **Index Update**: Add entry to `docs/research/research-index.md`
+- **Tag Classification**: Add searchable tags for future reference
+
+### 5. Quality Assurance
+
+- **Source Credibility**: Verify information from reputable sources
+- **Cross-Perspective Validation**: Ensure consistency across researcher findings
+- **Bias Detection**: Identify and flag potential biases or limitations
+- **Completeness Check**: Confirm all research objectives addressed
+
+## Research Request Template
+
+When executing this task, use this structure for research requests:
+
+```yaml
+research_request:
+  metadata:
+    requesting_agent: "[agent-id]"
+    request_date: "[YYYY-MM-DD]"
+    priority: "[high|medium|low]"
+    timeline: "[timeframe needed]"
+
+  context:
+    project_phase: "[planning|development|validation|etc]"
+    background: "[relevant project context]"
+    related_docs: "[PRD, architecture, stories, etc]"
+    previous_research: "[check research log references]"
+
+  objective:
+    primary_goal: "[specific research question]"
+    success_criteria: "[how to measure success]"
+    scope: "[boundaries and limitations]"
+    decision_impact: "[how results will be used]"
+
+  specialization:
+    primary_domain: "[technical|market|user|competitive|regulatory|etc]"
+    secondary_domains: "[additional perspectives needed]"
+    specific_expertise: "[particular skills required]"
+    research_depth: "[overview|detailed|comprehensive]"
+
+  team_config:
+    researcher_count: "[1-3, default 3]"
+    perspective_1: "[domain and focus area]"
+    perspective_2: "[domain and focus area]"
+    perspective_3: "[domain and focus area]"
+
+  output:
+    format: "[executive_summary|detailed_report|comparison_matrix|etc]"
+    audience: "[who will use results]"
+    integration: "[how results feed into workflow]"
+    citation_level: "[minimal|standard|comprehensive]"
+```
+
+## Integration with Existing Agents
+
+### Adding Research Capability to Agents
+
+To add research capabilities to existing agents, add this dependency:
+
+```yaml
+dependencies:
+  tasks:
+    - request-research.md
+```
+
+Then add a research command:
+
+```yaml
+commands:
+  - research {topic}: Request specialized research analysis using task request-research
+```
+
+### Research Command Examples
+
+- `*research "competitor API pricing models"` (from PM)
+- `*research "microservices vs monolith for our scale"` (from Architect)
+- `*research "React vs Vue for dashboard components"` (from Dev)
+- `*research "automated testing strategies for ML models"` (from QA)
+
+## Research Log Structure
+
+### Research Index (`docs/research/research-index.md`)
+```markdown
+# Research Index
+
+## Recent Research
+- [2024-01-15: AI Model Comparison](2024-01-15-ai-model-comparison.md) - Technical analysis of LLM options
+- [2024-01-12: Payment Gateway Analysis](2024-01-12-payment-gateway-analysis.md) - Market comparison of payment solutions
+
+## Research by Category
+### Technical Research
+- AI/ML Models
+- Architecture Decisions
+- Technology Stacks
+
+### Market Research
+- Competitive Analysis
+- User Behavior
+- Industry Trends
+```
+
+### Individual Research Files (`docs/research/YYYY-MM-DD-topic.md`)
+```markdown
+# Research: [Topic]
+
+**Date**: YYYY-MM-DD
+**Requested by**: [agent-name]
+**Research Team**: [perspectives used]
+
+## Executive Summary
+[Key findings and recommendations]
+
+## Research Objective
+[What was being researched and why]
+
+## Key Findings
+[Main insights from all perspectives]
+
+## Recommendations
+[Actionable next steps]
+
+## Research Team Perspectives
+### Perspective 1: [Domain]
+[Key insights from this angle]
+
+### Perspective 2: [Domain]
+[Key insights from this angle]
+
+### Perspective 3: [Domain]
+[Key insights from this angle]
+
+## Sources and References
+[Credible sources cited by research team]
+
+## Tags
+[Searchable tags for future reference]
+```
+
+## Important Notes
+
+- **Research Log Maintenance**: Research Coordinator automatically maintains the research index
+- **Duplicate Prevention**: Always check existing research before launching new requests
+- **Source Quality**: Prioritize credible, recent sources with proper attribution
+- **Perspective Diversity**: Ensure research angles provide genuinely different viewpoints
+- **Synthesis Quality**: Coordinator must reconcile conflicting findings and highlight uncertainties
+- **Integration Focus**: All research should provide actionable insights for decision-making
+
+## Error Handling
+
+- **Web Search Failures**: Graceful degradation to available information
+- **Conflicting Research**: Document disagreements and uncertainty levels
+- **Incomplete Coverage**: Flag areas needing additional research
+- **Source Quality Issues**: Clearly mark uncertain or low-confidence findings
+==================== END: .bmad-2d-unity-game-dev/tasks/request-research.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/templates/brainstorming-output-tmpl.yaml ====================
 template:
@@ -3229,6 +3487,7 @@ sections:
 
 ==================== START: .bmad-2d-unity-game-dev/data/elicitation-methods.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Elicitation Methods Data
 
 ## Core Reflective Methods
@@ -3387,6 +3646,7 @@ sections:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/kb-mode-interaction.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # KB Mode Interaction Task
 
 ## Purpose
@@ -3466,6 +3726,7 @@ Or ask me about anything else related to BMad-Method!
 
 ==================== START: .bmad-2d-unity-game-dev/utils/workflow-management.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Workflow Management
 
 Enables BMad orchestrator to manage and execute team workflows.
@@ -3539,6 +3800,7 @@ Agents should be workflow-aware: know active workflow, their role, access artifa
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -3629,6 +3891,7 @@ The LLM will:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/shard-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document Sharding Task
 
 ## Purpose
@@ -3818,6 +4081,7 @@ Document sharded successfully:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/game-design-brainstorming.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Brainstorming Techniques Task
 
 This task provides a comprehensive toolkit of creative brainstorming techniques specifically designed for game design ideation and innovative thinking. The game designer can use these techniques to facilitate productive brainstorming sessions focused on game mechanics, player experience, and creative concepts.
@@ -5669,6 +5933,7 @@ sections:
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-design-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Document Quality Checklist
 
 ## Document Completeness
@@ -6908,6 +7173,7 @@ sections:
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-architect-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Architect Solution Validation Checklist
 
 This checklist serves as a comprehensive framework for the Game Architect to validate the technical design and architecture before game development execution. The Game Architect should systematically work through each item, ensuring the game architecture is robust, scalable, performant, and aligned with the Game Design Document requirements.
@@ -7303,6 +7569,7 @@ After presenting the report, ask the user if they would like detailed analysis o
 
 ==================== START: .bmad-2d-unity-game-dev/data/development-guidelines.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Guidelines (Unity & C#)
 
 ## Overview
@@ -7893,6 +8160,7 @@ These guidelines ensure consistent, high-quality game development that meets per
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/validate-next-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Validate Next Story Task
 
 ## Purpose
@@ -7914,7 +8182,7 @@ To comprehensively validate a story draft before implementation begins, ensuring
 
 ### 1. Template Completeness Validation
 
-- Load `bmad-core/templates/story-tmpl.md` and extract all section headings from the template
+- Load `.bmad-core/templates/story-tmpl.yaml` and extract all section headings from the template
 - **Missing sections check**: Compare story sections against template sections to verify all required sections are present
 - **Placeholder validation**: Ensure no template placeholders remain unfilled (e.g., `{{EpicNum}}`, `{{role}}`, `_TBD_`)
 - **Agent section verification**: Confirm all sections from template exist for future agent use
@@ -8031,6 +8299,7 @@ Provide a structured validation report including:
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-story-dod-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Story Definition of Done (DoD) Checklist
 
 ## Instructions for Developer Agent
@@ -8159,6 +8428,7 @@ Be honest - it's better to flag issues now than have them discovered during play
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-game-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Game Story Task
 
 ## Purpose
@@ -8347,6 +8617,7 @@ This task ensures game development stories are immediately actionable and enable
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/correct-course-game.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Correct Course Task - Game Development
 
 ## Purpose
@@ -8752,6 +9023,7 @@ sections:
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-change-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Change Navigation Checklist
 
 **Purpose:** To systematically guide the Game SM agent and user through analysis and planning when a significant change (performance issue, platform constraint, technical blocker, gameplay feedback) is identified during Unity game development.
@@ -11810,6 +12082,7 @@ sections:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Game Design Elicitation Task
 
 ## Purpose
@@ -11924,6 +12197,7 @@ The questions and perspectives offered should always consider:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/correct-course-game.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Correct Course Task - Game Development
 
 ## Purpose
@@ -12069,6 +12343,7 @@ Based on the analysis and agreed path forward:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-game-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Game Story Task
 
 ## Purpose
@@ -12257,6 +12532,7 @@ This task ensures game development stories are immediately actionable and enable
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/game-design-brainstorming.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Brainstorming Techniques Task
 
 This task provides a comprehensive toolkit of creative brainstorming techniques specifically designed for game design ideation and innovative thinking. The game designer can use these techniques to facilitate productive brainstorming sessions focused on game mechanics, player experience, and creative concepts.
@@ -12551,6 +12827,7 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/validate-game-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Validate Game Story Task
 
 ## Purpose
@@ -12755,6 +13032,7 @@ Based on validation results, provide specific recommendations for:
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-architect-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Architect Solution Validation Checklist
 
 This checklist serves as a comprehensive framework for the Game Architect to validate the technical design and architecture before game development execution. The Game Architect should systematically work through each item, ensuring the game architecture is robust, scalable, performant, and aligned with the Game Design Document requirements.
@@ -13150,6 +13428,7 @@ After presenting the report, ask the user if they would like detailed analysis o
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-change-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Change Navigation Checklist
 
 **Purpose:** To systematically guide the Game SM agent and user through analysis and planning when a significant change (performance issue, platform constraint, technical blocker, gameplay feedback) is identified during Unity game development.
@@ -13357,6 +13636,7 @@ Keep it technically precise and actionable.]]
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-design-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Document Quality Checklist
 
 ## Document Completeness
@@ -13562,6 +13842,7 @@ _Outline immediate next actions for the team based on this assessment._
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-story-dod-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Story Definition of Done (DoD) Checklist
 
 ## Instructions for Developer Agent
@@ -14056,6 +14337,7 @@ workflow:
 
 ==================== START: .bmad-2d-unity-game-dev/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # BMad Knowledge Base - 2D Unity Game Development
 
 ## Overview
@@ -14829,6 +15111,7 @@ This knowledge base provides the foundation for effective game development using
 
 ==================== START: .bmad-2d-unity-game-dev/data/development-guidelines.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Development Guidelines (Unity & C#)
 
 ## Overview

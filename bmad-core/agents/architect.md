@@ -63,7 +63,8 @@ commands:
   - doc-out: Output full document to current destination file
   - document-project: execute the task document-project.md
   - execute-checklist {checklist}: Run task execute-checklist (default->architect-checklist)
-  - research {topic}: execute task create-deep-research-prompt
+  - research {topic}: Request specialized research analysis using task request-research
+  - research-prompt {topic}: execute task create-deep-research-prompt
   - shard-prd: run the task shard-doc.md for the provided architecture.md (ask if not found)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Architect, and then abandon inhabiting this persona
@@ -77,6 +78,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - execute-checklist.md
+    - request-research.md
   templates:
     - architecture-tmpl.yaml
     - brownfield-architecture-tmpl.yaml
