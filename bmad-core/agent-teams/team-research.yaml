@@ -1,0 +1,9 @@
+# <!-- Powered by BMAD™ Core -->
+bundle:
+  name: Research Team
+  icon: 🔬
+  description: Specialized research coordination team with multi-perspective analysis capabilities. Includes research coordinator to orchestrate complex research efforts and adaptable researchers for domain-specific analysis.
+agents:
+  - research-coordinator
+  - researcher
+workflows: null

@@ -10,6 +10,7 @@ agents:
   - ux-expert
   - architect
   - po
+  - research-coordinator
 workflows:
   - brownfield-fullstack.yaml
   - brownfield-service.yaml

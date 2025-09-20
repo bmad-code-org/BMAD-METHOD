@@ -1,0 +1,238 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: research-synthesis-template-v1
+  name: Research Synthesis Report
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/research/{{date}}-{{research_topic}}.md
+    title: "Research: {{research_topic}}"
+
+workflow:
+  mode: structured
+  validation: research-quality-checklist
+
+sections:
+  - id: metadata
+    title: Research Metadata
+    instruction: |
+      Capture essential metadata about the research effort:
+      - Date and requesting agent
+      - Research team composition and perspectives
+      - Original research objective and scope
+      - Priority level and timeline constraints
+    template: |
+      **Date**: {{research_date}}
+      **Requested by**: {{requesting_agent}}
+      **Research Team**: {{research_perspectives}}
+      **Priority**: {{priority_level}}
+      **Timeline**: {{timeline_constraints}}
+
+  - id: executive-summary
+    title: Executive Summary
+    instruction: |
+      Provide a concise overview synthesizing all research perspectives:
+      - Key findings from all research angles
+      - Primary recommendations and next steps
+      - Critical insights that inform decision-making
+      - Confidence levels and uncertainty areas
+    template: |
+      ## Executive Summary
+
+      {{executive_summary_content}}
+
+      ### Key Recommendations
+      {{key_recommendations}}
+
+      ### Confidence Assessment
+      {{confidence_levels}}
+
+  - id: research-objective
+    title: Research Objective
+    instruction: |
+      Document the original research request and objectives:
+      - Primary research question or problem
+      - Success criteria and scope boundaries
+      - Decision context and expected impact
+      - Background and requesting agent context
+    template: |
+      ## Research Objective
+
+      ### Primary Goal
+      {{primary_research_goal}}
+
+      ### Success Criteria
+      {{success_criteria}}
+
+      ### Decision Context
+      {{decision_context}}
+
+      ### Background
+      {{research_background}}
+
+  - id: methodology
+    title: Research Methodology
+    instruction: |
+      Describe the research approach and team structure:
+      - Number and types of research perspectives used
+      - Specialization configuration for each researcher
+      - Research methods and source types prioritized
+      - Quality assurance and validation processes
+    template: |
+      ## Research Methodology
+
+      ### Research Team Configuration
+      {{research_team_config}}
+
+      ### Research Approaches
+      {{research_approaches}}
+
+      ### Source Types and Priorities
+      {{source_priorities}}
+
+      ### Quality Assurance
+      {{quality_assurance_methods}}
+
+  - id: key-findings
+    title: Key Findings
+    instruction: |
+      Present the synthesized findings from all research perspectives:
+      - Major insights that emerged across perspectives
+      - Convergent findings where researchers agreed
+      - Divergent findings and conflicting information
+      - Gaps and areas requiring additional research
+    template: |
+      ## Key Findings
+
+      ### Convergent Insights
+      {{convergent_findings}}
+
+      ### Perspective-Specific Insights
+      {{perspective_specific_findings}}
+
+      ### Conflicting Information
+      {{conflicting_findings}}
+
+      ### Research Gaps Identified
+      {{research_gaps}}
+
+  - id: detailed-analysis
+    title: Detailed Analysis by Perspective
+    instruction: |
+      Provide detailed findings from each research perspective:
+      - Findings from each domain specialization
+      - Evidence and sources supporting each perspective
+      - Domain-specific recommendations
+      - Limitations and uncertainties for each angle
+    template: |
+      ## Detailed Analysis by Perspective
+
+      ### Perspective 1: {{perspective_1_domain}}
+      {{perspective_1_findings}}
+
+      **Key Sources**: {{perspective_1_sources}}
+      **Confidence Level**: {{perspective_1_confidence}}
+
+      ### Perspective 2: {{perspective_2_domain}}
+      {{perspective_2_findings}}
+
+      **Key Sources**: {{perspective_2_sources}}
+      **Confidence Level**: {{perspective_2_confidence}}
+
+      ### Perspective 3: {{perspective_3_domain}}
+      {{perspective_3_findings}}
+
+      **Key Sources**: {{perspective_3_sources}}
+      **Confidence Level**: {{perspective_3_confidence}}
+
+  - id: recommendations
+    title: Recommendations and Next Steps
+    instruction: |
+      Provide actionable recommendations based on research synthesis:
+      - Immediate actions based on high-confidence findings
+      - Strategic recommendations for medium-term planning
+      - Areas requiring additional research or validation
+      - Risk mitigation strategies based on findings
+    template: |
+      ## Recommendations and Next Steps
+
+      ### Immediate Actions (High Confidence)
+      {{immediate_actions}}
+
+      ### Strategic Recommendations
+      {{strategic_recommendations}}
+
+      ### Additional Research Needed
+      {{additional_research_needed}}
+
+      ### Risk Mitigation
+      {{risk_mitigation_strategies}}
+
+  - id: sources-and-evidence
+    title: Sources and Evidence
+    instruction: |
+      Document all sources and evidence used in the research:
+      - Primary sources cited by each researcher
+      - Source credibility assessments
+      - Evidence quality and recency evaluation
+      - Links and references for verification
+    template: |
+      ## Sources and Evidence
+
+      ### Primary Sources by Perspective
+      {{sources_by_perspective}}
+
+      ### Source Credibility Assessment
+      {{source_credibility_evaluation}}
+
+      ### Evidence Quality Notes
+      {{evidence_quality_notes}}
+
+      ### Reference Links
+      {{reference_links}}
+
+  - id: limitations-and-uncertainties
+    title: Limitations and Uncertainties
+    instruction: |
+      Clearly document research limitations and areas of uncertainty:
+      - Scope limitations and boundary constraints
+      - Information gaps and unavailable data
+      - Conflicting evidence and uncertainty areas
+      - Temporal constraints and information recency
+    template: |
+      ## Limitations and Uncertainties
+
+      ### Scope Limitations
+      {{scope_limitations}}
+
+      ### Information Gaps
+      {{information_gaps}}
+
+      ### Areas of Uncertainty
+      {{uncertainty_areas}}
+
+      ### Temporal Constraints
+      {{temporal_constraints}}
+
+  - id: research-tags
+    title: Research Classification
+    instruction: |
+      Add classification tags for future searchability:
+      - Domain tags (technical, market, user, etc.)
+      - Topic tags (specific subject areas)
+      - Project phase tags (planning, development, etc.)
+      - Decision type tags (architecture, feature, strategy, etc.)
+    template: |
+      ## Research Classification
+
+      ### Domain Tags
+      {{domain_tags}}
+
+      ### Topic Tags
+      {{topic_tags}}
+
+      ### Project Phase Tags
+      {{project_phase_tags}}
+
+      ### Decision Type Tags
+      {{decision_type_tags}}

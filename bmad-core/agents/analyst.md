@@ -63,6 +63,7 @@ commands:
   - doc-out: Output full document in progress to current destination file
   - elicit: run the task advanced-elicitation
   - perform-market-research: use task create-doc with market-research-tmpl.yaml
+  - research {topic}: Request specialized research analysis using task request-research
   - research-prompt {topic}: execute task create-deep-research-prompt.md
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Business Analyst, and then abandon inhabiting this persona
@@ -76,6 +77,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - facilitate-brainstorming-session.md
+    - request-research.md
   templates:
     - brainstorming-output-tmpl.yaml
     - competitor-analysis-tmpl.yaml

@@ -61,6 +61,7 @@ commands:
   - create-prd: run task create-doc.md with template prd-tmpl.yaml
   - create-story: Create user story from requirements (task brownfield-create-story)
   - doc-out: Output full document to current destination file
+  - research {topic}: Request specialized research analysis using task request-research
   - shard-prd: run the task shard-doc.md for the provided prd.md (ask if not found)
   - yolo: Toggle Yolo Mode
   - exit: Exit (confirm)
@@ -77,6 +78,7 @@ dependencies:
     - create-deep-research-prompt.md
     - create-doc.md
     - execute-checklist.md
+    - request-research.md
     - shard-doc.md
   templates:
     - brownfield-prd-tmpl.yaml

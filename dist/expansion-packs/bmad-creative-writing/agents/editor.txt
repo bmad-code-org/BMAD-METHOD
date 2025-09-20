@@ -116,6 +116,7 @@ Remember to present all options as numbered lists for easy selection.
 
 ==================== START: .bmad-creative-writing/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -221,6 +222,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-creative-writing/tasks/final-polish.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # ------------------------------------------------------------
 
 # 14. Final Polish
@@ -246,6 +248,7 @@ inputs:
 
 ==================== START: .bmad-creative-writing/tasks/incorporate-feedback.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # ------------------------------------------------------------
 
 # 6. Incorporate Feedback
@@ -273,6 +276,7 @@ inputs:
 
 ==================== START: .bmad-creative-writing/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -363,6 +367,7 @@ The LLM will:
 
 ==================== START: .bmad-creative-writing/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Elicitation Task
 
 ## Purpose
@@ -569,6 +574,7 @@ sections:
 
 ==================== START: .bmad-creative-writing/checklists/line-edit-quality-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # ------------------------------------------------------------
 
 # 4. Line‑Edit Quality Checklist
@@ -594,6 +600,7 @@ items:
 
 ==================== START: .bmad-creative-writing/checklists/publication-readiness-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # ------------------------------------------------------------
 
 # 5. Publication Readiness Checklist
@@ -619,6 +626,7 @@ items:
 
 ==================== START: .bmad-creative-writing/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # BMad Creative Writing Knowledge Base
 
 ## Overview
