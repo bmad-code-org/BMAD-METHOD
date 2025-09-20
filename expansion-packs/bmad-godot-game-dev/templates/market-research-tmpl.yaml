@@ -1,0 +1,418 @@
+template:
+  id: game-market-research-template-v3
+  name: Game Market Research Report
+  version: 3.0
+  output:
+    format: markdown
+    filename: docs/game-market-research.md
+    title: "Game Market Research Report: {{game_title}}"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+  custom_elicitation:
+    title: "Game Market Research Elicitation Actions"
+    options:
+      - "Expand platform market analysis (PC, Console, Mobile)"
+      - "Deep dive into a specific player demographic"
+      - "Analyze genre trends and player preferences"
+      - "Compare to successful games in similar genre"
+      - "Analyze monetization models (F2P, Premium, Hybrid)"
+      - "Explore cross-platform opportunities"
+      - "Evaluate streaming and content creator potential"
+      - "Assess esports and competitive gaming potential"
+      - "Analyze seasonal and regional market variations"
+      - "Proceed to next section"
+
+sections:
+  - id: executive-summary
+    title: Executive Summary
+    instruction: Provide a high-level overview of key findings, target platforms, player demographics, monetization opportunities, and launch strategy recommendations. Write this section LAST after completing all other sections.
+
+  - id: research-objectives
+    title: Research Objectives & Methodology
+    instruction: This template guides the creation of a comprehensive game market research report. Begin by understanding target platforms, player demographics, genre positioning, and monetization strategies. Consider both direct competitors and substitute entertainment options.
+    sections:
+      - id: objectives
+        title: Research Objectives
+        instruction: |
+          List the primary objectives of this game market research:
+          - Target platform selection (PC/Console/Mobile/Cross-platform)
+          - Genre positioning and differentiation
+          - Player demographic identification
+          - Monetization model selection
+          - Launch timing and strategy
+          - Marketing channel prioritization
+      - id: methodology
+        title: Research Methodology
+        instruction: |
+          Describe the research approach:
+          - Data sources used (primary/secondary)
+          - Analysis frameworks applied
+          - Data collection timeframe
+          - Limitations and assumptions
+
+  - id: market-overview
+    title: Market Overview
+    sections:
+      - id: market-definition
+        title: Game Market Definition
+        instruction: |
+          Define the game market being analyzed:
+          - Genre and sub-genre classification
+          - Platform scope (PC/Steam, Console/PS5/Xbox, Mobile/iOS/Android)
+          - Geographic regions (NA, EU, Asia, Global)
+          - Player segments (Casual, Core, Hardcore)
+          - Age ratings and content restrictions
+      - id: market-size-growth
+        title: Game Market Size & Growth
+        instruction: |
+          Calculate market opportunity for the game. Consider:
+          - Global games market size by platform
+          - Genre-specific market share
+          - Regional market variations
+          - Seasonal trends (launch windows)
+          - Digital vs physical distribution
+        sections:
+          - id: tam
+            title: Total Addressable Market (TAM)
+            instruction: |
+              Calculate total game market opportunity:
+              - Platform market size (PC: $X, Console: $Y, Mobile: $Z)
+              - Genre market share (e.g., RPG: 15% of total)
+              - Geographic reach potential
+          - id: sam
+            title: Serviceable Addressable Market (SAM)
+            instruction: |
+              Define reachable market based on:
+              - Target platforms and distribution channels
+              - Language localization plans
+              - Age rating restrictions
+              - Technical requirements (minimum specs)
+          - id: som
+            title: Serviceable Obtainable Market (SOM)
+            instruction: |
+              Realistic capture estimates:
+              - Launch year projections
+              - Marketing budget constraints
+              - Competition intensity in genre
+              - Platform holder relationships
+      - id: market-trends
+        title: Gaming Industry Trends & Drivers
+        instruction: Analyze key trends shaping the gaming market including technology, player behavior, and business models
+        sections:
+          - id: key-trends
+            title: Key Gaming Trends
+            instruction: |
+              Identify 5-7 major gaming trends:
+              - Platform shifts (PC gaming growth, mobile dominance)
+              - Genre popularity cycles (Battle Royale, Roguelike, etc.)
+              - Monetization evolution (Battle Pass, NFTs, Subscriptions)
+              - Social/Streaming integration (Twitch, YouTube Gaming)
+              - Cross-platform play adoption
+              - Cloud gaming emergence
+              - VR/AR market development
+          - id: growth-drivers
+            title: Growth Drivers
+            instruction: |
+              Gaming market growth factors:
+              - Expanding player demographics
+              - Improved internet infrastructure
+              - Mobile device penetration
+              - Esports and streaming culture
+              - Social gaming trends
+              - Pandemic-driven adoption
+          - id: market-inhibitors
+            title: Market Inhibitors
+            instruction: |
+              Factors constraining growth:
+              - Market saturation in genres
+              - Rising development costs
+              - Platform holder fees (30% cut)
+              - Regulatory challenges (loot boxes, age ratings)
+              - Discovery challenges (Steam has 50k+ games)
+              - Player time constraints
+
+  - id: player-analysis
+    title: Player Analysis
+    sections:
+      - id: player-segments
+        title: Target Player Segments
+        instruction: For each player segment, create detailed profiles including demographics, play patterns, platform preferences, and spending behavior
+        repeatable: true
+        sections:
+          - id: segment
+            title: "Player Segment {{segment_number}}: {{segment_name}}"
+            template: |
+              - **Description:** {{player_type_overview}}
+              - **Size:** {{number_of_players_market_value}}
+              - **Demographics:** {{age_gender_location}}
+              - **Play Patterns:** {{hours_per_week_session_length}}
+              - **Platform Preference:** {{PC_console_mobile}}
+              - **Genre Preferences:** {{favorite_genres}}
+              - **Spending Behavior:** {{F2P_premium_whale_status}}
+              - **Social Behavior:** {{solo_coop_competitive}}
+      - id: player-motivations
+        title: Player Motivation Analysis
+        instruction: Understand why players engage with games using Bartle's taxonomy and SDT
+        sections:
+          - id: achievement-motivated
+            title: Achievers
+            instruction: Players who seek mastery, completion, high scores
+          - id: social-motivated
+            title: Socializers
+            instruction: Players who value interaction, community, cooperation
+          - id: exploration-motivated
+            title: Explorers
+            instruction: Players who enjoy discovery, lore, secrets
+          - id: competition-motivated
+            title: Killers/Competitors
+            instruction: Players who seek dominance, PvP, rankings
+      - id: player-journey
+        title: Player Journey Mapping
+        instruction: Map the player lifecycle from discovery to advocacy
+        template: |
+          For primary player segment:
+
+          1. **Discovery:** {{streamers_ads_friends_app_stores}}
+          2. **Evaluation:** {{reviews_gameplay_videos_demos}}
+          3. **Acquisition:** {{purchase_download_game_pass}}
+          4. **Onboarding:** {{tutorial_difficulty_curve}}
+          5. **Engagement:** {{core_loop_progression_social}}
+          6. **Retention:** {{updates_seasons_events}}
+          7. **Monetization:** {{DLC_MTX_battle_pass}}
+          8. **Advocacy:** {{streaming_reviews_word_of_mouth}}
+
+  - id: competitive-landscape
+    title: Game Competitive Landscape
+    sections:
+      - id: genre-competition
+        title: Genre Competition Analysis
+        instruction: |
+          Analyze the competitive environment:
+          - Direct genre competitors
+          - Substitute entertainment (other genres, media)
+          - Platform exclusives impact
+          - Indie vs AAA dynamics
+          - Release window competition
+      - id: competitor-analysis
+        title: Direct Competitor Analysis
+        instruction: |
+          For top 5-10 competing games:
+          - Game title and developer/publisher
+          - Platform availability
+          - Launch date and lifecycle stage
+          - Player count/sales estimates
+          - Metacritic/Steam reviews
+          - Monetization model
+          - Content update cadence
+          - Community size and engagement
+      - id: competitive-positioning
+        title: Competitive Positioning
+        instruction: |
+          Analyze positioning strategies:
+          - Unique gameplay mechanics
+          - Art style differentiation
+          - Narrative/IP strength
+          - Technical innovation (graphics, physics)
+          - Community features
+          - Monetization fairness
+          - Platform optimization
+
+  - id: gaming-industry-analysis
+    title: Gaming Industry Analysis
+    sections:
+      - id: gaming-five-forces
+        title: Gaming Industry Five Forces
+        instruction: Analyze forces specific to game development
+        sections:
+          - id: platform-power
+            title: "Platform Holder Power: {{power_level}}"
+            template: |
+              - Steam/Epic/Console manufacturers control
+              - 30% revenue share standard
+              - Certification requirements
+              - Featured placement influence
+          - id: player-power
+            title: "Player Power: {{power_level}}"
+            template: |
+              - Abundant game choices
+              - Review bombing capability
+              - Refund policies
+              - Community influence
+          - id: genre-rivalry
+            title: "Genre Competition: {{intensity_level}}"
+            template: |
+              - Number of similar games
+              - Release timing conflicts
+              - Marketing spend requirements
+              - Talent competition
+          - id: entry-barriers
+            title: "Barriers to Entry: {{barrier_level}}"
+            template: |
+              - Development costs
+              - Technical expertise requirements
+              - Marketing/visibility challenges
+              - Platform relationships
+          - id: entertainment-substitutes
+            title: "Entertainment Alternatives: {{threat_level}}"
+            template: |
+              - Other game genres
+              - Streaming services
+              - Social media
+              - Traditional entertainment
+      - id: genre-lifecycle
+        title: Genre Lifecycle Stage
+        instruction: |
+          Identify where your game genre is in its lifecycle:
+          - Emerging (new mechanics, small audience)
+          - Growth (expanding player base, innovation)
+          - Mature (established conventions, large market)
+          - Decline (decreasing interest, oversaturation)
+          - Revival potential (nostalgia, modernization)
+
+  - id: opportunity-assessment
+    title: Game Market Opportunity Assessment
+    sections:
+      - id: market-opportunities
+        title: Game Market Opportunities
+        instruction: Identify specific opportunities in the gaming market
+        repeatable: true
+        sections:
+          - id: opportunity
+            title: "Opportunity {{opportunity_number}}: {{name}}"
+            template: |
+              - **Description:** {{opportunity_description}}
+              - **Market Size:** {{player_base_revenue_potential}}
+              - **Platform Focus:** {{PC_console_mobile}}
+              - **Development Requirements:** {{time_budget_team}}
+              - **Technical Requirements:** {{engine_tools_infrastructure}}
+              - **Marketing Requirements:** {{budget_channels_influencers}}
+              - **Risks:** {{competition_timing_execution}}
+      - id: strategic-recommendations
+        title: Game Launch Strategic Recommendations
+        sections:
+          - id: go-to-market
+            title: Game Go-to-Market Strategy
+            instruction: |
+              Recommend game launch approach:
+              - Platform launch sequence (PC first, console later, etc.)
+              - Early Access vs Full Release
+              - Geographic rollout (soft launch regions)
+              - Marketing campaign timing
+              - Influencer/streamer strategy
+              - Community building approach
+              - Steam wishlist campaign
+          - id: monetization-strategy
+            title: Monetization Strategy
+            instruction: |
+              Based on player analysis and genre standards:
+              - Business model (Premium, F2P, Freemium, Subscription)
+              - Price points ($19.99, $39.99, $59.99)
+              - DLC/Season Pass strategy
+              - Microtransaction approach (cosmetic only, P2W, etc.)
+              - Battle Pass potential
+              - Platform fees consideration (30% cut)
+          - id: risk-mitigation
+            title: Game Development Risk Mitigation
+            instruction: |
+              Key game industry risks and mitigation:
+              - Launch window competition (AAA releases)
+              - Platform certification delays
+              - Streamer/influencer reception
+              - Review bombing potential
+              - Server/online infrastructure
+              - Post-launch content pipeline
+              - Community management needs
+              - Regulatory (ESRB, PEGI, loot boxes)
+
+  - id: platform-analysis
+    title: Platform-Specific Analysis
+    sections:
+      - id: platform-comparison
+        title: Platform Comparison
+        template: |
+          | Platform | Market Size | Competition | Dev Cost | Revenue Share |
+          |----------|------------|-------------|----------|---------------|
+          | Steam/PC | {{size}} | {{competition}} | {{cost}} | 30% |
+          | PlayStation | {{size}} | {{competition}} | {{cost}} | 30% |
+          | Xbox | {{size}} | {{competition}} | {{cost}} | 30% |
+          | Nintendo | {{size}} | {{competition}} | {{cost}} | 30% |
+          | iOS | {{size}} | {{competition}} | {{cost}} | 30% |
+          | Android | {{size}} | {{competition}} | {{cost}} | 30% |
+      - id: distribution-channels
+        title: Distribution Channel Analysis
+        template: |
+          **Digital Storefronts:**
+          - Steam: {{pros_cons_requirements}}
+          - Epic Games Store: {{12_percent_exclusivity}}
+          - GOG: {{DRM_free_considerations}}
+          - Itch.io: {{indie_friendly_revenue_share}}
+          - Platform stores: {{certification_requirements}}
+
+          **Subscription Services:**
+          - Game Pass: {{opportunity_requirements}}
+          - PlayStation Plus: {{tier_considerations}}
+          - Apple Arcade: {{exclusive_requirements}}
+
+  - id: marketing-channels
+    title: Game Marketing Channel Analysis
+    sections:
+      - id: channel-effectiveness
+        title: Marketing Channel Effectiveness
+        template: |
+          **Organic Channels:**
+          - Steam Discovery: {{algorithm_factors}}
+          - Platform Features: {{visibility_opportunities}}
+          - Word of Mouth: {{virality_potential}}
+
+          **Paid Channels:**
+          - Digital Ads: {{ROI_targeting_options}}
+          - Influencer Partnerships: {{cost_reach_engagement}}
+          - Gaming Media: {{PR_review_coverage}}
+
+          **Community Channels:**
+          - Discord: {{community_building}}
+          - Reddit: {{subreddit_engagement}}
+          - Social Media: {{platform_specific_strategies}}
+      - id: content-creator-strategy
+        title: Content Creator & Streaming Strategy
+        template: |
+          **Streaming Platforms:**
+          - Twitch: {{viewer_demographics_peak_times}}
+          - YouTube Gaming: {{long_form_content}}
+          - TikTok: {{viral_clips_potential}}
+
+          **Creator Engagement:**
+          - Early access keys: {{timing_selection}}
+          - Creator programs: {{incentives_support}}
+          - Stream-friendly features: {{built_in_tools}}
+
+  - id: appendices
+    title: Appendices
+    sections:
+      - id: data-sources
+        title: A. Data Sources
+        instruction: |
+          Game industry sources:
+          - Newzoo reports
+          - SteamSpy/SteamDB data
+          - App Annie/Sensor Tower mobile data
+          - NPD/GfK/GSD sales data
+          - Platform holder reports
+      - id: genre-benchmarks
+        title: B. Genre Success Benchmarks
+        instruction: |
+          Success metrics by genre:
+          - Sales thresholds
+          - Player retention rates
+          - Monetization benchmarks
+          - Review score correlations
+      - id: seasonal-analysis
+        title: C. Seasonal & Event Analysis
+        instruction: |
+          Release timing considerations:
+          - Holiday seasons
+          - Steam sales events
+          - Competition calendar
+          - Platform holder promotions

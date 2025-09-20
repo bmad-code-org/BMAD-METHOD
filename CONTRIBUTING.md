@@ -1,6 +1,6 @@
 # Contributing to this project
 
-Thank you for considering contributing to this project! This document outlines the process for contributing and some guidelines to follow.
+Thank you for contributing to this project! This document outlines the process for contributing and some guidelines to follow.
 
 🆕 **New to GitHub or pull requests?** Check out our [beginner-friendly Pull Request Guide](docs/how-to-contribute-with-pull-requests.md) first!
 
@@ -8,10 +8,7 @@ Thank you for considering contributing to this project! This document outlines t
 
 Also note, we use the discussions feature in GitHub to have a community to discuss potential ideas, uses, additions and enhancements.
 
-💬 **Discord Community**: Join our [Discord server](https://discord.gg/gk8jAdXWmj) for real-time discussions:
-
-- **#general-dev** - Technical discussions, feature ideas, and development questions
-- **#bugs-issues** - Bug reports and issue discussions
+💬 **Discord Community**: Join our [Discord server](https://discord.gg/gk8jAdXWmj) for real-time discussions or search past discussions or ideas.
 
 ## Code of Conduct
 
@@ -190,10 +187,6 @@ Fixes #[issue number] (if applicable)
 ## How
 
 [2-3 bullets listing HOW you implemented it]
-
--
--
--
 
 ## Testing
 

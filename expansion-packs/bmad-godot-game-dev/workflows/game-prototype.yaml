@@ -1,0 +1,213 @@
+workflow:
+  id: godot-game-prototype
+  name: Godot Rapid Prototype Development
+  description: Godot-optimized workflow leveraging the engine's rapid prototyping features - @tool scripts, built-in nodes, CSG geometry, immediate mode GUI, and GDScript's duck typing. Emphasizes Godot's hot reload, in-editor testing, and scene-based iteration for validating game concepts in hours, not days.
+  type: prototype
+  project_types:
+    - godot-game-jam
+    - godot-mechanic-test
+    - godot-shader-demo
+    - godot-physics-sandbox
+    - godot-ui-experiment
+    - godot-multiplayer-test
+  prototype_sequence:
+    - step: concept_definition
+      agent: game-designer
+      duration: 15-30 minutes
+      creates: concept-summary.md
+      notes: Define concept leveraging Godot's strengths - built-in physics (Box2D/Bullet), particle systems, shaders, or procedural generation. Identify which Godot nodes will drive the core mechanic.
+    - step: rapid_design
+      agent: game-designer
+      duration: 30-60 minutes
+      creates: prototype-spec.md
+      requires: concept-summary.md
+      optional_steps:
+        - godot_node_selection
+        - scene_structure_sketch
+        - input_action_mapping
+      notes: Map mechanics to specific Godot nodes (Area2D, CharacterBody2D, RigidBody2D). Define scene hierarchy and signal connections. Plan InputMap actions for immediate responsiveness.
+    - step: technical_planning
+      agent: game-developer
+      duration: 15-30 minutes
+      creates: prototype-architecture.md
+      requires: prototype-spec.md
+      notes: Plan Godot-specific implementation - scene structure, autoload needs, @tool scripts for in-editor testing. Use GDScript for all prototype code (duck typing speeds iteration). Identify built-in nodes to leverage.
+    - step: implementation_stories
+      agent: game-sm
+      duration: 30-45 minutes
+      creates: prototype-stories/
+      requires: prototype-spec.md, prototype-architecture.md
+      notes: Create 3-5 Godot-focused stories - "Create player scene with CharacterBody2D", "Implement _physics_process movement", "Connect Area2D signals for interactions". Each story includes specific node types and Godot methods.
+    - step: iterative_development
+      agent: game-developer
+      duration: varies
+      implements: prototype-stories/
+      notes: Use Godot's hot reload and @tool scripts for real-time iteration. Test in editor with F6 (scene) and F5 (project). Profile with Godot's built-in monitors. Use Remote Debugger for mobile testing. Document which built-in nodes work best.
+  workflow_end:
+    action: prototype_evaluation
+    notes: "Prototype complete. Evaluate core mechanics, gather feedback, and decide next steps: iterate, expand, or archive."
+  game_jam_sequence:
+    - step: jam_concept
+      agent: game-designer
+      duration: 10-15 minutes
+      creates: jam-concept.md
+      notes: Match jam theme to Godot's built-in capabilities. Identify hero nodes (e.g., CPUParticles2D for effects, AudioStreamPlayer2D for dynamic audio). Define InputMap actions.
+    - step: jam_implementation
+      agent: game-developer
+      duration: varies (jam timeline)
+      creates: working-prototype
+      requires: jam-concept.md
+      notes: Build directly in Godot editor. Use built-in nodes, CSG for 3D prototypes, immediate GUI for quick UI. Leverage Godot's animation player for juice. Export to HTML5 for easy sharing. Keep scenes under 100 nodes for performance.
+  jam_workflow_end:
+    action: jam_submission
+    notes: Submit to game jam. Capture lessons learned and consider post-jam development if concept shows promise.
+  flow_diagram: |
+    ```mermaid
+    graph TD
+        A[Start: Prototype Project] --> B{Development Context?}
+        B -->|Standard Prototype| C[game-designer: concept-summary.md]
+        B -->|Game Jam| D[game-designer: jam-concept.md]
+
+        C --> E[game-designer: prototype-spec.md]
+        E --> F[game-developer: prototype-architecture.md]
+        F --> G[game-sm: create prototype stories]
+        G --> H[game-developer: iterative implementation]
+        H --> I[Prototype Evaluation]
+
+        D --> J[game-developer: direct implementation]
+        J --> K[Game Jam Submission]
+
+        E -.-> E1[Optional: quick brainstorming]
+        E -.-> E2[Optional: reference research]
+
+        style I fill:#90EE90
+        style K fill:#90EE90
+        style C fill:#FFE4B5
+        style E fill:#FFE4B5
+        style F fill:#FFE4B5
+        style G fill:#FFE4B5
+        style H fill:#FFE4B5
+        style D fill:#FFB6C1
+        style J fill:#FFB6C1
+    ```
+  godot_specific_features:
+    rapid_prototyping_tools:
+      - Tool scripts for in-editor testing without running
+      - CSG nodes for quick 3D geometry without modeling
+      - Immediate mode drawing for debug visualizations
+      - Built-in placeholder assets (icon.svg, default theme)
+      - Hot reload for GDScript changes
+    prototype_acceleration:
+      - F6 to test current scene instantly
+      - F5 to run full project
+      - Remote debugging on devices
+      - Live scene editing while running
+      - Inspector value tweaking in real-time
+    godot_node_combinations:
+      quick_player: CharacterBody2D + CollisionShape2D + Sprite2D
+      pickup_system: Area2D + signal connections
+      physics_toy: RigidBody2D + joints + constraints
+      particle_effects: CPUParticles2D with built-in parameters
+      ui_prototype: Control + containers + theme variations
+    export_for_testing:
+      - HTML5 export for easy web sharing
+      - One-click APK export for Android testing
+      - Debug export with remote debugger enabled
+      - PCK files for quick distribution
+  decision_guidance:
+    use_prototype_sequence_when:
+      - Testing Godot-specific features (shaders, particles, physics)
+      - Validating scene composition strategies
+      - Experimenting with Godot's node system combinations
+      - Building with Godot's animation tools (AnimationPlayer, AnimationTree)
+      - Testing Godot export targets (HTML5, Mobile, Desktop)
+      - Learning Godot's signal patterns and node communication
+    use_game_jam_sequence_when:
+      - Godot Game Jam participation
+      - Leveraging Godot's rapid development features
+      - Using CSG for quick 3D prototypes
+      - Building with Godot's immediate mode GUI
+      - Testing Godot's networking capabilities quickly
+  godot_prototype_best_practices:
+    godot_rapid_development:
+      - Use @tool scripts to test mechanics in editor without running
+      - Leverage Godot's hot reload for immediate feedback
+      - Build scenes incrementally with F6 (test current scene)
+      - Use placeholder Godot icons and CSG shapes
+    godot_node_leverage:
+      - Start with Godot's template projects when applicable
+      - Use Area2D for all detection/trigger needs
+      - Implement with CharacterBody2D's built-in movement methods
+      - Apply RigidBody2D for physics toys
+      - Use Control nodes with containers for auto-layout UI
+    godot_iteration_tools:
+      - Run scenes directly with F6 during development
+      - Use Godot's remote debugger for device testing
+      - Monitor performance with built-in profiler (not external tools)
+      - Adjust project settings in real-time
+      - Use editor's node property tweaking for balancing
+    godot_prototyping_patterns:
+      - Compose scenes, don't code everything
+      - Signal connections over hard references
+      - Export variables for in-editor tweaking
+      - AnimationPlayer for all timed events
+      - Resource files (.tres) for data-driven design
+  godot_prototype_evaluation:
+    godot_mechanic_validation:
+      - Does the mechanic work well with Godot's physics engine?
+      - Are Godot's built-in nodes sufficient or do we need custom?
+      - Can the mechanic scale with Godot's scene instancing?
+      - Does it perform well on Godot's HTML5 export?
+    godot_technical_assessment:
+      - Draw calls under 1000 (check Godot profiler)
+      - Physics bodies under 200 for mobile targets
+      - Scene tree depth reasonable (<10 levels)
+      - Proper use of Godot's threading if needed
+      - GDScript performance adequate or need C#/GDExtension?
+    godot_expansion_viability:
+      - Can current scene structure support more content?
+      - Are signals and groups set up for scaling?
+      - Is the resource system being used effectively?
+      - Would Godot's multiplayer API support this mechanic?
+      - Are we leveraging Godot's strengths (not fighting it)?
+  post_prototype_options:
+    iterate_and_improve:
+      action: continue_prototyping
+      when: Core mechanic shows promise but needs refinement
+      next_steps: Create new prototype iteration focusing on identified improvements
+    expand_to_full_game:
+      action: transition_to_full_development
+      when: Prototype validates strong game concept
+      next_steps: Use game-dev-greenfield workflow to create full game design and architecture
+    pivot_concept:
+      action: new_prototype_direction
+      when: Current mechanic doesn't work but insights suggest new direction
+      next_steps: Apply learnings to new prototype concept
+    archive_and_learn:
+      action: document_learnings
+      when: Prototype doesn't work but provides valuable insights
+      next_steps: Document lessons learned and move to next prototype concept
+  godot_time_boxing:
+    concept_phase: 30 min - Pick Godot nodes that drive your mechanic
+    design_phase: 1 hour - Sketch scene tree and signal flow
+    planning_phase: 30 min - Set up Godot project with right settings
+    implementation_phase: 2-hour sprints - F6 test after each sprint
+    polish_phase: 1 hour - Godot's animation tools for juice
+  godot_success_metrics:
+    godot_velocity:
+      - First scene running in Godot within 2 hours
+      - Core nodes connected and signaling within 4 hours
+      - Playable build exported (HTML5) within 8 hours
+      - All built-in Godot features identified for mechanic
+    godot_learning:
+      - Which Godot nodes best serve the mechanic
+      - Performance profile from Godot's monitors
+      - Export size and load time benchmarks
+      - Godot-specific optimizations discovered
+      - Editor workflow improvements identified
+  handoff_prompts:
+    concept_to_design: Concept defined with target Godot nodes identified. Create design spec mapping mechanics to Godot's systems.
+    design_to_technical: Design ready with scene structure planned. Create Godot project setup and technical approach.
+    technical_to_stories: Godot architecture defined. Create stories with specific node types and signal connections.
+    stories_to_implementation: Stories specify Godot implementation. Begin building in editor with F6 testing.
+    prototype_to_evaluation: Prototype running in Godot. Check profiler metrics and evaluate for expansion.

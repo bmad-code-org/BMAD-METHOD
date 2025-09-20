@@ -1,11 +1,14 @@
 # Working in the Brownfield: A Complete Guide
 
-> **HIGHLY RECOMMENDED: Use Gemini Web or Gemini CLI for Brownfield Documentation Generation!**
->
-> Gemini Web's 1M+ token context window or Gemini CLI (when it's working) can analyze your ENTIRE codebase, or critical sections of it, all at once (obviously within reason):
->
-> - Upload via GitHub URL or use gemini cli in the project folder
-> - If working in the web: use `npx bmad-method flatten` to flatten your project into a single file, then upload that file to your web agent.
+## Critical Tip
+
+Regardless of what you plan for your existing project you want to start agentic coding with, producing contextual artifacts for agents is of the highest importance.
+
+If using Claude Code - it is recommended to use the document-project task with the architect to systematically produce important key artifacts for your codebase.
+
+Optionally you can product context information and understanding for your repo utilizing web agents like Gemini. If its already in github, you can provide the project URL in gemini and use the agents to help analyze or document the project with the team fullstack or the architect specific gem.
+
+If your project is too large, you can also flatten your codebase - which can make it easier to upload or use with some tools. You can read more about the optional tool in the [Flattener Guide](./flattener.md)
 
 ## What is Brownfield Development?
 
@@ -26,8 +29,14 @@ If you have just completed an MVP with BMad, and you want to continue with post-
 
 ## The Complete Brownfield Workflow
 
+Starting in the Web Option (potentially save some cost but a potentially more frustrating experience):
+
 1. **Follow the [<ins>User Guide - Installation</ins>](user-guide.md#installation) steps to setup your agent in the web.**
 2. **Generate a 'flattened' single file of your entire codebase** run: `npx bmad-method flatten`
+
+Starting in an IDE with large context and good models (Its important to use quality models for this process for the best results)
+
+1. In Claude Code or a similar IDE, select the architect agent and then use the \*document-project task. You will want to ensure you are validating and directing the agent to produce the best possible documents for LLMs to understand your code base, and not include any misleading or unnecessary info.
 
 ### Choose Your Approach
 

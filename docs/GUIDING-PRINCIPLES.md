@@ -1,6 +1,6 @@
 # BMad Method Guiding Principles
 
-The BMad Method is a natural language framework for AI-assisted software development. These principles ensure contributions maintain the method's effectiveness.
+The BMad Core and Method is a natural language framework for AI-assisted workflow with human in the loop processing along with software development. These principles ensure contributions maintain the method's effectiveness.
 
 ## Core Principles
 
@@ -8,7 +8,7 @@ The BMad Method is a natural language framework for AI-assisted software develop
 
 - **Minimize dev agent dependencies**: Development agents that work in IDEs must have minimal context overhead
 - **Save context for code**: Every line counts - dev agents should focus on coding, not documentation
-- **Web agents can be larger**: Planning agents (PRD Writer, Architect) used in web UI can have more complex tasks and dependencies
+- **Planning agents can be larger**: Planning agents (PM, Architect) used in web UI can have more complex tasks and dependencies
 - **Small files, loaded on demand**: Multiple small, focused files are better than large files with many branches
 
 ### 2. Natural Language First
@@ -85,7 +85,7 @@ Templates follow the [BMad Document Template](../common/utils/bmad-doc-template.
 
 ## Remember
 
-- The power is in natural language orchestration, not code
+- The power is in natural language orchestration and human agent collaboration, not code
 - Dev agents code, planning agents plan
 - Keep dev agents lean for maximum coding efficiency
 - Expansion packs handle specialized domains

@@ -1,0 +1,620 @@
+template:
+  id: godot-level-design-doc-template-v3
+  name: Godot Level Design Document
+  version: 3.0
+  output:
+    format: markdown
+    filename: docs/godot-level-design-document.md
+    title: "{{game_title}} Godot Level Design Document"
+
+workflow:
+  mode: interactive
+
+sections:
+  - id: initial-setup
+    instruction: |
+      This template creates comprehensive Godot level design documentation focusing on scene structure, TileMap implementation, and performance optimization (60+ FPS). This document provides detail for creating Godot scenes (.tscn), implementing node hierarchies, and optimizing with object pooling.
+
+      If available, review: Game Design Document (GDD), Game Architecture Document, Language Strategy (GDScript vs C#). This document must align with 60+ FPS performance requirements and TDD practices (GUT/GoDotTest).
+
+  - id: introduction
+    title: Introduction
+    instruction: Establish the purpose and scope of level design for this game
+    content: |
+      This document defines the Godot level design framework for {{game_title}}, providing guidelines for creating performant, engaging levels using Godot's scene system, TileMap nodes, and Area2D/3D collision systems while maintaining 60+ FPS.
+
+      This framework ensures consistency across all level scenes (.tscn) while leveraging Godot's node inheritance, scene instancing, and object pooling for optimal performance.
+    sections:
+      - id: change-log
+        title: Change Log
+        instruction: Track document versions and changes
+        type: table
+        template: |
+          | Date | Version | Description | Author |
+          | :--- | :------ | :---------- | :----- |
+
+  - id: level-design-philosophy
+    title: Level Design Philosophy
+    instruction: Establish the overall approach to level design based on the game's core pillars and mechanics. Apply `tasks#advanced-elicitation` after presenting this section.
+    sections:
+      - id: design-principles
+        title: Design Principles
+        instruction: Define 3-5 core principles that guide all level design decisions
+        type: numbered-list
+        template: |
+          **{{principle_name}}** - {{description}}
+      - id: player-experience-goals
+        title: Player Experience Goals
+        instruction: Define what players should feel and learn in each level category
+        template: |
+          **Tutorial Levels:** {{experience_description}}
+          **Standard Levels:** {{experience_description}}
+          **Challenge Levels:** {{experience_description}}
+          **Boss Levels:** {{experience_description}}
+      - id: level-flow-framework
+        title: Level Flow Framework
+        instruction: Define the standard structure for level progression with performance targets
+        template: |
+          **Introduction Phase:** {{duration}} - {{purpose}} - Target: 60+ FPS
+          **Development Phase:** {{duration}} - {{purpose}} - Object pooling active
+          **Climax Phase:** {{duration}} - {{purpose}} - Peak performance critical
+          **Resolution Phase:** {{duration}} - {{purpose}} - Scene cleanup required
+
+  - id: level-categories
+    title: Level Categories
+    instruction: Define different types of levels based on the GDD requirements. Each category should be specific enough for implementation.
+    repeatable: true
+    sections:
+      - id: level-category
+        title: "{{category_name}} Levels"
+        template: |
+          **Purpose:** {{gameplay_purpose}}
+
+          **Target Duration:** {{min_time}} - {{max_time}} minutes
+
+          **Difficulty Range:** {{difficulty_scale}}
+
+          **Key Mechanics Featured:**
+
+          - {{mechanic_1}} - {{usage_description}}
+          - {{mechanic_2}} - {{usage_description}}
+
+          **Player Objectives:**
+
+          - Primary: {{primary_objective}}
+          - Secondary: {{secondary_objective}}
+          - Hidden: {{secret_objective}}
+
+          **Success Criteria:**
+
+          - {{completion_requirement_1}}
+          - {{completion_requirement_2}}
+
+          **Godot Technical Requirements:**
+
+          - Maximum nodes: {{node_limit}} active nodes
+          - Performance target: 60+ FPS mandatory (frame time <16.67ms)
+          - Memory budget: {{memory_limit}}MB scene memory
+          - Draw calls: <{{draw_call_limit}} for level geometry
+          - Object pools: Required for {{spawned_entities}}
+          - Language: {{GDScript|C#}} for level logic - {{reason}}
+
+  - id: level-progression-system
+    title: Level Progression System
+    instruction: Define how players move through levels and how difficulty scales
+    sections:
+      - id: world-structure
+        title: World Structure
+        instruction: Define the Godot scene organization and resource structure
+        template: |
+          **Scene Organization:** {{linear|hub_world|open_world}}
+
+          **Total Level Scenes:** {{number}} .tscn files
+
+          **World Scene Breakdown:**
+
+          - World 1: {{level_count}} scenes - res://levels/world1/ - {{difficulty_range}}
+          - World 2: {{level_count}} scenes - res://levels/world2/ - {{difficulty_range}}
+          - World 3: {{level_count}} scenes - res://levels/world3/ - {{difficulty_range}}
+
+          **Scene Loading:** < 3 seconds with loading screen if needed
+          **Scene Instancing:** Use PackedScene for repeated elements
+      - id: difficulty-progression
+        title: Difficulty Progression
+        instruction: Define how challenge increases across the game
+        sections:
+          - id: progression-curve
+            title: Progression Curve
+            type: code
+            language: text
+            template: |
+              Difficulty
+                  ^     ___/```
+                  |    /
+                  |   /     ___/```
+                  |  /     /
+                  | /     /
+                  |/     /
+                  +-----------> Level Number
+                 Tutorial  Early  Mid  Late
+          - id: scaling-parameters
+            title: Scaling Parameters
+            type: bullet-list
+            template: |
+              - Enemy count: {{start_count}} → {{end_count}} (pooled)
+              - Enemy difficulty: {{start_diff}} → {{end_diff}}
+              - Level complexity: {{start_complex}} → {{end_complex}}
+              - Time pressure: {{start_time}} → {{end_time}}
+              - Performance impact: Must maintain 60+ FPS at peak
+      - id: unlock-requirements
+        title: Unlock Requirements
+        instruction: Define how players access new levels
+        template: |
+          **Progression Gates:**
+
+          - Linear progression: Complete previous level
+          - Star requirements: {{star_count}} stars to unlock
+          - Skill gates: Demonstrate {{skill_requirement}}
+          - Optional content: {{unlock_condition}}
+
+  - id: level-design-components
+    title: Level Design Components
+    instruction: Define the building blocks used to create levels
+    sections:
+      - id: environmental-elements
+        title: Environmental Elements
+        instruction: Define Godot nodes and resources for level components
+        template: |
+          **TileMap Layers:**
+
+          - Background: TileMap node - {{tile_size}}px tiles
+          - Collision: TileMap with physics layers
+          - Foreground: TileMap for overlays
+
+          **Interactive Nodes:**
+
+          - {{node_1}}: Area2D/3D - {{signals_emitted}}
+          - {{node_2}}: RigidBody2D/3D - {{physics_properties}}
+
+          **Hazard Nodes:**
+
+          - {{hazard_1}}: Area2D with damage signal
+          - {{hazard_2}}: AnimationPlayer for moving hazards
+
+          **Performance:** All interactive elements use object pooling
+      - id: collectibles-rewards
+        title: Collectibles and Rewards
+        instruction: Define all collectible items and their placement rules
+        template: |
+          **Collectible Types:**
+
+          - {{collectible_1}}: {{value_and_purpose}}
+          - {{collectible_2}}: {{value_and_purpose}}
+
+          **Placement Guidelines:**
+
+          - Mandatory collectibles: {{placement_rules}}
+          - Optional collectibles: {{placement_rules}}
+          - Secret collectibles: {{placement_rules}}
+
+          **Reward Distribution:**
+
+          - Easy to find: {{percentage}}%
+          - Moderate challenge: {{percentage}}%
+          - High skill required: {{percentage}}%
+      - id: enemy-placement-framework
+        title: Enemy Placement Framework
+        instruction: Define enemy node placement and pooling strategies
+        template: |
+          **Enemy Scene Types:**
+
+          - {{enemy_scene_1}}.tscn: {{node_type}} - {{ai_behavior}}
+          - {{enemy_scene_2}}.tscn: {{node_type}} - {{ai_behavior}}
+
+          **Godot Placement Methods:**
+
+          - Spawn Points: Position2D/3D markers in scene
+          - Dynamic Spawning: Object pool with max {{pool_size}}
+          - Wave System: Timer-based with performance monitoring
+
+          **Performance Scaling:**
+
+          - Max active enemies: {{max_count}} to maintain 60+ FPS
+          - LOD system: Disable AI beyond {{distance}} units
+          - Pooling strategy: Reuse instances, never instantiate in gameplay
+
+  - id: level-creation-guidelines
+    title: Level Creation Guidelines
+    instruction: Provide specific guidelines for creating individual levels
+    sections:
+      - id: level-layout-principles
+        title: Godot Level Layout Principles
+        template: |
+          **TileMap Design:**
+
+          - Tile size: {{tile_size}}x{{tile_size}} pixels
+          - Grid dimensions: {{grid_width}}x{{grid_height}} tiles
+          - Collision layers: {{collision_layer_count}}
+          - Autotiling: {{autotile_enabled}} for efficiency
+
+          **Node-Based Navigation:**
+
+          - Navigation2D/3D setup: {{nav_mesh_config}}
+          - Path2D for guided movement
+          - Area2D triggers for zone transitions
+          - Position2D markers for spawn points
+
+          **Performance Layout:**
+          - Chunk size for streaming: {{chunk_size}}
+          - Occlusion culling setup: {{occlusion_config}}
+          - Draw call optimization: Batch similar tiles
+      - id: pacing-and-flow
+        title: Pacing and Flow
+        instruction: Define how to control the rhythm and pace of gameplay within levels
+        template: |
+          **Action Sequences:**
+
+          - High intensity duration: {{max_duration}}
+          - Rest period requirement: {{min_rest_time}}
+          - Intensity variation: {{pacing_pattern}}
+
+          **Learning Sequences:**
+
+          - New mechanic introduction: {{teaching_method}}
+          - Practice opportunity: {{practice_duration}}
+          - Skill application: {{application_context}}
+      - id: challenge-design
+        title: Challenge Design
+        instruction: Define how to create appropriate challenges for each level type
+        template: |
+          **Challenge Types:**
+
+          - Execution challenges: {{skill_requirements}}
+          - Puzzle challenges: {{complexity_guidelines}}
+          - Time challenges: {{time_pressure_rules}}
+          - Resource challenges: {{resource_management}}
+
+          **Difficulty Calibration:**
+
+          - Skill check frequency: {{frequency_guidelines}}
+          - Failure recovery: {{retry_mechanics}}
+          - Hint system integration: {{help_system}}
+
+  - id: technical-implementation
+    title: Godot Technical Implementation
+    instruction: Define Godot-specific technical requirements for level scenes
+    sections:
+      - id: level-scene-structure
+        title: Level Scene Structure
+        instruction: Define Godot scene hierarchy and resource organization
+        template: |
+          **Scene File Format:**
+
+          - File type: .tscn (Godot scene)
+          - Naming: `level_{{world}}_{{number}}.tscn`
+          - Location: res://levels/{{world}}/
+          - Resource format: .tres for level data
+
+          **Scene Hierarchy:**
+          ```
+          Level (Node2D/Spatial)
+          ├── TileMap (background)
+          ├── TileMap (collision)
+          ├── TileMap (foreground)
+          ├── Entities (Node2D)
+          │   ├── Enemies (pooled)
+          │   └── Pickups (pooled)
+          ├── Triggers (Node2D)
+          └── LevelLogic (Node with script)
+          ```
+        sections:
+          - id: level-resource-data
+            title: Level Resource Data (.tres)
+            type: code
+            language: gdscript
+            template: |
+              # LevelData.gd - extends Resource
+              class_name LevelData
+              extends Resource
+
+              @export var level_id: String = "{{unique_identifier}}"
+              @export var world_id: String = "{{world_identifier}}"
+              @export var difficulty: float = {{difficulty_value}}
+              @export var target_time: float = {{completion_time_seconds}}
+              @export var target_fps: int = 60  # Mandatory
+
+              @export var objectives: Dictionary = {
+                  "primary": "{{primary_objective}}",
+                  "secondary": ["{{secondary_objectives}}"],
+                  "hidden": ["{{secret_objectives}}"]
+              }
+
+              @export var performance_limits: Dictionary = {
+                  "max_enemies": {{enemy_pool_size}},
+                  "max_particles": {{particle_limit}},
+                  "max_draw_calls": {{draw_call_limit}}
+              }
+
+              # Entity spawn data
+              @export var spawn_points: Array[Vector2] = []
+              @export var enemy_waves: Array[Resource] = []
+      - id: godot-asset-integration
+        title: Godot Asset Integration
+        instruction: Define how Godot resources and assets are organized
+        template: |
+          **TileSet Resource:**
+
+          - Resource path: res://tilesets/{{tileset_name}}.tres
+          - Tile size: {{tile_dimensions}}x{{tile_dimensions}}px
+          - Physics layers: {{collision_layers}}
+          - Autotile setup: {{autotile_config}}
+          - Custom data layers: {{custom_properties}}
+
+          **Audio Integration:**
+
+          - AudioStreamPlayer2D for positional audio
+          - Audio bus: "Level" for volume control
+          - Stream format: .ogg for music, .wav for SFX
+          - Preload critical sounds to avoid frame drops
+
+          **Texture Import Settings:**
+          - Filter: Nearest (for pixel art) or Linear
+          - Mipmaps: Disabled for 2D, Enabled for 3D
+          - Compression: Lossless for important visuals
+      - id: godot-performance-optimization
+        title: Godot Performance Optimization
+        instruction: Define Godot-specific optimization for 60+ FPS
+        template: |
+          **Node Limits (for 60+ FPS):**
+
+          - Maximum active nodes: {{node_limit}}
+          - Maximum physics bodies: {{physics_limit}}
+          - Maximum particles: {{particle_limit}} (use GPUParticles2D/3D)
+          - Maximum lights: {{light_limit}}
+
+          **Memory Management:**
+
+          - Scene memory budget: {{scene_memory}}MB
+          - Texture memory: {{texture_memory}}MB
+          - Object pooling: Mandatory for all spawned entities
+          - Scene loading: <3 seconds (show loading screen if longer)
+
+          **Godot Optimization Techniques:**
+
+          - VisibilityEnabler2D/3D for automatic culling
+          - LOD using visibility ranges
+          - Static body optimization for non-moving collision
+          - YSort for efficient 2D depth sorting
+          - Multimesh for repeated elements
+
+          **Language Strategy:**
+          - Level logic: GDScript with static typing
+          - Performance-critical systems: C# (no LINQ)
+
+  - id: godot-level-patterns
+    title: Godot Level Design Patterns
+    instruction: Document common Godot patterns for level implementation
+    sections:
+      - id: scene-inheritance
+        title: Scene Inheritance Pattern
+        template: |
+          **Base Level Scene:**
+          - res://levels/base_level.tscn
+          - Contains common nodes (UI, pause, music)
+          - Child scenes inherit and override
+
+          **Inherited Scenes:**
+          - Each level extends base_level.tscn
+          - Override specific properties
+          - Maintain 60+ FPS through shared resources
+      - id: tilemap-patterns
+        title: TileMap Best Practices
+        template: |
+          **Layer Organization:**
+          - Background: Decorative, no collision
+          - Collision: Physics bodies, one-way platforms
+          - Foreground: Overlay effects
+
+          **Autotiling Setup:**
+          - 3x3 minimal or 16-tile for complex terrain
+          - Custom data for gameplay properties
+          - Collision shapes optimized per tile
+      - id: spawning-patterns
+        title: Entity Spawning Patterns
+        template: |
+          **Object Pooling (Mandatory):**
+          ```gdscript
+          # Enemy pool manager
+          var enemy_pool: Array = []
+          var max_enemies: int = {{max_count}}
+
+          func _ready() -> void:
+              # Pre-instantiate enemies
+              for i in max_enemies:
+                  var enemy = enemy_scene.instantiate()
+                  enemy.set_process(false)
+                  enemy_pool.append(enemy)
+          ```
+
+          **Spawn Points:**
+          - Use Position2D/3D markers
+          - Group spawn points for wave management
+          - Signal when spawn completes
+      - id: performance-patterns
+        title: Performance Optimization Patterns
+        template: |
+          **Visibility Management:**
+          - VisibilityEnabler2D for off-screen culling
+          - LOD groups for distance-based quality
+          - Disable process for inactive entities
+
+          **Memory Management:**
+          - Preload frequently used resources
+          - Queue_free() with object pool return
+          - Signal cleanup in _exit_tree()
+
+          **Draw Call Batching:**
+          - Use same material/shader where possible
+          - Batch static geometry
+          - Minimize transparent overdraw
+
+  - id: level-testing-framework
+    title: Level Testing Framework
+    instruction: Define how levels should be tested and validated
+    sections:
+      - id: automated-testing
+        title: Automated Testing
+        template: |
+          **Performance Testing (GUT/GoDotTest):**
+
+          - Frame rate validation: Must maintain 60+ FPS
+          - Frame time monitoring: <16.67ms average
+          - Memory leak detection: Check signal cleanup
+          - Object pool verification: Ensure recycling works
+          - Loading time: <3 seconds per scene
+
+          **Gameplay Testing (TDD Approach):**
+
+          - Write GUT tests for level completion paths
+          - Test all Area2D triggers fire correctly
+          - Verify collectible spawn points accessible
+          - Test enemy AI with performance monitoring
+          - Validate all signals connect/disconnect properly
+      - id: manual-testing-protocol
+        title: Manual Testing Protocol
+        sections:
+          - id: playtesting-checklist
+            title: Godot Playtesting Checklist
+            type: checklist
+            items:
+              - Level maintains 60+ FPS throughout gameplay
+              - TileMap collision works correctly
+              - All Area2D triggers activate properly
+              - Object pooling functions without hiccups
+              - Scene transitions take <3 seconds
+              - Input responsiveness <50ms (3 frames)
+              - No memory leaks from signals
+              - Navigation mesh pathfinding works
+          - id: player-experience-testing
+            title: Player Experience Testing
+            type: checklist
+            items:
+              - Tutorial levels teach effectively
+              - Challenge feels fair and rewarding
+              - Flow and pacing maintain engagement
+              - Audio and visual feedback support gameplay
+      - id: balance-validation
+        title: Balance Validation
+        template: |
+          **Godot Metrics Collection:**
+
+          - FPS consistency: >95% of time at 60+ FPS
+          - Completion rate: Target {{completion_percentage}}%
+          - Average completion time: {{target_time}} ± {{variance}}
+          - Object pool efficiency: >90% reuse rate
+          - Draw calls per level: <{{draw_call_target}}
+
+          **Performance-Based Iteration:**
+
+          - If FPS drops: Reduce active enemies/particles
+          - If loading slow: Optimize texture imports
+          - If memory high: Check for signal leaks
+          - Testing with Godot profiler mandatory
+
+  - id: content-creation-pipeline
+    title: Godot Level Creation Pipeline
+    instruction: Define the workflow for creating new Godot level scenes
+    sections:
+      - id: design-phase
+        title: Design Phase
+        template: |
+          **Concept Development:**
+
+          1. Define level goals and performance targets (60+ FPS)
+          2. Sketch TileMap layout and node placement
+          3. Plan object pooling for spawned entities
+          4. Choose language (GDScript vs C#) for level logic
+          5. Estimate memory and draw call budget
+
+          **Godot Documentation Requirements:**
+
+          - Level scene hierarchy diagram
+          - TileSet resource requirements
+          - Signal flow documentation
+          - Performance budget allocation
+          - TDD test plan (GUT/GoDotTest)
+      - id: implementation-phase
+        title: Godot Implementation Phase
+        template: |
+          **Scene Creation (TDD Approach):**
+
+          1. Write GUT tests for level mechanics (RED phase)
+          2. Create level scene (.tscn) structure
+          3. Build TileMap layers (collision, visual, background)
+          4. Implement object pools for enemies/pickups
+          5. Add Area2D triggers and signals (GREEN phase)
+          6. Configure Navigation2D mesh
+          7. Optimize with static typing (REFACTOR phase)
+
+          **Godot Quality Assurance:**
+
+          1. Run GUT/GoDotTest suites
+          2. Profile with Godot debugger (60+ FPS check)
+          3. Verify object pooling efficiency
+          4. Check memory usage and draw calls
+          5. Test on minimum spec hardware
+      - id: integration-phase
+        title: Godot Integration Phase
+        template: |
+          **Scene Integration:**
+
+          1. Add to level scene autoload manager
+          2. Connect to game state signals
+          3. Integrate with save system (user:// path)
+          4. Link achievements via signal system
+          5. Set up scene transitions (<3 seconds)
+
+          **Final Godot Validation:**
+
+          1. Test scene in full game context
+          2. Verify 60+ FPS with all systems active
+          3. Export template testing (all platforms)
+          4. Check InputMap works for all devices
+          5. Validate object pools don't leak memory
+
+  - id: success-metrics
+    title: Godot Level Success Metrics
+    instruction: Define metrics for level design success with performance focus
+    sections:
+      - id: player-engagement
+        title: Player Engagement
+        type: bullet-list
+        template: |
+          - Level completion rate: {{target_rate}}%
+          - Replay rate: {{replay_target}}%
+          - Time spent per level: {{engagement_time}}
+          - Player satisfaction: {{satisfaction_target}}/10
+          - Input responsiveness: <50ms feedback
+      - id: godot-performance
+        title: Godot Technical Performance
+        type: bullet-list
+        template: |
+          - Frame rate: 60+ FPS maintained {{fps_consistency}}%
+          - Frame time: <16.67ms average
+          - Scene loading: <3 seconds {{load_compliance}}%
+          - Memory efficiency: {{memory_efficiency}}%
+          - Object pool reuse: >90% efficiency
+          - Draw calls: Within budget {{draw_compliance}}%
+          - Signal leaks: 0 tolerance
+          - Crash rate: <{{crash_threshold}}%
+      - id: design-quality
+        title: Design Quality
+        type: bullet-list
+        template: |
+          - Difficulty curve adherence: {{curve_accuracy}}
+          - Node architecture efficiency: {{node_score}}
+          - TileMap optimization: {{tilemap_score}}
+          - Signal flow clarity: {{signal_score}}
+          - TDD coverage: >80% (GUT/GoDotTest)
+          - Language strategy appropriateness: {{language_score}}
+          - Content accessibility: {{accessibility_rate}}%

@@ -181,7 +181,7 @@ npx bmad-method install
 
 ## Core Configuration (core-config.yaml)
 
-**New in V4**: The `bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
+**New in V4**: The `.bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
 
 ### What is core-config.yaml?
 

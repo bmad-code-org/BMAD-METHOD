@@ -353,8 +353,7 @@ agent:
   id: qa
   title: Test Architect & Quality Advisor
   icon: 🧪
-  whenToUse: |
-    Use for comprehensive test architecture review, quality gate decisions, 
+  whenToUse: Use for comprehensive test architecture review, quality gate decisions, 
     and code improvement. Provides thorough analysis including requirements 
     traceability, risk assessment, and test strategy. 
     Advisory only - teams choose their quality bar.
@@ -895,7 +894,7 @@ npx bmad-method install
 
 ## Core Configuration (core-config.yaml)
 
-**New in V4**: The `bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
+**New in V4**: The `.bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
 
 ### What is core-config.yaml?
 
@@ -2589,7 +2588,7 @@ First, determine the project type by checking:
 
 2. Is this a BROWNFIELD project (enhancing existing system)?
    - Look for: References to existing codebase, enhancement/modification language
-   - Check for: brownfield-prd.md, brownfield-architecture.md, existing system analysis
+   - Check for: prd.md, architecture.md, existing system analysis
 
 3. Does the project include UI/UX components?
    - Check for: frontend-architecture.md, UI/UX specifications, design files
@@ -2607,8 +2606,8 @@ For GREENFIELD projects:
 
 For BROWNFIELD projects:
 
-- brownfield-prd.md - The brownfield enhancement requirements
-- brownfield-architecture.md - The enhancement architecture
+- prd.md - The brownfield enhancement requirements
+- architecture.md - The enhancement architecture
 - Existing project codebase access (CRITICAL - cannot proceed without this)
 - Current deployment configuration and infrastructure details
 - Database schemas, API documentation, monitoring setup
@@ -3299,8 +3298,8 @@ Implement fixes based on QA results (gate and assessments) for a specific story.
 ```yaml
 required:
   - story_id: '{epic}.{story}' # e.g., "2.2"
-  - qa_root: from `bmad-core/core-config.yaml` key `qa.qaLocation` (e.g., `docs/project/qa`)
-  - story_root: from `bmad-core/core-config.yaml` key `devStoryLocation` (e.g., `docs/project/stories`)
+  - qa_root: from `.bmad-core/core-config.yaml` key `qa.qaLocation` (e.g., `docs/project/qa`)
+  - story_root: from `.bmad-core/core-config.yaml` key `devStoryLocation` (e.g., `docs/project/stories`)
 
 optional:
   - story_title: '{title}' # derive from story H1 if missing
@@ -3328,7 +3327,7 @@ optional:
 
 ### 0) Load Core Config & Locate Story
 
-- Read `bmad-core/core-config.yaml` and resolve `qa_root` and `story_root`
+- Read `.bmad-core/core-config.yaml` and resolve `qa_root` and `story_root`
 - Locate story file in `{story_root}/{epic}.{story}.*.md`
   - HALT if missing and ask for correct story id/path
 
@@ -3396,7 +3395,7 @@ Status Rule:
 
 ## Blocking Conditions
 
-- Missing `bmad-core/core-config.yaml`
+- Missing `.bmad-core/core-config.yaml`
 - Story file not found for `story_id`
 - No QA artifacts found (neither gate nor assessments)
   - HALT and request QA to generate at least a gate file (or proceed only with clear developer-provided fix list)
@@ -3542,11 +3541,11 @@ Quick NFR validation focused on the core four: security, performance, reliabilit
 ```yaml
 required:
   - story_id: '{epic}.{story}' # e.g., "1.3"
-  - story_path: `bmad-core/core-config.yaml` for the `devStoryLocation`
+  - story_path: `.bmad-core/core-config.yaml` for the `devStoryLocation`
 
 optional:
-  - architecture_refs: `bmad-core/core-config.yaml` for the `architecture.architectureFile`
-  - technical_preferences: `bmad-core/core-config.yaml` for the `technicalPreferences`
+  - architecture_refs: `.bmad-core/core-config.yaml` for the `architecture.architectureFile`
+  - technical_preferences: `.bmad-core/core-config.yaml` for the `technicalPreferences`
   - acceptance_criteria: From story file
 ```
 
@@ -3896,7 +3895,7 @@ Generate a standalone quality gate file that provides a clear pass/fail decision
 
 ## Gate File Location
 
-**ALWAYS** check the `bmad-core/core-config.yaml` for the `qa.qaLocation/gates`
+**ALWAYS** check the `.bmad-core/core-config.yaml` for the `qa.qaLocation/gates`
 
 Slug rules:
 
@@ -4006,7 +4005,7 @@ waiver:
 
 ## Output Requirements
 
-1. **ALWAYS** create gate file at: `qa.qaLocation/gates` from `bmad-core/core-config.yaml`
+1. **ALWAYS** create gate file at: `qa.qaLocation/gates` from `.bmad-core/core-config.yaml`
 2. **ALWAYS** append this exact format to story's QA Results section:
 
    ```text
@@ -4231,7 +4230,7 @@ NFR assessment: qa.qaLocation/assessments/{epic}.{story}-nfr-{YYYYMMDD}.md
 **Template and Directory:**
 
 - Render from `../templates/qa-gate-tmpl.yaml`
-- Create directory defined in `qa.qaLocation/gates` (see `bmad-core/core-config.yaml`) if missing
+- Create directory defined in `qa.qaLocation/gates` (see `.bmad-core/core-config.yaml`) if missing
 - Save to: `qa.qaLocation/gates/{epic}.{story}-{slug}.yml`
 
 Gate file structure:

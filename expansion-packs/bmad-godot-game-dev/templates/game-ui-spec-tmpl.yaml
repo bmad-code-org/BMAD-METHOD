@@ -1,0 +1,601 @@
+template:
+  id: frontend-spec-template-v2
+  name: UI/UX Specification
+  version: 2.0
+  output:
+    format: markdown
+    filename: docs/front-end-spec.md
+    title: "{{project_name}} UI/UX Specification"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: introduction
+    title: Introduction
+    instruction: |
+      Review provided documents including Project Brief, PRD, and any user research to gather context. Focus on understanding user needs, pain points, and desired outcomes before beginning the specification.
+
+      Establish the document's purpose and scope. Keep the content below but ensure project name is properly substituted.
+    content: |
+      This document defines the user experience goals, information architecture, user flows, and visual design specifications for {{project_name}}'s user interface. It serves as the foundation for visual design and frontend development, ensuring a cohesive and user-centered experience.
+    sections:
+      - id: ux-goals-principles
+        title: Overall UX Goals & Principles
+        instruction: |
+          Work with the user to establish and document the following. If not already defined, facilitate a discussion to determine:
+
+          1. Target User Personas - elicit details or confirm existing ones from PRD
+          2. Key Usability Goals - understand what success looks like for users
+          3. Core Design Principles - establish 3-5 guiding principles
+        elicit: true
+        sections:
+          - id: user-personas
+            title: Target User Personas
+            template: "{{persona_descriptions}}"
+            examples:
+              - "**Power User:** Technical professionals who need advanced features and efficiency"
+              - "**Casual User:** Occasional users who prioritize ease of use and clear guidance"
+              - "**Administrator:** System managers who need control and oversight capabilities"
+          - id: usability-goals
+            title: Usability Goals
+            template: "{{usability_goals}}"
+            examples:
+              - "Ease of learning: New users can complete core tasks within 5 minutes"
+              - "Efficiency of use: Power users can complete frequent tasks with minimal clicks"
+              - "Error prevention: Clear validation and confirmation for destructive actions"
+              - "Memorability: Infrequent users can return without relearning"
+          - id: design-principles
+            title: Design Principles
+            template: "{{design_principles}}"
+            type: numbered-list
+            examples:
+              - "**Clarity over cleverness** - Prioritize clear communication over aesthetic innovation"
+              - "**Progressive disclosure** - Show only what's needed, when it's needed"
+              - "**Consistent patterns** - Use familiar UI patterns throughout the application"
+              - "**Immediate feedback** - Every action should have a clear, immediate response"
+              - "**Accessible by default** - Design for all users from the start"
+      - id: changelog
+        title: Change Log
+        type: table
+        columns: [Date, Version, Description, Author]
+        instruction: Track document versions and changes
+
+  - id: information-architecture
+    title: Information Architecture (IA)
+    instruction: |
+      Collaborate with the user to create a comprehensive information architecture:
+
+      1. Build a Site Map or Screen Inventory showing all major areas
+      2. Define the Navigation Structure (primary, secondary, breadcrumbs)
+      3. Use Mermaid diagrams for visual representation
+      4. Consider user mental models and expected groupings
+    elicit: true
+    sections:
+      - id: sitemap
+        title: Site Map / Screen Inventory
+        type: mermaid
+        mermaid_type: graph
+        template: "{{sitemap_diagram}}"
+        examples:
+          - |
+            graph TD
+                A[Homepage] --> B[Dashboard]
+                A --> C[Products]
+                A --> D[Account]
+                B --> B1[Analytics]
+                B --> B2[Recent Activity]
+                C --> C1[Browse]
+                C --> C2[Search]
+                C --> C3[Product Details]
+                D --> D1[Profile]
+                D --> D2[Settings]
+                D --> D3[Billing]
+      - id: navigation-structure
+        title: Navigation Structure
+        template: |
+          **Primary Navigation:** {{primary_nav_description}}
+
+          **Secondary Navigation:** {{secondary_nav_description}}
+
+          **Breadcrumb Strategy:** {{breadcrumb_strategy}}
+
+  - id: user-flows
+    title: User Flows
+    instruction: |
+      For each critical user task identified in the PRD:
+
+      1. Define the user's goal clearly
+      2. Map out all steps including decision points
+      3. Consider edge cases and error states
+      4. Use Mermaid flow diagrams for clarity
+      5. Link to external tools (Figma/Miro) if detailed flows exist there
+
+      Create subsections for each major flow.
+    elicit: true
+    repeatable: true
+    sections:
+      - id: flow
+        title: "{{flow_name}}"
+        template: |
+          **Player Goal:** {{flow_goal}}
+
+          **Entry Scene:** {{entry_scene}}.tscn
+
+          **Input Methods:** {{supported_inputs}}
+
+          **Performance Target:** 60+ FPS throughout
+
+          **Success Criteria:** {{success_criteria}}
+        sections:
+          - id: flow-diagram
+            title: Flow Diagram
+            type: mermaid
+            mermaid_type: graph
+            template: "{{flow_diagram}}"
+          - id: edge-cases
+            title: "Edge Cases & Error Handling:"
+            type: bullet-list
+            template: "- {{edge_case}}"
+          - id: notes
+            template: "**Notes:** {{flow_notes}}"
+
+  - id: wireframes-mockups
+    title: Wireframes & Mockups
+    instruction: |
+      Clarify where detailed visual designs will be created (Figma, Sketch, etc.) and how to reference them. If low-fidelity wireframes are needed, offer to help conceptualize layouts for key screens.
+    elicit: true
+    sections:
+      - id: design-files
+        template: "**Primary Design Files:** {{design_tool_link}}"
+      - id: key-scene-layouts
+        title: Key UI Scene Layouts
+        repeatable: true
+        sections:
+          - id: scene
+            title: "{{scene_name}}.tscn"
+            template: |
+              **Purpose:** {{scene_purpose}}
+
+              **Control Node Hierarchy:**
+              ```
+              Control (root)
+              ├── MarginContainer
+              │   └── VBoxContainer
+              │       ├── {{element_1}}
+              │       ├── {{element_2}}
+              │       └── {{element_3}}
+              ```
+
+              **Anchoring Strategy:** {{anchor_preset}}
+
+              **InputMap Actions:** {{input_actions}}
+
+              **Performance Impact:** {{fps_impact}}
+
+              **Theme Resource:** res://themes/{{theme_name}}.tres
+
+  - id: component-library
+    title: Godot UI Component Library
+    instruction: |
+      Define reusable Godot UI scenes and Control node patterns. Specify theme resources, custom Control classes, and performance considerations. Focus on scene inheritance and instancing patterns.
+    elicit: true
+    sections:
+      - id: godot-ui-approach
+        template: |
+          **Godot UI Approach:** {{ui_approach}}
+
+          **Theme Strategy:** {{theme_strategy}}
+          - Base Theme: res://themes/base_theme.tres
+          - Theme Overrides: {{override_strategy}}
+
+          **Language Choice:** {{GDScript|C#}} for UI logic
+          - Rationale: {{language_reason}}
+      - id: core-components
+        title: Core Components
+        repeatable: true
+        sections:
+          - id: component
+            title: "{{component_name}}"
+            template: |
+              **Scene Path:** res://ui/components/{{component_name}}.tscn
+
+              **Purpose:** {{component_purpose}}
+
+              **Control Type:** {{control_node_type}}
+
+              **Signals:**
+              - {{signal_1}}
+              - {{signal_2}}
+
+              **Export Variables:**
+              - @export var {{var_name}}: {{type}}
+
+              **States:** {{component_states}}
+
+              **Performance:** {{performance_notes}}
+
+              **Usage Guidelines:** {{usage_guidelines}}
+
+  - id: branding-style
+    title: Game Visual Style Guide
+    instruction: Define visual style for Godot UI using themes, stylebox resources, and shader materials. Ensure consistency across all UI scenes while maintaining 60+ FPS.
+    elicit: true
+    sections:
+      - id: visual-identity
+        title: Visual Identity
+        template: |
+          **Game Art Style:** {{art_style}}
+
+          **Godot Theme Resources:**
+          - Main Theme: res://themes/main_theme.tres
+          - Dark Theme: res://themes/dark_theme.tres
+
+          **StyleBox Resources:**
+          - Panel: res://themes/styles/panel_style.tres
+          - Button: res://themes/styles/button_style.tres
+      - id: color-palette
+        title: Color Palette
+        type: table
+        columns: ["Color Type", "Hex Code", "Usage"]
+        rows:
+          - ["Primary", "{{primary_color}}", "{{primary_usage}}"]
+          - ["Secondary", "{{secondary_color}}", "{{secondary_usage}}"]
+          - ["Accent", "{{accent_color}}", "{{accent_usage}}"]
+          - ["Success", "{{success_color}}", "Positive feedback, confirmations"]
+          - ["Warning", "{{warning_color}}", "Cautions, important notices"]
+          - ["Error", "{{error_color}}", "Errors, destructive actions"]
+          - ["Neutral", "{{neutral_colors}}", "Text, borders, backgrounds"]
+      - id: typography
+        title: Typography
+        sections:
+          - id: font-families
+            title: Font Resources
+            template: |
+              - **Primary:** res://fonts/{{primary_font}}.ttf
+              - **Secondary:** res://fonts/{{secondary_font}}.ttf
+              - **Monospace:** res://fonts/{{mono_font}}.ttf
+
+              **Dynamic Font Settings:**
+              - Use Mipmaps: true (for scaling)
+              - Antialiasing: true
+              - Hinting: Light
+          - id: type-scale
+            title: Type Scale
+            type: table
+            columns: ["Element", "Size", "Weight", "Line Height"]
+            rows:
+              - ["H1", "{{h1_size}}", "{{h1_weight}}", "{{h1_line}}"]
+              - ["H2", "{{h2_size}}", "{{h2_weight}}", "{{h2_line}}"]
+              - ["H3", "{{h3_size}}", "{{h3_weight}}", "{{h3_line}}"]
+              - ["Body", "{{body_size}}", "{{body_weight}}", "{{body_line}}"]
+              - ["Small", "{{small_size}}", "{{small_weight}}", "{{small_line}}"]
+      - id: iconography
+        title: Iconography
+        template: |
+          **Icon Atlas:** res://ui/icons/icon_atlas.png
+
+          **Icon Size Standards:**
+          - Small: 16x16
+          - Medium: 32x32
+          - Large: 64x64
+
+          **Texture Import Settings:**
+          - Filter: Linear (for smooth scaling)
+          - Mipmaps: Generate
+
+          **Usage Guidelines:** {{icon_guidelines}}
+      - id: spacing-layout
+        title: Spacing & Layout
+        template: |
+          **Container System:**
+          - MarginContainer: {{margin_values}}
+          - Separation (H/VBox): {{separation_pixels}}
+          - GridContainer columns: {{grid_columns}}
+
+          **Anchor Presets:** {{anchor_strategy}}
+
+          **Spacing Scale:** {{spacing_scale}} (in pixels)
+
+          **Safe Area Margins:** {{safe_margins}} (for mobile)
+
+  - id: accessibility
+    title: Game Accessibility Requirements
+    instruction: Define specific accessibility requirements for Godot game UI, including input remapping through InputMap, visual adjustments through themes, and performance considerations for accessibility features.
+    elicit: true
+    sections:
+      - id: compliance-target
+        title: Compliance Target
+        template: |
+          **Standard:** {{compliance_standard}}
+
+          **Godot Accessibility Features:**
+          - InputMap remapping support
+          - Theme system for high contrast
+          - Font scaling through DynamicFont
+          - Performance: Accessibility features maintain 60+ FPS
+      - id: key-requirements
+        title: Key Requirements
+        template: |
+          **Visual (Godot Theme System):**
+          - Color contrast ratios: {{contrast_requirements}}
+          - Focus indicators: Custom StyleBox for focused state
+          - Text sizing: DynamicFont with size range {{min_size}}-{{max_size}}
+          - Colorblind modes: Theme variants for different types
+
+          **Interaction (InputMap):**
+          - Full keyboard navigation through ui_* actions
+          - Gamepad support with proper button prompts
+          - Touch targets: Minimum 44x44 pixels
+          - Hold-to-confirm for destructive actions
+          - Input buffer: {{buffer_frames}} frames for combo inputs
+
+          **Performance:**
+          - Accessibility features maintain 60+ FPS
+          - No additional draw calls for focus indicators
+          - Theme switching without frame drops
+      - id: testing-strategy
+        title: Testing Strategy
+        template: |
+          **Godot-Specific Testing:**
+          - InputMap verification for all UI actions
+          - Theme contrast validation
+          - Performance testing with accessibility features enabled
+          - Touch target size verification
+          - {{additional_testing}}
+
+  - id: responsiveness
+    title: Godot UI Responsiveness Strategy
+    instruction: Define viewport scaling, anchor presets, and Control node adaptation strategies for different screen sizes. Consider Godot's stretch modes and aspect ratios while maintaining 60+ FPS.
+    elicit: true
+    sections:
+      - id: viewport-settings
+        title: Viewport Configuration
+        template: |
+          **Project Settings:**
+          - Base Resolution: {{base_width}}x{{base_height}}
+          - Stretch Mode: {{canvas_items|viewport|2d}}
+          - Stretch Aspect: {{keep|keep_width|keep_height|expand}}
+
+          **Resolution Support:**
+          | Resolution | Aspect | Platform | UI Scale |
+          |------------|--------|----------|----------|
+          | 1280x720   | 16:9   | Mobile   | 1.0x     |
+          | 1920x1080  | 16:9   | Desktop  | 1.5x     |
+          | 2560x1440  | 16:9   | Desktop  | 2.0x     |
+          | {{custom}} | {{asp}}| {{plat}} | {{scale}}|
+      - id: adaptation-patterns
+        title: Godot UI Adaptation Patterns
+        template: |
+          **Anchor Presets:**
+          - Mobile: Full Rect with margins
+          - Desktop: Center with fixed size
+          - Wide: Proportional margins
+
+          **Container Adjustments:**
+          - Mobile: VBoxContainer for vertical layout
+          - Desktop: HBoxContainer or GridContainer
+
+          **Control Visibility:**
+          - Hide/show nodes based on viewport size
+          - Use Control.visible property
+
+          **Font Scaling:**
+          - DynamicFont size based on viewport
+          - Maintain readability at all scales
+
+          **Performance:** All adaptations maintain 60+ FPS
+
+  - id: animation
+    title: Godot UI Animation & Transitions
+    instruction: Define AnimationPlayer and Tween-based animations for UI. Ensure all animations maintain 60+ FPS and can be disabled for accessibility.
+    elicit: true
+    sections:
+      - id: motion-principles
+        title: Motion Principles
+        template: |
+          **Godot Animation Guidelines:**
+          - Use AnimationPlayer for complex sequences
+          - Use Tweens for simple property animations
+          - All animations < 0.3s for responsiveness
+          - Maintain 60+ FPS during animations
+          - Provide animation_speed setting for accessibility
+
+          {{additional_principles}}
+      - id: key-animations
+        title: Key UI Animations
+        repeatable: true
+        template: |
+          - **{{animation_name}}:**
+            - Method: {{AnimationPlayer|Tween}}
+            - Properties: {{animated_properties}}
+            - Duration: {{duration}}s
+            - Easing: {{Trans.LINEAR|Trans.QUAD|Trans.CUBIC}}
+            - Performance Impact: {{fps_impact}}
+            - Can Disable: {{yes|no}}
+
+  - id: performance
+    title: UI Performance Requirements
+    instruction: Define Godot UI performance goals ensuring 60+ FPS is maintained. Consider draw calls, Control node count, and theme complexity.
+    sections:
+      - id: performance-goals
+        title: Performance Goals
+        template: |
+          - **Frame Rate:** 60+ FPS mandatory (frame time <16.67ms)
+          - **Scene Load:** <3 seconds for UI scene transitions
+          - **Input Response:** <50ms (3 frames at 60 FPS)
+          - **Draw Calls:** UI should add <20 draw calls
+          - **Control Nodes:** <100 active Control nodes per scene
+          - **Theme Complexity:** <10 StyleBox resources active
+      - id: optimization-strategies
+        title: Godot UI Optimization Strategies
+        template: |
+          **Node Optimization:**
+          - Use scene instancing for repeated UI elements
+          - Hide off-screen Control nodes (visible = false)
+          - Pool dynamic UI elements (popups, tooltips)
+
+          **Rendering Optimization:**
+          - Batch UI draw calls through theme consistency
+          - Use nine-patch rect for scalable backgrounds
+          - Minimize transparent overlays
+
+          **Update Optimization:**
+          - Use signals instead of polling for UI updates
+          - Update UI only when values change
+          - Batch multiple UI updates in single frame
+
+          **Language Choice:**
+          - GDScript for simple UI logic (with static typing)
+          - C# for complex UI systems (inventory, crafting)
+
+          {{additional_strategies}}
+
+  - id: godot-implementation
+    title: Godot UI Implementation Guide
+    instruction: |
+      Define specific Godot implementation details for UI developers including scene structure, script organization, and resource management.
+    sections:
+      - id: scene-organization
+        title: UI Scene Organization
+        template: |
+          **Scene Structure:**
+          ```
+          res://
+          ├── ui/
+          │   ├── scenes/
+          │   │   ├── main_menu.tscn
+          │   │   ├── hud.tscn
+          │   │   └── {{scene}}.tscn
+          │   ├── components/
+          │   │   ├── button.tscn
+          │   │   └── {{component}}.tscn
+          │   └── popups/
+          │       └── {{popup}}.tscn
+          ```
+
+          **Script Organization:**
+          - UI Logic: GDScript with static typing
+          - Performance-critical: C# for complex systems
+          - Autoload: UI manager singleton
+      - id: theme-resources
+        title: Theme Resource Setup
+        template: |
+          **Theme Hierarchy:**
+          - Base Theme: res://themes/base_theme.tres
+          - Variations: {{theme_variations}}
+
+          **Resource Preloading:**
+          - Preload frequently used UI scenes
+          - Load themes at startup
+          - Cache StyleBox resources
+      - id: input-configuration
+        title: InputMap Configuration
+        template: |
+          **UI Actions:**
+          - ui_accept: Space, Enter, Gamepad A
+          - ui_cancel: Escape, Gamepad B
+          - ui_up/down/left/right: Arrow keys, WASD, D-pad
+          - ui_focus_next: Tab, Gamepad RB
+          - ui_focus_prev: Shift+Tab, Gamepad LB
+          - {{custom_actions}}
+
+          **Touch Gestures:**
+          - Tap: ui_accept
+          - Swipe: Navigation
+          - Pinch: Zoom (if applicable)
+
+  - id: next-steps
+    title: Next Steps
+    instruction: |
+      After completing the Godot UI/UX specification:
+
+      1. Review with game design team
+      2. Create UI mockups considering Godot's Control nodes
+      3. Prepare theme resources and StyleBoxes
+      4. Set up TDD with GUT tests for UI components
+      5. Note performance requirements (60+ FPS)
+    sections:
+      - id: immediate-actions
+        title: Immediate Actions
+        type: numbered-list
+        template: |
+          1. Create base theme resource (res://themes/base_theme.tres)
+          2. Set up UI scene templates with proper anchoring
+          3. Configure InputMap for UI navigation
+          4. Write GUT tests for UI components
+          5. Profile UI scenes to ensure 60+ FPS
+          6. {{additional_action}}
+      - id: godot-handoff-checklist
+        title: Godot UI Handoff Checklist
+        type: checklist
+        items:
+          - "All UI scenes mapped with .tscn files"
+          - "Control node hierarchies defined"
+          - "Theme resources prepared"
+          - "InputMap actions configured"
+          - "Anchor presets documented"
+          - "60+ FPS performance validated"
+          - "GUT test coverage planned"
+          - "Language strategy decided (GDScript vs C#)"
+          - "Accessibility features implemented"
+          - "Touch controls configured"
+
+  - id: godot-ui-patterns
+    title: Godot UI Design Patterns
+    instruction: Document common Godot UI patterns and best practices used in the game.
+    sections:
+      - id: common-patterns
+        title: Common UI Patterns
+        template: |
+          **Dialog System:**
+          - Use PopupPanel nodes for modal dialogs
+          - AcceptDialog/ConfirmationDialog for prompts
+          - Signal pattern: dialog.popup_hide.connect(callback)
+
+          **Menu Navigation:**
+          - TabContainer for multi-page interfaces
+          - Tree node for hierarchical menus
+          - Focus management with grab_focus()
+
+          **HUD Layout:**
+          - MarginContainer for screen edges
+          - Anchor presets for corner elements
+          - CanvasLayer for overlay UI (stays on top)
+
+          **Inventory Grid:**
+          - GridContainer with fixed columns
+          - ItemList for scrollable lists
+          - Drag and drop with Control._gui_input()
+
+          **Health/Mana Bars:**
+          - ProgressBar with custom StyleBox
+          - TextureProgressBar for themed bars
+          - Tween for smooth value changes
+      - id: signal-patterns
+        title: UI Signal Patterns
+        template: |
+          **Button Signals:**
+          ```gdscript
+          button.pressed.connect(_on_button_pressed)
+          button.button_down.connect(_on_button_down)
+          button.toggled.connect(_on_button_toggled)
+          ```
+
+          **Input Handling:**
+          ```gdscript
+          func _gui_input(event: InputEvent) -> void:
+              if event.is_action_pressed("ui_accept"):
+                  # Handle input with 60+ FPS maintained
+          ```
+
+          **Custom Signals:**
+          ```gdscript
+          signal value_changed(new_value: float)
+          signal item_selected(item_id: int)
+          ```
+
+  - id: checklist-results
+    title: Checklist Results
+    instruction: If a Godot UI/UX checklist exists, run it against this document and report results here.

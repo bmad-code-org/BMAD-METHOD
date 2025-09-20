@@ -1,0 +1,406 @@
+template:
+  id: godot-game-story-template-v4
+  name: Godot Game Development Story
+  version: 4.0
+  output:
+    format: markdown
+    filename: "stories/{{epic_name}}/{{story_id}}-{{story_name}}.md"
+    title: "Godot Story: {{story_title}}"
+
+workflow:
+  mode: interactive
+
+sections:
+  - id: initial-setup
+    instruction: |
+      This template creates detailed Godot game development stories with TDD focus and 60+ FPS performance requirements. Each story should focus on a single, implementable feature using appropriate language choices (GDScript for logic, C# for performance-critical systems).
+
+      Before starting, ensure you have access to:
+
+      - Game Design Document (GDD) with Godot specifications
+      - Game Architecture Document with node hierarchy
+      - Language strategy decisions (GDScript vs C#)
+      - Performance targets (60+ FPS mandatory)
+      - Any existing stories in this epic
+
+      The story must include TDD requirements (GUT for GDScript, GoDotTest for C#) and performance validation steps.
+
+  - id: story-header
+    content: |
+      **Epic:** {{epic_name}}  
+      **Story ID:** {{story_id}}  
+      **Priority:** {{High|Medium|Low}}  
+      **Points:** {{story_points}}  
+      **Status:** Draft
+      **Language:** {{GDScript|C#|Both}}  
+      **Performance Target:** 60+ FPS
+
+  - id: description
+    title: Description
+    instruction: Provide a clear, concise description of what this story implements in Godot. Focus on the specific game feature, node architecture, and language choice rationale. Reference the GDD section and performance requirements.
+    template: |
+      {{clear_description_of_what_needs_to_be_implemented}}
+
+      **Godot Implementation:** Using {{node_types}} with {{language_choice}} for {{performance_reason}}
+      **Performance Impact:** {{expected_fps_impact}}
+
+  - id: acceptance-criteria
+    title: Acceptance Criteria
+    instruction: Define specific, testable conditions that must be met for the story to be considered complete. Each criterion should be verifiable and directly related to gameplay functionality.
+    sections:
+      - id: functional-requirements
+        title: Functional Requirements
+        type: checklist
+        items:
+          - "{{specific_functional_requirement}}"
+      - id: technical-requirements
+        title: Technical Requirements
+        type: checklist
+        items:
+          - Code follows GDScript/C# best practices with static typing
+          - Maintains 60+ FPS on all target devices (frame time <16.67ms)
+          - Object pooling implemented for spawned entities
+          - Signals properly connected and cleaned up
+          - GUT/GoDotTest coverage >= 80%
+          - "{{specific_technical_requirement}}"
+      - id: game-design-requirements
+        title: Game Design Requirements
+        type: checklist
+        items:
+          - "{{gameplay_requirement_from_gdd}}"
+          - "{{balance_requirement_if_applicable}}"
+          - "{{player_experience_requirement}}"
+
+  - id: technical-specifications
+    title: Technical Specifications
+    instruction: Provide specific Godot technical details including node hierarchy, signal flow, and language decisions. Include scene structure and resource requirements.
+    sections:
+      - id: files-to-modify
+        title: Files to Create/Modify
+        template: |
+          **New Scenes (.tscn):**
+
+          - `res://scenes/{{scene_name}}.tscn` - {{purpose}}
+
+          **New Scripts:**
+
+          - `res://scripts/{{script_name}}.gd` - {{gdscript_purpose}} (static typing required)
+          - `res://scripts/{{script_name}}.cs` - {{csharp_purpose}} (for performance)
+
+          **New Resources (.tres):**
+
+          - `res://resources/{{resource_name}}.tres` - {{resource_purpose}}
+
+          **Modified Files:**
+
+          - `{{existing_file_1}}` - {{changes_needed}}
+          - `{{existing_file_2}}` - {{changes_needed}}
+      - id: class-interface-definitions
+        title: Node/Class Definitions
+        instruction: Define specific Godot node structures and classes with language strategy
+        template: |
+          **GDScript Implementation (for game logic):**
+          ```gdscript
+          # {{script_name}}.gd
+          class_name {{ClassName}}
+          extends {{Node2D|Control|Node3D}}
+
+          # Static typing mandatory for 10-20% performance gain
+          @export var {{property_name}}: {{type}} = {{default_value}}
+
+          var _{{private_property}}: {{type}}
+
+          signal {{signal_name}}({{params}})
+
+          func _ready() -> void:
+              # TDD: Write GUT tests first
+              pass
+
+          func _physics_process(delta: float) -> void:
+              # Must maintain 60+ FPS
+              pass
+          ```
+
+          **C# Implementation (for performance-critical systems):**
+          ```csharp
+          // {{script_name}}.cs
+          using Godot;
+
+          [GlobalClass]
+          public partial class {{ClassName}} : {{Node2D|Control|Node3D}}
+          {
+              [Export] public {{type}} {{PropertyName}} { get; set; }
+              
+              [Signal]
+              public delegate void {{SignalName}}EventHandler({{params}});
+              
+              public override void _Ready()
+              {
+                  // TDD: Write GoDotTest tests first
+                  // No LINQ in hot paths
+              }
+              
+              public override void _PhysicsProcess(double delta)
+              {
+                  // Optimize for 60+ FPS, no allocations
+              }
+          }
+          ```
+      - id: integration-points
+        title: Integration Points
+        instruction: Specify how this feature integrates with existing Godot systems
+        template: |
+          **Scene Tree Integration:**
+
+          - Parent Scene: `res://scenes/{{parent_scene}}.tscn`
+          - Node Path: `/root/{{node_path}}`
+          - Scene Instancing: {{instancing_details}}
+
+          **Node Dependencies:**
+
+          - {{node_name}}: {{dependency_description}}
+          - Language: {{GDScript|C#}} - {{language_reason}}
+
+          **Signal Connections:**
+
+          - Emits: `{{signal_name}}` when {{condition}}
+          - Connects to: `{{node_path}}.{{signal_name}}` for {{response}}
+          - Cleanup: Signals disconnected in `_exit_tree()`
+
+          **Resource Dependencies:**
+
+          - `res://resources/{{resource}}.tres` - {{usage}}
+          - Preloaded: {{yes|no}} - {{preload_reason}}
+
+  - id: tdd-workflow
+    title: TDD Workflow (Red-Green-Refactor)
+    instruction: Define the Test-Driven Development approach for this story
+    template: |
+      **RED Phase - Write Failing Tests First:**
+
+      GDScript (GUT):
+      - [ ] Create test file: `res://tests/unit/test_{{component}}.gd`
+      - [ ] Write test for {{behavior_1}} - expect failure
+      - [ ] Write test for {{behavior_2}} - expect failure
+      - [ ] Write performance test for 60+ FPS - expect failure
+
+      C# (GoDotTest):
+      - [ ] Create test file: `res://tests/unit/{{Component}}Tests.cs`
+      - [ ] Write test for {{behavior_1}} - expect failure
+      - [ ] Write optimization test (no allocations) - expect failure
+
+      **GREEN Phase - Make Tests Pass:**
+
+      - [ ] Implement minimal code to pass {{behavior_1}} test
+      - [ ] Implement minimal code to pass {{behavior_2}} test
+      - [ ] Ensure 60+ FPS requirement is met
+      - [ ] Verify all tests are green
+
+      **REFACTOR Phase - Optimize and Clean:**
+
+      - [ ] Add static typing to all GDScript (10-20% perf gain)
+      - [ ] Remove LINQ from C# hot paths
+      - [ ] Implement object pooling for {{spawned_entities}}
+      - [ ] Clean up signal connections
+      - [ ] Profile and verify 60+ FPS maintained
+      - [ ] Ensure test coverage >= 80%
+
+  - id: implementation-tasks
+    title: Implementation Tasks
+    instruction: Break down the implementation into TDD-focused tasks following Red-Green-Refactor cycle. Each task should maintain 60+ FPS.
+    sections:
+      - id: dev-agent-record
+        title: Dev Agent Record
+        template: |
+          **TDD Tasks (Red-Green-Refactor):**
+
+          - [ ] Write GUT/GoDotTest tests for {{component}} (RED phase)
+          - [ ] Implement {{node_structure}} to pass tests (GREEN phase)
+          - [ ] Refactor with static typing and optimization (REFACTOR phase)
+          - [ ] Create object pool for {{spawned_entities}}
+          - [ ] Implement signal connections with cleanup
+          - [ ] Profile performance to ensure 60+ FPS
+          - [ ] Language optimization (GDScript static typing or C# no-LINQ)
+          - [ ] Integration testing with {{related_system}}
+          - [ ] Final performance validation (must maintain 60+ FPS)
+
+          **Debug Log:**
+          | Task | File | Change | Reverted? |
+          |------|------|--------|-----------|
+          | | | | |
+
+          **Completion Notes:**
+
+          <!-- Only note deviations from requirements, keep under 50 words -->
+
+          **Change Log:**
+
+          <!-- Only requirement changes during implementation -->
+
+  - id: godot-technical-context
+    title: Godot Technical Context
+    instruction: Define the Godot-specific technical implementation details
+    template: |
+      **Engine Version:** Godot {{version}} (4.3+ recommended)
+      **Renderer:** {{Forward+|Mobile|Compatibility}}
+      **Primary Language:** {{GDScript|C#}} - {{reason}}
+
+      **Node Architecture:**
+      ```
+      {{parent_node}}
+      └── {{child_node_1}} ({{node_type}})
+          ├── {{child_node_2}} ({{node_type}})
+          └── {{child_node_3}} ({{node_type}})
+      ```
+
+      **Performance Requirements:**
+      - Target FPS: 60+ (mandatory)
+      - Frame Budget: 16.67ms
+      - Memory Budget: {{memory_mb}}MB
+      - Draw Calls: < {{draw_calls}}
+
+      **Object Pooling Required:**
+      - {{entity_type}}: Pool size {{pool_size}}
+      - Recycling strategy: {{strategy}}
+
+  - id: game-design-context
+    title: Game Design Context
+    instruction: Reference the specific sections of the GDD that this story implements with Godot-specific details
+    template: |
+      **GDD Reference:** {{section_name}} ({{page_or_section_number}})
+
+      **Game Mechanic:** {{mechanic_name}}
+
+      **Godot Implementation Approach:**
+      - Node Architecture: {{node_hierarchy}}
+      - Language Choice: {{GDScript|C#}} for {{reason}}
+      - Performance Target: 60+ FPS with {{expected_load}}
+
+      **Player Experience Goal:** {{experience_description}}
+
+      **Balance Parameters (Resource-based):**
+
+      - {{parameter_1}}: {{value_or_range}} (stored in .tres)
+      - {{parameter_2}}: {{value_or_range}} (exported variable)
+
+  - id: testing-requirements
+    title: Testing Requirements
+    instruction: Define specific TDD testing criteria with GUT (GDScript) and GoDotTest (C#) frameworks
+    sections:
+      - id: unit-tests
+        title: Unit Tests (TDD Mandatory)
+        template: |
+          **GUT Test Files (GDScript):**
+
+          - `res://tests/unit/test_{{component_name}}.gd`
+          - Coverage Target: 80% minimum
+
+          **GoDotTest Files (C#):**
+
+          - `res://tests/unit/{{ComponentName}}Tests.cs`
+          - No LINQ in test hot paths
+
+          **Test Scenarios (Write First - Red Phase):**
+
+          - {{test_scenario_1}} - Must validate 60+ FPS
+          - {{test_scenario_2}} - Signal emission verification
+          - {{edge_case_test}} - Object pool boundary testing
+          - Performance test: Frame time < 16.67ms
+      - id: game-testing
+        title: Game Testing
+        template: |
+          **Manual Test Cases (Godot Editor):**
+
+          1. {{test_case_1_description}}
+
+            - Expected: {{expected_behavior}}
+            - Performance: Must maintain 60+ FPS
+            - Profiler Check: Frame time < 16.67ms
+            - Language Validation: {{GDScript|C#}} performing as expected
+
+          2. {{test_case_2_description}}
+            - Expected: {{expected_behavior}}
+            - Signal Flow: {{signal_verification}}
+            - Memory: No leaks, signals cleaned up
+            - Object Pools: Verify pooling active
+      - id: performance-tests
+        title: Performance Tests
+        template: |
+          **Godot Profiler Metrics (Mandatory):**
+
+          - Frame rate: 60+ FPS consistently (FAIL if below)
+          - Frame time: < 16.67ms average
+          - Physics frame: < {{physics_time}}ms
+          - Memory usage: < {{memory_limit}}MB
+          - Draw calls: < {{draw_call_budget}}
+          - Object pools: Active and recycling properly
+          - GDScript static typing: Verified (10-20% perf gain)
+          - C# optimization: No LINQ, no allocations in hot paths
+          - {{feature_specific_performance_metric}}
+
+  - id: dependencies
+    title: Dependencies
+    instruction: List any dependencies including Godot-specific requirements
+    template: |
+      **Story Dependencies:**
+
+      - {{story_id}}: {{dependency_description}}
+
+      **Godot System Dependencies:**
+
+      - Node: {{parent_node}} must exist in scene tree
+      - Autoload: {{autoload_singleton}} configured
+      - Language: {{prerequisite_language_setup}}
+
+      **Resource Dependencies:**
+
+      - Resource Type: {{.tres|.tscn}}
+      - Asset: {{asset_description}}
+      - Location: `res://{{asset_path}}`
+      - Import Settings: {{import_configuration}}
+
+  - id: definition-of-done
+    title: Definition of Done
+    instruction: Checklist that must be completed with focus on Godot, TDD, and performance
+    type: checklist
+    items:
+      - All acceptance criteria met
+      - TDD followed (tests written first, then implementation)
+      - GUT tests passing (GDScript) with 80%+ coverage
+      - GoDotTest passing (C#) with 80%+ coverage
+      - Performance: 60+ FPS maintained on all platforms
+      - Static typing used in all GDScript
+      - C# optimized (no LINQ in hot paths)
+      - Object pooling active for spawned entities
+      - Signals properly connected and cleaned up
+      - No GDScript or C# errors/warnings
+      - Node hierarchy follows architecture
+      - Resources (.tres) configured properly
+      - Export templates tested
+      - Documentation updated
+      - "{{game_specific_dod_item}}"
+
+  - id: notes
+    title: Notes
+    instruction: Any additional Godot-specific context, language decisions, or optimization notes
+    template: |
+      **Godot Implementation Notes:**
+
+      - Language Choice: {{GDScript|C#}} because {{performance_reason}}
+      - Node Architecture: {{node_pattern}} for {{benefit}}
+      - Signal Pattern: {{signal_strategy}}
+      - {{note_1}}
+
+      **Performance Decisions:**
+
+      - Static Typing: {{gdscript_typing_strategy}} for 10-20% gain
+      - C# Usage: {{csharp_systems}} for critical performance
+      - Object Pooling: {{pooling_strategy}} for spawned entities
+      - {{decision_1}}: {{rationale}}
+
+      **Future Optimizations:**
+
+      - Consider migrating {{system}} to C# if FPS drops
+      - Implement LOD for {{complex_nodes}}
+      - Add performance benchmarks to test suite
+      - {{future_optimization_1}}
