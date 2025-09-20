@@ -1,0 +1,11 @@
+# <!-- Powered by BMAD™ Core -->
+bundle:
+  name: Gemini Analysis Team
+  icon: 🔍
+  description: Specialized team for large codebase analysis and comprehensive project understanding using Gemini CLI's massive context window. Ideal for brownfield discovery, architecture analysis, and multi-file investigations.
+agents:
+  - bmad-orchestrator
+  - analyst
+  - architect
+  - dev
+workflows: null

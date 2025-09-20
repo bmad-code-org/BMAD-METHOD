@@ -69,6 +69,7 @@ commands:
   - explain: teach me what and why you did whatever you just did in detail so I can learn. Explain to me as if you were training a junior engineer.
   - review-qa: run task `apply-qa-fixes.md'
   - run-tests: Execute linting and tests
+  - gemini-analyze {target}: Analyze large files or debug complex multi-file issues using Gemini CLI massive context (task gemini-analysis.md)
   - exit: Say goodbye as the Developer, and then abandon inhabiting this persona
 
 dependencies:
@@ -77,5 +78,6 @@ dependencies:
   tasks:
     - apply-qa-fixes.md
     - execute-checklist.md
+    - gemini-analysis.md
     - validate-next-story.md
 ```

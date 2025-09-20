@@ -160,6 +160,7 @@ dependencies:
 ## Pre-Research Planning
 
 ### Research Objective Clarity
+
 - [ ] Research objective is specific and measurable
 - [ ] Success criteria are clearly defined
 - [ ] Scope boundaries are explicitly stated
@@ -167,6 +168,7 @@ dependencies:
 - [ ] Timeline and priority constraints are documented
 
 ### Research Strategy Design
+
 - [ ] Multi-perspective approach is appropriate for complexity
 - [ ] Domain specializations are properly assigned
 - [ ] Research team size matches scope and timeline
@@ -174,6 +176,7 @@ dependencies:
 - [ ] Research methodologies are appropriate for objectives
 
 ### Prior Research Review
+
 - [ ] Research log has been searched for related work
 - [ ] Prior research relevance has been assessed
 - [ ] Strategy for building on existing work is defined
@@ -182,6 +185,7 @@ dependencies:
 ## During Research Execution
 
 ### Source Quality and Credibility
+
 - [ ] Sources are credible and authoritative
 - [ ] Information recency is appropriate for topic
 - [ ] Source diversity provides multiple viewpoints
@@ -189,6 +193,7 @@ dependencies:
 - [ ] Primary sources are prioritized over secondary when available
 
 ### Research Methodology
+
 - [ ] Research approach is systematic and thorough
 - [ ] Domain expertise lens is consistently applied
 - [ ] Web search capabilities are effectively utilized
@@ -196,6 +201,7 @@ dependencies:
 - [ ] Analysis frameworks are appropriate for domain
 
 ### Quality Assurance
+
 - [ ] Key findings are supported by multiple sources
 - [ ] Conflicting information is properly documented
 - [ ] Uncertainty levels are clearly identified
@@ -205,6 +211,7 @@ dependencies:
 ## Synthesis and Integration
 
 ### Multi-Perspective Synthesis
+
 - [ ] Findings from all researchers are properly integrated
 - [ ] Convergent insights are clearly identified
 - [ ] Divergent viewpoints are fairly represented
@@ -212,6 +219,7 @@ dependencies:
 - [ ] Gaps requiring additional research are documented
 
 ### Analysis Quality
+
 - [ ] Key findings directly address research objectives
 - [ ] Evidence supports conclusions and recommendations
 - [ ] Limitations and uncertainties are transparently documented
@@ -219,6 +227,7 @@ dependencies:
 - [ ] Recommendations are actionable and specific
 
 ### Documentation Standards
+
 - [ ] Executive summary captures key insights effectively
 - [ ] Detailed analysis is well-organized and comprehensive
 - [ ] Source documentation enables verification
@@ -228,6 +237,7 @@ dependencies:
 ## Final Deliverable Review
 
 ### Completeness
+
 - [ ] All research questions have been addressed
 - [ ] Success criteria have been met
 - [ ] Output format matches requestor requirements
@@ -235,6 +245,7 @@ dependencies:
 - [ ] Next steps and follow-up needs are identified
 
 ### Decision Support Quality
+
 - [ ] Findings directly inform decision-making needs
 - [ ] Confidence levels help assess decision risk
 - [ ] Recommendations are prioritized and actionable
@@ -242,6 +253,7 @@ dependencies:
 - [ ] Risk factors and mitigation strategies are provided
 
 ### Integration and Handoff
+
 - [ ] Results are properly formatted for requesting agent
 - [ ] Research log has been updated with new entry
 - [ ] Index categorization is accurate and searchable
@@ -251,6 +263,7 @@ dependencies:
 ## Post-Research Evaluation
 
 ### Research Effectiveness
+
 - [ ] Research objectives were successfully achieved
 - [ ] Timeline and resource constraints were managed effectively
 - [ ] Quality standards were maintained throughout process
@@ -258,6 +271,7 @@ dependencies:
 - [ ] Lessons learned are documented for process improvement
 
 ### Knowledge Management
+
 - [ ] Research artifacts are properly stored and indexed
 - [ ] Key insights are preserved for future reference
 - [ ] Research methodology insights can inform future efforts
@@ -267,6 +281,7 @@ dependencies:
 ## Quality Escalation Triggers
 
 ### Immediate Review Required
+
 - [ ] Major conflicts between research perspectives cannot be reconciled
 - [ ] Key sources are found to be unreliable or biased
 - [ ] Research scope significantly exceeds original boundaries
@@ -274,6 +289,7 @@ dependencies:
 - [ ] Timeline constraints threaten quality standards
 
 ### Process Improvement Needed
+
 - [ ] Repeated issues with source credibility or access
 - [ ] Frequent scope creep or objective changes
 - [ ] Consistent challenges with perspective coordination
@@ -283,6 +299,7 @@ dependencies:
 ## Continuous Improvement
 
 ### Research Process Enhancement
+
 - [ ] Track research effectiveness and decision impact
 - [ ] Identify patterns in research requests and optimize approaches
 - [ ] Refine domain specialization profiles based on experience
@@ -290,6 +307,7 @@ dependencies:
 - [ ] Enhance coordination methods between research perspectives
 
 ### Knowledge Base Development
+
 - [ ] Update research methodologies based on lessons learned
 - [ ] Expand credible source directories with new discoveries
 - [ ] Improve domain expertise profiles with refined specializations
@@ -307,6 +325,7 @@ dependencies:
 ### Technical Research Methodologies
 
 #### Technology Assessment Framework
+
 - **Capability Analysis**: Feature sets, performance characteristics, scalability limits
 - **Implementation Evaluation**: Complexity, learning curve, integration requirements
 - **Ecosystem Assessment**: Community support, documentation quality, maintenance status
@@ -314,6 +333,7 @@ dependencies:
 - **Security Analysis**: Vulnerability assessment, security model evaluation
 
 #### Technical Source Priorities
+
 1. **Official Documentation**: Primary source for capabilities and limitations
 2. **GitHub Repositories**: Code quality, activity level, issue resolution patterns
 3. **Technical Blogs**: Implementation experiences, best practices, lessons learned
@@ -323,6 +343,7 @@ dependencies:
 ### Market Research Methodologies
 
 #### Market Analysis Framework
+
 - **Market Sizing**: TAM/SAM/SOM analysis, growth rate assessment
 - **Competitive Landscape**: Player mapping, market share analysis, positioning
 - **Customer Segmentation**: Demographics, psychographics, behavioral patterns
@@ -330,6 +351,7 @@ dependencies:
 - **Opportunity Assessment**: Market gaps, underserved segments, entry barriers
 
 #### Market Source Priorities
+
 1. **Industry Reports**: Analyst research, market studies, trend analyses
 2. **Financial Data**: Public company reports, funding announcements, valuations
 3. **Survey Data**: Customer research, market studies, adoption surveys
@@ -339,6 +361,7 @@ dependencies:
 ### User Research Methodologies
 
 #### User-Centered Research Framework
+
 - **Behavioral Analysis**: User journey mapping, interaction patterns, pain points
 - **Needs Assessment**: Jobs-to-be-done analysis, unmet needs identification
 - **Experience Evaluation**: Usability assessment, satisfaction measurement
@@ -346,6 +369,7 @@ dependencies:
 - **Context Analysis**: Use case scenarios, environmental factors, constraints
 
 #### User Research Source Priorities
+
 1. **User Studies**: Direct research, surveys, interviews, focus groups
 2. **Product Reviews**: Customer feedback, ratings, detailed experiences
 3. **Social Media**: User discussions, complaints, feature requests
@@ -355,6 +379,7 @@ dependencies:
 ### Competitive Research Methodologies
 
 #### Competitive Intelligence Framework
+
 - **Feature Comparison**: Capability matrices, feature gap analysis
 - **Strategic Analysis**: Business model evaluation, positioning assessment
 - **Performance Benchmarking**: Speed, reliability, user experience comparisons
@@ -362,6 +387,7 @@ dependencies:
 - **Innovation Tracking**: Product roadmaps, patent filings, investment areas
 
 #### Competitive Source Priorities
+
 1. **Competitor Websites**: Product information, pricing, positioning messages
 2. **Product Demos**: Hands-on evaluation, feature testing, user experience
 3. **Press Releases**: Strategic announcements, product launches, partnerships
@@ -371,6 +397,7 @@ dependencies:
 ### Scientific Research Methodologies
 
 #### Scientific Analysis Framework
+
 - **Literature Review**: Peer-reviewed research, citation analysis, consensus building
 - **Methodology Assessment**: Research design quality, statistical validity, reproducibility
 - **Evidence Evaluation**: Study quality, sample sizes, control factors
@@ -378,6 +405,7 @@ dependencies:
 - **Application Assessment**: Practical implications, implementation feasibility
 
 #### Scientific Source Priorities
+
 1. **Peer-Reviewed Journals**: Primary research, systematic reviews, meta-analyses
 2. **Academic Databases**: Research repositories, citation networks, preprints
 3. **Conference Proceedings**: Latest research, emerging trends, expert presentations
@@ -389,6 +417,7 @@ dependencies:
 ### Source Credibility Assessment
 
 #### Primary Source Evaluation
+
 - **Authority**: Expertise of authors, institutional affiliation, credentials
 - **Accuracy**: Fact-checking, peer review process, error correction mechanisms
 - **Objectivity**: Bias assessment, funding sources, conflict of interest disclosure
@@ -396,6 +425,7 @@ dependencies:
 - **Coverage**: Scope comprehensiveness, detail level, methodology transparency
 
 #### Secondary Source Validation
+
 - **Citation Quality**: Primary source references, citation accuracy, source diversity
 - **Synthesis Quality**: Analysis depth, logical coherence, balanced perspective
 - **Author Expertise**: Subject matter knowledge, track record, reputation
@@ -405,6 +435,7 @@ dependencies:
 ### Information Synthesis Approaches
 
 #### Multi-Perspective Integration
+
 - **Convergence Analysis**: Identify areas where sources agree consistently
 - **Divergence Documentation**: Note significant disagreements and analyze causes
 - **Confidence Weighting**: Assign confidence levels based on source quality and consensus
@@ -412,6 +443,7 @@ dependencies:
 - **Uncertainty Quantification**: Document limitations and areas of unclear evidence
 
 #### Evidence Hierarchy
+
 1. **High Confidence**: Multiple credible sources, recent information, expert consensus
 2. **Medium Confidence**: Some credible sources, mixed consensus, moderate currency
 3. **Low Confidence**: Limited sources, significant disagreement, dated information
@@ -421,6 +453,7 @@ dependencies:
 ## Domain-Specific Analysis Frameworks
 
 ### Technical Analysis Framework
+
 - **Feasibility Assessment**: Technical viability, implementation complexity, resource requirements
 - **Scalability Analysis**: Performance under load, growth accommodation, architectural limits
 - **Integration Evaluation**: Compatibility assessment, integration complexity, ecosystem fit
@@ -428,6 +461,7 @@ dependencies:
 - **Risk Assessment**: Technical risks, dependency risks, obsolescence potential
 
 ### Business Analysis Framework
+
 - **Value Proposition**: Customer value delivery, competitive advantage, market differentiation
 - **Financial Impact**: Cost analysis, revenue potential, ROI assessment, budget implications
 - **Strategic Alignment**: Goal consistency, priority alignment, resource allocation fit
@@ -435,6 +469,7 @@ dependencies:
 - **Risk-Benefit Analysis**: Potential rewards vs implementation risks and costs
 
 ### User Impact Framework
+
 - **User Experience**: Ease of use, learning curve, satisfaction factors, accessibility
 - **Adoption Factors**: Barriers to adoption, motivation drivers, change management needs
 - **Value Delivery**: User benefit realization, problem solving effectiveness, outcome achievement
@@ -444,6 +479,7 @@ dependencies:
 ## Research Coordination Best Practices
 
 ### Multi-Researcher Coordination
+
 - **Perspective Assignment**: Clear domain boundaries, minimal overlap, comprehensive coverage
 - **Communication Protocols**: Regular check-ins, conflict resolution processes, coordination methods
 - **Quality Standards**: Consistent source credibility requirements, analysis depth expectations
@@ -451,6 +487,7 @@ dependencies:
 - **Integration Planning**: Synthesis approach design, conflict resolution strategies, gap handling
 
 ### Research Efficiency Optimization
+
 - **Source Sharing**: Avoid duplicate source evaluation across researchers
 - **Finding Coordination**: Share relevant discoveries between perspectives
 - **Quality Checks**: Cross-validation of key findings, source verification collaboration

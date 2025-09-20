@@ -997,6 +997,7 @@ This task provides a unified interface for any agent to request specialized rese
 ## Usage Scenarios
 
 ### From Any Agent
+
 Any agent can call this task to get specialized research assistance:
 
 ```yaml
@@ -1018,24 +1019,28 @@ Any agent can call this task to get specialized research assistance:
 The task will elicit a structured research request with these components:
 
 #### Research Context
+
 - **Requesting Agent**: Which agent is making the request
 - **Project Context**: Current project phase and relevant background
 - **Previous Research**: Check research log for related prior work
 - **Urgency Level**: Timeline constraints and priority
 
 #### Research Objective
+
 - **Primary Goal**: What specific question or problem needs researching
 - **Success Criteria**: How to measure if research achieved its objective
 - **Scope Boundaries**: What to include/exclude from research
 - **Decision Impact**: How results will be used
 
 #### Domain Specialization Requirements
+
 - **Primary Domain**: Main area of expertise needed (technical, market, user, etc.)
 - **Secondary Domains**: Additional perspectives required
 - **Specific Expertise**: Particular skills or knowledge areas
 - **Research Depth**: High-level overview vs deep technical analysis
 
 #### Output Requirements
+
 - **Format**: Executive summary, detailed report, comparison matrix, etc.
 - **Audience**: Who will consume the research results
 - **Integration**: How results feed into next steps
@@ -1064,12 +1069,14 @@ Each Researcher Agent will:
 ### 4. Result Delivery
 
 #### To Requesting Agent
+
 - **Executive Summary**: Key findings and recommendations
 - **Detailed Analysis**: Comprehensive research results
 - **Source Documentation**: Links and citations for verification
 - **Next Steps**: Recommended actions or follow-up research
 
 #### To Research Log
+
 - **Research Entry**: Concise summary stored in `docs/research/YYYY-MM-DD-research-topic.md`
 - **Index Update**: Add entry to `docs/research/research-index.md`
 - **Tag Classification**: Add searchable tags for future reference
@@ -1088,40 +1095,40 @@ When executing this task, use this structure for research requests:
 ```yaml
 research_request:
   metadata:
-    requesting_agent: "[agent-id]"
-    request_date: "[YYYY-MM-DD]"
-    priority: "[high|medium|low]"
-    timeline: "[timeframe needed]"
+    requesting_agent: '[agent-id]'
+    request_date: '[YYYY-MM-DD]'
+    priority: '[high|medium|low]'
+    timeline: '[timeframe needed]'
 
   context:
-    project_phase: "[planning|development|validation|etc]"
-    background: "[relevant project context]"
-    related_docs: "[PRD, architecture, stories, etc]"
-    previous_research: "[check research log references]"
+    project_phase: '[planning|development|validation|etc]'
+    background: '[relevant project context]'
+    related_docs: '[PRD, architecture, stories, etc]'
+    previous_research: '[check research log references]'
 
   objective:
-    primary_goal: "[specific research question]"
-    success_criteria: "[how to measure success]"
-    scope: "[boundaries and limitations]"
-    decision_impact: "[how results will be used]"
+    primary_goal: '[specific research question]'
+    success_criteria: '[how to measure success]'
+    scope: '[boundaries and limitations]'
+    decision_impact: '[how results will be used]'
 
   specialization:
-    primary_domain: "[technical|market|user|competitive|regulatory|etc]"
-    secondary_domains: "[additional perspectives needed]"
-    specific_expertise: "[particular skills required]"
-    research_depth: "[overview|detailed|comprehensive]"
+    primary_domain: '[technical|market|user|competitive|regulatory|etc]'
+    secondary_domains: '[additional perspectives needed]'
+    specific_expertise: '[particular skills required]'
+    research_depth: '[overview|detailed|comprehensive]'
 
   team_config:
-    researcher_count: "[1-3, default 3]"
-    perspective_1: "[domain and focus area]"
-    perspective_2: "[domain and focus area]"
-    perspective_3: "[domain and focus area]"
+    researcher_count: '[1-3, default 3]'
+    perspective_1: '[domain and focus area]'
+    perspective_2: '[domain and focus area]'
+    perspective_3: '[domain and focus area]'
 
   output:
-    format: "[executive_summary|detailed_report|comparison_matrix|etc]"
-    audience: "[who will use results]"
-    integration: "[how results feed into workflow]"
-    citation_level: "[minimal|standard|comprehensive]"
+    format: '[executive_summary|detailed_report|comparison_matrix|etc]'
+    audience: '[who will use results]'
+    integration: '[how results feed into workflow]'
+    citation_level: '[minimal|standard|comprehensive]'
 ```
 
 ## Integration with Existing Agents
@@ -1153,26 +1160,32 @@ commands:
 ## Research Log Structure
 
 ### Research Index (`docs/research/research-index.md`)
+
 ```markdown
 # Research Index
 
 ## Recent Research
+
 - [2024-01-15: AI Model Comparison](2024-01-15-ai-model-comparison.md) - Technical analysis of LLM options
 - [2024-01-12: Payment Gateway Analysis](2024-01-12-payment-gateway-analysis.md) - Market comparison of payment solutions
 
 ## Research by Category
+
 ### Technical Research
+
 - AI/ML Models
 - Architecture Decisions
 - Technology Stacks
 
 ### Market Research
+
 - Competitive Analysis
 - User Behavior
 - Industry Trends
 ```
 
 ### Individual Research Files (`docs/research/YYYY-MM-DD-topic.md`)
+
 ```markdown
 # Research: [Topic]
 
@@ -1181,31 +1194,41 @@ commands:
 **Research Team**: [perspectives used]
 
 ## Executive Summary
+
 [Key findings and recommendations]
 
 ## Research Objective
+
 [What was being researched and why]
 
 ## Key Findings
+
 [Main insights from all perspectives]
 
 ## Recommendations
+
 [Actionable next steps]
 
 ## Research Team Perspectives
+
 ### Perspective 1: [Domain]
+
 [Key insights from this angle]
 
 ### Perspective 2: [Domain]
+
 [Key insights from this angle]
 
 ### Perspective 3: [Domain]
+
 [Key insights from this angle]
 
 ## Sources and References
+
 [Credible sources cited by research team]
 
 ## Tags
+
 [Searchable tags for future reference]
 ```
 

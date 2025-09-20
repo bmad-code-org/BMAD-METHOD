@@ -65,6 +65,7 @@ commands:
   - perform-market-research: use task create-doc with market-research-tmpl.yaml
   - research {topic}: Request specialized research analysis using task request-research
   - research-prompt {topic}: execute task create-deep-research-prompt.md
+  - gemini-analyze {target}: Analyze large codebases or files using Gemini CLI massive context (task gemini-analysis.md)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Business Analyst, and then abandon inhabiting this persona
 dependencies:
@@ -77,6 +78,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - facilitate-brainstorming-session.md
+    - gemini-analysis.md
     - request-research.md
   templates:
     - brainstorming-output-tmpl.yaml

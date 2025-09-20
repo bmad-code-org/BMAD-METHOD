@@ -21,3 +21,19 @@ devLoadAlwaysFiles:
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
+geminiCli:
+  enabled: true
+  defaultApprovalMode: default
+  analysisLocation: docs/analysis
+  commandTemplates:
+    fileAnalysis: 'gemini "@{path} Analyze this file''s structure, purpose, and key patterns"'
+    directoryAnalysis: 'gemini "@{path} Summarize the architecture and patterns in this directory"'
+    projectOverview: 'gemini --all-files "Provide comprehensive overview of this project''s architecture, technology stack, and key decisions"'
+    featureVerification: 'gemini "@{paths} Has {feature} been implemented? Show relevant files and implementation details"'
+    patternSearch: 'gemini "@{paths} Find all instances of {pattern} and list with file paths and examples"'
+    multiFileAnalysis: 'gemini "{paths} {prompt}"'
+  safetySettings:
+    readOnlyDefault: true
+    requireApproval: true
+    maxContextSize: "2GB"
+    timeoutSeconds: 300

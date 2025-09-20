@@ -234,6 +234,7 @@ commands:
   - perform-market-research: use task create-doc with market-research-tmpl.yaml
   - research {topic}: Request specialized research analysis using task request-research
   - research-prompt {topic}: execute task create-deep-research-prompt.md
+  - gemini-analyze {target}: Analyze large codebases or files using Gemini CLI massive context (task gemini-analysis.md)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Business Analyst, and then abandon inhabiting this persona
 dependencies:
@@ -246,6 +247,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - facilitate-brainstorming-session.md
+    - gemini-analysis.md
     - request-research.md
   templates:
     - brainstorming-output-tmpl.yaml
@@ -415,6 +417,7 @@ commands:
   - execute-checklist {checklist}: Run task execute-checklist (default->architect-checklist)
   - research {topic}: Request specialized research analysis using task request-research
   - research-prompt {topic}: execute task create-deep-research-prompt
+  - gemini-analyze {target}: Analyze large codebases or architectural patterns using Gemini CLI massive context (task gemini-analysis.md)
   - shard-prd: run the task shard-doc.md for the provided architecture.md (ask if not found)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Architect, and then abandon inhabiting this persona
@@ -428,6 +431,7 @@ dependencies:
     - create-doc.md
     - document-project.md
     - execute-checklist.md
+    - gemini-analysis.md
     - request-research.md
   templates:
     - architecture-tmpl.yaml
@@ -2686,6 +2690,262 @@ Generate structured document with these sections:
 - Respect their process and timing
 ==================== END: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
 
+==================== START: .bmad-core/tasks/gemini-analysis.md ====================
+<!-- Powered by BMAD™ Core -->
+
+# Gemini Analysis Task
+
+## Purpose
+
+This task provides access to Google Gemini CLI's massive context window for analyzing large codebases, big files, or complex multi-file operations that exceed normal context limits. Gemini CLI can handle entire project contexts that would overflow standard AI context windows.
+
+## Key Capabilities
+
+- **Massive Context Window**: Analyze entire codebases without context limitations
+- **File & Directory Inclusion**: Use `@` syntax for precise file/directory targeting
+- **Multi-File Analysis**: Compare and analyze multiple large files simultaneously
+- **Codebase Flattening**: Alternative to local flattener for large projects
+- **Feature Verification**: Check if specific features are implemented across entire projects
+- **Pattern Discovery**: Find patterns, implementations, and architectural decisions project-wide
+
+## When to Use Gemini Analysis
+
+### Ideal Use Cases
+- **Large Codebase Architecture Analysis**: Understanding overall system design
+- **Multi-File Pattern Searching**: Finding implementations across multiple files
+- **Feature Implementation Verification**: Checking if features exist project-wide
+- **Brownfield Project Discovery**: Understanding existing large codebases
+- **Context-Heavy Debugging**: Analyzing complex interactions across many files
+- **Comprehensive Code Reviews**: Reviewing entire feature implementations
+
+### Context Size Triggers
+- Files or directories totaling >100KB of content
+- Analysis requiring >20 files simultaneously
+- Project-wide architectural understanding needed
+- Current context window insufficient for task
+
+## Analysis Modes
+
+### 1. Single File Analysis
+**Use Case**: Deep analysis of large individual files
+**Command Pattern**: `gemini "@file/path Analyze this file's structure and purpose"`
+**Examples**:
+- `@src/main.py Explain this file's architecture and key patterns`
+- `@config/webpack.config.js Break down this configuration and its impact`
+
+### 2. Directory Analysis
+**Use Case**: Understanding structure and patterns within specific directories
+**Command Pattern**: `gemini "@directory/ Analyze the architecture of this codebase section"`
+**Examples**:
+- `@src/components/ Summarize the component architecture and patterns`
+- `@api/routes/ Document all API endpoints and their purposes`
+
+### 3. Multi-Path Analysis
+**Use Case**: Comparing and analyzing relationships between multiple areas
+**Command Pattern**: `gemini "@path1 @path2 Analyze relationships between these areas"`
+**Examples**:
+- `@src/ @tests/ Analyze test coverage for the source code`
+- `@frontend/ @backend/ How do these communicate and what are the integration points?`
+
+### 4. Project Overview
+**Use Case**: Comprehensive understanding of entire project
+**Command Pattern**: `gemini --all-files "Provide comprehensive project analysis"`
+**Examples**:
+- `--all-files "Give me an architectural overview of this entire project"`
+- `--all-files "Summarize the technology stack and key architectural decisions"`
+
+### 5. Feature Verification
+**Use Case**: Checking if specific features or patterns are implemented
+**Command Pattern**: `gemini "@codebase/ Has [feature] been implemented? Show relevant files"`
+**Examples**:
+- `@src/ @lib/ Has dark mode been implemented? Show relevant files and functions`
+- `@api/ @middleware/ Is rate limiting implemented? Show the implementation details`
+
+### 6. Pattern Discovery
+**Use Case**: Finding specific coding patterns, security measures, or architectural decisions
+**Command Pattern**: `gemini "@codebase/ Find all instances of [pattern] and list with file paths"`
+**Examples**:
+- `@src/ Are there any React hooks that handle WebSocket connections?`
+- `@backend/ Is proper error handling implemented for all endpoints?`
+
+## Task Process
+
+### 1. Analysis Request Processing
+
+#### Gather Requirements
+- **Analysis Type**: Which mode fits the user's need?
+- **Target Paths**: What files/directories should be included?
+- **Analysis Depth**: High-level overview vs detailed analysis?
+- **Specific Questions**: What particular aspects to focus on?
+- **Output Format**: How should results be presented?
+
+#### Path Validation
+- **Existence Check**: Verify all specified paths exist
+- **Size Assessment**: Estimate total content size
+- **Permission Validation**: Ensure readable access
+- **Safety Check**: Confirm read-only analysis scope
+
+### 2. Command Construction
+
+#### Basic Command Structure
+```bash
+gemini [options] "@path1 @path2 [prompt]"
+```
+
+#### Option Selection
+- **Standard Mode**: `gemini "@path prompt"`
+- **All Files Mode**: `gemini --all-files "prompt"`
+- **Safe Mode**: `gemini --approval-mode default "@path prompt"`
+- **Sandbox Mode**: `gemini --sandbox "@path prompt"` (if editing needed)
+
+#### Path Formatting
+- **Single File**: `@src/main.py`
+- **Directory**: `@src/components/`
+- **Multiple Paths**: `@src/ @tests/ @docs/`
+- **Current Directory**: `@./`
+- **Specific Files**: `@package.json @README.md`
+
+### 3. Safety and Validation
+
+#### Pre-Execution Checks
+- **Read-Only Confirmation**: Ensure analysis-only intent
+- **Path Sanitization**: Validate and clean file paths
+- **Size Warnings**: Alert for extremely large contexts
+- **Approval Mode**: Set appropriate safety level
+
+#### Command Safety Options
+```yaml
+safety_levels:
+  read_only: "Default - analysis only, no modifications"
+  default: "Prompt for any file modifications"
+  auto_edit: "Auto-approve edit tools only"
+  sandbox: "Run in safe sandbox environment"
+```
+
+### 4. Execution and Results
+
+#### Command Execution
+1. **Validate Paths**: Confirm all targets exist and are accessible
+2. **Construct Command**: Build proper Gemini CLI command
+3. **Execute Analysis**: Run Gemini CLI with specified parameters
+4. **Capture Output**: Collect and format analysis results
+5. **Error Handling**: Manage CLI failures or timeouts
+
+#### Result Processing
+- **Output Formatting**: Structure results for readability
+- **Key Insights Extraction**: Highlight critical findings
+- **Follow-up Suggestions**: Recommend next steps
+- **Source Documentation**: Reference analyzed files/paths
+
+### 5. Integration with BMAD Workflow
+
+#### Result Documentation
+- **Store in Project**: Save significant analyses in `docs/analysis/`
+- **Reference in Stories**: Link analyses to relevant development stories
+- **Architecture Updates**: Update architecture docs with findings
+- **Knowledge Preservation**: Maintain analysis artifacts for team reference
+
+#### Follow-Up Actions
+- **Story Creation**: Generate development stories from findings
+- **Architecture Review**: Update architectural documentation
+- **Technical Debt**: Identify and document technical debt items
+- **Research Coordination**: Trigger detailed research if needed
+
+## Command Templates
+
+### Architecture Analysis
+```bash
+# Overall project architecture
+gemini --all-files "Analyze the overall architecture of this project. Include technology stack, key patterns, and architectural decisions."
+
+# Specific component architecture
+gemini "@src/components/ Analyze the component architecture. What patterns are used and how are components organized?"
+
+# Backend architecture
+gemini "@api/ @services/ @middleware/ Analyze the backend architecture. How are routes organized and what patterns are used?"
+```
+
+### Feature Verification
+```bash
+# Authentication implementation
+gemini "@src/ @api/ Is JWT authentication fully implemented? Show all auth-related files and middleware."
+
+# Security measures
+gemini "@src/ @api/ What security measures are implemented? Look for input validation, CORS, rate limiting."
+
+# Testing coverage
+gemini "@src/ @tests/ Analyze test coverage. Which areas are well-tested and which need more tests?"
+```
+
+### Code Quality Analysis
+```bash
+# Error handling patterns
+gemini "@src/ @api/ How is error handling implemented throughout the codebase? Show examples."
+
+# Performance considerations
+gemini "@src/ @lib/ What performance optimizations are in place? Identify potential bottlenecks."
+
+# Code organization
+gemini "@src/ How is the code organized? What are the main modules and their responsibilities?"
+```
+
+### Technology Assessment
+```bash
+# Dependency analysis
+gemini "@package.json @src/ What are the key dependencies and how are they used in the code?"
+
+# Build system analysis
+gemini "@webpack.config.js @package.json @src/ How is the build system configured and what optimizations are in place?"
+
+# Database integration
+gemini "@models/ @migrations/ @src/ How is the database integrated? What ORM patterns are used?"
+```
+
+## Error Handling
+
+### Common Issues
+- **Path Not Found**: Specified files/directories don't exist
+- **Context Too Large**: Even Gemini's context has limits
+- **CLI Unavailable**: Gemini CLI not installed or configured
+- **Permission Denied**: Cannot read specified files
+- **Command Timeout**: Analysis takes too long to complete
+
+### Error Recovery
+- **Path Validation**: Pre-validate all paths before execution
+- **Graceful Degradation**: Suggest smaller scope if context too large
+- **Alternative Approaches**: Offer local flattener or partial analysis
+- **Clear Error Messages**: Provide actionable error information
+- **Fallback Options**: Suggest manual analysis approaches
+
+### Safety Measures
+- **Read-Only Default**: Never modify files without explicit permission
+- **Approval Prompts**: Confirm any file modifications
+- **Sandbox Options**: Use sandbox mode for risky operations
+- **Timeout Protection**: Prevent hanging operations
+- **Resource Monitoring**: Track memory and processing usage
+
+## Integration Notes
+
+### With Existing BMAD Tools
+- **Flattener Integration**: Use existing flattener for preprocessing when needed
+- **Research Coordination**: Can trigger research system for follow-up analysis
+- **Story Generation**: Results can inform story creation
+- **Architecture Documentation**: Updates architectural understanding
+
+### With Core Configuration
+- **Command Templates**: Stored in core-config.yaml for consistency
+- **Default Settings**: Safety and approval modes configured globally
+- **Path Patterns**: Common path combinations for different project types
+- **Integration Points**: How Gemini analysis feeds into BMAD workflow
+
+### Agent Accessibility
+All agents with Gemini analysis capability will have access to:
+- **Standard Analysis**: `*gemini-analyze` command for common patterns
+- **Custom Queries**: Ability to specify custom analysis prompts
+- **Result Integration**: Automatic integration with agent workflows
+- **Safety Controls**: Appropriate safety measures for agent context
+==================== END: .bmad-core/tasks/gemini-analysis.md ====================
+
 ==================== START: .bmad-core/tasks/request-research.md ====================
 <!-- Powered by BMAD™ Core -->
 
@@ -2706,6 +2966,7 @@ This task provides a unified interface for any agent to request specialized rese
 ## Usage Scenarios
 
 ### From Any Agent
+
 Any agent can call this task to get specialized research assistance:
 
 ```yaml
@@ -2727,24 +2988,28 @@ Any agent can call this task to get specialized research assistance:
 The task will elicit a structured research request with these components:
 
 #### Research Context
+
 - **Requesting Agent**: Which agent is making the request
 - **Project Context**: Current project phase and relevant background
 - **Previous Research**: Check research log for related prior work
 - **Urgency Level**: Timeline constraints and priority
 
 #### Research Objective
+
 - **Primary Goal**: What specific question or problem needs researching
 - **Success Criteria**: How to measure if research achieved its objective
 - **Scope Boundaries**: What to include/exclude from research
 - **Decision Impact**: How results will be used
 
 #### Domain Specialization Requirements
+
 - **Primary Domain**: Main area of expertise needed (technical, market, user, etc.)
 - **Secondary Domains**: Additional perspectives required
 - **Specific Expertise**: Particular skills or knowledge areas
 - **Research Depth**: High-level overview vs deep technical analysis
 
 #### Output Requirements
+
 - **Format**: Executive summary, detailed report, comparison matrix, etc.
 - **Audience**: Who will consume the research results
 - **Integration**: How results feed into next steps
@@ -2773,12 +3038,14 @@ Each Researcher Agent will:
 ### 4. Result Delivery
 
 #### To Requesting Agent
+
 - **Executive Summary**: Key findings and recommendations
 - **Detailed Analysis**: Comprehensive research results
 - **Source Documentation**: Links and citations for verification
 - **Next Steps**: Recommended actions or follow-up research
 
 #### To Research Log
+
 - **Research Entry**: Concise summary stored in `docs/research/YYYY-MM-DD-research-topic.md`
 - **Index Update**: Add entry to `docs/research/research-index.md`
 - **Tag Classification**: Add searchable tags for future reference
@@ -2797,40 +3064,40 @@ When executing this task, use this structure for research requests:
 ```yaml
 research_request:
   metadata:
-    requesting_agent: "[agent-id]"
-    request_date: "[YYYY-MM-DD]"
-    priority: "[high|medium|low]"
-    timeline: "[timeframe needed]"
+    requesting_agent: '[agent-id]'
+    request_date: '[YYYY-MM-DD]'
+    priority: '[high|medium|low]'
+    timeline: '[timeframe needed]'
 
   context:
-    project_phase: "[planning|development|validation|etc]"
-    background: "[relevant project context]"
-    related_docs: "[PRD, architecture, stories, etc]"
-    previous_research: "[check research log references]"
+    project_phase: '[planning|development|validation|etc]'
+    background: '[relevant project context]'
+    related_docs: '[PRD, architecture, stories, etc]'
+    previous_research: '[check research log references]'
 
   objective:
-    primary_goal: "[specific research question]"
-    success_criteria: "[how to measure success]"
-    scope: "[boundaries and limitations]"
-    decision_impact: "[how results will be used]"
+    primary_goal: '[specific research question]'
+    success_criteria: '[how to measure success]'
+    scope: '[boundaries and limitations]'
+    decision_impact: '[how results will be used]'
 
   specialization:
-    primary_domain: "[technical|market|user|competitive|regulatory|etc]"
-    secondary_domains: "[additional perspectives needed]"
-    specific_expertise: "[particular skills required]"
-    research_depth: "[overview|detailed|comprehensive]"
+    primary_domain: '[technical|market|user|competitive|regulatory|etc]'
+    secondary_domains: '[additional perspectives needed]'
+    specific_expertise: '[particular skills required]'
+    research_depth: '[overview|detailed|comprehensive]'
 
   team_config:
-    researcher_count: "[1-3, default 3]"
-    perspective_1: "[domain and focus area]"
-    perspective_2: "[domain and focus area]"
-    perspective_3: "[domain and focus area]"
+    researcher_count: '[1-3, default 3]'
+    perspective_1: '[domain and focus area]'
+    perspective_2: '[domain and focus area]'
+    perspective_3: '[domain and focus area]'
 
   output:
-    format: "[executive_summary|detailed_report|comparison_matrix|etc]"
-    audience: "[who will use results]"
-    integration: "[how results feed into workflow]"
-    citation_level: "[minimal|standard|comprehensive]"
+    format: '[executive_summary|detailed_report|comparison_matrix|etc]'
+    audience: '[who will use results]'
+    integration: '[how results feed into workflow]'
+    citation_level: '[minimal|standard|comprehensive]'
 ```
 
 ## Integration with Existing Agents
@@ -2862,26 +3129,32 @@ commands:
 ## Research Log Structure
 
 ### Research Index (`docs/research/research-index.md`)
+
 ```markdown
 # Research Index
 
 ## Recent Research
+
 - [2024-01-15: AI Model Comparison](2024-01-15-ai-model-comparison.md) - Technical analysis of LLM options
 - [2024-01-12: Payment Gateway Analysis](2024-01-12-payment-gateway-analysis.md) - Market comparison of payment solutions
 
 ## Research by Category
+
 ### Technical Research
+
 - AI/ML Models
 - Architecture Decisions
 - Technology Stacks
 
 ### Market Research
+
 - Competitive Analysis
 - User Behavior
 - Industry Trends
 ```
 
 ### Individual Research Files (`docs/research/YYYY-MM-DD-topic.md`)
+
 ```markdown
 # Research: [Topic]
 
@@ -2890,31 +3163,41 @@ commands:
 **Research Team**: [perspectives used]
 
 ## Executive Summary
+
 [Key findings and recommendations]
 
 ## Research Objective
+
 [What was being researched and why]
 
 ## Key Findings
+
 [Main insights from all perspectives]
 
 ## Recommendations
+
 [Actionable next steps]
 
 ## Research Team Perspectives
+
 ### Perspective 1: [Domain]
+
 [Key insights from this angle]
 
 ### Perspective 2: [Domain]
+
 [Key insights from this angle]
 
 ### Perspective 3: [Domain]
+
 [Key insights from this angle]
 
 ## Sources and References
+
 [Credible sources cited by research team]
 
 ## Tags
+
 [Searchable tags for future reference]
 ```
 
@@ -9434,19 +9717,23 @@ This task is the primary workflow for the Research Coordinator to manage multi-p
 ### 1. Research Request Intake
 
 #### Process Incoming Request
+
 **If called via unified request-research task:**
+
 - Extract research request YAML structure
 - Validate all required fields are present
 - Understand requesting agent context and needs
 - Assess urgency and timeline constraints
 
 **If called directly by user/agent:**
+
 - Elicit research requirements using structured approach
 - Guide user through research request specification
 - Ensure clarity on objectives and expected outcomes
 - Document request in standard format
 
 #### Critical Elements to Capture
+
 - **Requesting Agent**: Which agent needs the research
 - **Research Objective**: Specific question or problem
 - **Context**: Project phase, background, constraints
@@ -9458,6 +9745,7 @@ This task is the primary workflow for the Research Coordinator to manage multi-p
 ### 2. Research Log Analysis
 
 #### Check for Existing Research
+
 1. **Search Research Index**: Look for related prior research
    - Search by topic keywords
    - Check domain tags and categories
@@ -9479,6 +9767,7 @@ This task is the primary workflow for the Research Coordinator to manage multi-p
 ### 3. Research Strategy Design
 
 #### Multi-Perspective Planning
+
 1. **Determine Research Team Size**
    - Default: 3 researchers for comprehensive coverage
    - Configurable based on complexity and timeline
@@ -9491,6 +9780,7 @@ This task is the primary workflow for the Research Coordinator to manage multi-p
    - **Maximize Coverage**: Balance breadth vs depth
 
 #### Common Research Team Configurations
+
 - **Technology Assessment**: Technical + Scalability + Security
 - **Market Analysis**: Market + Competitive + User
 - **Product Decision**: Technical + Business + User
@@ -9500,6 +9790,7 @@ This task is the primary workflow for the Research Coordinator to manage multi-p
 ### 4. Researcher Deployment
 
 #### Configure Research Teams
+
 For each researcher agent:
 
 1. **Specialization Configuration**
@@ -9521,28 +9812,31 @@ For each researcher agent:
    - Quality standards and source requirements
 
 #### Research Assignment Template
+
 ```yaml
 researcher_briefing:
-  research_context: "[Context from original request]"
-  assigned_domain: "[Primary specialization]"
-  perspective_focus: "[Specific angle to investigate]"
-  research_questions: "[Domain-specific questions to address]"
-  source_priorities: "[Types of sources to prioritize]"
-  analysis_framework: "[How to analyze information]"
-  coordination_role: "[How this fits with other researchers]"
-  deliverable_format: "[Expected output structure]"
-  timeline: "[Deadlines and checkpoints]"
+  research_context: '[Context from original request]'
+  assigned_domain: '[Primary specialization]'
+  perspective_focus: '[Specific angle to investigate]'
+  research_questions: '[Domain-specific questions to address]'
+  source_priorities: '[Types of sources to prioritize]'
+  analysis_framework: '[How to analyze information]'
+  coordination_role: '[How this fits with other researchers]'
+  deliverable_format: '[Expected output structure]'
+  timeline: '[Deadlines and checkpoints]'
 ```
 
 ### 5. Research Coordination
 
 #### Monitor Research Progress
+
 - **Progress Checkpoints**: Regular status updates from researchers
 - **Quality Review**: Interim assessment of findings quality
 - **Coordination Adjustments**: Modify approach based on early findings
 - **Conflict Resolution**: Address disagreements between researchers
 
 #### Handle Research Challenges
+
 - **Information Gaps**: Redirect research focus if sources unavailable
 - **Conflicting Findings**: Document disagreements for synthesis
 - **Scope Creep**: Keep research focused on original objectives
@@ -9551,6 +9845,7 @@ researcher_briefing:
 ### 6. Findings Synthesis
 
 #### Synthesis Process
+
 1. **Gather Individual Reports**
    - Collect findings from each researcher
    - Review quality and completeness
@@ -9570,6 +9865,7 @@ researcher_briefing:
    - Identify areas needing additional research
 
 #### Synthesis Output Structure
+
 Using research-synthesis-tmpl.yaml:
 
 1. **Executive Summary**: Key insights and recommendations
@@ -9583,12 +9879,14 @@ Using research-synthesis-tmpl.yaml:
 ### 7. Delivery and Documentation
 
 #### Deliver to Requesting Agent
+
 1. **Primary Deliverable**: Synthesized research report
 2. **Executive Summary**: Key findings and recommendations
 3. **Supporting Detail**: Access to full analysis as needed
 4. **Next Steps**: Recommended actions and follow-up research
 
 #### Update Research Index
+
 Using research-log-entry-tmpl.yaml:
 
 1. **Add Index Entry**: New research to chronological list
@@ -9597,6 +9895,7 @@ Using research-log-entry-tmpl.yaml:
 4. **Cross-References**: Link to related prior research
 
 #### Store Research Artifacts
+
 - **Primary Report**: Store in docs/research/ with date-topic filename
 - **Research Index**: Update research-index.md with new entry
 - **Source Documentation**: Preserve links and references
@@ -9605,6 +9904,7 @@ Using research-log-entry-tmpl.yaml:
 ### 8. Quality Assurance
 
 #### Research Quality Checklist
+
 - **Objective Completion**: All research questions addressed
 - **Source Credibility**: Reliable, recent, and relevant sources
 - **Perspective Diversity**: Genuinely different analytical angles
@@ -9614,6 +9914,7 @@ Using research-log-entry-tmpl.yaml:
 - **Uncertainty Documentation**: Limitations and gaps clearly stated
 
 #### Validation Steps
+
 1. **Internal Review**: Coordinator validates synthesis quality
 2. **Source Verification**: Spot-check key sources and evidence
 3. **Logic Check**: Ensure recommendations follow from findings
@@ -9622,12 +9923,14 @@ Using research-log-entry-tmpl.yaml:
 ### 9. Error Handling and Edge Cases
 
 #### Common Challenges
+
 - **Researcher Unavailability**: Adjust team size or perspective assignments
 - **Source Access Issues**: Graceful degradation to available information
 - **Conflicting Deadlines**: Prioritize critical research elements
 - **Quality Problems**: Reassign research or adjust scope
 
 #### Escalation Triggers
+
 - **Irreconcilable Conflicts**: Major disagreements between researchers
 - **Missing Critical Information**: Gaps that prevent objective completion
 - **Quality Failures**: Repeated issues with source credibility or analysis
@@ -9636,12 +9939,14 @@ Using research-log-entry-tmpl.yaml:
 ### 10. Continuous Improvement
 
 #### Research Process Optimization
+
 - **Track Research Effectiveness**: Monitor how research informs decisions
 - **Identify Common Patterns**: Frequently requested research types
 - **Optimize Team Configurations**: Most effective perspective combinations
 - **Improve Synthesis Quality**: Better integration techniques
 
 #### Knowledge Base Enhancement
+
 - **Update Domain Profiles**: Refine specialization descriptions
 - **Expand Source Directories**: Add new credible source types
 - **Improve Methodologies**: Better research and analysis frameworks
@@ -9670,6 +9975,7 @@ This task enables the Research Coordinator to search existing research logs to i
 ### 1. Search Strategy
 
 #### Check Research Index
+
 1. **Load Research Index**: Read `docs/research/research-index.md`
 2. **Keyword Search**: Search for related terms in:
    - Research titles and descriptions
@@ -9678,6 +9984,7 @@ This task enables the Research Coordinator to search existing research logs to i
    - Requesting agent information
 
 #### Search Parameters
+
 - **Topic Keywords**: Core subject terms from research request
 - **Domain Tags**: Technical, market, user, competitive, etc.
 - **Date Range**: Recent research vs historical
@@ -9686,6 +9993,7 @@ This task enables the Research Coordinator to search existing research logs to i
 ### 2. Analysis Process
 
 #### Evaluate Matches
+
 For each potential match:
 
 1. **Relevance Assessment**
@@ -9706,21 +10014,25 @@ For each potential match:
 ### 3. Output Options
 
 #### Full Coverage Exists
+
 - **Recommendation**: Refer to existing research
 - **Action**: Provide link and summary of relevant findings
 - **Update Strategy**: Consider if refresh needed due to age
 
 #### Partial Coverage Available
+
 - **Recommendation**: Build on existing research
 - **Action**: Identify specific gaps to focus new research
 - **Integration Strategy**: How to combine old and new findings
 
 #### No Relevant Coverage
+
 - **Recommendation**: Proceed with full research effort
 - **Action**: Document search results to avoid future confusion
 - **Baseline**: Use existing research as context background
 
 #### Outdated Coverage
+
 - **Recommendation**: Update/refresh existing research
 - **Action**: Compare current request to prior research scope
 - **Strategy**: Full refresh vs targeted updates
@@ -9728,6 +10040,7 @@ For each potential match:
 ### 4. Documentation
 
 #### Search Results Summary
+
 ```markdown
 ## Research Log Search Results
 
@@ -9736,6 +10049,7 @@ For each potential match:
 **Matches Found**: [number of potential matches]
 
 ### Relevant Prior Research
+
 1. **[Research Title]** (Date: YYYY-MM-DD)
    - **Relevance**: [how closely it matches]
    - **Coverage**: [what aspects are covered]
@@ -9744,6 +10058,7 @@ For each potential match:
    - **Recommendation**: [use as-is/build-on/refresh/ignore]
 
 ### Search Conclusion
+
 - **Overall Assessment**: [full/partial/no/outdated coverage]
 - **Recommended Action**: [refer/build-on/proceed/refresh]
 - **Integration Strategy**: [how to use prior work]
@@ -9752,12 +10067,14 @@ For each potential match:
 ### 5. Integration Recommendations
 
 #### Building on Prior Research
+
 - **Reference Strategy**: How to cite and build upon existing work
 - **Gap Focus**: Specific areas to concentrate new research efforts
 - **Perspective Additions**: New angles not covered in prior research
 - **Update Requirements**: Refresh outdated information
 
 #### Avoiding Duplication
+
 - **Scope Differentiation**: How current request differs from prior work
 - **Methodology Variation**: Different research approaches to try
 - **Source Expansion**: New information sources to explore
@@ -10060,6 +10377,7 @@ sections:
 ## Pre-Research Planning
 
 ### Research Objective Clarity
+
 - [ ] Research objective is specific and measurable
 - [ ] Success criteria are clearly defined
 - [ ] Scope boundaries are explicitly stated
@@ -10067,6 +10385,7 @@ sections:
 - [ ] Timeline and priority constraints are documented
 
 ### Research Strategy Design
+
 - [ ] Multi-perspective approach is appropriate for complexity
 - [ ] Domain specializations are properly assigned
 - [ ] Research team size matches scope and timeline
@@ -10074,6 +10393,7 @@ sections:
 - [ ] Research methodologies are appropriate for objectives
 
 ### Prior Research Review
+
 - [ ] Research log has been searched for related work
 - [ ] Prior research relevance has been assessed
 - [ ] Strategy for building on existing work is defined
@@ -10082,6 +10402,7 @@ sections:
 ## During Research Execution
 
 ### Source Quality and Credibility
+
 - [ ] Sources are credible and authoritative
 - [ ] Information recency is appropriate for topic
 - [ ] Source diversity provides multiple viewpoints
@@ -10089,6 +10410,7 @@ sections:
 - [ ] Primary sources are prioritized over secondary when available
 
 ### Research Methodology
+
 - [ ] Research approach is systematic and thorough
 - [ ] Domain expertise lens is consistently applied
 - [ ] Web search capabilities are effectively utilized
@@ -10096,6 +10418,7 @@ sections:
 - [ ] Analysis frameworks are appropriate for domain
 
 ### Quality Assurance
+
 - [ ] Key findings are supported by multiple sources
 - [ ] Conflicting information is properly documented
 - [ ] Uncertainty levels are clearly identified
@@ -10105,6 +10428,7 @@ sections:
 ## Synthesis and Integration
 
 ### Multi-Perspective Synthesis
+
 - [ ] Findings from all researchers are properly integrated
 - [ ] Convergent insights are clearly identified
 - [ ] Divergent viewpoints are fairly represented
@@ -10112,6 +10436,7 @@ sections:
 - [ ] Gaps requiring additional research are documented
 
 ### Analysis Quality
+
 - [ ] Key findings directly address research objectives
 - [ ] Evidence supports conclusions and recommendations
 - [ ] Limitations and uncertainties are transparently documented
@@ -10119,6 +10444,7 @@ sections:
 - [ ] Recommendations are actionable and specific
 
 ### Documentation Standards
+
 - [ ] Executive summary captures key insights effectively
 - [ ] Detailed analysis is well-organized and comprehensive
 - [ ] Source documentation enables verification
@@ -10128,6 +10454,7 @@ sections:
 ## Final Deliverable Review
 
 ### Completeness
+
 - [ ] All research questions have been addressed
 - [ ] Success criteria have been met
 - [ ] Output format matches requestor requirements
@@ -10135,6 +10462,7 @@ sections:
 - [ ] Next steps and follow-up needs are identified
 
 ### Decision Support Quality
+
 - [ ] Findings directly inform decision-making needs
 - [ ] Confidence levels help assess decision risk
 - [ ] Recommendations are prioritized and actionable
@@ -10142,6 +10470,7 @@ sections:
 - [ ] Risk factors and mitigation strategies are provided
 
 ### Integration and Handoff
+
 - [ ] Results are properly formatted for requesting agent
 - [ ] Research log has been updated with new entry
 - [ ] Index categorization is accurate and searchable
@@ -10151,6 +10480,7 @@ sections:
 ## Post-Research Evaluation
 
 ### Research Effectiveness
+
 - [ ] Research objectives were successfully achieved
 - [ ] Timeline and resource constraints were managed effectively
 - [ ] Quality standards were maintained throughout process
@@ -10158,6 +10488,7 @@ sections:
 - [ ] Lessons learned are documented for process improvement
 
 ### Knowledge Management
+
 - [ ] Research artifacts are properly stored and indexed
 - [ ] Key insights are preserved for future reference
 - [ ] Research methodology insights can inform future efforts
@@ -10167,6 +10498,7 @@ sections:
 ## Quality Escalation Triggers
 
 ### Immediate Review Required
+
 - [ ] Major conflicts between research perspectives cannot be reconciled
 - [ ] Key sources are found to be unreliable or biased
 - [ ] Research scope significantly exceeds original boundaries
@@ -10174,6 +10506,7 @@ sections:
 - [ ] Timeline constraints threaten quality standards
 
 ### Process Improvement Needed
+
 - [ ] Repeated issues with source credibility or access
 - [ ] Frequent scope creep or objective changes
 - [ ] Consistent challenges with perspective coordination
@@ -10183,6 +10516,7 @@ sections:
 ## Continuous Improvement
 
 ### Research Process Enhancement
+
 - [ ] Track research effectiveness and decision impact
 - [ ] Identify patterns in research requests and optimize approaches
 - [ ] Refine domain specialization profiles based on experience
@@ -10190,6 +10524,7 @@ sections:
 - [ ] Enhance coordination methods between research perspectives
 
 ### Knowledge Base Development
+
 - [ ] Update research methodologies based on lessons learned
 - [ ] Expand credible source directories with new discoveries
 - [ ] Improve domain expertise profiles with refined specializations
@@ -10207,6 +10542,7 @@ sections:
 ### Technical Research Methodologies
 
 #### Technology Assessment Framework
+
 - **Capability Analysis**: Feature sets, performance characteristics, scalability limits
 - **Implementation Evaluation**: Complexity, learning curve, integration requirements
 - **Ecosystem Assessment**: Community support, documentation quality, maintenance status
@@ -10214,6 +10550,7 @@ sections:
 - **Security Analysis**: Vulnerability assessment, security model evaluation
 
 #### Technical Source Priorities
+
 1. **Official Documentation**: Primary source for capabilities and limitations
 2. **GitHub Repositories**: Code quality, activity level, issue resolution patterns
 3. **Technical Blogs**: Implementation experiences, best practices, lessons learned
@@ -10223,6 +10560,7 @@ sections:
 ### Market Research Methodologies
 
 #### Market Analysis Framework
+
 - **Market Sizing**: TAM/SAM/SOM analysis, growth rate assessment
 - **Competitive Landscape**: Player mapping, market share analysis, positioning
 - **Customer Segmentation**: Demographics, psychographics, behavioral patterns
@@ -10230,6 +10568,7 @@ sections:
 - **Opportunity Assessment**: Market gaps, underserved segments, entry barriers
 
 #### Market Source Priorities
+
 1. **Industry Reports**: Analyst research, market studies, trend analyses
 2. **Financial Data**: Public company reports, funding announcements, valuations
 3. **Survey Data**: Customer research, market studies, adoption surveys
@@ -10239,6 +10578,7 @@ sections:
 ### User Research Methodologies
 
 #### User-Centered Research Framework
+
 - **Behavioral Analysis**: User journey mapping, interaction patterns, pain points
 - **Needs Assessment**: Jobs-to-be-done analysis, unmet needs identification
 - **Experience Evaluation**: Usability assessment, satisfaction measurement
@@ -10246,6 +10586,7 @@ sections:
 - **Context Analysis**: Use case scenarios, environmental factors, constraints
 
 #### User Research Source Priorities
+
 1. **User Studies**: Direct research, surveys, interviews, focus groups
 2. **Product Reviews**: Customer feedback, ratings, detailed experiences
 3. **Social Media**: User discussions, complaints, feature requests
@@ -10255,6 +10596,7 @@ sections:
 ### Competitive Research Methodologies
 
 #### Competitive Intelligence Framework
+
 - **Feature Comparison**: Capability matrices, feature gap analysis
 - **Strategic Analysis**: Business model evaluation, positioning assessment
 - **Performance Benchmarking**: Speed, reliability, user experience comparisons
@@ -10262,6 +10604,7 @@ sections:
 - **Innovation Tracking**: Product roadmaps, patent filings, investment areas
 
 #### Competitive Source Priorities
+
 1. **Competitor Websites**: Product information, pricing, positioning messages
 2. **Product Demos**: Hands-on evaluation, feature testing, user experience
 3. **Press Releases**: Strategic announcements, product launches, partnerships
@@ -10271,6 +10614,7 @@ sections:
 ### Scientific Research Methodologies
 
 #### Scientific Analysis Framework
+
 - **Literature Review**: Peer-reviewed research, citation analysis, consensus building
 - **Methodology Assessment**: Research design quality, statistical validity, reproducibility
 - **Evidence Evaluation**: Study quality, sample sizes, control factors
@@ -10278,6 +10622,7 @@ sections:
 - **Application Assessment**: Practical implications, implementation feasibility
 
 #### Scientific Source Priorities
+
 1. **Peer-Reviewed Journals**: Primary research, systematic reviews, meta-analyses
 2. **Academic Databases**: Research repositories, citation networks, preprints
 3. **Conference Proceedings**: Latest research, emerging trends, expert presentations
@@ -10289,6 +10634,7 @@ sections:
 ### Source Credibility Assessment
 
 #### Primary Source Evaluation
+
 - **Authority**: Expertise of authors, institutional affiliation, credentials
 - **Accuracy**: Fact-checking, peer review process, error correction mechanisms
 - **Objectivity**: Bias assessment, funding sources, conflict of interest disclosure
@@ -10296,6 +10642,7 @@ sections:
 - **Coverage**: Scope comprehensiveness, detail level, methodology transparency
 
 #### Secondary Source Validation
+
 - **Citation Quality**: Primary source references, citation accuracy, source diversity
 - **Synthesis Quality**: Analysis depth, logical coherence, balanced perspective
 - **Author Expertise**: Subject matter knowledge, track record, reputation
@@ -10305,6 +10652,7 @@ sections:
 ### Information Synthesis Approaches
 
 #### Multi-Perspective Integration
+
 - **Convergence Analysis**: Identify areas where sources agree consistently
 - **Divergence Documentation**: Note significant disagreements and analyze causes
 - **Confidence Weighting**: Assign confidence levels based on source quality and consensus
@@ -10312,6 +10660,7 @@ sections:
 - **Uncertainty Quantification**: Document limitations and areas of unclear evidence
 
 #### Evidence Hierarchy
+
 1. **High Confidence**: Multiple credible sources, recent information, expert consensus
 2. **Medium Confidence**: Some credible sources, mixed consensus, moderate currency
 3. **Low Confidence**: Limited sources, significant disagreement, dated information
@@ -10321,6 +10670,7 @@ sections:
 ## Domain-Specific Analysis Frameworks
 
 ### Technical Analysis Framework
+
 - **Feasibility Assessment**: Technical viability, implementation complexity, resource requirements
 - **Scalability Analysis**: Performance under load, growth accommodation, architectural limits
 - **Integration Evaluation**: Compatibility assessment, integration complexity, ecosystem fit
@@ -10328,6 +10678,7 @@ sections:
 - **Risk Assessment**: Technical risks, dependency risks, obsolescence potential
 
 ### Business Analysis Framework
+
 - **Value Proposition**: Customer value delivery, competitive advantage, market differentiation
 - **Financial Impact**: Cost analysis, revenue potential, ROI assessment, budget implications
 - **Strategic Alignment**: Goal consistency, priority alignment, resource allocation fit
@@ -10335,6 +10686,7 @@ sections:
 - **Risk-Benefit Analysis**: Potential rewards vs implementation risks and costs
 
 ### User Impact Framework
+
 - **User Experience**: Ease of use, learning curve, satisfaction factors, accessibility
 - **Adoption Factors**: Barriers to adoption, motivation drivers, change management needs
 - **Value Delivery**: User benefit realization, problem solving effectiveness, outcome achievement
@@ -10344,6 +10696,7 @@ sections:
 ## Research Coordination Best Practices
 
 ### Multi-Researcher Coordination
+
 - **Perspective Assignment**: Clear domain boundaries, minimal overlap, comprehensive coverage
 - **Communication Protocols**: Regular check-ins, conflict resolution processes, coordination methods
 - **Quality Standards**: Consistent source credibility requirements, analysis depth expectations
@@ -10351,6 +10704,7 @@ sections:
 - **Integration Planning**: Synthesis approach design, conflict resolution strategies, gap handling
 
 ### Research Efficiency Optimization
+
 - **Source Sharing**: Avoid duplicate source evaluation across researchers
 - **Finding Coordination**: Share relevant discoveries between perspectives
 - **Quality Checks**: Cross-validation of key findings, source verification collaboration
