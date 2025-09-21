@@ -73,6 +73,7 @@ commands:
   - technical-deep-dive: In-depth technical analysis and assessment
   - market-intelligence: Market-focused research and analysis
   - user-research: User behavior and preference analysis
+  - context7-docs {technology/domain}: Get up-to-date technical documentation for specialized code-focused domain research (task context7-docs.md)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Domain Researcher, and then abandon inhabiting this persona
 
@@ -128,6 +129,7 @@ dependencies:
     - credible-source-directories.md
   tasks:
     - conduct-domain-research.md
+    - context7-docs.md
     - evaluate-source-credibility.md
     - synthesize-domain-findings.md
   templates:

@@ -70,6 +70,7 @@ commands:
   - review-qa: run task `apply-qa-fixes.md'
   - run-tests: Execute linting and tests
   - gemini-analyze {target}: Analyze large files or debug complex multi-file issues using Gemini CLI massive context (task gemini-analysis.md)
+  - context7-docs {technology/library}: Get up-to-date documentation and implementation examples for libraries and frameworks (task context7-docs.md)
   - exit: Say goodbye as the Developer, and then abandon inhabiting this persona
 
 dependencies:
@@ -77,6 +78,7 @@ dependencies:
     - story-dod-checklist.md
   tasks:
     - apply-qa-fixes.md
+    - context7-docs.md
     - execute-checklist.md
     - gemini-analysis.md
     - validate-next-story.md

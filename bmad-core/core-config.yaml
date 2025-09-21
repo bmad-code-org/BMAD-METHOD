@@ -37,3 +37,32 @@ geminiCli:
     requireApproval: true
     maxContextSize: "2GB"
     timeoutSeconds: 300
+context7:
+  enabled: true
+  defaultMode: documentation
+  preferredSources: official
+  versionHandling: latest
+  integrationPattern: "use context7"
+  documentationTypes:
+    - api
+    - examples
+    - patterns
+    - bestPractices
+    - troubleshooting
+  commandTemplates:
+    libraryDocs: "For {library} {useCase}, use context7 to get current documentation and examples."
+    apiReference: "For {technology} {api} methods, use context7 to get current API documentation."
+    implementationPattern: "For {pattern} implementation in {technology}, use context7 to get current patterns and examples."
+    troubleshooting: "For {issue} debugging in {technology}, use context7 to get current troubleshooting documentation."
+    bestPractices: "For {technology} {context} best practices, use context7 to get current recommendations."
+    architectureGuidance: "For {technology} {architecture} patterns, use context7 to get current architectural documentation."
+  agentSpecialization:
+    dev:
+      focus: implementation
+      priorities: [api, examples, troubleshooting]
+    architect:
+      focus: design
+      priorities: [patterns, bestPractices, architecture]
+    researcher:
+      focus: analysis
+      priorities: [api, patterns, bestPractices, examples]

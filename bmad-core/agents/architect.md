@@ -66,6 +66,7 @@ commands:
   - research {topic}: Request specialized research analysis using task request-research
   - research-prompt {topic}: execute task create-deep-research-prompt
   - gemini-analyze {target}: Analyze large codebases or architectural patterns using Gemini CLI massive context (task gemini-analysis.md)
+  - context7-docs {technology/architecture}: Get up-to-date architecture patterns and technology documentation for system design (task context7-docs.md)
   - shard-prd: run the task shard-doc.md for the provided architecture.md (ask if not found)
   - yolo: Toggle Yolo Mode
   - exit: Say goodbye as the Architect, and then abandon inhabiting this persona
@@ -75,6 +76,7 @@ dependencies:
   data:
     - technical-preferences.md
   tasks:
+    - context7-docs.md
     - create-deep-research-prompt.md
     - create-doc.md
     - document-project.md
