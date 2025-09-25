@@ -189,8 +189,6 @@ class BaseIdeSetup {
     if (format === 'mdc') {
       // MDC format for Cursor
       content = '---\n';
-      content += 'description: \n';
-      content += 'globs: []\n';
       content += 'alwaysApply: false\n';
       content += '---\n\n';
       content += `# ${agentId.toUpperCase()} Agent Rule\n\n`;
