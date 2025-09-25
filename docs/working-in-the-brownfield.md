@@ -6,7 +6,7 @@ Regardless of what you plan for your existing project you want to start agentic 
 
 If using Claude Code - it is recommended to use the document-project task with the architect to systematically produce important key artifacts for your codebase.
 
-Optionally you can product context information and understanding for your repo utilizing web agents like Gemini. If its already in github, you can provide the project URL in gemini and use the agents to help analyze or document the project with the team fullstack or the architect specific gem.
+Optionally you can produce context information and understanding for your repo utilizing web agents like Gemini. If its already in github, you can provide the project URL in gemini and use the agents to help analyze or document the project with the team fullstack or the architect specific gem.
 
 If your project is too large, you can also flatten your codebase - which can make it easier to upload or use with some tools. You can read more about the optional tool in the [Flattener Guide](./flattener.md)
 
