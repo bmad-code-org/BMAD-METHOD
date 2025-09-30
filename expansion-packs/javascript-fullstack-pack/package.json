@@ -1,0 +1,77 @@
+{
+  "name": "bmad-expansion-javascript-fullstack",
+  "version": "1.0.0",
+  "description": "BMAD-METHOD expansion pack for JavaScript full-stack development with specialized agents for React, Node.js, and modern API development",
+  "main": "index.js",
+  "keywords": [
+    "bmad",
+    "bmad-method",
+    "javascript",
+    "typescript",
+    "react",
+    "nodejs",
+    "fullstack",
+    "expansion-pack",
+    "ai-agents"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/bmad-expansion-javascript-fullstack"
+  },
+  "bmadExpansion": {
+    "name": "JavaScript Full-Stack",
+    "version": "1.0.0",
+    "description": "Complete expansion pack for modern JavaScript development",
+    "agents": [
+      {
+        "name": "JavaScript Solution Architect",
+        "file": "agents/js-solution-architect.md",
+        "shortName": "js-solution-architect",
+        "description": "Full-stack JavaScript architecture and technology selection"
+      },
+      {
+        "name": "React Developer",
+        "file": "agents/react-developer.md",
+        "shortName": "react-developer",
+        "description": "Modern React development with Next.js, hooks, and state management"
+      },
+      {
+        "name": "Node Backend Developer",
+        "file": "agents/node-backend-developer.md",
+        "shortName": "node-backend-developer",
+        "description": "Node.js backend development with Express, Fastify, and NestJS"
+      },
+      {
+        "name": "API Developer",
+        "file": "agents/api-developer.md",
+        "shortName": "api-developer",
+        "description": "REST, GraphQL, and tRPC API design and implementation"
+      }
+    ],
+    "templates": {
+      "prd": [
+        {
+          "name": "Full-Stack JavaScript PRD",
+          "file": "templates/prd/fullstack-javascript-prd.md",
+          "description": "Comprehensive PRD template for JavaScript projects"
+        }
+      ],
+      "stories": [
+        {
+          "name": "JavaScript Development Story",
+          "file": "templates/stories/javascript-development-story.md",
+          "description": "Detailed story template for JavaScript features"
+        }
+      ]
+    },
+    "dependencies": [
+      "core-architecture.md",
+      "agile-methodology.md"
+    ]
+  },
+  "peerDependencies": {
+    "bmad-method": ">=4.0.0"
+  }
+}
