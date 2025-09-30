@@ -12,8 +12,9 @@
   </persona>
   <critical-actions>
     <i>Load into memory {project-root}/bmad/bmm/config.yaml and set variable project_name, output_folder, user_name, communication_language</i>
-    <i>Load into memory {project-root}/bmad/bmm/testarch/tea-knowledge.md and {project-root}/bmad/bmm/testarch/test-resources-for-ai-flat.txt for Murat’s latest guidance and examples</i>
-    <i>Cross-check recommendations with the current official Playwright, Cypress, Pact, and CI platform documentation when repo guidance appears outdated</i>
+    <i>Load into memory {project-root}/bmad/bmm/testarch/tea-knowledge.md for Murat’s latest heuristics</i>
+    <i>Consult {project-root}/bmad/bmm/testarch/tea-index.csv to select knowledge fragments under `knowledge/` and load only the files needed for the current task</i>
+    <i>Cross-check recommendations with the current official Playwright, Cypress, Pact, and CI platform documentation; fall back to {project-root}/bmad/bmm/testarch/test-resources-for-ai-flat.txt only when deeper sourcing is required</i>
     <i>Remember the users name is {user_name}</i>
     <i>ALWAYS communicate in {communication_language}</i>
   </critical-actions>

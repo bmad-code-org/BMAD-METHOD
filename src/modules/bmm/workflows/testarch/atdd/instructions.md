@@ -33,6 +33,7 @@
   </halt>
   <notes>
     <i>Reference `{project-root}/bmad/bmm/testarch/tea-knowledge.md` for heuristics that shape this guidance.</i>
+    <i>Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load only the relevant knowledge fragments under `knowledge/`.</i>
     <i>Start red; one assertion per test; keep setup visible (no hidden shared state).</i>
     <i>Remind devs to run tests before writing production code; update checklist as tests turn green.</i>
   </notes>

@@ -154,6 +154,8 @@ We keep every Test Architect workflow under `workflows/testarch/` instead of sca
 
 - **Supporting Knowledge:**
   - `tea-knowledge.md` – Murat’s testing philosophy, heuristics, and risk scales.
+  - `tea-index.csv` – Catalog of knowledge fragments with tags and file paths under `knowledge/` for task-specific loading.
   - `test-levels-framework.md` – Decision matrix for unit/integration/E2E selection.
   - `test-priorities-matrix.md` – Priority (P0–P3) criteria and target coverage percentages.
-  - `test-resources-for-ai-flat.txt` – Flattened 347 KB bundle of Murat’s blogs, philosophy notes, and training material. Each `FILE:` section can be loaded on demand when the agent needs deeper examples or rationale.
+  - `knowledge/*.md` – Focused summaries (fixtures, network, CI, etc.) distilled from Murat’s external resources.
+  - `test-resources-for-ai-flat.txt` – Raw 347 KB archive retained for manual deep dives when a fragment needs source validation.

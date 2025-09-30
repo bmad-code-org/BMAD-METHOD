@@ -28,6 +28,7 @@
   </halt>
   <notes>
     <i>Reference `{project-root}/bmad/bmm/testarch/tea-knowledge.md` for heuristics that shape this guidance.</i>
+    <i>Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load only the relevant knowledge fragments under `knowledge/`.</i>
     <i>Unknown thresholds default to CONCERNS—never guess.</i>
     <i>Ensure every NFR has evidence or call it out explicitly.</i>
     <i>Suggest monitoring hooks and fail-fast mechanisms when gaps exist.</i>

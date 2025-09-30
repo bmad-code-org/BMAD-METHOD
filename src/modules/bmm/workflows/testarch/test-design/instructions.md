@@ -14,6 +14,7 @@
     </step>
     <step n="2" title="Assess Risks">
       <action>Consult `{project-root}/bmad/bmm/testarch/tea-knowledge.md` for the latest risk heuristics before scoring.</action>
+      <action>Use `{project-root}/bmad/bmm/testarch/tea-index.csv` to pull targeted fragments (risk heuristics, fixture guidance, etc.) from `knowledge/` as needed.</action>
       <action>Filter requirements to isolate genuine risks; review PRD/architecture/story for unresolved gaps.</action>
       <action>Classify risks across TECH, SEC, PERF, DATA, BUS, OPS; request clarification when evidence is missing.</action>
       <action>Score probability (1 unlikely, 2 possible, 3 likely) and impact (1 minor, 2 degraded, 3 critical); compute totals and highlight scores ≥6.</action>
@@ -34,6 +35,7 @@
   </halt>
   <notes>
     <i>Category definitions: TECH=architecture flaws; SEC=missing controls; PERF=SLA risk; DATA=loss/corruption; BUS=user/business harm; OPS=deployment/run failures.</i>
+    <i>Leverage `tea-index.csv` tags to find supporting evidence (e.g., fixture-architecture, selective-testing) without loading unnecessary files.</i>
     <i>Rely on evidence, not speculation; tie scenarios back to mitigations; keep scenarios independent and maintainable.</i>
   </notes>
   <output>

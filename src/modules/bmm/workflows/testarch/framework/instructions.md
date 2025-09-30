@@ -32,6 +32,7 @@
   </halt>
   <notes>
     <i>Reference `{project-root}/bmad/bmm/testarch/tea-knowledge.md` for heuristics that shape this guidance.</i>
+    <i>Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load only the relevant knowledge fragments under `knowledge/`.</i>
     <i>Playwright: take advantage of worker parallelism, trace viewer, multi-language support.</i>
     <i>Cypress: avoid when dependent API chains are heavy; consider component testing (Vitest/Cypress CT).</i>
     <i>Contract testing: suggest Pact for microservices; always recommend data-cy/data-testid selectors.</i>

@@ -28,6 +28,7 @@
   </halt>
   <notes>
     <i>Reference `{project-root}/bmad/bmm/testarch/tea-knowledge.md` for heuristics that shape this guidance.</i>
+    <i>Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load only the relevant knowledge fragments under `knowledge/`.</i>
     <i>FAIL whenever unresolved P0 risks/tests or security issues remain.</i>
     <i>CONCERNS when mitigations are planned but residual risk exists; WAIVED requires reason, approver, and expiry.</i>
     <i>Maintain audit trail in the history section.</i>

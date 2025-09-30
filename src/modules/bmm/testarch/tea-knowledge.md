@@ -2,7 +2,7 @@
 
 # Murat Test Architecture Foundations (Slim Brief)
 
-This brief distills Murat Ozcan's testing philosophy used by the Test Architect agent. Use it as the north star while executing the TEA workflows.
+This brief distills Murat Ozcan's testing philosophy used by the Test Architect agent. Use it as the north star while executing the TEA workflows, and rely on `tea-index.csv` to pull deeper fragments on demand.
 
 ## Core Principles
 
@@ -325,34 +325,35 @@ history:
 
 ## Reference Capsules (Summaries Bundled In)
 
-- **Fixture Architecture Quick Wins**
+- **Fixture Architecture Quick Wins** (`knowledge/fixture-architecture.md`)
   - Compose Playwright or Cypress suites with additive fixtures; use `mergeTests`/`extend` to layer auth, network, and telemetry helpers without inheritance.
   - Keep HTTP helpers framework-agnostic so the same function fuels unit tests, API smoke checks, and runtime fixtures.
   - Normalize selectors (`data-testid`/`data-cy`) and lint new UI code for missing attributes to prevent brittle locators.
 
-- **Playwright Patterns Digest**
+- **Network & Playwright Patterns** (`knowledge/network-first.md`, `knowledge/playwright-config.md`)
   - Register network interceptions before navigation, assert on typed responses, and capture HAR files for regression.
   - Treat timeouts and retries as configuration, not inline magic numbers; expose overrides via fixtures.
   - Name specs and test IDs with intent (`checkout.complete-happy-path`) so CI shards and triage stay meaningful.
 
-- **Component TDD Highlights**
+- **Component TDD Highlights** (`knowledge/component-tdd.md`, `knowledge/data-factories.md`)
   - Begin UI work with failing component specs; rebuild providers/stores per spec to avoid state bleed.
   - Use factories to exercise prop variations and edge cases; assert through accessible queries (`getByRole`, `getByLabelText`).
   - Document mount helpers and cleanup expectations so component tests stay deterministic.
 
-- **Contract Testing Cliff Notes**
+- **Contract Testing Cliff Notes** (`knowledge/contract-testing.md`)
   - Store consumer contracts alongside integration specs; version with semantic tags and publish on every CI run.
   - Enforce provider verification prior to merge to act as a release gate for service integrations.
   - Capture fallback behaviour (timeouts, retries, circuit breakers) inside contracts to keep resilience expectations explicit.
 
-- **End-to-End Reference Flow**
+- **End-to-End Reference Flow** (`knowledge/ci-burn-in.md`, `knowledge/selective-testing.md`)
   - Prime end-to-end journeys through API fixtures, then assert through UI steps mirroring real user narratives.
   - Pair burn-in scripts (`npm run test:e2e -- --repeat-each=3`) with selective retries to flush flakes before promotion.
 
-- **Philosophy & Heuristics Articles**
-  - Use long-form articles for rationale; extract checklists, scripts, and thresholds back into this brief whenever teams adopt new practices.
+- **Special Topics** (`knowledge/feature-flags.md`, `knowledge/email-auth.md`, `knowledge/error-handling.md`, `knowledge/visual-debugging.md`)
+  - Feature flag governance, targeted email-auth flows, resilient error handling, and visual debugging ergonomics captured as separate fragments.
+  - Use the Murat knowledge bundle only when these fragments need deeper sourcing.
 
-These capsules distil Murat's sample repositories (Playwright patterns, Cypress vs Playwright comparisons, CCTDD, Pact examples, Tour of Heroes walkthrough) captured in the `test-resources-for-ai` knowledge pack so the TEA agent can operate offline while reflecting those techniques.
+These capsules map to focused fragments stored under `knowledge/`. Each fragment is catalogued in `tea-index.csv` so workflows can load only what they need.
 
 ## Reference Assets
 
@@ -360,4 +361,5 @@ These capsules distil Murat's sample repositories (Playwright patterns, Cypress 
 - [Test Levels Framework](./test-levels-framework.md) — choose the right level for each scenario.
 - [Test Priorities Matrix](./test-priorities-matrix.md) — assign P0–P3 priorities consistently.
 - [TEA Workflows](../workflows/testarch/README.md) — per-command instructions executed by the agent.
-- [Murat Knowledge Bundle](./test-resources-for-ai-flat.txt) — 347 KB flattened snapshot of Murat’s blogs, philosophy notes, and course material. Sections are delimited with `FILE:` headers; load relevant portions when deeper examples or rationales are required.
+- [TEA Knowledge Index](./tea-index.csv) — tags each knowledge fragment and the supporting markdown file under `knowledge/` for on-demand loading.
+- [Murat Knowledge Bundle](./test-resources-for-ai-flat.txt) — raw 347 KB archive of blogs and course notes; consult manually when a fragment needs deeper sourcing.
