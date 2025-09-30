@@ -18,7 +18,7 @@ last-redoc-date: 2025-09-30
    - Architect `*solution-architecture`
 2. Confirm `bmad/bmm/config.yaml` defines `project_name`, `output_folder`, `dev_story_location`, and language settings.
 3. Ensure a test test framework setup exists; if not, use `*framework` command to create a test framework setup, prior to development.
-4. Skim supporting references under `./testarch/`:
+4. Skim supporting references (knowledge under `testarch/`, command workflows under `workflows/testarch/`).
    - `tea-knowledge.md`
    - `test-levels-framework.md`
    - `test-priorities-matrix.md`
@@ -125,26 +125,30 @@ last-redoc-date: 2025-09-30
 
 ## Command Catalog
 
-| Command        | Task File                        | Primary Outputs                                                      | Notes                                            |
-| -------------- | -------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------ |
-| `*framework`   | `testarch/framework.md`          | Playwright/Cypress scaffold, `.env.example`, `.nvmrc`, sample specs  | Use when no production-ready harness exists      |
-| `*atdd`        | `testarch/atdd.md`               | Failing Acceptance-Test Driven Development, implementation checklist | Requires approved story + harness                |
-| `*automate`    | `testarch/automate.md`           | Prioritized specs, fixtures, README/script updates, DoD summary      | Avoid duplicate coverage (see priority matrix)   |
-| `*ci`          | `testarch/ci.md`                 | CI workflow, selective test scripts, secrets checklist               | Platform-aware (GitHub Actions default)          |
-| `*test-design` | `testarch/test-design.md`        | Combined risk assessment, mitigation plan, and coverage strategy     | Handles risk scoring and test design in one pass |
-| `*trace`       | `testarch/trace-requirements.md` | Coverage matrix, recommendations, gate snippet                       | Requires access to story/tests repositories      |
-| `*nfr-assess`  | `testarch/nfr-assess.md`         | NFR assessment report with actions                                   | Focus on security/performance/reliability        |
-| `*gate`        | `testarch/gate.md`               | Gate YAML + summary (PASS/CONCERNS/FAIL/WAIVED)                      | Deterministic decision rules + rationale         |
+| Command        | Task File                                        | Primary Outputs                                                     | Notes                                            |
+| -------------- | ------------------------------------------------ | ------------------------------------------------------------------- | ------------------------------------------------ |
+| `*framework`   | `workflows/testarch/framework/instructions.md`   | Playwright/Cypress scaffold, `.env.example`, `.nvmrc`, sample specs | Use when no production-ready harness exists      |
+| `*atdd`        | `workflows/testarch/atdd/instructions.md`        | Failing acceptance tests + implementation checklist                 | Requires approved story + harness                |
+| `*automate`    | `workflows/testarch/automate/instructions.md`    | Prioritized specs, fixtures, README/script updates, DoD summary     | Avoid duplicate coverage (see priority matrix)   |
+| `*ci`          | `workflows/testarch/ci/instructions.md`          | CI workflow, selective test scripts, secrets checklist              | Platform-aware (GitHub Actions default)          |
+| `*test-design` | `workflows/testarch/test-design/instructions.md` | Combined risk assessment, mitigation plan, and coverage strategy    | Handles risk scoring and test design in one pass |
+| `*trace`       | `workflows/testarch/trace/instructions.md`       | Coverage matrix, recommendations, gate snippet                      | Requires access to story/tests repositories      |
+| `*nfr-assess`  | `workflows/testarch/nfr-assess/instructions.md`  | NFR assessment report with actions                                  | Focus on security/performance/reliability        |
+| `*gate`        | `workflows/testarch/gate/instructions.md`        | Gate YAML + summary (PASS/CONCERNS/FAIL/WAIVED)                     | Deterministic decision rules + rationale         |
 
 <details>
 <summary>Command Guidance and Context Loading</summary>
 
-- Each task reads one row from `tea-commands.csv` via `command_key`, expanding pipe-delimited (`|`) values into checklists.
-- Keep CSV rows lightweight; place in-depth heuristics in `tea-knowledge.md` and reference via `knowledge_tags`.
-- If the CSV grows substantially, consider splitting into scoped registries (e.g., planning vs execution) or upgrading to Markdown tables for humans.
+- Each task now carries its own preflight/flow/deliverable guidance inline.
+- `tea-knowledge.md` still stores heuristics; update the brief alongside task edits.
+- Consider future modularization into orchestrated workflows if additional automation is needed.
 - `tea-knowledge.md` encapsulates Murat’s philosophy—update both CSV and knowledge file together to avoid drift.
 
 </details>
+
+## Workflow Placement
+
+We keep every Test Architect workflow under `workflows/testarch/` instead of scattering them across the phase folders. TEA steps show up during planning (`*framework`), implementation (`*atdd`, `*automate`, `*trace`), and release (`*gate`), so a single directory keeps the command catalog and examples coherent while still letting the orchestrator treat each command as a first-class workflow. When phase-specific navigation improves, we can add lightweight entrypoints without losing this central reference.
 
 ## Appendix
 
@@ -152,4 +156,4 @@ last-redoc-date: 2025-09-30
   - `tea-knowledge.md` – Murat’s testing philosophy, heuristics, and risk scales.
   - `test-levels-framework.md` – Decision matrix for unit/integration/E2E selection.
   - `test-priorities-matrix.md` – Priority (P0–P3) criteria and target coverage percentages.
-    s
+  - `test-resources-for-ai-flat.txt` – Flattened 347 KB bundle of Murat’s blogs, philosophy notes, and training material. Each `FILE:` section can be loaded on demand when the agent needs deeper examples or rationale.

@@ -1,0 +1,43 @@
+<!-- Powered by BMAD-CORE™ -->
+
+# Automation Expansion v3.0
+
+```xml
+<task id="bmad/bmm/testarch/automate" name="Automation Expansion">
+  <llm critical="true">
+    <i>Preflight requirements:</i>
+    <i>- Acceptance criteria are satisfied.</i>
+    <i>- Code builds locally without errors.</i>
+    <i>- Framework scaffolding is configured.</i>
+  </llm>
+  <flow>
+    <step n="1" title="Preflight">
+      <action>Verify all requirements above; halt if any fail.</action>
+    </step>
+    <step n="2" title="Expand Automation">
+      <action>Review story source/diff to confirm automation targets.</action>
+      <action>Review quality heuristics from `{project-root}/bmad/bmm/testarch/tea-knowledge.md` before proposing additions.</action>
+      <action>Ensure fixture architecture exists (Playwright `mergeTests`, Cypress commands); add apiRequest/network/auth/log fixtures if missing.</action>
+      <action>Map acceptance criteria using `{project-root}/bmad/bmm/testarch/test-levels-framework.md` and avoid duplicate coverage.</action>
+      <action>Assign priorities using `{project-root}/bmad/bmm/testarch/test-priorities-matrix.md`.</action>
+      <action>Generate unit/integration/E2E specs (naming `feature-name.spec.ts`) covering happy, negative, and edge paths.</action>
+      <action>Enforce deterministic waits, self-cleaning factories, and execution under 1.5 minutes per test.</action>
+      <action>Run the suite, capture Definition of Done results, and update package.json scripts plus README instructions.</action>
+    </step>
+    <step n="3" title="Deliverables">
+      <action>Create new/enhanced spec files grouped by level, supporting fixtures/helpers, data factory utilities, updated scripts/README notes, and a DoD summary highlighting remaining gaps.</action>
+    </step>
+  </flow>
+  <halt>
+    <i>If the automation target is unclear or the framework is missing, halt and request clarification/setup.</i>
+  </halt>
+  <notes>
+    <i>Never create page objects; keep tests under 300 lines and stateless.</i>
+    <i>Forbid hard waits/conditional flow; co-locate tests near source.</i>
+    <i>Flag flaky patterns immediately.</i>
+  </notes>
+  <output>
+    <i>Prioritized automation suite updates and DoD summary ready for gating.</i>
+  </output>
+</task>
+```

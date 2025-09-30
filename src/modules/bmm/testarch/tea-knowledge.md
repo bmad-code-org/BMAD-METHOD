@@ -2,7 +2,7 @@
 
 # Murat Test Architecture Foundations (Slim Brief)
 
-This brief distills Murat Ozcan's testing philosophy used by the Test Architect agent. Use it as the north star after loading `tea-commands.csv`.
+This brief distills Murat Ozcan's testing philosophy used by the Test Architect agent. Use it as the north star while executing the TEA workflows.
 
 ## Core Principles
 
@@ -14,8 +14,10 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
 - Composition over inheritance: prefer functional helpers and fixtures that compose behaviour; page objects and deep class trees hide duplication.
 - Setup via API, assert via UI. Keep tests user-centric while priming state through fast interfaces.
 - One test = one concern. Explicit assertions live in the test body, not buried in helpers.
+- Test at the lowest level possible first: favour component/unit coverage before integration/E2E (target ~1:3–1:5 ratio of high-level to low-level tests).
+- Zero tolerance for flakiness: if a test flakes, fix the cause immediately or delete the test—shipping with flakes is not acceptable evidence.
 
-## Patterns and Heuristics
+## Patterns & Heuristics
 
 - Selector order: `data-cy` / `data-testid` -> ARIA -> text. Avoid brittle CSS, IDs, or index based locators.
 - Network boundary is the mock boundary. Stub at the edge, never mid-service unless risk demands.
@@ -44,9 +46,37 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
     ...overrides,
   });
   ```
+- Standard test skeleton keeps intent clear—`describe` the feature, `context` specific scenarios, make setup visible, and follow Arrange → Act → Assert explicitly:
+
+  ```javascript
+  describe('Checkout', () => {
+    context('when inventory is available', () => {
+      beforeEach(async () => {
+        await seedInventory();
+        await interceptOrders(); // intercept BEFORE navigation
+        await test.step('navigate', () => page.goto('/checkout'));
+      });
+
+      it('completes purchase', async () => {
+        await cart.fillDetails(validUser);
+        await expect(page.getByTestId('order-confirmed')).toBeVisible();
+      });
+    });
+  });
+  ```
+
+- Helper/fixture thresholds: 3+ call sites → promote to fixture with subpath export, 2-3 → shared utility module, 1-off → keep inline to avoid premature abstraction.
+- Deterministic waits only: prefer `page.waitForResponse`, `cy.wait('@alias')`, or element disappearance (e.g., `cy.get('[data-cy="spinner"]').should('not.exist')`). Ban `waitForTimeout`/`cy.wait(ms)` unless quarantined in TODO and slated for removal.
+- Data is created via APIs or tasks, not UI flows:
+  ```javascript
+  beforeEach(() => {
+    cy.task('db:seed', { users: [createUser({ role: 'admin' })] });
+  });
+  ```
+- Assertions stay in tests; when shared state varies, assert on ranges (`expect(count).toBeGreaterThanOrEqual(3)`) rather than brittle exact values.
 - Visual debugging: keep component/test runner UIs available (Playwright trace viewer, Cypress runner) to accelerate feedback.
 
-## Risk and Coverage
+## Risk & Coverage
 
 - Risk score = probability (1-3) × impact (1-3). Score 9 => gate FAIL, ≥6 => CONCERNS. Most stories have 0-1 high risks.
 - Test level ratio: heavy unit/component coverage, but always include E2E for critical journeys and integration seams.
@@ -60,7 +90,7 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
 - **Media**: screenshot only-on-failure, video retain-on-failure
 - **Language Matching**: Tests should match source code language (JS/TS frontend -> JS/TS tests)
 
-## Automation and CI
+## Automation & CI
 
 - Prefer Playwright for multi-language teams, worker parallelism, rich debugging; Cypress suits smaller DX-first repos or component-heavy spikes.
 - **Framework Selection**: Large repo + performance = Playwright, Small repo + DX = Cypress
@@ -71,7 +101,7 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
 - Burn-in testing: run new or changed specs multiple times (e.g., 3-10x) to flush flakes before they land in main.
 - Keep helper scripts handy (`scripts/test-changed.sh`, `scripts/burn-in-changed.sh`) so CI and local workflows stay in sync.
 
-## Project Structure and Config
+## Project Structure & Config
 
 - **Directory structure**:
   ```
@@ -92,8 +122,10 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
   };
   export default configs[process.env.TEST_ENV || 'local'];
   ```
+- Validate environment input up-front (fail fast when `TEST_ENV` is missing) and keep Playwright/Cypress configs small by delegating per-env overrides to files under `config/`.
+- Keep `.env.example`, `.nvmrc`, and scripts (burn-in, test-changed) in source control so CI and local machines share tooling defaults.
 
-## Test Hygiene and Independence
+## Test Hygiene & Independence
 
 - Tests must be independent and stateless; never rely on execution order.
 - Cleanup all data created during tests (afterEach or API cleanup).
@@ -101,7 +133,7 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
 - No shared mutable state; prefer factory functions per test.
 - Tests must run in parallel safely; never commit `.only`.
 - Prefer co-location: component tests next to components, integration in `tests/integration`, etc.
-- Feature flags: centralise enum definitions (e.g., `export const FLAGS = Object.freeze({ NEW_FEATURE: 'new-feature' })`), provide helpers to set/clear targeting, and write dedicated flag tests that clean up targeting after each run.
+- Feature flags: centralise enum definitions (e.g., `export const FLAGS = Object.freeze({ NEW_FEATURE: 'new-feature' })`), provide helpers to set/clear targeting, write dedicated flag suites that clean up targeting after each run, and exercise both enabled/disabled paths in CI.
 
 ## CCTDD (Component Test-Driven Development)
 
@@ -117,6 +149,8 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
 - **HAR recording**: Record network traffic for offline playback in CI.
 - **Selective reruns**: Only rerun failed specs, not entire suite.
 - **Network recording**: capture HAR files during stable runs so CI can replay network traffic when external systems are flaky.
+- Stage jobs: cache dependencies once, run `test-changed` before full suite, then execute sharded E2E jobs with `fail-fast: false` so one failure doesn’t cancel other evidence.
+- Ship burn-in scripts (e.g., `scripts/burn-in-changed.sh`) that loop 5–10x over changed specs and stop on first failure; wire them into CI for flaky detection before merge.
 
 ## Package Scripts
 
@@ -127,25 +161,20 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
   "test:component": "cypress run --component",
   "test:contract": "jest --testMatch='**/pact/*.spec.ts'",
   "test:debug": "playwright test --headed",
-  "test:ci": "npm run test:unit andand npm run test:e2e",
+  "test:ci": "npm run test:unit && npm run test:e2e",
   "contract:publish": "pact-broker publish"
   ```
 
-## Contract Testing (Pact)
+## Online Resources & Examples
 
-- Use for microservices with integration points.
-- Consumer generates contracts, provider verifies.
-- Structure: `pact/` directory at root, `pact/config.ts` for broker settings.
-- Reference repos: pact-js-example-consumer, pact-js-example-provider, pact-js-example-react-consumer.
+- Full-text mirrors of Murat's public repos live in the `test-resources-for-ai/sample-repos` knowledge pack so TEA can stay offline. Key origins include Playwright patterns (`pw-book`), Cypress vs Playwright comparisons, Tour of Heroes, and Pact consumer/provider examples.
 
-## Online Resources and Examples
-
-- Fixture architecture: https://github.com/muratkeremozcan/cy-vs-pw-murats-version
+- - Fixture architecture: https://github.com/muratkeremozcan/cy-vs-pw-murats-version
 - Playwright patterns: https://github.com/muratkeremozcan/pw-book
 - Component testing (CCTDD): https://github.com/muratkeremozcan/cctdd
 - Contract testing: https://github.com/muratkeremozcan/pact-js-example-consumer
 - Full app example: https://github.com/muratkeremozcan/tour-of-heroes-react-vite-cypress-ts
-- Blog posts: https://dev.to/muratkeremozcan
+- Blog essays at https://dev.to/muratkeremozcan provide narrative rationale—distil any new actionable guidance back into this brief when processes evolve.
 
 ## Risk Model Details
 
@@ -156,7 +185,7 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
 - BUS: Business or user harm, revenue-impacting failures, compliance gaps.
 - OPS: Deployment, infrastructure, or observability gaps that block releases.
 
-## Probability and Impact Scale
+## Probability & Impact Scale
 
 - Probability 1 = Unlikely (standard implementation, low risk).
 - Probability 2 = Possible (edge cases, needs attention).
@@ -168,8 +197,8 @@ This brief distills Murat Ozcan's testing philosophy used by the Test Architect 
 
 ## Test Design Frameworks
 
-- Use `docs/docs-v6/v6-bmm/test-levels-framework.md` for level selection and anti-patterns.
-- Use `docs/docs-v6/v6-bmm/test-priorities-matrix.md` for P0-P3 priority criteria.
+- Use [`test-levels-framework.md`](./test-levels-framework.md) for level selection and anti-patterns.
+- Use [`test-priorities-matrix.md`](./test-priorities-matrix.md) for P0–P3 priority criteria.
 - Naming convention: `{epic}.{story}-{LEVEL}-{sequence}` (e.g., `2.4-E2E-01`).
 - Tie each scenario to risk mitigations or acceptance criteria.
 
@@ -270,6 +299,65 @@ history:
 - Describe blocks: `describe('Feature/Component Name', () => { context('when condition', ...) })`.
 - Data attributes: always kebab-case (`data-cy="submit-button"`, `data-testid="user-email"`).
 
-## Reference Materials
+## Contract Testing Rules (Pact)
 
-If deeper context is needed, consult Murat's testing philosophy notes, blog posts, and sample repositories in https://github.com/muratkeremozcan/test-resources-for-ai/blob/main/gitingest-full-repo-text-version.txt.
+- Use Pact for microservice integrations; keep a `pact/` directory with broker config and share contracts as first-class artifacts in the repo.
+- Keep consumer contracts beside the integration specs that exercise them; version with semantic tags so downstream teams understand breaking changes.
+- Publish contracts on every CI run and enforce provider verification before merge—failing verification blocks release and acts as a quality gate.
+- Capture fallback behaviour (timeouts, retries, circuit breakers) inside interactions so resilience expectations stay explicit.
+- Sample interaction scaffold:
+  ```javascript
+  const interaction = {
+    state: 'user with id 1 exists',
+    uponReceiving: 'a request for user 1',
+    withRequest: {
+      method: 'GET',
+      path: '/users/1',
+      headers: { Accept: 'application/json' },
+    },
+    willRespondWith: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: like({ id: 1, name: string('Jane Doe'), email: email('jane@example.com') }),
+    },
+  };
+  ```
+
+## Reference Capsules (Summaries Bundled In)
+
+- **Fixture Architecture Quick Wins**
+  - Compose Playwright or Cypress suites with additive fixtures; use `mergeTests`/`extend` to layer auth, network, and telemetry helpers without inheritance.
+  - Keep HTTP helpers framework-agnostic so the same function fuels unit tests, API smoke checks, and runtime fixtures.
+  - Normalize selectors (`data-testid`/`data-cy`) and lint new UI code for missing attributes to prevent brittle locators.
+
+- **Playwright Patterns Digest**
+  - Register network interceptions before navigation, assert on typed responses, and capture HAR files for regression.
+  - Treat timeouts and retries as configuration, not inline magic numbers; expose overrides via fixtures.
+  - Name specs and test IDs with intent (`checkout.complete-happy-path`) so CI shards and triage stay meaningful.
+
+- **Component TDD Highlights**
+  - Begin UI work with failing component specs; rebuild providers/stores per spec to avoid state bleed.
+  - Use factories to exercise prop variations and edge cases; assert through accessible queries (`getByRole`, `getByLabelText`).
+  - Document mount helpers and cleanup expectations so component tests stay deterministic.
+
+- **Contract Testing Cliff Notes**
+  - Store consumer contracts alongside integration specs; version with semantic tags and publish on every CI run.
+  - Enforce provider verification prior to merge to act as a release gate for service integrations.
+  - Capture fallback behaviour (timeouts, retries, circuit breakers) inside contracts to keep resilience expectations explicit.
+
+- **End-to-End Reference Flow**
+  - Prime end-to-end journeys through API fixtures, then assert through UI steps mirroring real user narratives.
+  - Pair burn-in scripts (`npm run test:e2e -- --repeat-each=3`) with selective retries to flush flakes before promotion.
+
+- **Philosophy & Heuristics Articles**
+  - Use long-form articles for rationale; extract checklists, scripts, and thresholds back into this brief whenever teams adopt new practices.
+
+These capsules distil Murat's sample repositories (Playwright patterns, Cypress vs Playwright comparisons, CCTDD, Pact examples, Tour of Heroes walkthrough) captured in the `test-resources-for-ai` knowledge pack so the TEA agent can operate offline while reflecting those techniques.
+
+## Reference Assets
+
+- [Test Architect README](./README.md) — high-level usage guidance and phase checklists.
+- [Test Levels Framework](./test-levels-framework.md) — choose the right level for each scenario.
+- [Test Priorities Matrix](./test-priorities-matrix.md) — assign P0–P3 priorities consistently.
+- [TEA Workflows](../workflows/testarch/README.md) — per-command instructions executed by the agent.
+- [Murat Knowledge Bundle](./test-resources-for-ai-flat.txt) — 347 KB flattened snapshot of Murat’s blogs, philosophy notes, and course material. Sections are delimited with `FILE:` headers; load relevant portions when deeper examples or rationales are required.
