@@ -27,8 +27,7 @@
     <i>If reviews are incomplete or risk data is outdated, halt and request the necessary reruns.</i>
   </halt>
   <notes>
-    <i>Reference `{project-root}/bmad/bmm/testarch/tea-knowledge.md` for heuristics that shape this guidance.</i>
-    <i>Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load only the relevant knowledge fragments under `knowledge/`.</i>
+    <i>Pull the risk-governance, probability-impact, and test-quality fragments via `{project-root}/bmad/bmm/testarch/tea-index.csv` before issuing a gate decision.</i>
     <i>FAIL whenever unresolved P0 risks/tests or security issues remain.</i>
     <i>CONCERNS when mitigations are planned but residual risk exists; WAIVED requires reason, approver, and expiry.</i>
     <i>Maintain audit trail in the history section.</i>

@@ -31,8 +31,7 @@
     <i>If git repo is absent, tests fail, or CI platform is unspecified, halt and request setup.</i>
   </halt>
   <notes>
-    <i>Reference `{project-root}/bmad/bmm/testarch/tea-knowledge.md` for heuristics that shape this guidance.</i>
-    <i>Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load only the relevant knowledge fragments under `knowledge/`.</i>
+    <i>Use `{project-root}/bmad/bmm/testarch/tea-index.csv` to load CI-focused fragments (ci-burn-in, selective-testing, visual-debugging) before finalising recommendations.</i>
     <i>Target ~20× speedups via parallel shards and caching; keep jobs under 10 minutes.</i>
     <i>Use `wait-on-timeout` ≈120s for app startup; ensure local `npm test` mirrors CI run.</i>
     <i>Mention alternative platform paths when not on GitHub.</i>

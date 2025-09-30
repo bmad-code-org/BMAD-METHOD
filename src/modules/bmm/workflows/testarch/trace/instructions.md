@@ -28,8 +28,7 @@
     <i>If story lacks implemented tests, pause and advise running `*atdd` or writing tests before tracing.</i>
   </halt>
   <notes>
-    <i>Reference `{project-root}/bmad/bmm/testarch/tea-knowledge.md` for heuristics that shape this guidance.</i>
-    <i>Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load only the relevant knowledge fragments under `knowledge/`.</i>
+    <i>Use `{project-root}/bmad/bmm/testarch/tea-index.csv` to load traceability-relevant fragments (risk-governance, selective-testing, test-quality) as needed.</i>
     <i>Coverage definitions: FULL=all scenarios validated, PARTIAL=some coverage, NONE=no validation, UNIT-ONLY=missing higher-level validation, INTEGRATION-ONLY=lacks lower-level confidence.</i>
     <i>Ensure assertions stay explicit and avoid duplicate coverage.</i>
   </notes>
