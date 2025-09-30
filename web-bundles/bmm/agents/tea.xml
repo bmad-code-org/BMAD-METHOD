@@ -70,284 +70,367 @@
   </activation>
     <cmds>
       <c cmd="*help">Show numbered cmd list</c>
-      <c cmd="*framework" exec="bmad/bmm/testarch/framework.md">Initialize production-ready test framework architecture</c>
-      <c cmd="*atdd" exec="bmad/bmm/testarch/atdd.md">Generate E2E tests first, before starting implementation</c>
-      <c cmd="*automate" exec="bmad/bmm/testarch/automate.md">Generate comprehensive test automation</c>
-      <c cmd="*test-design" exec="bmad/bmm/testarch/test-design.md">Create comprehensive test scenarios</c>
-      <c cmd="*trace" exec="bmad/bmm/testarch/trace-requirements.md">Map requirements to tests Given-When-Then BDD format</c>
-      <c cmd="*nfr-assess" exec="bmad/bmm/testarch/nfr-assess.md">Validate non-functional requirements</c>
-      <c cmd="*ci" exec="bmad/bmm/testarch/ci.md">Scaffold CI/CD quality pipeline</c>
-      <c cmd="*gate" exec="bmad/bmm/testarch/gate.md">Write/update quality gate decision assessment</c>
+      <c cmd="*framework" run-workflow="bmad/bmm/workflows/testarch/framework/workflow.yaml">Initialize production-ready test framework architecture</c>
+      <c cmd="*atdd" run-workflow="bmad/bmm/workflows/testarch/atdd/workflow.yaml">Generate E2E tests first, before starting implementation</c>
+      <c cmd="*automate" run-workflow="bmad/bmm/workflows/testarch/automate/workflow.yaml">Generate comprehensive test automation</c>
+      <c cmd="*test-design" run-workflow="bmad/bmm/workflows/testarch/test-design/workflow.yaml">Create comprehensive test scenarios</c>
+      <c cmd="*trace" run-workflow="bmad/bmm/workflows/testarch/trace/workflow.yaml">Map requirements to tests Given-When-Then BDD format</c>
+      <c cmd="*nfr-assess" run-workflow="bmad/bmm/workflows/testarch/nfr-assess/workflow.yaml">Validate non-functional requirements</c>
+      <c cmd="*ci" run-workflow="bmad/bmm/workflows/testarch/ci/workflow.yaml">Scaffold CI/CD quality pipeline</c>
+      <c cmd="*gate" run-workflow="bmad/bmm/workflows/testarch/gate/workflow.yaml">Write/update quality gate decision assessment</c>
       <c cmd="*exit">Goodbye+exit persona</c>
     </cmds>
   </agent>
 
   <!-- Dependencies -->
-  <task id="bmad/bmm/testarch/framework" name="Test Framework Setup">
+  <file id="bmad/bmm/workflows/testarch/framework/workflow.yaml" type="yaml"><![CDATA[# Test Architect workflow: framework
+  name: testarch-framework
+  description: "Initialize or refresh the test framework harness."
+  author: "BMad"
+  
+  config_source: "{project-root}/bmad/bmm/config.yaml"
+  output_folder: "{config_source}:output_folder"
+  user_name: "{config_source}:user_name"
+  communication_language: "{config_source}:communication_language"
+  date: system-generated
+  
+  installed_path: "{project-root}/bmad/bmm/workflows/testarch/framework"
+  instructions: "{installed_path}/instructions.md"
+  
+  template: false
+  
+  tags:
+    - qa
+    - setup
+    - test-architect
+  
+  execution_hints:
+    interactive: false
+    autonomous: true
+    iterative: true
+  ]]></file>
+  <file id="bmad/core/tasks/workflow.md" type="md"><![CDATA[<!-- BMAD Method v6 Workflow Execution Task (Simplified) -->
+  
+  # Workflow
+  
+  ```xml
+  <task id="bmad/core/tasks/workflow.md" name="Execute Workflow">
+    <objective>Execute given workflow by loading its configuration, following instructions, and producing output</objective>
+  
     <llm critical="true">
-      <i>Set command_key=&quot;*framework&quot;</i>
-      <i>Load bmad/bmm/testarch/tea-commands.csv and parse the row where command equals command_key</i>
-      <i>Load bmad/bmm/testarch/tea-knowledge.md to internal memory</i>
-      <i>Use the CSV columns preflight, flow_cues, deliverables, halt_rules, notes, knowledge_tags to guide behaviour</i>
-      <i>Split pipe-delimited values (|) into individual checklist items</i>
-      <i>Map knowledge_tags to matching sections in the knowledge brief and apply those heuristics throughout execution</i>
-      <i>DO NOT expand beyond the guidance unless the user supplies extra context; keep instructions lean and adaptive</i>
+      <mandate>Always read COMPLETE files - NEVER use offset/limit when reading any workflow related files</mandate>
+      <mandate>Instructions are MANDATORY - either as file path, steps or embedded list in YAML, XML or markdown</mandate>
+      <mandate>Execute ALL steps in instructions IN EXACT ORDER</mandate>
+      <mandate>Save to template output file after EVERY "template-output" tag</mandate>
+      <mandate>NEVER delegate a step - YOU are responsible for every steps execution</mandate>
     </llm>
+  
+    <WORKFLOW-RULES critical="true">
+      <rule n="1">Steps execute in exact numerical order (1, 2, 3...)</rule>
+      <rule n="2">Optional steps: Ask user unless #yolo mode active</rule>
+      <rule n="3">Template-output tags: Save content → Show user → Get approval before continuing</rule>
+      <rule n="4">Elicit tags: Execute immediately unless #yolo mode (which skips ALL elicitation)</rule>
+      <rule n="5">User must approve each major section before continuing UNLESS #yolo mode active</rule>
+    </WORKFLOW-RULES>
+  
     <flow>
-      <step n="1" title="Run Preflight Checks">
-        <action>Evaluate each item in preflight; confirm or collect missing information</action>
-        <action>If any preflight requirement fails, follow halt_rules and stop</action>
+      <step n="1" title="Load and Initialize Workflow">
+        <substep n="1a" title="Load Configuration and Resolve Variables">
+          <action>Read workflow.yaml from provided path</action>
+          <mandate>Load config_source (REQUIRED for all modules)</mandate>
+          <phase n="1">Load external config from config_source path</phase>
+          <phase n="2">Resolve all {config_source}: references with values from config</phase>
+          <phase n="3">Resolve system variables (date:system-generated) and paths ({project-root}, {installed_path})</phase>
+          <phase n="4">Ask user for input of any variables that are still unknown</phase>
+        </substep>
+  
+        <substep n="1b" title="Load Required Components">
+          <mandate>Instructions: Read COMPLETE file from path OR embedded list (REQUIRED)</mandate>
+          <check>If template path → Read COMPLETE template file</check>
+          <check>If validation path → Note path for later loading when needed</check>
+          <check>If template: false → Mark as action-workflow (else template-workflow)</check>
+          <note>Data files (csv, json) → Store paths only, load on-demand when instructions reference them</note>
+        </substep>
+  
+        <substep n="1c" title="Initialize Output" if="template-workflow">
+          <action>Resolve default_output_file path with all variables and {{date}}</action>
+          <action>Create output directory if doesn't exist</action>
+          <action>If template-workflow → Write template to output file with placeholders</action>
+          <action>If action-workflow → Skip file creation</action>
+        </substep>
       </step>
-      <step n="2" title="Execute Framework Flow">
-        <action>Follow flow_cues sequence, adapting to the project&apos;s stack</action>
-        <action>When deciding frameworks or patterns, apply relevant heuristics from tea-knowledge.md via knowledge_tags</action>
-        <action>Keep generated assets minimal—only what the CSV specifies</action>
+  
+      <step n="2" title="Process Each Instruction Step">
+        <iterate>For each step in instructions:</iterate>
+  
+        <substep n="2a" title="Handle Step Attributes">
+          <check>If optional="true" and NOT #yolo → Ask user to include</check>
+          <check>If if="condition" → Evaluate condition</check>
+          <check>If for-each="item" → Repeat step for each item</check>
+          <check>If repeat="n" → Repeat step n times</check>
+        </substep>
+  
+        <substep n="2b" title="Execute Step Content">
+          <action>Process step instructions (markdown or XML tags)</action>
+          <action>Replace {{variables}} with values (ask user if unknown)</action>
+          <execute-tags>
+            <tag><action> → Perform the action</tag>
+            <tag><check> → Evaluate condition</tag>
+            <tag><ask> → Prompt user and WAIT for response</tag>
+            <tag><invoke-workflow> → Execute another workflow with given inputs</tag>
+            <tag><invoke-task> → Execute specified task</tag>
+            <tag><goto step="x"> → Jump to specified step</tag>
+          </execute-tags>
+        </substep>
+  
+        <substep n="2c" title="Handle Special Output Tags">
+          <if tag="template-output">
+            <mandate>Generate content for this section</mandate>
+            <mandate>Save to file (Write first time, Edit subsequent)</mandate>
+            <action>Show checkpoint separator: ━━━━━━━━━━━━━━━━━━━━━━━</action>
+            <action>Display generated content</action>
+            <ask>Continue [c] or Edit [e]? WAIT for response</ask>
+          </if>
+  
+          <if tag="elicit-required">
+            <mandate critical="true">YOU MUST READ the file at {project-root}/bmad/core/tasks/adv-elicit.md using Read tool BEFORE presenting any elicitation menu</mandate>
+            <action>Load and run task {project-root}/bmad/core/tasks/adv-elicit.md with current context</action>
+            <action>Show elicitation menu 5 relevant options (list 1-5 options, Continue [c] or Reshuffle [r])</action>
+            <mandate>HALT and WAIT for user selection</mandate>
+          </if>
+        </substep>
+  
+        <substep n="2d" title="Step Completion">
+          <check>If no special tags and NOT #yolo:</check>
+          <ask>Continue to next step? (y/n/edit)</ask>
+        </substep>
       </step>
-      <step n="3" title="Finalize Deliverables">
-        <action>Create artifacts listed in deliverables</action>
-        <action>Capture a concise summary for the user explaining what was scaffolded</action>
+  
+      <step n="3" title="Completion">
+        <check>If checklist exists → Run validation</check>
+        <check>If template: false → Confirm actions completed</check>
+        <check>Else → Confirm document saved to output path</check>
+        <action>Report workflow completion</action>
       </step>
     </flow>
-    <halt>
-      <i>Follow halt_rules from the CSV row verbatim</i>
-    </halt>
-    <notes>
-      <i>Use notes column for additional guardrails while executing</i>
-    </notes>
-    <output>
-      <i>Deliverables and summary specified in the CSV row</i>
-    </output>
-  </task>
-  <task id="bmad/bmm/testarch/tdd" name="Acceptance Test Driven Development">
-    <llm critical="true">
-      <i>Set command_key=&quot;*tdd&quot;</i>
-      <i>Load bmad/bmm/testarch/tea-commands.csv and parse the row where command equals command_key</i>
-      <i>Load bmad/bmm/testarch/tea-knowledge.md into context</i>
-      <i>Use CSV columns preflight, flow_cues, deliverables, halt_rules, notes, knowledge_tags to guide execution</i>
-      <i>Split pipe-delimited fields into individual checklist items</i>
-      <i>Map knowledge_tags to sections in the knowledge brief and apply them while writing tests</i>
-      <i>Keep responses concise and focused on generating the failing acceptance tests plus the implementation checklist</i>
+  
+    <execution-modes>
+      <mode name="normal">Full user interaction at all decision points</mode>
+      <mode name="#yolo">Skip optional sections, skip all elicitation, minimize prompts</mode>
+    </execution-modes>
+  
+    <supported-tags desc="Instructions can use these tags">
+      <structural>
+        <tag>step n="X" goal="..." - Define step with number and goal</tag>
+        <tag>optional="true" - Step can be skipped</tag>
+        <tag>if="condition" - Conditional execution</tag>
+        <tag>for-each="collection" - Iterate over items</tag>
+        <tag>repeat="n" - Repeat n times</tag>
+      </structural>
+      <execution>
+        <tag>action - Required action to perform</tag>
+        <tag>check - Condition to evaluate</tag>
+        <tag>ask - Get user input (wait for response)</tag>
+        <tag>goto - Jump to another step</tag>
+        <tag>invoke-workflow - Call another workflow</tag>
+        <tag>invoke-task - Call a task</tag>
+      </execution>
+      <output>
+        <tag>template-output - Save content checkpoint</tag>
+        <tag>elicit-required - Trigger enhancement</tag>
+        <tag>critical - Cannot be skipped</tag>
+        <tag>example - Show example output</tag>
+      </output>
+    </supported-tags>
+  
+    <llm final="true">
+      <mandate>This is the complete workflow execution engine</mandate>
+      <mandate>You MUST Follow instructions exactly as written and maintain conversation context between steps</mandate>
+      <mandate>If confused, re-read this task, the workflow yaml, and any yaml indicated files</mandate>
     </llm>
-    <flow>
-      <step n="1" title="Preflight">
-        <action>Verify each preflight requirement; gather missing info from user when needed</action>
-        <action>Abort if halt_rules are triggered</action>
-      </step>
-      <step n="2" title="Execute TDD Flow">
-        <action>Walk through flow_cues sequentially, adapting to story context</action>
-        <action>Use knowledge brief heuristics to enforce Murat&apos;s patterns (one test = one concern, explicit assertions, etc.)</action>
-      </step>
-      <step n="3" title="Deliverables">
-        <action>Produce artifacts described in deliverables</action>
-        <action>Summarize failing tests and checklist items for the developer</action>
-      </step>
-    </flow>
-    <halt>
-      <i>Apply halt_rules from the CSV row exactly</i>
-    </halt>
-    <notes>
-      <i>Use the notes column for additional constraints or reminders</i>
-    </notes>
-    <output>
-      <i>Failing acceptance test files + implementation checklist summary</i>
-    </output>
   </task>
-  <task id="bmad/bmm/testarch/automate" name="Automation Expansion">
-    <llm critical="true">
-      <i>Set command_key=&quot;*automate&quot;</i>
-      <i>Load bmad/bmm/testarch/tea-commands.csv and read the row where command equals command_key</i>
-      <i>Load bmad/bmm/testarch/tea-knowledge.md for heuristics</i>
-      <i>Follow CSV columns preflight, flow_cues, deliverables, halt_rules, notes, knowledge_tags</i>
-      <i>Convert pipe-delimited values into actionable checklists</i>
-      <i>Apply Murat&apos;s opinions from the knowledge brief when filling gaps or refactoring tests</i>
-    </llm>
-    <flow>
-      <step n="1" title="Preflight">
-        <action>Confirm prerequisites; stop if halt_rules are triggered</action>
-      </step>
-      <step n="2" title="Execute Automation Flow">
-        <action>Walk through flow_cues to analyse existing coverage and add only necessary specs</action>
-        <action>Use knowledge heuristics (composable helpers, deterministic waits, network boundary) while generating code</action>
-      </step>
-      <step n="3" title="Deliverables">
-        <action>Create or update artifacts listed in deliverables</action>
-        <action>Summarize coverage deltas and remaining recommendations</action>
-      </step>
-    </flow>
-    <halt>
-      <i>Apply halt_rules from the CSV row as written</i>
-    </halt>
-    <notes>
-      <i>Reference notes column for additional guardrails</i>
-    </notes>
-    <output>
-      <i>Updated spec files and concise summary of automation changes</i>
-    </output>
-  </task>
-  <task id="bmad/bmm/testarch/test-design" name="Risk andamp; Test Design">
-    <llm critical="true">
-      <i>Set command_key=&quot;*test-design&quot;</i>
-      <i>Load bmad/bmm/testarch/tea-commands.csv and parse the matching row</i>
-      <i>Load bmad/bmm/testarch/tea-knowledge.md for risk-model and coverage heuristics</i>
-      <i>Use CSV columns preflight, flow_cues, deliverables, halt_rules, notes, knowledge_tags as the execution blueprint</i>
-      <i>Split pipe-delimited values into actionable checklists</i>
-      <i>Stay evidence-based—link risks and scenarios directly to PRD/architecture/story artifacts</i>
-    </llm>
-    <flow>
-      <step n="1" title="Preflight">
-        <action>Confirm story markdown, acceptance criteria, and architecture/PRD access.</action>
-        <action>Stop immediately if halt_rules trigger (missing inputs or unclear requirements).</action>
-      </step>
-      <step n="2" title="Assess Risks">
-        <action>Follow flow_cues to filter genuine risks, classify them (TECH/SEC/PERF/DATA/BUS/OPS), and score probability × impact.</action>
-        <action>Document mitigations with owners, timelines, and residual risk expectations.</action>
-      </step>
-      <step n="3" title="Design Coverage">
-        <action>Break acceptance criteria into atomic scenarios mapped to mitigations.</action>
-        <action>Choose test levels using test-levels-framework.md, assign priorities via test-priorities-matrix.md, and note tooling/data prerequisites.</action>
-      </step>
-      <step n="4" title="Deliverables">
-        <action>Generate the combined risk report and test design artifacts described in deliverables.</action>
-        <action>Summarize key risks, mitigations, coverage plan, and recommended execution order.</action>
-      </step>
-    </flow>
-    <halt>
-      <i>Apply halt_rules from the CSV row verbatim.</i>
-    </halt>
-    <notes>
-      <i>Use notes column for calibration reminders and coverage heuristics.</i>
-    </notes>
-    <output>
-      <i>Unified risk assessment plus coverage strategy ready for implementation.</i>
-    </output>
-  </task>
-  <task id="bmad/bmm/testarch/trace" name="Requirements Traceability">
-    <llm critical="true">
-      <i>Set command_key=&quot;*trace&quot;</i>
-      <i>Load bmad/bmm/testarch/tea-commands.csv and read the matching row</i>
-      <i>Load bmad/bmm/testarch/tea-knowledge.md emphasising assertions guidance</i>
-      <i>Use CSV columns preflight, flow_cues, deliverables, halt_rules, notes, knowledge_tags</i>
-      <i>Split pipe-delimited values into actionable lists</i>
-      <i>Focus on mapping reality: reference actual files, describe coverage gaps, recommend next steps</i>
-    </llm>
-    <flow>
-      <step n="1" title="Preflight">
-        <action>Validate prerequisites; halt per halt_rules if unmet</action>
-      </step>
-      <step n="2" title="Traceability Analysis">
-        <action>Follow flow_cues to map acceptance criteria to implemented tests</action>
-        <action>Leverage knowledge heuristics to highlight assertion quality and duplication risks</action>
-      </step>
-      <step n="3" title="Deliverables">
-        <action>Create traceability report described in deliverables</action>
-        <action>Summarize critical gaps and recommendations</action>
-      </step>
-    </flow>
-    <halt>
-      <i>Apply halt_rules from the CSV row</i>
-    </halt>
-    <notes>
-      <i>Reference notes column for additional emphasis</i>
-    </notes>
-    <output>
-      <i>Coverage matrix and narrative summary</i>
-    </output>
-  </task>
-  <task id="bmad/bmm/testarch/nfr-assess" name="NFR Assessment">
-    <llm critical="true">
-      <i>Set command_key=&quot;*nfr-assess&quot;</i>
-      <i>Load bmad/bmm/testarch/tea-commands.csv and parse the matching row</i>
-      <i>Load bmad/bmm/testarch/tea-knowledge.md focusing on NFR guidance</i>
-      <i>Use CSV columns preflight, flow_cues, deliverables, halt_rules, notes, knowledge_tags</i>
-      <i>Split pipe-delimited values into actionable lists</i>
-      <i>Demand evidence for each non-functional claim (tests, telemetry, logs)</i>
-    </llm>
-    <flow>
-      <step n="1" title="Preflight">
-        <action>Confirm prerequisites; halt per halt_rules if unmet</action>
-      </step>
-      <step n="2" title="Assess NFRs">
-        <action>Follow flow_cues to evaluate Security, Performance, Reliability, Maintainability</action>
-        <action>Use knowledge heuristics to suggest monitoring and fail-fast patterns</action>
-      </step>
-      <step n="3" title="Deliverables">
-        <action>Produce assessment document and recommendations defined in deliverables</action>
-        <action>Summarize status, gaps, and actions</action>
-      </step>
-    </flow>
-    <halt>
-      <i>Apply halt_rules from the CSV row</i>
-    </halt>
-    <notes>
-      <i>Reference notes column for negotiation framing (cost vs confidence)</i>
-    </notes>
-    <output>
-      <i>NFR assessment markdown with clear next steps</i>
-    </output>
-  </task>
-  <task id="bmad/bmm/testarch/ci" name="CI/CD Enablement">
-    <llm critical="true">
-      <i>Set command_key=&quot;*ci&quot;</i>
-      <i>Load bmad/bmm/testarch/tea-commands.csv and read the row where command equals command_key</i>
-      <i>Load bmad/bmm/testarch/tea-knowledge.md to recall CI heuristics</i>
-      <i>Follow CSV columns preflight, flow_cues, deliverables, halt_rules, notes, knowledge_tags</i>
-      <i>Split pipe-delimited values into actionable lists</i>
-      <i>Keep output focused on workflow YAML, scripts, and guidance explicitly requested in deliverables</i>
-    </llm>
-    <flow>
-      <step n="1" title="Preflight">
-        <action>Confirm prerequisites and required permissions</action>
-        <action>Stop if halt_rules trigger</action>
-      </step>
-      <step n="2" title="Execute CI Flow">
-        <action>Apply flow_cues to design the pipeline stages</action>
-        <action>Leverage knowledge brief guidance (cost vs confidence, sharding, artifacts) when making trade-offs</action>
-      </step>
-      <step n="3" title="Deliverables">
-        <action>Create artifacts listed in deliverables (workflow files, scripts, documentation)</action>
-        <action>Summarize the pipeline, selective testing strategy, and required secrets</action>
-      </step>
-    </flow>
-    <halt>
-      <i>Use halt_rules from the CSV row verbatim</i>
-    </halt>
-    <notes>
-      <i>Reference notes column for optimization reminders</i>
-    </notes>
-    <output>
-      <i>CI workflow + concise explanation ready for team adoption</i>
-    </output>
-  </task>
-  <task id="bmad/bmm/testarch/tea-gate" name="Quality Gate">
-    <llm critical="true">
-      <i>Set command_key=&quot;*gate&quot;</i>
-      <i>Load bmad/bmm/testarch/tea-commands.csv and read the matching row</i>
-      <i>Load bmad/bmm/testarch/tea-knowledge.md to reinforce risk-model heuristics</i>
-      <i>Use CSV columns preflight, flow_cues, deliverables, halt_rules, notes, knowledge_tags</i>
-      <i>Split pipe-delimited values into actionable items</i>
-      <i>Apply deterministic rules for PASS/CONCERNS/FAIL/WAIVED; capture rationale and approvals</i>
-    </llm>
-    <flow>
-      <step n="1" title="Preflight">
-        <action>Gather latest assessments and confirm prerequisites; halt per halt_rules if missing</action>
-      </step>
-      <step n="2" title="Set Gate Decision">
-        <action>Follow flow_cues to determine status, residual risk, follow-ups</action>
-        <action>Use knowledge heuristics to balance cost vs confidence when negotiating waivers</action>
-      </step>
-      <step n="3" title="Deliverables">
-        <action>Update gate YAML specified in deliverables</action>
-        <action>Summarize decision, rationale, owners, and deadlines</action>
-      </step>
-    </flow>
-    <halt>
-      <i>Apply halt_rules from the CSV row</i>
-    </halt>
-    <notes>
-      <i>Use notes column for quality bar reminders</i>
-    </notes>
-    <output>
-      <i>Updated gate file with documented decision</i>
-    </output>
-  </task>
+  ```
+  ]]></file>
+  <file id="bmad/bmm/workflows/testarch/atdd/workflow.yaml" type="yaml"><![CDATA[# Test Architect workflow: atdd
+  name: testarch-atdd
+  description: "Generate failing acceptance tests before implementation."
+  author: "BMad"
+  
+  config_source: "{project-root}/bmad/bmm/config.yaml"
+  output_folder: "{config_source}:output_folder"
+  user_name: "{config_source}:user_name"
+  communication_language: "{config_source}:communication_language"
+  date: system-generated
+  
+  installed_path: "{project-root}/bmad/bmm/workflows/testarch/atdd"
+  instructions: "{installed_path}/instructions.md"
+  
+  template: false
+  
+  tags:
+    - qa
+    - atdd
+    - test-architect
+  
+  execution_hints:
+    interactive: false
+    autonomous: true
+    iterative: true
+  ]]></file>
+  <file id="bmad/bmm/workflows/testarch/automate/workflow.yaml" type="yaml"><![CDATA[# Test Architect workflow: automate
+  name: testarch-automate
+  description: "Expand automation coverage after implementation."
+  author: "BMad"
+  
+  config_source: "{project-root}/bmad/bmm/config.yaml"
+  output_folder: "{config_source}:output_folder"
+  user_name: "{config_source}:user_name"
+  communication_language: "{config_source}:communication_language"
+  date: system-generated
+  
+  installed_path: "{project-root}/bmad/bmm/workflows/testarch/automate"
+  instructions: "{installed_path}/instructions.md"
+  
+  template: false
+  
+  tags:
+    - qa
+    - automation
+    - test-architect
+  
+  execution_hints:
+    interactive: false
+    autonomous: true
+    iterative: true
+  ]]></file>
+  <file id="bmad/bmm/workflows/testarch/test-design/workflow.yaml" type="yaml"><![CDATA[# Test Architect workflow: test-design
+  name: testarch-plan
+  description: "Plan risk mitigation and test coverage before development."
+  author: "BMad"
+  
+  config_source: "{project-root}/bmad/bmm/config.yaml"
+  output_folder: "{config_source}:output_folder"
+  user_name: "{config_source}:user_name"
+  communication_language: "{config_source}:communication_language"
+  date: system-generated
+  
+  installed_path: "{project-root}/bmad/bmm/workflows/testarch/test-design"
+  instructions: "{installed_path}/instructions.md"
+  
+  template: false
+  
+  tags:
+    - qa
+    - planning
+    - test-architect
+  
+  execution_hints:
+    interactive: false
+    autonomous: true
+    iterative: true
+  ]]></file>
+  <file id="bmad/bmm/workflows/testarch/trace/workflow.yaml" type="yaml"><![CDATA[# Test Architect workflow: trace
+  name: testarch-trace
+  description: "Trace requirements to implemented automated tests."
+  author: "BMad"
+  
+  config_source: "{project-root}/bmad/bmm/config.yaml"
+  output_folder: "{config_source}:output_folder"
+  user_name: "{config_source}:user_name"
+  communication_language: "{config_source}:communication_language"
+  date: system-generated
+  
+  installed_path: "{project-root}/bmad/bmm/workflows/testarch/trace"
+  instructions: "{installed_path}/instructions.md"
+  
+  template: false
+  
+  tags:
+    - qa
+    - traceability
+    - test-architect
+  
+  execution_hints:
+    interactive: false
+    autonomous: true
+    iterative: true
+  ]]></file>
+  <file id="bmad/bmm/workflows/testarch/nfr-assess/workflow.yaml" type="yaml"><![CDATA[# Test Architect workflow: nfr-assess
+  name: testarch-nfr
+  description: "Assess non-functional requirements before release."
+  author: "BMad"
+  
+  config_source: "{project-root}/bmad/bmm/config.yaml"
+  output_folder: "{config_source}:output_folder"
+  user_name: "{config_source}:user_name"
+  communication_language: "{config_source}:communication_language"
+  date: system-generated
+  
+  installed_path: "{project-root}/bmad/bmm/workflows/testarch/nfr-assess"
+  instructions: "{installed_path}/instructions.md"
+  
+  template: false
+  
+  tags:
+    - qa
+    - nfr
+    - test-architect
+  
+  execution_hints:
+    interactive: false
+    autonomous: true
+    iterative: true
+  ]]></file>
+  <file id="bmad/bmm/workflows/testarch/ci/workflow.yaml" type="yaml"><![CDATA[# Test Architect workflow: ci
+  name: testarch-ci
+  description: "Scaffold or update the CI/CD quality pipeline."
+  author: "BMad"
+  
+  config_source: "{project-root}/bmad/bmm/config.yaml"
+  output_folder: "{config_source}:output_folder"
+  user_name: "{config_source}:user_name"
+  communication_language: "{config_source}:communication_language"
+  date: system-generated
+  
+  installed_path: "{project-root}/bmad/bmm/workflows/testarch/ci"
+  instructions: "{installed_path}/instructions.md"
+  
+  template: false
+  
+  tags:
+    - qa
+    - ci-cd
+    - test-architect
+  
+  execution_hints:
+    interactive: false
+    autonomous: true
+    iterative: true
+  ]]></file>
+  <file id="bmad/bmm/workflows/testarch/gate/workflow.yaml" type="yaml"><![CDATA[# Test Architect workflow: gate
+  name: testarch-gate
+  description: "Record the quality gate decision for the story."
+  author: "BMad"
+  
+  config_source: "{project-root}/bmad/bmm/config.yaml"
+  output_folder: "{config_source}:output_folder"
+  user_name: "{config_source}:user_name"
+  communication_language: "{config_source}:communication_language"
+  date: system-generated
+  
+  installed_path: "{project-root}/bmad/bmm/workflows/testarch/gate"
+  instructions: "{installed_path}/instructions.md"
+  
+  template: false
+  
+  tags:
+    - qa
+    - gate
+    - test-architect
+  
+  execution_hints:
+    interactive: false
+    autonomous: true
+    iterative: true
+  ]]></file>
 </agent-bundle>
