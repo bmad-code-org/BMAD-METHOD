@@ -1,0 +1,211 @@
+# <!-- Powered by BMAD™ Core -->
+workflow:
+  id: fullstack-greenfield
+  name: Full-Stack JavaScript - Greenfield Project
+  description: Complete workflow for building a new full-stack JavaScript/TypeScript application from concept to deployment. Guides teams through requirements gathering, architecture design, technology selection, and story-driven development.
+  type: greenfield
+  project_types:
+    - web-application
+    - saas-platform
+    - api-service
+    - mobile-backend
+    - enterprise-app
+    - startup-mvp
+
+  full_sequence:
+    - agent: analyst
+      creates: requirements-analysis.md
+      optional_steps:
+        - stakeholder_interviews
+        - competitive_analysis
+        - user_research
+      notes: "Gather and document all project requirements, business goals, and user needs. SAVE OUTPUT: Copy to docs/requirements/ folder."
+
+    - agent: js-solution-architect
+      creates: technology-stack-decision.md
+      requires: requirements-analysis.md
+      optional_steps:
+        - technology_research
+        - scalability_analysis
+        - cost_estimation
+      notes: "Select appropriate technology stack based on requirements. Choose frontend framework, backend framework, database, hosting, and tools. SAVE OUTPUT: Copy to docs/architecture/ folder."
+
+    - agent: js-solution-architect
+      creates: system-architecture.md
+      requires:
+        - requirements-analysis.md
+        - technology-stack-decision.md
+      optional_steps:
+        - architecture_patterns_review
+        - security_architecture
+        - performance_planning
+      notes: "Design complete system architecture including frontend, backend, database schema, API contracts, and deployment strategy. SAVE OUTPUT: Copy to docs/architecture/ folder."
+
+    - agent: js-solution-architect
+      validates: architecture_completeness
+      requires: system-architecture.md
+      uses: architecture-review-checklist
+      notes: Validate architecture document for completeness, feasibility, and alignment with requirements. May require updates.
+
+    - agent: various
+      updates: architecture_documents
+      condition: validation_issues_found
+      notes: If validation finds issues, return to js-solution-architect to fix and re-export updated documents.
+
+  project_setup_guidance:
+    action: initialize_project_structure
+    notes: "Set up project following architecture document: Initialize monorepo (if needed), configure TypeScript, set up frontend (Next.js/Vite), backend (Express/Fastify/NestJS), and database (Prisma). Configure linting, formatting, and testing."
+
+  workflow_end:
+    action: move_to_story_development
+    notes: Architecture complete and validated. Set up development environment. Use Scrum Master to create implementation epics and stories from architecture document.
+
+  mvp_sequence:
+    - step: assess_mvp_scope
+      action: identify_core_features
+      notes: Define minimal feature set for MVP. Focus on core value proposition and essential functionality.
+
+    - agent: analyst
+      creates: mvp-requirements.md
+      optional_steps:
+        - feature_prioritization
+        - timeline_planning
+      notes: "Document MVP scope with prioritized features. SAVE OUTPUT: Copy to docs/ folder."
+
+    - agent: js-solution-architect
+      creates: mvp-architecture.md
+      uses: create-doc mvp-architecture OR jump to stories
+      requires: mvp-requirements.md
+      notes: Create streamlined architecture focused on MVP features. Can skip detailed architecture for very simple MVPs and jump directly to stories.
+
+  mvp_workflow_end:
+    action: rapid_implementation
+    notes: MVP scope defined. Begin implementation focusing on core features. Use feature-development workflow for agile story creation and execution.
+
+  flow_diagram: |
+    ```mermaid
+    graph TD
+        A[Start: New Full-Stack Project] --> B{Project Scope?}
+        B -->|Full Production App| C[analyst: requirements-analysis.md]
+        B -->|MVP/Rapid Prototype| D[analyst: mvp-requirements.md]
+
+        C --> E[js-solution-architect: technology-stack-decision.md]
+        E --> F[js-solution-architect: system-architecture.md]
+        F --> G[js-solution-architect: validate architecture]
+        G --> H{Validation issues?}
+        H -->|Yes| I[Return to architect for fixes]
+        H -->|No| J[Initialize project structure]
+        I --> G
+        J --> K[Move to Story Development]
+
+        D --> L[js-solution-architect: mvp-architecture.md]
+        L --> M[Move to Rapid Implementation]
+
+        C -.-> C1[Optional: stakeholder interviews]
+        C -.-> C2[Optional: competitive analysis]
+        E -.-> E1[Optional: technology research]
+        F -.-> F1[Optional: security architecture]
+        D -.-> D1[Optional: feature prioritization]
+
+        style K fill:#90EE90
+        style M fill:#90EE90
+        style C fill:#FFE4B5
+        style E fill:#FFE4B5
+        style F fill:#FFE4B5
+        style D fill:#FFB6C1
+        style L fill:#FFB6C1
+    ```
+
+  decision_guidance:
+    use_full_sequence_when:
+      - Building production applications or SaaS platforms
+      - Multiple team members or contractors
+      - Complex requirements with multiple integrations
+      - Long-term development timeline (3+ months)
+      - Enterprise or business-critical applications
+      - Need comprehensive documentation for team coordination
+      - Regulatory compliance requirements
+      - Scalability is critical from day one
+
+    use_mvp_sequence_when:
+      - Startup MVP or proof-of-concept
+      - Solo developer or very small team (2-3 people)
+      - Simple CRUD applications
+      - Quick validation of product ideas
+      - Limited budget or tight timeline
+      - Learning projects or portfolio pieces
+      - Internal tools with simple requirements
+
+  handoff_prompts:
+    analyst_to_architect: Requirements analysis complete. Save as docs/requirements/requirements-analysis.md, then create technology stack decision document.
+    stack_to_architecture: Technology stack selected. Save as docs/architecture/technology-stack-decision.md, then create comprehensive system architecture.
+    architecture_review: Architecture complete. Save as docs/architecture/system-architecture.md. Please validate using architecture-review-checklist.
+    validation_issues: Architecture validation found issues with [specific areas]. Please return to js-solution-architect to address and re-save.
+    full_complete: All architecture artifacts validated and saved. Initialize project structure per architecture document and move to story development.
+    mvp_to_architecture: MVP requirements defined. Save as docs/mvp-requirements.md, then create MVP architecture or jump to implementation stories.
+    mvp_complete: MVP scope defined. Initialize lean project structure and begin rapid feature implementation.
+
+  story_development_guidance:
+    epic_breakdown:
+      - Frontend Core - React/Next.js setup, routing, base components, state management
+      - Backend Core - API setup, database schema, authentication, core endpoints
+      - User Authentication - Login, registration, password reset, session management
+      - Core Features - Main application features from requirements
+      - Integration Layer - External APIs, third-party services, webhooks
+      - UI/UX Polish - Responsive design, loading states, error handling, animations
+      - Testing - Unit tests, integration tests, E2E tests
+      - DevOps - CI/CD pipeline, deployment, monitoring, logging
+
+    story_creation_process:
+      - Use Scrum Master to create detailed implementation stories
+      - Each story references specific architecture sections
+      - Include technical specs (TypeScript interfaces, API contracts)
+      - Specify frontend AND backend changes for full-stack features
+      - Apply story-dod-checklist for quality validation
+      - Ensure stories are immediately actionable by developers
+
+  development_best_practices:
+    technical_standards:
+      - TypeScript strict mode for all code
+      - Component-based architecture
+      - RESTful or GraphQL API design
+      - Comprehensive error handling
+      - Input validation on frontend and backend
+      - Authentication and authorization on all protected routes
+
+    testing_strategy:
+      - Unit tests for business logic (80%+ coverage)
+      - Integration tests for API endpoints
+      - E2E tests for critical user flows
+      - Component tests for React components
+
+    performance_targets:
+      - Lighthouse score > 90 for frontend
+      - API response time < 200ms (p95)
+      - Time to Interactive < 3 seconds
+      - Bundle size optimization
+
+    security_requirements:
+      - OWASP Top 10 mitigations
+      - Input sanitization and validation
+      - Secure authentication (JWT, OAuth)
+      - HTTPS only in production
+      - Secrets management (environment variables, vaults)
+      - Rate limiting on API endpoints
+
+  success_criteria:
+    architecture_phase_complete:
+      - All architecture documents created and validated
+      - Technology stack selected and justified
+      - Database schema designed
+      - API contracts defined
+      - Security and performance requirements established
+      - Deployment strategy planned
+
+    implementation_readiness:
+      - Development environment configured
+      - Code repository initialized
+      - CI/CD pipeline skeleton in place
+      - Team has access to all tools and services
+      - First sprint of stories ready
+      - Definition of Done established

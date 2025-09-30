@@ -1,0 +1,15 @@
+# <!-- Powered by BMAD™ Core -->
+bundle:
+  name: Backend API Team
+  icon: 🔧
+  description: Specialized team for Node.js backend and API development with TypeScript.
+agents:
+  - analyst
+  - bmad-orchestrator
+  - js-solution-architect
+  - node-backend-developer
+  - api-developer
+  - typescript-expert
+workflows:
+  - backend-api-development.yaml
+  - feature-development.yaml

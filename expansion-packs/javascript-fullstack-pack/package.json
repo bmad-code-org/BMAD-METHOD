@@ -48,6 +48,12 @@
         "file": "agents/api-developer.md",
         "shortName": "api-developer",
         "description": "REST, GraphQL, and tRPC API design and implementation"
+      },
+      {
+        "name": "TypeScript Expert",
+        "file": "agents/typescript-expert.md",
+        "shortName": "typescript-expert",
+        "description": "Advanced TypeScript patterns, type safety, and migration expertise"
       }
     ],
     "templates": {

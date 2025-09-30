@@ -1,0 +1,66 @@
+# <!-- Powered by BMAD™ Core -->
+workflow:
+  id: mvp-rapid-prototype
+  name: MVP & Rapid Prototype Workflow
+  description: Fast-track workflow for building MVPs and prototypes. Focus on speed and core functionality over comprehensive documentation.
+  type: rapid-development
+  project_types:
+    - mvp
+    - proof-of-concept
+    - hackathon
+    - demo
+    - investor-pitch
+
+  sequence:
+    - agent: analyst
+      creates: mvp-brief.md
+      notes: "Quick brief: core problem, target users, essential features (3-5 max), and success criteria. Keep it to 1-2 pages. SAVE to docs/"
+
+    - agent: js-solution-architect
+      creates: tech-stack-choice.md
+      requires: mvp-brief.md
+      notes: "Choose fastest stack to implement. Recommend: Next.js + Prisma + PostgreSQL/Supabase OR T3 Stack. SAVE to docs/"
+
+    - agent: scrum-master
+      creates: mvp-stories.md
+      requires:
+        - mvp-brief.md
+        - tech-stack-choice.md
+      notes: Create 5-10 high-priority stories covering core features only. Each story should be completable in < 1 day.
+
+  workflow_end:
+    action: rapid_implementation
+    notes: Begin implementation immediately. Deploy early and often. Use hosted services (Vercel, Supabase, Planetscale) to move fast.
+
+  time_boxing:
+    mvp_planning: 2-4 hours
+    core_implementation: 3-7 days
+    polish_and_demo: 1-2 days
+    total_timeline: 1-2 weeks maximum
+
+  shortcuts_for_speed:
+    - Use Next.js for full-stack (API routes + frontend)
+    - Use Supabase for database + auth
+    - Use shadcn/ui for ready-made components
+    - Use Vercel for zero-config deployment
+    - Skip comprehensive testing (manual testing only)
+    - Minimal documentation (README + inline comments)
+    - Use third-party services instead of building (Stripe, SendGrid, etc)
+
+  what_to_skip:
+    - Comprehensive testing suite
+    - Complex CI/CD pipelines
+    - Performance optimization
+    - Extensive error handling
+    - Multi-environment setup
+    - Detailed documentation
+    - Code reviews (if solo)
+
+  what_not_to_skip:
+    - TypeScript (saves time debugging)
+    - Basic authentication
+    - Input validation
+    - Error boundaries in React
+    - Environment variables for secrets
+    - Git version control
+    - Basic README with setup instructions

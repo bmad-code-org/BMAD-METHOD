@@ -1,0 +1,17 @@
+# <!-- Powered by BMAD™ Core -->
+bundle:
+  name: JavaScript Full-Stack Team
+  icon: 🚀
+  description: Complete team for full-stack JavaScript/TypeScript development with React, Node.js, and modern tooling.
+agents:
+  - analyst
+  - bmad-orchestrator
+  - js-solution-architect
+  - react-developer
+  - node-backend-developer
+  - api-developer
+  - typescript-expert
+workflows:
+  - fullstack-greenfield.yaml
+  - feature-development.yaml
+  - mvp-rapid-prototype.yaml

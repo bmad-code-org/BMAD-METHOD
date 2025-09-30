@@ -1,0 +1,48 @@
+# <!-- Powered by BMAD™ Core -->
+workflow:
+  id: backend-api-development
+  name: Backend API Development
+  description: Specialized workflow for building Node.js backend services and APIs with Express, Fastify, or NestJS.
+  type: backend-focused
+  project_types:
+    - rest-api
+    - graphql-api
+    - microservice
+    - api-gateway
+    - backend-for-frontend
+
+  sequence:
+    - agent: analyst
+      creates: api-requirements.md
+      notes: "Document API requirements, endpoints, data models, integrations, and non-functional requirements. SAVE to docs/requirements/"
+
+    - agent: api-developer
+      creates: api-specification.md
+      requires: api-requirements.md
+      notes: "Design API contracts: endpoints, request/response schemas, authentication, rate limiting, and versioning strategy. SAVE to docs/api/"
+
+    - agent: js-solution-architect
+      creates: backend-architecture.md
+      requires: api-specification.md
+      notes: "Design backend architecture: framework choice, database design, caching strategy, background jobs, and scalability approach. SAVE to docs/architecture/"
+
+    - agent: node-backend-developer
+      validates: implementation_feasibility
+      uses: backend-checklist
+      notes: Review architecture for Node.js best practices and identify potential issues.
+
+    - agent: typescript-expert
+      creates: backend-types.md
+      requires: backend-architecture.md
+      notes: Define TypeScript types for DTOs, entities, service interfaces, and middleware.
+
+  workflow_end:
+    action: begin_api_implementation
+    notes: Architecture and API spec validated. Initialize Node.js project and begin endpoint development.
+
+  recommended_stack:
+    framework: Express, Fastify, or NestJS
+    database: PostgreSQL with Prisma ORM or MongoDB with Mongoose
+    authentication: JWT with refresh tokens or OAuth 2.0
+    caching: Redis for sessions and data caching
+    testing: Jest + Supertest for API tests

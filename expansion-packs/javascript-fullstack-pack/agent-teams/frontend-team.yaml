@@ -1,0 +1,14 @@
+# <!-- Powered by BMAD™ Core -->
+bundle:
+  name: Frontend Development Team
+  icon: ⚛️
+  description: Specialized team for React/Next.js frontend development with TypeScript.
+agents:
+  - analyst
+  - bmad-orchestrator
+  - js-solution-architect
+  - react-developer
+  - typescript-expert
+workflows:
+  - frontend-app-development.yaml
+  - feature-development.yaml

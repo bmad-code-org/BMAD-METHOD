@@ -14,26 +14,18 @@ This expansion pack provides a complete team of AI agents specialized in JavaScr
 - **Testing**: Jest, Vitest, Cypress, Playwright
 - **Deployment**: Docker, Kubernetes, Serverless
 
-## Agents Included
+## Agents Included (5 Total)
 
 ### Planning & Architecture
-- **JS Solution Architect**: Designs full-stack JavaScript architectures
-- **Frontend Architect**: Specializes in frontend architecture and state management
-- **Backend Architect**: Focuses on API design, microservices, and scalability
+- **JS Solution Architect**: Designs full-stack JavaScript architectures, technology selection, and system design
 
 ### Development Agents
-- **React Developer**: Expert in React, Next.js, and modern React patterns
-- **Vue Developer**: Specializes in Vue 3, Nuxt, and composition API
-- **Node Backend Developer**: Backend development with Express, Fastify, NestJS
-- **API Developer**: REST, GraphQL, and modern API patterns
-- **Full-Stack Developer**: End-to-end JavaScript development
+- **React Developer**: Expert in React 18+, Next.js 14, hooks, and modern state management
+- **Node Backend Developer**: Backend development with Express, Fastify, NestJS, and database integration
+- **API Developer**: REST, GraphQL, tRPC API design with versioning and documentation
 
 ### Specialized Roles
-- **TypeScript Expert**: Type safety, advanced types, and migration
-- **Performance Engineer**: Optimization, profiling, and monitoring
-- **DevOps Engineer**: CI/CD, containerization, and deployment
-- **Security Specialist**: Security best practices and vulnerability assessment
-- **Testing Engineer**: Test strategy, automation, and quality assurance
+- **TypeScript Expert**: Type safety, advanced type patterns, migration strategies, and strict mode configuration
 
 ## Installation
 
@@ -123,32 +115,50 @@ npm install bmad-expansion-javascript-fullstack
 - Migration from JavaScript
 - Type safety for APIs
 
-## Templates Included
+## Structure
 
-### PRD Templates
-- `js-fullstack-prd.md`: Full-stack project requirements
-- `frontend-app-prd.md`: Frontend application requirements
-- `backend-api-prd.md`: Backend API requirements
-- `microservices-prd.md`: Microservices architecture requirements
+### Agent Teams
+- `fullstack-team.yaml`: Complete full-stack development team
+- `frontend-team.yaml`: Frontend-focused development team
+- `backend-team.yaml`: Backend and API development team
 
-### Architecture Templates
-- `fullstack-architecture.md`: Complete stack architecture
-- `frontend-architecture.md`: Frontend-specific architecture
-- `backend-architecture.md`: Backend system design
-- `api-architecture.md`: API design and documentation
+### Workflows (6 Total)
+- `fullstack-greenfield.yaml`: New full-stack project from scratch
+- `frontend-app-development.yaml`: Frontend application workflow
+- `backend-api-development.yaml`: Backend API development workflow
+- `feature-development.yaml`: Adding features to existing apps
+- `mvp-rapid-prototype.yaml`: Fast MVP and prototype development
+- `migration-to-typescript.yaml`: JavaScript to TypeScript migration
 
-### Story Templates
-- `frontend-feature-story.md`: Frontend feature development
-- `backend-endpoint-story.md`: Backend endpoint implementation
-- `api-integration-story.md`: API integration work
-- `performance-optimization-story.md`: Performance improvements
-- `security-enhancement-story.md`: Security implementations
+### Checklists (8 Total)
+- `architecture-review-checklist.md`: Architecture validation
+- `api-design-checklist.md`: API design quality
+- `frontend-checklist.md`: React/Next.js quality
+- `backend-checklist.md`: Node.js backend quality
+- `security-checklist.md`: Security validation
+- `performance-checklist.md`: Performance optimization
+- `deployment-readiness-checklist.md`: Production deployment
+- `story-dod-checklist.md`: Story definition of done
 
-### Workflow Plans
-- `fullstack-mvp-workflow.md`: MVP development workflow
-- `feature-development-workflow.md`: Adding new features
-- `refactoring-workflow.md`: Code refactoring process
-- `deployment-workflow.md`: Deployment and release process
+### Tasks (6 Total)
+- `create-development-story.md`: Story creation guide
+- `create-architecture-doc.md`: Architecture documentation
+- `create-api-spec.md`: API specification creation
+- `setup-project.md`: Project initialization
+- `code-review.md`: Code review process
+- `performance-optimization.md`: Performance tuning
+
+### Data/Reference (6 Total)
+- `development-guidelines.md`: Coding standards and conventions
+- `architecture-patterns.md`: Common architecture patterns
+- `best-practices.md`: Full-stack best practices
+- `technology-stack-guide.md`: Stack selection guide
+- `security-guidelines.md`: Security implementation
+- `deployment-strategies.md`: Deployment patterns
+
+### Templates (2 Total)
+- `fullstack-javascript-prd.md`: Comprehensive PRD template
+- `javascript-development-story.md`: Detailed story template
 
 ## Use Cases
 
@@ -212,14 +222,9 @@ expansion_packs:
     agents:
       - js-solution-architect
       - react-developer
-      - vue-developer
       - node-backend-developer
       - api-developer
       - typescript-expert
-      - performance-engineer
-      - devops-engineer
-      - security-specialist
-      - testing-engineer
 ```
 
 ## Contributing
