@@ -5,6 +5,8 @@ bundle:
   description: Complete team for full-stack JavaScript/TypeScript development with React, Node.js, and modern tooling.
 agents:
   - analyst
+  - pm
+  - scrum-master
   - bmad-orchestrator
   - js-solution-architect
   - react-developer

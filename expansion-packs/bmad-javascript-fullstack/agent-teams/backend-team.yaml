@@ -5,6 +5,8 @@ bundle:
   description: Specialized team for Node.js backend and API development with TypeScript.
 agents:
   - analyst
+  - pm
+  - scrum-master
   - bmad-orchestrator
   - js-solution-architect
   - node-backend-developer

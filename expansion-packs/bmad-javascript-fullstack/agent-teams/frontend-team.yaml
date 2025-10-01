@@ -5,6 +5,8 @@ bundle:
   description: Specialized team for React/Next.js frontend development with TypeScript.
 agents:
   - analyst
+  - pm
+  - scrum-master
   - bmad-orchestrator
   - js-solution-architect
   - react-developer
