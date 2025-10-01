@@ -3,7 +3,7 @@
 ## 📁 Complete File Listing
 
 ```
-javascript-fullstack-pack/
+bmad-javascript-fullstack/
 │
 ├── 📄 README.md (Main Documentation - 450 lines)
 ├── 🚀 QUICKSTART.md (Quick Start Guide - 350 lines)

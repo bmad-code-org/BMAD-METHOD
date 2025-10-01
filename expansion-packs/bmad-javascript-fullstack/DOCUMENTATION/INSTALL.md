@@ -22,7 +22,7 @@ The expansion pack is ready to use as-is! Simply:
 
 1. **Copy the entire folder** to your BMAD installation:
    ```bash
-   cp -r javascript-fullstack-pack /path/to/your/bmad-core/expansion-packs/
+   cp -r bmad-javascript-fullstack /path/to/your/bmad-core/expansion-packs/
    ```
 
 2. **Start using the agents** in your BMAD UI:
@@ -49,7 +49,7 @@ To publish this as an NPM package:
 
 2. **Publish to NPM**:
    ```bash
-   cd javascript-fullstack-pack
+   cd bmad-javascript-fullstack
    npm publish
    ```
 
@@ -66,7 +66,7 @@ To share via GitHub:
 1. **Create a new repository**
 2. **Push the expansion pack**:
    ```bash
-   cd javascript-fullstack-pack
+   cd bmad-javascript-fullstack
    git init
    git add .
    git commit -m "Initial commit: JavaScript Full-Stack Expansion Pack"
@@ -77,7 +77,7 @@ To share via GitHub:
 3. **Users clone and install**:
    ```bash
    git clone <your-repo-url>
-   cp -r javascript-fullstack-pack/* /path/to/bmad-core/expansion-packs/
+   cp -r bmad-javascript-fullstack/* /path/to/bmad-core/expansion-packs/
    ```
 
 ---

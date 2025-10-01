@@ -1,10 +1,10 @@
 # <!-- Powered by BMAD™ Core -->
 name: bmad-javascript-fullstack
-version: 1.0.0
+version: 1.0.1
 short-title: JavaScript Full-Stack Dev Pack
 description: >-
   Comprehensive expansion pack for modern JavaScript/TypeScript full-stack
   development. Specialized agents for React, Node.js, API design, and
   TypeScript expertise. Complete workflows from architecture to deployment.
 author: BMAD Community
-slashPrefix: bmad-js
+slashPrefix: bmadJSFullStack

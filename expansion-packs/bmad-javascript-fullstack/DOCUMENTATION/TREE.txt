@@ -1,4 +1,4 @@
-javascript-fullstack-pack/
+bmad-javascript-fullstack/
 │
 ├── 📄 README.md (242 lines)
 │   └─ Main documentation and overview

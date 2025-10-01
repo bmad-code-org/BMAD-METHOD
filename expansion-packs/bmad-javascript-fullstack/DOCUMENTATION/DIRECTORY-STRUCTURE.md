@@ -3,7 +3,7 @@
 ## Complete File Tree
 
 ```
-javascript-fullstack-pack/
+bmad-javascript-fullstack/
 │
 ├── 📄 README.md                                    # Main documentation (242 lines)
 ├── 🚀 QUICKSTART.md                                # Quick start tutorial (385 lines)
@@ -274,7 +274,7 @@ package.json    → NPM package configuration
 ## 🌲 Alternative Tree View (Compact)
 
 ```
-javascript-fullstack-pack/
+bmad-javascript-fullstack/
 ├── docs (6)
 │   ├── README.md
 │   ├── QUICKSTART.md
@@ -369,7 +369,7 @@ Template files
 ## 📊 Total Package Contents
 
 ```
-📦 javascript-fullstack-pack (168 KB)
+📦 bmad-javascript-fullstack (168 KB)
    ├── 📚 Documentation       : 6 files  (2,158 lines, 56 KB)
    ├── 🤖 AI Agents          : 5 files  (3,787 lines, 96 KB)
    ├── 📋 Templates          : 2 files  (976 lines,  14 KB)

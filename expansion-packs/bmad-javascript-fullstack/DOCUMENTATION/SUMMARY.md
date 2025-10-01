@@ -180,7 +180,7 @@ Step-by-step guide to get started quickly:
 ## 📊 File Structure
 
 ```
-javascript-fullstack-pack/
+bmad-javascript-fullstack/
 ├── README.md                                    # Main documentation
 ├── QUICKSTART.md                                # Quick start guide
 ├── package.json                                 # Package configuration
@@ -427,7 +427,7 @@ npx bmad-method install
 ### Option 2: Manual
 ```bash
 git clone [repository]
-cp -r javascript-fullstack-pack/* bmad-core/expansion-packs/
+cp -r bmad-javascript-fullstack/* bmad-core/expansion-packs/
 ```
 
 ## 🤝 Integration with Core BMAD

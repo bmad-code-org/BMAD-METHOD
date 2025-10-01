@@ -22,7 +22,7 @@ npx bmad-method install
 git clone https://github.com/yourusername/bmad-expansion-javascript-fullstack
 
 # Copy to your BMAD installation
-cp -r javascript-fullstack-pack/* /path/to/your/project/bmad-core/expansion-packs/javascript-fullstack/
+cp -r bmad-javascript-fullstack/* /path/to/your/project/bmad-core/expansion-packs/javascript-fullstack/
 ```
 
 ## Your First Project
