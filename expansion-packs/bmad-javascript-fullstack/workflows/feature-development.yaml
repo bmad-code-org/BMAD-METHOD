@@ -26,7 +26,7 @@ workflow:
         - technical_impact_review
       notes: "Create detailed technical spec with file changes, new components/endpoints, types, tests, and implementation steps. SAVE to docs/features/[feature-name]/"
 
-    - agent: scrum-master
+    - agent: sm
       creates: feature-stories.md
       requires: technical-specification.md
       uses: create-development-story task

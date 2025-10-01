@@ -21,7 +21,7 @@ workflow:
       requires: mvp-brief.md
       notes: "Choose fastest stack to implement. Recommend: Next.js + Prisma + PostgreSQL/Supabase OR T3 Stack. SAVE to docs/"
 
-    - agent: scrum-master
+    - agent: sm
       creates: mvp-stories.md
       requires:
         - mvp-brief.md

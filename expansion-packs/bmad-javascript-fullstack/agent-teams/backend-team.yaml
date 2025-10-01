@@ -6,7 +6,7 @@ bundle:
 agents:
   - analyst
   - pm
-  - scrum-master
+  - sm
   - bmad-orchestrator
   - js-solution-architect
   - node-backend-developer
