@@ -67,6 +67,9 @@ The goal is quality delivery, not just checking boxes.]]
    [[LLM: Build issues block everyone. Ensure everything compiles and runs cleanly]]
    - [ ] Project builds successfully without errors.
    - [ ] Project linting passes
+   - [ ] All tests pass (unit, integration, etc.)
+   - [ ] All code changes for this story committed to respective repositories with descriptive messages referencing story number (e.g., `feat: Story X.Y - brief description`)
+   - [ ] Story file changes (Dev Agent Record, File List, Status) committed
    - [ ] Any new dependencies added were either pre-approved in the story requirements OR explicitly approved by the user during development (approval documented in story file).
    - [ ] If new dependencies were added, they are recorded in the appropriate project files (e.g., `package.json`, `requirements.txt`) with justification.
    - [ ] No known security vulnerabilities introduced by newly added and approved dependencies.
