@@ -317,7 +317,32 @@ Asset requirements:</ask>
 
 </step>
 
-<step n="12" goal="Success metrics">
+<step n="12" goal="Generate detailed epic breakdown in epics.md">
+
+<action>Load epics_template from workflow.yaml</action>
+
+<critical>Create separate epics.md with full story hierarchy</critical>
+
+<template-output file="epics.md">epic_overview</template-output>
+
+<for-each epic="epic_list">
+
+Generate Epic {{epic_number}} with expanded goals, capabilities, success criteria.
+
+Generate all stories with:
+
+- User story format
+- Prerequisites
+- Acceptance criteria (3-8 per story)
+- Technical notes (high-level only)
+
+<template-output file="epics.md">epic\_{{epic_number}}\_details</template-output>
+<elicit-required/>
+
+</for-each>
+
+</step>
+<step n="13" goal="Success metrics">
 
 <ask>What technical metrics will you track?
 
@@ -347,7 +372,7 @@ Your metrics:</ask>
 
 </step>
 
-<step n="13" goal="Document out of scope and assumptions">
+<step n="14" goal="Document out of scope and assumptions">
 
 <template-output>out_of_scope</template-output>
 
@@ -355,7 +380,7 @@ Your metrics:</ask>
 
 </step>
 
-<step n="14" goal="Generate solutioning handoff and next steps">
+<step n="15" goal="Generate solutioning handoff and next steps">
 
 <action>Check if game-type fragment contained narrative tags</action>
 
