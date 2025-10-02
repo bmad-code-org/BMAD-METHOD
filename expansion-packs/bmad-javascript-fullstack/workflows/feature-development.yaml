@@ -17,14 +17,25 @@ workflow:
     - agent: js-solution-architect
       reviews: technical_impact
       requires: feature-requirements.md
+      loads_if_needed:
+        - security-guidelines.md (IF authentication/authorization changes)
+        - best-practices.md (IF introducing new patterns)
+        - architecture-patterns.md (IF architectural changes)
       notes: Assess technical impact on existing architecture. Identify affected components, database changes, API modifications, and integration points.
+
+    - agent: js-solution-architect
+      action: create_checkpoint
+      uses: create-checkpoint-summary task
+      creates: architecture-impact-checkpoint.md
+      requires: technical_impact_review
+      notes: "Compact technical impact analysis into checkpoint: selected approach, affected components, risks, and constraints. Max 100 lines. SAVE to docs/features/[feature-name]/checkpoints/"
 
     - agent: react-developer OR node-backend-developer OR api-developer
       creates: technical-specification.md
       requires:
         - feature-requirements.md
-        - technical_impact_review
-      notes: "Create detailed technical spec with file changes, new components/endpoints, types, tests, and implementation steps. SAVE to docs/features/[feature-name]/"
+        - architecture-impact-checkpoint.md
+      notes: "Create detailed technical spec with file changes, new components/endpoints, types, tests, and implementation steps. Reference checkpoint for architecture context. SAVE to docs/features/[feature-name]/"
 
     - agent: sm
       creates: feature-stories.md
@@ -32,9 +43,16 @@ workflow:
       uses: create-development-story task
       notes: Break feature into implementable stories with clear acceptance criteria and DoD.
 
+    - agent: sm
+      action: create_checkpoint
+      uses: create-checkpoint-summary task
+      creates: implementation-checkpoint.md
+      requires: feature-stories.md
+      notes: "Compact planning phase into checkpoint: story priorities, effort estimates, dependencies, and critical DoD criteria. Archive verbose specs. Max 100 lines. SAVE to docs/features/[feature-name]/checkpoints/"
+
   workflow_end:
     action: begin_feature_implementation
-    notes: Feature fully specified and broken into stories. Developers can begin implementation following story sequence.
+    notes: Feature planning complete with compact checkpoint. Developers reference implementation-checkpoint.md + stories for context-efficient implementation.
 
   story_flow:
     - Create feature branch from main

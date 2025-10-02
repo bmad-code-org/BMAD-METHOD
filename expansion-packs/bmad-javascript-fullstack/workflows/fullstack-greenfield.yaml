@@ -24,6 +24,10 @@ workflow:
     - agent: js-solution-architect
       creates: technology-stack-decision.md
       requires: requirements-analysis.md
+      loads_if_needed:
+        - technology-stack-guide.md (ALWAYS - for stack comparison)
+        - deployment-strategies.md (IF hosting decisions needed)
+        - security-guidelines.md (IF handling sensitive data)
       optional_steps:
         - technology_research
         - scalability_analysis
@@ -31,10 +35,17 @@ workflow:
       notes: "Select appropriate technology stack based on requirements. Choose frontend framework, backend framework, database, hosting, and tools. SAVE OUTPUT: Copy to docs/architecture/ folder."
 
     - agent: js-solution-architect
+      action: create_checkpoint
+      uses: create-checkpoint-summary task
+      creates: stack-selection-checkpoint.md
+      requires: technology-stack-decision.md
+      notes: "Compact stack selection into checkpoint: chosen technologies, key rationale, and constraints. Max 100 lines. SAVE to docs/checkpoints/"
+
+    - agent: js-solution-architect
       creates: system-architecture.md
       requires:
         - requirements-analysis.md
-        - technology-stack-decision.md
+        - stack-selection-checkpoint.md
       optional_steps:
         - architecture_patterns_review
         - security_architecture
@@ -52,13 +63,22 @@ workflow:
       condition: validation_issues_found
       notes: If validation finds issues, return to js-solution-architect to fix and re-export updated documents.
 
+    - agent: js-solution-architect
+      action: create_checkpoint
+      uses: create-checkpoint-summary task
+      creates: architecture-complete-checkpoint.md
+      requires: system-architecture.md
+      condition: architecture_validated
+      notes: "Compact architecture phase into checkpoint: key architectural decisions, selected patterns, critical constraints, and setup requirements. Archive detailed analysis. Max 100 lines. SAVE to docs/checkpoints/"
+
   project_setup_guidance:
     action: initialize_project_structure
-    notes: "Set up project following architecture document: Initialize monorepo (if needed), configure TypeScript, set up frontend (Next.js/Vite), backend (Express/Fastify/NestJS), and database (Prisma). Configure linting, formatting, and testing."
+    requires: architecture-complete-checkpoint.md
+    notes: "Set up project following checkpoint summary and architecture document. Initialize monorepo (if needed), configure TypeScript, set up frontend (Next.js/Vite), backend (Express/Fastify/NestJS), and database (Prisma). Configure linting, formatting, and testing."
 
   workflow_end:
     action: move_to_story_development
-    notes: Architecture complete and validated. Set up development environment. Use Scrum Master to create implementation epics and stories from architecture document.
+    notes: Architecture phase complete with compact checkpoint. Developers reference architecture-complete-checkpoint.md for context-efficient story development.
 
   mvp_sequence:
     - step: assess_mvp_scope
@@ -78,9 +98,16 @@ workflow:
       requires: mvp-requirements.md
       notes: Create streamlined architecture focused on MVP features. Can skip detailed architecture for very simple MVPs and jump directly to stories.
 
+    - agent: js-solution-architect
+      action: create_checkpoint
+      uses: create-checkpoint-summary task
+      creates: mvp-checkpoint.md
+      requires: mvp-architecture.md
+      notes: "Compact MVP planning into checkpoint: core feature scope, minimal tech stack, and rapid implementation approach. Max 50 lines for lean MVP context. SAVE to docs/checkpoints/"
+
   mvp_workflow_end:
     action: rapid_implementation
-    notes: MVP scope defined. Begin implementation focusing on core features. Use feature-development workflow for agile story creation and execution.
+    notes: MVP scope defined with compact checkpoint. Developers reference mvp-checkpoint.md for lean, context-efficient rapid implementation.
 
   flow_diagram: |
     ```mermaid
