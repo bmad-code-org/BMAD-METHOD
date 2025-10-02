@@ -24,15 +24,38 @@ workflow:
     - agent: js-solution-architect
       creates: technology-stack-decision.md
       requires: requirements-analysis.md
+      context_budget: 2000-3000 tokens
       loads_if_needed:
-        - technology-stack-guide.md (ALWAYS - for stack comparison)
-        - deployment-strategies.md (IF hosting decisions needed)
-        - security-guidelines.md (IF handling sensitive data)
+        - technology-stack-guide.md
+          WHEN: ALWAYS (making stack decisions)
+          WHY: Need framework comparisons, decision criteria, and stack recommendations
+          TOKENS: ~1500
+          NOTE: This is the core decision guide for greenfield projects
+        - deployment-strategies.md
+          WHEN: Requirements specify hosting/deployment needs OR choosing deployment approach
+          WHY: Need hosting platform comparison and deployment pattern guidance
+          TOKENS: ~500
+          SKIP_IF: Deployment decision deferred to later phase
+        - security-guidelines.md
+          WHEN: Requirements involve authentication, user data, PII, payments, or compliance
+          WHY: Need security architecture patterns for sensitive data handling
+          TOKENS: ~1000
+          SKIP_IF: No sensitive data or auth requirements
+        - architecture-patterns.md
+          WHEN: Complex requirements suggesting microservices, event-driven, or non-standard patterns
+          WHY: Need pattern comparison for architectural style selection
+          TOKENS: ~1200
+          SKIP_IF: Standard monolith or JAMstack pattern sufficient
       optional_steps:
         - technology_research
         - scalability_analysis
         - cost_estimation
-      notes: "Select appropriate technology stack based on requirements. Choose frontend framework, backend framework, database, hosting, and tools. SAVE OUTPUT: Copy to docs/architecture/ folder."
+      notes: |
+        Select appropriate technology stack based on requirements. Choose frontend framework, backend framework, database, hosting, and tools.
+        DEFAULT LOAD: requirements-analysis.md + core-principles.md (~800 tokens)
+        REQUIRED LOAD: technology-stack-guide.md (core decision guide)
+        JIT LOAD: deployment-strategies.md, security-guidelines.md, architecture-patterns.md based on requirements
+        SAVE OUTPUT: Copy to docs/architecture/ folder.
 
     - agent: js-solution-architect
       action: create_checkpoint
@@ -46,11 +69,38 @@ workflow:
       requires:
         - requirements-analysis.md
         - stack-selection-checkpoint.md
+      context_budget: 1500-2500 tokens
+      loads_if_needed:
+        - architecture-patterns.md
+          WHEN: Designing specific architecture pattern (microservices, event-driven, CQRS, etc.)
+          WHY: Need detailed pattern guidance for chosen architectural style
+          TOKENS: ~1200
+          SKIP_IF: Simple monolith or standard JAMstack - use role knowledge
+        - security-guidelines.md
+          WHEN: Designing auth system, RBAC, or security-critical features
+          WHY: Need security architecture patterns and best practices
+          TOKENS: ~1000
+          SKIP_IF: No auth or minimal security requirements (defer to implementation)
+        - database-design-patterns.md
+          WHEN: Complex data model with many relationships, or choosing SQL vs NoSQL
+          WHY: Need schema design patterns and database selection criteria
+          TOKENS: ~800
+          SKIP_IF: Simple CRUD schema - use role knowledge
+        - api-implementation-patterns.md
+          WHEN: Defining API contracts and need specific implementation guidance
+          WHY: Need API design patterns for REST/GraphQL/tRPC
+          TOKENS: ~300-500 per section
+          SKIP_IF: API design delegated to api-developer agent
       optional_steps:
         - architecture_patterns_review
         - security_architecture
         - performance_planning
-      notes: "Design complete system architecture including frontend, backend, database schema, API contracts, and deployment strategy. SAVE OUTPUT: Copy to docs/architecture/ folder."
+      notes: |
+        Design complete system architecture including frontend, backend, database schema, API contracts, and deployment strategy.
+        DEFAULT LOAD: stack-selection-checkpoint.md + requirements (~1000 tokens)
+        JIT LOAD: Pattern/security/database guides only when designing those specific aspects
+        TARGET: Keep under 2500 tokens by loading sections, not full files
+        SAVE OUTPUT: Copy to docs/architecture/ folder.
 
     - agent: js-solution-architect
       validates: architecture_completeness

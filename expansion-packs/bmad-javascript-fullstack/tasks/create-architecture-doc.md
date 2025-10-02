@@ -5,6 +5,19 @@
 ## Purpose
 Document the technical architecture of a JavaScript/TypeScript full-stack application to guide implementation and ensure team alignment.
 
+## Context Budget
+
+**Estimated Tokens**: ~2,000-4,000 tokens (complete architecture doc)
+**Complexity**: High (requires comprehensive system design across frontend, backend, database, infrastructure)
+**Context Window Usage**: ~10-20% of typical limit
+**Input Context Required**: ~500-1,000 tokens (requirements, constraints, scale estimates)
+
+**Token Efficiency**:
+- Use architecture checklist to guide structure (avoid over-documentation)
+- Reference external docs for standard patterns (e.g., link to Next.js docs instead of explaining)
+- Focus on decisions and rationale, not technology tutorials
+- Create separate ADR files for complex decisions, reference in main doc
+
 ## When to Use
 - Starting a new greenfield project
 - Major system refactoring

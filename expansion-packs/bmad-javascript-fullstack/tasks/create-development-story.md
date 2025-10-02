@@ -5,6 +5,19 @@
 ## Purpose
 Create detailed, actionable development stories for JavaScript/TypeScript full-stack features that enable developers to implement without additional design decisions.
 
+## Context Budget
+
+**Estimated Tokens**: ~800-1,500 tokens per story
+**Complexity**: Medium-High (requires detailed technical specification and acceptance criteria)
+**Context Window Usage**: ~5-8% per story
+**Input Context Required**: ~1,000-2,000 tokens (architecture doc + requirements)
+
+**Token Efficiency**:
+- Reference architecture doc by path, don't repeat full stack details
+- Point to shared type definitions instead of duplicating interfaces
+- Use template structure to minimize boilerplate
+- Each story should be self-contained but reference shared docs
+
 ## When to Use
 - Breaking down epics into implementable stories
 - Converting architecture documents into development tasks

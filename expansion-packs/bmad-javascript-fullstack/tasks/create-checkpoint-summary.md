@@ -5,11 +5,24 @@
 ## Purpose
 Compact accumulated context from workflow phases into concise summaries that maintain essential information while reducing token usage for subsequent phases. Implements the "compaction strategy" from effective context engineering.
 
+## Context Budget
+
+**Estimated Tokens**: ~500-1,000 tokens (checkpoint output)
+**Complexity**: Medium (requires analyzing phase outputs and extracting key decisions)
+**Context Window Usage**: ~5-10% of typical 200K token limit
+**Token Reduction**: Target 80%+ reduction from original phase context (e.g., 5,000 tokens → 1,000 tokens)
+
+**Budget Triggers**:
+- Create checkpoint when phase context exceeds 3,000-5,000 tokens
+- Archive verbose discussions exceeding 1,000 tokens
+- Compress multi-agent conversations with 5+ exchanges
+
 ## When to Use
 - After major decision points (architecture chosen, tech stack selected)
 - Before transitioning between workflow phases
 - After 5+ sequential agent interactions
 - When detailed discussions need to be archived with key decisions preserved
+- **Token-based trigger**: When phase context >3K tokens
 
 ## Prerequisites
 - Completed phase with multiple artifacts or discussions

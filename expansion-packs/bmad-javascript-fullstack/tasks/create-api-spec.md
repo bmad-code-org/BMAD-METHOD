@@ -5,6 +5,19 @@
 ## Purpose
 Define complete API contracts for a JavaScript/TypeScript backend to ensure frontend-backend alignment and enable parallel development.
 
+## Context Budget
+
+**Estimated Tokens**: ~1,500-3,000 tokens (complete API spec with 10-20 endpoints)
+**Complexity**: Medium-High (requires consistent contract definition across all endpoints)
+**Context Window Usage**: ~8-15% of typical limit
+**Token Efficiency per Endpoint**: ~100-150 tokens (TypeScript interfaces + docs)
+
+**Token Efficiency**:
+- Generate OpenAPI spec (YAML) - more compact than repeated examples
+- Share common types across endpoints (pagination, error responses)
+- Reference auth patterns doc instead of repeating for each endpoint
+- Use TypeScript interfaces as source of truth, avoid duplicating in prose
+
 ## When to Use
 - Before starting backend implementation
 - When adding new API endpoints

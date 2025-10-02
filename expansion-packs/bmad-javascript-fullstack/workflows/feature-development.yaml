@@ -17,11 +17,26 @@ workflow:
     - agent: js-solution-architect
       reviews: technical_impact
       requires: feature-requirements.md
+      context_budget: 1500-2500 tokens
       loads_if_needed:
-        - security-guidelines.md (IF authentication/authorization changes)
-        - best-practices.md (IF introducing new patterns)
-        - architecture-patterns.md (IF architectural changes)
-      notes: Assess technical impact on existing architecture. Identify affected components, database changes, API modifications, and integration points.
+        - security-guidelines.md
+          WHEN: Feature involves authentication, authorization, user data, or sensitive information
+          WHY: Need security patterns for auth flows, data protection, and input validation
+          TOKENS: ~1000
+        - best-practices.md
+          WHEN: Feature introduces new architectural patterns not in existing codebase
+          WHY: Ensure new patterns align with team standards and best practices
+          TOKENS: ~800
+          SKIP_IF: Using existing patterns only
+        - architecture-patterns.md
+          WHEN: Feature requires significant architectural changes (new service, major refactor)
+          WHY: Need pattern guidance for structural changes
+          TOKENS: ~1200
+          SKIP_IF: Simple addition to existing architecture
+      notes: |
+        Assess technical impact on existing architecture. Identify affected components, database changes, API modifications, and integration points.
+        DEFAULT LOAD: core-principles.md + feature-requirements.md + existing architecture checkpoint (~800 tokens)
+        JIT LOAD: Only load guides when making specific decisions about security, patterns, or architecture changes.
 
     - agent: js-solution-architect
       action: create_checkpoint
@@ -35,7 +50,32 @@ workflow:
       requires:
         - feature-requirements.md
         - architecture-impact-checkpoint.md
-      notes: "Create detailed technical spec with file changes, new components/endpoints, types, tests, and implementation steps. Reference checkpoint for architecture context. SAVE to docs/features/[feature-name]/"
+      context_budget: 1000-1500 tokens
+      loads_if_needed:
+        - component-design-guidelines.md (react-developer)
+          WHEN: Building complex reusable component (compound components, render props, custom hooks)
+          WHY: Need advanced component patterns
+          TOKENS: ~600
+          SKIP_IF: Simple component using standard patterns
+        - state-management-guide.md (react-developer)
+          WHEN: Choosing state solution for new feature (useState vs Zustand vs Redux vs React Query)
+          WHY: Need state management decision framework
+          TOKENS: ~800
+          SKIP_IF: State pattern already defined in architecture
+        - security-guidelines.md (node-backend-developer)
+          WHEN: Implementing auth endpoints or handling sensitive data
+          WHY: Need auth patterns and security best practices
+          TOKENS: ~1000
+          SKIP_IF: Standard CRUD endpoints
+        - api-implementation-patterns.md (api-developer, node-backend-developer)
+          WHEN: Implementing specific API type (REST/GraphQL/tRPC) - load relevant section only
+          WHY: Need implementation details for chosen API style
+          TOKENS: ~200-300 per section
+          SKIP_IF: Following existing API patterns in codebase
+      notes: |
+        Create detailed technical spec with file changes, new components/endpoints, types, tests, and implementation steps.
+        DEFAULT LOAD: checkpoint + requirements (~1000 tokens)
+        JIT LOAD: Role-specific guides only when making new decisions. SAVE to docs/features/[feature-name]/
 
     - agent: sm
       creates: feature-stories.md
