@@ -1,0 +1,56 @@
+# Story Context Creation Workflow
+name: story-context
+description: "Assemble a dynamic Story Context XML by pulling latest documentation and existing code/library artifacts relevant to a drafted story"
+author: "BMad"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/story-context"
+template: "{installed_path}/context-template.xml"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Variables and inputs
+variables:
+  story_path: "" # Explicit story path; auto-discovered if empty
+  auto_update_status: false
+  story_dir: "{config_source}:dev_story_location"
+  story_selection_limit: 10
+  tech_spec_search_dir: "{project-root}/docs"
+  tech_spec_glob_template: "tech-spec-epic-{{epic_id}}*.md"
+  non_interactive: true
+
+# Output configuration
+default_output_file: "{output_folder}/story-context-{{epic_id}}.{{story_id}}.xml"
+
+# Recommended inputs
+recommended_inputs:
+  - story_markdown: "Path to a story markdown file to build context for"
+
+# Required tools
+required_tools:
+  - list_files
+  - file_info
+  - read_file
+  - write_file
+  - create_directory
+  - glob
+  - search_repo
+  - parse_markdown
+
+tags:
+  - context
+  - story
+  - planning
+  - bmad-v6
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: true

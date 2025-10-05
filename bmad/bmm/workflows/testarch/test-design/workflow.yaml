@@ -1,0 +1,25 @@
+# Test Architect workflow: test-design
+name: testarch-plan
+description: "Plan risk mitigation and test coverage before development."
+author: "BMad"
+
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{project-root}/bmad/bmm/workflows/testarch/test-design"
+instructions: "{installed_path}/instructions.md"
+
+template: false
+
+tags:
+  - qa
+  - planning
+  - test-architect
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: true

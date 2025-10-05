@@ -1,0 +1,37 @@
+# Build Agent Workflow Configuration
+name: create-agent
+description: "Interactive workflow to build BMAD Core compliant agents (YAML source compiled to .md during install) with optional brainstorming, persona development, and command structure"
+author: "BMad"
+
+# Critical variables load from config_source
+config_source: "{project-root}/bmad/bmb/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+src_impact: "{config_source}:src_impact"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Technical documentation for agent building
+agent_types: "{installed_path}/agent-types.md"
+agent_architecture: "{installed_path}/agent-architecture.md"
+agent_commands: "{installed_path}/agent-command-patterns.md"
+communication_styles: "{installed_path}/communication-styles.md"
+
+# Optional docs that help understand agent patterns
+recommended_inputs:
+  - example_agents: "{project-root}/bmad/bmm/agents/"
+  - agent_activation_rules: "{project-root}/src/utility/models/agent-activation-ide.xml"
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmb/workflows/create-agent"
+template: false # This is an interactive workflow - no template needed
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Output configuration - YAML agents compiled to .md at install time
+# If src_impact=true: Save YAML to src/modules/{{target_module}}/agents/
+# If src_impact=false: Save YAML to output_folder/agents/
+default_output_file: "{output_folder}/agents/{{agent_filename}}.agent.yaml"
+src_output_file: "{project-root}/src/modules/{{target_module}}/agents/{{agent_filename}}.agent.yaml"
+# Optional user override file (auto-created by installer if missing)
+config_output_file: "{project-root}/bmad/_cfg/agents/{{target_module}}-{{agent_filename}}.customize.yaml"

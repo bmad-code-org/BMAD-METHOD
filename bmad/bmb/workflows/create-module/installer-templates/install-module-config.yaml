@@ -1,0 +1,132 @@
+# {{MODULE_NAME}} Installation Configuration Template
+# This file defines how the module gets installed into a BMAD system
+
+module_name: "{{MODULE_NAME}}"
+module_code: "{{MODULE_CODE}}"
+author: "{{AUTHOR}}"
+installation_date: "{{DATE}}"
+bmad_version_required: "6.0.0"
+
+# Module metadata
+metadata:
+  description: "{{MODULE_DESCRIPTION}}"
+  category: "{{MODULE_CATEGORY}}"
+  tags: ["{{MODULE_TAGS}}"]
+  homepage: "{{MODULE_HOMEPAGE}}"
+  license: "{{MODULE_LICENSE}}"
+
+# Pre-installation checks
+pre_install_checks:
+  - name: "Check BMAD version"
+    type: "version_check"
+    minimum: "6.0.0"
+
+  - name: "Check dependencies"
+    type: "module_check"
+    required_modules: [] # List any required modules
+
+  - name: "Check disk space"
+    type: "disk_check"
+    required_mb: 50
+
+# Installation steps
+install_steps:
+  - name: "Create module directories"
+    action: "mkdir"
+    paths:
+      - "{project-root}/bmad/{{MODULE_CODE}}"
+      - "{project-root}/bmad/{{MODULE_CODE}}/data"
+      - "{project-root}/bmad/{{MODULE_CODE}}/agents"
+      - "{project-root}/bmad/{{MODULE_CODE}}/workflows"
+      - "{project-root}/bmad/{{MODULE_CODE}}/config"
+      - "{project-root}/bmad/{{MODULE_CODE}}/logs"
+
+  - name: "Copy module configuration"
+    action: "copy"
+    files:
+      - source: "config.yaml"
+        dest: "{project-root}/bmad/{{MODULE_CODE}}/config.yaml"
+
+  - name: "Copy default data files"
+    action: "copy"
+    optional: true
+    files:
+      - source: "data/*"
+        dest: "{project-root}/bmad/{{MODULE_CODE}}/data/"
+
+  - name: "Register module in manifest"
+    action: "register"
+    manifest_path: "{project-root}/bmad/_cfg/manifest.yaml"
+    entry:
+      module: "{{MODULE_CODE}}"
+      status: "active"
+      path: "{project-root}/bmad/{{MODULE_CODE}}"
+
+  - name: "Setup agent shortcuts"
+    action: "create_shortcuts"
+    agents: "{{AGENT_LIST}}"
+
+  - name: "Initialize module database"
+    action: "exec"
+    optional: true
+    script: "installer.js"
+    function: "initDatabase"
+
+# External assets to install
+external_assets:
+  - description: "Module documentation"
+    source: "assets/docs/*"
+    dest: "{project-root}/docs/{{MODULE_CODE}}/"
+
+  - description: "Example configurations"
+    source: "assets/examples/*"
+    dest: "{project-root}/examples/{{MODULE_CODE}}/"
+    optional: true
+
+# Module configuration defaults
+default_config:
+  output_folder: "{project-root}/output/{{MODULE_CODE}}"
+  data_folder: "{project-root}/bmad/{{MODULE_CODE}}/data"
+  log_level: "info"
+  auto_save: true
+  # {{CUSTOM_CONFIG}}
+
+# Post-installation setup
+post_install:
+  - name: "Run initial setup"
+    action: "workflow"
+    workflow: "{{MODULE_CODE}}-setup"
+    optional: true
+
+  - name: "Generate sample data"
+    action: "exec"
+    script: "installer.js"
+    function: "generateSamples"
+    optional: true
+
+  - name: "Verify installation"
+    action: "test"
+    test_command: "bmad test {{MODULE_CODE}}"
+
+# Post-installation message
+post_install_message: |
+  ✅ {{MODULE_NAME}} has been installed successfully!
+
+  🚀 Quick Start:
+  1. Load the main agent: `agent {{PRIMARY_AGENT}}`
+  2. View available commands: `*help`
+  3. Run the main workflow: `workflow {{PRIMARY_WORKFLOW}}`
+
+  📚 Documentation: {project-root}/docs/{{MODULE_CODE}}/README.md
+  💡 Examples: {project-root}/examples/{{MODULE_CODE}}/
+
+  {{CUSTOM_MESSAGE}}
+
+# Uninstall configuration
+uninstall:
+  preserve_user_data: true
+  remove_paths:
+    - "{project-root}/bmad/{{MODULE_CODE}}"
+    - "{project-root}/docs/{{MODULE_CODE}}"
+  backup_before_remove: true
+  unregister_from_manifest: true

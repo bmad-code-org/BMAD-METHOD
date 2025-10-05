@@ -1,0 +1,133 @@
+workflow:
+  id: bmm/dev-story-tdd
+  name: TDD Dev Story Workflow
+  description: Execute story implementation using strict TDD methodology with RED-GREEN-REFACTOR cycles
+  version: 1.0.0
+
+  inputs:
+    - name: story_path
+      type: string
+      required: true
+      description: Path to the approved story markdown file
+    - name: context_path
+      type: string
+      required: false
+      description: Path to story context JSON/XML (auto-detected if not provided)
+    - name: rvtm_enabled
+      type: boolean
+      default: true
+      description: Enable automatic RVTM traceability updates
+
+  outputs:
+    - name: implementation_status
+      type: string
+      description: Final implementation status (complete/partial/blocked)
+    - name: tests_created
+      type: number
+      description: Number of tests created during TDD cycles
+    - name: tests_passing
+      type: number
+      description: Number of tests currently passing
+    - name: coverage_percentage
+      type: number
+      description: Test coverage percentage for implemented features
+    - name: rvtm_links
+      type: array
+      description: List of RVTM requirement-test-implementation links created
+
+  steps:
+    - id: load-story-context
+      name: Load and Validate Story Context
+      command: load
+      path: "{story_path}"
+      validation:
+        - status: Approved
+        - has_context: true
+
+    - id: init-rvtm
+      name: Initialize RVTM if Enabled
+      condition: "{rvtm_enabled}"
+      command: exec
+      path: "{project-root}/bmad/core/tasks/rvtm-init.xml"
+
+    - id: extract-tasks
+      name: Extract Tasks from Story
+      command: parse
+      source: story_context
+      extract:
+        - acceptance_criteria
+        - tasks
+        - test_requirements
+
+    - id: tdd-cycles
+      name: Execute TDD Cycles for Each Task
+      type: loop
+      items: "{tasks}"
+      steps:
+        - id: red-phase
+          name: RED - Generate Failing Tests
+          command: exec
+          path: "{project-root}/bmad/bmm/workflows/testarch/atdd/instructions.md"
+          params:
+            task: "{current_task}"
+            acceptance_criteria: "{related_acs}"
+
+        - id: verify-red
+          name: Verify Tests Fail
+          command: test
+          expect: failure
+
+        - id: green-phase
+          name: GREEN - Implement to Pass Tests
+          command: implement
+          minimal: true
+          target: pass_tests
+
+        - id: verify-green
+          name: Verify Tests Pass
+          command: test
+          expect: success
+
+        - id: refactor-phase
+          name: REFACTOR - Improve Code Quality
+          command: refactor
+          maintain: green_tests
+          principles:
+            - DRY
+            - SOLID
+            - Clean Code
+
+        - id: update-rvtm
+          name: Update RVTM Traceability
+          condition: "{rvtm_enabled}"
+          command: exec
+          path: "{project-root}/bmad/core/tasks/rvtm-update.xml"
+          params:
+            story_id: "{metadata.storyId}"
+            test_ids: "{created_test_ids}"
+            status: "{test_status}"
+
+    - id: final-validation
+      name: Run Complete Test Suite
+      command: test
+      scope: all
+
+    - id: update-story
+      name: Update Story with Implementation Status
+      command: update
+      target: "{story_path}"
+      fields:
+        implementation_status: "{final_status}"
+        tests_created: "{total_tests}"
+        coverage: "{coverage_percentage}"
+
+    - id: generate-report
+      name: Generate TDD Implementation Report
+      command: report
+      template: tdd_implementation
+      include:
+        - cycles_completed
+        - tests_created
+        - coverage_metrics
+        - rvtm_traceability
+        - remaining_tasks

@@ -1,0 +1,60 @@
+# Project Planning Workflow Configuration
+name: "plan-project"
+description: "Scale-adaptive project planning workflow for all project levels (0-4). Automatically adjusts outputs based on project scope - from single atomic changes (Level 0: tech-spec only) to enterprise platforms (Level 4: full PRD + epics). Level 2-4 route to 3-solutioning workflow for architecture and tech specs. Generates appropriate planning artifacts for each level."
+author: "BMad"
+
+# Critical variables load from config_source
+config_source: "{project-root}/bmad/bmm/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+recommended_inputs:
+  - product_brief: "{output_folder}/product-brief.md"
+  - game_brief: "{output_folder}/game-brief.md"
+  - market_research: "{output_folder}/market-research.md"
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/2-plan"
+
+# Templates - Load these only when the instructions request loading them
+prd_template: "{installed_path}/prd/prd-template.md"
+analysis_template: "{installed_path}/prd/analysis-template.md"
+epics_template: "{installed_path}/prd/epics-template.md"
+tech_spec_template: "{installed_path}/tech-spec/tech-spec-template.md"
+ux_spec_template: "{installed_path}/ux/ux-spec-template.md"
+gdd_template: "{installed_path}/gdd/gdd-template.md"
+game_types_csv: "{installed_path}/gdd/game-types.csv"
+narrative_template: "{installed_path}/narrative/narrative-template.md"
+
+# Routing instructions - loads appropriate instruction set based on project level
+instructions: "{installed_path}/instructions-router.md"
+
+# Output configuration
+analysis_file: "{output_folder}/project-workflow-analysis.md"
+default_output_file: "{output_folder}/PRD.md"
+gdd_output_file: "{output_folder}/GDD.md"
+epics_output_file: "{output_folder}/epics.md"
+tech_spec_file: "{output_folder}/tech-spec.md"
+ux_spec_file: "{output_folder}/ux-specification.md"
+narrative_design_file: "{output_folder}/narrative-design.md"
+ai_frontend_prompt_file: "{output_folder}/ai-frontend-prompt.md"
+validation_output_file: "{output_folder}/PRD-validation-report.md"
+
+# Scale parameters - adaptive by project level
+scale_parameters:
+  level_0: "Single atomic change, tech-spec only"
+  level_1: "1-10 stories, 1 epic, minimal PRD + tech-spec"
+  level_2: "5-15 stories, 1-2 epics, focused PRD + tech-spec"
+  level_3: "12-40 stories, 2-5 epics, full PRD + architect handoff"
+  level_4: "40+ stories, 5+ epics, enterprise PRD + architect handoff"
+
+#Do not load these directly - instructions-router.md will load the proper file based on project type/level when needed
+instructions_sm: "{installed_path}/tech-spec/instructions-sm.md"
+instructions_med: "{installed_path}/prd/instructions-med.md"
+instructions_lg: "{installed_path}/prd/instructions-lg.md"
+instructions_ux: "{installed_path}/ux/instructions-ux.md"
+instructions_gdd: "{installed_path}/gdd/instructions-gdd.md"
+instructions_narrative: "{installed_path}/narrative/instructions-narrative.md"
+validation: "{installed_path}/checklist.md"

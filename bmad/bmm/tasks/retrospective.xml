@@ -1,0 +1,104 @@
+<task id="bmad/bmm/tasks/retrospective.xml" name="Team Retrospective">
+  <llm critical="true">
+    <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
+    <i>DO NOT skip steps or change the sequence</i>
+    <i>HALT immediately when halt-conditions are met</i>
+    <i>Each andlt;actionandgt; within andlt;stepandgt; is a REQUIRED action to complete that step</i>
+    <i>Sections outside flow (validation, output, critical-context) provide essential context - review and apply throughout execution</i>
+  </llm>
+  <flow>
+    <step n="1" title="Epic Context Discovery">
+      <action>Check {project-root}{output_folder}/stories/ for highest completed story</action>
+      <action>Extract epic number from story (e.g., "Epic: 003")</action>
+      <action>Read epic from {project-root}{output_folder}/prd/epic{number}.md</action>
+      <action>List all stories for this epic in {project-root}{output_folder}/stories/</action>
+      <action>Check completion status of each story</action>
+      <action>Extract key metrics (velocity, blockers encountered)</action>
+      <action>Review epic goals and success criteria</action>
+      <action>Compare actual outcomes vs. planned</action>
+      <action>Note technical debt incurred</action>
+      <action>Document architectural decisions made</action>
+    </step>
+
+    <step n="2" title="Preview Next Epic">
+      <action>Read next epic from d{project-root}{output_folder}/prd/epic{next-number}.md</action>
+      <action>Identify dependencies on completed work</action>
+      <action>Note potential gaps or preparation needed</action>
+      <action>Check for technical prerequisites</action>
+    </step>
+
+    <step n="3" title="Initialize Retrospective with Context">
+      <output>
+        🔄 TEAM RETROSPECTIVE - Epic {{number}}: {{Epic Name}}
+
+        Bob (Scrum Master) facilitating
+
+        Epic Summary:
+        - Completed: {{completed}}/{{total}} stories ({{percentage}}%)
+        - Velocity: {{actual-points}} story points (planned: {{planned-points}})
+        - Duration: {{actual-sprints}} sprints (planned: {{planned-sprints}})
+        - Technical Debt: {{debt-items}}
+
+        Next Epic Preview: Epic {{next-number}}: {{Next Epic Name}}
+        - Dependencies on Epic {{number}}: {{dependencies}}
+        - Preparation needed: {{preparation-gaps}}
+
+        Team assembled for reflection:
+        {{agents-based-on-story-records}}
+
+        Focus: Learning from Epic {{number}} and preparing for Epic {{next-number}}
+      </output>
+    </step>
+
+    <step n="4" title="Epic Review Discussion">
+      <action>Each agent shares referencing actual story data</action>
+      <action>What Went Well: Successes from completed stories, effective practices, velocity achievements</action>
+      <action>What Could Improve: Challenges from story records, blockers that slowed progress, technical debt incurred</action>
+      <action>Lessons Learned: Key insights for future epics, patterns to repeat or avoid</action>
+    </step>
+
+    <step n="5" title="Next Epic Preparation Discussion">
+      <action>Each agent addresses preparation needs</action>
+      <action>Dependencies Check: What from completed epic is needed for next epic, any incomplete blocking work</action>
+      <action>Preparation Needs: Technical setup required, knowledge gaps to fill, refactoring needed</action>
+      <action>Risk Assessment: Potential issues based on experience, mitigation strategies</action>
+    </step>
+
+    <step n="6" title="Synthesize Action Items">
+      <action>Bob identifies patterns across feedback</action>
+      <action>Synthesizes into team agreements</action>
+      <action>Assigns ownership to action items</action>
+      <action>Creates preparation sprint tasks if needed</action>
+      <output>
+        📝 EPIC {{number}} ACTION ITEMS:
+        {{numbered-action-items-with-owners}}
+
+        🚀 EPIC {{next-number}} PREPARATION SPRINT:
+        {{preparation-tasks-with-timeline}}
+
+        ⚠️ CRITICAL PATH:
+        {{critical-dependencies-and-timeline}}
+      </output>
+    </step>
+
+    <step n="7" title="Critical User Verification">
+      <validation>
+        <i>Testing Verification: Has full regression testing been completed?</i>
+        <i>Deployment Status: Has epic been deployed to production?</i>
+        <i>Business Validation: Have stakeholders reviewed and accepted deliverables?</i>
+        <i>Technical Health: Is codebase in stable, maintainable state?</i>
+        <i>Final Checks: Any unresolved blockers that will impact next epic?</i>
+      </validation>
+    </step>
+  </flow>
+
+  <llm critical="true">
+    <i>This task extends party-mode with retrospective-specific structure</i>
+    <i>Bob (Scrum Master) facilitates the discussion ensuring psychological safety</i>
+    <i>No blame, focus on systems and processes</i>
+    <i>Everyone contributes with specific examples preferred</i>
+    <i>Action items must be achievable with clear ownership</i>
+    <i>End with team agreements and clear next steps</i>
+    <i>Two-part format: Epic Review + Next Epic Preparation</i>
+  </llm>
+</task>

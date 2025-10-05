@@ -1,0 +1,22 @@
+# Brainstorm Game Workflow Configuration
+name: "brainstorm-game"
+description: "Facilitate game brainstorming sessions by orchestrating the CIS brainstorming workflow with game-specific context, guidance, and additional game design techniques."
+author: "BMad"
+
+# Critical variables load from config_source
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/1-analysis/brainstorm-game"
+template: false
+instructions: "{installed_path}/instructions.md"
+
+# Context and techniques for game brainstorming
+game_context: "{installed_path}/game-context.md"
+game_brain_methods: "{installed_path}/game-brain-methods.csv"
+
+# CIS brainstorming workflow to invoke
+cis_brainstorming: "{project-root}/bmad/cis/workflows/brainstorming/workflow.yaml"

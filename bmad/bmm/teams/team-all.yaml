@@ -1,0 +1,7 @@
+# <!-- Powered by BMAD-CORE™ -->
+bundle:
+  name: Team All
+  icon: 👥
+  description: Includes every bmm system agent.
+agents:
+  - "*"

@@ -1,0 +1,25 @@
+# Test Architect workflow: atdd
+name: testarch-atdd
+description: "Generate failing acceptance tests before implementation."
+author: "BMad"
+
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{project-root}/bmad/bmm/workflows/testarch/atdd"
+instructions: "{installed_path}/instructions.md"
+
+template: false
+
+tags:
+  - qa
+  - atdd
+  - test-architect
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: true
