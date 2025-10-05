@@ -17,19 +17,12 @@ class WorkflowCommandGenerator {
    * @param {string} bmadDir - BMAD installation directory
    */
   async generateWorkflowCommands(projectDir, bmadDir) {
-    const manifestPath = path.join(bmadDir, '_cfg', 'workflow-manifest.csv');
+    const workflows = await this.loadWorkflowManifest(bmadDir);
 
-    if (!(await fs.pathExists(manifestPath))) {
+    if (!workflows) {
       console.log(chalk.yellow('Workflow manifest not found. Skipping command generation.'));
       return { generated: 0 };
     }
-
-    // Read and parse the CSV manifest
-    const csvContent = await fs.readFile(manifestPath, 'utf8');
-    const workflows = csv.parse(csvContent, {
-      columns: true,
-      skip_empty_lines: true,
-    });
 
     // Base commands directory
     const baseCommandsDir = path.join(projectDir, '.claude', 'commands', 'bmad');
@@ -38,11 +31,9 @@ class WorkflowCommandGenerator {
 
     // Generate a command file for each workflow, organized by module
     for (const workflow of workflows) {
-      // Create module directory structure: commands/bmad/{module}/workflows/
       const moduleWorkflowsDir = path.join(baseCommandsDir, workflow.module, 'workflows');
       await fs.ensureDir(moduleWorkflowsDir);
 
-      // Use just the workflow name as filename (no prefix)
       const commandContent = await this.generateCommandContent(workflow, bmadDir);
       const commandPath = path.join(moduleWorkflowsDir, `${workflow.name}.md`);
 
@@ -51,9 +42,50 @@ class WorkflowCommandGenerator {
     }
 
     // Also create a workflow launcher README in each module
-    await this.createModuleWorkflowLaunchers(baseCommandsDir, workflows, bmadDir);
+    const groupedWorkflows = this.groupWorkflowsByModule(workflows);
+    await this.createModuleWorkflowLaunchers(baseCommandsDir, groupedWorkflows);
 
     return { generated: generatedCount };
+  }
+
+  async collectWorkflowArtifacts(bmadDir) {
+    const workflows = await this.loadWorkflowManifest(bmadDir);
+
+    if (!workflows) {
+      return { artifacts: [], counts: { commands: 0, launchers: 0 } };
+    }
+
+    const artifacts = [];
+
+    for (const workflow of workflows) {
+      const commandContent = await this.generateCommandContent(workflow, bmadDir);
+      artifacts.push({
+        type: 'workflow-command',
+        module: workflow.module,
+        relativePath: path.join(workflow.module, 'workflows', `${workflow.name}.md`),
+        content: commandContent,
+        sourcePath: workflow.path,
+      });
+    }
+
+    const groupedWorkflows = this.groupWorkflowsByModule(workflows);
+    for (const [module, launcherContent] of Object.entries(this.buildModuleWorkflowLaunchers(groupedWorkflows))) {
+      artifacts.push({
+        type: 'workflow-launcher',
+        module,
+        relativePath: path.join(module, 'workflows', 'README.md'),
+        content: launcherContent,
+        sourcePath: null,
+      });
+    }
+
+    return {
+      artifacts,
+      counts: {
+        commands: workflows.length,
+        launchers: Object.keys(groupedWorkflows).length,
+      },
+    };
   }
 
   /**
@@ -94,49 +126,57 @@ class WorkflowCommandGenerator {
   /**
    * Create workflow launcher files for each module
    */
-  async createModuleWorkflowLaunchers(baseCommandsDir, workflows, bmadDir) {
-    // Group workflows by module
+  async createModuleWorkflowLaunchers(baseCommandsDir, workflowsByModule) {
+    for (const [module, moduleWorkflows] of Object.entries(workflowsByModule)) {
+      const content = this.buildLauncherContent(module, moduleWorkflows);
+      const moduleWorkflowsDir = path.join(baseCommandsDir, module, 'workflows');
+      await fs.ensureDir(moduleWorkflowsDir);
+      const launcherPath = path.join(moduleWorkflowsDir, 'README.md');
+      await fs.writeFile(launcherPath, content);
+    }
+  }
+
+  groupWorkflowsByModule(workflows) {
     const workflowsByModule = {};
+
     for (const workflow of workflows) {
       if (!workflowsByModule[workflow.module]) {
         workflowsByModule[workflow.module] = [];
       }
 
-      // Convert path for display
-      let workflowPath = workflow.path;
-      if (workflowPath.includes('/src/modules/')) {
-        const match = workflowPath.match(/\/src\/modules\/(.+)/);
-        if (match) {
-          workflowPath = `{project-root}/bmad/${match[1]}`;
-        }
-      } else if (workflowPath.includes('/src/core/')) {
-        const match = workflowPath.match(/\/src\/core\/(.+)/);
-        if (match) {
-          workflowPath = `{project-root}/bmad/core/${match[1]}`;
-        }
-      }
-
       workflowsByModule[workflow.module].push({
         ...workflow,
-        displayPath: workflowPath,
+        displayPath: this.transformWorkflowPath(workflow.path),
       });
     }
 
-    // Create a launcher file for each module
-    for (const [module, moduleWorkflows] of Object.entries(workflowsByModule)) {
-      let content = `# ${module.toUpperCase()} Workflows
+    return workflowsByModule;
+  }
+
+  buildModuleWorkflowLaunchers(groupedWorkflows) {
+    const launchers = {};
+
+    for (const [module, moduleWorkflows] of Object.entries(groupedWorkflows)) {
+      launchers[module] = this.buildLauncherContent(module, moduleWorkflows);
+    }
+
+    return launchers;
+  }
+
+  buildLauncherContent(module, moduleWorkflows) {
+    let content = `# ${module.toUpperCase()} Workflows
 
 ## Available Workflows in ${module}
 
 `;
 
-      for (const workflow of moduleWorkflows) {
-        content += `**${workflow.name}**\n`;
-        content += `- Path: \`${workflow.displayPath}\`\n`;
-        content += `- ${workflow.description}\n\n`;
-      }
+    for (const workflow of moduleWorkflows) {
+      content += `**${workflow.name}**\n`;
+      content += `- Path: \`${workflow.displayPath}\`\n`;
+      content += `- ${workflow.description}\n\n`;
+    }
 
-      content += `
+    content += `
 ## Execution
 
 When running any workflow:
@@ -150,12 +190,39 @@ When running any workflow:
 - #yolo: Skip optional steps
 `;
 
-      // Write module-specific launcher
-      const moduleWorkflowsDir = path.join(baseCommandsDir, module, 'workflows');
-      await fs.ensureDir(moduleWorkflowsDir);
-      const launcherPath = path.join(moduleWorkflowsDir, 'README.md');
-      await fs.writeFile(launcherPath, content);
+    return content;
+  }
+
+  transformWorkflowPath(workflowPath) {
+    let transformed = workflowPath;
+
+    if (workflowPath.includes('/src/modules/')) {
+      const match = workflowPath.match(/\/src\/modules\/(.+)/);
+      if (match) {
+        transformed = `{project-root}/bmad/${match[1]}`;
+      }
+    } else if (workflowPath.includes('/src/core/')) {
+      const match = workflowPath.match(/\/src\/core\/(.+)/);
+      if (match) {
+        transformed = `{project-root}/bmad/core/${match[1]}`;
+      }
     }
+
+    return transformed;
+  }
+
+  async loadWorkflowManifest(bmadDir) {
+    const manifestPath = path.join(bmadDir, '_cfg', 'workflow-manifest.csv');
+
+    if (!(await fs.pathExists(manifestPath))) {
+      return null;
+    }
+
+    const csvContent = await fs.readFile(manifestPath, 'utf8');
+    return csv.parse(csvContent, {
+      columns: true,
+      skip_empty_lines: true,
+    });
   }
 }
 

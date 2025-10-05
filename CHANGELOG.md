@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Codex Installer
+
+- Codex installer uses custom prompts in `.codex/prompts/`, instead of `AGENTS.md`
+
 ## [6.0.0-alpha.0]
 
 **Release: September 28, 2025**

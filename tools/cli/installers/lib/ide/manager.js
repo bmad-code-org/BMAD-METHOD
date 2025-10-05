@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const chalk = require('chalk');
+const os = require('node:os');
 
 /**
  * IDE Manager - handles IDE-specific setup
@@ -191,9 +192,13 @@ class IdeManager {
       }
     }
 
-    // Check for AGENTS.md (Codex)
-    if (await fs.pathExists(path.join(projectDir, 'AGENTS.md'))) {
-      detected.push('codex');
+    // Check Codex prompt directory for BMAD exports
+    const codexPromptDir = path.join(os.homedir(), '.codex', 'prompts');
+    if (await fs.pathExists(codexPromptDir)) {
+      const codexEntries = await fs.readdir(codexPromptDir);
+      if (codexEntries.some((file) => file.startsWith('bmad-'))) {
+        detected.push('codex');
+      }
     }
 
     return detected;
