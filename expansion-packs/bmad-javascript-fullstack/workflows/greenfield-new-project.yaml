@@ -1,0 +1,214 @@
+# Greenfield Project Workflow
+workflow:
+  id: greenfield-project
+  name: Start New JavaScript/TypeScript Project
+  description: From zero to deployed application with core features
+  duration: 5-7 days (MVP) | 2-4 weeks (Production)
+  token_budget: 12000 (MVP) | 20000 (Production)
+
+  # PHASE 1: Requirements & Planning (Day 1 Morning)
+  requirements:
+    agent: analyst
+    duration: 2-4 hours
+    tokens: 1000
+    inputs:
+      - Business goals
+      - Target users
+      - Core problem
+    outputs:
+      - requirements.md
+      - user-stories.md
+      - success-metrics.md
+    checklist:
+      - [ ] Define 5-10 core features
+      - [ ] Prioritize features (MVP vs Future)
+      - [ ] Set success criteria
+      - [ ] Define constraints (budget, timeline)
+
+  # PHASE 2: Architecture & Tech Stack (Day 1 Afternoon)
+  architecture:
+    agent: js-solution-architect
+    duration: 4 hours
+    tokens: 3000
+    load:
+      - technology-stack-guide.md # Only guide needed
+    decisions:
+      frontend:
+        default: Next.js 14 # Full-stack, fast, production-ready
+        alternatives:
+          - Vite + React # If pure SPA needed
+          - Remix # If heavy server-side needed
+      backend:
+        default: Next.js API Routes # Simpler for most cases
+        alternatives:
+          - Express/Fastify # If separate backend needed
+          - NestJS # If enterprise patterns needed
+      database:
+        default: PostgreSQL + Prisma # Best for relational data
+        alternatives:
+          - Supabase # If need auth + realtime
+          - MongoDB # If document-based data
+      deployment:
+        default: Vercel # Zero-config for Next.js
+        alternatives:
+          - Railway/Fly.io # If need more control
+          - AWS # If enterprise requirements
+    outputs:
+      - architecture.md
+      - tech-stack.md
+      - database-schema.sql
+      - api-specification.yaml
+    checkpoint:
+      name: architecture-checkpoint.md
+      max_tokens: 500
+      includes:
+        - Tech stack choices
+        - Architecture diagram
+        - Key constraints
+
+  # PHASE 3: Project Setup (Day 2 Morning)
+  setup:
+    duration: 2-4 hours
+    tokens: 1500
+    parallel_execution:
+      track_1:
+        agent: node-backend-developer
+        tasks:
+          - Initialize Node.js project
+          - Setup TypeScript
+          - Configure database
+          - Create API structure
+          - Setup auth middleware
+      track_2:
+        agent: react-developer
+        tasks:
+          - Initialize Next.js/React
+          - Setup TypeScript
+          - Configure Tailwind CSS
+          - Create layout components
+          - Setup routing
+      track_3:
+        agent: devops
+        tasks:
+          - Initialize Git repository
+          - Setup GitHub Actions CI/CD
+          - Configure environment variables
+          - Create Docker setup (if needed)
+    outputs:
+      - Working project skeleton
+      - README.md
+      - Development environment
+
+  # PHASE 4: Core Features (Days 2-5)
+  core_features:
+    duration: 3-5 days
+    tokens: 5000-10000
+
+    mvp_features:
+      priority_1_auth: # Day 2 Afternoon
+        - User registration
+        - User login
+        - Password reset
+        - Session management
+
+      priority_2_core: # Days 3-4
+        - Primary business feature
+        - CRUD operations
+        - Basic admin panel
+
+      priority_3_polish: # Day 5
+        - Error handling
+        - Loading states
+        - Basic responsiveness
+
+    production_features: # Additional 1-2 weeks
+      - All MVP features +
+      - Payment integration
+      - Email notifications
+      - Advanced admin features
+      - Analytics integration
+      - Performance optimization
+      - Comprehensive testing
+
+    parallel_development:
+      - Frontend components
+      - Backend APIs
+      - Database migrations
+      - Unit tests
+
+    checkpoints:
+      frequency: Every 2 days
+      max_tokens: 500 each
+
+  # PHASE 5: Deployment (Day 5 Afternoon)
+  deployment:
+    agent: devops or senior-developer
+    duration: 2-4 hours
+    tokens: 1000
+    tasks:
+      production_setup:
+        - Configure production environment
+        - Setup domain and SSL
+        - Configure environment variables
+        - Setup monitoring (Sentry/LogRocket)
+      deployment:
+        - Deploy database migrations
+        - Deploy application
+        - Run smoke tests
+        - Verify production
+    outputs:
+      - Live application URL
+      - Deployment documentation
+      - Monitoring dashboard
+
+  # Success Criteria
+  success_metrics:
+    mvp:
+      - Core features working
+      - Deployed to production
+      - Basic documentation
+      - < 1 week delivery
+    production:
+      - All planned features complete
+      - Test coverage > 70%
+      - Performance targets met
+      - Full documentation
+
+  # Common Patterns & Decisions
+  patterns:
+    authentication:
+      recommended: NextAuth.js or Supabase Auth
+      custom_jwt: Only if specific requirements
+
+    state_management:
+      client: Zustand for simple, Redux Toolkit for complex
+      server: React Query/TanStack Query
+
+    styling:
+      recommended: Tailwind CSS
+      alternatives: CSS Modules, Styled Components
+
+    testing:
+      unit: Vitest
+      integration: Testing Library
+      e2e: Playwright
+
+  # Deliverables Checklist
+  deliverables:
+    code:
+      - [ ] Source code in Git
+      - [ ] TypeScript throughout
+      - [ ] Tests for critical paths
+      - [ ] Error handling
+
+    documentation:
+      - [ ] README with setup instructions
+      - [ ] API documentation
+      - [ ] Deployment guide
+      - [ ] Environment variables guide
+
+    deployment:
+      - [ ] Production URL
+      - [ ] CI/CD pipeline
+      - [ ] Monitoring setup
+      - [ ] Backup strategy

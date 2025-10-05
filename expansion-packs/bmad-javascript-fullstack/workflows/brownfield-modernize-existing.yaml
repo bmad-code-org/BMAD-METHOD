@@ -1,0 +1,293 @@
+# Brownfield Setup Workflow
+workflow:
+  id: brownfield-setup
+  name: Modernize & Standardize Existing JavaScript/TypeScript Project
+  description: Take legacy/existing code and prepare it for modern development
+  duration: 3-5 days
+  token_budget: 8500
+
+  # PHASE 1: Assessment (Day 1)
+  assessment:
+    agent: js-solution-architect + analyst
+    duration: 4-8 hours
+    tokens: 2000
+
+    analyze:
+      code_quality:
+        - Run ESLint analysis
+        - Check TypeScript coverage
+        - Identify code smells
+        - Measure technical debt
+
+      dependencies:
+        - Run npm/yarn audit
+        - Check outdated packages
+        - Identify security vulnerabilities
+        - Review bundle size
+
+      infrastructure:
+        - Current build process
+        - Deployment method
+        - Environment management
+        - CI/CD status
+
+      testing:
+        - Current test coverage
+        - Test framework status
+        - E2E test presence
+        - Manual testing process
+
+    outputs:
+      - assessment-report.md
+      - technical-debt-list.md
+      - security-vulnerabilities.md
+      - modernization-opportunities.md
+
+    red_flags:
+      critical:
+        - No version control
+        - Exposed secrets in code
+        - SQL injection vulnerabilities
+        - No authentication
+      high:
+        - No TypeScript
+        - No tests
+        - Outdated framework (>2 major versions)
+        - No error handling
+      medium:
+        - Poor code organization
+        - No documentation
+        - Mixed coding styles
+        - No CI/CD
+
+  # PHASE 2: Modernization Plan (Day 1 Afternoon)
+  planning:
+    agent: js-solution-architect
+    duration: 2-4 hours
+    tokens: 1000
+
+    prioritization:
+      immediate: # Must fix now
+        - Security vulnerabilities
+        - Breaking bugs
+        - Critical dependencies
+
+      short_term: # This sprint
+        - Add TypeScript
+        - Setup testing
+        - Standardize code style
+        - Basic CI/CD
+
+      long_term: # Future sprints
+        - Architecture refactoring
+        - Performance optimization
+        - Advanced testing
+        - Full migration
+
+    decisions:
+      typescript:
+        add_now: If no TypeScript at all
+        gradual: If partial TypeScript
+        skip: If already full TypeScript
+
+      testing:
+        start_with: Critical business logic
+        framework: Vitest or Jest
+        target: 50% coverage initially
+
+      refactoring:
+        approach: Incremental, not rewrite
+        focus: High-traffic code first
+        rule: Don't break existing functionality
+
+    outputs:
+      - modernization-plan.md
+      - priority-matrix.md
+      - migration-timeline.md
+
+    checkpoint:
+      name: brownfield-plan-checkpoint.md
+      max_tokens: 400
+
+  # PHASE 3: Setup Standards (Day 2)
+  standardization:
+    duration: 4-8 hours
+    tokens: 1500
+
+    parallel_tasks:
+      track_1:
+        agent: typescript-expert
+        tasks:
+          - Setup TypeScript config
+          - Add type definitions
+          - Configure path aliases
+          - Create shared types
+
+      track_2:
+        agent: node-backend-developer
+        tasks:
+          - Setup ESLint + Prettier
+          - Configure pre-commit hooks
+          - Standardize project structure
+          - Update package.json scripts
+
+      track_3:
+        agent: devops
+        tasks:
+          - Setup/fix CI/CD pipeline
+          - Configure environment management
+          - Add automated testing
+          - Setup deployment process
+
+    configs_to_add:
+      required:
+        - tsconfig.json
+        - .eslintrc.js
+        - .prettierrc
+        - .gitignore
+        - .env.example
+
+      recommended:
+        - .husky (pre-commit hooks)
+        - .github/workflows
+        - docker-compose.yml
+        - jest.config.js
+
+    outputs:
+      - Standardized configuration
+      - Updated dependencies
+      - Development guide
+      - Updated README
+
+  # PHASE 4: Critical Refactoring (Days 3-4)
+  refactoring:
+    duration: 1-3 days
+    tokens: 3000
+
+    priority_order:
+      1_security:
+        - Fix authentication issues
+        - Sanitize inputs
+        - Update vulnerable dependencies
+        - Remove hardcoded secrets
+
+      2_stability:
+        - Fix breaking bugs
+        - Add error boundaries
+        - Handle edge cases
+        - Fix memory leaks
+
+      3_performance:
+        - Optimize database queries
+        - Fix N+1 problems
+        - Add caching layer
+        - Optimize bundle size
+
+      4_maintainability:
+        - Extract reusable components
+        - Standardize API responses
+        - Consolidate duplicate code
+        - Improve naming conventions
+
+    rules:
+      - Test before and after changes
+      - Commit frequently
+      - Document breaking changes
+      - Keep backward compatibility
+      - Create migration guides
+
+    outputs:
+      - Refactored codebase
+      - Migration notes
+      - Test results
+      - Performance metrics
+
+  # PHASE 5: Integration & Validation (Day 5)
+  validation:
+    agent: qa-engineer + developers
+    duration: 4-8 hours
+    tokens: 1000
+
+    verify:
+      functionality:
+        - All features still work
+        - No new bugs introduced
+        - Performance not degraded
+        - User experience maintained
+
+      standards:
+        - TypeScript compiles
+        - ESLint passes
+        - Tests pass
+        - Build succeeds
+
+      deployment:
+        - CI/CD pipeline works
+        - Deployment successful
+        - Monitoring active
+        - Rollback possible
+
+    outputs:
+      - validation-report.md
+      - test-coverage-report.html
+      - ready-for-features.md
+
+  # Post-Setup: Ready for Feature Development
+  next_steps:
+    immediate:
+      - Start using Feature Addition workflow
+      - Begin adding new features
+      - Continue incremental improvements
+
+    ongoing:
+      - Gradually increase test coverage
+      - Refactor remaining technical debt
+      - Update documentation
+      - Train team on new standards
+
+  # Common Scenarios & Solutions
+  scenarios:
+    no_typescript:
+      solution: Add TS config, rename files gradually
+      timeline: 1-2 weeks for full migration
+
+    no_tests:
+      solution: Start with critical paths, aim for 50%
+      timeline: Add tests with each new feature
+
+    outdated_react:
+      solution: Incremental upgrade, fix deprecations
+      timeline: 1 version at a time
+
+    jquery_legacy:
+      solution: Gradual replacement with React
+      timeline: Component by component
+
+    monolithic_code:
+      solution: Extract modules incrementally
+      timeline: Ongoing refactoring
+
+  # Success Criteria
+  success_metrics:
+    required:
+      - No critical vulnerabilities
+      - Basic tests running
+      - CI/CD functional
+      - TypeScript configured
+
+    recommended:
+      - 50%+ test coverage
+      - All dependencies updated
+      - Documentation current
+      - Performance improved
+
+  # Deliverables
+  deliverables:
+    - [ ] Assessment report
+    - [ ] Modernization plan
+    - [ ] Updated codebase
+    - [ ] Standard configurations
+    - [ ] Test suite
+    - [ ] CI/CD pipeline
+    - [ ] Development guide
+    - [ ] Ready for features

@@ -1,0 +1,396 @@
+# Feature Addition Workflow
+workflow:
+  id: feature-addition
+  name: Add Feature to Existing Project
+  description: Works for both greenfield and brownfield projects
+  duration: 2-10 days (based on size)
+  token_budget: 4500 (small) | 8000 (medium) | 12000 (large)
+
+  # SIZE ESTIMATION (30 minutes)
+  sizing:
+    agent: analyst + architect
+    duration: 30 minutes
+    tokens: 500
+
+    size_definitions:
+      small:
+        effort: 1-2 days
+        files: 1-3 files changed
+        complexity: Using existing patterns
+        examples:
+          - Add new field to form
+          - Create new page with CRUD
+          - Add filter to list
+          - Update UI component
+
+      medium:
+        effort: 2-5 days
+        files: 4-10 files changed
+        complexity: Some new patterns
+        examples:
+          - Payment integration
+          - Email notifications
+          - File upload system
+          - Advanced filtering
+
+      large:
+        effort: 5-10 days
+        files: 10+ files changed
+        complexity: New architecture
+        examples:
+          - Multi-step wizard
+          - Real-time collaboration
+          - Advanced analytics
+          - Complex workflow
+
+    decision:
+      small: Skip to implementation
+      medium: Do quick design
+      large: Full design phase
+
+  # SMALL FEATURE (Skip most phases)
+  small_feature:
+    duration: 1-2 days
+    tokens: 4500
+
+    quick_analysis:
+      agent: appropriate-developer
+      duration: 1 hour
+      outputs:
+        - feature-brief.md (1 page max)
+      checklist:
+        - [ ] What changes are needed?
+        - [ ] Which files to modify?
+        - [ ] Any API changes?
+        - [ ] Test strategy?
+
+    implementation:
+      agent: appropriate-developer
+      duration: 4-12 hours
+      tasks:
+        - Make code changes
+        - Add/update tests
+        - Update documentation
+        - Manual testing
+      outputs:
+        - Working feature
+        - Updated tests
+
+    deployment:
+      duration: 1 hour
+      tasks:
+        - Code review
+        - Merge to main
+        - Deploy to production
+
+  # MEDIUM FEATURE
+  medium_feature:
+    duration: 2-5 days
+    tokens: 8000
+
+    # Phase 1: Analysis (2-4 hours)
+    analysis:
+      agent: analyst + architect
+      duration: 2-4 hours
+      tokens: 1000
+      outputs:
+        - feature-requirements.md
+        - impact-analysis.md
+      analyze:
+        - Detailed requirements
+        - Affected components
+        - API changes needed
+        - Database schema updates
+        - Integration points
+        - Risks and dependencies
+
+    # Phase 2: Design (2-4 hours)
+    design:
+      agent: appropriate-specialist
+      duration: 2-4 hours
+      tokens: 1500
+      outputs:
+        - technical-design.md
+        - api-changes.yaml (if backend)
+        - component-plan.md (if frontend)
+      design_elements:
+        - API contracts
+        - Component structure
+        - State management
+        - Database changes
+        - Error handling
+      checkpoint:
+        name: feature-design-checkpoint.md
+        max_tokens: 300
+
+    # Phase 3: Implementation (2-5 days)
+    implementation:
+      agent: developers
+      duration: 2-5 days
+      tokens: 4000
+      parallel_tracks:
+        frontend:
+          - Build UI components
+          - Implement state logic
+          - Add form validation
+          - Style components
+        backend:
+          - Create API endpoints
+          - Update database schema
+          - Add business logic
+          - Handle errors
+        testing:
+          - Unit tests
+          - Integration tests
+          - Manual QA
+      checkpoints:
+        frequency: Daily
+        max_tokens: 200 each
+
+    # Phase 4: Testing & Deployment (4-8 hours)
+    release:
+      duration: 4-8 hours
+      tokens: 1500
+      tasks:
+        - Code review
+        - Final QA
+        - Deploy to staging
+        - Smoke test
+        - Deploy to production
+        - Monitor metrics
+
+  # LARGE FEATURE
+  large_feature:
+    duration: 5-10 days
+    tokens: 12000
+
+    # Phase 1: Requirements (4-8 hours)
+    requirements:
+      agent: analyst
+      duration: 4-8 hours
+      tokens: 1500
+      outputs:
+        - detailed-requirements.md
+        - user-stories.md (5-10 stories)
+        - acceptance-criteria.md
+        - success-metrics.md
+
+    # Phase 2: Architecture Review (4 hours)
+    architecture:
+      agent: js-solution-architect
+      duration: 4 hours
+      tokens: 2000
+      load:
+        jit:
+          - IF new_patterns: architecture-patterns.md
+          - IF security: security-guidelines.md
+          - IF complex_api: api-implementation-patterns.md
+      outputs:
+        - architecture-impact.md
+        - integration-plan.md
+        - risk-mitigation.md
+      checkpoint:
+        name: architecture-impact-checkpoint.md
+        max_tokens: 400
+
+    # Phase 3: Design (1 day)
+    design:
+      agent: team-leads
+      duration: 1 day
+      tokens: 2500
+      parallel_design:
+        frontend:
+          - Component hierarchy
+          - State architecture
+          - Routing changes
+          - UI/UX flow
+        backend:
+          - API specification
+          - Database schema
+          - Service architecture
+          - Integration design
+        infrastructure:
+          - Performance requirements
+          - Scaling strategy
+          - Monitoring plan
+      outputs:
+        - frontend-design.md
+        - backend-design.md
+        - infrastructure-plan.md
+      checkpoint:
+        name: detailed-design-checkpoint.md
+        max_tokens: 500
+
+    # Phase 4: Story Creation (2 hours)
+    stories:
+      agent: scrum-master
+      duration: 2 hours
+      tokens: 1000
+      outputs:
+        - implementation-stories.md (5-10 stories)
+        - sprint-plan.md
+      story_types:
+        - Database migrations
+        - Backend API endpoints
+        - Frontend components
+        - Integration work
+        - Testing & QA
+
+    # Phase 5: Implementation (5-10 days)
+    implementation:
+      duration: 5-10 days
+      tokens: 4000
+      parallel_teams:
+        ui_team:
+          - Build component library
+          - Implement pages
+          - Add interactions
+        api_team:
+          - Create endpoints
+          - Add validation
+          - Implement business logic
+        data_team:
+          - Schema migrations
+          - Data transformations
+          - Database optimization
+        qa_team:
+          - Write test cases
+          - Automated testing
+          - Manual QA
+      daily_checkpoints:
+        - Progress report
+        - Blocker resolution
+        - Integration status
+
+    # Phase 6: Integration & Release (1-2 days)
+    release:
+      duration: 1-2 days
+      tokens: 1000
+      phases:
+        integration:
+          - Merge feature branches
+          - Integration testing
+          - Performance testing
+          - Security review
+        deployment:
+          - Deploy to staging
+          - User acceptance testing
+          - Production deployment
+          - Post-deployment monitoring
+
+  # FEATURE-SPECIFIC PATTERNS
+  patterns:
+    authentication_feature:
+      components:
+        - Login/register forms
+        - Auth context/provider
+        - Protected routes
+        - Session management
+      backend:
+        - Auth endpoints
+        - JWT middleware
+        - Password hashing
+        - Refresh token logic
+
+    payment_integration:
+      components:
+        - Checkout flow
+        - Payment forms
+        - Order confirmation
+      backend:
+        - Stripe/payment integration
+        - Webhook handlers
+        - Order processing
+        - Receipt generation
+
+    real_time_feature:
+      components:
+        - WebSocket client
+        - Real-time updates
+        - Optimistic UI
+      backend:
+        - WebSocket server
+        - Event broadcasting
+        - State synchronization
+
+    file_upload:
+      components:
+        - Upload UI
+        - Progress tracking
+        - File preview
+      backend:
+        - Upload endpoints
+        - S3/storage integration
+        - File validation
+
+  # COMMON DECISIONS
+  decisions:
+    new_dependencies:
+      evaluate:
+        - Bundle size impact
+        - Maintenance status
+        - License compatibility
+        - Security record
+      approval: Tech lead required
+
+    database_changes:
+      approach:
+        - Write migration scripts
+        - Test rollback
+        - Plan zero-downtime deployment
+      backup: Always before schema changes
+
+    breaking_changes:
+      process:
+        - Document clearly
+        - Version API
+        - Provide migration guide
+        - Deprecation period
+
+  # SUCCESS CRITERIA
+  success_metrics:
+    small:
+      - Feature works as expected
+      - Tests pass
+      - Code reviewed
+      - Deployed to production
+
+    medium:
+      - All acceptance criteria met
+      - Test coverage adequate
+      - Performance acceptable
+      - Documentation updated
+
+    large:
+      - All stories complete
+      - Full test coverage
+      - Performance validated
+      - User acceptance passed
+      - Monitoring in place
+
+  # DELIVERABLES
+  deliverables:
+    code:
+      - [ ] Feature implementation
+      - [ ] Unit tests
+      - [ ] Integration tests
+      - [ ] Updated types/interfaces
+
+    documentation:
+      - [ ] Feature documentation
+      - [ ] API documentation (if applicable)
+      - [ ] Migration guide (if breaking)
+      - [ ] Updated README
+
+    deployment:
+      - [ ] Deployed to production
+      - [ ] Monitoring configured
+      - [ ] Rollback plan documented
+
+  # QUICK REFERENCE
+  quick_start:
+    step_1: Estimate feature size (small/medium/large)
+    step_2: Follow appropriate workflow path
+    step_3: Use parallel development when possible
+    step_4: Checkpoint daily for medium/large features
+    step_5: Deploy incrementally if possible

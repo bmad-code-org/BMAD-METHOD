@@ -1,0 +1,429 @@
+# Maintenance Workflow
+workflow:
+  id: maintenance
+  name: Bug Fixes, Updates, and Improvements
+  description: Quick turnaround for maintenance tasks
+  duration: 2 hours - 3 days
+  token_budget: 1000-4000
+
+  # TRIAGE (30 minutes)
+  triage:
+    agent: appropriate-developer or lead
+    duration: 30 minutes
+    tokens: 300
+
+    categorize:
+      bug_fix:
+        priority: By impact and users affected
+        sla:
+          critical: 2-4 hours
+          high: 4-8 hours
+          medium: 1-2 days
+          low: 1 week
+
+      dependency_update:
+        priority: By security and compatibility
+        types:
+          security: Immediate
+          major: Plan carefully
+          minor: Low risk
+          patch: Safe to update
+
+      performance_issue:
+        priority: By user impact
+        approach:
+          - Profile first
+          - Fix bottleneck
+          - Measure improvement
+
+      refactoring:
+        priority: By technical debt impact
+        rules:
+          - Don't rewrite
+          - Incremental changes
+          - Maintain functionality
+
+    outputs:
+      - issue-assessment.md
+      - priority-label
+      - assigned-developer
+
+  # BUG FIX WORKFLOW
+  bug_fix:
+    duration: 2-8 hours
+    tokens: 1500
+
+    # Step 1: Reproduce (30 min - 2 hours)
+    reproduce:
+      agent: assigned-developer
+      tasks:
+        - Get reproduction steps
+        - Reproduce locally
+        - Identify affected versions
+        - Check error logs
+      outputs:
+        - Confirmed reproduction
+        - Environment details
+
+    # Step 2: Root Cause Analysis (30 min - 2 hours)
+    analyze:
+      tasks:
+        - Debug the issue
+        - Identify root cause
+        - Assess fix complexity
+        - Check for related bugs
+      outputs:
+        - Root cause identified
+        - Fix approach defined
+
+    # Step 3: Fix Implementation (1-4 hours)
+    fix:
+      tasks:
+        - Implement fix
+        - Add regression test
+        - Update error handling
+        - Verify fix works
+      outputs:
+        - Fixed code
+        - Regression test
+        - Verification proof
+
+    # Step 4: Deploy (30 min - 1 hour)
+    deploy:
+      tasks:
+        - Code review (expedited if critical)
+        - Deploy to staging
+        - Verify fix
+        - Deploy to production
+        - Monitor for issues
+      outputs:
+        - Fix deployed
+        - Monitoring active
+
+    checklist:
+      - [ ] Bug reproduced
+      - [ ] Root cause found
+      - [ ] Fix implemented
+      - [ ] Test added
+      - [ ] Verified working
+      - [ ] Code reviewed
+      - [ ] Deployed to production
+      - [ ] Users notified (if needed)
+
+  # DEPENDENCY UPDATE WORKFLOW
+  dependency_update:
+    duration: 1-4 hours
+    tokens: 1000
+
+    # Step 1: Audit (15-30 min)
+    audit:
+      commands:
+        - npm audit
+        - npm outdated
+        - Check breaking changes
+      outputs:
+        - Vulnerability report
+        - Update candidates
+
+    # Step 2: Update Strategy (15-30 min)
+    strategy:
+      safe_updates:
+        - Patch versions (1.2.3 -> 1.2.4)
+        - Security fixes
+        - No breaking changes
+      careful_updates:
+        - Minor versions (1.2.0 -> 1.3.0)
+        - Check changelog
+        - Test thoroughly
+      major_updates:
+        - Major versions (1.x -> 2.x)
+        - Read migration guide
+        - Plan separate PR
+
+    # Step 3: Update & Test (1-2 hours)
+    update:
+      tasks:
+        - Update dependencies
+        - Fix breaking changes
+        - Run all tests
+        - Check build
+        - Test locally
+      outputs:
+        - Updated package.json
+        - All tests passing
+
+    # Step 4: Deploy (30 min)
+    deploy:
+      tasks:
+        - Code review
+        - Deploy to staging
+        - Smoke test
+        - Deploy to production
+        - Monitor logs
+
+    checklist:
+      - [ ] Dependencies audited
+      - [ ] Breaking changes reviewed
+      - [ ] Updates applied
+      - [ ] Tests passing
+      - [ ] Build successful
+      - [ ] Deployed safely
+
+  # PERFORMANCE OPTIMIZATION WORKFLOW
+  performance:
+    duration: 1-3 days
+    tokens: 3000
+
+    # Step 1: Profile & Measure (2-4 hours)
+    profile:
+      agent: performance-expert or senior-dev
+      tools:
+        frontend:
+          - Chrome DevTools
+          - Lighthouse
+          - Web Vitals
+          - Bundle analyzer
+        backend:
+          - APM tools (New Relic, DataDog)
+          - Database query analysis
+          - CPU/Memory profiling
+          - Network analysis
+      outputs:
+        - Performance baseline
+        - Bottleneck identification
+        - Improvement opportunities
+
+    # Step 2: Optimize (1-2 days)
+    optimize:
+      common_fixes:
+        frontend:
+          - Code splitting
+          - Image optimization
+          - Remove unused code
+          - Lazy loading
+          - Memoization
+        backend:
+          - Database indexing
+          - Query optimization
+          - Caching (Redis)
+          - Connection pooling
+          - Background jobs
+        both:
+          - API response size
+          - Reduce requests
+          - CDN usage
+          - Compression
+
+      tasks:
+        - Implement optimizations
+        - Measure improvements
+        - A/B test if possible
+        - Document changes
+
+    # Step 3: Validate (2-4 hours)
+    validate:
+      metrics:
+        - Page load time
+        - Time to Interactive
+        - API response time
+        - Database query time
+        - Bundle size
+      targets:
+        - 30%+ improvement minimum
+        - Meet performance budget
+        - No regressions
+      outputs:
+        - Performance report
+        - Before/after metrics
+
+    checklist:
+      - [ ] Baseline measured
+      - [ ] Bottlenecks identified
+      - [ ] Optimizations implemented
+      - [ ] Improvements measured
+      - [ ] No regressions
+      - [ ] Deployed to production
+
+  # REFACTORING WORKFLOW
+  refactoring:
+    duration: 1-5 days
+    tokens: 4000
+
+    # Step 1: Plan (2-4 hours)
+    planning:
+      identify:
+        - Code smells
+        - Technical debt
+        - Duplication
+        - Complexity
+      prioritize:
+        - High-traffic code first
+        - Business-critical paths
+        - Frequently changed code
+      scope:
+        - One module at a time
+        - Incremental changes
+        - Maintain tests
+
+    # Step 2: Refactor (1-4 days)
+    refactor:
+      principles:
+        - Keep tests green
+        - Small commits
+        - No behavior changes
+        - Incremental improvements
+      patterns:
+        - Extract methods/components
+        - Remove duplication
+        - Simplify logic
+        - Improve naming
+        - Add types
+      outputs:
+        - Cleaner code
+        - Better structure
+        - Same functionality
+
+    # Step 3: Verify (2-4 hours)
+    verify:
+      checks:
+        - All tests pass
+        - No new bugs
+        - Performance same/better
+        - Code review approval
+      outputs:
+        - Verified refactoring
+        - Documentation updated
+
+    checklist:
+      - [ ] Refactoring plan created
+      - [ ] Code incrementally improved
+      - [ ] Tests still passing
+      - [ ] No functionality changes
+      - [ ] Code reviewed
+      - [ ] Deployed safely
+
+  # SECURITY PATCH WORKFLOW
+  security_patch:
+    duration: 2-8 hours
+    priority: URGENT
+    tokens: 2000
+
+    # Step 1: Assess (30 min)
+    assess:
+      severity:
+        critical: Exploit in the wild
+        high: Easy to exploit
+        medium: Requires conditions
+        low: Theoretical risk
+      impact:
+        - Data exposure risk
+        - System compromise risk
+        - User impact
+      outputs:
+        - Severity assessment
+        - Patch urgency
+
+    # Step 2: Patch (1-4 hours)
+    patch:
+      immediate_actions:
+        - Apply security update
+        - Test critical paths
+        - Deploy to production ASAP
+      follow_up:
+        - Comprehensive testing
+        - Security scan
+        - Audit related code
+
+    # Step 3: Communicate (30 min)
+    communicate:
+      notify:
+        - Security team
+        - Engineering team
+        - Management (if severe)
+        - Users (if data exposure)
+      document:
+        - What was vulnerable
+        - How it was fixed
+        - Impact assessment
+        - Prevention measures
+
+    checklist:
+      - [ ] Vulnerability assessed
+      - [ ] Patch applied
+      - [ ] Testing completed
+      - [ ] Deployed to production
+      - [ ] Security scan clean
+      - [ ] Team notified
+      - [ ] Incident documented
+
+  # COMMON PATTERNS
+  patterns:
+    quick_fix:
+      when: Simple, low-risk change
+      process:
+        - Make fix
+        - Add test
+        - Deploy quickly
+
+    careful_fix:
+      when: Complex or high-risk
+      process:
+        - Thorough analysis
+        - Comprehensive testing
+        - Staged deployment
+
+    hotfix:
+      when: Production is broken
+      process:
+        - Fix on hotfix branch
+        - Minimal testing
+        - Deploy immediately
+        - Thorough testing later
+
+  # ESCALATION
+  escalation:
+    when_to_escalate:
+      - Can't reproduce bug
+      - Fix causes regressions
+      - Security vulnerability
+      - Breaking change needed
+      - Requires architecture change
+
+    escalation_path:
+      - Team lead
+      - Senior developer
+      - Architect
+      - CTO (critical security)
+
+  # SUCCESS METRICS
+  success:
+    bug_fix:
+      - Issue resolved
+      - No regression
+      - Test coverage added
+      - Users satisfied
+
+    update:
+      - Dependencies current
+      - No vulnerabilities
+      - All tests pass
+      - Production stable
+
+    performance:
+      - 30%+ improvement
+      - Targets met
+      - No degradation elsewhere
+
+    refactoring:
+      - Code cleaner
+      - Same functionality
+      - Team velocity maintained
+
+  # DELIVERABLES
+  deliverables:
+    - [ ] Issue resolved
+    - [ ] Tests added/passing
+    - [ ] Code reviewed
+    - [ ] Deployed to production
+    - [ ] Documented (if needed)
+    - [ ] Monitoring confirmed

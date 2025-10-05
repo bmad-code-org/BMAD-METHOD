@@ -1,0 +1,248 @@
+# BMAD Checkpoint Metadata Format
+# Structured format for consistent, searchable, reusable checkpoints
+
+checkpoint:
+  # === METADATA HEADER (Required) ===
+  metadata:
+    id: "checkpoint-{phase}-{timestamp}"  # Unique identifier
+    version: "1.0.0"                      # Checkpoint format version
+    created_at: "2024-01-15T10:30:00Z"    # ISO 8601 timestamp
+    created_by: "agent-role"              # Agent who created checkpoint
+    phase: "architecture"                 # Current phase (requirements/architecture/implementation)
+    project: "project-name"               # Project identifier
+
+    # Token metrics for optimization
+    tokens:
+      original: 4500                      # Tokens before compression
+      compressed: 800                    # Tokens after compression
+      savings_percent: 82                # Percentage saved
+
+    # Searchable tags for retrieval
+    tags:
+      - "authentication"
+      - "rest-api"
+      - "jwt"
+      - "postgresql"
+
+    # Dependencies on other checkpoints
+    dependencies:
+      - "checkpoint-requirements-20240114"
+      - "checkpoint-tech-stack-20240115"
+
+  # === DECISIONS SECTION (Required) ===
+  decisions:
+    # Technology decisions with rationale
+    technology_stack:
+      frontend:
+        framework: "Next.js 14"
+        rationale: "SSR needed for SEO, RSC for performance"
+      backend:
+        framework: "Fastify"
+        rationale: "High performance requirement (10k req/s)"
+      database:
+        primary: "PostgreSQL"
+        rationale: "Complex relationships, ACID compliance"
+
+    # Architecture patterns decided
+    patterns:
+      api_style: "REST"
+      auth_method: "JWT with refresh tokens"
+      state_management: "Zustand + React Query"
+      deployment: "Container-based on AWS ECS"
+
+    # Key constraints identified
+    constraints:
+      performance: "Sub-200ms p95 response time"
+      security: "OWASP Top 10 compliance required"
+      scale: "Support 10,000 concurrent users"
+      budget: "$5,000/month infrastructure"
+
+  # === ARTIFACTS SECTION (Required) ===
+  artifacts:
+    # Created files with paths and purpose
+    created:
+      - path: "docs/architecture/system-design.md"
+        type: "architecture-doc"
+        tokens: 1200
+        purpose: "Complete system architecture"
+
+      - path: "api/openapi-spec.yaml"
+        type: "api-specification"
+        tokens: 800
+        purpose: "REST API contract"
+
+      - path: "database/schema.sql"
+        type: "database-schema"
+        tokens: 600
+        purpose: "PostgreSQL schema with migrations"
+
+    # Modified files
+    modified:
+      - path: "README.md"
+        changes: "Added architecture section"
+
+      - path: "package.json"
+        changes: "Added core dependencies"
+
+    # Files to be created in next phase
+    pending:
+      - "src/services/auth.service.ts"
+      - "src/components/LoginForm.tsx"
+      - "src/api/routes/auth.routes.ts"
+
+  # === CONTEXT SUMMARY (Required) ===
+  summary:
+    # Executive summary (2-3 sentences max)
+    executive: |
+      Designed microservices architecture using Next.js frontend and Fastify backend.
+      JWT authentication with PostgreSQL database, deployed on AWS ECS.
+
+    # Key accomplishments
+    completed:
+      - "Technology stack selected and validated"
+      - "API specification designed (42 endpoints)"
+      - "Database schema with 15 tables defined"
+      - "Security architecture implemented"
+
+    # Critical information for next phase
+    critical_context:
+      - "API rate limiting: 100 req/min for free tier"
+      - "Database indexes needed on user.email and post.created_at"
+      - "Redis required for session management"
+      - "CORS configured for frontend domain only"
+
+    # Known issues or blockers
+    issues:
+      - description: "Payment provider not yet selected"
+        severity: "medium"
+        blocks: "checkout-flow"
+
+      - description: "Email service decision pending"
+        severity: "low"
+        blocks: "user-notifications"
+
+  # === NEXT STEPS (Required) ===
+  next_steps:
+    immediate:
+      - task: "Implement authentication service"
+        assigned_to: "node-backend-developer"
+        priority: "high"
+
+      - task: "Create login/register components"
+        assigned_to: "react-developer"
+        priority: "high"
+
+    parallel_work:
+      - "Frontend team: Build component library"
+      - "Backend team: Implement core API endpoints"
+      - "DevOps: Setup CI/CD pipeline"
+
+    dependencies_needed:
+      - "Finalize payment provider (blocks checkout)"
+      - "Obtain SSL certificates (blocks deployment)"
+
+  # === METRICS (Optional but recommended) ===
+  metrics:
+    # Quantifiable metrics for tracking
+    code_metrics:
+      files_created: 12
+      lines_of_code: 1847
+      test_coverage: 0  # Not yet implemented
+
+    # Performance benchmarks
+    performance:
+      api_response_time: null  # To be measured
+      database_queries: null   # To be optimized
+      bundle_size: null        # To be analyzed
+
+    # Time tracking
+    time_spent:
+      architecture_design: "4 hours"
+      api_specification: "2 hours"
+      database_design: "3 hours"
+      documentation: "1 hour"
+
+  # === HANDOFF PROTOCOL (Required for phase transitions) ===
+  handoff:
+    from_agent: "js-solution-architect"
+    to_agents:
+      - "node-backend-developer"
+      - "react-developer"
+      - "api-developer"
+
+    handoff_message: |
+      Architecture complete. Backend team implement auth first.
+      Frontend team can start component library in parallel.
+      API developer please review and refine endpoint specs.
+
+    validation_checklist:
+      - "[x] All technology decisions documented"
+      - "[x] API specification complete"
+      - "[x] Database schema defined"
+      - "[x] Security requirements clear"
+      - "[x] Performance targets set"
+      - "[ ] Payment provider selected"
+      - "[ ] Email service configured"
+
+# === CHECKPOINT USAGE EXAMPLES ===
+
+# Example 1: Minimal checkpoint (requirements phase)
+checkpoint_minimal:
+  metadata:
+    id: "checkpoint-requirements-20240115"
+    phase: "requirements"
+    tokens: { original: 2000, compressed: 400 }
+
+  decisions:
+    scope: "MVP with user auth, posts, and comments"
+    timeline: "8 weeks"
+    budget: "$50,000"
+
+  artifacts:
+    created:
+      - path: "docs/requirements.md"
+
+  summary:
+    executive: "MVP requirements gathered. Focus on core social features."
+
+  next_steps:
+    immediate:
+      - task: "Design system architecture"
+
+# Example 2: Implementation checkpoint
+checkpoint_implementation:
+  metadata:
+    id: "checkpoint-auth-implementation-20240120"
+    phase: "implementation"
+    tokens: { original: 3000, compressed: 600 }
+
+  decisions:
+    implementation_choices:
+      password_hashing: "bcrypt with 10 rounds"
+      token_storage: "httpOnly cookies"
+      session_length: "7 days"
+
+  artifacts:
+    created:
+      - path: "src/services/auth.service.ts"
+      - path: "src/middleware/auth.middleware.ts"
+      - path: "tests/auth.test.ts"
+
+  summary:
+    executive: "Authentication system fully implemented with JWT."
+    completed:
+      - "Login/logout endpoints"
+      - "Password reset flow"
+      - "Role-based access control"
+
+  next_steps:
+    immediate:
+      - task: "Implement user profile endpoints"
+
+# === CHECKPOINT SEARCH QUERIES ===
+# Checkpoints can be searched by:
+# - metadata.tags: Find all checkpoints with specific tags
+# - metadata.phase: Find checkpoints from specific phase
+# - artifacts.created[].type: Find checkpoints that created specific artifact types
+# - decisions.technology_stack: Find projects using specific technologies
+# - metadata.created_by: Find all checkpoints from specific agent
