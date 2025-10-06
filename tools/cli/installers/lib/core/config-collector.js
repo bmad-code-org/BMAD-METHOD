@@ -10,6 +10,7 @@ class ConfigCollector {
   constructor() {
     this.collectedConfig = {};
     this.existingConfig = null;
+    this.currentProjectDir = null;
   }
 
   /**
@@ -93,6 +94,7 @@ class ConfigCollector {
    * @param {boolean} skipCompletion - Skip showing completion message (for early core collection)
    */
   async collectModuleConfig(moduleName, projectDir, skipLoadExisting = false, skipCompletion = false) {
+    this.currentProjectDir = projectDir;
     // Load existing config if needed and not already loaded
     if (!skipLoadExisting && !this.existingConfig) {
       await this.loadExistingConfig(projectDir);
@@ -280,6 +282,11 @@ class ConfigCollector {
     let questionType = 'input';
     let defaultValue = item.default;
     let choices = null;
+
+    if (typeof defaultValue === 'string' && defaultValue.includes('{directory_name}') && this.currentProjectDir) {
+      const dirName = path.basename(this.currentProjectDir);
+      defaultValue = defaultValue.replaceAll('{directory_name}', dirName);
+    }
 
     // Handle different question types
     if (item['single-select']) {
