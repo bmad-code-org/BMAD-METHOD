@@ -14,6 +14,7 @@ class ManifestGenerator {
     this.tasks = [];
     this.modules = [];
     this.files = [];
+    this.selectedIdes = [];
   }
 
   /**
@@ -22,7 +23,7 @@ class ManifestGenerator {
    * @param {Array} selectedModules - Selected modules for installation
    * @param {Array} installedFiles - All installed files (optional, for hash tracking)
    */
-  async generateManifests(bmadDir, selectedModules, installedFiles = []) {
+  async generateManifests(bmadDir, selectedModules, installedFiles = [], options = {}) {
     // Create _cfg directory if it doesn't exist
     const cfgDir = path.join(bmadDir, '_cfg');
     await fs.ensureDir(cfgDir);
@@ -31,6 +32,17 @@ class ManifestGenerator {
     this.modules = ['core', ...selectedModules];
     this.bmadDir = bmadDir;
     this.allInstalledFiles = installedFiles;
+
+    if (!Object.prototype.hasOwnProperty.call(options, 'ides')) {
+      throw new Error('ManifestGenerator requires `options.ides` to be provided – installer should supply the selected IDEs array.');
+    }
+
+    const resolvedIdes = options.ides ?? [];
+    if (!Array.isArray(resolvedIdes)) {
+      throw new TypeError('ManifestGenerator expected `options.ides` to be an array.');
+    }
+
+    this.selectedIdes = resolvedIdes;
 
     // Collect workflow data
     await this.collectWorkflows(selectedModules);
@@ -324,7 +336,7 @@ class ManifestGenerator {
         lastUpdated: new Date().toISOString(),
       },
       modules: this.modules,
-      ides: ['claude-code'],
+      ides: this.selectedIdes,
     };
 
     const yamlStr = yaml.dump(manifest, {
