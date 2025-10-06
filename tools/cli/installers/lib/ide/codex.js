@@ -81,6 +81,20 @@ class CodexSetup extends BaseIdeSetup {
   }
 
   /**
+   * Detect Codex installation by checking for BMAD prompt exports
+   */
+  async detect(_projectDir) {
+    const destDir = this.getCodexPromptDir();
+
+    if (!(await fs.pathExists(destDir))) {
+      return false;
+    }
+
+    const entries = await fs.readdir(destDir);
+    return entries.some((entry) => entry.startsWith('bmad-'));
+  }
+
+  /**
    * Collect Claude-style artifacts for Codex export.
    * Returns the normalized artifact list for further processing.
    */

@@ -1,7 +1,6 @@
 const fs = require('fs-extra');
 const path = require('node:path');
 const chalk = require('chalk');
-const os = require('node:os');
 
 /**
  * IDE Manager - handles IDE-specific setup
@@ -166,38 +165,9 @@ class IdeManager {
   async detectInstalledIdes(projectDir) {
     const detected = [];
 
-    // Check for IDE-specific directories
-    const ideChecks = {
-      cursor: '.cursor',
-      'claude-code': '.claude',
-      windsurf: '.windsurf',
-      cline: '.clinerules',
-      roo: '.roomodes',
-      trae: '.trae',
-      kilo: '.kilocodemodes',
-      gemini: '.gemini',
-      qwen: '.qwen',
-      crush: '.crush',
-      iflow: '.iflow',
-      auggie: '.auggie',
-      'github-copilot': '.github/chatmodes',
-      vscode: '.vscode',
-      idea: '.idea',
-    };
-
-    for (const [ide, dir] of Object.entries(ideChecks)) {
-      const idePath = path.join(projectDir, dir);
-      if (await fs.pathExists(idePath)) {
-        detected.push(ide);
-      }
-    }
-
-    // Check Codex prompt directory for BMAD exports
-    const codexPromptDir = path.join(os.homedir(), '.codex', 'prompts');
-    if (await fs.pathExists(codexPromptDir)) {
-      const codexEntries = await fs.readdir(codexPromptDir);
-      if (codexEntries.some((file) => file.startsWith('bmad-'))) {
-        detected.push('codex');
+    for (const [name, handler] of this.handlers) {
+      if (typeof handler.detect === 'function' && (await handler.detect(projectDir))) {
+        detected.push(name);
       }
     }
 

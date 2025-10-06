@@ -16,6 +16,7 @@ class AuggieSetup extends BaseIdeSetup {
       { name: 'User Home (~/.auggie/commands)', value: path.join(os.homedir(), '.auggie', 'commands') },
       { name: 'Custom Location', value: 'custom' },
     ];
+    this.detectionPaths = ['.auggie'];
   }
 
   /**
