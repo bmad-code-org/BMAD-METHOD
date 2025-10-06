@@ -12,11 +12,11 @@ class AuggieSetup extends BaseIdeSetup {
   constructor() {
     super('auggie', 'Auggie CLI');
     this.defaultLocations = [
-      { name: 'Project Directory (.auggie/commands)', value: '.auggie/commands', checked: true },
-      { name: 'User Home (~/.auggie/commands)', value: path.join(os.homedir(), '.auggie', 'commands') },
+      { name: 'Project Directory (.augment/commands)', value: '.augment/commands', checked: true },
+      { name: 'User Home (~/.augment/commands)', value: path.join(os.homedir(), '.augment', 'commands') },
       { name: 'Custom Location', value: 'custom' },
     ];
-    this.detectionPaths = ['.auggie'];
+    this.detectionPaths = ['.augment'];
   }
 
   /**
@@ -141,7 +141,7 @@ class AuggieSetup extends BaseIdeSetup {
       // Process the pre-collected locations to resolve relative paths
       const processedLocations = [];
       for (const loc of options.auggieLocations) {
-        if (loc === '.auggie/commands') {
+        if (loc === '.augment/commands') {
           // Relative to project directory
           processedLocations.push(path.join(projectDir, loc));
         } else {
@@ -183,7 +183,7 @@ class AuggieSetup extends BaseIdeSetup {
           },
         ]);
         locations.push(custom.path);
-      } else if (loc.startsWith('.auggie')) {
+      } else if (loc.startsWith('.augment')) {
         // Relative to project directory
         locations.push(path.join(projectDir, loc));
       } else {
@@ -239,7 +239,7 @@ BMAD ${task.module.toUpperCase()} module
     const fs = require('fs-extra');
 
     // Check common locations
-    const locations = [path.join(os.homedir(), '.auggie', 'commands'), path.join(projectDir, '.auggie', 'commands')];
+    const locations = [path.join(os.homedir(), '.augment', 'commands'), path.join(projectDir, '.augment', 'commands')];
 
     for (const location of locations) {
       const agentsDir = path.join(location, 'agents');
