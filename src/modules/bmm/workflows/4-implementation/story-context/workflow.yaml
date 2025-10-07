@@ -11,7 +11,7 @@ communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/story-context"
+installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/story-context"
 template: "{installed_path}/context-template.xml"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
