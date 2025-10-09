@@ -50,7 +50,7 @@ const AgentPartyGenerator = {
       <role>${this.escapeXml(agent.role || '')}</role>
       <identity>${this.escapeXml(agent.identity || '')}</identity>
       <communication_style>${this.escapeXml(agent.communicationStyle || '')}</communication_style>
-      <principles>${agent.principles || ''}</principles>
+      <principles>${this.escapeXml(agent.principles || '')}</principles>
     </persona>
   </agent>\n`;
       }

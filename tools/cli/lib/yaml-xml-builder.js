@@ -234,13 +234,31 @@ class YamlXmlBuilder {
     }
 
     if (persona.principles) {
-      // Principles can be array or string
-      let principlesText;
+      // Principles can be array, object, or string
+      let principlesText = '';
+
+      const stringifyEntry = (entry) => {
+        if (entry == null) return '';
+        if (typeof entry === 'string') return entry;
+        if (Array.isArray(entry)) return entry.map(stringifyEntry).filter(Boolean).join(' ');
+        if (typeof entry === 'object') {
+          const pairs = Object.entries(entry).map(([k, v]) => {
+            const vStr = Array.isArray(v) ? v.map(String).join(' ') : String(v ?? '');
+            return `${k}: ${vStr}`;
+          });
+          return pairs.join(' ');
+        }
+        return String(entry);
+      };
+
       if (Array.isArray(persona.principles)) {
-        principlesText = persona.principles.join(' ');
+        principlesText = persona.principles.map(stringifyEntry).filter(Boolean).join(' ');
+      } else if (typeof persona.principles === 'object') {
+        principlesText = stringifyEntry(persona.principles);
       } else {
-        principlesText = persona.principles;
+        principlesText = String(persona.principles);
       }
+
       xml += `    <principles>${this.escapeXml(principlesText)}</principles>\n`;
     }
 
