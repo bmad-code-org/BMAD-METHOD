@@ -9,6 +9,6 @@ date: system-generated
 
 # This is an action workflow - no template output
 template: false
-instructions: "{project-root}/src/core/workflows/bmad-init/instructions.md"
+instructions: "{project-root}/bmad/core/workflows/bmad-init/instructions.md"
 
 web_bundle: false
