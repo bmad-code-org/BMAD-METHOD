@@ -251,7 +251,7 @@ Modules are what we used to call Expansion Packs. A new repository to contribute
 
 What used to be tasks and create-doc templates are now all workflows! Simpler, yet more powerful and support many ways of achieving many different outcomes! A lot more documentation will be coming. This document is used by the agent builder to generate workflows or convert to workflows, but there is a lot more than what we have documented here in this alpha doc.
 
-- [Workflow Creation Guide](src/modules/bmb/workflows/create-workflow/workflow-creation-guide)
+- [Workflow Creation Guide](src/modules/bmb/workflows/create-workflow/workflow-creation-guide.md)
 
 ### Installer Changes
 
