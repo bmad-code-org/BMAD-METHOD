@@ -38,7 +38,7 @@ so that {{benefit}}.
 
 ### Context Reference
 
-<!-- Path(s) to story context XML/JSON will be added here by context workflow -->
+<!-- Path(s) to story context XML will be added here by context workflow -->
 
 ### Agent Model Used
 

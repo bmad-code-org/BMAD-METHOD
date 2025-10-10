@@ -43,7 +43,7 @@ The BMM (BMAD Method Module) orchestrates software development through four dist
 │                   PHASE 3: SOLUTIONING                       │
 │                    (Levels 3-4 Only)                         │
 ├──────────────────────────────────────────────────────────────┤
-│  3-solutioning ──→ Architecture.md                           │
+│  3-solutioning ──→ solution-architecture.md                  │
 │       ↓                                                      │
 │  tech-spec (per epic, JIT during implementation)             │
 └────────────────────────────────────────────────────────────┬─┘
@@ -126,10 +126,10 @@ Architecture and technical design phase for complex projects.
 
 ### Workflows
 
-| Workflow          | Owner     | Purpose                        | Output                    | Timing            |
-| ----------------- | --------- | ------------------------------ | ------------------------- | ----------------- |
-| **3-solutioning** | Architect | Create overall architecture    | Architecture.md with ADRs | Once per project  |
-| **tech-spec**     | Architect | Create epic-specific tech spec | tech-spec-epic-N.md       | One per epic, JIT |
+| Workflow          | Owner     | Purpose                        | Output                             | Timing            |
+| ----------------- | --------- | ------------------------------ | ---------------------------------- | ----------------- |
+| **3-solutioning** | Architect | Create overall architecture    | solution-architecture.md with ADRs | Once per project  |
+| **tech-spec**     | Architect | Create epic-specific tech spec | tech-spec-epic-N.md                | One per epic, JIT |
 
 ### Just-In-Time Tech Specs
 
@@ -258,7 +258,7 @@ plan-project (Phase 2)
 
 - **Phase 1**: Briefs and research documents
 - **Phase 2**: PRD, Epics, or tech-spec based on level
-- **Phase 3**: Architecture.md, epic-specific tech specs
+- **Phase 3**: solution-architecture.md, epic-specific tech specs
 - **Phase 4**: Story files, context XMLs, implemented code
 
 ## Best Practices

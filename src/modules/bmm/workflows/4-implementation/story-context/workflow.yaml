@@ -27,7 +27,7 @@ variables:
   non_interactive: true
 
 # Output configuration
-default_output_file: "{output_folder}/story-context-{{epic_id}}.{{story_id}}.xml"
+default_output_file: "{story_dir}/story-context-{{epic_id}}.{{story_id}}.xml"
 
 # Recommended inputs
 recommended_inputs:

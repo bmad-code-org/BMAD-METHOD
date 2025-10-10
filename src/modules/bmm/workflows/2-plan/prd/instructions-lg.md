@@ -189,7 +189,7 @@ Since this is a Level {{project_level}} project, you need architecture before st
 - Run `architecture` workflow
 - Consider reference architectures
 - Generate solution fragments
-- Create architecture.md
+- Create solution-architecture.md
 
 ## Complete Next Steps Checklist
 
@@ -200,18 +200,18 @@ Since this is a Level {{project_level}} project, you need architecture before st
 - [ ] **Run architecture workflow** (REQUIRED)
   - Command: `workflow architecture`
   - Input: PRD.md, epics.md
-  - Output: architecture.md
+  - Output: solution-architecture.md
 
 <check if="project has significant UX/UI components (Level 3-4 typically does)">
 
-- [ ] **Run UX specification workflow** (HIGHLY RECOMMENDED for user-facing systems) - Command: `workflow plan-project` then select "UX specification" - Or continue within this workflow if UI-heavy - Input: PRD.md, epics.md, architecture.md (once available) - Output: ux-specification.md - Optional: AI Frontend Prompt for rapid prototyping - Note: Creates comprehensive UX/UI spec including IA, user flows, components
+- [ ] **Run UX specification workflow** (HIGHLY RECOMMENDED for user-facing systems) - Command: `workflow plan-project` then select "UX specification" - Or continue within this workflow if UI-heavy - Input: PRD.md, epics.md, solution-architecture.md (once available) - Output: ux-specification.md - Optional: AI Frontend Prompt for rapid prototyping - Note: Creates comprehensive UX/UI spec including IA, user flows, components
       </check>
 
 ### Phase 2: Detailed Planning
 
 - [ ] **Generate detailed user stories**
   - Command: `workflow generate-stories`
-  - Input: epics.md + architecture.md
+  - Input: epics.md + solution-architecture.md
   - Output: user-stories.md with full acceptance criteria
 
 - [ ] **Create technical design documents**

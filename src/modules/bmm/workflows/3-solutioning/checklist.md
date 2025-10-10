@@ -53,7 +53,7 @@ Use this checklist during workflow execution and review.
 
 - [ ] Template sections determined dynamically
 - [ ] User approved section list
-- [ ] architecture.md generated with ALL sections
+- [ ] solution-architecture.md generated with ALL sections
 - [ ] Technology and Library Decision Table included with specific versions
 - [ ] Proposed Source Tree included
 - [ ] Design-level only (no extensive code)
@@ -76,7 +76,7 @@ Use this checklist during workflow execution and review.
 - [ ] DevOps assessed (simple inline or complex placeholder)
 - [ ] Security assessed (simple inline or complex placeholder)
 - [ ] Testing assessed (simple inline or complex placeholder)
-- [ ] Specialist sections added to END of architecture.md
+- [ ] Specialist sections added to END of solution-architecture.md
 
 ### Step 8: PRD Updates (Optional)
 
@@ -105,7 +105,7 @@ Use this checklist during workflow execution and review.
 
 ### Technology and Library Decision Table
 
-- [ ] Table exists in architecture.md
+- [ ] Table exists in solution-architecture.md
 - [ ] ALL technologies have specific versions (e.g., "pino 8.17.0")
 - [ ] NO vague entries ("a logging library", "appropriate caching")
 - [ ] NO multi-option entries without decision ("Pino or Winston")
@@ -113,7 +113,7 @@ Use this checklist during workflow execution and review.
 
 ### Proposed Source Tree
 
-- [ ] Section exists in architecture.md
+- [ ] Section exists in solution-architecture.md
 - [ ] Complete directory structure shown
 - [ ] For polyrepo: ALL repo structures included
 - [ ] Matches technology stack conventions
@@ -137,7 +137,7 @@ Use this checklist during workflow execution and review.
 
 ### Required Files
 
-- [ ] /docs/architecture.md (or solution-architecture.md)
+- [ ] /docs/solution-architecture.md (or architecture.md)
 - [ ] /docs/cohesion-check-report.md
 - [ ] /docs/epic-alignment-matrix.md
 - [ ] /docs/tech-spec-epic-1.md
@@ -153,7 +153,7 @@ Use this checklist during workflow execution and review.
 ### Updated Files
 
 - [ ] analysis-template.md (workflow status updated)
-- [ ] prd.md (if architectural discoveries required updates)
+- [ ] PRD.md (if architectural discoveries required updates)
 
 ## Next Steps After Workflow
 

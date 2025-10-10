@@ -12,7 +12,7 @@
     <action>Resolve variables from config_source: story_dir (dev_story_location), output_folder, user_name, communication_language. If story_dir missing and {{non_interactive}} == false → ASK user to provide a stories directory and update variable. If {{non_interactive}} == true and missing, HALT with a clear message.</action>
     <action>Create {{story_dir}} if it does not exist</action>
     <action>Resolve installed component paths from workflow.yaml: template, instructions, validation</action>
-    <action>Resolve recommended inputs if present: epics_file, prd_file, hla_file</action>
+    <action>Resolve recommended inputs if present: epics_file, prd_file, solution-architecture_file</action>
   </step>
 
   <step n="2" goal="Discover and load source documents">
@@ -21,7 +21,7 @@
       1) tech_spec_file (epic-scoped)
       2) epics_file (acceptance criteria and breakdown)
       3) prd_file (business requirements and constraints)
-      4) hla_file (architecture constraints)
+      4) solution-architecture_file (architecture constraints)
       5) Architecture docs under docs/ and output_folder/: tech-stack.md, unified-project-structure.md, coding-standards.md, testing-strategy.md, backend-architecture.md, frontend-architecture.md, data-models.md, database-schema.md, rest-api-spec.md, external-apis.md (include if present)
     </action>
     <action>READ COMPLETE FILES for all items found in the prioritized set. Store content and paths for citation.</action>
@@ -42,7 +42,7 @@
 
   <step n="4" goal="Extract requirements and derive story statement">
     <action>From tech_spec_file (preferred) or epics_file: extract epic {{epic_num}} title/summary, acceptance criteria for the next story, and any component references. If not present, fall back to PRD sections mapping to this epic/story.</action>
-    <action>From hla and architecture docs: extract constraints, patterns, component boundaries, and testing guidance relevant to the extracted ACs. ONLY capture information that directly informs implementation of this story.</action>
+    <action>From solution-architecture and architecture docs: extract constraints, patterns, component boundaries, and testing guidance relevant to the extracted ACs. ONLY capture information that directly informs implementation of this story.</action>
     <action>Derive a clear user story statement (role, action, benefit) grounded strictly in the above sources. If ambiguous and {{non_interactive}} == false → ASK user to clarify. If {{non_interactive}} == true → generate the best grounded statement WITHOUT inventing domain facts.</action>
     <template-output file="{default_output_file}">requirements_context_summary</template-output>
   </step>

@@ -368,7 +368,7 @@ Sub-step 6.2: Fill Template Placeholders
    - Ask user for any missing information
    - Generate appropriate content based on user_skill_level
 
-8. Generate final architecture.md document
+8. Generate final solution-architecture.md document
 
 CRITICAL REQUIREMENTS:
 - MUST include "Technology and Library Decisions" section with table:
@@ -438,7 +438,7 @@ Run cohesion check validation inline (NO separate workflow for now):
 5. Generate Epic Alignment Matrix:
    | Epic | Stories | Components | Data Models | APIs | Integration Points | Status |
 
-   This matrix is SEPARATE OUTPUT (not in architecture.md)
+   This matrix is SEPARATE OUTPUT (not in solution-architecture.md)
 
 6. Generate Cohesion Check Report with:
    - Executive summary (READY vs GAPS)
@@ -464,7 +464,7 @@ Issues found:
 {{list_critical_issues}}
 
 Options:
-1. I'll fix these issues now (update architecture.md)
+1. I'll fix these issues now (update solution-architecture.md)
 2. You'll fix them manually
 3. Proceed anyway (not recommended)
 
@@ -478,7 +478,7 @@ Proceed? (y/n)
 </ask>
 
 <action if="user_chooses_option_1">
-Update architecture.md to address critical issues, then re-validate.
+Update solution-architecture.md to address critical issues, then re-validate.
 </action>
 </step>
 
@@ -498,7 +498,7 @@ Testing Assessment:
 - Simple: Basic unit + E2E → Handle INLINE
 - Complex: Mission-critical UI, comprehensive coverage needed → Create PLACEHOLDER
 
-For INLINE: Add 1-3 paragraph sections to architecture.md
+For INLINE: Add 1-3 paragraph sections to solution-architecture.md
 For PLACEHOLDER: Add handoff section with specialist agent invocation instructions
 </action>
 
@@ -522,7 +522,7 @@ I'll handle {{specialist_area}} inline with essentials.
 </ask>
 
 <action>
-Update architecture.md with specialist sections (inline or placeholders) at the END of document.
+Update solution-architecture.md with specialist sections (inline or placeholders) at the END of document.
 </action>
 
 <template-output>specialist_sections</template-output>
@@ -598,12 +598,12 @@ For polyrepo projects:
    Example: frontend-repo, api-repo, worker-repo, mobile-repo
 
 2. Strategy: Copy FULL documentation to ALL repos
-   - architecture.md → Copy to each repo
+   - solution-architecture.md → Copy to each repo
    - tech-spec-epic-X.md → Copy to each repo (full set)
    - cohesion-check-report.md → Copy to each repo
 
 3. Add repo-specific README pointing to docs:
-   "See /docs/architecture.md for complete solution architecture"
+   "See /docs/solution-architecture.md for complete solution architecture"
 
 4. Later phases extract per-epic and per-story contexts as needed
 
@@ -621,7 +621,7 @@ For monorepo projects:
 <action>
 Final validation checklist:
 
-- [x] architecture.md exists and is complete
+- [x] solution-architecture.md exists and is complete
 - [x] Technology and Library Decision Table has specific versions
 - [x] Proposed Source Tree section included
 - [x] Cohesion check passed (or issues addressed)

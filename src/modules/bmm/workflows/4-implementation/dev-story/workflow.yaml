@@ -24,8 +24,8 @@ variables:
   strict: true # if true, halt on validation failures
   story_dir: "{config_source}:dev_story_location" # Directory containing story markdown files
   story_selection_limit: 10
-  run_until_complete: true # Continue through all tasks without pausing except on HALT conditions
-  force_yolo: true # Hint executor to activate #yolo: skip optional prompts and elicitation
+  run_until_complete: false # Continue through all tasks without pausing except on HALT conditions
+  force_yolo: false # Hint executor to activate #yolo: skip optional prompts and elicitation
 
 # Recommended inputs
 recommended_inputs:

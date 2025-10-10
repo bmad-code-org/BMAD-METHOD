@@ -11,8 +11,8 @@ date: system-generated
 
 # Inputs expected (ask user if missing)
 recommended_inputs:
-  - prd: "{project-root}/docs/prd.md"
-  - architecture: "{project-root}/docs/architecture.md"
+  - prd: "{project-root}/docs/PRD.md"
+  - architecture: "{project-root}/docs/solution-architecture.md"
   - frontend_spec: "{project-root}/docs/front-end-spec.md"
   - brownfield_notes: "{project-root}/docs/brownfield-notes.md"
 
