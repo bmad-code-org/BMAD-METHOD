@@ -1,0 +1,99 @@
+# Review Story Workflow
+name: review-story
+description: "Perform a Senior Developer Review on a completed story flagged Ready for Review, leveraging story-context, epic tech-spec, repo docs, MCP servers for latest best-practices, and web search as fallback. Appends structured review notes to the story."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/review-story"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# This is an action workflow (no output template document)
+template: false
+
+# Variables (can be provided by caller)
+variables:
+  story_path: "" # Explicit path to a story markdown file
+  story_dir: "{config_source}:dev_story_location" # Directory containing story markdown files
+  story_selection_limit: 10
+  allow_status_values: |
+    - Ready for Review
+    - Review
+  auto_discover_context: true
+  auto_discover_tech_spec: true
+  tech_spec_search_dir: "{project-root}/docs"
+  tech_spec_glob_template: "tech-spec-epic-{{epic_num}}*.md"
+  arch_docs_search_dirs: |
+    - "{project-root}/docs"
+    - "{output_folder}"
+  arch_docs_file_names: |
+    - prd.md
+    - epics.md
+    - high-level-architecture.md
+    - tech-stack.md
+    - unified-project-structure.md
+    - coding-standards.md
+    - testing-strategy.md
+    - security-guidelines.md
+    - backend-architecture.md
+    - frontend-architecture.md
+    - data-models.md
+    - database-schema.md
+    - rest-api-spec.md
+    - external-apis.md
+  enable_mcp_doc_search: true # Prefer enabled MCP servers for doc/best-practice lookup
+  enable_web_fallback: true # Fallback to web search/read-url if MCP not available
+  update_status_on_result: false # If true, update story Status based on review outcome
+  status_on_approve: "Done"
+  status_on_changes_requested: "InProgress"
+  # Persistence controls for review action items and notes
+  persist_action_items: true
+  # Valid targets: story_tasks, story_review_section, backlog_file, epic_followups
+  persist_targets: |
+    - story_review_section
+    - story_tasks
+    - backlog_file
+    - epic_followups
+  backlog_file: "{project-root}/docs/backlog.md"
+  update_epic_followups: true
+  epic_followups_section_title: "Post-Review Follow-ups"
+  create_github_issues: false
+  non_interactive: true
+
+# Recommended inputs
+recommended_inputs:
+  - story_markdown: "Path to the story markdown file flagged Ready for Review"
+  - tech_spec: "Epic technical specification document (auto-discovered if omitted)"
+  - story_context: "Story Context XML/JSON path (auto-discovered if omitted)"
+
+# Required tools (conceptual; executor should provide equivalents)
+required_tools:
+  - list_files
+  - file_info
+  - read_file
+  - write_file
+  - search_repo
+  - parse_markdown
+  - glob
+  - mcp_doc_search # Use available MCP servers to search docs/best-practices
+  - web_search # Fallback research
+  - read_url # Fetch references
+
+tags:
+  - review
+  - code-review
+  - quality
+  - testing
+  - bmad-v6
+
+execution_hints:
+  interactive: false # Minimize prompts; intended to run deterministically
+  autonomous: true # Proceed without user input unless blocked
+  iterative: true

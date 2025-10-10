@@ -1,0 +1,128 @@
+[
+  {
+    "title": "T1.1 Project bootstrap & repo",
+    "body": "Create Expo RN scaffold, CI skeleton, README, .env pattern. Acceptance: `expo start` runs; README shows dev steps.",
+    "labels": ["P0","sprint0"],
+    "estimate_hours": 4,
+    "epic": "Capture & Local Storage"
+  },
+  {
+    "title": "T1.2 Local DB & journaling core",
+    "body": "Implement Entry model, CRUD, tags, search. Offline-first confirmed. Acceptance: create/edit/delete/search works offline.",
+    "labels": ["P0","sprint1"],
+    "estimate_hours": 20,
+    "epic": "Capture & Local Storage"
+  },
+  {
+    "title": "T1.3 UI: Home, New Entry, Entry Detail, Tags",
+    "body": "Navigation, quick-capture FAB, tag picker. Acceptance: screens wired and functional.",
+    "labels": ["P0","sprint1"],
+    "estimate_hours": 18,
+    "epic": "Capture & Local Storage"
+  },
+  {
+    "title": "T1.4 Settings & API key dev mode",
+    "body": "Settings: env entry for API keys, anonymize toggle, retention chooser. Acceptance: keys stored securely; toggles persist.",
+    "labels": ["P0","sprint0"],
+    "estimate_hours": 6,
+    "epic": "Capture & Local Storage"
+  },
+  {
+    "title": "T1.5 Audio capture UI & file storage",
+    "body": "Record/pause/stop, preview, Transcribe button. Acceptance: local audio saved and playable.",
+    "labels": ["P0","sprint1"],
+    "estimate_hours": 12,
+    "epic": "Audio & Transcription"
+  },
+  {
+    "title": "T1.6 Serverless: signed-upload endpoint skeleton",
+    "body": "Deploy serverless function to create signed upload URL. Acceptance: client can upload using signed URL.",
+    "labels": ["P0","server"],
+    "estimate_hours": 8,
+    "epic": "Audio & Transcription"
+  },
+  {
+    "title": "T1.7 Integrate upload + client wiring",
+    "body": "Client uploads and notifies server to start transcription. Acceptance: server receives upload metadata and job enqueued.",
+    "labels": ["P0","server","client"],
+    "estimate_hours": 8,
+    "epic": "Audio & Transcription"
+  },
+  {
+    "title": "T2.1 Whisper transcription worker (serverless)",
+    "body": "Server downloads audio, calls Whisper, returns transcript and deletes audio. Acceptance: transcript returned; audio removed.",
+    "labels": ["P0","server"],
+    "estimate_hours": 12,
+    "epic": "Audio & Transcription"
+  },
+  {
+    "title": "T2.2 Client transcript UI + anonymize editing",
+    "body": "Edit transcript, auto-detect PII, anonymize toggle. Acceptance: sanitized text shown and editable.",
+    "labels": ["P0","client"],
+    "estimate_hours": 8,
+    "epic": "Audio & Transcription"
+  },
+  {
+    "title": "T2.3 Serverless OpenAI generation proxy (/generate-post)",
+    "body": "Proxy OpenAI calls, apply system prompt, return variants, log token usage. Acceptance: variants returned; usage logged.",
+    "labels": ["P0","server"],
+    "estimate_hours": 12,
+    "epic": "Generation & Drafting"
+  },
+  {
+    "title": "T2.4 Client convert UI & draft editor",
+    "body": "Show variants, hashtags, CTA; edit and copy/publish. Acceptance: edit & publish flows functional.",
+    "labels": ["P0","client"],
+    "estimate_hours": 10,
+    "epic": "Generation & Drafting"
+  },
+  {
+    "title": "T2.5 LinkedIn OAuth & publish endpoint",
+    "body": "Implement OAuth server flow; publish UGC on behalf of user. Acceptance: successful post returned; tokens stored securely.",
+    "labels": ["P0","server","integration"],
+    "estimate_hours": 16,
+    "epic": "Publishing & Integrations"
+  },
+  {
+    "title": "T2.6 Fallback publish flows (client)",
+    "body": "Copy-to-clipboard, native share sheet, share-offsite link. Acceptance: fallback works on iOS & Android.",
+    "labels": ["P0","client"],
+    "estimate_hours": 6,
+    "epic": "Publishing & Integrations"
+  },
+  {
+    "title": "T3.1 Retention & soft-delete + purge engine",
+    "body": "UI for retention; purge engine respects TTL. Acceptance: soft-delete and purge verified.",
+    "labels": ["P0","server","ops"],
+    "estimate_hours": 10,
+    "epic": "Privacy & Retention"
+  },
+  {
+    "title": "T3.2 Consent logs & processing events",
+    "body": "Record per-entry processing events and consent. Acceptance: logs viewable and exportable.",
+    "labels": ["P0","server"],
+    "estimate_hours": 6,
+    "epic": "Privacy & Retention"
+  },
+  {
+    "title": "T3.3 Cost controls & quotas",
+    "body": "Enforce daily generation caps; show usage in UI. Acceptance: quotas enforced; UI shows remaining usage.",
+    "labels": ["P0","ops"],
+    "estimate_hours": 8,
+    "epic": "Release & Ops"
+  },
+  {
+    "title": "T3.4 Build & store prep",
+    "body": "Prepare TestFlight / Play Store builds, privacy policy, screenshots. Acceptance: builds uploaded; privacy policy included.",
+    "labels": ["P0","release"],
+    "estimate_hours": 12,
+    "epic": "Release & Ops"
+  },
+  {
+    "title": "T3.5 Buffer & polish",
+    "body": "Fix critical bugs, UX polish, monitoring alerts. Acceptance: no critical bugs; monitoring enabled.",
+    "labels": ["P0","polish"],
+    "estimate_hours": 12,
+    "epic": "Release & Ops"
+  }
+]

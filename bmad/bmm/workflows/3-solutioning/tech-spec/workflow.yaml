@@ -1,0 +1,51 @@
+name: tech-spec
+description: "Generate a comprehensive Technical Specification from PRD and Architecture with acceptance criteria and traceability mapping"
+author: "BMAD BMM"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Inputs expected (ask user if missing)
+recommended_inputs:
+  - prd: "{project-root}/docs/prd.md"
+  - architecture: "{project-root}/docs/architecture.md"
+  - frontend_spec: "{project-root}/docs/front-end-spec.md"
+  - brownfield_notes: "{project-root}/docs/brownfield-notes.md"
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/3-solutioning/tech-spec"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Output configuration
+default_output_file: "{project-root}/docs/tech-spec-epic-{{epic_id}}.md"
+
+# Required tools
+required_tools:
+  - list_files
+  - file_info
+  - read_file
+  - write_file
+  - search_repo
+  - glob
+  - parse_markdown
+
+tags:
+  - tech-spec
+  - architecture
+  - planning
+  - bmad-v6
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: true
+
+# Variables
+variables:
+  non_interactive: true

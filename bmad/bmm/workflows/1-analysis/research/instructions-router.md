@@ -1,0 +1,91 @@
+# Research Workflow Router Instructions
+
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>This is a ROUTER that directs to specialized research instruction sets</critical>
+
+<!-- IDE-INJECT-POINT: research-subagents -->
+
+<workflow>
+
+<step n="1" goal="Welcome and Research Type Selection">
+<action>Welcome the user to the Research Workflow</action>
+
+**The Research Workflow supports multiple research types:**
+
+Present the user with research type options:
+
+**What type of research do you need?**
+
+1. **Market Research** - Comprehensive market analysis with TAM/SAM/SOM calculations, competitive intelligence, customer segments, and go-to-market strategy
+   - Use for: Market opportunity assessment, competitive landscape analysis, market sizing
+   - Output: Detailed market research report with financials
+
+2. **Deep Research Prompt Generator** - Create structured, multi-step research prompts optimized for AI platforms (ChatGPT, Gemini, Grok, Claude)
+   - Use for: Generating comprehensive research prompts, structuring complex investigations
+   - Output: Optimized research prompt with framework, scope, and validation criteria
+
+3. **Technical/Architecture Research** - Evaluate technology stacks, architecture patterns, frameworks, and technical approaches
+   - Use for: Tech stack decisions, architecture pattern selection, framework evaluation
+   - Output: Technical research report with recommendations and trade-off analysis
+
+4. **Competitive Intelligence** - Deep dive into specific competitors, their strategies, products, and market positioning
+   - Use for: Competitor deep dives, competitive strategy analysis
+   - Output: Competitive intelligence report
+
+5. **User Research** - Customer insights, personas, jobs-to-be-done, and user behavior analysis
+   - Use for: Customer discovery, persona development, user journey mapping
+   - Output: User research report with personas and insights
+
+6. **Domain/Industry Research** - Deep dive into specific industries, domains, or subject matter areas
+   - Use for: Industry analysis, domain expertise building, trend analysis
+   - Output: Domain research report
+
+<ask>Select a research type (1-6) or describe your research needs:</ask>
+
+<action>Capture user selection as {{research_type}}</action>
+
+</step>
+
+<step n="2" goal="Route to Appropriate Research Instructions">
+
+<critical>Based on user selection, load the appropriate instruction set</critical>
+
+<check>If research_type == "1" OR "market" OR "market research":</check>
+<action>Set research_mode = "market"</action>
+<action>LOAD: {installed_path}/instructions-market.md</action>
+<action>Continue with market research workflow</action>
+
+<check>If research_type == "2" OR "prompt" OR "deep research prompt":</check>
+<action>Set research_mode = "deep-prompt"</action>
+<action>LOAD: {installed_path}/instructions-deep-prompt.md</action>
+<action>Continue with deep research prompt generation</action>
+
+<check>If research_type == "3" OR "technical" OR "architecture":</check>
+<action>Set research_mode = "technical"</action>
+<action>LOAD: {installed_path}/instructions-technical.md</action>
+<action>Continue with technical research workflow</action>
+
+<check>If research_type == "4" OR "competitive":</check>
+<action>Set research_mode = "competitive"</action>
+<action>This will use market research workflow with competitive focus</action>
+<action>LOAD: {installed_path}/instructions-market.md</action>
+<action>Pass mode="competitive" to focus on competitive intelligence</action>
+
+<check>If research_type == "5" OR "user":</check>
+<action>Set research_mode = "user"</action>
+<action>This will use market research workflow with user research focus</action>
+<action>LOAD: {installed_path}/instructions-market.md</action>
+<action>Pass mode="user" to focus on customer insights</action>
+
+<check>If research_type == "6" OR "domain" OR "industry":</check>
+<action>Set research_mode = "domain"</action>
+<action>This will use market research workflow with domain focus</action>
+<action>LOAD: {installed_path}/instructions-market.md</action>
+<action>Pass mode="domain" to focus on industry/domain analysis</action>
+
+<critical>The loaded instruction set will continue from here with full context</critical>
+
+</step>
+
+</workflow>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Journaling AI Demo Client</title>
+  <style>
+    body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; padding: 20px; max-width: 900px; margin: auto }
+    label { display:block; margin-top: 12px }
+    button { margin-right: 8px }
+    textarea { width:100%; min-height: 120px }
+    pre { background:#f6f8fa; padding:12px; overflow:auto }
+    .row { display:flex; gap:8px; align-items:center }
+  </style>
+</head>
+<body>
+  <h1>Journaling → AI → LinkedIn (Demo)</h1>
+  <p>Lightweight browser demo to test the serverless endpoints. Set <code>API_BASE</code> to your deployed server URL (no trailing slash).</p>
+
+  <label>API Base URL
+    <input id="apiBase" type="text" placeholder="https://your-server.com" style="width:100%" />
+  </label>
+
+  <h2>1) Capture</h2>
+  <div>
+    <div class="row">
+      <button id="startRec">Start Record</button>
+      <button id="stopRec" disabled>Stop</button>
+      <button id="uploadAudio" disabled>Upload & Transcribe</button>
+      <span id="recStatus">Idle</span>
+    </div>
+    <p>Or paste/enter a transcript below manually.</p>
+  </div>
+
+  <label>Transcript (paste or use transcription)
+    <textarea id="transcript" placeholder="Transcript will appear here after transcription or paste your text..."></textarea>
+  </label>
+
+  <h2>2) Convert</h2>
+  <div>
+    <label>Tone
+      <select id="tone"><option value="professional">Professional</option><option value="thought-leadership">Thought‑leadership</option><option value="casual">Casual</option></select>
+    </label>
+
+    <label>Max chars
+      <select id="maxchars"><option value="280">280</option><option value="400" selected>400</option><option value="600">600</option></select>
+    </label>
+
+    <button id="generate">Generate Post Variants</button>
+  </div>
+
+  <h3>Generated Variants</h3>
+  <div id="variants"></div>
+
+  <h2>3) Publish (fallback)</h2>
+  <p>Use direct publish only if you have LinkedIn OAuth implemented on the server. Fallback: copy final text and open LinkedIn.</p>
+  <div class="row">
+    <button id="copyText" disabled>Copy Selected Variant</button>
+    <button id="openLinkedIn">Open LinkedIn (paste)</button>
+  </div>
+
+  <h2>Raw API Responses</h2>
+  <pre id="raw">No actions yet.</pre>
+
+  <script src="demo.js"></script>
+</body>
+</html>

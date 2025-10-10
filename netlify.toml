@@ -1,0 +1,6 @@
+[build]
+  functions = "netlify/functions"
+  publish = "bmad/tools/serverless-samples/demo-client"
+
+[dev]
+  command = "npm --prefix bmad/tools/serverless-samples start"

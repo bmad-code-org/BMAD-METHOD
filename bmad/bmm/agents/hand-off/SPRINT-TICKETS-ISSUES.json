@@ -1,0 +1,110 @@
+[
+  {
+    "title": "Project bootstrap & repo (T1.1)",
+    "body": "Create Expo RN scaffold, CI skeleton, README, .env pattern. Acceptance: `expo start` runs; README shows dev steps.",
+    "labels": ["bootstrap","P0"],
+    "estimate_hours": 4
+  },
+  {
+    "title": "Local DB & journaling core (T1.2)",
+    "body": "Implement Entry model, CRUD, tags, search. Offline-first confirmed. Acceptance: create/edit/delete/search works offline.",
+    "labels": ["backend","P0"],
+    "estimate_hours": 20
+  },
+  {
+    "title": "UI: Home, New Entry, Entry Detail, Tags (T1.3)",
+    "body": "Navigation, quick-capture FAB, tag picker. Acceptance: screens wired and functional.",
+    "labels": ["ui","P0"],
+    "estimate_hours": 18
+  },
+  {
+    "title": "Settings & API key dev mode (T1.4)",
+    "body": "Settings: env entry for API keys, anonymize toggle, retention chooser. Acceptance: keys stored securely; toggles persist.",
+    "labels": ["ui","P0"],
+    "estimate_hours": 6
+  },
+  {
+    "title": "Audio capture UI & file storage (T1.5)",
+    "body": "Record/pause/stop, preview, Transcribe button. Acceptance: local audio saved and playable.",
+    "labels": ["audio","P0"],
+    "estimate_hours": 12
+  },
+  {
+    "title": "Serverless: signed-upload endpoint skeleton (T1.6)",
+    "body": "Deploy serverless function to create signed upload URL. Acceptance: client can upload using signed URL.",
+    "labels": ["serverless","P0"],
+    "estimate_hours": 8
+  },
+  {
+    "title": "Integrate upload + client wiring (T1.7)",
+    "body": "Client uploads and notifies server to start transcription. Acceptance: server receives upload metadata and job enqueued.",
+    "labels": ["integration","P0"],
+    "estimate_hours": 8
+  },
+  {
+    "title": "Whisper transcription worker (serverless) (T2.1)",
+    "body": "Server downloads audio, calls Whisper, returns transcript and deletes audio. Acceptance: transcript returned; audio removed.",
+    "labels": ["serverless","ai","P0"],
+    "estimate_hours": 12
+  },
+  {
+    "title": "Client transcript UI + anonymize editing (T2.2)",
+    "body": "Edit transcript, auto-detect PII, anonymize toggle. Acceptance: sanitized text shown and editable.",
+    "labels": ["ui","privacy","P0"],
+    "estimate_hours": 8
+  },
+  {
+    "title": "Serverless OpenAI generation proxy (/generate-post) (T2.3)",
+    "body": "Proxy OpenAI calls, apply system prompt, return variants, log token usage. Acceptance: variants returned; usage logged.",
+    "labels": ["serverless","ai","P0"],
+    "estimate_hours": 12
+  },
+  {
+    "title": "Client convert UI & draft editor (T2.4)",
+    "body": "Show variants, hashtags, CTA; edit and copy/publish. Acceptance: edit & publish flows functional.",
+    "labels": ["ui","P0"],
+    "estimate_hours": 10
+  },
+  {
+    "title": "LinkedIn OAuth & publish endpoint (T2.5)",
+    "body": "Implement OAuth server flow; publish UGC on behalf of user. Acceptance: successful post returned; tokens stored securely.",
+    "labels": ["integration","P0"],
+    "estimate_hours": 16
+  },
+  {
+    "title": "Fallback publish flows (client) (T2.6)",
+    "body": "Copy-to-clipboard, native share sheet, share-offsite link. Acceptance: fallback works on iOS & Android.",
+    "labels": ["ui","P0"],
+    "estimate_hours": 6
+  },
+  {
+    "title": "Retention & soft-delete + purge engine (T3.1)",
+    "body": "UI for retention; purge engine respects TTL. Acceptance: soft-delete and purge verified.",
+    "labels": ["backend","privacy","P0"],
+    "estimate_hours": 10
+  },
+  {
+    "title": "Consent logs & processing events (T3.2)",
+    "body": "Record per-entry processing events and consent. Acceptance: logs viewable and exportable.",
+    "labels": ["backend","P0"],
+    "estimate_hours": 6
+  },
+  {
+    "title": "Cost controls & quotas (T3.3)",
+    "body": "Enforce daily generation caps; show usage in UI. Acceptance: quotas enforced; UI shows remaining usage.",
+    "labels": ["backend","P1"],
+    "estimate_hours": 8
+  },
+  {
+    "title": "Build & store prep (T3.4)",
+    "body": "Prepare TestFlight / Play Store builds, privacy policy, screenshots. Acceptance: builds uploaded; privacy policy included.",
+    "labels": ["release","P1"],
+    "estimate_hours": 12
+  },
+  {
+    "title": "Buffer & polish (T3.5)",
+    "body": "Fix critical bugs, UX polish, monitoring alerts. Acceptance: no critical bugs; monitoring enabled.",
+    "labels": ["polish","P1"],
+    "estimate_hours": 12
+  }
+]

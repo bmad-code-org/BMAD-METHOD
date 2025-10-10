@@ -1,0 +1,15 @@
+{
+  "name": "serverless-samples",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.0.0",
+    "openai": "^4.0.0"
+  },
+  "scripts": {
+    "start": "echo \"Deploy these functions to your serverless platform\""
+  }
+}

@@ -1,0 +1,41 @@
+# Retrospective - Epic Completion Review Workflow
+name: "retrospective"
+description: "Run after epic completion to review overall success, extract lessons learned, and explore if new information emerged that might impact the next epic"
+author: "BMad"
+
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/retrospective"
+template: false
+instructions: "{installed_path}/instructions.md"
+
+mode: interactive
+trigger: "Run AFTER completing an epic"
+
+required_inputs:
+  - completed_epic: "The epic that was just completed"
+  - stories_folder: "{output_folder}/stories/"
+  - epics_folder: "{output_folder}/prd/"
+  - agent_party_config: "{project-root}/bmad/_cfg/agent-party.xml"
+
+output_artifacts:
+  - retrospective_summary: "Comprehensive review of what went well and what could improve"
+  - lessons_learned: "Key insights for future epics"
+  - action_items: "Specific improvements with ownership"
+  - next_epic_preparation: "Dependencies, gaps, and preparation tasks for next epic"
+  - critical_path: "Blockers or prerequisites that must be addressed"
+
+facilitation:
+  facilitator: "Bob (Scrum Master)"
+  tone: "Psychological safety - no blame, focus on systems and processes"
+  format: "Two-part: (1) Review completed epic + (2) Preview next epic preparation"
+
+validation_required:
+  - testing_complete: "Has full regression testing been completed?"
+  - deployment_status: "Has epic been deployed to production?"
+  - business_validation: "Have stakeholders reviewed and accepted deliverables?"
+  - technical_health: "Is codebase in stable, maintainable state?"
+  - blocker_resolution: "Any unresolved blockers that will impact next epic?"

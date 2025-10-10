@@ -1,0 +1,72 @@
+name: create-story
+description: "Create the next user story markdown from epics/PRD and architecture, using a standard template and saving to the stories folder"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/create-story"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Variables and inputs
+variables:
+  story_dir: "{config_source}:dev_story_location" # Directory where stories are stored
+  epics_file: "{output_folder}/epics.md" # Preferred source for epic/story breakdown
+  prd_file: "{output_folder}/prd.md" # Fallback for requirements
+  hla_file: "{output_folder}/high-level-architecture.md" # Optional architecture context
+  tech_spec_file: "" # Will be auto-discovered from docs as tech-spec-epic-{{epic_num}}-*.md
+  tech_spec_search_dir: "{project-root}/docs"
+  tech_spec_glob_template: "tech-spec-epic-{{epic_num}}*.md"
+  arch_docs_search_dirs: |
+    - "{project-root}/docs"
+    - "{output_folder}"
+  arch_docs_file_names: |
+    - tech-stack.md
+    - unified-project-structure.md
+    - coding-standards.md
+    - testing-strategy.md
+    - backend-architecture.md
+    - frontend-architecture.md
+    - data-models.md
+    - database-schema.md
+    - rest-api-spec.md
+    - external-apis.md
+  story_title: "" # Will be elicited if not derivable
+  epic_num: 1
+  story_num: 1
+  auto_run_context: true # Optionally run story-context after creation
+  non_interactive: true # Generate without elicitation; avoid interactive prompts
+
+# Output configuration
+default_output_file: "{story_dir}/story-{{epic_num}}.{{story_num}}.md"
+
+required_tools:
+  - list_files
+  - file_info
+  - read_file
+  - write_file
+  - create_directory
+  - search_repo
+  - glob
+
+recommended_inputs:
+  - epics: "Epic breakdown (epic-list.md)"
+  - prd: "PRD document"
+  - hla: "High-Level Architecture (optional)"
+
+tags:
+  - story-generation
+  - planning
+  - bmad-v6
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: true

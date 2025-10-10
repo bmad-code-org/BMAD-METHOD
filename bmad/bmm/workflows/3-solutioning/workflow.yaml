@@ -1,0 +1,62 @@
+# Solution Architecture Workflow Configuration
+name: solution-architecture
+description: "Scale-adaptive solution architecture generation with dynamic template sections. Replaces legacy HLA workflow with modern BMAD Core compliance."
+author: "BMad Builder"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Input requirements
+inputs:
+  - name: prd_path
+    description: "Path to PRD document"
+    default: "{output_folder}/PRD.md"
+    required: true
+  - name: project_workflow_analysis_path
+    description: "Path to project-workflow-analysis.md from plan-project workflow"
+    default: "{output_folder}/project-workflow-analysis.md"
+    required: true
+  - name: project_level
+    description: "Project level (0-4) from analysis file"
+    type: integer
+    required: true
+
+# Output artifacts
+outputs:
+  - name: architecture_md
+    description: "Complete solution architecture document"
+    default: "{output_folder}/solution-architecture.md"
+  - name: architecture_decisions_md
+    description: "Architecture Decision Records (ADRs)"
+    default: "{output_folder}/architecture-decisions.md"
+  - name: epic_alignment_matrix
+    description: "Epic-to-component mapping (from cohesion check)"
+  - name: tech_specs
+    description: "Per-epic tech spec documents"
+
+# Workflow variables (set during execution)
+variables:
+  user_skill_level: "intermediate"
+  project_type: ""
+  architecture_style: ""
+  repo_strategy: ""
+  template_sections: []
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/3-solutioning"
+adr_template: "{installed_path}/ADR-template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Reference data files
+architecture_registry: "{installed_path}/templates/registry.csv"
+project_types_questions: "{installed_path}/project-types"
+
+# Default output location
+default_output_file: "{output_folder}/solution-architecture.md"
+
+# Additional workflow dependencies
+tech_spec_workflow: "{project-root}/bmad/bmm/workflows/3-solutioning/tech-spec/workflow.yaml"

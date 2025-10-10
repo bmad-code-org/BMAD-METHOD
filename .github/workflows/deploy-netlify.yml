@@ -1,0 +1,28 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches: [ main, v6-alpha ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies (serverless-samples)
+        working-directory: ./bmad/tools/serverless-samples
+        run: npm ci
+
+      - name: Netlify deploy (demo client + functions)
+        uses: netlify/actions/cli@v3
+        with:
+          args: deploy --prod --dir=bmad/tools/serverless-samples/demo-client --functions=netlify/functions --site-id=${{ secrets.NETLIFY_SITE_ID }} --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

@@ -1,0 +1,31 @@
+# Game Brief - Interactive Workflow Configuration
+name: game-brief
+description: "Interactive game brief creation workflow that guides users through defining their game vision with multiple input sources and conversational collaboration"
+author: "BMad"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Optional input documents
+recommended_inputs:
+  - market_research: "Market research document (optional)"
+  - brainstorming_results: "Brainstorming session outputs (optional)"
+  - competitive_analysis: "Competitive game analysis (optional)"
+  - initial_ideas: "Initial game ideas or notes (optional)"
+  - reference_games: "List of inspiration games (optional)"
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/1-analysis/game-brief"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Output configuration
+default_output_file: "{output_folder}/game-brief-{{game_name}}-{{date}}.md"
+
+# Workflow settings
+autonomous: false # This is an interactive workflow requiring user collaboration
+brief_format: "comprehensive" # Options: "comprehensive" (full detail) or "executive" (3-page limit)

@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>LinkedIn OAuth Dev Demo</title>
+    <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:24px}</style>
+  </head>
+  <body>
+    <h1>LinkedIn OAuth Dev Demo</h1>
+    <p>This demo exercises the dev-mode OAuth & publish endpoints in the serverless starter.</p>
+
+    <button id="start">Start OAuth (oauth-start)</button>
+    <pre id="out"></pre>
+
+    <hr />
+    <h2>Simulate callback</h2>
+    <label>UserId: <input id="userId" value="dev-user" /></label>
+    <button id="callback">Call Callback (dev)</button>
+    <pre id="cbout"></pre>
+
+    <hr />
+    <h2>Publish</h2>
+    <textarea id="text" rows="4" cols="60">Hello from dev demo</textarea><br/>
+    <button id="publish">Publish</button>
+    <pre id="pubout"></pre>
+
+    <script>
+      const out = (id, v) => document.getElementById(id).textContent = JSON.stringify(v, null, 2);
+      document.getElementById('start').onclick = async () => {
+        const r = await fetch('/api/linkedin-oauth-start');
+        out('out', await r.json());
+      };
+      document.getElementById('callback').onclick = async () => {
+        const userId = document.getElementById('userId').value;
+        const r = await fetch(`/api/linkedin-callback?code=dev-code&userId=${encodeURIComponent(userId)}`);
+        out('cbout', await r.json());
+      };
+      document.getElementById('publish').onclick = async () => {
+        const text = document.getElementById('text').value;
+        const r = await fetch('/api/publish-linkedin', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ userId: 'dev-user', text }) });
+        out('pubout', await r.json());
+      };
+    </script>
+  </body>
+</html>
