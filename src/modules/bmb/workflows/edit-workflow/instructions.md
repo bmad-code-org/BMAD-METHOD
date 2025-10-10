@@ -1,6 +1,6 @@
 # Edit Workflow - Workflow Editor Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/edit-workflow/workflow.yaml</critical>
 <critical>Study the workflow creation guide thoroughly at: {workflow_creation_guide}</critical>
 
@@ -52,10 +52,11 @@ Present the editing menu to the user:
 4. **Update template** - Fix variables, improve structure (if applicable)
 5. **Enhance validation** - Make checklist more specific and measurable
 6. **Add new features** - Add steps, optional sections, or capabilities
-7. **Optimize for clarity** - Improve descriptions, add examples
-8. **Full review and update** - Comprehensive improvements across all files
+7. **Configure web bundle** - Add/update web bundle for deployment
+8. **Optimize for clarity** - Improve descriptions, add examples
+9. **Full review and update** - Comprehensive improvements across all files
 
-<ask>Select an option (1-8) or describe a custom edit:</ask>
+<ask>Select an option (1-9) or describe a custom edit:</ask>
 </step>
 
 <step n="4" goal="Load relevant documentation">
@@ -72,6 +73,11 @@ Based on the selected edit type, load appropriate reference materials:
 <check>If editing validation:</check>
 <action>Review the "Validation" section and measurable criteria examples</action>
 
+<check>If configuring web bundle:</check>
+<action>Review the "Web Bundles" section of the creation guide</action>
+<action>Scan all workflow files for referenced resources</action>
+<action>Create inventory of all files that must be included</action>
+
 <check>If fixing critical issues:</check>
 <action>Load the workflow execution engine documentation</action>
 <action>Verify all required elements are present</action>
@@ -79,6 +85,30 @@ Based on the selected edit type, load appropriate reference materials:
 
 <step n="5" goal="Perform edits" repeat="until-complete">
 Based on the selected focus area:
+
+<check>If configuring web bundle (option 7):</check>
+<action>Check if web_bundle section exists in workflow.yaml</action>
+
+If creating new web bundle:
+
+1. Extract workflow metadata (name, description, author)
+2. Convert all file paths to bmad/-relative format
+3. Remove any {config_source} references
+4. Scan instructions.md for all file references:
+   - Data files (CSV, JSON)
+   - Sub-workflows
+   - Shared templates
+   - Any included files
+5. Scan template.md for any includes
+6. Create complete web_bundle_files array
+7. Generate web_bundle section
+
+If updating existing web bundle:
+
+1. Verify all paths are bmad/-relative
+2. Check for missing files in web_bundle_files
+3. Remove any config dependencies
+4. Update file list with newly referenced files
 
 <action>Show the current content that will be edited</action>
 <action>Explain the proposed changes and why they improve the workflow</action>
@@ -120,6 +150,15 @@ Validation checks:
 - [ ] Checklist criteria are measurable (if present)
 - [ ] Critical headers are present in instructions
 - [ ] YAML syntax is valid
+
+Web bundle validation (if applicable):
+
+- [ ] web_bundle section present if needed
+- [ ] All paths are bmad/-relative (no {project-root})
+- [ ] No {config_source} variables in web bundle
+- [ ] All referenced files listed in web_bundle_files
+- [ ] Instructions, validation, template paths correct
+- [ ] Complete file inventory verified
 
 <check>If any validation fails:</check>
 <ask>Issues found. Would you like to fix them? (y/n)</ask>

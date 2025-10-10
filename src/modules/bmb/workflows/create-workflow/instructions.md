@@ -2,7 +2,7 @@
 
 <workflow>
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project_root}/bmad/bmb/workflows/create-workflow/workflow.yaml</critical>
 <critical>You MUST fully understand the workflow creation guide at: {workflow_creation_guide}</critical>
 <critical>Study the guide thoroughly to follow ALL conventions for optimal human-AI collaboration</critical>
@@ -12,7 +12,7 @@
 
 <action if="user_response == 'y' or user_response == 'yes'">
 Invoke brainstorming workflow to explore ideas and design concepts:
-- Workflow: {project-root}/bmad/cis/workflows/brainstorming/workflow.yaml
+- Workflow: {project-root}/bmad/core/workflows/brainstorming/workflow.yaml
 - Context data: {installed_path}/brainstorm-context.md
 - Purpose: Generate creative workflow ideas, explore different approaches, and clarify requirements
 
@@ -63,10 +63,10 @@ Based on type, determine which files are needed:
 - Action: workflow.yaml + instructions.md
 - Others: Varies based on requirements
 
-<critical>Check {src_impact} variable to determine output location:</critical>
+<critical>Determine output location based on module assignment:</critical>
 
-- If {src_impact} = true: Workflow will be saved to {src_output_folder}
-- If {src_impact} = false: Workflow will be saved to {default_output_folder}
+- If workflow belongs to module: Save to {module_output_folder}
+- If standalone workflow: Save to {standalone_output_folder}
 
 Store decisions for later use.
 </step>
@@ -122,10 +122,10 @@ Follow path conventions from guide:
 - Use {installed_path} for workflow components
 - Use {config_source} for config references
 
-<critical>Determine save location based on {src_impact}:</critical>
+<critical>Determine save location:</critical>
 
-- If {src_impact} = true: Write to {src_output_folder}/workflow.yaml
-- If {src_impact} = false: Write to {default_output_folder}/workflow.yaml
+- Use the output folder determined in Step 1 (module or standalone)
+- Write to {{output_folder}}/workflow.yaml
   </step>
 
 <step n="5" goal="Create instructions.md" if="workflow_type != 'template-only'">
@@ -134,7 +134,7 @@ Load and use the template at: {template_instructions}
 Generate the instructions.md file following the workflow creation guide:
 
 1. ALWAYS include critical headers:
-   - Workflow engine reference: {project_root}/bmad/core/tasks/workflow.md
+   - Workflow engine reference: {project_root}/bmad/core/tasks/workflow.xml
    - workflow.yaml reference: must be loaded and processed
 
 2. Structure with <workflow> tags containing all steps
@@ -158,10 +158,9 @@ Generate the instructions.md file following the workflow creation guide:
    - Set limits ("3-5 items maximum")
    - Save checkpoints with <template-output>
 
-<critical>Determine save location based on {src_impact}:</critical>
+<critical>Save location:</critical>
 
-- If {src_impact} = true: Write to {src_output_folder}/instructions.md
-- If {src_impact} = false: Write to {default_output_folder}/instructions.md
+- Write to {{output_folder}}/instructions.md
   </step>
 
 <step n="6" goal="Create template.md" if="workflow_type == 'document'">
@@ -187,10 +186,9 @@ Variable sources as per guide:
 - Step outputs via <template-output>
 - System variables (date, paths)
 
-<critical>Determine save location based on {src_impact}:</critical>
+<critical>Save location:</critical>
 
-- If {src_impact} = true: Write to {src_output_folder}/template.md
-- If {src_impact} = false: Write to {default_output_folder}/template.md
+- Write to {{output_folder}}/template.md
   </step>
 
 <step n="7" goal="Create validation checklist" optional="true">
@@ -216,10 +214,9 @@ Create checklist.md following guide best practices:
 
 4. Add final validation section with issue lists
 
-<critical>Determine save location based on {src_impact}:</critical>
+<critical>Save location:</critical>
 
-- If {src_impact} = true: Write to {src_output_folder}/checklist.md
-- If {src_impact} = false: Write to {default_output_folder}/checklist.md
+- Write to {{output_folder}}/checklist.md
   </step>
 
 <step n="8" goal="Create supporting files" optional="true">
@@ -247,6 +244,64 @@ Ask if they want to:
 - Add additional steps or features
   </step>
 
+<step n="9b" goal="Configure web bundle (optional)">
+<ask>Will this workflow need to be deployable as a web bundle? [yes/no]</ask>
+
+If yes:
+<action>Explain web bundle requirements:</action>
+
+- Web bundles are self-contained and cannot use config_source variables
+- All files must be explicitly listed in web_bundle_files
+- File paths use bmad/ root (not {project-root})
+
+<action>Configure web_bundle section in workflow.yaml:</action>
+
+1. Copy core workflow metadata (name, description, author)
+2. Convert all file paths to bmad/-relative paths:
+   - Remove {project-root}/ prefix
+   - Remove {config_source} references (use hardcoded values)
+   - Example: "{project-root}/bmad/bmm/workflows/x" → "bmad/bmm/workflows/x"
+
+3. List ALL referenced files:
+   - Scan instructions.md for any file paths
+   - Scan template.md for any includes or references
+   - Include all data files (CSV, JSON, etc.)
+   - Include any sub-workflow YAML files
+   - Include any shared templates
+
+4. Create web_bundle_files array with complete list
+
+Example:
+
+```yaml
+web_bundle:
+  name: '{workflow_name}'
+  description: '{workflow_description}'
+  author: '{author}'
+  instructions: 'bmad/{module}/workflows/{workflow}/instructions.md'
+  validation: 'bmad/{module}/workflows/{workflow}/checklist.md'
+  template: 'bmad/{module}/workflows/{workflow}/template.md'
+
+  # Any data files (no config_source)
+  data_file: 'bmad/{module}/workflows/{workflow}/data.csv'
+
+  web_bundle_files:
+    - 'bmad/{module}/workflows/{workflow}/instructions.md'
+    - 'bmad/{module}/workflows/{workflow}/checklist.md'
+    - 'bmad/{module}/workflows/{workflow}/template.md'
+    - 'bmad/{module}/workflows/{workflow}/data.csv'
+    # Add every single file referenced anywhere
+```
+
+<action>Validate web bundle completeness:</action>
+
+- Ensure no {config_source} variables remain
+- Verify all file paths are listed
+- Check that paths are bmad/-relative
+
+<template-output>web_bundle_config</template-output>
+</step>
+
 <step n="10" goal="Document and finalize">
 Create a brief README for the workflow folder explaining:
 - Purpose and use case
@@ -257,11 +312,12 @@ Create a brief README for the workflow folder explaining:
 
 Provide user with:
 
-- Location of created workflow:
-  - If {src_impact} = true: {{src_output_folder}}
-  - If {src_impact} = false: {{default_output_folder}}
+- Location of created workflow: {{output_folder}}
 - Command to run it
-- Next steps for testing
-  </step>
+- Next steps:
+  - "Run the BMAD Method installer to this project location"
+  - "Select the option 'Compile Agents (Quick rebuild of all agent .md files)' after confirming the folder"
+  - "This will compile your new workflow and make it available for use"
+    </step>
 
 </workflow>

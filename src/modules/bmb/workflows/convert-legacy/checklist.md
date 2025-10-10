@@ -17,18 +17,19 @@
 
 - [ ] Agent name, id, title, and icon transferred
 - [ ] All persona elements mapped to v5 structure
-- [ ] All commands converted to v5 <cmds> format
+- [ ] All commands converted to v5 menu array (YAML)
 - [ ] Dependencies properly referenced or converted
 - [ ] Activation instructions adapted to v5 patterns
 
-#### v5 Compliance
+#### v5 Compliance (YAML Format)
 
-- [ ] Valid XML structure with proper nesting
-- [ ] <agent> tag has all required attributes (id, name, title, icon)
-- [ ] NO <activation> section included (auto-inserted from agent-activation-ide.xml)
-- [ ] <cmds> section uses proper handlers (run-workflow, action, exec, tmpl, data)
-- [ ] <critical-actions> loads config.yaml when needed
-- [ ] Persona sections (<role>, <identity>, <communication_style>, <principles>) are present
+- [ ] Valid YAML structure with proper indentation
+- [ ] agent.metadata has all required fields (id, name, title, icon, module)
+- [ ] agent.persona has all sections (role, identity, communication_style, principles)
+- [ ] agent.menu uses proper handlers (workflow, action, exec, tmpl, data)
+- [ ] agent.critical_actions array present when needed
+- [ ] agent.prompts defined for any action: "#id" references
+- [ ] File extension is .agent.yaml (will be compiled to .md later)
 
 #### Best Practices
 

@@ -1,7 +1,7 @@
 # Create Story - Workflow Instructions (Spec-compliant, non-interactive by default)
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow creates or updates the next user story from epics/PRD and architecture context, saving to the configured stories directory and optionally invoking Story Context.</critical>
 <critical>Default execution mode: #yolo (minimal prompts). Only elicit if absolutely required and {{non_interactive}} == false.</critical>
@@ -71,7 +71,7 @@
   </step>
 
   <step n="8" goal="Validate, save, and optionally generate context">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.md</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Save document unconditionally (non-interactive default). In interactive mode, allow user confirmation.</action>
     <check>If {{auto_run_context}} == true → <invoke-workflow path="{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml">Pass {{story_path}} = {default_output_file}</invoke-workflow></check>
     <action>Report created/updated story path</action>

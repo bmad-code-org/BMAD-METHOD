@@ -2,7 +2,7 @@
 
 <workflow>
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This is the MEDIUM instruction set for Level 1-2 projects - minimal PRD + solutioning handoff</critical>
 <critical>Project analysis already completed - proceeding with focused requirements</critical>
@@ -15,24 +15,25 @@
 <action>Load project-workflow-analysis.md</action>
 <action>Confirm Level 1-2 - Feature or small system</action>
 
-<check>If continuation_mode == true:</check>
-<action>Load existing PRD.md and check completion status</action>
-<ask>Found existing work. Would you like to:
+<check if="continuation_mode == true">
+  <action>Load existing PRD.md and check completion status</action>
+  <ask>Found existing work. Would you like to:
 
 1. Review what's done and continue
 2. Modify existing sections
 3. Start fresh
    </ask>
    <action>If continuing, skip to first incomplete section</action>
+   </check>
 
-<check>If new or starting fresh:</check>
-Check `output_folder` for existing docs. Ask user if they have a Product Brief.
+<check if="new or starting fresh">
+  Check `output_folder` for existing docs. Ask user if they have a Product Brief.
 
 <action>Load prd_template from workflow.yaml</action>
-
-<critical>Get the core idea of what they're building</critical>
+<critical>Discuss with them to get the core idea of what they're building</critical>
 
 <template-output>description</template-output>
+</check>
 
 </step>
 
@@ -155,13 +156,15 @@ Only document ACTUAL assumptions from discussion.
 
 Run cohesion validation? (y/n)</ask>
 
-<check>If yes:</check>
-<action>Load {installed_path}/checklist.md</action>
-<action>Review all outputs against "Cohesion Validation (All Levels)" section</action>
-<action>Validate PRD sections, then cohesion sections A-H as applicable</action>
-<action>Apply Section B (Greenfield) or Section C (Brownfield) based on field_type</action>
-<action>Include Section E (UI/UX) if UI components exist</action>
-<action>Generate comprehensive validation report with findings</action>
+<check if="yes">
+  <action>Load {installed_path}/checklist.md</action>
+  <action>Review all outputs against "Cohesion Validation (All Levels)" section</action>
+  <action>Validate PRD sections, then cohesion sections A-H as applicable</action>
+  <action>Apply Section B (Greenfield) or Section C (Brownfield) based on field_type</action>
+  <action>Include Section E (UI/UX) if UI components exist</action>
+  <action>Generate comprehensive validation report with findings</action>
+
+</check>
 
 </step>
 
@@ -194,15 +197,10 @@ Since this is a Level {{project_level}} project, you need solutioning before imp
   - Input: PRD.md, epic-stories.md
   - Output: solution-architecture.md, tech-spec-epic-N.md files
 
-<check>If project has significant UX/UI components (Level 1-2 with UI):</check>
+<check if="project has significant UX/UI components (Level 1-2 with UI)">
 
-- [ ] **Run UX specification workflow** (HIGHLY RECOMMENDED for user-facing systems)
-  - Command: `workflow plan-project` then select "UX specification"
-  - Or continue within this workflow if UI-heavy
-  - Input: PRD.md, epic-stories.md, solution-architecture.md (once available)
-  - Output: ux-specification.md
-  - Optional: AI Frontend Prompt for rapid prototyping
-  - Note: Creates comprehensive UX/UI spec including IA, user flows, components
+- [ ] **Run UX specification workflow** (HIGHLY RECOMMENDED for user-facing systems) - Command: `workflow plan-project` then select "UX specification" - Or continue within this workflow if UI-heavy - Input: PRD.md, epic-stories.md, solution-architecture.md (once available) - Output: ux-specification.md - Optional: AI Frontend Prompt for rapid prototyping - Note: Creates comprehensive UX/UI spec including IA, user flows, components
+      </check>
 
 ### Phase 2: Detailed Planning
 
@@ -239,12 +237,16 @@ Since this is a Level {{project_level}} project, you need solutioning before imp
 
 Which would you like to proceed with?</ask>
 
-<check>If user selects option 2:</check>
-<action>LOAD: {installed_path}/ux/instructions-ux.md</action>
-<action>Pass mode="integrated" with Level 1-2 context</action>
+<check if="user selects option 2">
+  <invoke-workflow>{project-root}/bmad/bmm/workflows/2-plan/ux/workflow.yaml</invoke-workflow>
+  <action>Pass mode="integrated" with Level 1-2 context</action>
 
-<check>If user selects option 3:</check>
-<invoke-task>{project-root}/bmad/bmm/tasks/ai-fe-prompt.md</invoke-task>
+</check>
+
+<check if="user selects option 3">
+  <invoke-task>{project-root}/bmad/bmm/tasks/ai-fe-prompt.md</invoke-task>
+
+</check>
 
 </step>
 

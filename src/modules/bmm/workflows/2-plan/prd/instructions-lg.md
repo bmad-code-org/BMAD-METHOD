@@ -2,7 +2,7 @@
 
 <workflow>
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This is the LARGE instruction set for Level 3-4 projects - full PRD + architect handoff</critical>
 <critical>Project analysis already completed - proceeding with comprehensive requirements</critical>
@@ -15,18 +15,19 @@
 <action>Load project-workflow-analysis.md</action>
 <action>Confirm Level 3-4 - Full product or platform</action>
 
-<check>If continuation_mode == true:</check>
-<action>Load existing PRD.md and check completion status</action>
-<ask>Found existing work. Would you like to:
+<check if="continuation_mode == true">
+  <action>Load existing PRD.md and check completion status</action>
+  <ask>Found existing work. Would you like to:
 
 1. Review what's done and continue
 2. Modify existing sections
 3. Start fresh
    </ask>
    <action>If continuing, skip to first incomplete section</action>
+   </check>
 
-<check>If new or starting fresh:</check>
-Check `output_folder` for `product_brief`, `market_research`, and other docs.
+<check if="new or starting fresh">
+  Check `output_folder` for `product_brief`, `market_research`, and other docs.
 
 <critical>For Level 3-4, Product Brief is STRONGLY recommended</critical>
 
@@ -35,6 +36,7 @@ Check `output_folder` for `product_brief`, `market_research`, and other docs.
 Get comprehensive description of the project vision.
 
 <template-output>description</template-output>
+</check>
 
 </step>
 
@@ -200,15 +202,10 @@ Since this is a Level {{project_level}} project, you need architecture before st
   - Input: PRD.md, epics.md
   - Output: architecture.md
 
-<check>If project has significant UX/UI components (Level 3-4 typically does):</check>
+<check if="project has significant UX/UI components (Level 3-4 typically does)">
 
-- [ ] **Run UX specification workflow** (HIGHLY RECOMMENDED for user-facing systems)
-  - Command: `workflow plan-project` then select "UX specification"
-  - Or continue within this workflow if UI-heavy
-  - Input: PRD.md, epics.md, architecture.md (once available)
-  - Output: ux-specification.md
-  - Optional: AI Frontend Prompt for rapid prototyping
-  - Note: Creates comprehensive UX/UI spec including IA, user flows, components
+- [ ] **Run UX specification workflow** (HIGHLY RECOMMENDED for user-facing systems) - Command: `workflow plan-project` then select "UX specification" - Or continue within this workflow if UI-heavy - Input: PRD.md, epics.md, architecture.md (once available) - Output: ux-specification.md - Optional: AI Frontend Prompt for rapid prototyping - Note: Creates comprehensive UX/UI spec including IA, user flows, components
+      </check>
 
 ### Phase 2: Detailed Planning
 
@@ -246,7 +243,7 @@ Since this is a Level {{project_level}} project, you need architecture before st
 
 <ask>Project Planning Complete! Next immediate action:
 
-1. Start architecture workflow
+1. Start architecture workflow with the architect in a new context window
 2. Create UX specification (if UI-heavy project)
 3. Generate AI Frontend Prompt (if UX complete)
 4. Review all outputs with stakeholders
@@ -255,12 +252,14 @@ Since this is a Level {{project_level}} project, you need architecture before st
 
 Which would you like to proceed with?</ask>
 
-<check>If user selects option 2:</check>
-<action>LOAD: {installed_path}/ux/instructions-ux.md</action>
-<action>Pass mode="integrated" with Level 3-4 context</action>
+<check if="user selects option 2">
+  <invoke-workflow>{project-root}/bmad/bmm/workflows/2-plan/ux/workflow.yaml</invoke-workflow>
+  <action>Pass mode="integrated" with Level 3-4 context</action>
+</check>
 
-<check>If user selects option 3:</check>
-<invoke-task>{project-root}/bmad/bmm/tasks/ai-fe-prompt.md</invoke-task>
+<check if="user selects option 3">
+  <invoke-task>{project-root}/bmad/bmm/tasks/ai-fe-prompt.md</invoke-task>
+</check>
 
 </step>
 

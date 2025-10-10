@@ -1,0 +1,64 @@
+# Technical Specification Workflow (Level 0)
+name: tech-spec-sm
+description: "Technical specification workflow for Level 0 projects (single atomic changes). Creates focused tech spec for bug fixes, single endpoint additions, or small isolated changes. Tech-spec only - no PRD needed."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/2-plan/tech-spec"
+instructions: "{installed_path}/instructions-sm.md"
+template: "{installed_path}/tech-spec-template.md"
+
+# Output configuration
+default_output_file: "{output_folder}/tech-spec.md"
+
+# Recommended input documents (optional for Level 0)
+recommended_inputs:
+  - bug_report: "Bug description or issue ticket"
+  - feature_request: "Brief feature description"
+
+# Claude Code integration points
+claude_code_enhancements:
+  - injection_point: "tech-spec-subagents"
+  - available_subagents:
+      - technical-evaluator: "Technology assessment and feasibility"
+      - codebase-analyzer: "Existing code analysis"
+      - pattern-detector: "Identify coding patterns to follow"
+
+# Workflow configuration
+interactive: true # User checkpoints
+autonomous: false # Requires user input
+allow_parallel: false # Sequential specification
+
+# Technical frameworks available
+frameworks:
+  - "Technical Design Patterns"
+  - "API Design Principles"
+  - "Code Organization Standards"
+  - "Testing Strategies"
+
+web_bundle:
+  name: "tech-spec-sm"
+  description: "Technical specification workflow for Level 0 projects (single atomic changes). Creates focused tech spec for bug fixes, single endpoint additions, or small isolated changes. Tech-spec only - no PRD needed."
+  author: "BMad"
+  instructions: "bmad/bmm/workflows/2-plan/tech-spec/instructions-sm.md"
+  use_advanced_elicitation: true
+  web_bundle_files:
+    - "bmad/bmm/workflows/2-plan/tech-spec/instructions-sm.md"
+    - "bmad/bmm/workflows/2-plan/tech-spec/tech-spec-template.md"
+  # Technical frameworks available
+  frameworks:
+    - "Technical Design Patterns"
+    - "API Design Principles"
+    - "Code Organization Standards"
+    - "Testing Strategies"
+  # Workflow configuration
+  interactive: true # User checkpoints
+  autonomous: false # Requires user input
+  allow_parallel: false # Sequential specification

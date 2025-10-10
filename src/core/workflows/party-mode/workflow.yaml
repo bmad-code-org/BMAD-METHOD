@@ -4,18 +4,13 @@ description: "Orchestrates group discussions between all installed BMAD agents, 
 author: "BMad"
 
 # Critical data sources - manifest and config overrides
-manifest: "{project-root}/bmad/_cfg/agent-party.xml"
-agent_configs: "{project-root}/bmad/_cfg/agents/"
+agent_manifest: "{project-root}/bmad/_cfg/agent-manifest.csv"
+agent_overrides: "{project-root}/bmad/_cfg/agents/*.customize.yaml"
 date: system-generated
 
 # This is an interactive action workflow - no template output
 template: false
 instructions: "{project-root}/src/core/workflows/party-mode/instructions.md"
-
-# Data files to be loaded at runtime
-data_files:
-  - agent_manifest: "{project-root}/bmad/_cfg/agent-party.xml"
-  - agent_overrides: "{project-root}/bmad/_cfg/agents/*.md"
 
 # Exit conditions
 exit_triggers:

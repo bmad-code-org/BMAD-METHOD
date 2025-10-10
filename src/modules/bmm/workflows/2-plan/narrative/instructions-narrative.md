@@ -2,11 +2,12 @@
 
 <workflow>
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already completed the GDD workflow</critical>
 <critical>This workflow creates detailed narrative content for story-driven games</critical>
 <critical>Uses narrative_template for output</critical>
 <critical>If users mention gameplay mechanics, note them but keep focus on narrative</critical>
+<critical>Facilitate good brainstorming techniques throughout with the user, pushing them to come up with much of the narrative you will help weave together. The goal is for the user to feel that they crafted the narrative and story arc unless they push you to do it all or indicate YOLO</critical>
 
 <step n="1" goal="Load GDD context and assess narrative complexity">
 
@@ -26,7 +27,7 @@ Your game type ({{game_type}}) suggests **{{suggested_complexity}}**. Confirm or
 
 <action>Set narrative_complexity</action>
 
-<check>If complexity == "Light":</check>
+<check if="complexity == "Light"">
 <ask>Light narrative games usually don't need a full Narrative Design Document. Are you sure you want to continue?
 
 - GDD story sections may be sufficient
@@ -36,6 +37,8 @@ Your game type ({{game_type}}) suggests **{{suggested_complexity}}**. Confirm or
 Your choice:</ask>
 
 <action>Load narrative_template from workflow.yaml</action>
+
+</check>
 
 </step>
 
@@ -304,8 +307,8 @@ Your key conversations:</ask>
 
 <template-output>key_conversations</template-output>
 
-<check>If game has branching dialogue:</check>
-<ask>Describe your branching dialogue system.
+<check if="game has branching dialogue">
+  <ask>Describe your branching dialogue system.
 
 - How many branches/paths?
 - What determines branches? (stats, choices, flags)
@@ -315,6 +318,7 @@ Your key conversations:</ask>
 Your branching system:</ask>
 
 <template-output>branching_dialogue</template-output>
+</check>
 
 </step>
 
@@ -397,8 +401,8 @@ Your optional content:</ask>
 
 <template-output>optional_content</template-output>
 
-<check>If multiple endings:</check>
-<ask>Describe your ending structure.
+<check if="multiple endings">
+  <ask>Describe your ending structure.
 
 - How many endings?
 - What determines ending? (choices, stats, completion)
@@ -408,6 +412,7 @@ Your optional content:</ask>
 Your endings:</ask>
 
 <template-output>multiple_endings</template-output>
+</check>
 
 </step>
 

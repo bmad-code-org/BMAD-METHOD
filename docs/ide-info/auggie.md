@@ -6,8 +6,8 @@ BMAD agents can be installed in multiple locations based on your setup.
 
 ### Common Locations
 
-- User Home: `~/.auggie/commands/`
-- Project: `.auggie/commands/`
+- User Home: `~/.augment/commands/`
+- Project: `.augment/commands/`
 - Custom paths you selected
 
 ### How to Use

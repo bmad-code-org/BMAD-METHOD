@@ -1,0 +1,95 @@
+# Product Requirements Document (PRD) Workflow
+name: prd
+description: "Scale-adaptive PRD workflow for project levels 1-4. Level 1-2: focused PRD + solutioning handoff. Level 3-4: full PRD with epics + architect handoff. Automatically adjusts scope based on project complexity."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/2-plan/prd"
+
+# Instructions - routes to appropriate level-based instructions
+instructions_med: "{installed_path}/instructions-med.md" # Level 1-2
+instructions_lg: "{installed_path}/instructions-lg.md" # Level 3-4
+
+# Templates
+prd_template: "{installed_path}/prd-template.md"
+analysis_template: "{installed_path}/analysis-template.md"
+epics_template: "{installed_path}/epics-template.md"
+
+# Output configuration
+analysis_file: "{output_folder}/project-workflow-analysis.md"
+default_output_file: "{output_folder}/PRD.md"
+epics_output_file: "{output_folder}/epics.md"
+validation_output_file: "{output_folder}/PRD-validation-report.md"
+
+# Recommended input documents
+recommended_inputs:
+  - product_brief: "{output_folder}/product-brief.md"
+  - market_research: "{output_folder}/market-research.md"
+
+# Scale parameters - adaptive by project level
+scale_parameters:
+  level_1: "1-10 stories, 1 epic, minimal PRD + solutioning handoff"
+  level_2: "5-15 stories, 1-2 epics, focused PRD + solutioning handoff"
+  level_3: "12-40 stories, 2-5 epics, full PRD + architect handoff"
+  level_4: "40+ stories, 5+ epics, enterprise PRD + architect handoff"
+
+# Claude Code integration points
+claude_code_enhancements:
+  - injection_point: "prd-subagents"
+  - available_subagents:
+      - requirements-analyst: "Requirements analysis and refinement"
+      - user-journey-mapper: "User journey and epic boundaries"
+      - epic-optimizer: "Epic scope optimization"
+      - document-reviewer: "PRD quality validation"
+
+# Workflow configuration
+interactive: true # User checkpoints throughout
+autonomous: false # Requires user input
+allow_parallel: false # Sequential planning process
+
+# Product frameworks available
+frameworks:
+  - "Jobs-to-be-Done"
+  - "User Story Mapping"
+  - "Epic Decomposition"
+  - "Acceptance Criteria"
+  - "MoSCoW Prioritization"
+
+web_bundle:
+  name: "prd"
+  description: "Scale-adaptive PRD workflow for project levels 1-4. Level 1-2: focused PRD + solutioning handoff. Level 3-4: full PRD with epics + architect handoff. Automatically adjusts scope based on project complexity."
+  author: "BMad"
+  # Note: Router workflow will load appropriate instructions based on level
+  instructions_med: "bmad/bmm/workflows/2-plan/prd/instructions-med.md"
+  instructions_lg: "bmad/bmm/workflows/2-plan/prd/instructions-lg.md"
+  use_advanced_elicitation: true
+  web_bundle_files:
+    - "bmad/bmm/workflows/2-plan/prd/instructions-med.md"
+    - "bmad/bmm/workflows/2-plan/prd/instructions-lg.md"
+    - "bmad/bmm/workflows/2-plan/prd/prd-template.md"
+    - "bmad/bmm/workflows/2-plan/prd/analysis-template.md"
+    - "bmad/bmm/workflows/2-plan/prd/epics-template.md"
+  # Scale parameters - adaptive by project level
+  scale_parameters:
+    level_1: "1-10 stories, 1 epic, minimal PRD + solutioning handoff"
+    level_2: "5-15 stories, 1-2 epics, focused PRD + solutioning handoff"
+    level_3: "12-40 stories, 2-5 epics, full PRD + architect handoff"
+    level_4: "40+ stories, 5+ epics, enterprise PRD + architect handoff"
+  # Product frameworks available
+  frameworks:
+    - "Jobs-to-be-Done"
+    - "User Story Mapping"
+    - "Epic Decomposition"
+    - "Acceptance Criteria"
+    - "MoSCoW Prioritization"
+  # Workflow configuration
+  interactive: true # User checkpoints throughout
+  autonomous: false # Requires user input
+  allow_parallel: false # Sequential planning process

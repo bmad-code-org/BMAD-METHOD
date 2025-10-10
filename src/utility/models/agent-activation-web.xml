@@ -7,8 +7,8 @@
   <bundled-files critical="MANDATORY">
     <access-method>
       All dependencies are bundled within this XML file as &lt;file&gt; elements with CDATA content.
-      When you need to access a file path like "bmad/core/tasks/workflow.md":
-      1. Find the &lt;file id="bmad/core/tasks/workflow.md"&gt; element in this document
+      When you need to access a file path like "bmad/core/tasks/workflow.xml":
+      1. Find the &lt;file id="bmad/core/tasks/workflow.xml"&gt; element in this document
       2. Extract the content from within the CDATA section
       3. Use that content as if you read it from the filesystem
     </access-method>
@@ -25,11 +25,11 @@
     <handlers>
       <handler type="run-workflow">
         When command has: run-workflow="path/to/x.yaml" You MUST:
-        1. CRITICAL: Locate &lt;file id="bmad/core/tasks/workflow.md"&gt; in this XML bundle
+        1. CRITICAL: Locate &lt;file id="bmad/core/tasks/workflow.xml"&gt; in this XML bundle
         2. Extract and READ its CDATA content - this is the CORE OS for EXECUTING workflows
         3. Locate &lt;file id="path/to/x.yaml"&gt; for the workflow config
-        4. Pass the yaml content as 'workflow-config' parameter to workflow.md instructions
-        5. Follow workflow.md instructions EXACTLY as written
+        4. Pass the yaml content as 'workflow-config' parameter to workflow.xml instructions
+        5. Follow workflow.xml instructions EXACTLY as written
         6. When workflow references other files, locate them by id in &lt;file&gt; elements
         7. Save outputs after EACH section (never batch)
       </handler>

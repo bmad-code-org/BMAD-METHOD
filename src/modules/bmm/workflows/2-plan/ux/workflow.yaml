@@ -1,0 +1,71 @@
+# UX/UI Specification Workflow
+name: ux-spec
+description: "UX/UI specification workflow for defining user experience and interface design. Creates comprehensive UX documentation including wireframes, user flows, component specifications, and design system guidelines."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/2-plan/ux"
+instructions: "{installed_path}/instructions-ux.md"
+template: "{installed_path}/ux-spec-template.md"
+
+# Output configuration
+default_output_file: "{output_folder}/ux-specification.md"
+ai_frontend_prompt_file: "{output_folder}/ai-frontend-prompt.md"
+
+# Recommended input documents
+recommended_inputs:
+  - prd: "{output_folder}/PRD.md"
+  - product_brief: "{output_folder}/product-brief.md"
+  - gdd: "{output_folder}/GDD.md"
+
+# Claude Code integration points
+claude_code_enhancements:
+  - injection_point: "ux-subagents"
+  - available_subagents:
+      - ux-expert: "User experience design and best practices"
+      - user-researcher: "User research and persona development"
+
+# Workflow configuration
+interactive: true # User checkpoints throughout
+autonomous: false # Requires user input
+allow_parallel: false # Sequential UX design process
+
+# UX frameworks available
+frameworks:
+  - "User-Centered Design"
+  - "Design System Principles"
+  - "Accessibility (WCAG)"
+  - "Responsive Design"
+  - "Component-Based Design"
+  - "Atomic Design"
+  - "Material Design / Human Interface Guidelines"
+
+web_bundle:
+  name: "ux-spec"
+  description: "UX/UI specification workflow for defining user experience and interface design. Creates comprehensive UX documentation including wireframes, user flows, component specifications, and design system guidelines."
+  author: "BMad"
+  instructions: "bmad/bmm/workflows/2-plan/ux/instructions-ux.md"
+  use_advanced_elicitation: true
+  web_bundle_files:
+    - "bmad/bmm/workflows/2-plan/ux/instructions-ux.md"
+    - "bmad/bmm/workflows/2-plan/ux/ux-spec-template.md"
+  recommended_inputs: "PRD, Product Brief, Brain Storming Report, GDD"
+  # UX frameworks available
+  frameworks:
+    - "User-Centered Design"
+    - "Design System Principles"
+    - "Accessibility (WCAG)"
+    - "Responsive Design"
+    - "Component-Based Design"
+    - "Atomic Design"
+    - "Material Design / Human Interface Guidelines"
+  # Workflow configuration
+  interactive: true # User checkpoints throughout
+  autonomous: false # Requires user input
+  allow_parallel: false # Sequential UX design process

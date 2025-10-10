@@ -4,7 +4,7 @@
 #
 # The installer will:
 # 1. Ask users if they want to install subagents (all/selective/none)
-# 2. Ask where to install (project-level .claude/agents/ or user-level ~/.claude/agents/)
+# 2. Ask where to install (project-level .claude/agents/bmad/ or user-level ~/.claude/agents/bmad/)
 # 3. Only inject content related to selected subagents
 # 4. Templates stay in bmad/ directory and are referenced from there
 # 5. Injections are placed at specific sections where each subagent is most valuable

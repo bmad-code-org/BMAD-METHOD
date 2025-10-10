@@ -32,7 +32,7 @@ workflow create-module --input module-brief-my-module-2024-09-26.md
 
 The workflow loads critical variables from the BMB configuration:
 
-- **output_folder**: Where the module will be created
+- **custom_module_location**: Where custom modules are created (default: `bmad/`)
 - **user_name**: Module author information
 - **date**: Automatic timestamp for versioning
 

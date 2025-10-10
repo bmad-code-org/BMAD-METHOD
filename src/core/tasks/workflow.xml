@@ -1,0 +1,166 @@
+<task id="bmad/core/tasks/workflow.xml" name="Execute Workflow">
+  <objective>Execute given workflow by loading its configuration, following instructions, and producing output</objective>
+
+  <llm critical="true">
+    <mandate>Always read COMPLETE files - NEVER use offset/limit when reading any workflow related files</mandate>
+    <mandate>Instructions are MANDATORY - either as file path, steps or embedded list in YAML, XML or markdown</mandate>
+    <mandate>Execute ALL steps in instructions IN EXACT ORDER</mandate>
+    <mandate>Save to template output file after EVERY "template-output" tag</mandate>
+    <mandate>NEVER delegate a step - YOU are responsible for every steps execution</mandate>
+  </llm>
+
+  <WORKFLOW-RULES critical="true">
+    <rule n="1">Steps execute in exact numerical order (1, 2, 3...)</rule>
+    <rule n="2">Optional steps: Ask user unless #yolo mode active</rule>
+    <rule n="3">Template-output tags: Save content → Show user → Get approval before continuing</rule>
+    <rule n="4">Elicit tags: Execute immediately unless #yolo mode (which skips ALL elicitation)</rule>
+    <rule n="5">User must approve each major section before continuing UNLESS #yolo mode active</rule>
+  </WORKFLOW-RULES>
+
+  <flow>
+    <step n="1" title="Load and Initialize Workflow">
+      <substep n="1a" title="Load Configuration and Resolve Variables">
+        <action>Read workflow.yaml from provided path</action>
+        <mandate>Load config_source (REQUIRED for all modules)</mandate>
+        <phase n="1">Load external config from config_source path</phase>
+        <phase n="2">Resolve all {config_source}: references with values from config</phase>
+        <phase n="3">Resolve system variables (date:system-generated) and paths ({project-root}, {installed_path})</phase>
+        <phase n="4">Ask user for input of any variables that are still unknown</phase>
+      </substep>
+
+      <substep n="1b" title="Load Required Components">
+        <mandate>Instructions: Read COMPLETE file from path OR embedded list (REQUIRED)</mandate>
+        <check>If template path → Read COMPLETE template file</check>
+        <check>If validation path → Note path for later loading when needed</check>
+        <check>If template: false → Mark as action-workflow (else template-workflow)</check>
+        <note>Data files (csv, json) → Store paths only, load on-demand when instructions reference them</note>
+      </substep>
+
+      <substep n="1c" title="Initialize Output" if="template-workflow">
+        <action>Resolve default_output_file path with all variables and {{date}}</action>
+        <action>Create output directory if doesn't exist</action>
+        <action>If template-workflow → Write template to output file with placeholders</action>
+        <action>If action-workflow → Skip file creation</action>
+      </substep>
+    </step>
+
+    <step n="2" title="Process Each Instruction Step">
+      <iterate>For each step in instructions:</iterate>
+
+      <substep n="2a" title="Handle Step Attributes">
+        <check>If optional="true" and NOT #yolo → Ask user to include</check>
+        <check>If if="condition" → Evaluate condition</check>
+        <check>If for-each="item" → Repeat step for each item</check>
+        <check>If repeat="n" → Repeat step n times</check>
+      </substep>
+
+      <substep n="2b" title="Execute Step Content">
+        <action>Process step instructions (markdown or XML tags)</action>
+        <action>Replace {{variables}} with values (ask user if unknown)</action>
+        <execute-tags>
+          <tag>action xml tag → Perform the action</tag>
+          <tag>check if="condition" xml tag → Conditional block wrapping actions (requires closing &lt;/check&gt;)</tag>
+          <tag>ask xml tag → Prompt user and WAIT for response</tag>
+          <tag>invoke-workflow xml tag → Execute another workflow with given inputs</tag>
+          <tag>invoke-task xml tag → Execute specified task</tag>
+          <tag>goto step="x" → Jump to specified step</tag>
+        </execute-tags>
+      </substep>
+
+      <substep n="2c" title="Handle Special Output Tags">
+        <if tag="template-output">
+          <mandate>Generate content for this section</mandate>
+          <mandate>Save to file (Write first time, Edit subsequent)</mandate>
+          <action>Show checkpoint separator: ━━━━━━━━━━━━━━━━━━━━━━━</action>
+          <action>Display generated content</action>
+          <ask>Continue [c] or Edit [e]? WAIT for response</ask>
+        </if>
+
+        <if tag="elicit-required">
+          <mandate critical="true">YOU MUST READ the file at {project-root}/bmad/core/tasks/adv-elicit.xml using Read tool BEFORE presenting
+            any elicitation menu</mandate>
+          <action>Load and run task {project-root}/bmad/core/tasks/adv-elicit.xml with current context</action>
+          <action>Show elicitation menu 5 relevant options (list 1-5 options, Continue [c] or Reshuffle [r])</action>
+          <mandate>HALT and WAIT for user selection</mandate>
+        </if>
+      </substep>
+
+      <substep n="2d" title="Step Completion">
+        <check>If no special tags and NOT #yolo:</check>
+        <ask>Continue to next step? (y/n/edit)</ask>
+      </substep>
+    </step>
+
+    <step n="3" title="Completion">
+      <check>If checklist exists → Run validation</check>
+      <check>If template: false → Confirm actions completed</check>
+      <check>Else → Confirm document saved to output path</check>
+      <action>Report workflow completion</action>
+    </step>
+  </flow>
+
+  <execution-modes>
+    <mode name="normal">Full user interaction at all decision points</mode>
+    <mode name="#yolo">Skip optional sections, skip all elicitation, minimize prompts</mode>
+  </execution-modes>
+
+  <supported-tags desc="Instructions can use these tags">
+    <structural>
+      <tag>step n="X" goal="..." - Define step with number and goal</tag>
+      <tag>optional="true" - Step can be skipped</tag>
+      <tag>if="condition" - Conditional execution</tag>
+      <tag>for-each="collection" - Iterate over items</tag>
+      <tag>repeat="n" - Repeat n times</tag>
+    </structural>
+    <execution>
+      <tag>action - Required action to perform</tag>
+      <tag>action if="condition" - Single conditional action (inline, no closing tag needed)</tag>
+      <tag>check if="condition"&gt;...&lt;/check&gt; - Conditional block wrapping multiple items (closing tag required)</tag>
+      <tag>ask - Get user input (wait for response)</tag>
+      <tag>goto - Jump to another step</tag>
+      <tag>invoke-workflow - Call another workflow</tag>
+      <tag>invoke-task - Call a task</tag>
+    </execution>
+    <output>
+      <tag>template-output - Save content checkpoint</tag>
+      <tag>elicit-required - Trigger enhancement</tag>
+      <tag>critical - Cannot be skipped</tag>
+      <tag>example - Show example output</tag>
+    </output>
+  </supported-tags>
+
+  <conditional-execution-patterns desc="When to use each pattern">
+    <pattern type="single-action">
+      <use-case>One action with a condition</use-case>
+      <syntax>&lt;action if="condition"&gt;Do something&lt;/action&gt;</syntax>
+      <example>&lt;action if="file exists"&gt;Load the file&lt;/action&gt;</example>
+      <rationale>Cleaner and more concise for single items</rationale>
+    </pattern>
+
+    <pattern type="multi-action-block">
+      <use-case>Multiple actions/tags under same condition</use-case>
+      <syntax>&lt;check if="condition"&gt;
+  &lt;action&gt;First action&lt;/action&gt;
+  &lt;action&gt;Second action&lt;/action&gt;
+&lt;/check&gt;</syntax>
+      <example>&lt;check if="validation fails"&gt;
+  &lt;action&gt;Log error&lt;/action&gt;
+  &lt;goto step="1"&gt;Retry&lt;/goto&gt;
+&lt;/check&gt;</example>
+      <rationale>Explicit scope boundaries prevent ambiguity</rationale>
+    </pattern>
+
+    <pattern type="nested-conditions">
+      <use-case>Else/alternative branches</use-case>
+      <syntax>&lt;check if="condition A"&gt;...&lt;/check&gt;
+&lt;check if="else"&gt;...&lt;/check&gt;</syntax>
+      <rationale>Clear branching logic with explicit blocks</rationale>
+    </pattern>
+  </conditional-execution-patterns>
+
+  <llm final="true">
+    <mandate>This is the complete workflow execution engine</mandate>
+    <mandate>You MUST Follow instructions exactly as written and maintain conversation context between steps</mandate>
+    <mandate>If confused, re-read this task, the workflow yaml, and any yaml indicated files</mandate>
+  </llm>
+</task>

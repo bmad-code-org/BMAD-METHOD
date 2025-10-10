@@ -1,6 +1,6 @@
 # Problem Solving Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project_root}/bmad/cis/workflows/problem-solving/workflow.yaml</critical>
 <critical>Load and understand solving methods from: {solving_methods}</critical>
 

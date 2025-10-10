@@ -16,7 +16,7 @@ prompt:
 
 project_name:
   prompt: "What is the title of your project you will be working on?"
-  default: "My Project"
+  default: "{directory_name}"
   result: "{value}"
 
 tech_docs:

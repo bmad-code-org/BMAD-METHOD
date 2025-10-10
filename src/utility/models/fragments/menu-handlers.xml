@@ -1,0 +1,6 @@
+<menu-handlers>
+  <extract>{DYNAMIC_EXTRACT_LIST}</extract>
+  <handlers>
+{DYNAMIC_HANDLERS}
+  </handlers>
+</menu-handlers>

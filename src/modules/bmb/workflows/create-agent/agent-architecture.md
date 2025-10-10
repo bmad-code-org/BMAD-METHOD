@@ -13,15 +13,15 @@ _LLM-Optimized Technical Documentation for Agent Building_
 
 <agent id="path/to/agent.md" name="Name" title="Title" icon="🤖">
   <persona>
-    <role>Primary function</role>
-    <identity>Background and expertise</identity>
-    <communication_style>How they interact</communication_style>
-    <principles>Core beliefs and methodology</principles>
+    <role>My primary function</role>
+    <identity>My background and expertise</identity>
+    <communication_style>How I interact</communication_style>
+    <principles>My core beliefs and methodology</principles>
   </persona>
-  <cmds>
-    <c cmd="*help">Show numbered cmd list</c>
-    <c cmd="*exit">Exit with confirmation</c>
-  </cmds>
+  <menu>
+    <item cmd="*help">Show numbered menu</item>
+    <item cmd="*exit">Exit with confirmation</item>
+  </menu>
 </agent>
 ```
 
@@ -42,10 +42,10 @@ _LLM-Optimized Technical Documentation for Agent Building_
 
 ```xml
 <persona>
-  <role>1-2 lines: Professional title and primary expertise</role>
-  <identity>3-5 lines: Background, experience, specializations</identity>
-  <communication_style>3-5 lines: Interaction approach, tone, quirks</communication_style>
-  <principles>5-8 lines: Core beliefs, methodology, philosophy</principles>
+  <role>1-2 sentences: Professional title and primary expertise, use first-person voice</role>
+  <identity>2-5 sentences: Background, experience, specializations, use first-person voice</identity>
+  <communication_style>1-3 sentences: Interaction approach, tone, quirks, use first-person voice</communication_style>
+  <principles>2-5 sentences: Core beliefs, methodology, philosophy, use first-person voice</principles>
 </persona>
 ```
 
@@ -94,12 +94,12 @@ _LLM-Optimized Technical Documentation for Agent Building_
 - **Sidecar file loading (Expert agents) - MUST be explicit and CRITICAL**
 - **Domain restrictions (Expert agents) - MUST be enforced**
 
-#### 3. Commands Section (REQUIRED)
+#### 3. Menu Section (REQUIRED)
 
 ```xml
-<cmds>
-  <c cmd="*trigger" [attributes]>Description</c>
-</cmds>
+<menu>
+  <item cmd="*trigger" [attributes]>Description</item>
+</menu>
 ```
 
 **Command Attributes:**
@@ -109,7 +109,7 @@ _LLM-Optimized Technical Documentation for Agent Building_
 - `tmpl="{path}"` - Template reference
 - `data="{path}"` - Data file reference
 
-**Required Commands:**
+**Required Menu Items:**
 
 - `*help` - Always first, shows command list
 - `*exit` - Always last, exits agent
@@ -154,7 +154,7 @@ _LLM-Optimized Technical Documentation for Agent Building_
   </critical-actions>
 
   <persona>...</persona>
-  <cmds>...</cmds>
+  <menu>...</menu>
 </agent>
 ```
 
@@ -197,42 +197,42 @@ Bad:  ../../../relative/paths/
 
 ```xml
 <!-- Full path -->
-<c cmd="*create-prd" run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
+<item cmd="*create-prd" run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
   Create Product Requirements Document
-</c>
+</item>
 
 <!-- Placeholder for future -->
-<c cmd="*analyze" run-workflow="todo">
+<item cmd="*analyze" run-workflow="todo">
   Perform analysis (workflow to be created)
-</c>
+</item>
 ```
 
 ### Task Commands
 
 ```xml
-<c cmd="*validate" exec="{project-root}/bmad/core/tasks/validate-workflow.md">
+<item cmd="*validate" exec="{project-root}/bmad/core/tasks/validate-workflow.xml">
   Validate document
-</c>
+</item>
 ```
 
 ### Template Commands
 
 ```xml
-<c cmd="*brief"
+<item cmd="*brief"
    exec="{project-root}/bmad/core/tasks/create-doc.md"
    tmpl="{project-root}/bmad/bmm/templates/brief.md">
   Create project brief
-</c>
+</item>
 ```
 
 ### Data-Driven Commands
 
 ```xml
-<c cmd="*standup"
-   exec="{project-root}/bmad/bmm/tasks/daily-standup.md"
+<item cmd="*standup"
+   exec="{project-root}/bmad/bmm/tasks/daily-standup.xml"
    data="{project-root}/bmad/_cfg/agent-party.xml">
   Run daily standup
-</c>
+</item>
 ```
 
 ## Agent Type Specific Patterns
@@ -270,17 +270,17 @@ Bad:  ../../../relative/paths/
 </persona>
 
 <!-- Hard-coded paths -->
-<c cmd="*run" exec="/Users/john/project/task.md">
+<item cmd="*run" exec="/Users/john/project/task.md">
 
 <!-- No help command -->
-<cmds>
-  <c cmd="*do-something">Action</c>
+<menu>
+  <item cmd="*do-something">Action</item>
   <!-- Missing *help -->
-</cmds>
+</menu>
 
 <!-- Duplicate command triggers -->
-<c cmd="*analyze">First</c>
-<c cmd="*analyze">Second</c>
+<item cmd="*analyze">First</item>
+<item cmd="*analyze">Second</item>
 ```
 
 ### ✅ Good Practices
@@ -295,14 +295,14 @@ Bad:  ../../../relative/paths/
 </persona>
 
 <!-- Variable-based paths -->
-<c cmd="*run" exec="{project-root}/bmad/module/task.md">
+<item cmd="*run" exec="{project-root}/bmad/module/task.md">
 
 <!-- Required commands present -->
-<cmds>
-  <c cmd="*help">Show commands</c>
-  <c cmd="*analyze">Perform analysis</c>
-  <c cmd="*exit">Exit</c>
-</cmds>
+<menu>
+  <item cmd="*help">Show commands</item>
+  <item cmd="*analyze">Perform analysis</item>
+  <item cmd="*exit">Exit</item>
+</menu>
 ```
 
 ## Agent Lifecycle
@@ -378,10 +378,10 @@ When building agents:
 ### Minimal Commands
 
 ```xml
-<cmds>
-  <c cmd="*help">Show numbered cmd list</c>
-  <c cmd="*exit">Exit with confirmation</c>
-</cmds>
+<menu>
+  <item cmd="*help">Show numbered cmd list</item>
+  <item cmd="*exit">Exit with confirmation</item>
+</menu>
 ```
 
 ### Standard Critical Actions
@@ -403,10 +403,10 @@ When building agents:
        icon="{emoji}">
   <persona>...</persona>
   <critical-actions>...</critical-actions>
-  <cmds>
-    <c cmd="*help">...</c>
-    <c cmd="*{command}" run-workflow="{path}">...</c>
-    <c cmd="*exit">...</c>
-  </cmds>
+  <menu>
+    <item cmd="*help">...</item>
+    <item cmd="*{command}" run-workflow="{path}">...</item>
+    <item cmd="*exit">...</item>
+  </menu>
 </agent>
 ```

@@ -165,35 +165,10 @@ class IdeManager {
   async detectInstalledIdes(projectDir) {
     const detected = [];
 
-    // Check for IDE-specific directories
-    const ideChecks = {
-      cursor: '.cursor',
-      'claude-code': '.claude',
-      windsurf: '.windsurf',
-      cline: '.clinerules',
-      roo: '.roomodes',
-      trae: '.trae',
-      kilo: '.kilocodemodes',
-      gemini: '.gemini',
-      qwen: '.qwen',
-      crush: '.crush',
-      iflow: '.iflow',
-      auggie: '.auggie',
-      'github-copilot': '.github/chatmodes',
-      vscode: '.vscode',
-      idea: '.idea',
-    };
-
-    for (const [ide, dir] of Object.entries(ideChecks)) {
-      const idePath = path.join(projectDir, dir);
-      if (await fs.pathExists(idePath)) {
-        detected.push(ide);
+    for (const [name, handler] of this.handlers) {
+      if (typeof handler.detect === 'function' && (await handler.detect(projectDir))) {
+        detected.push(name);
       }
-    }
-
-    // Check for AGENTS.md (Codex)
-    if (await fs.pathExists(path.join(projectDir, 'AGENTS.md'))) {
-      detected.push('codex');
     }
 
     return detected;

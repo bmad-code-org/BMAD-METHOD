@@ -1,16 +1,18 @@
 const path = require('node:path');
-const { BaseIdeSetup } = require('./_base-ide');
+const fs = require('fs-extra');
+const os = require('node:os');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
+const { BaseIdeSetup } = require('./_base-ide');
+const { WorkflowCommandGenerator } = require('./workflow-command-generator');
+const { getAgentsFromBmad, getTasksFromBmad } = require('./shared/bmad-artifacts');
 
 /**
  * Codex setup handler (supports both CLI and Web)
- * Creates comprehensive AGENTS.md file in project root
  */
 class CodexSetup extends BaseIdeSetup {
   constructor() {
     super('codex', 'Codex', true); // preferred IDE
-    this.agentsFile = 'AGENTS.md';
   }
 
   /**
@@ -44,223 +46,172 @@ class CodexSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Use pre-collected configuration if available
     const config = options.preCollectedConfig || {};
     const mode = config.codexMode || options.codexMode || 'cli';
 
-    // Get agents and tasks
-    const agents = await this.getAgents(bmadDir);
-    const tasks = await this.getTasks(bmadDir);
+    const { artifacts, counts } = await this.collectClaudeArtifacts(projectDir, bmadDir, options);
 
-    // Create AGENTS.md content
-    const content = this.createAgentsDocument(agents, tasks, mode);
-
-    // Write AGENTS.md file
-    const agentsPath = path.join(projectDir, this.agentsFile);
-    await this.writeFile(agentsPath, content);
-
-    // Handle mode-specific setup
-    if (mode === 'web') {
-      await this.setupWebMode(projectDir);
-    } else {
-      await this.setupCliMode(projectDir);
-    }
+    const destDir = this.getCodexPromptDir();
+    await fs.ensureDir(destDir);
+    await this.clearOldBmadFiles(destDir);
+    const written = await this.flattenAndWriteArtifacts(artifacts, destDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - Mode: ${mode === 'web' ? 'Web' : 'CLI'}`));
-    console.log(chalk.dim(`  - ${agents.length} agents documented`));
-    console.log(chalk.dim(`  - ${tasks.length} tasks documented`));
-    console.log(chalk.dim(`  - Agents file: ${this.agentsFile}`));
+    console.log(chalk.dim(`  - ${counts.agents} agents exported`));
+    console.log(chalk.dim(`  - ${counts.tasks} tasks exported`));
+    console.log(chalk.dim(`  - ${counts.workflows} workflow commands exported`));
+    if (counts.workflowLaunchers > 0) {
+      console.log(chalk.dim(`  - ${counts.workflowLaunchers} workflow launchers exported`));
+    }
+    if (counts.subagents > 0) {
+      console.log(chalk.dim(`  - ${counts.subagents} subagents exported`));
+    }
+    console.log(chalk.dim(`  - ${written} Codex prompt files written`));
+    console.log(chalk.dim(`  - Destination: ${destDir}`));
 
     return {
       success: true,
       mode,
-      agents: agents.length,
-      tasks: tasks.length,
+      artifacts,
+      counts,
+      destination: destDir,
+      written,
     };
   }
 
   /**
-   * Select Codex mode (CLI or Web)
+   * Detect Codex installation by checking for BMAD prompt exports
    */
-  async selectMode() {
-    const response = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'mode',
-        message: 'Select Codex deployment mode:',
-        choices: [
-          { name: 'CLI (Command-line interface)', value: 'cli' },
-          { name: 'Web (Browser-based interface)', value: 'web' },
-        ],
-        default: 'cli',
-      },
-    ]);
+  async detect(_projectDir) {
+    const destDir = this.getCodexPromptDir();
 
-    return response.mode;
+    if (!(await fs.pathExists(destDir))) {
+      return false;
+    }
+
+    const entries = await fs.readdir(destDir);
+    return entries.some((entry) => entry.startsWith('bmad-'));
   }
 
   /**
-   * Create comprehensive agents document
+   * Collect Claude-style artifacts for Codex export.
+   * Returns the normalized artifact list for further processing.
    */
-  createAgentsDocument(agents, tasks, mode) {
-    let content = `# BMAD Method - Agent Directory
+  async collectClaudeArtifacts(projectDir, bmadDir, options = {}) {
+    const selectedModules = options.selectedModules || [];
+    const artifacts = [];
 
-This document contains all available BMAD agents and tasks for use with Codex ${mode === 'web' ? 'Web' : 'CLI'}.
-
-## Quick Start
-
-${
-  mode === 'web'
-    ? `Access agents through the web interface:
-1. Navigate to the Agents section
-2. Select an agent to activate
-3. The agent persona will be active for your session`
-    : `Activate agents in CLI:
-1. Reference agents using \`@{agent-name}\`
-2. Execute tasks using \`@task-{task-name}\`
-3. Agents remain active for the conversation`
-}
-
----
-
-## Available Agents
-
-`;
-
-    // Group agents by module
-    const agentsByModule = {};
+    const agents = await getAgentsFromBmad(bmadDir, selectedModules);
     for (const agent of agents) {
-      if (!agentsByModule[agent.module]) {
-        agentsByModule[agent.module] = [];
-      }
-      agentsByModule[agent.module].push(agent);
+      const content = await this.readAndProcessWithProject(
+        agent.path,
+        {
+          module: agent.module,
+          name: agent.name,
+        },
+        projectDir,
+      );
+
+      artifacts.push({
+        type: 'agent',
+        module: agent.module,
+        sourcePath: agent.path,
+        relativePath: path.join(agent.module, 'agents', `${agent.name}.md`),
+        content,
+      });
     }
 
-    // Document each module's agents
-    for (const [module, moduleAgents] of Object.entries(agentsByModule)) {
-      content += `### ${module.toUpperCase()} Module\n\n`;
-
-      for (const agent of moduleAgents) {
-        const agentContent = this.readFileSync(agent.path);
-        const titleMatch = agentContent.match(/title="([^"]+)"/);
-        const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
-
-        const iconMatch = agentContent.match(/icon="([^"]+)"/);
-        const icon = iconMatch ? iconMatch[1] : '🤖';
-
-        const whenToUseMatch = agentContent.match(/whenToUse="([^"]+)"/);
-        const whenToUse = whenToUseMatch ? whenToUseMatch[1] : `Use for ${title} tasks`;
-
-        content += `#### ${icon} ${title} (\`@${agent.name}\`)\n\n`;
-        content += `**When to use:** ${whenToUse}\n\n`;
-        content += `**Activation:** Type \`@${agent.name}\` to activate this agent.\n\n`;
-      }
-    }
-
-    content += `---
-
-## Available Tasks
-
-`;
-
-    // Group tasks by module
-    const tasksByModule = {};
+    const tasks = await getTasksFromBmad(bmadDir, selectedModules);
     for (const task of tasks) {
-      if (!tasksByModule[task.module]) {
-        tasksByModule[task.module] = [];
-      }
-      tasksByModule[task.module].push(task);
+      const content = await this.readAndProcessWithProject(
+        task.path,
+        {
+          module: task.module,
+          name: task.name,
+        },
+        projectDir,
+      );
+
+      artifacts.push({
+        type: 'task',
+        module: task.module,
+        sourcePath: task.path,
+        relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
+        content,
+      });
     }
 
-    // Document each module's tasks
-    for (const [module, moduleTasks] of Object.entries(tasksByModule)) {
-      content += `### ${module.toUpperCase()} Module Tasks\n\n`;
+    const workflowGenerator = new WorkflowCommandGenerator();
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+    artifacts.push(...workflowArtifacts);
 
-      for (const task of moduleTasks) {
-        const taskContent = this.readFileSync(task.path);
-        const nameMatch = taskContent.match(/<name>([^<]+)<\/name>/);
-        const taskName = nameMatch ? nameMatch[1] : this.formatTitle(task.name);
-
-        content += `- **${taskName}** (\`@task-${task.name}\`)\n`;
-      }
-      content += '\n';
-    }
-
-    content += `---
-
-## Usage Guidelines
-
-1. **One agent at a time**: Activate a single agent for focused assistance
-2. **Task execution**: Tasks are one-time workflows, not persistent personas
-3. **Module organization**: Agents and tasks are grouped by their source module
-4. **Context preservation**: ${mode === 'web' ? 'Sessions maintain agent context' : 'Conversations maintain agent context'}
-
----
-
-*Generated by BMAD Method installer for Codex ${mode === 'web' ? 'Web' : 'CLI'}*
-`;
-
-    return content;
+    return {
+      artifacts,
+      counts: {
+        agents: agents.length,
+        tasks: tasks.length,
+        workflows: workflowCounts.commands,
+        workflowLaunchers: workflowCounts.launchers,
+      },
+    };
   }
 
-  /**
-   * Read file synchronously (for document generation)
-   */
-  readFileSync(filePath) {
-    const fs = require('node:fs');
-    try {
-      return fs.readFileSync(filePath, 'utf8');
-    } catch {
-      return '';
-    }
+  getCodexPromptDir() {
+    return path.join(os.homedir(), '.codex', 'prompts');
   }
 
-  /**
-   * Setup for CLI mode
-   */
-  async setupCliMode(projectDir) {
-    // CLI mode - ensure .gitignore includes AGENTS.md if needed
-    const fs = require('fs-extra');
-    const gitignorePath = path.join(projectDir, '.gitignore');
+  flattenFilename(relativePath) {
+    const sanitized = relativePath.replaceAll(/[\\/]/g, '-');
+    return `bmad-${sanitized}`;
+  }
 
-    if (await fs.pathExists(gitignorePath)) {
-      const gitignoreContent = await fs.readFile(gitignorePath, 'utf8');
-      if (!gitignoreContent.includes('AGENTS.md')) {
-        // User can decide whether to track this file
-        console.log(chalk.dim('  Note: Consider adding AGENTS.md to .gitignore if desired'));
+  async flattenAndWriteArtifacts(artifacts, destDir) {
+    let written = 0;
+
+    for (const artifact of artifacts) {
+      const flattenedName = this.flattenFilename(artifact.relativePath);
+      const targetPath = path.join(destDir, flattenedName);
+      await fs.writeFile(targetPath, artifact.content);
+      written++;
+    }
+
+    return written;
+  }
+
+  async clearOldBmadFiles(destDir) {
+    if (!(await fs.pathExists(destDir))) {
+      return;
+    }
+
+    const entries = await fs.readdir(destDir);
+
+    for (const entry of entries) {
+      if (!entry.startsWith('bmad-')) {
+        continue;
       }
-    }
-  }
 
-  /**
-   * Setup for Web mode
-   */
-  async setupWebMode(projectDir) {
-    // Web mode - add to .gitignore to avoid committing
-    const fs = require('fs-extra');
-    const gitignorePath = path.join(projectDir, '.gitignore');
-
-    if (await fs.pathExists(gitignorePath)) {
-      const gitignoreContent = await fs.readFile(gitignorePath, 'utf8');
-      if (!gitignoreContent.includes('AGENTS.md')) {
-        await fs.appendFile(gitignorePath, '\n# Codex Web agents file\nAGENTS.md\n');
-        console.log(chalk.dim('  Added AGENTS.md to .gitignore for web deployment'));
+      const entryPath = path.join(destDir, entry);
+      const stat = await fs.stat(entryPath);
+      if (stat.isFile()) {
+        await fs.remove(entryPath);
+      } else if (stat.isDirectory()) {
+        await fs.remove(entryPath);
       }
     }
   }
 
-  /**
-   * Cleanup Codex configuration
-   */
-  async cleanup(projectDir) {
-    const fs = require('fs-extra');
-    const agentsPath = path.join(projectDir, this.agentsFile);
+  async readAndProcessWithProject(filePath, metadata, projectDir) {
+    const content = await fs.readFile(filePath, 'utf8');
+    return super.processContent(content, metadata, projectDir);
+  }
 
-    if (await fs.pathExists(agentsPath)) {
-      await fs.remove(agentsPath);
-      console.log(chalk.dim('Removed AGENTS.md file'));
-    }
+  /**
+   * Cleanup Codex configuration (no-op until export destination is finalized)
+   */
+  async cleanup() {
+    const destDir = this.getCodexPromptDir();
+    await this.clearOldBmadFiles(destDir);
   }
 }
 

@@ -37,62 +37,88 @@ class Installer {
    * @param {Array} selectedModules - Selected modules from configuration
    * @returns {Object} Tool/IDE selection and configurations
    */
-  async collectToolConfigurations(projectDir, selectedModules) {
+  async collectToolConfigurations(projectDir, selectedModules, isFullReinstall = false, previousIdes = []) {
     // Prompt for tool selection
     const { UI } = require('../../../lib/ui');
     const ui = new UI();
     const toolConfig = await ui.promptToolSelection(projectDir, selectedModules);
 
-    // Collect IDE-specific configurations if any were selected
-    const ideConfigurations = {};
+    // Check for already configured IDEs
+    const { Detector } = require('./detector');
+    const detector = new Detector();
     const bmadDir = path.join(projectDir, 'bmad');
 
+    // During full reinstall, use the saved previous IDEs since bmad dir was deleted
+    // Otherwise detect from existing installation
+    let previouslyConfiguredIdes;
+    if (isFullReinstall) {
+      // During reinstall, treat all IDEs as new (need configuration)
+      previouslyConfiguredIdes = [];
+    } else {
+      const existingInstall = await detector.detect(bmadDir);
+      previouslyConfiguredIdes = existingInstall.ides || [];
+    }
+
+    // Collect IDE-specific configurations if any were selected
+    const ideConfigurations = {};
+
     if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
-      console.log('\n'); // Add spacing before IDE questions
+      // Determine which IDEs are newly selected (not previously configured)
+      const newlySelectedIdes = toolConfig.ides.filter((ide) => !previouslyConfiguredIdes.includes(ide));
 
-      for (const ide of toolConfig.ides) {
-        // List of IDEs that have interactive prompts
-        const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini'].includes(ide);
+      if (newlySelectedIdes.length > 0) {
+        console.log('\n'); // Add spacing before IDE questions
 
-        if (needsPrompts) {
-          // Get IDE handler and collect configuration
-          try {
-            // Dynamically load the IDE setup module
-            const ideModule = require(`../ide/${ide}`);
+        for (const ide of newlySelectedIdes) {
+          // List of IDEs that have interactive prompts
+          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini'].includes(ide);
 
-            // Get the setup class (handle different export formats)
-            let SetupClass;
-            const className =
-              ide
-                .split('-')
-                .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                .join('') + 'Setup';
+          if (needsPrompts) {
+            // Get IDE handler and collect configuration
+            try {
+              // Dynamically load the IDE setup module
+              const ideModule = require(`../ide/${ide}`);
 
-            if (ideModule[className]) {
-              SetupClass = ideModule[className];
-            } else if (ideModule.default) {
-              SetupClass = ideModule.default;
-            } else {
-              // Skip if no setup class found
-              continue;
+              // Get the setup class (handle different export formats)
+              let SetupClass;
+              const className =
+                ide
+                  .split('-')
+                  .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                  .join('') + 'Setup';
+
+              if (ideModule[className]) {
+                SetupClass = ideModule[className];
+              } else if (ideModule.default) {
+                SetupClass = ideModule.default;
+              } else {
+                // Skip if no setup class found
+                continue;
+              }
+
+              const ideSetup = new SetupClass();
+
+              // Check if this IDE has a collectConfiguration method
+              if (typeof ideSetup.collectConfiguration === 'function') {
+                console.log(chalk.cyan(`\nConfiguring ${ide}...`));
+                ideConfigurations[ide] = await ideSetup.collectConfiguration({
+                  selectedModules: selectedModules || [],
+                  projectDir,
+                  bmadDir,
+                });
+              }
+            } catch {
+              // IDE doesn't have a setup file or collectConfiguration method
+              console.warn(chalk.yellow(`Warning: Could not load configuration for ${ide}`));
             }
-
-            const ideSetup = new SetupClass();
-
-            // Check if this IDE has a collectConfiguration method
-            if (typeof ideSetup.collectConfiguration === 'function') {
-              console.log(chalk.cyan(`\nConfiguring ${ide}...`));
-              ideConfigurations[ide] = await ideSetup.collectConfiguration({
-                selectedModules: selectedModules || [],
-                projectDir,
-                bmadDir,
-              });
-            }
-          } catch {
-            // IDE doesn't have a setup file or collectConfiguration method
-            console.warn(chalk.yellow(`Warning: Could not load configuration for ${ide}`));
           }
         }
+      }
+
+      // Log which IDEs are already configured and being kept
+      const keptIdes = toolConfig.ides.filter((ide) => previouslyConfiguredIdes.includes(ide));
+      if (keptIdes.length > 0) {
+        console.log(chalk.dim(`\nKeeping existing configuration for: ${keptIdes.join(', ')}`));
       }
     }
 
@@ -119,12 +145,11 @@ class Installer {
     // Display welcome message
     CLIUtils.displaySection('BMAD™ Installation', 'Version ' + require(path.join(getProjectRoot(), 'package.json')).version);
 
-    // Preflight: Block legacy BMAD v4 footprints before any prompts/writes
+    // Preflight: Handle legacy BMAD v4 footprints before any prompts/writes
     const projectDir = path.resolve(config.directory);
     const legacyV4 = await this.detector.detectLegacyV4(projectDir);
     if (legacyV4.hasLegacyV4) {
-      const error = this.createLegacyV4Error(legacyV4);
-      throw error;
+      await this.handleLegacyV4Migration(projectDir, legacyV4);
     }
 
     // If core config was pre-collected (from interactive mode), use it
@@ -140,12 +165,7 @@ class Installer {
     // Collect configurations for modules (core was already collected in UI.promptInstall if interactive)
     const moduleConfigs = await this.configCollector.collectAllConfigurations(config.modules || [], path.resolve(config.directory));
 
-    const toolSelection = await this.collectToolConfigurations(path.resolve(config.directory), config.modules);
-
-    // Merge tool selection into config
-    config.ides = toolSelection.ides;
-    config.skipIde = toolSelection.skipIde;
-    const ideConfigurations = toolSelection.configurations;
+    // Tool selection will be collected after we determine if it's a reinstall/update/new install
 
     const spinner = ora('Preparing installation...').start();
 
@@ -186,13 +206,117 @@ class Installer {
         console.log(chalk.dim(`  Location: ${bmadDir}`));
         console.log(chalk.dim(`  Version: ${existingInstall.version}`));
 
-        // TODO: Handle update scenario
         const { action } = await this.promptUpdateAction();
         if (action === 'cancel') {
           console.log('Installation cancelled.');
-          return;
+          return { success: false, cancelled: true };
+        }
+
+        if (action === 'reinstall') {
+          // Warn about destructive operation
+          console.log(chalk.red.bold('\n⚠️  WARNING: This is a destructive operation!'));
+          console.log(chalk.red('All custom files and modifications in the bmad directory will be lost.'));
+
+          const inquirer = require('inquirer');
+          const { confirmReinstall } = await inquirer.prompt([
+            {
+              type: 'confirm',
+              name: 'confirmReinstall',
+              message: chalk.yellow('Are you sure you want to delete and reinstall?'),
+              default: false,
+            },
+          ]);
+
+          if (!confirmReinstall) {
+            console.log('Installation cancelled.');
+            return { success: false, cancelled: true };
+          }
+
+          // Remember previously configured IDEs before deleting
+          config._previouslyConfiguredIdes = existingInstall.ides || [];
+
+          // Remove existing installation
+          await fs.remove(bmadDir);
+          console.log(chalk.green('✓ Removed existing installation\n'));
+
+          // Mark this as a full reinstall so we re-collect IDE configurations
+          config._isFullReinstall = true;
+        } else if (action === 'update') {
+          // Store that we're updating for later processing
+          config._isUpdate = true;
+          config._existingInstall = existingInstall;
+
+          // Detect custom and modified files BEFORE updating (compare current files vs files-manifest.csv)
+          const existingFilesManifest = await this.readFilesManifest(bmadDir);
+          console.log(chalk.dim(`DEBUG: Read ${existingFilesManifest.length} files from manifest`));
+          console.log(chalk.dim(`DEBUG: Manifest has hashes: ${existingFilesManifest.some((f) => f.hash)}`));
+
+          const { customFiles, modifiedFiles } = await this.detectCustomFiles(bmadDir, existingFilesManifest);
+
+          console.log(chalk.dim(`DEBUG: Found ${customFiles.length} custom files, ${modifiedFiles.length} modified files`));
+          if (modifiedFiles.length > 0) {
+            console.log(chalk.yellow('DEBUG: Modified files:'));
+            for (const f of modifiedFiles) console.log(chalk.dim(`  - ${f.path}`));
+          }
+
+          config._customFiles = customFiles;
+          config._modifiedFiles = modifiedFiles;
+
+          // If there are custom files, back them up temporarily
+          if (customFiles.length > 0) {
+            const tempBackupDir = path.join(projectDir, '.bmad-custom-backup-temp');
+            await fs.ensureDir(tempBackupDir);
+
+            spinner.start(`Backing up ${customFiles.length} custom files...`);
+            for (const customFile of customFiles) {
+              const relativePath = path.relative(bmadDir, customFile);
+              const backupPath = path.join(tempBackupDir, relativePath);
+              await fs.ensureDir(path.dirname(backupPath));
+              await fs.copy(customFile, backupPath);
+            }
+            spinner.succeed(`Backed up ${customFiles.length} custom files`);
+
+            config._tempBackupDir = tempBackupDir;
+          }
+
+          // For modified files, back them up to temp directory (will be restored as .bak files after install)
+          if (modifiedFiles.length > 0) {
+            const tempModifiedBackupDir = path.join(projectDir, '.bmad-modified-backup-temp');
+            await fs.ensureDir(tempModifiedBackupDir);
+
+            console.log(chalk.yellow(`\nDEBUG: Backing up ${modifiedFiles.length} modified files to temp location`));
+            spinner.start(`Backing up ${modifiedFiles.length} modified files...`);
+            for (const modifiedFile of modifiedFiles) {
+              const relativePath = path.relative(bmadDir, modifiedFile.path);
+              const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
+              console.log(chalk.dim(`DEBUG: Backing up ${relativePath} to temp`));
+              await fs.ensureDir(path.dirname(tempBackupPath));
+              await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
+            }
+            spinner.succeed(`Backed up ${modifiedFiles.length} modified files`);
+
+            config._tempModifiedBackupDir = tempModifiedBackupDir;
+          } else {
+            console.log(chalk.dim('DEBUG: No modified files detected'));
+          }
         }
       }
+
+      // Now collect tool configurations after we know if it's a reinstall
+      spinner.stop();
+      const toolSelection = await this.collectToolConfigurations(
+        path.resolve(config.directory),
+        config.modules,
+        config._isFullReinstall || false,
+        config._previouslyConfiguredIdes || [],
+      );
+
+      // Merge tool selection into config
+      config.ides = toolSelection.ides;
+      config.skipIde = toolSelection.skipIde;
+      const ideConfigurations = toolSelection.configurations;
+
+      spinner.start('Continuing installation...');
 
       // Create bmad directory structure
       spinner.text = 'Creating directory structure...';
@@ -246,25 +370,27 @@ class Installer {
       spinner.succeed('Module configurations generated');
 
       // Create agent configuration files
-      spinner.start('Creating agent configurations...');
-      // Get user info from collected config if available
-      const userInfo = {
-        userName: moduleConfigs.core?.['user_name'] || null,
-        responseLanguage: moduleConfigs.core?.['communication_language'] || null,
-      };
-      const agentConfigResult = await this.createAgentConfigs(bmadDir, userInfo);
-      if (agentConfigResult.skipped > 0) {
-        spinner.succeed(`Agent configurations: ${agentConfigResult.created} created, ${agentConfigResult.skipped} preserved`);
-      } else {
-        spinner.succeed(`Agent configurations created: ${agentConfigResult.created}`);
-      }
+      // Note: Legacy createAgentConfigs removed - using YAML customize system instead
+      // Customize templates are now created in processAgentFiles when building YAML agents
 
-      // Generate CSV manifests for workflows, agents, and tasks BEFORE IDE setup
+      // Pre-register manifest files that will be created (except files-manifest.csv to avoid recursion)
+      const cfgDir = path.join(bmadDir, '_cfg');
+      this.installedFiles.push(
+        path.join(cfgDir, 'manifest.yaml'),
+        path.join(cfgDir, 'workflow-manifest.csv'),
+        path.join(cfgDir, 'agent-manifest.csv'),
+        path.join(cfgDir, 'task-manifest.csv'),
+      );
+
+      // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes BEFORE IDE setup
       spinner.start('Generating workflow and agent manifests...');
       const manifestGen = new ManifestGenerator();
-      const manifestStats = await manifestGen.generateManifests(bmadDir, config.modules || []);
+      const manifestStats = await manifestGen.generateManifests(bmadDir, config.modules || [], this.installedFiles, {
+        ides: config.ides || [],
+      });
+
       spinner.succeed(
-        `Manifests generated: ${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks`,
+        `Manifests generated: ${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.files} files`,
       );
 
       // Configure IDEs and copy documentation
@@ -337,23 +463,82 @@ class Installer {
 
       spinner.succeed('Module-specific installers completed');
 
-      // Create manifest
-      spinner.start('Creating installation manifest...');
-      const manifestResult = await this.manifest.create(
-        bmadDir,
-        {
-          version: require(path.join(getProjectRoot(), 'package.json')).version,
-          installDate: new Date().toISOString(),
-          core: config.installCore,
-          modules: config.modules || [],
-          ides: config.ides || [],
-          language: config.language || null,
-        },
-        this.installedFiles,
-      );
-      spinner.succeed(`Manifest created (${manifestResult.filesTracked} files tracked)`);
+      // Note: Manifest files are already created by ManifestGenerator above
+      // No need to create legacy manifest.csv anymore
+
+      // If this was an update, restore custom files
+      let customFiles = [];
+      let modifiedFiles = [];
+      if (config._isUpdate) {
+        if (config._customFiles && config._customFiles.length > 0) {
+          spinner.start(`Restoring ${config._customFiles.length} custom files...`);
+
+          for (const originalPath of config._customFiles) {
+            const relativePath = path.relative(bmadDir, originalPath);
+            const backupPath = path.join(config._tempBackupDir, relativePath);
+
+            if (await fs.pathExists(backupPath)) {
+              await fs.ensureDir(path.dirname(originalPath));
+              await fs.copy(backupPath, originalPath, { overwrite: true });
+            }
+          }
+
+          // Clean up temp backup
+          if (config._tempBackupDir && (await fs.pathExists(config._tempBackupDir))) {
+            await fs.remove(config._tempBackupDir);
+          }
+
+          spinner.succeed(`Restored ${config._customFiles.length} custom files`);
+          customFiles = config._customFiles;
+        }
+
+        if (config._modifiedFiles && config._modifiedFiles.length > 0) {
+          modifiedFiles = config._modifiedFiles;
+
+          // Restore modified files as .bak files
+          if (config._tempModifiedBackupDir && (await fs.pathExists(config._tempModifiedBackupDir))) {
+            spinner.start(`Restoring ${modifiedFiles.length} modified files as .bak...`);
+
+            for (const modifiedFile of modifiedFiles) {
+              const relativePath = path.relative(bmadDir, modifiedFile.path);
+              const tempBackupPath = path.join(config._tempModifiedBackupDir, relativePath);
+              const bakPath = modifiedFile.path + '.bak';
+
+              if (await fs.pathExists(tempBackupPath)) {
+                await fs.ensureDir(path.dirname(bakPath));
+                await fs.copy(tempBackupPath, bakPath, { overwrite: true });
+              }
+            }
+
+            // Clean up temp backup
+            await fs.remove(config._tempModifiedBackupDir);
+
+            spinner.succeed(`Restored ${modifiedFiles.length} modified files as .bak`);
+          }
+        }
+      }
 
       spinner.stop();
+
+      // Report custom and modified files if any were found
+      if (customFiles.length > 0) {
+        console.log(chalk.cyan(`\n📁 Custom files preserved: ${customFiles.length}`));
+        console.log(chalk.dim('The following custom files were found and restored:\n'));
+        for (const file of customFiles) {
+          console.log(chalk.dim(`  - ${path.relative(bmadDir, file)}`));
+        }
+        console.log('');
+      }
+
+      if (modifiedFiles.length > 0) {
+        console.log(chalk.yellow(`\n⚠️  Modified files detected: ${modifiedFiles.length}`));
+        console.log(chalk.dim('The following files were modified and backed up with .bak extension:\n'));
+        for (const file of modifiedFiles) {
+          console.log(chalk.dim(`  - ${file.relativePath} → ${file.relativePath}.bak`));
+        }
+        console.log(chalk.dim('\nThese files have been updated with the new version.'));
+        console.log(chalk.dim('Review the .bak files to see your changes and merge if needed.\n'));
+      }
 
       // Display completion message
       const { UI } = require('../../../lib/ui');
@@ -362,6 +547,7 @@ class Installer {
         path: bmadDir,
         modules: config.modules,
         ides: config.ides,
+        customFiles: customFiles.length > 0 ? customFiles : undefined,
       });
 
       return { success: true, path: bmadDir, modules: config.modules, ides: config.ides };
@@ -560,6 +746,9 @@ class Installer {
 
         // Write the clean config file
         await fs.writeFile(configPath, header + yamlContent, 'utf8');
+
+        // Track the config file in installedFiles
+        this.installedFiles.push(configPath);
       }
     }
   }
@@ -601,6 +790,10 @@ class Installer {
         skipModuleInstaller: true, // We'll run it later after IDE setup
       },
     );
+
+    // Process agent files to build YAML agents and create customize templates
+    const modulePath = path.join(bmadDir, moduleName);
+    await this.processAgentFiles(modulePath, moduleName);
 
     // Dependencies are already included in full module install
   }
@@ -771,8 +964,8 @@ class Installer {
   }
 
   /**
-   * Process agent files to inject activation block
-   * @param {string} modulePath - Path to module
+   * Process agent files to build YAML agents and inject activation blocks
+   * @param {string} modulePath - Path to module in bmad/ installation
    * @param {string} moduleName - Module name
    */
   async processAgentFiles(modulePath, moduleName) {
@@ -783,21 +976,338 @@ class Installer {
       return; // No agents to process
     }
 
+    // Determine project directory (parent of bmad/ directory)
+    const bmadDir = path.dirname(modulePath);
+    const projectDir = path.dirname(bmadDir);
+    const cfgAgentsDir = path.join(bmadDir, '_cfg', 'agents');
+
+    // Ensure _cfg/agents directory exists
+    await fs.ensureDir(cfgAgentsDir);
+
     // Get all agent files
     const agentFiles = await fs.readdir(agentsPath);
 
     for (const agentFile of agentFiles) {
-      if (!agentFile.endsWith('.md')) continue;
+      // Handle YAML agents - build them to .md
+      if (agentFile.endsWith('.agent.yaml')) {
+        const agentName = agentFile.replace('.agent.yaml', '');
+        const yamlPath = path.join(agentsPath, agentFile);
+        const mdPath = path.join(agentsPath, `${agentName}.md`);
+        const customizePath = path.join(cfgAgentsDir, `${moduleName}-${agentName}.customize.yaml`);
 
-      const agentPath = path.join(agentsPath, agentFile);
-      let content = await fs.readFile(agentPath, 'utf8');
+        // Create customize template if it doesn't exist
+        if (!(await fs.pathExists(customizePath))) {
+          const genericTemplatePath = getSourcePath('utility', 'templates', 'agent.customize.template.yaml');
+          if (await fs.pathExists(genericTemplatePath)) {
+            await fs.copy(genericTemplatePath, customizePath);
+            console.log(chalk.dim(`  Created customize: ${moduleName}-${agentName}.customize.yaml`));
+          }
+        }
 
-      // Check if content has agent XML and no activation block
-      if (content.includes('<agent') && !content.includes('<activation')) {
-        // Inject the activation block using XML handler
-        content = this.xmlHandler.injectActivationSimple(content);
-        await fs.writeFile(agentPath, content, 'utf8');
+        // Build YAML + customize to .md
+        const customizeExists = await fs.pathExists(customizePath);
+        const xmlContent = await this.xmlHandler.buildFromYaml(yamlPath, customizeExists ? customizePath : null, {
+          includeMetadata: true,
+        });
+
+        // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
+        // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+        // Write the built .md file to bmad/{module}/agents/
+        await fs.writeFile(mdPath, xmlContent, 'utf8');
+        this.installedFiles.push(mdPath);
+
+        // Remove the source YAML file - we can regenerate from installer source if needed
+        await fs.remove(yamlPath);
+
+        console.log(chalk.dim(`  Built agent: ${agentName}.md`));
       }
+      // Handle legacy .md agents - inject activation if needed
+      else if (agentFile.endsWith('.md')) {
+        const agentPath = path.join(agentsPath, agentFile);
+        let content = await fs.readFile(agentPath, 'utf8');
+
+        // Check if content has agent XML and no activation block
+        if (content.includes('<agent') && !content.includes('<activation')) {
+          // Inject the activation block using XML handler
+          content = this.xmlHandler.injectActivationSimple(content);
+          await fs.writeFile(agentPath, content, 'utf8');
+        }
+      }
+    }
+  }
+
+  /**
+   * Build standalone agents in bmad/agents/ directory
+   * @param {string} bmadDir - Path to bmad directory
+   * @param {string} projectDir - Path to project directory
+   */
+  async buildStandaloneAgents(bmadDir, projectDir) {
+    const standaloneAgentsPath = path.join(bmadDir, 'agents');
+    const cfgAgentsDir = path.join(bmadDir, '_cfg', 'agents');
+
+    // Check if standalone agents directory exists
+    if (!(await fs.pathExists(standaloneAgentsPath))) {
+      return;
+    }
+
+    // Get all subdirectories in agents/
+    const agentDirs = await fs.readdir(standaloneAgentsPath, { withFileTypes: true });
+
+    for (const agentDir of agentDirs) {
+      if (!agentDir.isDirectory()) continue;
+
+      const agentDirPath = path.join(standaloneAgentsPath, agentDir.name);
+
+      // Find any .agent.yaml file in the directory
+      const files = await fs.readdir(agentDirPath);
+      const yamlFile = files.find((f) => f.endsWith('.agent.yaml'));
+
+      if (!yamlFile) continue;
+
+      const agentName = path.basename(yamlFile, '.agent.yaml');
+      const sourceYamlPath = path.join(agentDirPath, yamlFile);
+      const targetMdPath = path.join(agentDirPath, `${agentName}.md`);
+      const customizePath = path.join(cfgAgentsDir, `${agentName}.customize.yaml`);
+
+      // Check for customizations
+      const customizeExists = await fs.pathExists(customizePath);
+      let customizedFields = [];
+
+      if (customizeExists) {
+        const customizeContent = await fs.readFile(customizePath, 'utf8');
+        const yaml = require('js-yaml');
+        const customizeYaml = yaml.load(customizeContent);
+
+        // Detect what fields are customized (similar to rebuildAgentFiles)
+        if (customizeYaml) {
+          if (customizeYaml.persona) {
+            for (const [key, value] of Object.entries(customizeYaml.persona)) {
+              if (value !== '' && value !== null && !(Array.isArray(value) && value.length === 0)) {
+                customizedFields.push(`persona.${key}`);
+              }
+            }
+          }
+          if (customizeYaml.agent?.metadata) {
+            for (const [key, value] of Object.entries(customizeYaml.agent.metadata)) {
+              if (value !== '' && value !== null) {
+                customizedFields.push(`metadata.${key}`);
+              }
+            }
+          }
+          if (customizeYaml.critical_actions && customizeYaml.critical_actions.length > 0) {
+            customizedFields.push('critical_actions');
+          }
+          if (customizeYaml.menu && customizeYaml.menu.length > 0) {
+            customizedFields.push('menu');
+          }
+        }
+      }
+
+      // Build YAML to XML .md
+      const xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
+        includeMetadata: true,
+      });
+
+      // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
+      // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+      // Write the built .md file
+      await fs.writeFile(targetMdPath, xmlContent, 'utf8');
+
+      // Display result
+      if (customizedFields.length > 0) {
+        console.log(chalk.dim(`  Built standalone agent: ${agentName}.md `) + chalk.yellow(`(customized: ${customizedFields.join(', ')})`));
+      } else {
+        console.log(chalk.dim(`  Built standalone agent: ${agentName}.md`));
+      }
+    }
+  }
+
+  /**
+   * Rebuild agent files from installer source (for compile command)
+   * @param {string} modulePath - Path to module in bmad/ installation
+   * @param {string} moduleName - Module name
+   */
+  async rebuildAgentFiles(modulePath, moduleName) {
+    // Get source agents directory from installer
+    const sourceAgentsPath =
+      moduleName === 'core' ? path.join(getModulePath('core'), 'agents') : path.join(getSourcePath(`modules/${moduleName}`), 'agents');
+
+    if (!(await fs.pathExists(sourceAgentsPath))) {
+      return; // No source agents to rebuild
+    }
+
+    // Determine project directory (parent of bmad/ directory)
+    const bmadDir = path.dirname(modulePath);
+    const projectDir = path.dirname(bmadDir);
+    const cfgAgentsDir = path.join(bmadDir, '_cfg', 'agents');
+    const targetAgentsPath = path.join(modulePath, 'agents');
+
+    // Ensure target directory exists
+    await fs.ensureDir(targetAgentsPath);
+
+    // Get all YAML agent files from source
+    const sourceFiles = await fs.readdir(sourceAgentsPath);
+
+    for (const file of sourceFiles) {
+      if (file.endsWith('.agent.yaml')) {
+        const agentName = file.replace('.agent.yaml', '');
+        const sourceYamlPath = path.join(sourceAgentsPath, file);
+        const targetMdPath = path.join(targetAgentsPath, `${agentName}.md`);
+        const customizePath = path.join(cfgAgentsDir, `${moduleName}-${agentName}.customize.yaml`);
+
+        // Check for customizations
+        const customizeExists = await fs.pathExists(customizePath);
+        let customizedFields = [];
+
+        if (customizeExists) {
+          const customizeContent = await fs.readFile(customizePath, 'utf8');
+          const yaml = require('js-yaml');
+          const customizeYaml = yaml.load(customizeContent);
+
+          // Detect what fields are customized
+          if (customizeYaml) {
+            if (customizeYaml.persona) {
+              for (const [key, value] of Object.entries(customizeYaml.persona)) {
+                if (value !== '' && value !== null && !(Array.isArray(value) && value.length === 0)) {
+                  customizedFields.push(`persona.${key}`);
+                }
+              }
+            }
+            if (customizeYaml.agent?.metadata) {
+              for (const [key, value] of Object.entries(customizeYaml.agent.metadata)) {
+                if (value !== '' && value !== null) {
+                  customizedFields.push(`metadata.${key}`);
+                }
+              }
+            }
+            if (customizeYaml.critical_actions && customizeYaml.critical_actions.length > 0) {
+              customizedFields.push('critical_actions');
+            }
+            if (customizeYaml.memories && customizeYaml.memories.length > 0) {
+              customizedFields.push('memories');
+            }
+            if (customizeYaml.menu && customizeYaml.menu.length > 0) {
+              customizedFields.push('menu');
+            }
+            if (customizeYaml.prompts && customizeYaml.prompts.length > 0) {
+              customizedFields.push('prompts');
+            }
+          }
+        }
+
+        // Build YAML + customize to .md
+        const xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
+          includeMetadata: true,
+        });
+
+        // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
+        // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+        // Write the rebuilt .md file
+        await fs.writeFile(targetMdPath, xmlContent, 'utf8');
+
+        // Display result with customizations if any
+        if (customizedFields.length > 0) {
+          console.log(chalk.dim(`  Rebuilt agent: ${agentName}.md `) + chalk.yellow(`(customized: ${customizedFields.join(', ')})`));
+        } else {
+          console.log(chalk.dim(`  Rebuilt agent: ${agentName}.md`));
+        }
+      }
+    }
+  }
+
+  /**
+   * Compile/rebuild all agents and tasks for quick updates
+   * @param {Object} config - Compilation configuration
+   * @returns {Object} Compilation results
+   */
+  async compileAgents(config) {
+    const ora = require('ora');
+    const spinner = ora('Starting agent compilation...').start();
+
+    try {
+      const projectDir = path.resolve(config.directory);
+      const bmadDir = path.join(projectDir, 'bmad');
+
+      // Check if bmad directory exists
+      if (!(await fs.pathExists(bmadDir))) {
+        spinner.fail('No BMAD installation found');
+        throw new Error(`BMAD not installed at ${bmadDir}`);
+      }
+
+      let agentCount = 0;
+      let taskCount = 0;
+
+      // Process all modules in bmad directory
+      spinner.text = 'Rebuilding agent files...';
+      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        if (entry.isDirectory() && entry.name !== '_cfg' && entry.name !== 'docs') {
+          const modulePath = path.join(bmadDir, entry.name);
+
+          // Special handling for standalone agents in bmad/agents/ directory
+          if (entry.name === 'agents') {
+            spinner.text = 'Building standalone agents...';
+            await this.buildStandaloneAgents(bmadDir, projectDir);
+
+            // Count standalone agents
+            const standaloneAgentsPath = path.join(bmadDir, 'agents');
+            const standaloneAgentDirs = await fs.readdir(standaloneAgentsPath, { withFileTypes: true });
+            for (const agentDir of standaloneAgentDirs) {
+              if (agentDir.isDirectory()) {
+                const agentDirPath = path.join(standaloneAgentsPath, agentDir.name);
+                const agentFiles = await fs.readdir(agentDirPath);
+                agentCount += agentFiles.filter((f) => f.endsWith('.md') && !f.endsWith('.agent.yaml')).length;
+              }
+            }
+          } else {
+            // Rebuild module agents from installer source
+            const agentsPath = path.join(modulePath, 'agents');
+            if (await fs.pathExists(agentsPath)) {
+              await this.rebuildAgentFiles(modulePath, entry.name);
+              const agentFiles = await fs.readdir(agentsPath);
+              agentCount += agentFiles.filter((f) => f.endsWith('.md')).length;
+            }
+
+            // Count tasks (already built)
+            const tasksPath = path.join(modulePath, 'tasks');
+            if (await fs.pathExists(tasksPath)) {
+              const taskFiles = await fs.readdir(tasksPath);
+              taskCount += taskFiles.filter((f) => f.endsWith('.md')).length;
+            }
+          }
+        }
+      }
+
+      // Ask for IDE to update
+      spinner.stop();
+      // Note: UI lives in tools/cli/lib/ui.js; from installers/lib/core use '../../../lib/ui'
+      const { UI } = require('../../../lib/ui');
+      const ui = new UI();
+      const toolConfig = await ui.promptToolSelection(projectDir, []);
+
+      if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
+        spinner.start('Updating IDE configurations...');
+
+        for (const ide of toolConfig.ides) {
+          spinner.text = `Updating ${ide}...`;
+          await this.ideManager.setup(ide, projectDir, bmadDir, {
+            selectedModules: entries.filter((e) => e.isDirectory() && e.name !== '_cfg').map((e) => e.name),
+            skipModuleInstall: true, // Skip module installation, just update IDE files
+            verbose: config.verbose,
+          });
+        }
+
+        spinner.succeed('IDE configurations updated');
+      }
+
+      return { agentCount, taskCount };
+    } catch (error) {
+      spinner.fail('Compilation failed');
+      throw error;
     }
   }
 
@@ -837,36 +1347,236 @@ class Installer {
   }
 
   /**
-   * Private: Create formatted error for legacy BMAD v4 detection
+   * Handle legacy BMAD v4 migration with automatic backup
+   * @param {string} projectDir - Project directory
    * @param {Object} legacyV4 - Legacy V4 detection result with offenders array
-   * @returns {Error} Formatted error with fullMessage property
    */
-  createLegacyV4Error(legacyV4) {
-    const error = new Error('Legacy BMAD v4 artefacts detected in project. Remove them to continue.');
+  async handleLegacyV4Migration(projectDir, legacyV4) {
+    console.log(chalk.yellow.bold('\n⚠️  Legacy BMAD v4 detected'));
+    console.log(chalk.dim('The installer found legacy artefacts in your project.\n'));
 
-    // Build the complete formatted message using template literals
-    const headerMessage = `
-${chalk.red.bold('Blocked: Legacy BMAD v4 detected')}
-The installer found legacy artefacts in your project.`;
+    // Separate .bmad* folders (auto-backup) from other offending paths (manual cleanup)
+    const bmadFolders = legacyV4.offenders.filter((p) => {
+      const name = path.basename(p);
+      return name.startsWith('.bmad'); // Only dot-prefixed folders get auto-backed up
+    });
+    const otherOffenders = legacyV4.offenders.filter((p) => {
+      const name = path.basename(p);
+      return !name.startsWith('.bmad'); // Everything else is manual cleanup
+    });
 
-    const offendersMessage = `
-Offending paths:
-${legacyV4.offenders.map((p) => ` - ${p}`).join('\n')}
+    const inquirer = require('inquirer');
 
-Cleanup commands you can copy/paste:
-${chalk.cyan('macOS/Linux:')}
-${legacyV4.offenders.map((p) => `  rm -rf '${p}'`).join('\n')}
-${chalk.cyan('Windows:')}
-${legacyV4.offenders.map((p) => `  rmdir /S /Q "${p}"`).join('\n')}`;
+    // Show warning for other offending paths FIRST
+    if (otherOffenders.length > 0) {
+      console.log(chalk.yellow('⚠️  Recommended cleanup:'));
+      console.log(chalk.dim('It is recommended to remove the following items before proceeding:\n'));
+      for (const p of otherOffenders) console.log(chalk.dim(` - ${p}`));
 
-    const footerMessage = `
-Remove the listed paths (case sensitive) and rerun install.
-Note: You may also want to remove other BMAD-related v4 files/folders left over in this project. If you have customizations, back them up or migrate them before deleting.`;
+      console.log(chalk.cyan('\nCleanup commands you can copy/paste:'));
+      console.log(chalk.dim('macOS/Linux:'));
+      for (const p of otherOffenders) console.log(chalk.dim(`  rm -rf '${p}'`));
+      console.log(chalk.dim('Windows:'));
+      for (const p of otherOffenders) console.log(chalk.dim(`  rmdir /S /Q "${p}"`));
 
-    // Attach the complete formatted message
-    error.fullMessage = headerMessage + offendersMessage + footerMessage;
+      const { cleanedUp } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'cleanedUp',
+          message: 'Have you completed the recommended cleanup? (You can proceed without it, but it is recommended)',
+          default: false,
+        },
+      ]);
 
-    return error;
+      if (cleanedUp) {
+        console.log(chalk.green('✓ Cleanup acknowledged\n'));
+      } else {
+        console.log(chalk.yellow('⚠️  Proceeding without recommended cleanup\n'));
+      }
+    }
+
+    // Handle .bmad* folders with automatic backup
+    if (bmadFolders.length > 0) {
+      console.log(chalk.cyan('The following legacy folders will be moved to v4-backup:'));
+      for (const p of bmadFolders) console.log(chalk.dim(` - ${p}`));
+
+      const { proceed } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'proceed',
+          message: 'Proceed with backing up legacy v4 folders?',
+          default: true,
+        },
+      ]);
+
+      if (proceed) {
+        const backupDir = path.join(projectDir, 'v4-backup');
+        await fs.ensureDir(backupDir);
+
+        for (const folder of bmadFolders) {
+          const folderName = path.basename(folder);
+          const backupPath = path.join(backupDir, folderName);
+
+          // If backup already exists, add timestamp
+          let finalBackupPath = backupPath;
+          if (await fs.pathExists(backupPath)) {
+            const timestamp = new Date().toISOString().replaceAll(/[:.]/g, '-').split('T')[0];
+            finalBackupPath = path.join(backupDir, `${folderName}-${timestamp}`);
+          }
+
+          await fs.move(folder, finalBackupPath, { overwrite: false });
+          console.log(chalk.green(`✓ Moved ${folderName} to ${path.relative(projectDir, finalBackupPath)}`));
+        }
+      } else {
+        throw new Error('Installation cancelled by user');
+      }
+    }
+  }
+
+  /**
+   * Read files-manifest.csv
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Array} Array of file entries from files-manifest.csv
+   */
+  async readFilesManifest(bmadDir) {
+    const filesManifestPath = path.join(bmadDir, '_cfg', 'files-manifest.csv');
+    if (!(await fs.pathExists(filesManifestPath))) {
+      return [];
+    }
+
+    try {
+      const content = await fs.readFile(filesManifestPath, 'utf8');
+      const lines = content.split('\n');
+      const files = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        // Skip header
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        // Parse CSV line properly handling quoted values
+        const parts = [];
+        let current = '';
+        let inQuotes = false;
+
+        for (const char of line) {
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            parts.push(current);
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        parts.push(current); // Add last part
+
+        if (parts.length >= 4) {
+          files.push({
+            type: parts[0],
+            name: parts[1],
+            module: parts[2],
+            path: parts[3],
+            hash: parts[4] || null, // Hash may not exist in old manifests
+          });
+        }
+      }
+
+      return files;
+    } catch (error) {
+      console.warn('Warning: Could not read files-manifest.csv:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Detect custom and modified files
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {Array} existingFilesManifest - Previous files from files-manifest.csv
+   * @returns {Object} Object with customFiles and modifiedFiles arrays
+   */
+  async detectCustomFiles(bmadDir, existingFilesManifest) {
+    const customFiles = [];
+    const modifiedFiles = [];
+
+    // Check if the manifest has hashes - if not, we can't detect modifications
+    let manifestHasHashes = false;
+    if (existingFilesManifest && existingFilesManifest.length > 0) {
+      manifestHasHashes = existingFilesManifest.some((f) => f.hash);
+    }
+
+    // Build map of previously installed files from files-manifest.csv with their hashes
+    const installedFilesMap = new Map();
+    for (const fileEntry of existingFilesManifest) {
+      if (fileEntry.path) {
+        // Files in manifest are stored as relative paths starting with 'bmad/'
+        // Convert to absolute path
+        const relativePath = fileEntry.path.startsWith('bmad/') ? fileEntry.path.slice(5) : fileEntry.path;
+        const absolutePath = path.join(bmadDir, relativePath);
+        installedFilesMap.set(path.normalize(absolutePath), {
+          hash: fileEntry.hash,
+          relativePath: relativePath,
+        });
+      }
+    }
+
+    // Recursively scan bmadDir for all files
+    const scanDirectory = async (dir) => {
+      try {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+
+          if (entry.isDirectory()) {
+            // Skip certain directories
+            if (entry.name === 'node_modules' || entry.name === '.git') {
+              continue;
+            }
+            await scanDirectory(fullPath);
+          } else if (entry.isFile()) {
+            const normalizedPath = path.normalize(fullPath);
+            const fileInfo = installedFilesMap.get(normalizedPath);
+
+            // Skip certain system files that are auto-generated
+            const relativePath = path.relative(bmadDir, fullPath);
+            const fileName = path.basename(fullPath);
+
+            // Skip _cfg directory - system files
+            if (relativePath.startsWith('_cfg/') || relativePath.startsWith('_cfg\\')) {
+              continue;
+            }
+
+            // Skip config.yaml files - these are regenerated on each install/update
+            // Users should use _cfg/agents/ override files instead
+            if (fileName === 'config.yaml') {
+              continue;
+            }
+
+            if (!fileInfo) {
+              // File not in manifest = custom file
+              customFiles.push(fullPath);
+            } else if (manifestHasHashes && fileInfo.hash) {
+              // File in manifest with hash - check if it was modified
+              const currentHash = await this.manifest.calculateFileHash(fullPath);
+              if (currentHash && currentHash !== fileInfo.hash) {
+                // Hash changed = file was modified
+                modifiedFiles.push({
+                  path: fullPath,
+                  relativePath: fileInfo.relativePath,
+                });
+              }
+            }
+            // If manifest doesn't have hashes, we can't detect modifications
+            // so we just skip files that are in the manifest
+          }
+        }
+      } catch {
+        // Ignore errors scanning directories
+      }
+    };
+
+    await scanDirectory(bmadDir);
+    return { customFiles, modifiedFiles };
   }
 
   /**
@@ -982,6 +1692,7 @@ Note: You may also want to remove other BMAD-related v4 files/folders left over 
       configContent += processedTemplate;
 
       await fs.writeFile(configPath, configContent, 'utf8');
+      this.installedFiles.push(configPath); // Track agent config files
       createdCount++;
     }
 

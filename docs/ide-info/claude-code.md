@@ -13,13 +13,13 @@ BMAD agents are installed as slash commands in `.claude/commands/bmad/`.
 ### Examples
 
 ```
-/bmad-dev - Activate development agent
-/bmad-architect - Activate architect agent
-/bmad-task-setup - Execute setup task
+/bmad:bmm:agents:dev - Activate development agent
+/bmad:bmm:agents:architect - Activate architect agent
+/bmad:bmm:workflows:dev-story - Execute dev-story workflow
 ```
 
 ### Notes
 
 - Commands are autocompleted when you type `/`
 - Agent remains active for the conversation
-- Start new conversation to switch agents
+- Start a new conversation to switch agents

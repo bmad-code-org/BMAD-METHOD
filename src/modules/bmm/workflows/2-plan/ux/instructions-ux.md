@@ -2,7 +2,7 @@
 
 <workflow>
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow creates comprehensive UX/UI specifications - can run standalone or as part of plan-project</critical>
 <critical>Uses ux-spec-template.md for structured output generation</critical>
@@ -12,15 +12,16 @@
 
 <action>Determine workflow mode (standalone or integrated)</action>
 
-<check>If mode="standalone":</check>
-<ask>Do you have an existing PRD or requirements document? (y/n)
+<check if="mode is standalone">
+  <ask>Do you have an existing PRD or requirements document? (y/n)
 
 If yes: Provide the path to the PRD
 If no: We'll gather basic requirements to create the UX spec
 </ask>
+</check>
 
-<check>If no PRD in standalone mode:</check>
-<ask>Let's gather essential information:
+<check if="no PRD in standalone mode">
+  <ask>Let's gather essential information:
 
 1. **Project Description**: What are you building?
 2. **Target Users**: Who will use this?
@@ -28,15 +29,18 @@ If no: We'll gather basic requirements to create the UX spec
 4. **Platform**: Web, mobile, desktop, or multi-platform?
 5. **Existing Brand/Design**: Any existing style guide or brand to follow?
    </ask>
+   </check>
 
-<check>If PRD exists or integrated mode:</check>
-<action>Load the following documents if available:</action>
+<check if="PRD exists or integrated mode">
+  <action>Load the following documents if available:</action>
 
 - PRD.md (primary source for requirements and user journeys)
 - epics.md or epic-stories.md (helps understand feature grouping)
 - tech-spec.md (understand technical constraints)
 - architecture.md (if Level 3-4 project)
 - project-workflow-analysis.md (understand project level and scope)
+
+</check>
 
 <action>Analyze project for UX complexity:</action>
 
@@ -225,13 +229,14 @@ This is recommended for:
 - Complex state transitions
   </ask>
 
-<check>If yes:</check>
+<check if="yes or fuzzy match the user wants to define animation or micro interactions">
 
 <action>Define motion principles</action>
 <template-output>motion_principles</template-output>
 
 <action>Define key animations and transitions</action>
 <template-output>key_animations</template-output>
+</check>
 
 </step>
 
@@ -241,26 +246,26 @@ This is recommended for:
 
 **1. Will you be creating high-fidelity designs?**
 
-- [ ] Yes, in Figma
-- [ ] Yes, in Sketch
-- [ ] Yes, in Adobe XD
-- [ ] No, development from spec
-- [ ] Other: **\_\_\_\_**
+- Yes, in Figma
+- Yes, in Sketch
+- Yes, in Adobe XD
+- No, development from spec
+- Other (describe)
 
 **2. For key screens, should we:**
 
-- [ ] Reference design file locations
-- [ ] Create low-fi wireframe descriptions
-- [ ] Skip visual representations
-      </ask>
+- Reference design file locations
+- Create low-fi wireframe descriptions
+- Skip visual representations
+  </ask>
 
-<check>If design files will be created:</check>
-<template-output>design_files</template-output>
+<template-output if="design files will be created">design_files</template-output>
 
-<check>If wireframe descriptions needed:</check>
-<for-each screen="key_screens">
-<template-output>screen*layout*{{screen_number}}</template-output>
-</for-each>
+<check if="wireframe descriptions needed">
+  <for-each screen="key_screens">
+    <template-output>screen*layout*{{screen_number}}</template-output>
+  </for-each>
+</check>
 
 </step>
 
@@ -281,17 +286,18 @@ This is recommended for:
 - [ ] Brand guidelines incorporated
 - [ ] Performance goals established
 
-<check>If Level 3-4 project:</check>
+<check if="Level 3-4 project">
+  - [ ] Ready for detailed visual design
+  - [ ] Frontend architecture can proceed
+  - [ ] Story generation can include UX details
+</check>
 
-- [ ] Ready for detailed visual design
-- [ ] Frontend architecture can proceed
-- [ ] Story generation can include UX details
+<check if="Level 1-2 project or standalone">
+  - [ ] Development can proceed with spec
+  - [ ] Component implementation order defined
+  - [ ] MVP scope clear
 
-<check>If Level 1-2 project or standalone:</check>
-
-- [ ] Development can proceed with spec
-- [ ] Component implementation order defined
-- [ ] MVP scope clear
+</check>
 
 <template-output>design_handoff_checklist</template-output>
 
@@ -307,8 +313,9 @@ This is recommended for:
 
 Would you like to generate an AI Frontend Prompt? (y/n):</ask>
 
-<check>If user selects yes or option 1:</check>
-<goto step="11">Generate AI Frontend Prompt</goto>
+<check if="user selects yes or option 1">
+  <goto step="11">Generate AI Frontend Prompt</goto>
+</check>
 
 </step>
 

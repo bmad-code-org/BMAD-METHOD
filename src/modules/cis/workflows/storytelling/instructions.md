@@ -3,7 +3,7 @@
 ## Workflow
 
 <workflow>
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project_root}/bmad/cis/workflows/storytelling/workflow.yaml</critical>
 
 <step n="1" goal="Story Context Setup">
@@ -177,8 +177,6 @@ The first moment determines if they keep reading/listening.
 
 <step n="6" goal="Write Core Narrative">
 
-<check>Ask if user wants to write or wants AI to write</check>
-
 <ask>Would you like to:
 
 1. Draft the story yourself with my guidance
@@ -186,13 +184,13 @@ The first moment determines if they keep reading/listening.
 3. Co-create it iteratively together
    </ask>
 
-<if selection="1">
+<if selection="1 or draft themselves">
   <action>Provide writing prompts and encouragement</action>
   <action>Offer feedback on drafts they share</action>
   <action>Suggest refinements for clarity, emotion, flow</action>
 </if>
 
-<if selection="2">
+<if selection="2 or ai writes the next draft based on discussions">
   <action>Synthesize all gathered elements</action>
   <action>Write complete narrative in appropriate tone/style</action>
   <action>Structure according to chosen framework</action>
@@ -200,7 +198,7 @@ The first moment determines if they keep reading/listening.
   <action>Present draft for feedback and refinement</action>
 </if>
 
-<if selection="3">
+<if selection="3 or work collaboratively with co-creation">
   <action>Write opening paragraph</action>
   <action>Get feedback and iterate</action>
   <action>Build section by section collaboratively</action>

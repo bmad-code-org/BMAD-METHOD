@@ -1,6 +1,6 @@
 # Market Research Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This is an INTERACTIVE workflow with web research capabilities. Engage the user at key decision points.</critical>
 
@@ -471,8 +471,8 @@ Provide mitigation strategies.
 
 <ask>Would you like to create a financial model with revenue projections based on the market analysis?</ask>
 
-<check>If yes:</check>
-Build 3-year projections:
+<check if="yes">
+  Build 3-year projections:
 
 - Revenue model based on SOM scenarios
 - Customer acquisition projections
@@ -481,6 +481,8 @@ Build 3-year projections:
 - Funding requirements
 
 <template-output>financial_projections</template-output>
+</check>
+
 </step>
 
 <step n="11" goal="Executive Summary Creation">
@@ -537,8 +539,8 @@ Create compelling executive summary with:
 <step n="13" goal="Appendices and Supporting Materials" optional="true">
 <ask>Would you like to include detailed appendices with calculations, full competitor profiles, or raw research data?</ask>
 
-<check>If yes:</check>
-Create appendices with:
+<check if="yes">
+  Create appendices with:
 
 - Detailed TAM/SAM/SOM calculations
 - Full competitor profiles
@@ -548,6 +550,8 @@ Create appendices with:
 - Glossary of terms
 
 <template-output>appendices</template-output>
+</check>
+
 </step>
 
 </workflow>

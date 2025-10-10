@@ -2,7 +2,41 @@
 
 ## Overview
 
-BMAD agents come in three distinct types, each designed for different use cases and complexity levels.
+BMAD agents come in three distinct types, each designed for different use cases and complexity levels. The type determines where the agent is stored and what capabilities it has.
+
+## Directory Structure by Type
+
+### Standalone Agents (Simple & Expert)
+
+Live in their own dedicated directories under `bmad/agents/`:
+
+```
+bmad/agents/
+├── my-helper/                   # Simple agent
+│   ├── my-helper.agent.yaml     # Agent definition
+│   └── my-helper.md             # Built XML (generated)
+│
+└── domain-expert/               # Expert agent
+    ├── domain-expert.agent.yaml
+    ├── domain-expert.md         # Built XML
+    └── domain-expert-sidecar/   # Expert resources
+        ├── memories.md          # Persistent memory
+        ├── instructions.md      # Private directives
+        └── knowledge/           # Domain knowledge
+
+```
+
+### Module Agents
+
+Part of a module system under `bmad/{module}/agents/`:
+
+```
+bmad/bmm/agents/
+├── product-manager.agent.yaml
+├── product-manager.md           # Built XML
+├── business-analyst.agent.yaml
+└── business-analyst.md          # Built XML
+```
 
 ## Agent Types
 
@@ -10,12 +44,15 @@ BMAD agents come in three distinct types, each designed for different use cases 
 
 **Purpose:** Self-contained, standalone agents with embedded capabilities
 
+**Location:** `bmad/agents/{agent-name}/`
+
 **Characteristics:**
 
 - All logic embedded within the agent file
 - No external dependencies
 - Quick to create and deploy
 - Perfect for single-purpose tools
+- Lives in its own directory
 
 **Use Cases:**
 
@@ -24,7 +61,26 @@ BMAD agents come in three distinct types, each designed for different use cases 
 - Simple analyzers
 - Static advisors
 
-**Structure:**
+**YAML Structure (source):**
+
+```yaml
+agent:
+  metadata:
+    name: 'Helper'
+    title: 'Simple Helper'
+    icon: '🤖'
+    type: 'simple'
+  persona:
+    role: 'Simple Helper Role'
+    identity: '...'
+    communication_style: '...'
+    principles: ['...']
+  menu:
+    - trigger: calculate
+      description: 'Perform calculation'
+```
+
+**XML Structure (built):**
 
 ```xml
 <agent id="simple-agent" name="Helper" title="Simple Helper" icon="🤖">
@@ -37,11 +93,11 @@ BMAD agents come in three distinct types, each designed for different use cases 
   <embedded-data>
     <!-- Optional embedded data/logic -->
   </embedded-data>
-  <cmds>
-    <c cmd="*help">Show commands</c>
-    <c cmd="*calculate">Perform calculation</c>
-    <c cmd="*exit">Exit</c>
-  </cmds>
+  <menu>
+    <item cmd="*help">Show commands</item>
+    <item cmd="*calculate">Perform calculation</item>
+    <item cmd="*exit">Exit</item>
+  </menu>
 </agent>
 ```
 
@@ -49,12 +105,15 @@ BMAD agents come in three distinct types, each designed for different use cases 
 
 **Purpose:** Specialized agents with domain expertise and sidecar resources
 
+**Location:** `bmad/agents/{agent-name}/` with sidecar directory
+
 **Characteristics:**
 
 - Has access to specific folders/files
 - Domain-restricted operations
 - Maintains specialized knowledge
 - Can have memory/context files
+- Includes sidecar directory for resources
 
 **Use Cases:**
 
@@ -63,7 +122,30 @@ BMAD agents come in three distinct types, each designed for different use cases 
 - Domain expert (medical, legal, technical)
 - Personal coach with history
 
-**Structure:**
+**YAML Structure (source):**
+
+```yaml
+agent:
+  metadata:
+    name: 'Domain Expert'
+    title: 'Specialist'
+    icon: '🎯'
+    type: 'expert'
+  persona:
+    role: 'Domain Specialist Role'
+    identity: '...'
+    communication_style: '...'
+    principles: ['...']
+  critical_actions:
+    - 'Load COMPLETE file {agent-folder}/instructions.md and follow ALL directives'
+    - 'Load COMPLETE file {agent-folder}/memories.md into permanent context'
+    - 'ONLY access {user-folder}/diary/ - NO OTHER FOLDERS'
+  menu:
+    - trigger: analyze
+      description: 'Analyze domain-specific data'
+```
+
+**XML Structure (built):**
 
 ```xml
 <agent id="expert-agent" name="Domain Expert" title="Specialist" icon="🎯">
@@ -79,23 +161,29 @@ BMAD agents come in three distinct types, each designed for different use cases 
     <i critical="MANDATORY">Load COMPLETE file {agent-folder}/memories.md into permanent context</i>
     <i critical="MANDATORY">ONLY access {user-folder}/diary/ - NO OTHER FOLDERS</i>
   </critical-actions>
-  <cmds>...</cmds>
+  <menu>...</menu>
 </agent>
 ```
 
-**Sidecar Structure:**
+**Complete Directory Structure:**
 
 ```
-expert-agent/
-├── agent.md          # Main agent file
-├── memories.md       # Personal context/memories
-├── knowledge/        # Domain knowledge base
-└── data/            # Agent-specific data
+bmad/agents/expert-agent/
+├── expert-agent.agent.yaml      # Agent YAML source
+├── expert-agent.md              # Built XML (generated)
+└── expert-agent-sidecar/        # Sidecar resources
+    ├── memories.md              # Persistent memory
+    ├── instructions.md          # Private directives
+    ├── knowledge/               # Domain knowledge base
+    │   └── README.md
+    └── sessions/                # Session notes
 ```
 
 ### 3. Module Agent
 
 **Purpose:** Full-featured agents belonging to a module with access to workflows and resources
+
+**Location:** `bmad/{module}/agents/`
 
 **Characteristics:**
 
@@ -103,6 +191,7 @@ expert-agent/
 - Access to multiple workflows
 - Can invoke other tasks and agents
 - Professional/enterprise grade
+- Integrated with module workflows
 
 **Use Cases:**
 
@@ -111,7 +200,33 @@ expert-agent/
 - Test Architect (test strategies, automation)
 - Business Analyst (market research, requirements)
 
-**Structure:**
+**YAML Structure (source):**
+
+```yaml
+agent:
+  metadata:
+    name: 'John'
+    title: 'Product Manager'
+    icon: '📋'
+    module: 'bmm'
+    type: 'module'
+  persona:
+    role: 'Product Management Expert'
+    identity: '...'
+    communication_style: '...'
+    principles: ['...']
+  critical_actions:
+    - 'Load config from {project-root}/bmad/{module}/config.yaml'
+  menu:
+    - trigger: create-prd
+      workflow: '{project-root}/bmad/bmm/workflows/prd/workflow.yaml'
+      description: 'Create PRD'
+    - trigger: validate
+      exec: '{project-root}/bmad/core/tasks/validate-workflow.xml'
+      description: 'Validate document'
+```
+
+**XML Structure (built):**
 
 ```xml
 <agent id="bmad/bmm/agents/pm.md" name="John" title="Product Manager" icon="📋">
@@ -124,12 +239,12 @@ expert-agent/
   <critical-actions>
     <i>Load config from {project-root}/bmad/{module}/config.yaml</i>
   </critical-actions>
-  <cmds>
-    <c cmd="*help">Show numbered cmd list</c>
-    <c cmd="*create-prd" run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">Create PRD</c>
-    <c cmd="*validate" exec="{project-root}/bmad/core/tasks/validate-workflow.md">Validate document</c>
-    <c cmd="*exit">Exit</c>
-  </cmds>
+  <menu>
+    <item cmd="*help">Show numbered menu</item>
+    <item cmd="*create-prd" run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">Create PRD</item>
+    <item cmd="*validate" exec="{project-root}/bmad/core/tasks/validate-workflow.xml">Validate document</item>
+    <item cmd="*exit">Exit</item>
+  </menu>
 </agent>
 ```
 

@@ -1,6 +1,6 @@
 # Research Workflow Router Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This is a ROUTER that directs to specialized research instruction sets</critical>
 
@@ -51,40 +51,49 @@ Present the user with research type options:
 
 <critical>Based on user selection, load the appropriate instruction set</critical>
 
-<check>If research_type == "1" OR "market" OR "market research":</check>
-<action>Set research_mode = "market"</action>
-<action>LOAD: {installed_path}/instructions-market.md</action>
-<action>Continue with market research workflow</action>
+<check if="research_type == 1 OR fuzzy match market research">
+  <action>Set research_mode = "market"</action>
+  <action>LOAD: {installed_path}/instructions-market.md</action>
+  <action>Continue with market research workflow</action>
+</check>
 
-<check>If research_type == "2" OR "prompt" OR "deep research prompt":</check>
-<action>Set research_mode = "deep-prompt"</action>
-<action>LOAD: {installed_path}/instructions-deep-prompt.md</action>
-<action>Continue with deep research prompt generation</action>
+<check if="research_type == 2 or prompt or fuzzy match deep research prompt">
+  <action>Set research_mode = "deep-prompt"</action>
+  <action>LOAD: {installed_path}/instructions-deep-prompt.md</action>
+  <action>Continue with deep research prompt generation</action>
+</check>
 
-<check>If research_type == "3" OR "technical" OR "architecture":</check>
-<action>Set research_mode = "technical"</action>
-<action>LOAD: {installed_path}/instructions-technical.md</action>
-<action>Continue with technical research workflow</action>
+<check if="research_type == 3 technical or architecture or fuzzy match indicates technical type of research">
+  <action>Set research_mode = "technical"</action>
+  <action>LOAD: {installed_path}/instructions-technical.md</action>
+  <action>Continue with technical research workflow</action>
 
-<check>If research_type == "4" OR "competitive":</check>
-<action>Set research_mode = "competitive"</action>
-<action>This will use market research workflow with competitive focus</action>
-<action>LOAD: {installed_path}/instructions-market.md</action>
-<action>Pass mode="competitive" to focus on competitive intelligence</action>
+</check>
 
-<check>If research_type == "5" OR "user":</check>
-<action>Set research_mode = "user"</action>
-<action>This will use market research workflow with user research focus</action>
-<action>LOAD: {installed_path}/instructions-market.md</action>
-<action>Pass mode="user" to focus on customer insights</action>
+<check if="research_type == 4 or fuzzy match competitive">
+  <action>Set research_mode = "competitive"</action>
+  <action>This will use market research workflow with competitive focus</action>
+  <action>LOAD: {installed_path}/instructions-market.md</action>
+  <action>Pass mode="competitive" to focus on competitive intelligence</action>
 
-<check>If research_type == "6" OR "domain" OR "industry":</check>
-<action>Set research_mode = "domain"</action>
-<action>This will use market research workflow with domain focus</action>
-<action>LOAD: {installed_path}/instructions-market.md</action>
-<action>Pass mode="domain" to focus on industry/domain analysis</action>
+</check>
 
-<critical>The loaded instruction set will continue from here with full context</critical>
+<check if="research_type == 5 or fuzzy match user research">
+  <action>Set research_mode = "user"</action>
+  <action>This will use market research workflow with user research focus</action>
+  <action>LOAD: {installed_path}/instructions-market.md</action>
+  <action>Pass mode="user" to focus on customer insights</action>
+
+</check>
+
+<check if="research_type == 6 or fuzzy match domain or industry or category">
+  <action>Set research_mode = "domain"</action>
+  <action>This will use market research workflow with domain focus</action>
+  <action>LOAD: {installed_path}/instructions-market.md</action>
+  <action>Pass mode="domain" to focus on industry/domain analysis</action>
+</check>
+
+<critical>The loaded instruction set will continue from here with full context of the {research_type}</critical>
 
 </step>
 

@@ -5,6 +5,10 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
+## 🚀 Critical: Understanding BMad Method v6a Workflow
+
+**IMPORTANT: Before using this framework, you MUST read the [BMM v6 Workflows Guide](./src/modules/bmm/workflows/README.md).** This document is fundamental to understanding how to use v6 of the BMad Method and explains the revolutionary v6a workflow system with its four phases: Analysis, Planning, Solutioning, and Implementation.
+
 **[Subscribe to BMadCode on YouTube](https://www.youtube.com/@BMadCode?sub_confirmation=1)** and **[Join our amazing, active Discord Community](https://discord.gg/gk8jAdXWmj)**
 
 ⭐ **If you find this project helpful or useful, please give it a star in the upper right-hand corner!** It helps others discover BMad-CORE and you will be notified of updates!
@@ -104,8 +108,11 @@ BMad-CORE works in ANY domain through specialized modules (previously called exp
 ### Available Modules with Alpha Release
 
 - **BMad Core (core)**: Included and used to power every current and future module; includes a master orchestrator for the local environment and one for the web bundles used with ChatGPT or Gemini Gems, for example.
-- **BMad Method (bmm)**: Agile AI-driven software development - the classic that started it all and is still the best - but with v6, massively improved thanks to a rebuild from the ground up built on the new powerful BMad-CORE engine. The BMad Method has also been expanded to use a new "Scale Adaptive Workflow Engine"™.
-- **BMad BoMB (bmb)**: The BMad Builder is your Custom Agent, Workflow, and Module authoring tool - it's now easier than ever to customize existing modules or create whatever you can imagine as a standalone module.
+
+- **[BMad Method (bmm)](./src/modules/bmm/README.md)**: Agile AI-driven software development - the classic that started it all and is still the best - but with v6, massively improved thanks to a rebuild from the ground up built on the new powerful BMad-CORE engine. The BMad Method has also been expanded to use a new "Scale Adaptive Workflow Engine"™. **[See BMM Documentation](./src/modules/bmm/README.md)**
+
+- **[BMad BoMB (bmb)](./src/modules/bmb/README.md)**: The BMad Builder is your Custom Agent, Workflow, and Module authoring tool - it's now easier than ever to customize existing modules or create whatever you can imagine as a standalone module. **[See BMB Documentation](./src/modules/bmb/README.md)**
+
 - **Creative Intelligence Suite (cis)**: Unlock innovation, problem-solving, and creative thinking! Brainstorming that was part of the BMad Method in the past is now part of this standalone module along with other workflows. The power of BMad modules still allows modules to borrow from each other - so the CIS, while standalone, also powers the brainstorming abilities for certain agents within the BMad Method!
 
 ## What's New in V6-ALPHA
@@ -136,7 +143,9 @@ The sub-agent experience is still undergoing some work, so install them if you c
 
 When you read about the BoMB below, it will link to more information about various features in this new evolution of BMad Code. One of the exciting features is the new agent types - there are 3 now! The most exciting are the new standalone tiny agents that you can easily generate and deploy free from any module - specialized for your exact needs.
 
-### BMad Method
+### BMad Method (BMM)
+
+📚 **[Full BMM Documentation](./src/modules/bmm/README.md)** | **[v6 Workflows Guide](./src/modules/bmm/workflows/README.md)**
 
 The BMad Method is significantly transforming and yet more powerful than ever. **Scale Adaptive** is a new term that means when you start the workflow to create a PRD or a GDD (or a simple tech-spec in the case of simple tasks), you will first answer some questions about the scope of the project, new vs. existing codebase and its state, and other questions. This will trigger a leveling of the effort from 0-4, and based on this scale adaptation, it will guide the workflow in different directions.
 
@@ -221,7 +230,9 @@ The CIS has 5 agents to try out, each with their own workflow! This is a new mod
 
 - [CIS Readme](./src/modules/cis/readme.md)
 
-### BoMB: BMad Builder
+### BoMB: BMad Builder (BMB)
+
+📚 **[Full BMB Documentation](./src/modules/bmb/README.md)** | **[Agent Creation Guide](./src/modules/bmb/workflows/create-agent/README.md)**
 
 #### Agent Docs
 

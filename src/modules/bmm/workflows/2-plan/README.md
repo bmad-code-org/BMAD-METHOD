@@ -1,8 +1,14 @@
-# Project Planning Workflow
+---
+last-redoc-date: 2025-10-01
+---
 
-## Overview
+# Project Planning Workflow (Phase 2)
 
-Scale-adaptive project planning workflow that automatically adjusts outputs based on project scope - from single atomic changes (Level 0: tech-spec only) to enterprise platforms (Level 4: full PRD + epics). Generates appropriate planning artifacts for each level with intelligent routing and continuation support.
+This scale-adaptive workflow represents the cornerstone of BMM v6's intelligent project orchestration, automatically determining project complexity (Level 0-4) and routing to specialized planning pathways based on project type, scope, and context. Unlike traditional one-size-fits-all planning approaches, it dynamically adjusts output artifacts—from minimal tech specs for atomic changes to comprehensive PRD suites for enterprise platforms—ensuring planning overhead matches project value. The workflow serves as the critical bridge between Phase 1 analysis outputs and Phase 3 solutioning, establishing the contractual foundation for all subsequent development activities.
+
+The workflow's routing intelligence analyzes project characteristics through multi-dimensional assessment: project type (game, web, mobile, backend), context (greenfield vs. brownfield), scope indicators, and complexity signals. Based on this analysis, it classifies projects into five levels with distinct artifact requirements. Level 0 produces only tech specs for single atomic changes. Levels 1-2 generate focused PRDs with embedded tech specs. Levels 3-4 create comprehensive PRDs with separate epics that hand off to the architect-driven solutioning workflow. This classification isn't merely about document generation—it fundamentally changes how requirements are structured, validated, and communicated to downstream consumers.
+
+Critical to v6's flow improvement is this workflow's integration with the project-workflow-analysis.md tracking document, which maintains project state across sessions, tracks which agents participate in each phase, and provides continuity for multi-session planning efforts. The workflow can resume from any point, intelligently detecting existing artifacts and determining next steps without redundant work. For game projects, it routes to specialized GDD generation with genre-specific templates. For UX-heavy projects, it can generate standalone UX specifications or AI frontend prompts from existing specs.
 
 ## Key Features
 

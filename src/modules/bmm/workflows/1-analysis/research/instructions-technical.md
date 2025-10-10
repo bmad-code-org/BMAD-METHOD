@@ -1,6 +1,6 @@
 # Technical/Architecture Research Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow conducts technical research for architecture and technology decisions</critical>
 
@@ -89,12 +89,11 @@ Consider:
 
 If you have specific options, list them. Otherwise, I'll research current leading solutions based on your requirements.</ask>
 
-<check>If user provides options:</check>
-<template-output>user_provided_options</template-output>
+<template-output if="user provides options">user_provided_options</template-output>
 
-<check>If discovering options:</check>
-<action>Conduct web research to identify current leading solutions</action>
-<action>Search for:
+<check if="discovering options">
+  <action>Conduct web research to identify current leading solutions</action>
+  <action>Search for:
 
 - "[technical_category] best tools 2025"
 - "[technical_category] comparison [use_case]"
@@ -102,10 +101,12 @@ If you have specific options, list them. Otherwise, I'll research current leadin
 - "State of [technical_category] 2025"
   </action>
 
-<elicit-required/>
+  <elicit-required/>
 
 <action>Present discovered options (typically 3-5 main candidates)</action>
 <template-output>technology_options</template-output>
+
+</check>
 
 </step>
 
@@ -283,7 +284,7 @@ For top 2-3 candidates:
 
 <ask>Are you researching architecture patterns (microservices, event-driven, etc.)?</ask>
 
-<check>If yes:</check>
+<check if="yes">
 
 Research and document:
 
@@ -308,6 +309,7 @@ Research and document:
 - Operational overhead
 
 <template-output>architecture_pattern_analysis</template-output>
+</check>
 
 </step>
 
@@ -433,9 +435,10 @@ Create ADR format documentation:
 
 Select option (1-5):</ask>
 
-<check>If option 4:</check>
-<action>LOAD: {installed_path}/instructions-deep-prompt.md</action>
-<action>Pre-populate with technical research context</action>
+<check if="option 4">
+  <action>LOAD: {installed_path}/instructions-deep-prompt.md</action>
+  <action>Pre-populate with technical research context</action>
+</check>
 
 </step>
 

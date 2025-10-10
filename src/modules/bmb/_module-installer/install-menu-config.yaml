@@ -9,3 +9,18 @@ prompt: "Happy Building - Build the Modules, Workflows and Agents of your dreams
 ## user_name
 ## communication_language
 ## output_folder
+
+custom_agent_location:
+  prompt: "Where do custom agents get created?"
+  default: "bmad/agents"
+  result: "{project-root}/{value}"
+
+custom_workflow_location:
+  prompt: "Where do custom workflows get stored?"
+  default: "bmad/workflows"
+  result: "{project-root}/{value}"
+
+custom_module_location:
+  prompt: "Where do custom modules get stored?"
+  default: "bmad"
+  result: "{project-root}/{value}"

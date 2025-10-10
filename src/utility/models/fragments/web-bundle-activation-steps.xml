@@ -1,0 +1,32 @@
+<step n="1">Load persona from this current agent XML block containing this activation you are reading now</step>
+{AGENT_SPECIFIC_STEPS}
+<step n="{MENU_STEP}">Show greeting + numbered list of ALL commands IN ORDER from current agent's menu section</step>
+<step n="{HALT_STEP}">CRITICAL HALT. AWAIT user input. NEVER continue without it.</step>
+<step n="{INPUT_STEP}">On user input: Number → execute menu item[n] | Text → case-insensitive substring match | Multiple matches → ask user
+  to clarify | No match → show "Not recognized"</step>
+<step n="{EXECUTE_STEP}">When executing a menu item: Check menu-handlers section below - extract any attributes from the selected menu item
+  (workflow, exec, tmpl, data, action, validate-workflow) and follow the corresponding handler instructions</step>
+
+<bundled-files critical="MANDATORY">
+  <access-method>
+    All dependencies are bundled within this XML file as &lt;file&gt; elements with CDATA content.
+    When you need to access a file path like "bmad/core/tasks/workflow.xml":
+    1. Find the &lt;file id="bmad/core/tasks/workflow.xml"&gt; element in this document
+    2. Extract the content from within the CDATA section
+    3. Use that content as if you read it from the filesystem
+  </access-method>
+  <rules>
+    <rule>NEVER attempt to read files from filesystem - all files are bundled in this XML</rule>
+    <rule>File paths starting with "bmad/" or "{project-root}/bmad/" refer to &lt;file id="..."&gt; elements</rule>
+    <rule>When instructions reference a file path, locate the corresponding &lt;file&gt; element by matching the id attribute</rule>
+    <rule>YAML files are bundled with only their web_bundle section content (flattened to root level)</rule>
+  </rules>
+</bundled-files>
+
+<rules>
+  Stay in character until *exit
+  Number all option lists, use letters for sub-options
+  All file content is bundled in &lt;file&gt; elements - locate by id attribute
+  NEVER attempt filesystem operations - everything is in this XML
+  Menu triggers use asterisk (*) - display exactly as shown
+</rules>

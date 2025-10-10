@@ -8,15 +8,15 @@ When executing agent commands, understand these reference patterns:
 
 ```xml
 <!-- Pattern 1: Inline action -->
-<c cmd="*example" action="do this specific thing">
+<item cmd="*example" action="do this specific thing">Description</item>
 → Execute the text "do this specific thing" directly
 
 <!-- Pattern 2: Internal reference with # prefix -->
-<c cmd="*example" action="#prompt-id">
+<item cmd="*example" action="#prompt-id">Description</item>
 → Find <prompt id="prompt-id"> in the current agent and execute its content
 
 <!-- Pattern 3: External file reference -->
-<c cmd="*example" exec="{project-root}/path/to/file.md">
+<item cmd="*example" exec="{project-root}/path/to/file.md">Description</item>
 → Load and execute the external file
 ```
 
@@ -27,7 +27,9 @@ When executing agent commands, understand these reference patterns:
 ### Basic Structure
 
 ```xml
-<c cmd="*trigger" [attributes]>Description</c>
+<menu>
+  <item cmd="*trigger" [attributes]>Description</item>
+</menu>
 ```
 
 **Components:**
@@ -64,29 +66,29 @@ Execute complete multi-step processes
 
 ```xml
 <!-- Standard workflow -->
-<c cmd="*create-prd"
-   run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
+<item cmd="*create-prd"
+     run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
   Create Product Requirements Document
-</c>
+</item>
 
 <!-- Workflow with validation -->
-<c cmd="*validate-prd"
-   validate-workflow="{output_folder}/prd-draft.md"
-   workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
+<item cmd="*validate-prd"
+     validate-workflow="{output_folder}/prd-draft.md"
+     workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
   Validate PRD Against Checklist
-</c>
+</item>
 
 <!-- Auto-discover validation workflow from document -->
-<c cmd="*validate-doc"
-   validate-workflow="{output_folder}/document.md">
+<item cmd="*validate-doc"
+     validate-workflow="{output_folder}/document.md">
   Validate Document (auto-discover checklist)
-</c>
+</item>
 
 <!-- Placeholder for future development -->
-<c cmd="*analyze-data"
-   run-workflow="todo">
+<item cmd="*analyze-data"
+     run-workflow="todo">
   Analyze dataset (workflow coming soon)
-</c>
+</item>
 ```
 
 **Workflow Attributes:**
@@ -109,17 +111,17 @@ Execute single operations
 
 ```xml
 <!-- Simple task -->
-<c cmd="*validate"
-   exec="{project-root}/bmad/core/tasks/validate-workflow.md">
+<item cmd="*validate"
+   exec="{project-root}/bmad/core/tasks/validate-workflow.xml">
   Validate document against checklist
-</c>
+</item>
 
 <!-- Task with data -->
-<c cmd="*standup"
-   exec="{project-root}/bmad/mmm/tasks/daily-standup.md"
+<item cmd="*standup"
+   exec="{project-root}/bmad/mmm/tasks/daily-standup.xml"
    data="{project-root}/bmad/_cfg/agent-party.xml">
   Run agile team standup
-</c>
+</item>
 ```
 
 **Data Property:**
@@ -134,18 +136,18 @@ Execute single operations
 Generate documents from templates
 
 ```xml
-<c cmd="*brief"
+<item cmd="*brief"
    exec="{project-root}/bmad/core/tasks/create-doc.md"
    tmpl="{project-root}/bmad/bmm/templates/brief.md">
   Produce Project Brief
-</c>
+</item>
 
-<c cmd="*competitor-analysis"
+<item cmd="*competitor-analysis"
    exec="{project-root}/bmad/core/tasks/create-doc.md"
    tmpl="{project-root}/bmad/bmm/templates/competitor.md"
    data="{project-root}/bmad/_data/market-research.csv">
   Produce Competitor Analysis
-</c>
+</item>
 ```
 
 ### 4. Meta Commands
@@ -154,13 +156,13 @@ Agent control and information
 
 ```xml
 <!-- Required meta commands -->
-<c cmd="*help">Show numbered cmd list</c>
-<c cmd="*exit">Exit with confirmation</c>
+<item cmd="*help">Show numbered cmd list</item>
+<item cmd="*exit">Exit with confirmation</item>
 
 <!-- Optional meta commands -->
-<c cmd="*yolo">Toggle Yolo Mode</c>
-<c cmd="*status">Show current status</c>
-<c cmd="*config">Show configuration</c>
+<item cmd="*yolo">Toggle Yolo Mode</item>
+<item cmd="*status">Show current status</item>
+<item cmd="*config">Show configuration</item>
 ```
 
 ### 5. Action Commands
@@ -171,15 +173,15 @@ Direct prompts embedded in commands (Simple agents)
 
 ```xml
 <!-- Short action attribute with embedded prompt -->
-<c cmd="*list-tasks"
+<item cmd="*list-tasks"
    action="list all tasks from {project-root}/bmad/_cfg/task-manifest.csv">
   List Available Tasks
-</c>
+</item>
 
-<c cmd="*summarize"
+<item cmd="*summarize"
    action="summarize the key points from the current document">
   Summarize Document
-</c>
+</item>
 ```
 
 #### Complex Action (Referenced)
@@ -214,23 +216,23 @@ For multiline/complex prompts, define them separately and reference by id:
   </prompts>
 
   <!-- Commands reference the prompts by id -->
-  <cmds>
-    <c cmd="*help">Show numbered cmd list</c>
+  <menu>
+    <item cmd="*help">Show numbered cmd list</item>
 
-    <c cmd="*deep-analyze"
+    <item cmd="*deep-analyze"
        action="#deep-analysis">
       <!-- The # means: use the <prompt id="deep-analysis"> defined above -->
       Perform Deep Analysis
-    </c>
+    </item>
 
-    <c cmd="*review-literature"
+    <item cmd="*review-literature"
        action="#literature-review"
        data="{project-root}/bmad/_data/sources.csv">
       Conduct Literature Review
-    </c>
+    </item>
 
-    <c cmd="*exit">Exit with confirmation</c>
-  </cmds>
+    <item cmd="*exit">Exit with confirmation</item>
+  </menu>
 </agent>
 ```
 
@@ -261,9 +263,9 @@ Logic embedded in agent persona (Simple agents)
 
 ```xml
 <!-- No exec/run-workflow/action attribute -->
-<c cmd="*calculate">Perform calculation</c>
-<c cmd="*convert">Convert format</c>
-<c cmd="*generate">Generate output</c>
+<item cmd="*calculate">Perform calculation</item>
+<item cmd="*convert">Convert format</item>
+<item cmd="*generate">Generate output</item>
 ```
 
 ## Command Naming Conventions
@@ -295,16 +297,16 @@ Logic embedded in agent persona (Simple agents)
 
 ```xml
 <!-- ❌ Too vague -->
-<c cmd="*do">Do something</c>
+<item cmd="*do">Do something</item>
 
 <!-- ❌ Too long -->
-<c cmd="*create-comprehensive-product-requirements-document-with-analysis">
+<item cmd="*create-comprehensive-product-requirements-document-with-analysis">
 
 <!-- ❌ No verb -->
-<c cmd="*prd">Product Requirements</c>
+<item cmd="*prd">Product Requirements</item>
 
 <!-- ✅ Clear and concise -->
-<c cmd="*create-prd">Create Product Requirements Document</c>
+<item cmd="*create-prd">Create Product Requirements Document</item>
 ```
 
 ## Command Organization
@@ -312,25 +314,25 @@ Logic embedded in agent persona (Simple agents)
 ### Standard Order
 
 ```xml
-<cmds>
+<menu>
   <!-- 1. Always first -->
-  <c cmd="*help">Show numbered cmd list</c>
+  <item cmd="*help">Show numbered cmd list</item>
 
   <!-- 2. Primary workflows -->
-  <c cmd="*create-prd" run-workflow="...">Create PRD</c>
-  <c cmd="*create-module" run-workflow="...">Build module</c>
+  <item cmd="*create-prd" run-workflow="...">Create PRD</item>
+  <item cmd="*create-module" run-workflow="...">Build module</item>
 
   <!-- 3. Secondary actions -->
-  <c cmd="*validate" exec="...">Validate document</c>
-  <c cmd="*analyze" exec="...">Analyze code</c>
+  <item cmd="*validate" exec="...">Validate document</item>
+  <item cmd="*analyze" exec="...">Analyze code</item>
 
   <!-- 4. Utility commands -->
-  <c cmd="*config">Show configuration</c>
-  <c cmd="*yolo">Toggle Yolo Mode</c>
+  <item cmd="*config">Show configuration</item>
+  <item cmd="*yolo">Toggle Yolo Mode</item>
 
   <!-- 5. Always last -->
-  <c cmd="*exit">Exit with confirmation</c>
-</cmds>
+  <item cmd="*exit">Exit with confirmation</item>
+</menu>
 ```
 
 ### Grouping Strategies
@@ -338,34 +340,34 @@ Logic embedded in agent persona (Simple agents)
 **By Lifecycle:**
 
 ```xml
-<cmds>
-  <c cmd="*help">Help</c>
+<menu>
+  <item cmd="*help">Help</item>
   <!-- Planning -->
-  <c cmd="*brainstorm">Brainstorm ideas</c>
-  <c cmd="*plan">Create plan</c>
+  <item cmd="*brainstorm">Brainstorm ideas</item>
+  <item cmd="*plan">Create plan</item>
   <!-- Building -->
-  <c cmd="*build">Build component</c>
-  <c cmd="*test">Test component</c>
+  <item cmd="*build">Build component</item>
+  <item cmd="*test">Test component</item>
   <!-- Deployment -->
-  <c cmd="*deploy">Deploy to production</c>
-  <c cmd="*monitor">Monitor system</c>
-  <c cmd="*exit">Exit</c>
-</cmds>
+  <item cmd="*deploy">Deploy to production</item>
+  <item cmd="*monitor">Monitor system</item>
+  <item cmd="*exit">Exit</item>
+</menu>
 ```
 
 **By Complexity:**
 
 ```xml
-<cmds>
-  <c cmd="*help">Help</c>
+<menu>
+  <item cmd="*help">Help</item>
   <!-- Simple -->
-  <c cmd="*quick-review">Quick review</c>
+  <item cmd="*quick-review">Quick review</item>
   <!-- Standard -->
-  <c cmd="*create-doc">Create document</c>
+  <item cmd="*create-doc">Create document</item>
   <!-- Complex -->
-  <c cmd="*full-analysis">Comprehensive analysis</c>
-  <c cmd="*exit">Exit</c>
-</cmds>
+  <item cmd="*full-analysis">Comprehensive analysis</item>
+  <item cmd="*exit">Exit</item>
+</menu>
 ```
 
 ## Command Descriptions
@@ -374,26 +376,26 @@ Logic embedded in agent persona (Simple agents)
 
 ```xml
 <!-- Clear action and object -->
-<c cmd="*create-prd">Create Product Requirements Document</c>
+<item cmd="*create-prd">Create Product Requirements Document</item>
 
 <!-- Specific outcome -->
-<c cmd="*analyze-security">Perform security vulnerability analysis</c>
+<item cmd="*analyze-security">Perform security vulnerability analysis</item>
 
 <!-- User benefit -->
-<c cmd="*optimize">Optimize code for performance</c>
+<item cmd="*optimize">Optimize code for performance</item>
 ```
 
 ### Poor Descriptions
 
 ```xml
 <!-- Too vague -->
-<c cmd="*process">Process</c>
+<item cmd="*process">Process</item>
 
 <!-- Technical jargon -->
-<c cmd="*exec-wf-123">Execute WF123</c>
+<item cmd="*exec-wf-123">Execute WF123</item>
 
 <!-- Missing context -->
-<c cmd="*run">Run</c>
+<item cmd="*run">Run</item>
 ```
 
 ## The Data Property
@@ -404,26 +406,26 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 
 ```xml
 <!-- Workflow with data -->
-<c cmd="*brainstorm"
-   run-workflow="{project-root}/bmad/cis/workflows/brainstorming/workflow.yaml"
-   data="{project-root}/bmad/cis/workflows/brainstorming/brain-methods.csv">
+<item cmd="*brainstorm"
+   run-workflow="{project-root}/bmad/core/workflows/brainstorming/workflow.yaml"
+   data="{project-root}/bmad/core/workflows/brainstorming/brain-methods.csv">
   Creative Brainstorming Session
-</c>
+</item>
 
 <!-- Action with data -->
-<c cmd="*analyze-metrics"
+<item cmd="*analyze-metrics"
    action="analyze these metrics and identify trends"
    data="{project-root}/bmad/_data/performance-metrics.json">
   Analyze Performance Metrics
-</c>
+</item>
 
 <!-- Template with data -->
-<c cmd="*report"
+<item cmd="*report"
    exec="{project-root}/bmad/core/tasks/create-doc.md"
    tmpl="{project-root}/bmad/bmm/templates/report.md"
    data="{project-root}/bmad/_data/quarterly-results.csv">
   Generate Quarterly Report
-</c>
+</item>
 ```
 
 **Common Data Uses:**
@@ -441,39 +443,39 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 
 ```xml
 <!-- Only show if certain conditions met -->
-<c cmd="*advanced-mode"
+<item cmd="*advanced-mode"
    if="user_level == 'expert'"
    run-workflow="...">
   Advanced configuration mode
-</c>
+</item>
 
 <!-- Environment specific -->
-<c cmd="*deploy-prod"
+<item cmd="*deploy-prod"
    if="environment == 'production'"
    exec="...">
   Deploy to production
-</c>
+</item>
 ```
 
 ### Parameterized Commands
 
 ```xml
 <!-- Accept runtime parameters -->
-<c cmd="*create-agent"
+<item cmd="*create-agent"
    run-workflow="..."
    params="agent_type,agent_name">
   Create new agent with parameters
-</c>
+</item>
 ```
 
 ### Command Aliases
 
 ```xml
 <!-- Multiple triggers for same action -->
-<c cmd="*prd|*create-prd|*product-requirements"
+<item cmd="*prd|*create-prd|*product-requirements"
    run-workflow="...">
   Create Product Requirements Document
-</c>
+</item>
 ```
 
 ## Module-Specific Patterns
@@ -481,27 +483,27 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 ### BMM (Business Management)
 
 ```xml
-<c cmd="*create-prd">Product Requirements</c>
-<c cmd="*market-research">Market Research</c>
-<c cmd="*competitor-analysis">Competitor Analysis</c>
-<c cmd="*brief">Project Brief</c>
+<item cmd="*create-prd">Product Requirements</item>
+<item cmd="*market-research">Market Research</item>
+<item cmd="*competitor-analysis">Competitor Analysis</item>
+<item cmd="*brief">Project Brief</item>
 ```
 
 ### BMB (Builder)
 
 ```xml
-<c cmd="*create-agent">Build Agent</c>
-<c cmd="*create-module">Build Module</c>
-<c cmd="*create-workflow">Create Workflow</c>
-<c cmd="*module-brief">Module Brief</c>
+<item cmd="*create-agent">Build Agent</item>
+<item cmd="*create-module">Build Module</item>
+<item cmd="*create-workflow">Create Workflow</item>
+<item cmd="*module-brief">Module Brief</item>
 ```
 
 ### CIS (Creative Intelligence)
 
 ```xml
-<c cmd="*brainstorm">Brainstorming Session</c>
-<c cmd="*ideate">Ideation Workshop</c>
-<c cmd="*storytell">Story Creation</c>
+<item cmd="*brainstorm">Brainstorming Session</item>
+<item cmd="*ideate">Ideation Workshop</item>
+<item cmd="*storytell">Story Creation</item>
 ```
 
 ## Command Menu Presentation
@@ -520,10 +522,10 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 
 ```xml
 <!-- Group separator (visual only) -->
-<c cmd="---">━━━━━━━━━━━━━━━━━━━━</c>
+<item cmd="---">━━━━━━━━━━━━━━━━━━━━</item>
 
 <!-- Section header (non-executable) -->
-<c cmd="SECTION">═══ Workflows ═══</c>
+<item cmd="SECTION">═══ Workflows ═══</item>
 ```
 
 ## Error Handling
@@ -532,16 +534,16 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 
 ```xml
 <!-- Workflow not yet created -->
-<c cmd="*future-feature"
+<item cmd="*future-feature"
    run-workflow="todo">
   Coming soon: Advanced feature
-</c>
+</item>
 
 <!-- Graceful degradation -->
-<c cmd="*analyze"
+<item cmd="*analyze"
    run-workflow="{optional-path|fallback-path}">
   Analyze with available tools
-</c>
+</item>
 ```
 
 ## Testing Commands
@@ -569,36 +571,36 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 
 ```xml
 <!-- Create document -->
-<c cmd="*{action}-{object}"
+<item cmd="*{action}-{object}"
    run-workflow="{project-root}/bmad/{module}/workflows/{workflow}/workflow.yaml">
   {Action} {Object Description}
-</c>
+</item>
 
 <!-- Validate document -->
-<c cmd="*validate-{object}"
+<item cmd="*validate-{object}"
    validate-workflow="{output_folder}/{document}.md"
    workflow="{project-root}/bmad/{module}/workflows/{workflow}/workflow.yaml">
   Validate {Object Description}
-</c>
+</item>
 ```
 
 ### Task Command
 
 ```xml
-<c cmd="*{action}"
+<item cmd="*{action}"
    exec="{project-root}/bmad/{module}/tasks/{task}.md">
   {Action Description}
-</c>
+</item>
 ```
 
 ### Template Command
 
 ```xml
-<c cmd="*{document}"
+<item cmd="*{document}"
    exec="{project-root}/bmad/core/tasks/create-doc.md"
    tmpl="{project-root}/bmad/{module}/templates/{template}.md">
   Create {Document Name}
-</c>
+</item>
 ```
 
 ## Self-Contained Agent Patterns
@@ -669,36 +671,36 @@ The `data` attribute can be added to ANY command type to provide supplementary i
     </prompt>
   </prompts>
 
-  <cmds>
-    <c cmd="*help">Show numbered cmd list</c>
+  <menu>
+    <item cmd="*help">Show numbered cmd list</item>
 
     <!-- Simple inline actions -->
-    <c cmd="*summarize"
+    <item cmd="*summarize"
        action="create executive summary of findings">
       Create Executive Summary
-    </c>
+    </item>
 
     <!-- Complex referenced prompts -->
-    <c cmd="*swot"
+    <item cmd="*swot"
        action="#swot-analysis">
       Perform SWOT Analysis
-    </c>
+    </item>
 
-    <c cmd="*compete"
+    <item cmd="*compete"
        action="#competitive-intel"
        data="{project-root}/bmad/_data/market-data.csv">
       Analyze Competition
-    </c>
+    </item>
 
     <!-- Hybrid: external task with internal data -->
-    <c cmd="*report"
+    <item cmd="*report"
        exec="{project-root}/bmad/core/tasks/create-doc.md"
        tmpl="{project-root}/bmad/research/templates/report.md">
       Generate Research Report
-    </c>
+    </item>
 
-    <c cmd="*exit">Exit with confirmation</c>
-  </cmds>
+    <item cmd="*exit">Exit with confirmation</item>
+  </menu>
 </agent>
 ```
 
@@ -708,32 +710,32 @@ For agents that primarily use embedded logic:
 
 ```xml
 <agent name="Data Analyst">
-  <cmds>
-    <c cmd="*help">Show numbered cmd list</c>
+  <menu>
+    <item cmd="*help">Show numbered cmd list</item>
 
     <!-- Action commands for direct operations -->
-    <c cmd="*list-metrics"
+    <item cmd="*list-metrics"
        action="list all available metrics from the dataset">
       List Available Metrics
-    </c>
+    </item>
 
-    <c cmd="*analyze"
+    <item cmd="*analyze"
        action="perform statistical analysis on the provided data"
        data="{project-root}/bmad/_data/dataset.csv">
       Analyze Dataset
-    </c>
+    </item>
 
-    <c cmd="*visualize"
+    <item cmd="*visualize"
        action="create visualization recommendations for this data">
       Suggest Visualizations
-    </c>
+    </item>
 
     <!-- Embedded logic commands -->
-    <c cmd="*calculate">Perform calculations</c>
-    <c cmd="*interpret">Interpret results</c>
+    <item cmd="*calculate">Perform calculations</item>
+    <item cmd="*interpret">Interpret results</item>
 
-    <c cmd="*exit">Exit with confirmation</c>
-  </cmds>
+    <item cmd="*exit">Exit with confirmation</item>
+  </menu>
 </agent>
 ```
 

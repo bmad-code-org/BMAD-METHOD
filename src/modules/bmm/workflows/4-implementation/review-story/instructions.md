@@ -1,7 +1,7 @@
 # Senior Developer Review - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow performs a Senior Developer Review on a story flagged Ready for Review, appends structured review notes, and can update the story status based on the outcome.</critical>
 <critical>Default execution mode: #yolo (non-interactive). Only ask if {{non_interactive}} == false. If auto-discovery of the target story fails, HALT with a clear message to provide 'story_path' or 'story_dir'.</critical>
@@ -16,15 +16,15 @@
     <action>Resolve {{story_path}} and read the COMPLETE file.</action>
     <action>Extract {{epic_num}} and {{story_num}} from filename (e.g., story-2.3.*.md) and story metadata if available.</action>
     <action>Parse sections: Status, Story, Acceptance Criteria, Tasks/Subtasks (and completion states), Dev Notes, Dev Agent Record (Context Reference, Completion Notes, File List), Change Log.</action>
-    <check>If Status is not one of {{allow_status_values}} → HALT with message: "Story status must be 'Ready for Review' to proceed" (accept 'Review' as equivalent).</check>
-    <check>If story cannot be read → HALT.</check>
+    <action if="Status is not one of {{allow_status_values}}">HALT with message: "Story status must be 'Ready for Review' to proceed" (accept 'Review' as equivalent).</action>
+    <action if="story cannot be read">HALT.</action>
   </step>
 
   <step n="2" goal="Resolve context and specification inputs">
     <action>Locate Story Context: Under Dev Agent Record → Context Reference, read referenced path(s). If missing and {{auto_discover_context}}: search {{output_folder}} for files named "story-context-{{epic_num}}.{{story_num}}*.xml"; pick the most recent.</action>
-    <check>If no context found → Continue but record a WARNING in review notes: "No Story Context found".</check>
+    <action if="no context found">Continue but record a WARNING in review notes: "No Story Context found".</action>
     <action>Locate Epic Tech Spec: If {{auto_discover_tech_spec}}, search {{tech_spec_search_dir}} with glob {{tech_spec_glob_template}} (resolve {{epic_num}}); else use provided input.</action>
-    <check>If no tech spec found → Continue but record a WARNING in review notes: "No Tech Spec found for epic {{epic_num}}".</check>
+    <action if="no tech spec found">Continue but record a WARNING in review notes: "No Tech Spec found for epic {{epic_num}}".</action>
     <action>Load architecture/standards docs: For each file name in {{arch_docs_file_names}} within {{arch_docs_search_dirs}}, read if exists. Collect any testing, coding standards, security, and architectural patterns.</action>
   </step>
 
@@ -40,12 +40,12 @@
     <action>From Dev Agent Record → File List, compile list of changed/added files. If File List is missing or clearly incomplete, search repo for recent changes relevant to the story scope (heuristics: filenames matching components/services/routes/tests inferred from ACs/tasks).</action>
     <action>Cross-check epic tech-spec requirements and architecture constraints against the implementation intent in files.</action>
     <action>For each acceptance criterion, verify there is evidence of implementation and corresponding tests (unit/integration/E2E as applicable). Note any gaps explicitly.</action>
-    <check>If critical architecture constraints are violated (e.g., layering, dependency rules) → flag as High severity finding.</check>
+    <action if="critical architecture constraints are violated (e.g., layering, dependency rules)">flag as High Severity finding.</action>
   </step>
 
   <step n="5" goal="Perform code quality and risk review">
     <action>For each changed file, skim for common issues appropriate to the stack: error handling, input validation, logging, dependency injection, thread-safety/async correctness, resource cleanup, performance anti-patterns.</action>
-    <action>Perform security review: injection risks, authZ/authN handling, secret management, unsafe defaults, unvalidated redirects, CORS misconfig, dependency vulnerabilities (based on manifests).</action>
+    <action>Perform security review: injection risks, authZ/authN handling, secret management, unsafe defaults, un-validated redirects, CORS misconfigured, dependency vulnerabilities (based on manifests).</action>
     <action>Check tests quality: assertions are meaningful, edge cases covered, deterministic behavior, proper fixtures, no flakiness patterns.</action>
     <action>Capture concrete, actionable suggestions with severity (High/Med/Low) and rationale. When possible, suggest specific code-level changes (filenames + line ranges) without rewriting large sections.</action>
   </step>
@@ -94,7 +94,7 @@
   </step>
 
   <step n="9" goal="Validation and completion">
-    <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/bmad/core/tasks/validate-workflow.md</invoke-task>
+    <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Report workflow completion.</action>
   </step>  <step n="1" goal="Locate story and verify review status">
     <action>If {{story_path}} was provided → use it. Else auto-discover from {{story_dir}} by listing files matching pattern: "story-*.md" (recursive), sort by last modified (newest first), present top {{story_selection_limit}}.</action>
@@ -102,15 +102,15 @@
     <action>Resolve {{story_path}} and read the COMPLETE file.</action>
     <action>Extract {{epic_num}} and {{story_num}} from filename (e.g., story-2.3.*.md) and story metadata if available.</action>
     <action>Parse sections: Status, Story, Acceptance Criteria, Tasks/Subtasks (and completion states), Dev Notes, Dev Agent Record (Context Reference, Completion Notes, File List), Change Log.</action>
-    <check>If Status is not one of {{allow_status_values}} → HALT with message: "Story status must be 'Ready for Review' to proceed" (accept 'Review' as equivalent).</check>
-    <check>If story cannot be read → HALT.</check>
+    <action if="Status is not one of {{allow_status_values}}">HALT with message: "Story status must be 'Ready for Review' to proceed" (accept 'Review' as equivalent).</action>
+    <action if="story cannot be read">HALT.</action>
   </step>
 
   <step n="2" goal="Resolve context and specification inputs">
     <action>Locate Story Context: Under Dev Agent Record → Context Reference, read referenced path(s). If missing and {{auto_discover_context}}: search {{output_folder}} for files named "story-context-{{epic_num}}.{{story_num}}*.xml"; pick the most recent.</action>
-    <check>If no context found → Continue but record a WARNING in review notes: "No Story Context found".</check>
+    <action if="no context found">Continue but record a WARNING in review notes: "No Story Context found".</action>
     <action>Locate Epic Tech Spec: If {{auto_discover_tech_spec}}, search {{tech_spec_search_dir}} with glob {{tech_spec_glob_template}} (resolve {{epic_num}}); else use provided input.</action>
-    <check>If no tech spec found → Continue but record a WARNING in review notes: "No Tech Spec found for epic {{epic_num}}".</check>
+    <action if="no tech spec found">Continue but record a WARNING in review notes: "No Tech Spec found for epic {{epic_num}}".</action>
     <action>Load architecture/standards docs: For each file name in {{arch_docs_file_names}} within {{arch_docs_search_dirs}}, read if exists. Collect any testing, coding standards, security, and architectural patterns.</action>
   </step>
 
@@ -126,7 +126,7 @@
     <action>From Dev Agent Record → File List, compile list of changed/added files. If File List is missing or clearly incomplete, search repo for recent changes relevant to the story scope (heuristics: filenames matching components/services/routes/tests inferred from ACs/tasks).</action>
     <action>Cross-check epic tech-spec requirements and architecture constraints against the implementation intent in files.</action>
     <action>For each acceptance criterion, verify there is evidence of implementation and corresponding tests (unit/integration/E2E as applicable). Note any gaps explicitly.</action>
-    <check>If critical architecture constraints are violated (e.g., layering, dependency rules) → flag as High severity finding.</check>
+    <action if="critical architecture constraints are violated (e.g., layering, dependency rules)">flag as High severity finding.</action>
   </step>
 
   <step n="5" goal="Perform code quality and risk review">
@@ -168,7 +168,7 @@
   </step>
 
   <step n="9" goal="Validation and completion">
-    <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/bmad/core/tasks/validate-workflow.md</invoke-task>
+    <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Report workflow completion.</action>
   </step>
 

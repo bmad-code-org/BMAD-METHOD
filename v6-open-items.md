@@ -4,9 +4,24 @@
 
 Aside from stability and bug fixes found during the alpha period - the main focus will be on the following:
 
-- Single Agent web bundler finalized
-- Team Web Bundler functional
-- bmm `testarch` converted to a standalone module or integrated into the BMM workflow's after aligned with the rest of bmad method flow.
+- DONE: Single Agent web bundler finalized - run `npm run bundle'
+- DONE: 4->v6 upgrade installer fixed.
+- DONE: v6->v6 updates will no longer remove custom content. so if you have a new agent you created for example anywhere under the bmad folder, updates will no longer remove them.
+- DONE: if you modify an installed file and upgrade, the file will be saved as a .bak file and the installer will inform you.
+- DONE: Game Agents comms style WAY to over the top - reduced a bit.
+- need to nest subagents for better organization.
+- DONE: Quick note on BMM v6 Flow
+- DONE: CC SubAgents installed to sub-folders now.
+- DONE: Qwen TOML update.
+- DONE: Diagram alpha BMM flow. - added to src/modules/bmm/workflows/
+- DONE: Fix Redoc task to BMB.
+- DONE: Team Web Bundler functional
+- DONE: Agent improvement to loading instruction insertion and customization system overhaul
+- DONE: Stand along agents now will install to bmad/agents and are able to be compiled by the installer also
+- bmm `testarch` integrated into the BMM workflow's after aligned with the rest of bmad method flow.
+- Document new agent workflows.
+- need to segregate game dev workflows and potentially add as an installation choice
+- the workflow runner needs to become a series of targeted workflow injections at install time so workflows can be run directly without the bloated intermediary.
 - All project levels (0 through 4) manual flows validated through workflow phase 1-4
   - level 0 (simple addition or update to existing project) workflow is super streamlined from explanation of issue through code implementation
     - simple spec file -> context -> implementation
@@ -14,7 +29,8 @@ Aside from stability and bug fixes found during the alpha period - the main focu
 - NPX installer
 - github pipelines, branch protection, vulnerability scanners
 - improved subagent injections
-- bmm existing project scanning and integration with workflow phase 1-4 improvements
+- bmm existing project scanning and integration with workflow phase 0-4 improvements
+- BTA Module coming soon!
 
 ## Needed before Beta → v0 release
 

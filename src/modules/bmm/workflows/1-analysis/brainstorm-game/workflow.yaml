@@ -18,8 +18,8 @@ instructions: "{installed_path}/instructions.md"
 game_context: "{installed_path}/game-context.md"
 game_brain_methods: "{installed_path}/game-brain-methods.csv"
 
-# CIS brainstorming workflow to invoke
-cis_brainstorming: "{project-root}/bmad/cis/workflows/brainstorming/workflow.yaml"
+# CORE brainstorming workflow to invoke
+core_brainstorming: "{project-root}/bmad/core/workflows/brainstorming/workflow.yaml"
 
 web_bundle:
   name: "brainstorm-game"
@@ -32,6 +32,6 @@ web_bundle:
     - "bmad/bmm/workflows/1-analysis/brainstorm-game/instructions.md"
     - "bmad/bmm/workflows/1-analysis/brainstorm-game/game-context.md"
     - "bmad/bmm/workflows/1-analysis/brainstorm-game/game-brain-methods.csv"
-    - "bmad/cis/workflows/brainstorming/workflow.yaml"
+    - "bmad/core/workflows/brainstorming/workflow.yaml"
   existing_workflows:
-    - cis_brainstorming: "bmad/cis/workflows/brainstorming/workflow.yaml"
+    - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"

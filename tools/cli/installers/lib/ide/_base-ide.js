@@ -15,6 +15,8 @@ class BaseIdeSetup {
     this.preferred = preferred; // Whether this IDE should be shown in preferred list
     this.configDir = null; // Override in subclasses
     this.rulesDir = null; // Override in subclasses
+    this.configFile = null; // Override in subclasses when detection is file-based
+    this.detectionPaths = []; // Additional paths that indicate the IDE is configured
     this.xmlHandler = new XmlHandler();
   }
 
@@ -44,6 +46,40 @@ class BaseIdeSetup {
         }
       }
     }
+  }
+
+  /**
+   * Detect whether this IDE already has configuration in the project
+   * Subclasses can override for custom logic
+   * @param {string} projectDir - Project directory
+   * @returns {boolean}
+   */
+  async detect(projectDir) {
+    const pathsToCheck = [];
+
+    if (this.configDir) {
+      pathsToCheck.push(path.join(projectDir, this.configDir));
+    }
+
+    if (this.configFile) {
+      pathsToCheck.push(path.join(projectDir, this.configFile));
+    }
+
+    if (Array.isArray(this.detectionPaths)) {
+      for (const candidate of this.detectionPaths) {
+        if (!candidate) continue;
+        const resolved = path.isAbsolute(candidate) ? candidate : path.join(projectDir, candidate);
+        pathsToCheck.push(resolved);
+      }
+    }
+
+    for (const candidate of pathsToCheck) {
+      if (await fs.pathExists(candidate)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -177,8 +213,9 @@ class BaseIdeSetup {
       processed = this.xmlHandler.injectActivationSimple(processed, metadata);
     }
 
-    // Use the actual project directory path if provided, otherwise default to 'bmad/'
-    const projectRoot = projectDir ? projectDir + '/' : 'bmad/';
+    // Use the actual project directory path if provided, otherwise default to 'bmad'
+    // Note: Don't add trailing slash - paths in source include leading slash
+    const projectRoot = projectDir || 'bmad';
 
     // Common replacements (including in the activation block)
     processed = processed.replaceAll('{project-root}', projectRoot);

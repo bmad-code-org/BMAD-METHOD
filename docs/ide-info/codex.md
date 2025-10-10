@@ -2,31 +2,20 @@
 
 ## Activating Agents
 
-BMAD agents are documented in `AGENTS.md` file in project root.
-
-### CLI Mode
-
-1. **Reference Agent**: Type `@{agent-name}` in prompt
-2. **Execute Task**: Type `@task-{task-name}`
-3. **Active Session**: Agent remains active for conversation
-
-### Web Mode
-
-1. **Navigate**: Go to Agents section in web interface
-2. **Select Agent**: Click to activate agent persona
-3. **Session**: Agent active for browser session
+BMAD agents, tasks and workflows are installed as custom prompts in
+`$CODEX_HOME/prompts/bmad-*.md` files. If `CODEX_HOME` is not set, it
+defaults to `$HOME/.codex/`.
 
 ### Examples
 
 ```
-@dev - Activate development agent
-@architect - Activate architect agent
-@task-setup - Execute setup task
+/bmad-bmm-agents-dev - Activate development agent
+/bmad-bmm-agents-architect - Activate architect agent
+/bmad-bmm-workflows-dev-story - Execute dev-story workflow
 ```
 
 ### Notes
 
-- All agents documented in AGENTS.md
-- CLI: Reference with @ syntax
-- Web: Use interface to select
-- One agent active at a time
+Prompts are autocompleted when you type /
+Agent remains active for the conversation
+Start a new conversation to switch agents

@@ -50,7 +50,6 @@ program
   .action(async (moduleName, options) => {
     try {
       const bundler = new WebBundler(null, options.output);
-      await bundler.loadWebActivation();
       const result = await bundler.bundleModule(moduleName);
 
       if (result.agents.length === 0 && result.teams.length === 0) {
@@ -71,7 +70,6 @@ program
   .action(async (moduleName, agentFile, options) => {
     try {
       const bundler = new WebBundler(null, options.output);
-      await bundler.loadWebActivation();
 
       // Ensure .md extension
       if (!agentFile.endsWith('.md')) {
@@ -83,6 +81,30 @@ program
 
       await bundler.bundleAgent(moduleName, agentFile, false);
       console.log(chalk.green(`\n✨ Successfully bundled agent: ${agentFile}`));
+    } catch (error) {
+      console.error(chalk.red('Error:'), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('team <module> <team>')
+  .description('Bundle a specific team')
+  .option('-o, --output <path>', 'Output directory', 'web-bundles')
+  .action(async (moduleName, teamFile, options) => {
+    try {
+      const bundler = new WebBundler(null, options.output);
+
+      // Ensure .yaml or .yml extension
+      if (!teamFile.endsWith('.yaml') && !teamFile.endsWith('.yml')) {
+        teamFile += '.yaml';
+      }
+
+      // Pre-discover module for complete manifests
+      await bundler.preDiscoverModule(moduleName);
+
+      await bundler.bundleTeam(moduleName, teamFile);
+      console.log(chalk.green(`\n✨ Successfully bundled team: ${teamFile}`));
     } catch (error) {
       console.error(chalk.red('Error:'), error.message);
       process.exit(1);

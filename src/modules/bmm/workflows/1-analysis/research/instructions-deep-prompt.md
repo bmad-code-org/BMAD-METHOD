@@ -1,6 +1,6 @@
 # Deep Research Prompt Generator Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow generates structured research prompts optimized for AI platforms</critical>
 <critical>Based on 2025 best practices from ChatGPT, Gemini, Grok, and Claude</critical>
@@ -251,35 +251,38 @@ Examples:
 - [r] Refine with additional context
 - [o] Optimize for different platform</ask>
 
-<check>If edit or refine:</check>
-<ask>What would you like to adjust?</ask>
-<goto step="7">Regenerate with modifications</goto>
+<check if="edit or refine">
+  <ask>What would you like to adjust?</ask>
+  <goto step="7">Regenerate with modifications</goto>
+</check>
 
 </step>
 
 <step n="8" goal="Generate Platform-Specific Tips">
 <action>Provide platform-specific usage tips based on target platform</action>
 
-<check>If target_platform includes ChatGPT:</check>
-**ChatGPT Deep Research Tips:**
+<check if="target_platform includes ChatGPT">
+  **ChatGPT Deep Research Tips:**
 
 - Use clear verbs: "compare," "analyze," "synthesize," "recommend"
 - Specify keywords explicitly to guide search
 - Answer clarifying questions thoroughly (requests are more expensive)
 - You have 25-250 queries/month depending on tier
 - Review the research plan before it starts searching
+  </check>
 
-<check>If target_platform includes Gemini:</check>
-**Gemini Deep Research Tips:**
+<check if="target_platform includes Gemini">
+  **Gemini Deep Research Tips:**
 
 - Keep initial prompt simple - you can adjust the research plan
 - Be specific and clear - vagueness is the enemy
 - Review and modify the multi-point research plan before it runs
 - Use follow-up questions to drill deeper or add sections
 - Available in 45+ languages globally
+  </check>
 
-<check>If target_platform includes Grok:</check>
-**Grok DeepSearch Tips:**
+<check if="target_platform includes Grok">
+  **Grok DeepSearch Tips:**
 
 - Include date windows: "from Jan-Jun 2025"
 - Specify output format: "bullet list + citations"
@@ -287,15 +290,17 @@ Examples:
 - Use follow-up commands: "Expand on [topic]" to deepen sections
 - Verify facts when obscure sources cited
 - Free tier: 5 queries/24hrs, Premium: 30/2hrs
+  </check>
 
-<check>If target_platform includes Claude:</check>
-**Claude Projects Tips:**
+<check if="target_platform includes Claude">
+  **Claude Projects Tips:**
 
 - Use Chain of Thought prompting for complex reasoning
 - Break into sub-prompts for multi-step research (prompt chaining)
 - Add relevant documents to Project for context
 - Provide explicit instructions and examples
 - Test iteratively and refine prompts
+  </check>
 
 <template-output>platform_tips</template-output>
 
@@ -359,11 +364,13 @@ The output includes:
 
 Select option (1-4):</ask>
 
-<check>If option 1:</check>
-<goto step="1">Start with different platform selection</goto>
+<check if="option 1">
+  <goto step="1">Start with different platform selection</goto>
+</check>
 
-<check>If option 2 or 3:</check>
-<goto step="1">Start new prompt with context from previous</goto>
+<check if="option 2 or 3">
+  <goto step="1">Start new prompt with context from previous</goto>
+</check>
 
 </step>
 

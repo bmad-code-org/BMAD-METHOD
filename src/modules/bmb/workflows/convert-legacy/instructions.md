@@ -1,6 +1,6 @@
 # Convert Legacy - v4 to v5 Conversion Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project_root}/bmad/bmb/workflows/convert-legacy/workflow.yaml</critical>
 
 <workflow>
@@ -58,8 +58,8 @@ For Modules:
 <action>Map v4 patterns to v5 equivalents:
 
 - v4 Task + Template → v5 Workflow (folder with workflow.yaml, instructions.md, template.md)
-- v4 Agent YAML → v5 Agent XML format
-- v4 Commands → v5 <cmds> with proper handlers
+- v4 Agent YAML → v5 Agent YAML format
+- v4 Commands → v5 <menu> with proper handlers
 - v4 Dependencies → v5 workflow references or data files
   </action>
   </step>
@@ -80,7 +80,7 @@ For Modules:
 
 <check>If agent conversion:</check>
 <check>If simple agent (basic persona + commands):</check>
-<action>Use direct conversion to v5 agent XML format</action>
+<action>Use direct conversion to v5 agent YAML format</action>
 <goto step="5a">Direct Agent Conversion</goto>
 <check>If complex agent with embedded workflows:</check>
 <action>Plan to invoke create-agent workflow</action>
@@ -114,45 +114,50 @@ For Modules:
 </step>
 
 <step n="5a" goal="Direct Agent Conversion" optional="true">
-<action>Transform v4 YAML agent to v5 XML format:</action>
+<action>Transform v4 YAML agent to v5 YAML format:</action>
 
-1. Convert agent metadata:
-   - v4 `agent.name` → v5 `<agent name="">`
-   - v4 `agent.id` → v5 `<agent id="">`
-   - v4 `agent.title` → v5 `<agent title="">`
-   - v4 `agent.icon` → v5 `<agent icon="">`
+1. Convert agent metadata structure:
+   - v4 `agent.name` → v5 `agent.metadata.name`
+   - v4 `agent.id` → v5 `agent.metadata.id`
+   - v4 `agent.title` → v5 `agent.metadata.title`
+   - v4 `agent.icon` → v5 `agent.metadata.icon`
+   - Add v5 `agent.metadata.module` field
 
-2. Transform persona:
-   - v4 `persona.role` → v5 `<role>`
-   - v4 `persona.style` → v5 `<communication_style>`
-   - v4 `persona.identity` → v5 `<identity>`
-   - v4 `persona.core_principles` → v5 `<principles>`
+2. Transform persona structure:
+   - v4 `persona.role` → v5 `agent.persona.role` (keep as YAML string)
+   - v4 `persona.style` → v5 `agent.persona.communication_style`
+   - v4 `persona.identity` → v5 `agent.persona.identity`
+   - v4 `persona.core_principles` → v5 `agent.persona.principles` (as array)
 
-3. Convert commands:
-   - v4 YAML commands list → v5 `<cmds>` with `<c cmd="">` entries
-   - Map task references to `run-workflow` handlers
+3. Convert commands to menu:
+   - v4 `commands:` list → v5 `agent.menu:` array
+   - Each command becomes menu item with:
+     - `trigger:` (without \* prefix - added at build)
+     - `description:`
+     - Handler attributes (`workflow:`, `exec:`, `action:`, etc.)
+   - Map task references to workflow paths
    - Map template references to workflow invocations
 
-4. Add v5-specific sections:
-   - DO NOT include `<activation>` block (inserted automatically from agent-activation-ide.xml)
-   - Add `<critical-actions>` for config loading and startup requirements
-   - Structure proper XML hierarchy with agent attributes and persona
+4. Add v5-specific sections (in YAML):
+   - `agent.prompts:` array for inline prompts (if using action: "#id")
+   - `agent.critical_actions:` array for startup requirements
+   - `agent.activation_rules:` for universal agent rules
 
 5. Handle dependencies and paths:
    - Convert task dependencies to workflow references
    - Map template dependencies to v5 workflows
    - Preserve checklist and data file references
-   - CRITICAL: All exec/data/run-workflow paths must use {project-root}/bmad/{{module}}/ NOT src/
+   - CRITICAL: All paths must use {project-root}/bmad/{{module}}/ NOT src/
 
-<action>Generate the converted v5 agent file with proper XML structure</action>
+<action>Generate the converted v5 agent YAML file (.agent.yaml)</action>
 <action>Example path conversions:
 
 - exec="{project-root}/bmad/{{target_module}}/tasks/task-name.md"
 - run-workflow="{project-root}/bmad/{{target_module}}/workflows/workflow-name/workflow.yaml"
 - data="{project-root}/bmad/{{target_module}}/data/data-file.yaml"
   </action>
-  <action>Save to: bmad/{{target_module}}/agents/{{agent_name}}.md (physical location)</action>
-  <action>But agent will reference: {project-root}/bmad/{{target_module}}/agents/{{agent_name}}.md</action>
+  <action>Save to: bmad/{{target_module}}/agents/{{agent_name}}.agent.yaml (physical location)</action>
+  <action>Note: The build process will later compile this to .md with XML format</action>
   <goto step="6">Continue to Validation</goto>
   </step>
 
@@ -275,10 +280,10 @@ For Modules:
 
 For Agents:
 
-- [ ] Valid XML structure
-- [ ] All required sections present
-- [ ] Commands properly formatted
-- [ ] Activation sequence correct
+- [ ] Valid YAML structure (.agent.yaml)
+- [ ] All required sections present (metadata, persona, menu)
+- [ ] Menu items properly formatted (trigger, description, handlers)
+- [ ] Paths use {project-root} variables
 
 For Workflows:
 

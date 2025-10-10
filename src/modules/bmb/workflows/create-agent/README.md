@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Build Agent workflow is an interactive agent builder that guides you through creating BMAD Core compliant agents with proper persona, activation rules, and command structure. It supports three agent types: Simple (self-contained), Expert (with sidecar resources), and Module (full-featured with workflows).
+The Build Agent workflow is an interactive agent builder that guides you through creating BMAD Core compliant agents as YAML source files that compile to final `.md` during install. It supports three agent types: Simple (self-contained), Expert (with sidecar resources), and Module (full-featured with workflows).
 
 ## Key Features
 
@@ -10,8 +10,8 @@ The Build Agent workflow is an interactive agent builder that guides you through
 - **Three Agent Types**: Simple, Expert, and Module agents with appropriate structures
 - **Persona Development**: Guided creation of role, identity, communication style, and principles
 - **Command Builder**: Interactive command definition with workflow/task/action patterns
-- **Validation Built-In**: Ensures XML structure and BMAD Core compliance
-- **Config File Support**: Optional agent config for persona overrides
+- **Validation Built-In**: Ensures YAML structure and BMAD Core compliance
+- **Customize Support**: Optional `customize.yaml` for persona/menu overrides and critical actions
 - **Sidecar Resources**: Setup for Expert agents with domain-specific data
 
 ## Usage
@@ -94,49 +94,99 @@ create-agent/
 
 ### Phase 4: Finalization (Steps 5-10)
 
-- Add custom activation rules (optional, rarely needed)
-- Generate complete agent.md file
-- Create agent config file (optional)
+- Confirm activation behavior (mostly automatic)
+- Generate `.agent.yaml` file
+- Optionally create a customize file for overrides
 - Setup sidecar resources (for Expert agents)
-- Validate agent structure
+- Validate YAML and compile to `.md`
 - Provide usage instructions
 
 ## Output
 
-### Generated Agent File
+### Generated Files
 
-Creates agent file at:
-`{output_folder}/agents/{{agent_filename}}.md`
+#### For Standalone Agents (not part of a module)
 
-### Agent Structure
+- **YAML Source**: `{custom_agent_location}/{{agent_filename}}.agent.yaml` (default: `bmad/agents/`)
+- **Installation Location**: `{project-root}/bmad/agents/{{agent_filename}}.md`
+- **Compilation**: Run the BMAD Method installer and select "Compile Agents (Quick rebuild of all agent .md files)"
 
-```xml
-<!-- Powered by BMAD-CORE™ -->
+#### For Module Agents
 
-# {{agent_title}}
+- **YAML Source**: `src/modules/{{target_module}}/agents/{{agent_filename}}.agent.yaml`
+- **Installation Location**: `{project-root}/bmad/{{module}}/agents/{{agent_filename}}.md`
+- **Compilation**: Automatic during module installation
 
-<agent id="bmad/{{module}}/agents/{{agent_filename}}.md"
-       name="{{agent_name}}"
-       title="{{agent_title}}"
-       icon="{{agent_icon}}">
-  <persona>
-    <role>...</role>
-    <identity>...</identity>
-    <communication_style>...</communication_style>
-    <principles>...</principles>
-  </persona>
-  <cmds>
-    <c cmd="*help">...</c>
-    <c cmd="*exit">...</c>
-    <!-- Additional commands -->
-  </cmds>
-</agent>
+### YAML Agent Structure (simplified)
+
+```yaml
+agent:
+  metadata:
+    id: bmad/{{module}}/agents/{{agent_filename}}.md
+    name: { { agent_name } }
+    title: { { agent_title } }
+    icon: { { agent_icon } }
+    module: { { module } }
+  persona:
+    role: '...'
+    identity: '...'
+    communication_style: '...'
+    principles: ['...', '...']
+  menu:
+    - trigger: example
+      workflow: '{project-root}/path/to/workflow.yaml'
+      description: Do the thing
 ```
 
-### Optional Config File
+### Optional Customize File
 
 If created, generates at:
-`{project-root}/bmad/_cfg/agents/{{agent_config_name}}.md`
+`{project-root}/bmad/_cfg/agents/{{module}}-{{agent_filename}}.customize.yaml`
+
+## Installation and Compilation
+
+### Agent Installation Locations
+
+Agents are installed to different locations based on their type:
+
+1. **Standalone Agents** (not part of a module)
+   - Source: Created in your custom agent location (default: `bmad/agents/`)
+   - Installed to: `{project-root}/bmad/agents/`
+   - Compilation: Run BMAD Method installer and select "Compile Agents"
+
+2. **Module Agents** (part of BMM, BMB, or custom modules)
+   - Source: Created in `src/modules/{module}/agents/`
+   - Installed to: `{project-root}/bmad/{module}/agents/`
+   - Compilation: Automatic during module installation
+
+### Compilation Process
+
+The installer compiles YAML agent definitions to Markdown:
+
+```bash
+# For standalone agents
+npm run build:agents
+
+# For all BMad components (includes agents)
+npm run install:bmad
+
+# Using the installer menu
+npm run installer
+# Then select: Compile Agents
+```
+
+### Build Commands
+
+Additional build commands for agent management:
+
+```bash
+# Build specific agent types
+npx bmad-method build:agents        # Build standalone agents
+npx bmad-method build:modules        # Build module agents (with modules)
+
+# Full rebuild
+npx bmad-method build:all           # Rebuild everything
+```
 
 ## Requirements
 
@@ -194,11 +244,13 @@ Users can go from **vague idea → brainstormed concept → built agent** in one
 
 ### After Completion
 
-1. Test the agent by loading it
-2. Verify all commands work as expected
-3. Implement any "todo" workflows
-4. Refine persona based on usage
-5. Add more commands as agent evolves
+1. **Compile the agent**:
+   - For standalone agents: Run `npm run build:agents` or use the installer menu
+   - For module agents: Automatic during module installation
+2. **Test the agent**: Use the compiled `.md` agent in your IDE
+3. **Implement placeholders**: Complete any "todo" workflows referenced
+4. **Refine as needed**: Use customize file for persona adjustments
+5. **Evolve over time**: Add new commands as requirements emerge
 
 ## Agent Types
 

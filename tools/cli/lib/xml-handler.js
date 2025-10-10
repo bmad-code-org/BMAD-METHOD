@@ -2,9 +2,11 @@ const xml2js = require('xml2js');
 const fs = require('fs-extra');
 const path = require('node:path');
 const { getProjectRoot, getSourcePath } = require('./project-root');
+const { YamlXmlBuilder } = require('./yaml-xml-builder');
 
 /**
  * XML utility functions for BMAD installer
+ * Now supports both legacy XML agents and new YAML-based agents
  */
 class XmlHandler {
   constructor() {
@@ -33,6 +35,8 @@ class XmlHandler {
       attrkey: '$',
       charkey: '_',
     });
+
+    this.yamlBuilder = new YamlXmlBuilder();
   }
 
   /**
@@ -132,7 +136,7 @@ class XmlHandler {
   }
 
   /**
-   * Simple string-based injection (fallback method)
+   * Simple string-based injection (fallback method for legacy XML agents)
    * This preserves formatting better than XML parsing
    */
   injectActivationSimple(agentContent, metadata = {}) {
@@ -177,6 +181,47 @@ class XmlHandler {
       console.error('Error in simple injection:', error);
       return agentContent;
     }
+  }
+
+  /**
+   * Build agent from YAML source
+   * @param {string} yamlPath - Path to .agent.yaml file
+   * @param {string} customizePath - Path to .customize.yaml file (optional)
+   * @param {Object} metadata - Build metadata
+   * @returns {string} Generated XML content
+   */
+  async buildFromYaml(yamlPath, customizePath = null, metadata = {}) {
+    try {
+      // Use YamlXmlBuilder to convert YAML to XML
+      const mergedAgent = await this.yamlBuilder.loadAndMergeAgent(yamlPath, customizePath);
+
+      // Build metadata
+      const buildMetadata = {
+        sourceFile: path.basename(yamlPath),
+        sourceHash: await this.yamlBuilder.calculateFileHash(yamlPath),
+        customizeFile: customizePath ? path.basename(customizePath) : null,
+        customizeHash: customizePath ? await this.yamlBuilder.calculateFileHash(customizePath) : null,
+        builderVersion: '1.0.0',
+        includeMetadata: metadata.includeMetadata !== false,
+      };
+
+      // Convert to XML
+      const xml = await this.yamlBuilder.convertToXml(mergedAgent, buildMetadata);
+
+      return xml;
+    } catch (error) {
+      console.error('Error building agent from YAML:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if a path is a YAML agent file
+   * @param {string} filePath - Path to check
+   * @returns {boolean} True if it's a YAML agent file
+   */
+  isYamlAgent(filePath) {
+    return filePath.endsWith('.agent.yaml');
   }
 }
 

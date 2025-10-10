@@ -1,6 +1,6 @@
 # Build Module - Interactive Module Builder Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project_root}/bmad/bmb/workflows/create-module/workflow.yaml</critical>
 <critical>Study existing modules in: {project_root}/bmad/ for patterns</critical>
 
@@ -46,12 +46,25 @@ If skip, proceed directly to module definition.
 
 Ask the user about their module vision:
 
-**Module Identity:**
+**"What kind of module do you want to create? Tell me about its purpose and what it will help with."**
 
-1. **Module code** (kebab-case, e.g., "rpg-toolkit", "data-viz", "team-collab")
-2. **Module name** (friendly name, e.g., "RPG Toolkit", "Data Visualization Suite")
-3. **Module purpose** (1-2 sentences describing what it does)
-4. **Target audience** (who will use this module?)
+Listen to their description and then:
+
+<action>Based on their description, intelligently propose module details:</action>
+
+**Module Identity (AI Proposed):**
+
+1. **Module name** - Extract from their description (e.g., "Data Visualization Suite", "RPG Toolkit")
+2. **Module code** - Generate kebab-case from name:
+   - "Data Visualization Suite" → propose: "data-viz"
+   - "RPG Game Master Tools" → propose: "rpg-toolkit"
+   - "Team Collaboration System" → propose: "team-collab"
+   - "Personal Finance Manager" → propose: "fin-manager"
+
+   Present as: _"Based on what you described, I suggest the module code: `{{proposed-code}}`. This will be used in paths like bmad/{{proposed-code}}/agents/. Does this work or would you prefer something different?"_
+
+3. **Module purpose** - Refine their description into 1-2 clear sentences
+4. **Target audience** - Infer from context or ask if unclear
 
 **Module Theme Examples:**
 
@@ -61,10 +74,9 @@ Ask the user about their module vision:
 - **Business:** Project Management, Marketing, Sales
 - **Personal:** Journaling, Learning, Productivity
 
-<critical>Check {src_impact} variable to determine output location:</critical>
+<critical>Determine output location:</critical>
 
-- If {src_impact} = true: Module will be created at {src_output_folder}
-- If {src_impact} = false: Module will be created at {default_output_folder}
+- Module will be created at {installer_output_folder}
 
 Store module identity for scaffolding.
 
@@ -72,32 +84,52 @@ Store module identity for scaffolding.
 </step>
 
 <step n="2" goal="Plan module components">
-Gather the module's component architecture:
+<action>Based on the module purpose, propose an initial component architecture:</action>
 
-**Agents Planning:**
-Ask: How many agents will this module have? (typically 1-5)
+**"Based on your {{module_name}}, here's what I think would make a great module structure:"**
 
-For each agent, gather:
+**Agents Planning (AI Proposed):**
 
-- Agent name and purpose
-- Will it be Simple, Expert, or Module type?
-- Key commands it should have
-- Create now or placeholder for later?
+<action>Intelligently suggest agents based on module purpose:</action>
 
-Example for RPG module:
+For a Data Visualization module, suggest:
 
-1. DM Agent - Dungeon Master assistant (Module type)
-2. NPC Agent - Character simulation (Expert type)
-3. Story Writer Agent - Adventure creation (Module type)
+- "Data Analyst" - Interprets and analyzes datasets (Module type)
+- "Chart Designer" - Creates visualization specs (Simple type)
+- "Report Builder" - Generates comprehensive reports (Module type)
 
-**Workflows Planning:**
-Ask: How many workflows? (typically 2-10)
+For an RPG Toolkit, suggest:
 
-For each workflow, gather:
+- "Dungeon Master" - Runs game sessions (Module type)
+- "NPC Generator" - Creates characters (Expert type)
+- "Story Weaver" - Builds adventures (Module type)
 
-- Workflow name and purpose
-- Document, Action, or Interactive type?
-- Complexity (simple/complex)
+For a Team Collaboration module, suggest:
+
+- "Project Manager" - Coordinates tasks (Module type)
+- "Meeting Facilitator" - Runs standups/retros (Simple type)
+- "Documentation Lead" - Maintains team docs (Expert type)
+
+Present as: _"I'm thinking your module could have these agents: [list]. We can start with the core ones and add others later. Which of these resonate with your vision?"_
+
+**Workflows Planning (AI Proposed):**
+
+<action>Intelligently suggest workflows based on module purpose:</action>
+
+For a Data Visualization module, suggest workflows like:
+
+- "analyze-dataset" - Statistical analysis workflow
+- "create-dashboard" - Interactive dashboard builder
+- "generate-report" - Automated report generation
+
+For an RPG Toolkit, suggest workflows like:
+
+- "session-prep" - Prepare game session materials
+- "generate-encounter" - Create combat/social encounters
+- "world-building" - Design locations and lore
+
+Present as: _"For workflows, these would complement your agents well: [list]. Each can be created as we need them. Which are most important to start with?"_
+
 - Create now or placeholder?
 
 Example workflows:
@@ -118,10 +150,36 @@ For each task:
 <template-output>module_components</template-output>
 </step>
 
+<step n="2b" goal="Determine module complexity">
+<action>Based on components, intelligently determine module type:</action>
+
+**Simple Module** (auto-select if):
+
+- 1-2 agents, all Simple type
+- 1-3 workflows
+- No complex integrations
+
+**Standard Module** (auto-select if):
+
+- 2-4 agents with mixed types
+- 3-8 workflows
+- Some shared resources
+
+**Complex Module** (auto-select if):
+
+- 4+ agents or multiple Module-type agents
+- 8+ workflows
+- Complex interdependencies
+- External integrations
+
+Present as: _"Based on your planned components, this looks like a {{determined_type}} module. This means we'll set up {{structure_description}}."_
+
+<template-output>module_type</template-output>
+</step>
+
 <step n="3" goal="Create module directory structure">
-<critical>Determine base module path based on {src_impact}:</critical>
-- If {src_impact} = true: Use {src_output_folder}
-- If {src_impact} = false: Use {default_output_folder}
+<critical>Use module path determined in Step 1:</critical>
+- The module base path is {{module_path}}
 
 <action>Create base module directories at the determined path:</action>
 
@@ -188,10 +246,9 @@ output_folder: "{project-root}/docs/{{module_code}}"
 data_folder: "{{determined_module_path}}/data"
 ```
 
-<critical>Determine save location based on {src_impact}:</critical>
+<critical>Save location:</critical>
 
-- If {src_impact} = true: Save to {src_output_folder}/config.yaml
-- If {src_impact} = false: Save to {default_output_folder}/config.yaml
+- Save to {{module_path}}/config.yaml
 
 <template-output>module_config</template-output>
 </step>
@@ -205,10 +262,9 @@ If yes:
 </invoke-workflow>
 
 Guide them to create the primary agent for the module.
-<critical>Ensure it's saved to the correct location based on {src_impact}:</critical>
+<critical>Save to module's agents folder:</critical>
 
-- If {src_impact} = true: {src_output_folder}/agents/
-- If {src_impact} = false: {default_output_folder}/agents/
+- Save to {{module_path}}/agents/
 
 If no, create placeholder:
 
@@ -232,10 +288,9 @@ If yes:
 </invoke-workflow>
 
 Guide them to create the primary workflow.
-<critical>Ensure it's saved to the correct location based on {src_impact}:</critical>
+<critical>Save to module's workflows folder:</critical>
 
-- If {src_impact} = true: {src_output_folder}/workflows/
-- If {src_impact} = false: {default_output_folder}/workflows/
+- Save to {{module_path}}/workflows/
 
 If no, create placeholder structure:
 
@@ -482,9 +537,7 @@ Show summary:
 
 ```
 ✅ Module: {{module_name}} ({{module_code}})
-📁 Location:
-   - If {src_impact} = true: {src_output_folder}
-   - If {src_impact} = false: {default_output_folder}
+📁 Location: {{module_path}}
 👥 Agents: {{agent_count}} ({{agents_created}} created, {{agents_planned}} planned)
 📋 Workflows: {{workflow_count}} ({{workflows_created}} created, {{workflows_planned}} planned)
 📝 Tasks: {{task_count}}
@@ -494,8 +547,11 @@ Show summary:
 Next steps:
 
 1. Complete remaining components using roadmap
-2. Test module with: `bmad install {{module_code}}`
-3. Share module or integrate with existing system
+2. Run the BMAD Method installer to this project location
+3. Select the option 'Compile Agents (Quick rebuild of all agent .md files)' after confirming the folder
+4. This will compile your new module and make it available for use
+5. Test module with: `bmad install {{module_code}}`
+6. Share module or integrate with existing system
 
 Ask: Would you like to:
 

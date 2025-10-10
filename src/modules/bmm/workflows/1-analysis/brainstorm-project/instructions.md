@@ -1,7 +1,7 @@
 # Brainstorm Project - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This is a meta-workflow that orchestrates the CIS brainstorming workflow with project-specific context</critical>
 
@@ -17,9 +17,9 @@
     </action>
   </step>
 
-  <step n="2" goal="Invoke CIS brainstorming with project context">
+  <step n="2" goal="Invoke core brainstorming with project context">
     <action>Execute the CIS brainstorming workflow with project context</action>
-    <invoke-workflow path="{cis_brainstorming}" data="{project_context}">
+    <invoke-workflow path="{core_brainstorming}" data="{project_context}">
       The CIS brainstorming workflow will:
       - Present interactive brainstorming techniques menu
       - Guide the user through selected ideation methods

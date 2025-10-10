@@ -1,42 +1,39 @@
 # Correct Course - Sprint Change Management Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml</critical>
 
 <workflow>
 
 <step n="1" goal="Initialize Change Navigation">
-<action>Confirm change trigger and gather user description of the issue</action>
-<action>Ask: "What specific issue or change has been identified that requires navigation?"</action>
-<action>Verify access to required project documents:</action>
-  - PRD (Product Requirements Document)
-  - Current Epics and Stories
-  - Architecture documentation
-  - UI/UX specifications
-<action>Ask user for mode preference:</action>
-  - **Incremental** (recommended): Refine each edit collaboratively
-  - **Batch**: Present all changes at once for review
-<action>Store mode selection for use throughout workflow</action>
+  <action>Confirm change trigger and gather user description of the issue</action>
+  <action>Ask: "What specific issue or change has been identified that requires navigation?"</action>
+  <action>Verify access to required project documents:</action>
+    - PRD (Product Requirements Document)
+    - Current Epics and Stories
+    - Architecture documentation
+    - UI/UX specifications
+  <action>Ask user for mode preference:</action>
+    - **Incremental** (recommended): Refine each edit collaboratively
+    - **Batch**: Present all changes at once for review
+  <action>Store mode selection for use throughout workflow</action>
 
-<check>If change trigger is unclear:</check>
-<action>HALT: "Cannot navigate change without clear understanding of the triggering issue. Please provide specific details about what needs to change and why."</action>
+<action if="change trigger is unclear">HALT: "Cannot navigate change without clear understanding of the triggering issue. Please provide specific details about what needs to change and why."</action>
 
-<check>If core documents are unavailable:</check>
-<action>HALT: "Need access to project documents (PRD, Epics, Architecture, UI/UX) to assess change impact. Please ensure these documents are accessible."</action>
+<action if="core documents are unavailable">HALT: "Need access to project documents (PRD, Epics, Architecture, UI/UX) to assess change impact. Please ensure these documents are accessible."</action>
 </step>
 
 <step n="2" goal="Execute Change Analysis Checklist">
-<action>Load and execute the systematic analysis from: {project-root}/bmad/bmm/workflows/4-implementation/correct-course/checklist.md</action>
-<action>Work through each checklist section interactively with the user</action>
-<action>Record status for each checklist item:</action>
-  - [x] Done - Item completed successfully
-  - [N/A] Skip - Item not applicable to this change
-  - [!] Action-needed - Item requires attention or follow-up
-<action>Maintain running notes of findings and impacts discovered</action>
-<action>Present checklist progress after each major section</action>
+  <action>Load and execute the systematic analysis from: {project-root}/bmad/bmm/workflows/4-implementation/correct-course/checklist.md</action>
+  <action>Work through each checklist section interactively with the user</action>
+  <action>Record status for each checklist item:</action>
+    - [x] Done - Item completed successfully
+    - [N/A] Skip - Item not applicable to this change
+    - [!] Action-needed - Item requires attention or follow-up
+  <action>Maintain running notes of findings and impacts discovered</action>
+  <action>Present checklist progress after each major section</action>
 
-<check>If checklist cannot be completed:</check>
-<action>Identify blocking issues and work with user to resolve before continuing</action>
+<action if="checklist cannot be completed">Identify blocking issues and work with user to resolve before continuing</action>
 </step>
 
 <step n="3" goal="Draft Specific Change Proposals">
@@ -81,13 +78,14 @@
 - Show wireframe or flow changes needed
 - Connect changes to user experience impact
 
-<check>If mode is Incremental:</check>
-<action>Present each edit proposal individually</action>
-<ask>Review and refine this change? Options: Approve [a], Edit [e], Skip [s]</ask>
-<action>Iterate on each proposal based on user feedback</action>
+<check if="mode is Incremental">
+  <action>Present each edit proposal individually</action>
+  <ask>Review and refine this change? Options: Approve [a], Edit [e], Skip [s]</ask>
+  <action>Iterate on each proposal based on user feedback</action>
+</check>
 
-<check>If mode is Batch:</check>
-<action>Collect all edit proposals and present together at end of step</action>
+<action if="mode is Batch">Collect all edit proposals and present together at end of step</action>
+
 </step>
 
 <step n="4" goal="Generate Sprint Change Proposal">
@@ -138,15 +136,17 @@
 <action>Get explicit user approval for complete proposal</action>
 <ask>Do you approve this Sprint Change Proposal for implementation? (yes/no/revise)</ask>
 
-<check>If no or revise:</check>
-<action>Gather specific feedback on what needs adjustment</action>
-<action>Return to appropriate step to address concerns</action>
-<goto step="3">If changes needed to edit proposals</goto>
-<goto step="4">If changes needed to overall proposal structure</goto>
+<check if="no or revise">
+  <action>Gather specific feedback on what needs adjustment</action>
+  <action>Return to appropriate step to address concerns</action>
+  <goto step="3">If changes needed to edit proposals</goto>
+  <goto step="4">If changes needed to overall proposal structure</goto>
 
-<check>If yes:</check>
-<action>Finalize Sprint Change Proposal document</action>
-<action>Determine change scope classification:</action>
+</check>
+
+<check if="yes the proposal is approved by the user">
+  <action>Finalize Sprint Change Proposal document</action>
+  <action>Determine change scope classification:</action>
 
 - **Minor**: Can be implemented directly by development team
 - **Moderate**: Requires backlog reorganization and PO/SM coordination
@@ -154,20 +154,26 @@
 
 <action>Provide appropriate handoff based on scope:</action>
 
-<check>If Minor scope:</check>
-<action>Route to: Development team for direct implementation</action>
-<action>Deliverables: Finalized edit proposals and implementation tasks</action>
+</check>
 
-<check>If Moderate scope:</check>
-<action>Route to: Product Owner / Scrum Master agents</action>
-<action>Deliverables: Sprint Change Proposal + backlog reorganization plan</action>
+<check if="Minor scope">
+  <action>Route to: Development team for direct implementation</action>
+  <action>Deliverables: Finalized edit proposals and implementation tasks</action>
+</check>
 
-<check>If Major scope:</check>
-<action>Route to: Product Manager / Solution Architect</action>
-<action>Deliverables: Complete Sprint Change Proposal + escalation notice</action>
+<check if="Moderate scope">
+  <action>Route to: Product Owner / Scrum Master agents</action>
+  <action>Deliverables: Sprint Change Proposal + backlog reorganization plan</action>
+</check>
+
+<check if="Major scope">
+  <action>Route to: Product Manager / Solution Architect</action>
+  <action>Deliverables: Complete Sprint Change Proposal + escalation notice</action>
 
 <action>Confirm handoff completion and next steps with user</action>
 <action>Document handoff in workflow execution log</action>
+</check>
+
 </step>
 
 <step n="6" goal="Workflow Completion">

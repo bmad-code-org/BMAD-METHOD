@@ -1,7 +1,7 @@
 <!-- BMAD BMM Tech Spec Workflow Instructions (v6) -->
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow generates a comprehensive Technical Specification from PRD and Architecture, including detailed design, NFRs, acceptance criteria, and traceability mapping.</critical>
 <critical>Default execution mode: #yolo (non-interactive). If required inputs cannot be auto-discovered and {{non_interactive}} == true, HALT with a clear message listing missing documents; do not prompt.</critical>
@@ -10,7 +10,9 @@
   <step n="1" goal="Collect inputs and initialize">
     <action>Identify PRD and Architecture documents from recommended_inputs. Attempt to auto-discover at default paths.</action>
     <ask optional="true" if="{{non_interactive}} == false">If inputs are missing, ask the user for file paths.</ask>
-    <check>If inputs are missing and {{non_interactive}} == true → HALT with a clear message listing missing documents.</check>
+
+    <check if="inputs are missing and {{non_interactive}} == true">HALT with a clear message listing missing documents and do not proceed until user provides sufficient documents to proceed.</check>
+
     <action>Extract {{epic_title}} and {{epic_id}} from PRD (or ASK if not present).</action>
     <action>Resolve output file path using workflow variables and initialize by writing the template.</action>
   </step>
@@ -66,7 +68,7 @@
   </step>
 
   <step n="8" goal="Validate">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.md</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
   </step>
 
 </workflow>

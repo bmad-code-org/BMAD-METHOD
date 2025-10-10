@@ -17,8 +17,8 @@ instructions: "{installed_path}/instructions.md"
 # Context document for project brainstorming
 project_context: "{installed_path}/project-context.md"
 
-# CIS brainstorming workflow to invoke
-cis_brainstorming: "{project-root}/bmad/cis/workflows/brainstorming/workflow.yaml"
+# CORE brainstorming workflow to invoke
+core_brainstorming: "{project-root}/bmad/core/workflows/brainstorming/workflow.yaml"
 
 web_bundle:
   name: "brainstorm-project"
@@ -30,6 +30,6 @@ web_bundle:
   web_bundle_files:
     - "bmad/bmm/workflows/1-analysis/brainstorm-project/instructions.md"
     - "bmad/bmm/workflows/1-analysis/brainstorm-project/project-context.md"
-    - "bmad/cis/workflows/brainstorming/workflow.yaml"
+    - "bmad/core/workflows/brainstorming/workflow.yaml"
   existing_workflows:
-    - cis_brainstorming: "bmad/cis/workflows/brainstorming/workflow.yaml"
+    - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"

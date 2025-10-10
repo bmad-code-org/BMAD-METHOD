@@ -13,7 +13,7 @@ async function regenerateManifests() {
   console.log('Target directory:', bmadDir);
 
   try {
-    const result = await generator.generateManifests(bmadDir, selectedModules);
+    const result = await generator.generateManifests(bmadDir, selectedModules, [], { ides: [] });
     console.log('✓ Manifests generated successfully:');
     console.log(`  - ${result.workflows} workflows`);
     console.log(`  - ${result.agents} agents`);

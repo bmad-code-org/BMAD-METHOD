@@ -1,27 +1,28 @@
 # Party Mode - Multi-Agent Discussion Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>This workflow orchestrates group discussions between all installed BMAD agents</critical>
 
 <workflow>
 
 <step n="1" goal="Load Agent Manifest and Configurations">
-  <action>Load the agent manifest from {{manifest}}</action>
-  <action>Parse XML to extract all agent entries with their condensed information:</action>
-    - id (file path)
-    - name
-    - title
-    - role (single sentence with capabilities)
-    - style (communication style)
-    - principles
-    - memories (if present)
-    - collaborators (key collaborators if any)
+  <action>Load the agent manifest CSV from {{manifest}}</action>
+  <action>Parse CSV to extract all agent entries with their condensed information:</action>
+    - name (agent identifier)
+    - displayName (agent's persona name)
+    - title (formal position)
+    - icon (visual identifier)
+    - role (capabilities summary)
+    - identity (background/expertise)
+    - communicationStyle (how they communicate)
+    - principles (decision-making philosophy)
+    - module (source module)
+    - path (file location)
 
 <action>For each agent found in manifest:</action>
-<check>Look for config override at {{agent_configs}}[module]-[agent-name].md</check>
-<check>If config override exists:</check>
-<action>Load the override configuration</action>
-<action>MERGE override data with manifest data (overrides take precedence):</action> - Override role replaces manifest role if present - Override style replaces manifest style if present - Override principles replace manifest principles if present - Override memories replace or append to manifest memories - Any additional persona elements from override are added
+<check>Look for config override at {{agent_overrides}}[module]-[agent-name].customize.yaml</check>
+<action if="agent override exists">Load the override configuration</action>
+<action>MERGE override data with manifest data (overrides take precedence):</action> - Override role replaces manifest role if present - Override identity replaces manifest identity if present - Override communicationStyle replaces manifest communicationStyle if present - Override principles replace manifest principles if present - Any additional persona elements from override are added
 
 <action>Build complete agent roster with merged personalities</action>
 <action>Store agent data for use in conversation orchestration</action>
@@ -63,9 +64,9 @@
   <substep n="3b" goal="Generate In-Character Responses">
     <action>For each selected agent, generate authentic response:</action>
     <action>Use the agent's merged personality data:</action>
-      - Apply their communication style exactly
+      - Apply their communicationStyle exactly
       - Reflect their principles in reasoning
-      - Reference their memories if contextually relevant
+      - Draw from their identity and role for expertise
       - Maintain their unique voice and perspective
 
     <action>Enable natural cross-talk between agents:</action>

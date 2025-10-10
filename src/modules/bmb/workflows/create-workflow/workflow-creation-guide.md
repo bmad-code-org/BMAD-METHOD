@@ -42,7 +42,7 @@ default_output_file: '{output_folder}/output.md'
 ```markdown
 # instructions.md
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow.yaml</critical>
 
 <workflow>
@@ -140,7 +140,7 @@ recommended_inputs: # Expected input docs
 ```markdown
 # instructions.md
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow.yaml</critical>
 
 <workflow>
@@ -186,8 +186,9 @@ Write 1-3 bullet points about project success:
 ```xml
 <step n="2" goal="Validate input">
   <action>Load validation criteria</action>
-  <check>If validation fails:</check>
-  <goto step="1">Return to previous step</goto>
+  <check if="validation fails">
+    <goto step="1">Return to previous step</goto>
+  </check>
   <template-output>validated_data</template-output>
 </step>
 ```
@@ -257,17 +258,37 @@ _Generated on {{date}}_
 </step>
 ```
 
-### Branching and Goto
+### Conditional Execution
+
+**Single Action (use `action if=""`):**
+
+```xml
+<step n="6" goal="Load context">
+  <action if="file exists">Load existing document</action>
+  <action if="new project">Initialize from template</action>
+</step>
+```
+
+**Multiple Actions (use `<check if="">...</check>`):**
 
 ```xml
 <step n="7" goal="Validate">
   <action>Check requirements</action>
-  <check>If incomplete:</check>
-  <goto step="2">Return to gathering</goto>
-  <check>If complete:</check>
-  <continue>Proceed</continue>
+  <check if="incomplete">
+    <action>Log validation errors</action>
+    <goto step="2">Return to gathering</goto>
+  </check>
+  <check if="complete">
+    <action>Mark as validated</action>
+    <continue>Proceed</continue>
+  </check>
 </step>
 ```
+
+**When to use which:**
+
+- **`<action if="">`** - Single conditional action (cleaner, more concise)
+- **`<check if="">...</check>`** - Multiple items under same condition (explicit scope)
 
 ### Loops
 
@@ -275,8 +296,9 @@ _Generated on {{date}}_
 <step n="8" goal="Refine">
   <loop max="5">
     <action>Generate solution</action>
-    <check>If criteria met:</check>
-    <break>Exit loop</break>
+    <check if="criteria met">
+      <break>Exit loop</break>
+    </check>
   </loop>
 </step>
 ```
@@ -286,7 +308,8 @@ _Generated on {{date}}_
 **Execution:**
 
 - `<action>` - Required action
-- `<check>` - Conditional check
+- `<action if="condition">` - Single conditional action (inline)
+- `<check if="condition">...</check>` - Conditional block for multiple items (requires closing tag)
 - `<ask>` - User prompt
 - `<goto>` - Jump to step
 - `<invoke-workflow>` - Call another workflow
@@ -370,8 +393,9 @@ Check requirements against goals.
 
 <step n="3" goal="Verify">
   <action>Run tests</action>
-  <check>If tests fail:</check>
-  <goto step="2">Fix issues</goto>
+  <check if="tests fail">
+    <goto step="2">Fix issues</goto>
+  </check>
 </step>
 </workflow>
 ```
@@ -414,6 +438,40 @@ Check requirements against goals.
 3. **Set limits** - "3-5 items maximum"
 4. **Explain why** - Context helps AI make better decisions
 
+### Conditional Execution Best Practices
+
+**✅ DO:**
+
+- Use `<action if="">` for single conditional actions
+- Use `<check if="">...</check>` for blocks with multiple items
+- Always close `<check>` tags explicitly
+- Keep conditions simple and readable
+
+**❌ DON'T:**
+
+- Wrap single actions in `<check>` blocks (unnecessarily verbose)
+- Forget to close `<check>` tags
+- Nest too many levels (makes logic hard to follow)
+
+**Examples:**
+
+```xml
+<!-- ✅ Good: Single action -->
+<action if="file exists">Load configuration</action>
+
+<!-- ❌ Avoid: Unnecessary wrapper for single action -->
+<check if="file exists">
+  <action>Load configuration</action>
+</check>
+
+<!-- ✅ Good: Multiple actions in block -->
+<check if="validation fails">
+  <action>Log error details</action>
+  <action>Notify user</action>
+  <goto step="1">Retry input</goto>
+</check>
+```
+
 ### Common Pitfalls
 
 - **Missing critical headers** - Always include workflow engine references
@@ -421,6 +479,107 @@ Check requirements against goals.
 - **Too many steps** - Combine related actions
 - **No checkpoints** - Add `<template-output>` tags
 - **Vague instructions** - Be explicit about expectations
+- **Unclosed check tags** - Always close `<check if="">...</check>` blocks
+- **Wrong conditional pattern** - Use `<action if="">` for single items, `<check if="">` for blocks
+
+## Web Bundles
+
+Web bundles allow workflows to be deployed as self-contained packages for web environments.
+
+### When to Use Web Bundles
+
+- Deploying workflows to web-based AI platforms
+- Creating shareable workflow packages
+- Ensuring workflow portability without dependencies
+- Publishing workflows for public use
+
+### Web Bundle Requirements
+
+1. **Self-Contained**: No external dependencies
+2. **No Config Variables**: Cannot use `{config_source}` references
+3. **Complete File List**: Every referenced file must be listed
+4. **Relative Paths**: Use `bmad/` root paths (no `{project-root}`)
+
+### Creating a Web Bundle
+
+Add this section to your workflow.yaml:
+
+```yaml
+web_bundle:
+  name: 'workflow-name'
+  description: 'Workflow description'
+  author: 'Your Name'
+
+  # Core files (bmad/-relative paths)
+  instructions: 'bmad/module/workflows/workflow/instructions.md'
+  validation: 'bmad/module/workflows/workflow/checklist.md'
+  template: 'bmad/module/workflows/workflow/template.md'
+
+  # Data files (no config_source allowed)
+  data_file: 'bmad/module/workflows/workflow/data.csv'
+
+  # Complete file list - CRITICAL!
+  web_bundle_files:
+    - 'bmad/module/workflows/workflow/instructions.md'
+    - 'bmad/module/workflows/workflow/checklist.md'
+    - 'bmad/module/workflows/workflow/template.md'
+    - 'bmad/module/workflows/workflow/data.csv'
+    # Include ALL referenced files
+```
+
+### Converting Existing Workflows
+
+1. **Remove Config Dependencies**:
+   - Replace `{config_source}:variable` with hardcoded values
+   - Convert `{project-root}/bmad/` to `bmad/`
+
+2. **Inventory All Files**:
+   - Scan instructions.md for file references
+   - Check template.md for includes
+   - List all data files
+
+3. **Test Completeness**:
+   - Ensure no missing file references
+   - Verify all paths are relative to bmad/
+
+### Example: Complete Web Bundle
+
+```yaml
+web_bundle:
+  name: 'analyze-requirements'
+  description: 'Requirements analysis workflow'
+  author: 'BMad Team'
+
+  instructions: 'bmad/bmm/workflows/analyze-requirements/instructions.md'
+  validation: 'bmad/bmm/workflows/analyze-requirements/checklist.md'
+  template: 'bmad/bmm/workflows/analyze-requirements/template.md'
+
+  # Data files
+  techniques_data: 'bmad/bmm/workflows/analyze-requirements/techniques.csv'
+  patterns_data: 'bmad/bmm/workflows/analyze-requirements/patterns.json'
+
+  # Sub-workflow reference
+  validation_workflow: 'bmad/bmm/workflows/validate-requirements/workflow.yaml'
+
+  web_bundle_files:
+    # Core workflow files
+    - 'bmad/bmm/workflows/analyze-requirements/instructions.md'
+    - 'bmad/bmm/workflows/analyze-requirements/checklist.md'
+    - 'bmad/bmm/workflows/analyze-requirements/template.md'
+
+    # Data files
+    - 'bmad/bmm/workflows/analyze-requirements/techniques.csv'
+    - 'bmad/bmm/workflows/analyze-requirements/patterns.json'
+
+    # Sub-workflow and its files
+    - 'bmad/bmm/workflows/validate-requirements/workflow.yaml'
+    - 'bmad/bmm/workflows/validate-requirements/instructions.md'
+    - 'bmad/bmm/workflows/validate-requirements/checklist.md'
+
+    # Shared templates referenced in instructions
+    - 'bmad/bmm/templates/requirement-item.md'
+    - 'bmad/bmm/templates/validation-criteria.md'
+```
 
 ## Troubleshooting
 
@@ -452,5 +611,5 @@ Check requirements against goals.
 
 _For implementation details, see:_
 
-- `/src/core/tasks/workflow.md` - Execution engine
+- `/src/core/tasks/workflow.xml` - Execution engine
 - `/bmad/bmm/workflows/` - Production examples

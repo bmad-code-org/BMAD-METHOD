@@ -18,6 +18,13 @@ recommended_inputs:
 # Module path and component files
 installed_path: "{project-root}/bmad/bmm/workflows/2-plan"
 
+# Sub-workflow references - Router invokes these workflows based on project type/level
+workflow_gdd: "{installed_path}/gdd/workflow.yaml"
+workflow_prd: "{installed_path}/prd/workflow.yaml"
+workflow_narrative: "{installed_path}/narrative/workflow.yaml"
+workflow_tech_spec: "{installed_path}/tech-spec/workflow.yaml"
+workflow_ux: "{installed_path}/ux/workflow.yaml"
+
 # Templates - Load these only when the instructions request loading them
 prd_template: "{installed_path}/prd/prd-template.md"
 analysis_template: "{installed_path}/prd/analysis-template.md"

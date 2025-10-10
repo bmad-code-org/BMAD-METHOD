@@ -2,7 +2,7 @@
 
 <workflow>
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This is the SMALL instruction set for Level 0 projects - tech-spec only</critical>
 <critical>Project analysis already completed - proceeding directly to technical specification</critical>
@@ -74,12 +74,13 @@
 
 Run cohesion validation? (y/n)</ask>
 
-<check>If yes:</check>
-<action>Load {installed_path}/checklist.md</action>
-<action>Review tech-spec.md against "Cohesion Validation (All Levels)" section</action>
-<action>Focus on Section A (Tech Spec), Section D (Feature Sequencing)</action>
-<action>Apply Section B (Greenfield) or Section C (Brownfield) based on field_type</action>
-<action>Generate validation report with findings</action>
+<check if="yes">
+  <action>Load {installed_path}/checklist.md</action>
+  <action>Review tech-spec.md against "Cohesion Validation (All Levels)" section</action>
+  <action>Focus on Section A (Tech Spec), Section D (Feature Sequencing)</action>
+  <action>Apply Section B (Greenfield) or Section C (Brownfield) based on field_type</action>
+  <action>Generate validation report with findings</action>
+</check>
 
 </step>
 
@@ -99,19 +100,19 @@ Run cohesion validation? (y/n)</ask>
 
 <action>Determine appropriate next steps for Level 0 atomic change</action>
 
-<check>If change involves UI components:</check>
-
 **Optional Next Steps:**
 
-- [ ] **Create simple UX documentation** (if UI change is user-facing)
-  - Note: Full instructions-ux workflow may be overkill for Level 0
-  - Consider documenting just the specific UI change
+<check if="change involves UI components">
+  - [ ] **Create simple UX documentation** (if UI change is user-facing)
+    - Note: Full instructions-ux workflow may be overkill for Level 0
+    - Consider documenting just the specific UI change
+</check>
 
 - [ ] **Generate implementation task**
   - Command: `workflow task-generation`
   - Uses: tech-spec.md
 
-<check>If change is backend/API only:</check>
+<check if="change is backend/API only">
 
 **Recommended Next Steps:**
 
@@ -131,6 +132,8 @@ Run cohesion validation? (y/n)</ask>
 4. Exit workflow
 
 Select option (1-4):</ask>
+
+</check>
 
 </step>
 

@@ -7,7 +7,6 @@ author: "BMad"
 config_source: "{project-root}/bmad/bmb/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
-src_impact: "{config_source}:src_impact"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 

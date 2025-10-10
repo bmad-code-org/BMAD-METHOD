@@ -1,7 +1,7 @@
 # Develop Story - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.md</critical>
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status</critical>
 <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
@@ -78,7 +78,7 @@
   </step>
 
   <step n="7" goal="Validation and handoff" optional="true">
-    <action>Optionally run the workflow validation task against the story using {project-root}/bmad/core/tasks/validate-workflow.md</action>
+    <action>Optionally run the workflow validation task against the story using {project-root}/bmad/core/tasks/validate-workflow.xml</action>
     <action>Prepare a concise summary in Dev Agent Record → Completion Notes</action>
     <action>Communicate that the story is Ready for Review</action>
   </step>

@@ -20,6 +20,35 @@ class UI {
     CLIUtils.displaySection('BMAD™ Setup', 'Build More, Architect Dreams');
 
     const confirmedDirectory = await this.getConfirmedDirectory();
+
+    // Check if there's an existing BMAD installation
+    const fs = require('fs-extra');
+    const path = require('node:path');
+    const bmadDir = path.join(confirmedDirectory, 'bmad');
+    const hasExistingInstall = await fs.pathExists(bmadDir);
+
+    // Only show action menu if there's an existing installation
+    if (hasExistingInstall) {
+      const { actionType } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'actionType',
+          message: 'What would you like to do?',
+          choices: [
+            { name: 'Update BMAD Installation', value: 'install' },
+            { name: 'Compile Agents (Quick rebuild of all agent .md files)', value: 'compile' },
+          ],
+        },
+      ]);
+
+      // Handle agent compilation separately
+      if (actionType === 'compile') {
+        return {
+          actionType: 'compile',
+          directory: confirmedDirectory,
+        };
+      }
+    }
     const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
     const coreConfig = await this.collectCoreConfig(confirmedDirectory);
     const moduleChoices = await this.getModuleChoices(installedModuleIds);
@@ -30,6 +59,7 @@ class UI {
     CLIUtils.displayModuleComplete('core', false); // false = don't clear the screen again
 
     return {
+      actionType: 'install', // Explicitly set action type
       directory: confirmedDirectory,
       installCore: true, // Always install core
       modules: selectedModules,

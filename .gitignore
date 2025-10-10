@@ -6,6 +6,9 @@ deno.lock
 pnpm-workspace.yaml
 package-lock.json
 
+
+test-output/*
+
 # Logs
 logs/
 *.log

@@ -57,12 +57,34 @@
 - [ ] Output location is writable
 - [ ] Dependencies (if any) are available
 
+## Web Bundle Configuration (if applicable)
+
+- [ ] web_bundle section present if needed
+- [ ] Name, description, author copied from main config
+- [ ] All file paths converted to bmad/-relative format
+- [ ] NO {config_source} variables in web bundle
+- [ ] NO {project-root} prefixes in paths
+- [ ] Instructions path listed correctly
+- [ ] Validation/checklist path listed correctly
+- [ ] Template path listed (if document workflow)
+- [ ] All data files referenced in instructions are listed
+- [ ] All sub-workflows are included
+- [ ] web_bundle_files array is complete:
+  - [ ] Instructions.md included
+  - [ ] Checklist.md included
+  - [ ] Template.md included (if applicable)
+  - [ ] All CSV/JSON data files included
+  - [ ] All referenced templates included
+  - [ ] All sub-workflow files included
+- [ ] No external dependencies outside bundle
+
 ## Documentation
 
 - [ ] README created (if requested)
 - [ ] Usage instructions clear
 - [ ] Example command provided
 - [ ] Special requirements noted
+- [ ] Web bundle deployment noted (if applicable)
 
 ## Final Validation
 

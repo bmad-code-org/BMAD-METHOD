@@ -529,12 +529,12 @@ Update architecture.md with specialist sections (inline or placeholders) at the 
 </step>
 
 <step n="8" goal="PRD epic/story updates (if needed)" optional="true">
-<check>
+<ask>
 Did cohesion check or architecture design reveal:
 - Missing enabler epics (e.g., "Infrastructure Setup")?
 - Story modifications needed?
 - New FRs/NFRs discovered?
-</check>
+</ask>
 
 <ask if="changes_needed">
 Architecture design revealed some PRD updates needed:
@@ -587,9 +587,9 @@ Update project-workflow-analysis.md workflow status:
 </step>
 
 <step n="10" goal="Polyrepo documentation strategy" optional="true">
-<check>
+<ask>
 Is this a polyrepo project (multiple repositories)?
-</check>
+</ask>
 
 <action if="polyrepo">
 For polyrepo projects:

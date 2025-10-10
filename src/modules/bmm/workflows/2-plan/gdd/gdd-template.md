@@ -151,9 +151,3 @@
 ## Assumptions and Dependencies
 
 {{assumptions_and_dependencies}}
-
----
-
-## Change Log
-
-{{change_log}}

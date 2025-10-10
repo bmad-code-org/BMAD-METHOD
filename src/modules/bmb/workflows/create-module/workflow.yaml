@@ -6,7 +6,7 @@ author: "BMad"
 # Critical variables load from config_source
 config_source: "{project-root}/bmad/bmb/config.yaml"
 output_folder: "{config_source}:output_folder"
-src_impact: "{config_source}:src_impact"
+custom_module_location: "{config_source}:custom_module_location"
 communication_language: "{config_source}:communication_language"
 user_name: "{config_source}:user_name"
 date: system-generated
@@ -18,7 +18,7 @@ installer_templates: "{installed_path}/installer-templates/"
 # Use existing build workflows
 agent_builder: "{project-root}/bmad/bmb/workflows/create-agent/workflow.yaml"
 workflow_builder: "{project-root}/bmad/bmb/workflows/create-workflow/workflow.yaml"
-brainstorming_workflow: "{project-root}/bmad/cis/workflows/brainstorming/workflow.yaml"
+brainstorming_workflow: "{project-root}/bmad/core/workflows/brainstorming/workflow.yaml"
 brainstorming_context: "{installed_path}/brainstorm-context.md"
 
 # Optional docs that help understand module patterns
@@ -37,12 +37,8 @@ instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
 # Output configuration - creates entire module structure
-# If src_impact=true: Save to src/modules/{{module_code}}
-# If src_impact=false: Save to output_folder/{{module_code}}
-default_output_folder: "{output_folder}/{{module_code}}"
-src_output_folder: "{project-root}/src/modules/{{module_code}}"
-installer_output_folder: "{output_folder}/{{module_code}}"
-src_installer_output_folder: "{project-root}/src/modules/{{module_code}}"
+# Save to custom_module_location/{{module_code}}
+installer_output_folder: "{custom_module_location}/{{module_code}}"
 
 web_bundle:
   name: "create-module"
@@ -56,4 +52,4 @@ web_bundle:
   existing_workflows:
     - agent_builder: "bmad/bmb/workflows/create-agent/workflow.yaml"
     - workflow_builder: "bmad/bmb/workflows/create-workflow/workflow.yaml"
-    - brainstorming_workflow: "bmad/cis/workflows/brainstorming/workflow.yaml"
+    - brainstorming_workflow: "bmad/core/workflows/brainstorming/workflow.yaml"

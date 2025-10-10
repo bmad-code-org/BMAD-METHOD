@@ -191,14 +191,46 @@ class Detector {
     };
 
     const offenders = [];
-    if (await existsCaseSensitive(projectDir, ['.bmad-core'])) {
-      offenders.push(path.join(projectDir, '.bmad-core'));
+
+    // Find all directories starting with .bmad, bmad, or Bmad
+    try {
+      const entries = await fs.readdir(projectDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          const name = entry.name;
+          // Match .bmad*, bmad* (lowercase), or Bmad* (capital B)
+          // BUT exclude 'bmad' exactly (that's the new v6 installation directory)
+          if ((name.startsWith('.bmad') || name.startsWith('bmad') || name.startsWith('Bmad')) && name !== 'bmad') {
+            offenders.push(path.join(projectDir, entry.name));
+          }
+        }
+      }
+    } catch {
+      // Ignore errors reading directory
     }
-    if (await existsCaseSensitive(projectDir, ['.claude', 'commands', 'BMad'])) {
-      offenders.push(path.join(projectDir, '.claude', 'commands', 'BMad'));
-    }
-    if (await existsCaseSensitive(projectDir, ['.crush', 'commands', 'BMad'])) {
-      offenders.push(path.join(projectDir, '.crush', 'commands', 'BMad'));
+
+    // Check inside various IDE command folders for legacy bmad folders
+    // List of IDE config folders that might have commands directories
+    const ideConfigFolders = ['.claude', '.crush', '.continue', '.cursor', '.windsurf', '.cline', '.roo-cline'];
+
+    for (const ideFolder of ideConfigFolders) {
+      const commandsPath = path.join(projectDir, ideFolder, 'commands');
+      if (await fs.pathExists(commandsPath)) {
+        try {
+          const commandEntries = await fs.readdir(commandsPath, { withFileTypes: true });
+          for (const entry of commandEntries) {
+            if (entry.isDirectory()) {
+              const name = entry.name;
+              // Find bmad-related folders (excluding exact 'bmad' if it exists)
+              if ((name.startsWith('bmad') || name.startsWith('Bmad') || name === 'BMad') && name !== 'bmad') {
+                offenders.push(path.join(commandsPath, entry.name));
+              }
+            }
+          }
+        } catch {
+          // Ignore errors reading commands directory
+        }
+      }
     }
 
     return { hasLegacyV4: offenders.length > 0, offenders };
