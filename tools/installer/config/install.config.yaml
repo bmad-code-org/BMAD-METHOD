@@ -9,6 +9,16 @@ installation-options:
     description: Select and install a single agent with its dependencies
     action: copy-agent
 ide-configurations:
+  kiro:
+    name: Kiro IDE
+    rule-dir: .kiro/steering/
+    format: multi-file
+    command-suffix: .md
+    instructions: |
+      # To use BMad agents in Kiro IDE:
+      # 1. The installer creates agent files in `.kiro/steering/`.
+      # 2. The steering file `bmad.md` is always included.
+      # 3. Type *agent-name (e.g., "*agent-dev", "*agent-pm") to activate the agent.
   cursor:
     name: Cursor
     rule-dir: .cursor/rules/bmad/

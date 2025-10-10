@@ -69,6 +69,9 @@ class IdeSetup extends BaseIdeSetup {
       case 'cline': {
         return this.setupCline(installDir, selectedAgent);
       }
+      case 'kiro': {
+        return this.setupKiro(installDir, selectedAgent);
+      }
       case 'kilo': {
         return this.setupKilocode(installDir, selectedAgent);
       }
@@ -1389,6 +1392,36 @@ class IdeSetup extends BaseIdeSetup {
         console.log(chalk.green(`✓ Created rule: ${agentId}.md`));
       }
     }
+  }
+
+  async setupKiro(installDir, selectedAgent) {
+    const kiroSteeringDir = path.join(installDir, '.kiro', 'steering');
+    await fileManager.ensureDirectory(kiroSteeringDir);
+
+    // Get all agent IDs
+    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
+    const agentLinks = [];
+
+    for (const agentId of agents) {
+      // Find the agent file
+      const agentPath = await this.findAgentPath(agentId, installDir);
+      if (agentPath) {
+        const agentContent = await fileManager.readFile(agentPath);
+        const mdPath = path.join(kiroSteeringDir, `${agentId}.md`);
+        await fileManager.writeFile(mdPath, agentContent);
+        agentLinks.push(`- [*agent-${agentId}](./${agentId}.md)`);
+        console.log(chalk.green(`✓ Created steering file: ${agentId}.md`));
+      }
+    }
+
+    // Create bmad-method.md and readme.md with inclusion header and agent links
+    const inclusionHeader = '---\ninclusion: always\n---\n';
+    const intro =
+      "i'll open the next file that is under the .kiro/steering/ dir based on the user's input file name\n";
+    const content = `${inclusionHeader}\n${intro}\n${agentLinks.join('\n')}\n`;
+    await fileManager.writeFile(path.join(kiroSteeringDir, 'bmad.md'), content);
+    console.log(chalk.green('✓ Created bmad.md for Kiro steering.'));
+    return true;
   }
 
   async findAgentPath(agentId, installDir) {
