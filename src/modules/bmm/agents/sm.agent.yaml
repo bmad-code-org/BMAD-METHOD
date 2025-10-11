@@ -29,6 +29,10 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
       description: Create a Draft Story with Context
 
+    - trigger: development-status
+      exec: "{project-root}/bmad/bmm/tasks/development-status.xml"
+      description: View current development progress and project status
+
     - trigger: story-context
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml"
       description: Assemble dynamic Story Context (XML) from latest docs and code

@@ -29,6 +29,10 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: Execute Dev Story workflow (implements tasks, tests, validates, updates story)
 
+    - trigger: development-status
+      exec: "{project-root}/bmad/bmm/tasks/development-status.xml"
+      description: View current development progress and project status
+
     - trigger: review
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/review-story/workflow.yaml"
       description: Perform Senior Developer Review on a story flagged Ready for Review (loads context/tech-spec, checks ACs/tests/architecture/security, appends review notes)

@@ -27,6 +27,10 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: Course Correction Analysis
 
+    - trigger: development-status
+      exec: "{project-root}/bmad/bmm/tasks/development-status.xml"
+      description: View current development progress and project status
+
     - trigger: plan-project
       workflow: "{project-root}/bmad/bmm/workflows/2-plan/workflow.yaml"
       description: Analyze Project Scope and Create PRD or Smaller Tech Spec

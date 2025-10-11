@@ -1,0 +1,231 @@
+<task id="bmad/bmm/tasks/development-status.xml" name="Development Status">
+  <llm critical="true">
+    <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
+    <i>DO NOT skip steps or change the sequence</i>
+    <i>This is a READ-ONLY task - do not modify any files</i>
+    <i>Each andlt;actionandgt; within andlt;stepandgt; is a REQUIRED action to complete that step</i>
+    <i>Handle missing files gracefully - report as "not found" not error</i>
+  </llm>
+
+  <flow>
+    <step n="1" title="Discover Planning Artifacts">
+      <action>Check for {project-root}{output_folder}/project-brief.md</action>
+      <action>Check for {project-root}{output_folder}/PRD.md</action>
+      <action>Check for {project-root}{output_folder}/solution-architecture.md</action>
+      <action>Check for {project-root}{output_folder}/epics.md</action>
+      <action>Check for {project-root}{output_folder}/project-workflow-analysis.md</action>
+      <action>For each existing file, note last modified date</action>
+      <action>If project-workflow-analysis.md exists, extract: project level (0-4), type, context (greenfield/brownfield)</action>
+      <action>If epics.md exists, count total epics</action>
+    </step>
+
+    <step n="2" title="Scan Story Files">
+      <action>List all files in {project-root}{output_folder}/stories/ matching pattern story-*.md</action>
+      <action>For each story file, extract:
+        - Story number (e.g., story-1.2.md = epic 1, story 2)
+        - Story title (first H1 heading after front matter)
+        - Status field (look for "Status: value" line)
+        - Total tasks (count all checkboxes: - [ ] and - [x] and - [X])
+        - Completed tasks (count only checked: - [x] or - [X])
+        - Last modified date from filesystem
+      </action>
+      <action>Group stories by status: Draft, Approved, In Progress, Ready for Review, Done, Blocked</action>
+      <action>Count stories in each status category</action>
+    </step>
+
+    <step n="3" title="Calculate Metrics">
+      <action>Calculate total stories count</action>
+      <action>Calculate percentage for each status category</action>
+      <action>Calculate total tasks across all stories</action>
+      <action>Calculate completed tasks across all stories</action>
+      <action>Calculate task completion percentage</action>
+      <action>If epics.md exists, group stories by epic and calculate per-epic progress</action>
+    </step>
+
+    <step n="4" title="Identify Current Focus">
+      <action>List all stories with "Status: In Progress"</action>
+      <action>For each in-progress story, calculate task completion percentage</action>
+      <action>Calculate time since last modified (e.g., "2 days ago", "today")</action>
+      <action>List all stories with "Status: Blocked"</action>
+      <action>Scan blocked stories for blocker descriptions</action>
+      <action>List all stories with "Status: Ready for Review"</action>
+      <action>List all stories with "Status: Draft" or "Status: Approved" as ready to start</action>
+    </step>
+
+    <step n="5" title="Generate Recommendations">
+      <action>Analyze current state and generate context-aware next steps</action>
+      <action>If no PRD exists: recommend running plan-project workflow</action>
+      <action>If PRD exists but no epics: recommend creating epic breakdown</action>
+      <action>If epics exist but no stories: recommend running create-story workflow</action>
+      <action>If stories in progress: recommend continuing implementation</action>
+      <action>If stories ready for review: recommend running review-story workflow</action>
+      <action>If blocked stories: recommend resolving blockers or running correct-course</action>
+      <action>If all stories in epic done: recommend running retrospective workflow</action>
+    </step>
+
+    <step n="6" title="Display Status Report">
+      <output>
+# 📊 BMAD v6 Development Status
+
+**Generated:** {{current_date}} {{current_time}}
+
+---
+
+## Planning Phase Status
+
+- {{✅/⏳}} **Project Brief**: {{exists with date / not found}}
+- {{✅/⏳}} **PRD**: {{exists with date / not found}}
+- {{✅/⏳}} **Architecture**: {{exists with date / not found}}
+- {{✅/⏳}} **Epics**: {{X epics found / not created yet}}
+- {{✅/⏳}} **Workflow Analysis**: {{exists with date / not found}}
+
+{{If project-workflow-analysis.md exists:}}
+**Project Metadata:**
+- Level: {{0-4}}
+- Type: {{game/web/mobile/backend/etc}}
+- Context: {{greenfield/brownfield}}
+
+---
+
+## Development Phase Progress
+
+{{If no stories found:}}
+⚠️ No story files found in {{output_folder}}/stories/
+
+This is normal for new projects. Stories are created during Phase 4 (Implementation).
+
+{{If stories found:}}
+### Story Breakdown
+
+📊 **Total Stories:** {{count}}
+
+{{For each status with count > 0:}}
+- {{emoji}} **{{Status}}**: {{count}} ({{percentage}}%)
+
+### Task Completion
+
+📝 **Total Tasks:** {{count}}
+- ✅ **Completed:** {{count}} ({{percentage}}%)
+- ⏳ **Remaining:** {{count}} ({{percentage}}%)
+
+{{If epics.md exists and stories grouped by epic:}}
+### Epic Progress
+
+{{For each epic with stories:}}
+**Epic {{number}}: {{title}}**
+- Stories: {{total}} ({{done}} done, {{in_progress}} in progress, {{other_statuses}})
+- Completion: {{percentage}}%
+
+---
+
+## Current Focus
+
+{{If any stories with "Status: In Progress":}}
+### 🎯 Active Stories
+
+{{For each in-progress story:}}
+**{{story_id}}: {{title}}**
+- Progress: {{completed_tasks}}/{{total_tasks}} tasks ({{percentage}}%)
+- Last Updated: {{date}} ({{relative_time}})
+
+{{If no stories in progress:}}
+### 🎯 Active Stories
+
+No stories currently in progress.
+
+{{If any stories with "Status: Blocked":}}
+---
+
+## ⚠️ Blockers
+
+{{For each blocked story:}}
+**{{story_id}}: {{title}}**
+- Status: Blocked
+- Last Updated: {{date}} ({{relative_time}})
+
+{{If any stories with "Status: Ready for Review":}}
+---
+
+## 👀 Ready for Review
+
+{{For each story ready for review:}}
+- **{{story_id}}: {{title}}** ({{completed_tasks}}/{{total_tasks}} tasks)
+
+{{If any draft or approved stories:}}
+---
+
+## 📌 Ready to Start
+
+{{List up to 5 draft or approved stories}}
+
+---
+
+## 💡 Recommended Next Steps
+
+{{Display generated recommendations based on current state}}
+      </output>
+    </step>
+
+    <step n="7" title="Offer Next Actions">
+      <output>
+What would you like to do?
+
+1. 📖 View details of a specific story
+2. 🚀 Continue working on current story
+3. ✨ Create next story (*create-story)
+4. 👀 Review story (*review-story)
+5. 🔄 Refresh status
+6. ❌ Exit
+      </output>
+    </step>
+  </flow>
+
+  <validation>
+    <i>All file paths must be resolved from config variables</i>
+    <i>Missing files are reported as "not found" not errors</i>
+    <i>Percentages are rounded to whole numbers</i>
+    <i>Story status parsing is case-insensitive</i>
+    <i>Task checkboxes support: - [ ], - [x], - [X]</i>
+    <i>Date calculations must be accurate</i>
+  </validation>
+
+  <critical-context>
+    <i>This task is completely READ-ONLY - never modify files</i>
+    <i>Safe to run at any time without side effects</i>
+    <i>Can be run by any agent to check progress</i>
+    <i>Output is formatted markdown suitable for copying to reports</i>
+    <i>If story directory doesn't exist, this is normal for new projects</i>
+    <i>Handle malformed story files gracefully - skip and continue</i>
+  </critical-context>
+
+  <config-variables>
+    <var name="output_folder">Location of planning documents and stories (PRD, epics, stories/)</var>
+  </config-variables>
+
+  <use-cases>
+    <case>Daily standup: Check progress at start of day</case>
+    <case>Sprint planning: Review completed work and plan next sprint</case>
+    <case>Stakeholder reporting: Generate progress summaries</case>
+    <case>Context recovery: Resume work after breaks</case>
+    <case>Before reviews: Check what's ready for review</case>
+    <case>Epic completion: Verify all stories done before retrospective</case>
+  </use-cases>
+
+  <related-workflows>
+    <workflow name="create-story">Run when ready to start next story</workflow>
+    <workflow name="dev-story">Run to continue implementation</workflow>
+    <workflow name="review-story">Run when story is ready for review</workflow>
+    <workflow name="correct-course">Run when blockers identified</workflow>
+    <workflow name="retrospective">Run when epic complete</workflow>
+    <workflow name="plan-project">Run when no planning docs exist</workflow>
+  </related-workflows>
+
+  <llm critical="true">
+    <i>Execute steps in exact order</i>
+    <i>Be thorough in file discovery and parsing</i>
+    <i>Format output clearly with appropriate emojis</i>
+    <i>Provide context-aware recommendations</i>
+    <i>Handle missing or malformed files gracefully</i>
+    <i>This is a status check tool - fast and non-invasive</i>
+  </llm>
+</task>
