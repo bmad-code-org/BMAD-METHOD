@@ -2008,6 +2008,133 @@ class Installer {
       process.exit(code);
     });
   }
+
+  async updateManifestOnly(config) {
+    const spinner = ora('Updating installation manifest...').start();
+
+    try {
+      // Store the original CWD where npx was executed
+      const originalCwd = process.env.INIT_CWD || process.env.PWD || process.cwd();
+
+      // Resolve installation directory relative to where the user ran the command
+      let installDir = path.isAbsolute(config.directory)
+        ? config.directory
+        : path.resolve(originalCwd, config.directory);
+
+      if (path.basename(installDir) === '.bmad-core') {
+        // If user points directly to .bmad-core, treat its parent as the project root
+        installDir = path.dirname(installDir);
+      }
+
+      // Check if installation directory exists
+      if (!(await fileManager.pathExists(installDir))) {
+        spinner.fail(`Installation directory does not exist: ${installDir}`);
+        throw new Error(`Directory not found: ${installDir}`);
+      }
+
+      // Check if .bmad-core exists (required for manifest update)
+      const bmadCorePath = path.join(installDir, '.bmad-core');
+      if (!(await fileManager.pathExists(bmadCorePath))) {
+        spinner.fail('No BMad installation found (missing .bmad-core directory)');
+        throw new Error('No existing BMad installation found. Use regular install command first.');
+      }
+
+      spinner.text = 'Scanning installed files...';
+
+      // Detect current installation state
+      const state = await this.detectInstallationState(installDir);
+
+      if (state.type !== 'v4_existing') {
+        spinner.fail('No valid BMad v4 installation found');
+        throw new Error('Cannot update manifest - no valid v4 installation detected');
+      }
+
+      let updatedManifests = [];
+
+      // Update core manifest if bmad-core exists
+      if (state.hasBmadCore) {
+        spinner.text = 'Updating core manifest...';
+
+        // Scan all files in .bmad-core directory
+        const coreFiles = await resourceLocator.findFiles('**/*', {
+          cwd: bmadCorePath,
+          nodir: true,
+        });
+
+        // Convert to relative paths from install directory
+        const relativeFiles = coreFiles.map((file) => `.bmad-core/${file}`);
+
+        // Create manifest config based on existing manifest or defaults
+        const existingManifest = state.manifest || {};
+        const manifestConfig = {
+          installType: existingManifest.install_type || 'full',
+          ides: existingManifest.ide_config || [],
+          expansionPacks: existingManifest.expansion_packs || [],
+          prdSharded: existingManifest.prd_sharded,
+          architectureSharded: existingManifest.architecture_sharded,
+        };
+
+        await fileManager.createManifest(installDir, manifestConfig, relativeFiles);
+        updatedManifests.push('Core manifest (.bmad-core/install-manifest.yaml)');
+      }
+
+      // Update expansion pack manifests
+      if (state.expansionPacks && Object.keys(state.expansionPacks).length > 0) {
+        spinner.text = 'Updating expansion pack manifests...';
+
+        for (const [packId, packInfo] of Object.entries(state.expansionPacks)) {
+          const packPath = path.join(installDir, `.${packId}`);
+
+          if (await fileManager.pathExists(packPath)) {
+            // Scan all files in expansion pack directory
+            const packFiles = await resourceLocator.findFiles('**/*', {
+              cwd: packPath,
+              nodir: true,
+            });
+
+            // Convert to relative paths from install directory
+            const relativePackFiles = packFiles.map((file) => `.${packId}/${file}`);
+
+            // Create expansion pack manifest config
+            const packManifestConfig = {
+              installType: 'expansion',
+              expansionPackVersion:
+                packInfo.manifest?.version ||
+                require(path.resolve(__dirname, '../../../package.json')).version,
+            };
+
+            await fileManager.createExpansionPackManifest(
+              installDir,
+              packId,
+              packManifestConfig,
+              relativePackFiles,
+            );
+            updatedManifests.push(`${packId} manifest (.${packId}/install-manifest.yaml)`);
+          }
+        }
+      }
+
+      spinner.succeed('Installation manifest updated successfully!');
+
+      // Show summary
+      console.log(chalk.green('\n✓ Manifest Update Complete'));
+      console.log(chalk.cyan(`📍 Installation directory: ${installDir}`));
+      console.log(chalk.cyan('📄 Updated manifests:'));
+
+      for (const manifest of updatedManifests) {
+        console.log(chalk.green(`  ✓ ${manifest}`));
+      }
+
+      if (updatedManifests.length === 0) {
+        console.log(chalk.yellow('  ⚠️  No manifests found to update'));
+      }
+
+      console.log(chalk.dim('\nManifests now reflect the current state of installed files.'));
+    } catch (error) {
+      spinner.fail('Manifest update failed');
+      throw error;
+    }
+  }
 }
 
 module.exports = new Installer();
