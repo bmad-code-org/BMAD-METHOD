@@ -1,0 +1,180 @@
+{
+  "name": "bmad-method",
+  "owner": {
+    "name": "BMad Code, LLC",
+    "email": "bmad@bmadcode.com"
+  },
+  "plugins": [
+    {
+      "name": "bmad-core",
+      "source": "./bmad-core",
+      "description": "Universal AI Agent Framework for breakthrough agile development. Features agentic planning with Analyst, PM, Architect agents and context-engineered development with Scrum Master, Dev, and QA agents.",
+      "version": "4.44.0",
+      "author": "Brian (BMad) Madison",
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      },
+      "license": "MIT",
+      "keywords": [
+        "agile",
+        "ai",
+        "orchestrator",
+        "development",
+        "methodology",
+        "agents",
+        "bmad",
+        "agentic-planning",
+        "context-engineering",
+        "vibe-coding"
+      ],
+      "category": "development-methodology",
+      "tags": [
+        "agile-framework",
+        "ai-agents",
+        "project-planning",
+        "software-architecture",
+        "development-workflow"
+      ]
+    },
+    {
+      "name": "bmad-godot-game-dev",
+      "source": "./expansion-packs/bmad-godot-game-dev",
+      "description": "Game Development expansion pack for BMad Method - Godot GDscript & C# focused. Adds specialized game development agents, workflows, and templates for creating games with Godot engine.",
+      "version": "1.0.0",
+      "author": "sjennings (Lum), based on BMAD Unity Game Dev expansion pack by pbean (PinkyD)",
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      },
+      "license": "MIT",
+      "keywords": [
+        "game-development",
+        "godot",
+        "gdscript",
+        "csharp",
+        "game-design",
+        "bmad",
+        "expansion-pack"
+      ],
+      "category": "game-development",
+      "tags": ["godot-engine", "game-dev", "gdscript", "game-design", "2d-3d-games"],
+      "requires": ["bmad-core"]
+    },
+    {
+      "name": "bmad-2d-phaser-game-dev",
+      "source": "./expansion-packs/bmad-2d-phaser-game-dev",
+      "description": "2D Game Development expansion pack for BMad Method using Phaser framework. Specialized agents and workflows for creating 2D browser-based games with Phaser.js.",
+      "version": "1.0.0",
+      "author": "BMad Code",
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      },
+      "license": "MIT",
+      "keywords": [
+        "game-development",
+        "phaser",
+        "2d-games",
+        "javascript",
+        "web-games",
+        "bmad",
+        "expansion-pack"
+      ],
+      "category": "game-development",
+      "tags": ["phaser-framework", "2d-game-dev", "javascript-games", "browser-games"],
+      "requires": ["bmad-core"]
+    },
+    {
+      "name": "bmad-2d-unity-game-dev",
+      "source": "./expansion-packs/bmad-2d-unity-game-dev",
+      "description": "2D Game Development expansion pack for BMad Method using Unity engine. Specialized agents and workflows for creating 2D games with Unity and C#.",
+      "version": "1.0.0",
+      "author": "pbean (PinkyD)",
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      },
+      "license": "MIT",
+      "keywords": [
+        "game-development",
+        "unity",
+        "2d-games",
+        "csharp",
+        "game-design",
+        "bmad",
+        "expansion-pack"
+      ],
+      "category": "game-development",
+      "tags": ["unity-engine", "2d-game-dev", "unity-2d", "csharp-games"],
+      "requires": ["bmad-core"]
+    },
+    {
+      "name": "bmad-creative-writing",
+      "source": "./expansion-packs/bmad-creative-writing",
+      "description": "Comprehensive AI-powered creative writing framework providing specialized agents, workflows, and tools for fiction writers, screenwriters, and narrative designers. Includes 10 specialized writing agents, 8 workflows from ideation to publication, 27 quality checklists, and KDP publishing integration.",
+      "version": "1.1.1",
+      "author": "Wes",
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      },
+      "license": "MIT",
+      "keywords": [
+        "creative-writing",
+        "fiction",
+        "screenwriting",
+        "narrative-design",
+        "publishing",
+        "bmad",
+        "expansion-pack"
+      ],
+      "category": "creative-writing",
+      "tags": [
+        "fiction-writing",
+        "screenwriting",
+        "narrative-design",
+        "publishing",
+        "kdp-integration"
+      ],
+      "requires": ["bmad-core"]
+    },
+    {
+      "name": "bmad-infrastructure-devops",
+      "source": "./expansion-packs/bmad-infrastructure-devops",
+      "description": "This expansion pack extends BMad Method with comprehensive infrastructure and DevOps capabilities. It's designed for teams that need to define, implement, and manage cloud infrastructure alongside their application development.",
+      "version": "1.12.0",
+      "author": "Brian (BMad)",
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      },
+      "license": "MIT",
+      "keywords": [
+        "devops",
+        "infrastructure",
+        "cloud",
+        "kubernetes",
+        "terraform",
+        "cicd",
+        "bmad",
+        "expansion-pack"
+      ],
+      "category": "devops",
+      "tags": [
+        "infrastructure-as-code",
+        "cloud-infrastructure",
+        "devops-automation",
+        "kubernetes",
+        "terraform"
+      ],
+      "requires": ["bmad-core"]
+    }
+  ]
+}
