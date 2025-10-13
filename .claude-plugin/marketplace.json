@@ -1,5 +1,8 @@
 {
   "name": "bmad-method",
+  "metadata": {
+    "description": "Universal AI Agent Framework for breakthrough agile development. Includes bmad-core framework and expansion packs for game development, creative writing, and infrastructure/DevOps. Transform any domain with specialized AI agents using agentic planning and context-engineered development."
+  },
   "owner": {
     "name": "BMad Code, LLC",
     "email": "bmad@bmadcode.com"
@@ -10,13 +13,47 @@
       "source": "./bmad-core",
       "description": "Universal AI Agent Framework for breakthrough agile development. Features agentic planning with Analyst, PM, Architect agents and context-engineered development with Scrum Master, Dev, and QA agents.",
       "version": "4.44.0",
-      "author": "Brian (BMad) Madison",
-      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      "author": {
+        "name": "Brian (BMad) Madison"
       },
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": "https://github.com/bmadcode/BMAD-METHOD.git",
       "license": "MIT",
+      "agents": [
+        "./agents/analyst.md",
+        "./agents/architect.md",
+        "./agents/bmad-master.md",
+        "./agents/bmad-orchestrator.md",
+        "./agents/dev.md",
+        "./agents/pm.md",
+        "./agents/po.md",
+        "./agents/qa.md",
+        "./agents/sm.md",
+        "./agents/ux-expert.md"
+      ],
+      "operations": [
+        "./tasks/advanced-elicitation.md",
+        "./tasks/apply-qa-fixes.md",
+        "./tasks/brownfield-create-epic.md",
+        "./tasks/brownfield-create-story.md",
+        "./tasks/correct-course.md",
+        "./tasks/create-brownfield-story.md",
+        "./tasks/create-deep-research-prompt.md",
+        "./tasks/create-next-story.md",
+        "./tasks/document-project.md",
+        "./tasks/facilitate-brainstorming-session.md",
+        "./tasks/generate-ai-frontend-prompt.md",
+        "./tasks/index-docs.md",
+        "./tasks/kb-mode-interaction.md",
+        "./tasks/nfr-assess.md",
+        "./tasks/qa-gate.md",
+        "./tasks/review-story.md",
+        "./tasks/risk-profile.md",
+        "./tasks/shard-doc.md",
+        "./tasks/test-design.md",
+        "./tasks/trace-requirements.md",
+        "./tasks/validate-next-story.md"
+      ],
       "keywords": [
         "agile",
         "ai",
@@ -43,13 +80,47 @@
       "source": "./expansion-packs/bmad-godot-game-dev",
       "description": "Game Development expansion pack for BMad Method - Godot GDscript & C# focused. Adds specialized game development agents, workflows, and templates for creating games with Godot engine.",
       "version": "1.0.0",
-      "author": "sjennings (Lum), based on BMAD Unity Game Dev expansion pack by pbean (PinkyD)",
-      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      "author": {
+        "name": "sjennings (Lum), based on BMAD Unity Game Dev expansion pack by pbean (PinkyD)"
       },
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": "https://github.com/bmadcode/BMAD-METHOD.git",
       "license": "MIT",
+      "agents": [
+        "./agents/bmad-orchestrator.md",
+        "./agents/game-analyst.md",
+        "./agents/game-architect.md",
+        "./agents/game-designer.md",
+        "./agents/game-developer.md",
+        "./agents/game-pm.md",
+        "./agents/game-po.md",
+        "./agents/game-qa.md",
+        "./agents/game-sm.md",
+        "./agents/game-ux-expert.md"
+      ],
+      "operations": [
+        "./tasks/advanced-elicitation.md",
+        "./tasks/apply-qa-fixes.md",
+        "./tasks/brownfield-create-epic.md",
+        "./tasks/brownfield-create-story.md",
+        "./tasks/correct-course-game.md",
+        "./tasks/create-deep-research-prompt.md",
+        "./tasks/create-doc.md",
+        "./tasks/create-game-story.md",
+        "./tasks/document-project.md",
+        "./tasks/execute-checklist.md",
+        "./tasks/facilitate-brainstorming-session.md",
+        "./tasks/game-brownfield-create-epic.md",
+        "./tasks/game-brownfield-create-story.md",
+        "./tasks/game-design-brainstorming.md",
+        "./tasks/game-risk-profile.md",
+        "./tasks/game-test-design.md",
+        "./tasks/generate-ai-frontend-prompt.md",
+        "./tasks/kb-mode-interaction.md",
+        "./tasks/review-game-story.md",
+        "./tasks/shard-doc.md",
+        "./tasks/validate-game-story.md"
+      ],
       "keywords": [
         "game-development",
         "godot",
@@ -68,13 +139,18 @@
       "source": "./expansion-packs/bmad-2d-phaser-game-dev",
       "description": "2D Game Development expansion pack for BMad Method using Phaser framework. Specialized agents and workflows for creating 2D browser-based games with Phaser.js.",
       "version": "1.0.0",
-      "author": "BMad Code",
-      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      "author": {
+        "name": "BMad Code"
       },
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": "https://github.com/bmadcode/BMAD-METHOD.git",
       "license": "MIT",
+      "agents": ["./agents/game-designer.md", "./agents/game-developer.md", "./agents/game-sm.md"],
+      "operations": [
+        "./tasks/advanced-elicitation.md",
+        "./tasks/create-game-story.md",
+        "./tasks/game-design-brainstorming.md"
+      ],
       "keywords": [
         "game-development",
         "phaser",
@@ -93,13 +169,25 @@
       "source": "./expansion-packs/bmad-2d-unity-game-dev",
       "description": "2D Game Development expansion pack for BMad Method using Unity engine. Specialized agents and workflows for creating 2D games with Unity and C#.",
       "version": "1.0.0",
-      "author": "pbean (PinkyD)",
-      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      "author": {
+        "name": "pbean (PinkyD)"
       },
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": "https://github.com/bmadcode/BMAD-METHOD.git",
       "license": "MIT",
+      "agents": [
+        "./agents/game-architect.md",
+        "./agents/game-designer.md",
+        "./agents/game-developer.md",
+        "./agents/game-sm.md"
+      ],
+      "operations": [
+        "./tasks/advanced-elicitation.md",
+        "./tasks/correct-course-game.md",
+        "./tasks/create-game-story.md",
+        "./tasks/game-design-brainstorming.md",
+        "./tasks/validate-game-story.md"
+      ],
       "keywords": [
         "game-development",
         "unity",
@@ -118,13 +206,51 @@
       "source": "./expansion-packs/bmad-creative-writing",
       "description": "Comprehensive AI-powered creative writing framework providing specialized agents, workflows, and tools for fiction writers, screenwriters, and narrative designers. Includes 10 specialized writing agents, 8 workflows from ideation to publication, 27 quality checklists, and KDP publishing integration.",
       "version": "1.1.1",
-      "author": "Wes",
-      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      "author": {
+        "name": "Wes"
       },
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": "https://github.com/bmadcode/BMAD-METHOD.git",
       "license": "MIT",
+      "agents": [
+        "./agents/beta-reader.md",
+        "./agents/book-critic.md",
+        "./agents/character-psychologist.md",
+        "./agents/cover-designer.md",
+        "./agents/dialog-specialist.md",
+        "./agents/editor.md",
+        "./agents/genre-specialist.md",
+        "./agents/narrative-designer.md",
+        "./agents/plot-architect.md",
+        "./agents/world-builder.md"
+      ],
+      "operations": [
+        "./tasks/advanced-elicitation.md",
+        "./tasks/analyze-reader-feedback.md",
+        "./tasks/analyze-story-structure.md",
+        "./tasks/assemble-kdp-package.md",
+        "./tasks/brainstorm-premise.md",
+        "./tasks/build-world.md",
+        "./tasks/character-depth-pass.md",
+        "./tasks/create-doc.md",
+        "./tasks/create-draft-section.md",
+        "./tasks/critical-review.md",
+        "./tasks/develop-character.md",
+        "./tasks/execute-checklist.md",
+        "./tasks/expand-premise.md",
+        "./tasks/expand-synopsis.md",
+        "./tasks/final-polish.md",
+        "./tasks/generate-cover-brief.md",
+        "./tasks/generate-cover-prompts.md",
+        "./tasks/generate-scene-list.md",
+        "./tasks/incorporate-feedback.md",
+        "./tasks/outline-scenes.md",
+        "./tasks/provide-feedback.md",
+        "./tasks/publish-chapter.md",
+        "./tasks/quick-feedback.md",
+        "./tasks/select-next-arc.md",
+        "./tasks/workshop-dialog.md"
+      ],
       "keywords": [
         "creative-writing",
         "fiction",
@@ -149,13 +275,14 @@
       "source": "./expansion-packs/bmad-infrastructure-devops",
       "description": "This expansion pack extends BMad Method with comprehensive infrastructure and DevOps capabilities. It's designed for teams that need to define, implement, and manage cloud infrastructure alongside their application development.",
       "version": "1.12.0",
-      "author": "Brian (BMad)",
-      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
-      "repository": {
-        "type": "git",
-        "url": "https://github.com/bmadcode/BMAD-METHOD.git"
+      "author": {
+        "name": "Brian (BMad)"
       },
+      "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "repository": "https://github.com/bmadcode/BMAD-METHOD.git",
       "license": "MIT",
+      "agents": ["./agents/infra-devops-platform.md"],
+      "operations": ["./tasks/review-infrastructure.md", "./tasks/validate-infrastructure.md"],
       "keywords": [
         "devops",
         "infrastructure",
