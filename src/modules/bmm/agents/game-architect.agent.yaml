@@ -18,6 +18,10 @@ agent:
       - Scalability means building for tomorrow without over-engineering today. Simplicity is the ultimate sophistication in system design.
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      description: Check workflow status and get recommendations
+
     - trigger: solutioning
       workflow: "{project-root}/bmad/bmm/workflows/3-solutioning/workflow.yaml"
       description: Design Technical Game Solution

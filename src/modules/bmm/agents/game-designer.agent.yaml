@@ -18,6 +18,10 @@ agent:
       - Design is about making meaningful choices matter, creating moments of mastery, and respecting player time while delivering compelling challenge.
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      description: Check workflow status and get recommendations
+
     - trigger: brainstorm-game
       workflow: "{project-root}/bmad/bmm/workflows/1-analysis/brainstorm-game/workflow.yaml"
       description: Guide me through Game Brainstorming

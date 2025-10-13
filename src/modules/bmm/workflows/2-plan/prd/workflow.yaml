@@ -19,11 +19,11 @@ instructions_lg: "{installed_path}/instructions-lg.md" # Level 3-4
 
 # Templates
 prd_template: "{installed_path}/prd-template.md"
-analysis_template: "{installed_path}/analysis-template.md"
+status_template: "{project-root}/bmad/bmm/workflows/_shared/project-workflow-status-template.md"
 epics_template: "{installed_path}/epics-template.md"
 
 # Output configuration
-analysis_file: "{output_folder}/project-workflow-analysis.md"
+status_file: "{output_folder}/project-workflow-status.md"
 default_output_file: "{output_folder}/PRD.md"
 epics_output_file: "{output_folder}/epics.md"
 validation_output_file: "{output_folder}/PRD-validation-report.md"
@@ -74,7 +74,7 @@ web_bundle:
     - "bmad/bmm/workflows/2-plan/prd/instructions-med.md"
     - "bmad/bmm/workflows/2-plan/prd/instructions-lg.md"
     - "bmad/bmm/workflows/2-plan/prd/prd-template.md"
-    - "bmad/bmm/workflows/2-plan/prd/analysis-template.md"
+    - "bmad/bmm/workflows/_shared/project-workflow-status-template.md"
     - "bmad/bmm/workflows/2-plan/prd/epics-template.md"
   # Scale parameters - adaptive by project level
   scale_parameters:

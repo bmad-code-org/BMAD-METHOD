@@ -8,7 +8,7 @@ This scale-adaptive workflow represents the cornerstone of BMM v6's intelligent 
 
 The workflow's routing intelligence analyzes project characteristics through multi-dimensional assessment: project type (game, web, mobile, backend), context (greenfield vs. brownfield), scope indicators, and complexity signals. Based on this analysis, it classifies projects into five levels with distinct artifact requirements. Level 0 produces only tech specs for single atomic changes. Levels 1-2 generate focused PRDs with embedded tech specs. Levels 3-4 create comprehensive PRDs with separate epics that hand off to the architect-driven solutioning workflow. This classification isn't merely about document generation—it fundamentally changes how requirements are structured, validated, and communicated to downstream consumers.
 
-Critical to v6's flow improvement is this workflow's integration with the project-workflow-analysis.md tracking document, which maintains project state across sessions, tracks which agents participate in each phase, and provides continuity for multi-session planning efforts. The workflow can resume from any point, intelligently detecting existing artifacts and determining next steps without redundant work. For game projects, it routes to specialized GDD generation with genre-specific templates. For UX-heavy projects, it can generate standalone UX specifications or AI frontend prompts from existing specs.
+Critical to v6's flow improvement is this workflow's integration with the project-workflow-status.md tracking document, which maintains project state across sessions, tracks which agents participate in each phase, and provides continuity for multi-session planning efforts. The workflow can resume from any point, intelligently detecting existing artifacts and determining next steps without redundant work. For game projects, it routes to specialized GDD generation with genre-specific templates. For UX-heavy projects, it can generate standalone UX specifications or AI frontend prompts from existing specs.
 
 ## Key Features
 
@@ -104,7 +104,7 @@ plan-project/
 
 ### Generated Files
 
-- **Primary output**: PRD.md (except Level 0), tech-spec.md, project-workflow-analysis.md
+- **Primary output**: PRD.md (except Level 0), tech-spec.md, project-workflow-status.md
 - **Supporting files**: epics.md (Level 3-4), PRD-validation-report.md (if validation run)
 
 ### Output Structure by Level
@@ -166,7 +166,7 @@ plan-project/
 **Issue**: Workflow creates wrong level of documentation
 
 - **Solution**: Review project assessment and restart with correct scope classification
-- **Check**: Verify the project-workflow-analysis.md reflects actual project complexity
+- **Check**: Verify the project-workflow-status.md reflects actual project complexity
 
 **Issue**: Missing input documents cause incomplete planning
 
@@ -175,7 +175,7 @@ plan-project/
 
 **Issue**: Continuation from previous session fails
 
-- **Solution**: Check for existing project-workflow-analysis.md and ensure output folder is correct
+- **Solution**: Check for existing project-workflow-status.md and ensure output folder is correct
 - **Check**: Verify previous session completed at a valid checkpoint
 
 ## Customization
@@ -201,7 +201,7 @@ For issues or questions:
 
 - Review the workflow creation guide at `/bmad/bmb/workflows/create-workflow/workflow-creation-guide.md`
 - Validate output using `checklist.md`
-- Consult project assessment in `project-workflow-analysis.md`
+- Consult project assessment in `project-workflow-status.md`
 - Check continuation status in existing output documents
 
 ---

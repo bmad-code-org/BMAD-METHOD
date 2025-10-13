@@ -1,0 +1,43 @@
+# Workflow Status - Master Router and Status Tracker
+name: workflow-status
+description: "Universal entry point for BMM workflows. Checks for existing workflow status, displays current state, suggests next actions, or helps plan new workflow. Can be invoked by any agent (bmad-master, analyst, pm) to understand where the project is and what to do next."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status"
+instructions: "{installed_path}/instructions.md"
+
+# Variables and inputs
+variables:
+  status_file_pattern: "project-workflow-status*.md" # Searches for versioned files
+  check_existing_status: true # Always check for existing status file
+  display_menu: true # Display agent menu after status check
+  suggest_next_action: true # Suggest next action based on current state
+
+# Output configuration - no output file, reads existing status
+default_output_file: ""
+
+required_tools:
+  - list_files
+  - read_file
+  - glob
+
+tags:
+  - workflow-orchestration
+  - status-tracking
+  - master-router
+  - bmad-v6
+
+execution_hints:
+  interactive: true # User interaction required for decisions
+  autonomous: false # Requires user input
+  iterative: false # Single-pass status check and suggestion
+
+web_bundle: false

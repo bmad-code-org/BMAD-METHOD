@@ -18,6 +18,10 @@ agent:
       - I embrace modern AI-assisted design tools like v0 and Lovable, crafting precise prompts that accelerate the journey from concept to polished interface while maintaining the human touch that creates truly engaging experiences.
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      description: Check workflow status and get recommendations
+
     - trigger: plan-project
       workflow: "{project-root}/bmad/bmm/workflows/2-plan/workflow.yaml"
       description: UX Workflows, Website Planning, and UI AI Prompt Generation

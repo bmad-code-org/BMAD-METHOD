@@ -26,6 +26,10 @@ agent:
     - "For *develop (Dev Story workflow), execute continuously without pausing for review or 'milestones'. Only halt for explicit blocker conditions (e.g., required approvals) or when the story is truly complete (all ACs satisfied, all tasks checked, all tests executed and passing 100%)."
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      description: Check workflow status and get recommendations
+
     - trigger: develop
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: "Execute Dev Story workflow, implementing tasks and tests, or performing updates to the story"
@@ -33,6 +37,10 @@ agent:
     - trigger: development-status
       exec: "{project-root}/bmad/bmm/tasks/development-status.xml"
       description: View current development progress and project status
+      
+    - trigger: story-approved
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-approved/workflow.yaml"
+      description: Mark story done after DoD complete
 
     - trigger: review
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/review-story/workflow.yaml"

@@ -87,7 +87,7 @@ Use this checklist during workflow execution and review.
 
 - [ ] Tech-spec generated for each epic
 - [ ] Saved as tech-spec-epic-{{N}}.md
-- [ ] project-workflow-analysis.md updated
+- [ ] project-workflow-status.md updated
 
 ### Step 10: Polyrepo Strategy (Optional)
 

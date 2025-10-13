@@ -15,7 +15,35 @@ FACILITATION NOTES:
 
 <workflow>
 
-<step n="1" goal="Epic Context Discovery">
+<step n="1" goal="Check and load workflow status file">
+<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+
+<check if="exists">
+  <action>Load the status file</action>
+  <action>Set status_file_found = true</action>
+  <action>Store status_file_path for later updates</action>
+</check>
+
+<check if="not exists">
+  <ask>**No workflow status file found.**
+
+This workflow conducts epic retrospective (optional Phase 4 workflow).
+
+Options:
+
+1. Run workflow-status first to create the status file (recommended for progress tracking)
+2. Continue in standalone mode (no progress tracking)
+3. Exit
+
+What would you like to do?</ask>
+<action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to retrospective"</action>
+<action>If user chooses option 2 → Set standalone_mode = true and continue</action>
+<action>If user chooses option 3 → HALT</action>
+</check>
+</step>
+
+<step n="2" goal="Epic Context Discovery">
 <action>Identify the completed epic</action>
 
 <ask>Which epic has just been completed? (Enter epic number, e.g., "003" or auto-detect from highest completed story)</ask>
@@ -369,6 +397,72 @@ See you at sprint planning once prep work is done!"
 <action>Confirm all action items have been captured</action>
 <action>Remind user to schedule prep sprint if needed</action>
 </step>
+
+<step n="9" goal="Update status file on completion">
+<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Find the most recent file (by date in filename)</action>
+
+<check if="status file exists">
+  <action>Load the status file</action>
+
+<template-output file="{{status_file_path}}">current_step</template-output>
+<action>Set to: "retrospective (Epic {{completed_number}})"</action>
+
+<template-output file="{{status_file_path}}">current_workflow</template-output>
+<action>Set to: "retrospective (Epic {{completed_number}}) - Complete"</action>
+
+<template-output file="{{status_file_path}}">progress_percentage</template-output>
+<action>Increment by: 5% (optional epic boundary workflow)</action>
+
+<template-output file="{{status_file_path}}">decisions_log</template-output>
+<action>Add entry:</action>
+
+```
+- **{{date}}**: Completed retrospective for Epic {{completed_number}}. Action items: {{action_count}}. Preparation tasks: {{prep_task_count}}. Critical path items: {{critical_count}}. Next: Execute preparation sprint before beginning Epic {{next_number}}.
+```
+
+<output>**✅ Retrospective Complete**
+
+**Epic Review:**
+
+- Epic {{completed_number}}: {{epic_title}} reviewed
+- Action Items: {{action_count}}
+- Preparation Tasks: {{prep_task_count}}
+- Critical Path Items: {{critical_count}}
+
+**Status file updated:**
+
+- Current step: retrospective (Epic {{completed_number}}) ✓
+- Progress: {{new_progress_percentage}}%
+
+**Next Steps:**
+
+1. Review retrospective summary: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md
+2. Execute preparation sprint (Est: {{prep_days}} days)
+3. Complete critical path items before Epic {{next_number}}
+4. Begin Epic {{next_number}} planning when preparation complete
+
+Check status anytime with: `workflow-status`
+</output>
+</check>
+
+<check if="status file not found">
+  <output>**✅ Retrospective Complete**
+
+**Epic Review:**
+
+- Epic {{completed_number}}: {{epic_title}} reviewed
+- Retrospective saved: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md
+
+Note: Running in standalone mode (no status file).
+
+**Next Steps:**
+
+1. Execute preparation sprint
+2. Begin Epic {{next_number}} planning
+   </output>
+   </check>
+   </step>
 
 </workflow>
 

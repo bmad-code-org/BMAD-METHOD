@@ -1,19 +1,37 @@
-# PRD Workflow - Small Projects (Level 0)
+# PRD Workflow - Small Projects (Level 0-1)
 
 <workflow>
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>This is the SMALL instruction set for Level 0 projects - tech-spec only</critical>
+<critical>This is the SMALL instruction set for Level 0-1 projects - tech-spec with story generation</critical>
+<critical>Level 0: tech-spec + single user story | Level 1: tech-spec + epic/stories</critical>
 <critical>Project analysis already completed - proceeding directly to technical specification</critical>
-<critical>NO PRD generated - uses tech_spec_template only</critical>
+<critical>NO PRD generated - uses tech_spec_template + story templates</critical>
 
-<step n="1" goal="Confirm project scope">
+<step n="1" goal="Confirm project scope and update tracking">
 
-<action>Load project-workflow-analysis.md</action>
-<action>Confirm Level 0 - Single atomic change</action>
+<action>Load project-workflow-status.md from {output_folder}/project-workflow-status.md</action>
 
-<ask>Please describe the specific change/fix you need to implement:</ask>
+<action>Update Workflow Status Tracker:</action>
+<check if="project_level == 0">
+<action>Set current_workflow = "tech-spec (Level 0 - generating tech spec)"</action>
+</check>
+<check if="project_level == 1">
+<action>Set current_workflow = "tech-spec (Level 1 - generating tech spec)"</action>
+</check>
+<action>Set progress_percentage = 20%</action>
+<action>Save project-workflow-status.md</action>
+
+<check if="project_level == 0">
+  <action>Confirm Level 0 - Single atomic change</action>
+  <ask>Please describe the specific change/fix you need to implement:</ask>
+</check>
+
+<check if="project_level == 1">
+  <action>Confirm Level 1 - Coherent feature</action>
+  <ask>Please describe the feature you need to implement:</ask>
+</check>
 
 </step>
 
@@ -21,6 +39,10 @@
 
 <critical>Generate tech-spec.md - this is the TECHNICAL SOURCE OF TRUTH</critical>
 <critical>ALL TECHNICAL DECISIONS MUST BE DEFINITIVE - NO AMBIGUITY ALLOWED</critical>
+
+<action>Update progress in project-workflow-status.md:</action>
+<action>Set progress_percentage = 40%</action>
+<action>Save project-workflow-status.md</action>
 
 <action>Initialize tech-spec.md using tech_spec_template from workflow.yaml</action>
 
@@ -54,7 +76,7 @@
 **Deployment Strategy**: How to deploy the change
 <template-output file="tech-spec.md">deployment_strategy</template-output>
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -84,17 +106,49 @@ Run cohesion validation? (y/n)</ask>
 
 </step>
 
-<step n="4" goal="Finalize and determine next steps">
+<step n="4" goal="Generate user stories based on project level">
+
+<action>Load project-workflow-status.md to determine project_level</action>
+
+<check if="project_level == 0">
+  <action>Invoke instructions-level0-story.md to generate single user story</action>
+  <action>Story will be saved to user-story.md</action>
+  <action>Story links to tech-spec.md for technical implementation details</action>
+</check>
+
+<check if="project_level == 1">
+  <action>Invoke instructions-level1-stories.md to generate epic and stories</action>
+  <action>Epic and stories will be saved to epic-stories.md</action>
+  <action>Stories link to tech-spec.md implementation tasks</action>
+</check>
+
+</step>
+
+<step n="5" goal="Finalize and determine next steps">
 
 <action>Confirm tech-spec is complete and definitive</action>
-<action>No PRD needed for Level 0</action>
-<action>Ready for implementation</action>
+
+<check if="project_level == 0">
+  <action>Confirm user-story.md generated successfully</action>
+</check>
+
+<check if="project_level == 1">
+  <action>Confirm epic-stories.md generated successfully</action>
+</check>
 
 ## Summary
 
-- **Level 0 Output**: tech-spec.md only
+<check if="project_level == 0">
+- **Level 0 Output**: tech-spec.md + user-story.md
 - **No PRD required**
-- **Direct to implementation**
+- **Direct to implementation with story tracking**
+</check>
+
+<check if="project_level == 1">
+- **Level 1 Output**: tech-spec.md + epic-stories.md
+- **No PRD required**
+- **Ready for sprint planning with epic/story breakdown**
+</check>
 
 ## Next Steps Checklist
 

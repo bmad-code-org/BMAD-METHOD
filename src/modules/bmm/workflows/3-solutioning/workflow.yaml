@@ -16,8 +16,8 @@ inputs:
     default: "{output_folder}/PRD.md"
     required: true
   - name: project_workflow_analysis_path
-    description: "Path to project-workflow-analysis.md from plan-project workflow"
-    default: "{output_folder}/project-workflow-analysis.md"
+    description: "Path to project-workflow-status.md from plan-project workflow"
+    default: "{output_folder}/project-workflow-status.md"
     required: true
   - name: project_level
     description: "Project level (0-4) from analysis file"

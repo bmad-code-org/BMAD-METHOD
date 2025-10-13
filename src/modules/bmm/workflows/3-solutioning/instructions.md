@@ -7,10 +7,55 @@ This workflow generates scale-adaptive solution architecture documentation that 
 
 <step n="0" goal="Load project analysis, validate prerequisites, and scale assessment">
 <action>
-1. Read project-workflow-analysis.md:
-   Path: {{project_workflow_analysis_path}}
+1. Search {output_folder}/ for files matching pattern: project-workflow-status*.md
+   Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)
 
-2. Extract:
+2. Check if status file exists:
+   <check if="exists">
+     <action>Load the status file</action>
+     <action>Set status_file_found = true</action>
+     <action>Store status_file_path for later updates</action>
+
+     <action>Validate workflow sequence:</action>
+     <check if='next_step != "solution-architecture" AND current_step not in ["plan-project", "workflow-status"]'>
+       <ask>**⚠️ Workflow Sequence Note**
+
+Status file shows:
+- Current step: {{current_step}}
+- Expected next: {{next_step}}
+
+This workflow (solution-architecture) is typically run after plan-project for Level 3-4 projects.
+
+Options:
+1. Continue anyway (if you're resuming work)
+2. Exit and run the expected workflow: {{next_step}}
+3. Check status with workflow-status
+
+What would you like to do?</ask>
+       <action>If user chooses exit → HALT with message: "Run workflow-status to see current state"</action>
+     </check>
+   </check>
+
+   <check if="not exists">
+     <ask>**No workflow status file found.**
+
+The status file tracks progress across all workflows and stores project configuration.
+
+Options:
+1. Run workflow-status first to create the status file (recommended)
+2. Continue in standalone mode (no progress tracking)
+3. Exit
+
+What would you like to do?</ask>
+     <action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to solution-architecture"</action>
+     <action>If user chooses option 2 → Set standalone_mode = true and continue</action>
+     <action>If user chooses option 3 → HALT</action>
+   </check>
+
+3. Extract project configuration from status file:
+   Path: {{status_file_path}}
+
+   Extract:
    - project_level: {{0|1|2|3|4}}
    - field_type: {{greenfield|brownfield}}
    - project_type: {{web|mobile|embedded|game|library}}
@@ -19,7 +64,7 @@ This workflow generates scale-adaptive solution architecture documentation that 
    - ux_spec_path: /docs/ux-spec.md (if exists)
    - prd_status: {{complete|incomplete}}
 
-3. Validate Prerequisites (BLOCKING):
+4. Validate Prerequisites (BLOCKING):
 
    Check 1: PRD complete?
    IF prd_status != complete:
@@ -67,7 +112,7 @@ This workflow generates scale-adaptive solution architecture documentation that 
      - UX Spec: {{complete | not_applicable}}
      Proceeding with solution architecture workflow...
 
-4. Determine workflow path:
+5. Determine workflow path:
    IF project_level == 0:
      - Skip solution architecture entirely
      - Output: "Level 0 project - validate/update tech-spec.md only"
@@ -237,7 +282,7 @@ Based on your requirements, I need to determine the architecture pattern:
 {{project_type_specific_questions}}
 </ask>
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 <template-output>architecture_pattern</template-output>
 </step>
 
@@ -290,7 +335,7 @@ NOTE: For hybrid projects (e.g., "web + mobile"), load multiple question files
 {{project_type_specific_questions}}
 </ask>
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 <template-output>architecture_decisions</template-output>
 </step>
 
@@ -579,7 +624,7 @@ For each epic in PRD:
 <template-output>tech_specs</template-output>
 
 <action>
-Update project-workflow-analysis.md workflow status:
+Update project-workflow-status.md workflow status:
 - [x] Solution architecture generated
 - [x] Cohesion check passed
 - [x] Tech specs generated for all epics
@@ -637,6 +682,192 @@ Generate completion summary:
 </action>
 
 <template-output>completion_summary</template-output>
+
+<action>
+Prepare for Phase 4 transition - Populate story backlog:
+
+1. Read PRD from {output_folder}/PRD.md or {output_folder}/epics.md
+2. Extract all epics and their stories
+3. Create ordered backlog list (Epic 1 stories first, then Epic 2, etc.)
+
+For each story in sequence:
+- epic_num: Epic number
+- story_num: Story number within epic
+- story_id: "{{epic_num}}.{{story_num}}" format
+- story_title: Story title from PRD/epics
+- story_file: "story-{{epic_num}}.{{story_num}}.md"
+
+4. Update project-workflow-status.md with backlog population:
+
+Open {output_folder}/project-workflow-status.md
+
+In "### Implementation Progress (Phase 4 Only)" section:
+
+#### BACKLOG (Not Yet Drafted)
+
+Populate table with ALL stories:
+
+| Epic | Story | ID  | Title           | File         |
+| ---- | ----- | --- | --------------- | ------------ |
+| 1    | 1     | 1.1 | {{story_title}} | story-1.1.md |
+| 1    | 2     | 1.2 | {{story_title}} | story-1.2.md |
+| 1    | 3     | 1.3 | {{story_title}} | story-1.3.md |
+| 2    | 1     | 2.1 | {{story_title}} | story-2.1.md |
+... (all stories)
+
+**Total in backlog:** {{total_story_count}} stories
+
+#### TODO (Needs Drafting)
+
+Initialize with FIRST story:
+
+- **Story ID:** 1.1
+- **Story Title:** {{first_story_title}}
+- **Story File:** `story-1.1.md`
+- **Status:** Not created OR Draft (needs review)
+- **Action:** SM should run `create-story` workflow to draft this story
+
+#### IN PROGRESS (Approved for Development)
+
+Leave empty initially:
+
+(Story will be moved here by SM agent `story-ready` workflow)
+
+#### DONE (Completed Stories)
+
+Initialize empty table:
+
+| Story ID   | File | Completed Date | Points |
+| ---------- | ---- | -------------- | ------ |
+| (none yet) |      |                |        |
+
+**Total completed:** 0 stories
+**Total points completed:** 0 points
+
+5. Update "Workflow Status Tracker" section:
+- Set current_phase = "4-Implementation"
+- Set current_workflow = "Ready to begin story implementation"
+- Set progress_percentage = {{calculate based on phase completion}}
+- Check "3-Solutioning" checkbox in Phase Completion Status
+
+6. Update "Next Action Required" section:
+- Set next_action = "Draft first user story"
+- Set next_command = "Load SM agent and run 'create-story' workflow"
+- Set next_agent = "bmad/bmm/agents/sm.md"
+
+7. Update "Artifacts Generated" table:
+Add entries for all generated tech specs
+
+8. Add to Decision Log:
+- **{{date}}**: Phase 3 (Solutioning) complete. Architecture and tech specs generated. Populated story backlog with {{total_story_count}} stories. Ready for Phase 4 (Implementation). Next: SM drafts story 1.1.
+
+9. Save project-workflow-status.md
+</action>
+
+<ask>
+**Phase 3 (Solutioning) Complete!**
+
+✅ Solution architecture generated
+✅ Cohesion check passed
+✅ {{epic_count}} tech specs generated
+✅ Story backlog populated ({{total_story_count}} stories)
+
+**Documents Generated:**
+- solution-architecture.md
+- cohesion-check-report.md
+- tech-spec-epic-1.md through tech-spec-epic-{{epic_count}}.md
+
+**Ready for Phase 4 (Implementation)**
+
+**Next Steps:**
+1. Load SM agent: `bmad/bmm/agents/sm.md`
+2. Run `create-story` workflow
+3. SM will draft story {{first_story_id}}: {{first_story_title}}
+4. You review drafted story
+5. Run `story-ready` workflow to approve it for development
+
+Would you like to proceed with story drafting now? (y/n)
+</ask>
+</step>
+
+<step n="12" goal="Update status file on completion">
+<action>
+Search {output_folder}/ for files matching pattern: project-workflow-status*.md
+Find the most recent file (by date in filename)
+</action>
+
+<check if="status file exists">
+<action>Load the status file</action>
+
+<template-output file="{{status_file_path}}">current_step</template-output>
+<action>Set to: "solution-architecture"</action>
+
+<template-output file="{{status_file_path}}">current_workflow</template-output>
+<action>Set to: "solution-architecture - Complete"</action>
+
+<template-output file="{{status_file_path}}">progress_percentage</template-output>
+<action>Increment by: 15% (solution-architecture is a major workflow)</action>
+
+<template-output file="{{status_file_path}}">decisions_log</template-output>
+<action>Add entry:</action>
+```
+
+- **{{date}}**: Completed solution-architecture workflow. Generated solution-architecture.md, cohesion-check-report.md, and {{epic_count}} tech-spec files. Populated story backlog with {{total_story_count}} stories. Phase 3 complete. Next: SM agent should run create-story to draft first story ({{first_story_id}}).
+
+```
+
+<template-output file="{{status_file_path}}">next_action</template-output>
+<action>Set to: "Draft first user story ({{first_story_id}})"</action>
+
+<template-output file="{{status_file_path}}">next_command</template-output>
+<action>Set to: "Load SM agent and run 'create-story' workflow"</action>
+
+<template-output file="{{status_file_path}}">next_agent</template-output>
+<action>Set to: "bmad/bmm/agents/sm.md"</action>
+
+<output>**✅ Solution Architecture Complete**
+
+**Architecture Documents:**
+- solution-architecture.md (main architecture document)
+- cohesion-check-report.md (validation report)
+- tech-spec-epic-1.md through tech-spec-epic-{{epic_count}}.md ({{epic_count}} specs)
+
+**Story Backlog:**
+- {{total_story_count}} stories populated in status file
+- First story: {{first_story_id}} ({{first_story_title}})
+
+**Status file updated:**
+- Current step: solution-architecture ✓
+- Progress: {{new_progress_percentage}}%
+- Phase 3 (Solutioning) complete
+- Ready for Phase 4 (Implementation)
+
+**Next Steps:**
+1. Load SM agent (bmad/bmm/agents/sm.md)
+2. Run `create-story` workflow to draft story {{first_story_id}}
+3. Review drafted story
+4. Run `story-ready` to approve for development
+
+Check status anytime with: `workflow-status`
+</output>
+</check>
+
+<check if="status file not found">
+<output>**✅ Solution Architecture Complete**
+
+**Architecture Documents:**
+- solution-architecture.md
+- cohesion-check-report.md
+- tech-spec-epic-1.md through tech-spec-epic-{{epic_count}}.md
+
+Note: Running in standalone mode (no status file).
+
+To track progress across workflows, run `workflow-status` first.
+
+**Next Steps:**
+1. Load SM agent and run `create-story` to draft stories
+</output>
+</check>
 </step>
 
 </workflow>

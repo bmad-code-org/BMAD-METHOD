@@ -8,7 +8,35 @@
 
 <workflow>
 
-<step n="1" goal="Welcome and Research Type Selection">
+<step n="1" goal="Check and load workflow status file">
+<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+
+<check if="exists">
+  <action>Load the status file</action>
+  <action>Set status_file_found = true</action>
+  <action>Store status_file_path for later updates</action>
+</check>
+
+<check if="not exists">
+  <ask>**No workflow status file found.**
+
+This workflow conducts research (optional Phase 1 workflow).
+
+Options:
+
+1. Run workflow-status first to create the status file (recommended for progress tracking)
+2. Continue in standalone mode (no progress tracking)
+3. Exit
+
+What would you like to do?</ask>
+<action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to research"</action>
+<action>If user chooses option 2 → Set standalone_mode = true and continue</action>
+<action>If user chooses option 3 → HALT</action>
+</check>
+</step>
+
+<step n="2" goal="Welcome and Research Type Selection">
 <action>Welcome the user to the Research Workflow</action>
 
 **The Research Workflow supports multiple research types:**
@@ -47,7 +75,7 @@ Present the user with research type options:
 
 </step>
 
-<step n="2" goal="Route to Appropriate Research Instructions">
+<step n="3" goal="Route to Appropriate Research Instructions">
 
 <critical>Based on user selection, load the appropriate instruction set</critical>
 

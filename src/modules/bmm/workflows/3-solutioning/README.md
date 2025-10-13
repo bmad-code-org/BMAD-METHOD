@@ -24,12 +24,12 @@ This workflow generates comprehensive, scale-adaptive solution architecture docu
 
 Run this workflow **AFTER** completing:
 
-| Prerequisite               | Required For                  | Location                             |
-| -------------------------- | ----------------------------- | ------------------------------------ |
-| **plan-project workflow**  | All projects                  | `/docs/project-workflow-analysis.md` |
-| **PRD with epics/stories** | Level 1+ projects             | `/docs/PRD.md`                       |
-| **GDD (for games)**        | Game projects                 | `/docs/GDD.md` or `/docs/PRD.md`     |
-| **UX Specification**       | UI projects (web/mobile/game) | `/docs/ux-specification.md`          |
+| Prerequisite               | Required For                  | Location                           |
+| -------------------------- | ----------------------------- | ---------------------------------- |
+| **plan-project workflow**  | All projects                  | `/docs/project-workflow-status.md` |
+| **PRD with epics/stories** | Level 1+ projects             | `/docs/PRD.md`                     |
+| **GDD (for games)**        | Game projects                 | `/docs/GDD.md` or `/docs/PRD.md`   |
+| **UX Specification**       | UI projects (web/mobile/game) | `/docs/ux-specification.md`        |
 
 ---
 
@@ -41,7 +41,7 @@ workflow solution-architecture
 
 **The workflow will:**
 
-1. Load `project-workflow-analysis.md` (from plan-project)
+1. Load `project-workflow-status.md` (from plan-project)
 2. Check prerequisites (PRD/GDD, UX spec if needed)
 3. Read requirements (PRD for apps, GDD for games)
 4. Ask architecture pattern questions
@@ -110,7 +110,7 @@ Each row maps to:
 
 ### Step 0: Prerequisites and Scale Check
 
-Load `project-workflow-analysis.md`:
+Load `project-workflow-status.md`:
 
 - Extract: `project_level` (0-4), `project_type` (web/game/mobile/etc.), `field_type` (greenfield/brownfield)
 - Validate: PRD exists, UX spec exists (if UI project)

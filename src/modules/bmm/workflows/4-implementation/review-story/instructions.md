@@ -1,6 +1,6 @@
 # Senior Developer Review - Workflow Instructions
 
-```xml
+````xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow performs a Senior Developer Review on a story flagged Ready for Review, appends structured review notes, and can update the story status based on the outcome.</critical>
@@ -10,7 +10,34 @@
 
 <workflow>
 
-  <step n="1" goal="Locate story and verify review status">
+  <step n="1" goal="Check and load workflow status file">
+    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+    <action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+
+    <check if="exists">
+      <action>Load the status file</action>
+      <action>Set status_file_found = true</action>
+      <action>Store status_file_path for later updates</action>
+    </check>
+
+    <check if="not exists">
+      <ask>**No workflow status file found.**
+
+This workflow performs Senior Developer Review on a story (optional Phase 4 workflow).
+
+Options:
+1. Run workflow-status first to create the status file (recommended for progress tracking)
+2. Continue in standalone mode (no progress tracking)
+3. Exit
+
+What would you like to do?</ask>
+      <action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to review-story"</action>
+      <action>If user chooses option 2 → Set standalone_mode = true and continue</action>
+      <action>If user chooses option 3 → HALT</action>
+    </check>
+  </step>
+
+  <step n="2" goal="Locate story and verify review status">
     <action>If {{story_path}} was provided → use it. Else auto-discover from {{story_dir}} by listing files matching pattern: "story-*.md" (recursive), sort by last modified (newest first), present top {{story_selection_limit}}.</action>
     <ask optional="true" if="{{non_interactive}} == false">Select a story (1-{{story_selection_limit}}) or enter a path:</ask>
     <action>Resolve {{story_path}} and read the COMPLETE file.</action>
@@ -172,5 +199,64 @@
     <action>Report workflow completion.</action>
   </step>
 
+  <step n="10" goal="Update status file on completion">
+    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+    <action>Find the most recent file (by date in filename)</action>
+
+    <check if="status file exists">
+      <action>Load the status file</action>
+
+      <template-output file="{{status_file_path}}">current_step</template-output>
+      <action>Set to: "review-story (Story {{epic_num}}.{{story_num}})"</action>
+
+      <template-output file="{{status_file_path}}">current_workflow</template-output>
+      <action>Set to: "review-story (Story {{epic_num}}.{{story_num}}) - Complete"</action>
+
+      <template-output file="{{status_file_path}}">progress_percentage</template-output>
+      <action>Calculate per-story weight: remaining_40_percent / total_stories / 5</action>
+      <action>Increment by: {{per_story_weight}} * 2 (review-story ~2% per story)</action>
+
+      <template-output file="{{status_file_path}}">decisions_log</template-output>
+      <action>Add entry:</action>
+      ```
+      - **{{date}}**: Completed review-story for Story {{epic_num}}.{{story_num}}. Review outcome: {{outcome}}. Action items: {{action_item_count}}. Next: Address review feedback if needed, then continue with story-approved when ready.
+      ```
+
+      <output>**✅ Story Review Complete**
+
+**Story Details:**
+- Story: {{epic_num}}.{{story_num}}
+- Review Outcome: {{outcome}}
+- Action Items: {{action_item_count}}
+
+**Status file updated:**
+- Current step: review-story (Story {{epic_num}}.{{story_num}}) ✓
+- Progress: {{new_progress_percentage}}%
+
+**Next Steps:**
+1. Review the Senior Developer Review notes appended to story
+2. Address any action items or changes requested
+3. When ready, run `story-approved` to mark story complete
+
+Check status anytime with: `workflow-status`
+      </output>
+    </check>
+
+    <check if="status file not found">
+      <output>**✅ Story Review Complete**
+
+**Story Details:**
+- Story: {{epic_num}}.{{story_num}}
+- Review Outcome: {{outcome}}
+
+Note: Running in standalone mode (no status file).
+
+**Next Steps:**
+1. Review the Senior Developer Review notes
+2. Address any action items
+      </output>
+    </check>
+  </step>
+
 </workflow>
-```
+````

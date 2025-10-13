@@ -1,6 +1,6 @@
 # Develop Story - Workflow Instructions
 
-```xml
+````xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status</critical>
@@ -11,19 +11,44 @@
 
 <workflow>
 
-  <step n="1" goal="Load story and select next task">
-    <action>If {{story_path}} was explicitly provided and is valid → use it. Otherwise, attempt auto-discovery.</action>
-    <action>Auto-discovery: Read {{story_dir}} from config (dev_story_location). If invalid/missing or contains no .md files, ASK user to provide either: (a) a story file path, or (b) a directory to scan.</action>
-    <action>If a directory is provided, list story markdown files recursively under that directory matching pattern: "story-*.md".</action>
-    <action>Sort candidates by last modified time (newest first) and take the top {{story_selection_limit}} items.</action>
-    <ask>Present the list with index, filename, and modified time. Ask: "Select a story (1-{{story_selection_limit}}) or enter a path:"</ask>
-    <action>Resolve the selected item into {{story_path}}</action>
-    <action>Read the COMPLETE story file from {{story_path}}</action>
-    <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks (including subtasks), Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
-    <action>Identify the first incomplete task (unchecked [ ]) in Tasks/Subtasks; if subtasks exist, treat all subtasks as part of the selected task scope</action>
-    <check>If no incomplete tasks found → "All tasks completed - proceed to completion sequence" and <goto step="6">Continue</goto></check>
-    <check>If story file inaccessible → HALT: "Cannot develop story without access to story file"</check>
-    <check>If task requirements ambiguous → ASK user to clarify; if unresolved, HALT: "Task requirements must be clear before implementation"</check>
+  <step n="1" goal="Load story from status file IN PROGRESS section">
+    <action>Read {output_folder}/project-workflow-status.md (if exists)</action>
+    <action>Navigate to "### Implementation Progress (Phase 4 Only)" section</action>
+    <action>Find "#### IN PROGRESS (Approved for Development)" section</action>
+
+    <check if="IN PROGRESS section has a story">
+      <action>Extract story information:</action>
+      - current_story_id: The story ID (e.g., "1.1", "auth-feature-1", "login-fix")
+      - current_story_title: The story title
+      - current_story_file: The exact story file path
+      - current_story_context_file: The context file path (if exists)
+
+      <critical>DO NOT SEARCH for stories - the status file tells you exactly which story is IN PROGRESS</critical>
+
+      <action>Set {{story_path}} = {story_dir}/{current_story_file}</action>
+      <action>Read the COMPLETE story file from {{story_path}}</action>
+      <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks (including subtasks), Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
+      <action>Identify the first incomplete task (unchecked [ ]) in Tasks/Subtasks; if subtasks exist, treat all subtasks as part of the selected task scope</action>
+      <check>If no incomplete tasks found → "All tasks completed - proceed to completion sequence" and <goto step="6">Continue</goto></check>
+      <check>If story file inaccessible → HALT: "Cannot develop story without access to story file"</check>
+      <check>If task requirements ambiguous → ASK user to clarify; if unresolved, HALT: "Task requirements must be clear before implementation"</check>
+    </check>
+
+    <check if="IN PROGRESS section is empty OR status file not found">
+      <action>Fall back to legacy auto-discovery:</action>
+      <action>If {{story_path}} was explicitly provided and is valid → use it. Otherwise, attempt auto-discovery.</action>
+      <action>Auto-discovery: Read {{story_dir}} from config (dev_story_location). If invalid/missing or contains no .md files, ASK user to provide either: (a) a story file path, or (b) a directory to scan.</action>
+      <action>If a directory is provided, list story markdown files recursively under that directory matching pattern: "story-*.md".</action>
+      <action>Sort candidates by last modified time (newest first) and take the top {{story_selection_limit}} items.</action>
+      <ask>Present the list with index, filename, and modified time. Ask: "Select a story (1-{{story_selection_limit}}) or enter a path:"</ask>
+      <action>Resolve the selected item into {{story_path}}</action>
+      <action>Read the COMPLETE story file from {{story_path}}</action>
+      <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks (including subtasks), Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
+      <action>Identify the first incomplete task (unchecked [ ]) in Tasks/Subtasks; if subtasks exist, treat all subtasks as part of the selected task scope</action>
+      <check>If no incomplete tasks found → "All tasks completed - proceed to completion sequence" and <goto step="6">Continue</goto></check>
+      <check>If story file inaccessible → HALT: "Cannot develop story without access to story file"</check>
+      <check>If task requirements ambiguous → ASK user to clarify; if unresolved, HALT: "Task requirements must be clear before implementation"</check>
+    </check>
   </step>
 
   <step n="2" goal="Plan and implement task">
@@ -83,5 +108,65 @@
     <action>Communicate that the story is Ready for Review</action>
   </step>
 
+  <step n="8" goal="Update status file on completion">
+    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+    <action>Find the most recent file (by date in filename)</action>
+
+    <check if="status file exists">
+      <action>Load the status file</action>
+
+      <template-output file="{{status_file_path}}">current_step</template-output>
+      <action>Set to: "dev-story (Story {{current_story_id}})"</action>
+
+      <template-output file="{{status_file_path}}">current_workflow</template-output>
+      <action>Set to: "dev-story (Story {{current_story_id}}) - Complete (Ready for Review)"</action>
+
+      <template-output file="{{status_file_path}}">progress_percentage</template-output>
+      <action>Calculate per-story weight: remaining_40_percent / total_stories / 5</action>
+      <action>Increment by: {{per_story_weight}} * 5 (dev-story weight is ~5% per story - largest weight)</action>
+
+      <template-output file="{{status_file_path}}">decisions_log</template-output>
+      <action>Add entry:</action>
+      ```
+      - **{{date}}**: Completed dev-story for Story {{current_story_id}} ({{current_story_title}}). All tasks complete, tests passing. Story status: Ready for Review. Next: User reviews and runs story-approved when satisfied with implementation.
+      ```
+
+      <output>**✅ Story Implementation Complete**
+
+**Story Details:**
+- Story ID: {{current_story_id}}
+- Title: {{current_story_title}}
+- File: {{story_path}}
+- Status: Ready for Review
+
+**Status file updated:**
+- Current step: dev-story (Story {{current_story_id}}) ✓
+- Progress: {{new_progress_percentage}}%
+
+**Next Steps:**
+1. Review the implemented story and test the changes
+2. Verify all acceptance criteria are met
+3. When satisfied, run `story-approved` to mark story complete and advance the queue
+
+Or check status anytime with: `workflow-status`
+      </output>
+    </check>
+
+    <check if="status file not found">
+      <output>**✅ Story Implementation Complete**
+
+**Story Details:**
+- Story ID: {{current_story_id}}
+- Title: {{current_story_title}}
+- File: {{story_path}}
+- Status: Ready for Review
+
+Note: Running in standalone mode (no status file).
+
+To track progress across workflows, run `workflow-status` first.
+      </output>
+    </check>
+  </step>
+
 </workflow>
-```
+````

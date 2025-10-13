@@ -5,7 +5,35 @@
 
 <workflow>
 
-<step n="0" goal="Initialize product brief session">
+<step n="0" goal="Check and load workflow status file">
+<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+
+<check if="exists">
+  <action>Load the status file</action>
+  <action>Set status_file_found = true</action>
+  <action>Store status_file_path for later updates</action>
+</check>
+
+<check if="not exists">
+  <ask>**No workflow status file found.**
+
+This workflow creates a Product Brief document (optional Phase 1 workflow).
+
+Options:
+
+1. Run workflow-status first to create the status file (recommended for progress tracking)
+2. Continue in standalone mode (no progress tracking)
+3. Exit
+
+What would you like to do?</ask>
+<action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to product-brief"</action>
+<action>If user chooses option 2 → Set standalone_mode = true and continue</action>
+<action>If user chooses option 3 → HALT</action>
+</check>
+</step>
+
+<step n="1" goal="Initialize product brief session">
 <action>Welcome the user to the Product Brief creation process</action>
 <action>Explain this is a collaborative process to define their product vision</action>
 <ask>Ask the user to provide the project name for this product brief</ask>
@@ -349,5 +377,68 @@ This brief will serve as the primary input for creating the Product Requirements
 
 <template-output>final_brief</template-output>
 </step>
+
+<step n="16" goal="Update status file on completion">
+<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Find the most recent file (by date in filename)</action>
+
+<check if="status file exists">
+  <action>Load the status file</action>
+
+<template-output file="{{status_file_path}}">current_step</template-output>
+<action>Set to: "product-brief"</action>
+
+<template-output file="{{status_file_path}}">current_workflow</template-output>
+<action>Set to: "product-brief - Complete"</action>
+
+<template-output file="{{status_file_path}}">progress_percentage</template-output>
+<action>Increment by: 10% (optional Phase 1 workflow)</action>
+
+<template-output file="{{status_file_path}}">decisions_log</template-output>
+<action>Add entry:</action>
+
+```
+- **{{date}}**: Completed product-brief workflow. Product brief document generated and saved. Next: Proceed to plan-project workflow to create Product Requirements Document (PRD).
+```
+
+<output>**✅ Product Brief Complete**
+
+**Brief Document:**
+
+- Product brief saved and ready for handoff
+
+**Status file updated:**
+
+- Current step: product-brief ✓
+- Progress: {{new_progress_percentage}}%
+
+**Next Steps:**
+
+1. Review the product brief document
+2. Gather any additional stakeholder input
+3. Run `plan-project` workflow to create PRD from this brief
+
+Check status anytime with: `workflow-status`
+</output>
+</check>
+
+<check if="status file not found">
+  <output>**✅ Product Brief Complete**
+
+**Brief Document:**
+
+- Product brief saved and ready for handoff
+
+Note: Running in standalone mode (no status file).
+
+To track progress across workflows, run `workflow-status` first.
+
+**Next Steps:**
+
+1. Review the product brief document
+2. Run `plan-project` workflow to create PRD
+   </output>
+   </check>
+   </step>
 
 </workflow>

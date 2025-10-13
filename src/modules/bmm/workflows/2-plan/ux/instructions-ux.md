@@ -38,7 +38,7 @@ If no: We'll gather basic requirements to create the UX spec
 - epics.md or epic-stories.md (helps understand feature grouping)
 - tech-spec.md (understand technical constraints)
 - solution-architecture.md (if Level 3-4 project)
-- project-workflow-analysis.md (understand project level and scope)
+- project-workflow-status.md (understand project level and scope)
 
 </check>
 
@@ -81,7 +81,7 @@ What will guide all design decisions?
 <template-output>usability_goals</template-output>
 <template-output>design_principles</template-output>
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -106,7 +106,7 @@ What will guide all design decisions?
 
 <template-output>navigation_structure</template-output>
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -133,7 +133,7 @@ Create Mermaid diagram showing complete flow.
 
 </for-each>
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -193,7 +193,7 @@ Do you have existing brand guidelines to follow? (y/n)
 
 <template-output>spacing_layout</template-output>
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 

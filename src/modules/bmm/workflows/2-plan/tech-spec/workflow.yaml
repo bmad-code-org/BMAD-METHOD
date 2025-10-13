@@ -15,8 +15,18 @@ installed_path: "{project-root}/bmad/bmm/workflows/2-plan/tech-spec"
 instructions: "{installed_path}/instructions-sm.md"
 template: "{installed_path}/tech-spec-template.md"
 
+# Story generation instructions (invoked based on level)
+instructions_level0_story: "{installed_path}/instructions-level0-story.md"
+instructions_level1_stories: "{installed_path}/instructions-level1-stories.md"
+
+# Templates
+user_story_template: "{installed_path}/user-story-template.md"
+epic_stories_template: "{installed_path}/epic-stories-template.md"
+
 # Output configuration
 default_output_file: "{output_folder}/tech-spec.md"
+user_story_file: "{output_folder}/user-story.md"
+epic_stories_file: "{output_folder}/epic-stories.md"
 
 # Recommended input documents (optional for Level 0)
 recommended_inputs:
@@ -45,13 +55,17 @@ frameworks:
 
 web_bundle:
   name: "tech-spec-sm"
-  description: "Technical specification workflow for Level 0 projects (single atomic changes). Creates focused tech spec for bug fixes, single endpoint additions, or small isolated changes. Tech-spec only - no PRD needed."
+  description: "Technical specification workflow for Level 0-1 projects. Creates focused tech spec with story generation. Level 0: tech-spec + user story. Level 1: tech-spec + epic/stories."
   author: "BMad"
   instructions: "bmad/bmm/workflows/2-plan/tech-spec/instructions-sm.md"
   use_advanced_elicitation: true
   web_bundle_files:
     - "bmad/bmm/workflows/2-plan/tech-spec/instructions-sm.md"
+    - "bmad/bmm/workflows/2-plan/tech-spec/instructions-level0-story.md"
+    - "bmad/bmm/workflows/2-plan/tech-spec/instructions-level1-stories.md"
     - "bmad/bmm/workflows/2-plan/tech-spec/tech-spec-template.md"
+    - "bmad/bmm/workflows/2-plan/tech-spec/user-story-template.md"
+    - "bmad/bmm/workflows/2-plan/tech-spec/epic-stories-template.md"
   # Technical frameworks available
   frameworks:
     - "Technical Design Patterns"

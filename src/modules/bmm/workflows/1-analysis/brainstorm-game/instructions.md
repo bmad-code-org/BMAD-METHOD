@@ -4,7 +4,35 @@
 
 <workflow>
 
-  <step n="1" goal="Load game brainstorming context and techniques">
+  <step n="1" goal="Check and load workflow status file">
+    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+    <action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+
+    <check if="exists">
+      <action>Load the status file</action>
+      <action>Set status_file_found = true</action>
+      <action>Store status_file_path for later updates</action>
+    </check>
+
+    <check if="not exists">
+      <ask>**No workflow status file found.**
+
+This workflow generates brainstorming ideas for game ideation (optional Phase 1 workflow).
+
+Options:
+
+1. Run workflow-status first to create the status file (recommended for progress tracking)
+2. Continue in standalone mode (no progress tracking)
+3. Exit
+
+What would you like to do?</ask>
+<action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to brainstorm-game"</action>
+<action>If user chooses option 2 → Set standalone_mode = true and continue</action>
+<action>If user chooses option 3 → HALT</action>
+</check>
+</step>
+
+  <step n="2" goal="Load game brainstorming context and techniques">
     <action>Read the game context document from: {game_context}</action>
     <action>This context provides game-specific guidance including:
       - Focus areas for game ideation (mechanics, narrative, experience, etc.)
@@ -22,7 +50,7 @@
     </action>
   </step>
 
-  <step n="2" goal="Invoke CIS brainstorming with game context">
+  <step n="3" goal="Invoke CIS brainstorming with game context">
     <action>Execute the CIS brainstorming workflow with game context and additional techniques</action>
     <invoke-workflow path="{core_brainstorming}" data="{game_context}" techniques="{game_brain_methods}">
       The CIS brainstorming workflow will:
@@ -34,10 +62,68 @@
     </invoke-workflow>
   </step>
 
-  <step n="3" goal="Completion">
-    <action>Confirm brainstorming session completed successfully</action>
-    <action>Brainstorming results saved by CIS workflow</action>
-    <action>Report workflow completion</action>
-  </step>
+  <step n="4" goal="Update status file on completion">
+    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+    <action>Find the most recent file (by date in filename)</action>
+
+    <check if="status file exists">
+      <action>Load the status file</action>
+
+      <template-output file="{{status_file_path}}">current_step</template-output>
+      <action>Set to: "brainstorm-game"</action>
+
+      <template-output file="{{status_file_path}}">current_workflow</template-output>
+      <action>Set to: "brainstorm-game - Complete"</action>
+
+      <template-output file="{{status_file_path}}">progress_percentage</template-output>
+      <action>Increment by: 5% (optional Phase 1 workflow)</action>
+
+      <template-output file="{{status_file_path}}">decisions_log</template-output>
+      <action>Add entry:</action>
+      ```
+      - **{{date}}**: Completed brainstorm-game workflow. Generated game brainstorming session results saved to {output_folder}/brainstorming-session-results-{{date}}.md. Next: Review game ideas and consider running research or game-brief workflows.
+      ```
+
+      <output>**✅ Game Brainstorming Session Complete**
+
+**Session Results:**
+
+- Game brainstorming results saved to: {output_folder}/brainstorming-session-results-{{date}}.md
+
+**Status file updated:**
+
+- Current step: brainstorm-game ✓
+- Progress: {{new_progress_percentage}}%
+
+**Next Steps:**
+
+1. Review game brainstorming results
+2. Consider running:
+   - `research` workflow for market/game research
+   - `game-brief` workflow to formalize game vision
+   - Or proceed directly to `plan-project` if ready
+
+Check status anytime with: `workflow-status`
+</output>
+</check>
+
+    <check if="status file not found">
+      <output>**✅ Game Brainstorming Session Complete**
+
+**Session Results:**
+
+- Game brainstorming results saved to: {output_folder}/brainstorming-session-results-{{date}}.md
+
+Note: Running in standalone mode (no status file).
+
+To track progress across workflows, run `workflow-status` first.
+
+**Next Steps:**
+
+1. Review game brainstorming results
+2. Run research or game-brief workflows
+   </output>
+   </check>
+   </step>
 
 </workflow>

@@ -21,9 +21,13 @@ agent:
     - "When running *create-story, run non-interactively: use solution-architecture, PRD, Tech Spec, and epics to generate a complete draft without elicitation."
 
   menu:
-    - trigger: correct-course
-      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
-      description: Execute correct-course task
+    - trigger: workflow-status
+      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      description: Check workflow status and get recommendations
+
+    - trigger: assess-project-ready
+      validate-workflow: "{project-root}/bmad/bmm/workflows/3-solutioning/workflow.yaml"
+      description: Validate solutioning complete, ready for Phase 4 (Level 2-4 only)
 
     - trigger: create-story
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
@@ -32,6 +36,10 @@ agent:
     - trigger: development-status
       exec: "{project-root}/bmad/bmm/tasks/development-status.xml"
       description: View current development progress and project status
+      
+    - trigger: story-ready
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-ready/workflow.yaml"
+      description: Mark drafted story ready for development
 
     - trigger: story-context
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml"
@@ -45,3 +53,7 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml"
       data: "{project-root}/bmad/_cfg/agent-party.xml"
       description: Facilitate team retrospective after epic/sprint
+
+    - trigger: correct-course
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
+      description: Execute correct-course task

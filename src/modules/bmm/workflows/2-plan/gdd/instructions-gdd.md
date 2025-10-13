@@ -12,7 +12,7 @@
 
 <step n="1" goal="Load context and determine game type">
 
-<action>Load project-workflow-analysis.md</action>
+<action>Load project-workflow-status.md</action>
 <action>Confirm project_type == "game"</action>
 
 <check if="continuation_mode == true">
@@ -151,7 +151,7 @@ Your gameplay loop:</ask>
 Define the primary game mechanics.
 
 <template-output>primary_mechanics</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 <ask>Describe the control scheme and input method:
 
@@ -176,7 +176,7 @@ For each {{placeholder}} in the fragment, elicit and capture that information.
 
 <template-output file="GDD.md">GAME_TYPE_SPECIFIC_SECTIONS</template-output>
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -312,7 +312,7 @@ Asset requirements:</ask>
 - Level 4: 5+ epics with 40+ stories
 
 <template-output>epics</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -336,7 +336,7 @@ Generate all stories with:
 - Technical notes (high-level only)
 
 <template-output file="epics.md">epic\_{{epic_number}}\_details</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </for-each>
 
@@ -439,7 +439,7 @@ Since this is a Level {{project_level}} game project, you need solutioning for p
 
 - [ ] **Run solutioning workflow** (REQUIRED)
   - Command: `workflow solution-architecture`
-  - Input: GDD.md, project-workflow-analysis.md
+  - Input: GDD.md, project-workflow-status.md
   - Output: solution-architecture.md with engine/platform specifics
   - Note: Registry.csv will provide engine-specific guidance
 

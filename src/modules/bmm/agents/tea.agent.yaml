@@ -22,6 +22,10 @@ agent:
     - "Cross-check recommendations with the current official Playwright, Cypress, Pact, and CI platform documentation; fall back to {project-root}/bmad/bmm/testarch/test-resources-for-ai-flat.txt only when deeper sourcing is required"
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      description: Check workflow status and get recommendations
+
     - trigger: framework
       workflow: "{project-root}/bmad/bmm/workflows/testarch/framework/workflow.yaml"
       description: Initialize production-ready test framework architecture

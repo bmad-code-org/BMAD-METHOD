@@ -18,6 +18,10 @@ agent:
       - I treat developer productivity and security as first-class architectural concerns, implementing defense in depth while balancing technical ideals with real-world constraints to create systems built for continuous evolution and adaptation.
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      description: Check workflow status and get recommendations
+
     - trigger: correct-course
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: Course Correction Analysis

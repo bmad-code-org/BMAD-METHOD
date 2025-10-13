@@ -12,7 +12,7 @@
 
 <step n="1" goal="Load context and handle continuation">
 
-<action>Load project-workflow-analysis.md</action>
+<action>Load project-workflow-status.md</action>
 <action>Confirm Level 3-4 - Full product or platform</action>
 
 <check if="continuation_mode == true">
@@ -68,7 +68,7 @@ Each goal should be measurable and outcome-focused.
 1-2 paragraphs on problem, current situation, why now.
 
 <template-output>context</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -82,7 +82,7 @@ Each goal should be measurable and outcome-focused.
 Group related features logically.
 
 <template-output>functional_requirements</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -104,7 +104,7 @@ Match NFRs to deployment intent (8-12 NFRs)
 Map complete user flows with decision points.
 
 <template-output>user_journeys</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -126,7 +126,7 @@ Map complete user flows with decision points.
 Each epic delivers significant value.
 
 <template-output>epics</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -150,7 +150,7 @@ Generate all stories with:
 - Technical notes (high-level only)
 
 <template-output file="epics.md">epic\_{{epic_number}}\_details</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </for-each>
 
@@ -205,7 +205,13 @@ Since this is a Level {{project_level}} project, you need architecture before st
 <check if="project has significant UX/UI components (Level 3-4 typically does)">
 
 - [ ] **Run UX specification workflow** (HIGHLY RECOMMENDED for user-facing systems) - Command: `workflow plan-project` then select "UX specification" - Or continue within this workflow if UI-heavy - Input: PRD.md, epics.md, solution-architecture.md (once available) - Output: ux-specification.md - Optional: AI Frontend Prompt for rapid prototyping - Note: Creates comprehensive UX/UI spec including IA, user flows, components
-      </check>
+
+<action>Update workflow status file to mark ux-spec as next step</action>
+<action>In status file, set next_action: "Run UX specification workflow"</action>
+<action>In status file, set next_command: "ux-spec"</action>
+<action>In status file, set next_agent: "PM"</action>
+<action>Add to decisions log: "PRD complete. UX workflow required due to UI components."</action>
+</check>
 
 ### Phase 2: Detailed Planning
 

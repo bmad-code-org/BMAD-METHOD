@@ -12,7 +12,7 @@
 
 <step n="1" goal="Load context and handle continuation">
 
-<action>Load project-workflow-analysis.md</action>
+<action>Load project-workflow-status.md</action>
 <action>Confirm Level 1-2 - Feature or small system</action>
 
 <check if="continuation_mode == true">
@@ -75,7 +75,7 @@
 **Format**: `FR001: [user capability]`
 
 <template-output>functional_requirements</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -119,7 +119,7 @@ Create simple epic list with story titles.
 Generate epic-stories.md with basic story structure.
 
 <template-output file="epic-stories.md">epic_stories</template-output>
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -200,7 +200,13 @@ Since this is a Level {{project_level}} project, you need solutioning before imp
 <check if="project has significant UX/UI components (Level 1-2 with UI)">
 
 - [ ] **Run UX specification workflow** (HIGHLY RECOMMENDED for user-facing systems) - Command: `workflow plan-project` then select "UX specification" - Or continue within this workflow if UI-heavy - Input: PRD.md, epic-stories.md, solution-architecture.md (once available) - Output: ux-specification.md - Optional: AI Frontend Prompt for rapid prototyping - Note: Creates comprehensive UX/UI spec including IA, user flows, components
-      </check>
+
+<action>Update workflow status file to mark ux-spec as next step</action>
+<action>In status file, set next_action: "Run UX specification workflow"</action>
+<action>In status file, set next_command: "ux-spec"</action>
+<action>In status file, set next_agent: "PM"</action>
+<action>Add to decisions log: "PRD complete. UX workflow required due to UI components."</action>
+</check>
 
 ### Phase 2: Detailed Planning
 

@@ -80,7 +80,7 @@ Search queries to execute:
 - "[market_category] market growth rate CAGR forecast"
 - "[market_category] market trends [current_year]"
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="3b" title="Regulatory and Government Data">
@@ -204,8 +204,8 @@ For each major segment, research and define:
 - Purchasing frequency
 - Budget allocation
 
-<elicit-required/>
-<template-output>segment_profile_{{segment_number}}</template-output>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<template-output>segment*profile*{{segment_number}}</template-output>
 </step>
 
 <step n="5b" title="Jobs-to-be-Done Framework">
@@ -280,8 +280,8 @@ Gather intelligence on:
 - Team and leadership
 - Customer reviews and sentiment
 
-<elicit-required/>
-<template-output>competitor_analysis_{{competitor_number}}</template-output>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<template-output>competitor*analysis*{{competitor_number}}</template-output>
 </step>
 
 <step n="6c" title="Competitive Positioning Map">
@@ -404,7 +404,7 @@ For each opportunity:
 - Risk assessment
 - Success criteria
 
-<elicit-required/>
+<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 <template-output>market_opportunities</template-output>
 </step>
 
@@ -553,5 +553,70 @@ Create compelling executive summary with:
 </check>
 
 </step>
+
+<step n="14" goal="Update status file on completion">
+<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Find the most recent file (by date in filename)</action>
+
+<check if="status file exists">
+  <action>Load the status file</action>
+
+<template-output file="{{status_file_path}}">current_step</template-output>
+<action>Set to: "research ({{research_mode}})"</action>
+
+<template-output file="{{status_file_path}}">current_workflow</template-output>
+<action>Set to: "research ({{research_mode}}) - Complete"</action>
+
+<template-output file="{{status_file_path}}">progress_percentage</template-output>
+<action>Increment by: 5% (optional Phase 1 workflow)</action>
+
+<template-output file="{{status_file_path}}">decisions_log</template-output>
+<action>Add entry:</action>
+
+```
+- **{{date}}**: Completed research workflow ({{research_mode}} mode). Research report generated and saved. Next: Review findings and consider product-brief or plan-project workflows.
+```
+
+<output>**✅ Research Complete ({{research_mode}} mode)**
+
+**Research Report:**
+
+- Research report generated and saved
+
+**Status file updated:**
+
+- Current step: research ({{research_mode}}) ✓
+- Progress: {{new_progress_percentage}}%
+
+**Next Steps:**
+
+1. Review research findings
+2. Share with stakeholders
+3. Consider running:
+   - `product-brief` or `game-brief` to formalize vision
+   - `plan-project` if ready to create PRD/GDD
+
+Check status anytime with: `workflow-status`
+</output>
+</check>
+
+<check if="status file not found">
+  <output>**✅ Research Complete ({{research_mode}} mode)**
+
+**Research Report:**
+
+- Research report generated and saved
+
+Note: Running in standalone mode (no status file).
+
+To track progress across workflows, run `workflow-status` first.
+
+**Next Steps:**
+
+1. Review research findings
+2. Run product-brief or plan-project workflows
+   </output>
+   </check>
+   </step>
 
 </workflow>

@@ -39,10 +39,12 @@ The heart of BMM - structured workflows for the four development phases:
    - `tech-spec` - Epic-specific technical specifications
 
 4. **Implementation Phase** (Iterative)
-   - `create-story` - Story generation
-   - `story-context` - Expertise injection
-   - `dev-story` - Implementation
-   - `review-story` - Quality validation
+   - `create-story` - Story drafting (SM agent)
+   - `story-ready` - Approve story for development (SM agent)
+   - `story-context` - Expertise injection (SM agent)
+   - `dev-story` - Implementation (DEV agent)
+   - `story-approved` - Mark story done (DEV agent)
+   - `review-story` - Quality validation (DEV/SR agent)
    - `correct-course` - Issue resolution
    - `retrospective` - Continuous improvement
 
@@ -85,6 +87,21 @@ BMM automatically adapts to project complexity:
 ### Just-In-Time Design
 
 Technical specifications are created one epic at a time during implementation, not all upfront, allowing for learning and adaptation.
+
+### Story State Machine
+
+Stories flow through a 4-state lifecycle tracked in the status file:
+
+```
+BACKLOG → TODO → IN PROGRESS → DONE
+```
+
+- **BACKLOG**: Ordered list of stories to be drafted (populated at phase transition)
+- **TODO**: Single story ready for SM to draft (or drafted, awaiting approval)
+- **IN PROGRESS**: Single story approved for DEV to implement
+- **DONE**: Completed stories with dates and points
+
+Agents never search for "next story" - they always read the exact story from the status file. Simple workflows (`story-ready`, `story-approved`) advance the queue automatically.
 
 ### Context Injection
 
