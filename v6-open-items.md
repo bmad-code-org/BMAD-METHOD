@@ -4,12 +4,29 @@
 
 Aside from stability and bug fixes found during the alpha period - the main focus will be on the following:
 
+- In Progress - Brownfield v6 integrated into the workflow.
+- In Progress - Full workflow single file tracking.
+- In Progress - Codex improvements.
+  - Advanced Elicitation is not working well with codex
+  - Brainstorming is somewhat ok with codex, but could be improved
+- Validate Gemini CLI - is it able to function at all for any workflows?
+- BoMB Tooling included with module install
+- Teat Architect better integration into workflows
+- Document new agent workflows.
+- need to segregate game dev workflows and potentially add as an installation choice
+- the workflow runner needs to become a series of targeted workflow injections at install time so workflows can be run directly without the bloated intermediary.
+- All project levels (0 through 4) manual flows validated through workflow phase 1-4 for greenfield and brownfield
+- NPX installer
+- github pipelines, branch protection, vulnerability scanners
+- subagent injections reenabled
+- bmm existing project scanning and integration with workflow phase 0-4 improvements
+- Additional custom sections for architecture project types
 - DONE: Single Agent web bundler finalized - run `npm run bundle'
 - DONE: 4->v6 upgrade installer fixed.
 - DONE: v6->v6 updates will no longer remove custom content. so if you have a new agent you created for example anywhere under the bmad folder, updates will no longer remove them.
 - DONE: if you modify an installed file and upgrade, the file will be saved as a .bak file and the installer will inform you.
 - DONE: Game Agents comms style WAY to over the top - reduced a bit.
-- need to nest subagents for better organization.
+- DONE: need to nest subagents for better organization.
 - DONE: Quick note on BMM v6 Flow
 - DONE: CC SubAgents installed to sub-folders now.
 - DONE: Qwen TOML update.
@@ -19,24 +36,13 @@ Aside from stability and bug fixes found during the alpha period - the main focu
 - DONE: Agent improvement to loading instruction insertion and customization system overhaul
 - DONE: Stand along agents now will install to bmad/agents and are able to be compiled by the installer also
 - bmm `testarch` integrated into the BMM workflow's after aligned with the rest of bmad method flow.
-- Document new agent workflows.
-- need to segregate game dev workflows and potentially add as an installation choice
-- the workflow runner needs to become a series of targeted workflow injections at install time so workflows can be run directly without the bloated intermediary.
-- All project levels (0 through 4) manual flows validated through workflow phase 1-4
-  - level 0 (simple addition or update to existing project) workflow is super streamlined from explanation of issue through code implementation
-    - simple spec file -> context -> implementation
-  - level 1 (simple update to existing, or a very simple oneshot tool or project)
-- NPX installer
-- github pipelines, branch protection, vulnerability scanners
-- improved subagent injections
-- bmm existing project scanning and integration with workflow phase 0-4 improvements
-- BTA Module coming soon!
 
 ## Needed before Beta → v0 release
 
 Once the alpha is stabilized and we switch to beta, work on v4.x will freeze and the beta will merge to main. The NPX installer will still install v4 by default, but people will be able to npm install the beta version also.
 
 - Orchestration tracking works consistently across all workflow phases on BMM module
+- Single Reference Architecture
 - Module repository and submission process defined
 - Final polished documentation and user guide for each module
 - Final polished documentation for overall project architecture
@@ -49,5 +55,6 @@ Once the alpha is stabilized and we switch to beta, work on v4.x will freeze and
 - Installer offers installation of vetted community modules
 - DevOps Module
 - Security Module
-- BoMB improvements
+- Further BoMB improvements
 - 2-3 functional Reference Architecture Project Scaffolds and community contribution process defined
+-

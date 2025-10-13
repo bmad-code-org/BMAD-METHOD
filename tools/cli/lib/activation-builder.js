@@ -51,13 +51,15 @@ class ActivationBuilder {
     // 2. Build menu handlers section with dynamic handlers
     const menuHandlers = await this.loadFragment('menu-handlers.xml');
 
-    // Build extract list (comma-separated list of used attributes)
-    const extractList = profile.usedAttributes.join(', ');
-
     // Build handlers (load only needed handlers)
     const handlers = await this.buildHandlers(profile);
 
-    const processedHandlers = menuHandlers.replace('{DYNAMIC_EXTRACT_LIST}', extractList).replace('{DYNAMIC_HANDLERS}', handlers);
+    // Remove the extract line from the final output - it's just build metadata
+    // The extract list tells us which attributes to look for during processing
+    // but shouldn't appear in the final agent file
+    const processedHandlers = menuHandlers
+      .replace('<extract>{DYNAMIC_EXTRACT_LIST}</extract>\n', '') // Remove the entire extract line
+      .replace('{DYNAMIC_HANDLERS}', handlers);
 
     activation += '\n' + this.indent(processedHandlers, 2) + '\n';
 

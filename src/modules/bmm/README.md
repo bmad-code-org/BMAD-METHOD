@@ -17,7 +17,7 @@ Specialized AI agents for different development roles:
 - **Architect** - Technical architecture and design
 - **SM** (Scrum Master) - Sprint and story management
 - **DEV** (Developer) - Code implementation
-- **SR** (Senior Reviewer) - Code review and quality
+- **TEA** (Test Architect) - Test Architect
 - **UX** - User experience design
 - And more specialized roles
 
@@ -65,17 +65,9 @@ Test architecture and quality assurance components.
 ## Quick Start
 
 ```bash
-# Run a planning workflow
-bmad pm plan-project
-
-# Create a new story
-bmad sm create-story
-
-# Run development workflow
-bmad dev develop
-
-# Review implementation
-bmad sr review-story
+# Load the PM agent - either via slash command or drag and drop or @ the agent file.
+# Once loaded, the agent should greet you and offer a menu of options. You can enter:
+`*plan-project`
 ```
 
 ## Key Concepts

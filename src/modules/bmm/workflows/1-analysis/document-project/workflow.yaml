@@ -1,0 +1,98 @@
+# Document Project Workflow Configuration
+name: "document-project"
+version: "1.2.0"
+description: "Analyzes and documents brownfield projects by scanning codebase, architecture, and patterns to create comprehensive reference documentation for AI-assisted development"
+author: "BMad"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/document-project"
+template: false # This is an action workflow with multiple output files
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Required data files - CRITICAL for project type detection and documentation requirements
+project_types_csv: "{project-root}/bmad/bmm/workflows/3-solutioning/project-types/project-types.csv"
+architecture_registry_csv: "{project-root}/bmad/bmm/workflows/3-solutioning/templates/registry.csv"
+documentation_requirements_csv: "{installed_path}/documentation-requirements.csv"
+
+# Architecture template references
+architecture_templates_path: "{project-root}/bmad/bmm/workflows/3-solutioning/templates"
+
+# Optional input - project root to scan (defaults to current working directory)
+recommended_inputs:
+  - project_root: "User will specify or use current directory"
+  - existing_readme: "README.md at project root (if exists)"
+  - project_config: "package.json, go.mod, requirements.txt, etc. (auto-detected)"
+
+# Output configuration - Multiple files generated in output folder
+# File naming depends on project structure (simple vs multi-part)
+# Simple projects: index.md, architecture.md, etc.
+# Multi-part projects: index.md, architecture-{part_id}.md, etc.
+
+default_output_files:
+  - index: "{output_folder}/index.md"
+  - project_overview: "{output_folder}/project-overview.md"
+  - architecture: "{output_folder}/architecture.md" # or architecture-{part_id}.md for multi-part
+  - source_tree: "{output_folder}/source-tree-analysis.md"
+  - component_inventory: "{output_folder}/component-inventory.md" # or component-inventory-{part_id}.md
+  - development_guide: "{output_folder}/development-guide.md" # or development-guide-{part_id}.md
+  - deployment_guide: "{output_folder}/deployment-guide.md" # optional, if deployment config found
+  - contribution_guide: "{output_folder}/contribution-guide.md" # optional, if CONTRIBUTING.md found
+  - api_contracts: "{output_folder}/api-contracts.md" # optional, per part if needed
+  - data_models: "{output_folder}/data-models.md" # optional, per part if needed
+  - integration_architecture: "{output_folder}/integration-architecture.md" # only for multi-part
+  - project_parts: "{output_folder}/project-parts.json" # metadata for multi-part projects
+  - deep_dive: "{output_folder}/deep-dive-{sanitized_target_name}.md" # deep-dive mode output
+  - project_scan_report: "{output_folder}/project-scan-report.json" # state tracking for resumability
+
+# Runtime variables (generated during workflow execution)
+runtime_variables:
+  - workflow_mode: "initial_scan | full_rescan | deep_dive"
+  - scan_level: "quick | deep | exhaustive (default: quick)"
+  - project_type: "Detected project type (web, backend, cli, etc.)"
+  - project_parts: "Array of project parts for multi-part projects"
+  - architecture_match: "Matched architecture from registry"
+  - doc_requirements: "Documentation requirements for project type"
+  - tech_stack: "Detected technology stack"
+  - existing_docs: "Discovered existing documentation"
+  - deep_dive_target: "Target area for deep-dive analysis (if deep-dive mode)"
+  - deep_dive_count: "Number of deep-dive docs generated"
+  - resume_point: "Step to resume from (if resuming interrupted workflow)"
+  - state_file: "Path to project-scan-report.json for state tracking"
+
+# Scan Level Definitions
+scan_levels:
+  quick:
+    description: "Pattern-based scanning without reading source files"
+    duration: "2-5 minutes"
+    reads: "Config files, package manifests, directory structure only"
+    use_case: "Quick project overview, initial understanding"
+    default: true
+  deep:
+    description: "Reads files in critical directories per project type"
+    duration: "10-30 minutes"
+    reads: "Critical files based on documentation_requirements.csv patterns"
+    use_case: "Comprehensive documentation for brownfield PRD"
+    default: false
+  exhaustive:
+    description: "Reads ALL source files in project"
+    duration: "30-120 minutes"
+    reads: "Every source file (excluding node_modules, dist, build)"
+    use_case: "Complete analysis, migration planning, detailed audit"
+    default: false
+
+# Resumability Settings
+resumability:
+  enabled: true
+  state_file_location: "{output_folder}/project-scan-report.json"
+  state_file_max_age: "24 hours"
+  auto_prompt_resume: true
+  archive_old_state: true
+  archive_location: "{output_folder}/.archive/"
