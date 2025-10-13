@@ -11,6 +11,7 @@ Reusable task definitions that agents can execute. Tasks are atomic units of wor
 **Purpose:** View comprehensive real-time development progress across planning and implementation phases.
 
 **Usage:**
+
 ```bash
 /sm
 *development-status
@@ -24,6 +25,7 @@ Reusable task definitions that agents can execute. Tasks are atomic units of wor
 ```
 
 **What it shows:**
+
 - Planning phase status (PRD, Architecture, Epics existence)
 - Story breakdown by status (Draft/In Progress/Done/etc)
 - Task completion metrics
@@ -32,6 +34,7 @@ Reusable task definitions that agents can execute. Tasks are atomic units of wor
 - Context-aware recommendations for next steps
 
 **When to use:**
+
 - Daily standup preparation
 - Sprint planning
 - Progress reporting to stakeholders
@@ -47,12 +50,14 @@ Reusable task definitions that agents can execute. Tasks are atomic units of wor
 **Purpose:** Run structured daily standup meetings with context from current stories.
 
 **What it does:**
+
 - Discovers current story status
 - Gathers team context
 - Facilitates structured standup discussion
 - Creates actionable summary
 
 **When to use:**
+
 - Start of each working day
 - Sprint checkpoint meetings
 
@@ -63,6 +68,7 @@ Reusable task definitions that agents can execute. Tasks are atomic units of wor
 **Purpose:** Facilitate team retrospective after completing an epic.
 
 **What it does:**
+
 - Reviews completed epic metrics
 - Gathers team feedback (What went well, What to improve)
 - Identifies lessons learned
@@ -70,6 +76,7 @@ Reusable task definitions that agents can execute. Tasks are atomic units of wor
 - Creates action items
 
 **When to use:**
+
 - After completing all stories in an epic
 - Before starting next epic
 - Sprint/milestone completion
@@ -106,16 +113,17 @@ Tasks follow a structured XML format with these key sections:
 
 ## How Tasks Differ from Workflows
 
-| Aspect | Tasks | Workflows |
-|--------|-------|-----------|
-| **Format** | XML | YAML + Markdown |
-| **Scope** | Single focused operation | Multi-step process |
-| **Structure** | Linear flow of steps | Complex branching logic |
-| **Duration** | Quick (seconds to minutes) | Extended (minutes to hours) |
-| **State** | Stateless, read-only | May modify project files |
-| **Use Case** | Status checks, reports | Creating artifacts, implementation |
+| Aspect        | Tasks                      | Workflows                          |
+| ------------- | -------------------------- | ---------------------------------- |
+| **Format**    | XML                        | YAML + Markdown                    |
+| **Scope**     | Single focused operation   | Multi-step process                 |
+| **Structure** | Linear flow of steps       | Complex branching logic            |
+| **Duration**  | Quick (seconds to minutes) | Extended (minutes to hours)        |
+| **State**     | Stateless, read-only       | May modify project files           |
+| **Use Case**  | Status checks, reports     | Creating artifacts, implementation |
 
 **Examples:**
+
 - **Task:** View development status (read-only, quick)
 - **Workflow:** Create story (generates files, multi-step)
 
@@ -126,7 +134,7 @@ Tasks are integrated into agent menus using the `exec` attribute:
 ```yaml
 menu:
   - trigger: development-status
-    exec: "{project-root}/bmad/bmm/tasks/development-status.xml"
+    exec: '{project-root}/bmad/bmm/tasks/development-status.xml'
     description: View current development progress
 ```
 
