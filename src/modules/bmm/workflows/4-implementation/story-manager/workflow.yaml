@@ -1,0 +1,76 @@
+name: story-manager
+description: "Add new story to active epic with full documentation integration. Maintains bidirectional traceability by updating epic, PRD, solution-architecture.md, ux-specification.md, and all discovered documentation. Cross-references related stories. Supports Creation Mode (build from scratch) and Review-Based Mode (extract from dev reviews/backlog). Critical for AI agent coordination - keeps documentation current to prevent hallucination. Implements atomic integrity with checkpoint-based resume capability."
+author: "Paul"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+project_name: "{config_source}:project_name"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/story-manager"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Variables and inputs
+variables:
+  story_dir: "{config_source}:dev_story_location" # Directory where stories are stored
+  docs_dir: "{output_folder}" # Documentation root for discovery
+  epics_file: "{output_folder}/epics.md" # Epic breakdown document
+  prd_file: "{output_folder}/PRD.md" # Product Requirements Document
+  solution_architecture_file: "{output_folder}/solution-architecture.md" # Architecture source of truth
+  ux_specification_file: "{output_folder}/ux-specification.md" # UX source of truth
+  story_title: "" # Will be elicited or extracted
+  epic_num: "" # Will be determined from context
+  story_num: "" # Will be auto-incremented
+  workflow_mode: "" # "creation" or "review-based" - determined at runtime
+  review_source_file: "" # Path to review document if review-based mode
+  workflow_status: "draft" # Story status: draft, in-progress, review, complete
+
+# Output configuration
+default_output_file: "{story_dir}/story-{{epic_num}}.{{story_num}}.md"
+
+# Required tools for file operations and search
+required_tools:
+  - list_files:
+      description: "Required for discovering all documentation files in docs/"
+  - file_info:
+      description: "Required for checking file metadata and status"
+  - read_file:
+      description: "Required for reading epic, PRD, stories, and all discovered docs"
+  - write_file:
+      description: "Required for creating story and updating documentation"
+  - create_directory:
+      description: "Required for ensuring story directory exists"
+  - search_repo:
+      description: "Required for finding related stories and documentation references"
+  - glob:
+      description: "Required for pattern-matching documentation files"
+
+# Recommended inputs
+recommended_inputs:
+  - epics: "Epic breakdown document (epics.md) - workflow will prompt if missing"
+  - prd: "Product Requirements Document (PRD.md) - workflow will prompt if missing"
+  - solution-architecture: "Solution Architecture (solution-architecture.md) - workflow will prompt if missing"
+  - ux-specification: "UX Specification (ux-specification.md) - optional, assessed if present"
+  - existing_stories: "Related stories for cross-referencing"
+  - review_document: "Senior dev review or backlog item (for review-based mode)"
+
+# Tags
+tags:
+  - story-management
+  - documentation-integration
+  - bidirectional-traceability
+  - ai-agent-coordination
+  - bmad-v6
+
+# Execution configuration
+execution_hints:
+  interactive: true # Requires human-in-the-loop approval (SM decisions)
+  autonomous: false # Not fully autonomous - requires strategic decisions
+  resumable: true # Critical - supports checkpoint-based resume
+  atomic: true # All-or-nothing documentation updates

@@ -53,3 +53,7 @@ agent:
     - trigger: correct-course
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: Execute correct-course task
+
+    - trigger: add-story
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-manager/workflow.yaml"
+      description: Add a new story to the current epic based on your own needs or from senior dev review notes in existing stories as well as update all relevant documentation
