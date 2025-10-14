@@ -8,7 +8,7 @@
 
 <step n="1" goal="Read status file and identify the IN PROGRESS story">
 
-<action>Read {output_folder}/project-workflow-status.md</action>
+<action>Read {output_folder}/bmm-workflow-status.md</action>
 <action>Navigate to "### Implementation Progress (Phase 4 Only)" section</action>
 <action>Find "#### IN PROGRESS (Approved for Development)" section</action>
 
@@ -62,7 +62,7 @@ Find "## Dev Agent Record" section and add:
 
 <step n="3" goal="Move story IN PROGRESS → DONE, advance the queue">
 
-<action>Open {output_folder}/project-workflow-status.md</action>
+<action>Open {output_folder}/bmm-workflow-status.md</action>
 
 <action>Update "#### DONE (Completed Stories)" section:</action>
 
@@ -207,7 +207,7 @@ If BACKLOG had 1 story and is now empty:
 ```
 </check>
 
-<action>Save project-workflow-status.md</action>
+<action>Save bmm-workflow-status.md</action>
 
 </step>
 

@@ -375,7 +375,7 @@ Select option (1-4):</ask>
 </step>
 
 <step n="FINAL" goal="Update status file on completion">
-<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
 <action>Find the most recent file (by date in filename)</action>
 
 <check if="status file exists">

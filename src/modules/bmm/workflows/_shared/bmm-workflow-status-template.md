@@ -3,7 +3,7 @@
 **Project:** {{project_name}}
 **Created:** {{start_date}}
 **Last Updated:** {{last_updated}}
-**Status File:** `project-workflow-status-{{start_date}}.md`
+**Status File:** `bmm-workflow-status.md`
 
 ---
 
@@ -333,6 +333,6 @@ BACKLOG → TODO → IN PROGRESS → DONE
 
 _This file serves as the **single source of truth** for project workflow status, epic/story tracking, and next actions. All BMM agents and workflows reference this document for coordination._
 
-_Template Location: `bmad/bmm/workflows/_shared/project-workflow-status-template.md`_
+_Template Location: `bmad/bmm/workflows/_shared/bmm-workflow-status-template.md`_
 
 _File Created: {{start_date}}_

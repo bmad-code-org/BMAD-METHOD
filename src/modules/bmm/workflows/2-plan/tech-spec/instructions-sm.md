@@ -11,7 +11,7 @@
 
 <step n="1" goal="Confirm project scope and update tracking">
 
-<action>Load project-workflow-status.md from {output_folder}/project-workflow-status.md</action>
+<action>Load bmm-workflow-status.md from {output_folder}/bmm-workflow-status.md</action>
 
 <action>Update Workflow Status Tracker:</action>
 <check if="project_level == 0">
@@ -21,7 +21,7 @@
 <action>Set current_workflow = "tech-spec (Level 1 - generating tech spec)"</action>
 </check>
 <action>Set progress_percentage = 20%</action>
-<action>Save project-workflow-status.md</action>
+<action>Save bmm-workflow-status.md</action>
 
 <check if="project_level == 0">
   <action>Confirm Level 0 - Single atomic change</action>
@@ -40,9 +40,9 @@
 <critical>Generate tech-spec.md - this is the TECHNICAL SOURCE OF TRUTH</critical>
 <critical>ALL TECHNICAL DECISIONS MUST BE DEFINITIVE - NO AMBIGUITY ALLOWED</critical>
 
-<action>Update progress in project-workflow-status.md:</action>
+<action>Update progress in bmm-workflow-status.md:</action>
 <action>Set progress_percentage = 40%</action>
-<action>Save project-workflow-status.md</action>
+<action>Save bmm-workflow-status.md</action>
 
 <action>Initialize tech-spec.md using tech_spec_template from workflow.yaml</action>
 
@@ -108,7 +108,7 @@ Run cohesion validation? (y/n)</ask>
 
 <step n="4" goal="Generate user stories based on project level">
 
-<action>Load project-workflow-status.md to determine project_level</action>
+<action>Load bmm-workflow-status.md to determine project_level</action>
 
 <check if="project_level == 0">
   <action>Invoke instructions-level0-story.md to generate single user story</action>

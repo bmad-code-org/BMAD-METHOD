@@ -27,7 +27,7 @@ workflow_ux: "{installed_path}/ux/workflow.yaml"
 
 # Templates - Load these only when the instructions request loading them
 prd_template: "{installed_path}/prd/prd-template.md"
-status_template: "{project-root}/bmad/bmm/workflows/_shared/project-workflow-status-template.md"
+status_template: "{project-root}/bmad/bmm/workflows/_shared/bmm-workflow-status-template.md"
 epics_template: "{installed_path}/prd/epics-template.md"
 tech_spec_template: "{installed_path}/tech-spec/tech-spec-template.md"
 ux_spec_template: "{installed_path}/ux/ux-spec-template.md"
@@ -39,7 +39,7 @@ narrative_template: "{installed_path}/narrative/narrative-template.md"
 instructions: "{installed_path}/instructions-router.md"
 
 # Output configuration
-status_file: "{output_folder}/project-workflow-status.md"
+status_file: "{output_folder}/bmm-workflow-status.md"
 default_output_file: "{output_folder}/PRD.md"
 gdd_output_file: "{output_folder}/GDD.md"
 epics_output_file: "{output_folder}/epics.md"
@@ -83,7 +83,7 @@ web_bundle:
   instructions_narrative: "bmad/bmm/workflows/2-plan/narrative/instructions-narrative.md"
   # Templates - Load these only when the instructions request loading them
   prd_template: "{installed_path}/prd/prd-template.md"
-  status_template: "bmad/bmm/workflows/_shared/project-workflow-status-template.md"
+  status_template: "bmad/bmm/workflows/_shared/bmm-workflow-status-template.md"
   epics_template: "{installed_path}/prd/epics-template.md"
   tech_spec_template: "{installed_path}/tech-spec/tech-spec-template.md"
   ux_spec_template: "{installed_path}/ux/ux-spec-template.md"
@@ -103,7 +103,6 @@ web_bundle:
     - "bmad/bmm/workflows/2-plan/prd/instructions-med.md"
     - "bmad/bmm/workflows/2-plan/prd/instructions-lg.md"
     - "bmad/bmm/workflows/2-plan/prd/prd-template.md"
-    - "bmad/bmm/workflows/2-plan/prd/analysis-template.md"
     - "bmad/bmm/workflows/2-plan/prd/epics-template.md"
     - "bmad/bmm/workflows/2-plan/tech-spec/tech-spec-template.md"
     - "bmad/bmm/workflows/2-plan/ux/ux-spec-template.md"

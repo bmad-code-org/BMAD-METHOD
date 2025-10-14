@@ -12,7 +12,7 @@
 
 <step n="1" goal="Load context and determine game type">
 
-<action>Load project-workflow-status.md</action>
+<action>Load bmm-workflow-status.md</action>
 <action>Confirm project_type == "game"</action>
 
 <check if="continuation_mode == true">
@@ -439,7 +439,7 @@ Since this is a Level {{project_level}} game project, you need solutioning for p
 
 - [ ] **Run solutioning workflow** (REQUIRED)
   - Command: `workflow solution-architecture`
-  - Input: GDD.md, project-workflow-status.md
+  - Input: GDD.md, bmm-workflow-status.md
   - Output: solution-architecture.md with engine/platform specifics
   - Note: Registry.csv will provide engine-specific guidance
 

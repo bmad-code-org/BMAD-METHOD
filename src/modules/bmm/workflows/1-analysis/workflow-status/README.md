@@ -72,7 +72,7 @@ The workflow builds a comprehensive plan including:
 
 **Step 5: Create Status File**
 
-- Create `project-workflow-status-YYYY-MM-DD.md`
+- Create `bmm-workflow-status.md`
 - Document complete planned workflow in "Planned Workflow Journey" table
 - Set current step: "Workflow Definition Phase"
 - Set next step: First item from planned workflow
@@ -95,7 +95,7 @@ The workflow builds a comprehensive plan including:
 
 **The workflow will:**
 
-1. Find most recent `project-workflow-status-YYYY-MM-DD.md` file
+1. Find most recent `bmm-workflow-status.md` file
 2. Read and parse current state:
    - Current phase and progress %
    - Project level and type
@@ -123,12 +123,12 @@ If in Implementation phase, shows:
 **Search Pattern:**
 
 ```
-{output_folder}/project-workflow-status*.md
+{output_folder}/bmm-workflow-status.md
 ```
 
 **Versioning:**
 
-- Files are named: `project-workflow-status-YYYY-MM-DD.md`
+- Files are named: `bmm-workflow-status.md`
 - Workflow finds most recent by date
 - Old files can be archived
 
@@ -286,7 +286,7 @@ Next Step: plan-project (PM agent)
 
 Ready to create your workflow status file?
 
-This will create: project-workflow-status-2025-10-12.md
+This will create: bmm-workflow-status.md
 
 The status file will document:
 - Your complete planned workflow (phases and steps)
@@ -297,7 +297,7 @@ Create status file? (y/n): y
 
 ✅ Status file created!
 
-File: project-workflow-status-2025-10-12.md
+File: bmm-workflow-status.md
 
 To proceed with your first step:
 

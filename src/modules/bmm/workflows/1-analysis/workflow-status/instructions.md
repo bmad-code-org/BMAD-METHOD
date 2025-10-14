@@ -9,11 +9,11 @@
 
 <step n="1" goal="Check for existing workflow status file">
 
-<action>Search {output_folder}/ for files matching pattern: project-workflow-status\*.md</action>
+<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status\*.md</action>
 <action>Use glob or list_files to find all matching files</action>
 
 <check if="files found">
-  <action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+  <action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
   <action>Set status_file_found = true</action>
   <action>Set status_file_path = most recent file path</action>
   <action>Go to Step 2 (Read existing status)</action>
@@ -519,7 +519,7 @@ Based on your responses, here's your complete workflow journey:
 
 <ask>**Ready to create your workflow status file?**
 
-This will create: `project-workflow-status-{{today_date}}.md`
+This will create: `bmm-workflow-status.md`
 
 The status file will document:
 
@@ -530,7 +530,7 @@ The status file will document:
 Create status file? (y/n)</ask>
 
 <check if='confirm == "y"'>
-  <action>Create project-workflow-status-{{today}}.md file</action>
+  <action>Create bmm-workflow-status.md file</action>
   <action>Set current_phase = "Workflow Definition"</action>
   <action>Set next_action = planned_workflow[0].step</action>
   <action>Set next_agent = planned_workflow[0].agent</action>
@@ -538,7 +538,7 @@ Create status file? (y/n)</ask>
 
 <output>**✅ Status file created!**
 
-File: `project-workflow-status-{{today}}.md`
+File: `bmm-workflow-status.md`
 
 **To proceed with your first step:**
 
@@ -587,8 +587,8 @@ Your choice (1-5):</ask>
 
 This will:
 
-- Archive current status: `project-workflow-status-{{old_date}}.md` → `archive/`
-- Create new status: `project-workflow-status-{{today}}.md`
+- Archive current status: `bmm-workflow-status.md` → `archive/`
+- Create new status: `bmm-workflow-status.md`
 - Start fresh assessment
 
 Continue? (y/n)</ask>

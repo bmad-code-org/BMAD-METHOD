@@ -10,7 +10,7 @@
 <step n="1" goal="Load tech spec and extract the change">
 
 <action>Read the completed tech-spec.md file from {output_folder}/tech-spec.md</action>
-<action>Load project-workflow-status.md from {output_folder}/project-workflow-status.md</action>
+<action>Load bmm-workflow-status.md from {output_folder}/bmm-workflow-status.md</action>
 <action>Extract dev_story_location from config (where stories are stored)</action>
 <action>Extract the problem statement from "Technical Approach" section</action>
 <action>Extract the scope from "Source Tree Structure" section</action>
@@ -98,9 +98,9 @@
 
 </step>
 
-<step n="4" goal="Update project-workflow-status and initialize Phase 4">
+<step n="4" goal="Update bmm-workflow-status and initialize Phase 4">
 
-<action>Open {output_folder}/project-workflow-status.md</action>
+<action>Open {output_folder}/bmm-workflow-status.md</action>
 
 <action>Update "Workflow Status Tracker" section:</action>
 
@@ -173,7 +173,7 @@ Initialize empty table:
 - **{{date}}**: Level 0 tech-spec and story generation completed. Skipping Phase 3 (solutioning) - moving directly to Phase 4 (implementation). Single story (story-{slug}.md) drafted and ready for review.
 ```
 
-<action>Save project-workflow-status.md</action>
+<action>Save bmm-workflow-status.md</action>
 
 </step>
 
@@ -206,7 +206,7 @@ Initialize empty table:
 
 **Progress Tracking:**
 
-- All decisions logged in: `project-workflow-status.md`
+- All decisions logged in: `bmm-workflow-status.md`
 - Next action clearly identified
 
 <ask>Ready to proceed? Choose your path:

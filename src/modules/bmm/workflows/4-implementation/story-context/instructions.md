@@ -8,8 +8,8 @@
 
 <workflow>
   <step n="1" goal="Check and load workflow status file">
-    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
-    <action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
+    <action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
 
     <check if="exists">
       <action>Load the status file</action>
@@ -67,6 +67,8 @@ What would you like to do?</ask>
     <action>If {{non_interactive}} == true: choose the most recently modified story automatically. If none found, HALT with a clear message to provide 'story_path' or 'story_dir'. Else resolve selection into {{story_path}} and READ COMPLETE file.</action>
     <action>Extract {{epic_id}}, {{story_id}}, {{story_title}}, {{story_status}} from filename/content; parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes.</action>
     <action>Extract user story fields (asA, iWant, soThat).</action>
+    <action>Store project root path for relative path conversion: extract from {project-root} variable.</action>
+    <action>Define path normalization function: convert any absolute path to project-relative by removing project root prefix.</action>
     <action>Initialize output by writing template to {default_output_file}.</action>
     <template-output file="{default_output_file}">as_a</template-output>
     <template-output file="{default_output_file}">i_want</template-output>
@@ -74,10 +76,15 @@ What would you like to do?</ask>
   </step>
 
   <step n="3" goal="Collect relevant documentation">
-    <action>Scan docs and src module docs for items relevant to this story's domain: search keywords from story title, ACs, and tasks<</action>
+    <action>Scan docs and src module docs for items relevant to this story's domain: search keywords from story title, ACs, and tasks.</action>
     <action>Prefer authoritative sources: PRD, Architecture, Front-end Spec, Testing standards, module-specific docs.</action>
+    <action>For each discovered document: convert absolute paths to project-relative format by removing {project-root} prefix. Store only relative paths (e.g., "docs/prd.md" not "/Users/.../docs/prd.md").</action>
     <template-output file="{default_output_file}">
-      Add artifacts.docs entries with {path, title, section, snippet} (NO invention)
+      Add artifacts.docs entries with {path, title, section, snippet}:
+      - path: PROJECT-RELATIVE path only (strip {project-root} prefix)
+      - title: Document title
+      - section: Relevant section name
+      - snippet: Brief excerpt (2-3 sentences max, NO invention)
     </template-output>
   </step>
 
@@ -85,10 +92,24 @@ What would you like to do?</ask>
     <action>Search source tree for modules, files, and symbols matching story intent and AC keywords (controllers, services, components, tests).</action>
     <action>Identify existing interfaces/APIs the story should reuse rather than recreate.</action>
     <action>Extract development constraints from Dev Notes and architecture (patterns, layers, testing requirements).</action>
+    <action>For all discovered code artifacts: convert absolute paths to project-relative format (strip {project-root} prefix).</action>
     <template-output file="{default_output_file}">
-      Add artifacts.code entries with {path, kind, symbol, lines, reason}; include a brief reason explaining relevance to the story
-      Populate interfaces with any API/interface signatures that the developer must call (name, kind, signature, path)
-      Populate constraints with development rules extracted from Dev Notes and architecture (e.g., patterns, layers, testing requirements)
+      Add artifacts.code entries with {path, kind, symbol, lines, reason}:
+      - path: PROJECT-RELATIVE path only (e.g., "src/services/api.js" not full path)
+      - kind: file type (controller, service, component, test, etc.)
+      - symbol: function/class/interface name
+      - lines: line range if specific (e.g., "45-67")
+      - reason: brief explanation of relevance to this story
+
+      Populate interfaces with API/interface signatures:
+      - name: Interface or API name
+      - kind: REST endpoint, GraphQL, function signature, class interface
+      - signature: Full signature or endpoint definition
+      - path: PROJECT-RELATIVE path to definition
+
+      Populate constraints with development rules:
+      - Extract from Dev Notes and architecture
+      - Include: required patterns, layer restrictions, testing requirements, coding standards
     </template-output>
   </step>
 
@@ -125,7 +146,7 @@ What would you like to do?</ask>
   </step>
 
   <step n="9" goal="Update status file on completion">
-    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
     <action>Find the most recent file (by date in filename)</action>
 
     <check if="status file exists">

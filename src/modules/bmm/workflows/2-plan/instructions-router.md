@@ -3,13 +3,13 @@
 <workflow>
 
 <critical>This workflow requires a workflow status file to exist</critical>
-<critical>ALWAYS check for existing project-workflow-status.md first</critical>
+<critical>ALWAYS check for existing bmm-workflow-status.md first</critical>
 <critical>If no status file exists, direct user to run workflow-status first</critical>
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 
 <step n="1" goal="Check for existing workflow status file - REQUIRED">
 
-<action>Check if any project-workflow-status\*.md files exist in {output_folder}/</action>
+<action>Check if any bmm-workflow-status\*.md files exist in {output_folder}/</action>
 
 <check if="not exists">
   <output>**⚠️ No Workflow Status File Found**
@@ -35,7 +35,7 @@ Or tell me: "run workflow-status"
 </check>
 
 <check if="exists">
-  <action>Find the most recent project-workflow-status-YYYY-MM-DD.md file</action>
+  <action>Find the most recent bmm-workflow-status.md file</action>
   <action>Load the status file</action>
   <action>Extract key information:</action>
 
@@ -95,7 +95,7 @@ After updating your plan, return here if needed.
 - Level 3-4: Check for PRD.md, epics.md
 
   <check if="outputs exist">
-    <ask>Found existing workflow status file: project-workflow-status-{{file_date}}.md (Level {{project_level}})
+    <ask>Found existing workflow status file: bmm-workflow-status.md (Level {{project_level}})
 
 **Existing documents detected:**
 {{list_existing_docs}}

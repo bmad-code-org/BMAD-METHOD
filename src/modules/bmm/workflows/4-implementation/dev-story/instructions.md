@@ -12,7 +12,7 @@
 <workflow>
 
   <step n="1" goal="Load story from status file IN PROGRESS section">
-    <action>Read {output_folder}/project-workflow-status.md (if exists)</action>
+    <action>Read {output_folder}/bmm-workflow-status.md (if exists)</action>
     <action>Navigate to "### Implementation Progress (Phase 4 Only)" section</action>
     <action>Find "#### IN PROGRESS (Approved for Development)" section</action>
 
@@ -109,7 +109,7 @@
   </step>
 
   <step n="8" goal="Update status file on completion">
-    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
     <action>Find the most recent file (by date in filename)</action>
 
     <check if="status file exists">

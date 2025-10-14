@@ -16,8 +16,8 @@ FACILITATION NOTES:
 <workflow>
 
 <step n="1" goal="Check and load workflow status file">
-<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
-<action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
+<action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
 
 <check if="exists">
   <action>Load the status file</action>
@@ -399,7 +399,7 @@ See you at sprint planning once prep work is done!"
 </step>
 
 <step n="9" goal="Update status file on completion">
-<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
 <action>Find the most recent file (by date in filename)</action>
 
 <check if="status file exists">

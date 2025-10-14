@@ -153,7 +153,7 @@ plan-project
     │   ├─→ Level 0 → tech-spec workflow
     │   ├─→ Level 1-2 → PRD + embedded tech-spec
     │   └─→ Level 3-4 → PRD + epics → Solutioning
-    └─→ Generate project-workflow-status.md (tracking doc)
+    └─→ Generate bmm-workflow-status.md (tracking doc)
 ```
 
 ### Key Outputs
@@ -165,7 +165,7 @@ plan-project
 - **story-{slug}.md**: Single user story (Level 0)
 - **story-{slug}-1.md, story-{slug}-2.md, story-{slug}-3.md**: User stories (Level 1)
 - **GDD.md**: Game Design Document (game projects)
-- **project-workflow-status-YYYY-MM-DD.md**: Versioned workflow state tracking with story backlog
+- **bmm-workflow-status.md**: Versioned workflow state tracking with story backlog
 
 ## Phase 3: Solutioning (Levels 3-4 Only)
 
@@ -198,7 +198,7 @@ The core development cycle that transforms requirements into working software.
 
 ### The Story State Machine
 
-Phase 4 uses a 4-state lifecycle to manage story progression, tracked in `project-workflow-status.md`:
+Phase 4 uses a 4-state lifecycle to manage story progression, tracked in `bmm-workflow-status.md`:
 
 ```
 BACKLOG → TODO → IN PROGRESS → DONE
@@ -364,7 +364,7 @@ plan-project (Phase 2)
 
 ### Tracking Documents
 
-- **project-workflow-status-YYYY-MM-DD.md**: Versioned workflow state tracking with 4-section story backlog
+- **bmm-workflow-status.md**: Versioned workflow state tracking with 4-section story backlog
   - **BACKLOG**: Ordered list of stories to be drafted
   - **TODO**: Single story ready for drafting (or drafted, awaiting approval)
   - **IN PROGRESS**: Single story approved for development

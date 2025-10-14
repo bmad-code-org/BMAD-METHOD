@@ -28,7 +28,7 @@
   </step>
 
   <step n="2.5" goal="Check status file TODO section for story to draft">
-    <action>Read {output_folder}/project-workflow-status.md (if exists)</action>
+    <action>Read {output_folder}/bmm-workflow-status.md (if exists)</action>
     <action>Navigate to "### Implementation Progress (Phase 4 Only)" section</action>
     <action>Find "#### TODO (Needs Drafting)" section</action>
 
@@ -121,7 +121,7 @@
   </step>
 
   <step n="9" goal="Update status file on completion">
-    <action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
     <action>Find the most recent file (by date in filename)</action>
 
     <check if="status file exists">

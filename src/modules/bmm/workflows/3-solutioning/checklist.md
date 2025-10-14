@@ -4,7 +4,6 @@ Use this checklist during workflow execution and review.
 
 ## Pre-Workflow
 
-- [ ] analysis-template.md exists from plan-project phase
 - [ ] PRD exists with FRs, NFRs, epics, and stories (for Level 1+)
 - [ ] UX specification exists (for UI projects at Level 2+)
 - [ ] Project level determined (0-4)
@@ -87,7 +86,7 @@ Use this checklist during workflow execution and review.
 
 - [ ] Tech-spec generated for each epic
 - [ ] Saved as tech-spec-epic-{{N}}.md
-- [ ] project-workflow-status.md updated
+- [ ] bmm-workflow-status.md updated
 
 ### Step 10: Polyrepo Strategy (Optional)
 
@@ -152,7 +151,6 @@ Use this checklist during workflow execution and review.
 
 ### Updated Files
 
-- [ ] analysis-template.md (workflow status updated)
 - [ ] PRD.md (if architectural discoveries required updates)
 
 ## Next Steps After Workflow

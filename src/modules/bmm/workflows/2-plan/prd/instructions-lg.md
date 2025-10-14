@@ -12,7 +12,7 @@
 
 <step n="1" goal="Load context and handle continuation">
 
-<action>Load project-workflow-status.md</action>
+<action>Load bmm-workflow-status.md</action>
 <action>Confirm Level 3-4 - Full product or platform</action>
 
 <check if="continuation_mode == true">

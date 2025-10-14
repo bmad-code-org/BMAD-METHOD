@@ -16,7 +16,7 @@ instructions: "{installed_path}/instructions.md"
 
 # Variables and inputs
 variables:
-  status_file_pattern: "project-workflow-status*.md" # Searches for versioned files
+  status_file_pattern: "bmm-workflow-status.md" # Searches for versioned files
   check_existing_status: true # Always check for existing status file
   display_menu: true # Display agent menu after status check
   suggest_next_action: true # Suggest next action based on current state

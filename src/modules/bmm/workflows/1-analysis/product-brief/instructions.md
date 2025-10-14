@@ -6,8 +6,8 @@
 <workflow>
 
 <step n="0" goal="Check and load workflow status file">
-<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
-<action>Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)</action>
+<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
+<action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
 
 <check if="exists">
   <action>Load the status file</action>
@@ -379,7 +379,7 @@ This brief will serve as the primary input for creating the Product Requirements
 </step>
 
 <step n="16" goal="Update status file on completion">
-<action>Search {output_folder}/ for files matching pattern: project-workflow-status*.md</action>
+<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
 <action>Find the most recent file (by date in filename)</action>
 
 <check if="status file exists">

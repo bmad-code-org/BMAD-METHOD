@@ -11,7 +11,7 @@
 <step n="1" goal="Load tech spec and extract implementation tasks">
 
 <action>Read the completed tech-spec.md file from {output_folder}/tech-spec.md</action>
-<action>Load project-workflow-status.md from {output_folder}/project-workflow-status.md</action>
+<action>Load bmm-workflow-status.md from {output_folder}/bmm-workflow-status.md</action>
 <action>Extract dev_story_location from config (where stories are stored)</action>
 <action>Identify all implementation tasks from the "Implementation Guide" section</action>
 <action>Identify the overall feature goal from "Technical Approach" section</action>
@@ -228,9 +228,9 @@ Epic: Icon Reliability
 
 </step>
 
-<step n="6" goal="Update project-workflow-status and populate backlog for Phase 4">
+<step n="6" goal="Update bmm-workflow-status and populate backlog for Phase 4">
 
-<action>Open {output_folder}/project-workflow-status.md</action>
+<action>Open {output_folder}/bmm-workflow-status.md</action>
 
 <action>Update "Workflow Status Tracker" section:</action>
 
@@ -314,7 +314,7 @@ Initialize empty table:
 - **{{date}}**: Level 1 tech-spec and epic/stories generation completed. {{story_count}} stories created. Skipping Phase 3 (solutioning) - moving directly to Phase 4 (implementation). Story backlog populated. First story (story-{epic_slug}-1.md) drafted and ready for review.
 ```
 
-<action>Save project-workflow-status.md</action>
+<action>Save bmm-workflow-status.md</action>
 
 </step>
 
@@ -366,7 +366,7 @@ d. Run dev-story workflow to implement story 1
 
 **Progress Tracking:**
 
-- All decisions logged in: `project-workflow-status.md`
+- All decisions logged in: `bmm-workflow-status.md`
 - Next action clearly identified
 
 <ask>Ready to proceed? Choose your path:

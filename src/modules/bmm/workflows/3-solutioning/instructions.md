@@ -7,8 +7,8 @@ This workflow generates scale-adaptive solution architecture documentation that 
 
 <step n="0" goal="Load project analysis, validate prerequisites, and scale assessment">
 <action>
-1. Search {output_folder}/ for files matching pattern: project-workflow-status*.md
-   Find the most recent file (by date in filename: project-workflow-status-YYYY-MM-DD.md)
+1. Search {output_folder}/ for files matching pattern: bmm-workflow-status.md
+   Find the most recent file (by date in filename: bmm-workflow-status.md)
 
 2. Check if status file exists:
    <check if="exists">
@@ -624,7 +624,7 @@ For each epic in PRD:
 <template-output>tech_specs</template-output>
 
 <action>
-Update project-workflow-status.md workflow status:
+Update bmm-workflow-status.md workflow status:
 - [x] Solution architecture generated
 - [x] Cohesion check passed
 - [x] Tech specs generated for all epics
@@ -697,9 +697,9 @@ For each story in sequence:
 - story_title: Story title from PRD/epics
 - story_file: "story-{{epic_num}}.{{story_num}}.md"
 
-4. Update project-workflow-status.md with backlog population:
+4. Update bmm-workflow-status.md with backlog population:
 
-Open {output_folder}/project-workflow-status.md
+Open {output_folder}/bmm-workflow-status.md
 
 In "### Implementation Progress (Phase 4 Only)" section:
 
@@ -761,7 +761,7 @@ Add entries for all generated tech specs
 8. Add to Decision Log:
 - **{{date}}**: Phase 3 (Solutioning) complete. Architecture and tech specs generated. Populated story backlog with {{total_story_count}} stories. Ready for Phase 4 (Implementation). Next: SM drafts story 1.1.
 
-9. Save project-workflow-status.md
+9. Save bmm-workflow-status.md
 </action>
 
 <ask>
@@ -792,7 +792,7 @@ Would you like to proceed with story drafting now? (y/n)
 
 <step n="12" goal="Update status file on completion">
 <action>
-Search {output_folder}/ for files matching pattern: project-workflow-status*.md
+Search {output_folder}/ for files matching pattern: bmm-workflow-status.md
 Find the most recent file (by date in filename)
 </action>
 
