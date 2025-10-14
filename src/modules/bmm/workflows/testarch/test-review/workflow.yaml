@@ -1,0 +1,99 @@
+# Test Architect workflow: test-review
+name: testarch-test-review
+description: "Review test quality using comprehensive knowledge base and best practices validation"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/testarch/test-review"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/test-review-template.md"
+
+# Variables and inputs
+variables:
+  # Review target
+  test_file_path: "" # Explicit test file to review (if not provided, auto-discover)
+  test_dir: "{project-root}/tests"
+  review_scope: "single" # single (one file), directory (folder), suite (all tests)
+
+  # Review configuration
+  quality_score_enabled: true # Calculate 0-100 quality score
+  append_to_file: false # true = inline comments, false = separate report
+  check_against_knowledge: true # Use tea-index.csv fragments for validation
+  strict_mode: false # Strict = fail on any violation, Relaxed = advisory only
+
+  # Quality criteria to check
+  check_given_when_then: true # BDD format validation
+  check_test_ids: true # Test ID conventions (e.g., 1.3-E2E-001)
+  check_priority_markers: true # P0/P1/P2/P3 classification
+  check_hard_waits: true # Detect sleep(), wait(X), hardcoded delays
+  check_determinism: true # No conditionals (if/else), no try/catch abuse
+  check_isolation: true # Tests clean up, no shared state
+  check_fixture_patterns: true # Pure function → Fixture → mergeTests
+  check_data_factories: true # Factory usage vs hardcoded data
+  check_network_first: true # Route intercept before navigate
+  check_assertions: true # Explicit assertions, not implicit waits
+  check_test_length: true # Warn if >300 lines per file
+  check_test_duration: true # Warn if individual test >1.5 min
+  check_flakiness_patterns: true # Common flaky patterns (race conditions, timing)
+
+  # Integration with BMad artifacts
+  use_story_file: true # Load story for context (acceptance criteria)
+  use_test_design: true # Load test-design for priority context
+  auto_discover_story: true # Find related story by test ID
+
+  # Output configuration
+  output_file: "{output_folder}/test-review-{filename}.md"
+  generate_inline_comments: false # Add TODO comments in test files
+  generate_quality_badge: true # Create quality badge/score
+  append_to_story: false # Add review section to story file
+
+  # Knowledge base fragments to load
+  knowledge_fragments:
+    - test-quality.md # Definition of Done for tests
+    - fixture-architecture.md # Pure function → Fixture patterns
+    - network-first.md # Route interception before navigation
+    - data-factories.md # Factory patterns and best practices
+    - test-levels-framework.md # E2E vs API vs Component vs Unit
+    - playwright-config.md # Configuration patterns (if Playwright)
+    - tdd-cycles.md # Red-Green-Refactor patterns
+    - selective-testing.md # Duplicate coverage detection
+
+# Output configuration
+default_output_file: "{output_folder}/test-review.md"
+
+# Required tools
+required_tools:
+  - read_file # Read test files, story, test-design
+  - write_file # Create review report
+  - list_files # Discover test files in directory
+  - search_repo # Find tests by patterns
+  - glob # Find test files matching patterns
+
+# Recommended inputs
+recommended_inputs:
+  - test_file: "Test file to review (single file mode)"
+  - test_dir: "Directory of tests to review (directory mode)"
+  - story: "Related story for acceptance criteria context (optional)"
+  - test_design: "Test design for priority context (optional)"
+
+tags:
+  - qa
+  - test-architect
+  - code-review
+  - quality
+  - best-practices
+
+execution_hints:
+  interactive: false # Minimize prompts
+  autonomous: true # Proceed without user input unless blocked
+  iterative: true # Can review multiple files
+
+web_bundle: false

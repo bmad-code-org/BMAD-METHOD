@@ -57,3 +57,7 @@ agent:
     - trigger: gate
       workflow: "{project-root}/bmad/bmm/workflows/testarch/gate/workflow.yaml"
       description: Write/update quality gate decision assessment
+
+    - trigger: test-review
+      workflow: "{project-root}/bmad/bmm/workflows/testarch/test-review/workflow.yaml"
+      description: Review test quality using comprehensive knowledge base and best practices

@@ -1,25 +1,107 @@
 # Test Architect workflow: nfr-assess
 name: testarch-nfr
-description: "Assess non-functional requirements before release."
+description: "Assess non-functional requirements (performance, security, reliability, maintainability) before release with evidence-based validation"
 author: "BMad"
 
+# Critical variables from config
 config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
+# Workflow components
 installed_path: "{project-root}/bmad/bmm/workflows/testarch/nfr-assess"
 instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/nfr-report-template.md"
 
-template: false
+# Variables and inputs
+variables:
+  # Target specification
+  story_file: "" # Path to story markdown (optional)
+  feature_name: "" # Feature to assess (if no story file)
+
+  # NFR categories to assess
+  assess_performance: true # Response time, throughput, resource usage
+  assess_security: true # Authentication, authorization, data protection
+  assess_reliability: true # Error handling, recovery, availability
+  assess_maintainability: true # Code quality, test coverage, documentation
+
+  # Custom NFR categories (comma-separated)
+  custom_nfr_categories: "" # e.g., "accessibility,internationalization,compliance"
+
+  # Evidence sources
+  test_results_dir: "{project-root}/test-results"
+  metrics_dir: "{project-root}/metrics"
+  logs_dir: "{project-root}/logs"
+  include_ci_results: true # Analyze CI/CD pipeline results
+
+  # Thresholds (can be overridden)
+  performance_response_time_ms: 500 # Target response time
+  performance_throughput_rps: 100 # Target requests per second
+  security_score_min: 85 # Minimum security score (0-100)
+  reliability_uptime_pct: 99.9 # Target uptime percentage
+  maintainability_coverage_pct: 80 # Minimum test coverage
+
+  # Assessment configuration
+  use_deterministic_rules: true # PASS/CONCERNS/FAIL based on evidence
+  never_guess_thresholds: true # Mark as CONCERNS if threshold unknown
+  require_evidence: true # Every NFR must have evidence or be called out
+  suggest_monitoring: true # Recommend monitoring hooks for gaps
+
+  # Integration with BMad artifacts
+  use_tech_spec: true # Load tech-spec.md for NFR requirements
+  use_prd: true # Load PRD.md for NFR context
+  use_test_design: true # Load test-design.md for NFR test plan
+
+  # Output configuration
+  output_file: "{output_folder}/nfr-assessment.md"
+  generate_gate_yaml: true # Create gate YAML snippet with NFR status
+  generate_evidence_checklist: true # Create checklist of evidence gaps
+  update_story_file: false # Add NFR section to story (optional)
+
+  # Quality gates
+  fail_on_critical_nfr: true # Fail if critical NFR has FAIL status
+  warn_on_concerns: true # Warn if any NFR has CONCERNS status
+  block_release_on_fail: true # Block release if NFR assessment fails
+
+  # Advanced options
+  auto_load_knowledge: true # Load nfr-criteria, ci-burn-in fragments
+  include_quick_wins: true # Suggest quick wins for concerns/failures
+  include_recommended_actions: true # Provide actionable remediation steps
+
+# Output configuration
+default_output_file: "{output_folder}/nfr-assessment.md"
+
+# Required tools
+required_tools:
+  - read_file # Read story, test results, metrics, logs, BMad artifacts
+  - write_file # Create NFR assessment, gate YAML, evidence checklist
+  - list_files # Discover test results, metrics, logs
+  - search_repo # Find NFR-related tests and evidence
+  - glob # Find result files matching patterns
+
+# Recommended inputs
+recommended_inputs:
+  - story: "Story markdown with NFR requirements (optional)"
+  - tech_spec: "Technical specification with NFR targets (recommended)"
+  - test_results: "Test execution results (performance, security, etc.)"
+  - metrics: "Application metrics (response times, error rates, etc.)"
+  - logs: "Application logs for reliability analysis"
+  - ci_results: "CI/CD pipeline results for burn-in validation"
 
 tags:
   - qa
   - nfr
   - test-architect
+  - performance
+  - security
+  - reliability
 
 execution_hints:
-  interactive: false
-  autonomous: true
+  interactive: false # Minimize prompts
+  autonomous: true # Proceed without user input unless blocked
   iterative: true
+
+web_bundle: false

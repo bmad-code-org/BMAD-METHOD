@@ -1,25 +1,89 @@
 # Test Architect workflow: ci
 name: testarch-ci
-description: "Scaffold or update the CI/CD quality pipeline."
+description: "Scaffold CI/CD quality pipeline with test execution, burn-in loops, and artifact collection"
 author: "BMad"
 
+# Critical variables from config
 config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
+# Workflow components
 installed_path: "{project-root}/bmad/bmm/workflows/testarch/ci"
 instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
 
-template: false
+# Variables and inputs
+variables:
+  ci_platform: "auto" # auto, github-actions, gitlab-ci, circle-ci, jenkins
+  test_framework: "" # Detected from framework workflow (playwright, cypress)
+  test_dir: "{project-root}/tests"
+  config_file: "" # Framework config file path
+  node_version_source: "{project-root}/.nvmrc" # Node version for CI
+
+  # Execution configuration
+  parallel_jobs: 4 # Number of parallel test shards
+  burn_in_enabled: true # Enable burn-in loop for flaky test detection
+  burn_in_iterations: 10 # Number of burn-in iterations
+  selective_testing_enabled: true # Enable changed test detection
+
+  # Artifact configuration
+  artifact_retention_days: 30
+  upload_artifacts_on: "failure" # failure, always, never
+  artifact_types: "traces,screenshots,videos,html-report" # Comma-separated
+
+  # Performance tuning
+  cache_enabled: true # Enable dependency caching
+  browser_cache_enabled: true # Cache browser binaries
+  timeout_minutes: 60 # Overall job timeout
+  test_timeout_minutes: 30 # Individual test run timeout
+
+  # Notification configuration
+  notify_on_failure: false # Enable notifications (requires setup)
+  notification_channels: "" # slack, email, discord
+
+  # Output artifacts
+  generate_ci_readme: true
+  generate_local_mirror_script: true
+  generate_secrets_checklist: true
+
+  # CI-specific optimizations
+  use_matrix_strategy: true # Parallel execution across OS/browsers
+  use_sharding: true # Split tests into shards
+  retry_failed_tests: true
+  retry_count: 2
+
+# Output configuration
+default_output_file: "{project-root}/.github/workflows/test.yml" # GitHub Actions default
+
+# Required tools
+required_tools:
+  - read_file # Read .nvmrc, package.json, framework config
+  - write_file # Create CI config, scripts, documentation
+  - create_directory # Create .github/workflows/ or .gitlab-ci/ directories
+  - list_files # Detect existing CI configuration
+  - search_repo # Find test files for selective testing
+
+# Recommended inputs
+recommended_inputs:
+  - framework_config: "Framework configuration (playwright.config.ts, cypress.config.ts)"
+  - package_json: "Project dependencies and scripts"
+  - nvmrc: ".nvmrc for Node version (optional, defaults to LTS)"
+  - existing_ci: "Existing CI configuration to update (optional)"
+  - git_info: "Git repository information for platform detection"
 
 tags:
   - qa
   - ci-cd
   - test-architect
+  - pipeline
+  - automation
 
 execution_hints:
-  interactive: false
-  autonomous: true
+  interactive: false # Minimize prompts, auto-detect when possible
+  autonomous: true # Proceed without user input unless blocked
   iterative: true
+
+web_bundle: false

@@ -1,25 +1,99 @@
 # Test Architect workflow: trace
 name: testarch-trace
-description: "Trace requirements to implemented automated tests."
+description: "Generate requirements-to-tests traceability matrix with coverage analysis and gap identification"
 author: "BMad"
 
+# Critical variables from config
 config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
+# Workflow components
 installed_path: "{project-root}/bmad/bmm/workflows/testarch/trace"
 instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/trace-template.md"
 
-template: false
+# Variables and inputs
+variables:
+  # Target specification
+  story_file: "" # Path to story markdown (e.g., bmad/output/story-1.3.md)
+  acceptance_criteria: "" # Optional - inline criteria if no story file
+
+  # Test discovery
+  test_dir: "{project-root}/tests"
+  source_dir: "{project-root}/src"
+  auto_discover_tests: true # Automatically find tests related to story
+
+  # Traceability configuration
+  coverage_levels: "e2e,api,component,unit" # Which levels to trace (comma-separated)
+  map_by_test_id: true # Use test IDs (e.g., 1.3-E2E-001) for mapping
+  map_by_describe: true # Use describe blocks for mapping
+  map_by_filename: true # Use file paths for mapping
+
+  # Coverage classification
+  require_explicit_mapping: true # Require tests to explicitly reference criteria
+  flag_unit_only: true # Flag criteria covered only by unit tests
+  flag_integration_only: true # Flag criteria covered only by integration tests
+  flag_partial_coverage: true # Flag criteria with incomplete coverage
+
+  # Gap analysis
+  prioritize_by_risk: true # Use test-priorities (P0/P1/P2/P3) for gap severity
+  suggest_missing_tests: true # Recommend specific tests to add
+  check_duplicate_coverage: true # Warn about same behavior tested at multiple levels
+
+  # Integration with BMad artifacts
+  use_test_design: true # Load test-design.md if exists (risk assessment)
+  use_tech_spec: true # Load tech-spec.md if exists (technical context)
+  use_prd: true # Load PRD.md if exists (requirements context)
+
+  # Output configuration
+  output_file: "{output_folder}/traceability-matrix.md"
+  generate_gate_yaml: true # Create gate YAML snippet with coverage summary
+  generate_coverage_badge: true # Create coverage badge/metric
+  update_story_file: true # Add traceability section to story file
+
+  # Quality gates
+  min_p0_coverage: 100 # Percentage (P0 must be 100% covered)
+  min_p1_coverage: 90 # Percentage
+  min_overall_coverage: 80 # Percentage
+
+  # Advanced options
+  auto_load_knowledge: true # Load traceability, risk-governance, test-quality fragments
+  include_code_coverage: false # Integrate with code coverage reports (Istanbul, NYC)
+  check_assertions: true # Verify explicit assertions in tests
+
+# Output configuration
+default_output_file: "{output_folder}/traceability-matrix.md"
+
+# Required tools
+required_tools:
+  - read_file # Read story, test files, BMad artifacts
+  - write_file # Create traceability matrix, gate YAML
+  - list_files # Discover test files
+  - search_repo # Find tests by test ID, describe blocks
+  - glob # Find test files matching patterns
+
+# Recommended inputs
+recommended_inputs:
+  - story: "Story markdown with acceptance criteria (required for BMad mode)"
+  - test_files: "Test suite for the feature (auto-discovered if not provided)"
+  - test_design: "Test design with risk/priority assessment (optional)"
+  - tech_spec: "Technical specification (optional)"
+  - existing_tests: "Current test suite for analysis"
 
 tags:
   - qa
   - traceability
   - test-architect
+  - coverage
+  - requirements
 
 execution_hints:
-  interactive: false
-  autonomous: true
+  interactive: false # Minimize prompts
+  autonomous: true # Proceed without user input unless blocked
   iterative: true
+
+web_bundle: false
