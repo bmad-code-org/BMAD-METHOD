@@ -75,6 +75,13 @@ The TEA agent runs this workflow when:
 - `require_self_cleaning`: All tests must clean up data (default: true)
 - `auto_load_knowledge`: Load relevant knowledge fragments (default: true)
 - `run_tests_after_generation`: Verify tests pass/fail as expected (default: true)
+- `auto_validate`: Run generated tests after creation (default: true) **NEW**
+- `auto_heal_failures`: Enable automatic healing (default: false, opt-in) **NEW**
+- `max_healing_iterations`: Maximum healing attempts per test (default: 3) **NEW**
+- `fail_on_unhealable`: Fail workflow if tests can't be healed (default: false) **NEW**
+- `mark_unhealable_as_fixme`: Mark unfixable tests with test.fixme() (default: true) **NEW**
+- `use_mcp_healing`: Use Playwright MCP if available (default: true) **NEW**
+- `healing_knowledge_fragments`: Healing patterns to load (default: "test-healing-patterns,selector-resilience,timing-debugging") **NEW**
 
 ## Outputs
 
@@ -160,6 +167,269 @@ The TEA agent runs this workflow when:
 - API: POST /auth/login returns 200 (already covered in E2E)
 
 Use E2E sparingly for critical paths. Use API/Component/Unit for variations and edge cases.
+
+### Healing Capabilities (NEW - Phase 2.5)
+
+**automate** automatically validates and heals test failures after generation.
+
+**Configuration**: Controlled by `config.tea_use_mcp_enhancements` (default: true)
+
+- If true + MCP available → MCP-assisted healing
+- If true + MCP unavailable → Pattern-based healing
+- If false → No healing, document failures for manual review
+
+**Constants**: Max 3 healing attempts, unfixable tests marked as `test.fixme()`
+
+**How Healing Works (Default - Pattern-Based):**
+
+TEA heals tests using pattern-based analysis by:
+
+1. **Parsing error messages** from test output logs
+2. **Matching patterns** against known failure signatures
+3. **Applying fixes** from healing knowledge fragments:
+   - `test-healing-patterns.md` - Common failure patterns (selectors, timing, data, network)
+   - `selector-resilience.md` - Selector refactoring (CSS → data-testid, nth() → filter())
+   - `timing-debugging.md` - Race condition fixes (hard waits → event-based waits)
+4. **Re-running tests** to verify fix (max 3 iterations)
+5. **Marking unfixable tests** as `test.fixme()` with detailed comments
+
+**This works well for:**
+
+- ✅ Common failure patterns (stale selectors, timing issues, dynamic data)
+- ✅ Text-based errors with clear signatures
+- ✅ Issues documented in knowledge base
+- ✅ Automated CI environments without browser access
+
+**What MCP Adds (Interactive Debugging Enhancement):**
+
+When Playwright MCP is available, TEA **additionally**:
+
+1. **Debugs failures interactively** before applying pattern-based fixes:
+   - **Pause test execution** with `playwright_test_debug_test` (step through, inspect state)
+   - **See visual failure context** with `browser_snapshot` (screenshot of failure state)
+   - **Inspect live DOM** with browser tools (find why selector doesn't match)
+   - **Analyze console logs** with `browser_console_messages` (JS errors, warnings, debug output)
+   - **Inspect network activity** with `browser_network_requests` (failed API calls, CORS errors, timeouts)
+
+2. **Enhances pattern-based fixes** with real-world data:
+   - **Pattern match identifies issue** (e.g., "stale selector")
+   - **MCP discovers actual selector** with `browser_generate_locator` from live page
+   - **TEA applies refined fix** using real DOM structure (not just pattern guess)
+   - **Verification happens in browser** (see if fix works visually)
+
+3. **Catches root causes** pattern matching might miss:
+   - **Network failures**: MCP shows 500 error on API call (not just timeout)
+   - **JS errors**: MCP shows `TypeError: undefined` in console (not just "element not found")
+   - **Timing issues**: MCP shows loading spinner still visible (not just "selector timeout")
+   - **State problems**: MCP shows modal blocking button (not just "not clickable")
+
+**Key Benefits of MCP Enhancement:**
+
+- ✅ **Pattern-based fixes** (fast, automated) **+** **MCP verification** (accurate, context-aware)
+- ✅ **Visual debugging**: See exactly what user sees when test fails
+- ✅ **DOM inspection**: Discover why selectors don't match (element missing, wrong attributes, dynamic IDs)
+- ✅ **Network visibility**: Identify API failures, slow requests, CORS issues
+- ✅ **Console analysis**: Catch JS errors that break page functionality
+- ✅ **Robust selectors**: Generate locators from actual DOM (role, text, testid hierarchy)
+- ✅ **Faster iteration**: Debug and fix in same browser session (no restart needed)
+- ✅ **Higher success rate**: MCP helps diagnose failures pattern matching can't solve
+
+**Example Enhancement Flow:**
+
+```
+1. Pattern-based healing identifies issue
+   → Error: "Locator '.submit-btn' resolved to 0 elements"
+   → Pattern match: Stale selector (CSS class)
+   → Suggested fix: Replace with data-testid
+
+2. MCP enhances diagnosis (if available)
+   → browser_snapshot shows button exists but has class ".submit-button" (not ".submit-btn")
+   → browser_generate_locator finds: button[type="submit"].submit-button
+   → browser_console_messages shows no errors
+
+3. TEA applies refined fix
+   → await page.locator('button[type="submit"]').click()
+   → (More accurate than pattern-based guess)
+```
+
+**Healing Modes:**
+
+1. **MCP-Enhanced Healing** (when Playwright MCP available):
+   - Pattern-based analysis **+** Interactive debugging
+   - Visual context with `browser_snapshot`
+   - Console log analysis with `browser_console_messages`
+   - Network inspection with `browser_network_requests`
+   - Live DOM inspection with `browser_generate_locator`
+   - Step-by-step debugging with `playwright_test_debug_test`
+
+2. **Pattern-Based Healing** (always available):
+   - Error message parsing and pattern matching
+   - Automated fixes from healing knowledge fragments
+   - Text-based analysis (no visual/DOM inspection)
+   - Works in CI without browser access
+
+**Healing Workflow:**
+
+```
+1. Generate tests → Run tests
+2. IF pass → Success ✅
+3. IF fail AND auto_heal_failures=false → Report failures ⚠️
+4. IF fail AND auto_heal_failures=true → Enter healing loop:
+   a. Identify failure pattern (selector, timing, data, network)
+   b. Apply automated fix from knowledge base
+   c. Re-run test (max 3 iterations)
+   d. IF healed → Success ✅
+   e. IF unhealable → Mark test.fixme() with detailed comment
+```
+
+**Example Healing Outcomes:**
+
+```typescript
+// ❌ Original (failing): CSS class selector
+await page.locator('.btn-primary').click();
+
+// ✅ Healed: data-testid selector
+await page.getByTestId('submit-button').click();
+
+// ❌ Original (failing): Hard wait
+await page.waitForTimeout(3000);
+
+// ✅ Healed: Network-first pattern
+await page.waitForResponse('**/api/data');
+
+// ❌ Original (failing): Hardcoded ID
+await expect(page.getByText('User 123')).toBeVisible();
+
+// ✅ Healed: Regex pattern
+await expect(page.getByText(/User \d+/)).toBeVisible();
+```
+
+**Unfixable Tests (Marked as test.fixme()):**
+
+```typescript
+test.fixme('[P1] should handle complex interaction', async ({ page }) => {
+  // FIXME: Test healing failed after 3 attempts
+  // Failure: "Locator 'button[data-action="submit"]' resolved to 0 elements"
+  // Attempted fixes:
+  //   1. Replaced with page.getByTestId('submit-button') - still failing
+  //   2. Replaced with page.getByRole('button', { name: 'Submit' }) - still failing
+  //   3. Added waitForLoadState('networkidle') - still failing
+  // Manual investigation needed: Selector may require application code changes
+  // TODO: Review with team, may need data-testid added to button component
+  // Original test code...
+});
+```
+
+**When to Enable Healing:**
+
+- ✅ Enable for greenfield projects (catch generated test issues early)
+- ✅ Enable for brownfield projects (auto-fix legacy selector patterns)
+- ❌ Disable if environment not ready (application not deployed/seeded)
+- ❌ Disable if preferring manual review of all generated tests
+
+**Healing Report Example:**
+
+```markdown
+## Test Healing Report
+
+**Auto-Heal Enabled**: true
+**Healing Mode**: Pattern-based
+**Iterations Allowed**: 3
+
+### Validation Results
+
+- **Total tests**: 10
+- **Passing**: 7
+- **Failing**: 3
+
+### Healing Outcomes
+
+**Successfully Healed (2 tests):**
+
+- `tests/e2e/login.spec.ts:15` - Stale selector (CSS class → data-testid)
+- `tests/e2e/checkout.spec.ts:42` - Race condition (added network-first interception)
+
+**Unable to Heal (1 test):**
+
+- `tests/e2e/complex-flow.spec.ts:67` - Marked as test.fixme()
+  - Requires application code changes (add data-testid to component)
+
+### Healing Patterns Applied
+
+- **Selector fixes**: 1
+- **Timing fixes**: 1
+```
+
+**Graceful Degradation:**
+
+- Healing is OPTIONAL (default: disabled)
+- Works without Playwright MCP (pattern-based fallback)
+- Unfixable tests marked clearly (not silently broken)
+- Manual investigation path documented
+
+### Recording Mode (NEW - Phase 2.5)
+
+**automate** can record complex UI interactions instead of AI generation.
+
+**Activation**: Automatic for complex UI scenarios when config.tea_use_mcp_enhancements is true and MCP available
+
+- Complex scenarios: drag-drop, wizards, multi-page flows
+- Fallback: AI generation (silent, automatic)
+
+**When to Use Recording Mode:**
+
+- ✅ Complex UI interactions (drag-drop, multi-step forms, wizards)
+- ✅ Visual workflows (modals, dialogs, animations, transitions)
+- ✅ Unclear requirements (exploratory, discovering behavior)
+- ✅ Multi-page flows (checkout, registration, onboarding)
+- ❌ NOT for simple CRUD (AI generation faster)
+- ❌ NOT for API-only tests (no UI to record)
+
+**When to Use AI Generation (Default):**
+
+- ✅ Clear requirements available
+- ✅ Standard patterns (login, CRUD, navigation)
+- ✅ Need many tests quickly
+- ✅ API/backend tests (no UI interaction)
+
+**Recording Workflow (Same as atdd):**
+
+```
+1. Set generation_mode: "recording"
+2. Use generator_setup_page to init recording
+3. For each test scenario:
+   - Execute with browser_* tools (navigate, click, type, select)
+   - Add verifications with browser_verify_* tools
+   - Capture log and generate test file
+4. Enhance with knowledge base patterns:
+   - Given-When-Then structure
+   - data-testid selectors
+   - Network-first interception
+   - Fixtures/factories
+5. Validate (run tests if auto_validate enabled)
+6. Heal if needed (if auto_heal_failures enabled)
+```
+
+**Combination: Recording + Healing:**
+
+automate can use BOTH recording and healing together:
+
+- Generate tests via recording (complex flows captured interactively)
+- Run tests to validate (auto_validate)
+- Heal failures automatically (auto_heal_failures)
+
+This is particularly powerful for brownfield projects where:
+
+- Requirements unclear → Use recording to capture existing behavior
+- Application complex → Recording captures nuances AI might miss
+- Tests may fail → Healing fixes common issues automatically
+
+**Graceful Degradation:**
+
+- Recording mode is OPTIONAL (default: AI generation)
+- Requires Playwright MCP (falls back to AI if unavailable)
+- Works with or without healing enabled
+- Same quality output regardless of generation method
 
 ### Test Level Selection Framework
 
@@ -421,8 +691,7 @@ await element.click();
 
 **After this workflow:**
 
-- **trace** workflow: Update traceability matrix with new test coverage
-- **gate** workflow: Quality gate decision using test results
+- **trace** workflow: Update traceability matrix with new test coverage (Phase 1) and make quality gate decision (Phase 2)
 - **CI pipeline**: Run tests in burn-in loop to detect flaky patterns
 
 **Coordinates with:**
@@ -450,7 +719,7 @@ await element.click();
 
 - **atdd**: REQUIRES story with acceptance criteria (halt if missing)
 - **test-design**: REQUIRES PRD/epic context (halt if missing)
-- **gate**: REQUIRES test results (halt if missing)
+- **trace (Phase 2)**: REQUIRES test results for gate decision (halt if missing)
 
 ### File Size Limits
 
@@ -494,7 +763,13 @@ This workflow automatically consults:
 - **ci-burn-in.md** - Flaky test detection patterns (10 iterations to catch intermittent failures)
 - **test-quality.md** - Test design principles (Given-When-Then, determinism, isolation, atomic assertions)
 
-See `tea-index.csv` for complete knowledge fragment mapping.
+**Healing Knowledge (If `auto_heal_failures` enabled):**
+
+- **test-healing-patterns.md** - Common failure patterns and automated fixes (selectors, timing, data, network, hard waits)
+- **selector-resilience.md** - Robust selector strategies and debugging (data-testid hierarchy, filter vs nth, anti-patterns)
+- **timing-debugging.md** - Race condition identification and deterministic wait fixes (network-first, event-based waits)
+
+See `tea-index.csv` for complete knowledge fragment mapping (22 fragments total).
 
 ## Example Output
 

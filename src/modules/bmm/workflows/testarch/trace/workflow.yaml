@@ -1,6 +1,6 @@
-# Test Architect workflow: trace
+# Test Architect workflow: trace (enhanced with gate decision)
 name: testarch-trace
-description: "Generate requirements-to-tests traceability matrix with coverage analysis and gap identification"
+description: "Generate requirements-to-tests traceability matrix, analyze coverage, and make quality gate decision (PASS/CONCERNS/FAIL/WAIVED)"
 author: "BMad"
 
 # Critical variables from config
@@ -65,6 +65,46 @@ variables:
   include_code_coverage: false # Integrate with code coverage reports (Istanbul, NYC)
   check_assertions: true # Verify explicit assertions in tests
 
+  # PHASE 2: Gate Decision Variables (runs after traceability)
+  enable_gate_decision: true # Run gate decision after traceability (Phase 2)
+
+  # Gate target specification
+  gate_type: "story" # story | epic | release | hotfix
+  # story_id, epic_num, release_version inherited from trace context
+
+  # Gate decision configuration
+  decision_mode: "deterministic" # deterministic (rule-based) | manual (team decision)
+  allow_waivers: true # Allow business-approved waivers for FAIL → WAIVED
+  require_evidence: true # Require links to test results, reports, etc.
+
+  # Input sources for gate (auto-discovered from Phase 1 + external)
+  # story_file, test_design_file inherited from trace
+  nfr_file: "" # Path to nfr-assessment.md (optional, recommended for release gates)
+  test_results: "" # Path to test execution results (CI artifacts, reports)
+
+  # Decision criteria thresholds
+  min_p0_pass_rate: 100 # P0 tests must have 100% pass rate
+  min_p1_pass_rate: 95 # P1 tests threshold
+  min_overall_pass_rate: 90 # Overall test pass rate
+  # min_coverage already defined above (min_overall_coverage: 80)
+  max_critical_nfrs_fail: 0 # No critical NFRs can fail
+  max_security_issues: 0 # No unresolved security issues
+
+  # Risk tolerance
+  allow_p2_failures: true # P2 failures don't block release
+  allow_p3_failures: true # P3 failures don't block release
+  escalate_p1_failures: true # P1 failures require escalation approval
+
+  # Gate output configuration
+  gate_output_file: "{output_folder}/gate-decision-{gate_type}-{story_id}{epic_num}{release_version}.md"
+  append_to_history: true # Append to bmm-workflow-status.md gate history
+  notify_stakeholders: true # Generate notification message for team
+
+  # Advanced gate options
+  check_all_workflows_complete: true # Verify test-design, trace, nfr-assess complete
+  validate_evidence_freshness: true # Warn if assessments are >7 days old
+  require_sign_off: false # Require named approver for gate decision
+
 # Output configuration
 default_output_file: "{output_folder}/traceability-matrix.md"
 
@@ -80,9 +120,12 @@ required_tools:
 recommended_inputs:
   - story: "Story markdown with acceptance criteria (required for BMad mode)"
   - test_files: "Test suite for the feature (auto-discovered if not provided)"
-  - test_design: "Test design with risk/priority assessment (optional)"
+  - test_design: "Test design with risk/priority assessment (required for Phase 2 gate)"
   - tech_spec: "Technical specification (optional)"
   - existing_tests: "Current test suite for analysis"
+  - test_results: "CI/CD test execution results (required for Phase 2 gate)"
+  - nfr_assess: "Non-functional requirements validation (recommended for release gates)"
+  - code_coverage: "Code coverage report (optional)"
 
 tags:
   - qa
@@ -90,6 +133,9 @@ tags:
   - test-architect
   - coverage
   - requirements
+  - gate
+  - decision
+  - release
 
 execution_hints:
   interactive: false # Minimize prompts

@@ -49,12 +49,126 @@ Plans comprehensive test coverage strategy with risk assessment, priority classi
 4. **Load Knowledge Base Fragments**
 
    **Critical:** Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load:
-   - `risk-governance.md` - Risk classification framework
-   - `probability-impact.md` - Risk scoring methodology
-   - `test-levels-framework.md` - Test level selection guidance
-   - `test-priorities-matrix.md` - P0-P3 prioritization criteria
+   - `risk-governance.md` - Risk classification framework (6 categories: TECH, SEC, PERF, DATA, BUS, OPS), automated scoring, gate decision engine, owner tracking (625 lines, 4 examples)
+   - `probability-impact.md` - Risk scoring methodology (probability × impact matrix, automated classification, dynamic re-assessment, gate integration, 604 lines, 4 examples)
+   - `test-levels-framework.md` - Test level selection guidance (E2E vs API vs Component vs Unit with decision matrix, characteristics, when to use each, 467 lines, 4 examples)
+   - `test-priorities-matrix.md` - P0-P3 prioritization criteria (automated priority calculation, risk-based mapping, tagging strategy, time budgets, 389 lines, 2 examples)
 
-**Halt Condition:** If story data or acceptance criteria are missing, HALT with message: "Test design requires clear requirements and acceptance criteria"
+**Halt Condition:** If story data or acceptance criteria are missing, check if brownfield exploration is needed. If neither requirements NOR exploration possible, HALT with message: "Test design requires clear requirements, acceptance criteria, or brownfield app URL for exploration"
+
+---
+
+## Step 1.5: Mode Selection (NEW - Phase 2.5)
+
+### Actions
+
+1. **Detect Planning Mode**
+
+   Determine mode based on context:
+
+   **Requirements-Based Mode (DEFAULT)**:
+   - Have clear story/PRD with acceptance criteria
+   - Uses: Existing workflow (Steps 2-4)
+   - Appropriate for: Documented features, greenfield projects
+
+   **Exploratory Mode (OPTIONAL - Brownfield)**:
+   - Missing/incomplete requirements AND brownfield application exists
+   - Uses: UI exploration to discover functionality
+   - Appropriate for: Undocumented brownfield apps, legacy systems
+
+2. **Requirements-Based Mode (DEFAULT - Skip to Step 2)**
+
+   If requirements are clear:
+   - Continue with existing workflow (Step 2: Assess and Classify Risks)
+   - Use loaded requirements from Step 1
+   - Proceed with risk assessment based on documented requirements
+
+3. **Exploratory Mode (OPTIONAL - Brownfield Apps)**
+
+   If exploring brownfield application:
+
+   **A. Check MCP Availability**
+
+   If config.tea_use_mcp_enhancements is true AND Playwright MCP tools available:
+   - Use MCP-assisted exploration (Step 3.B)
+
+   If MCP unavailable OR config.tea_use_mcp_enhancements is false:
+   - Use manual exploration fallback (Step 3.C)
+
+   **B. MCP-Assisted Exploration (If MCP Tools Available)**
+
+   Use Playwright MCP browser tools to explore UI:
+
+   **Setup:**
+
+   ```
+   1. Use planner_setup_page to initialize browser
+   2. Navigate to {exploration_url}
+   3. Capture initial state with browser_snapshot
+   ```
+
+   **Exploration Process:**
+
+   ```
+   4. Use browser_navigate to explore different pages
+   5. Use browser_click to interact with buttons, links, forms
+   6. Use browser_hover to reveal hidden menus/tooltips
+   7. Capture browser_snapshot at each significant state
+   8. Take browser_screenshot for documentation
+   9. Monitor browser_console_messages for JavaScript errors
+   10. Track browser_network_requests to identify API calls
+   11. Map user flows and interactive elements
+   12. Document discovered functionality
+   ```
+
+   **Discovery Documentation:**
+   - Create list of discovered features (pages, workflows, forms)
+   - Identify user journeys (navigation paths)
+   - Map API endpoints (from network requests)
+   - Note error states (from console messages)
+   - Capture screenshots for visual reference
+
+   **Convert to Test Scenarios:**
+   - Transform discoveries into testable requirements
+   - Prioritize based on user flow criticality
+   - Identify risks from discovered functionality
+   - Continue with Step 2 (Assess and Classify Risks) using discovered requirements
+
+   **C. Manual Exploration Fallback (If MCP Unavailable)**
+
+   If Playwright MCP is not available:
+
+   **Notify User:**
+
+   ```markdown
+   Exploratory mode enabled but Playwright MCP unavailable.
+
+   **Manual exploration required:**
+
+   1. Open application at: {exploration_url}
+   2. Explore all pages, workflows, and features
+   3. Document findings in markdown:
+      - List of pages/features discovered
+      - User journeys identified
+      - API endpoints observed (DevTools Network tab)
+      - JavaScript errors noted (DevTools Console)
+      - Critical workflows mapped
+
+   4. Provide exploration findings to continue workflow
+
+   **Alternative:** Disable exploratory_mode and provide requirements documentation
+   ```
+
+   Wait for user to provide exploration findings, then:
+   - Parse user-provided discovery documentation
+   - Convert to testable requirements
+   - Continue with Step 2 (risk assessment)
+
+4. **Proceed to Risk Assessment**
+
+   After mode selection (Requirements-Based OR Exploratory):
+   - Continue to Step 2: Assess and Classify Risks
+   - Use requirements from documentation (Requirements-Based) OR discoveries (Exploratory)
 
 ---
 
@@ -402,18 +516,21 @@ Examples:
 
 ### Knowledge Base Integration
 
-**Auto-load enabled:**
+**Core Fragments (Auto-loaded in Step 1):**
 
-- `risk-governance.md` - Risk framework
-- `probability-impact.md` - Scoring guide
-- `test-levels-framework.md` - Level selection
-- `test-priorities-matrix.md` - Priority assignment
+- `risk-governance.md` - Risk classification (6 categories), automated scoring, gate decision engine, coverage traceability, owner tracking (625 lines, 4 examples)
+- `probability-impact.md` - Probability × impact matrix, automated classification thresholds, dynamic re-assessment, gate integration (604 lines, 4 examples)
+- `test-levels-framework.md` - E2E vs API vs Component vs Unit decision framework with characteristics matrix (467 lines, 4 examples)
+- `test-priorities-matrix.md` - P0-P3 automated priority calculation, risk-based mapping, tagging strategy, time budgets (389 lines, 2 examples)
 
-**Manual reference:**
+**Reference for Test Planning:**
 
-- Use `tea-index.csv` to find additional fragments
-- Load `selective-testing.md` for execution strategy
-- Load `fixture-architecture.md` for data setup patterns
+- `selective-testing.md` - Execution strategy: tag-based, spec filters, diff-based selection, promotion rules (727 lines, 4 examples)
+- `fixture-architecture.md` - Data setup patterns: pure function → fixture → mergeTests, auto-cleanup (406 lines, 5 examples)
+
+**Manual Reference (Optional):**
+
+- Use `tea-index.csv` to find additional specialized fragments as needed
 
 ### Evidence-Based Assessment
 

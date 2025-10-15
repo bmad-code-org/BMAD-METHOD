@@ -141,6 +141,145 @@ The TEA agent runs this workflow when:
 
 **Selection Strategy**: Avoid duplicate coverage. Use E2E for critical happy path, API for business logic variations, component for UI edge cases, unit for pure logic.
 
+### Recording Mode (NEW - Phase 2.5)
+
+**atdd** can record complex UI interactions instead of AI generation.
+
+**Activation**: Automatic for complex UI when config.tea_use_mcp_enhancements is true and MCP available
+
+- Fallback: AI generation (silent, automatic)
+
+**When to Use Recording Mode:**
+
+- ✅ Complex UI interactions (drag-drop, multi-step forms, wizards)
+- ✅ Visual workflows (modals, dialogs, animations)
+- ✅ Unclear requirements (exploratory, discovering expected behavior)
+- ✅ Multi-page flows (checkout, registration, onboarding)
+- ❌ NOT for simple CRUD (AI generation faster)
+- ❌ NOT for API-only tests (no UI to record)
+
+**When to Use AI Generation (Default):**
+
+- ✅ Clear acceptance criteria available
+- ✅ Standard patterns (login, CRUD, navigation)
+- ✅ Need many tests quickly
+- ✅ API/backend tests (no UI interaction)
+
+**How Test Generation Works (Default - AI-Based):**
+
+TEA generates tests using AI by:
+
+1. **Analyzing acceptance criteria** from story markdown
+2. **Inferring selectors** from requirement descriptions (e.g., "login button" → `[data-testid="login-button"]`)
+3. **Synthesizing test code** based on knowledge base patterns
+4. **Estimating interactions** using common UI patterns (click, type, verify)
+5. **Applying best practices** from knowledge fragments (Given-When-Then, network-first, fixtures)
+
+**This works well for:**
+
+- ✅ Clear requirements with known UI patterns
+- ✅ Standard workflows (login, CRUD, navigation)
+- ✅ When selectors follow conventions (data-testid attributes)
+
+**What MCP Adds (Interactive Verification & Enhancement):**
+
+When Playwright MCP is available, TEA **additionally**:
+
+1. **Verifies generated tests** by:
+   - **Launching real browser** with `generator_setup_page`
+   - **Executing generated test steps** with `browser_*` tools (`navigate`, `click`, `type`)
+   - **Seeing actual UI** with `browser_snapshot` (visual verification)
+   - **Discovering real selectors** with `browser_generate_locator` (auto-generate from live DOM)
+
+2. **Enhances AI-generated tests** by:
+   - **Validating selectors exist** in actual DOM (not just guesses)
+   - **Verifying behavior** with `browser_verify_text`, `browser_verify_visible`, `browser_verify_url`
+   - **Capturing actual interaction log** with `generator_read_log`
+   - **Refining test code** with real observed behavior
+
+3. **Catches issues early** by:
+   - **Finding missing selectors** before DEV implements (requirements clarification)
+   - **Discovering edge cases** not in requirements (loading states, error messages)
+   - **Validating assumptions** about UI structure and behavior
+
+**Key Benefits of MCP Enhancement:**
+
+- ✅ **AI generates tests** (fast, based on requirements) **+** **MCP verifies tests** (accurate, based on reality)
+- ✅ **Accurate selectors**: Validated against actual DOM, not just inferred
+- ✅ **Visual validation**: TEA sees what user sees (modals, animations, state changes)
+- ✅ **Complex flows**: Records multi-step interactions precisely
+- ✅ **Edge case discovery**: Observes actual app behavior beyond requirements
+- ✅ **Selector resilience**: MCP generates robust locators from live page (role-based, text-based, fallback chains)
+
+**Example Enhancement Flow:**
+
+```
+1. AI generates test based on acceptance criteria
+   → await page.click('[data-testid="submit-button"]')
+
+2. MCP verifies selector exists (browser_generate_locator)
+   → Found: button[type="submit"].btn-primary
+   → No data-testid attribute exists!
+
+3. TEA refines test with actual selector
+   → await page.locator('button[type="submit"]').click()
+   → Documents requirement: "Add data-testid='submit-button' to button"
+```
+
+**Recording Workflow (MCP-Based):**
+
+```
+1. Set generation_mode: "recording"
+2. Use generator_setup_page to init recording session
+3. For each acceptance criterion:
+   a. Execute scenario with browser_* tools:
+      - browser_navigate, browser_click, browser_type
+      - browser_select, browser_check
+   b. Add verifications with browser_verify_* tools:
+      - browser_verify_text, browser_verify_visible
+      - browser_verify_url
+   c. Capture log with generator_read_log
+   d. Generate test with generator_write_test
+4. Enhance generated tests with knowledge base patterns:
+   - Add Given-When-Then comments
+   - Replace selectors with data-testid
+   - Add network-first interception
+   - Add fixtures/factories
+5. Verify tests fail (RED phase)
+```
+
+**Example: Recording a Checkout Flow**
+
+```markdown
+Recording session for: "User completes checkout with credit card"
+
+Actions recorded:
+
+1. browser_navigate('/cart')
+2. browser_click('[data-testid="checkout-button"]')
+3. browser_type('[data-testid="card-number"]', '4242424242424242')
+4. browser_type('[data-testid="expiry"]', '12/25')
+5. browser_type('[data-testid="cvv"]', '123')
+6. browser_click('[data-testid="place-order"]')
+7. browser_verify_text('Order confirmed')
+8. browser_verify_url('/confirmation')
+
+Generated test (enhanced):
+
+- Given-When-Then structure added
+- data-testid selectors used
+- Network-first payment API mock added
+- Card factory created for test data
+- Test verified to FAIL (checkout not implemented)
+```
+
+**Graceful Degradation:**
+
+- Recording mode is OPTIONAL (default: AI generation)
+- Requires Playwright MCP (falls back to AI if unavailable)
+- Generated tests enhanced with knowledge base patterns
+- Same quality output regardless of generation method
+
 ### Given-When-Then Structure
 
 All tests follow BDD format for clarity:

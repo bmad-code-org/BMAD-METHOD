@@ -212,7 +212,7 @@ Automatically consults TEA knowledge base:
 
 - **atdd**: Generate failing tests that run in CI
 - **automate**: Expand test coverage that CI executes
-- **gate**: Use CI results for quality gate decisions
+- **trace (Phase 2)**: Use CI results for quality gate decisions
 
 **Coordinates with:**
 
@@ -484,7 +484,7 @@ bmad tea *ci
 - **framework**: Set up test infrastructure → [framework/README.md](../framework/README.md)
 - **atdd**: Generate acceptance tests → [atdd/README.md](../atdd/README.md)
 - **automate**: Expand test coverage → [automate/README.md](../automate/README.md)
-- **gate**: Quality gate decisions → [gate/README.md](../gate/README.md)
+- **trace**: Traceability and quality gate decisions → [trace/README.md](../trace/README.md)
 
 ## Version History
 

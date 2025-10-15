@@ -355,10 +355,11 @@ Scaffolds a production-ready CI/CD quality pipeline with test execution, burn-in
 
 **Critical:** Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to identify and load relevant knowledge fragments:
 
-- `ci-burn-in.md` - Burn-in loop patterns and configuration
-- `selective-testing.md` - Changed test detection strategies
-- `visual-debugging.md` - Artifact collection best practices
-- `test-quality.md` - CI-specific test quality criteria
+- `ci-burn-in.md` - Burn-in loop patterns: 10-iteration detection, GitHub Actions workflow, shard orchestration, selective execution (678 lines, 4 examples)
+- `selective-testing.md` - Changed test detection strategies: tag-based, spec filters, diff-based selection, promotion rules (727 lines, 4 examples)
+- `visual-debugging.md` - Artifact collection best practices: trace viewer, HAR recording, custom artifacts, accessibility integration (522 lines, 5 examples)
+- `test-quality.md` - CI-specific test quality criteria: deterministic tests, isolated with cleanup, explicit assertions, length/time optimization (658 lines, 5 examples)
+- `playwright-config.md` - CI-optimized configuration: parallelization, artifact output, project dependencies, sharding (722 lines, 5 examples)
 
 ### CI Platform-Specific Guidance
 

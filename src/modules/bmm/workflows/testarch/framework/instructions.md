@@ -351,11 +351,11 @@ The generated `tests/README.md` should include:
 
 **Critical:** Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to identify and load relevant knowledge fragments:
 
-- `fixture-architecture.md` - Pure function → fixture → `mergeTests` pattern
-- `data-factories.md` - Faker-based factories with auto-cleanup
-- `network-first.md` - Network-first testing safeguards
-- `playwright-config.md` - Playwright-specific configuration best practices
-- `test-config.md` - General configuration guidelines
+- `fixture-architecture.md` - Pure function → fixture → `mergeTests` composition with auto-cleanup (406 lines, 5 examples)
+- `data-factories.md` - Faker-based factories with overrides, nested factories, API seeding, auto-cleanup (498 lines, 5 examples)
+- `network-first.md` - Network-first testing safeguards: intercept before navigate, HAR capture, deterministic waiting (489 lines, 5 examples)
+- `playwright-config.md` - Playwright-specific configuration: environment-based, timeout standards, artifact output, parallelization, project config (722 lines, 5 examples)
+- `test-quality.md` - Test design principles: deterministic, isolated with cleanup, explicit assertions, length/time limits (658 lines, 5 examples)
 
 ### Framework-Specific Guidance
 

@@ -72,6 +72,7 @@ variables:
   # Advanced options
   auto_load_knowledge: true # Load test-levels, test-priorities, fixture-architecture, selective-testing, ci-burn-in
   run_tests_after_generation: true # Verify tests pass/fail as expected
+  auto_validate: true # Always validate generated tests
 
 # Output configuration
 default_output_file: "{output_folder}/automation-summary.md"

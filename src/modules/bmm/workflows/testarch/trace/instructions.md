@@ -1,7 +1,7 @@
-# Requirements Traceability - Instructions v4.0
+# Test Architect Workflow: Requirements Traceability & Quality Gate Decision
 
 **Workflow:** `testarch-trace`
-**Purpose:** Generate requirements-to-tests traceability matrix with coverage analysis and gap identification
+**Purpose:** Generate requirements-to-tests traceability matrix, analyze coverage gaps, and make quality gate decisions (PASS/CONCERNS/FAIL/WAIVED)
 **Agent:** Test Architect (TEA)
 **Format:** Pure Markdown v4.0 (no XML blocks)
 
@@ -9,29 +9,40 @@
 
 ## Overview
 
-This workflow creates a comprehensive traceability matrix that maps acceptance criteria to implemented tests, identifies coverage gaps, and provides actionable recommendations for improving test coverage. It supports both BMad-integrated mode (with story files and test design) and standalone mode (with inline acceptance criteria).
+This workflow operates in two sequential phases to validate test coverage and deployment readiness:
+
+**PHASE 1 - REQUIREMENTS TRACEABILITY:** Create comprehensive traceability matrix mapping acceptance criteria to implemented tests, identify coverage gaps, and provide actionable recommendations.
+
+**PHASE 2 - QUALITY GATE DECISION:** Use traceability results combined with test execution evidence to make gate decisions (PASS/CONCERNS/FAIL/WAIVED) that determine deployment readiness.
 
 **Key Capabilities:**
 
 - Map acceptance criteria to specific test cases across all levels (E2E, API, Component, Unit)
 - Classify coverage status (FULL, PARTIAL, NONE, UNIT-ONLY, INTEGRATION-ONLY)
 - Prioritize gaps by risk level (P0/P1/P2/P3) using test-priorities framework
-- Generate gate-ready YAML snippets for CI/CD integration
-- Detect duplicate coverage across test levels
-- Verify explicit assertions in test cases
+- Apply deterministic decision rules based on coverage and test execution results
+- Generate gate decisions with evidence and rationale
+- Support waivers for business-approved exceptions
+- Update workflow status and notify stakeholders
 
 ---
 
 ## Prerequisites
 
-**Required:**
+**Required (Phase 1):**
 
 - Acceptance criteria (from story file OR provided inline)
 - Implemented test suite (or acknowledge gaps to be addressed)
 
+**Required (Phase 2 - if `enable_gate_decision: true`):**
+
+- Test execution results (CI/CD test reports, pass/fail rates)
+- Test design with risk priorities (P0/P1/P2/P3)
+
 **Recommended:**
 
 - `test-design.md` (for risk assessment and priority context)
+- `nfr-assessment.md` (for release-level gates)
 - `tech-spec.md` (for technical implementation context)
 - Test framework configuration (playwright.config.ts, jest.config.js, etc.)
 
@@ -39,21 +50,26 @@ This workflow creates a comprehensive traceability matrix that maps acceptance c
 
 - If story lacks any implemented tests AND no gaps are acknowledged, recommend running `*atdd` workflow first
 - If acceptance criteria are completely missing, halt and request them
+- If Phase 2 enabled but test execution results missing, warn and skip gate decision
 
 ---
 
-## Workflow Steps
+## PHASE 1: REQUIREMENTS TRACEABILITY
+
+This phase focuses on mapping requirements to tests, analyzing coverage, and identifying gaps.
+
+---
 
 ### Step 1: Load Context and Knowledge Base
 
 **Actions:**
 
 1. Load relevant knowledge fragments from `{project-root}/bmad/bmm/testarch/tea-index.csv`:
-   - `traceability.md` - Requirements mapping patterns
-   - `test-priorities.md` - P0/P1/P2/P3 risk framework
-   - `risk-governance.md` - Risk-based testing approach
-   - `test-quality.md` - Definition of Done for tests
-   - `selective-testing.md` - Duplicate coverage patterns
+   - `test-priorities-matrix.md` - P0/P1/P2/P3 risk framework with automated priority calculation, risk-based mapping, tagging strategy (389 lines, 2 examples)
+   - `risk-governance.md` - Risk-based testing approach: 6 categories (TECH, SEC, PERF, DATA, BUS, OPS), automated scoring, gate decision engine, coverage traceability (625 lines, 4 examples)
+   - `probability-impact.md` - Risk scoring methodology: probability × impact matrix, automated classification, dynamic re-assessment, gate integration (604 lines, 4 examples)
+   - `test-quality.md` - Definition of Done for tests: deterministic, isolated with cleanup, explicit assertions, length/time limits (658 lines, 5 examples)
+   - `selective-testing.md` - Duplicate coverage patterns: tag-based, spec filters, diff-based selection, promotion rules (727 lines, 4 examples)
 
 2. Read story file (if provided):
    - Extract acceptance criteria
@@ -160,7 +176,7 @@ This workflow creates a comprehensive traceability matrix that maps acceptance c
    - P1 coverage >= 90% (recommended)
    - Overall coverage >= 80% (recommended)
 
-**Output:** Prioritized gap analysis with actionable recommendations
+**Output:** Prioritized gap analysis with actionable recommendations and coverage metrics
 
 ---
 
@@ -191,7 +207,7 @@ This workflow creates a comprehensive traceability matrix that maps acceptance c
 
 ---
 
-### Step 6: Generate Deliverables
+### Step 6: Generate Deliverables (Phase 1)
 
 **Actions:**
 
@@ -231,13 +247,442 @@ This workflow creates a comprehensive traceability matrix that maps acceptance c
    - Include coverage summary
    - Add gate status
 
-**Output:** Complete traceability documentation ready for review and CI/CD integration
+**Output:** Complete Phase 1 traceability deliverables
+
+**Next:** If `enable_gate_decision: true`, proceed to Phase 2. Otherwise, workflow complete.
+
+---
+
+## PHASE 2: QUALITY GATE DECISION
+
+This phase uses traceability results to make a quality gate decision (PASS/CONCERNS/FAIL/WAIVED) based on evidence and decision rules.
+
+**When Phase 2 Runs:** Automatically after Phase 1 if `enable_gate_decision: true` (default: true)
+
+**Skip Conditions:** If test execution results (`test_results`) not provided, warn and skip Phase 2.
+
+---
+
+### Step 7: Gather Quality Evidence
+
+**Actions:**
+
+1. **Load Phase 1 traceability results** (inherited context):
+   - Coverage metrics (P0/P1/overall percentages)
+   - Gap analysis (missing/partial tests)
+   - Quality concerns (test quality flags)
+   - Traceability matrix
+
+2. **Load test execution results** (if `test_results` provided):
+   - Read CI/CD test reports (JUnit XML, TAP, JSON)
+   - Extract pass/fail counts by priority
+   - Calculate pass rates:
+     - **P0 pass rate**: `(P0 passed / P0 total) * 100`
+     - **P1 pass rate**: `(P1 passed / P1 total) * 100`
+     - **Overall pass rate**: `(All passed / All total) * 100`
+   - Identify failing tests and map to criteria
+
+3. **Load NFR assessment** (if `nfr_file` provided):
+   - Read `nfr-assessment.md` or similar
+   - Check critical NFR status (performance, security, scalability)
+   - Flag any critical NFR failures
+
+4. **Load supporting artifacts**:
+   - `test-design.md` → Risk priorities, DoD checklist
+   - `story-*.md` or `Epics.md` → Requirements context
+   - `bmm-workflow-status.md` → Workflow completion status (if `check_all_workflows_complete: true`)
+
+5. **Validate evidence freshness** (if `validate_evidence_freshness: true`):
+   - Check timestamps of test-design, traceability, NFR assessments
+   - Warn if artifacts are >7 days old
+
+6. **Check prerequisite workflows** (if `check_all_workflows_complete: true`):
+   - Verify test-design workflow complete
+   - Verify trace workflow complete (Phase 1)
+   - Verify nfr-assess workflow complete (if release-level gate)
+
+**Output:** Consolidated evidence bundle with all quality signals
+
+---
+
+### Step 8: Apply Decision Rules
+
+**If `decision_mode: "deterministic"`** (rule-based - default):
+
+**Decision rules** (based on `workflow.yaml` thresholds):
+
+1. **PASS** if ALL of the following are true:
+   - P0 coverage ≥ `min_p0_coverage` (default: 100%)
+   - P1 coverage ≥ `min_p1_coverage` (default: 90%)
+   - Overall coverage ≥ `min_overall_coverage` (default: 80%)
+   - P0 test pass rate = `min_p0_pass_rate` (default: 100%)
+   - P1 test pass rate ≥ `min_p1_pass_rate` (default: 95%)
+   - Overall test pass rate ≥ `min_overall_pass_rate` (default: 90%)
+   - Critical NFRs passed (if `nfr_file` provided)
+   - No unresolved security issues ≤ `max_security_issues` (default: 0)
+   - No test quality red flags (hard waits, no assertions)
+
+2. **CONCERNS** if ANY of the following are true:
+   - P1 coverage 80-89% (below threshold but not critical)
+   - P1 test pass rate 90-94% (below threshold but not critical)
+   - Overall pass rate 85-89%
+   - P2 coverage <50% (informational)
+   - Some non-critical NFRs failing
+   - Minor test quality concerns (large test files, inferred mappings)
+   - **Note**: CONCERNS does NOT block deployment but requires acknowledgment
+
+3. **FAIL** if ANY of the following are true:
+   - P0 coverage <100% (missing critical tests)
+   - P0 test pass rate <100% (failing critical tests)
+   - P1 coverage <80% (significant gap)
+   - P1 test pass rate <90% (significant failures)
+   - Overall coverage <80%
+   - Overall pass rate <85%
+   - Critical NFRs failing (`max_critical_nfrs_fail` exceeded)
+   - Unresolved security issues (`max_security_issues` exceeded)
+   - Major test quality issues (tests with no assertions, pervasive hard waits)
+
+4. **WAIVED** (only if `allow_waivers: true`):
+   - Decision would be FAIL based on rules above
+   - Business stakeholder has approved waiver
+   - Waiver documented with:
+     - Justification (time constraint, known limitation, acceptable risk)
+     - Approver name and date
+     - Mitigation plan (follow-up stories, manual testing)
+   - Waiver evidence linked (email, Slack thread, ticket)
+
+**Risk tolerance adjustments:**
+
+- If `allow_p2_failures: true` → P2 test failures do NOT affect gate decision
+- If `allow_p3_failures: true` → P3 test failures do NOT affect gate decision
+- If `escalate_p1_failures: true` → P1 failures require explicit manager/lead approval
+
+**If `decision_mode: "manual"`:**
+
+- Present evidence summary to team
+- Recommend decision based on rules above
+- Team makes final call in meeting/chat
+- Document decision with approver names
+
+**Output:** Gate decision (PASS/CONCERNS/FAIL/WAIVED) with rule-based rationale
+
+---
+
+### Step 9: Document Decision and Evidence
+
+**Actions:**
+
+1. **Create gate decision document**:
+   - Save to `gate_output_file` (default: `{output_folder}/gate-decision-{gate_type}-{story_id}.md`)
+   - Use structure below
+
+2. **Document structure**:
+
+```markdown
+# Quality Gate Decision: {gate_type} {story_id/epic_num/release_version}
+
+**Decision**: [PASS / CONCERNS / FAIL / WAIVED]
+**Date**: {date}
+**Decider**: {decision_mode} (deterministic | manual)
+**Evidence Date**: {test_results_date}
+
+---
+
+## Summary
+
+[1-2 sentence summary of decision and key factors]
+
+---
+
+## Decision Criteria
+
+| Criterion         | Threshold | Actual   | Status  |
+| ----------------- | --------- | -------- | ------- |
+| P0 Coverage       | ≥100%     | 100%     | ✅ PASS |
+| P1 Coverage       | ≥90%      | 88%      | ⚠️ FAIL |
+| Overall Coverage  | ≥80%      | 92%      | ✅ PASS |
+| P0 Pass Rate      | 100%      | 100%     | ✅ PASS |
+| P1 Pass Rate      | ≥95%      | 98%      | ✅ PASS |
+| Overall Pass Rate | ≥90%      | 96%      | ✅ PASS |
+| Critical NFRs     | All Pass  | All Pass | ✅ PASS |
+| Security Issues   | 0         | 0        | ✅ PASS |
+
+**Overall Status**: 7/8 criteria met → Decision: **CONCERNS**
+
+---
+
+## Evidence Summary
+
+### Test Coverage (from Phase 1 Traceability)
+
+- **P0 Coverage**: 100% (5/5 criteria fully covered)
+- **P1 Coverage**: 88% (7/8 criteria fully covered)
+- **Overall Coverage**: 92% (12/13 criteria covered)
+- **Gap**: AC-5 (P1) missing E2E test
+
+### Test Execution Results
+
+- **P0 Pass Rate**: 100% (12/12 tests passed)
+- **P1 Pass Rate**: 98% (45/46 tests passed)
+- **Overall Pass Rate**: 96% (67/70 tests passed)
+- **Failures**: 3 P2 tests (non-blocking)
+
+### Non-Functional Requirements
+
+- Performance: ✅ PASS (response time <500ms)
+- Security: ✅ PASS (no vulnerabilities)
+- Scalability: ✅ PASS (handles 10K users)
+
+### Test Quality
+
+- All tests have explicit assertions ✅
+- No hard waits detected ✅
+- Test files <300 lines ✅
+- Test IDs follow convention ✅
+
+---
+
+## Decision Rationale
+
+**Why CONCERNS (not PASS)**:
+
+- P1 coverage at 88% is below 90% threshold
+- AC-5 (P1 priority) missing E2E test for error handling scenario
+- This is a known gap from test-design phase
+
+**Why CONCERNS (not FAIL)**:
+
+- P0 coverage is 100% (critical paths validated)
+- Overall coverage is 92% (above 80% threshold)
+- Test pass rate is excellent (96% overall)
+- Gap is isolated to one P1 criterion (not systemic)
+
+**Recommendation**:
+
+- Acknowledge gap and proceed with deployment
+- Add missing AC-5 E2E test in next sprint
+- Create follow-up story: "Add E2E test for AC-5 error handling"
+
+---
+
+## Next Steps
+
+- [ ] Create follow-up story for AC-5 E2E test
+- [ ] Deploy to staging environment
+- [ ] Monitor production for edge cases related to AC-5
+- [ ] Update traceability matrix after follow-up test added
+
+---
+
+## References
+
+- Traceability Matrix: `bmad/output/traceability-matrix.md`
+- Test Design: `bmad/output/test-design-epic-2.md`
+- Test Results: `ci-artifacts/test-report-2025-01-15.xml`
+- NFR Assessment: `bmad/output/nfr-assessment-release-1.2.md`
+```
+
+3. **Include evidence links** (if `require_evidence: true`):
+   - Link to traceability matrix
+   - Link to test execution reports (CI artifacts)
+   - Link to NFR assessment
+   - Link to test-design document
+   - Link to relevant PRs, commits, deployments
+
+4. **Waiver documentation** (if decision is WAIVED):
+   - Approver name and role (e.g., "Jane Doe, Engineering Manager")
+   - Approval date and method (e.g., "2025-01-15, Slack thread")
+   - Justification (e.g., "Time-boxed MVP, missing tests will be added in v1.1")
+   - Mitigation plan (e.g., "Manual testing by QA, follow-up stories created")
+   - Evidence link (e.g., "Slack: #engineering 2025-01-15 3:42pm")
+
+**Output:** Complete gate decision document with evidence and rationale
+
+---
+
+### Step 10: Update Status Tracking and Notify
+
+**Actions:**
+
+1. **Update workflow status** (if `append_to_history: true`):
+   - Append gate decision to `bmm-workflow-status.md` under "Gate History" section
+   - Format:
+
+     ```markdown
+     ## Gate History
+
+     ### Story 1.3 - User Login (2025-01-15)
+
+     - **Decision**: CONCERNS
+     - **Reason**: P1 coverage 88% (below 90%)
+     - **Document**: [gate-decision-story-1.3.md](bmad/output/gate-decision-story-1.3.md)
+     - **Action**: Deploy with follow-up story for AC-5
+     ```
+
+2. **Generate stakeholder notification** (if `notify_stakeholders: true`):
+   - Create concise summary message for team communication
+   - Include: Decision, key metrics, action items
+   - Format for Slack/email/chat:
+
+   ```
+   🚦 Quality Gate Decision: Story 1.3 - User Login
+
+   Decision: ⚠️ CONCERNS
+   - P0 Coverage: ✅ 100%
+   - P1 Coverage: ⚠️ 88% (below 90%)
+   - Test Pass Rate: ✅ 96%
+
+   Action Required:
+   - Create follow-up story for AC-5 E2E test
+   - Deploy to staging for validation
+
+   Full Report: bmad/output/gate-decision-story-1.3.md
+   ```
+
+3. **Request sign-off** (if `require_sign_off: true`):
+   - Prompt for named approver (tech lead, QA lead, PM)
+   - Document approver name and timestamp in gate decision
+   - Block until sign-off received (interactive prompt)
+
+**Output:** Status tracking updated, stakeholders notified, sign-off obtained (if required)
+
+**Workflow Complete**: Both Phase 1 (traceability) and Phase 2 (gate decision) deliverables generated.
+
+---
+
+## Decision Matrix (Quick Reference)
+
+| Scenario        | P0 Cov            | P1 Cov | Overall Cov | P0 Pass | P1 Pass | Overall Pass | NFRs | Decision     |
+| --------------- | ----------------- | ------ | ----------- | ------- | ------- | ------------ | ---- | ------------ |
+| All green       | 100%              | ≥90%   | ≥80%        | 100%    | ≥95%    | ≥90%         | Pass | **PASS**     |
+| Minor gap       | 100%              | 80-89% | ≥80%        | 100%    | 90-94%  | 85-89%       | Pass | **CONCERNS** |
+| Missing P0      | <100%             | -      | -           | -       | -       | -            | -    | **FAIL**     |
+| P0 test fail    | 100%              | -      | -           | <100%   | -       | -            | -    | **FAIL**     |
+| P1 gap          | 100%              | <80%   | -           | 100%    | -       | -            | -    | **FAIL**     |
+| NFR fail        | 100%              | ≥90%   | ≥80%        | 100%    | ≥95%    | ≥90%         | Fail | **FAIL**     |
+| Security issue  | -                 | -      | -           | -       | -       | -            | Yes  | **FAIL**     |
+| Business waiver | [FAIL conditions] | -      | -           | -       | -       | -            | -    | **WAIVED**   |
+
+---
+
+## Waiver Management
+
+**When to use waivers:**
+
+- Time-boxed MVP releases (known gaps, follow-up planned)
+- Low-risk P1 gaps with mitigation (manual testing, monitoring)
+- Technical debt acknowledged by product/engineering leadership
+- External dependencies blocking test automation
+
+**Waiver approval process:**
+
+1. Document gap and risk in gate decision
+2. Propose mitigation plan (manual testing, follow-up stories, monitoring)
+3. Request approval from stakeholder (EM, PM, QA lead)
+4. Link approval evidence (email, chat thread, meeting notes)
+5. Add waiver to gate decision document
+6. Create follow-up stories to close gaps
+
+**Waiver does NOT apply to:**
+
+- P0 gaps (always blocking)
+- Critical security issues (always blocking)
+- Critical NFR failures (performance, data integrity)
+
+---
+
+## Example Gate Decisions
+
+### Example 1: PASS (All Criteria Met)
+
+```
+Decision: ✅ PASS
+
+Summary: All quality criteria met. Story 1.3 is ready for production deployment.
+
+Evidence:
+- P0 Coverage: 100% (5/5 criteria)
+- P1 Coverage: 95% (19/20 criteria)
+- Overall Coverage: 92% (24/26 criteria)
+- P0 Pass Rate: 100% (12/12 tests)
+- P1 Pass Rate: 98% (45/46 tests)
+- Overall Pass Rate: 96% (67/70 tests)
+- NFRs: All pass (performance, security, scalability)
+
+Action: Deploy to production ✅
+```
+
+### Example 2: CONCERNS (Minor Gap, Non-Blocking)
+
+```
+Decision: ⚠️ CONCERNS
+
+Summary: P1 coverage slightly below threshold (88% vs 90%). Recommend deploying with follow-up story.
+
+Evidence:
+- P0 Coverage: 100% ✅
+- P1 Coverage: 88% ⚠️ (below 90%)
+- Overall Coverage: 92% ✅
+- Test Pass Rate: 96% ✅
+- Gap: AC-5 (P1) missing E2E test
+
+Action:
+- Deploy to staging for validation
+- Create follow-up story for AC-5 E2E test
+- Monitor production for edge cases related to AC-5
+```
+
+### Example 3: FAIL (P0 Gap, Blocking)
+
+```
+Decision: ❌ FAIL
+
+Summary: P0 coverage incomplete. Missing critical validation test. BLOCKING deployment.
+
+Evidence:
+- P0 Coverage: 80% ❌ (4/5 criteria, AC-2 missing)
+- AC-2: "User cannot login with invalid credentials" (P0 priority)
+- No tests validate login security for invalid credentials
+- This is a critical security gap
+
+Action:
+- Add P0 test for AC-2: 1.3-E2E-004 (invalid credentials)
+- Re-run traceability after test added
+- Re-evaluate gate decision after P0 coverage = 100%
+
+Deployment BLOCKED until P0 gap resolved ❌
+```
+
+### Example 4: WAIVED (Business Decision)
+
+```
+Decision: ⚠️ WAIVED
+
+Summary: P1 coverage below threshold (75% vs 90%), but waived for MVP launch.
+
+Evidence:
+- P0 Coverage: 100% ✅
+- P1 Coverage: 75% ❌ (below 90%)
+- Gap: 5 P1 criteria missing E2E tests (error handling, edge cases)
+
+Waiver:
+- Approver: Jane Doe, Engineering Manager
+- Date: 2025-01-15
+- Justification: Time-boxed MVP for investor demo. Core functionality (P0) fully validated. P1 gaps are low-risk edge cases.
+- Mitigation: Manual QA testing for P1 scenarios, follow-up stories created for automated tests in v1.1
+- Evidence: Slack #engineering 2025-01-15 3:42pm
+
+Action:
+- Deploy to production with manual QA validation ✅
+- Add 5 E2E tests for P1 gaps in v1.1 sprint
+- Monitor production logs for edge case occurrences
+```
 
 ---
 
 ## Non-Prescriptive Approach
 
-**Minimal Examples:** This workflow provides principles and patterns, not rigid templates. Teams should adapt the traceability format to their needs.
+**Minimal Examples:** This workflow provides principles and patterns, not rigid templates. Teams should adapt the traceability and gate decision formats to their needs.
 
 **Key Patterns to Follow:**
 
@@ -245,7 +690,9 @@ This workflow creates a comprehensive traceability matrix that maps acceptance c
 - Prioritize by risk (P0 gaps are critical, P3 gaps are acceptable)
 - Check coverage at appropriate levels (E2E for journeys, Unit for logic)
 - Verify test quality (explicit assertions, no flakiness)
-- Generate gate-ready artifacts (YAML snippets for CI/CD)
+- Apply deterministic gate rules for consistency
+- Document gate decisions with clear evidence
+- Use waivers judiciously (business approved, mitigation planned)
 
 **Extend as Needed:**
 
@@ -253,6 +700,8 @@ This workflow creates a comprehensive traceability matrix that maps acceptance c
 - Integrate with code coverage tools (Istanbul, NYC)
 - Link to external traceability systems (JIRA, Azure DevOps)
 - Add compliance or regulatory requirements
+- Customize gate decision thresholds per project
+- Add manual approval workflows for gate decisions
 
 ---
 
@@ -323,7 +772,7 @@ Use selective testing principles from `selective-testing.md`:
 ### With test-design.md
 
 - Use risk assessment to prioritize gap remediation
-- Reference test priorities (P0/P1/P2/P3) for severity classification
+- Reference test priorities (P0/P1/P2/P3) for severity classification and gate decision
 - Align traceability with originally planned test coverage
 
 ### With tech-spec.md
@@ -338,9 +787,15 @@ Use selective testing principles from `selective-testing.md`:
 - Verify acceptance criteria align with product goals
 - Check for unstated requirements that need coverage
 
+### With nfr-assessment.md
+
+- Load non-functional validation results for gate decision
+- Check critical NFR status (performance, security, scalability)
+- Include NFR pass/fail in gate decision criteria
+
 ---
 
-## Quality Gates
+## Quality Gates (Phase 1 Recommendations)
 
 ### P0 Coverage (Critical Paths)
 
@@ -496,6 +951,7 @@ traceability:
 
 Before completing this workflow, verify:
 
+**Phase 1 (Traceability):**
 - ✅ All acceptance criteria are mapped to tests (or gaps are documented)
 - ✅ Coverage status is classified (FULL, PARTIAL, NONE, UNIT-ONLY, INTEGRATION-ONLY)
 - ✅ Gaps are prioritized by risk level (P0/P1/P2/P3)
@@ -503,19 +959,32 @@ Before completing this workflow, verify:
 - ✅ Duplicate coverage is identified and flagged
 - ✅ Test quality is assessed (assertions, structure, performance)
 - ✅ Traceability matrix is generated and saved
-- ✅ Gate YAML snippet is generated (if enabled)
-- ✅ Story file is updated with traceability section (if enabled)
-- ✅ Recommendations are actionable and specific
+
+**Phase 2 (Gate Decision - if enabled):**
+- ✅ Test execution results loaded and pass rates calculated
+- ✅ NFR assessment results loaded (if applicable)
+- ✅ Decision rules applied consistently (PASS/CONCERNS/FAIL/WAIVED)
+- ✅ Gate decision document created with evidence
+- ✅ Waiver documented if decision is WAIVED (approver, justification, mitigation)
+- ✅ Workflow status updated (bmm-workflow-status.md)
+- ✅ Stakeholders notified (if enabled)
 
 ---
 
 ## Notes
 
+**Phase 1 (Traceability):**
 - **Explicit Mapping:** Require tests to reference criteria explicitly (test IDs, describe blocks) for maintainability
 - **Risk-Based Prioritization:** Use test-priorities framework (P0/P1/P2/P3) to determine gap severity
 - **Quality Over Quantity:** Better to have fewer high-quality tests with FULL coverage than many low-quality tests with PARTIAL coverage
 - **Selective Testing:** Avoid duplicate coverage - test each behavior at the appropriate level only
-- **Gate Integration:** Generate YAML snippets that can be consumed by CI/CD pipelines for automated quality gates
+
+**Phase 2 (Gate Decision):**
+- **Deterministic Rules:** Use consistent thresholds (P0=100%, P1≥90%, overall≥80%) for objectivity
+- **Evidence-Based:** Every decision must cite specific metrics (coverage %, pass rates, NFRs)
+- **Waiver Discipline:** Waivers require approver name, justification, mitigation plan, and evidence link
+- **Non-Blocking CONCERNS:** Use CONCERNS for minor gaps that don't justify blocking deployment (e.g., P1 at 88% vs 90%)
+- **Automate in CI/CD:** Generate YAML snippets that can be consumed by CI/CD pipelines for automated quality gates
 
 ---
 
@@ -542,15 +1011,33 @@ Before completing this workflow, verify:
 - Determine if overlap is acceptable (defense in depth) or wasteful (same validation at multiple levels)
 - Consolidate tests at appropriate level (logic → unit, integration → API, journey → E2E)
 
+### "Test execution results missing" (Phase 2)
+- Phase 2 gate decision requires `test_results` (CI/CD test reports)
+- If missing, Phase 2 will be skipped with warning
+- Provide JUnit XML, TAP, or JSON test report path via `test_results` variable
+
+### "Gate decision is FAIL but deployment needed urgently"
+- Request business waiver (if `allow_waivers: true`)
+- Document approver, justification, mitigation plan
+- Create follow-up stories to address gaps
+- Use WAIVED decision only for non-P0 gaps
+
 ---
 
 ## Related Workflows
 
-- **testarch-test-design** - Define test priorities (P0/P1/P2/P3) before tracing
-- **testarch-atdd** - Generate failing acceptance tests for gaps identified
-- **testarch-automate** - Expand regression suite based on traceability findings
-- **testarch-gate** - Use traceability matrix as input for quality gate decisions
-- **testarch-test-review** - Review test quality issues flagged in traceability
+**Prerequisites:**
+- `testarch-test-design` - Define test priorities (P0/P1/P2/P3) before tracing (required for Phase 2)
+- `testarch-atdd` or `testarch-automate` - Generate tests before tracing coverage
+
+**Complements:**
+- `testarch-nfr-assess` - Non-functional requirements validation (recommended for release gates)
+- `testarch-test-review` - Review test quality issues flagged in traceability
+
+**Next Steps:**
+- If gate decision is PASS/CONCERNS → Deploy and monitor
+- If gate decision is FAIL → Add missing tests, re-run trace workflow
+- If gate decision is WAIVED → Deploy with mitigation, create follow-up stories
 
 ---
 

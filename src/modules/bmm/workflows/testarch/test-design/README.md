@@ -176,6 +176,121 @@ The TEA agent runs this workflow when:
 
 **Key principle**: Avoid duplicate coverage - don't test same behavior at multiple levels.
 
+### Exploratory Mode (NEW - Phase 2.5)
+
+**test-design** supports UI exploration for brownfield applications with missing documentation.
+
+**Activation**: Automatic when requirements missing/incomplete for brownfield apps
+
+- If config.tea_use_mcp_enhancements is true + MCP available → MCP-assisted exploration
+- Otherwise → Manual exploration with user documentation
+
+**When to Use Exploratory Mode:**
+
+- ✅ Brownfield projects with missing documentation
+- ✅ Legacy systems lacking requirements
+- ✅ Undocumented features needing test coverage
+- ✅ Unknown user journeys requiring discovery
+- ❌ NOT for greenfield projects with clear requirements
+
+**Exploration Modes:**
+
+1. **MCP-Assisted Exploration** (if Playwright MCP available):
+   - Interactive browser exploration using MCP tools
+   - `planner_setup_page` - Initialize browser
+   - `browser_navigate` - Explore pages
+   - `browser_click` - Interact with UI elements
+   - `browser_hover` - Reveal hidden menus
+   - `browser_snapshot` - Capture state at each step
+   - `browser_screenshot` - Document visually
+   - `browser_console_messages` - Find JavaScript errors
+   - `browser_network_requests` - Identify API endpoints
+
+2. **Manual Exploration** (fallback without MCP):
+   - User explores application manually
+   - Documents findings in markdown:
+     - Pages/features discovered
+     - User journeys identified
+     - API endpoints observed (DevTools Network)
+     - JavaScript errors noted (DevTools Console)
+     - Critical workflows mapped
+   - Provides exploration findings to workflow
+
+**Exploration Workflow:**
+
+```
+1. Enable exploratory_mode and set exploration_url
+2. IF MCP available:
+   - Use planner_setup_page to init browser
+   - Explore UI with browser_* tools
+   - Capture snapshots and screenshots
+   - Monitor console and network
+   - Document discoveries
+3. IF MCP unavailable:
+   - Notify user to explore manually
+   - Wait for exploration findings
+4. Convert discoveries to testable requirements
+5. Continue with standard risk assessment (Step 2)
+```
+
+**Example Output from Exploratory Mode:**
+
+```markdown
+## Exploration Findings - Legacy Admin Panel
+
+**Exploration URL**: https://admin.example.com
+**Mode**: MCP-Assisted
+
+### Discovered Features:
+
+1. User Management (/admin/users)
+   - List users (table with 10 columns)
+   - Edit user (modal form)
+   - Delete user (confirmation dialog)
+   - Export to CSV (download button)
+
+2. Reporting Dashboard (/admin/reports)
+   - Date range picker
+   - Filter by department
+   - Generate PDF report
+   - Email report to stakeholders
+
+3. API Endpoints Discovered:
+   - GET /api/admin/users
+   - PUT /api/admin/users/:id
+   - DELETE /api/admin/users/:id
+   - POST /api/reports/generate
+
+### User Journeys Mapped:
+
+1. Admin deletes inactive user
+   - Navigate to /admin/users
+   - Click delete icon
+   - Confirm in modal
+   - User removed from table
+
+2. Admin generates monthly report
+   - Navigate to /admin/reports
+   - Select date range (last month)
+   - Click generate
+   - Download PDF
+
+### Risks Identified (from exploration):
+
+- R-001 (SEC): No RBAC check observed (any admin can delete any user)
+- R-002 (DATA): No confirmation on bulk delete
+- R-003 (PERF): User table loads slowly (5s for 1000 rows)
+
+**Next**: Proceed to risk assessment with discovered requirements
+```
+
+**Graceful Degradation:**
+
+- Exploratory mode is OPTIONAL (default: disabled)
+- Works without Playwright MCP (manual fallback)
+- If exploration fails, can disable mode and provide requirements documentation
+- Seamlessly transitions to standard risk assessment workflow
+
 ### Knowledge Base Integration
 
 Automatically consults TEA knowledge base:
@@ -197,7 +312,7 @@ Automatically consults TEA knowledge base:
 
 - **atdd**: Generate failing tests for P0 scenarios
 - **automate**: Expand coverage for P1/P2 scenarios
-- **gate**: Use quality gate criteria for release decisions
+- **trace (Phase 2)**: Use quality gate criteria for release decisions
 
 **Coordinates with:**
 
@@ -368,7 +483,7 @@ Total effort: 65 hours (~8 days)
 
 - **atdd**: Generate failing tests → [atdd/README.md](../atdd/README.md)
 - **automate**: Expand regression coverage → [automate/README.md](../automate/README.md)
-- **gate**: Quality gate decisions → [gate/README.md](../gate/README.md)
+- **trace**: Traceability and quality gate decisions → [trace/README.md](../trace/README.md)
 - **framework**: Test infrastructure → [framework/README.md](../framework/README.md)
 
 ## Version History

@@ -403,7 +403,7 @@ bmad tea *nfr-assess \
 - **testarch-test-design** → `*nfr-assess` - Define NFR requirements, then assess
 - **testarch-framework** → `*nfr-assess` - Set up frameworks, then validate NFRs
 - **testarch-ci** → `*nfr-assess` - Configure CI, then assess reliability with burn-in
-- `*nfr-assess` → **testarch-gate** - Assess NFRs, then apply quality gates
+- `*nfr-assess` → **testarch-trace (Phase 2)** - Assess NFRs, then apply quality gates
 - `*nfr-assess` → **testarch-test-review** - Assess maintainability, then review tests
 
 ---
@@ -452,7 +452,7 @@ bmad tea *nfr-assess \
 - `bmad tea *test-design` - Define NFR requirements and test plan
 - `bmad tea *framework` - Set up performance/security testing frameworks
 - `bmad tea *ci` - Configure CI/CD for NFR validation
-- `bmad tea *gate` - Apply quality gates using NFR assessment metrics
+- `bmad tea *trace` (Phase 2) - Apply quality gates using NFR assessment metrics
 - `bmad tea *test-review` - Review test quality (maintainability NFR)
 
 ---

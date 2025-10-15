@@ -50,14 +50,18 @@ This workflow performs comprehensive test quality reviews using TEA's knowledge 
 **Actions:**
 
 1. Load relevant knowledge fragments from `{project-root}/bmad/bmm/testarch/tea-index.csv`:
-   - `test-quality.md` - Definition of Done (no hard waits, <300 lines, <1.5 min, self-cleaning)
-   - `fixture-architecture.md` - Pure function → Fixture → mergeTests pattern
-   - `network-first.md` - Route intercept before navigate (race condition prevention)
-   - `data-factories.md` - Factory functions with overrides, API-first setup
-   - `test-levels-framework.md` - E2E vs API vs Component vs Unit appropriateness
-   - `playwright-config.md` - Environment-based configuration (if Playwright detected)
-   - `tdd-cycles.md` - Red-Green-Refactor patterns
-   - `selective-testing.md` - Duplicate coverage detection
+   - `test-quality.md` - Definition of Done (deterministic tests, isolated with cleanup, explicit assertions, <300 lines, <1.5 min, 658 lines, 5 examples)
+   - `fixture-architecture.md` - Pure function → Fixture → mergeTests composition with auto-cleanup (406 lines, 5 examples)
+   - `network-first.md` - Route intercept before navigate to prevent race conditions (intercept before navigate, HAR capture, deterministic waiting, 489 lines, 5 examples)
+   - `data-factories.md` - Factory functions with faker: overrides, nested factories, API-first setup (498 lines, 5 examples)
+   - `test-levels-framework.md` - E2E vs API vs Component vs Unit appropriateness with decision matrix (467 lines, 4 examples)
+   - `playwright-config.md` - Environment-based configuration with fail-fast validation (722 lines, 5 examples)
+   - `component-tdd.md` - Red-Green-Refactor patterns with provider isolation, accessibility, visual regression (480 lines, 4 examples)
+   - `selective-testing.md` - Duplicate coverage detection with tag-based, spec filter, diff-based selection (727 lines, 4 examples)
+   - `test-healing-patterns.md` - Common failure patterns: stale selectors, race conditions, dynamic data, network errors, hard waits (648 lines, 5 examples)
+   - `selector-resilience.md` - Selector best practices (data-testid > ARIA > text > CSS hierarchy, anti-patterns, 541 lines, 4 examples)
+   - `timing-debugging.md` - Race condition prevention and async debugging techniques (370 lines, 3 examples)
+   - `ci-burn-in.md` - Flaky test detection with 10-iteration burn-in loop (678 lines, 4 examples)
 
 2. Determine review scope:
    - **single**: Review one test file (`test_file_path` provided)

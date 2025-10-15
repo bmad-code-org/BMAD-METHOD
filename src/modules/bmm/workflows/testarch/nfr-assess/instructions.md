@@ -51,10 +51,11 @@ This workflow performs a comprehensive assessment of non-functional requirements
 **Actions:**
 
 1. Load relevant knowledge fragments from `{project-root}/bmad/bmm/testarch/tea-index.csv`:
-   - `nfr-criteria.md` - Non-functional requirements criteria and thresholds
-   - `ci-burn-in.md` - CI/CD burn-in patterns for reliability validation
-   - `test-quality.md` - Test quality expectations (related to maintainability)
-   - `playwright-config.md` - Performance configuration patterns (if using Playwright)
+   - `nfr-criteria.md` - Non-functional requirements criteria and thresholds (security, performance, reliability, maintainability with code examples, 658 lines, 4 examples)
+   - `ci-burn-in.md` - CI/CD burn-in patterns for reliability validation (10-iteration detection, sharding, selective execution, 678 lines, 4 examples)
+   - `test-quality.md` - Test quality expectations for maintainability (deterministic, isolated, explicit assertions, length/time limits, 658 lines, 5 examples)
+   - `playwright-config.md` - Performance configuration patterns: parallelization, timeout standards, artifact output (722 lines, 5 examples)
+   - `error-handling.md` - Reliability validation patterns: scoped exceptions, retry validation, telemetry logging, graceful degradation (736 lines, 4 examples)
 
 2. Read story file (if provided):
    - Extract NFR requirements
