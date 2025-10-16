@@ -1,0 +1,71 @@
+# TeachFlow Installation Configuration
+module_name: TeachFlow
+module_code: teachflow
+installation_date: 2025-10-14
+
+# Installation steps
+install_steps:
+  - name: "Create directories"
+    action: "mkdir"
+    paths:
+      - "{project-root}/bmad/teachflow"
+      - "{project-root}/bmad/teachflow/data"
+      - "{project-root}/bmad/teachflow/agents"
+      - "{project-root}/bmad/teachflow/workflows"
+      - "{project-root}/bmad/teachflow/templates"
+      - "{project-root}/docs/teachflow"
+
+  - name: "Copy configuration"
+    action: "copy"
+    source: "{installer_path}/config.yaml"
+    dest: "{project-root}/bmad/teachflow/config.yaml"
+
+  - name: "Copy agents README"
+    action: "copy"
+    source: "{installer_path}/agents/README.md"
+    dest: "{project-root}/bmad/teachflow/agents/README.md"
+
+  - name: "Copy workflows README"
+    action: "copy"
+    source: "{installer_path}/workflows/README.md"
+    dest: "{project-root}/bmad/teachflow/workflows/README.md"
+
+  - name: "Copy module README"
+    action: "copy"
+    source: "{installer_path}/README.md"
+    dest: "{project-root}/bmad/teachflow/README.md"
+
+  - name: "Register module"
+    action: "register"
+    manifest: "{project-root}/bmad/_cfg/manifest.yaml"
+
+# External assets
+external_assets: []
+
+# Post-install message
+post_install_message: |
+  🎓 TeachFlow Module Installed Successfully!
+
+  TeachFlow is now ready to help streamline your teaching workflow.
+
+  📋 Next Steps:
+
+  1. Create your first agent:
+     /bmad:bmb:workflows:create-agent
+     Start with: Instructional Designer or Behavior Specialist
+
+  2. Create your first workflow:
+     /bmad:bmb:workflows:create-workflow
+     Recommended: lesson-plan-builder or behavior-incident-report
+
+  3. Check the roadmap:
+     See bmad/teachflow/TODO.md for development plan
+
+  4. Read the documentation:
+     See bmad/teachflow/README.md for full guide
+
+  📂 Module Location: bmad/teachflow/
+  📝 Documentation: bmad/teachflow/README.md
+  🗺️  Development Roadmap: bmad/teachflow/TODO.md
+
+  Happy teaching! 🍎

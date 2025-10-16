@@ -910,6 +910,11 @@ class Installer {
         continue;
       }
 
+      // Skip workflow instructions.md files to preserve user customizations
+      if (file.includes('workflows/') && file.endsWith('instructions.md')) {
+        continue;
+      }
+
       const sourceFile = path.join(sourcePath, file);
       const targetFile = path.join(targetPath, file);
 

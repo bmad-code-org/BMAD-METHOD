@@ -1,0 +1,13 @@
+# TeachFlow Module Configuration
+
+code: teachflow
+name: "TeachFlow: 3D Learning & Standards Alignment for Educators"
+description: "NGSS-aligned lesson planning with 3D learning framework (SEP, DCI, CCC)"
+version: "1.0.0"
+default_selected: false # This module will not be selected by default for new installations
+
+prompt: "Transform your teaching with 3D learning standards alignment and AI-powered lesson planning."
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
