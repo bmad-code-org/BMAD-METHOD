@@ -3,6 +3,7 @@
 ````xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>This workflow assembles a Story Context XML for a single user story by extracting ACs, tasks, relevant docs/code, interfaces, constraints, and testing guidance to support implementation.</critical>
 <critical>Default execution mode: #yolo (non-interactive). Only ask if {{non_interactive}} == false. If auto-discovery fails, HALT and request 'story_path' or 'story_dir'.</critical>
 
@@ -168,7 +169,7 @@ What would you like to do?</ask>
       - **{{date}}**: Completed story-context for Story {{story_id}} ({{story_title}}). Context file: {{default_output_file}}. Next: DEV agent should run dev-story to implement.
       ```
 
-      <output>**✅ Story Context Generated Successfully**
+      <output>**✅ Story Context Generated Successfully, {user_name}!**
 
 **Story Details:**
 - Story ID: {{story_id}}
@@ -189,7 +190,7 @@ Check status anytime with: `workflow-status`
     </check>
 
     <check if="status file not found">
-      <output>**✅ Story Context Generated Successfully**
+      <output>**✅ Story Context Generated Successfully, {user_name}!**
 
 **Story Details:**
 - Story ID: {{story_id}}

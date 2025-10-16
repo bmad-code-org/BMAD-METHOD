@@ -20,7 +20,7 @@ agent:
   menu:
     - trigger: workflow-status
       workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
-      description: Check workflow status and get recommendations
+      description: Check workflow status and get recommendations (START HERE!)
 
     - trigger: brainstorm-game
       workflow: "{project-root}/bmad/bmm/workflows/1-analysis/brainstorm-game/workflow.yaml"
@@ -30,9 +30,13 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/1-analysis/game-brief/workflow.yaml"
       description: Create Game Brief
 
-    - trigger: plan-game
-      workflow: "{project-root}/bmad/bmm/workflows/2-plan/workflow.yaml"
+    - trigger: gdd
+      workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/gdd/workflow.yaml"
       description: Create Game Design Document (GDD)
+
+    - trigger: narrative
+      workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/narrative/workflow.yaml"
+      description: Create Narrative Design Document (story-driven games)
 
     - trigger: research
       workflow: "{project-root}/bmad/bmm/workflows/1-analysis/research/workflow.yaml"

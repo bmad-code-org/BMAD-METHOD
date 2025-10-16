@@ -244,12 +244,12 @@ class BaseIdeSetup {
       processed = this.xmlHandler.injectActivationSimple(processed, metadata);
     }
 
-    // Use the actual project directory path if provided, otherwise default to 'bmad'
+    // Only replace {project-root} if a specific projectDir is provided
+    // Otherwise leave the placeholder intact
     // Note: Don't add trailing slash - paths in source include leading slash
-    const projectRoot = projectDir || 'bmad';
-
-    // Common replacements (including in the activation block)
-    processed = processed.replaceAll('{project-root}', projectRoot);
+    if (projectDir) {
+      processed = processed.replaceAll('{project-root}', projectDir);
+    }
     processed = processed.replaceAll('{module}', metadata.module || 'core');
     processed = processed.replaceAll('{agent}', metadata.name || '');
     processed = processed.replaceAll('{task}', metadata.name || '');

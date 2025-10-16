@@ -3,6 +3,7 @@
 ````xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>This is a meta-workflow that orchestrates the CIS brainstorming workflow with project-specific context</critical>
 
 <workflow>
@@ -77,7 +78,7 @@ What would you like to do?</ask>
       - **{{date}}**: Completed brainstorm-project workflow. Generated brainstorming session results saved to {output_folder}/brainstorming-session-results-{{date}}.md. Next: Review ideas and consider running research or product-brief workflows.
       ```
 
-      <output>**✅ Brainstorming Session Complete**
+      <output>**✅ Brainstorming Session Complete, {user_name}!**
 
 **Session Results:**
 - Brainstorming results saved to: {output_folder}/brainstorming-session-results-{{date}}.md
@@ -98,7 +99,7 @@ Check status anytime with: `workflow-status`
     </check>
 
     <check if="status file not found">
-      <output>**✅ Brainstorming Session Complete**
+      <output>**✅ Brainstorming Session Complete, {user_name}!**
 
 **Session Results:**
 - Brainstorming results saved to: {output_folder}/brainstorming-session-results-{{date}}.md

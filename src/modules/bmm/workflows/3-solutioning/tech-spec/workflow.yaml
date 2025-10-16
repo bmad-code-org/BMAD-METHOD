@@ -25,27 +25,6 @@ validation: "{installed_path}/checklist.md"
 # Output configuration
 default_output_file: "{project-root}/docs/tech-spec-epic-{{epic_id}}.md"
 
-# Required tools
-required_tools:
-  - list_files
-  - file_info
-  - read_file
-  - write_file
-  - search_repo
-  - glob
-  - parse_markdown
-
-tags:
-  - tech-spec
-  - architecture
-  - planning
-  - bmad-v6
-
-execution_hints:
-  interactive: false
-  autonomous: true
-  iterative: true
-
 # Variables
 variables:
   non_interactive: true

@@ -1,7 +1,8 @@
 # Convert Legacy - v4 to v5 Conversion Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project_root}/bmad/bmb/workflows/convert-legacy/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<parameter name="You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/convert-legacy/workflow.yaml</critical>
+<critical>Communicate in {communication_language} throughout the conversion process</critical>
 
 <workflow>
 
@@ -205,6 +206,17 @@ For Modules:
    - Agent permissions → note in instructions
    - Processing flow → integrate into workflow steps
 
+<critical>When invoking create-workflow, the standard config block will be automatically added:</critical>
+
+```yaml
+# Critical variables from config
+config_source: '{project-root}/bmad/{{target_module}}/config.yaml'
+output_folder: '{config_source}:output_folder'
+user_name: '{config_source}:user_name'
+communication_language: '{config_source}:communication_language'
+date: system-generated
+```
+
 <invoke-workflow>
   workflow: {project-root}/bmad/bmb/workflows/create-workflow/workflow.yaml
   inputs:
@@ -213,6 +225,9 @@ For Modules:
     - template_structure: {{extracted_template}}
     - instructions: {{converted_sections}}
 </invoke-workflow>
+
+<action>Verify the created workflow.yaml includes standard config block</action>
+<action>Update converted instructions to use config variables where appropriate</action>
 
 <goto step="6">Continue to Validation</goto>
 </step>
@@ -263,6 +278,17 @@ For Modules:
    - YOLO mode → autonomous flag or optional steps
    - Critical notices → workflow.yaml comments
 
+<critical>When invoking create-workflow, the standard config block will be automatically added:</critical>
+
+```yaml
+# Critical variables from config
+config_source: '{project-root}/bmad/{{target_module}}/config.yaml'
+output_folder: '{config_source}:output_folder'
+user_name: '{config_source}:user_name'
+communication_language: '{config_source}:communication_language'
+date: system-generated
+```
+
 <invoke-workflow>
   workflow: {project-root}/bmad/bmb/workflows/create-workflow/workflow.yaml
   inputs:
@@ -271,6 +297,9 @@ For Modules:
     - instructions: {{extracted_task_logic}}
     - template: {{generated_template_if_document}}
 </invoke-workflow>
+
+<action>Verify the created workflow.yaml includes standard config block</action>
+<action>Update converted instructions to use config variables where appropriate</action>
 
 <goto step="6">Continue to Validation</goto>
 </step>
@@ -291,6 +320,17 @@ For Workflows:
 - [ ] Instructions follow v5 conventions
 - [ ] Template variables match
 - [ ] File structure correct
+
+**Standard Config Validation (Workflows):**
+
+- [ ] workflow.yaml contains standard config block:
+  - config_source defined
+  - output_folder, user_name, communication_language pulled from config
+  - date set to system-generated
+- [ ] Converted instructions use config variables where appropriate
+- [ ] Template includes config variables in metadata (if document workflow)
+- [ ] No hardcoded paths that should use {output_folder}
+- [ ] No generic greetings that should use {user_name}
 
 For Modules:
 
@@ -315,6 +355,7 @@ For Modules:
 - Warnings or notes
 
 <action>Save report to: {output_folder}/conversion-report-{{date}}.md</action>
+<action>Inform {user_name} in {communication_language} that the conversion report has been generated</action>
 </step>
 
 <step n="8" goal="Cleanup and Finalize">

@@ -2,6 +2,7 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 
 <workflow>
 
@@ -34,31 +35,18 @@ What would you like to do?</ask>
 </step>
 
 <step n="1" goal="Initialize product brief session">
-<action>Welcome the user to the Product Brief creation process</action>
-<action>Explain this is a collaborative process to define their product vision</action>
-<ask>Ask the user to provide the project name for this product brief</ask>
+<action>Welcome the user in {communication_language} to the Product Brief creation process</action>
+<action>Explain this is a collaborative process to define their product vision and strategic foundation</action>
+<action>Ask the user to provide the project name for this product brief</action>
 <template-output>project_name</template-output>
 </step>
 
 <step n="1" goal="Gather available inputs and context">
-<action>Check what inputs the user has available:</action>
-<ask>Do you have any of these documents to help inform the brief?
-1. Market research
-2. Brainstorming results
-3. Competitive analysis
-4. Initial product ideas or notes
-5. None - let's start fresh
-
-Please share any documents you have or select option 5.</ask>
-
-<action>Load and analyze any provided documents</action>
-<action>Extract key insights and themes from input documents</action>
-
-<ask>Based on what you've shared (or if starting fresh), please tell me:
-
-- What's the core problem you're trying to solve?
-- Who experiences this problem most acutely?
-- What sparked this product idea?</ask>
+<action>Explore what existing materials the user has available to inform the brief</action>
+<action>Offer options for input sources: market research, brainstorming results, competitive analysis, initial ideas, or starting fresh</action>
+<action>If documents are provided, load and analyze them to extract key insights, themes, and patterns</action>
+<action>Engage the user about their core vision: what problem they're solving, who experiences it most acutely, and what sparked this product idea</action>
+<action>Build initial understanding through conversational exploration rather than rigid questioning</action>
 
 <template-output>initial_context</template-output>
 </step>
@@ -76,70 +64,39 @@ Which approach works best for you?</ask>
 </step>
 
 <step n="3" goal="Define the problem statement" if="collaboration_mode == 'interactive'">
-<ask>Let's dig deeper into the problem. Tell me:
-- What's the current state that frustrates users?
-- Can you quantify the impact? (time lost, money spent, opportunities missed)
-- Why do existing solutions fall short?
-- Why is solving this urgent now?</ask>
-
-<action>Challenge vague statements and push for specificity</action>
-<action>Help the user articulate measurable pain points</action>
-<action>Create a compelling problem statement with evidence</action>
+<action>Guide deep exploration of the problem: current state frustrations, quantifiable impact (time/money/opportunities), why existing solutions fall short, urgency of solving now</action>
+<action>Challenge vague statements and push for specificity with probing questions</action>
+<action>Help the user articulate measurable pain points with evidence</action>
+<action>Craft a compelling, evidence-based problem statement</action>
 
 <template-output>problem_statement</template-output>
 </step>
 
 <step n="4" goal="Develop the proposed solution" if="collaboration_mode == 'interactive'">
-<ask>Now let's shape your solution vision:
-- What's your core approach to solving this problem?
-- What makes your solution different from what exists?
-- Why will this succeed where others haven't?
-- Paint me a picture of the ideal user experience</ask>
-
-<action>Focus on the "what" and "why", not implementation details</action>
-<action>Help articulate key differentiators</action>
-<action>Craft a clear solution vision</action>
+<action>Shape the solution vision by exploring: core approach to solving the problem, key differentiators from existing solutions, why this will succeed, ideal user experience</action>
+<action>Focus on the "what" and "why", not implementation details - keep it strategic</action>
+<action>Help articulate compelling differentiators that make this solution unique</action>
+<action>Craft a clear, inspiring solution vision</action>
 
 <template-output>proposed_solution</template-output>
 </step>
 
 <step n="5" goal="Identify target users" if="collaboration_mode == 'interactive'">
-<ask>Who exactly will use this product? Let's get specific:
-
-For your PRIMARY users:
-
-- What's their demographic/professional profile?
-- What are they currently doing to solve this problem?
-- What specific pain points do they face?
-- What goals are they trying to achieve?
-
-Do you have a SECONDARY user segment? If so, let's define them too.</ask>
-
-<action>Push beyond generic personas like "busy professionals"</action>
-<action>Create specific, actionable user profiles</action>
-<action>[VISUAL PLACEHOLDER: User persona cards or journey map would be valuable here]</action>
+<action>Guide detailed definition of primary users: demographic/professional profile, current problem-solving methods, specific pain points, goals they're trying to achieve</action>
+<action>Explore secondary user segments if applicable and define how their needs differ</action>
+<action>Push beyond generic personas like "busy professionals" - demand specificity and actionable details</action>
+<action>Create specific, actionable user profiles that inform product decisions</action>
 
 <template-output>primary_user_segment</template-output>
 <template-output>secondary_user_segment</template-output>
 </step>
 
 <step n="6" goal="Establish goals and success metrics" if="collaboration_mode == 'interactive'">
-<ask>What does success look like? Let's set SMART goals:
-
-Business objectives (with measurable outcomes):
-
-- Example: "Acquire 1000 paying users within 6 months"
-- Example: "Reduce customer support tickets by 40%"
-
-User success metrics (behaviors/outcomes, not features):
-
-- Example: "Users complete core task in under 2 minutes"
-- Example: "70% of users return weekly"
-
-What are your top 3-5 Key Performance Indicators?</ask>
-
-<action>Help formulate specific, measurable goals</action>
-<action>Distinguish between business and user success</action>
+<action>Guide establishment of SMART goals across business objectives and user success metrics</action>
+<action>Explore measurable business outcomes (user acquisition targets, cost reductions, revenue goals)</action>
+<action>Define user success metrics focused on behaviors and outcomes, not features (task completion time, return frequency)</action>
+<action>Help formulate specific, measurable goals that distinguish between business and user success</action>
+<action>Identify top 3-5 Key Performance Indicators that will track product success</action>
 
 <template-output>business_objectives</template-output>
 <template-output>user_success_metrics</template-output>
@@ -147,24 +104,11 @@ What are your top 3-5 Key Performance Indicators?</ask>
 </step>
 
 <step n="7" goal="Define MVP scope" if="collaboration_mode == 'interactive'">
-<ask>Let's be ruthless about MVP scope.
-
-What are the absolute MUST-HAVE features for launch?
-
-- Think: What's the minimum to validate your core hypothesis?
-- For each feature, why is it essential?
-
-What tempting features need to wait for v2?
-
-- What would be nice but isn't critical?
-- What adds complexity without core value?
-
-What would constitute a successful MVP launch?
-
-[VISUAL PLACEHOLDER: Consider a feature priority matrix or MoSCoW diagram]</ask>
-
-<action>Challenge scope creep aggressively</action>
-<action>Push for true minimum viability</action>
+<action>Be ruthless about MVP scope - identify absolute MUST-HAVE features for launch that validate the core hypothesis</action>
+<action>For each proposed feature, probe why it's essential vs nice-to-have</action>
+<action>Identify tempting features that need to wait for v2 - what adds complexity without core value</action>
+<action>Define what constitutes a successful MVP launch with clear criteria</action>
+<action>Challenge scope creep aggressively and push for true minimum viability</action>
 <action>Clearly separate must-haves from nice-to-haves</action>
 
 <template-output>core_features</template-output>
@@ -172,115 +116,53 @@ What would constitute a successful MVP launch?
 <template-output>mvp_success_criteria</template-output>
 </step>
 
-<step n="8" goal="Assess financial impact and ROI">
-<ask>Let's talk numbers and strategic value:
-
-**Financial Considerations:**
-
-- What's the expected development investment (budget/resources)?
-- What's the revenue potential or cost savings opportunity?
-- When do you expect to reach break-even?
-- How does this align with available budget?
-
-**Strategic Alignment:**
-
-- Which company OKRs or strategic objectives does this support?
-- How does this advance key strategic initiatives?
-- What's the opportunity cost of NOT doing this?
-
-[VISUAL PLACEHOLDER: Consider adding a simple ROI projection chart here]</ask>
-
-<action>Help quantify financial impact where possible</action>
-<action>Connect to broader company strategy</action>
-<action>Document both tangible and intangible value</action>
+<step n="8" goal="Assess financial impact and ROI" if="collaboration_mode == 'interactive'">
+<action>Explore financial considerations: development investment, revenue potential, cost savings opportunities, break-even timing, budget alignment</action>
+<action>Investigate strategic alignment: company OKRs, strategic objectives, key initiatives supported, opportunity cost of NOT doing this</action>
+<action>Help quantify financial impact where possible - both tangible and intangible value</action>
+<action>Connect this product to broader company strategy and demonstrate strategic value</action>
 
 <template-output>financial_impact</template-output>
 <template-output>company_objectives_alignment</template-output>
 <template-output>strategic_initiatives</template-output>
 </step>
 
-<step n="9" goal="Explore post-MVP vision" optional="true">
-<ask>Looking beyond MVP (optional but helpful):
-
-If the MVP succeeds, what comes next?
-
-- Phase 2 features?
-- Expansion opportunities?
-- Long-term vision (1-2 years)?
-
-This helps ensure MVP decisions align with future direction.</ask>
+<step n="9" goal="Explore post-MVP vision" optional="true" if="collaboration_mode == 'interactive'">
+<action>Guide exploration of post-MVP future: Phase 2 features, expansion opportunities, long-term vision (1-2 years)</action>
+<action>Ensure MVP decisions align with future direction while staying focused on immediate goals</action>
 
 <template-output>phase_2_features</template-output>
 <template-output>long_term_vision</template-output>
 <template-output>expansion_opportunities</template-output>
 </step>
 
-<step n="10" goal="Document technical considerations">
-<ask>Let's capture technical context. These are preferences, not final decisions:
-
-Platform requirements:
-
-- Web, mobile, desktop, or combination?
-- Browser/OS support needs?
-- Performance requirements?
-- Accessibility standards?
-
-Do you have technology preferences or constraints?
-
-- Frontend frameworks?
-- Backend preferences?
-- Database needs?
-- Infrastructure requirements?
-
-Any existing systems to integrate with?</ask>
-
+<step n="10" goal="Document technical considerations" if="collaboration_mode == 'interactive'">
+<action>Capture technical context as preferences, not final decisions</action>
+<action>Explore platform requirements: web/mobile/desktop, browser/OS support, performance needs, accessibility standards</action>
+<action>Investigate technology preferences or constraints: frontend/backend frameworks, database needs, infrastructure requirements</action>
+<action>Identify existing systems requiring integration</action>
 <action>Check for technical-preferences.yaml file if available</action>
-<action>Note these are initial thoughts for PM and architect to consider</action>
+<action>Note these are initial thoughts for PM and architect to consider during planning</action>
 
 <template-output>platform_requirements</template-output>
 <template-output>technology_preferences</template-output>
 <template-output>architecture_considerations</template-output>
 </step>
 
-<step n="11" goal="Identify constraints and assumptions">
-<ask>Let's set realistic expectations:
-
-What constraints are you working within?
-
-- Budget or resource limits?
-- Timeline or deadline pressures?
-- Team size and expertise?
-- Technical limitations?
-
-What assumptions are you making?
-
-- About user behavior?
-- About the market?
-- About technical feasibility?</ask>
-
-<action>Document constraints clearly</action>
-<action>List assumptions to validate during development</action>
+<step n="11" goal="Identify constraints and assumptions" if="collaboration_mode == 'interactive'">
+<action>Guide realistic expectations setting around constraints: budget/resource limits, timeline pressures, team size/expertise, technical limitations</action>
+<action>Explore assumptions being made about: user behavior, market conditions, technical feasibility</action>
+<action>Document constraints clearly and list assumptions that need validation during development</action>
 
 <template-output>constraints</template-output>
 <template-output>key_assumptions</template-output>
 </step>
 
-<step n="12" goal="Assess risks and open questions" optional="true">
-<ask>What keeps you up at night about this project?
-
-Key risks:
-
-- What could derail the project?
-- What's the impact if these risks materialize?
-
-Open questions:
-
-- What do you still need to figure out?
-- What needs more research?
-
-[VISUAL PLACEHOLDER: Risk/impact matrix could help prioritize]
-
-Being honest about unknowns helps us prepare.</ask>
+<step n="12" goal="Assess risks and open questions" optional="true" if="collaboration_mode == 'interactive'">
+<action>Facilitate honest risk assessment: what could derail the project, impact if risks materialize</action>
+<action>Document open questions: what still needs figuring out, what needs more research</action>
+<action>Help prioritize risks by impact and likelihood</action>
+<action>Frame unknowns as opportunities to prepare, not just worries</action>
 
 <template-output>key_risks</template-output>
 <template-output>open_questions</template-output>
@@ -371,11 +253,17 @@ Being honest about unknowns helps us prepare.</ask>
 
 1. Review the entire document
 2. Make final adjustments
-3. Save and prepare for handoff to PM
+3. Generate an executive summary version (3-page limit)
+4. Save and prepare for handoff to PM
 
 This brief will serve as the primary input for creating the Product Requirements Document (PRD).</ask>
 
+<check>If user chooses option 3 (executive summary):</check>
+<action>Create condensed 3-page executive brief focusing on: problem statement, proposed solution, target users, MVP scope, financial impact, and strategic alignment</action>
+<action>Save as: {output_folder}/product-brief-executive-{{project_name}}-{{date}}.md</action>
+
 <template-output>final_brief</template-output>
+<template-output>executive_brief</template-output>
 </step>
 
 <step n="16" goal="Update status file on completion">
@@ -401,11 +289,11 @@ This brief will serve as the primary input for creating the Product Requirements
 - **{{date}}**: Completed product-brief workflow. Product brief document generated and saved. Next: Proceed to plan-project workflow to create Product Requirements Document (PRD).
 ```
 
-<output>**✅ Product Brief Complete**
+<output>**✅ Product Brief Complete, {user_name}!**
 
 **Brief Document:**
 
-- Product brief saved and ready for handoff
+- Product brief saved to {output_folder}/product-brief-{{project_name}}-{{date}}.md
 
 **Status file updated:**
 

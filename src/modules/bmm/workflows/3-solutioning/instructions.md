@@ -5,6 +5,10 @@ This workflow generates scale-adaptive solution architecture documentation that 
 ```xml
 <workflow name="solution-architecture">
 
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
+
 <step n="0" goal="Load project analysis, validate prerequisites, and scale assessment">
 <action>
 1. Search {output_folder}/ for files matching pattern: bmm-workflow-status.md
@@ -765,7 +769,7 @@ Add entries for all generated tech specs
 </action>
 
 <ask>
-**Phase 3 (Solutioning) Complete!**
+**Phase 3 (Solutioning) Complete, {user_name}!**
 
 ✅ Solution architecture generated
 ✅ Cohesion check passed

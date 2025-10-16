@@ -1,5 +1,9 @@
 # Story Ready Workflow Instructions (SM Agent)
 
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
+
 <workflow>
 
 <critical>This workflow is run by SM agent AFTER user reviews a drafted story and confirms it's ready for development</critical>
@@ -128,7 +132,7 @@ If BACKLOG had 1 story and is now empty:
 
 <action>Display summary</action>
 
-**Story Marked Ready for Development!**
+**Story Marked Ready for Development, {user_name}!**
 
 ✅ Story file updated: `{{todo_story_file}}` → Status: Ready
 ✅ Status file updated: Story moved TODO → IN PROGRESS

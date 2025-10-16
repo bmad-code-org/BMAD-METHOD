@@ -17,3 +17,6 @@ test-quality,Test Quality Definition of Done,"Execution limits, isolation rules,
 nfr-criteria,NFR Review Criteria,"Security, performance, reliability, maintainability status definitions","nfr,assessment,quality",knowledge/nfr-criteria.md
 test-levels,Test Levels Framework,"Guidelines for choosing unit, integration, or end-to-end coverage","testing,levels,selection",knowledge/test-levels-framework.md
 test-priorities,Test Priorities Matrix,"P0–P3 criteria, coverage targets, execution ordering","testing,prioritization,risk",knowledge/test-priorities-matrix.md
+test-healing-patterns,Test Healing Patterns,"Common failure patterns and automated fixes","healing,debugging,patterns",knowledge/test-healing-patterns.md
+selector-resilience,Selector Resilience,"Robust selector strategies and debugging techniques","selectors,locators,debugging",knowledge/selector-resilience.md
+timing-debugging,Timing Debugging,"Race condition identification and deterministic wait fixes","timing,async,debugging",knowledge/timing-debugging.md

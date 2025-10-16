@@ -1,12 +1,13 @@
 # ReDoc Workflow Instructions
 
-<workflow>
-
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project_root}/src/modules/bmb/workflows/redoc/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/src/modules/bmb/workflows/redoc/workflow.yaml</critical>
+<critical>Communicate in {communication_language} throughout the documentation process</critical>
 <critical>This is an AUTONOMOUS workflow - minimize user interaction unless clarification is absolutely required</critical>
 <critical>IMPORTANT: Process ONE document at a time to avoid token limits. Each README should be created individually, not batched.</critical>
 <critical>When using Task tool with sub-agents: Only request ONE workflow or agent documentation per invocation to prevent token overflow.</critical>
+
+<workflow>
 
 <step n="1" goal="Load BMAD conventions and initialize">
 <action>Load ALL BMAD convention documents from {bmad_conventions}:
@@ -256,9 +257,9 @@ For each README with last-redoc-date frontmatter:
 </step>
 
 <step n="8" goal="Completion">
-<action>Confirm autonomous workflow execution complete</action>
+<action>Confirm to {user_name} in {communication_language} that autonomous workflow execution is complete</action>
 <action>Provide path to all updated documentation</action>
-<action>Suggest next steps if needed (e.g., "Run redoc on parent module to update references")</action>
+<action>Suggest next steps if needed</action>
 </step>
 
 </workflow>

@@ -2,6 +2,7 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 
 <workflow>
 
@@ -34,33 +35,18 @@ What would you like to do?</ask>
 </step>
 
 <step n="1" goal="Initialize game brief session">
-<action>Welcome the user to the Game Brief creation process</action>
-<action>Explain this is a collaborative process to define their game vision</action>
-<ask>What is the working title for your game?</ask>
+<action>Welcome the user in {communication_language} to the Game Brief creation process</action>
+<action>Explain this is a collaborative process to define their game vision, capturing the essence of what they want to create</action>
+<action>Ask for the working title of their game</action>
 <template-output>game_name</template-output>
 </step>
 
 <step n="1" goal="Gather available inputs and context">
-<action>Check what inputs the user has available:</action>
-<ask>Do you have any of these documents to help inform the brief?
-
-1. Market research or player data
-2. Brainstorming results or game jam prototypes
-3. Competitive game analysis
-4. Initial game ideas or design notes
-5. Reference games list
-6. None - let's start fresh
-
-Please share any documents you have or select option 6.</ask>
-
-<action>Load and analyze any provided documents</action>
-<action>Extract key insights and themes from input documents</action>
-
-<ask>Based on what you've shared (or if starting fresh), tell me:
-
-- What's the core gameplay experience you want to create?
-- What emotion or feeling should players have?
-- What sparked this game idea?</ask>
+<action>Explore what existing materials the user has available to inform the brief</action>
+<action>Offer options for input sources: market research, brainstorming results, competitive analysis, design notes, reference games, or starting fresh</action>
+<action>If documents are provided, load and analyze them to extract key insights, themes, and patterns</action>
+<action>Engage the user about their core vision: what gameplay experience they want to create, what emotions players should feel, and what sparked this game idea</action>
+<action>Build initial understanding through conversational exploration rather than rigid questioning</action>
 
 <template-output>initial_context</template-output>
 </step>
@@ -78,22 +64,11 @@ Which approach works best for you?</ask>
 </step>
 
 <step n="3" goal="Define game vision" if="collaboration_mode == 'interactive'">
-<ask>Let's capture your game vision.
-
-**Core Concept** - What is your game in one sentence?
-Example: "A roguelike deck-builder where you climb a mysterious spire"
-
-**Elevator Pitch** - Describe your game in 2-3 sentences as if pitching to a publisher or player.
-Example: "Slay the Spire fuses card games and roguelikes together. Craft a unique deck, encounter bizarre creatures, discover relics of immense power, and kill the Spire."
-
-**Vision Statement** - What is the aspirational goal for this game? What experience do you want to create?
-Example: "Create a deeply replayable tactical card game that rewards strategic thinking while maintaining the excitement of randomness. Every run should feel unique but fair."
-
-Your answers:</ask>
-
-<action>Help refine the core concept to be clear and compelling</action>
-<action>Ensure elevator pitch is concise but captures the hook</action>
-<action>Guide vision statement to be aspirational but achievable</action>
+<action>Guide user to articulate their game vision across three levels of depth</action>
+<action>Help them craft a one-sentence core concept that captures the essence (reference successful games like "A roguelike deck-builder where you climb a mysterious spire" as examples)</action>
+<action>Develop an elevator pitch (2-3 sentences) that would compel a publisher or player - refine until it's concise but hooks attention</action>
+<action>Explore their aspirational vision statement: the experience they want to create and what makes it meaningful - ensure it's ambitious yet achievable</action>
+<action>Refine through conversation, challenging vague language and elevating compelling ideas</action>
 
 <template-output>core_concept</template-output>
 <template-output>elevator_pitch</template-output>
@@ -101,32 +76,11 @@ Your answers:</ask>
 </step>
 
 <step n="4" goal="Identify target market" if="collaboration_mode == 'interactive'">
-<ask>Who will play your game?
-
-**Primary Audience:**
-
-- Age range
-- Gaming experience level (casual, core, hardcore)
-- Preferred genres
-- Platform preferences
-- Typical play session length
-- Why will THIS game appeal to them?
-
-**Secondary Audience** (if applicable):
-
-- Who else might enjoy this game?
-- How might their needs differ?
-
-**Market Context:**
-
-- What's the market opportunity?
-- Are there similar successful games?
-- What's the competitive landscape?
-- Why is now the right time for this game?</ask>
-
-<action>Push for specificity beyond "people who like fun games"</action>
-<action>Help identify a realistic and reachable audience</action>
-<action>Document market evidence or assumptions</action>
+<action>Guide user to define their primary target audience with specific demographics, gaming preferences, and behavioral characteristics</action>
+<action>Push for specificity beyond generic descriptions like "people who like fun games" - challenge vague answers</action>
+<action>Explore secondary audiences if applicable and how their needs might differ</action>
+<action>Investigate the market context: opportunity size, competitive landscape, similar successful games, and why now is the right time</action>
+<action>Help identify a realistic and reachable audience segment based on evidence or well-reasoned assumptions</action>
 
 <template-output>primary_audience</template-output>
 <template-output>secondary_audience</template-output>
@@ -134,32 +88,12 @@ Your answers:</ask>
 </step>
 
 <step n="5" goal="Define game fundamentals" if="collaboration_mode == 'interactive'">
-<ask>Let's define your core gameplay.
-
-**Core Gameplay Pillars (2-4 fundamental elements):**
-These are the pillars that define your game. Everything should support these.
-Examples:
-
-- "Tight controls + challenging combat + rewarding exploration" (Hollow Knight)
-- "Emergent stories + survival tension + creative problem solving" (RimWorld)
-- "Strategic depth + quick sessions + massive replayability" (Into the Breach)
-
-**Primary Mechanics:**
-What does the player actually DO?
-
-- Core actions (jump, shoot, build, manage, etc.)
-- Key systems (combat, resource management, progression, etc.)
-- Interaction model (real-time, turn-based, etc.)
-
-**Player Experience Goals:**
-What emotions and experiences are you designing for?
-Examples: tension and relief, mastery and growth, creativity and expression, discovery and surprise
-
-Your game fundamentals:</ask>
-
-<action>Ensure pillars are specific and measurable</action>
-<action>Focus on player actions, not implementation details</action>
-<action>Connect mechanics to emotional experience</action>
+<action>Help user identify 2-4 core gameplay pillars that fundamentally define their game - everything should support these pillars</action>
+<action>Provide examples from successful games for inspiration (Hollow Knight's "tight controls + challenging combat + rewarding exploration")</action>
+<action>Explore what the player actually DOES - core actions, key systems, and interaction models</action>
+<action>Define the emotional experience goals: what feelings are you designing for (tension/relief, mastery/growth, creativity/expression, discovery/surprise)</action>
+<action>Ensure pillars are specific and measurable, focusing on player actions rather than implementation details</action>
+<action>Connect mechanics directly to emotional experiences through guided discussion</action>
 
 <template-output>core_gameplay_pillars</template-output>
 <template-output>primary_mechanics</template-output>
@@ -167,46 +101,13 @@ Your game fundamentals:</ask>
 </step>
 
 <step n="6" goal="Define scope and constraints" if="collaboration_mode == 'interactive'">
-<ask>Let's establish realistic constraints.
-
-**Target Platforms:**
-
-- PC (Steam, itch.io, Epic)?
-- Console (which ones)?
-- Mobile (iOS, Android)?
-- Web browser?
-- Priority order if multiple?
-
-**Development Timeline:**
-
-- Target release date or timeframe?
-- Are there fixed deadlines (game jams, funding milestones)?
-- Phased release (early access, beta)?
-
-**Budget Considerations:**
-
-- Self-funded, grant-funded, publisher-backed?
-- Asset creation budget (art, audio, voice)?
-- Marketing budget?
-- Tools and software costs?
-
-**Team Resources:**
-
-- Team size and roles?
-- Full-time or part-time?
-- Skills available vs. skills needed?
-- Outsourcing plans?
-
-**Technical Constraints:**
-
-- Engine preference or requirement?
-- Performance targets (frame rate, load times)?
-- File size limits?
-- Accessibility requirements?</ask>
-
-<action>Help user be realistic about scope</action>
-<action>Identify potential blockers early</action>
-<action>Document assumptions about resources</action>
+<action>Help user establish realistic project constraints across all key dimensions</action>
+<action>Explore target platforms and prioritization (PC, console, mobile, web)</action>
+<action>Discuss development timeline: release targets, fixed deadlines, phased release strategies</action>
+<action>Investigate budget reality: funding source, asset creation costs, marketing, tools and software</action>
+<action>Assess team resources: size, roles, availability, skills gaps, outsourcing needs</action>
+<action>Define technical constraints: engine choice, performance targets, file size limits, accessibility requirements</action>
+<action>Push for realism about scope - identify potential blockers early and document resource assumptions</action>
 
 <template-output>target_platforms</template-output>
 <template-output>development_timeline</template-output>
@@ -216,34 +117,11 @@ Your game fundamentals:</ask>
 </step>
 
 <step n="7" goal="Establish reference framework" if="collaboration_mode == 'interactive'">
-<ask>Let's identify your reference games and position.
-
-**Inspiration Games:**
-List 3-5 games that inspire this project. For each:
-
-- Game name
-- What you're drawing from it (mechanic, feel, art style, etc.)
-- What you're NOT taking from it
-
-**Competitive Analysis:**
-What games are most similar to yours?
-
-- Direct competitors (very similar games)
-- Indirect competitors (solve same player need differently)
-- What they do well
-- What they do poorly
-- What your game will do differently
-
-**Key Differentiators:**
-What makes your game unique?
-
-- What's your hook?
-- Why will players choose your game over alternatives?
-- What can you do that others can't or won't?</ask>
-
-<action>Help identify genuine differentiation vs. "just better"</action>
-<action>Look for specific, concrete differences</action>
-<action>Validate differentiators are actually valuable to players</action>
+<action>Guide user to identify 3-5 inspiration games and articulate what they're drawing from each (mechanics, feel, art style) and explicitly what they're NOT taking</action>
+<action>Conduct competitive analysis: identify direct and indirect competitors, analyze what they do well and poorly, and define how this game will differ</action>
+<action>Explore key differentiators and unique value proposition - what's the hook that makes players choose this game over alternatives</action>
+<action>Challenge "just better" thinking - push for genuine, specific differentiation that's actually valuable to players</action>
+<action>Validate that differentiators are concrete, achievable, and compelling</action>
 
 <template-output>inspiration_games</template-output>
 <template-output>competitive_analysis</template-output>
@@ -251,33 +129,11 @@ What makes your game unique?
 </step>
 
 <step n="8" goal="Define content framework" if="collaboration_mode == 'interactive'">
-<ask>Let's scope your content needs.
-
-**World and Setting:**
-
-- Where/when does your game take place?
-- How much world-building is needed?
-- Is narrative important (critical, supporting, minimal)?
-- Real-world or fantasy/sci-fi?
-
-**Narrative Approach:**
-
-- Story-driven, story-light, or no story?
-- Linear, branching, or emergent narrative?
-- Cutscenes, dialogue, environmental storytelling?
-- How much writing is needed?
-
-**Content Volume:**
-Estimate the scope:
-
-- How long is a typical playthrough?
-- How many levels/stages/areas?
-- Replayability approach (procedural, unlocks, multiple paths)?
-- Asset volume (characters, enemies, items, environments)?</ask>
-
-<action>Help estimate content realistically</action>
-<action>Identify if narrative workflow will be needed later</action>
-<action>Flag content-heavy areas that need planning</action>
+<action>Explore the game's world and setting: location, time period, world-building depth, narrative importance, and genre context</action>
+<action>Define narrative approach: story-driven/light/absent, linear/branching/emergent, delivery methods (cutscenes, dialogue, environmental), writing scope</action>
+<action>Estimate content volume realistically: playthrough length, level/stage count, replayability strategy, total asset volume</action>
+<action>Identify if a dedicated narrative workflow will be needed later based on story complexity</action>
+<action>Flag content-heavy areas that require detailed planning and resource allocation</action>
 
 <template-output>world_setting</template-output>
 <template-output>narrative_approach</template-output>
@@ -285,33 +141,11 @@ Estimate the scope:
 </step>
 
 <step n="9" goal="Define art and audio direction" if="collaboration_mode == 'interactive'">
-<ask>What should your game look and sound like?
-
-**Visual Style:**
-
-- Art style (pixel art, low-poly, hand-drawn, realistic, etc.)
-- Color palette and mood
-- Reference images or games with similar aesthetics
-- 2D or 3D?
-- Animation requirements
-
-**Audio Style:**
-
-- Music genre and mood
-- SFX approach (realistic, stylized, retro)
-- Voice acting needs (full, partial, none)?
-- Audio importance to gameplay (critical or supporting)
-
-**Production Approach:**
-
-- Creating assets in-house or outsourcing?
-- Asset store usage?
-- Generative/AI tools?
-- Style complexity vs. team capability?</ask>
-
-<action>Ensure art/audio vision aligns with budget and team skills</action>
-<action>Identify potential production bottlenecks</action>
-<action>Note if style guide will be needed</action>
+<action>Explore visual style direction: art style preference, color palette and mood, reference games/images, 2D vs 3D, animation requirements</action>
+<action>Define audio style: music genre and mood, SFX approach, voice acting scope, audio's importance to gameplay</action>
+<action>Discuss production approach: in-house creation vs outsourcing, asset store usage, AI/generative tools, style complexity vs team capability</action>
+<action>Ensure art and audio vision aligns realistically with budget and team skills - identify potential production bottlenecks early</action>
+<action>Note if a comprehensive style guide will be needed for consistent production</action>
 
 <template-output>visual_style</template-output>
 <template-output>audio_style</template-output>
@@ -319,38 +153,11 @@ Estimate the scope:
 </step>
 
 <step n="10" goal="Assess risks" if="collaboration_mode == 'interactive'">
-<ask>Let's identify potential risks honestly.
-
-**Key Risks:**
-
-- What could prevent this game from being completed?
-- What could make it not fun?
-- What assumptions are you making that might be wrong?
-
-**Technical Challenges:**
-
-- Any unproven technical elements?
-- Performance concerns?
-- Platform-specific challenges?
-- Middleware or tool dependencies?
-
-**Market Risks:**
-
-- Is the market saturated?
-- Are you dependent on a trend or platform?
-- Competition concerns?
-- Discoverability challenges?
-
-**Mitigation Strategies:**
-For each major risk, what's your plan?
-
-- How will you validate assumptions?
-- What's the backup plan?
-- Can you prototype risky elements early?</ask>
-
-<action>Encourage honest risk assessment</action>
-<action>Focus on actionable mitigation, not just worry</action>
-<action>Prioritize risks by impact and likelihood</action>
+<action>Facilitate honest risk assessment across all dimensions - what could prevent completion, what could make it unfun, what assumptions might be wrong</action>
+<action>Identify technical challenges: unproven elements, performance concerns, platform-specific issues, tool dependencies</action>
+<action>Explore market risks: saturation, trend dependency, competition intensity, discoverability challenges</action>
+<action>For each major risk, develop actionable mitigation strategies - how to validate assumptions, backup plans, early prototyping opportunities</action>
+<action>Prioritize risks by impact and likelihood, focusing on proactive mitigation rather than passive worry</action>
 
 <template-output>key_risks</template-output>
 <template-output>technical_challenges</template-output>
@@ -359,38 +166,11 @@ For each major risk, what's your plan?
 </step>
 
 <step n="11" goal="Define success criteria" if="collaboration_mode == 'interactive'">
-<ask>What does success look like?
-
-**MVP Definition:**
-What's the absolute minimum playable version?
-
-- Core loop must be fun and complete
-- Essential content only
-- What can be added later?
-- When do you know MVP is "done"?
-
-**Success Metrics:**
-How will you measure success?
-
-- Players acquired
-- Retention rate (daily, weekly)
-- Session length
-- Completion rate
-- Review scores
-- Revenue targets (if commercial)
-- Community engagement
-
-**Launch Goals:**
-What are your concrete targets for launch?
-
-- Sales/downloads in first month?
-- Review score target?
-- Streamer/press coverage goals?
-- Community size goals?</ask>
-
-<action>Push for specific, measurable goals</action>
-<action>Distinguish between MVP and full release</action>
-<action>Ensure goals are realistic given resources</action>
+<action>Define the MVP (Minimum Playable Version) - what's the absolute minimum where the core loop is fun and complete, with essential content only</action>
+<action>Establish specific, measurable success metrics: player acquisition, retention rates, session length, completion rate, review scores, revenue targets, community engagement</action>
+<action>Set concrete launch goals: first-month sales/downloads, review score targets, streamer/press coverage, community size</action>
+<action>Push for specificity and measurability - challenge vague aspirations with "how will you measure that?"</action>
+<action>Clearly distinguish between MVP milestones and full release goals, ensuring all targets are realistic given resources</action>
 
 <template-output>mvp_definition</template-output>
 <template-output>success_metrics</template-output>
@@ -398,36 +178,11 @@ What are your concrete targets for launch?
 </step>
 
 <step n="12" goal="Identify immediate next steps" if="collaboration_mode == 'interactive'">
-<ask>What needs to happen next?
-
-**Immediate Actions:**
-What should you do right after this brief?
-
-- Prototype a core mechanic?
-- Create art style test?
-- Validate technical feasibility?
-- Build vertical slice?
-- Playtest with target audience?
-
-**Research Needs:**
-What do you still need to learn?
-
-- Market validation?
-- Technical proof of concept?
-- Player interest testing?
-- Competitive deep-dive?
-
-**Open Questions:**
-What are you still uncertain about?
-
-- Design questions to resolve
-- Technical unknowns
-- Market validation needs
-- Resource/budget questions</ask>
-
-<action>Create actionable next steps</action>
-<action>Prioritize by importance and dependency</action>
-<action>Identify blockers that need resolution</action>
+<action>Identify immediate actions to take right after this brief: prototype core mechanics, create art style tests, validate technical feasibility, build vertical slice, playtest with target audience</action>
+<action>Determine research needs: market validation, technical proof of concept, player interest testing, competitive deep-dive</action>
+<action>Document open questions and uncertainties: unresolved design questions, technical unknowns, market validation needs, resource/budget questions</action>
+<action>Create actionable, specific next steps - prioritize by importance and dependency</action>
+<action>Identify blockers that must be resolved before moving forward</action>
 
 <template-output>immediate_actions</template-output>
 <template-output>research_needs</template-output>
@@ -529,7 +284,8 @@ What are you still uncertain about?
 
 1. Review the entire document
 2. Make final adjustments
-3. Save and prepare for GDD creation
+3. Generate an executive summary version (3-page limit)
+4. Save and prepare for GDD creation
 
 This brief will serve as the primary input for creating the Game Design Document (GDD).
 
@@ -539,7 +295,12 @@ This brief will serve as the primary input for creating the Game Design Document
 - Proceed to GDD workflow: `workflow gdd`
 - Validate assumptions with target players</ask>
 
+<check>If user chooses option 3 (executive summary):</check>
+<action>Create condensed 3-page executive brief focusing on: core concept, target market, gameplay pillars, key differentiators, and success criteria</action>
+<action>Save as: {output_folder}/game-brief-executive-{{game_name}}-{{date}}.md</action>
+
 <template-output>final_brief</template-output>
+<template-output>executive_brief</template-output>
 </step>
 
 <step n="16" goal="Update status file on completion">
@@ -565,11 +326,11 @@ This brief will serve as the primary input for creating the Game Design Document
 - **{{date}}**: Completed game-brief workflow. Game brief document generated and saved. Next: Proceed to plan-project workflow to create Game Design Document (GDD).
 ```
 
-<output>**✅ Game Brief Complete**
+<output>**✅ Game Brief Complete, {user_name}!**
 
 **Brief Document:**
 
-- Game brief saved and ready for GDD creation
+- Game brief saved to {output_folder}/game-brief-{{game_name}}-{{date}}.md
 
 **Status file updated:**
 
@@ -588,11 +349,11 @@ Check status anytime with: `workflow-status`
 </check>
 
 <check if="status file not found">
-  <output>**✅ Game Brief Complete**
+  <output>**✅ Game Brief Complete, {user_name}!**
 
 **Brief Document:**
 
-- Game brief saved and ready for GDD creation
+- Game brief saved to {output_folder}/game-brief-{{game_name}}-{{date}}.md
 
 Note: Running in standalone mode (no status file).
 

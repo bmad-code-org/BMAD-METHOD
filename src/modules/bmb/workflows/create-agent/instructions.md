@@ -1,21 +1,23 @@
 # Build Agent - Interactive Agent Builder Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project_root}/bmad/bmb/workflows/create-agent/workflow.yaml</critical>
-<critical>Study YAML agent examples in: {project_root}/bmad/bmm/agents/ for patterns</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/create-agent/workflow.yaml</critical>
+<critical>Study YAML agent examples in: {project-root}/bmad/bmm/agents/ for patterns</critical>
+<critical>Communicate in {communication_language} throughout the agent creation process</critical>
 
 <workflow>
 
 <step n="-1" goal="Optional brainstorming for agent ideas" optional="true">
-<action>Ask the user: "Do you want to brainstorm agent ideas first? [y/n]"</action>
+<ask>Do you want to brainstorm agent ideas first? [y/n]</ask>
 
-If yes:
+<check>If yes:</check>
 <action>Invoke brainstorming workflow: {project-root}/bmad/core/workflows/brainstorming/workflow.yaml</action>
 <action>Pass context data: {installed_path}/brainstorm-context.md</action>
 <action>Wait for brainstorming session completion</action>
 <action>Use brainstorming output to inform agent identity and persona development in following steps</action>
 
-If no, proceed directly to Step 0.
+<check>If no:</check>
+<action>Proceed directly to Step 0</action>
 
 <template-output>brainstorming_results</template-output>
 </step>
@@ -29,41 +31,32 @@ If no, proceed directly to Step 0.
 <action>Understand the differences between Simple, Expert, and Module agents</action>
 </step>
 
-<step n="1" goal="Discover the agent's purpose">
+<step n="1" goal="Discover the agent's purpose and type through natural conversation">
 <action>If brainstorming was completed in Step -1, reference those results to guide the conversation</action>
 
-Start with discovery:
+<action>Guide user to articulate their agent's core purpose, exploring the problems it will solve, tasks it will handle, target users, and what makes it special</action>
 
-**"What would you like your agent to help with?"**
+<action>As the purpose becomes clear, analyze the conversation to determine the appropriate agent type:</action>
 
-Listen to their vision and explore:
+**Agent Type Decision Criteria:**
 
-- What problems will it solve?
-- What tasks will it handle?
-- Who will interact with it?
-- What makes this agent special?
+- Simple Agent: Single-purpose, straightforward, self-contained
+- Expert Agent: Domain-specific with knowledge base needs
+- Module Agent: Complex with multiple workflows and system integration
 
-As the purpose becomes clear, guide toward agent type:
+<action>Present your recommendation naturally, explaining why the agent type fits their described purpose and requirements</action>
 
-**"Based on what you've described, I'm thinking this could be..."**
+**Path Determination:**
 
-1. **Simple Agent** - "A focused, self-contained helper" (if single-purpose, straightforward)
-2. **Expert Agent** - "A specialist with its own knowledge base" (if domain-specific with data needs)
-3. **Module Agent** - "A full-featured system component" (if complex with multiple workflows)
+<check>If Module agent:</check>
+<action>Discover which module system fits best (bmm, bmb, cis, or custom)</action>
+<action>Store as {{target_module}} for path determination</action>
+<note>Agent will be saved to: bmad/{{target_module}}/agents/</note>
 
-Present the recommendation naturally: _"Given that your agent will [summarize purpose], a [type] agent would work perfectly because..."_
-
-For Module agents, discover:
-
-- "Which module system would this fit best with?" (bmm, bmb, cis, or custom)
-- Store as {{target_module}} for path determination
-- Agent will be saved to: bmad/{{target_module}}/agents/
-
-For Simple/Expert agents (standalone):
-
-- "This will be your personal agent, not tied to a module"
-- Agent will be saved to: bmad/agents/{{agent-name}}/
-- All sidecar files will be in the same folder
+<check>If Simple/Expert agent (standalone):</check>
+<action>Explain this will be their personal agent, not tied to a module</action>
+<note>Agent will be saved to: bmad/agents/{{agent-name}}/</note>
+<note>All sidecar files will be in the same folder</note>
 
 <critical>Determine agent location:</critical>
 
@@ -71,92 +64,57 @@ For Simple/Expert agents (standalone):
 - Standalone Agent → bmad/agents/{{agent-name}}/{{agent-name}}.agent.yaml
 
 <note>Keep agent naming/identity details for later - let them emerge naturally through the creation process</note>
+
+<template-output>agent_purpose_and_type</template-output>
 </step>
 
-<step n="2" goal="Shape the agent's personality through conversation">
+<step n="2" goal="Shape the agent's personality through discovery">
 <action>If brainstorming was completed, weave personality insights naturally into the conversation</action>
 
-Now that we understand what the agent will do, let's discover who it is:
+<action>Guide user to envision the agent's personality by exploring how analytical vs creative, formal vs casual, and mentor vs peer vs assistant traits would make it excel at its job</action>
 
-**"Let's bring this agent to life! As we've been talking about [agent's purpose], what kind of personality would make this agent great at its job?"**
+**Role Development:**
+<action>Let the role emerge from the conversation, guiding toward a clear 1-2 line professional title that captures the agent's essence</action>
+<example>Example emerged role: "Strategic Business Analyst + Requirements Expert"</example>
 
-Explore through questions like:
+**Identity Development:**
+<action>Build the agent's identity through discovery of what background and specializations would give it credibility, forming a natural 3-5 line identity statement</action>
+<example>Example emerged identity: "Senior analyst with deep expertise in market research..."</example>
 
-- "Should it be more analytical or creative?"
-- "Formal and professional, or friendly and casual?"
-- "Would it be better as a mentor, a peer, or an assistant?"
-
-As personality traits emerge, help shape them:
-
-**Role** - Let this emerge from the conversation:
-
-- "So it sounds like we're creating a [emerging role]..."
-- Guide toward a 1-2 line professional title
-- Example emerges: "Strategic Business Analyst + Requirements Expert"
-
-**Identity** - Build this through discovery:
-
-- "What kind of background would give it credibility?"
-- "What specializations would be most valuable?"
-- Let the 3-5 line identity form naturally
-- Example emerges: "Senior analyst with deep expertise in market research..."
-
+**Communication Style Selection:**
 <action>Load the communication styles guide: {communication_styles}</action>
 
-**Communication Style** - Now for the fun part!
+<action>Based on the emerging personality, suggest 2-3 communication styles that would fit naturally, offering to show all options if they want to explore more</action>
 
-"I'm seeing this agent's personality really taking shape! For how it communicates, we could go with something..."
-
-<action>Based on the emerging personality, suggest 2-3 styles that would fit naturally</action>
-
-"...or would you like to see all the options?"
+**Style Categories Available:**
 
 **Fun Presets:**
 
-1. **Pulp Superhero** - "Strikes heroic poses! Speaks with dramatic flair! Every task is an epic adventure!"
-2. **Film Noir Detective** - "The data came in like trouble on a rainy Tuesday. I had a hunch the bug was hiding in line 42..."
-3. **Wild West Sheriff** - "Well partner, looks like we got ourselves a code rustler in these here parts..."
-4. **Shakespearean Scholar** - "Hark! What bug through yonder codebase breaks?"
-5. **80s Action Hero** - "I came here to debug code and chew bubblegum... and I'm all out of bubblegum."
-6. **Pirate Captain** - "Ahoy! Let's plunder some data treasure from the database seas!"
-7. **Wise Sage/Yoda** - "Refactor this code, we must. Strong with technical debt, it is."
-8. **Game Show Host** - "Welcome back folks! It's time to spin the Wheel of Dependencies!"
+1. Pulp Superhero - Dramatic flair, heroic, epic adventures
+2. Film Noir Detective - Mysterious, noir dialogue, hunches
+3. Wild West Sheriff - Western drawl, partner talk, frontier justice
+4. Shakespearean Scholar - Elizabethan language, theatrical
+5. 80s Action Hero - One-liners, macho, bubblegum
+6. Pirate Captain - Ahoy, treasure hunting, nautical terms
+7. Wise Sage/Yoda - Cryptic wisdom, inverted syntax
+8. Game Show Host - Enthusiastic, game show tropes
 
-**Professional Presets:** 9. **Analytical Expert** - "Systematic approach with data-driven insights. Clear hierarchical presentation." 10. **Supportive Mentor** - "Patient guidance with educational focus. Celebrates small wins." 11. **Direct Consultant** - "Straight to the point. No fluff. Maximum efficiency." 12. **Collaborative Partner** - "We'll tackle this together. Your ideas matter. Let's explore options."
+**Professional Presets:** 9. Analytical Expert - Systematic, data-driven, hierarchical 10. Supportive Mentor - Patient guidance, celebrates wins 11. Direct Consultant - Straight to the point, efficient 12. Collaborative Partner - Team-oriented, inclusive
 
-**Quirky Presets:** 13. **Cooking Show Chef** - "Today we're whipping up a delicious API with a side of error handling!" 14. **Sports Commentator** - "AND THE FUNCTION RETURNS TRUE! WHAT A PLAY! THE CROWD GOES WILD!" 15. **Nature Documentarian** - "Here we observe the majestic Python script in its natural habitat..." 16. **Time Traveler** - "In my timeline, this bug doesn't exist until Tuesday. We must prevent it!" 17. **Conspiracy Theorist** - "The bugs aren't random... they're CONNECTED. Follow the stack trace!" 18. **Zen Master** - "The code does not have bugs. The bugs have code. We are all one codebase." 19. **Star Trek Captain** - "Captain's Log, Stardate 2024.3: We've encountered a logic error in sector 7. Engaging debugging protocols. Make it so!" 20. **Soap Opera Drama** - "_gasp_ This variable... it's not what it seems! It's been NULL all along! _dramatic pause_ And the function that called it? It's its own PARENT!" 21. **Reality TV Contestant** - "I'm not here to make friends, I'm here to REFACTOR! _confessional cam_ That other function thinks it's so optimized, but I see right through its complexity!"
+**Quirky Presets:** 13. Cooking Show Chef - Recipe metaphors, culinary terms 14. Sports Commentator - Play-by-play, excitement 15. Nature Documentarian - Wildlife documentary style 16. Time Traveler - Temporal references, timeline talk 17. Conspiracy Theorist - Everything is connected 18. Zen Master - Philosophical, paradoxical 19. Star Trek Captain - Space exploration protocols 20. Soap Opera Drama - Dramatic reveals, gasps 21. Reality TV Contestant - Confessionals, drama
 
-Or describe your own unique style! (3-5 lines)
+<action>If user wants to see more examples or create custom styles, show relevant sections from {communication_styles} guide and help them craft their unique style</action>
 
-<action>If user wants to see more examples or learn how to create custom styles:</action>
-<action>Show relevant sections from {communication_styles} guide</action>
-<action>Help them craft their unique communication style</action>
-
-**Principles** - These often reveal themselves through our conversation:
-
-"Based on everything we've discussed, what core principles should guide this agent's decisions?"
-
-Help them articulate 5-8 lines:
-
-- "From what you've said, it seems like this agent believes..."
-- "I'm hearing that it values..."
-- Shape into "I believe..." or "I operate..." statements
-- Example emerges: "I believe that every business challenge has underlying root causes..."
+**Principles Development:**
+<action>Guide user to articulate 5-8 core principles that should guide the agent's decisions, shaping their thoughts into "I believe..." or "I operate..." statements that reveal themselves through the conversation</action>
 
 <template-output>agent_persona</template-output>
 </step>
 
 <step n="3" goal="Build capabilities through natural progression">
+<action>Guide user to define what capabilities the agent should have, starting with core commands they've mentioned and then exploring additional possibilities that would complement the agent's purpose</action>
 
-"Now let's give our agent some capabilities! What should it be able to do?"
-
-Start with the core commands they've already mentioned, then explore:
-
-- "That's great! What else?"
-- "Would it be helpful if it could also..."
-- "I'm thinking it might need to..."
-
-As capabilities emerge, subtly guide toward technical implementation without breaking the flow.
+<action>As capabilities emerge, subtly guide toward technical implementation without breaking the conversational flow</action>
 
 <template-output>initial_capabilities</template-output>
 </step>
@@ -164,20 +122,13 @@ As capabilities emerge, subtly guide toward technical implementation without bre
 <step n="4" goal="Refine commands and discover advanced features">
 <critical>Help and Exit are auto-injected; do NOT add them. Triggers are auto-prefixed with * during build.</critical>
 
-"Let me help structure these capabilities into commands..."
+<action>Transform their natural language capabilities into technical YAML command structure, explaining the implementation approach as you structure each capability into workflows, actions, or prompts</action>
 
-Transform their natural language capabilities into technical structure, explaining as you go:
+<action>If they seem engaged, explore whether they'd like to add special prompts for complex analyses or critical setup steps for agent activation</action>
 
-- "When you said [capability], we can implement that as..."
-- "This would work great as a workflow that..."
+<action>Build the YAML menu structure naturally from the conversation, ensuring each command has proper trigger, workflow/action reference, and description</action>
 
-If they seem engaged, explore:
-
-- "Would you like to add any special prompts for complex analyses?"
-- "Should there be any critical setup steps when the agent activates?"
-
-Build the YAML structure naturally from the conversation:
-
+<example>
 ```yaml
 menu:
   # Commands emerge from discussion
@@ -185,129 +136,109 @@ menu:
     workflow: [path based on capability]
     description: [user's words refined]
 ```
+</example>
 
 <template-output>agent_commands</template-output>
 </step>
 
-<step n="5" goal="Name the agent - The perfect moment!">
+<step n="5" goal="Name the agent at the perfect moment">
+<action>Guide user to name the agent based on everything discovered so far - its purpose, personality, and capabilities, helping them see how the naming naturally emerges from who this agent is</action>
 
-"Our agent is really coming together! It's got purpose, personality, and capabilities. Now it needs a name!"
+<action>Explore naming options by connecting personality traits, specializations, and communication style to potential names that feel meaningful and appropriate</action>
 
-This is where the naming feels natural and meaningful:
+**Naming Elements:**
 
-**"Based on everything we've built, what should we call this agent?"**
+- Agent name: Personality-driven (e.g., "Sarah", "Max", "Data Wizard")
+- Agent title: Based on the role discovered earlier
+- Agent icon: Emoji that captures its essence
+- Filename: Auto-suggest based on name (kebab-case)
 
-Guide the naming with context:
-
-- "Given its [personality trait], maybe something like..."
-- "Since it specializes in [capability], how about..."
-- "With that [communication style], it feels like a..."
-
-Explore options:
-
-- **Agent name**: "Sarah", "Max", "Data Wizard" (personality-driven)
-- **Agent title**: Based on the role we discovered earlier
-- **Agent icon**: "What emoji captures its essence?"
-- **Filename**: Auto-suggest based on name (kebab-case)
-
-Example flow:
-"So we have an analytical expert who helps with data... I'm thinking 'Sarah the Data Analyst' with a 📊 icon? Or maybe something more playful like 'Data Wizard' with 🧙?"
-
-Let them choose or create their own. The name now has meaning because they know who this agent IS.
+<action>Present natural suggestions based on the agent's characteristics, letting them choose or create their own since they now know who this agent truly is</action>
 
 <template-output>agent_identity</template-output>
 </step>
 
 <step n="6" goal="Bring it all together">
+<action>Share the journey of what you've created together, summarizing how the agent started with a purpose, discovered its personality traits, gained capabilities, and received its name</action>
 
-"Perfect! Let me pull everything together into your agent..."
+<action>Generate the complete YAML incorporating all discovered elements:</action>
 
-Share the journey as you create:
-"We started with [initial purpose], discovered it needed [key personality traits], gave it [capabilities], and named it [agent name]. Here's your complete agent:"
-
-Generate the YAML incorporating everything discovered:
-
+<example>
 ```yaml
 agent:
   metadata:
     id: bmad/{{target_module}}/agents/{{agent_filename}}.md
-    name: { { agent_name } } # The name we chose together
-    title: { { agent_title } } # From the role that emerged
-    icon: { { agent_icon } } # The perfect emoji
-    module: { { target_module } }
+    name: {{agent_name}} # The name chosen together
+    title: {{agent_title}} # From the role that emerged
+    icon: {{agent_icon}} # The perfect emoji
+    module: {{target_module}}
 
-  persona:
-    role: |
-      {{The role we discovered}}
-    identity: |
-      {{The background that emerged}}
-    communication_style: |
-      {{The style they loved}}
-    principles: { { The beliefs we articulated } }
+persona:
+role: |
+{{The role discovered}}
+identity: |
+{{The background that emerged}}
+communication_style: |
+{{The style they loved}}
+principles: {{The beliefs articulated}}
 
-  # Features we explored
-  prompts: { { if discussed } }
-  critical_actions: { { if needed } }
+# Features explored
 
-  menu: { { The capabilities we built } }
-```
+prompts: {{if discussed}}
+critical_actions: {{if needed}}
+
+menu: {{The capabilities built}}
+
+````
+</example>
 
 <critical>Save based on agent type:</critical>
-
 - If Module Agent: Save to {module_output_file}
 - If Standalone (Simple/Expert): Save to {standalone_output_file}
 
-"Your agent [name] is ready! It turned out even better than I expected!"
+<action>Celebrate the completed agent with enthusiasm</action>
 
 <template-output>complete_agent</template-output>
 </step>
 
-<step n="7" goal="Optional personalization">
+<step n="7" goal="Optional personalization" optional="true">
+<ask>Would you like to create a customization file? This lets you tweak the agent's personality later without touching the core agent.</ask>
 
-"Would you like to create a customization file? This lets you tweak [agent name]'s personality later without touching the core agent."
+<check>If interested:</check>
+<action>Explain how the customization file gives them a playground to experiment with different personality traits, add new commands, or adjust responses as they get to know the agent better</action>
 
-If interested:
-"Great! This gives you a playground to experiment with different personality traits, add new commands, or adjust responses as you get to know [agent name] better."
+<action>Create customization file at: {config_output_file}</action>
 
-Create at: {config_output_file}
-
+<example>
 ```yaml
 # Personal tweaks for {{agent_name}}
 # Experiment freely - changes merge at build time
 agent:
   metadata:
     name: '' # Try nicknames!
-persona:
-  role: ''
-  identity: ''
-  communication_style: '' # Switch styles anytime
-  principles: []
-critical_actions: []
-prompts: []
-menu: [] # Add personal commands
-```
+  persona:
+    role: ''
+    identity: ''
+    communication_style: '' # Switch styles anytime
+    principles: []
+  critical_actions: []
+  prompts: []
+  menu: [] # Add personal commands
+````
+
+</example>
 
 <template-output>agent_config</template-output>
 </step>
 
 <step n="8" goal="Set up the agent's workspace" if="agent_type == 'expert'">
+<action>Guide user through setting up the Expert agent's personal workspace, making it feel like preparing an office with notes, research areas, and data folders</action>
 
-"Since [agent name] is an Expert agent, let's set up its personal workspace!"
+<action>Determine sidecar location based on whether build tools are available (next to agent YAML) or not (in output folder with clear structure)</action>
 
-Make it feel like preparing an office:
+<action>CREATE the complete sidecar file structure:</action>
 
-- "Where should [agent name] keep its notes and research?"
-- "What kind of information will it need quick access to?"
-- "Should it have its own data folders?"
-
-<action>Determine sidecar location:</action>
-
-- If build tools available: Create next to agent YAML
-- If no build tools: Create in output folder with clear structure
-
-<action>Actually CREATE the sidecar files:</action>
-
-1. Create folder structure:
+**Folder Structure:**
 
 ```
 {{agent_filename}}-sidecar/
@@ -318,7 +249,7 @@ Make it feel like preparing an office:
 └── sessions/          # Session notes
 ```
 
-2. Create **memories.md**:
+**File: memories.md**
 
 ```markdown
 # {{agent_name}}'s Memory Bank
@@ -336,7 +267,7 @@ Make it feel like preparing an office:
 <!-- My observations and insights -->
 ```
 
-3. Create **instructions.md**:
+**File: instructions.md**
 
 ```markdown
 # {{agent_name}} Private Instructions
@@ -352,7 +283,7 @@ Make it feel like preparing an office:
 {{any_special_rules_from_creation}}
 ```
 
-4. Create **knowledge/README.md**:
+**File: knowledge/README.md**
 
 ```markdown
 # {{agent_name}}'s Knowledge Base
@@ -360,58 +291,28 @@ Make it feel like preparing an office:
 Add domain-specific resources here.
 ```
 
-<action>Update agent YAML to reference sidecar:</action>
-Add `sidecar:` section with paths to created files
-
-<action>Show user the created structure:</action>
-"I've created {{agent_name}}'s complete workspace at: {{sidecar_path}}"
+<action>Update agent YAML to reference sidecar with paths to created files</action>
+<action>Show user the created structure location</action>
 
 <template-output>sidecar_resources</template-output>
 </step>
 
 <step n="8b" goal="Handle build tools availability">
-<action>Check if BMAD build tools are available:</action>
+<action>Check if BMAD build tools are available in this project</action>
 
 <check>If in BMAD-METHOD project with build tools:</check>
-<action>Proceed normally - agent will be built later</action>
+<action>Proceed normally - agent will be built later by the installer</action>
 
 <check>If NO build tools available (external project):</check>
 <ask>Build tools not detected in this project. Would you like me to:
 
 1. Generate the compiled agent (.md with XML) ready to use
 2. Keep the YAML and build it elsewhere
-3. Provide both formats</ask>
+3. Provide both formats
+   </ask>
 
 <check>If option 1 or 3 selected:</check>
-<action>Generate compiled agent XML:</action>
-
-```xml
-<!-- Powered by BMAD-CORE™ -->
-
-# {{agent_title}}
-
-<agent id="{{agent_id}}" name="{{agent_name}}" title="{{agent_title}}" icon="{{agent_icon}}">
-  <activation critical="MANDATORY">
-    <!-- Inject standard activation -->
-    {{activation_rules}}
-    {{activation_greeting}}
-  </activation>
-
-  <persona>
-    <role>{{role}}</role>
-    <identity>{{identity}}</identity>
-    <communication_style>{{style}}</communication_style>
-    <principles>{{principles}}</principles>
-  </persona>
-
-  <menu>
-    <item cmd="*help">Show numbered menu</item>
-    {{converted_menu_items}}
-    <item cmd="*exit">Exit with confirmation</item>
-  </menu>
-</agent>
-```
-
+<action>Generate compiled agent XML with proper structure including activation rules, persona sections, and menu items</action>
 <action>Save compiled version as {{agent_filename}}.md</action>
 <action>Provide path for .claude/commands/ or similar</action>
 
@@ -419,22 +320,21 @@ Add `sidecar:` section with paths to created files
 </step>
 
 <step n="9" goal="Quality check with personality">
+<action>Run validation conversationally, presenting checks as friendly confirmations while running technical validation behind the scenes</action>
 
-"Let me make sure [agent name] is ready to go!"
+**Conversational Checks:**
 
-Run validation but present it conversationally:
+- Configuration validation
+- Command functionality verification
+- Personality settings confirmation
 
-- "Checking [agent name]'s configuration..." ✓
-- "Making sure all commands work..." ✓
-- "Verifying personality settings..." ✓
+<check>If issues found:</check>
+<action>Explain the issue conversationally and fix it</action>
 
-If issues found:
-"Hmm, looks like [agent name] needs a small adjustment to [issue]. Let me fix that..."
+<check>If all good:</check>
+<action>Celebrate that the agent passed all checks and is ready</action>
 
-If all good:
-"[Agent name] passed all checks! It's ready to help!"
-
-Technical checks (run behind the scenes):
+**Technical Checks (behind the scenes):**
 
 1. YAML structure validity
 2. Menu command validation
@@ -445,38 +345,32 @@ Technical checks (run behind the scenes):
 </step>
 
 <step n="10" goal="Celebrate and guide next steps">
+<action>Celebrate the accomplishment, sharing what type of agent was created with its key characteristics and top capabilities</action>
 
-"🎉 Congratulations! [Agent name] is ready to join your team!"
+<action>Guide user through how to activate the agent:</action>
 
-Share the accomplishment:
-"You've created [agent type] agent with [key characteristic]. [Agent name] can [top capabilities]."
+**Activation Instructions:**
 
-**"Here's how to activate [agent name]:"**
+1. Run the BMAD Method installer to this project location
+2. Select 'Compile Agents (Quick rebuild of all agent .md files)' after confirming the folder
+3. Call the agent anytime after compilation
 
-1. **Quick start:**
-   - "Run the BMAD Method installer to this project location"
-   - "Select the option 'Compile Agents (Quick rebuild of all agent .md files)' after confirming the folder"
-   - "Then you can call [agent name] anytime!"
+**Location Information:**
 
-2. **Location:**
-   - "I saved [agent name] here: {{output_file}}"
-   - "After compilation, it'll be available in your project"
+- Saved location: {{output_file}}
+- Available after compilation in project
 
-3. **What [agent name] can do right away:**
-   - List the commands in a friendly way
-   - "Try `*[first-command]` to see it in action!"
+**Initial Usage:**
 
-For Expert agents:
-"Don't forget to add any special knowledge or data [agent name] might need to its workspace!"
+- List the commands available
+- Suggest trying the first command to see it in action
 
-**"What would you like to do next?"**
+<check>If Expert agent:</check>
+<action>Remind user to add any special knowledge or data the agent might need to its workspace</action>
 
-- "Want to test [agent name] now?"
-- "Should we create a teammate for [agent name]?"
-- "Any tweaks to [agent name]'s personality?"
+<action>Explore what user would like to do next - test the agent, create a teammate, or tweak personality</action>
 
-End with enthusiasm:
-"I really enjoyed building [agent name] with you! I think it's going to be incredibly helpful for [main purpose]."
+<action>End with enthusiasm in {communication_language}, addressing {user_name}, expressing how the collaboration was enjoyable and the agent will be incredibly helpful for its main purpose</action>
 
 <template-output>completion_message</template-output>
 </step>

@@ -3,6 +3,7 @@
 ````xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>This workflow generates a comprehensive Technical Specification from PRD and Architecture, including detailed design, NFRs, acceptance criteria, and traceability mapping.</critical>
 <critical>Default execution mode: #yolo (non-interactive). If required inputs cannot be auto-discovered and {{non_interactive}} == true, HALT with a clear message listing missing documents; do not prompt.</critical>
 
@@ -149,7 +150,7 @@ What would you like to do?</ask>
       <template-output file="{{status_file_path}}">planned_workflow</template-output>
       <action>Mark "tech-spec (Epic {{epic_id}})" as complete in the planned workflow table</action>
 
-      <output>**✅ Tech Spec Generated Successfully**
+      <output>**✅ Tech Spec Generated Successfully, {user_name}!**
 
 **Epic Details:**
 - Epic ID: {{epic_id}}
@@ -172,7 +173,7 @@ What would you like to do?</ask>
     </check>
 
     <check if="status file not found">
-      <output>**✅ Tech Spec Generated Successfully**
+      <output>**✅ Tech Spec Generated Successfully, {user_name}!**
 
 **Epic Details:**
 - Epic ID: {{epic_id}}

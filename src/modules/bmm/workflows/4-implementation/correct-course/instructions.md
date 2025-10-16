@@ -2,6 +2,7 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 
 <workflow>
 
@@ -189,7 +190,7 @@
 - Specific edit proposals with before/after
 - Implementation handoff plan
 
-<action>Report workflow completion to user</action>
+<action>Report workflow completion to user with personalized message: "✅ Correct Course workflow complete, {user_name}!"</action>
 <action>Remind user of success criteria and next steps for implementation team</action>
 </step>
 
