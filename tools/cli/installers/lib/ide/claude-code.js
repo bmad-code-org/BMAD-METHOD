@@ -186,11 +186,11 @@ class ClaudeCodeSetup extends BaseIdeSetup {
   }
 
   /**
-   * Override processContent to use the actual project directory path
+   * Override processContent to keep {project-root} placeholder
    */
   processContent(content, metadata = {}) {
-    // Use the base class method with the actual project directory
-    return super.processContent(content, metadata, this.projectDir);
+    // Use the base class method WITHOUT projectDir to preserve {project-root} placeholder
+    return super.processContent(content, metadata);
   }
 
   /**

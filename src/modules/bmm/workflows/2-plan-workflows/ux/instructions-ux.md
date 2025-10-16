@@ -4,6 +4,7 @@
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>This workflow creates comprehensive UX/UI specifications - can run standalone or as part of plan-project</critical>
 <critical>Uses ux-spec-template.md for structured output generation</critical>
 <critical>Can optionally generate AI Frontend Prompts for tools like Vercel v0, Lovable.ai</critical>
@@ -35,7 +36,7 @@ If no: We'll gather basic requirements to create the UX spec
   <action>Load the following documents if available:</action>
 
 - PRD.md (primary source for requirements and user journeys)
-- epics.md or epic-stories.md (helps understand feature grouping)
+- epics.md (helps understand feature grouping)
 - tech-spec.md (understand technical constraints)
 - solution-architecture.md (if Level 3-4 project)
 - bmm-workflow-status.md (understand project level and scope)
@@ -301,7 +302,9 @@ This is recommended for:
 
 <template-output>design_handoff_checklist</template-output>
 
-<ask>UX Specification saved to {{ux_spec_file}}
+<ask>**✅ UX Specification Complete, {user_name}!**
+
+UX Specification saved to {{ux_spec_file}}
 
 **Additional Output Options:**
 

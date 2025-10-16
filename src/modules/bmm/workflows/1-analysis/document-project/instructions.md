@@ -1,9 +1,11 @@
 # Document Project Workflow Router
 
-<workflow>
-
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/document-project/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
+
+<workflow>
+
 <critical>This router determines workflow mode and delegates to specialized sub-workflows</critical>
 
 <step n="1" goal="Check and load workflow status file">
@@ -241,7 +243,7 @@ Your choice [1/2/3]:
 - **{{date}}**: Completed document-project workflow ({{workflow_mode}} mode, {{scan_level}} scan). Generated brownfield documentation in {output_folder}/. Next: {{next_step}}.
 ```
 
-<output>**✅ Document Project Workflow Complete**
+<output>**✅ Document Project Workflow Complete, {user_name}!**
 
 **Documentation Generated:**
 

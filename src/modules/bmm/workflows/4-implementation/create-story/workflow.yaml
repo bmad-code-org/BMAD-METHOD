@@ -39,28 +39,9 @@ variables:
 # Output configuration
 default_output_file: "{story_dir}/story-{{epic_num}}.{{story_num}}.md"
 
-required_tools:
-  - list_files
-  - file_info
-  - read_file
-  - write_file
-  - create_directory
-  - search_repo
-  - glob
-
 recommended_inputs:
   - epics: "Epic breakdown (epics.md)"
   - prd: "PRD document"
   - solution-architecture: "Solution Architecture (optional)"
-
-tags:
-  - story-generation
-  - planning
-  - bmad-v6
-
-execution_hints:
-  interactive: false # Minimize prompts; intended to run to completion
-  autonomous: true # Proceed without user input unless blocked
-  iterative: true
 
 web_bundle: false

@@ -60,29 +60,4 @@ recommended_inputs:
   - tech_spec: "Epic technical specification document (auto-discovered if omitted)"
   - story_context: "Story Context XML path (auto-discovered if omitted)"
 
-# Required tools (conceptual; executor should provide equivalents)
-required_tools:
-  - list_files
-  - file_info
-  - read_file
-  - write_file
-  - search_repo
-  - parse_markdown
-  - glob
-  - mcp_doc_search # Use available MCP servers to search docs/best-practices
-  - web_search # Fallback research
-  - read_url # Fetch references
-
-tags:
-  - review
-  - code-review
-  - quality
-  - testing
-  - bmad-v6
-
-execution_hints:
-  interactive: false # Minimize prompts; intended to run deterministically
-  autonomous: true # Proceed without user input unless blocked
-  iterative: true
-
 web_bundle: false

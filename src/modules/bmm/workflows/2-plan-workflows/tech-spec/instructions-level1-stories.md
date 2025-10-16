@@ -58,14 +58,14 @@
 - "Admin Dashboard" → "admin-dashboard"
   </example>
 
-<action>Initialize epic-stories.md summary document using epic_stories_template</action>
+<action>Initialize epics.md summary document using epics_template</action>
 
-<template-output file="{output_folder}/epic-stories.md">epic_title</template-output>
-<template-output file="{output_folder}/epic-stories.md">epic_slug</template-output>
-<template-output file="{output_folder}/epic-stories.md">epic_goal</template-output>
-<template-output file="{output_folder}/epic-stories.md">epic_scope</template-output>
-<template-output file="{output_folder}/epic-stories.md">epic_success_criteria</template-output>
-<template-output file="{output_folder}/epic-stories.md">epic_dependencies</template-output>
+<template-output file="{output_folder}/epics.md">epic_title</template-output>
+<template-output file="{output_folder}/epics.md">epic_slug</template-output>
+<template-output file="{output_folder}/epics.md">epic_goal</template-output>
+<template-output file="{output_folder}/epics.md">epic_scope</template-output>
+<template-output file="{output_folder}/epics.md">epic_success_criteria</template-output>
+<template-output file="{output_folder}/epics.md">epic_dependencies</template-output>
 
 </step>
 
@@ -105,9 +105,6 @@
 
 <action>For each story (2-3 total), generate separate story file</action>
 <action>Story filename format: "story-{epic_slug}-{n}.md" where n = 1, 2, or 3</action>
-<action>Each story should represent a deliverable unit of work</action>
-<action>Stories should have clear acceptance criteria from tech spec</action>
-<action>Estimate story points based on time estimates in tech spec</action>
 
 <guidelines>
 **Story Generation Guidelines:**
@@ -140,58 +137,27 @@
 - Dev Agent Record: Empty sections for context workflow to populate
   </guidelines>
 
-<action>For story 1:</action>
-<action>Set story_path_1 = "{dev_story_location}/story-{epic_slug}-1.md"</action>
-<action>Initialize from user_story_template</action>
+<for-each story="1 to story_count">
+  <action>Set story_path_{n} = "{dev_story_location}/story-{epic_slug}-{n}.md"</action>
+  <action>Create story file from user_story_template with the following content:</action>
 
-<template-output file="{story_path_1}">story_title</template-output>
-<template-output file="{story_path_1}">role</template-output>
-<template-output file="{story_path_1}">capability</template-output>
-<template-output file="{story_path_1}">benefit</template-output>
-<template-output file="{story_path_1}">acceptance_criteria</template-output>
-<template-output file="{story_path_1}">tasks_subtasks</template-output>
-<template-output file="{story_path_1}">technical_summary</template-output>
-<template-output file="{story_path_1}">files_to_modify</template-output>
-<template-output file="{story_path_1}">test_locations</template-output>
-<template-output file="{story_path_1}">story_points</template-output>
-<template-output file="{story_path_1}">time_estimate</template-output>
-<template-output file="{story_path_1}">architecture_references</template-output>
+  <template-output file="{story_path_{n}}">
+    - story_title: User-focused deliverable title
+    - role: User role (e.g., developer, user, admin)
+    - capability: What they want to do
+    - benefit: Why it matters
+    - acceptance_criteria: Specific, measurable criteria from tech spec
+    - tasks_subtasks: Implementation tasks with AC references
+    - technical_summary: High-level approach, key decisions
+    - files_to_modify: List of files that will change
+    - test_locations: Where tests will be added
+    - story_points: Estimated effort (1/2/3/5)
+    - time_estimate: Days/hours estimate
+    - architecture_references: Links to tech-spec.md sections
+  </template-output>
+</for-each>
 
-<action>For story 2:</action>
-<action>Set story_path_2 = "{dev_story_location}/story-{epic_slug}-2.md"</action>
-<action>Initialize from user_story_template</action>
-
-<template-output file="{story_path_2}">story_title</template-output>
-<template-output file="{story_path_2}">role</template-output>
-<template-output file="{story_path_2}">capability</template-output>
-<template-output file="{story_path_2}">benefit</template-output>
-<template-output file="{story_path_2}">acceptance_criteria</template-output>
-<template-output file="{story_path_2}">tasks_subtasks</template-output>
-<template-output file="{story_path_2}">technical_summary</template-output>
-<template-output file="{story_path_2}">files_to_modify</template-output>
-<template-output file="{story_path_2}">test_locations</template-output>
-<template-output file="{story_path_2}">story_points</template-output>
-<template-output file="{story_path_2}">time_estimate</template-output>
-<template-output file="{story_path_2}">architecture_references</template-output>
-
-<check if="story_count == 3">
-  <action>For story 3:</action>
-  <action>Set story_path_3 = "{dev_story_location}/story-{epic_slug}-3.md"</action>
-  <action>Initialize from user_story_template</action>
-
-<template-output file="{story_path_3}">story_title</template-output>
-<template-output file="{story_path_3}">role</template-output>
-<template-output file="{story_path_3}">capability</template-output>
-<template-output file="{story_path_3}">benefit</template-output>
-<template-output file="{story_path_3}">acceptance_criteria</template-output>
-<template-output file="{story_path_3}">tasks_subtasks</template-output>
-<template-output file="{story_path_3}">technical_summary</template-output>
-<template-output file="{story_path_3}">files_to_modify</template-output>
-<template-output file="{story_path_3}">test_locations</template-output>
-<template-output file="{story_path_3}">story_points</template-output>
-<template-output file="{story_path_3}">time_estimate</template-output>
-<template-output file="{story_path_3}">architecture_references</template-output>
-</check>
+<critical>Generate exactly {story_count} story files (2 or 3 based on Step 3 decision)</critical>
 
 </step>
 
@@ -220,11 +186,11 @@ Epic: Icon Reliability
 2. **Story 2** → Test and deploy (depends on Story 1)
    </example>
 
-<template-output file="{output_folder}/epic-stories.md">story_summaries</template-output>
-<template-output file="{output_folder}/epic-stories.md">story_map</template-output>
-<template-output file="{output_folder}/epic-stories.md">total_points</template-output>
-<template-output file="{output_folder}/epic-stories.md">estimated_timeline</template-output>
-<template-output file="{output_folder}/epic-stories.md">implementation_sequence</template-output>
+<template-output file="{output_folder}/epics.md">story_summaries</template-output>
+<template-output file="{output_folder}/epics.md">story_map</template-output>
+<template-output file="{output_folder}/epics.md">total_points</template-output>
+<template-output file="{output_folder}/epics.md">estimated_timeline</template-output>
+<template-output file="{output_folder}/epics.md">implementation_sequence</template-output>
 
 </step>
 
@@ -290,7 +256,7 @@ Initialize empty table:
 
 ```
 | tech-spec.md | Complete | {output_folder}/tech-spec.md | {{date}} |
-| epic-stories.md | Complete | {output_folder}/epic-stories.md | {{date}} |
+| epics.md | Complete | {output_folder}/epics.md | {{date}} |
 | story-{epic_slug}-1.md | Draft | {dev_story_location}/story-{epic_slug}-1.md | {{date}} |
 | story-{epic_slug}-2.md | Draft | {dev_story_location}/story-{epic_slug}-2.md | {{date}} |
 {{#if story_3}}
@@ -335,7 +301,7 @@ Initialize empty table:
 **Generated Artifacts:**
 
 - `tech-spec.md` → Technical source of truth
-- `epic-stories.md` → Epic and story summary
+- `epics.md` → Epic and story summary
 - `story-{epic_slug}-1.md` → First story (ready for implementation)
 - `story-{epic_slug}-2.md` → Second story
   {{#if story_3}}

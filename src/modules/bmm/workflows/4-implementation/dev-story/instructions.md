@@ -3,6 +3,7 @@
 ````xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status</critical>
 <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
 <critical>If {{run_until_complete}} == true, run non-interactively: do not pause between steps unless a HALT condition is reached or explicit user approval is required for unapproved dependencies.</critical>
@@ -131,7 +132,7 @@
       - **{{date}}**: Completed dev-story for Story {{current_story_id}} ({{current_story_title}}). All tasks complete, tests passing. Story status: Ready for Review. Next: User reviews and runs story-approved when satisfied with implementation.
       ```
 
-      <output>**✅ Story Implementation Complete**
+      <output>**✅ Story Implementation Complete, {user_name}!**
 
 **Story Details:**
 - Story ID: {{current_story_id}}
@@ -153,7 +154,7 @@ Or check status anytime with: `workflow-status`
     </check>
 
     <check if="status file not found">
-      <output>**✅ Story Implementation Complete**
+      <output>**✅ Story Implementation Complete, {user_name}!**
 
 **Story Details:**
 - Story ID: {{current_story_id}}

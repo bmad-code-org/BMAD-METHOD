@@ -107,9 +107,9 @@ Output is designed to feed directly into:
 ```
 1-analysis/game-brief     (You are here)
     ↓
-2-plan/gdd               (Game Design Document)
+2-plan-workflows/gdd               (Game Design Document)
     ↓
-2-plan/narrative         (Optional: Story-heavy games)
+2-plan-workflows/narrative         (Optional: Story-heavy games)
     ↓
 3-solutioning            (Technical architecture, engine selection)
     ↓
@@ -216,6 +216,6 @@ A: Involve your team! Collaborative briefs catch blind spots and build shared vi
 ## Related Workflows
 
 - **Product Brief** (`1-analysis/product-brief`): For software products, not games
-- **GDD** (`2-plan/gdd`): Next step after game brief
-- **Narrative Design** (`2-plan/narrative`): For story-heavy games after GDD
+- **GDD** (`2-plan-workflows/gdd`): Next step after game brief
+- **Narrative Design** (`2-plan-workflows/narrative`): For story-heavy games after GDD
 - **Solutioning** (`3-solutioning`): Technical architecture after planning

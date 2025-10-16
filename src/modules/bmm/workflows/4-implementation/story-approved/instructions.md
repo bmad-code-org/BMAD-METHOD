@@ -1,5 +1,9 @@
 # Story Approved Workflow Instructions (DEV Agent)
 
+<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
+
 <workflow>
 
 <critical>This workflow is run by DEV agent AFTER user confirms a story is approved (Definition of Done is complete)</critical>
@@ -215,7 +219,7 @@ If BACKLOG had 1 story and is now empty:
 
 <action>Display summary</action>
 
-**Story Approved and Marked Done!**
+**Story Approved and Marked Done, {user_name}!**
 
 ✅ Story file updated: `{{current_story_file}}` → Status: Done
 ✅ Status file updated: Story moved IN PROGRESS → DONE

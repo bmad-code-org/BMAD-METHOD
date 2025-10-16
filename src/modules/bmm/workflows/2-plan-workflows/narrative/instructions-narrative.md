@@ -4,6 +4,7 @@
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already completed the GDD workflow</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>This workflow creates detailed narrative content for story-driven games</critical>
 <critical>Uses narrative_template for output</critical>
 <critical>If users mention gameplay mechanics, note them but keep focus on narrative</critical>
@@ -27,7 +28,7 @@ Your game type ({{game_type}}) suggests **{{suggested_complexity}}**. Confirm or
 
 <action>Set narrative_complexity</action>
 
-<check if="complexity == "Light"">
+<check if="complexity == Light">
 <ask>Light narrative games usually don't need a full Narrative Design Document. Are you sure you want to continue?
 
 - GDD story sections may be sufficient
@@ -508,7 +509,9 @@ Your references:</ask>
 
 <template-output>references</template-output>
 
-<ask>Narrative Design complete! Next steps:
+<ask>**✅ Narrative Design Complete, {user_name}!**
+
+Next steps:
 
 1. Proceed to solutioning (technical architecture)
 2. Create detailed script/screenplay (outside workflow)

@@ -4,14 +4,70 @@
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>This is the SMALL instruction set for Level 0-1 projects - tech-spec with story generation</critical>
 <critical>Level 0: tech-spec + single user story | Level 1: tech-spec + epic/stories</critical>
 <critical>Project analysis already completed - proceeding directly to technical specification</critical>
 <critical>NO PRD generated - uses tech_spec_template + story templates</critical>
 
+<step n="0" goal="Check for workflow status file - REQUIRED">
+
+<action>Check if bmm-workflow-status.md exists in {output_folder}/</action>
+
+<check if="not exists">
+  <output>**⚠️ No Workflow Status File Found**
+
+The tech-spec workflow requires an existing workflow status file to understand your project context.
+
+Please run `workflow-status` first to:
+
+- Map out your complete workflow journey
+- Determine project type and level
+- Create the status file with your planned workflow
+
+**To proceed:**
+
+Run: `bmad analyst workflow-status`
+
+After completing workflow planning, you'll be directed back to this workflow.
+</output>
+<action>Exit workflow - cannot proceed without status file</action>
+</check>
+
+<check if="exists">
+  <action>Load status file and proceed to Step 1</action>
+</check>
+
+</step>
+
 <step n="1" goal="Confirm project scope and update tracking">
 
 <action>Load bmm-workflow-status.md from {output_folder}/bmm-workflow-status.md</action>
+<action>Verify project_level is 0 or 1</action>
+
+<check if="project_level >= 2">
+  <error>This workflow is for Level 0-1 only. Level 2-4 should use PRD workflow.</error>
+  <output>**Incorrect Workflow for Your Level**
+
+Your status file indicates Level {{project_level}}.
+
+**Correct workflow:** `prd` (run with PM agent)
+
+Run: `bmad pm prd`
+</output>
+<action>Exit and redirect user to prd workflow</action>
+</check>
+
+<check if="project_type == game">
+  <error>This workflow is for software projects. Game projects should use GDD workflow.</error>
+  <output>**Incorrect Workflow for Game Projects**
+
+**Correct workflow:** `gdd` (run with PM agent)
+
+Run: `bmad pm gdd`
+</output>
+<action>Exit and redirect user to gdd workflow</action>
+</check>
 
 <action>Update Workflow Status Tracker:</action>
 <check if="project_level == 0">
@@ -44,7 +100,7 @@
 <action>Set progress_percentage = 40%</action>
 <action>Save bmm-workflow-status.md</action>
 
-<action>Initialize tech-spec.md using tech_spec_template from workflow.yaml</action>
+<action>Initialize and write out tech-spec.md using tech_spec_template</action>
 
 <critical>DEFINITIVE DECISIONS REQUIRED:</critical>
 
@@ -118,7 +174,7 @@ Run cohesion validation? (y/n)</ask>
 
 <check if="project_level == 1">
   <action>Invoke instructions-level1-stories.md to generate epic and stories</action>
-  <action>Epic and stories will be saved to epic-stories.md</action>
+  <action>Epic and stories will be saved to epics.md
   <action>Stories link to tech-spec.md implementation tasks</action>
 </check>
 
@@ -133,7 +189,7 @@ Run cohesion validation? (y/n)</ask>
 </check>
 
 <check if="project_level == 1">
-  <action>Confirm epic-stories.md generated successfully</action>
+  <action>Confirm epics.md generated successfully</action>
 </check>
 
 ## Summary
@@ -145,7 +201,7 @@ Run cohesion validation? (y/n)</ask>
 </check>
 
 <check if="project_level == 1">
-- **Level 1 Output**: tech-spec.md + epic-stories.md
+- **Level 1 Output**: tech-spec.md + epics.md
 - **No PRD required**
 - **Ready for sprint planning with epic/story breakdown**
 </check>
@@ -178,7 +234,9 @@ Run cohesion validation? (y/n)</ask>
   - Command: `workflow task-generation`
   - Uses: tech-spec.md
 
-<ask>Level 0 planning complete! Next action:
+<ask>**✅ Tech-Spec Complete, {user_name}!**
+
+Next action:
 
 1. Proceed to implementation
 2. Generate development task

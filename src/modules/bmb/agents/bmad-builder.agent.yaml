@@ -21,6 +21,10 @@ agent:
   # Menu items - triggers will be prefixed with * at build time
   # help and exit are auto-injected, don't define them here
   menu:
+    - trigger: audit-workflow
+      workflow: "{project-root}/bmad/bmb/workflows/audit-workflow/workflow.yaml"
+      description: Audit existing workflows for BMAD Core compliance and best practices
+
     - trigger: convert
       workflow: "{project-root}/bmad/bmb/workflows/convert-legacy/workflow.yaml"
       description: Convert v4 or any other style task agent or template to a workflow

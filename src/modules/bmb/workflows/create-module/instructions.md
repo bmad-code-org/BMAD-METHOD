@@ -1,21 +1,23 @@
 # Build Module - Interactive Module Builder Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project_root}/bmad/bmb/workflows/create-module/workflow.yaml</critical>
-<critical>Study existing modules in: {project_root}/bmad/ for patterns</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/create-module/workflow.yaml</critical>
+<critical>Study existing modules in: {project-root}/bmad/ for patterns</critical>
+<critical>Communicate in {communication_language} throughout the module creation process</critical>
 
 <workflow>
 
 <step n="-1" goal="Optional brainstorming for module ideas" optional="true">
 <ask>Do you want to brainstorm module ideas first? [y/n]</ask>
 
-If yes:
-<action>Invoke brainstorming workflow: {brainstorming-workflow}</action>
+<check>If yes:</check>
+<action>Invoke brainstorming workflow: {brainstorming_workflow}</action>
 <action>Pass context data: {brainstorming_context}</action>
 <action>Wait for brainstorming session completion</action>
-<action>Use brainstorming output to inform module concept, agent lineup, and workflow portfolio</action>
+<action>Use brainstorming output to inform module concept, agent lineup, and workflow portfolio in following steps</action>
 
-If no, proceed to check for module brief.
+<check>If no:</check>
+<action>Proceed directly to Step 0</action>
 
 <template-output>brainstorming_results</template-output>
 </step>
@@ -23,16 +25,17 @@ If no, proceed to check for module brief.
 <step n="0" goal="Check for module brief" optional="true">
 <ask>Do you have a module brief or should we create one? [have/create/skip]</ask>
 
-If create:
+<check>If create:</check>
 <action>Invoke module-brief workflow: {project-root}/bmad/bmb/workflows/module-brief/workflow.yaml</action>
 <action>Wait for module brief completion</action>
 <action>Load the module brief to use as blueprint</action>
 
-If have:
+<check>If have:</check>
 <ask>Provide path to module brief document</ask>
 <action>Load the module brief and use it to pre-populate all planning sections</action>
 
-If skip, proceed directly to module definition.
+<check>If skip:</check>
+<action>Proceed directly to Step 1</action>
 
 <template-output>module_brief</template-output>
 </step>
@@ -44,135 +47,101 @@ If skip, proceed directly to module definition.
 <action>Review directory structures and component guidelines</action>
 <action>Study the installation infrastructure patterns</action>
 
-Ask the user about their module vision:
+<action>If brainstorming or module brief was completed, reference those results to guide the conversation</action>
 
-**"What kind of module do you want to create? Tell me about its purpose and what it will help with."**
-
-Listen to their description and then:
+<action>Guide user to articulate their module's vision, exploring its purpose, what it will help with, and who will use it</action>
 
 <action>Based on their description, intelligently propose module details:</action>
 
-**Module Identity (AI Proposed):**
+**Module Identity Development:**
 
-1. **Module name** - Extract from their description (e.g., "Data Visualization Suite", "RPG Toolkit")
-2. **Module code** - Generate kebab-case from name:
-   - "Data Visualization Suite" → propose: "data-viz"
-   - "RPG Game Master Tools" → propose: "rpg-toolkit"
-   - "Team Collaboration System" → propose: "team-collab"
-   - "Personal Finance Manager" → propose: "fin-manager"
-
-   Present as: _"Based on what you described, I suggest the module code: `{{proposed-code}}`. This will be used in paths like bmad/{{proposed-code}}/agents/. Does this work or would you prefer something different?"_
-
+1. **Module name** - Extract from their description with proper title case
+2. **Module code** - Generate kebab-case from name following patterns:
+   - Multi-word descriptive names → shortened kebab-case
+   - Domain-specific terms → recognizable abbreviations
+   - Present suggested code and confirm it works for paths like bmad/{{code}}/agents/
 3. **Module purpose** - Refine their description into 1-2 clear sentences
 4. **Target audience** - Infer from context or ask if unclear
 
-**Module Theme Examples:**
+**Module Theme Reference Categories:**
 
-- **Domain-Specific:** Legal, Medical, Finance, Education
-- **Creative:** RPG/Gaming, Story Writing, Music Production
-- **Technical:** DevOps, Testing, Architecture, Security
-- **Business:** Project Management, Marketing, Sales
-- **Personal:** Journaling, Learning, Productivity
+- Domain-Specific (Legal, Medical, Finance, Education)
+- Creative (RPG/Gaming, Story Writing, Music Production)
+- Technical (DevOps, Testing, Architecture, Security)
+- Business (Project Management, Marketing, Sales)
+- Personal (Journaling, Learning, Productivity)
 
 <critical>Determine output location:</critical>
 
 - Module will be created at {installer_output_folder}
 
-Store module identity for scaffolding.
+<action>Store module identity for scaffolding</action>
 
 <template-output>module_identity</template-output>
 </step>
 
 <step n="2" goal="Plan module components">
-<action>Based on the module purpose, propose an initial component architecture:</action>
+<action>Based on the module purpose, intelligently propose an initial component architecture</action>
 
-**"Based on your {{module_name}}, here's what I think would make a great module structure:"**
+**Agents Planning:**
 
-**Agents Planning (AI Proposed):**
+<action>Suggest agents based on module purpose, considering agent types (Simple/Expert/Module) appropriate to each role</action>
 
-<action>Intelligently suggest agents based on module purpose:</action>
+**Example Agent Patterns by Domain:**
 
-For a Data Visualization module, suggest:
+- Data/Analytics: Analyst, Designer, Builder roles
+- Gaming/Creative: Game Master, Generator, Storytelling roles
+- Team/Business: Manager, Facilitator, Documentation roles
 
-- "Data Analyst" - Interprets and analyzes datasets (Module type)
-- "Chart Designer" - Creates visualization specs (Simple type)
-- "Report Builder" - Generates comprehensive reports (Module type)
+<action>Present suggested agent list with types, explaining we can start with core ones and add others later</action>
+<action>Confirm which agents resonate with their vision</action>
 
-For an RPG Toolkit, suggest:
+**Workflows Planning:**
 
-- "Dungeon Master" - Runs game sessions (Module type)
-- "NPC Generator" - Creates characters (Expert type)
-- "Story Weaver" - Builds adventures (Module type)
+<action>Intelligently suggest workflows that complement the proposed agents</action>
 
-For a Team Collaboration module, suggest:
+**Example Workflow Patterns by Domain:**
 
-- "Project Manager" - Coordinates tasks (Module type)
-- "Meeting Facilitator" - Runs standups/retros (Simple type)
-- "Documentation Lead" - Maintains team docs (Expert type)
+- Data/Analytics: analyze-dataset, create-dashboard, generate-report
+- Gaming/Creative: session-prep, generate-encounter, world-building
+- Team/Business: planning, facilitation, documentation workflows
 
-Present as: _"I'm thinking your module could have these agents: [list]. We can start with the core ones and add others later. Which of these resonate with your vision?"_
-
-**Workflows Planning (AI Proposed):**
-
-<action>Intelligently suggest workflows based on module purpose:</action>
-
-For a Data Visualization module, suggest workflows like:
-
-- "analyze-dataset" - Statistical analysis workflow
-- "create-dashboard" - Interactive dashboard builder
-- "generate-report" - Automated report generation
-
-For an RPG Toolkit, suggest workflows like:
-
-- "session-prep" - Prepare game session materials
-- "generate-encounter" - Create combat/social encounters
-- "world-building" - Design locations and lore
-
-Present as: _"For workflows, these would complement your agents well: [list]. Each can be created as we need them. Which are most important to start with?"_
-
-- Create now or placeholder?
-
-Example workflows:
-
-1. adventure-plan - Create full adventure (Document)
-2. random-encounter - Quick encounter generator (Action)
-3. npc-generator - Create NPCs on the fly (Interactive)
-4. treasure-generator - Loot tables (Action)
+<action>For each workflow, note whether it should be Document, Action, or Interactive type</action>
+<action>Confirm which workflows are most important to start with</action>
+<action>Determine which to create now vs placeholder</action>
 
 **Tasks Planning (optional):**
-Ask: Any special tasks that don't warrant full workflows?
+<ask>Any special tasks that don't warrant full workflows?</ask>
 
-For each task:
-
-- Task name and purpose
-- Standalone or supporting?
+<check>If tasks needed:</check>
+<action>For each task, capture name, purpose, and whether standalone or supporting</action>
 
 <template-output>module_components</template-output>
 </step>
 
 <step n="2b" goal="Determine module complexity">
-<action>Based on components, intelligently determine module type:</action>
+<action>Based on components, intelligently determine module type using criteria:</action>
 
-**Simple Module** (auto-select if):
+**Simple Module Criteria:**
 
 - 1-2 agents, all Simple type
 - 1-3 workflows
 - No complex integrations
 
-**Standard Module** (auto-select if):
+**Standard Module Criteria:**
 
 - 2-4 agents with mixed types
 - 3-8 workflows
 - Some shared resources
 
-**Complex Module** (auto-select if):
+**Complex Module Criteria:**
 
 - 4+ agents or multiple Module-type agents
 - 8+ workflows
 - Complex interdependencies
 - External integrations
 
-Present as: _"Based on your planned components, this looks like a {{determined_type}} module. This means we'll set up {{structure_description}}."_
+<action>Present determined module type with explanation of what structure will be set up</action>
 
 <template-output>module_type</template-output>
 </step>
@@ -254,52 +223,37 @@ data_folder: "{{determined_module_path}}/data"
 </step>
 
 <step n="5" goal="Create first agent" optional="true">
-Ask: **Create your first agent now? [Yes/no]**
+<ask>Create your first agent now? [yes/no]</ask>
 
-If yes:
-<invoke-workflow input="{{module_components}}">
-{agent_builder}
-</invoke-workflow>
+<check>If yes:</check>
+<action>Invoke agent builder workflow: {agent_builder}</action>
+<action>Pass module_components as context input</action>
+<action>Guide them to create the primary agent for the module</action>
 
-Guide them to create the primary agent for the module.
 <critical>Save to module's agents folder:</critical>
 
 - Save to {{module_path}}/agents/
 
-If no, create placeholder:
-
-```md
-# {{primary_agent_name}} Agent
-
-<!-- TODO: Create using create-agent workflow -->
-<!-- Purpose: {{agent_purpose}} -->
-<!-- Type: {{agent_type}} -->
-```
+<check>If no:</check>
+<action>Create placeholder file in agents folder with TODO notes including agent name, purpose, and type</action>
 
 <template-output>first_agent</template-output>
 </step>
 
 <step n="6" goal="Create first workflow" optional="true">
-Ask: **Create your first workflow now? [Yes/no]**
+<ask>Create your first workflow now? [yes/no]</ask>
 
-If yes:
-<invoke-workflow input="{{module_components}}">
-{workflow_builder}
-</invoke-workflow>
+<check>If yes:</check>
+<action>Invoke workflow builder: {workflow_builder}</action>
+<action>Pass module_components as context input</action>
+<action>Guide them to create the primary workflow</action>
 
-Guide them to create the primary workflow.
 <critical>Save to module's workflows folder:</critical>
 
 - Save to {{module_path}}/workflows/
 
-If no, create placeholder structure:
-
-```
-workflows/{{workflow_name}}/
-├── workflow.yaml    # TODO: Configure
-├── instructions.md  # TODO: Add steps
-└── template.md     # TODO: If document workflow
-```
+<check>If no:</check>
+<action>Create placeholder workflow folder structure with TODO notes for workflow.yaml, instructions.md, and template.md if document workflow</action>
 
 <template-output>first_workflow</template-output>
 </step>
@@ -516,48 +470,50 @@ Ask if user wants to:
 </step>
 
 <step n="10" goal="Validate and finalize module">
-Run validation checks:
+<action>Run validation checks:</action>
 
-1. **Structure validation:**
-   - All required directories created
-   - Config files properly formatted
-   - Installer configuration valid
+**Structure validation:**
 
-2. **Component validation:**
-   - At least one agent or workflow exists (or planned)
-   - All references use correct paths
-   - Module code consistent throughout
+- All required directories created
+- Config files properly formatted
+- Installer configuration valid
 
-3. **Documentation validation:**
-   - README.md complete
-   - Installation instructions clear
-   - Examples provided
+**Component validation:**
 
-Show summary:
+- At least one agent or workflow exists (or planned)
+- All references use correct paths
+- Module code consistent throughout
 
-```
-✅ Module: {{module_name}} ({{module_code}})
-📁 Location: {{module_path}}
-👥 Agents: {{agent_count}} ({{agents_created}} created, {{agents_planned}} planned)
-📋 Workflows: {{workflow_count}} ({{workflows_created}} created, {{workflows_planned}} planned)
-📝 Tasks: {{task_count}}
-📦 Installer: Ready at same location
-```
+**Documentation validation:**
 
-Next steps:
+- README.md complete
+- Installation instructions clear
+- Examples provided
+
+<action>Present summary to {user_name}:</action>
+
+- Module name and code
+- Location path
+- Agent count (created vs planned)
+- Workflow count (created vs planned)
+- Task count
+- Installer status
+
+<action>Provide next steps guidance:</action>
 
 1. Complete remaining components using roadmap
 2. Run the BMAD Method installer to this project location
-3. Select the option 'Compile Agents (Quick rebuild of all agent .md files)' after confirming the folder
-4. This will compile your new module and make it available for use
-5. Test module with: `bmad install {{module_code}}`
-6. Share module or integrate with existing system
+3. Select 'Compile Agents' option after confirming folder
+4. Module will be compiled and available for use
+5. Test with bmad install command
+6. Share or integrate with existing system
 
-Ask: Would you like to:
+<ask>Would you like to:
 
 - Create another component now?
 - Test the module installation?
 - Exit and continue later?
+  </ask>
 
 <template-output>module_summary</template-output>
 </step>

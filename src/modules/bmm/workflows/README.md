@@ -25,23 +25,23 @@ The BMM (BMAD Method Module) orchestrates software development through four dist
 ├──────────────────────────────────────────────────────────────┤
 │  brainstorm-game ──┐                                         │
 │  brainstorm-project ├──→ research ──→ product-brief  ──┐     │
-│  game-brief ────────┘                                  │     │
+│  game-brief ────────┘                          game-brief ┘  │
 └────────────────────────────────────────────────────────┼─────┘
                                                          ↓
 ┌──────────────────────────────────────────────────────────────┐
 │                    PHASE 2: PLANNING                         │
-│                  (Scale-Adaptive Router)                     │
+│              (Scale-Adaptive Router - by type)               │
 ├──────────────────────────────────────────────────────────────┤
-│                    plan-project                              │
-│                         ├──→ Level 0: tech-spec only         │
-│                         ├──→ Level 1-2: PRD + tech-spec      │
-│                         ├──→ Level 3-4: PRD + Epics ──────┐  │
-│                         └──→ Game: GDD                    │  │
-└───────────────────────────────────────────────────────────┼──┘
-                                                            ↓
+│  SOFTWARE: plan-project          GAMES: gdd            │
+│      ├──→ Level 0: tech-spec only      ├──→ GDD (all levels) │
+│      ├──→ Level 1: tech-spec only      └──→ Narrative design │
+│      ├──→ Level 2: PRD + tech-spec                           │
+│      └──→ Level 3-4: PRD + Epics ────────────────────────┐   │
+└──────────────────────────────────────────────────────────┼───┘
+                                                           ↓
 ┌──────────────────────────────────────────────────────────────┐
 │                   PHASE 3: SOLUTIONING                       │
-│                    (Levels 3-4 Only)                         │
+│              (Software Levels 3-4 / Complex Games)           │
 ├──────────────────────────────────────────────────────────────┤
 │  3-solutioning ──→ solution-architecture.md                  │
 │       ↓                                                      │
@@ -124,13 +124,13 @@ The central orchestrator that determines project scale and generates appropriate
 
 ### Scale Levels
 
-| Level | Scope                    | Outputs                        | Next Phase       |
-| ----- | ------------------------ | ------------------------------ | ---------------- |
-| **0** | Single atomic change     | tech-spec + 1 story            | → Implementation |
-| **1** | 1-10 stories, 1 epic     | tech-spec + epic + 2-3 stories | → Implementation |
-| **2** | 5-15 stories, 1-2 epics  | Focused PRD + tech-spec        | → Implementation |
-| **3** | 12-40 stories, 2-5 epics | Full PRD + Epics list          | → Solutioning    |
-| **4** | 40+ stories, 5+ epics    | Enterprise PRD + Epics         | → Solutioning    |
+| Level | Scope                    | Outputs                        | Next Phase                     |
+| ----- | ------------------------ | ------------------------------ | ------------------------------ |
+| **0** | Single atomic change     | tech-spec + 1 story            | → Implementation               |
+| **1** | 1-10 stories, 1 epic     | tech-spec + epic + 2-3 stories | → Implementation               |
+| **2** | 5-15 stories, 1-2 epics  | PRD + epics                    | → Tech-spec → Implementation   |
+| **3** | 12-40 stories, 2-5 epics | PRD + epics                    | → Solutioning → Implementation |
+| **4** | 40+ stories, 5+ epics    | PRD + epics                    | → Solutioning → Implementation |
 
 **Key Changes (v6a):**
 
@@ -140,20 +140,49 @@ The central orchestrator that determines project scale and generates appropriate
 
 ### Routing Logic
 
+**Universal Entry Point** (workflow-status):
+
 ```
-plan-project
-    ├─→ Detect project type (game/web/mobile/backend/etc)
+workflow-status
+    ├─→ Check for existing status file
+    │   ├─→ If exists: Display status + recommend next action
+    │   └─→ If not exists: Guide workflow planning
+    ├─→ Determine project context (greenfield/brownfield)
+    ├─→ Determine project type (game/web/mobile/backend/etc)
     ├─→ Assess complexity → assign Level 0-4
-    ├─→ Check context (greenfield/brownfield)
-    │   └─→ If brownfield & undocumented:
-    │       └─→ HALT: "Generate brownfield documentation first"
-    │           └─→ (TBD workflow for codebase analysis)
-    ├─→ Route to appropriate sub-workflow:
-    │   ├─→ Game → GDD workflow
-    │   ├─→ Level 0 → tech-spec workflow
-    │   ├─→ Level 1-2 → PRD + embedded tech-spec
-    │   └─→ Level 3-4 → PRD + epics → Solutioning
-    └─→ Generate bmm-workflow-status.md (tracking doc)
+    ├─→ Map complete workflow journey
+    └─→ Generate bmm-workflow-status.md + direct to first workflow
+```
+
+**Direct Routing** (no intermediate routers):
+
+```
+workflow-status determines routing:
+
+    SOFTWARE PROJECTS:
+    ├─→ Level 0-1 → bmad architect tech-spec
+    │   └─→ Validates status file + level
+    │   └─→ Generates tech-spec.md + stories
+    │   └─→ Direct to Phase 4 (implementation)
+    │
+    ├─→ Level 2 → bmad pm prd
+    │   └─→ Validates status file + level
+    │   └─→ Generates PRD.md + epics.md
+    │   └─→ Then: bmad architect tech-spec (lightweight solutioning)
+    │   └─→ Then: Phase 4 (implementation)
+    │
+    └─→ Level 3-4 → bmad pm prd
+        └─→ Validates status file + level
+        └─→ Generates PRD.md + epics.md
+        └─→ Then: Phase 3 (solution-architecture)
+        └─→ Then: Phase 4 (implementation)
+
+    GAME PROJECTS:
+    └─→ All Levels → bmad pm gdd
+        └─→ Validates status file + project type
+        └─→ Generates GDD.md + epics.md
+        └─→ Optional: narrative design
+        └─→ Then: Phase 3 or 4 (based on complexity)
 ```
 
 ### Key Outputs
@@ -381,7 +410,8 @@ plan-project (Phase 2)
 - **Phase 2**:
   - Level 0: tech-spec.md + story-{slug}.md
   - Level 1: tech-spec.md + epic-stories.md + story-{slug}-N.md files
-  - Level 2-4: PRD.md, Epics.md, or tech-spec.md based on level
+  - Level 2: PRD.md + epics.md (then tech-spec.md in Phase 3)
+  - Level 3-4: PRD.md + epics.md (then solution-architecture.md in Phase 3)
 - **Phase 3**: solution-architecture.md, epic-specific tech specs
 - **Phase 4**: Story files, context XMLs, implemented code
 
@@ -440,7 +470,9 @@ bmad analyst research
 bmad analyst product-brief
 
 # Phase 2: Planning
-bmad pm plan-project
+bmad pm prd             # Level 2-4 software projects
+bmad architect tech-spec # Level 0-1 software projects
+bmad pm gdd             # Game projects
 
 # Phase 3: Solutioning (L3-4)
 bmad architect solution-architecture

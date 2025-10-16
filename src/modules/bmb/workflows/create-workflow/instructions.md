@@ -1,11 +1,12 @@
 # Build Workflow - Workflow Builder Instructions
 
-<workflow>
-
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project_root}/bmad/bmb/workflows/create-workflow/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/create-workflow/workflow.yaml</critical>
 <critical>You MUST fully understand the workflow creation guide at: {workflow_creation_guide}</critical>
 <critical>Study the guide thoroughly to follow ALL conventions for optimal human-AI collaboration</critical>
+<critical>Communicate in {communication_language} throughout the workflow creation process</critical>
+
+<workflow>
 
 <step n="-1" goal="Optional brainstorming phase" optional="true">
 <ask>Do you want to brainstorm workflow ideas first? [y/n]</ask>
@@ -91,6 +92,27 @@ Work with user to outline the workflow steps:
 - Which steps should repeat?
 - What variables/outputs does each step produce?
 
+<ask>What instruction style should this workflow favor?
+
+**1. Intent-Based (Recommended)** - Guide the LLM with goals and principles, let it adapt conversations naturally
+
+- More flexible and conversational
+- LLM chooses appropriate questions based on context
+- Better for complex discovery and iterative refinement
+- Example: `<action>Guide user to define their target audience with specific demographics and needs</action>`
+
+**2. Prescriptive** - Provide exact wording for questions and options
+
+- More controlled and predictable
+- Ensures consistency across runs
+- Better for simple data collection or specific compliance needs
+- Example: `<ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask>`
+
+Note: Your choice will be the _primary_ style, but we'll use the other when it makes more sense for specific steps.</ask>
+
+<action>Store instruction_style preference (intent-based or prescriptive)</action>
+<action>Explain that both styles have value and will be mixed appropriately</action>
+
 Create a step outline with clear goals and outputs.
 </step>
 
@@ -116,6 +138,19 @@ Include:
 - Required tools if any
 - Recommended inputs if any
 
+<critical>ALWAYS include the standard config block:</critical>
+
+```yaml
+# Critical variables from config
+config_source: '{project-root}/bmad/{{target_module}}/config.yaml'
+output_folder: '{config_source}:output_folder'
+user_name: '{config_source}:user_name'
+communication_language: '{config_source}:communication_language'
+date: system-generated
+```
+
+<critical>This standard config ensures workflows can run autonomously and communicate properly with users</critical>
+
 Follow path conventions from guide:
 
 - Use {project-root} for absolute paths
@@ -134,7 +169,7 @@ Load and use the template at: {template_instructions}
 Generate the instructions.md file following the workflow creation guide:
 
 1. ALWAYS include critical headers:
-   - Workflow engine reference: {project_root}/bmad/core/tasks/workflow.xml
+   - Workflow engine reference: {project-root}/bmad/core/tasks/workflow.xml
    - workflow.yaml reference: must be loaded and processed
 
 2. Structure with <workflow> tags containing all steps
@@ -158,6 +193,139 @@ Generate the instructions.md file following the workflow creation guide:
    - Set limits ("3-5 items maximum")
    - Save checkpoints with <template-output>
 
+<critical>Standard config variable usage:</critical>
+
+Instructions MUST use the standard config variables where appropriate:
+
+- Communicate in {communication_language} throughout the workflow
+- Address user as {user_name} in greetings and summaries
+- Write all output files to {output_folder} or subdirectories
+- Include {date} in generated document headers
+
+Example usage in instructions:
+
+```xml
+<action>Write document to {output_folder}/output-file.md</action>
+<critical>Communicate all responses in {communication_language}</critical>
+<output>Hello {user_name}, the workflow is complete!</output>
+```
+
+<critical>Applying instruction style preference:</critical>
+
+Based on the {{instruction_style}} preference from Step 3, generate instructions using these patterns:
+
+**Intent-Based Instructions (Recommended for most workflows):**
+
+Focus on goals, principles, and desired outcomes. Let the LLM adapt the conversation naturally.
+
+✅ **Good Examples:**
+
+```xml
+<!-- Discovery and exploration -->
+<action>Guide user to define their target audience with specific demographics, psychographics, and behavioral characteristics</action>
+<action>Explore the user's vision for the product, asking probing questions to uncover core motivations and success criteria</action>
+<action>Help user identify and prioritize key features based on user value and technical feasibility</action>
+
+<!-- Validation and refinement -->
+<action>Validate that the technical approach aligns with project constraints and team capabilities</action>
+<action>Challenge assumptions about user needs and market fit with thought-provoking questions</action>
+
+<!-- Complex iterative work -->
+<action>Collaborate with user to refine the architecture, iterating until they're satisfied with the design</action>
+```
+
+❌ **Avoid (too prescriptive):**
+
+```xml
+<ask>What is your target audience age range? Choose: 18-24, 25-34, 35-44, 45+</ask>
+<ask>List exactly 3 key features in priority order</ask>
+```
+
+**When to use Intent-Based:**
+
+- Complex discovery processes (user research, requirements gathering)
+- Creative brainstorming and ideation
+- Iterative refinement workflows
+- When user input quality matters more than consistency
+- Workflows requiring adaptation to context
+
+**Prescriptive Instructions (Use selectively):**
+
+Provide exact wording, specific options, and controlled interactions.
+
+✅ **Good Examples:**
+
+```xml
+<!-- Simple data collection -->
+<ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask>
+<ask>Select monetization model: Premium, Free-to-Play, Subscription, Ad-Supported</ask>
+
+<!-- Compliance and standards -->
+<ask>Does this comply with GDPR requirements? [yes/no]</ask>
+<ask>Choose documentation standard: JSDoc, TypeDoc, TSDoc</ask>
+
+<!-- Binary decisions -->
+<ask>Do you want to generate test cases? [yes/no]</ask>
+<ask>Include performance benchmarks? [yes/no]</ask>
+```
+
+❌ **Avoid (too rigid for complex tasks):**
+
+```xml
+<ask>What are your product goals? List exactly 5 goals, each 10-15 words</ask>
+<ask>Describe your user persona in exactly 3 sentences</ask>
+```
+
+**When to use Prescriptive:**
+
+- Simple data collection (platform, format, yes/no choices)
+- Compliance verification and standards adherence
+- Configuration with finite options
+- When consistency is critical across all executions
+- Quick setup wizards
+
+**Mixing Both Styles (Best Practice):**
+
+Even if user chose a primary style, use the other when appropriate:
+
+```xml
+<!-- Intent-based workflow with prescriptive moments -->
+<step n="1" goal="Understand user vision">
+  <action>Explore the user's vision for their game, uncovering their creative intent and target experience</action>
+  <action>Ask probing questions about genre, themes, and emotional tone they want to convey</action>
+</step>
+
+<step n="2" goal="Capture basic metadata">
+  <ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask> <!-- Prescriptive for simple choice -->
+  <ask>Select primary genre: Action, RPG, Strategy, Puzzle, Simulation, Other</ask>
+</step>
+
+<step n="3" goal="Deep dive into gameplay">
+  <action>Guide user to articulate their core gameplay loop, exploring mechanics and player agency</action> <!-- Back to intent-based -->
+  <action>Help them identify what makes their game unique and compelling</action>
+</step>
+```
+
+**Guidelines for the chosen style:**
+
+If user chose **Intent-Based**:
+
+- Default to goal-oriented <action> tags
+- Use open-ended guidance language
+- Save prescriptive <ask> tags for simple data/choices
+- Focus on "guide", "explore", "help user", "validate"
+- Allow LLM to adapt questions to user responses
+
+If user chose **Prescriptive**:
+
+- Default to explicit <ask> tags with clear options
+- Use precise wording for consistency
+- Save intent-based <action> tags for complex discovery
+- Focus on "choose", "select", "specify", "confirm"
+- Provide structured choices when possible
+
+**Remember:** The goal is optimal human-AI collaboration. Use whichever style best serves the user at each step.
+
 <critical>Save location:</critical>
 
 - Write to {{output_folder}}/instructions.md
@@ -171,9 +339,20 @@ Generate the template.md file following guide conventions:
 1. Document structure with clear sections
 2. Variable syntax: {{variable_name}} using snake_case
 3. Variable names MUST match <template-output> tags exactly from instructions
-4. Include standard metadata:
-   - **Date:** {{date}}
-   - **Author:** {{user_name}} (if applicable)
+4. Include standard metadata header (optional - config variables available):
+
+   ```markdown
+   # Document Title
+
+   **Date:** {{date}}
+   **Author:** {{user_name}}
+   ```
+
+   Note: {{date}} and {{user_name}} are optional in headers. Primary purpose of these variables:
+   - {{date}} - Gives agent current date awareness (not confused with training cutoff)
+   - {{user_name}} - Optional author attribution
+   - {{communication_language}} - NOT for document output! Tells agent how to communicate during execution
+
 5. Follow naming conventions from guide:
    - Use descriptive names: {{primary_user_journey}} not {{puj}}
    - Snake_case for all variables
@@ -181,10 +360,25 @@ Generate the template.md file following guide conventions:
 
 Variable sources as per guide:
 
-- workflow.yaml config values
+- workflow.yaml config values (user_name, communication_language, date, output_folder)
 - User input runtime values
 - Step outputs via <template-output>
 - System variables (date, paths)
+
+<critical>Standard config variables in templates:</critical>
+
+Templates CAN optionally use these config variables:
+
+- {{user_name}} - Document author (optional)
+- {{date}} - Generation date (optional)
+
+IMPORTANT: {{communication_language}} is NOT for document headers!
+
+- Purpose: Tells agent how to communicate with user during workflow execution
+- NOT for: Document output language or template headers
+- Future: {{document_output_language}} will handle multilingual document generation
+
+These variables are automatically available from workflow.yaml config block.
 
 <critical>Save location:</critical>
 
@@ -230,11 +424,31 @@ If yes, create placeholder files or copy from templates.
 
 <step n="9" goal="Test and validate workflow">
 Review the created workflow:
+
+**Basic Validation:**
+
 1. Verify all file paths are correct
 2. Check variable names match between files
 3. Ensure step numbering is sequential
 4. Validate YAML syntax
 5. Confirm all placeholders are replaced
+
+**Standard Config Validation:** 6. Verify workflow.yaml contains standard config block:
+
+- config_source defined
+- output_folder, user_name, communication_language pulled from config
+- date set to system-generated
+
+7. Check instructions use config variables where appropriate
+8. Verify template includes config variables in metadata (if document workflow)
+
+**YAML/Instruction/Template Alignment:** 9. Cross-check all workflow.yaml variables against instruction usage:
+
+- Are all yaml variables referenced in instructions.md OR template.md?
+- Are there hardcoded values that should be variables?
+- Do template variables match <template-output> tags in instructions?
+
+10. Identify any unused yaml fields (bloat detection)
 
 Show user a summary of created files and their locations.
 Ask if they want to:
@@ -262,12 +476,24 @@ If yes:
    - Remove {config_source} references (use hardcoded values)
    - Example: "{project-root}/bmad/bmm/workflows/x" → "bmad/bmm/workflows/x"
 
-3. List ALL referenced files:
-   - Scan instructions.md for any file paths
-   - Scan template.md for any includes or references
-   - Include all data files (CSV, JSON, etc.)
-   - Include any sub-workflow YAML files
-   - Include any shared templates
+3. List ALL referenced files by scanning:
+
+   **Scan instructions.md for:**
+   - File paths in <action> tags
+   - Data files (CSV, JSON, YAML, etc.)
+   - Validation/checklist files
+   - Any <invoke-workflow> calls → must include that workflow's yaml file
+   - Any <goto> tags that reference other workflows
+   - Shared templates or includes
+
+   **Scan template.md for:**
+   - Any includes or references to other files
+   - Shared template fragments
+
+   **Critical: Workflow Dependencies**
+   - If instructions call another workflow, that workflow's yaml MUST be in web_bundle_files
+   - Example: `<invoke-workflow>{project-root}/bmad/core/workflows/x/workflow.yaml</invoke-workflow>`
+     → Add "bmad/core/workflows/x/workflow.yaml" to web_bundle_files
 
 4. Create web_bundle_files array with complete list
 
@@ -291,33 +517,58 @@ web_bundle:
     - 'bmad/{module}/workflows/{workflow}/template.md'
     - 'bmad/{module}/workflows/{workflow}/data.csv'
     # Add every single file referenced anywhere
+
+  # CRITICAL: If this workflow invokes other workflows, use existing_workflows
+  # This signals the bundler to recursively include those workflows' web_bundles
+  existing_workflows:
+    - workflow_variable_name: 'bmad/path/to/workflow.yaml'
 ```
+
+**Example with existing_workflows:**
+
+```yaml
+web_bundle:
+  name: 'brainstorm-game'
+  description: 'Game brainstorming with CIS workflow'
+  author: 'BMad'
+  instructions: 'bmad/bmm/workflows/brainstorm-game/instructions.md'
+  template: false
+  web_bundle_files:
+    - 'bmad/bmm/workflows/brainstorm-game/instructions.md'
+    - 'bmad/mmm/workflows/brainstorm-game/game-context.md'
+    - 'bmad/core/workflows/brainstorming/workflow.yaml'
+  existing_workflows:
+    - core_brainstorming: 'bmad/core/workflows/brainstorming/workflow.yaml'
+```
+
+**What existing_workflows does:**
+
+- Tells the bundler this workflow invokes another workflow
+- Bundler recursively includes the invoked workflow's entire web_bundle
+- Essential for meta-workflows that orchestrate other workflows
+- Maps workflow variable names to their bmad/-relative paths
 
 <action>Validate web bundle completeness:</action>
 
 - Ensure no {config_source} variables remain
 - Verify all file paths are listed
 - Check that paths are bmad/-relative
+- If workflow uses <invoke-workflow>, add to existing_workflows
 
 <template-output>web_bundle_config</template-output>
 </step>
 
 <step n="10" goal="Document and finalize">
-Create a brief README for the workflow folder explaining:
-- Purpose and use case
-- How to invoke: `workflow {workflow_name}`
-- Expected inputs
-- Generated outputs
-- Any special requirements
+<action>Create a brief README for the workflow folder explaining purpose, how to invoke, expected inputs, generated outputs, and any special requirements</action>
 
-Provide user with:
+<action>Provide {user_name} with workflow completion summary in {communication_language}:</action>
 
 - Location of created workflow: {{output_folder}}
-- Command to run it
+- Command to run it: `workflow {workflow_name}`
 - Next steps:
-  - "Run the BMAD Method installer to this project location"
-  - "Select the option 'Compile Agents (Quick rebuild of all agent .md files)' after confirming the folder"
-  - "This will compile your new workflow and make it available for use"
+  - Run the BMAD Method installer to this project location
+  - Select 'Compile Agents (Quick rebuild of all agent .md files)' after confirming the folder
+  - This will compile the new workflow and make it available for use
     </step>
 
 </workflow>

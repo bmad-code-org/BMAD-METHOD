@@ -2,6 +2,7 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 
 <critical>
 FACILITATION NOTES:
@@ -447,7 +448,7 @@ Check status anytime with: `workflow-status`
 </check>
 
 <check if="status file not found">
-  <output>**✅ Retrospective Complete**
+  <output>**✅ Retrospective Complete, {user_name}!**
 
 **Epic Review:**
 

@@ -1,7 +1,8 @@
 # Module Brief Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project_root}/bmad/bmb/workflows/module-brief/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/module-brief/workflow.yaml</critical>
+<critical>Communicate in {communication_language} throughout the module brief creation process</critical>
 
 <workflow>
 
@@ -248,16 +249,17 @@ For each risk, note mitigation strategy.
 </step>
 
 <step n="12" goal="Final review and export readiness">
-<action>Review all sections with user</action>
+<action>Review all sections with {user_name}</action>
 <action>Ensure module brief is ready for create-module workflow</action>
 
-Ask if they want to:
+<ask>Would {user_name} like to:
 
 1. Proceed directly to create-module workflow
 2. Save and refine later
 3. Generate additional planning documents
+   </ask>
 
-<action>Highlight that this brief can be fed directly into create-module workflow!</action>
+<action>Inform {user_name} in {communication_language} that this brief can be fed directly into create-module workflow</action>
 
 <template-output>final_brief</template-output>
 </step>

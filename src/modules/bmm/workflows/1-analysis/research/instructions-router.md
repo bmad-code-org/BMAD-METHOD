@@ -2,11 +2,13 @@
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>This is a ROUTER that directs to specialized research instruction sets</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 
 <!-- IDE-INJECT-POINT: research-subagents -->
 
 <workflow>
+
+<critical>This is a ROUTER that directs to specialized research instruction sets</critical>
 
 <step n="1" goal="Check and load workflow status file">
 <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>

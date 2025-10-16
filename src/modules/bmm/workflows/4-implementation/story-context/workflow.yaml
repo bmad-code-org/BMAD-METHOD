@@ -33,26 +33,4 @@ default_output_file: "{story_dir}/story-context-{{epic_id}}.{{story_id}}.xml"
 recommended_inputs:
   - story_markdown: "Path to a story markdown file to build context for"
 
-# Required tools
-required_tools:
-  - list_files
-  - file_info
-  - read_file
-  - write_file
-  - create_directory
-  - glob
-  - search_repo
-  - parse_markdown
-
-tags:
-  - context
-  - story
-  - planning
-  - bmad-v6
-
-execution_hints:
-  interactive: false
-  autonomous: true
-  iterative: true
-
 web_bundle: false

@@ -1,5 +1,9 @@
 # Workflow Status - Master Router and Status Tracker
 
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
+
 <workflow>
 
 <critical>This is the UNIVERSAL ENTRY POINT for all BMM workflows</critical>
@@ -158,9 +162,9 @@ Or tell me: "load {{next_agent}} and {{next_command}}"
 
 <step n="3" goal="Initial workflow planning - no status file exists" if="status_file_found == false">
 
-<action>Display welcome message</action>
+<action>Display welcome message in {communication_language}</action>
 
-**🚀 Welcome to BMad Method Workflows!**
+**🚀 Welcome to BMad Method Workflows, {user_name}!**
 
 No workflow status file found. Let's plan your complete workflow journey.
 
@@ -424,13 +428,45 @@ Based on your responses, here's your complete workflow journey:
 {{/if}}
 </check>
 
-<action>Always add Phase 2 (required for all levels)</action>
+<action>Always add Phase 2 (required for all levels) - route based on project type and level</action>
 
-- Phase: "2-Plan"
-- Step: "plan-project"
-- Agent: "PM"
-- Description: "Create PRD/GDD/Tech-Spec (determines final level)"
-- Status: "Planned"
+<check if='project_type == "game"'>
+  <action>Add game planning workflow</action>
+  - Phase: "2-Plan"
+  - Step: "gdd"
+  - Agent: "PM"
+  - Description: "Create Game Design Document"
+  - Status: "Planned"
+</check>
+
+<check if='project_type != "game"'>
+  <check if='level_known == true AND estimated_level <= 1'>
+    <action>Add tech-spec workflow (Levels 0-1)</action>
+    - Phase: "2-Plan"
+    - Step: "tech-spec"
+    - Agent: "Architect"
+    - Description: "Create technical specification and stories"
+    - Status: "Planned"
+  </check>
+
+  <check if='level_known == true AND estimated_level >= 2'>
+    <action>Add PRD workflow (Levels 2-4)</action>
+    - Phase: "2-Plan"
+    - Step: "prd"
+    - Agent: "PM"
+    - Description: "Create Product Requirements Document and epics"
+    - Status: "Planned"
+  </check>
+
+  <check if='level_known == false OR estimated_level == "TBD"'>
+    <action>Add conditional planning note</action>
+    - Phase: "2-Plan"
+    - Step: "TBD - Level 0-1 → tech-spec, Level 2-4 → prd"
+    - Agent: "PM or Architect"
+    - Description: "Workflow determined after level assessment"
+    - Status: "Conditional"
+  </check>
+</check>
 
 <check if='needs_ux_workflow == true'>
   <action>Add UX workflow to Phase 2 planning (runs after PRD, before Phase 3)</action>
@@ -536,7 +572,7 @@ Create status file? (y/n)</ask>
   <action>Set next_agent = planned_workflow[0].agent</action>
   <action>Include complete planned_workflow in status file</action>
 
-<output>**✅ Status file created!**
+<output>**✅ Status file created, {user_name}!**
 
 File: `bmm-workflow-status.md`
 
@@ -549,7 +585,15 @@ After documentation is complete, return to check status: `bmad analyst workflow-
 {{/if}}
 
 {{#if planned_workflow[0].step != "document-project" AND planned_workflow[0].step != "user-choice"}}
+{{#if planned_workflow[0].step == "gdd"}}
+Load PM: `bmad pm gdd`
+{{else if planned_workflow[0].step == "tech-spec"}}
+Load Architect: `bmad architect tech-spec`
+{{else if planned_workflow[0].step == "prd"}}
+Load PM: `bmad pm prd`
+{{else}}
 Load {{planned_workflow[0].agent}}: `bmad {{lowercase planned_workflow[0].agent}} {{planned_workflow[0].step}}`
+{{/if}}
 {{/if}}
 
 {{#if planned_workflow[0].step == "user-choice"}}
@@ -596,9 +640,9 @@ Continue? (y/n)</ask>
   <check if="confirm == 'y'">
     <output>**To start new workflow:**
 
-Load PM agent: `bmad pm plan-project`
+Run: `bmad analyst workflow-status`
 
-This will create a new workflow status file and guide you through fresh assessment.
+This will guide you through fresh workflow assessment and create a new status file.
 </output>
 </check>
 </check>
@@ -644,7 +688,9 @@ Which phase? (1-4)</ask>
 
 **Phase 2: Planning (Required)**
 
-- `plan-project` - Scale-adaptive planning (PRD, GDD, or Tech-Spec)
+- `prd` - Product Requirements Document (Level 2-4 software projects)
+- `tech-spec` - Technical specification (Level 0-1 software projects)
+- `gdd` - Game Design Document (game projects)
 - `ux-spec` - UX/UI specification (for projects with UI components)
 
 **Phase 3: Solutioning (Level 3-4 Only)**
@@ -672,12 +718,14 @@ Which phase? (1-4)</ask>
 **🎯 Recommended for Your Current Phase ({{current_phase}}):**
 
 {{#if current_phase == '1-Analysis'}}
-Continue analysis or move to `plan-project`
+Continue analysis or move to Phase 2 Planning (prd/tech-spec/gdd based on your project)
 {{/if}}
 
 {{#if current_phase == '2-Plan'}}
-{{#if project_level < 3}}
+{{#if project_level < 2}}
 Ready for Phase 4! Run `create-story` (SM agent)
+{{else if project_level == 2}}
+Run `tech-spec` workflow for lightweight technical planning, then Phase 4
 {{else}}
 Ready for Phase 3! Run `solution-architecture` (Architect agent)
 {{/if}}

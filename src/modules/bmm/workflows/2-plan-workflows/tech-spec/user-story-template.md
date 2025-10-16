@@ -54,8 +54,3 @@ so that {{benefit}}.
 ### File List
 
 <!-- Will be populated during dev-story execution -->
-
----
-
-_Generated as part of Level 0 Tech Spec workflow (BMad Method v6)_
-_Story Format: Compatible with story-context and dev-story workflows_

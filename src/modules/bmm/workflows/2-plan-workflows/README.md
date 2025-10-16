@@ -4,11 +4,50 @@ last-redoc-date: 2025-10-01
 
 # Project Planning Workflow (Phase 2)
 
-This scale-adaptive workflow represents the cornerstone of BMM v6's intelligent project orchestration, automatically determining project complexity (Level 0-4) and routing to specialized planning pathways based on project type, scope, and context. Unlike traditional one-size-fits-all planning approaches, it dynamically adjusts output artifacts—from minimal tech specs for atomic changes to comprehensive PRD suites for enterprise platforms—ensuring planning overhead matches project value. The workflow serves as the critical bridge between Phase 1 analysis outputs and Phase 3 solutioning, establishing the contractual foundation for all subsequent development activities.
+The Phase 2 Planning workflow is **scale-adaptive**, meaning it automatically determines the right level of planning documentation based on project complexity (Levels 0-4). This ensures planning overhead matches project value—from minimal tech specs for bug fixes to comprehensive PRDs for enterprise platforms.
 
-The workflow's routing intelligence analyzes project characteristics through multi-dimensional assessment: project type (game, web, mobile, backend), context (greenfield vs. brownfield), scope indicators, and complexity signals. Based on this analysis, it classifies projects into five levels with distinct artifact requirements. Level 0 produces only tech specs for single atomic changes. Levels 1-2 generate focused PRDs with embedded tech specs. Levels 3-4 create comprehensive PRDs with separate epics that hand off to the architect-driven solutioning workflow. This classification isn't merely about document generation—it fundamentally changes how requirements are structured, validated, and communicated to downstream consumers.
+## Scale-Adaptive Flow (Levels 0-4)
 
-Critical to v6's flow improvement is this workflow's integration with the bmm-workflow-status.md tracking document, which maintains project state across sessions, tracks which agents participate in each phase, and provides continuity for multi-session planning efforts. The workflow can resume from any point, intelligently detecting existing artifacts and determining next steps without redundant work. For game projects, it routes to specialized GDD generation with genre-specific templates. For UX-heavy projects, it can generate standalone UX specifications or AI frontend prompts from existing specs.
+The workflow routes to different planning approaches based on project level:
+
+### Level 0 - Single File Change / Bug Fix
+
+**Planning:** Tech-spec only (lightweight implementation plan)
+**Output:** `tech-spec.md` with single story
+**Next Phase:** Direct to implementation (Phase 4)
+
+### Level 1 - Small Feature (1-3 files, 2-5 stories)
+
+**Planning:** Tech-spec only (implementation-focused)
+**Output:** `tech-spec.md` with epic breakdown and stories
+**Next Phase:** Direct to implementation (Phase 4)
+
+### Level 2 - Feature Set / Small Project (5-15 stories, 1-2 epics)
+
+**Planning:** PRD (product-focused) + Tech-spec (technical planning)
+**Output:** `PRD.md`, `epics.md`, `tech-spec.md`
+**Next Phase:** Tech-spec workflow (lightweight solutioning), then implementation (Phase 4)
+**Note:** Level 2 uses tech-spec instead of full solution-architecture to keep planning lightweight
+
+### Level 3 - Medium Project (15-40 stories, 2-5 epics)
+
+**Planning:** PRD (strategic product document)
+**Output:** `PRD.md`, `epics.md`
+**Next Phase:** Solution-architecture workflow (Phase 3), then implementation (Phase 4)
+
+### Level 4 - Large/Enterprise Project (40-100+ stories, 5-10 epics)
+
+**Planning:** PRD (comprehensive product specification)
+**Output:** `PRD.md`, `epics.md`
+**Next Phase:** Solution-architecture workflow (Phase 3), then implementation (Phase 4)
+
+**Critical Distinction:**
+
+- **Levels 0-1:** No PRD, tech-spec only
+- **Level 2:** PRD + tech-spec (skips full architecture)
+- **Levels 3-4:** PRD → full solution-architecture workflow
+
+Critical to v6's flow improvement is this workflow's integration with the bmm-workflow-status.md tracking document, which maintains project state across sessions, tracks which agents participate in each phase, and provides continuity for multi-session planning efforts. The workflow can resume from any point, intelligently detecting existing artifacts and determining next steps without redundant work. For UX-heavy projects, it can generate standalone UX specifications or AI frontend prompts from existing specs.
 
 ## Key Features
 
@@ -18,24 +57,6 @@ Critical to v6's flow improvement is this workflow's integration with the bmm-wo
 - **Multi-level outputs** - Supports 5 project levels (0-4) with appropriate artifacts
 - **Input integration** - Leverages product briefs and market research when available
 - **Template-driven** - Uses validated templates for consistent output structure
-
-## Usage
-
-### Basic Invocation
-
-```bash
-workflow plan-project
-```
-
-### With Input Documents
-
-```bash
-# With product brief as input
-workflow plan-project --input /path/to/product-brief.md
-
-# With multiple inputs
-workflow plan-project --input product-brief.md --input market-research.md
-```
 
 ### Configuration
 
@@ -50,32 +71,31 @@ The workflow adapts automatically based on project assessment, but key configura
 ### Files Included
 
 ```
-plan-project/
+2-plan-workflows/
 ├── README.md                      # Overview and usage details
-├── checklist.md                   # Validation criteria
-├── instructions-router.md         # Initial assessment and routing logic
-├── workflow.yaml                  # Configuration and metadata
+├── checklist.md                   # Shared validation criteria
+├── prd/
+│   ├── epics-template.md          # Epic breakdown template
+│   ├── instructions.md            # Level 2-4 PRD instructions
+│   ├── prd-template.md            # Product Requirements Document template
+│   └── workflow.yaml
+├── tech-spec/
+│   ├── epics-template.md          # Epic-to-story handoff template
+│   ├── instructions-level0-story.md
+│   ├── instructions-level1-stories.md
+│   ├── instructions.md            # Level 0-1 tech-spec instructions
+│   ├── tech-spec-template.md      # Technical Specification template
+│   ├── user-story-template.md     # Story template for Level 0/1
+│   └── workflow.yaml
 ├── gdd/
-│   ├── gdd-template.md            # Game Design Document template
-│   ├── instructions-gdd.md        # Genre-aware GDD instructions
+│   ├── instructions-gdd.md        # Game Design Document instructions
+│   ├── gdd-template.md            # GDD template
+│   ├── game-types.csv             # Genre catalog
+│   ├── game-types/                # Genre-specific templates
 │   └── workflow.yaml
 ├── narrative/
 │   ├── instructions-narrative.md  # Narrative design instructions
 │   ├── narrative-template.md      # Narrative planning template
-│   └── workflow.yaml
-├── prd/
-│   ├── epics-template.md          # Epic breakdown template
-│   ├── instructions-lg.md         # Level 3-4 PRD instructions
-│   ├── instructions-med.md        # Level 1-2 PRD instructions
-│   ├── prd-template.md            # Product Requirements Document template
-│   └── workflow.yaml
-├── tech-spec/
-│   ├── epic-stories-template.md   # Epic-to-story handoff template
-│   ├── instructions-level0-story.md
-│   ├── instructions-level1-stories.md
-│   ├── instructions-sm.md         # Level 0 tech-spec instructions
-│   ├── tech-spec-template.md      # Technical Specification template
-│   ├── user-story-template.md     # Story template for Level 0/1
 │   └── workflow.yaml
 └── ux/
     ├── instructions-ux.md         # UX specification instructions
@@ -95,23 +115,31 @@ plan-project/
 
 ### Phase 2: Level-Specific Planning (Steps vary by level)
 
-**Level 0 (Single Atomic Change)**:
+**Level 0 (Single File Change / Bug Fix)**:
 
-- Creates technical specification only
-- Focuses on implementation details for small changes
+- Tech-spec only workflow
+- Single story implementation plan
+- Direct to Phase 4 (implementation)
 
-**Level 1-2 (Features and Small Systems)**:
+**Level 1 (Small Feature)**:
 
-- Generates minimal PRD with core sections
-- Creates comprehensive tech-spec
-- Includes basic epic breakdown
+- Tech-spec only workflow
+- Epic breakdown with 2-5 stories
+- Direct to Phase 4 (implementation)
 
-**Level 3-4 (Full Products and Platforms)**:
+**Level 2 (Feature Set / Small Project)**:
 
-- Produces complete PRD with all sections
-- Generates detailed epic breakdown
-- Includes architect handoff materials
-- Creates traceability mapping
+- PRD workflow (strategic product document)
+- Generates `PRD.md` and `epics.md`
+- Then runs tech-spec workflow (lightweight solutioning)
+- Then to Phase 4 (implementation)
+
+**Level 3-4 (Medium to Enterprise Projects)**:
+
+- PRD workflow (comprehensive product specification)
+- Generates `PRD.md` and `epics.md`
+- Hands off to Phase 3 (solution-architecture workflow)
+- Full architecture design before implementation
 
 ### Phase 3: Validation and Handoff (Final steps)
 
@@ -124,33 +152,34 @@ plan-project/
 ### Generated Files
 
 - **Primary output**: PRD.md (except Level 0), tech-spec.md, bmm-workflow-status.md
-- **Supporting files**: epics.md (Level 3-4), PRD-validation-report.md (if validation run)
+- **Supporting files**: epics.md (Level 2-4), PRD-validation-report.md (if validation run)
 
 ### Output Structure by Level
 
 **Level 0 - Tech Spec Only**:
 
-1. **Technical Overview** - Implementation approach
-2. **Detailed Design** - Code-level specifications
-3. **Testing Strategy** - Validation approach
+- `tech-spec.md` - Single story implementation plan
+- Direct to implementation
 
-**Level 1-2 - Minimal PRD + Tech Spec**:
+**Level 1 - Tech Spec with Epic Breakdown**:
 
-1. **Problem Statement** - Core issue definition
-2. **Solution Overview** - High-level approach
-3. **Requirements** - Functional and non-functional
-4. **Technical Specification** - Implementation details
-5. **Success Criteria** - Acceptance criteria
+- `tech-spec.md` - Epic breakdown with 2-5 stories
+- Direct to implementation
 
-**Level 3-4 - Full PRD + Epics**:
+**Level 2 - PRD + Tech Spec**:
 
-1. **Executive Summary** - Project overview
-2. **Problem Definition** - Detailed problem analysis
-3. **Solution Architecture** - Comprehensive solution design
-4. **User Experience** - Journey mapping and wireframes
-5. **Requirements** - Complete functional/non-functional specs
-6. **Epic Breakdown** - Development phases and stories
-7. **Technical Handoff** - Architecture and implementation guidance
+- `PRD.md` - Strategic product document (goals, requirements, user journeys, UX principles, UI goals, epic list, scope)
+- `epics.md` - Tactical implementation roadmap (detailed story breakdown)
+- `tech-spec.md` - Lightweight technical planning (generated after PRD)
+- Then to implementation
+
+**Level 3-4 - PRD + Full Architecture**:
+
+- `PRD.md` - Comprehensive product specification
+- `epics.md` - Complete epic/story breakdown
+- Hands off to solution-architecture workflow (Phase 3)
+- `solution-architecture.md` - Generated by architect workflow
+- Then to implementation
 
 ## Requirements
 
