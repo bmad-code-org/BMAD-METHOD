@@ -18,7 +18,6 @@ instructions: "{installed_path}/instructions.md"
 # Templates
 prd_template: "{installed_path}/prd-template.md"
 epics_template: "{installed_path}/epics-template.md"
-status_template: "{project-root}/bmad/bmm/workflows/_shared/bmm-workflow-status-template.md"
 
 # Output files
 status_file: "{output_folder}/bmm-workflow-status.md"
@@ -41,4 +40,3 @@ web_bundle:
     - "bmad/bmm/workflows/2-plan-workflows/prd/instructions.md"
     - "bmad/bmm/workflows/2-plan-workflows/prd/prd-template.md"
     - "bmad/bmm/workflows/2-plan-workflows/prd/epics-template.md"
-    - "bmad/bmm/workflows/_shared/bmm-workflow-status-template.md"

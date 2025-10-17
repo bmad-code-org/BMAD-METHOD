@@ -18,58 +18,8 @@ template: "{installed_path}/nfr-report-template.md"
 
 # Variables and inputs
 variables:
-  # Target specification
-  story_file: "" # Path to story markdown (optional)
-  feature_name: "" # Feature to assess (if no story file)
-
-  # NFR categories to assess
-  assess_performance: true # Response time, throughput, resource usage
-  assess_security: true # Authentication, authorization, data protection
-  assess_reliability: true # Error handling, recovery, availability
-  assess_maintainability: true # Code quality, test coverage, documentation
-
-  # Custom NFR categories (comma-separated)
-  custom_nfr_categories: "" # e.g., "accessibility,internationalization,compliance"
-
-  # Evidence sources
-  test_results_dir: "{project-root}/test-results"
-  metrics_dir: "{project-root}/metrics"
-  logs_dir: "{project-root}/logs"
-  include_ci_results: true # Analyze CI/CD pipeline results
-
-  # Thresholds (can be overridden)
-  performance_response_time_ms: 500 # Target response time
-  performance_throughput_rps: 100 # Target requests per second
-  security_score_min: 85 # Minimum security score (0-100)
-  reliability_uptime_pct: 99.9 # Target uptime percentage
-  maintainability_coverage_pct: 80 # Minimum test coverage
-
-  # Assessment configuration
-  use_deterministic_rules: true # PASS/CONCERNS/FAIL based on evidence
-  never_guess_thresholds: true # Mark as CONCERNS if threshold unknown
-  require_evidence: true # Every NFR must have evidence or be called out
-  suggest_monitoring: true # Recommend monitoring hooks for gaps
-
-  # Integration with BMad artifacts
-  use_tech_spec: true # Load tech-spec.md for NFR requirements
-  use_prd: true # Load PRD.md for NFR context
-  use_test_design: true # Load test-design.md for NFR test plan
-
-  # Output configuration
-  output_file: "{output_folder}/nfr-assessment.md"
-  generate_gate_yaml: true # Create gate YAML snippet with NFR status
-  generate_evidence_checklist: true # Create checklist of evidence gaps
-  update_story_file: false # Add NFR section to story (optional)
-
-  # Quality gates
-  fail_on_critical_nfr: true # Fail if critical NFR has FAIL status
-  warn_on_concerns: true # Warn if any NFR has CONCERNS status
-  block_release_on_fail: true # Block release if NFR assessment fails
-
-  # Advanced options
-  auto_load_knowledge: true # Load nfr-criteria, ci-burn-in fragments
-  include_quick_wins: true # Suggest quick wins for concerns/failures
-  include_recommended_actions: true # Provide actionable remediation steps
+  # NFR category assessment (defaults to all categories)
+  custom_nfr_categories: "" # Optional additional categories beyond standard (security, performance, reliability, maintainability)
 
 # Output configuration
 default_output_file: "{output_folder}/nfr-assessment.md"

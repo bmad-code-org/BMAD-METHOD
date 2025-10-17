@@ -17,43 +17,8 @@ validation: "{installed_path}/checklist.md"
 
 # Variables and inputs
 variables:
-  ci_platform: "auto" # auto, github-actions, gitlab-ci, circle-ci, jenkins
-  test_framework: "" # Detected from framework workflow (playwright, cypress)
-  test_dir: "{project-root}/tests"
-  config_file: "" # Framework config file path
-  node_version_source: "{project-root}/.nvmrc" # Node version for CI
-
-  # Execution configuration
-  parallel_jobs: 4 # Number of parallel test shards
-  burn_in_enabled: true # Enable burn-in loop for flaky test detection
-  burn_in_iterations: 10 # Number of burn-in iterations
-  selective_testing_enabled: true # Enable changed test detection
-
-  # Artifact configuration
-  artifact_retention_days: 30
-  upload_artifacts_on: "failure" # failure, always, never
-  artifact_types: "traces,screenshots,videos,html-report" # Comma-separated
-
-  # Performance tuning
-  cache_enabled: true # Enable dependency caching
-  browser_cache_enabled: true # Cache browser binaries
-  timeout_minutes: 60 # Overall job timeout
-  test_timeout_minutes: 30 # Individual test run timeout
-
-  # Notification configuration
-  notify_on_failure: false # Enable notifications (requires setup)
-  notification_channels: "" # slack, email, discord
-
-  # Output artifacts
-  generate_ci_readme: true
-  generate_local_mirror_script: true
-  generate_secrets_checklist: true
-
-  # CI-specific optimizations
-  use_matrix_strategy: true # Parallel execution across OS/browsers
-  use_sharding: true # Split tests into shards
-  retry_failed_tests: true
-  retry_count: 2
+  ci_platform: "auto" # auto, github-actions, gitlab-ci, circle-ci, jenkins - user can override
+  test_dir: "{project-root}/tests" # Root test directory
 
 # Output configuration
 default_output_file: "{project-root}/.github/workflows/test.yml" # GitHub Actions default

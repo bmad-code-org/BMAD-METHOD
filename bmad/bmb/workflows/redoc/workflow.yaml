@@ -1,0 +1,31 @@
+# ReDoc - Reverse-Tree Documentation Engine
+name: "redoc"
+description: "Autonomous documentation system that maintains module, workflow, and agent documentation using a reverse-tree approach (leaf folders first, then parents). Understands BMAD conventions and produces technical writer quality output."
+author: "BMad"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmb/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+
+# Required knowledge base - BMAD conventions and patterns
+bmad_conventions:
+  agent_architecture: "{project-root}/src/modules/bmb/workflows/create-agent/agent-architecture.md"
+  agent_command_patterns: "{project-root}/src/modules/bmb/workflows/create-agent/agent-command-patterns.md"
+  agent_types: "{project-root}/src/modules/bmb/workflows/create-agent/agent-types.md"
+  module_structure: "{project-root}/src/modules/bmb/workflows/create-module/module-structure.md"
+  workflow_guide: "{project-root}/src/modules/bmb/workflows/create-workflow/workflow-creation-guide.md"
+
+# Runtime inputs
+target_path: "" # User specifies: module path, workflow path, agent path, or folder path
+
+# Module path and component files
+installed_path: "{project-root}/src/modules/bmb/workflows/redoc"
+template: false # Action workflow - updates files in place
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Configuration
+autonomous: true # Runs without user checkpoints unless clarification needed
+
+# Web bundle configuration

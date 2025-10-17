@@ -17,23 +17,10 @@ validation: "{installed_path}/checklist.md"
 
 # Variables and inputs
 variables:
-  test_framework: "" # playwright or cypress - auto-detect from package.json or ask
-  project_type: "" # react, vue, angular, next, node - detected from package.json
-  bundler: "" # vite, webpack, rollup, esbuild - detected from package.json
   test_dir: "{project-root}/tests" # Root test directory
-  config_file: "" # Will be set to {project-root}/{framework}.config.{ts|js}
   use_typescript: true # Prefer TypeScript configuration
-  standalone_mode: true # Can run without story context
-
-  # Framework selection criteria
-  framework_preference: "auto" # auto, playwright, cypress
-  project_size: "auto" # auto, small, large - influences framework choice
-
-  # Output artifacts
-  generate_env_example: true
-  generate_nvmrc: true
-  generate_readme: true
-  generate_sample_tests: true
+  framework_preference: "auto" # auto, playwright, cypress - user can override auto-detection
+  project_size: "auto" # auto, small, large - influences framework recommendation
 
 # Output configuration
 default_output_file: "{test_dir}/README.md" # Main deliverable is test setup README
