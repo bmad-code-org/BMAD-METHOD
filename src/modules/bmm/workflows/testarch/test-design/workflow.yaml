@@ -18,33 +18,7 @@ template: "{installed_path}/test-design-template.md"
 
 # Variables and inputs
 variables:
-  # Target scope
-  epic_num: "" # Epic number for scoped design
-  story_path: "" # Specific story for design (optional)
-  design_level: "full" # full, targeted, minimal
-
-  # Risk assessment configuration
-  risk_assessment_enabled: true
-  risk_threshold: 6 # Scores >= 6 are high-priority (probability × impact)
-  risk_categories: "TECH,SEC,PERF,DATA,BUS,OPS" # Comma-separated
-
-  # Coverage planning
-  priority_levels: "P0,P1,P2,P3" # Test priorities
-  test_levels: "e2e,api,integration,unit,component" # Test levels to consider
-  selective_testing_strategy: "risk-based" # risk-based, coverage-based, hybrid
-
-  # Output configuration
-  output_file: "{output_folder}/test-design-epic-{epic_num}.md"
-  include_risk_matrix: true
-  include_coverage_matrix: true
-  include_execution_order: true
-  include_resource_estimates: true
-
-  # Advanced options
-  auto_load_knowledge: true # Load relevant knowledge fragments
-  include_mitigation_plan: true
-  include_gate_criteria: true
-  standalone_mode: false # Can run without epic context
+  design_level: "full" # full, targeted, minimal - scope of design effort
 
 # Output configuration
 default_output_file: "{output_folder}/test-design-epic-{epic_num}.md"

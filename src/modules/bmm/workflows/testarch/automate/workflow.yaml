@@ -18,61 +18,13 @@ template: false
 
 # Variables and inputs
 variables:
-  # Execution mode
+  # Execution mode and targeting
   standalone_mode: true # Can work without BMad artifacts (true) or integrate with BMad (false)
-
-  # Target specification (flexible - can be story, feature, or directory)
-  story_file: "" # Path to story markdown (optional - only if BMad workflow)
-  target_feature: "" # Feature name or directory to analyze (e.g., "user-authentication" or "src/auth/")
-  target_files: "" # Specific files to analyze (comma-separated paths)
-
-  # Discovery and analysis
-  test_dir: "{project-root}/tests"
-  source_dir: "{project-root}/src"
-  auto_discover_features: true # Automatically find features needing tests
-  analyze_coverage: true # Check existing test coverage gaps
-
-  # Coverage strategy
   coverage_target: "critical-paths" # critical-paths, comprehensive, selective
-  test_levels: "e2e,api,component,unit" # Which levels to generate (comma-separated)
-  avoid_duplicate_coverage: true # Don't test same behavior at multiple levels
 
-  # Test priorities (from test-priorities.md knowledge fragment)
-  include_p0: true # Critical paths (every commit)
-  include_p1: true # High priority (PR to main)
-  include_p2: true # Medium priority (nightly)
-  include_p3: false # Low priority (on-demand)
-
-  # Test design principles
-  use_given_when_then: true # BDD-style test structure
-  one_assertion_per_test: true # Atomic test design
-  network_first: true # Route interception before navigation
-  deterministic_waits: true # No hard waits or sleeps
-
-  # Infrastructure generation
-  generate_fixtures: true # Create/enhance fixture architecture
-  generate_factories: true # Create/enhance data factories
-  update_helpers: true # Add utility functions
-
-  # Integration with BMad artifacts (when available)
-  use_test_design: true # Load test-design.md if exists
-  use_tech_spec: true # Load tech-spec.md if exists
-  use_prd: true # Load PRD.md if exists
-
-  # Output configuration
-  update_readme: true # Update test README with new specs
-  update_package_scripts: true # Add test execution scripts
-  output_summary: "{output_folder}/automation-summary.md"
-
-  # Quality gates
-  max_test_duration: 90 # seconds (1.5 minutes per test)
-  max_file_lines: 300 # lines (keep tests lean)
-  require_self_cleaning: true # All tests must clean up data
-
-  # Advanced options
-  auto_load_knowledge: true # Load test-levels, test-priorities, fixture-architecture, selective-testing, ci-burn-in
-  run_tests_after_generation: true # Verify tests pass/fail as expected
-  auto_validate: true # Always validate generated tests
+  # Directory paths
+  test_dir: "{project-root}/tests" # Root test directory
+  source_dir: "{project-root}/src" # Source code directory
 
 # Output configuration
 default_output_file: "{output_folder}/automation-summary.md"

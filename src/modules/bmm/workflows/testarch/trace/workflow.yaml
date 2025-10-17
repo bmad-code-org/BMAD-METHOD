@@ -18,92 +18,14 @@ template: "{installed_path}/trace-template.md"
 
 # Variables and inputs
 variables:
-  # Target specification
-  story_file: "" # Path to story markdown (e.g., bmad/output/story-1.3.md)
-  acceptance_criteria: "" # Optional - inline criteria if no story file
+  # Directory paths
+  test_dir: "{project-root}/tests" # Root test directory
+  source_dir: "{project-root}/src" # Source code directory
 
-  # Test discovery
-  test_dir: "{project-root}/tests"
-  source_dir: "{project-root}/src"
-  auto_discover_tests: true # Automatically find tests related to story
-
-  # Traceability configuration
-  coverage_levels: "e2e,api,component,unit" # Which levels to trace (comma-separated)
-  map_by_test_id: true # Use test IDs (e.g., 1.3-E2E-001) for mapping
-  map_by_describe: true # Use describe blocks for mapping
-  map_by_filename: true # Use file paths for mapping
-
-  # Coverage classification
-  require_explicit_mapping: true # Require tests to explicitly reference criteria
-  flag_unit_only: true # Flag criteria covered only by unit tests
-  flag_integration_only: true # Flag criteria covered only by integration tests
-  flag_partial_coverage: true # Flag criteria with incomplete coverage
-
-  # Gap analysis
-  prioritize_by_risk: true # Use test-priorities (P0/P1/P2/P3) for gap severity
-  suggest_missing_tests: true # Recommend specific tests to add
-  check_duplicate_coverage: true # Warn about same behavior tested at multiple levels
-
-  # Integration with BMad artifacts
-  use_test_design: true # Load test-design.md if exists (risk assessment)
-  use_tech_spec: true # Load tech-spec.md if exists (technical context)
-  use_prd: true # Load PRD.md if exists (requirements context)
-
-  # Output configuration
-  output_file: "{output_folder}/traceability-matrix.md"
-  generate_gate_yaml: true # Create gate YAML snippet with coverage summary
-  generate_coverage_badge: true # Create coverage badge/metric
-  update_story_file: true # Add traceability section to story file
-
-  # Quality gates
-  min_p0_coverage: 100 # Percentage (P0 must be 100% covered)
-  min_p1_coverage: 90 # Percentage
-  min_overall_coverage: 80 # Percentage
-
-  # Advanced options
-  auto_load_knowledge: true # Load traceability, risk-governance, test-quality fragments
-  include_code_coverage: false # Integrate with code coverage reports (Istanbul, NYC)
-  check_assertions: true # Verify explicit assertions in tests
-
-  # PHASE 2: Gate Decision Variables (runs after traceability)
-  enable_gate_decision: true # Run gate decision after traceability (Phase 2)
-
-  # Gate target specification
-  gate_type: "story" # story | epic | release | hotfix
-  # story_id, epic_num, release_version inherited from trace context
-
-  # Gate decision configuration
+  # Workflow behavior
+  coverage_levels: "e2e,api,component,unit" # Which test levels to trace
+  gate_type: "story" # story | epic | release | hotfix - determines gate scope
   decision_mode: "deterministic" # deterministic (rule-based) | manual (team decision)
-  allow_waivers: true # Allow business-approved waivers for FAIL → WAIVED
-  require_evidence: true # Require links to test results, reports, etc.
-
-  # Input sources for gate (auto-discovered from Phase 1 + external)
-  # story_file, test_design_file inherited from trace
-  nfr_file: "" # Path to nfr-assessment.md (optional, recommended for release gates)
-  test_results: "" # Path to test execution results (CI artifacts, reports)
-
-  # Decision criteria thresholds
-  min_p0_pass_rate: 100 # P0 tests must have 100% pass rate
-  min_p1_pass_rate: 95 # P1 tests threshold
-  min_overall_pass_rate: 90 # Overall test pass rate
-  # min_coverage already defined above (min_overall_coverage: 80)
-  max_critical_nfrs_fail: 0 # No critical NFRs can fail
-  max_security_issues: 0 # No unresolved security issues
-
-  # Risk tolerance
-  allow_p2_failures: true # P2 failures don't block release
-  allow_p3_failures: true # P3 failures don't block release
-  escalate_p1_failures: true # P1 failures require escalation approval
-
-  # Gate output configuration
-  gate_output_file: "{output_folder}/gate-decision-{gate_type}-{story_id}{epic_num}{release_version}.md"
-  append_to_history: true # Append to bmm-workflow-status.md gate history
-  notify_stakeholders: true # Generate notification message for team
-
-  # Advanced gate options
-  check_all_workflows_complete: true # Verify test-design, trace, nfr-assess complete
-  validate_evidence_freshness: true # Warn if assessments are >7 days old
-  require_sign_off: false # Require named approver for gate decision
 
 # Output configuration
 default_output_file: "{output_folder}/traceability-matrix.md"

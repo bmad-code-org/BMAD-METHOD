@@ -18,35 +18,7 @@ template: "{installed_path}/atdd-checklist-template.md"
 
 # Variables and inputs
 variables:
-  # Story context
-  story_file: "" # Path to story markdown with acceptance criteria
-  test_dir: "{project-root}/tests"
-  test_framework: "" # Detected from framework workflow (playwright, cypress)
-
-  # Test level selection
-  test_levels: "e2e,api,component" # Which levels to generate
-  primary_level: "e2e" # Primary test level for acceptance criteria
-  include_component_tests: true # Generate component tests for UI logic
-
-  # ATDD approach
-  start_failing: true # Tests must fail initially (red phase)
-  use_given_when_then: true # BDD-style test structure
-  network_first: true # Route interception before navigation
-  one_assertion_per_test: true # Atomic test design
-
-  # Data and fixtures
-  generate_factories: true # Create data factory stubs
-  generate_fixtures: true # Create fixture architecture
-  auto_cleanup: true # Fixtures clean up their data
-
-  # Output configuration
-  output_checklist: "{output_folder}/atdd-checklist-{story_id}.md"
-  include_data_testids: true # List required data-testid attributes
-  include_mock_requirements: true # Document mock/stub needs
-
-  # Advanced options
-  auto_load_knowledge: true # Load fixture-architecture, data-factories, component-tdd fragments
-  share_with_dev: true # Provide implementation checklist to DEV agent
+  test_dir: "{project-root}/tests" # Root test directory
 
 # Output configuration
 default_output_file: "{output_folder}/atdd-checklist-{story_id}.md"
