@@ -11,12 +11,12 @@ This workflow generates comprehensive, scale-adaptive solution architecture docu
 **Unique Features:**
 
 - ✅ **Scale-adaptive**: Level 0 = skip, Levels 1-4 = progressive depth
-- ✅ **Pattern-aware**: 171 technology combinations across 12 project types
-- ✅ **Template-driven**: 11 complete architecture document templates
-- ✅ **Engine-specific guidance**: Unity, Godot, Phaser, and more
+- ✅ **Intent-based**: LLM intelligence over prescriptive lists
+- ✅ **Template-driven**: 11 adaptive architecture document templates
+- ✅ **Game-aware**: Adapts heavily based on game type (RPG, Puzzle, Shooter, etc.)
 - ✅ **GDD/PRD aware**: Uses Game Design Doc for games, PRD for everything else
 - ✅ **ADR tracking**: Separate Architecture Decision Records document
-- ✅ **Specialist integration**: Pattern-specific specialist recommendations
+- ✅ **Simplified structure**: ~11 core project types with consistent naming
 
 ---
 
@@ -71,38 +71,37 @@ workflow solution-architecture
 
 ## Project Types and Templates
 
-### 12 Project Types Supported
+### Simplified Project Type System
 
-| Type          | Examples                     | Template                          | Guide Examples       |
-| ------------- | ---------------------------- | --------------------------------- | -------------------- |
-| **web**       | Next.js, Rails, Django       | web-fullstack-architecture.md     | (TBD)                |
-| **mobile**    | React Native, Flutter, Swift | mobile-app-architecture.md        | (TBD)                |
-| **game**      | Unity, Godot, Phaser         | game-engine-architecture.md       | Unity, Godot, Phaser |
-| **embedded**  | ESP32, STM32, Raspberry Pi   | embedded-firmware-architecture.md | (TBD)                |
-| **backend**   | Express, FastAPI, gRPC       | backend-service-architecture.md   | (TBD)                |
-| **data**      | Spark, Airflow, MLflow       | data-pipeline-architecture.md     | (TBD)                |
-| **cli**       | Commander, Click, Cobra      | cli-tool-architecture.md          | (TBD)                |
-| **desktop**   | Electron, Tauri, Qt          | desktop-app-architecture.md       | (TBD)                |
-| **library**   | npm, PyPI, cargo             | library-package-architecture.md   | (TBD)                |
-| **infra**     | Terraform, K8s Operator      | infrastructure-architecture.md    | (TBD)                |
-| **extension** | Chrome, VS Code plugins      | desktop-app-architecture.md       | (TBD)                |
+The workflow uses ~11 core project types that cover 99% of software projects:
 
-### 171 Technology Combinations
+| Type               | Name                     | Template                   | Instructions                   |
+| ------------------ | ------------------------ | -------------------------- | ------------------------------ |
+| **web**            | Web Application          | web-template.md            | web-instructions.md            |
+| **mobile**         | Mobile Application       | mobile-template.md         | mobile-instructions.md         |
+| **game**           | Game Development         | game-template.md           | game-instructions.md           |
+| **backend**        | Backend Service          | backend-template.md        | backend-instructions.md        |
+| **data**           | Data Pipeline            | data-template.md           | data-instructions.md           |
+| **cli**            | CLI Tool                 | cli-template.md            | cli-instructions.md            |
+| **library**        | Library/SDK              | library-template.md        | library-instructions.md        |
+| **desktop**        | Desktop Application      | desktop-template.md        | desktop-instructions.md        |
+| **embedded**       | Embedded System          | embedded-template.md       | embedded-instructions.md       |
+| **extension**      | Browser/Editor Extension | extension-template.md      | extension-instructions.md      |
+| **infrastructure** | Infrastructure           | infrastructure-template.md | infrastructure-instructions.md |
 
-The workflow maintains a registry (`templates/registry.csv`) with 171 pre-defined technology stack combinations:
+### Intent-Based Architecture
 
-**Examples:**
+Instead of maintaining 171 prescriptive technology combinations, the workflow now:
 
-- `web-nextjs-ssr-monorepo` → Next.js SSR, TypeScript, monorepo
-- `game-unity-3d` → Unity 3D, C#, monorepo
-- `mobile-react-native` → React Native, TypeScript, cross-platform
-- `backend-fastapi-rest` → FastAPI, Python, REST API
-- `data-ml-training` → PyTorch/TensorFlow, Python, ML pipeline
+- **Leverages LLM intelligence** to understand project requirements
+- **Adapts templates dynamically** based on actual needs
+- **Uses intent-based instructions** rather than prescriptive checklists
+- **Allows for emerging technologies** without constant updates
 
-Each row maps to:
+Each project type has:
 
-- **template_path**: Architecture document structure (11 templates)
-- **guide_path**: Engine/framework-specific guidance (optional)
+- **Instruction file**: Intent-based guidance for architecture decisions
+- **Template file**: Adaptive starting point for the architecture document
 
 ---
 
@@ -155,63 +154,56 @@ Analyze PRD epics:
 - Map domain capabilities
 - Determine service boundaries (if microservices)
 
-### Step 5: Project-Type Questions
+### Step 5: Intent-Based Technical Decisions
 
-Load: `project-types/{project_type}-questions.md`
+Load: `project-types/{project_type}-instructions.md`
 
-- Ask project-type-specific questions (not yet engine-specific)
+- Use intent-based guidance, not prescriptive lists
+- Allow LLM intelligence to identify relevant decisions
+- Consider emerging technologies naturally
 
-### Step 6: Load Template + Guide
+### Step 6: Adaptive Template Selection
 
-**6.1: Search Registry**
+**6.1: Simple Template Selection**
 
 ```
-Read: templates/registry.csv
-Match WHERE:
-  - project_types = {determined_type}
-  - languages = {preferred_languages}
-  - architecture_style = {determined_style}
-  - tags overlap with {requirements}
-
-Get: template_path, guide_path
+Based on project_type from analysis:
+  web → web-template.md
+  mobile → mobile-template.md
+  game → game-template.md (adapts heavily by game type)
+  backend → backend-template.md
+  ... (consistent naming pattern)
 ```
 
 **6.2: Load Template**
 
 ```
-Read: templates/{template_path}
-Example: templates/game-engine-architecture.md
+Read: project-types/{type}-template.md
+Example: project-types/game-template.md
 
-This is a COMPLETE document structure with:
+Templates are adaptive starting points:
 - Standard sections (exec summary, tech stack, data arch, etc.)
-- Pattern-specific sections (Gameplay Systems for games, SSR Strategy for web)
-- All {{placeholders}} to fill
+- Pattern-specific sections conditionally included
+- All {{placeholders}} to fill based on requirements
 ```
 
-**6.3: Load Guide (if available)**
+**6.3: Dynamic Adaptation**
 
-```
-IF guide_path not empty:
-  Read: templates/{guide_path}
-  Example: templates/game-engine-unity-guide.md
+Templates adapt based on:
 
-Guide contains:
-- Engine/framework-specific questions
-- Architecture patterns for this tech
-- Common pitfalls
-- Specialist recommendations
-- ADR templates
-```
+- Actual project requirements from PRD/GDD
+- User skill level (beginner/intermediate/expert)
+- Specific technology choices made
+- Game type for game projects (RPG, Puzzle, Shooter, etc.)
 
-**Example Flow for Unity Game:**
+**Example Flow for Unity RPG:**
 
-1. GDD says "Unity 2022 LTS"
-2. Registry match: `game-unity-3d` → `game-engine-architecture.md` + `game-engine-unity-guide.md`
-3. Load complete game architecture template
-4. Load Unity-specific guide
-5. Ask Unity-specific questions (MonoBehaviour vs ECS, ScriptableObjects, etc.)
-6. Fill template placeholders
-7. Generate `solution-architecture.md` + `architecture-decisions.md`
+1. GDD says "Unity 2022 LTS" and "RPG"
+2. Load game-template.md and game-instructions.md
+3. Template adapts to include RPG-specific sections (inventory, quests, dialogue)
+4. Instructions guide Unity-specific decisions (MonoBehaviour vs ECS, etc.)
+5. LLM intelligence fills gaps not in any list
+6. Generate optimized `solution-architecture.md` + `architecture-decisions.md`
 
 ### Step 7: Cohesion Check
 
@@ -234,28 +226,30 @@ Validate architecture quality:
 ├── instructions.md                  # Main workflow logic
 ├── checklist.md                     # Validation checklist
 ├── ADR-template.md                  # ADR document template
-├── templates/                       # Architecture templates and guides
-│   ├── registry.csv                 # 171 tech combinations → templates
-│   ├── game-engine-architecture.md  # Complete game architecture doc
-│   ├── game-engine-unity-guide.md   # Unity-specific guidance
-│   ├── game-engine-godot-guide.md   # Godot-specific guidance
-│   ├── game-engine-web-guide.md     # Phaser/PixiJS/Three.js guidance
-│   ├── web-fullstack-architecture.md
-│   ├── web-api-architecture.md
-│   ├── mobile-app-architecture.md
-│   ├── embedded-firmware-architecture.md
-│   ├── backend-service-architecture.md
-│   ├── data-pipeline-architecture.md
-│   ├── cli-tool-architecture.md
-│   ├── desktop-app-architecture.md
-│   ├── library-package-architecture.md
-│   └── infrastructure-architecture.md
-└── project-types/                   # Project type detection and questions
-    ├── project-types.csv            # 12 project types + detection keywords
-    ├── game-questions.md
-    ├── web-questions.md
-    ├── mobile-questions.md
-    └── ... (12 question files)
+└── project-types/                   # All project type files in one folder
+    ├── project-types.csv            # Simple 2-column mapping (type, name)
+    ├── web-instructions.md          # Intent-based guidance for web projects
+    ├── web-template.md              # Adaptive web architecture template
+    ├── mobile-instructions.md       # Intent-based guidance for mobile
+    ├── mobile-template.md           # Adaptive mobile architecture template
+    ├── game-instructions.md         # Intent-based guidance (adapts by game type)
+    ├── game-template.md             # Highly adaptive game architecture template
+    ├── backend-instructions.md      # Intent-based guidance for backend services
+    ├── backend-template.md          # Adaptive backend architecture template
+    ├── data-instructions.md         # Intent-based guidance for data pipelines
+    ├── data-template.md             # Adaptive data pipeline template
+    ├── cli-instructions.md          # Intent-based guidance for CLI tools
+    ├── cli-template.md              # Adaptive CLI architecture template
+    ├── library-instructions.md      # Intent-based guidance for libraries/SDKs
+    ├── library-template.md          # Adaptive library architecture template
+    ├── desktop-instructions.md      # Intent-based guidance for desktop apps
+    ├── desktop-template.md          # Adaptive desktop architecture template
+    ├── embedded-instructions.md     # Intent-based guidance for embedded systems
+    ├── embedded-template.md         # Adaptive embedded architecture template
+    ├── extension-instructions.md    # Intent-based guidance for extensions
+    ├── extension-template.md        # Adaptive extension architecture template
+    ├── infrastructure-instructions.md  # Intent-based guidance for infra
+    └── infrastructure-template.md   # Adaptive infrastructure template
 ```
 
 ---
@@ -310,60 +304,6 @@ Each template in `templates/` is a **complete** architecture document structure:
 - Power Management
 - Sensor/Actuator Integration
 - OTA Update Strategy
-
----
-
-## Guide System
-
-### Engine/Framework-Specific Guides
-
-Guides are **workflow instruction documents** that:
-
-- Ask engine-specific questions
-- Provide architecture pattern recommendations
-- Suggest what sections to emphasize
-- Define ADRs to create
-
-**Guides are NOT:**
-
-- ❌ Reference documentation (use official docs)
-- ❌ Tutorials (how to code)
-- ❌ API references
-
-**Guides ARE:**
-
-- ✅ Question flows for architecture decisions
-- ✅ Pattern recommendations specific to the tech
-- ✅ Common pitfalls to avoid
-- ✅ Specialist recommendations
-
-**Example: game-engine-unity-guide.md**
-
-```markdown
-## Unity Architecture Questions
-
-- MonoBehaviour or ECS?
-- ScriptableObjects for game data?
-- Addressables or Resources?
-
-## Unity Patterns
-
-- Singleton GameManager (when to use)
-- Event-driven communication
-- Object pooling strategy
-
-## Unity-Specific Sections to Include
-
-- Unity Project Configuration
-- Scene Architecture
-- Component Organization
-- Package Dependencies
-
-## Common Pitfalls
-
-- Caching GetComponent calls
-- Avoiding empty Update methods
-```
 
 ---
 
@@ -531,24 +471,19 @@ Specialists are documented with:
 
 ## Extending the System
 
-### Adding a New Template
-
-1. Create `templates/new-pattern-architecture.md`
-2. Include all standard sections + pattern-specific sections
-3. Add rows to `templates/registry.csv` pointing to new template
-
-### Adding a New Guide
-
-1. Create `templates/new-tech-guide.md`
-2. Include: questions, patterns, pitfalls, specialist recommendations
-3. Update `templates/registry.csv` with `guide_path` column
-
 ### Adding a New Project Type
 
-1. Add row to `project-types/project-types.csv`
-2. Create `project-types/new-type-questions.md`
-3. Ensure templates exist for this type
+1. Add row to `project-types/project-types.csv` (just type and name)
+2. Create `project-types/{type}-instructions.md` with intent-based guidance
+3. Create `project-types/{type}-template.md` with adaptive template
 4. Update instructions.md if special handling needed (like GDD for games)
+
+### Key Principles
+
+- **Intent over prescription**: Guide decisions, don't list every option
+- **Leverage LLM intelligence**: Trust the model to know technologies
+- **Adaptive templates**: Templates should adapt to project needs
+- **Consistent naming**: Always use {type}-instructions.md and {type}-template.md
 
 ---
 
@@ -557,8 +492,8 @@ Specialists are documented with:
 - **Validation:** See `checklist.md`
 - **Workflow Logic:** See `instructions.md`
 - **Configuration:** See `workflow.yaml`
-- **Registry Format:** See `templates/registry.csv`
-- **Example Guide:** See `templates/game-engine-unity-guide.md`
+- **Project Types:** See `project-types/project-types.csv`
+- **Example Template:** See `project-types/game-template.md`
 
 ---
 

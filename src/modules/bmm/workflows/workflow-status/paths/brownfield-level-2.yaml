@@ -1,0 +1,95 @@
+# Brownfield Level 2 - Medium Project in Existing Codebase
+# 5-15 stories, multiple features added to existing system
+
+project_type: "software"
+level: 2
+field_type: "brownfield"
+description: "Medium project adding multiple features to existing codebase"
+
+phases:
+  - phase: 0
+    name: "Documentation"
+    conditional: "if_undocumented"
+    workflows:
+      - id: "document-project"
+        required: true
+        agent: "analyst"
+        command: "document-project"
+        output: "Codebase documentation"
+
+  - phase: 1
+    name: "Analysis"
+    optional: true
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+      - id: "research"
+        optional: true
+        agent: "analyst"
+        command: "research"
+      - id: "product-brief"
+        optional: true
+        agent: "analyst"
+        command: "product-brief"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        recommended: true
+        agent: "pm"
+        command: "prd"
+        output: "Focused PRD for new features"
+        note: "Must consider existing system constraints"
+      - id: "tech-spec"
+        required: true
+        agent: "architect"
+        command: "tech-spec"
+        output: "Creates multiple story files"
+        note: "Integrate with existing patterns"
+      - id: "ux-spec"
+        conditional: "if_has_ui"
+        agent: "pm"
+        command: "ux-spec"
+
+  - phase: 3
+    name: "Solutioning"
+    skip: true
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+        note: "Include existing code context"
+      - id: "validate-story-context"
+        optional: true
+        agent: "sm"
+        command: "validate-story-context"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "review-story"
+        recommended: true
+        agent: "dev"
+        command: "review-story"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+
+story_naming: "story-<short-title>.md"
+story_example: "story-user-dashboard.md, story-api-integration.md"
+max_stories: 15
+brownfield_note: "Balance new features with existing system stability"

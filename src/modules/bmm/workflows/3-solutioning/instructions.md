@@ -2,78 +2,76 @@
 
 This workflow generates scale-adaptive solution architecture documentation that replaces the legacy HLA workflow.
 
-```xml
 <workflow name="solution-architecture">
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language}</critical>
+<critical>Communicate all responses in {communication_language} and language MUSt be tailored to {user_skill_level}</critical>
+<critical>Generate all documents in {document_output_language}</critical>
 
-<step n="0" goal="Load project analysis, validate prerequisites, and scale assessment">
-<action>
-1. Search {output_folder}/ for files matching pattern: bmm-workflow-status.md
-   Find the most recent file (by date in filename: bmm-workflow-status.md)
+<critical>DOCUMENT OUTPUT: Concise, technical, LLM-optimized. Use tables/lists over prose. Specific versions only. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 
-2. Check if status file exists:
-   <check if="exists">
-     <action>Load the status file</action>
-     <action>Set status_file_found = true</action>
-     <action>Store status_file_path for later updates</action>
+<step n="0" goal="Validate workflow and extract project configuration">
 
-     <action>Validate workflow sequence:</action>
-     <check if='next_step != "solution-architecture" AND current_step not in ["plan-project", "workflow-status"]'>
-       <ask>**⚠️ Workflow Sequence Note**
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: data</param>
+  <param>data_request: project_config</param>
+</invoke-workflow>
 
-Status file shows:
-- Current step: {{current_step}}
-- Expected next: {{next_step}}
+<check if="status_exists == false">
+  <output>**⚠️ No Workflow Status File Found**
 
-This workflow (solution-architecture) is typically run after plan-project for Level 3-4 projects.
+The solution-architecture workflow requires a status file to understand your project context.
 
-Options:
-1. Continue anyway (if you're resuming work)
-2. Exit and run the expected workflow: {{next_step}}
-3. Check status with workflow-status
+Please run `workflow-init` first to:
 
-What would you like to do?</ask>
-       <action>If user chooses exit → HALT with message: "Run workflow-status to see current state"</action>
-     </check>
-   </check>
+- Define your project type and level
+- Map out your workflow journey
+- Create the status file
 
-   <check if="not exists">
-     <ask>**No workflow status file found.**
+Run: `workflow-init`
 
-The status file tracks progress across all workflows and stores project configuration.
+After setup, return here to run solution-architecture.
+</output>
+<action>Exit workflow - cannot proceed without status file</action>
+</check>
 
-Options:
-1. Run workflow-status first to create the status file (recommended)
-2. Continue in standalone mode (no progress tracking)
-3. Exit
+<check if="status_exists == true">
+  <action>Store {{status_file_path}} for later updates</action>
+  <action>Use extracted project configuration:</action>
+  - project_level: {{project_level}}
+  - field_type: {{field_type}}
+  - project_type: {{project_type}}
+  - has_user_interface: {{has_user_interface}}
+  - ui_complexity: {{ui_complexity}}
+  - ux_spec_path: {{ux_spec_path}}
+  - prd_status: {{prd_status}}
 
-What would you like to do?</ask>
-     <action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to solution-architecture"</action>
-     <action>If user chooses option 2 → Set standalone_mode = true and continue</action>
-     <action>If user chooses option 3 → HALT</action>
-   </check>
+</check>
+</step>
 
-3. Extract project configuration from status file:
-   Path: {{status_file_path}}
+<step n="0.5" goal="Validate workflow sequencing and prerequisites">
 
-   Extract:
-   - project_level: {{0|1|2|3|4}}
-   - field_type: {{greenfield|brownfield}}
-   - project_type: {{web|mobile|embedded|game|library}}
-   - has_user_interface: {{true|false}}
-   - ui_complexity: {{none|simple|moderate|complex}}
-   - ux_spec_path: /docs/ux-spec.md (if exists)
-   - prd_status: {{complete|incomplete}}
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: validate</param>
+  <param>calling_workflow: solution-architecture</param>
+</invoke-workflow>
 
-4. Validate Prerequisites (BLOCKING):
+<check if="warning != ''">
+  <output>{{warning}}</output>
+  <ask>Continue with solution-architecture anyway? (y/n)</ask>
+  <check if="n">
+    <output>{{suggestion}}</output>
+    <action>Exit workflow</action>
+  </check>
+</check>
 
-   Check 1: PRD complete?
-   IF prd_status != complete:
-     ❌ STOP WORKFLOW
-     Output: "PRD is required before solution architecture.
+<action>Validate Prerequisites (BLOCKING):
+
+Check 1: PRD complete?
+IF prd_status != complete:
+❌ STOP WORKFLOW
+Output: "PRD is required before solution architecture.
 
              REQUIRED: Complete PRD with FRs, NFRs, epics, and stories.
 
@@ -82,10 +80,10 @@ What would you like to do?</ask>
              After PRD is complete, return here to run solution-architecture workflow."
      END
 
-   Check 2: UX Spec complete (if UI project)?
-   IF has_user_interface == true AND ux_spec_missing:
-     ❌ STOP WORKFLOW
-     Output: "UX Spec is required before solution architecture for UI projects.
+Check 2: UX Spec complete (if UI project)?
+IF has_user_interface == true AND ux_spec_missing:
+❌ STOP WORKFLOW
+Output: "UX Spec is required before solution architecture for UI projects.
 
              REQUIRED: Complete UX specification before proceeding.
 
@@ -109,788 +107,361 @@ What would you like to do?</ask>
              After UX spec is complete at /docs/ux-spec.md, return here to run solution-architecture workflow."
      END
 
-   Check 3: All prerequisites met?
-   IF all prerequisites met:
-     ✅ Prerequisites validated
-     - PRD: complete
-     - UX Spec: {{complete | not_applicable}}
-     Proceeding with solution architecture workflow...
+Check 3: All prerequisites met?
+IF all prerequisites met:
+✅ Prerequisites validated - PRD: complete - UX Spec: {{complete | not_applicable}}
+Proceeding with solution architecture workflow...
 
 5. Determine workflow path:
-   IF project_level == 0:
-     - Skip solution architecture entirely
-     - Output: "Level 0 project - validate/update tech-spec.md only"
-     - STOP WORKFLOW
-   ELSE:
-     - Proceed with full solution architecture workflow
-</action>
-<template-output>prerequisites_and_scale_assessment</template-output>
+   IF project_level == 0: - Skip solution architecture entirely - Output: "Level 0 project - validate/update tech-spec.md only" - STOP WORKFLOW
+   ELSE: - Proceed with full solution architecture workflow
+   </action>
+   <template-output>prerequisites_and_scale_assessment</template-output>
+   </step>
+
+<step n="1" goal="Analyze requirements and identify project characteristics">
+
+<action>Load and deeply understand the requirements documents (PRD/GDD) and any UX specifications.</action>
+
+<action>Intelligently determine the true nature of this project by analyzing:
+
+- The primary document type (PRD for software, GDD for games)
+- Core functionality and features described
+- Technical constraints and requirements mentioned
+- User interface complexity and interaction patterns
+- Performance and scalability requirements
+- Integration needs with external services
+  </action>
+
+<action>Extract and synthesize the essential architectural drivers:
+
+- What type of system is being built (web, mobile, game, library, etc.)
+- What are the critical quality attributes (performance, security, usability)
+- What constraints exist (technical, business, regulatory)
+- What integrations are required
+- What scale is expected
+  </action>
+
+<action>If UX specifications exist, understand the user experience requirements and how they drive technical architecture:
+
+- Screen/page inventory and complexity
+- Navigation patterns and user flows
+- Real-time vs. static interactions
+- Accessibility and responsive design needs
+- Performance expectations from a user perspective
+  </action>
+
+<action>Identify gaps between requirements and technical specifications:
+
+- What architectural decisions are already made vs. what needs determination
+- Misalignments between UX designs and functional requirements
+- Missing enabler requirements that will be needed for implementation
+  </action>
+
+<template-output>requirements_analysis</template-output>
+</step>
 </step>
 
-<step n="1" goal="Deep requirements document and spec analysis">
-<action>
-1. Determine requirements document type based on project_type:
-   - IF project_type == "game":
-     Primary Doc: Game Design Document (GDD)
-     Path: {{gdd_path}} OR {{prd_path}}/GDD.md
-   - ELSE:
-     Primary Doc: Product Requirements Document (PRD)
-     Path: {{prd_path}}
+<step n="2" goal="Understand user context and preferences">
 
-2. Read primary requirements document:
-   Read: {{determined_path}}
+<action>Engage with the user to understand their technical context and preferences:
 
-   Extract based on document type:
+- Note: User skill level is {user_skill_level} (from config)
+- Learn about any existing technical decisions or constraints
+- Understand team capabilities and preferences
+- Identify any existing infrastructure or systems to integrate with
+  </action>
 
-   IF GDD (Game):
-   - Game concept and genre
-   - Core gameplay mechanics
-   - Player progression systems
-   - Game world/levels/scenes
-   - Characters and entities
-   - Win/loss conditions
-   - Game modes (single-player, multiplayer, etc.)
-   - Technical requirements (platform, performance targets)
-   - Art/audio direction
-   - Monetization (if applicable)
+<action>Based on {user_skill_level}, adapt YOUR CONVERSATIONAL STYLE:
 
-   IF PRD (Non-Game):
-   - All Functional Requirements (FRs)
-   - All Non-Functional Requirements (NFRs)
-   - All Epics with user stories
-   - Technical constraints mentioned
-   - Integrations required (payments, email, etc.)
+<check if="{user_skill_level} == 'beginner'">
+  - Explain architectural concepts as you discuss them
+  - Be patient and educational in your responses
+  - Clarify technical terms when introducing them
+</check>
 
-3. Read UX Spec (if project has UI):
-   IF has_user_interface == true:
-     Read: {{ux_spec_path}}
+<check if="{user_skill_level} == 'intermediate'">
+  - Balance explanations with efficiency
+  - Assume familiarity with common concepts
+  - Explain only complex or unusual patterns
+</check>
 
-     Extract:
-     - All screens/pages (list every screen defined)
-     - Navigation structure (how screens connect, patterns)
-     - Key user flows (auth, onboarding, checkout, core features)
-     - UI complexity indicators:
-       * Complex wizards/multi-step forms
-       * Real-time updates/dashboards
-       * Complex state machines
-       * Rich interactions (drag-drop, animations)
-       * Infinite scroll, virtualization needs
-     - Component patterns (from design system/wireframes)
-     - Responsive requirements (mobile-first, desktop-first, adaptive)
-     - Accessibility requirements (WCAG level, screen reader support)
-     - Design system/tokens (colors, typography, spacing if specified)
-     - Performance requirements (page load times, frame rates)
+<check if="{user_skill_level} == 'expert'">
+  - Be direct and technical in discussions
+  - Skip basic explanations
+  - Focus on advanced considerations and edge cases
+</check>
 
-4. Cross-reference requirements + specs:
-   IF GDD + UX Spec (game with UI):
-   - Each gameplay mechanic should have UI representation
-   - Each scene/level should have visual design
-   - Player controls mapped to UI elements
-
-   IF PRD + UX Spec (non-game):
-   - Each epic should have corresponding screens/flows in UX spec
-   - Each screen should support epic stories
-   - FRs should have UI manifestation (where applicable)
-   - NFRs (performance, accessibility) should inform UX patterns
-   - Identify gaps: Epics without screens, screens without epic mapping
-
-5. Detect characteristics:
-   - Project type(s): web, mobile, embedded, game, library, desktop
-   - UI complexity: simple (CRUD) | moderate (dashboards) | complex (wizards/real-time)
-   - Architecture style hints: monolith, microservices, modular, etc.
-   - Repository strategy hints: monorepo, polyrepo, hybrid
-   - Special needs: real-time, event-driven, batch, offline-first
-
-6. Identify what's already specified vs. unknown
-   - Known: Technologies explicitly mentioned in PRD/UX spec
-   - Unknown: Gaps that need decisions
-
-Output summary:
-- Project understanding
-- UI/UX summary (if applicable):
-  * Screen count: N screens
-  * Navigation complexity: simple | moderate | complex
-  * UI complexity: simple | moderate | complex
-  * Key user flows documented
-- PRD-UX alignment check: Gaps identified (if any)
+NOTE: This affects only how you TALK to the user, NOT the documents you generate.
+The architecture document itself should always be concise and technical.
 </action>
-<template-output>prd_and_ux_analysis</template-output>
+
+<template-output>user_context</template-output>
 </step>
 
-<step n="2" goal="User skill level and preference clarification">
-<ask>
-What's your experience level with {{project_type}} development?
+<step n="3" goal="Determine overall architecture approach">
 
-1. Beginner - Need detailed explanations and guidance
-2. Intermediate - Some explanations helpful
-3. Expert - Concise output, minimal explanations
+<action>Based on the requirements analysis, determine the most appropriate architectural patterns:
 
-Your choice (1/2/3):
-</ask>
+- Consider the scale, complexity, and team size to choose between monolith, microservices, or serverless
+- Evaluate whether a single repository or multiple repositories best serves the project needs
+- Think about deployment and operational complexity vs. development simplicity
+  </action>
 
-<action>
-Set user_skill_level variable for adaptive output:
-- beginner: Verbose explanations, examples, rationale for every decision
-- intermediate: Moderate explanations, key rationale, balanced detail
-- expert: Concise, decision-focused, minimal prose
+<action>Guide the user through architectural pattern selection by discussing trade-offs and implications rather than presenting a menu of options. Help them understand what makes sense for their specific context.</action>
 
-This affects ALL subsequent output verbosity.
-</action>
-
-<ask optional="true">
-Any technical preferences or constraints I should know?
-- Preferred languages/frameworks?
-- Required platforms/services?
-- Team expertise areas?
-- Existing infrastructure (brownfield)?
-
-(Press enter to skip if none)
-</ask>
-
-<action>
-Record preferences for narrowing recommendations.
-</action>
+<template-output>architecture_patterns</template-output>
 </step>
 
-<step n="3" goal="Determine architecture pattern">
-<action>
-Determine the architectural pattern based on requirements:
+<step n="4" goal="Design component boundaries and structure">
 
-1. Architecture style:
-   - Monolith (single application)
-   - Microservices (multiple services)
-   - Serverless (function-based)
-   - Other (event-driven, JAMstack, etc.)
+<action>Analyze the epics and requirements to identify natural boundaries for components or services:
 
-2. Repository strategy:
-   - Monorepo (single repo)
-   - Polyrepo (multiple repos)
-   - Hybrid
+- Group related functionality that changes together
+- Identify shared infrastructure needs (authentication, logging, monitoring)
+- Consider data ownership and consistency boundaries
+- Think about team structure and ownership
+  </action>
 
-3. Pattern-specific characteristics:
-   - For web: SSR vs SPA vs API-only
-   - For mobile: Native vs cross-platform vs hybrid vs PWA
-   - For game: 2D vs 3D vs text-based vs web
-   - For backend: REST vs GraphQL vs gRPC vs realtime
-   - For data: ETL vs ML vs analytics vs streaming
-   - Etc.
-</action>
+<action>Map epics to architectural components, ensuring each epic has a clear home and the overall structure supports the planned functionality.</action>
 
-<ask>
-Based on your requirements, I need to determine the architecture pattern:
-
-1. Architecture style: {{suggested_style}} - Does this sound right? (or specify: monolith/microservices/serverless/other)
-
-2. Repository strategy: {{suggested_repo_strategy}} - Monorepo or polyrepo?
-
-{{project_type_specific_questions}}
-</ask>
-
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
-<template-output>architecture_pattern</template-output>
+<template-output>component_structure</template-output>
 </step>
 
-<step n="4" goal="Epic analysis and component boundaries">
-<action>
-1. Analyze each epic from PRD:
-   - What domain capabilities does it require?
-   - What data does it operate on?
-   - What integrations does it need?
+<step n="5" goal="Make project-specific technical decisions">
 
-2. Identify natural component/service boundaries:
-   - Vertical slices (epic-aligned features)
-   - Shared infrastructure (auth, logging, etc.)
-   - Integration points (external services)
+<critical>Use intent-based decision making, not prescriptive checklists.</critical>
 
-3. Determine architecture style:
-   - Single monolith vs. multiple services
-   - Monorepo vs. polyrepo
-   - Modular monolith vs. microservices
+<action>Based on requirements analysis, identify the project domain(s).
+Note: Projects can be hybrid (e.g., web + mobile, game + backend service).
 
-4. Map epics to proposed components (high-level only)
-</action>
-<template-output>component_boundaries</template-output>
+Use the simplified project types mapping:
+{{installed_path}}/project-types/project-types.csv
+
+This contains ~11 core project types that cover 99% of software projects.</action>
+
+<action>For identified domains, reference the intent-based instructions:
+{{installed_path}}/project-types/{{type}}-instructions.md
+
+These are guidance files, not prescriptive checklists.</action>
+
+<action>IMPORTANT: Instructions are guidance, not checklists.
+
+- Use your knowledge to identify what matters for THIS project
+- Consider emerging technologies not in any list
+- Address unique requirements from the PRD/GDD
+- Focus on decisions that affect implementation consistency
+  </action>
+
+<action>Engage with the user to make all necessary technical decisions:
+
+- Use the question files to ensure coverage of common areas
+- Go beyond the standard questions to address project-specific needs
+- Focus on decisions that will affect implementation consistency
+- Get specific versions for all technology choices
+- Document clear rationale for non-obvious decisions
+  </action>
+
+<action>Remember: The goal is to make enough definitive decisions that future implementation agents can work autonomously without architectural ambiguity.</action>
+
+<template-output>technical_decisions</template-output>
 </step>
 
-<step n="5" goal="Project-type-specific architecture questions">
-<action>
-1. Load project types registry:
-   Read: {{installed_path}}/project-types/project-types.csv
+<step n="6" goal="Generate concise solution architecture document">
 
-2. Match detected project_type to CSV:
-   - Use project_type from Step 1 (e.g., "web", "mobile", "backend")
-   - Find matching row in CSV
-   - Get question_file path
+<action>Select the appropriate adaptive template:
+{{installed_path}}/project-types/{{type}}-template.md</action>
 
-3. Load project-type-specific questions:
-   Read: {{installed_path}}/project-types/{{question_file}}
+<action>Template selection follows the naming convention:
 
-4. Ask only UNANSWERED questions (dynamic narrowing):
-   - Skip questions already answered by reference architecture
-   - Skip questions already specified in PRD
-   - Focus on gaps and ambiguities
+- Web project → web-template.md
+- Mobile app → mobile-template.md
+- Game project → game-template.md (adapts heavily based on game type)
+- Backend service → backend-template.md
+- Data pipeline → data-template.md
+- CLI tool → cli-template.md
+- Library/SDK → library-template.md
+- Desktop app → desktop-template.md
+- Embedded system → embedded-template.md
+- Extension → extension-template.md
+- Infrastructure → infrastructure-template.md
 
-5. Record all decisions with rationale
+For hybrid projects, choose the primary domain or intelligently merge relevant sections from multiple templates.</action>
 
-NOTE: For hybrid projects (e.g., "web + mobile"), load multiple question files
-</action>
+<action>Adapt the template heavily based on actual requirements.
+Templates are starting points, not rigid structures.</action>
 
-<ask>
-{{project_type_specific_questions}}
-</ask>
+<action>Generate a comprehensive yet concise architecture document that includes:
 
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
-<template-output>architecture_decisions</template-output>
-</step>
+MANDATORY SECTIONS (all projects):
 
-<step n="6" goal="Generate solution architecture document with dynamic template">
-<action>
-Sub-step 6.1: Load Appropriate Template
+1. Executive Summary (1-2 paragraphs max)
+2. Technology Decisions Table - SPECIFIC versions for everything
+3. Repository Structure and Source Tree
+4. Component Architecture
+5. Data Architecture (if applicable)
+6. API/Interface Contracts (if applicable)
+7. Key Architecture Decision Records
 
-1. Analyze project to determine:
-   - Project type(s): {{web|mobile|embedded|game|library|cli|desktop|data|backend|infra|extension}}
-   - Architecture style: {{monolith|microservices|serverless|etc}}
-   - Repository strategy: {{monorepo|polyrepo|hybrid}}
-   - Primary language(s): {{TypeScript|Python|Rust|etc}}
+The document MUST be optimized for LLM consumption:
 
-2. Search template registry:
-   Read: {{installed_path}}/templates/registry.csv
+- Use tables over prose wherever possible
+- List specific versions, not generic technology names
+- Include complete source tree structure
+- Define clear interfaces and contracts
+- NO verbose explanations (even for beginners - they get help in conversation, not docs)
+- Technical and concise throughout
+  </action>
 
-   Filter WHERE:
-   - project_types = {{project_type}}
-   - architecture_style = {{determined_style}}
-   - repo_strategy = {{determined_strategy}}
-   - languages matches {{language_preference}} (if specified)
-   - tags overlap with {{requirements}}
+<action>Ensure the document provides enough technical specificity that implementation agents can:
 
-3. Select best matching row:
-   Get {{template_path}} and {{guide_path}} from matched CSV row
-   Example template: "web-fullstack-architecture.md", "game-engine-architecture.md", etc.
-   Example guide: "game-engine-unity-guide.md", "game-engine-godot-guide.md", etc.
-
-4. Load markdown template:
-   Read: {{installed_path}}/templates/{{template_path}}
-
-   This template contains:
-   - Complete document structure with all sections
-   - {{placeholder}} variables to fill (e.g., {{project_name}}, {{framework}}, {{database_schema}})
-   - Pattern-specific sections (e.g., SSR sections for web, gameplay sections for games)
-   - Specialist recommendations (e.g., audio-designer for games, hardware-integration for embedded)
-
-5. Load pattern-specific guide (if available):
-   IF {{guide_path}} is not empty:
-     Read: {{installed_path}}/templates/{{guide_path}}
-
-     This guide contains:
-     - Engine/framework-specific questions
-     - Technology-specific best practices
-     - Common patterns and pitfalls
-     - Specialist recommendations for this specific tech stack
-     - Pattern-specific ADR examples
-
-6. Present template to user:
-</action>
-
-<ask>
-Based on your {{project_type}} {{architecture_style}} project, I've selected the "{{template_path}}" template.
-
-This template includes {{section_count}} sections covering:
-{{brief_section_list}}
-
-I will now fill in all the {{placeholder}} variables based on our previous discussions and requirements.
-
-Options:
-1. Use this template (recommended)
-2. Use a different template (specify which one)
-3. Show me the full template structure first
-
-Your choice (1/2/3):
-</ask>
-
-<action>
-Sub-step 6.2: Fill Template Placeholders
-
-6. Parse template to identify all {{placeholders}}
-
-7. Fill each placeholder with appropriate content:
-   - Use information from previous steps (PRD, UX spec, tech decisions)
-   - Ask user for any missing information
-   - Generate appropriate content based on user_skill_level
-
-8. Generate final solution-architecture.md document
-
-CRITICAL REQUIREMENTS:
-- MUST include "Technology and Library Decisions" section with table:
-  | Category | Technology | Version | Rationale |
-  - ALL technologies with SPECIFIC versions (e.g., "pino 8.17.0")
-  - NO vagueness ("a logging library" = FAIL)
-
-- MUST include "Proposed Source Tree" section:
-  - Complete directory/file structure
-  - For polyrepo: show ALL repo structures
-
-- Design-level only (NO extensive code implementations):
-  - ✅ DO: Data model schemas, API contracts, diagrams, patterns
-  - ❌ DON'T: 10+ line functions, complete components, detailed implementations
-
-- Adapt verbosity to user_skill_level:
-  - Beginner: Detailed explanations, examples, rationale
-  - Intermediate: Key explanations, balanced
-  - Expert: Concise, decision-focused
-
-Common sections (adapt per project):
-1. Executive Summary
-2. Technology Stack and Decisions (TABLE REQUIRED)
-3. Repository and Service Architecture (mono/poly, monolith/microservices)
-4. System Architecture (diagrams)
-5. Data Architecture
-6. API/Interface Design (adapts: REST for web, protocols for embedded, etc.)
-7. Cross-Cutting Concerns
-8. Component and Integration Overview (NOT epic alignment - that's cohesion check)
-9. Architecture Decision Records
-10. Implementation Guidance
-11. Proposed Source Tree (REQUIRED)
-12-14. Specialist sections (DevOps, Security, Testing) - see Step 7.5
-
-NOTE: Section list is DYNAMIC per project type. Embedded projects have different sections than web apps.
-</action>
+- Set up the development environment correctly
+- Implement features consistently with the architecture
+- Make minor technical decisions within the established framework
+- Understand component boundaries and responsibilities
+  </action>
 
 <template-output>solution_architecture</template-output>
 </step>
 
-<step n="7" goal="Solution architecture cohesion check (QUALITY GATE)">
-<action>
-CRITICAL: This is a validation quality gate before proceeding.
+<step n="7" goal="Validate architecture completeness and clarity">
 
-Run cohesion check validation inline (NO separate workflow for now):
+<critical>Quality gate to ensure the architecture is ready for implementation.</critical>
 
-1. Requirements Coverage:
-   - Every FR mapped to components/technology?
-   - Every NFR addressed in architecture?
-   - Every epic has technical foundation?
-   - Every story can be implemented with current architecture?
+<action>Perform a comprehensive validation of the architecture document:
 
-2. Technology and Library Table Validation:
-   - Table exists?
-   - All entries have specific versions?
-   - No vague entries ("a library", "some framework")?
-   - No multi-option entries without decision?
+- Verify every requirement has a technical solution
+- Ensure all technology choices have specific versions
+- Check that the document is free of ambiguous language
+- Validate that each epic can be implemented with the defined architecture
+- Confirm the source tree structure is complete and logical
+  </action>
 
-3. Code vs Design Balance:
-   - Any sections with 10+ lines of code? (FLAG for removal)
-   - Focus on design (schemas, patterns, diagrams)?
+<action>Generate an Epic Alignment Matrix showing how each epic maps to:
 
-4. Vagueness Detection:
-   - Scan for: "appropriate", "standard", "will use", "some", "a library"
-   - Flag all vague statements for specificity
+- Architectural components
+- Data models
+- APIs and interfaces
+- External integrations
+  This matrix helps validate coverage and identify gaps.</action>
 
-5. Generate Epic Alignment Matrix:
-   | Epic | Stories | Components | Data Models | APIs | Integration Points | Status |
+<action>If issues are found, work with the user to resolve them before proceeding. The architecture must be definitive enough for autonomous implementation.</action>
 
-   This matrix is SEPARATE OUTPUT (not in solution-architecture.md)
-
-6. Generate Cohesion Check Report with:
-   - Executive summary (READY vs GAPS)
-   - Requirements coverage table
-   - Technology table validation
-   - Epic Alignment Matrix
-   - Story readiness (X of Y stories ready)
-   - Vagueness detected
-   - Over-specification detected
-   - Recommendations (critical/important/nice-to-have)
-   - Overall readiness score
-
-7. Present report to user
-</action>
-
-<template-output>cohesion_check_report</template-output>
-
-<ask>
-Cohesion Check Results: {{readiness_score}}% ready
-
-{{if_gaps_found}}
-Issues found:
-{{list_critical_issues}}
-
-Options:
-1. I'll fix these issues now (update solution-architecture.md)
-2. You'll fix them manually
-3. Proceed anyway (not recommended)
-
-Your choice:
-{{/if}}
-
-{{if_ready}}
-✅ Architecture is ready for specialist sections!
-Proceed? (y/n)
-{{/if}}
-</ask>
-
-<action if="user_chooses_option_1">
-Update solution-architecture.md to address critical issues, then re-validate.
-</action>
+<template-output>cohesion_validation</template-output>
 </step>
 
-<step n="7.5" goal="Scale-adaptive specialist section handling" optional="true">
-<action>
-For each specialist area (DevOps, Security, Testing), assess complexity:
+<step n="7.5" goal="Address specialist concerns" optional="true">
 
-DevOps Assessment:
-- Simple: Vercel/Heroku, 1-2 envs, simple CI/CD → Handle INLINE
-- Complex: K8s, 3+ envs, complex IaC, multi-region → Create PLACEHOLDER
+<action>Assess the complexity of specialist areas (DevOps, Security, Testing) based on the project requirements:
 
-Security Assessment:
-- Simple: Framework defaults, no compliance → Handle INLINE
-- Complex: HIPAA/PCI/SOC2, custom auth, high sensitivity → Create PLACEHOLDER
+- For simple deployments and standard security, include brief inline guidance
+- For complex requirements (compliance, multi-region, extensive testing), create placeholders for specialist workflows
+  </action>
 
-Testing Assessment:
-- Simple: Basic unit + E2E → Handle INLINE
-- Complex: Mission-critical UI, comprehensive coverage needed → Create PLACEHOLDER
+<action>Engage with the user to understand their needs in these specialist areas and determine whether to address them now or defer to specialist agents.</action>
 
-For INLINE: Add 1-3 paragraph sections to solution-architecture.md
-For PLACEHOLDER: Add handoff section with specialist agent invocation instructions
-</action>
-
-<ask for_each="specialist_area">
-{{specialist_area}} Assessment: {{simple|complex}}
-
-{{if_complex}}
-Recommendation: Engage {{specialist_area}} specialist agent after this document.
-
-Options:
-1. Create placeholder, I'll engage specialist later (recommended)
-2. Attempt inline coverage now (may be less detailed)
-3. Skip (handle later)
-
-Your choice:
-{{/if}}
-
-{{if_simple}}
-I'll handle {{specialist_area}} inline with essentials.
-{{/if}}
-</ask>
-
-<action>
-Update solution-architecture.md with specialist sections (inline or placeholders) at the END of document.
-</action>
-
-<template-output>specialist_sections</template-output>
+<template-output>specialist_guidance</template-output>
 </step>
 
-<step n="8" goal="PRD epic/story updates (if needed)" optional="true">
-<ask>
-Did cohesion check or architecture design reveal:
-- Missing enabler epics (e.g., "Infrastructure Setup")?
-- Story modifications needed?
-- New FRs/NFRs discovered?
-</ask>
+<step n="8" goal="Refine requirements based on architecture" optional="true">
 
-<ask if="changes_needed">
-Architecture design revealed some PRD updates needed:
-{{list_suggested_changes}}
+<action>If the architecture design revealed gaps or needed clarifications in the requirements:
 
-Should I update the PRD? (y/n)
-</ask>
+- Identify missing enabler epics (e.g., infrastructure setup, monitoring)
+- Clarify ambiguous stories based on technical decisions
+- Add any newly discovered non-functional requirements
+  </action>
 
-<action if="user_approves">
-Update PRD with architectural discoveries:
-- Add enabler epics if needed
-- Clarify stories based on architecture
-- Update tech-spec.md with architecture reference
-</action>
+<action>Work with the user to update the PRD if necessary, ensuring alignment between requirements and architecture.</action>
 </step>
 
-<step n="9" goal="Tech-spec generation per epic (INTEGRATED)">
-<action>
-For each epic in PRD:
-1. Extract relevant architecture sections:
-   - Technology stack (full table)
-   - Components for this epic
-   - Data models for this epic
-   - APIs for this epic
-   - Proposed source tree (relevant paths)
-   - Implementation guidance
+<step n="9" goal="Generate epic-specific technical specifications">
 
-2. Generate tech-spec-epic-{{N}}.md using tech-spec workflow logic:
-   Read: {project-root}/bmad/bmm/workflows/3-solutioning/tech-spec/instructions.md
+<action>For each epic, create a focused technical specification that extracts only the relevant parts of the architecture:
 
-   Include:
-   - Epic overview (from PRD)
-   - Stories (from PRD)
-   - Architecture extract (from solution-architecture.md)
-   - Component-level technical decisions
-   - Implementation notes
-   - Testing approach
+- Technologies specific to that epic
+- Component details for that epic's functionality
+- Data models and APIs used by that epic
+- Implementation guidance specific to the epic's stories
+  </action>
 
-3. Save to: /docs/tech-spec-epic-{{N}}.md
-</action>
+<action>These epic-specific specs provide focused context for implementation without overwhelming detail.</action>
 
-<template-output>tech_specs</template-output>
-
-<action>
-Update bmm-workflow-status.md workflow status:
-- [x] Solution architecture generated
-- [x] Cohesion check passed
-- [x] Tech specs generated for all epics
-</action>
+<template-output>epic_tech_specs</template-output>
 </step>
 
-<step n="10" goal="Polyrepo documentation strategy" optional="true">
-<ask>
-Is this a polyrepo project (multiple repositories)?
-</ask>
+<step n="10" goal="Handle polyrepo documentation" optional="true">
 
-<action if="polyrepo">
-For polyrepo projects:
+<action>If this is a polyrepo project, ensure each repository has access to the complete architectural context:
 
-1. Identify all repositories from architecture:
-   Example: frontend-repo, api-repo, worker-repo, mobile-repo
+- Copy the full architecture documentation to each repository
+- This ensures every repo has the complete picture for autonomous development
+  </action>
+  </step>
 
-2. Strategy: Copy FULL documentation to ALL repos
-   - solution-architecture.md → Copy to each repo
-   - tech-spec-epic-X.md → Copy to each repo (full set)
-   - cohesion-check-report.md → Copy to each repo
+<step n="11" goal="Finalize architecture and prepare for implementation">
 
-3. Add repo-specific README pointing to docs:
-   "See /docs/solution-architecture.md for complete solution architecture"
+<action>Validate that the architecture package is complete:
 
-4. Later phases extract per-epic and per-story contexts as needed
+- Solution architecture document with all technical decisions
+- Epic-specific technical specifications
+- Cohesion validation report
+- Clear source tree structure
+- Definitive technology choices with versions
+  </action>
 
-Rationale: Full context in every repo, extract focused contexts during implementation.
-</action>
-
-<action if="monorepo">
-For monorepo projects:
-- All docs already in single /docs directory
-- No special strategy needed
-</action>
-</step>
-
-<step n="11" goal="Validation and completion">
-<action>
-Final validation checklist:
-
-- [x] solution-architecture.md exists and is complete
-- [x] Technology and Library Decision Table has specific versions
-- [x] Proposed Source Tree section included
-- [x] Cohesion check passed (or issues addressed)
-- [x] Epic Alignment Matrix generated
-- [x] Specialist sections handled (inline or placeholder)
-- [x] Tech specs generated for all epics
-- [x] Analysis template updated
-
-Generate completion summary:
-- Document locations
-- Key decisions made
-- Next steps (engage specialist agents if placeholders, begin implementation)
-</action>
+<action>Prepare the story backlog from the PRD/epics for Phase 4 implementation.</action>
 
 <template-output>completion_summary</template-output>
-
-<action>
-Prepare for Phase 4 transition - Populate story backlog:
-
-1. Read PRD from {output_folder}/PRD.md or {output_folder}/epics.md
-2. Extract all epics and their stories
-3. Create ordered backlog list (Epic 1 stories first, then Epic 2, etc.)
-
-For each story in sequence:
-- epic_num: Epic number
-- story_num: Story number within epic
-- story_id: "{{epic_num}}.{{story_num}}" format
-- story_title: Story title from PRD/epics
-- story_file: "story-{{epic_num}}.{{story_num}}.md"
-
-4. Update bmm-workflow-status.md with backlog population:
-
-Open {output_folder}/bmm-workflow-status.md
-
-In "### Implementation Progress (Phase 4 Only)" section:
-
-#### BACKLOG (Not Yet Drafted)
-
-Populate table with ALL stories:
-
-| Epic | Story | ID  | Title           | File         |
-| ---- | ----- | --- | --------------- | ------------ |
-| 1    | 1     | 1.1 | {{story_title}} | story-1.1.md |
-| 1    | 2     | 1.2 | {{story_title}} | story-1.2.md |
-| 1    | 3     | 1.3 | {{story_title}} | story-1.3.md |
-| 2    | 1     | 2.1 | {{story_title}} | story-2.1.md |
-... (all stories)
-
-**Total in backlog:** {{total_story_count}} stories
-
-#### TODO (Needs Drafting)
-
-Initialize with FIRST story:
-
-- **Story ID:** 1.1
-- **Story Title:** {{first_story_title}}
-- **Story File:** `story-1.1.md`
-- **Status:** Not created OR Draft (needs review)
-- **Action:** SM should run `create-story` workflow to draft this story
-
-#### IN PROGRESS (Approved for Development)
-
-Leave empty initially:
-
-(Story will be moved here by SM agent `story-ready` workflow)
-
-#### DONE (Completed Stories)
-
-Initialize empty table:
-
-| Story ID   | File | Completed Date | Points |
-| ---------- | ---- | -------------- | ------ |
-| (none yet) |      |                |        |
-
-**Total completed:** 0 stories
-**Total points completed:** 0 points
-
-5. Update "Workflow Status Tracker" section:
-- Set current_phase = "4-Implementation"
-- Set current_workflow = "Ready to begin story implementation"
-- Set progress_percentage = {{calculate based on phase completion}}
-- Check "3-Solutioning" checkbox in Phase Completion Status
-
-6. Update "Next Action Required" section:
-- Set next_action = "Draft first user story"
-- Set next_command = "Load SM agent and run 'create-story' workflow"
-- Set next_agent = "bmad/bmm/agents/sm.md"
-
-7. Update "Artifacts Generated" table:
-Add entries for all generated tech specs
-
-8. Add to Decision Log:
-- **{{date}}**: Phase 3 (Solutioning) complete. Architecture and tech specs generated. Populated story backlog with {{total_story_count}} stories. Ready for Phase 4 (Implementation). Next: SM drafts story 1.1.
-
-9. Save bmm-workflow-status.md
-</action>
-
-<ask>
-**Phase 3 (Solutioning) Complete, {user_name}!**
-
-✅ Solution architecture generated
-✅ Cohesion check passed
-✅ {{epic_count}} tech specs generated
-✅ Story backlog populated ({{total_story_count}} stories)
-
-**Documents Generated:**
-- solution-architecture.md
-- cohesion-check-report.md
-- tech-spec-epic-1.md through tech-spec-epic-{{epic_count}}.md
-
-**Ready for Phase 4 (Implementation)**
-
-**Next Steps:**
-1. Load SM agent: `bmad/bmm/agents/sm.md`
-2. Run `create-story` workflow
-3. SM will draft story {{first_story_id}}: {{first_story_title}}
-4. You review drafted story
-5. Run `story-ready` workflow to approve it for development
-
-Would you like to proceed with story drafting now? (y/n)
-</ask>
 </step>
 
-<step n="12" goal="Update status file on completion">
-<action>
-Search {output_folder}/ for files matching pattern: bmm-workflow-status.md
-Find the most recent file (by date in filename)
-</action>
+<step n="12" goal="Update status and complete">
 
-<check if="status file exists">
-<action>Load the status file</action>
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: update</param>
+  <param>action: complete_workflow</param>
+  <param>workflow_name: solution-architecture</param>
+  <param>populate_stories_from: {epics_file}</param>
+</invoke-workflow>
 
-<template-output file="{{status_file_path}}">current_step</template-output>
-<action>Set to: "solution-architecture"</action>
+<check if="success == true">
+  <output>✅ Status updated! Loaded {{total_stories}} stories from epics.</output>
+  <output>Next: {{next_workflow}} ({{next_agent}} agent)</output>
+  <output>Phase 3 complete!</output>
+</check>
 
-<template-output file="{{status_file_path}}">current_workflow</template-output>
-<action>Set to: "solution-architecture - Complete"</action>
+<check if="success == false">
+  <output>⚠️ Status update failed: {{error}}</output>
+</check>
 
-<template-output file="{{status_file_path}}">progress_percentage</template-output>
-<action>Increment by: 15% (solution-architecture is a major workflow)</action>
-
-<template-output file="{{status_file_path}}">decisions_log</template-output>
-<action>Add entry:</action>
-```
-
-- **{{date}}**: Completed solution-architecture workflow. Generated solution-architecture.md, cohesion-check-report.md, and {{epic_count}} tech-spec files. Populated story backlog with {{total_story_count}} stories. Phase 3 complete. Next: SM agent should run create-story to draft first story ({{first_story_id}}).
-
-```
-
-<template-output file="{{status_file_path}}">next_action</template-output>
-<action>Set to: "Draft first user story ({{first_story_id}})"</action>
-
-<template-output file="{{status_file_path}}">next_command</template-output>
-<action>Set to: "Load SM agent and run 'create-story' workflow"</action>
-
-<template-output file="{{status_file_path}}">next_agent</template-output>
-<action>Set to: "bmad/bmm/agents/sm.md"</action>
-
-<output>**✅ Solution Architecture Complete**
+<output>**✅ Solution Architecture Complete, {user_name}!**
 
 **Architecture Documents:**
-- solution-architecture.md (main architecture document)
-- cohesion-check-report.md (validation report)
-- tech-spec-epic-1.md through tech-spec-epic-{{epic_count}}.md ({{epic_count}} specs)
+
+- bmm-solution-architecture.md (main architecture document)
+- bmm-cohesion-check-report.md (validation report)
+- bmm-tech-spec-epic-1.md through bmm-tech-spec-epic-{{epic_count}}.md ({{epic_count}} specs)
 
 **Story Backlog:**
-- {{total_story_count}} stories populated in status file
-- First story: {{first_story_id}} ({{first_story_title}})
 
-**Status file updated:**
-- Current step: solution-architecture ✓
+- {{total_story_count}} stories populated in status file
+- First story: {{first_story_id}} ready for drafting
+
+**Status Updated:**
+
+- Phase 3 (Solutioning) complete ✓
 - Progress: {{new_progress_percentage}}%
-- Phase 3 (Solutioning) complete
 - Ready for Phase 4 (Implementation)
 
 **Next Steps:**
-1. Load SM agent (bmad/bmm/agents/sm.md)
-2. Run `create-story` workflow to draft story {{first_story_id}}
+
+1. Load SM agent to draft story {{first_story_id}}
+2. Run `create-story` workflow
 3. Review drafted story
 4. Run `story-ready` to approve for development
 
 Check status anytime with: `workflow-status`
 </output>
-</check>
-
-<check if="status file not found">
-<output>**✅ Solution Architecture Complete**
-
-**Architecture Documents:**
-- solution-architecture.md
-- cohesion-check-report.md
-- tech-spec-epic-1.md through tech-spec-epic-{{epic_count}}.md
-
-Note: Running in standalone mode (no status file).
-
-To track progress across workflows, run `workflow-status` first.
-
-**Next Steps:**
-1. Load SM agent and run `create-story` to draft stories
-</output>
-</check>
 </step>
 
 </workflow>
-```
-
----
-
-## Reference Documentation
-
-For detailed design specification, rationale, examples, and edge cases, see:
-`./arch-plan.md` (when available in same directory)
-
-Key sections:
-
-- Key Design Decisions (15 critical requirements)
-- Step 6 - Architecture Generation (examples, guidance)
-- Step 7 - Cohesion Check (validation criteria, report format)
-- Dynamic Template Section Strategy
-- CSV Registry Examples
-
-This instructions.md is the EXECUTABLE guide.
-arch-plan.md is the REFERENCE specification.

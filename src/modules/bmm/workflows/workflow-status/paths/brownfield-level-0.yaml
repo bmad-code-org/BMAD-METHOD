@@ -1,0 +1,69 @@
+# Brownfield Level 0 - Single Atomic Change in Existing Codebase
+# One change to existing system
+
+project_type: "software"
+level: 0
+field_type: "brownfield"
+description: "Single atomic change to existing codebase"
+
+phases:
+  - phase: 0
+    name: "Documentation"
+    conditional: "if_undocumented"
+    workflows:
+      - id: "document-project"
+        required: true
+        agent: "analyst"
+        command: "document-project"
+        output: "Codebase documentation"
+
+  - phase: 1
+    name: "Analysis"
+    optional: true
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "tech-spec"
+        required: true
+        agent: "architect"
+        command: "tech-spec"
+        output: "Creates single story file"
+        note: "Must understand existing patterns"
+
+  - phase: 3
+    name: "Solutioning"
+    skip: true
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+        note: "Include existing code context"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+
+story_naming: "story-<short-title>.md"
+story_example: "story-fix-auth-bug.md"
+max_stories: 1
+brownfield_note: "Ensure changes align with existing patterns"

@@ -253,8 +253,9 @@ What used to be tasks and create-doc templates are now all workflows! Simpler, y
 
 - [Workflow Creation Guide](src/modules/bmb/workflows/create-workflow/workflow-creation-guide.md)
 
-### Installer Changes
+### Installer & Bundler Documentation
 
+- **[CLI Tool Guide](tools/cli/README.md)** - Complete guide to how the installer, bundler, and agent compilation system works
 - [IDE Injections](docs/installers-bundlers/ide-injections)
 - [Installers Modules Platforms References](docs/installers-bundlers/installers-modules-platforms-reference)
 - [Web Bundler Usage](docs/installers-bundlers/web-bundler-usage)

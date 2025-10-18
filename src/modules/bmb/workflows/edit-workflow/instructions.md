@@ -77,9 +77,10 @@ Present the editing menu to the user:
 8. **Configure web bundle** - Add/update web bundle for deployment
 9. **Remove bloat** - Delete unused yaml fields, duplicate values
 10. **Optimize for clarity** - Improve descriptions, add examples
-11. **Full review and update** - Comprehensive improvements across all files
+11. **Adjust instruction style** - Convert between intent-based and prescriptive styles
+12. **Full review and update** - Comprehensive improvements across all files
 
-<ask>Select an option (1-11) or describe a custom edit:</ask>
+<ask>Select an option (1-12) or describe a custom edit:</ask>
 </step>
 
 <step n="4" goal="Load relevant documentation">
@@ -127,7 +128,16 @@ date: system-generated
 <check>If fixing critical issues:</check>
 <action>Load the workflow execution engine documentation</action>
 <action>Verify all required elements are present</action>
-</step>
+
+<check>If adjusting instruction style (option 11):</check>
+<action>Analyze current instruction style in instructions.md:</action>
+
+- Count <action> tags vs <ask> tags
+- Identify goal-oriented language ("guide", "explore", "help") vs prescriptive ("choose", "select", "specify")
+- Assess whether steps are open-ended or structured with specific options
+  <action>Determine current dominant style: intent-based, prescriptive, or mixed</action>
+  <action>Load the instruction style guide section from create-workflow</action>
+  </step>
 
 <step n="5" goal="Perform edits" repeat="until-complete">
 Based on the selected focus area:
@@ -160,6 +170,127 @@ If updating existing web bundle:
 2. Check for missing files in web_bundle_files
 3. Remove any config dependencies
 4. Update file list with newly referenced files
+
+<check>If adjusting instruction style (option 11):</check>
+<action>Present current style analysis to user:</action>
+
+**Current Instruction Style Analysis:**
+
+- Current dominant style: {{detected_style}}
+- Intent-based elements: {{intent_count}}
+- Prescriptive elements: {{prescriptive_count}}
+
+**Understanding Intent-Based vs Prescriptive:**
+
+**1. Intent-Based (Recommended)** - Guide the LLM with goals and principles, let it adapt conversations naturally
+
+- More flexible and conversational
+- LLM chooses appropriate questions based on context
+- Better for complex discovery and iterative refinement
+- Example: `<action>Guide user to define their target audience with specific demographics and needs</action>`
+
+**2. Prescriptive** - Provide exact wording for questions and options
+
+- More controlled and predictable
+- Ensures consistency across runs
+- Better for simple data collection or specific compliance needs
+- Example: `<ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask>`
+
+**When to use Intent-Based:**
+
+- Complex discovery processes (user research, requirements gathering)
+- Creative brainstorming and ideation
+- Iterative refinement workflows
+- When user input quality matters more than consistency
+- Workflows requiring adaptation to context
+
+**When to use Prescriptive:**
+
+- Simple data collection (platform, format, yes/no choices)
+- Compliance verification and standards adherence
+- Configuration with finite options
+- When consistency is critical across all executions
+- Quick setup wizards
+
+**Best Practice: Mix Both Styles**
+
+Even workflows with a primary style should use the other when appropriate. For example:
+
+```xml
+<!-- Intent-based workflow with prescriptive moments -->
+<step n="1" goal="Understand user vision">
+  <action>Explore the user's vision, uncovering their creative intent and target experience</action>
+</step>
+
+<step n="2" goal="Capture basic metadata">
+  <ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask> <!-- Prescriptive for simple choice -->
+</step>
+
+<step n="3" goal="Deep dive into details">
+  <action>Guide user to articulate their approach, exploring mechanics and unique aspects</action> <!-- Back to intent-based -->
+</step>
+```
+
+<ask>What would you like to do?
+
+1. **Make more intent-based** - Convert prescriptive <ask> tags to goal-oriented <action> tags where appropriate
+2. **Make more prescriptive** - Convert open-ended <action> tags to specific <ask> tags with options
+3. **Optimize mix** - Use intent-based for complex steps, prescriptive for simple data collection
+4. **Review specific steps** - Show me each step and let me decide individually
+5. **Cancel** - Keep current style
+
+Select option (1-5):</ask>
+
+<action>Store user's style adjustment preference as {{style_adjustment_choice}}</action>
+
+<check>If choice is 1 (make more intent-based):</check>
+<action>Identify prescriptive <ask> tags that could be converted to intent-based <action> tags</action>
+<action>For each candidate conversion:
+
+- Show original prescriptive version
+- Suggest intent-based alternative focused on goals
+- Explain the benefit of the conversion
+- Ask for approval
+  </action>
+  <action>Apply approved conversions</action>
+
+<check>If choice is 2 (make more prescriptive):</check>
+<action>Identify open-ended <action> tags that could be converted to prescriptive <ask> tags</action>
+<action>For each candidate conversion:
+
+- Show original intent-based version
+- Suggest prescriptive alternative with specific options
+- Explain when prescriptive is better here
+- Ask for approval
+  </action>
+  <action>Apply approved conversions</action>
+
+<check>If choice is 3 (optimize mix):</check>
+<action>Analyze each step for complexity and purpose</action>
+<action>Recommend style for each step:
+
+- Simple data collection → Prescriptive
+- Complex discovery → Intent-based
+- Binary decisions → Prescriptive
+- Creative exploration → Intent-based
+- Standards/compliance → Prescriptive
+- Iterative refinement → Intent-based
+  </action>
+  <action>Show recommendations with reasoning</action>
+  <action>Apply approved optimizations</action>
+
+<check>If choice is 4 (review specific steps):</check>
+<action>Present each step one at a time</action>
+<action>For each step:
+
+- Show current instruction text
+- Identify current style (intent-based, prescriptive, or mixed)
+- Offer to keep, convert to intent-based, or convert to prescriptive
+- Apply user's choice before moving to next step
+  </action>
+
+<check>If choice is 5 (cancel):</check>
+<goto step="3">Return to editing menu</goto>
 
 <action>Show the current content that will be edited</action>
 <action>Explain the proposed changes and why they improve the workflow</action>

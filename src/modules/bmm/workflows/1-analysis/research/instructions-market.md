@@ -559,23 +559,16 @@ Create compelling executive summary with:
 <action>Find the most recent file (by date in filename)</action>
 
 <check if="status file exists">
-  <action>Load the status file</action>
+  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+    <param>mode: update</param>
+    <param>action: complete_workflow</param>
+    <param>workflow_name: research</param>
+  </invoke-workflow>
 
-<template-output file="{{status_file_path}}">current_step</template-output>
-<action>Set to: "research ({{research_mode}})"</action>
-
-<template-output file="{{status_file_path}}">current_workflow</template-output>
-<action>Set to: "research ({{research_mode}}) - Complete"</action>
-
-<template-output file="{{status_file_path}}">progress_percentage</template-output>
-<action>Increment by: 5% (optional Phase 1 workflow)</action>
-
-<template-output file="{{status_file_path}}">decisions_log</template-output>
-<action>Add entry:</action>
-
-```
-- **{{date}}**: Completed research workflow ({{research_mode}} mode). Research report generated and saved. Next: Review findings and consider product-brief or plan-project workflows.
-```
+  <check if="success == true">
+    <output>Status updated! Next: {{next_workflow}}</output>
+  </check>
+</check>
 
 <output>**✅ Research Complete ({{research_mode}} mode)**
 

@@ -2,35 +2,40 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language}</critical>
+<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+<critical>Generate all documents in {document_output_language}</critical>
+
+<critical>DOCUMENT OUTPUT: Concise, professional, game-design focused. Use tables/lists over prose. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 
 <workflow>
 
-<step n="0" goal="Check and load workflow status file">
-<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-<action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
+<step n="0" goal="Validate workflow readiness">
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: validate</param>
+  <param>calling_workflow: game-brief</param>
+</invoke-workflow>
 
-<check if="exists">
-  <action>Load the status file</action>
-  <action>Set status_file_found = true</action>
-  <action>Store status_file_path for later updates</action>
+<check if="status_exists == false">
+  <output>{{suggestion}}</output>
+  <output>Note: Game brief is optional. Continuing without progress tracking.</output>
+  <action>Set standalone_mode = true</action>
 </check>
 
-<check if="not exists">
-  <ask>**No workflow status file found.**
+<check if="status_exists == true">
+  <action>Store {{status_file_path}} for later updates</action>
 
-This workflow creates a Game Brief document (optional Phase 1 workflow).
+  <check if="project_type != 'game'">
+    <output>Note: This is a {{project_type}} project. Game brief is designed for game projects.</output>
+    <ask>Continue with game brief anyway? (y/n)</ask>
+    <check if="n">
+      <action>Exit workflow</action>
+    </check>
+  </check>
 
-Options:
-
-1. Run workflow-status first to create the status file (recommended for progress tracking)
-2. Continue in standalone mode (no progress tracking)
-3. Exit
-
-What would you like to do?</ask>
-<action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to game-brief"</action>
-<action>If user chooses option 2 → Set standalone_mode = true and continue</action>
-<action>If user chooses option 3 → HALT</action>
+  <check if="warning != ''">
+    <output>{{warning}}</output>
+    <output>Note: Game brief can provide valuable vision clarity at any stage.</output>
+  </check>
 </check>
 </step>
 
@@ -303,39 +308,33 @@ This brief will serve as the primary input for creating the Game Design Document
 <template-output>executive_brief</template-output>
 </step>
 
-<step n="16" goal="Update status file on completion">
-<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-<action>Find the most recent file (by date in filename)</action>
+<step n="16" goal="Update status and complete">
+<check if="standalone_mode != true">
+  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+    <param>mode: update</param>
+    <param>action: complete_workflow</param>
+    <param>workflow_name: game-brief</param>
+  </invoke-workflow>
 
-<check if="status file exists">
-  <action>Load the status file</action>
-
-<template-output file="{{status_file_path}}">current_step</template-output>
-<action>Set to: "game-brief"</action>
-
-<template-output file="{{status_file_path}}">current_workflow</template-output>
-<action>Set to: "game-brief - Complete"</action>
-
-<template-output file="{{status_file_path}}">progress_percentage</template-output>
-<action>Increment by: 10% (optional Phase 1 workflow)</action>
-
-<template-output file="{{status_file_path}}">decisions_log</template-output>
-<action>Add entry:</action>
-
-```
-- **{{date}}**: Completed game-brief workflow. Game brief document generated and saved. Next: Proceed to plan-project workflow to create Game Design Document (GDD).
-```
+  <check if="success == true">
+    <output>Status updated! Next: {{next_workflow}}</output>
+  </check>
+</check>
 
 <output>**✅ Game Brief Complete, {user_name}!**
 
 **Brief Document:**
 
-- Game brief saved to {output_folder}/game-brief-{{game_name}}-{{date}}.md
+- Game brief saved to {output_folder}/bmm-game-brief-{{game_name}}-{{date}}.md
 
-**Status file updated:**
+{{#if standalone_mode != true}}
+**Status Updated:**
 
-- Current step: game-brief ✓
-- Progress: {{new_progress_percentage}}%
+- Progress tracking updated
+  {{else}}
+  Note: Running in standalone mode (no status file).
+  To track progress across workflows, run `workflow-init` first.
+  {{/if}}
 
 **Next Steps:**
 
@@ -344,27 +343,10 @@ This brief will serve as the primary input for creating the Game Design Document
 3. Run `plan-project` workflow to create GDD from this brief
 4. Validate assumptions with target players
 
+{{#if standalone_mode != true}}
 Check status anytime with: `workflow-status`
+{{/if}}
 </output>
-</check>
-
-<check if="status file not found">
-  <output>**✅ Game Brief Complete, {user_name}!**
-
-**Brief Document:**
-
-- Game brief saved to {output_folder}/game-brief-{{game_name}}-{{date}}.md
-
-Note: Running in standalone mode (no status file).
-
-To track progress across workflows, run `workflow-status` first.
-
-**Next Steps:**
-
-1. Review the game brief document
-2. Run `plan-project` workflow to create GDD
-   </output>
-   </check>
-   </step>
+</step>
 
 </workflow>

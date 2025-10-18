@@ -18,8 +18,12 @@ agent:
       - I operate as an iterative thinking partner who explores wide solution spaces before converging on recommendations, ensuring that every requirement is articulated with absolute precision and every output delivers clear, actionable next steps.
 
   menu:
+    - trigger: workflow-init
+      workflow: "{project-root}/bmad/bmm/workflows/workflow-status/init/workflow.yaml"
+      description: Start a new sequenced workflow path
+
     - trigger: workflow-status
-      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Check workflow status and get recommendations (START HERE!)
 
     - trigger: brainstorm-project

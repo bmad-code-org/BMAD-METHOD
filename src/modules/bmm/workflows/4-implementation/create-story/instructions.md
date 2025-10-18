@@ -1,11 +1,14 @@
 # Create Story - Workflow Instructions (Spec-compliant, non-interactive by default)
 
-````xml
+```xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language}</critical>
+<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+<critical>Generate all documents in {document_output_language}</critical>
 <critical>This workflow creates or updates the next user story from epics/PRD and architecture context, saving to the configured stories directory and optionally invoking Story Context.</critical>
 <critical>Default execution mode: #yolo (minimal prompts). Only elicit if absolutely required and {{non_interactive}} == false.</critical>
+
+<critical>DOCUMENT OUTPUT: Concise, technical, actionable story specifications. Use tables/lists for acceptance criteria and tasks. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 
 <workflow>
 
@@ -28,46 +31,26 @@
     <action>READ COMPLETE FILES for all items found in the prioritized set. Store content and paths for citation.</action>
   </step>
 
-  <step n="2.5" goal="Check status file TODO section for story to draft">
-    <action>Read {output_folder}/bmm-workflow-status.md (if exists)</action>
-    <action>Navigate to "### Implementation Progress (Phase 4 Only)" section</action>
-    <action>Find "#### TODO (Needs Drafting)" section</action>
+  <step n="2.5" goal="Get story to draft from status file">
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+      <param>mode: data</param>
+      <param>data_request: next_story</param>
+    </invoke-workflow>
 
-    <check if="TODO section has a story">
-      <action>Extract story information from TODO section:</action>
-      - todo_story_id: The story ID to draft (e.g., "1.1", "auth-feature-1", "login-fix")
-      - todo_story_title: The story title (for validation)
-      - todo_story_file: The exact story file path to create
+    <check if="status_exists == true AND todo_story_id != ''">
+      <action>Use extracted story information:</action>
+      - {{todo_story_id}}: The story ID to draft
+      - {{todo_story_title}}: The story title
+      - {{todo_story_file}}: The exact story file path to create
 
-      <critical>This is the PRIMARY source for determining which story to draft</critical>
-      <critical>DO NOT search or guess - the status file tells you exactly which story to create</critical>
+      <critical>This is the PRIMARY source - DO NOT search or guess</critical>
 
-      <action>Parse story numbering from todo_story_id:</action>
-
-      <check if='todo_story_id matches "N.M" format (e.g., "1.1", "2.3")'>
-        <action>Set {{epic_num}} = N, {{story_num}} = M</action>
-        <action>Set {{story_file}} = "story-{{epic_num}}.{{story_num}}.md"</action>
-      </check>
-
-      <check if='todo_story_id matches "slug-N" format (e.g., "auth-feature-1", "icon-reliability-2")'>
-        <action>Set {{epic_slug}} = slug part, {{story_num}} = N</action>
-        <action>Set {{story_file}} = "story-{{epic_slug}}-{{story_num}}.md"</action>
-      </check>
-
-      <check if='todo_story_id matches "slug" format (e.g., "login-fix", "icon-migration")'>
-        <action>Set {{story_slug}} = full slug</action>
-        <action>Set {{story_file}} = "story-{{story_slug}}.md"</action>
-      </check>
-
-      <action>Validate that {{story_file}} matches {{todo_story_file}} from status file</action>
-      <action>If mismatch, HALT with error: "Story file mismatch. Status file says: {{todo_story_file}}, derived: {{story_file}}"</action>
-
-      <action>Skip old story discovery logic in Step 3 - we know exactly what to draft</action>
+      <action>Set {{story_path}} = {story_dir}/{{todo_story_file}}</action>
+      <action>Skip legacy discovery in Step 3</action>
     </check>
 
-    <check if="TODO section is empty OR status file not found">
-      <action>Fall back to old story discovery logic in Step 3</action>
-      <action>Note: This is the legacy behavior for projects not using the new status file system</action>
+    <check if="status_exists == false OR todo_story_id == ''">
+      <action>Fall back to legacy story discovery in Step 3</action>
     </check>
   </step>
 
@@ -126,23 +109,15 @@
     <action>Find the most recent file (by date in filename)</action>
 
     <check if="status file exists">
-      <action>Load the status file</action>
+      <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+        <param>mode: update</param>
+        <param>action: set_current_workflow</param>
+        <param>workflow_name: create-story</param>
+      </invoke-workflow>
 
-      <template-output file="{{status_file_path}}">current_step</template-output>
-      <action>Set to: "create-story (Story {{story_id}})"</action>
-
-      <template-output file="{{status_file_path}}">current_workflow</template-output>
-      <action>Set to: "create-story (Story {{story_id}}) - Complete"</action>
-
-      <template-output file="{{status_file_path}}">progress_percentage</template-output>
-      <action>Calculate per-story weight: remaining_40_percent / total_stories / 5</action>
-      <action>Increment by: {{per_story_weight}} * 2 (create-story weight is ~2% per story)</action>
-
-      <template-output file="{{status_file_path}}">decisions_log</template-output>
-      <action>Add entry:</action>
-      ```
-      - **{{date}}**: Completed create-story for Story {{story_id}} ({{story_title}}). Story file: {{story_file}}. Status: Draft (needs review via story-ready). Next: Review and approve story.
-      ```
+      <check if="success == true">
+        <output>✅ Status updated: Story {{story_id}} drafted</output>
+      </check>
 
       <output>**✅ Story Created Successfully, {user_name}!**
 
@@ -180,4 +155,4 @@ To track progress across workflows, run `workflow-status` first.
   </step>
 
 </workflow>
-````
+```

@@ -1,0 +1,135 @@
+# Brownfield Level 3 - Complex Integration with Existing System
+# Major feature addition requiring architectural integration
+
+project_type: "software"
+level: 3
+field_type: "brownfield"
+description: "Complex integration with existing system architecture"
+
+phases:
+  - phase: 0
+    name: "Documentation"
+    conditional: "if_undocumented"
+    workflows:
+      - id: "document-project"
+        required: true
+        agent: "analyst"
+        command: "document-project"
+        output: "Comprehensive codebase documentation"
+
+  - phase: 1
+    name: "Analysis"
+    recommended: true
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+      - id: "research"
+        recommended: true
+        agent: "analyst"
+        command: "research"
+        note: "Research existing architecture patterns"
+      - id: "product-brief"
+        recommended: true
+        agent: "analyst"
+        command: "product-brief"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        required: true
+        agent: "pm"
+        command: "prd"
+        output: "Requirements with integration points"
+      - id: "ux-spec"
+        conditional: "if_has_ui"
+        agent: "pm"
+        command: "ux-spec"
+        note: "Must align with existing UI patterns"
+
+  - phase: 3
+    name: "Solutioning"
+    required: true
+    workflows:
+      - id: "architecture-review"
+        required: true
+        agent: "architect"
+        command: "architecture-review"
+        note: "Review existing architecture first"
+      - id: "integration-planning"
+        required: true
+        agent: "architect"
+        command: "integration-planning"
+        output: "Integration strategy document"
+      - id: "solution-architecture"
+        required: true
+        agent: "architect"
+        command: "solution-architecture"
+        note: "Extension of existing architecture"
+      - id: "assess-project-ready"
+        required: true
+        agent: "sm"
+        command: "assess-project-ready"
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    epic_loop: "for_each_epic"
+    epic_workflows:
+      - id: "tech-spec"
+        required: true
+        agent: "architect"
+        command: "tech-spec"
+        note: "Must respect existing patterns"
+    story_loop: "for_each_story_in_epic"
+    story_workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+        note: "Heavy emphasis on existing code context"
+      - id: "validate-story-context"
+        required: true
+        agent: "sm"
+        command: "validate-story-context"
+        note: "Ensure no breaking changes"
+      - id: "story-ready"
+        recommended: true
+        agent: "sm"
+        command: "story-ready"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "review-story"
+        required: true
+        agent: "dev"
+        command: "review-story"
+        note: "Check integration points"
+      - id: "correct-course"
+        conditional: "if_review_fails"
+        agent: "dev"
+        command: "correct-course"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+    epic_completion:
+      - id: "integration-test"
+        required: true
+        agent: "dev"
+        command: "integration-test"
+      - id: "retrospective"
+        required: true
+        agent: "pm"
+        command: "retrospective"
+
+story_naming: "story-<epic>.<story>.md"
+brownfield_note: "All changes must integrate seamlessly with existing system"

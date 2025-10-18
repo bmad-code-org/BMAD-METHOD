@@ -4,10 +4,30 @@
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language}</critical>
+<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+<critical>Generate all documents in {document_output_language}</critical>
 <critical>This workflow creates comprehensive UX/UI specifications - can run standalone or as part of plan-project</critical>
 <critical>Uses ux-spec-template.md for structured output generation</critical>
 <critical>Can optionally generate AI Frontend Prompts for tools like Vercel v0, Lovable.ai</critical>
+
+<critical>DOCUMENT OUTPUT: Professional, precise, actionable UX specs. Use tables/lists over prose. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
+
+<step n="0" goal="Check for workflow status">
+
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: init-check</param>
+</invoke-workflow>
+
+<check if="status_exists == true">
+  <action>Store {{status_file_path}} for later updates</action>
+  <action>Set tracking_mode = true</action>
+</check>
+
+<check if="status_exists == false">
+  <action>Set tracking_mode = false</action>
+  <output>Note: Running without workflow tracking. Run `workflow-init` to enable progress tracking.</output>
+</check>
+</step>
 
 <step n="1" goal="Load context and analyze project requirements">
 
@@ -365,6 +385,21 @@ Next actions:
 
 Select option (1-3):</ask>
 
+</step>
+
+<step n="12" goal="Update status if tracking enabled">
+
+<check if="tracking_mode == true">
+  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+    <param>mode: update</param>
+    <param>action: complete_workflow</param>
+    <param>workflow_name: ux</param>
+  </invoke-workflow>
+
+  <check if="success == true">
+    <output>✅ Status updated! Next: {{next_workflow}}</output>
+  </check>
+</check>
 </step>
 
 </workflow>

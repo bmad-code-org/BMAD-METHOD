@@ -1,0 +1,109 @@
+# Greenfield Level 3 - Complex System
+# Subsystems, integrations, architectural decisions required
+
+project_type: "software"
+level: 3
+field_type: "greenfield"
+description: "Complex system - subsystems, integrations, architectural decisions"
+
+phases:
+  - phase: 1
+    name: "Analysis"
+    optional: true
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+      - id: "research"
+        optional: true
+        agent: "analyst"
+        command: "research"
+        note: "Multiple research areas likely"
+      - id: "product-brief"
+        recommended: true
+        agent: "analyst"
+        command: "product-brief"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        required: true
+        agent: "pm"
+        command: "prd"
+        output: "High-level requirements and epic definitions"
+      - id: "ux-spec"
+        conditional: "if_has_ui"
+        agent: "pm"
+        command: "ux-spec"
+
+  - phase: 3
+    name: "Solutioning"
+    required: true
+    workflows:
+      - id: "solution-architecture"
+        required: true
+        agent: "architect"
+        command: "solution-architecture"
+        output: "System-wide architecture document"
+      - id: "assess-project-ready"
+        required: true
+        agent: "sm"
+        command: "assess-project-ready"
+        note: "Validate architecture before implementation"
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    epic_loop: "for_each_epic"
+    epic_workflows:
+      - id: "tech-spec"
+        required: true
+        agent: "architect"
+        command: "tech-spec"
+        note: "JIT per epic - creates stories for that epic"
+    story_loop: "for_each_story_in_epic"
+    story_workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+      - id: "validate-story-context"
+        recommended: true
+        agent: "sm"
+        command: "validate-story-context"
+      - id: "story-ready"
+        optional: true
+        agent: "sm"
+        command: "story-ready"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "review-story"
+        recommended: true
+        agent: "dev"
+        command: "review-story"
+      - id: "correct-course"
+        conditional: "if_review_fails"
+        agent: "dev"
+        command: "correct-course"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+    epic_completion:
+      - id: "retrospective"
+        recommended: true
+        agent: "pm"
+        command: "retrospective"
+
+story_naming: "story-<epic>.<story>.md"
+story_example: "story-1.1.md, story-2.3.md"
+epic_structure: "JIT tech-specs per epic create stories"

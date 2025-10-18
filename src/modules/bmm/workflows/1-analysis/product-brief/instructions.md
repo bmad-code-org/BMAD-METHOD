@@ -2,35 +2,41 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language}</critical>
+<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+<critical>Generate all documents in {document_output_language}</critical>
+
+<critical>DOCUMENT OUTPUT: Concise, professional, strategically focused. Use tables/lists over prose. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 
 <workflow>
 
-<step n="0" goal="Check and load workflow status file">
-<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-<action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
+<step n="0" goal="Validate workflow readiness">
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: validate</param>
+  <param>calling_workflow: product-brief</param>
+</invoke-workflow>
 
-<check if="exists">
-  <action>Load the status file</action>
-  <action>Set status_file_found = true</action>
-  <action>Store status_file_path for later updates</action>
+<check if="status_exists == false">
+  <output>{{suggestion}}</output>
+  <output>Note: Product Brief is optional. You can continue without status tracking.</output>
+  <action>Set standalone_mode = true</action>
 </check>
 
-<check if="not exists">
-  <ask>**No workflow status file found.**
+<check if="status_exists == true">
+  <action>Store {{status_file_path}} for later updates</action>
 
-This workflow creates a Product Brief document (optional Phase 1 workflow).
+  <check if="project_level < 2">
+    <output>Note: Product Brief is most valuable for Level 2+ projects. Your project is Level {{project_level}}.</output>
+    <output>You may want to skip directly to technical planning instead.</output>
+  </check>
 
-Options:
-
-1. Run workflow-status first to create the status file (recommended for progress tracking)
-2. Continue in standalone mode (no progress tracking)
-3. Exit
-
-What would you like to do?</ask>
-<action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to product-brief"</action>
-<action>If user chooses option 2 → Set standalone_mode = true and continue</action>
-<action>If user chooses option 3 → HALT</action>
+  <check if="warning != ''">
+    <output>{{warning}}</output>
+    <ask>Continue with Product Brief anyway? (y/n)</ask>
+    <check if="n">
+      <output>Exiting. {{suggestion}}</output>
+      <action>Exit workflow</action>
+    </check>
+  </check>
 </check>
 </step>
 
@@ -267,38 +273,32 @@ This brief will serve as the primary input for creating the Product Requirements
 </step>
 
 <step n="16" goal="Update status file on completion">
-<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-<action>Find the most recent file (by date in filename)</action>
+<check if="standalone_mode != true">
+  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+    <param>mode: update</param>
+    <param>action: complete_workflow</param>
+    <param>workflow_name: product-brief</param>
+  </invoke-workflow>
 
-<check if="status file exists">
-  <action>Load the status file</action>
-
-<template-output file="{{status_file_path}}">current_step</template-output>
-<action>Set to: "product-brief"</action>
-
-<template-output file="{{status_file_path}}">current_workflow</template-output>
-<action>Set to: "product-brief - Complete"</action>
-
-<template-output file="{{status_file_path}}">progress_percentage</template-output>
-<action>Increment by: 10% (optional Phase 1 workflow)</action>
-
-<template-output file="{{status_file_path}}">decisions_log</template-output>
-<action>Add entry:</action>
-
-```
-- **{{date}}**: Completed product-brief workflow. Product brief document generated and saved. Next: Proceed to plan-project workflow to create Product Requirements Document (PRD).
-```
+  <check if="success == true">
+    <output>Status updated! Next: {{next_workflow}}</output>
+  </check>
+</check>
 
 <output>**✅ Product Brief Complete, {user_name}!**
 
 **Brief Document:**
 
-- Product brief saved to {output_folder}/product-brief-{{project_name}}-{{date}}.md
+- Product brief saved to {output_folder}/bmm-product-brief-{{project_name}}-{{date}}.md
 
-**Status file updated:**
+{{#if standalone_mode != true}}
+**Status Updated:**
 
-- Current step: product-brief ✓
-- Progress: {{new_progress_percentage}}%
+- Progress tracking updated
+- Current workflow marked complete
+  {{else}}
+  **Note:** Running in standalone mode (no progress tracking)
+  {{/if}}
 
 **Next Steps:**
 
@@ -306,27 +306,10 @@ This brief will serve as the primary input for creating the Product Requirements
 2. Gather any additional stakeholder input
 3. Run `plan-project` workflow to create PRD from this brief
 
+{{#if standalone_mode != true}}
 Check status anytime with: `workflow-status`
+{{/if}}
 </output>
-</check>
-
-<check if="status file not found">
-  <output>**✅ Product Brief Complete**
-
-**Brief Document:**
-
-- Product brief saved and ready for handoff
-
-Note: Running in standalone mode (no status file).
-
-To track progress across workflows, run `workflow-status` first.
-
-**Next Steps:**
-
-1. Review the product brief document
-2. Run `plan-project` workflow to create PRD
-   </output>
-   </check>
-   </step>
+</step>
 
 </workflow>

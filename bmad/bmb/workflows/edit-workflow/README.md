@@ -43,8 +43,64 @@ Or through a BMAD agent:
 2. **Prioritized Issues**: Identifies and ranks issues by importance
 3. **Guided Editing**: Step-by-step process with explanations
 4. **Best Practices**: Ensures all edits follow BMAD conventions
-5. **Validation**: Checks all changes for correctness
-6. **Change Tracking**: Documents what was modified and why
+5. **Instruction Style Optimization**: Convert between intent-based and prescriptive styles
+6. **Validation**: Checks all changes for correctness
+7. **Change Tracking**: Documents what was modified and why
+
+## Understanding Instruction Styles
+
+When editing workflows, one powerful option is **adjusting the instruction style** to better match the workflow's purpose.
+
+### Intent-Based vs Prescriptive Instructions
+
+**Intent-Based (Recommended for most workflows)**
+
+Guides the AI with goals and principles, allowing flexible conversation.
+
+- **More flexible and conversational** - AI adapts to user responses
+- **Better for complex discovery** - Requirements gathering, creative exploration
+- **Quality over consistency** - Deep understanding matters more
+- **Example**: `<action>Guide user to define their target audience with specific demographics and needs</action>`
+
+**When to use:**
+
+- Complex discovery processes (user research, requirements)
+- Creative brainstorming and ideation
+- Iterative refinement workflows
+- Workflows requiring nuanced understanding
+
+**Prescriptive**
+
+Provides exact questions with structured options.
+
+- **More controlled and predictable** - Consistent questions every time
+- **Better for simple data collection** - Platform, format, yes/no choices
+- **Consistency over quality** - Same execution every run
+- **Example**: `<ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask>`
+
+**When to use:**
+
+- Simple data collection (platform, format, binary choices)
+- Compliance verification and standards adherence
+- Configuration with finite options
+- Quick setup wizards
+
+### Edit Workflow's Style Adjustment Feature
+
+The **"Adjust instruction style"** editing option (menu option 11) helps you:
+
+1. **Analyze current style** - Identifies whether workflow is primarily intent-based or prescriptive
+2. **Convert between styles** - Transform prescriptive steps to intent-based (or vice versa)
+3. **Optimize the mix** - Intelligently recommend the best style for each step
+4. **Step-by-step control** - Review and decide on each step individually
+
+**Common scenarios:**
+
+- **Make workflow more conversational**: Convert rigid <ask> tags to flexible <action> tags for complex steps
+- **Make workflow more consistent**: Convert open-ended <action> tags to structured <ask> tags for simple data collection
+- **Balance both approaches**: Use intent-based for discovery, prescriptive for simple choices
+
+This feature is especially valuable when converting legacy workflows or adapting workflows for different use cases.
 
 ## Workflow Steps
 
