@@ -102,6 +102,24 @@ export default [
     },
   },
 
+  // Task implementation modules use CommonJS for compatibility
+  {
+    files: ['src/modules/*/tasks/**/*.js'],
+    rules: {
+      // Allow CommonJS patterns for task modules
+      'unicorn/prefer-module': 'off',
+      'n/no-unsupported-features/node-builtins': 'off',
+      // Allow unused parameters prefixed with underscore
+      'no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+
   // ESLint config file should not be checked for publish-related Node rules
   {
     files: ['eslint.config.mjs'],

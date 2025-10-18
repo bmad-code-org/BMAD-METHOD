@@ -99,14 +99,14 @@ The workflow uses a YAML configuration file. Copy `config-template.yaml` to your
 # API Configuration
 api:
   provider: openrouter
-  model: "mistral/pixtral-large-latest"
+  model: 'mistral/pixtral-large-latest'
   api_key: ${OPENROUTER_API_KEY}
 
 # File Paths
 paths:
-  source_folder: "./source-documents"
-  master_file: "./master-file.xlsx"
-  processed_folder: "./processed/done"
+  source_folder: './source-documents'
+  master_file: './master-file.xlsx'
+  processed_folder: './processed/done'
 
 # Extraction Fields
 extraction_fields:
@@ -197,17 +197,17 @@ Extract sales data from PDF reports:
 extraction_fields:
   - name: date
     type: date
-    format: "YYYY-MM-DD"
-    description: "Sales report date"
+    format: 'YYYY-MM-DD'
+    description: 'Sales report date'
 
   - name: store_name
     type: string
-    description: "Tenant/store name"
+    description: 'Tenant/store name'
 
   - name: sales_amount
     type: number
-    format: "currency"
-    description: "Total sales"
+    format: 'currency'
+    description: 'Total sales'
 ```
 
 ## Implementation Plan
@@ -336,20 +336,20 @@ The workflow uses OpenRouter's Mistral Pixtral Large model for OCR:
 
 ```javascript
 // Example API call (implementation in Phase 2)
-const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-  method: "POST",
+const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  method: 'POST',
   headers: {
     Authorization: `Bearer ${apiKey}`,
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    model: "mistral/pixtral-large-latest",
+    model: 'mistral/pixtral-large-latest',
     messages: [
       {
-        role: "user",
+        role: 'user',
         content: [
-          { type: "image_url", image_url: { url: base64Image } },
-          { type: "text", text: "Extract: date, store name, amount..." },
+          { type: 'image_url', image_url: { url: base64Image } },
+          { type: 'text', text: 'Extract: date, store name, amount...' },
         ],
       },
     ],

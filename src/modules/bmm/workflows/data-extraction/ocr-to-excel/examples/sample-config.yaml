@@ -1,0 +1,71 @@
+# Example OCR to Excel Configuration
+# Copy this file to your project root and customize
+
+# API Configuration
+api:
+  provider: openrouter
+  model: "mistral/pixtral-large-latest"
+  api_key: ${OPENROUTER_API_KEY}
+  endpoint: "https://openrouter.ai/api/v1/chat/completions"
+  timeout: 60000
+  max_retries: 3
+  retry_delay: 2000
+
+# File Paths
+paths:
+  source_folder: "./source-documents"
+  processed_folder: "./processed/done"
+  master_file: "./master-data.xlsx"
+  backup_folder: "./backups"
+  log_folder: "./logs"
+
+# Extraction Fields (customize for your data)
+extraction_fields:
+  - name: date
+    type: date
+    format: "YYYY-MM-DD"
+    required: true
+    description: "Document date"
+
+  - name: store_name
+    type: string
+    required: true
+    description: "Store or tenant name"
+
+  - name: sales_amount
+    type: number
+    required: true
+    description: "Total sales amount"
+
+  - name: employee_name
+    type: string
+    required: false
+    description: "Employee name"
+
+# Processing Settings
+processing:
+  batch_size: 10
+  parallel_limit: 3
+  confidence_threshold: 0.85
+  pause_on_low_confidence: true
+  skip_duplicates: true
+
+# File Types
+file_types:
+  - pdf
+  - xlsx
+  - xls
+  - msg
+
+# Excel Configuration
+excel:
+  sheet_name: "Extracted Data"
+  start_row: 2
+  create_sheet_if_missing: true
+  backup_before_write: true
+
+# Logging
+logging:
+  level: "info"
+  log_to_file: true
+  log_to_console: true
