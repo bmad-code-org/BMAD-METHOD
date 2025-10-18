@@ -1,0 +1,110 @@
+# OCR to Excel Extraction Configuration Template
+# Copy this file to your project and customize the settings
+
+# API Configuration
+api:
+  provider: openrouter
+  model: "mistral/pixtral-large-latest"
+  api_key: ${OPENROUTER_API_KEY} # Set this environment variable
+  endpoint: "https://openrouter.ai/api/v1/chat/completions"
+  timeout: 60000 # milliseconds
+  max_retries: 3
+  retry_delay: 2000 # milliseconds
+
+# File Paths
+paths:
+  source_folder: "./source-documents" # Folder containing files to process
+  processed_folder: "./processed/done" # Where to move processed files
+  master_file: "./master-file.xlsx" # Master Excel file to append data
+  backup_folder: "./backups" # Automatic backups location
+  log_folder: "./logs" # Processing logs location
+
+# Extraction Fields
+# Define the fields to extract from documents
+extraction_fields:
+  - name: date
+    type: date
+    format: "YYYY-MM-DD"
+    required: true
+    description: "Sales report date"
+
+  - name: store_name
+    type: string
+    required: true
+    description: "Tenant/store name"
+
+  - name: sales_amount
+    type: number
+    format: "currency"
+    required: true
+    description: "Total sales amount"
+
+  - name: part_timer_name
+    type: string
+    required: false
+    description: "Employee name"
+
+  - name: shift_hours
+    type: number
+    required: false
+    description: "Hours worked"
+
+# Metadata Fields (automatically added)
+metadata_fields:
+  - name: source_file
+    description: "Original filename for audit trail"
+
+  - name: processed_date
+    description: "Date when file was processed"
+
+  - name: confidence
+    description: "OCR confidence score (0-1)"
+
+# Processing Settings
+processing:
+  batch_size: 10 # Process N files before saving to Excel
+  parallel_limit: 3 # Number of concurrent API calls
+  confidence_threshold: 0.85 # Auto-approve if >= this score
+  pause_on_low_confidence: true # Stop for human review on low confidence
+  skip_duplicates: true # Skip files already processed
+
+# File Type Settings
+file_types:
+  - pdf
+  - xlsx
+  - xls
+  - msg
+
+# Excel Configuration
+excel:
+  sheet_name: "Extracted Data" # Sheet to append data
+  start_row: 2 # First data row (after headers)
+  create_sheet_if_missing: true
+  backup_before_write: true
+  validate_headers: true # Ensure headers match field names
+
+# Logging
+logging:
+  level: "info" # debug, info, warn, error
+  log_to_file: true
+  log_to_console: true
+  include_timestamps: true
+  include_confidence_scores: true
+
+# Validation Rules
+validation:
+  required_fields: ["date", "store_name", "sales_amount"]
+  date_range:
+    min: "2020-01-01"
+    max: "2030-12-31"
+  amount_range:
+    min: 0
+    max: 1000000
+
+# Error Handling
+error_handling:
+  on_api_failure: "retry" # retry, skip, halt
+  on_parsing_error: "prompt" # prompt, skip, halt
+  on_validation_error: "prompt" # prompt, skip, halt
+  save_failed_files_list: true
+  failed_files_log: "./logs/failed-files.json"

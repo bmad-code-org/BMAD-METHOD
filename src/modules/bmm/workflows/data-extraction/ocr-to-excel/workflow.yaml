@@ -1,0 +1,67 @@
+# OCR to Excel - Data Extraction Workflow Configuration
+name: ocr-to-excel
+description: "Automated document processing workflow using Mistral OCR to extract structured data from PDFs, Excel files, and Outlook messages, consolidating results into a master Excel spreadsheet"
+author: "BMad"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Data extraction configuration
+extraction_config_file: "{project-root}/bmad/bmm/workflows/data-extraction/ocr-to-excel/extraction-config.yaml"
+
+# Optional input documents
+recommended_inputs:
+  - source_documents_folder: "Folder containing files to process (required)"
+  - master_excel_file: "Master Excel file to append data (required)"
+  - field_mapping_config: "Field mapping configuration (optional - will use defaults)"
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/data-extraction/ocr-to-excel"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+config_template: "{installed_path}/config-template.yaml"
+
+# Output configuration
+default_output_file: "{output_folder}/extraction-results-{{date}}.md"
+processing_log_file: "{output_folder}/logs/processing-log-{{date}}.json"
+
+# Workflow settings
+autonomous: false # Requires human validation of extracted data
+batch_processing: true # Supports processing multiple files
+parallel_processing: 3 # Process N files concurrently (default: 3)
+confidence_threshold: 0.85 # Auto-approve extractions with confidence >= 85%
+
+# API configuration
+api_provider: openrouter
+api_model: "mistral/pixtral-large-latest"
+api_endpoint: "https://openrouter.ai/api/v1/chat/completions"
+
+# Processing configuration
+supported_file_types:
+  - pdf
+  - xlsx
+  - xls
+  - msg
+
+# File management
+create_backups: true # Backup master Excel before each write
+move_processed_files: true # Move processed files to done folder
+maintain_folder_structure: true # Preserve original folder structure in done folder
+
+web_bundle:
+  name: "ocr-to-excel"
+  description: "Automated document processing workflow using Mistral OCR to extract structured data from PDFs, Excel files, and Outlook messages"
+  author: "BMad"
+  instructions: "bmad/bmm/workflows/data-extraction/ocr-to-excel/instructions.md"
+  validation: "bmad/bmm/workflows/data-extraction/ocr-to-excel/checklist.md"
+  template: "bmad/bmm/workflows/data-extraction/ocr-to-excel/template.md"
+  use_advanced_elicitation: true
+  web_bundle_files:
+    - "bmad/bmm/workflows/data-extraction/ocr-to-excel/template.md"
+    - "bmad/bmm/workflows/data-extraction/ocr-to-excel/instructions.md"
+    - "bmad/bmm/workflows/data-extraction/ocr-to-excel/checklist.md"
+    - "bmad/bmm/workflows/data-extraction/ocr-to-excel/config-template.yaml"
