@@ -5,11 +5,9 @@ author: "BMad"
 
 # Critical variables load from config_source
 config_source: "{project-root}/bmad/bmb/config.yaml"
-output_folder: "{config_source}:output_folder"
 custom_module_location: "{config_source}:custom_module_location"
 communication_language: "{config_source}:communication_language"
 user_name: "{config_source}:user_name"
-date: system-generated
 
 # Reference guides for module building
 module_structure_guide: "{installed_path}/module-structure.md"
@@ -40,16 +38,5 @@ validation: "{installed_path}/checklist.md"
 # Save to custom_module_location/{{module_code}}
 installer_output_folder: "{custom_module_location}/{{module_code}}"
 
-web_bundle:
-  name: "create-module"
-  description: "Interactive workflow to build complete BMAD modules with agents, workflows, tasks, and installation infrastructure"
-  author: "BMad"
-  web_bundle_files:
-    - "bmad/bmb/workflows/create-module/instructions.md"
-    - "bmad/bmb/workflows/create-module/checklist.md"
-    - "bmad/bmb/workflows/create-module/module-structure.md"
-    - "bmad/bmb/workflows/create-module/brainstorm-context.md"
-  existing_workflows:
-    - agent_builder: "bmad/bmb/workflows/create-agent/workflow.yaml"
-    - workflow_builder: "bmad/bmb/workflows/create-workflow/workflow.yaml"
-    - brainstorming_workflow: "bmad/core/workflows/brainstorming/workflow.yaml"
+# Web bundle configuration
+web_bundle: false # BMB workflows run locally in BMAD-METHOD project

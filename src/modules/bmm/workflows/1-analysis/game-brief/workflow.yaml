@@ -3,10 +3,13 @@ name: game-brief
 description: "Interactive game brief creation workflow that guides users through defining their game vision with multiple input sources and conversational collaboration"
 author: "BMad"
 
-# Critical variables
+# Critical variables from config
 config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Optional input documents
@@ -28,17 +31,15 @@ default_output_file: "{output_folder}/game-brief-{{game_name}}-{{date}}.md"
 
 # Workflow settings
 autonomous: false # This is an interactive workflow requiring user collaboration
-brief_format: "comprehensive" # Options: "comprehensive" (full detail) or "executive" (3-page limit)
 
 web_bundle:
   name: "game-brief"
   description: "Interactive game brief creation workflow that guides users through defining their game vision with multiple input sources and conversational collaboration"
   author: "BMad"
-  instructions: "bmad/bmm/workflows/1-analysis/product-brief/instructions.md"
-  validation: "bmad/bmm/workflows/1-analysis/product-brief/checklist.md"
+  instructions: "bmad/bmm/workflows/1-analysis/game-brief/instructions.md"
+  validation: "bmad/bmm/workflows/1-analysis/game-brief/checklist.md"
   template: "bmad/bmm/workflows/1-analysis/game-brief/template.md"
-  use_advanced_elicitation: true
   web_bundle_files:
-    - "bmad/bmm/workflows/1-analysis/game-brief/template.md"
     - "bmad/bmm/workflows/1-analysis/game-brief/instructions.md"
     - "bmad/bmm/workflows/1-analysis/game-brief/checklist.md"
+    - "bmad/bmm/workflows/1-analysis/game-brief/template.md"

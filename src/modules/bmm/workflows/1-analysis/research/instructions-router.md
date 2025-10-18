@@ -2,37 +2,34 @@
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>This is a ROUTER that directs to specialized research instruction sets</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 
 <!-- IDE-INJECT-POINT: research-subagents -->
 
 <workflow>
 
-<step n="1" goal="Check and load workflow status file">
-<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-<action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
+<critical>This is a ROUTER that directs to specialized research instruction sets</critical>
 
-<check if="exists">
-  <action>Load the status file</action>
-  <action>Set status_file_found = true</action>
-  <action>Store status_file_path for later updates</action>
+<step n="1" goal="Validate workflow readiness">
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: validate</param>
+  <param>calling_workflow: research</param>
+</invoke-workflow>
+
+<check if="status_exists == false">
+  <output>{{suggestion}}</output>
+  <output>Note: Research is optional. Continuing without progress tracking.</output>
+  <action>Set standalone_mode = true</action>
 </check>
 
-<check if="not exists">
-  <ask>**No workflow status file found.**
+<check if="status_exists == true">
+  <action>Store {{status_file_path}} for status updates in sub-workflows</action>
+  <action>Pass status_file_path to loaded instruction set</action>
 
-This workflow conducts research (optional Phase 1 workflow).
-
-Options:
-
-1. Run workflow-status first to create the status file (recommended for progress tracking)
-2. Continue in standalone mode (no progress tracking)
-3. Exit
-
-What would you like to do?</ask>
-<action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to research"</action>
-<action>If user chooses option 2 → Set standalone_mode = true and continue</action>
-<action>If user chooses option 3 → HALT</action>
+  <check if="warning != ''">
+    <output>{{warning}}</output>
+    <output>Note: Research can provide valuable insights at any project stage.</output>
+  </check>
 </check>
 </step>
 

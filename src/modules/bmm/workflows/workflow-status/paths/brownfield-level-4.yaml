@@ -1,0 +1,147 @@
+# Brownfield Level 4 - Enterprise Scale Changes to Existing System
+# 40+ stories, major expansion of existing enterprise system
+
+project_type: "software"
+level: 4
+field_type: "brownfield"
+description: "Enterprise scale expansion of existing system"
+
+phases:
+  - phase: 0
+    name: "Documentation"
+    conditional: "if_undocumented"
+    workflows:
+      - id: "document-project"
+        required: true
+        agent: "analyst"
+        command: "document-project"
+        output: "Comprehensive codebase documentation"
+        note: "Critical for enterprise-scale changes"
+
+  - phase: 1
+    name: "Analysis"
+    required: true
+    workflows:
+      - id: "brainstorm-project"
+        recommended: true
+        agent: "analyst"
+        command: "brainstorm-project"
+      - id: "research"
+        required: true
+        agent: "analyst"
+        command: "research"
+        note: "Research existing system architecture deeply"
+      - id: "product-brief"
+        required: true
+        agent: "analyst"
+        command: "product-brief"
+        note: "Strategic brief for major expansion"
+      - id: "impact-assessment"
+        recommended: true
+        agent: "analyst"
+        command: "impact-assessment"
+        note: "Assess impact on existing systems"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        required: true
+        agent: "pm"
+        command: "prd"
+        output: "Comprehensive PRD considering existing system"
+      - id: "ux-spec"
+        required: true
+        agent: "pm"
+        command: "ux-spec"
+        note: "Multiple UI/UX specifications"
+      - id: "product-spec"
+        recommended: true
+        agent: "pm"
+        command: "product-spec"
+        note: "Detailed specifications for expansion"
+      - id: "migration-plan"
+        conditional: "if_breaking_changes"
+        agent: "architect"
+        command: "migration-plan"
+
+  - phase: 3
+    name: "Solutioning"
+    required: true
+    workflows:
+      - id: "solution-architecture"
+        required: true
+        agent: "architect"
+        command: "solution-architecture"
+        output: "Architecture for system expansion"
+        note: "Must maintain backward compatibility"
+      - id: "assess-project-ready"
+        required: true
+        agent: "sm"
+        command: "assess-project-ready"
+        note: "Critical validation before major changes"
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    epic_loop: "for_each_epic"
+    epic_workflows:
+      - id: "tech-spec"
+        required: true
+        agent: "architect"
+        command: "tech-spec"
+        note: "JIT per epic - creates stories considering existing code"
+    story_loop: "for_each_story_in_epic"
+    story_workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+        note: "Extensive existing code context required"
+      - id: "validate-story-context"
+        required: true
+        agent: "sm"
+        command: "validate-story-context"
+      - id: "story-ready"
+        required: true
+        agent: "sm"
+        command: "story-ready"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "review-story"
+        required: true
+        agent: "dev"
+        command: "review-story"
+        note: "Rigorous review for enterprise changes"
+      - id: "correct-course"
+        conditional: "if_review_fails"
+        agent: "dev"
+        command: "correct-course"
+      - id: "integration-test"
+        required: true
+        agent: "dev"
+        command: "integration-test"
+        note: "Test integration with existing systems"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+    epic_completion:
+      - id: "retrospective"
+        required: true
+        agent: "pm"
+        command: "retrospective"
+        note: "Critical for enterprise-scale learning"
+
+story_naming: "story-<epic>.<story>.md"
+story_example: "story-1.1.md, story-2.3.md"
+epic_structure: "JIT tech-specs per epic create stories"
+enterprise_note: "Maintain system stability while implementing major changes"
+brownfield_note: "Extensive regression testing and backward compatibility required"

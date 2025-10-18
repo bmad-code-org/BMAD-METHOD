@@ -1,0 +1,65 @@
+# Game Design Document (GDD) Workflow
+name: gdd
+description: "Game Design Document workflow for all game project levels - from small prototypes to full AAA games. Generates comprehensive GDD with game mechanics, systems, progression, and implementation guidance."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/2-plan-workflows/gdd"
+instructions: "{installed_path}/instructions-gdd.md"
+template: "{installed_path}/gdd-template.md"
+game_types_csv: "{installed_path}/game-types.csv"
+
+# Output configuration
+default_output_file: "{output_folder}/GDD.md"
+
+# Game type references (loaded based on game type selection)
+game_type_guides: "{installed_path}/game-types/"
+
+# Recommended input documents
+recommended_inputs:
+  - game_brief: "{output_folder}/game-brief.md"
+  - narrative_design: "{output_folder}/narrative-design.md"
+  - market_research: "{output_folder}/market-research.md"
+
+web_bundle:
+  name: "gdd"
+  description: "Game Design Document workflow for all game project levels - from small prototypes to full AAA games. Generates comprehensive GDD with game mechanics, systems, progression, and implementation guidance."
+  author: "BMad"
+  instructions: "bmad/bmm/workflows/2-plan-workflows/gdd/instructions-gdd.md"
+  web_bundle_files:
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/instructions-gdd.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/gdd-template.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types.csv"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/action-platformer.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/adventure.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/card-game.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/fighting.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/horror.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/idle-incremental.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/metroidvania.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/moba.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/party-game.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/puzzle.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/racing.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/rhythm.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/roguelike.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/rpg.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/sandbox.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/shooter.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/simulation.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/sports.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/strategy.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/survival.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/text-based.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/tower-defense.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/turn-based-tactics.md"
+    - "bmad/bmm/workflows/2-plan-workflows/gdd/game-types/visual-novel.md"

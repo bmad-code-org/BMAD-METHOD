@@ -2,8 +2,21 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+<critical>Generate all documents in {document_output_language}</critical>
+
+<critical>DOCUMENT OUTPUT: Updated epics, stories, or PRD sections. Clear, actionable changes. User skill level ({user_skill_level}) affects conversation style ONLY, not document updates.</critical>
 
 <workflow>
+
+<step n="0" goal="Check project status" optional="true">
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: init-check</param>
+</invoke-workflow>
+
+<output>Running correct-course workflow for sprint change management.
+{{#if status_exists}}Status tracking enabled.{{else}}Note: No status file - running standalone.{{/if}}</output>
+</step>
 
 <step n="1" goal="Initialize Change Navigation">
   <action>Confirm change trigger and gather user description of the issue</action>
@@ -189,7 +202,7 @@
 - Specific edit proposals with before/after
 - Implementation handoff plan
 
-<action>Report workflow completion to user</action>
+<action>Report workflow completion to user with personalized message: "✅ Correct Course workflow complete, {user_name}!"</action>
 <action>Remind user of success criteria and next steps for implementation team</action>
 </step>
 

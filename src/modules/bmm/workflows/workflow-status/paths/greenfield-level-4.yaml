@@ -1,0 +1,118 @@
+# Greenfield Level 4 - Enterprise Scale
+# Multiple products, enterprise architecture, 40+ stories
+
+project_type: "software"
+level: 4
+field_type: "greenfield"
+description: "Enterprise scale - multiple products, enterprise architecture"
+
+phases:
+  - phase: 1
+    name: "Analysis"
+    required: true
+    workflows:
+      - id: "brainstorm-project"
+        recommended: true
+        agent: "analyst"
+        command: "brainstorm-project"
+      - id: "research"
+        required: true
+        agent: "analyst"
+        command: "research"
+        note: "Extensive research across multiple domains"
+      - id: "product-brief"
+        required: true
+        agent: "analyst"
+        command: "product-brief"
+        note: "Strategic brief for enterprise scope"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        required: true
+        agent: "pm"
+        command: "prd"
+        output: "Comprehensive product requirements document"
+      - id: "ux-spec"
+        required: true
+        agent: "pm"
+        command: "ux-spec"
+        note: "Multiple UI/UX specifications needed"
+      - id: "product-spec"
+        recommended: true
+        agent: "pm"
+        command: "product-spec"
+        note: "Detailed product specifications"
+
+  - phase: 3
+    name: "Solutioning"
+    required: true
+    workflows:
+      - id: "solution-architecture"
+        required: true
+        agent: "architect"
+        command: "solution-architecture"
+        output: "Enterprise architecture documentation"
+      - id: "assess-project-ready"
+        required: true
+        agent: "sm"
+        command: "assess-project-ready"
+        note: "Critical validation before enterprise implementation"
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    epic_loop: "for_each_epic"
+    epic_workflows:
+      - id: "tech-spec"
+        required: true
+        agent: "architect"
+        command: "tech-spec"
+        note: "JIT per epic - creates stories for that epic"
+    story_loop: "for_each_story_in_epic"
+    story_workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+      - id: "validate-story-context"
+        required: true
+        agent: "sm"
+        command: "validate-story-context"
+      - id: "story-ready"
+        recommended: true
+        agent: "sm"
+        command: "story-ready"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "review-story"
+        required: true
+        agent: "dev"
+        command: "review-story"
+      - id: "correct-course"
+        conditional: "if_review_fails"
+        agent: "dev"
+        command: "correct-course"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+    epic_completion:
+      - id: "retrospective"
+        required: true
+        agent: "pm"
+        command: "retrospective"
+        note: "Critical for enterprise-scale learning"
+
+story_naming: "story-<epic>.<story>.md"
+story_example: "story-1.1.md, story-2.3.md"
+epic_structure: "JIT tech-specs per epic create stories"
+enterprise_note: "Rigorous validation and reviews required at scale"

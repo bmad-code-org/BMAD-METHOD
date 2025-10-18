@@ -36,7 +36,6 @@ Thumbs.db
 # AI assistant files
 CLAUDE.md
 .ai/*
-.claude
 cursor
 .gemini
 .mcp.json

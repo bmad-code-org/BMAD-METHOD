@@ -62,7 +62,7 @@ Extension modules that add specialized capabilities to BMM.
 
 ### 🏗️ `/testarch`
 
-Test architecture and quality assurance components.
+Test architecture and quality assurance components. The **[Test Architect (TEA) Guide](./testarch/README.md)** provides comprehensive testing strategy across 9 workflows: framework setup, CI/CD, test design, ATDD, automation, traceability, NFR assessment, quality gates, and test review.
 
 ## Quick Start
 
@@ -119,6 +119,7 @@ BMM integrates seamlessly with the BMad Core framework, leveraging:
 ## Related Documentation
 
 - [BMM Workflows Guide](./workflows/README.md) - **Start here!**
+- [Test Architect (TEA) Guide](./testarch/README.md) - Quality assurance and testing strategy
 - [Agent Documentation](./agents/README.md) - Individual agent capabilities
 - [Team Configurations](./teams/README.md) - Pre-built team setups
 - [Task Library](./tasks/README.md) - Reusable task components

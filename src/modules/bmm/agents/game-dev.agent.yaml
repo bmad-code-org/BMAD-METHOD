@@ -19,7 +19,7 @@ agent:
 
   menu:
     - trigger: workflow-status
-      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Check workflow status and get recommendations
 
     - trigger: create-story

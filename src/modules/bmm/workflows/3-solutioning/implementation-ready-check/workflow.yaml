@@ -1,0 +1,36 @@
+# Implementation Ready Check - Workflow Configuration
+name: implementation-ready-check
+description: "Systematically validate that all planning and solutioning phases are complete and properly aligned before transitioning to Phase 4 implementation. Ensures PRD, architecture, and stories are cohesive with no gaps or contradictions."
+author: "BMad Builder"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow status integration
+workflow_status_workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
+workflow_paths_dir: "{project-root}/bmad/bmm/workflows/workflow-status/paths"
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/3-solutioning/implementation-ready-check"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Output configuration
+default_output_file: "{output_folder}/implementation-readiness-report-{{date}}.md"
+
+# Expected input documents (varies by project level)
+recommended_inputs:
+  - prd: "{output_folder}/prd*.md"
+  - architecture: "{output_folder}/solution-architecture*.md"
+  - tech_spec: "{output_folder}/tech-spec*.md"
+  - epics_stories: "{output_folder}/epic*.md"
+  - ux_artifacts: "{output_folder}/ux*.md"
+
+# Validation criteria data
+validation_criteria: "{installed_path}/validation-criteria.yaml"

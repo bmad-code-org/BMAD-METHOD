@@ -5,9 +5,8 @@ author: "BMad"
 
 # Critical variables
 config_source: "{project-root}/bmad/bmb/config.yaml"
-output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
-date: system-generated
+communication_language: "{config_source}:communication_language"
 
 # Required knowledge base - BMAD conventions and patterns
 bmad_conventions:
@@ -29,10 +28,5 @@ validation: "{installed_path}/checklist.md"
 # Configuration
 autonomous: true # Runs without user checkpoints unless clarification needed
 
-web_bundle:
-  name: "redoc"
-  description: "Autonomous documentation system that maintains module, workflow, and agent documentation using a reverse-tree approach (leaf folders first, then parents). Understands BMAD conventions and produces technical writer quality output."
-  author: "BMad"
-  web_bundle_files:
-    - "bmad/bmb/workflows/redoc/instructions.md"
-    - "bmad/bmb/workflows/redoc/checklist.md"
+# Web bundle configuration
+web_bundle: false # BMB workflows run locally in BMAD-METHOD project

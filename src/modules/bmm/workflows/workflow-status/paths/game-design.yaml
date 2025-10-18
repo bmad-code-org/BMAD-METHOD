@@ -1,0 +1,125 @@
+# Game Design - All Levels
+# Game development follows a different path than software
+
+project_type: "game"
+level: "all"
+field_type: "any"
+description: "Game development workflow - applies to all complexity levels"
+
+phases:
+  - phase: 1
+    name: "Analysis"
+    optional: true
+    workflows:
+      - id: "brainstorm-game"
+        optional: true
+        agent: "game-designer"
+        command: "brainstorm-game"
+      - id: "research"
+        optional: true
+        agent: "analyst"
+        command: "research"
+        note: "Market research, competitive analysis"
+      - id: "game-brief"
+        recommended: true
+        agent: "game-designer"
+        command: "game-brief"
+        output: "Game concept and vision document"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "gdd"
+        required: true
+        agent: "pm"
+        command: "gdd"
+        output: "Game Design Document with features and mechanics"
+      - id: "tech-spec"
+        conditional: "if_level_0_1"
+        agent: "architect"
+        command: "tech-spec"
+        note: "For simpler games, jump to implementation"
+
+  - phase: 3
+    name: "Solutioning"
+    conditional: "if_level_3_4"
+    workflows:
+      - id: "solution-architecture"
+        required: true
+        agent: "architect"
+        command: "solution-architecture"
+        note: "Engine architecture, networking, systems"
+      - id: "assess-project-ready"
+        required: true
+        agent: "sm"
+        command: "assess-project-ready"
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    note: "Implementation varies by game complexity"
+    level_based_implementation:
+      level_0_1:
+        story_loop: "for_each_story"
+        workflows:
+          - id: "create-story"
+            required: true
+            agent: "sm"
+          - id: "story-context"
+            required: true
+            agent: "sm"
+          - id: "dev-story"
+            required: true
+            agent: "dev"
+          - id: "story-approved"
+            required: true
+            agent: "dev"
+      level_2_4:
+        feature_loop: "for_each_feature"
+        feature_workflows:
+          - id: "tech-spec"
+            optional: true
+            agent: "architect"
+            note: "Per major feature"
+        story_loop: "for_each_story_in_feature"
+        story_workflows:
+          - id: "create-story"
+            required: true
+            agent: "sm"
+          - id: "story-context"
+            required: true
+            agent: "sm"
+          - id: "validate-story-context"
+            optional: true
+            agent: "sm"
+          - id: "dev-story"
+            required: true
+            agent: "dev"
+          - id: "review-story"
+            recommended: true
+            agent: "dev"
+          - id: "story-approved"
+            required: true
+            agent: "dev"
+        feature_completion:
+          - id: "playtest"
+            required: true
+            agent: "game-designer"
+            command: "playtest"
+          - id: "retrospective"
+            optional: true
+            agent: "pm"
+
+story_naming:
+  level_0_1: "story-<feature>.md"
+  level_2_4: "story-<feature>.<n>.md"
+story_examples:
+  - "story-player-movement.md"
+  - "story-inventory-1.md"
+  - "story-combat-system-3.md"
+
+special_considerations:
+  - "Iterative playtesting throughout development"
+  - "Art and audio pipelines run parallel to code"
+  - "Balance and tuning as ongoing process"
