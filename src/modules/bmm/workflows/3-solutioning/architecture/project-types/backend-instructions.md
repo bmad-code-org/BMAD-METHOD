@@ -151,14 +151,6 @@ Discuss service boundaries, data consistency, service discovery, and distributed
 **For an enterprise integration:**
 Focus on security, compliance, audit logging, and existing system compatibility.
 
-## Key Principles
-
-1. **Start simple, evolve as needed** - Don't build for imaginary scale
-2. **Use boring technology** - Proven solutions over cutting edge
-3. **Optimize for your constraint** - Development speed, performance, or operations
-4. **Make reversible decisions** - Avoid early lock-in
-5. **Document the "why"** - But keep it brief
-
 ## Output Format
 
 Structure decisions as:

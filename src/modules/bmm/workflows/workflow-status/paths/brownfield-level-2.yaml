@@ -46,13 +46,13 @@ phases:
         note: "Must consider existing system constraints"
       - id: "tech-spec"
         required: true
-        agent: "architect"
+        agent: "pm"
         command: "tech-spec"
-        output: "Creates multiple story files"
+        output: "Creates spec with multiple story files"
         note: "Integrate with existing patterns"
       - id: "ux-spec"
         conditional: "if_has_ui"
-        agent: "pm"
+        agent: "ux-expert"
         command: "ux-spec"
 
   - phase: 3

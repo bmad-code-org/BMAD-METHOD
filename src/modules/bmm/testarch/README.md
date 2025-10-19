@@ -141,7 +141,7 @@ This complexity **requires specialized documentation** (this guide), **extensive
 
 1. **Planning:** Analyst runs `*product-brief`; PM executes `*plan-project` to produce PRD and epics; Architect completes `*solution-architecture` for the new module.
 2. **Setup:** TEA checks harness via `*framework`, configures `*ci`, and runs `*test-design` to capture risk/coverage plans.
-3. **Story Prep:** Scrum Master generates the story via `*create-story`; PO validates using `*assess-project-ready`.
+3. **Story Prep:** Scrum Master generates the story via `*create-story`; PO validates using `*solutioning-gate-check`.
 4. **Implementation:** TEA optionally runs `*atdd`; Dev implements with guidance from failing tests and the plan.
 5. **Post-Dev and Release:** TEA runs `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` with Phase 2 enabled to generate both traceability and gate decision.
 
@@ -149,15 +149,15 @@ This complexity **requires specialized documentation** (this guide), **extensive
 
 ### Brownfield Feature Enhancement (Level 3–4)
 
-| Phase             | Test Architect                                                                         | Dev / Team                                                 | Outputs                                                                 |
-| ----------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Refresh Context   | -                                                                                      | Analyst/PM/Architect rerun planning workflows              | Updated planning artifacts in `{output_folder}`                         |
-| Baseline Coverage | Run `*trace` to inventory existing tests                                               | Review matrix, flag hotspots                               | Coverage matrix + initial gate snippet                                  |
-| Risk Targeting    | Run `*test-design`                                                                     | Align remediation/backlog priorities                       | Brownfield risk memo + scenario matrix                                  |
-| Story Prep        | -                                                                                      | Scrum Master `*create-story`                               | Updated story markdown                                                  |
-| Implementation    | (Optional) Run `*atdd` before dev                                                      | Implement story, referencing checklist/tests               | Failing acceptance tests + implementation checklist                     |
-| Post-Dev          | Apply `*automate`, (Optional) `*test-review`, re-run `*trace`, `*nfr-assess` if needed | Resolve gaps, update docs/tests                            | Regression specs, quality report, refreshed coverage matrix, NFR report |
-| Release           | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)                      | Product Owner `*assess-project-ready`, share release notes | Quality audit, Gate YAML + release summary                              |
+| Phase             | Test Architect                                                                         | Dev / Team                                                   | Outputs                                                                 |
+| ----------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| Refresh Context   | -                                                                                      | Analyst/PM/Architect rerun planning workflows                | Updated planning artifacts in `{output_folder}`                         |
+| Baseline Coverage | Run `*trace` to inventory existing tests                                               | Review matrix, flag hotspots                                 | Coverage matrix + initial gate snippet                                  |
+| Risk Targeting    | Run `*test-design`                                                                     | Align remediation/backlog priorities                         | Brownfield risk memo + scenario matrix                                  |
+| Story Prep        | -                                                                                      | Scrum Master `*create-story`                                 | Updated story markdown                                                  |
+| Implementation    | (Optional) Run `*atdd` before dev                                                      | Implement story, referencing checklist/tests                 | Failing acceptance tests + implementation checklist                     |
+| Post-Dev          | Apply `*automate`, (Optional) `*test-review`, re-run `*trace`, `*nfr-assess` if needed | Resolve gaps, update docs/tests                              | Regression specs, quality report, refreshed coverage matrix, NFR report |
+| Release           | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)                      | Product Owner `*solutioning-gate-check`, share release notes | Quality audit, Gate YAML + release summary                              |
 
 <details>
 <summary>Execution Notes</summary>
@@ -167,7 +167,7 @@ This complexity **requires specialized documentation** (this guide), **extensive
 - Use `*atdd` when stories benefit from ATDD; otherwise proceed to implementation and rely on post-dev automation.
 - After development, expand coverage with `*automate`, optionally review test quality with `*test-review`, re-run `*trace` (Phase 2 for gate decision). Run `*nfr-assess` now if non-functional risks weren't addressed earlier.
 - Use `*test-review` to validate existing brownfield tests or audit new tests before gate.
-- Product Owner `*assess-project-ready` confirms the team has artifacts before handoff or release.
+- Product Owner `*solutioning-gate-check` confirms the team has artifacts before handoff or release.
 
 </details>
 

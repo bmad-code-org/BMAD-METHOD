@@ -1,53 +1,47 @@
 # Solution Architecture Workflow Instructions
 
-This workflow generates scale-adaptive solution architecture documentation that replaces the legacy HLA workflow.
-
 <workflow name="solution-architecture">
 
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUSt be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
-
-<critical>DOCUMENT OUTPUT: Concise, technical, LLM-optimized. Use tables/lists over prose. Specific versions only. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
+<critical>DOCUMENT OUTPUT: Concise, technical, LLM-optimized. Use tables/lists over prose. Specific versions only. User skill level ({user_skill_level}) affects conversation style ONLY, not documented output content.</critical>
 
 <step n="0" goal="Validate workflow and extract project configuration">
+  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+    <param>mode: data</param>
+    <param>data_request: project_config</param>
+  </invoke-workflow>
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-  <param>mode: data</param>
-  <param>data_request: project_config</param>
-</invoke-workflow>
+  <check if="status_exists == false">
+    <output>**⚠️ No Workflow Status File Found**
 
-<check if="status_exists == false">
-  <output>**⚠️ No Workflow Status File Found**
+    Please run `workflow-init` first to:
 
-The solution-architecture workflow requires a status file to understand your project context.
+    - Define your project type and level
+    - Map out your workflow journey
+    - Create the status file
 
-Please run `workflow-init` first to:
+    Run: `workflow-init`
 
-- Define your project type and level
-- Map out your workflow journey
-- Create the status file
+    After setup, return here to run solution-architecture.
+    </output>
+    <action>Exit workflow - cannot proceed without status file</action>
 
-Run: `workflow-init`
+  </check>
 
-After setup, return here to run solution-architecture.
-</output>
-<action>Exit workflow - cannot proceed without status file</action>
-</check>
-
-<check if="status_exists == true">
-  <action>Store {{status_file_path}} for later updates</action>
-  <action>Use extracted project configuration:</action>
-  - project_level: {{project_level}}
-  - field_type: {{field_type}}
-  - project_type: {{project_type}}
-  - has_user_interface: {{has_user_interface}}
-  - ui_complexity: {{ui_complexity}}
-  - ux_spec_path: {{ux_spec_path}}
-  - prd_status: {{prd_status}}
-
-</check>
+  <check if="status_exists == true">
+    <action>Store {{status_file_path}} for later updates</action>
+    <action>Use extracted project configuration:</action>
+    - project_level: {{project_level}}
+    - field_type: {{field_type}}
+    - project_type: {{project_type}}
+    - has_user_interface: {{has_user_interface}}
+    - ui_complexity: {{ui_complexity}}
+    - ux_spec_path: {{ux_spec_path}}
+    - prd_status: {{prd_status}}
+  </check>
 </step>
 
 <step n="0.5" goal="Validate workflow sequencing and prerequisites">
@@ -112,7 +106,7 @@ IF all prerequisites met:
 ✅ Prerequisites validated - PRD: complete - UX Spec: {{complete | not_applicable}}
 Proceeding with solution architecture workflow...
 
-5. Determine workflow path:
+1. Determine workflow path:
    IF project_level == 0: - Skip solution architecture entirely - Output: "Level 0 project - validate/update tech-spec.md only" - STOP WORKFLOW
    ELSE: - Proceed with full solution architecture workflow
    </action>
@@ -121,7 +115,7 @@ Proceeding with solution architecture workflow...
 
 <step n="1" goal="Analyze requirements and identify project characteristics">
 
-<action>Load and deeply understand the requirements documents (PRD/GDD) and any UX specifications.</action>
+<action>Load and deeply understand the requirements documents (PRD/GDD), epics and the stories to complete them and any UX specifications.</action>
 
 <action>Intelligently determine the true nature of this project by analyzing:
 

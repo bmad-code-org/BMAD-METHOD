@@ -26,9 +26,9 @@ phases:
     workflows:
       - id: "tech-spec"
         required: true
-        agent: "architect"
+        agent: "pm"
         command: "tech-spec"
-        output: "Creates single story file"
+        output: "Creates Technical Specification with single story file"
 
   - phase: 3
     name: "Solutioning"

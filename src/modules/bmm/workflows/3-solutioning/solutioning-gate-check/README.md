@@ -51,13 +51,13 @@ The workflow adapts its validation based on project level:
 ### Via Scrum Master Agent
 
 ```
-*assess-project-ready
+*solutioning-gate-check
 ```
 
 ### Direct Workflow Invocation
 
 ```
-workflow implementation-ready-check
+workflow solutioning-gate-check
 ```
 
 ## Expected Inputs

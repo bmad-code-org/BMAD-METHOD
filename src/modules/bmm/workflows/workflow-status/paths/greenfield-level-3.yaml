@@ -36,7 +36,7 @@ phases:
         output: "High-level requirements and epic definitions"
       - id: "ux-spec"
         conditional: "if_has_ui"
-        agent: "pm"
+        agent: "ux-expert"
         command: "ux-spec"
 
   - phase: 3
@@ -48,11 +48,11 @@ phases:
         agent: "architect"
         command: "solution-architecture"
         output: "System-wide architecture document"
-      - id: "assess-project-ready"
+      - id: "solutioning-gate-check"
         required: true
-        agent: "sm"
-        command: "assess-project-ready"
-        note: "Validate architecture before implementation"
+        agent: "architect"
+        command: "solutioning-gate-check"
+        note: "Validate PRD + UX + architecture cohesion before implementation"
 
   - phase: 4
     name: "Implementation"

@@ -36,11 +36,6 @@ phases:
         agent: "analyst"
         command: "product-brief"
         note: "Strategic brief for major expansion"
-      - id: "impact-assessment"
-        recommended: true
-        agent: "analyst"
-        command: "impact-assessment"
-        note: "Assess impact on existing systems"
 
   - phase: 2
     name: "Planning"
@@ -56,15 +51,6 @@ phases:
         agent: "pm"
         command: "ux-spec"
         note: "Multiple UI/UX specifications"
-      - id: "product-spec"
-        recommended: true
-        agent: "pm"
-        command: "product-spec"
-        note: "Detailed specifications for expansion"
-      - id: "migration-plan"
-        conditional: "if_breaking_changes"
-        agent: "architect"
-        command: "migration-plan"
 
   - phase: 3
     name: "Solutioning"
@@ -76,10 +62,10 @@ phases:
         command: "solution-architecture"
         output: "Architecture for system expansion"
         note: "Must maintain backward compatibility"
-      - id: "assess-project-ready"
+      - id: "solutioning-gate-check"
         required: true
-        agent: "sm"
-        command: "assess-project-ready"
+        agent: "architect"
+        command: "solutioning-gate-check"
         note: "Critical validation before major changes"
 
   - phase: 4
@@ -89,7 +75,7 @@ phases:
     epic_workflows:
       - id: "tech-spec"
         required: true
-        agent: "architect"
+        agent: "sm"
         command: "tech-spec"
         note: "JIT per epic - creates stories considering existing code"
     story_loop: "for_each_story_in_epic"

@@ -37,14 +37,9 @@ phases:
         output: "Comprehensive product requirements document"
       - id: "ux-spec"
         required: true
-        agent: "pm"
+        agent: "ux-expert"
         command: "ux-spec"
         note: "Multiple UI/UX specifications needed"
-      - id: "product-spec"
-        recommended: true
-        agent: "pm"
-        command: "product-spec"
-        note: "Detailed product specifications"
 
   - phase: 3
     name: "Solutioning"
@@ -55,11 +50,11 @@ phases:
         agent: "architect"
         command: "solution-architecture"
         output: "Enterprise architecture documentation"
-      - id: "assess-project-ready"
+      - id: "solutioning-gate-check"
         required: true
-        agent: "sm"
-        command: "assess-project-ready"
-        note: "Critical validation before enterprise implementation"
+        agent: "architect"
+        command: "solutioning-gate-check"
+        note: "Validate PRD + UX + architecture cohesion before implementation"
 
   - phase: 4
     name: "Implementation"

@@ -1,7 +1,7 @@
 # Implementation Ready Check - Workflow Instructions
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/3-solutioning/implementation-ready-check/workflow.yaml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/3-solutioning/solutioning-gate-check/workflow.yaml</critical>
 <critical>Communicate all findings and analysis in {communication_language} throughout the assessment</critical>
 
 <workflow>
