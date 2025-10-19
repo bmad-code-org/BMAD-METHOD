@@ -140,13 +140,33 @@ Reference file should include:
 <action>Verify both memory systems confirm successful storage</action>
 </step>
 
-<step n="9" goal="Report completion and next steps">
+<step n="9" goal="Clean up backup branches">
+<action>List all backup branches created during merge process</action>
+<action>Identify backup branches matching pattern: backup-before-pull-*</action>
+
+<critical>Command: git branch | grep backup-before-pull</critical>
+
+<check if="backup branches found">
+  <action>Display found backup branches to user</action>
+  <action>Delete all backup branches matching the pattern</action>
+  <action>Confirm deletion with git branch output</action>
+  <action>Report number of branches cleaned up</action>
+</check>
+
+<check if="no backup branches found">
+  <action>Inform user that no backup branches need cleanup</action>
+</check>
+
+<action>Verify backup branches have been removed from git branch list</action>
+</step>
+
+<step n="10" goal="Report completion and next steps">
 <action>Generate comprehensive merge completion summary for {user_name}</action>
 
 <action>Include in summary:
 
 - Merge status (success/conflicts resolved)
-- Backup branch name and location
+- Backup branches cleaned up (count)
 - Merge commit hash
 - Files changed statistics
 - Modification preservation status (preserved/manually restored)

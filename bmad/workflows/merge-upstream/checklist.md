@@ -46,10 +46,18 @@
 - [ ] Graphiti episode includes: modification preservation status
 - [ ] Both memory systems confirmed successful storage
 
+## Backup Branch Cleanup
+
+- [ ] Backup branches identified: `git branch | grep backup-before-pull` executed
+- [ ] All backup branches matching pattern backup-before-pull-\* listed
+- [ ] Backup branches deleted successfully
+- [ ] Deletion confirmed: `git branch` shows no backup-before-pull branches remain
+- [ ] Number of cleaned up branches reported in summary
+
 ## Completeness
 
 - [ ] Merge commit hash documented in completion summary
-- [ ] Backup branch name documented for potential rollback
+- [ ] Backup branches cleaned up count included in summary
 - [ ] Files changed statistics recorded (files, insertions, deletions)
 - [ ] Modification preservation status documented (preserved/manually restored)
 - [ ] Reference documentation location confirmed: claudedocs/installer-modification-reference.md
@@ -83,6 +91,10 @@
 - [ ] Issue List:
 
 ### Memory Updates Issues
+
+- [ ] Issue List:
+
+### Backup Branch Cleanup Issues
 
 - [ ] Issue List:
 
