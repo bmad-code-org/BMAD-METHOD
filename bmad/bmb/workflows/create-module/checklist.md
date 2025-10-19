@@ -73,7 +73,7 @@
 
 ### Install Configuration
 
-- [ ] `install-module-config.yaml` exists in `_module-installer`
+- [ ] `install-config.yaml` exists in `_module-installer`
 - [ ] Installation steps defined
 - [ ] Directory creation steps present
 - [ ] File copy operations specified

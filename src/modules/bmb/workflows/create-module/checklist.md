@@ -26,16 +26,15 @@
 - [ ] `/tasks` directory exists (if tasks planned)
 - [ ] `/templates` directory exists (if templates used)
 - [ ] `/data` directory exists (if data files needed)
-- [ ] `config.yaml` present in module root
+- [ ] `/_module-installer/install-config.yaml` present (defines configuration questions)
 - [ ] `README.md` present with documentation
 
-### Runtime Directories (bmad/{module-code}/)
+### Installed Module Structure (generated in target after installation)
 
-- [ ] `/_module-installer` directory created
+- [ ] `/agents` directory for compiled agents
+- [ ] `/workflows` directory for workflow instances
 - [ ] `/data` directory for user data
-- [ ] `/agents` directory for overrides
-- [ ] `/workflows` directory for instances
-- [ ] Runtime `config.yaml` present
+- [ ] `config.yaml` generated from install-config.yaml during installation
 
 ## Component Planning
 
@@ -63,22 +62,22 @@
 
 ## Configuration Files
 
-### Module config.yaml
+### Installation Configuration (install-config.yaml)
 
-- [ ] All required fields present (name, code, version, author)
-- [ ] Component lists accurate (agents, workflows, tasks)
-- [ ] Paths use proper variables ({project-root}, etc.)
-- [ ] Output folders configured
-- [ ] Custom settings documented
+- [ ] `install-config.yaml` exists in `_module-installer`
+- [ ] Module metadata present (code, name, version)
+- [ ] Configuration questions defined for user input
+- [ ] Default values provided for all questions
+- [ ] Prompt text is clear and helpful
+- [ ] Result templates use proper variable substitution
+- [ ] Paths use proper variables ({project-root}, {value}, etc.)
 
-### Install Configuration
+### Generated Config (config.yaml in target)
 
-- [ ] `install-module-config.yaml` exists in `_module-installer`
-- [ ] Installation steps defined
-- [ ] Directory creation steps present
-- [ ] File copy operations specified
-- [ ] Module registration included
-- [ ] Post-install message defined
+- [ ] Generated during installation from install-config.yaml
+- [ ] Contains all user-provided configuration values
+- [ ] Module metadata included
+- [ ] No config.yaml should exist in source module
 
 ## Installation Infrastructure
 

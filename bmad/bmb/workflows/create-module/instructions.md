@@ -168,7 +168,7 @@
 ```
 {{module_code}}/
 ├── _module-installer/
-│   ├── install-module-config.yaml
+│   ├── install-config.yaml
 │   ├── installer.js (optional)
 │   └── assets/     # Files to copy during install
 ├── config.yaml     # Runtime configuration
@@ -261,7 +261,7 @@ data_folder: "{{determined_module_path}}/data"
 <step n="7" goal="Setup module installer">
 <action>Load installer templates from: {installer_templates}</action>
 
-Create install-module-config.yaml:
+Create install-config.yaml:
 
 ```yaml
 # {{module_name}} Installation Configuration

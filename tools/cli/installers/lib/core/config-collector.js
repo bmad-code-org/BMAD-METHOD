@@ -105,7 +105,7 @@ class ConfigCollector {
       this.allAnswers = {};
     }
     // Load module's config.yaml (check new location first, then fallback)
-    const installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-menu-config.yaml');
+    const installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-config.yaml');
     const legacyConfigPath = path.join(getModulePath(moduleName), 'config.yaml');
 
     let configPath = null;

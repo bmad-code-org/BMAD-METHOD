@@ -46,7 +46,18 @@ phases:
 
   - phase: 3
     name: "Solutioning"
-    skip: true
+    required: true
+    workflows:
+      - id: "solution-architecture"
+        required: true
+        agent: "architect"
+        command: "solution-architecture"
+        output: "System-wide architecture document"
+      - id: "assess-project-ready"
+        required: true
+        agent: "sm"
+        command: "assess-project-ready"
+        note: "Validate architecture before implementation"
 
   - phase: 4
     name: "Implementation"

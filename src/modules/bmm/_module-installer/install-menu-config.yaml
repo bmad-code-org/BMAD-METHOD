@@ -43,6 +43,12 @@ dev_story_location:
   prompt: "Where should development stories be stored?"
   default: "docs/stories"
   result: "{project-root}/{value}"
+
+# TEA Agent Configuration
+tea_use_mcp_enhancements:
+  prompt: "Enable Playwright MCP capabilities (healing, exploratory, verification)?"
+  default: true
+  result: "{value}"
 # kb_location:
 #   prompt: "Where should bmad knowledge base articles be stored?"
 #   default: "~/bmad/bmm/kb.md"

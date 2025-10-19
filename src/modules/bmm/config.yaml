@@ -1,7 +1,0 @@
-# Powered by BMAD™ Core
-name: bmm
-short-title: BMad Method Module
-author: Brian (BMad) Madison
-
-# TEA Agent Configuration
-tea_use_mcp_enhancements: true # Enable Playwright MCP capabilities (healing, exploratory, verification)
