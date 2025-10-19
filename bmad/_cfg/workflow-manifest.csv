@@ -1,4 +1,5 @@
 name,description,module,path
+"merge-upstream","Safely merge upstream repository changes while preserving critical fork modifications with automated verification and memory updates","core","bmad/workflows/merge-upstream/workflow.yaml"
 "brainstorming","Facilitate interactive brainstorming sessions using diverse creative techniques. This workflow facilitates interactive brainstorming sessions using diverse creative techniques. The session is highly interactive, with the AI acting as a facilitator to guide the user through various ideation methods to generate and refine creative solutions.","core","bmad/core/workflows/brainstorming/workflow.yaml"
 "party-mode","Orchestrates group discussions between all installed BMAD agents, enabling natural multi-agent conversations","core","bmad/core/workflows/party-mode/workflow.yaml"
 "audit-workflow","Comprehensive workflow quality audit - validates structure, config standards, variable usage, bloat detection, and web_bundle completeness. Performs deep analysis of workflow.yaml, instructions.md, template.md, and web_bundle configuration against BMAD v6 standards.","bmb","bmad/bmb/workflows/audit-workflow/workflow.yaml"

@@ -1,0 +1,32 @@
+# Merge Upstream Workflow Configuration
+name: "merge-upstream"
+description: "Safely merge upstream repository changes while preserving critical fork modifications with automated verification and memory updates"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/core/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Module path and component files
+installed_path: "{project-root}/bmad/workflows/merge-upstream"
+template: false # This is an action workflow - no template needed
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Reference documentation
+modification_reference: "{project-root}/claudedocs/installer-modification-reference.md"
+
+# Tool Requirements
+required_tools:
+  - "Git":
+      description: "Version control system for merge operations"
+      link: "https://git-scm.com/"
+  - "Serena MCP":
+      description: "Project memory management for cross-session persistence"
+      link: "MCP server for project context"
+  - "Graphiti MCP":
+      description: "Knowledge graph memory for relationship tracking"
+      link: "MCP server for graph-based memory"
