@@ -2,73 +2,86 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language}</critical>
+<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+<critical>Generate all documents in {document_output_language}</critical>
 <critical>This workflow is for Level 2-4 projects. Level 0-1 use tech-spec workflow.</critical>
 <critical>Produces TWO outputs: PRD.md (strategic) and epics.md (tactical implementation)</critical>
 <critical>TECHNICAL NOTES: If ANY technical details, preferences, or constraints are mentioned during PRD discussions, append them to {technical_decisions_file}. If file doesn't exist, create it from {technical_decisions_template}</critical>
 
+<critical>DOCUMENT OUTPUT: Concise, clear, actionable requirements. Use tables/lists over prose. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
+
 <workflow>
 
-<step n="0" goal="Check for workflow status file - REQUIRED">
+<step n="0" goal="Validate workflow and extract project configuration">
 
-<action>Check if bmm-workflow-status.md exists in {output_folder}/</action>
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: data</param>
+  <param>data_request: project_config</param>
+</invoke-workflow>
 
-<check if="not exists">
+<check if="status_exists == false">
   <output>**⚠️ No Workflow Status File Found**
 
-The PRD workflow requires an existing workflow status file to understand your project context.
+The PRD workflow requires a status file to understand your project context.
 
-Please run `workflow-status` first to:
+Please run `workflow-init` first to:
 
-- Map out your complete workflow journey
-- Determine project type and level
-- Create the status file with your planned workflow
+- Define your project type and level
+- Map out your workflow journey
+- Create the status file
 
-**To proceed:**
+Run: `workflow-init`
 
-Run: `bmad analyst workflow-status`
-
-After completing workflow planning, you'll be directed back to this workflow.
+After setup, return here to create your PRD.
 </output>
 <action>Exit workflow - cannot proceed without status file</action>
 </check>
 
-<check if="exists">
-  <action>Load status file: {status_file}</action>
-  <action>Proceed to Step 1</action>
+<check if="status_exists == true">
+  <action>Store {{status_file_path}} for later updates</action>
+
+  <check if="project_level < 2">
+    <output>**Incorrect Workflow for Level {{project_level}}**
+
+PRD is for Level 2-4 projects. Level 0-1 should use tech-spec directly.
+
+**Correct workflow:** `tech-spec` (Architect agent)
+</output>
+<action>Exit and redirect to tech-spec</action>
 </check>
 
+  <check if="project_type == game">
+    <output>**Incorrect Workflow for Game Projects**
+
+Game projects should use GDD workflow instead of PRD.
+
+**Correct workflow:** `gdd` (PM agent)
+</output>
+<action>Exit and redirect to gdd</action>
+</check>
+</check>
 </step>
 
-<step n="1" goal="Initialize and load context">
+<step n="0.5" goal="Validate workflow sequencing">
 
-<action>Extract project context from status file</action>
-<action>Verify project_level is 2, 3, or 4</action>
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: validate</param>
+  <param>calling_workflow: prd</param>
+</invoke-workflow>
 
-<check if="project_level < 2">
-  <error>This workflow is for Level 2-4 only. Level 0-1 should use tech-spec workflow.</error>
-  <output>**Incorrect Workflow for Your Level**
-
-Your status file indicates Level {{project_level}}.
-
-**Correct workflow:** `tech-spec` (run with Architect agent)
-
-Run: `bmad architect tech-spec`
-</output>
-<action>Exit and redirect user to tech-spec workflow</action>
+<check if="warning != ''">
+  <output>{{warning}}</output>
+  <ask>Continue with PRD anyway? (y/n)</ask>
+  <check if="n">
+    <output>{{suggestion}}</output>
+    <action>Exit workflow</action>
+  </check>
 </check>
+</step>
 
-<check if="project_type == game">
-  <error>This workflow is for software projects. Game projects should use GDD workflow.</error>
-  <output>**Incorrect Workflow for Game Projects**
+<step n="1" goal="Initialize PRD context">
 
-**Correct workflow:** `gdd` (run with PM agent)
-
-Run: `bmad pm gdd`
-</output>
-<action>Exit and redirect user to gdd workflow</action>
-</check>
-
+<action>Use {{project_level}} from status data</action>
 <action>Check for existing PRD.md in {output_folder}</action>
 
 <check if="PRD.md exists">
@@ -392,39 +405,49 @@ For each epic from the epic list, expand with full story details:
 
 </step>
 
-<step n="10" goal="Update workflow status and complete">
+<step n="10" goal="Update status and complete">
 
-<action>Update {status_file} with completion status</action>
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: update</param>
+  <param>action: complete_workflow</param>
+  <param>workflow_name: prd</param>
+  <param>populate_stories_from: {epics_output_file}</param>
+</invoke-workflow>
 
-<template-output file="bmm-workflow-status.md">prd_completion_update</template-output>
+<check if="success == true">
+  <output>Status updated! Next: {{next_workflow}} ({{next_agent}} agent)</output>
+  <output>Loaded {{total_stories}} stories from epics.</output>
+</check>
 
-**✅ PRD Workflow Complete, {user_name}!**
+<output>**✅ PRD Workflow Complete, {user_name}!**
 
 **Deliverables Created:**
 
-1. ✅ PRD.md - Strategic product requirements document
-2. ✅ epics.md - Tactical implementation roadmap with story breakdown
+1. ✅ bmm-PRD.md - Strategic product requirements document
+2. ✅ bmm-epics.md - Tactical implementation roadmap with story breakdown
 
 **Next Steps:**
 
-<check if="level == 2">
-  - Review PRD and epics with stakeholders
-  - **Next:** Run tech-spec workflow for lightweight technical planning
-  - Then proceed to implementation (create-story workflow)
-</check>
+{{#if project_level == 2}}
 
-<check if="level >= 3">
-  - Review PRD and epics with stakeholders
-  - **Next:** Run solution-architecture workflow for full technical design
-  - Then proceed to implementation (create-story workflow)
-</check>
+- Review PRD and epics with stakeholders
+- **Next:** Run `tech-spec` for lightweight technical planning
+- Then proceed to implementation
+  {{/if}}
 
-<ask>Would you like to:
+{{#if project_level >= 3}}
+
+- Review PRD and epics with stakeholders
+- **Next:** Run `solution-architecture` for full technical design
+- Then proceed to implementation
+  {{/if}}
+
+Would you like to:
 
 1. Review/refine any section
-2. Proceed to next phase (tech-spec for Level 2, solution-architecture for Level 3-4)
+2. Proceed to next phase
 3. Exit and review documents
-   </ask>
+   </output>
 
 </step>
 

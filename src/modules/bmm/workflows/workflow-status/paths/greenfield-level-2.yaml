@@ -1,0 +1,93 @@
+# Greenfield Level 2 - Medium Project
+# Multiple epics with 10+ stories total
+
+project_type: "software"
+level: 2
+field_type: "greenfield"
+description: "Medium project - multiple epics, 10+ stories"
+
+phases:
+  - phase: 1
+    name: "Analysis"
+    optional: true
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+      - id: "research"
+        optional: true
+        agent: "analyst"
+        command: "research"
+        note: "Can have multiple research docs"
+      - id: "product-brief"
+        recommended: true
+        agent: "analyst"
+        command: "product-brief"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        required: true
+        agent: "pm"
+        command: "prd"
+        output: "Creates epics.md and story list"
+      - id: "ux-spec"
+        conditional: "if_has_ui"
+        agent: "pm"
+        command: "ux-spec"
+      - id: "tech-spec"
+        optional: true
+        agent: "architect"
+        command: "tech-spec"
+        note: "Lightweight technical planning"
+
+  - phase: 3
+    name: "Solutioning"
+    skip: true
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    loop_type: "for_each_story"
+    workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+      - id: "validate-story-context"
+        optional: true
+        agent: "sm"
+        command: "validate-story-context"
+      - id: "story-ready"
+        optional: true
+        agent: "sm"
+        command: "story-ready"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "review-story"
+        optional: true
+        agent: "dev"
+        command: "review-story"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+    epic_completion:
+      - id: "retrospective"
+        optional: true
+        agent: "pm"
+        command: "retrospective"
+        note: "After each epic completes"
+
+story_naming: "story-<epic>.<story>.md"
+story_example: "story-1.1.md, story-2.3.md"
+epic_structure: "Numbered epics with numbered stories"

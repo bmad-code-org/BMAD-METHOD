@@ -1,0 +1,77 @@
+# Brownfield Level 1 - Small Feature in Existing Codebase
+# 1-10 stories adding to existing system
+
+project_type: "software"
+level: 1
+field_type: "brownfield"
+description: "Small feature addition to existing codebase"
+
+phases:
+  - phase: 0
+    name: "Documentation"
+    conditional: "if_undocumented"
+    workflows:
+      - id: "document-project"
+        required: true
+        agent: "analyst"
+        command: "document-project"
+        output: "Codebase documentation"
+
+  - phase: 1
+    name: "Analysis"
+    optional: true
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+      - id: "research"
+        optional: true
+        agent: "analyst"
+        command: "research"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "tech-spec"
+        required: true
+        agent: "architect"
+        command: "tech-spec"
+        output: "Creates story files for feature"
+        note: "Must integrate with existing architecture"
+
+  - phase: 3
+    name: "Solutioning"
+    skip: true
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+        note: "Include existing code context"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "review-story"
+        optional: true
+        agent: "dev"
+        command: "review-story"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+
+story_naming: "story-<short-title>.md"
+story_example: "story-add-auth.md, story-update-dashboard.md"
+max_stories: 10
+brownfield_note: "Ensure changes align with existing patterns and architecture"

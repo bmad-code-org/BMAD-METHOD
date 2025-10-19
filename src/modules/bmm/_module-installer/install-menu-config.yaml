@@ -19,6 +19,21 @@ project_name:
   default: "{directory_name}"
   result: "{value}"
 
+user_skill_level:
+  prompt:
+    - "What is your technical experience level?"
+    - "This affects how agents explain concepts to you (NOT document content)."
+    - "Documents are always concise for LLM efficiency."
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - New to development, explain concepts clearly"
+    - value: "intermediate"
+      label: "Intermediate - Familiar with development, balance explanation with efficiency"
+    - value: "expert"
+      label: "Expert - Deep technical knowledge, be direct and technical"
+
 tech_docs:
   prompt: "Where is Technical Documentation located within the project?"
   default: "docs"
@@ -28,22 +43,21 @@ dev_story_location:
   prompt: "Where should development stories be stored?"
   default: "docs/stories"
   result: "{project-root}/{value}"
+# kb_location:
+#   prompt: "Where should bmad knowledge base articles be stored?"
+#   default: "~/bmad/bmm/kb.md"
+#   result: "{value}"
 
-kb_location:
-  prompt: "Where should bmad knowledge base articles be stored?"
-  default: "~/bmad/bmm/kb.md"
-  result: "{value}"
-
-desired_mcp_tools:
-  prompt:
-    - "Which MCP Tools will you be using? (Select all that apply)"
-    - "Note: You will need to install these separately. Bindings will come post ALPHA along with other choices."
-  result: "{value}"
-  multi-select:
-    - "Chrome Official MCP"
-    - "Playwright"
-    - "Context 7"
-    - "Tavily"
-    - "Perplexity"
-    - "Jira"
-    - "Trello"
+# desired_mcp_tools:
+#   prompt:
+#     - "Which MCP Tools will you be using? (Select all that apply)"
+#     - "Note: You will need to install these separately. Bindings will come post ALPHA along with other choices."
+#   result: "{value}"
+#   multi-select:
+#     - "Chrome Official MCP"
+#     - "Playwright"
+#     - "Context 7"
+#     - "Tavily"
+#     - "Perplexity"
+#     - "Jira"
+#     - "Trello"

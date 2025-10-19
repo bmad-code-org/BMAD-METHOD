@@ -194,93 +194,23 @@ Epic: Icon Reliability
 
 </step>
 
-<step n="6" goal="Update bmm-workflow-status and populate backlog for Phase 4">
+<step n="6" goal="Update status and populate story backlog">
 
-<action>Open {output_folder}/bmm-workflow-status.md</action>
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: update</param>
+  <param>action: complete_workflow</param>
+  <param>workflow_name: tech-spec</param>
+  <param>populate_stories_from: {epics_output_file}</param>
+</invoke-workflow>
 
-<action>Update "Workflow Status Tracker" section:</action>
+<check if="success == true">
+  <output>✅ Status updated! Loaded {{total_stories}} stories from epics.</output>
+  <output>Next: {{next_workflow}} ({{next_agent}} agent)</output>
+</check>
 
-- Set current_phase = "4-Implementation" (Level 1 skips Phase 3)
-- Set current_workflow = "tech-spec (Level 1 - epic and stories generation complete, ready for implementation)"
-- Check "2-Plan" checkbox in Phase Completion Status
-- Set progress_percentage = 40% (planning complete, skipping solutioning)
-
-<action>Populate story backlog in "### Implementation Progress (Phase 4 Only)" section:</action>
-
-#### BACKLOG (Not Yet Drafted)
-
-**Ordered story sequence - populated at Phase 4 start:**
-
-| Epic | Story | ID  | Title | File |
-| ---- | ----- | --- | ----- | ---- |
-
-{{#if story_2}}
-| 1 | 2 | {epic_slug}-2 | {{story_2_title}} | story-{epic_slug}-2.md |
-{{/if}}
-{{#if story_3}}
-| 1 | 3 | {epic_slug}-3 | {{story_3_title}} | story-{epic_slug}-3.md |
-{{/if}}
-
-**Total in backlog:** {{story_count - 1}} stories
-
-**NOTE:** Level 1 uses slug-based IDs like "{epic_slug}-1", "{epic_slug}-2" instead of numeric "1.1", "1.2"
-
-#### TODO (Needs Drafting)
-
-Initialize with FIRST story (already drafted):
-
-- **Story ID:** {epic_slug}-1
-- **Story Title:** {{story_1_title}}
-- **Story File:** `story-{epic_slug}-1.md`
-- **Status:** Draft (needs review before development)
-- **Action:** User reviews drafted story, then runs SM agent `story-ready` workflow to approve
-
-#### IN PROGRESS (Approved for Development)
-
-Leave empty initially:
-
-(Story will be moved here by SM agent `story-ready` workflow after user approves story-{epic_slug}-1.md)
-
-#### DONE (Completed Stories)
-
-Initialize empty table:
-
-| Story ID   | File | Completed Date | Points |
-| ---------- | ---- | -------------- | ------ |
-| (none yet) |      |                |        |
-
-**Total completed:** 0 stories
-**Total points completed:** 0 points
-
-<action>Add to Artifacts Generated table:</action>
-
-```
-| tech-spec.md | Complete | {output_folder}/tech-spec.md | {{date}} |
-| epics.md | Complete | {output_folder}/epics.md | {{date}} |
-| story-{epic_slug}-1.md | Draft | {dev_story_location}/story-{epic_slug}-1.md | {{date}} |
-| story-{epic_slug}-2.md | Draft | {dev_story_location}/story-{epic_slug}-2.md | {{date}} |
-{{#if story_3}}
-| story-{epic_slug}-3.md | Draft | {dev_story_location}/story-{epic_slug}-3.md | {{date}} |
-{{/if}}
-```
-
-<action>Update "Next Action Required":</action>
-
-```
-**What to do next:** Review drafted story-{epic_slug}-1.md, then mark it ready for development
-
-**Command to run:** Load SM agent and run 'story-ready' workflow (confirms story-{epic_slug}-1.md is ready)
-
-**Agent to load:** bmad/bmm/agents/sm.md
-```
-
-<action>Add to Decision Log:</action>
-
-```
-- **{{date}}**: Level 1 tech-spec and epic/stories generation completed. {{story_count}} stories created. Skipping Phase 3 (solutioning) - moving directly to Phase 4 (implementation). Story backlog populated. First story (story-{epic_slug}-1.md) drafted and ready for review.
-```
-
-<action>Save bmm-workflow-status.md</action>
+<check if="success == false">
+  <output>⚠️ Status update failed: {{error}}</output>
+</check>
 
 </step>
 

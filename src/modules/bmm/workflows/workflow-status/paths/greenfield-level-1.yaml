@@ -1,0 +1,73 @@
+# Greenfield Level 1 - Small Feature
+# Coherent feature with 2-3 stories in a single epic
+
+project_type: "software"
+level: 1
+field_type: "greenfield"
+description: "Small coherent feature - 2-3 stories, single epic"
+
+phases:
+  - phase: 1
+    name: "Analysis"
+    optional: true
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+      - id: "research"
+        optional: true
+        agent: "analyst"
+        command: "research"
+      - id: "product-brief"
+        optional: true
+        agent: "analyst"
+        command: "product-brief"
+
+  - phase: 2
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "tech-spec"
+        required: true
+        agent: "architect"
+        command: "tech-spec"
+        output: "Creates 2-3 story files"
+
+  - phase: 3
+    name: "Solutioning"
+    skip: true
+
+  - phase: 4
+    name: "Implementation"
+    required: true
+    loop_type: "for_each_story"
+    workflows:
+      - id: "create-story"
+        required: true
+        agent: "sm"
+        command: "create-story"
+      - id: "story-context"
+        required: true
+        agent: "sm"
+        command: "story-context"
+      - id: "story-ready"
+        optional: true
+        agent: "sm"
+        command: "story-ready"
+      - id: "dev-story"
+        required: true
+        agent: "dev"
+        command: "dev-story"
+      - id: "review-story"
+        optional: true
+        agent: "dev"
+        command: "review-story"
+      - id: "story-approved"
+        required: true
+        agent: "dev"
+        command: "story-approved"
+
+story_naming: "story-<title>-<n>.md"
+story_example: "story-oauth-integration-1.md"
+max_stories: 3

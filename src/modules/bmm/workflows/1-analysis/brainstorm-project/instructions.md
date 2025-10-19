@@ -1,6 +1,6 @@
 # Brainstorm Project - Workflow Instructions
 
-````xml
+```xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
@@ -8,30 +8,25 @@
 
 <workflow>
 
-  <step n="1" goal="Check and load workflow status file">
-    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-    <action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
+  <step n="1" goal="Validate workflow readiness">
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+      <param>mode: validate</param>
+      <param>calling_workflow: brainstorm-project</param>
+    </invoke-workflow>
 
-    <check if="exists">
-      <action>Load the status file</action>
-      <action>Set status_file_found = true</action>
-      <action>Store status_file_path for later updates</action>
+    <check if="status_exists == false">
+      <output>{{suggestion}}</output>
+      <output>Note: Brainstorming is optional. Continuing without progress tracking.</output>
+      <action>Set standalone_mode = true</action>
     </check>
 
-    <check if="not exists">
-      <ask>**No workflow status file found.**
+    <check if="status_exists == true">
+      <action>Store {{status_file_path}} for later updates</action>
 
-This workflow generates brainstorming ideas for project ideation (optional Phase 1 workflow).
-
-Options:
-1. Run workflow-status first to create the status file (recommended for progress tracking)
-2. Continue in standalone mode (no progress tracking)
-3. Exit
-
-What would you like to do?</ask>
-      <action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to brainstorm-project"</action>
-      <action>If user chooses option 2 → Set standalone_mode = true and continue</action>
-      <action>If user chooses option 3 → HALT</action>
+      <check if="warning != ''">
+        <output>{{warning}}</output>
+        <output>Note: Brainstorming can be valuable at any project stage.</output>
+      </check>
     </check>
   </step>
 
@@ -56,36 +51,28 @@ What would you like to do?</ask>
     </invoke-workflow>
   </step>
 
-  <step n="4" goal="Update status file on completion">
-    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-    <action>Find the most recent file (by date in filename)</action>
+  <step n="4" goal="Update status and complete">
+    <check if="standalone_mode != true">
+      <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+        <param>mode: update</param>
+        <param>action: complete_workflow</param>
+        <param>workflow_name: brainstorm-project</param>
+      </invoke-workflow>
 
-    <check if="status file exists">
-      <action>Load the status file</action>
+      <check if="success == true">
+        <output>Status updated! Next: {{next_workflow}}</output>
+      </check>
+    </check>
 
-      <template-output file="{{status_file_path}}">current_step</template-output>
-      <action>Set to: "brainstorm-project"</action>
-
-      <template-output file="{{status_file_path}}">current_workflow</template-output>
-      <action>Set to: "brainstorm-project - Complete"</action>
-
-      <template-output file="{{status_file_path}}">progress_percentage</template-output>
-      <action>Increment by: 5% (optional Phase 1 workflow)</action>
-
-      <template-output file="{{status_file_path}}">decisions_log</template-output>
-      <action>Add entry:</action>
-      ```
-      - **{{date}}**: Completed brainstorm-project workflow. Generated brainstorming session results saved to {output_folder}/brainstorming-session-results-{{date}}.md. Next: Review ideas and consider running research or product-brief workflows.
-      ```
-
-      <output>**✅ Brainstorming Session Complete, {user_name}!**
+    <output>**✅ Brainstorming Session Complete, {user_name}!**
 
 **Session Results:**
-- Brainstorming results saved to: {output_folder}/brainstorming-session-results-{{date}}.md
+- Brainstorming results saved to: {output_folder}/bmm-brainstorming-session-{{date}}.md
 
-**Status file updated:**
-- Current step: brainstorm-project ✓
-- Progress: {{new_progress_percentage}}%
+{{#if standalone_mode != true}}
+**Status Updated:**
+- Progress tracking updated
+{{/if}}
 
 **Next Steps:**
 1. Review brainstorming results
@@ -94,26 +81,11 @@ What would you like to do?</ask>
    - `product-brief` workflow to formalize product vision
    - Or proceed directly to `plan-project` if ready
 
+{{#if standalone_mode != true}}
 Check status anytime with: `workflow-status`
-      </output>
-    </check>
-
-    <check if="status file not found">
-      <output>**✅ Brainstorming Session Complete, {user_name}!**
-
-**Session Results:**
-- Brainstorming results saved to: {output_folder}/brainstorming-session-results-{{date}}.md
-
-Note: Running in standalone mode (no status file).
-
-To track progress across workflows, run `workflow-status` first.
-
-**Next Steps:**
-1. Review brainstorming results
-2. Run research or product-brief workflows
-      </output>
-    </check>
+{{/if}}
+    </output>
   </step>
 
 </workflow>
-````
+```

@@ -56,6 +56,67 @@ create-workflow/
     └── README.md
 ```
 
+## Understanding Instruction Styles
+
+One of the most important decisions when creating a workflow is choosing the **instruction style** - how the workflow guides the AI's interaction with users.
+
+### Intent-Based vs Prescriptive Instructions
+
+**Intent-Based (Recommended for most workflows)**
+
+Guides the LLM with goals and principles, allowing natural conversation adaptation.
+
+- **More flexible and conversational** - AI adapts questions to context
+- **Better for complex discovery** - Requirements gathering, creative exploration
+- **Quality over consistency** - Focus on deep understanding
+- **Example**: `<action>Guide user to define their target audience with specific demographics and needs</action>`
+
+**Best for:**
+
+- Complex discovery processes (user research, requirements)
+- Creative brainstorming and ideation
+- Iterative refinement workflows
+- When adaptation to context matters
+- Workflows requiring nuanced understanding
+
+**Prescriptive**
+
+Provides exact wording for questions and structured options.
+
+- **More controlled and predictable** - Same questions every time
+- **Better for simple data collection** - Platform choices, yes/no decisions
+- **Consistency over quality** - Standardized execution
+- **Example**: `<ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask>`
+
+**Best for:**
+
+- Simple data collection (platform, format, binary choices)
+- Compliance verification and standards
+- Configuration with finite options
+- Quick setup wizards
+- When consistency is critical
+
+### Best Practice: Mix Both Styles
+
+The most effective workflows use **both styles strategically**:
+
+```xml
+<!-- Intent-based workflow with prescriptive moments -->
+<step n="1" goal="Understand user vision">
+  <action>Explore the user's vision, uncovering creative intent and target experience</action>
+</step>
+
+<step n="2" goal="Capture basic metadata">
+  <ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask>
+</step>
+
+<step n="3" goal="Deep dive into details">
+  <action>Guide user to articulate their core approach and unique aspects</action>
+</step>
+```
+
+**During workflow creation**, you'll be asked to choose a **primary style preference** - this sets the default approach, but you can (and should) use the other style when it makes more sense for specific steps.
+
 ## Workflow Process
 
 ### Phase 0: Optional Brainstorming (Step -1)
