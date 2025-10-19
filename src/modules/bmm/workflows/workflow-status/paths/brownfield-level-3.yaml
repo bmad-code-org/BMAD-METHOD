@@ -128,7 +128,7 @@ phases:
         command: "integration-test"
       - id: "retrospective"
         required: true
-        agent: "pm"
+        agent: "sm"
         command: "retrospective"
 
 story_naming: "story-<epic>.<story>.md"

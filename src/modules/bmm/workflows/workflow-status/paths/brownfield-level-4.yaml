@@ -136,7 +136,7 @@ phases:
     epic_completion:
       - id: "retrospective"
         required: true
-        agent: "pm"
+        agent: "sm"
         command: "retrospective"
         note: "Critical for enterprise-scale learning"
 
