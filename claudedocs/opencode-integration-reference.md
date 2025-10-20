@@ -4,38 +4,54 @@
 
 This document serves as the authoritative reference for preserving the OpenCode integration during upstream merges. OpenCode support is a **fork-specific feature** not present in the upstream BMAD-METHOD repository.
 
+## ⚠️ CRITICAL: Fork-Only Feature
+
+**OpenCode integration exists ONLY in this fork and will NEVER be published to npm.**
+
+- The published npm package `bmad-method@6.0.0-alpha.0` does NOT include OpenCode
+- Running `npx bmad-method install` will download the published version WITHOUT OpenCode
+- You MUST use local development commands to access OpenCode functionality
+
+**See**: `docs/V6_LOCAL_DEVELOPMENT.md` for complete local development instructions.
+
 ## Critical Information
 
 - **Modification Type**: Additive (new files + dependency)
 - **Risk Level**: Low-Medium (new files unlikely to conflict, dependency may need verification)
 - **Recovery Method**: Restore from backup branch
 - **Serena Memory**: `CRITICAL-opencode-fork-integration`
+- **Development Requirement**: Must use local CLI execution (not npx)
 
 ## Files Affected
 
 ### 1. New Files (Additive)
 
 #### `tools/cli/installers/lib/ide/opencode.js`
+
 - **Lines**: 602 (entire file)
 - **Purpose**: OpenCode IDE installer implementation
 - **Status**: Must be present for OpenCode functionality
 
 **Verification**:
+
 ```bash
 test -f tools/cli/installers/lib/ide/opencode.js && echo "✅ Present" || echo "❌ MISSING"
 ```
 
 **Recovery**:
+
 ```bash
 git checkout <backup-branch> -- tools/cli/installers/lib/ide/opencode.js
 ```
 
 #### `OPENCODE_INTEGRATION_SUMMARY.md`
+
 - **Lines**: 231 (entire file)
 - **Purpose**: Implementation documentation and architecture details
 - **Status**: Documentation only (optional but recommended to preserve)
 
 **Recovery**:
+
 ```bash
 git checkout <backup-branch> -- OPENCODE_INTEGRATION_SUMMARY.md
 ```
@@ -43,6 +59,7 @@ git checkout <backup-branch> -- OPENCODE_INTEGRATION_SUMMARY.md
 ### 2. Modified Files
 
 #### `package.json`
+
 - **Modification**: Added `comment-json` dependency
 - **Location**: `dependencies` section
 - **Code**:
@@ -52,22 +69,25 @@ git checkout <backup-branch> -- OPENCODE_INTEGRATION_SUMMARY.md
 - **Purpose**: Required for parsing JSONC files with comments
 
 **Verification**:
+
 ```bash
 grep -q '"comment-json"' package.json && echo "✅ Present" || echo "❌ MISSING"
 ```
 
 **Manual Recovery** (if needed):
+
 ```json
 {
   "dependencies": {
     // ... other dependencies ...
-    "comment-json": "^4.2.5",
+    "comment-json": "^4.2.5"
     // ... more dependencies ...
   }
 }
 ```
 
 Then run:
+
 ```bash
 npm install
 ```
@@ -126,11 +146,13 @@ console.log('   Display Name:', setup.displayName);
 ### Scenario 1: opencode.js Missing
 
 **Symptoms**:
+
 - File check fails
 - IDE manager doesn't list OpenCode
 - Error when trying to install with OpenCode
 
 **Recovery**:
+
 ```bash
 # 1. Find latest backup branch
 BACKUP=$(git branch -a | grep backup-before | tail -1 | xargs)
@@ -149,10 +171,12 @@ git commit -m "chore: restore OpenCode integration after upstream merge"
 ### Scenario 2: comment-json Dependency Missing
 
 **Symptoms**:
+
 - OpenCode installer throws "Cannot find module 'comment-json'" error
 - IDE manager shows warning about loading OpenCode
 
 **Recovery**:
+
 ```bash
 # Option A: Restore from backup
 BACKUP=$(git branch -a | grep backup-before | tail -1 | xargs)
@@ -172,6 +196,7 @@ npm list comment-json
 ### Scenario 3: Both Files Missing (Complete Loss)
 
 **Recovery**:
+
 ```bash
 # 1. Find backup branch
 BACKUP=$(git branch -a | grep backup-before | tail -1 | xargs)
@@ -222,24 +247,42 @@ After merging upstream changes:
 2. ✅ If any checks fail, run recovery procedures
 3. ✅ Run thorough verification
 4. ✅ Test basic functionality (optional)
-5. ✅ Update Serena memory with merge date
+
+### Testing OpenCode After Merge
+
+**CRITICAL**: Do NOT use `npx bmad-method` to test - it downloads the published version!
+
+```bash
+# ✅ CORRECT - Test with local version
+cd /path/to/test/project
+node /path/to/BMAD-METHOD/tools/cli/bmad-cli.js install
+
+# Or use npm script from BMAD-METHOD directory
+npm run dev:install
+
+# Verify OpenCode appears in IDE selection menu
+# Verify opencode.json/opencode.jsonc is created correctly
+```
+
+**See**: `docs/V6_LOCAL_DEVELOPMENT.md` for complete testing guide. 5. ✅ Update Serena memory with merge date
 
 ### Workflow Integration
 
 The `bmad/workflows/merge-upstream/` workflow includes OpenCode checks:
 
 **Step 7.5** (added to existing workflow):
+
 ```yaml
-- name: "Verify OpenCode Integration"
-  action: "Run OpenCode verification commands"
+- name: 'Verify OpenCode Integration'
+  action: 'Run OpenCode verification commands'
   verification:
-    - "File existence check"
-    - "Dependency check"
-    - "IDE manager discovery check"
+    - 'File existence check'
+    - 'Dependency check'
+    - 'IDE manager discovery check'
   on_failure:
-    - "Alert about missing OpenCode integration"
-    - "Provide recovery instructions"
-    - "Link to this reference document"
+    - 'Alert about missing OpenCode integration'
+    - 'Provide recovery instructions'
+    - 'Link to this reference document'
 ```
 
 ## Architecture Details
@@ -303,10 +346,12 @@ console.log('Name:', setup.name);
 ## Quick Reference Card
 
 **Files to Watch**:
+
 - ✅ `tools/cli/installers/lib/ide/opencode.js` (must exist)
 - ✅ `"comment-json": "^4.2.5"` in package.json
 
 **Quick Check**:
+
 ```bash
 test -f tools/cli/installers/lib/ide/opencode.js && \
 grep -q comment-json package.json && \
@@ -314,6 +359,7 @@ echo "✅ All good" || echo "❌ Needs recovery"
 ```
 
 **Quick Recovery**:
+
 ```bash
 BACKUP=$(git branch -a | grep backup-before | tail -1 | xargs)
 git checkout $BACKUP -- tools/cli/installers/lib/ide/opencode.js package.json

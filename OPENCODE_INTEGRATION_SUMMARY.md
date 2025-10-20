@@ -4,20 +4,42 @@
 
 Successfully implemented OpenCode integration for BMAD Method V6 following the V6 installer architecture patterns.
 
+## ⚠️ IMPORTANT: Fork-Only Feature
+
+**This OpenCode integration is a fork-specific feature and is NOT included in the published npm package.**
+
+### Using OpenCode (Local Development Only)
+
+```bash
+# ✅ CORRECT - Use local development version
+node tools/cli/bmad-cli.js install
+# or
+npm run dev:install
+
+# ❌ WRONG - Downloads published version WITHOUT OpenCode
+npx bmad-method install
+```
+
+**See `docs/V6_LOCAL_DEVELOPMENT.md` for complete instructions on using the local development version.**
+
 ## What Was Done
 
 ### 1. Added Missing Dependency
+
 **File**: `package.json`
+
 - Added `comment-json: ^4.2.5` to dependencies
 - Required for parsing JSONC files with comments
 
 ### 2. Implemented OpenCode Installer
+
 **File**: `tools/cli/installers/lib/ide/opencode.js`
 **Lines**: 590 lines of code
 
 Implemented full-featured OpenCode installer with:
 
 #### Core Features
+
 - ✅ Detects existing `opencode.json` or `opencode.jsonc` files
 - ✅ Creates minimal configuration if none exists
 - ✅ Idempotent merges - safe to run multiple times
@@ -27,22 +49,26 @@ Implemented full-featured OpenCode installer with:
 - ✅ Expansion pack support with auto-discovery
 
 #### Configuration Options
+
 - ✅ Optional agent prefix: `bmad-` (e.g., `bmad-dev` instead of `dev`)
 - ✅ Optional command prefix: `bmad:tasks:` (e.g., `bmad:tasks:create-doc`)
 - ✅ Forced prefixes for expansion pack agents/commands
 
 #### Documentation Generation
+
 - ✅ Generates/updates `AGENTS.md` for system prompt memory
 - ✅ Includes agent directory table with whenToUse descriptions
 - ✅ Lists available tasks with source file links
 - ✅ Provides usage instructions
 
 #### Metadata Extraction
+
 - ✅ Extracts `whenToUse` from agent YAML blocks
 - ✅ Extracts `Purpose` from task files
 - ✅ Cleans and summarizes descriptions for readability
 
 ### 3. Architecture Compliance
+
 The implementation follows V6 patterns by:
 
 - ✅ Extending `BaseIdeSetup` class
@@ -89,52 +115,53 @@ The implementation follows V6 patterns by:
 ### Example Output Structure
 
 **opencode.jsonc**:
+
 ```jsonc
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": [
-    ".bmad-core/core-config.yaml",
-    ".bmad-core/modules/bmm/config.yaml"
-  ],
+  "instructions": [".bmad-core/core-config.yaml", ".bmad-core/modules/bmm/config.yaml"],
   "agent": {
     "bmad-dev": {
       "prompt": "{file:./.bmad-core/agents/dev.md}",
       "mode": "all",
       "tools": { "write": true, "edit": true, "bash": true },
-      "description": "Code implementation, debugging, refactoring..."
+      "description": "Code implementation, debugging, refactoring...",
     },
     "bmad-orchestrator": {
       "prompt": "{file:./.bmad-core/agents/bmad-orchestrator.md}",
       "mode": "primary",
       "tools": { "write": true, "edit": true, "bash": true },
-      "description": "Workflow coordination, multi-agent tasks..."
-    }
+      "description": "Workflow coordination, multi-agent tasks...",
+    },
   },
   "command": {
     "bmad:tasks:create-doc": {
       "template": "{file:./.bmad-core/tasks/create-doc.md}",
-      "description": "Generate comprehensive technical documentation"
-    }
-  }
+      "description": "Generate comprehensive technical documentation",
+    },
+  },
 }
 ```
 
 **AGENTS.md** (excerpt):
+
 ```markdown
 <!-- BEGIN: BMAD-AGENTS-OPENCODE -->
+
 # BMAD-METHOD Agents and Tasks (OpenCode)
 
 ## How To Use With OpenCode
+
 - Run `opencode` in this project directory
 - OpenCode will read your `opencode.json` or `opencode.jsonc` configuration
 - Reference agents by their ID in your prompts (e.g., "As dev, implement...")
 
 ## Agents
 
-| Title | ID | When To Use |
-|---|---|---|
-| Dev | dev | Code implementation, debugging, refactoring... |
-| Orchestrator | bmad-orchestrator | Workflow coordination... |
+| Title        | ID                | When To Use                                    |
+| ------------ | ----------------- | ---------------------------------------------- |
+| Dev          | dev               | Code implementation, debugging, refactoring... |
+| Orchestrator | bmad-orchestrator | Workflow coordination...                       |
 
 <!-- END: BMAD-AGENTS-OPENCODE -->
 ```
@@ -142,23 +169,28 @@ The implementation follows V6 patterns by:
 ## Key Design Decisions
 
 ### 1. File References vs. File Copying
+
 Unlike most V6 IDEs that copy agent/task files to IDE-specific directories, OpenCode uses **file references**. This:
+
 - Reduces duplication
 - Ensures single source of truth
 - Allows runtime updates without reinstallation
 - Matches OpenCode's design philosophy
 
 ### 2. Prefix Strategy
+
 - **Core agents/tasks**: Optional prefixes (user choice)
 - **Expansion pack agents/tasks**: Forced prefixes to avoid collisions
 - Pattern: `bmad-{module}-{name}` for agents, `bmad:{module}:{name}` for tasks
 
 ### 3. Mode Assignment
+
 - Orchestrator agents (name contains "orchestrator"): `mode: "primary"`
 - All other agents: `mode: "all"`
 - Follows OpenCode's agent activation model
 
 ### 4. Collision Handling
+
 - Detects existing entries by checking if they reference BMAD files
 - Skips non-BMAD entries with warning
 - Updates BMAD-managed entries safely
@@ -167,6 +199,7 @@ Unlike most V6 IDEs that copy agent/task files to IDE-specific directories, Open
 ## Testing
 
 The implementation has been:
+
 - ✅ Structured following V6 architecture patterns
 - ✅ Auto-discovered by IDE manager
 - ✅ Dependency added and installed
@@ -175,6 +208,7 @@ The implementation has been:
 ## Usage
 
 ### Installation
+
 ```bash
 # Interactive (will prompt for prefix preferences)
 npx bmad install -i opencode
@@ -184,26 +218,28 @@ npx bmad install -i opencode --config '{"useAgentPrefix":true,"useCommandPrefix"
 ```
 
 ### Refresh After Updates
+
 ```bash
 npx bmad install -f -i opencode
 ```
 
 ### Cleanup
+
 ```bash
 npx bmad uninstall -i opencode
 ```
 
 ## Comparison: V4 vs V6 Implementation
 
-| Aspect | V4 (tools/installer) | V6 (tools/cli) |
-|--------|---------------------|----------------|
-| Architecture | Monolithic ide-setup.js | Modular per-IDE files |
-| Discovery | Hardcoded switch cases | Auto-discovery via manager |
-| Dependencies | Separate package.json | Shared root package.json |
-| Agent discovery | Custom methods | Shared bmad-artifacts.js |
-| Config collection | Inline prompts | Dedicated collectConfiguration() |
-| Module support | Manual tracking | selectedModules parameter |
-| Cleanup | Basic removal | Surgical BMAD-only removal |
+| Aspect            | V4 (tools/installer)    | V6 (tools/cli)                   |
+| ----------------- | ----------------------- | -------------------------------- |
+| Architecture      | Monolithic ide-setup.js | Modular per-IDE files            |
+| Discovery         | Hardcoded switch cases  | Auto-discovery via manager       |
+| Dependencies      | Separate package.json   | Shared root package.json         |
+| Agent discovery   | Custom methods          | Shared bmad-artifacts.js         |
+| Config collection | Inline prompts          | Dedicated collectConfiguration() |
+| Module support    | Manual tracking         | selectedModules parameter        |
+| Cleanup           | Basic removal           | Surgical BMAD-only removal       |
 
 ## Files Changed
 
