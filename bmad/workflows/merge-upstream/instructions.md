@@ -35,36 +35,68 @@
 <critical>This backup branch is essential for recovery if the merge encounters unexpected issues</critical>
 </step>
 
-<step n="3" goal="Document critical modification for reference">
-<action>Create or update the modification reference file in claudedocs/ directory</action>
-<action>Document the exact code that must be preserved during merge</action>
-<action>Include file path, line numbers, and the critical code snippet</action>
+<step n="3" goal="Document critical modifications for reference">
+<action>Create or update modification reference files in claudedocs/ directory</action>
+<action>Document all fork-specific modifications that must be preserved during merge</action>
+<action>Include file paths, line numbers, and critical code snippets</action>
 <action>Add insertion point details and recovery instructions</action>
 <action>Save verification commands for post-merge checking</action>
 
 <example>
-Reference file should include:
-- File: tools/cli/installers/lib/core/installer.js
-- Lines: 913-916
-- Code: Skip block for workflow instructions.md
-- Verification: grep command to check presence
+Reference files should include:
+
+1. Installer Skip Block (claudedocs/installer-modification-reference.md):
+   - File: tools/cli/installers/lib/core/installer.js
+   - Lines: 913-916
+   - Code: Skip block for workflow instructions.md
+   - Verification: grep command to check presence
+
+2. OpenCode Integration (claudedocs/opencode-integration-reference.md):
+   - File: tools/cli/installers/lib/ide/opencode.js (entire file)
+   - Type: Additive modification (new file)
+   - Dependency: comment-json in package.json
+   - Verification: File existence + dependency check + runtime check
 </example>
 </step>
 
-<step n="4" goal="Verify modification exists before merge">
-<action>Execute verification command to confirm critical modification is present</action>
+<step n="4" goal="Verify modifications exist before merge">
+<action>Execute verification commands to confirm all critical modifications are present</action>
+
+<substep n="4a" goal="Verify Installer Modification">
 <action>Use grep to search for the modification signature in the target file</action>
 
 <critical>Command: grep -A 2 "Skip workflow instructions" tools/cli/installers/lib/core/installer.js</critical>
 
 <check if="modification not found">
-  <action>Alert user that critical modification is missing from current codebase</action>
+  <action>Alert user that critical installer modification is missing from current codebase</action>
   <action>Provide guidance on restoring the modification before attempting merge</action>
   <goto step="1">Halt until modification is restored</goto>
 </check>
 
-<action>Confirm modification present at expected location</action>
+<action>Confirm installer modification present at expected location</action>
 <action>Record current line numbers for post-merge comparison</action>
+</substep>
+
+<substep n="4b" goal="Verify OpenCode Integration">
+<action>Execute OpenCode pre-merge verification checks</action>
+
+<critical>Commands:
+1. test -f tools/cli/installers/lib/ide/opencode.js
+2. grep -q "comment-json" package.json
+3. node -e "const {IdeManager}=require('./tools/cli/installers/lib/ide/manager');console.log(new IdeManager().getAvailableIdes().find(i=>i.value==='opencode')?'present':'missing')"
+</critical>
+
+<check if="any opencode check fails">
+  <action>Alert user that OpenCode integration is incomplete or missing</action>
+  <action>Provide recovery steps from claudedocs/opencode-integration-reference.md</action>
+  <action>Suggest restoring from previous backup or commit</action>
+  <goto step="1">Halt until OpenCode integration is restored</goto>
+</check>
+
+<action>Confirm OpenCode integration is complete and functional</action>
+</substep>
+
+<action>All fork modifications verified and ready for merge</action>
 </step>
 
 <step n="5" goal="Fetch upstream changes">
@@ -104,32 +136,75 @@ Reference file should include:
 <action>Display merge statistics: files changed, insertions, deletions</action>
 </step>
 
-<step n="7" goal="Verify modification preservation">
-<action>Execute post-merge verification to confirm critical modification survived</action>
+<step n="7" goal="Verify fork modifications preservation">
+<action>Execute post-merge verification to confirm all critical fork modifications survived</action>
 
+<substep n="7a" goal="Verify Installer Skip Block">
 <critical>Command: grep -A 2 "Skip workflow instructions" tools/cli/installers/lib/core/installer.js</critical>
 
 <check if="modification not found">
-  <action>Alert user that critical modification was lost during merge</action>
+  <action>Alert user that critical installer modification was lost during merge</action>
   <action>Load recovery instructions from reference documentation</action>
   <action>Guide user to manually re-insert the 4-line modification after config.yaml skip block</action>
   <action>Verify manual restoration before continuing</action>
 </check>
 
 <action>Confirm modification exists at same or nearby line numbers</action>
-<action>Verify git status shows clean merge completion</action>
 <action>Check that all expected modules still have install-menu-config.yaml files</action>
 
 <critical>Verification: find src/modules -name "install-menu-config.yaml" should show all modules intact</critical>
+</substep>
+
+<substep n="7b" goal="Verify OpenCode Integration">
+<action>Execute OpenCode verification checks to confirm fork-specific feature survived</action>
+
+<critical>Quick Verification Commands:</critical>
+
+<action>Check 1 - OpenCode installer file exists</action>
+<critical>Command: test -f tools/cli/installers/lib/ide/opencode.js && echo "✅ OpenCode present" || echo "❌ MISSING"</critical>
+
+<check if="opencode.js not found">
+  <action>Alert user that OpenCode integration was lost during merge</action>
+  <action>Identify most recent backup branch: git branch -a | grep backup-before | tail -1</action>
+  <action>Restore OpenCode: git checkout [backup-branch] -- tools/cli/installers/lib/ide/opencode.js</action>
+  <action>Verify restoration successful</action>
+</check>
+
+<action>Check 2 - comment-json dependency exists in package.json</action>
+<critical>Command: grep -q "comment-json" package.json && echo "✅ Dependency present" || echo "❌ MISSING"</critical>
+
+<check if="dependency not found">
+  <action>Alert user that comment-json dependency was lost during merge</action>
+  <action>Restore package.json from backup OR manually add: "comment-json": "^4.2.5"</action>
+  <action>Run: npm install</action>
+  <action>Verify: npm list comment-json</action>
+</check>
+
+<action>Check 3 - OpenCode is discoverable by IDE manager (runtime check)</action>
+<critical>Command: node -e "const {IdeManager}=require('./tools/cli/installers/lib/ide/manager');const opencode=new IdeManager().getAvailableIdes().find(i=>i.value==='opencode');console.log(opencode?'✅ OpenCode discoverable':'❌ MISSING from IDE list')"</critical>
+
+<check if="opencode not discoverable">
+  <action>Alert user about runtime discovery failure</action>
+  <action>Verify both opencode.js file AND comment-json dependency are present</action>
+  <action>Check for syntax errors: node -c tools/cli/installers/lib/ide/opencode.js</action>
+  <action>If file is corrupted, restore from backup branch</action>
+</check>
+
+<action>Confirm all three OpenCode checks passed</action>
+<action>Reference: Full recovery procedures in claudedocs/opencode-integration-reference.md</action>
+</substep>
+
+<action>Verify git status shows clean merge completion with all modifications intact</action>
 </step>
 
 <step n="8" goal="Update cross-session memories">
-<action>Prepare comprehensive memory update for Serena MCP with merge details</action>
-<action>Include merge date, commit hash, backup branch name, verification results</action>
+<action>Prepare comprehensive memory updates for Serena MCP with merge details</action>
+<action>Include merge date, commit hash, backup branch name, verification results for all modifications</action>
 <action>Document any conflicts encountered and how they were resolved</action>
 <action>Update merge workflow history and success metrics</action>
 
 <action>Write updated memory to Serena: CRITICAL-installer-fork-modification</action>
+<action>Write updated memory to Serena: CRITICAL-opencode-fork-integration</action>
 
 <action>Prepare episode for Graphiti MCP knowledge graph</action>
 <action>Include merge context, upstream commits pulled, modification preservation status</action>
