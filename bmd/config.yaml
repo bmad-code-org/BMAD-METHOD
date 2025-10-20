@@ -1,0 +1,12 @@
+# BMD Module Configuration
+# BMD (BMAD Development) - Tools for BMAD framework maintainers
+# Version: 1.0.0-alpha.0
+
+# Module Metadata
+module_code: bmd
+module_name: BMAD Development
+module_description: Specialized agents and workflows for maintaining and developing the BMAD framework itself
+
+cli_path: "tools/cli"
+tools_path: "tools"
+src_modules_path: "src/modules"

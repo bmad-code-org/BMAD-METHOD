@@ -20,7 +20,7 @@ instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
 # Required data files - CRITICAL for project type detection and documentation requirements
-project_types_csv: "{project-root}/bmad/bmm/workflows/3-solutioning/project-types/project-types.csv"
+project_types_csv: "{project-root}/bmad/bmm/workflows/3-solutioning/architecture/project-types/project-types.csv"
 architecture_registry_csv: "{project-root}/bmad/bmm/workflows/3-solutioning/templates/registry.csv"
 documentation_requirements_csv: "{installed_path}/documentation-requirements.csv"
 

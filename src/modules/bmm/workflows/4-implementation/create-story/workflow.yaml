@@ -22,7 +22,7 @@ variables:
   story_dir: "{config_source}:dev_story_location" # Directory where stories are stored
   epics_file: "{output_folder}/epics.md" # Preferred source for epic/story breakdown
   prd_file: "{output_folder}/PRD.md" # Fallback for requirements
-  solution-architecture_file: "{output_folder}/solution-architecture.md" # Optional architecture context
+  solution-architecture_file: "{output_folder}/architecture.md" # Optional architecture context
   tech_spec_file: "" # Will be auto-discovered from docs as tech-spec-epic-{{epic_num}}-*.md
   tech_spec_search_dir: "{project-root}/docs"
   tech_spec_glob_template: "tech-spec-epic-{{epic_num}}*.md"
@@ -30,7 +30,7 @@ variables:
     - "{project-root}/docs"
     - "{output_folder}"
   arch_docs_file_names: |
-    - solution-architecture.md
+    - architecture.md
     - infrastructure-architecture.md
   story_title: "" # Will be elicited if not derivable
   epic_num: 1

@@ -36,7 +36,7 @@ phases:
     workflows:
       - id: "tech-spec"
         required: true
-        agent: "architect"
+        agent: "pm"
         command: "tech-spec"
         output: "Creates story files for feature"
         note: "Must integrate with existing architecture"

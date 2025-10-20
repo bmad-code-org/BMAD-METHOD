@@ -45,15 +45,15 @@ phases:
     name: "Solutioning"
     conditional: "if_level_3_4"
     workflows:
-      - id: "solution-architecture"
+      - id: "create-architecture"
         required: true
         agent: "architect"
-        command: "solution-architecture"
+        command: "create-architecture"
         note: "Engine architecture, networking, systems"
-      - id: "assess-project-ready"
+      - id: "solutioning-gate-check"
         required: true
-        agent: "sm"
-        command: "assess-project-ready"
+        agent: "architect"
+        command: "solutioning-gate-check"
 
   - phase: 4
     name: "Implementation"

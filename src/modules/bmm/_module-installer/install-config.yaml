@@ -1,0 +1,69 @@
+# BMAD™ Method Core Configuration
+
+code: bmm
+name: "BMM: BMad Method Agile-AI Driven-Development"
+default_selected: true # This module will be selected by default for new installations
+
+prompt:
+  - "Thank you for choosing the BMAD™ Method, your gateway to dreaming, planning"
+  - "and building with real world proven techniques."
+  - "All paths are relative to project root, with no leading slash."
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+
+project_name:
+  prompt: "What is the title of your project you will be working on?"
+  default: "{directory_name}"
+  result: "{value}"
+
+user_skill_level:
+  prompt:
+    - "What is your technical experience level?"
+    - "This affects how agents explain concepts to you (NOT document content)."
+    - "Documents are always concise for LLM efficiency."
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - New to development, explain concepts clearly"
+    - value: "intermediate"
+      label: "Intermediate - Familiar with development, balance explanation with efficiency"
+    - value: "expert"
+      label: "Expert - Deep technical knowledge, be direct and technical"
+
+tech_docs:
+  prompt: "Where is Technical Documentation located within the project?"
+  default: "docs"
+  result: "{project-root}/{value}"
+
+dev_story_location:
+  prompt: "Where should development stories be stored?"
+  default: "docs/stories"
+  result: "{project-root}/{value}"
+
+# TEA Agent Configuration
+tea_use_mcp_enhancements:
+  prompt: "Enable Playwright MCP capabilities (healing, exploratory, verification)?"
+  default: true
+  result: "{value}"
+# kb_location:
+#   prompt: "Where should bmad knowledge base articles be stored?"
+#   default: "~/bmad/bmm/kb.md"
+#   result: "{value}"
+
+# desired_mcp_tools:
+#   prompt:
+#     - "Which MCP Tools will you be using? (Select all that apply)"
+#     - "Note: You will need to install these separately. Bindings will come post ALPHA along with other choices."
+#   result: "{value}"
+#   multi-select:
+#     - "Chrome Official MCP"
+#     - "Playwright"
+#     - "Context 7"
+#     - "Tavily"
+#     - "Perplexity"
+#     - "Jira"
+#     - "Trello"

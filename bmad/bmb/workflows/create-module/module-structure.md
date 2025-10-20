@@ -21,7 +21,7 @@ project-root/
 │
 └── bmad/{module-code}/            # Runtime instance
     ├── _module-installer/         # Installation files
-    │   ├── install-module-config.yaml
+    │   ├── install-config.yaml
     │   ├── installer.js          # Optional
     │   └── assets/               # Install assets
     ├── config.yaml               # User config
@@ -134,7 +134,7 @@ Tasks should be used for:
 
 ## Installation Infrastructure
 
-### Required: install-module-config.yaml
+### Required: install-config.yaml
 
 ```yaml
 module_name: 'Module Name'

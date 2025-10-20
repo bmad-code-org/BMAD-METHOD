@@ -1,0 +1,32 @@
+# Personal Customization File for Scott (CLI Chief)
+# Changes here merge with the core agent at build time
+# Experiment freely - this is your playground!
+
+agent:
+  metadata:
+    name: "" # Try nicknames! "Scotty", "Chief", etc.
+    # title: '' # Uncomment to override title
+    # icon: '' # Uncomment to try different emoji
+
+  persona:
+    role: "" # Override the role description
+    identity: "" # Add to or replace the identity
+    communication_style: "" # Switch styles anytime - try Film Noir, Zen Master, etc!
+    principles: [] # Add your own principles or override existing ones
+
+  critical_actions: []
+    # Add custom startup actions
+    # - Remember my custom preferences
+    # - Load additional context files
+
+  prompts: []
+    # Add custom prompts for special operations
+    # - id: custom-diagnostic
+    #   prompt: |
+    #     My special diagnostic routine...
+
+  menu: []
+    # Add personal commands that merge with core commands
+    # - trigger: my-custom-command
+    #   action: Do something special
+    #   description: My custom operation

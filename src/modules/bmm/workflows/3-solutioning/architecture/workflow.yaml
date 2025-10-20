@@ -1,0 +1,52 @@
+# Architecture Workflow Configuration
+name: architecture
+description: "Collaborative architectural decision facilitation for AI-agent consistency. Replaces template-driven architecture with intelligent, adaptive conversation that produces a decision-focused architecture document optimized for preventing agent conflicts."
+author: "BMad"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+
+# Input requirements - We work from PRD, Epics, and optionally UX Spec
+recommended_inputs:
+  - prd: "Product Requirements Document with FRs and NFRs"
+  - epics: "Epic definitions with user stories and acceptance criteria"
+  - ux_spec: "UX specification with interface designs and interaction patterns (optional)"
+
+# Input file references (fuzzy matched from output folder)
+prd_file: "{output_folder}/bmm-PRD.md or PRD.md or product-requirements.md"
+epics_file: "{output_folder}/bmm-epics.md or epics.md or user-stories.md"
+ux_spec_file: "{output_folder}/ux-spec.md or ux-specification.md or user-experience.md"
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/3-solutioning/architecture"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/architecture-template.md"
+
+# Knowledge bases for intelligent decision making
+decision_catalog: "{installed_path}/decision-catalog.yaml"
+architecture_patterns: "{installed_path}/architecture-patterns.yaml"
+pattern_categories: "{installed_path}/pattern-categories.csv"
+
+# Output configuration
+default_output_file: "{output_folder}/architecture.md"
+
+# Workflow metadata
+version: "1.3.2"
+replaces: "solution-architecture"
+paradigm: "facilitation-driven"
+execution_time: "30-90 minutes depending on user skill level"
+features:
+  - "Starter template discovery and integration"
+  - "Dynamic version verification via web search"
+  - "Adaptive facilitation by skill level"
+  - "Decision-focused architecture"
+  - "Novel pattern design for unique concepts"
+  - "Intelligent pattern identification - LLM figures out what patterns matter"
+  - "Implementation patterns for agent consistency"
