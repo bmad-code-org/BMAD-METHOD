@@ -220,6 +220,7 @@ class GitHubCopilotSetup extends BaseIdeSetup {
       'problems',
       'usages',
       'editFiles',
+      'new',
       'runCommands',
       'runTasks',
       'runTests',
