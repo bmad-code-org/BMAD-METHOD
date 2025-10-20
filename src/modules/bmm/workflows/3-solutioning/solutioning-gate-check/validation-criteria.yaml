@@ -56,9 +56,8 @@ validation_rules:
   level_3_4:
     required_documents:
       - prd
-      - solution_architecture
+      - architecture
       - epics_and_stories
-      - tech_spec # Optional at Level 4
 
     validations:
       - name: "PRD Completeness"
@@ -75,6 +74,9 @@ validation_rules:
           - "Integration points defined"
           - "Security architecture specified"
           - "Performance considerations addressed"
+          - "If architecture.md: Implementation patterns defined"
+          - "If architecture.md: Technology versions verified and current"
+          - "If architecture.md: Starter template command documented (if applicable)"
 
       - name: "PRD-Architecture Alignment"
         checks:
@@ -82,6 +84,8 @@ validation_rules:
           - "NFRs from PRD reflected in architecture"
           - "Technology choices support requirements"
           - "Scalability matches expected growth"
+          - "If UX spec exists: Architecture supports UX requirements"
+          - "If UX spec exists: Component library supports interaction patterns"
 
       - name: "Story Implementation Coverage"
         checks:
@@ -103,6 +107,7 @@ special_contexts:
   greenfield:
     additional_checks:
       - "Project initialization stories exist"
+      - "If using architecture.md: First story is starter template initialization"
       - "Development environment setup documented"
       - "CI/CD pipeline stories included"
       - "Initial data/schema setup planned"

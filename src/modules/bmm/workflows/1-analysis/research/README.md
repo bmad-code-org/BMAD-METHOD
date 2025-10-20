@@ -104,7 +104,7 @@ workflow research --type domain
 
 ```bash
 workflow research --type market --input product-brief.md --input competitor-list.md
-workflow research --type technical --input requirements.md --input solution-architecture.md
+workflow research --type technical --input requirements.md --input architecture.md
 workflow research --type deep_prompt --input research-question.md
 ```
 

@@ -35,7 +35,7 @@ Plans comprehensive test coverage strategy with risk assessment, priority classi
    - Identify all testable requirements
 
 2. **Load Architecture Context**
-   - Read solution-architecture.md for system design
+   - Read architecture.md for system design
    - Read tech-spec for implementation details
    - Identify technical constraints and dependencies
    - Note integration points and external systems

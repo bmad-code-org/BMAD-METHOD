@@ -43,7 +43,7 @@ The BMM (BMAD Method Module) orchestrates software development through four dist
 │                   PHASE 3: SOLUTIONING                       │
 │              (Software Levels 3-4 / Complex Games)           │
 ├──────────────────────────────────────────────────────────────┤
-│  3-solutioning ──→ solution-architecture.md                  │
+│  3-solutioning ──→ architecture.md                  │
 │       ↓                                                      │
 │  tech-spec (per epic, JIT during implementation)             │
 └────────────────────────────────────────────────────────────┬─┘
@@ -202,10 +202,10 @@ Architecture and technical design phase for complex projects.
 
 ### Workflows
 
-| Workflow          | Owner     | Purpose                        | Output                             | Timing            |
-| ----------------- | --------- | ------------------------------ | ---------------------------------- | ----------------- |
-| **3-solutioning** | Architect | Create overall architecture    | solution-architecture.md with ADRs | Once per project  |
-| **tech-spec**     | Architect | Create epic-specific tech spec | tech-spec-epic-N.md                | One per epic, JIT |
+| Workflow          | Owner     | Purpose                        | Output                    | Timing            |
+| ----------------- | --------- | ------------------------------ | ------------------------- | ----------------- |
+| **3-solutioning** | Architect | Create overall architecture    | architecture.md with ADRs | Once per project  |
+| **tech-spec**     | Architect | Create epic-specific tech spec | tech-spec-epic-N.md       | One per epic, JIT |
 
 ### Just-In-Time Tech Specs
 
@@ -411,8 +411,8 @@ plan-project (Phase 2)
   - Level 0: tech-spec.md + story-{slug}.md
   - Level 1: tech-spec.md + epic-stories.md + story-{slug}-N.md files
   - Level 2: PRD.md + epics.md (then tech-spec.md in Phase 3)
-  - Level 3-4: PRD.md + epics.md (then solution-architecture.md in Phase 3)
-- **Phase 3**: solution-architecture.md, epic-specific tech specs
+  - Level 3-4: PRD.md + epics.md (then architecture.md in Phase 3)
+- **Phase 3**: architecture.md, epic-specific tech specs
 - **Phase 4**: Story files, context XMLs, implemented code
 
 ## Best Practices

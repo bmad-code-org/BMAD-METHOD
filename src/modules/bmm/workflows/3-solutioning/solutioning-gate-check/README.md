@@ -41,7 +41,7 @@ The workflow adapts its validation based on project level:
 
 ### Level 3-4 Projects
 
-- Full validation of PRD, solution architecture, and comprehensive stories
+- Full validation of PRD, architecture document, and comprehensive stories
 - Deep cross-reference checking across all artifacts
 - Validates architectural decisions don't introduce scope creep
 - Checks UX artifacts if applicable
@@ -65,7 +65,7 @@ workflow solutioning-gate-check
 The workflow will automatically search your project's output folder for:
 
 - Product Requirements Documents (PRD)
-- Solution Architecture documents
+- Architecture documents
 - Technical Specifications
 - Epic and Story breakdowns
 - UX artifacts (if applicable)
@@ -107,6 +107,13 @@ The workflow uses systematic validation rules adapted to each project level:
 - **Story sequencing and dependencies**
 - **Greenfield project setup coverage**
 - **Risk identification and mitigation**
+
+For projects using the new architecture workflow (decision-architecture.md), additional validations include:
+
+- **Implementation patterns defined for consistency**
+- **Technology versions verified and current**
+- **Starter template initialization as first story**
+- **UX specification alignment (if provided)**
 
 ## Special Features
 

@@ -7,7 +7,7 @@
 - [ ] PRD exists and is complete (Level 2-4 projects)
 - [ ] PRD contains measurable success criteria
 - [ ] PRD defines clear scope boundaries and exclusions
-- [ ] Solution Architecture document exists (Level 3-4 projects)
+- [ ] Architecture document exists (architecture\*.md) (Level 3-4 projects)
 - [ ] Technical Specification exists with implementation details
 - [ ] Epic and story breakdown document exists
 - [ ] All documents are dated and versioned
@@ -29,6 +29,9 @@
 - [ ] Architecture doesn't introduce features beyond PRD scope
 - [ ] Performance requirements from PRD match architecture capabilities
 - [ ] Security requirements from PRD are fully addressed in architecture
+- [ ] If architecture.md: Implementation patterns are defined for consistency
+- [ ] If architecture.md: All technology choices have verified versions
+- [ ] If UX spec exists: Architecture supports UX requirements
 
 ### PRD to Stories Coverage (Level 2-4)
 
@@ -67,6 +70,7 @@
 ### Greenfield Project Specifics
 
 - [ ] Initial project setup and configuration stories exist
+- [ ] If using architecture.md: First story is starter template initialization command
 - [ ] Development environment setup is documented
 - [ ] CI/CD pipeline stories are included early in sequence
 - [ ] Database/storage initialization stories are properly placed

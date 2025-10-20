@@ -43,10 +43,10 @@ phases:
     name: "Solutioning"
     required: true
     workflows:
-      - id: "solution-architecture"
+      - id: "create-architecture"
         required: true
         agent: "architect"
-        command: "solution-architecture"
+        command: "create-architecture"
         output: "System-wide architecture document"
       - id: "solutioning-gate-check"
         required: true

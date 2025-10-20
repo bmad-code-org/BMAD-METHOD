@@ -27,7 +27,7 @@ default_output_file: "{output_folder}/implementation-readiness-report-{{date}}.m
 # Expected input documents (varies by project level)
 recommended_inputs:
   - prd: "{output_folder}/prd*.md"
-  - architecture: "{output_folder}/solution-architecture*.md"
+  - architecture: "{output_folder}/architecture*.md or {output_folder}/architecture*.md"
   - tech_spec: "{output_folder}/tech-spec*.md"
   - epics_stories: "{output_folder}/epic*.md"
   - ux_artifacts: "{output_folder}/ux*.md"

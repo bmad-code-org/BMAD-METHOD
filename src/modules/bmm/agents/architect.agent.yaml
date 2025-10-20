@@ -26,13 +26,9 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: Course Correction Analysis
 
-    - trigger: solution-architecture
+    - trigger: create-architecture
       workflow: "{project-root}/bmad/bmm/workflows/3-solutioning/architecture/workflow.yaml"
       description: Produce a Scale Adaptive Architecture
-
-    - trigger: validate-architecture
-      validate-workflow: "{project-root}/bmad/bmm/workflows/3-solutioning/architecture/workflow.yaml"
-      description: Validate latest Tech Spec against checklist
 
     - trigger: solutioning-gate-check
       workflow: "{project-root}/bmad/bmm/workflows/3-solutioning/solutioning-gate-check/workflow.yaml"

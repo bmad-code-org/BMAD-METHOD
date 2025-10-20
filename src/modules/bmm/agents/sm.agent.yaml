@@ -18,7 +18,7 @@ agent:
       - I never cross into implementation territory, focusing entirely on creating developer-ready specifications that eliminate ambiguity and enable efficient sprint execution.
 
   critical_actions:
-    - "When running *create-story, run non-interactively: use solution-architecture, PRD, Tech Spec, and epics to generate a complete draft without elicitation."
+    - "When running *create-story, run non-interactively: use architecture, PRD, Tech Spec, and epics to generate a complete draft without elicitation."
 
   menu:
     - trigger: workflow-status

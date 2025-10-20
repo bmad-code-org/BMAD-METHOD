@@ -198,7 +198,7 @@ When a game project completes the GDD and moves to solutioning:
 2. Loads GDD.md instead of PRD.md
 3. Matches game platforms to solutioning `registry.csv` game-\* entries
 4. Provides engine-specific guidance (Unity, Godot, Phaser, etc.)
-5. Generates solution-architecture.md with platform decisions
+5. Generates architecture.md with platform decisions
 6. Creates per-epic tech specs
 
 Example solutioning registry entries:

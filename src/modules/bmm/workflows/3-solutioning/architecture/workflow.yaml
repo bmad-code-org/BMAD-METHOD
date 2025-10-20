@@ -1,6 +1,6 @@
-# Solution Architecture Workflow Configuration
-name: solution-architecture
-description: "Scale-adaptive solution architecture generation."
+# Architecture Workflow Configuration
+name: architecture
+description: "Collaborative architectural decision facilitation for AI-agent consistency. Replaces template-driven architecture with intelligent, adaptive conversation that produces a decision-focused architecture document optimized for preventing agent conflicts."
 author: "BMad"
 
 # Critical variables
@@ -12,84 +12,41 @@ document_output_language: "{config_source}:document_output_language"
 user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
-# Inputs expected ( check output_folder or ask user if missing)
+# Input requirements - We work from PRD, Epics, and optionally UX Spec
 recommended_inputs:
-  - prd
-  - gdd
-  - spec
-  - architecture
-  - epics
-  - ux_spec
+  - prd: "Product Requirements Document with FRs and NFRs"
+  - epics: "Epic definitions with user stories and acceptance criteria"
+  - ux_spec: "UX specification with interface designs and interaction patterns (optional)"
 
-# Input requirements
-inputs:
-  - name: project_workflow_analysis_path
-    description: "Path to bmm-workflow-status.md from plan-project workflow"
-    default: "{output_folder}/bmm-workflow-status.md"
-    required: true
-  - name: project_level
-    description: "Project level (0-4) from analysis file"
-    type: integer
-    required: true
-
-# Output artifacts
-outputs:
-  - name: architecture.md
-    description: "Complete solution architecture document"
-    default: "{output_folder}/solution-architecture.md"
-  - name: architecture_decisions.md
-    description: "Architecture Decision Records (ADRs)"
-    default: "{output_folder}/architecture-decisions.md"
+# Input file references (fuzzy matched from output folder)
+prd_file: "{output_folder}/bmm-PRD.md or PRD.md or product-requirements.md"
+epics_file: "{output_folder}/bmm-epics.md or epics.md or user-stories.md"
+ux_spec_file: "{output_folder}/ux-spec.md or ux-specification.md or user-experience.md"
 
 # Module path and component files
 installed_path: "{project-root}/bmad/bmm/workflows/3-solutioning/architecture"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
+template: "{installed_path}/architecture-template.md"
 
-# Reference data files
-project_types: "{installed_path}/project-types/project-types.csv"
+# Knowledge bases for intelligent decision making
+decision_catalog: "{installed_path}/decision-catalog.yaml"
+architecture_patterns: "{installed_path}/architecture-patterns.yaml"
+pattern_categories: "{installed_path}/pattern-categories.csv"
 
-# Default output location
-default_output_file: "{output_folder}/solution-architecture.md"
+# Output configuration
+default_output_file: "{output_folder}/architecture.md"
 
-web_bundle:
-  name: "solution-architecture"
-  description: "Scale-adaptive solution architecture generation with dynamic template sections. Replaces legacy HLA workflow with modern BMAD Core compliance."
-  author: "BMad Builder"
-  instructions: "bmad/bmm/workflows/3-solutioning/architecture/instructions.md"
-  validation: "bmad/bmm/workflows/3-solutioning/architecture/checklist.md"
-  tech_spec_workflow: "bmad/bmm/workflows/4-implementation/epic-tech-context/workflow.yaml"
-  # Reference data files
-  project_types: "bmad/bmm/workflows/3-solutioning/architecture/project-types/project-types.csv"
-  # Workflow dependencies
-  existing_workflows:
-    - workflow_status: "bmad/bmm/workflows/workflow-status/workflow.yaml"
-  web_bundle_files:
-    - "bmad/bmm/workflows/3-solutioning/architecture/instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/checklist.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/ADR-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/project-types.csv"
-    # Instructions files
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/web-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/mobile-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/game-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/backend-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/data-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/cli-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/library-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/desktop-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/embedded-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/extension-instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/infrastructure-instructions.md"
-    # Template files
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/web-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/mobile-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/game-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/backend-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/data-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/cli-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/library-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/desktop-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/embedded-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/extension-template.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/project-types/infrastructure-template.md"
+# Workflow metadata
+version: "1.3.2"
+replaces: "solution-architecture"
+paradigm: "facilitation-driven"
+execution_time: "30-90 minutes depending on user skill level"
+features:
+  - "Starter template discovery and integration"
+  - "Dynamic version verification via web search"
+  - "Adaptive facilitation by skill level"
+  - "Decision-focused architecture"
+  - "Novel pattern design for unique concepts"
+  - "Intelligent pattern identification - LLM figures out what patterns matter"
+  - "Implementation patterns for agent consistency"

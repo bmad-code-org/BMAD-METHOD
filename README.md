@@ -220,7 +220,7 @@ The planning workflow adapts to:
 
 **Architect / Game Architect Agent**:
 
-- `solution-architecture` - Creates adaptive architecture based on project type
+- `architecture` - Creates adaptive architecture based on project type
   - No more document sharding
   - Adapts sections to your project (web, mobile, embedded, game, etc.)
   - Beyond basic concerns (complex testing, DevOps, security), specialized agents assist _(coming soon)_

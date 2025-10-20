@@ -1,461 +1,694 @@
-# Solution Architecture Workflow Instructions
+# Decision Architecture Workflow Instructions
 
-<workflow name="solution-architecture">
+<workflow name="architecture">
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language} and language MUSt be tailored to {user_skill_level}</critical>
+<critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication style based on {user_skill_level}</critical>
+<critical>The goal is ARCHITECTURAL DECISIONS that prevent AI agent conflicts, not detailed implementation specs</critical>
+<critical>Communicate all responses in {communication_language} and tailor to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
-<critical>DOCUMENT OUTPUT: Concise, technical, LLM-optimized. Use tables/lists over prose. Specific versions only. User skill level ({user_skill_level}) affects conversation style ONLY, not documented output content.</critical>
+<critical>This workflow replaces solution-architecture with a conversation-driven approach</critical>
 
 <step n="0" goal="Validate workflow and extract project configuration">
-  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-    <param>mode: data</param>
-    <param>data_request: project_config</param>
-  </invoke-workflow>
 
-  <check if="status_exists == false">
-    <output>**⚠️ No Workflow Status File Found**
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: data</param>
+  <param>data_request: project_config</param>
+</invoke-workflow>
 
-    Please run `workflow-init` first to:
+<check if="status_exists == false">
+  <output>**⚠️ No Workflow Status File Found**
 
-    - Define your project type and level
-    - Map out your workflow journey
-    - Create the status file
+The Decision Architecture workflow requires a status file to understand your project context.
 
-    Run: `workflow-init`
+Please run `workflow-init` first to:
 
-    After setup, return here to run solution-architecture.
-    </output>
-    <action>Exit workflow - cannot proceed without status file</action>
+- Define your project type and level
+- Map out your workflow journey
+- Create the status file
 
-  </check>
+Run: `workflow-init`
 
-  <check if="status_exists == true">
-    <action>Store {{status_file_path}} for later updates</action>
-    <action>Use extracted project configuration:</action>
-    - project_level: {{project_level}}
-    - field_type: {{field_type}}
-    - project_type: {{project_type}}
-    - has_user_interface: {{has_user_interface}}
-    - ui_complexity: {{ui_complexity}}
-    - ux_spec_path: {{ux_spec_path}}
-    - prd_status: {{prd_status}}
-  </check>
+After setup, return here to create your decision architecture.
+</output>
+<action>Exit workflow - cannot proceed without status file</action>
+</check>
+
+<check if="status_exists == true">
+  <action>Store {{status_file_path}} for later updates</action>
+
+  <check if="project_level < 3">
+    <output>**Note: Level {{project_level}} Project**
+
+Decision Architecture is typically for Level 3-4 projects, but can be used for any project that needs architectural planning.
+
+For Level {{project_level}}, we'll keep the architecture appropriately scoped.
+</output>
+</check>
+</check>
 </step>
 
-<step n="0.5" goal="Validate workflow sequencing and prerequisites">
+<step n="0.5" goal="Validate workflow sequencing">
 
 <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
   <param>mode: validate</param>
-  <param>calling_workflow: solution-architecture</param>
+  <param>calling_workflow: architecture</param>
 </invoke-workflow>
 
 <check if="warning != ''">
   <output>{{warning}}</output>
-  <ask>Continue with solution-architecture anyway? (y/n)</ask>
+  <ask>Continue with Decision Architecture anyway? (y/n)</ask>
   <check if="n">
     <output>{{suggestion}}</output>
     <action>Exit workflow</action>
   </check>
 </check>
 
-<action>Validate Prerequisites (BLOCKING):
+<action>Check for existing PRD and epics files using fuzzy matching</action>
 
-Check 1: PRD complete?
-IF prd_status != complete:
-❌ STOP WORKFLOW
-Output: "PRD is required before solution architecture.
+<action>Fuzzy match PRD file: {prd_file}</action>
+<check if="PRD_not_found">
+<output>**PRD Not Found**
 
-             REQUIRED: Complete PRD with FRs, NFRs, epics, and stories.
+Decision Architecture works from your Product Requirements Document (PRD).
 
-             Run: workflow plan-project
+Looking for: bmm-PRD.md, PRD.md, or product-requirements.md in {output_folder}
 
-             After PRD is complete, return here to run solution-architecture workflow."
-     END
+Please run the PRD workflow first to define your requirements.
 
-Check 2: UX Spec complete (if UI project)?
-IF has_user_interface == true AND ux_spec_missing:
-❌ STOP WORKFLOW
-Output: "UX Spec is required before solution architecture for UI projects.
+Run: `workflow prd`
+</output>
+<action>Exit workflow - PRD required</action>
+</check>
 
-             REQUIRED: Complete UX specification before proceeding.
-
-             Run: workflow ux-spec
-
-             The UX spec will define:
-             - Screen/page structure
-             - Navigation flows
-             - Key user journeys
-             - UI/UX patterns and components
-             - Responsive requirements
-             - Accessibility requirements
-
-             Once complete, the UX spec will inform:
-             - Frontend architecture and component structure
-             - API design (driven by screen data needs)
-             - State management strategy
-             - Technology choices (component libraries, animation, etc.)
-             - Performance requirements (lazy loading, code splitting)
-
-             After UX spec is complete at /docs/ux-spec.md, return here to run solution-architecture workflow."
-     END
-
-Check 3: All prerequisites met?
-IF all prerequisites met:
-✅ Prerequisites validated - PRD: complete - UX Spec: {{complete | not_applicable}}
-Proceeding with solution architecture workflow...
-
-1. Determine workflow path:
-   IF project_level == 0: - Skip solution architecture entirely - Output: "Level 0 project - validate/update tech-spec.md only" - STOP WORKFLOW
-   ELSE: - Proceed with full solution architecture workflow
-   </action>
-   <template-output>prerequisites_and_scale_assessment</template-output>
-   </step>
-
-<step n="1" goal="Analyze requirements and identify project characteristics">
-
-<action>Load and deeply understand the requirements documents (PRD/GDD), epics and the stories to complete them and any UX specifications.</action>
-
-<action>Intelligently determine the true nature of this project by analyzing:
-
-- The primary document type (PRD for software, GDD for games)
-- Core functionality and features described
-- Technical constraints and requirements mentioned
-- User interface complexity and interaction patterns
-- Performance and scalability requirements
-- Integration needs with external services
-  </action>
-
-<action>Extract and synthesize the essential architectural drivers:
-
-- What type of system is being built (web, mobile, game, library, etc.)
-- What are the critical quality attributes (performance, security, usability)
-- What constraints exist (technical, business, regulatory)
-- What integrations are required
-- What scale is expected
-  </action>
-
-<action>If UX specifications exist, understand the user experience requirements and how they drive technical architecture:
-
-- Screen/page inventory and complexity
-- Navigation patterns and user flows
-- Real-time vs. static interactions
-- Accessibility and responsive design needs
-- Performance expectations from a user perspective
-  </action>
-
-<action>Identify gaps between requirements and technical specifications:
-
-- What architectural decisions are already made vs. what needs determination
-- Misalignments between UX designs and functional requirements
-- Missing enabler requirements that will be needed for implementation
-  </action>
-
-<template-output>requirements_analysis</template-output>
-</step>
 </step>
 
-<step n="2" goal="Understand user context and preferences">
+<step n="1" goal="Load and understand project context">
+  <action>Load the PRD using fuzzy matching: {prd_file}</action>
+  <action>Load epics file using fuzzy matching: {epics_file}</action>
 
-<action>Engage with the user to understand their technical context and preferences:
-
-- Note: User skill level is {user_skill_level} (from config)
-- Learn about any existing technical decisions or constraints
-- Understand team capabilities and preferences
-- Identify any existing infrastructure or systems to integrate with
-  </action>
-
-<action>Based on {user_skill_level}, adapt YOUR CONVERSATIONAL STYLE:
-
-<check if="{user_skill_level} == 'beginner'">
-  - Explain architectural concepts as you discuss them
-  - Be patient and educational in your responses
-  - Clarify technical terms when introducing them
+<action>Check for UX specification using fuzzy matching:
+<action>Attempt to locate: {ux_spec_file}</action>
+<check if="ux_spec_found">
+<action>Load UX spec and extract architectural implications: - Component complexity (simple forms vs rich interactions) - Animation/transition requirements - Real-time update needs (live data, collaborative features) - Platform-specific UI requirements - Accessibility standards (WCAG compliance level) - Responsive design breakpoints - Offline capability requirements - Performance expectations (load times, interaction responsiveness)
+</action>
 </check>
-
-<check if="{user_skill_level} == 'intermediate'">
-  - Balance explanations with efficiency
-  - Assume familiarity with common concepts
-  - Explain only complex or unusual patterns
-</check>
-
-<check if="{user_skill_level} == 'expert'">
-  - Be direct and technical in discussions
-  - Skip basic explanations
-  - Focus on advanced considerations and edge cases
-</check>
-
-NOTE: This affects only how you TALK to the user, NOT the documents you generate.
-The architecture document itself should always be concise and technical.
 </action>
 
-<template-output>user_context</template-output>
+<action>Extract and understand from PRD: - Functional Requirements (what it must do) - Non-Functional Requirements (performance, security, compliance, etc.) - Epic structure and user stories - Acceptance criteria - Any technical constraints mentioned
+</action>
+
+<action>Count and assess project scale: - Number of epics: {{epic_count}} - Number of stories: {{story_count}} - Complexity indicators (real-time, multi-tenant, regulated, etc.) - UX complexity level (if UX spec exists)
+</action>
+
+<action>Reflect understanding back to {user_name}:
+"I'm reviewing your project documentation for {{project_name}}.
+I see {{epic_count}} epics with {{story_count}} total stories.
+{{if_ux_spec}}I also found your UX specification which defines the user experience requirements.{{/if_ux_spec}}
+
+     Key aspects I notice:
+     - [Summarize core functionality]
+     - [Note critical NFRs]
+     {{if_ux_spec}}- [Note UX complexity and requirements]{{/if_ux_spec}}
+     - [Identify unique challenges]
+
+     This will help me guide you through the architectural decisions needed
+     to ensure AI agents implement this consistently."
+
+  </action>
+
+<ask>Does this match your understanding of the project?</ask>
+<template-output>project_context_understanding</template-output>
 </step>
 
-<step n="3" goal="Determine overall architecture approach">
+<step n="2" goal="Discover and evaluate starter templates">
+  <critical>Modern starter templates make many good architectural decisions by default</critical>
 
-<action>Based on the requirements analysis, determine the most appropriate architectural patterns:
+<action>Based on PRD analysis, identify the primary technology domain: - Web application → Look for Next.js, Vite, Remix starters - Mobile app → Look for React Native, Expo, Flutter starters - API/Backend → Look for NestJS, Express, Fastify starters - CLI tool → Look for CLI framework starters - Full-stack → Look for T3, RedwoodJS, Blitz starters
+</action>
 
-- Consider the scale, complexity, and team size to choose between monolith, microservices, or serverless
-- Evaluate whether a single repository or multiple repositories best serves the project needs
-- Think about deployment and operational complexity vs. development simplicity
-  </action>
+  <check if="ux_spec_loaded">
+    <action>Consider UX requirements when selecting starter:
+      - Rich animations → Framer Motion compatible starter
+      - Complex forms → React Hook Form included starter
+      - Real-time features → Socket.io or WebSocket ready starter
+      - Accessibility focus → WCAG-compliant component library starter
+      - Design system → Storybook-enabled starter
+    </action>
+  </check>
 
-<action>Guide the user through architectural pattern selection by discussing trade-offs and implications rather than presenting a menu of options. Help them understand what makes sense for their specific context.</action>
+<action>Search for relevant starter templates:
+<WebSearch>{{primary_technology}} starter template CLI create command latest 2024</WebSearch>
+<WebSearch>{{primary_technology}} boilerplate generator latest options</WebSearch>
+</action>
 
-<template-output>architecture_patterns</template-output>
+  <check if="starter_templates_found">
+    <action>Investigate what each starter provides:
+      <WebSearch>{{starter_name}} default setup technologies included latest</WebSearch>
+      <WebSearch>{{starter_name}} project structure file organization</WebSearch>
+    </action>
+
+    <check if="{user_skill_level} == 'expert'">
+      <action>Present starter options concisely:
+        "Found {{starter_name}} which provides:
+         {{quick_decision_list}}
+
+         This would establish our base architecture. Use it?"
+      </action>
+    </check>
+
+    <check if="{user_skill_level} == 'beginner'">
+      <action>Explain starter benefits:
+        "I found {{starter_name}}, which is like a pre-built foundation for your project.
+
+         Think of it like buying a prefab house frame instead of cutting each board yourself.
+
+         It makes these decisions for you:
+         {{friendly_decision_list}}
+
+         This is a great starting point that follows best practices. Should we use it?"
+      </action>
+    </check>
+
+    <ask>Use {{starter_name}} as the foundation? (recommended) [y/n]</ask>
+
+    <check if="user_accepts_starter">
+      <action>Get current starter command and options:
+        <WebSearch>{{starter_name}} CLI command options flags latest 2024</WebSearch>
+      </action>
+
+      <action>Document the initialization command:
+        Store command: {{full_starter_command_with_options}}
+        Example: "npx create-next-app@latest my-app --typescript --tailwind --app"
+      </action>
+
+      <action>Extract and document starter-provided decisions:
+        Starter provides these architectural decisions:
+        - Language/TypeScript: {{provided_or_not}}
+        - Styling solution: {{provided_or_not}}
+        - Testing framework: {{provided_or_not}}
+        - Linting/Formatting: {{provided_or_not}}
+        - Build tooling: {{provided_or_not}}
+        - Project structure: {{provided_pattern}}
+      </action>
+
+      <action>Mark these decisions as "PROVIDED BY STARTER" in our decision tracking</action>
+
+      <action>Note for first implementation story:
+        "Project initialization using {{starter_command}} should be the first implementation story"
+      </action>
+    </check>
+
+    <check if="user_rejects_starter">
+      <ask>Any specific reason to avoid the starter? (helps me understand constraints)</ask>
+      <action>Note: Manual setup required, all decisions need to be made explicitly</action>
+    </check>
+
+  </check>
+
+  <check if="no_starter_found_or_applicable">
+    <action>Note: No standard starter template found for this project type.
+            Will need to make all architectural decisions explicitly.</action>
+  </check>
+
+<template-output>starter_template_decision</template-output>
 </step>
 
-<step n="4" goal="Design component boundaries and structure">
+<step n="3" goal="Adapt facilitation style and identify remaining decisions">
+  <action>Based on {user_skill_level} from config, set facilitation approach:
 
-<action>Analyze the epics and requirements to identify natural boundaries for components or services:
+  <check if="{user_skill_level} == 'expert'">
+    Set mode: EXPERT
+    - Use technical terminology freely
+    - Move quickly through decisions
+    - Assume familiarity with patterns and tools
+    - Focus on edge cases and advanced concerns
+  </check>
 
-- Group related functionality that changes together
-- Identify shared infrastructure needs (authentication, logging, monitoring)
-- Consider data ownership and consistency boundaries
-- Think about team structure and ownership
+  <check if="{user_skill_level} == 'intermediate'">
+    Set mode: INTERMEDIATE
+    - Balance technical accuracy with clarity
+    - Explain complex patterns briefly
+    - Confirm understanding at key points
+    - Provide context for non-obvious choices
+  </check>
+
+  <check if="{user_skill_level} == 'beginner'">
+    Set mode: BEGINNER
+    - Use analogies and real-world examples
+    - Explain technical concepts in simple terms
+    - Provide education about why decisions matter
+    - Protect from complexity overload
+  </check>
   </action>
 
-<action>Map epics to architectural components, ensuring each epic has a clear home and the overall structure supports the planned functionality.</action>
+<action>Load decision catalog: {decision_catalog}</action>
+<action>Load architecture patterns: {architecture_patterns}</action>
 
-<template-output>component_structure</template-output>
+<action>Analyze PRD against patterns to identify needed decisions: - Match functional requirements to known patterns - Identify which categories of decisions are needed - Flag any novel/unique aspects requiring special attention - Consider which decisions the starter template already made (if applicable)
+</action>
+
+<action>Create decision priority list:
+CRITICAL (blocks everything): - {{list_of_critical_decisions}}
+
+    IMPORTANT (shapes architecture):
+    - {{list_of_important_decisions}}
+
+    NICE-TO-HAVE (can defer):
+    - {{list_of_optional_decisions}}
+
+  </action>
+
+<action>Announce plan to {user_name} based on mode:
+<check if="mode == 'EXPERT'">
+"Based on your PRD, we need to make {{total_decision_count}} architectural decisions.
+{{starter_covered_count}} are covered by the starter template.
+Let's work through the remaining {{remaining_count}} decisions."
+</check>
+
+    <check if="mode == 'BEGINNER'">
+      "Great! I've analyzed your requirements and found {{total_decision_count}} technical
+       choices we need to make. Don't worry - I'll guide you through each one and explain
+       why it matters. {{if_starter}}The starter template handles {{starter_covered_count}}
+       of these automatically.{{/if_starter}}"
+    </check>
+
+  </action>
+
+<template-output>decision_identification</template-output>
 </step>
 
-<step n="5" goal="Make project-specific technical decisions">
+<step n="4" goal="Facilitate collaborative decision making" repeat="for-each-decision">
+  <critical>Each decision must be made WITH the user, not FOR them</critical>
+  <critical>ALWAYS verify current versions using WebSearch - NEVER trust hardcoded versions</critical>
 
-<critical>Use intent-based decision making, not prescriptive checklists.</critical>
+<action>For each decision in priority order:</action>
 
-<action>Based on requirements analysis, identify the project domain(s).
-Note: Projects can be hybrid (e.g., web + mobile, game + backend service).
+<action>Present the decision based on mode:
+<check if="mode == 'EXPERT'">
+"{{Decision_Category}}: {{Specific_Decision}}
+Options: {{concise_option_list_with_tradeoffs}}
+Recommendation: {{recommendation}} for {{reason}}"
+</check>
 
-Use the simplified project types mapping:
-{{installed_path}}/project-types/project-types.csv
+    <check if="mode == 'INTERMEDIATE'">
+      "Next decision: {{Human_Friendly_Category}}
 
-This contains ~11 core project types that cover 99% of software projects.</action>
+       We need to choose {{Specific_Decision}}.
 
-<action>For identified domains, reference the intent-based instructions:
-{{installed_path}}/project-types/{{type}}-instructions.md
+       Common options:
+       {{option_list_with_brief_explanations}}
 
-These are guidance files, not prescriptive checklists.</action>
+       For your project, {{recommendation}} would work well because {{reason}}."
+    </check>
 
-<action>IMPORTANT: Instructions are guidance, not checklists.
+    <check if="mode == 'BEGINNER'">
+      "Let's talk about {{Human_Friendly_Category}}.
 
-- Use your knowledge to identify what matters for THIS project
-- Consider emerging technologies not in any list
-- Address unique requirements from the PRD/GDD
-- Focus on decisions that affect implementation consistency
+       {{Educational_Context_About_Why_This_Matters}}
+
+       Think of it like {{real_world_analogy}}.
+
+       Your main options:
+       {{friendly_options_with_pros_cons}}
+
+       My suggestion: {{recommendation}}
+       This is good for you because {{beginner_friendly_reason}}."
+    </check>
+
   </action>
 
-<action>Engage with the user to make all necessary technical decisions:
+  <check if="decision_involves_specific_technology">
+    <action>Verify current stable version:
+      <WebSearch>{{technology}} latest stable version 2024</WebSearch>
+      <WebSearch>{{technology}} current LTS version</WebSearch>
+    </action>
 
-- Use the question files to ensure coverage of common areas
-- Go beyond the standard questions to address project-specific needs
-- Focus on decisions that will affect implementation consistency
-- Get specific versions for all technology choices
-- Document clear rationale for non-obvious decisions
-  </action>
+    <action>Update decision record with verified version:
+      Technology: {{technology}}
+      Verified Version: {{version_from_search}}
+      Verification Date: {{today}}
+    </action>
 
-<action>Remember: The goal is to make enough definitive decisions that future implementation agents can work autonomously without architectural ambiguity.</action>
+  </check>
 
-<template-output>technical_decisions</template-output>
+<ask>What's your preference? (or 'explain more' for details)</ask>
+
+  <check if="user_wants_more_info">
+    <action>Provide deeper explanation appropriate to skill level</action>
+    <check if="complex_tradeoffs">
+      <action>Consider using advanced elicitation:
+        "Would you like to explore innovative approaches to this decision?
+         I can help brainstorm unconventional solutions if you have specific goals."
+      </action>
+    </check>
+  </check>
+
+<action>Record decision:
+Category: {{category}}
+Decision: {{user_choice}}
+Version: {{verified_version_if_applicable}}
+Affects Epics: {{list_of_affected_epics}}
+Rationale: {{user_reasoning_or_default}}
+Provided by Starter: {{yes_if_from_starter}}
+</action>
+
+<action>Check for cascading implications:
+"This choice means we'll also need to {{related_decisions}}"
+</action>
+
+<template-output>decision_record</template-output>
 </step>
 
-<step n="6" goal="Generate concise solution architecture document">
+<step n="5" goal="Address cross-cutting concerns">
+  <critical>These decisions affect EVERY epic and story</critical>
 
-<action>Select the appropriate adaptive template:
-{{installed_path}}/project-types/{{type}}-template.md</action>
+<action>Facilitate decisions for consistency patterns: - Error handling strategy (How will all agents handle errors?) - Logging approach (Structured? Format? Levels?) - Date/time handling (Timezone? Format? Library?) - Authentication pattern (Where? How? Token format?) - API response format (Structure? Status codes? Errors?) - Testing strategy (Unit? Integration? E2E?)
+</action>
 
-<action>Template selection follows the naming convention:
+  <check if="{user_skill_level} == 'beginner'">
+    <action>Explain why these matter:
+      "These are rules that EVERY part of your app must follow.
+       If we don't decide now, each AI agent will do it differently,
+       and your app won't work properly when the pieces come together."
+    </action>
+  </check>
 
-- Web project → web-template.md
-- Mobile app → mobile-template.md
-- Game project → game-template.md (adapts heavily based on game type)
-- Backend service → backend-template.md
-- Data pipeline → data-template.md
-- CLI tool → cli-template.md
-- Library/SDK → library-template.md
-- Desktop app → desktop-template.md
-- Embedded system → embedded-template.md
-- Extension → extension-template.md
-- Infrastructure → infrastructure-template.md
-
-For hybrid projects, choose the primary domain or intelligently merge relevant sections from multiple templates.</action>
-
-<action>Adapt the template heavily based on actual requirements.
-Templates are starting points, not rigid structures.</action>
-
-<action>Generate a comprehensive yet concise architecture document that includes:
-
-MANDATORY SECTIONS (all projects):
-
-1. Executive Summary (1-2 paragraphs max)
-2. Technology Decisions Table - SPECIFIC versions for everything
-3. Repository Structure and Source Tree
-4. Component Architecture
-5. Data Architecture (if applicable)
-6. API/Interface Contracts (if applicable)
-7. Key Architecture Decision Records
-
-The document MUST be optimized for LLM consumption:
-
-- Use tables over prose wherever possible
-- List specific versions, not generic technology names
-- Include complete source tree structure
-- Define clear interfaces and contracts
-- NO verbose explanations (even for beginners - they get help in conversation, not docs)
-- Technical and concise throughout
-  </action>
-
-<action>Ensure the document provides enough technical specificity that implementation agents can:
-
-- Set up the development environment correctly
-- Implement features consistently with the architecture
-- Make minor technical decisions within the established framework
-- Understand component boundaries and responsibilities
-  </action>
-
-<template-output>solution_architecture</template-output>
+<template-output>cross_cutting_decisions</template-output>
 </step>
 
-<step n="7" goal="Validate architecture completeness and clarity">
+<step n="6" goal="Define project structure and boundaries">
+  <action>Based on all decisions made, define the project structure</action>
 
-<critical>Quality gate to ensure the architecture is ready for implementation.</critical>
+<action>Create comprehensive source tree: - Root configuration files - Source code organization - Test file locations - Build/dist directories - Documentation structure
+</action>
 
-<action>Perform a comprehensive validation of the architecture document:
+<action>Map epics to architectural boundaries:
+"Epic: {{epic_name}} → Lives in {{module/directory/service}}"
+</action>
 
-- Verify every requirement has a technical solution
-- Ensure all technology choices have specific versions
-- Check that the document is free of ambiguous language
-- Validate that each epic can be implemented with the defined architecture
-- Confirm the source tree structure is complete and logical
-  </action>
+<action>Define integration points: - Where do components communicate? - What are the API boundaries? - How do services interact?
+</action>
 
-<action>Generate an Epic Alignment Matrix showing how each epic maps to:
-
-- Architectural components
-- Data models
-- APIs and interfaces
-- External integrations
-  This matrix helps validate coverage and identify gaps.</action>
-
-<action>If issues are found, work with the user to resolve them before proceeding. The architecture must be definitive enough for autonomous implementation.</action>
-
-<template-output>cohesion_validation</template-output>
+<template-output>project_structure</template-output>
 </step>
 
-<step n="7.5" goal="Address specialist concerns" optional="true">
+<step n="7" goal="Design novel architectural patterns" optional="true">
+  <critical>Some projects require INVENTING new patterns, not just choosing existing ones</critical>
 
-<action>Assess the complexity of specialist areas (DevOps, Security, Testing) based on the project requirements:
+<action>Scan PRD for concepts that don't have standard solutions: - Novel interaction patterns (e.g., "swipe to match" before Tinder existed) - Unique multi-component workflows (e.g., "viral invitation system") - New data relationships (e.g., "social graph" before Facebook) - Unprecedented user experiences (e.g., "ephemeral messages" before Snapchat) - Complex state machines crossing multiple epics
+</action>
 
-- For simple deployments and standard security, include brief inline guidance
-- For complex requirements (compliance, multi-region, extensive testing), create placeholders for specialist workflows
-  </action>
+  <check if="novel_patterns_detected">
+    <action>For each novel pattern identified:</action>
 
-<action>Engage with the user to understand their needs in these specialist areas and determine whether to address them now or defer to specialist agents.</action>
+    <action>Engage user in design collaboration:
+      <check if="{user_skill_level} == 'expert'">
+        "The {{pattern_name}} concept requires architectural innovation.
 
-<template-output>specialist_guidance</template-output>
+         Core challenge: {{challenge_description}}
+
+         Let's design the component interaction model:"
+      </check>
+
+      <check if="{user_skill_level} == 'beginner'">
+        "Your idea about {{pattern_name}} is unique - there isn't a standard way to build this yet!
+
+         This is exciting - we get to invent the architecture together.
+
+         Let me help you think through how this should work:"
+      </check>
+    </action>
+
+    <action>Facilitate pattern design:
+      1. Identify core components involved
+      2. Map data flow between components
+      3. Design state management approach
+      4. Create sequence diagrams for complex flows
+      5. Define API contracts for the pattern
+      6. Consider edge cases and failure modes
+    </action>
+
+    <action>Use advanced elicitation for innovation:
+      "What if we approached this differently?
+       - What would the ideal user experience look like?
+       - Are there analogies from other domains we could apply?
+       - What constraints can we challenge?"
+    </action>
+
+    <action>Document the novel pattern:
+      Pattern Name: {{pattern_name}}
+      Purpose: {{what_problem_it_solves}}
+      Components:
+        {{component_list_with_responsibilities}}
+      Data Flow:
+        {{sequence_description_or_diagram}}
+      Implementation Guide:
+        {{how_agents_should_build_this}}
+      Affects Epics:
+        {{epics_that_use_this_pattern}}
+    </action>
+
+    <action>Validate pattern completeness:
+      "Does this {{pattern_name}} design cover all the use cases in your epics?
+       - {{use_case_1}}: ✓ Handled by {{component}}
+       - {{use_case_2}}: ✓ Handled by {{component}}
+       ..."
+    </action>
+
+  </check>
+
+  <check if="no_novel_patterns">
+    <action>Note: All patterns in this project have established solutions.
+            Proceeding with standard architectural patterns.</action>
+  </check>
+
+<template-output>novel_pattern_designs</template-output>
 </step>
 
-<step n="8" goal="Refine requirements based on architecture" optional="true">
+<step n="8" goal="Define implementation patterns to prevent agent conflicts">
+  <critical>These patterns ensure multiple AI agents write compatible code</critical>
+  <critical>Focus on what agents could decide DIFFERENTLY if not specified</critical>
 
-<action>If the architecture design revealed gaps or needed clarifications in the requirements:
+<action>Load pattern categories: {pattern_categories}</action>
 
-- Identify missing enabler epics (e.g., infrastructure setup, monitoring)
-- Clarify ambiguous stories based on technical decisions
-- Add any newly discovered non-functional requirements
+<action>Based on chosen technologies, identify potential conflict points:
+"Given that we're using {{tech_stack}}, agents need consistency rules for:"
+</action>
+
+<action>For each relevant pattern category, facilitate decisions:
+
+    NAMING PATTERNS (How things are named):
+    <check if="has_api">
+      - REST endpoint naming: /users or /user? Plural or singular?
+      - Route parameter format: :id or {id}?
+    </check>
+    <check if="has_database">
+      - Table naming: users or Users or user?
+      - Column naming: user_id or userId?
+      - Foreign key format: user_id or fk_user?
+    </check>
+    <check if="has_frontend">
+      - Component naming: UserCard or user-card?
+      - File naming: UserCard.tsx or user-card.tsx?
+    </check>
+
+    STRUCTURE PATTERNS (How things are organized):
+    - Where do tests live? __tests__/ or *.test.ts co-located?
+    - How are components organized? By feature or by type?
+    - Where do shared utilities go?
+
+    FORMAT PATTERNS (Data exchange formats):
+    <check if="has_api">
+      - API response wrapper? {data: ..., error: ...} or direct response?
+      - Error format? {message, code} or {error: {type, detail}}?
+      - Date format in JSON? ISO strings or timestamps?
+    </check>
+
+    COMMUNICATION PATTERNS (How components interact):
+    <check if="has_events">
+      - Event naming convention?
+      - Event payload structure?
+    </check>
+    <check if="has_state_management">
+      - State update pattern?
+      - Action naming convention?
+    </check>
+
+    LIFECYCLE PATTERNS (State and flow):
+    - How are loading states handled?
+    - What's the error recovery pattern?
+    - How are retries implemented?
+
+    LOCATION PATTERNS (Where things go):
+    - API route structure?
+    - Static asset organization?
+    - Config file locations?
+
+    CONSISTENCY PATTERNS (Cross-cutting):
+    - How are dates formatted in the UI?
+    - What's the logging format?
+    - How are user-facing errors written?
+
   </action>
 
-<action>Work with the user to update the PRD if necessary, ensuring alignment between requirements and architecture.</action>
+  <check if="{user_skill_level} == 'expert'">
+    <action>Rapid-fire through patterns:
+      "Quick decisions on implementation patterns:
+       - {{pattern}}: {{suggested_convention}} OK? [y/n/specify]"
+    </action>
+  </check>
+
+  <check if="{user_skill_level} == 'beginner'">
+    <action>Explain each pattern's importance:
+      "Let me explain why this matters:
+       If one AI agent names database tables 'users' and another names them 'Users',
+       your app will crash. We need to pick one style and make sure everyone follows it."
+    </action>
+  </check>
+
+<action>Document implementation patterns:
+Category: {{pattern_category}}
+Pattern: {{specific_pattern}}
+Convention: {{decided_convention}}
+Example: {{concrete_example}}
+Enforcement: "All agents MUST follow this pattern"
+</action>
+
+<template-output>implementation_patterns</template-output>
 </step>
 
-<step n="9" goal="Generate epic-specific technical specifications">
+<step n="9" goal="Validate architectural coherence">
+  <action>Run coherence checks:</action>
 
-<action>For each epic, create a focused technical specification that extracts only the relevant parts of the architecture:
+<action>Check decision compatibility: - Do all decisions work together? - Are there any conflicting choices? - Do the versions align properly?
+</action>
 
-- Technologies specific to that epic
-- Component details for that epic's functionality
-- Data models and APIs used by that epic
-- Implementation guidance specific to the epic's stories
-  </action>
+<action>Verify epic coverage: - Does every epic have architectural support? - Are all user stories implementable with these decisions? - Are there any gaps?
+</action>
 
-<action>These epic-specific specs provide focused context for implementation without overwhelming detail.</action>
+<action>Validate pattern completeness: - Are there any patterns we missed that agents would need? - Do novel patterns integrate with standard architecture? - Are implementation patterns comprehensive enough?
+</action>
 
-<template-output>epic_tech_specs</template-output>
+  <check if="issues_found">
+    <action>Address issues with {user_name}:
+      "I notice {{issue_description}}.
+       We should {{suggested_resolution}}."
+    </action>
+    <ask>How would you like to resolve this?</ask>
+    <action>Update decisions based on resolution</action>
+  </check>
+
+<template-output>coherence_validation</template-output>
 </step>
 
-<step n="10" goal="Handle polyrepo documentation" optional="true">
+<step n="10" goal="Generate decision architecture document">
+  <critical>The document must be complete, specific, and validation-ready</critical>
+  <critical>This is the consistency contract for all AI agents</critical>
 
-<action>If this is a polyrepo project, ensure each repository has access to the complete architectural context:
+<action>Load template: {architecture_template}</action>
 
-- Copy the full architecture documentation to each repository
-- This ensures every repo has the complete picture for autonomous development
+<action>Generate sections: 1. Executive Summary (2-3 sentences about the architecture approach) 2. Project Initialization (starter command if applicable) 3. Decision Summary Table (with verified versions and epic mapping) 4. Complete Project Structure (full tree, no placeholders) 5. Epic to Architecture Mapping (every epic placed) 6. Technology Stack Details (versions, configurations) 7. Integration Points (how components connect) 8. Novel Pattern Designs (if any were created) 9. Implementation Patterns (all consistency rules) 10. Consistency Rules (naming, organization, formats) 11. Data Architecture (models and relationships) 12. API Contracts (request/response formats) 13. Security Architecture (auth, authorization, data protection) 14. Performance Considerations (from NFRs) 15. Deployment Architecture (where and how) 16. Development Environment (setup and prerequisites) 17. Architecture Decision Records (key decisions with rationale)
+</action>
+
+<action>Fill template with all collected decisions and patterns</action>
+
+<action>Ensure starter command is first implementation story:
+<check if="using_starter_template">
+"## Project Initialization
+
+       First implementation story should execute:
+       ```bash
+       {{starter_command_with_options}}
+       ```
+
+       This establishes the base architecture with these decisions:
+       {{starter_provided_decisions}}"
+    </check>
+
   </action>
-  </step>
 
-<step n="11" goal="Finalize architecture and prepare for implementation">
+<template-output>architecture_document</template-output>
+</step>
 
-<action>Validate that the architecture package is complete:
+<step n="11" goal="Validate document completeness">
+  <action>Load validation checklist: {installed_path}/checklist.md</action>
 
-- Solution architecture document with all technical decisions
-- Epic-specific technical specifications
-- Cohesion validation report
-- Clear source tree structure
-- Definitive technology choices with versions
-  </action>
+<action>Run validation checklist from {installed_path}/checklist.md</action>
 
-<action>Prepare the story backlog from the PRD/epics for Phase 4 implementation.</action>
+<action>Verify MANDATORY items:
+□ Decision table has Version column with specific versions
+□ Every epic is mapped to architecture components
+□ Source tree is complete, not generic
+□ No placeholder text remains
+□ All FRs from PRD have architectural support
+□ All NFRs from PRD are addressed
+□ Implementation patterns cover all potential conflicts
+□ Novel patterns are fully documented (if applicable)
+</action>
+
+  <check if="validation_failed">
+    <action>Fix missing items automatically</action>
+    <goto step="10">Regenerate document section</goto>
+  </check>
+
+<template-output>validation_results</template-output>
+</step>
+
+<step n="12" goal="Final review and update workflow status">
+  <action>Present completion summary:</action>
+
+  <check if="{user_skill_level} == 'expert'">
+    "Architecture complete. {{decision_count}} decisions documented.
+     Ready for implementation phase."
+  </check>
+
+  <check if="{user_skill_level} == 'beginner'">
+    "Excellent! Your architecture is complete. You made {{decision_count}} important
+     decisions that will keep AI agents consistent as they build your app.
+
+     What happens next:
+     1. AI agents will read this architecture before implementing each story
+     2. They'll follow your technical choices exactly
+     3. Your app will be built with consistent patterns throughout
+
+     You're ready to move to the implementation phase!"
+
+  </check>
+
+<action>Save document to {output_folder}/architecture.md</action>
+
+  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+    <param>mode: update</param>
+    <param>action: complete_workflow</param>
+    <param>workflow_name: architecture</param>
+  </invoke-workflow>
+
+  <check if="success == true">
+    <output>✅ Decision Architecture workflow complete!
+
+    Status updated. Next steps:
+    - Review the architecture.md document
+    - {{next_workflow_suggestion}} ({{next_agent}} agent)
+    </output>
+
+  </check>
+
+<output>**Deliverables Created:**
+
+- ✅ architecture.md - Complete architectural decisions document
+  {{if_novel_patterns}}
+- ✅ Novel pattern designs for unique concepts
+  {{/if_novel_patterns}}
+  {{if_starter_template}}
+- ✅ Project initialization command documented
+  {{/if_starter_template}}
+
+The architecture is ready to guide AI agents through consistent implementation.
+</output>
 
 <template-output>completion_summary</template-output>
-</step>
-
-<step n="12" goal="Update status and complete">
-
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-  <param>mode: update</param>
-  <param>action: complete_workflow</param>
-  <param>workflow_name: solution-architecture</param>
-  <param>populate_stories_from: {epics_file}</param>
-</invoke-workflow>
-
-<check if="success == true">
-  <output>✅ Status updated! Loaded {{total_stories}} stories from epics.</output>
-  <output>Next: {{next_workflow}} ({{next_agent}} agent)</output>
-  <output>Phase 3 complete!</output>
-</check>
-
-<check if="success == false">
-  <output>⚠️ Status update failed: {{error}}</output>
-</check>
-
-<output>**✅ Solution Architecture Complete, {user_name}!**
-
-**Architecture Documents:**
-
-- bmm-solution-architecture.md (main architecture document)
-- bmm-cohesion-check-report.md (validation report)
-- bmm-tech-spec-epic-1.md through bmm-tech-spec-epic-{{epic_count}}.md ({{epic_count}} specs)
-
-**Story Backlog:**
-
-- {{total_story_count}} stories populated in status file
-- First story: {{first_story_id}} ready for drafting
-
-**Status Updated:**
-
-- Phase 3 (Solutioning) complete ✓
-- Progress: {{new_progress_percentage}}%
-- Ready for Phase 4 (Implementation)
-
-**Next Steps:**
-
-1. Load SM agent to draft story {{first_story_id}}
-2. Run `create-story` workflow
-3. Review drafted story
-4. Run `story-ready` to approve for development
-
-Check status anytime with: `workflow-status`
-</output>
 </step>
 
 </workflow>

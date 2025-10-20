@@ -45,10 +45,10 @@ phases:
     name: "Solutioning"
     required: true
     workflows:
-      - id: "solution-architecture"
+      - id: "create-architecture"
         required: true
         agent: "architect"
-        command: "solution-architecture"
+        command: "create-architecture"
         output: "Enterprise architecture documentation"
       - id: "solutioning-gate-check"
         required: true

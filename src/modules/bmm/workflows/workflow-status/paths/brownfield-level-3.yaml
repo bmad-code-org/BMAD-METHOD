@@ -64,10 +64,10 @@ phases:
         agent: "architect"
         command: "integration-planning"
         output: "Integration strategy document"
-      - id: "solution-architecture"
+      - id: "create-architecture"
         required: true
         agent: "architect"
-        command: "solution-architecture"
+        command: "create-architecture"
         note: "Extension of existing architecture"
       - id: "solutioning-gate-check"
         required: true

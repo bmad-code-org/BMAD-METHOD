@@ -106,7 +106,7 @@ This complexity **requires specialized documentation** (this guide), **extensive
 1. Run the core planning workflows first:
    - Analyst `*product-brief`
    - Product Manager `*plan-project`
-   - Architect `*solution-architecture`
+   - Architect `*create-architecture`
 2. Confirm `bmad/bmm/config.yaml` defines `project_name`, `output_folder`, `dev_story_location`, and language settings.
 3. Ensure a test test framework setup exists; if not, use `*framework` command to create a test framework setup, prior to development.
 4. Skim supporting references (knowledge under `testarch/`, command workflows under `workflows/testarch/`).
@@ -116,14 +116,14 @@ This complexity **requires specialized documentation** (this guide), **extensive
 
 ### Greenfield Feature Launch (Level 2)
 
-| Phase              | Test Architect                                                            | Dev / Team                                                                       | Outputs                                                                               |
-| ------------------ | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Setup              | -                                                                         | Analyst `*product-brief`, PM `*plan-project`, Architect `*solution-architecture` | `{output_folder}/product-brief*.md`, `PRD.md`, `epics.md`, `solution-architecture.md` |
-| Pre-Implementation | Run `*framework` (if harness missing), `*ci`, and `*test-design`          | Review risk/design/CI guidance, align backlog                                    | Test scaffold, CI pipeline, risk and coverage strategy                                |
-| Story Prep         | -                                                                         | Scrum Master `*create-story`, `*story-context`                                   | Story markdown + context XML                                                          |
-| Implementation     | (Optional) Trigger `*atdd` before dev to supply failing tests + checklist | Implement story guided by ATDD checklist                                         | Failing acceptance tests + implementation checklist                                   |
-| Post-Dev           | Execute `*automate`, (Optional) `*test-review`, re-run `*trace`           | Address recommendations, update code/tests                                       | Regression specs, quality report, refreshed coverage matrix                           |
-| Release            | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)         | Confirm Definition of Done, share release notes                                  | Quality audit, Gate YAML + release summary (owners, waivers)                          |
+| Phase              | Test Architect                                                            | Dev / Team                                                                     | Outputs                                                                      |
+| ------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Setup              | -                                                                         | Analyst `*product-brief`, PM `*plan-project`, Architect `*create-architecture` | `{output_folder}/product-brief*.md`, `PRD.md`, `epics.md`, `architecture.md` |
+| Pre-Implementation | Run `*framework` (if harness missing), `*ci`, and `*test-design`          | Review risk/design/CI guidance, align backlog                                  | Test scaffold, CI pipeline, risk and coverage strategy                       |
+| Story Prep         | -                                                                         | Scrum Master `*create-story`, `*story-context`                                 | Story markdown + context XML                                                 |
+| Implementation     | (Optional) Trigger `*atdd` before dev to supply failing tests + checklist | Implement story guided by ATDD checklist                                       | Failing acceptance tests + implementation checklist                          |
+| Post-Dev           | Execute `*automate`, (Optional) `*test-review`, re-run `*trace`           | Address recommendations, update code/tests                                     | Regression specs, quality report, refreshed coverage matrix                  |
+| Release            | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)         | Confirm Definition of Done, share release notes                                | Quality audit, Gate YAML + release summary (owners, waivers)                 |
 
 <details>
 <summary>Execution Notes</summary>

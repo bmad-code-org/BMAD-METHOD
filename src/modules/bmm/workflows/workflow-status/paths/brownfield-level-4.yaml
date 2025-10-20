@@ -56,10 +56,10 @@ phases:
     name: "Solutioning"
     required: true
     workflows:
-      - id: "solution-architecture"
+      - id: "create-architecture"
         required: true
         agent: "architect"
-        command: "solution-architecture"
+        command: "create-architecture"
         output: "Architecture for system expansion"
         note: "Must maintain backward compatibility"
       - id: "solutioning-gate-check"

@@ -25,10 +25,10 @@ workflow tech-spec
 
 ```bash
 # With specific PRD and architecture
-workflow tech-spec --input PRD.md --input solution-architecture.md
+workflow tech-spec --input PRD.md --input architecture.md
 
 # With comprehensive inputs
-workflow tech-spec --input PRD.md --input solution-architecture.md --input front-end-spec.md
+workflow tech-spec --input PRD.md --input architecture.md --input front-end-spec.md
 ```
 
 ### Configuration
