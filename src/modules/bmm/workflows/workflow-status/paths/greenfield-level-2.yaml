@@ -95,7 +95,7 @@ phases:
     epic_completion:
       - id: "retrospective"
         optional: true
-        agent: "pm"
+        agent: "sm"
         command: "retrospective"
         note: "After each epic completes"
 

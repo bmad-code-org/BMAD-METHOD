@@ -101,7 +101,7 @@ phases:
     epic_completion:
       - id: "retrospective"
         recommended: true
-        agent: "pm"
+        agent: "sm"
         command: "retrospective"
 
 story_naming: "story-<epic>.<story>.md"

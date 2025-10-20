@@ -109,7 +109,7 @@ phases:
             command: "playtest"
           - id: "retrospective"
             optional: true
-            agent: "pm"
+            agent: "sm"
 
 story_naming:
   level_0_1: "story-<feature>.md"
