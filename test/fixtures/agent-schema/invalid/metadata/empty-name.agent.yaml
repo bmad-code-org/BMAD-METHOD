@@ -1,0 +1,24 @@
+# Test: Empty string in metadata.name field
+# Expected: FAIL
+# Error code: custom
+# Error path: agent.metadata.name
+# Error message: agent.metadata.name must be a non-empty string
+
+agent:
+  metadata:
+    id: empty-name-test
+    name: "   "
+    title: Empty Name Test
+    icon: ❌
+
+  persona:
+    role: Test agent
+    identity: Test identity
+    communication_style: Test style
+    principles:
+      - Test principle
+
+  menu:
+    - trigger: help
+      description: Show help
+      action: display_help

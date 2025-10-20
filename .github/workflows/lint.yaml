@@ -1,4 +1,4 @@
-name: format-check
+name: lint
 
 "on":
   pull_request:
@@ -41,3 +41,21 @@ jobs:
 
       - name: ESLint
         run: npm run lint
+
+  schema-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate YAML schemas
+        run: npm run validate:schemas

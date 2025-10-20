@@ -1,0 +1,21 @@
+# Test: Empty menu array
+# Expected: FAIL
+# Error code: too_small
+# Error path: agent.menu
+# Error minimum: 1
+
+agent:
+  metadata:
+    id: empty-menu
+    name: Empty Menu
+    title: Empty Menu
+    icon: ❌
+
+  persona:
+    role: Test agent
+    identity: Test identity
+    communication_style: Test style
+    principles:
+      - Test principle
+
+  menu: []

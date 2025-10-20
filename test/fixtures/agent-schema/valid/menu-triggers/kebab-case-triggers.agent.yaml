@@ -1,0 +1,33 @@
+# Test: Valid kebab-case triggers
+# Expected: PASS
+
+agent:
+  metadata:
+    id: kebab-triggers
+    name: Kebab Case Triggers
+    title: Kebab Triggers
+    icon: 🧪
+
+  persona:
+    role: Test agent with kebab-case triggers
+    identity: I test kebab-case trigger validation.
+    communication_style: Clear
+    principles:
+      - Test kebab-case format
+
+  menu:
+    - trigger: help
+      description: Single word trigger
+      action: display_help
+    - trigger: list-tasks
+      description: Two word trigger
+      action: list_tasks
+    - trigger: workflow-init-process
+      description: Three word trigger
+      action: init_workflow
+    - trigger: test123
+      description: Trigger with numbers
+      action: test
+    - trigger: multi-word-kebab-case-trigger
+      description: Long kebab-case trigger
+      action: long_action

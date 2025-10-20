@@ -1,0 +1,18 @@
+# Test: Malformed YAML with syntax errors
+# Expected: FAIL - YAML parse error
+
+agent:
+  metadata:
+    id: malformed
+    name: Malformed YAML
+    title: [Malformed
+    icon: 🧪
+  persona:
+    role: Test
+    identity: Test
+    communication_style: Test
+    principles:
+      - Test
+  menu:
+    - trigger: help
+      description: Help
