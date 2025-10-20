@@ -1,0 +1,26 @@
+# Test: Module field with whitespace only
+# Expected: FAIL
+# Error code: custom
+# Error path: agent.metadata.module
+# Error message: agent.metadata.module must be a non-empty string
+# Path context: src/modules/bmm/agents/empty-module-string.agent.yaml
+
+agent:
+  metadata:
+    id: empty-module
+    name: Empty Module String
+    title: Empty Module
+    icon: ❌
+    module: "   "
+
+  persona:
+    role: Test agent
+    identity: Test identity
+    communication_style: Test style
+    principles:
+      - Test principle
+
+  menu:
+    - trigger: help
+      description: Show help
+      action: display_help

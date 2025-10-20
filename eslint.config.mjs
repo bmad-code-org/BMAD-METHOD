@@ -14,6 +14,8 @@ export default [
       'test/template-test-generator/**',
       'test/template-test-generator/**/*.js',
       'test/template-test-generator/**/*.md',
+      'test/fixtures/**',
+      'test/fixtures/**/*.yaml',
     ],
   },
 
@@ -59,9 +61,9 @@ export default [
     },
   },
 
-  // CLI/CommonJS scripts under tools/**
+  // CLI/CommonJS scripts under tools/** and test/**
   {
-    files: ['tools/**/*.js'],
+    files: ['tools/**/*.js', 'test/**/*.js'],
     rules: {
       // Allow CommonJS patterns for Node CLI scripts
       'unicorn/prefer-module': 'off',

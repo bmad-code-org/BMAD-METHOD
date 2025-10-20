@@ -1,0 +1,21 @@
+# Test: No critical_actions field (optional)
+# Expected: PASS
+
+agent:
+  metadata:
+    id: no-critical-actions
+    name: No Critical Actions
+    title: No Critical Actions
+    icon: 🧪
+
+  persona:
+    role: Test agent without critical actions
+    identity: I am a test agent without critical actions.
+    communication_style: Clear
+    principles:
+      - Test optional fields
+
+  menu:
+    - trigger: help
+      description: Show help
+      action: display_help

@@ -1,0 +1,23 @@
+# Test: Malformed module path (no slash after module name) treated as core
+# Expected: PASS - malformed path returns null, treated as core agent
+# Path context: src/modules/bmm
+
+agent:
+  metadata:
+    id: malformed-path
+    name: Malformed Path Test
+    title: Malformed Path
+    icon: 🧪
+    # No module field - will be treated as core since path parsing returns null
+
+  persona:
+    role: Test agent for malformed path edge case
+    identity: I test edge cases in path parsing.
+    communication_style: Clear
+    principles:
+      - Test edge case handling
+
+  menu:
+    - trigger: help
+      description: Show help
+      action: display_help

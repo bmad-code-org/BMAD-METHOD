@@ -256,6 +256,7 @@ Each commit should represent one logical change:
 - Web/planning agents can be larger with more complex tasks
 - Everything is natural language (markdown) - no code in core framework
 - Use bmad modules for domain-specific features
+- Validate YAML schemas with `npm run validate:schemas` before committing
 
 ## Code of Conduct
 

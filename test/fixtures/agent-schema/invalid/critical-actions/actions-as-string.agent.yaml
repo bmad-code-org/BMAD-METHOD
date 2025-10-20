@@ -1,0 +1,26 @@
+# Test: critical_actions as non-array
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: agent.critical_actions
+# Error expected: array
+
+agent:
+  metadata:
+    id: actions-string
+    name: Actions String
+    title: Actions String
+    icon: ❌
+
+  persona:
+    role: Test agent
+    identity: Test identity
+    communication_style: Test style
+    principles:
+      - Test principle
+
+  critical_actions: This should be an array
+
+  menu:
+    - trigger: help
+      description: Show help
+      action: display_help
