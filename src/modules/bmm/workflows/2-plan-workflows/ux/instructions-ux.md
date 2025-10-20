@@ -58,7 +58,7 @@ If no: We'll gather basic requirements to create the UX spec
 - PRD.md (primary source for requirements and user journeys)
 - epics.md (helps understand feature grouping)
 - tech-spec.md (understand technical constraints)
-- solution-architecture.md (if Level 3-4 project)
+- architecture.md (if Level 3-4 project)
 - bmm-workflow-status.md (understand project level and scope)
 
 </check>

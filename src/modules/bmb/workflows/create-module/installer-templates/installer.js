@@ -178,7 +178,7 @@ async function initDatabase(/* config */) {
   console.log('   Initializing database...');
 
   // TODO: Add database initialization
-  // This function can be called from install-module-config.yaml
+  // This function can be called from install-config.yaml
 
   console.log('   ✓ Database initialized');
 }

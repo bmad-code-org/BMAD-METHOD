@@ -121,7 +121,7 @@ Creative Innovation Studio for design workflows
 src/modules/{module}/
 ├── _module-installer/       # Not copied to destination
 │   ├── installer.js        # Post-install logic
-│   └── install-menu-config.yaml
+│   └── install-config.yaml
 ├── agents/
 ├── tasks/
 ├── templates/
@@ -135,7 +135,7 @@ src/modules/{module}/
 
 ### Collection Process
 
-Modules define prompts in `install-menu-config.yaml`:
+Modules define prompts in `install-config.yaml`:
 
 ```yaml
 project_name:
@@ -246,12 +246,12 @@ Platform-specific content without source modification:
    src/modules/mymod/
    ├── _module-installer/
    │   ├── installer.js
-   │   └── install-menu-config.yaml
+   │   └── install-config.yaml
    ├── agents/
    └── tasks/
    ```
 
-2. **Configuration** (`install-menu-config.yaml`)
+2. **Configuration** (`install-config.yaml`)
 
    ```yaml
    code: mymod

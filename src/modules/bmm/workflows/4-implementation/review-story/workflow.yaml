@@ -36,7 +36,7 @@ variables:
     - "{project-root}/docs"
     - "{output_folder}"
   arch_docs_file_names: |
-    - solution-architecture.md
+    - architecture.md
   enable_mcp_doc_search: true # Prefer enabled MCP servers for doc/best-practice lookup
   enable_web_fallback: true # Fallback to web search/read-url if MCP not available
   update_status_on_result: true # If true, update story Status based on review outcome

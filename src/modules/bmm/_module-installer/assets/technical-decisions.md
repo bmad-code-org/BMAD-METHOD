@@ -4,7 +4,7 @@ _Auto-updated during discovery and planning sessions - you can also add informat
 
 ## Purpose
 
-This document captures technical decisions, preferences, and constraints discovered during project discussions. It serves as input for solution-architecture.md and solution design documents.
+This document captures technical decisions, preferences, and constraints discovered during project discussions. It serves as input for architecture.md and solution design documents.
 
 ## Confirmed Decisions
 
@@ -26,5 +26,5 @@ This document captures technical decisions, preferences, and constraints discove
 
 - This file is automatically updated when technical information is mentioned
 - Decisions here are inputs, not final architecture
-- Final technical decisions belong in solution-architecture.md
+- Final technical decisions belong in architecture.md
 - Implementation details belong in solutions/\*.md and story context or dev notes.

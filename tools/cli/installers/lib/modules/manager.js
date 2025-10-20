@@ -46,7 +46,7 @@ class ModuleManager {
       if (entry.isDirectory()) {
         const modulePath = path.join(this.modulesSourcePath, entry.name);
         // Check for new structure first
-        const installerConfigPath = path.join(modulePath, '_module-installer', 'install-menu-config.yaml');
+        const installerConfigPath = path.join(modulePath, '_module-installer', 'install-config.yaml');
         // Fallback to old structure
         const configPath = path.join(modulePath, 'config.yaml');
 

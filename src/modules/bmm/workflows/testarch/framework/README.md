@@ -23,7 +23,7 @@ The TEA agent runs this workflow when:
 
 **Optional Context Files:**
 
-- **Architecture docs** (solution-architecture.md, tech-spec.md): Informs framework configuration decisions
+- **Architecture docs** (architecture.md, tech-spec.md): Informs framework configuration decisions
 - **Existing tests**: Detects current framework to avoid conflicts
 
 **Workflow Variables:**

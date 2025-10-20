@@ -80,7 +80,7 @@ The installer is a multi-stage system that handles agent compilation, IDE integr
 ```
 1. Collect User Input
    - Target directory, modules, IDEs
-   - Custom module configuration (via install-menu-config.yaml)
+   - Custom module configuration (via install-config.yaml)
 
 2. Pre-Installation
    - Validate target, check conflicts, backup existing installations
@@ -163,12 +163,12 @@ The installer supports **14 IDE environments** through a base-derived architectu
 
 ### Custom Module Configuration
 
-Modules define interactive configuration menus via `install-menu-config.yaml` files in their `_module-installer/` directories.
+Modules define interactive configuration menus via `install-config.yaml` files in their `_module-installer/` directories.
 
 **Config File Location**:
 
-- Core: `src/core/_module-installer/install-menu-config.yaml`
-- Modules: `src/modules/{module}/_module-installer/install-menu-config.yaml`
+- Core: `src/core/_module-installer/install-config.yaml`
+- Modules: `src/modules/{module}/_module-installer/install-config.yaml`
 
 **Configuration Types**:
 

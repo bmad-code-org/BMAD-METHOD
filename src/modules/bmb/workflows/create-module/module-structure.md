@@ -9,25 +9,28 @@ A BMAD module is a self-contained package of agents, workflows, tasks, and resou
 ### Core Structure
 
 ```
-project-root/
-├── bmad/{module-code}/     # Source code
-│   ├── agents/                    # Agent definitions
-│   ├── workflows/                 # Workflow folders
-│   ├── tasks/                     # Task files
-│   ├── templates/                 # Shared templates
-│   ├── data/                      # Static data
-│   ├── config.yaml                # Module config
-│   └── README.md                  # Documentation
-│
-└── bmad/{module-code}/            # Runtime instance
-    ├── _module-installer/         # Installation files
-    │   ├── install-module-config.yaml
-    │   ├── installer.js          # Optional
-    │   └── assets/               # Install assets
-    ├── config.yaml               # User config
-    ├── agents/                   # Agent overrides
-    ├── workflows/                # Workflow instances
-    └── data/                     # User data
+# SOURCE MODULE (in BMAD-METHOD project)
+src/modules/{module-code}/
+├── agents/                        # Agent definitions (.agent.yaml)
+├── workflows/                     # Workflow folders
+├── tasks/                         # Task files
+├── templates/                     # Shared templates
+├── data/                          # Static data
+├── _module-installer/             # Installation configuration
+│   ├── install-config.yaml  # Installation questions & config
+│   ├── installer.js              # Optional custom install logic
+│   └── assets/                   # Files to copy during install
+└── README.md                      # Module documentation
+
+# INSTALLED MODULE (in target project)
+{project-root}/bmad/{module-code}/
+├── agents/                        # Compiled agent files (.md)
+├── workflows/                     # Workflow instances
+├── tasks/                         # Task files
+├── templates/                     # Templates
+├── data/                          # Module data
+├── config.yaml                    # Generated from install-config.yaml
+└── README.md                      # Module documentation
 
 ```
 
@@ -134,41 +137,93 @@ Tasks should be used for:
 
 ## Installation Infrastructure
 
-### Required: install-module-config.yaml
+### Required: \_module-installer/install-config.yaml
+
+This file defines both installation questions AND static configuration values:
 
 ```yaml
-module_name: 'Module Name'
-module_code: 'module-code'
+# Module metadata
+code: module-code
+name: 'Module Name'
+default_selected: false
 
-install_steps:
-  - name: 'Create directories'
-    action: 'mkdir'
-    paths: [...]
+# Welcome message during installation
+prompt:
+  - 'Welcome to Module Name!'
+  - 'Brief description here'
 
-  - name: 'Copy files'
-    action: 'copy'
-    mappings: [...]
+# Core values automatically inherited from installer:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
 
-  - name: 'Register module'
-    action: 'register'
+# INTERACTIVE fields (ask user during install)
+output_location:
+  prompt: 'Where should module outputs be saved?'
+  default: 'output/module-code'
+  result: '{project-root}/{value}'
+
+feature_level:
+  prompt: 'Which feature set?'
+  default: 'standard'
+  result: '{value}'
+  single-select:
+    - value: 'basic'
+      label: 'Basic - Core features only'
+    - value: 'standard'
+      label: 'Standard - Recommended features'
+    - value: 'advanced'
+      label: 'Advanced - All features'
+
+# STATIC fields (no prompt, just hardcoded values)
+module_version:
+  result: '1.0.0'
+
+data_path:
+  result: '{project-root}/bmad/module-code/data'
 ```
 
-### Optional: installer.js
+**Key Points:**
 
-For complex installations requiring:
+- File is named `install-config.yaml` (NOT install-config.yaml)
+- Supports both interactive prompts and static values
+- `result` field uses placeholders: `{value}`, `{project-root}`, `{directory_name}`
+- Installer generates final `config.yaml` from this template
 
-- Database setup
-- API configuration
-- System integration
-- Permission management
+### Optional: \_module-installer/installer.js
 
-### Optional: External Assets
+For complex installations requiring custom logic:
 
-Files that get copied outside the module:
+```javascript
+/**
+ * @param {Object} options - Installation options
+ * @param {string} options.projectRoot - Target project directory
+ * @param {Object} options.config - Config from install-config.yaml
+ * @param {Array} options.installedIDEs - IDEs being configured
+ * @param {Object} options.logger - Logger (log, warn, error)
+ * @returns {boolean} - true if successful
+ */
+async function install(options) {
+  // Custom installation logic here
+  // - Database setup
+  // - API configuration
+  // - External downloads
+  // - Integration setup
 
-- System configurations
-- User templates
-- Shared resources
+  return true;
+}
+
+module.exports = { install };
+```
+
+### Optional: \_module-installer/assets/
+
+Files to copy during installation:
+
+- External configurations
+- Documentation
+- Example files
 - Integration scripts
 
 ## Module Lifecycle

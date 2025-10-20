@@ -39,7 +39,7 @@ Initialize a production-ready test framework architecture (Playwright or Cypress
    - If found, HALT with message: "Existing test framework detected. Use workflow `upgrade-framework` instead."
 
 3. **Gather Context**
-   - Look for architecture documents (`solution-architecture.md`, `tech-spec*.md`)
+   - Look for architecture documents (`architecture.md`, `tech-spec*.md`)
    - Check for API documentation or endpoint lists
    - Identify authentication requirements
 

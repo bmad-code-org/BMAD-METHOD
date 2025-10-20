@@ -155,8 +155,27 @@ class YamlXmlBuilder {
     }
 
     // Start building XML
-    let xml = '<!-- Powered by BMAD-CORE™ -->\n\n';
-    xml += `# ${metadata.title || 'Agent'}\n\n`;
+    let xml = '';
+
+    if (buildMetadata.forWebBundle) {
+      // Web bundle: keep existing format
+      xml += '<!-- Powered by BMAD-CORE™ -->\n\n';
+      xml += `# ${metadata.title || 'Agent'}\n\n`;
+    } else {
+      // Installation: use YAML frontmatter + instruction
+      // Extract name from filename: "cli-chief.yaml" or "pm.agent.yaml" -> "cli chief" or "pm"
+      const filename = buildMetadata.sourceFile || 'agent.yaml';
+      let nameFromFile = path.basename(filename, path.extname(filename)); // Remove .yaml/.md extension
+      nameFromFile = nameFromFile.replace(/\.agent$/, ''); // Remove .agent suffix if present
+      nameFromFile = nameFromFile.replaceAll('-', ' '); // Replace dashes with spaces
+
+      xml += '---\n';
+      xml += `name: "${nameFromFile}"\n`;
+      xml += `description: "${metadata.title || 'BMAD Agent'}"\n`;
+      xml += '---\n\n';
+      xml +=
+        "You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.\n\n";
+    }
 
     xml += '```xml\n';
 

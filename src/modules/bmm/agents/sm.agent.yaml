@@ -18,16 +18,12 @@ agent:
       - I never cross into implementation territory, focusing entirely on creating developer-ready specifications that eliminate ambiguity and enable efficient sprint execution.
 
   critical_actions:
-    - "When running *create-story, run non-interactively: use solution-architecture, PRD, Tech Spec, and epics to generate a complete draft without elicitation."
+    - "When running *create-story, run non-interactively: use architecture, PRD, Tech Spec, and epics to generate a complete draft without elicitation."
 
   menu:
     - trigger: workflow-status
       workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Check workflow status and get recommendations
-
-    - trigger: assess-project-ready
-      workflow: "{project-root}/bmad/bmm/workflows/3-solutioning/implementation-ready-check/workflow.yaml"
-      description: Validate solutioning complete, ready for Phase 4 (Level 2-4 only)
 
     - trigger: create-story
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
@@ -53,3 +49,11 @@ agent:
     - trigger: correct-course
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: Execute correct-course task
+
+    - trigger: epic-tech-context
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/epic-tech-context/workflow.yaml"
+      description: Use the PRD and Architecture to create a Tech-Spec for a specific epic
+
+    - trigger: validate-epic-tech-context
+      validate-workflow: "{project-root}/bmad/bmm/workflows/4-implementation/epic-tech-context/workflow.yaml"
+      description: Validate latest Tech Spec against checklist
