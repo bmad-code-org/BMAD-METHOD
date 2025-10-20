@@ -1,7 +1,7 @@
 # TeachFlow Module Configuration
 
 code: teachflow
-name: "TeachFlow: 3D Learning & Standards Alignment for Educators"
+name: "BTF: BMad Teach Flow"
 description: "NGSS-aligned lesson planning with 3D learning framework (SEP, DCI, CCC)"
 version: "1.0.0"
 default_selected: false # This module will not be selected by default for new installations
