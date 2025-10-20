@@ -7,6 +7,7 @@ author: "BMad"
 config_source: "{project-root}/bmad/cis/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Optional inputs for context
@@ -34,9 +35,7 @@ web_bundle:
   author: "BMad"
   instructions: "bmad/cis/workflows/storytelling/instructions.md"
   template: "bmad/cis/workflows/storytelling/template.md"
-  story_frameworks: "bmad/cis/workflows/storytelling/story-types.csv"
-  use_advanced_elicitation: true
   web_bundle_files:
     - "bmad/cis/workflows/storytelling/instructions.md"
     - "bmad/cis/workflows/storytelling/template.md"
-    - "bmad/cis/workflows/storytelling/story-frameworks.csv"
+    - "bmad/cis/workflows/storytelling/story-types.csv"

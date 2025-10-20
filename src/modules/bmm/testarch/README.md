@@ -1,5 +1,5 @@
 ---
-last-redoc-date: 2025-09-30
+last-redoc-date: 2025-10-14
 ---
 
 # Test Architect (TEA) Agent Guide
@@ -9,6 +9,97 @@ last-redoc-date: 2025-09-30
 - **Persona:** Murat, Master Test Architect and Quality Advisor focused on risk-based testing, fixture architecture, ATDD, and CI/CD governance.
 - **Mission:** Deliver actionable quality strategies, automation coverage, and gate decisions that scale with project level and compliance demands.
 - **Use When:** Project level ≥2, integration risk is non-trivial, brownfield regression risk exists, or compliance/NFR evidence is required.
+
+## TEA Workflow Lifecycle
+
+TEA integrates across the entire BMad development lifecycle, providing quality assurance at every phase:
+
+```
+┌──────────────────────────────────────────────────────────┐
+│             BMM Phase 2: PLANNING                        │
+│                                                          │
+│  PM: *plan-project                                       │
+│       ↓                                                  │
+│  TEA: *framework ──→ *ci ──→ *test-design                │
+│       └─────────┬─────────────┘                          │
+│                 │ (Setup once per project)               │
+└─────────────────┼──────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────────────┐
+│            BMM Phase 4: IMPLEMENTATION                   │
+│                  (Per Story Cycle)                       │
+│                                                          │
+│  ┌─→ SM: *create-story                                  │
+│  │        ↓                                              │
+│  │   TEA: *atdd (optional, before dev)                  │
+│  │        ↓                                              │
+│  │   DEV: implements story                               │
+│  │        ↓                                              │
+│  │   TEA: *automate ──→ *test-review (optional)         │
+│  │        ↓                                              │
+│  │   TEA: *trace (refresh coverage)                     │
+│  │        ↓                                              │
+│  └───[next story]                                        │
+└─────────────────┼──────────────────────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────────────────────┐
+│                EPIC/RELEASE GATE                         │
+│                                                          │
+│  TEA: *nfr-assess (if not done earlier)                 │
+│       ↓                                                  │
+│  TEA: *test-review (final audit, optional)              │
+│       ↓                                                  │
+│  TEA: *trace (Phase 2: Gate) ──→ PASS | CONCERNS | FAIL | WAIVED │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+```
+
+### TEA Integration with BMad v6 Workflow
+
+TEA operates **across all four BMad phases**, unlike other agents that are phase-specific:
+
+<details>
+<summary><strong>Cross-Phase Integration & Workflow Complexity</strong></summary>
+
+### Phase-Specific Agents (Standard Pattern)
+
+- **Phase 1 (Analysis)**: Analyst agent
+- **Phase 2 (Planning)**: PM agent
+- **Phase 3 (Solutioning)**: Architect agent
+- **Phase 4 (Implementation)**: SM, DEV agents
+
+### TEA: Cross-Phase Quality Agent (Unique Pattern)
+
+TEA is **the only agent that spans all phases**:
+
+```
+Phase 1 (Analysis) → [TEA not typically used]
+    ↓
+Phase 2 (Planning) → TEA: *framework, *ci, *test-design (setup)
+    ↓
+Phase 3 (Solutioning) → [TEA validates architecture testability]
+    ↓
+Phase 4 (Implementation) → TEA: *atdd, *automate, *test-review, *trace (per story)
+    ↓
+Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
+```
+
+### Why TEA Needs 8 Workflows
+
+**Standard agents**: 1-3 workflows per phase
+**TEA**: 8 workflows across 3+ phases
+
+| Phase       | TEA Workflows                          | Frequency        | Purpose                          |
+| ----------- | -------------------------------------- | ---------------- | -------------------------------- |
+| **Phase 2** | *framework, *ci, \*test-design         | Once per project | Establish quality infrastructure |
+| **Phase 4** | *atdd, *automate, *test-review, *trace | Per story/sprint | Continuous quality validation    |
+| **Release** | *nfr-assess, *trace (Phase 2: gate)    | Per epic/release | Go/no-go decision                |
+
+**Note**: `*trace` is a two-phase workflow: Phase 1 (traceability) + Phase 2 (gate decision). This reduces cognitive load while maintaining natural workflow.
+
+This complexity **requires specialized documentation** (this guide), **extensive knowledge base** (19+ fragments), and **unique architecture** (`testarch/` directory).
+
+</details>
 
 ## Prerequisites and Setup
 
@@ -31,8 +122,8 @@ last-redoc-date: 2025-09-30
 | Pre-Implementation | Run `*framework` (if harness missing), `*ci`, and `*test-design`          | Review risk/design/CI guidance, align backlog                                    | Test scaffold, CI pipeline, risk and coverage strategy                                |
 | Story Prep         | -                                                                         | Scrum Master `*create-story`, `*story-context`                                   | Story markdown + context XML                                                          |
 | Implementation     | (Optional) Trigger `*atdd` before dev to supply failing tests + checklist | Implement story guided by ATDD checklist                                         | Failing acceptance tests + implementation checklist                                   |
-| Post-Dev           | Execute `*automate`, re-run `*trace`                                      | Address recommendations, update code/tests                                       | Regression specs, refreshed coverage matrix                                           |
-| Release            | Run `*gate`                                                               | Confirm Definition of Done, share release notes                                  | Gate YAML + release summary (owners, waivers)                                         |
+| Post-Dev           | Execute `*automate`, (Optional) `*test-review`, re-run `*trace`           | Address recommendations, update code/tests                                       | Regression specs, quality report, refreshed coverage matrix                           |
+| Release            | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)         | Confirm Definition of Done, share release notes                                  | Quality audit, Gate YAML + release summary (owners, waivers)                          |
 
 <details>
 <summary>Execution Notes</summary>
@@ -40,7 +131,8 @@ last-redoc-date: 2025-09-30
 - Run `*framework` only once per repo or when modern harness support is missing.
 - `*framework` followed by `*ci` establishes install + pipeline; `*test-design` then handles risk scoring, mitigations, and scenario planning in one pass.
 - Use `*atdd` before coding when the team can adopt ATDD; share its checklist with the dev agent.
-- Post-implementation, keep `*trace` current, expand coverage with `*automate`, and finish with `*gate`.
+- Post-implementation, keep `*trace` current, expand coverage with `*automate`, optionally review test quality with `*test-review`. For release gate, run `*trace` with Phase 2 enabled to get deployment decision.
+- Use `*test-review` after `*atdd` to validate generated tests, after `*automate` to ensure regression quality, or before gate for final audit.
 
 </details>
 
@@ -51,21 +143,21 @@ last-redoc-date: 2025-09-30
 2. **Setup:** TEA checks harness via `*framework`, configures `*ci`, and runs `*test-design` to capture risk/coverage plans.
 3. **Story Prep:** Scrum Master generates the story via `*create-story`; PO validates using `*assess-project-ready`.
 4. **Implementation:** TEA optionally runs `*atdd`; Dev implements with guidance from failing tests and the plan.
-5. **Post-Dev and Release:** TEA runs `*automate`, re-runs `*trace`, and finishes with `*gate` to document the decision.
+5. **Post-Dev and Release:** TEA runs `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` with Phase 2 enabled to generate both traceability and gate decision.
 
 </details>
 
 ### Brownfield Feature Enhancement (Level 3–4)
 
-| Phase             | Test Architect                                                      | Dev / Team                                                 | Outputs                                                 |
-| ----------------- | ------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------- |
-| Refresh Context   | -                                                                   | Analyst/PM/Architect rerun planning workflows              | Updated planning artifacts in `{output_folder}`         |
-| Baseline Coverage | Run `*trace` to inventory existing tests                            | Review matrix, flag hotspots                               | Coverage matrix + initial gate snippet                  |
-| Risk Targeting    | Run `*test-design`                                                  | Align remediation/backlog priorities                       | Brownfield risk memo + scenario matrix                  |
-| Story Prep        | -                                                                   | Scrum Master `*create-story`                               | Updated story markdown                                  |
-| Implementation    | (Optional) Run `*atdd` before dev                                   | Implement story, referencing checklist/tests               | Failing acceptance tests + implementation checklist     |
-| Post-Dev          | Apply `*automate`, re-run `*trace`, trigger `*nfr-assess` if needed | Resolve gaps, update docs/tests                            | Regression specs, refreshed coverage matrix, NFR report |
-| Release           | Run `*gate`                                                         | Product Owner `*assess-project-ready`, share release notes | Gate YAML + release summary                             |
+| Phase             | Test Architect                                                                         | Dev / Team                                                 | Outputs                                                                 |
+| ----------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Refresh Context   | -                                                                                      | Analyst/PM/Architect rerun planning workflows              | Updated planning artifacts in `{output_folder}`                         |
+| Baseline Coverage | Run `*trace` to inventory existing tests                                               | Review matrix, flag hotspots                               | Coverage matrix + initial gate snippet                                  |
+| Risk Targeting    | Run `*test-design`                                                                     | Align remediation/backlog priorities                       | Brownfield risk memo + scenario matrix                                  |
+| Story Prep        | -                                                                                      | Scrum Master `*create-story`                               | Updated story markdown                                                  |
+| Implementation    | (Optional) Run `*atdd` before dev                                                      | Implement story, referencing checklist/tests               | Failing acceptance tests + implementation checklist                     |
+| Post-Dev          | Apply `*automate`, (Optional) `*test-review`, re-run `*trace`, `*nfr-assess` if needed | Resolve gaps, update docs/tests                            | Regression specs, quality report, refreshed coverage matrix, NFR report |
+| Release           | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)                      | Product Owner `*assess-project-ready`, share release notes | Quality audit, Gate YAML + release summary                              |
 
 <details>
 <summary>Execution Notes</summary>
@@ -73,7 +165,8 @@ last-redoc-date: 2025-09-30
 - Lead with `*trace` so remediation plans target true coverage gaps. Ensure `*framework` and `*ci` are in place early in the engagement; if the brownfield lacks them, run those setup steps immediately after refreshing context.
 - `*test-design` should highlight regression hotspots, mitigations, and P0 scenarios.
 - Use `*atdd` when stories benefit from ATDD; otherwise proceed to implementation and rely on post-dev automation.
-- After development, expand coverage with `*automate`, re-run `*trace`, and close with `*gate`. Run `*nfr-assess` now if non-functional risks weren't addressed earlier.
+- After development, expand coverage with `*automate`, optionally review test quality with `*test-review`, re-run `*trace` (Phase 2 for gate decision). Run `*nfr-assess` now if non-functional risks weren't addressed earlier.
+- Use `*test-review` to validate existing brownfield tests or audit new tests before gate.
 - Product Owner `*assess-project-ready` confirms the team has artifacts before handoff or release.
 
 </details>
@@ -87,26 +180,27 @@ last-redoc-date: 2025-09-30
 4. **Story Prep:** Scrum Master generates `stories/story-1.1.md` via `*create-story`, automatically pulling updated context.
 5. **ATDD First:** TEA runs `*atdd`, producing failing Playwright specs under `tests/e2e/payments/` plus an implementation checklist.
 6. **Implementation:** Dev pairs with the checklist/tests to deliver the story.
-7. **Post-Implementation:** TEA applies `*automate`, re-runs `*trace`, performs `*nfr-assess` to validate SLAs, and closes with `*gate` marking PASS with follow-ups.
+7. **Post-Implementation:** TEA applies `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` with Phase 2 enabled, performs `*nfr-assess` to validate SLAs. The `*trace` Phase 2 output marks PASS with follow-ups.
 
 </details>
 
 ### Enterprise / Compliance Program (Level 4)
 
-| Phase               | Test Architect                                   | Dev / Team                                     | Outputs                                                   |
-| ------------------- | ------------------------------------------------ | ---------------------------------------------- | --------------------------------------------------------- |
-| Strategic Planning  | -                                                | Analyst/PM/Architect standard workflows        | Enterprise-grade PRD, epics, architecture                 |
-| Quality Planning    | Run `*framework`, `*test-design`, `*nfr-assess`  | Review guidance, align compliance requirements | Harness scaffold, risk + coverage plan, NFR documentation |
-| Pipeline Enablement | Configure `*ci`                                  | Coordinate secrets, pipeline approvals         | `.github/workflows/test.yml`, helper scripts              |
-| Execution           | Enforce `*atdd`, `*automate`, `*trace` per story | Implement stories, resolve TEA findings        | Tests, fixtures, coverage matrices                        |
-| Release             | Run `*gate`                                      | Capture sign-offs, archive artifacts           | Updated assessments, gate YAML, audit trail               |
+| Phase               | Test Architect                                                    | Dev / Team                                     | Outputs                                                    |
+| ------------------- | ----------------------------------------------------------------- | ---------------------------------------------- | ---------------------------------------------------------- |
+| Strategic Planning  | -                                                                 | Analyst/PM/Architect standard workflows        | Enterprise-grade PRD, epics, architecture                  |
+| Quality Planning    | Run `*framework`, `*test-design`, `*nfr-assess`                   | Review guidance, align compliance requirements | Harness scaffold, risk + coverage plan, NFR documentation  |
+| Pipeline Enablement | Configure `*ci`                                                   | Coordinate secrets, pipeline approvals         | `.github/workflows/test.yml`, helper scripts               |
+| Execution           | Enforce `*atdd`, `*automate`, `*test-review`, `*trace` per story  | Implement stories, resolve TEA findings        | Tests, fixtures, quality reports, coverage matrices        |
+| Release             | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2) | Capture sign-offs, archive artifacts           | Quality audit, updated assessments, gate YAML, audit trail |
 
 <details>
 <summary>Execution Notes</summary>
 
 - Use `*atdd` for every story when feasible so acceptance tests lead implementation in regulated environments.
 - `*ci` scaffolds selective testing scripts, burn-in jobs, caching, and notifications for long-running suites.
-- Prior to release, rerun coverage (`*trace`, `*automate`) and formalize the decision in `*gate`; store everything for audits. Call `*nfr-assess` here if compliance/performance requirements weren't captured during planning.
+- Enforce `*test-review` per story or sprint to maintain quality standards and ensure compliance with testing best practices.
+- Prior to release, rerun coverage (`*trace`, `*automate`), perform final quality audit with `*test-review`, and formalize the decision with `*trace` Phase 2 (gate decision); store everything for audits. Call `*nfr-assess` here if compliance/performance requirements weren't captured during planning.
 
 </details>
 
@@ -116,47 +210,102 @@ last-redoc-date: 2025-09-30
 1. **Strategic Planning:** Analyst/PM/Architect complete PRD, epics, and architecture using the standard workflows.
 2. **Quality Planning:** TEA runs `*framework`, `*test-design`, and `*nfr-assess` to establish mitigations, coverage, and NFR targets.
 3. **Pipeline Setup:** TEA configures CI via `*ci` with selective execution scripts.
-4. **Execution:** For each story, TEA enforces `*atdd`, `*automate`, and `*trace`; Dev teams iterate on the findings.
-5. **Release:** TEA re-checks coverage and logs the final gate decision via `*gate`, archiving artifacts for compliance.
+4. **Execution:** For each story, TEA enforces `*atdd`, `*automate`, `*test-review`, and `*trace`; Dev teams iterate on the findings.
+5. **Release:** TEA re-checks coverage, performs final quality audit with `*test-review`, and logs the final gate decision via `*trace` Phase 2, archiving artifacts for compliance.
 
 </details>
 
 ## Command Catalog
 
-| Command        | Task File                                        | Primary Outputs                                                     | Notes                                            |
-| -------------- | ------------------------------------------------ | ------------------------------------------------------------------- | ------------------------------------------------ |
-| `*framework`   | `workflows/testarch/framework/instructions.md`   | Playwright/Cypress scaffold, `.env.example`, `.nvmrc`, sample specs | Use when no production-ready harness exists      |
-| `*atdd`        | `workflows/testarch/atdd/instructions.md`        | Failing acceptance tests + implementation checklist                 | Requires approved story + harness                |
-| `*automate`    | `workflows/testarch/automate/instructions.md`    | Prioritized specs, fixtures, README/script updates, DoD summary     | Avoid duplicate coverage (see priority matrix)   |
-| `*ci`          | `workflows/testarch/ci/instructions.md`          | CI workflow, selective test scripts, secrets checklist              | Platform-aware (GitHub Actions default)          |
-| `*test-design` | `workflows/testarch/test-design/instructions.md` | Combined risk assessment, mitigation plan, and coverage strategy    | Handles risk scoring and test design in one pass |
-| `*trace`       | `workflows/testarch/trace/instructions.md`       | Coverage matrix, recommendations, gate snippet                      | Requires access to story/tests repositories      |
-| `*nfr-assess`  | `workflows/testarch/nfr-assess/instructions.md`  | NFR assessment report with actions                                  | Focus on security/performance/reliability        |
-| `*gate`        | `workflows/testarch/gate/instructions.md`        | Gate YAML + summary (PASS/CONCERNS/FAIL/WAIVED)                     | Deterministic decision rules + rationale         |
-
 <details>
-<summary>Command Guidance and Context Loading</summary>
+<summary><strong>Optional Playwright MCP Enhancements</strong></summary>
 
-- Each task now carries its own preflight/flow/deliverable guidance inline.
-- `tea-index.csv` maps workflow needs to knowledge fragments; keep tags accurate as you add guidance.
-- Consider future modularization into orchestrated workflows if additional automation is needed.
-- Update the fragment markdown files alongside workflow edits so guidance and outputs stay in sync.
+**Two Playwright MCP servers** (actively maintained, continuously updated):
+
+- `playwright` - Browser automation (`npx @playwright/mcp@latest`)
+- `playwright-test` - Test runner with failure analysis (`npx playwright run-test-mcp-server`)
+
+**How MCP Enhances TEA Workflows**:
+
+MCP provides additional capabilities on top of TEA's default AI-based approach:
+
+1. `*test-design`:
+   - Default: Analysis + documentation
+   - **+ MCP**: Interactive UI discovery with `browser_navigate`, `browser_click`, `browser_snapshot`, behavior observation
+
+   Benefit:Discover actual functionality, edge cases, undocumented features
+
+2. `*atdd`, `*automate`:
+   - Default: Infers selectors and interactions from requirements and knowledge fragments
+   - **+ MCP**: Generates tests **then** verifies with `generator_setup_page`, `browser_*` tools, validates against live app
+
+   Benefit: Accurate selectors from real DOM, verified behavior, refined test code
+
+3. `*automate`:
+   - Default: Pattern-based fixes from error messages + knowledge fragments
+   - **+ MCP**: Pattern fixes **enhanced with** `browser_snapshot`, `browser_console_messages`, `browser_network_requests`, `browser_generate_locator`
+
+   Benefit: Visual failure context, live DOM inspection, root cause discovery
+
+**Config example**:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    },
+    "playwright-test": {
+      "command": "npx",
+      "args": ["playwright", "run-test-mcp-server"]
+    }
+  }
+}
+```
+
+**To disable**: Set `tea_use_mcp_enhancements: false` in `bmad/bmm/config.yaml` OR remove MCPs from IDE config.
 
 </details>
 
-## Workflow Placement
+<br></br>
 
-The TEA stack has three tightly-linked layers:
+| Command        | Workflow README                                   | Primary Outputs                                                                               | Notes                                                | With Playwright MCP Enhancements                                                                             |
+| -------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `*framework`   | [📖](../workflows/testarch/framework/README.md)   | Playwright/Cypress scaffold, `.env.example`, `.nvmrc`, sample specs                           | Use when no production-ready harness exists          | -                                                                                                            |
+| `*ci`          | [📖](../workflows/testarch/ci/README.md)          | CI workflow, selective test scripts, secrets checklist                                        | Platform-aware (GitHub Actions default)              | -                                                                                                            |
+| `*test-design` | [📖](../workflows/testarch/test-design/README.md) | Combined risk assessment, mitigation plan, and coverage strategy                              | Risk scoring + optional exploratory mode             | **+ Exploratory**: Interactive UI discovery with browser automation (uncover actual functionality)           |
+| `*atdd`        | [📖](../workflows/testarch/atdd/README.md)        | Failing acceptance tests + implementation checklist                                           | TDD red phase + optional recording mode              | **+ Recording**: AI generation verified with live browser (accurate selectors from real DOM)                 |
+| `*automate`    | [📖](../workflows/testarch/automate/README.md)    | Prioritized specs, fixtures, README/script updates, DoD summary                               | Optional healing/recording, avoid duplicate coverage | **+ Healing**: Pattern fixes enhanced with visual debugging + **+ Recording**: AI verified with live browser |
+| `*test-review` | [📖](../workflows/testarch/test-review/README.md) | Test quality review report with 0-100 score, violations, fixes                                | Reviews tests against knowledge base patterns        | -                                                                                                            |
+| `*nfr-assess`  | [📖](../workflows/testarch/nfr-assess/README.md)  | NFR assessment report with actions                                                            | Focus on security/performance/reliability            | -                                                                                                            |
+| `*trace`       | [📖](../workflows/testarch/trace/README.md)       | Phase 1: Coverage matrix, recommendations. Phase 2: Gate decision (PASS/CONCERNS/FAIL/WAIVED) | Two-phase workflow: traceability + gate decision     | -                                                                                                            |
 
-1. **Agent spec (`agents/tea.md`)** – declares the persona, critical actions, and the `run-workflow` entries for every TEA command. Critical actions instruct the agent to load `tea-index.csv` and then fetch only the fragments it needs from `knowledge/` before giving guidance.
-2. **Knowledge index (`tea-index.csv`)** – catalogues each fragment with tags and file paths. Workflows call out the IDs they need (e.g., `risk-governance`, `fixture-architecture`) so the agent loads targeted guidance instead of a monolithic brief.
-3. **Workflows (`workflows/testarch/*`)** – contain the task flows and reference `tea-index.csv` in their `<flow>`/`<notes>` sections to request specific fragments. Keeping all workflows in this directory ensures consistent discovery during planning (`*framework`), implementation (`*atdd`, `*automate`, `*trace`), and release (`*nfr-assess`, `*gate`).
+**📖** = Click to view detailed workflow documentation
 
-This separation lets us expand the knowledge base without touching agent wiring and keeps every command remote-controllable via the standard BMAD workflow runner. As navigation improves, we can add lightweight entrypoints or tags in the index without changing where workflows live.
+## Why TEA is Architecturally Different
 
-## Appendix
+TEA is the only BMM agent with its own top-level module directory (`bmm/testarch/`). This intentional design pattern reflects TEA's unique requirements:
 
-- **Supporting Knowledge:**
-  - `tea-index.csv` – Catalog of knowledge fragments with tags and file paths under `knowledge/` for task-specific loading.
-  - `knowledge/*.md` – Focused summaries (fixtures, network, CI, levels, priorities, etc.) distilled from Murat’s external resources.
-  - `test-resources-for-ai-flat.txt` – Raw 347 KB archive retained for manual deep dives when a fragment needs source validation.
+<details>
+<summary><strong>Unique Architecture Pattern & Rationale</strong></summary>
+
+### Directory Structure
+
+```
+src/modules/bmm/
+├── agents/
+│   └── tea.agent.yaml          # Agent definition (standard location)
+├── workflows/
+│   └── testarch/               # TEA workflows (standard location)
+└── testarch/                   # Knowledge base (UNIQUE!)
+    ├── knowledge/              # 21 production-ready test pattern fragments
+    ├── tea-index.csv           # Centralized knowledge lookup (21 fragments indexed)
+    └── README.md               # This guide
+```
+
+### Why TEA Gets Special Treatment
+
+TEA uniquely requires **extensive domain knowledge** (21 fragments, 12,821 lines: test patterns, CI/CD, fixtures, quality practices, healing strategies), a **centralized reference system** (`tea-index.csv` for on-demand fragment loading), **cross-cutting concerns** (domain-specific patterns vs project-specific artifacts like PRDs/stories), and **optional MCP integration** (healing, exploratory, verification modes). Other BMM agents don't require this architecture.
+
+</details>

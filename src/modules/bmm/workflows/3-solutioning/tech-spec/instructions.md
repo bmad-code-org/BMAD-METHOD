@@ -1,8 +1,9 @@
 <!-- BMAD BMM Tech Spec Workflow Instructions (v6) -->
 
-````xml
+```xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>This workflow generates a comprehensive Technical Specification from PRD and Architecture, including detailed design, NFRs, acceptance criteria, and traceability mapping.</critical>
 <critical>Default execution mode: #yolo (non-interactive). If required inputs cannot be auto-discovered and {{non_interactive}} == true, HALT with a clear message listing missing documents; do not prompt.</critical>
 
@@ -129,27 +130,17 @@ What would you like to do?</ask>
     <action>Find the most recent file (by date in filename)</action>
 
     <check if="status file exists">
-      <action>Load the status file</action>
+      <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+        <param>mode: update</param>
+        <param>action: complete_workflow</param>
+        <param>workflow_name: tech-spec</param>
+      </invoke-workflow>
 
-      <template-output file="{{status_file_path}}">current_step</template-output>
-      <action>Set to: "tech-spec (Epic {{epic_id}})"</action>
+      <check if="success == true">
+        <output>✅ Status updated for Epic {{epic_id}} tech-spec</output>
+      </check>
 
-      <template-output file="{{status_file_path}}">current_workflow</template-output>
-      <action>Set to: "tech-spec (Epic {{epic_id}}: {{epic_title}}) - Complete"</action>
-
-      <template-output file="{{status_file_path}}">progress_percentage</template-output>
-      <action>Increment by: 5% (tech-spec generates one epic spec)</action>
-
-      <template-output file="{{status_file_path}}">decisions_log</template-output>
-      <action>Add entry:</action>
-      ```
-      - **{{date}}**: Completed tech-spec for Epic {{epic_id}} ({{epic_title}}). Tech spec file: {{default_output_file}}. This is a JIT workflow that can be run multiple times for different epics. Next: Continue with remaining epics or proceed to Phase 4 implementation.
-      ```
-
-      <template-output file="{{status_file_path}}">planned_workflow</template-output>
-      <action>Mark "tech-spec (Epic {{epic_id}})" as complete in the planned workflow table</action>
-
-      <output>**✅ Tech Spec Generated Successfully**
+      <output>**✅ Tech Spec Generated Successfully, {user_name}!**
 
 **Epic Details:**
 - Epic ID: {{epic_id}}
@@ -172,7 +163,7 @@ What would you like to do?</ask>
     </check>
 
     <check if="status file not found">
-      <output>**✅ Tech Spec Generated Successfully**
+      <output>**✅ Tech Spec Generated Successfully, {user_name}!**
 
 **Epic Details:**
 - Epic ID: {{epic_id}}
@@ -189,4 +180,4 @@ To track progress across workflows, run `workflow-status` first.
   </step>
 
 </workflow>
-````
+```

@@ -70,6 +70,22 @@ class CodexSetup extends BaseIdeSetup {
     console.log(chalk.dim(`  - ${written} Codex prompt files written`));
     console.log(chalk.dim(`  - Destination: ${destDir}`));
 
+    // Prominent notice about home directory installation
+    console.log('');
+    console.log(chalk.bold.cyan('═'.repeat(70)));
+    console.log(chalk.bold.yellow('  IMPORTANT: Codex Configuration'));
+    console.log(chalk.bold.cyan('═'.repeat(70)));
+    console.log('');
+    console.log(chalk.white('  Prompts have been installed to your HOME DIRECTORY, not this project.'));
+    console.log(chalk.white('  No .codex file was created in the project root.'));
+    console.log('');
+    console.log(chalk.green('  ✓ You can now use slash commands (/) in Codex CLI'));
+    console.log(chalk.dim('    Example: /bmad-bmm-agents-pm'));
+    console.log(chalk.dim('    Type / to see all available commands'));
+    console.log('');
+    console.log(chalk.bold.cyan('═'.repeat(70)));
+    console.log('');
+
     return {
       success: true,
       mode,

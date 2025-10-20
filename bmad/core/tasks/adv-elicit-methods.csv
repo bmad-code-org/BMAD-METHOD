@@ -1,0 +1,39 @@
+category,method_name,description,output_pattern
+advanced,Tree of Thoughts,Explore multiple reasoning paths simultaneously then evaluate and select the best - perfect for complex problems with multiple valid approaches where finding the optimal path matters,paths → evaluation → selection
+advanced,Graph of Thoughts,Model reasoning as an interconnected network of ideas to reveal hidden relationships - ideal for systems thinking and discovering emergent patterns in complex multi-factor situations,nodes → connections → patterns
+advanced,Thread of Thought,Maintain coherent reasoning across long contexts by weaving a continuous narrative thread - essential for RAG systems and maintaining consistency in lengthy analyses,context → thread → synthesis
+advanced,Self-Consistency Validation,Generate multiple independent approaches then compare for consistency - crucial for high-stakes decisions where verification and consensus building matter,approaches → comparison → consensus
+advanced,Meta-Prompting Analysis,Step back to analyze the approach structure and methodology itself - valuable for optimizing prompts and improving problem-solving strategies,current → analysis → optimization
+advanced,Reasoning via Planning,Build a reasoning tree guided by world models and goal states - excellent for strategic planning and sequential decision-making tasks,model → planning → strategy
+collaboration,Stakeholder Round Table,Convene multiple personas to contribute diverse perspectives - essential for requirements gathering and finding balanced solutions across competing interests,perspectives → synthesis → alignment
+collaboration,Expert Panel Review,Assemble domain experts for deep specialized analysis - ideal when technical depth and peer review quality are needed,expert views → consensus → recommendations
+competitive,Red Team vs Blue Team,Adversarial attack-defend analysis to find vulnerabilities - critical for security testing and building robust solutions through adversarial thinking,defense → attack → hardening
+core,Expand or Contract for Audience,Dynamically adjust detail level and technical depth for target audience - essential when content needs to match specific reader capabilities,audience → adjustments → refined content
+core,Critique and Refine,Systematic review to identify strengths and weaknesses then improve - standard quality check for drafts needing polish and enhancement,strengths/weaknesses → improvements → refined version
+core,Explain Reasoning,Walk through step-by-step thinking to show how conclusions were reached - crucial for transparency and helping others understand complex logic,steps → logic → conclusion
+core,First Principles Analysis,Strip away assumptions to rebuild from fundamental truths - breakthrough technique for innovation and solving seemingly impossible problems,assumptions → truths → new approach
+core,5 Whys Deep Dive,Repeatedly ask why to drill down to root causes - simple but powerful for understanding failures and fixing problems at their source,why chain → root cause → solution
+core,Socratic Questioning,Use targeted questions to reveal hidden assumptions and guide discovery - excellent for teaching and helping others reach insights themselves,questions → revelations → understanding
+creative,Reverse Engineering,Work backwards from desired outcome to find implementation path - powerful for goal achievement and understanding how to reach specific endpoints,end state → steps backward → path forward
+creative,What If Scenarios,Explore alternative realities to understand possibilities and implications - valuable for contingency planning and creative exploration,scenarios → implications → insights
+creative,SCAMPER Method,Apply seven creativity lenses (Substitute/Combine/Adapt/Modify/Put/Eliminate/Reverse) - systematic ideation for product innovation and improvement,S→C→A→M→P→E→R
+learning,Feynman Technique,Explain complex concepts simply as if teaching a child - the ultimate test of true understanding and excellent for knowledge transfer,complex → simple → gaps → mastery
+learning,Active Recall Testing,Test understanding without references to verify true knowledge - essential for identifying gaps and reinforcing mastery,test → gaps → reinforcement
+narrative,Unreliable Narrator Mode,Question assumptions and biases by adopting skeptical perspective - crucial for detecting hidden agendas and finding balanced truth,perspective → biases → balanced view
+optimization,Speedrun Optimization,Find the fastest most efficient path by eliminating waste - perfect when time pressure demands maximum efficiency,current → bottlenecks → optimized
+optimization,New Game Plus,Revisit challenges with enhanced capabilities from prior experience - excellent for iterative improvement and mastery building,initial → enhanced → improved
+optimization,Roguelike Permadeath,Treat decisions as irreversible to force careful high-stakes analysis - ideal for critical decisions with no second chances,decision → consequences → execution
+philosophical,Occam's Razor Application,Find the simplest sufficient explanation by eliminating unnecessary complexity - essential for debugging and theory selection,options → simplification → selection
+philosophical,Trolley Problem Variations,Explore ethical trade-offs through moral dilemmas - valuable for understanding values and making difficult ethical decisions,dilemma → analysis → decision
+quantum,Observer Effect Consideration,Analyze how the act of measurement changes what's being measured - important for understanding metrics impact and self-aware systems,unmeasured → observation → impact
+retrospective,Hindsight Reflection,Imagine looking back from the future to gain perspective - powerful for project reviews and extracting wisdom from experience,future view → insights → application
+retrospective,Lessons Learned Extraction,Systematically identify key takeaways and actionable improvements - essential for knowledge transfer and continuous improvement,experience → lessons → actions
+risk,Identify Potential Risks,Brainstorm what could go wrong across all categories - fundamental for project planning and deployment preparation,categories → risks → mitigations
+risk,Challenge from Critical Perspective,Play devil's advocate to stress-test ideas and find weaknesses - essential for overcoming groupthink and building robust solutions,assumptions → challenges → strengthening
+risk,Failure Mode Analysis,Systematically explore how each component could fail - critical for reliability engineering and safety-critical systems,components → failures → prevention
+risk,Pre-mortem Analysis,Imagine future failure then work backwards to prevent it - powerful technique for risk mitigation before major launches,failure scenario → causes → prevention
+scientific,Peer Review Simulation,Apply rigorous academic evaluation standards - ensures quality through methodology review and critical assessment,methodology → analysis → recommendations
+scientific,Reproducibility Check,Verify results can be replicated independently - fundamental for reliability and scientific validity,method → replication → validation
+structural,Dependency Mapping,Visualize interconnections to understand requirements and impacts - essential for complex systems and integration planning,components → dependencies → impacts
+structural,Information Architecture Review,Optimize organization and hierarchy for better user experience - crucial for fixing navigation and findability problems,current → pain points → restructure
+structural,Skeleton of Thought,Create structure first then expand branches in parallel - efficient for generating long content quickly with good organization,skeleton → branches → integration

@@ -7,6 +7,8 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Inputs expected (ask user if missing)
@@ -24,27 +26,6 @@ validation: "{installed_path}/checklist.md"
 
 # Output configuration
 default_output_file: "{project-root}/docs/tech-spec-epic-{{epic_id}}.md"
-
-# Required tools
-required_tools:
-  - list_files
-  - file_info
-  - read_file
-  - write_file
-  - search_repo
-  - glob
-  - parse_markdown
-
-tags:
-  - tech-spec
-  - architecture
-  - planning
-  - bmad-v6
-
-execution_hints:
-  interactive: false
-  autonomous: true
-  iterative: true
 
 # Variables
 variables:

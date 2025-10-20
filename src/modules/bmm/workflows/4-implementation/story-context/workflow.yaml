@@ -8,6 +8,8 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Workflow components
@@ -32,27 +34,5 @@ default_output_file: "{story_dir}/story-context-{{epic_id}}.{{story_id}}.xml"
 # Recommended inputs
 recommended_inputs:
   - story_markdown: "Path to a story markdown file to build context for"
-
-# Required tools
-required_tools:
-  - list_files
-  - file_info
-  - read_file
-  - write_file
-  - create_directory
-  - glob
-  - search_repo
-  - parse_markdown
-
-tags:
-  - context
-  - story
-  - planning
-  - bmad-v6
-
-execution_hints:
-  interactive: false
-  autonomous: true
-  iterative: true
 
 web_bundle: false

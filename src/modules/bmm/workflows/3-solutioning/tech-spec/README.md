@@ -2,7 +2,7 @@
 
 ## Overview
 
-Generate a comprehensive Technical Specification from PRD and Architecture with acceptance criteria and traceability mapping. Creates detailed implementation guidance that bridges business requirements with technical execution.
+Generate a comprehensive Technical Specification for a single epic from PRD, Epics file and Architecture to produce a document with full acceptance criteria and traceability mapping. Creates detailed implementation guidance that bridges business requirements with technical execution.
 
 ## Key Features
 

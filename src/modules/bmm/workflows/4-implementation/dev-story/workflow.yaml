@@ -7,6 +7,8 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Workflow components
@@ -30,26 +32,5 @@ variables:
 # Recommended inputs
 recommended_inputs:
   - story_markdown: "Path to the story markdown file (Tasks/Subtasks, Acceptance Criteria present)"
-
-# Required tools (conceptual; executor should provide equivalents)
-required_tools:
-  - read_file
-  - write_file
-  - search_repo
-  - run_tests
-  - list_files
-  - file_info
-
-tags:
-  - development
-  - story-execution
-  - tests
-  - validation
-  - bmad-v6
-
-execution_hints:
-  interactive: false # Minimize prompts; intended to run to completion
-  autonomous: true # Proceed without user input unless blocked
-  iterative: true
 
 web_bundle: false

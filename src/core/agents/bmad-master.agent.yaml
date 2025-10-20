@@ -34,9 +34,5 @@ agent:
       workflow: "{project-root}/bmad/core/workflows/party-mode/workflow.yaml"
       description: "Group chat with all agents"
 
-    # - trigger: "*bmad-init"
-    #   workflow: "{project-root}/bmad/core/workflows/bmad-init/workflow.yaml"
-    #   description: "Initialize or Update BMAD system agent manifest, customization, or workflow selection"
-
   # Empty prompts section (no custom prompts for this agent)
   prompts: []

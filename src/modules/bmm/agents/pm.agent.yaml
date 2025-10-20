@@ -23,8 +23,12 @@ agent:
   # Menu items - triggers will be prefixed with * at build time
   # help and exit are auto-injected, don't define them here
   menu:
+    - trigger: workflow-init
+      workflow: "{project-root}/bmad/bmm/workflows/workflow-status/init/workflow.yaml"
+      description: Start a new sequenced workflow path
+
     - trigger: workflow-status
-      workflow: "{project-root}/bmad/bmm/workflows/1-analysis/workflow-status/workflow.yaml"
+      workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Check workflow status and get recommendations (START HERE!)
 
     - trigger: development-status
@@ -34,6 +38,14 @@ agent:
     - trigger: plan-project
       workflow: "{project-root}/bmad/bmm/workflows/2-plan/workflow.yaml"
       description: Analyze Project Scope and Create PRD or Smaller Tech Spec
+      
+    - trigger: prd
+      workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/prd/workflow.yaml"
+      description: Create Product Requirements Document (PRD) for Level 2-4 projects
+
+    - trigger: tech-spec
+      workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/tech-spec/workflow.yaml"
+      description: Create Tech Spec for Level 0-1 projects
 
     - trigger: correct-course
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"

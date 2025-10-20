@@ -8,12 +8,17 @@ prompt:
 # This is injected into the custom agent activation rules
 user_name:
   prompt: "What is your name?"
-  default: "BMad User"
+  default: "BMad"
   result: "{value}"
 
-# This is injected into the custom agent activation rules
+# This is injected into the custom agent activation rules and most workflows
 communication_language:
-  prompt: "Preferred language?"
+  prompt: "Preferred Chat Language?"
+  default: "English"
+  result: "{value}"
+
+document_output_language:
+  prompt: "Preferred Document Output Language?"
   default: "English"
   result: "{value}"
 

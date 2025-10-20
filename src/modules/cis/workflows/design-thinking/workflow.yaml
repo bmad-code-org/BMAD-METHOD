@@ -7,6 +7,7 @@ author: "BMad"
 config_source: "{project-root}/bmad/cis/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Optional inputs for context
@@ -34,8 +35,6 @@ web_bundle:
   author: "BMad"
   instructions: "bmad/cis/workflows/design-thinking/instructions.md"
   template: "bmad/cis/workflows/design-thinking/template.md"
-  design_methods: "bmad/cis/workflows/design-thinking/design-methods.csv"
-  use_advanced_elicitation: true
   web_bundle_files:
     - "bmad/cis/workflows/design-thinking/instructions.md"
     - "bmad/cis/workflows/design-thinking/template.md"

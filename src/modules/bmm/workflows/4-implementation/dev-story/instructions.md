@@ -1,54 +1,52 @@
 # Develop Story - Workflow Instructions
 
-````xml
+```xml
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+<critical>Generate all documents in {document_output_language}</critical>
 <critical>Only modify the story file in these areas: Tasks/Subtasks checkboxes, Dev Agent Record (Debug Log, Completion Notes), File List, Change Log, and Status</critical>
 <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
 <critical>If {{run_until_complete}} == true, run non-interactively: do not pause between steps unless a HALT condition is reached or explicit user approval is required for unapproved dependencies.</critical>
 <critical>Absolutely DO NOT stop because of "milestones", "significant progress", or "session boundaries". Continue in a single execution until the story is COMPLETE (all ACs satisfied and all tasks/subtasks checked) or a HALT condition is triggered.</critical>
 <critical>Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 6 decides completion.</critical>
 
+<critical>User skill level ({user_skill_level}) affects conversation style ONLY, not code updates.</critical>
+
 <workflow>
 
   <step n="1" goal="Load story from status file IN PROGRESS section">
-    <action>Read {output_folder}/bmm-workflow-status.md (if exists)</action>
-    <action>Navigate to "### Implementation Progress (Phase 4 Only)" section</action>
-    <action>Find "#### IN PROGRESS (Approved for Development)" section</action>
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+      <param>mode: data</param>
+      <param>data_request: next_story</param>
+    </invoke-workflow>
 
-    <check if="IN PROGRESS section has a story">
-      <action>Extract story information:</action>
-      - current_story_id: The story ID (e.g., "1.1", "auth-feature-1", "login-fix")
-      - current_story_title: The story title
-      - current_story_file: The exact story file path
-      - current_story_context_file: The context file path (if exists)
+    <check if="status_exists == true AND in_progress_story != ''">
+      <action>Use IN PROGRESS story from status:</action>
+      - {{in_progress_story}}: Current story ID
+      - Story file path derived from ID format
 
-      <critical>DO NOT SEARCH for stories - the status file tells you exactly which story is IN PROGRESS</critical>
+      <critical>DO NOT SEARCH - status file provides exact story</critical>
 
-      <action>Set {{story_path}} = {story_dir}/{current_story_file}</action>
-      <action>Read the COMPLETE story file from {{story_path}}</action>
-      <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks (including subtasks), Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
-      <action>Identify the first incomplete task (unchecked [ ]) in Tasks/Subtasks; if subtasks exist, treat all subtasks as part of the selected task scope</action>
-      <check>If no incomplete tasks found → "All tasks completed - proceed to completion sequence" and <goto step="6">Continue</goto></check>
-      <check>If story file inaccessible → HALT: "Cannot develop story without access to story file"</check>
-      <check>If task requirements ambiguous → ASK user to clarify; if unresolved, HALT: "Task requirements must be clear before implementation"</check>
+      <action>Determine story file path from in_progress_story ID</action>
+      <action>Set {{story_path}} = {story_dir}/{{derived_story_file}}</action>
     </check>
 
-    <check if="IN PROGRESS section is empty OR status file not found">
+    <check if="status_exists == false OR in_progress_story == ''">
       <action>Fall back to legacy auto-discovery:</action>
-      <action>If {{story_path}} was explicitly provided and is valid → use it. Otherwise, attempt auto-discovery.</action>
-      <action>Auto-discovery: Read {{story_dir}} from config (dev_story_location). If invalid/missing or contains no .md files, ASK user to provide either: (a) a story file path, or (b) a directory to scan.</action>
-      <action>If a directory is provided, list story markdown files recursively under that directory matching pattern: "story-*.md".</action>
-      <action>Sort candidates by last modified time (newest first) and take the top {{story_selection_limit}} items.</action>
-      <ask>Present the list with index, filename, and modified time. Ask: "Select a story (1-{{story_selection_limit}}) or enter a path:"</ask>
-      <action>Resolve the selected item into {{story_path}}</action>
-      <action>Read the COMPLETE story file from {{story_path}}</action>
-      <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks (including subtasks), Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
-      <action>Identify the first incomplete task (unchecked [ ]) in Tasks/Subtasks; if subtasks exist, treat all subtasks as part of the selected task scope</action>
-      <check>If no incomplete tasks found → "All tasks completed - proceed to completion sequence" and <goto step="6">Continue</goto></check>
-      <check>If story file inaccessible → HALT: "Cannot develop story without access to story file"</check>
-      <check>If task requirements ambiguous → ASK user to clarify; if unresolved, HALT: "Task requirements must be clear before implementation"</check>
+      <action>If {{story_path}} explicitly provided → use it</action>
+      <action>Otherwise list story-*.md files from {{story_dir}}, sort by modified time</action>
+      <ask optional="true" if="{{non_interactive}} == false">Select story or enter path</ask>
+      <action if="{{non_interactive}} == true">Auto-select most recent</action>
     </check>
+
+    <action>Read COMPLETE story file from {{story_path}}</action>
+    <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
+    <action>Identify first incomplete task (unchecked [ ]) in Tasks/Subtasks</action>
+
+    <check>If no incomplete tasks → <goto step="6">Completion sequence</goto></check>
+    <check>If story file inaccessible → HALT: "Cannot develop story without access to story file"</check>
+    <check>If task requirements ambiguous → ASK user to clarify or HALT</check>
   </step>
 
   <step n="2" goal="Plan and implement task">
@@ -113,25 +111,17 @@
     <action>Find the most recent file (by date in filename)</action>
 
     <check if="status file exists">
-      <action>Load the status file</action>
+      <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+        <param>mode: update</param>
+        <param>action: set_current_workflow</param>
+        <param>workflow_name: dev-story</param>
+      </invoke-workflow>
 
-      <template-output file="{{status_file_path}}">current_step</template-output>
-      <action>Set to: "dev-story (Story {{current_story_id}})"</action>
+      <check if="success == true">
+        <output>✅ Status updated: Story {{current_story_id}} ready for review</output>
+      </check>
 
-      <template-output file="{{status_file_path}}">current_workflow</template-output>
-      <action>Set to: "dev-story (Story {{current_story_id}}) - Complete (Ready for Review)"</action>
-
-      <template-output file="{{status_file_path}}">progress_percentage</template-output>
-      <action>Calculate per-story weight: remaining_40_percent / total_stories / 5</action>
-      <action>Increment by: {{per_story_weight}} * 5 (dev-story weight is ~5% per story - largest weight)</action>
-
-      <template-output file="{{status_file_path}}">decisions_log</template-output>
-      <action>Add entry:</action>
-      ```
-      - **{{date}}**: Completed dev-story for Story {{current_story_id}} ({{current_story_title}}). All tasks complete, tests passing. Story status: Ready for Review. Next: User reviews and runs story-approved when satisfied with implementation.
-      ```
-
-      <output>**✅ Story Implementation Complete**
+      <output>**✅ Story Implementation Complete, {user_name}!**
 
 **Story Details:**
 - Story ID: {{current_story_id}}
@@ -153,7 +143,7 @@ Or check status anytime with: `workflow-status`
     </check>
 
     <check if="status file not found">
-      <output>**✅ Story Implementation Complete**
+      <output>**✅ Story Implementation Complete, {user_name}!**
 
 **Story Details:**
 - Story ID: {{current_story_id}}
@@ -169,4 +159,4 @@ To track progress across workflows, run `workflow-status` first.
   </step>
 
 </workflow>
-````
+```

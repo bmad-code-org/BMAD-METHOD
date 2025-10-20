@@ -5,6 +5,7 @@
 <workflow>
 <critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project_root}/bmad/cis/workflows/storytelling/workflow.yaml</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 
 <step n="1" goal="Story Context Setup">
 
@@ -249,10 +250,11 @@ Polish and plan forward:
 
 <ask>What parts of the story feel strongest?</ask>
 <ask>What areas could use more refinement?</ask>
+<ask>What's the key resolution or call to action for your story?</ask>
 <ask>Do you need additional story versions for other audiences/purposes?</ask>
 <ask>How will you test this story with your audience?</ask>
 
-<template-output>refinement_opportunities, additional_versions, feedback_plan</template-output>
+<template-output>resolution, refinement_opportunities, additional_versions, feedback_plan</template-output>
 
 </step>
 
@@ -265,6 +267,9 @@ Compile all story components into the structured template:
 3. Include all strategic guidance and usage notes
 4. Verify tone and voice consistency
 5. Fill all template placeholders with actual content
+
+<action>Write final story document to {output_folder}/story-{{date}}.md</action>
+<action>Confirm completion with: "Story complete, {user_name}! Your narrative has been saved to {output_folder}/story-{{date}}.md"</action>
 
 <template-output>agent_role, agent_name, user_name, date</template-output>
 

@@ -5,11 +5,9 @@ author: "BMad Builder"
 
 # Critical variables
 config_source: "{project-root}/bmad/bmb/config.yaml"
-output_folder: "{config_source}:output_folder"
 custom_workflow_location: "{config_source}:custom_workflow_location"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
-date: system-generated
 
 # Template files for new workflows
 template_workflow_yaml: "{workflow_template_path}/workflow.yaml"
@@ -38,15 +36,5 @@ workflow_template_path: "{installed_path}/workflow-template"
 module_output_folder: "{project-root}/bmad/{{target_module}}/workflows/{{workflow_name}}"
 standalone_output_folder: "{custom_workflow_location}/{{workflow_name}}"
 
-web_bundle:
-  name: "create-workflow"
-  description: "Interactive workflow builder that guides creation of new BMAD workflows with proper structure and validation for optimal human-AI collaboration. Includes optional brainstorming phase for workflow ideas and design."
-  author: "BMad Builder"
-  web_bundle_files:
-    - "bmad/bmb/workflows/create-workflow/instructions.md"
-    - "bmad/bmb/workflows/create-workflow/checklist.md"
-    - "bmad/bmb/workflows/create-workflow/workflow-creation-guide.md"
-    - "bmad/bmb/workflows/create-workflow/workflow-template/workflow.yaml"
-    - "bmad/bmb/workflows/create-workflow/workflow-template/instructions.md"
-    - "bmad/bmb/workflows/create-workflow/workflow-template/template.md"
-    - "bmad/bmb/workflows/create-workflow/workflow-template/checklist.md"
+# Web bundle configuration
+web_bundle: false # BMB workflows run locally in BMAD-METHOD project
