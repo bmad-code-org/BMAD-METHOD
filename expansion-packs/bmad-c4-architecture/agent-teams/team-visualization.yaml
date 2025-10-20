@@ -1,0 +1,25 @@
+name: "Visualization Team"
+description: "Focused team for architecture visualization and documentation"
+version: "1.0.0"
+
+agents:
+  - "c4-architect" # C4 model specialist
+
+workflows:
+  - "c4-visualization"
+  - "diagram-export"
+  - "architecture-review"
+
+capabilities:
+  - "C4 model diagram creation"
+  - "Structurizr DSL generation"
+  - "Diagram export and formatting"
+  - "Architecture visualization"
+  - "Documentation generation"
+
+use_cases:
+  - "Create C4 diagrams from existing architecture"
+  - "Generate visual documentation"
+  - "Export diagrams for presentations"
+  - "Validate architecture diagrams"
+  - "Update and maintain architecture diagrams"

@@ -1,0 +1,107 @@
+name: "C4 Container Diagram Template"
+description: "Template for creating C4 Container diagrams using Structurizr DSL"
+version: "1.0"
+
+sections:
+  - id: system-context
+    title: "System Context"
+    instruction: "Reference the existing system from context diagram"
+    fields:
+      - id: system-name
+        title: "System Name"
+        type: "text"
+        required: true
+        placeholder: "Must match the system from context diagram"
+      - id: system-description
+        title: "System Description"
+        type: "textarea"
+        required: true
+        placeholder: "Brief description of the system"
+
+  - id: containers
+    title: "Containers"
+    instruction: "Define the high-level technical building blocks"
+    fields:
+      - id: web-applications
+        title: "Web Applications"
+        type: "list"
+        required: false
+        placeholder: "List web applications (e.g., React SPA, Angular App)"
+      - id: mobile-applications
+        title: "Mobile Applications"
+        type: "list"
+        required: false
+        placeholder: "List mobile applications (e.g., iOS App, Android App)"
+      - id: apis
+        title: "APIs and Services"
+        type: "list"
+        required: false
+        placeholder: "List APIs and microservices (e.g., REST API, GraphQL API)"
+      - id: databases
+        title: "Databases"
+        type: "list"
+        required: false
+        placeholder: "List databases (e.g., PostgreSQL, MongoDB, Redis)"
+      - id: file-systems
+        title: "File Systems"
+        type: "list"
+        required: false
+        placeholder: "List file systems (e.g., S3, Azure Blob, Local Storage)"
+
+  - id: technologies
+    title: "Technology Stack"
+    instruction: "Specify technologies for each container"
+    fields:
+      - id: frontend-tech
+        title: "Frontend Technologies"
+        type: "textarea"
+        required: false
+        placeholder: "Technologies for web and mobile applications"
+      - id: backend-tech
+        title: "Backend Technologies"
+        type: "textarea"
+        required: false
+        placeholder: "Technologies for APIs and services"
+      - id: data-tech
+        title: "Data Technologies"
+        type: "textarea"
+        required: false
+        placeholder: "Technologies for databases and storage"
+
+  - id: relationships
+    title: "Container Relationships"
+    instruction: "Define how containers communicate"
+    fields:
+      - id: communication-patterns
+        title: "Communication Patterns"
+        type: "textarea"
+        required: true
+        placeholder: "How do containers communicate? (e.g., REST API, Message Queue)"
+      - id: data-flow
+        title: "Data Flow"
+        type: "textarea"
+        required: true
+        placeholder: "How does data flow between containers?"
+      - id: security-boundaries
+        title: "Security Boundaries"
+        type: "textarea"
+        required: false
+        placeholder: "What security boundaries exist between containers?"
+
+  - id: llm-instructions
+    title: "LLM Instructions"
+    instruction: "AI processing instructions for generating the DSL"
+    content: |
+      Based on the provided information, generate a complete Structurizr DSL workspace that creates a C4 Container diagram. Follow these guidelines:
+
+      1. Use the system name and description from the context diagram
+      2. Create container elements for each identified container
+      3. Specify appropriate technologies for each container
+      4. Define relationships between containers with proper technology labels
+      5. Include relationships from users to containers
+      6. Include relationships to external systems
+      7. Create a container view that shows all containers
+      8. Apply autolayout for better diagram appearance
+      9. Use the default theme
+
+      The DSL should be complete and ready to use with Structurizr Lite.

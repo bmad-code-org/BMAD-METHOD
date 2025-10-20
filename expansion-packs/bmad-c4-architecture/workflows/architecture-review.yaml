@@ -1,0 +1,83 @@
+name: "Architecture Review Workflow"
+description: "Workflow for reviewing and improving existing architecture diagrams"
+version: "1.0.0"
+
+phases:
+  - id: "analysis"
+    name: "Current State Analysis"
+    description: "Analyze existing architecture and diagrams"
+    steps:
+      - agent: "c4-architect"
+        task: "review-architecture"
+        description: "Review existing architecture diagrams"
+        prerequisites: ["existing-diagrams-available"]
+        outputs: ["architecture-analysis.md", "issues-identified.md"]
+
+      - agent: "c4-architect"
+        task: "validate-model"
+        description: "Validate existing C4 model"
+        prerequisites: ["analysis-complete"]
+        outputs: ["validation-report.md"]
+
+  - id: "improvement"
+    name: "Improvement and Updates"
+    description: "Improve and update architecture diagrams"
+    steps:
+      - agent: "c4-architect"
+        task: "update-diagram"
+        description: "Update diagrams based on review findings"
+        prerequisites: ["issues-identified"]
+        outputs: ["updated-diagrams.dsl"]
+
+      - agent: "c4-architect"
+        task: "validate-model"
+        description: "Re-validate updated model"
+        prerequisites: ["updates-complete"]
+        outputs: ["updated-validation-report.md"]
+
+  - id: "documentation"
+    name: "Documentation and Export"
+    description: "Document changes and export updated diagrams"
+    steps:
+      - agent: "c4-architect"
+        task: "export-diagrams"
+        description: "Export updated diagrams"
+        prerequisites: ["validation-passed"]
+        outputs: ["updated-diagrams-export/"]
+
+      - agent: "c4-architect"
+        task: "generate-dsl"
+        description: "Generate updated workspace"
+        prerequisites: ["export-complete"]
+        outputs: ["updated-workspace.dsl"]
+
+# Workflow conditions
+conditions:
+  - name: "Issues identified"
+    check: "issues-identified"
+    description: "Review has identified issues to address"
+
+  - name: "Updates complete"
+    check: "updates-complete"
+    description: "All identified issues have been addressed"
+
+  - name: "Validation passed"
+    check: "validation-passed"
+    description: "Updated diagrams pass validation"
+
+# Error handling
+error_handling:
+  - condition: "no-issues-found"
+    action: "complete-workflow"
+    description: "No issues found, workflow complete"
+
+  - condition: "validation-failed"
+    action: "return-to-improvement"
+    description: "Return to improvement phase to fix validation issues"
+
+# Success criteria
+success_criteria:
+  - "All identified issues are addressed"
+  - "Updated diagrams pass validation"
+  - "Documentation reflects current state"
+  - "Stakeholders approve changes"
