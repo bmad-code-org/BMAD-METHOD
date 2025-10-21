@@ -1,17 +1,13 @@
 # Sprint Status Template
 # This is an EXAMPLE showing the expected format
 # The actual file will be generated with all epics/stories from your epic files
-#
-# Generated: {date}
-# Project: {project_name}
-# Project Key: {project_key}
-# Language: {document_output_language}
-#
-# TRACKING SYSTEM:
-# ================
-# System: {tracking_system}
-# Story Location: {story_location}
-#
+
+# generated: {date}
+# project: {project_name}
+# project_key: {project_key}
+# tracking_system: {tracking_system}
+# story_location: {story_location}
+
 # STATUS DEFINITIONS:
 # ==================
 # Epic Status:
@@ -38,6 +34,13 @@
 # - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
+
+generated: 05-06-2-2025 21:30
+project: My Awesome Project
+project_key: jira-1234
+tracking_system: file-system
+story_location: "{project-root}/docs/stories"
+
 development_status:
   epic-1: contexted
   1-1-user-authentication: done

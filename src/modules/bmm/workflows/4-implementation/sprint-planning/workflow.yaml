@@ -24,7 +24,8 @@ variables:
 
   # Tracking system configuration
   tracking_system: "file-system" # Options: file-system, Future will support other options from config of mcp such as jira, linear, trello
-  story_location: "{config_source}:dev_story_location" # File path for file-system, Future will support URL for Jira/Linear/Trello
+  story_location: "{project-root}/docs/stories" # Relative path for file-system, Future will support URL for Jira/Linear/Trello
+  story_location_absolute: "{config_source}:dev_story_location" # Absolute path for file operations
 
   # Source files (file-system only)
   epics_location: "{output_folder}" # Directory containing epic*.md files

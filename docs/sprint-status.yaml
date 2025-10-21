@@ -1,21 +1,26 @@
-# Sprint Status - Generated 2025-10-20
-# Project: MyPlantFamily
-# Project Key: MyPlantFamily
-# Language: English
-#
-# TRACKING SYSTEM:
-# ================
-# System: file-system
-# Story Location: /Users/brianmadison/dev/BMAD-METHOD/docs/stories
-#
+# generated: 2025-10-21
+# project: MyPlantFamily
+# project_key: MyPlantFamily
+# tracking_system: file-system
+# story_location: {project-root}/docs/stories
+
 # STATUS DEFINITIONS:
 # ==================
 # Epic Status:
-#   Epic: backlog → contexted
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created (required before drafting stories)
+#
 # Story Status:
-#   Story: backlog → drafted → ready-for-dev → in-progress → review → done
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Under SM review (via review-story workflow)
+#   - done: Story completed
+#
 # Retrospective Status:
-#   Retrospective: optional → completed
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
 #
 # WORKFLOW NOTES:
 # ===============
@@ -23,6 +28,12 @@
 # - Stories can be worked in parallel if team capacity allows
 # - SM typically drafts next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+
+generated: 2025-10-21
+project: MyPlantFamily
+project_key: MyPlantFamily
+tracking_system: file-system
+story_location: "{project-root}/docs/stories"
 
 development_status:
   # Epic 1: Foundation & Core Plant Management

@@ -56,12 +56,12 @@ development_status:
 
 **Story file detection:**
 
-- Check: `{story_location}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
+- Check: `{story_location_absolute}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
 - If exists → upgrade status to at least `drafted`
 
 **Story context detection:**
 
-- Check: `{story_location}/{story-key}-context.md` (e.g., `stories/1-1-user-authentication-context.md`)
+- Check: `{story_location_absolute}/{story-key}-context.md` (e.g., `stories/1-1-user-authentication-context.md`)
 - If exists → upgrade status to at least `ready-for-dev`
 
 **Preservation rule:**
@@ -79,37 +79,54 @@ development_status:
 <step n="4" goal="Generate sprint status file">
 <action>Create or update {status_file} with:</action>
 
-**File Header:**
+**File Structure:**
 
 ```yaml
-# Sprint Status - Generated {date}
-# Project: {project_name}
-# Project Key: {project_key}
-# Language: {document_output_language}
-#
-# TRACKING SYSTEM:
-# ================
-# System: {tracking_system}
-# Story Location: {story_location}
-#
+# generated: {date}
+# project: {project_name}
+# project_key: {project_key}
+# tracking_system: {tracking_system}
+# story_location: {story_location}
+
 # STATUS DEFINITIONS:
 # ==================
 # Epic Status:
-#   Epic: backlog → contexted
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created (required before drafting stories)
+#
 # Story Status:
-#   Story: backlog → drafted → ready-for-dev → in-progress → review → done
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Under SM review (via review-story workflow)
+#   - done: Story completed
+#
 # Retrospective Status:
-#   Retrospective: optional → completed
-```
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
 
-**Development Status Section:**
+generated: { date }
+project: { project_name }
+project_key: { project_key }
+tracking_system: { tracking_system }
+story_location: { story_location }
 
-```yaml
 development_status:
   # All epics, stories, and retrospectives in order
 ```
 
 <action>Write the complete sprint status YAML to {status_file}</action>
+<action>CRITICAL: For story_location field, write the variable value EXACTLY as defined in workflow.yaml: "{project-root}/docs/stories"</action>
+<action>CRITICAL: Do NOT resolve {project-root} to an absolute path - keep it as the literal string "{project-root}/docs/stories"</action>
+<action>CRITICAL: Metadata appears TWICE - once as comments (#) for documentation, once as YAML key:value fields for parsing</action>
 <action>Ensure all items are ordered: epic, its stories, its retrospective, next epic...</action>
 </step>
 
