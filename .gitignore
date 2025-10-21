@@ -32,6 +32,7 @@ Thumbs.db
 .windsurf/
 .trae/
 .bmad*/.cursor/
+.vscode/
 
 # AI assistant files
 CLAUDE.md
@@ -55,6 +56,10 @@ sample-project/*
 flattened-codebase.xml
 *.stats.md
 .internal-docs/
+claudedocs/
+scripts/
+v6-open-items.md
+OPENCODE_INTEGRATION_SUMMARY.md
 #UAT template testing output files
 tools/template-test-generator/test-scenarios/
 
