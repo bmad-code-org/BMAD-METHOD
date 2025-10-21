@@ -34,8 +34,8 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: "Execute Dev Story workflow, implementing tasks and tests, or performing updates to the story"
 
-    - trigger: story-approved
-      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-approved/workflow.yaml"
+    - trigger: story-done
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-done/workflow.yaml"
       description: Mark story done after DoD complete
 
     - trigger: review

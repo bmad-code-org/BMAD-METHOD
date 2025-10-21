@@ -63,10 +63,10 @@ phases:
         optional: true
         agent: "dev"
         command: "review-story"
-      - id: "story-approved"
+      - id: "story-done"
         required: true
         agent: "dev"
-        command: "story-approved"
+        command: "story-done"
 
 story_naming: "story-<title>-<n>.md"
 story_example: "story-oauth-integration-1.md"

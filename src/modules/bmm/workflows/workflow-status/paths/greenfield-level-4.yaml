@@ -96,10 +96,10 @@ phases:
         conditional: "if_review_fails"
         agent: "dev"
         command: "correct-course"
-      - id: "story-approved"
+      - id: "story-done"
         required: true
         agent: "dev"
-        command: "story-approved"
+        command: "story-done"
     epic_completion:
       - id: "retrospective"
         required: true

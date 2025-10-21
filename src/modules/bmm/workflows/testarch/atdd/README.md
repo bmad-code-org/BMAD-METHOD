@@ -664,7 +664,7 @@ npm run test:e2e -- user-authentication.spec.ts --debug
 2. Run failing tests to confirm RED phase: `npm run test:e2e`
 3. Begin implementation using checklist as guide
 4. Share progress in daily standup
-5. When all tests pass, run `bmad sm story-approved` to move story to DONE
+5. When all tests pass, run `bmad sm story-done` to move story to DONE
 
 ```
 

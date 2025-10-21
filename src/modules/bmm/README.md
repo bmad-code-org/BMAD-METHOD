@@ -43,7 +43,7 @@ The heart of BMM - structured workflows for the four development phases:
    - `story-ready` - Approve story for development (SM agent)
    - `story-context` - Expertise injection (SM agent)
    - `dev-story` - Implementation (DEV agent)
-   - `story-approved` - Mark story done (DEV agent)
+   - `story-done` - Mark story done (DEV agent)
    - `review-story` - Quality validation (DEV/SR agent)
    - `correct-course` - Issue resolution
    - `retrospective` - Continuous improvement
@@ -101,7 +101,7 @@ BACKLOG → TODO → IN PROGRESS → DONE
 - **IN PROGRESS**: Single story approved for DEV to implement
 - **DONE**: Completed stories with dates and points
 
-Agents never search for "next story" - they always read the exact story from the status file. Simple workflows (`story-ready`, `story-approved`) advance the queue automatically.
+Agents never search for "next story" - they always read the exact story from the status file. Simple workflows (`story-ready`, `story-done`) advance the queue automatically.
 
 ### Context Injection
 

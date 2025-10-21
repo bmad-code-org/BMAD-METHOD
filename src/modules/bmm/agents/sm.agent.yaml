@@ -25,6 +25,10 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Check workflow status and get recommendations
 
+    - trigger: sprint-planning
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml"
+      description: Generate or update sprint-status.yaml from epic files
+
     - trigger: create-story
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
       description: Create a Draft Story with Context

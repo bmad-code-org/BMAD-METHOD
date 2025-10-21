@@ -220,7 +220,7 @@ Running in standalone mode - no progress tracking.</output>
 **Next Steps:**
 1. Review the Senior Developer Review notes appended to story
 2. Address any action items or changes requested
-3. When ready, run `story-approved` to mark story complete
+3. When ready, run `story-done` to mark story complete
 
 Check status anytime with: `workflow-status`
       </output>

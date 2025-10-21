@@ -72,7 +72,7 @@ phases:
           - id: "dev-story"
             required: true
             agent: "dev"
-          - id: "story-approved"
+          - id: "story-done"
             required: true
             agent: "dev"
       level_2_4:
@@ -99,7 +99,7 @@ phases:
           - id: "review-story"
             recommended: true
             agent: "dev"
-          - id: "story-approved"
+          - id: "story-done"
             required: true
             agent: "dev"
         feature_completion:

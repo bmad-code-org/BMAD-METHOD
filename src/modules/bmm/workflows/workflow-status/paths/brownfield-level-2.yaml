@@ -84,10 +84,10 @@ phases:
         recommended: true
         agent: "dev"
         command: "review-story"
-      - id: "story-approved"
+      - id: "story-done"
         required: true
         agent: "dev"
-        command: "story-approved"
+        command: "story-done"
 
 story_naming: "story-<short-title>.md"
 story_example: "story-user-dashboard.md, story-api-integration.md"

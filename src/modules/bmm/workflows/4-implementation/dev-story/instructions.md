@@ -136,7 +136,7 @@
 **Next Steps:**
 1. Review the implemented story and test the changes
 2. Verify all acceptance criteria are met
-3. When satisfied, run `story-approved` to mark story complete and advance the queue
+3. When satisfied, run `story-done` to mark story complete and advance the queue
 
 Or check status anytime with: `workflow-status`
       </output>

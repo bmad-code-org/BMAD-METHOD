@@ -786,7 +786,7 @@ Use for: Alpha/beta releases, internal tools, proof-of-concept
 - `bmad tea *automate` - Expand regression suite based on gaps
 - `bmad tea *nfr-assess` - Validate non-functional requirements (for gate)
 - `bmad tea *test-review` - Review test quality issues flagged by trace
-- `bmad sm story-approved` - Mark story as complete (triggers gate)
+- `bmad sm story-done` - Mark story as complete (triggers gate)
 
 ---
 
