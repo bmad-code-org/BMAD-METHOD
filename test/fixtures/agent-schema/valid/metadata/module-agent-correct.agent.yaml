@@ -1,0 +1,23 @@
+# Test: Valid module agent with correct module field
+# Expected: PASS
+# Path context: src/modules/bmm/agents/module-agent-correct.agent.yaml
+
+agent:
+  metadata:
+    id: bmm-test
+    name: BMM Test Agent
+    title: BMM Test
+    icon: 🧪
+    module: bmm
+
+  persona:
+    role: Test module agent
+    identity: I am a module-scoped test agent.
+    communication_style: Professional
+    principles:
+      - Test module validation
+
+  menu:
+    - trigger: help
+      description: Show help
+      action: display_help

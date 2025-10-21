@@ -1,0 +1,21 @@
+# Test: Menu with single valid item
+# Expected: PASS
+
+agent:
+  metadata:
+    id: single-menu
+    name: Single Menu Item
+    title: Single Menu
+    icon: 🧪
+
+  persona:
+    role: Test agent with single menu item
+    identity: I am a test agent.
+    communication_style: Clear
+    principles:
+      - Test minimal menu
+
+  menu:
+    - trigger: help
+      description: Show help information
+      action: display_help

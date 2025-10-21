@@ -118,7 +118,7 @@ Congratulations! You have completed all stories for this project.
 
 **Next Steps:**
 
-1. Run `retrospective` workflow with PM agent to review the project
+1. Run `retrospective` workflow with SM agent to review the project
 2. Close out the project
 3. Celebrate! 🎊
    {{/if}}

@@ -8,6 +8,7 @@ package-lock.json
 
 
 test-output/*
+coverage/
 
 # Logs
 logs/
@@ -25,7 +26,6 @@ build/*.txt
 Thumbs.db
 
 # Development tools and configs
-.prettierignore
 .prettierrc
 
 # IDE and editor configs

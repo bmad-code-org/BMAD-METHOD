@@ -1,0 +1,5 @@
+# Test: Empty YAML file
+# Expected: FAIL
+# Error code: invalid_type
+# Error path:
+# Error expected: object

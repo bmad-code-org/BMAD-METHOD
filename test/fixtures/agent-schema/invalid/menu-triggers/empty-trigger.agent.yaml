@@ -1,0 +1,24 @@
+# Test: Empty trigger string
+# Expected: FAIL
+# Error code: custom
+# Error path: agent.menu[0].trigger
+# Error message: agent.menu[].trigger must be a non-empty string
+
+agent:
+  metadata:
+    id: empty-trigger
+    name: Empty Trigger
+    title: Empty
+    icon: ❌
+
+  persona:
+    role: Test agent
+    identity: Test identity
+    communication_style: Test style
+    principles:
+      - Test principle
+
+  menu:
+    - trigger: "   "
+      description: Empty trigger
+      action: display_help
