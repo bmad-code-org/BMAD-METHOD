@@ -139,7 +139,7 @@ This complexity **requires specialized documentation** (this guide), **extensive
 <details>
 <summary>Worked Example – “Nova CRM” Greenfield Feature</summary>
 
-1. **Planning:** Analyst runs `*product-brief`; PM executes `*plan-project` to produce PRD and epics; Architect completes `*solution-architecture` for the new module.
+1. **Planning:** Analyst runs `*product-brief`; PM executes `*plan-project` to produce PRD and epics; Architect completes `*create-architecture` for the new module.
 2. **Setup:** TEA checks harness via `*framework`, configures `*ci`, and runs `*test-design` to capture risk/coverage plans.
 3. **Story Prep:** Scrum Master generates the story via `*create-story`; PO validates using `*solutioning-gate-check`.
 4. **Implementation:** TEA optionally runs `*atdd`; Dev implements with guidance from failing tests and the plan.
@@ -174,7 +174,7 @@ This complexity **requires specialized documentation** (this guide), **extensive
 <details>
 <summary>Worked Example – “Atlas Payments” Brownfield Story</summary>
 
-1. **Context Refresh:** Analyst reruns `*product-brief`; PM executes `*plan-project` to update PRD, analysis, and `epics.md`; Architect triggers `*solution-architecture` capturing legacy payment flows.
+1. **Context Refresh:** Analyst reruns `*product-brief`; PM executes `*plan-project` to update PRD, analysis, and `epics.md`; Architect triggers `*create-architecture` capturing legacy payment flows.
 2. **Baseline Coverage:** TEA executes `*trace` to record current coverage in `docs/qa/assessments/atlas-payment-trace.md`.
 3. **Risk and Design:** `*test-design` flags settlement edge cases, plans mitigations, and allocates new API/E2E scenarios with P0 priorities.
 4. **Story Prep:** Scrum Master generates `stories/story-1.1.md` via `*create-story`, automatically pulling updated context.

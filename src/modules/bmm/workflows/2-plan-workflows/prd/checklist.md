@@ -84,7 +84,7 @@
 
 ### If Level 3-4:
 
-- [ ] PRD provides sufficient context for solution-architecture workflow
+- [ ] PRD provides sufficient context for create-architecture workflow
 - [ ] Epic structure supports phased delivery approach
 - [ ] Clear value delivery path through epic sequence
 

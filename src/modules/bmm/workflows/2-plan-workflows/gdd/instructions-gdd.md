@@ -390,10 +390,10 @@ Since this is a Level {{project_level}} game project, you need solutioning for p
 
 <action>Generate comprehensive checklist based on project analysis</action>
 
-### Phase 1: Solution Architecture and Engine Selection
+### Phase 1: Architecture and Engine Selection
 
 - [ ] **Run solutioning workflow** (REQUIRED)
-  - Command: `workflow solution-architecture`
+  - Command: `workflow create-architecture`
   - Input: GDD.md, bmm-workflow-status.md
   - Output: architecture.md with engine/platform specifics
   - Note: Registry.csv will provide engine-specific guidance

@@ -9,7 +9,7 @@
 <step n="1" goal="Scan for existing work">
 <action>Search {output_folder}/ for existing BMM artifacts:</action>
 - PRD files (*prd*.md)
-- Architecture docs (architecture*.md, solution-architecture*.md, architecture/*)
+- Architecture docs (architecture*.md, architecture*.md, architecture/*)
 - Briefs (*brief*.md)
 - Brainstorming docs (brainstorm*.md)
 - Research docs (*research*.md)

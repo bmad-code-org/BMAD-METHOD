@@ -30,11 +30,11 @@
 Status file shows project_level = {{project_level}}.
 
 Tech-spec workflow is typically only needed for Level 3-4 projects.
-For Level 0-2, solution-architecture usually generates tech specs automatically.
+For Level 0-2, architecture usually generates tech specs automatically.
 
 Options:
 1. Continue anyway (manual tech spec generation)
-2. Exit (check if solution-architecture already generated tech specs)
+2. Exit (check if architecture already generated tech specs)
 3. Run workflow-status to verify project configuration
 
 What would you like to do?</ask>
@@ -47,7 +47,7 @@ What would you like to do?</ask>
 
 The status file tracks progress across all workflows and stores project configuration.
 
-Note: This workflow is typically invoked automatically by solution-architecture, or manually for JIT epic tech specs.
+Note: This workflow is typically invoked automatically by architecture, or manually for JIT epic tech specs.
 
 Options:
 1. Run workflow-status first to create the status file (recommended)

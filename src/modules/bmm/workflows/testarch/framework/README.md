@@ -141,7 +141,7 @@ Automatically consults TEA knowledge base:
 
 **Coordinates with:**
 
-- **solution-architecture** (Phase 3): Aligns test structure with system architecture
+- **architecture** (Phase 3): Aligns test structure with system architecture
 - **tech-spec**: Uses technical specifications to inform test configuration
 
 **Updates:**

@@ -207,7 +207,7 @@ User runs: npm run install:bmad
 
 ---
 
-## Proposed Solution Architecture
+## Proposed Architecture
 
 ### New Command: `install-module`
 

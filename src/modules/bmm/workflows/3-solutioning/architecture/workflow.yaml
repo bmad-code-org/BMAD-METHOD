@@ -39,7 +39,7 @@ default_output_file: "{output_folder}/architecture.md"
 
 # Workflow metadata
 version: "1.3.2"
-replaces: "solution-architecture"
+replaces: "architecture"
 paradigm: "facilitation-driven"
 execution_time: "30-90 minutes depending on user skill level"
 features:

@@ -31,7 +31,7 @@ levels:
     title: "Complex System"
     stories: "12-40 stories"
     description: "Subsystems, integrations, full architecture"
-    documentation: "PRD + solution architecture + JIT tech specs"
+    documentation: "PRD + architecture + JIT tech specs"
     architecture: true
 
   4:

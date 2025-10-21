@@ -4,7 +4,7 @@ validation-target: 'Newly generated story markdown file'
 required-inputs:
   - 'epics.md (preferred) or PRD'
 optional-inputs:
-  - 'solution-architecture document for architecture context'
+  - 'architecture document for architecture context'
 validation-rules:
   - 'Story structure matches sections: Status, Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Change Log, Dev Agent Record'
   - 'Dev Notes include Project Structure Notes and References subsections'

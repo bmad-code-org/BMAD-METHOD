@@ -2,7 +2,7 @@
 
 ## Overview
 
-Generate a comprehensive Technical Specification for a single epic from PRD, Epics file and Solution Architecture to produce a document with full acceptance criteria and traceability mapping. Creates detailed implementation guidance that bridges business requirements with technical execution.
+Generate a comprehensive Technical Specification for a single epic from PRD, Epics file and Architecture to produce a document with full acceptance criteria and traceability mapping. Creates detailed implementation guidance that bridges business requirements with technical execution.
 
 ## Key Features
 
@@ -35,7 +35,7 @@ workflow tech-spec --input PRD.md --input architecture.md --input front-end-spec
 
 - **output_folder**: Location for generated technical specification
 - **epic_id**: Used in output filename (extracted from PRD or prompted)
-- **recommended_inputs**: PRD, solution-architecture, front-end spec, brownfield notes
+- **recommended_inputs**: PRD, architecture, front-end spec, brownfield notes
 
 ## Workflow Structure
 
@@ -104,7 +104,7 @@ tech-spec/
 ### Output Structure
 
 1. **Overview and Scope** - Project context and boundaries
-2. **System Architecture Alignment** - Connection to solution-architecture
+2. **System Architecture Alignment** - Connection to architecture
 3. **Detailed Design** - Services, data models, APIs, and workflows
 4. **Non-Functional Requirements** - Performance, security, reliability, observability
 5. **Dependencies and Integrations** - External systems and technical dependencies
@@ -116,7 +116,7 @@ tech-spec/
 ## Requirements
 
 - **PRD Document**: Product Requirements Document with clear acceptance criteria
-- **Architecture Document**: solution-architecture or technical design
+- **Architecture Document**: architecture or technical design
 - **Repository Access**: For dependency analysis and framework detection
 - **Epic Context**: Clear epic identification and scope definition
 

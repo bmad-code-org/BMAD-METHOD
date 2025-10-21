@@ -8,7 +8,7 @@
 <critical>The goal is ARCHITECTURAL DECISIONS that prevent AI agent conflicts, not detailed implementation specs</critical>
 <critical>Communicate all responses in {communication_language} and tailor to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
-<critical>This workflow replaces solution-architecture with a conversation-driven approach</critical>
+<critical>This workflow replaces architecture with a conversation-driven approach</critical>
 
 <step n="0" goal="Validate workflow and extract project configuration">
 

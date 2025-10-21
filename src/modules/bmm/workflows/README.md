@@ -174,7 +174,7 @@ workflow-status determines routing:
     └─→ Level 3-4 → bmad pm prd
         └─→ Validates status file + level
         └─→ Generates PRD.md + epics.md
-        └─→ Then: Phase 3 (solution-architecture)
+        └─→ Then: Phase 3 (architecture)
         └─→ Then: Phase 4 (implementation)
 
     GAME PROJECTS:
@@ -475,7 +475,7 @@ bmad architect tech-spec # Level 0-1 software projects
 bmad pm gdd             # Game projects
 
 # Phase 3: Solutioning (L3-4)
-bmad architect solution-architecture
+bmad architect architecture
 bmad architect tech-spec  # Per epic, JIT
 
 # Phase 4: Implementation
