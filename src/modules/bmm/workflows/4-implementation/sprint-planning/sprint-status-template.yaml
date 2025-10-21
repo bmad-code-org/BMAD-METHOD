@@ -4,7 +4,13 @@
 #
 # Generated: {date}
 # Project: {project_name}
+# Project Key: {project_key}
 # Language: {document_output_language}
+#
+# TRACKING SYSTEM:
+# ================
+# System: {tracking_system}
+# Story Location: {story_location}
 #
 # STATUS DEFINITIONS:
 # ==================

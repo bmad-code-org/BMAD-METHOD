@@ -20,16 +20,18 @@ validation: "{installed_path}/checklist.md"
 variables:
   # Project identification
   project_name: "{config_source}:project_name"
+  project_key: "{config_source}:project_name" # Future: Jira project key, Linear workspace ID, etc.
 
-  # Source files
+  # Tracking system configuration
+  tracking_system: "file-system" # Options: file-system, Future will support other options from config of mcp such as jira, linear, trello
+  story_location: "{config_source}:dev_story_location" # File path for file-system, Future will support URL for Jira/Linear/Trello
+
+  # Source files (file-system only)
   epics_location: "{output_folder}" # Directory containing epic*.md files
   epics_pattern: "epic*.md" # Pattern to find epic files
 
   # Output configuration
   status_file: "{output_folder}/sprint-status.yaml"
-
-  # Story locations
-  story_dir: "{config_source}:dev_story_location" # Where story files are created
 
 # Output configuration
 default_output_file: "{status_file}"

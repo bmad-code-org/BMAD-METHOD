@@ -18,6 +18,7 @@ Aside from stability and bug fixes found during the alpha period - the main focu
 
 --- done ---
 
+- Done - Sprint Status Workflow to generate the story status tracker
 - Done - Brownfield v6 integrated into the workflow.
 - Done - Full workflow single file tracking.
 - Done - BoMB Tooling included with module install

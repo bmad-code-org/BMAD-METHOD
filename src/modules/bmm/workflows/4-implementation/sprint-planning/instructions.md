@@ -56,12 +56,12 @@ development_status:
 
 **Story file detection:**
 
-- Check: `{story_dir}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
+- Check: `{story_location}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
 - If exists → upgrade status to at least `drafted`
 
 **Story context detection:**
 
-- Check: `{story_dir}/{story-key}-context.md` (e.g., `stories/1-1-user-authentication-context.md`)
+- Check: `{story_location}/{story-key}-context.md` (e.g., `stories/1-1-user-authentication-context.md`)
 - If exists → upgrade status to at least `ready-for-dev`
 
 **Preservation rule:**
@@ -84,9 +84,21 @@ development_status:
 ```yaml
 # Sprint Status - Generated {date}
 # Project: {project_name}
-# Status Definitions:
+# Project Key: {project_key}
+# Language: {document_output_language}
+#
+# TRACKING SYSTEM:
+# ================
+# System: {tracking_system}
+# Story Location: {story_location}
+#
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
 #   Epic: backlog → contexted
+# Story Status:
 #   Story: backlog → drafted → ready-for-dev → in-progress → review → done
+# Retrospective Status:
 #   Retrospective: optional → completed
 ```
 
