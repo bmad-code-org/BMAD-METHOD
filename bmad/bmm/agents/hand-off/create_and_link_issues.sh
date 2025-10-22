@@ -19,6 +19,10 @@ if ! command -v git >/dev/null; then
   exit 1
 fi
 
+# Determine repo full name early (used by epic creation/linking). This is the upstream repo we operate against.
+repo_full=$(gh repo view --json nameWithOwner | jq -r .nameWithOwner)
+
+
 echo "Step 1/5: Creating issues from $JSON_FILE"
 "$ROOT_DIR/create_issues.sh"
 
@@ -28,6 +32,68 @@ echo "Step 2/5: Building title->number map"
  gh issue list --limit 500 --json number,title,url | jq -r '.[] | "\(.number)\t\(.title)\t\(.url)"' > "$GH_MAP_FILE"
 
 echo "Step 3/5: Link created issues to epics (by epic title)"
+# Build a map of epic title -> epic issue number or URL. We'll try to create epics upstream when possible,
+# otherwise we'll create them in the fork and point to their URL.
+EPIC_MAP_FILE="/tmp/gh_epic_map.txt"
+> "$EPIC_MAP_FILE"
+jq -r '.[] | select(.epic != null and .epic != "") | .epic' "$JSON_FILE" | sort -u | while read -r epic_title; do
+  # Skip null/empty
+  if [ -z "$epic_title" ] || [ "$epic_title" = "null" ]; then
+    continue
+  fi
+  echo "Processing epic: $epic_title"
+  # Try to find existing epic in upstream by fuzzy/exact match
+  epic_num=$(gh issue list --limit 500 --json number,title --repo "$repo_full" | jq -r --arg epic "$epic_title" '.[] | select((.title|ascii_downcase) | contains(($epic|ascii_downcase))) | .number' | head -n1 || true)
+  if [ -z "$epic_num" ]; then
+    epic_num=$(gh issue list --limit 500 --json number,title --repo "$repo_full" | jq -r --arg epic "$epic_title" '.[] | select(.title==$epic) | .number' | head -n1 || true)
+  fi
+  if [ -n "$epic_num" ]; then
+    epic_url=$(gh issue view "$epic_num" --repo "$repo_full" --json url --jq -r .url)
+    echo -e "$epic_title	upstream	$epic_num	$epic_url" >> "$EPIC_MAP_FILE"
+    continue
+  fi
+  # Not found upstream. Try to create an epic issue upstream (some repos allow issue creation even if push is denied).
+  set +e
+  epic_create_json=$(gh issue create --repo "$repo_full" --title "$epic_title" --body "Epic: $epic_title" --label epic 2>&1)
+  rc=$?
+  set -e
+  if [ $rc -eq 0 ]; then
+    epic_num=$(echo "$epic_create_json" | sed -n 's/.*https:\/\/github.com\/[^/]*\/[^/]*\/issues\///p' | tr -d '\n')
+    # fallback: try to extract number via gh issue list
+    if [ -z "$epic_num" ]; then
+      epic_num=$(gh issue list --limit 1 --repo "$repo_full" --search "$epic_title" --json number | jq -r '.[0].number' || true)
+    fi
+    epic_url=$(echo "$epic_create_json" | grep -o 'https://github.com/[^ ]*/pulls/[^ ]*\|https://github.com/[^ ]*/issues/[^ ]*' | head -n1 || true)
+    if [ -z "$epic_url" ] && [ -n "$epic_num" ]; then
+      epic_url=$(gh issue view "$epic_num" --repo "$repo_full" --json url --jq -r .url || true)
+    fi
+    if [ -n "$epic_num" ]; then
+      echo -e "$epic_title	upstream	$epic_num	$epic_url" >> "$EPIC_MAP_FILE"
+      continue
+    fi
+  fi
+  # If we reach here, upstream creation failed; ensure we have a fork to create the epic there
+  username=$(gh api user | jq -r .login)
+  fork_full="$username/$(echo $repo_full | cut -d'/' -f2)"
+  if ! gh repo view "$fork_full" >/dev/null 2>&1; then
+    gh repo fork "$repo_full" --clone=false || true
+  fi
+  # Create epic in fork
+  set +e
+  fork_epic_json=$(gh issue create --repo "$fork_full" --title "$epic_title" --body "Epic (fork): $epic_title" --label epic 2>&1)
+  rc2=$?
+  set -e
+  if [ $rc2 -eq 0 ]; then
+    # Extract URL
+    epic_url=$(echo "$fork_epic_json" | grep -o 'https://github.com/[^ ]*/issues/[^ ]*' | head -n1 || true)
+    # Try to get number from URL
+    epic_num=$(echo "$epic_url" | awk -F/ '{print $NF}' || true)
+    echo -e "$epic_title	fork	$epic_num	$epic_url" >> "$EPIC_MAP_FILE"
+  else
+    echo "Warning: failed to create epic '$epic_title' in upstream and fork. Skipping epic creation.\n$fork_epic_json"
+  fi
+done
+
 jq -c '.[]' "$JSON_FILE" | while read -r item; do
   title=$(echo "$item" | jq -r '.title')
   epic=$(echo "$item" | jq -r '.epic')
@@ -40,23 +106,31 @@ jq -c '.[]' "$JSON_FILE" | while read -r item; do
   if [ -z "$epic" ] || [ "$epic" = "null" ]; then
     continue
   fi
-  # Find epic issue by fuzzy title match (case-insensitive contains). If multiple matches, pick the first.
-  epic_num=$(gh issue list --limit 500 --json number,title | jq -r --arg epic "$epic" '.[] | select((.title|ascii_downcase) | contains(($epic|ascii_downcase))) | .number' | head -n1 || true)
-  # Fallback: try exact match
-  if [ -z "$epic_num" ]; then
-    epic_num=$(gh issue list --limit 500 --json number,title | jq -r --arg epic "$epic" '.[] | select(.title==$epic) | .number' | head -n1 || true)
-  fi
-  if [ -z "$epic_num" ]; then
-    echo "Epic issue not found for title '$epic' — skipping linking for $title"
+  # Determine epic mapping from EPIC_MAP_FILE
+  if [ -z "$epic" ] || [ "$epic" = "null" ]; then
     continue
   fi
-  # Add a comment to epic linking the child issue (use URL from GH map where possible)
+  epic_entry=$(awk -F"\t" -v e="$epic" '$1==e {print $0; exit}' "$EPIC_MAP_FILE" || true)
+  if [ -z "$epic_entry" ]; then
+    echo "Epic mapping not found for '$epic' — skipping linking for $title"
+    continue
+  fi
+  epic_type=$(echo "$epic_entry" | cut -f2)
+  epic_num=$(echo "$epic_entry" | cut -f3)
+  epic_url=$(echo "$epic_entry" | cut -f4)
   child_url=$(awk -v n="$num" -F"\t" '$1==n {print $3; exit}' "$GH_MAP_FILE" || true)
   if [ -z "$child_url" ]; then
-    child_url=$(gh issue view "$num" --json url --jq -r '.url' || true)
+    child_url=$(gh issue view "$num" --repo "$repo_full" --json url --jq -r '.url' || true)
   fi
-  echo "Linking issue #$num to epic #$epic_num"
-  gh issue comment "$epic_num" --body "Linked child issue: $child_url" || true
+  if [ "$epic_type" = "upstream" ]; then
+    echo "Linking issue #$num to upstream epic #$epic_num"
+    # Add a comment on the epic linking to the child issue
+    gh issue comment "$epic_num" --repo "$repo_full" --body "Linked child issue: $child_url" || true
+  else
+    echo "Linking issue #$num to fork epic URL: $epic_url"
+    # Add comment to the upstream child issue pointing to the fork epic
+    gh issue comment "$num" --repo "$repo_full" --body "Linked epic (fork): $epic_url" || true
+  fi
 done
 
 echo "Step 4/5: Create milestone 'Sprint 1' if missing and assign issues"
