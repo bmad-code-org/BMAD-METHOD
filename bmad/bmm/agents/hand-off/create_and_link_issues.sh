@@ -117,7 +117,7 @@ if [ $push_rc -ne 0 ]; then
   echo "Push to origin failed (likely permissions). Attempting fork workflow..."
   # Determine upstream repo info
   upstream_repo=$(gh repo view --json nameWithOwner | jq -r .nameWithOwner)
-  username=$(gh api user --jq -r .login)
+  username=$(gh api user | jq -r .login)
 
   # Create a fork if it doesn't already exist in the user's account
   fork_full="$username/$(echo $upstream_repo | cut -d'/' -f2)"
