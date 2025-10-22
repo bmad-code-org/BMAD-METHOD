@@ -6,7 +6,7 @@
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
-<critical>This workflow creates comprehensive UX/UI specifications - can run standalone or as part of plan-project</critical>
+<critical>This workflow creates comprehensive UX/UI specifications - can run standalone or as part of prd workflow</critical>
 <critical>Uses ux-spec-template.md for structured output generation</critical>
 <critical>Can optionally generate AI Frontend Prompts for tools like Vercel v0, Lovable.ai</critical>
 

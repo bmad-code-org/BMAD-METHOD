@@ -79,7 +79,7 @@
 2. Consider running:
    - `research` workflow for market/technical research
    - `product-brief` workflow to formalize product vision
-   - Or proceed directly to `plan-project` if ready
+   - Or proceed directly to `prd` (Level 2-4) or `tech-spec` (Level 0-1) if ready
 
 {{#if standalone_mode != true}}
 Check status anytime with: `workflow-status`

@@ -201,7 +201,9 @@ The BMM module follows a comprehensive four-phase methodology. Each phase adapts
 
 **PM Agent**:
 
-- `plan-project` - Creates scale-adaptive PRD or GDD
+- `prd` - Creates Product Requirements Document for Level 2-4 projects
+- `tech-spec` - Creates Technical Specification for Level 0-1 projects
+- `gdd` - Creates Game Design Document for game projects (via Game Designer agent)
 
 The planning workflow adapts to:
 
@@ -239,10 +241,18 @@ The planning workflow adapts to:
 
 **Scrum Master (SM) Agent**:
 
-Before development starts, the SM prepares each story:
+Before development starts:
 
-1. `create-story` - Generates story from tech spec and context
-2. `story-context` - **🎉 NEW!** Game-changing contextual preparation
+1. **Level 4 Projects Only**: Run `sprint-planning` workflow
+   - Generates `sprint-status.yaml` from epic files
+   - Tracks all epics and stories through implementation
+   - Auto-detects current status based on files
+   - Provides single source of truth for Phase 4 progress
+
+Then, for each story, the SM prepares:
+
+2. `create-story` - Generates story from tech spec and context
+3. `story-context` - **🎉 NEW!** Game-changing contextual preparation
    - Real-time context gathering for the specific story
    - No more generic file lists
    - Supercharged, specialized development context

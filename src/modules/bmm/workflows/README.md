@@ -1,5 +1,5 @@
 ---
-last-redoc-date: 2025-10-12
+last-redoc-date: 2025-10-22
 ---
 
 # BMM Workflows - The Complete v6 Flow
@@ -32,7 +32,7 @@ The BMM (BMAD Method Module) orchestrates software development through four dist
 │                    PHASE 2: PLANNING                         │
 │              (Scale-Adaptive Router - by type)               │
 ├──────────────────────────────────────────────────────────────┤
-│  SOFTWARE: plan-project          GAMES: gdd            │
+│  SOFTWARE: prd (L2-4) / tech-spec (L0-1)   GAMES: gdd       │
 │      ├──→ Level 0: tech-spec only      ├──→ GDD (all levels) │
 │      ├──→ Level 1: tech-spec only      └──→ Narrative design │
 │      ├──→ Level 2: PRD + tech-spec                           │
@@ -52,6 +52,8 @@ The BMM (BMAD Method Module) orchestrates software development through four dist
 │                  PHASE 4: IMPLEMENTATION                     │
 │                    (Iterative Cycle)                         │
 ├──────────────────────────────────────────────────────────────┤
+│ [Level 4 only] sprint-planning ──→ creates sprint-status.yaml│
+│         ↓                                                    │
 │  ┌─→ create-story ──→ story-context ──→ dev-story ──┐        │
 │  │                                                  ↓        │
 │  │   retrospective ←── [epic done] ←────── review-story      │
@@ -358,7 +360,7 @@ Status: Done        (User approved via story-done, DoD complete)
 ### Brownfield Projects
 
 ```
-plan-project (Phase 2)
+Phase 2 Planning (prd or tech-spec based on level)
     ├─→ Check: Is existing codebase documented?
     │   ├─→ YES: Proceed with planning
     │   └─→ NO: HALT with message:
@@ -454,7 +456,7 @@ plan-project (Phase 2)
 | Creating all tech specs upfront   | Use JIT approach - one epic at a time |
 | Skipping story-context generation | Always run after create-story         |
 | Batching story creation           | Create one story at a time            |
-| Ignoring scale levels             | Let plan-project determine level      |
+| Ignoring scale levels             | Use prd for L2-4, tech-spec for L0-1  |
 | Planning brownfield without docs  | Run brownfield-analysis first         |
 | Not running retrospectives        | Schedule after every epic             |
 

@@ -473,7 +473,7 @@ Select option (1-5):</ask>
 
 1. Review technical research findings
 2. Share with architecture team
-3. Run `plan-project` to incorporate findings into PRD
+3. Run `prd` workflow to incorporate findings into PRD (Level 2-4)
 
 Check status anytime with: `workflow-status`
 </output>
@@ -491,7 +491,7 @@ Note: Running in standalone mode (no status file).
 **Next Steps:**
 
 1. Review technical research findings
-2. Run plan-project workflow
+2. Run prd or tech-spec workflow
    </output>
    </check>
    </step>

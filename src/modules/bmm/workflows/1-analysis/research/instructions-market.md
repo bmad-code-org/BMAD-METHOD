@@ -587,7 +587,7 @@ Create compelling executive summary with:
 2. Share with stakeholders
 3. Consider running:
    - `product-brief` or `game-brief` to formalize vision
-   - `plan-project` if ready to create PRD/GDD
+   - `prd` (software Level 2-4) or `gdd` (games) if ready to create PRD/GDD
 
 Check status anytime with: `workflow-status`
 </output>
@@ -607,7 +607,7 @@ To track progress across workflows, run `workflow-status` first.
 **Next Steps:**
 
 1. Review research findings
-2. Run product-brief or plan-project workflows
+2. Run product-brief, prd, or gdd workflows
    </output>
    </check>
    </step>

@@ -304,7 +304,7 @@ This brief will serve as the primary input for creating the Product Requirements
 
 1. Review the product brief document
 2. Gather any additional stakeholder input
-3. Run `plan-project` workflow to create PRD from this brief
+3. Run `prd` workflow to create PRD from this brief (Level 2-4 projects)
 
 {{#if standalone_mode != true}}
 Check status anytime with: `workflow-status`

@@ -405,7 +405,7 @@ Select option (1-4):</ask>
 
 1. Execute the research prompt with your chosen AI platform
 2. Gather and analyze findings
-3. Run `plan-project` to incorporate findings
+3. Run `prd` or `tech-spec` to incorporate findings
 
 Check status anytime with: `workflow-status`
 </output>
@@ -423,7 +423,7 @@ Note: Running in standalone mode (no status file).
 **Next Steps:**
 
 1. Execute the research prompt with AI platform
-2. Run plan-project workflow
+2. Run prd or tech-spec workflow
    </output>
    </check>
    </step>

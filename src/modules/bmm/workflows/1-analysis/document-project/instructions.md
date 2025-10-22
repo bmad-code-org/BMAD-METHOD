@@ -43,7 +43,7 @@
 
   <check if="warning != ''">
     <output>{{warning}}</output>
-    <output>Note: This may be auto-invoked by plan-project for brownfield documentation.</output>
+    <output>Note: This may be auto-invoked by prd or tech-spec for brownfield documentation.</output>
     <ask>Continue with documentation? (y/n)</ask>
     <check if="n">
       <output>{{suggestion}}</output>

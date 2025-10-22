@@ -340,7 +340,7 @@ This brief will serve as the primary input for creating the Game Design Document
 
 1. Review the game brief document
 2. Consider creating a prototype of core mechanic
-3. Run `plan-project` workflow to create GDD from this brief
+3. Run `gdd` workflow to create GDD from this brief
 4. Validate assumptions with target players
 
 {{#if standalone_mode != true}}

@@ -100,7 +100,7 @@
 2. Consider running:
    - `research` workflow for market/game research
    - `game-brief` workflow to formalize game vision
-   - Or proceed directly to `plan-project` if ready
+   - Or proceed directly to `gdd` workflow if ready
 
 {{#if standalone_mode != true}}
 Check status anytime with: `workflow-status`
