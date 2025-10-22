@@ -28,17 +28,43 @@
     <action>READ COMPLETE FILES for all items found in the prioritized set. Store content and paths for citation.</action>
   </step>
 
-  <step n="3" goal="Determine target story (do not prompt in #yolo)">
-    <action>List existing story markdown files in {{story_dir}} matching pattern: "story-<epic>.<story>.md"</action>
-    <check>If none found → Set {{epic_num}}=1 and {{story_num}}=1</check>
-    <check>If files found → Parse epic_num and story_num; pick the highest pair</check>
-    <action>Open the latest story (if exists) and read Status</action>
-    <check>If Status != Done/Approved and {{non_interactive}} == true → TARGET the latest story for update (do not create a new one)</check>
-    <check>If Status == Done/Approved → Candidate next story is {{epic_num}}.{{story_num+1}}</check>
-    <action>If creating a new story candidate: VERIFY planning in {{epics_file}}. Confirm that epic {{epic_num}} explicitly enumerates a next story matching {{story_num+1}} (or an equivalent next planned story entry). If epics.md is missing or does not enumerate another story for this epic, HALT with message:</action>
-    <action>"No planned next story found in epics.md for epic {{epic_num}}. Please load either PM (Product Manager) agent at {project-root}/bmad/bmm/agents/pm.md or SM (Scrum Master) agent at {project-root}/bmad/bmm/agents/sm.md and run `*correct-course` to add/modify epic stories, then rerun create-story."</action>
-    <check>If verification passes → Set {{story_num}} = {{story_num}} + 1</check>
-    <ask optional="true" if="{{non_interactive}} == false">If starting a new epic and {{non_interactive}} == false, ASK for {{epic_num}} and reset {{story_num}} to 1. In {{non_interactive}} == true, do NOT auto-advance epic; stay within current epic and continue incrementing story_num.</ask>
+  <step n="3" goal="Determine target story from sprint status">
+    <action>Query sprint-status for next backlog story:</action>
+
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: get_next_story</param>
+      <param>filter_status: backlog</param>
+    </invoke-workflow>
+
+    <check if="{{result_found}} == false">
+      <output>📋 No backlog stories found in sprint-status.yaml
+
+All stories are either already drafted or completed.
+
+**Options:**
+1. Run sprint-planning to refresh story tracking
+2. Load PM agent and run correct-course to add more stories
+3. Check if current sprint is complete
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <action>Parse {{result_story_key}} to extract epic_num, story_num, and story_title
+      Example: "1-2-user-authentication" → epic_num=1, story_num=2, title="user-authentication"
+    </action>
+    <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}"</action>
+
+    <action>Verify story is enumerated in {{epics_file}}. If not found, HALT with message:</action>
+    <action>"Story {{result_story_key}} not found in epics.md. Please load PM agent and run correct-course to sync epics, then rerun create-story."</action>
+
+    <action>Check if story file already exists at expected path in {{story_dir}}</action>
+    <check if="story file exists">
+      <output>ℹ️ Story file already exists: {{story_file_path}}
+
+Will update existing story file rather than creating new one.
+      </output>
+      <action>Set update_mode = true</action>
+    </check>
   </step>
 
   <step n="4" goal="Extract requirements and derive story statement">
@@ -74,14 +100,31 @@
   <step n="8" goal="Validate, save, and optionally generate context">
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Save document unconditionally (non-interactive default). In interactive mode, allow user confirmation.</action>
+
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: update_story_status</param>
+      <param>story_key: {{result_story_key}}</param>
+      <param>new_status: drafted</param>
+      <param>validate: true</param>
+    </invoke-workflow>
+
+    <check if="{{result_success}} == false">
+      <output>⚠️ Could not update story status: {{result_error}}
+
+Story file was created successfully, but sprint-status.yaml was not updated.
+You may need to run sprint-planning to refresh tracking.
+      </output>
+    </check>
+
     <check>If {{auto_run_context}} == true → <invoke-workflow path="{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml">Pass {{story_path}} = {default_output_file}</invoke-workflow></check>
     <action>Report created/updated story path</action>
     <output>**✅ Story Created Successfully, {user_name}!**
 
 **Story Details:**
 - Story ID: {{story_id}}
+- Story Key: {{result_story_key}}
 - File: {{story_file}}
-- Status: Draft (needs review)
+- Status: {{result_new_status}} (was {{result_old_status}})
 
 **Next Steps:**
 1. Review the drafted story in {{story_file}}

@@ -15,11 +15,49 @@
 <workflow>
 
   <step n="1" goal="Locate story and verify review status">
-    <action>If {{story_path}} was provided → use it. Else auto-discover from {{story_dir}} by listing files matching pattern: "story-*.md" (recursive), sort by last modified (newest first), present top {{story_selection_limit}}.</action>
-    <ask optional="true" if="{{non_interactive}} == false">Select a story (1-{{story_selection_limit}}) or enter a path:</ask>
-    <action>Resolve {{story_path}} and read the COMPLETE file.</action>
-    <action>Extract {{epic_num}} and {{story_num}} from filename (e.g., story-2.3.*.md) and story metadata if available.</action>
-    <action>Parse sections: Status, Story, Acceptance Criteria, Tasks/Subtasks (and completion states), Dev Notes, Dev Agent Record (Context Reference, Completion Notes, File List), Change Log.</action>
+    <check if="{{story_path}} is provided">
+      <action>Use {{story_path}} directly</action>
+      <action>Read COMPLETE file and parse sections</action>
+      <action>Extract story_key from filename or story metadata</action>
+      <goto>verify_status</goto>
+    </check>
+
+    <action>Query sprint-status for review stories:</action>
+
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: list_stories</param>
+      <param>filter_status: review</param>
+      <param>limit: 10</param>
+    </invoke-workflow>
+
+    <check if="{{result_count}} == 0">
+      <output>📋 No stories in review status found
+
+**Options:**
+1. Run `dev-story` to implement and mark stories ready for review
+2. Check sprint-status.yaml for current story states
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <action>Display available review stories:
+
+**Stories Ready for Review ({{result_count}} found):**
+
+{{result_story_list}}
+
+    </action>
+
+    <ask if="{{non_interactive}} == false">Select story to review (enter story key or number):</ask>
+    <action if="{{non_interactive}} == true">Auto-select first story from result_stories</action>
+
+    <action>Resolve selected story_key and find file path in {{story_dir}}</action>
+    <action>Resolve {{story_path}} and read the COMPLETE file</action>
+
+    <anchor id="verify_status" />
+
+    <action>Extract {{epic_num}} and {{story_num}} from filename (e.g., story-2.3.*.md) and story metadata if available</action>
+    <action>Parse sections: Status, Story, Acceptance Criteria, Tasks/Subtasks (and completion states), Dev Notes, Dev Agent Record (Context Reference, Completion Notes, File List), Change Log</action>
     <action if="Status is not one of {{allow_status_values}}">HALT with message: "Story status must be 'Ready for Review' to proceed" (accept 'Review' as equivalent).</action>
     <action if="story cannot be read">HALT.</action>
   </step>
@@ -80,6 +118,32 @@
     <action>Save the story file.</action>
   </step>
 
+  <step n="7.5" goal="Update sprint-status based on review outcome">
+    <action>Determine target status based on review outcome:
+      - If {{outcome}} == "Approve" → target_status = "done"
+      - If {{outcome}} == "Changes Requested" → target_status = "in-progress"
+      - If {{outcome}} == "Blocked" → target_status = "review" (stay in review)
+    </action>
+
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: update_story_status</param>
+      <param>story_key: {{story_key}}</param>
+      <param>new_status: {{target_status}}</param>
+      <param>validate: true</param>
+    </invoke-workflow>
+
+    <check if="{{result_success}} == true">
+      <output>✅ Sprint status updated: {{result_old_status}} → {{result_new_status}}</output>
+    </check>
+
+    <check if="{{result_success}} == false">
+      <output>⚠️ Could not update sprint-status: {{result_error}}
+
+Review was saved to story file, but sprint-status.yaml may be out of sync.
+      </output>
+    </check>
+  </step>
+
   <step n="8" goal="Persist action items to tasks/backlog/epic">
     <action>Normalize Action Items into a structured list: description, severity (High/Med/Low), type (Bug/TechDebt/Enhancement), suggested owner (if known), related AC/file references.</action>
     <action if="{{persist_action_items}} == true and 'story_tasks' in {{persist_targets}}">
@@ -104,13 +168,16 @@
 
 **Story Details:**
 - Story: {{epic_num}}.{{story_num}}
+- Story Key: {{story_key}}
 - Review Outcome: {{outcome}}
+- Sprint Status: {{result_new_status}}
 - Action Items: {{action_item_count}}
 
 **Next Steps:**
 1. Review the Senior Developer Review notes appended to story
-2. Address any action items or changes requested
-3. When ready, continue with implementation or mark story complete
+2. If approved: Story is marked done, continue with next story
+3. If changes requested: Address action items and re-run `dev-story`
+4. If blocked: Resolve blockers before proceeding
     </output>
   </step>
 

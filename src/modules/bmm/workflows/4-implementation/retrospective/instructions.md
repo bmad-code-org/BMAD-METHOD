@@ -26,6 +26,48 @@ FACILITATION NOTES:
 <action>If auto-detection succeeds, confirm with user: "It looks like Epic {{epic_number}} was just completed - is that correct?"</action>
 <action>If auto-detection fails or user indicates different epic, ask them to share which epic they just completed</action>
 
+<action>Verify epic completion status in sprint-status:</action>
+
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+  <param>action: check_epic_complete</param>
+  <param>epic_id: {{epic_number}}</param>
+</invoke-workflow>
+
+<check if="{{result_complete}} == false">
+  <output>⚠️ Epic {{epic_number}} is not yet complete for retrospective
+
+**Epic Status:**
+
+- Total Stories: {{result_total_stories}}
+- Completed (Done): {{result_done_stories}}
+- Pending: {{result_total_stories - result_done_stories}}
+
+**Pending Stories:**
+{{result_pending_stories}}
+
+**Options:**
+
+1. Complete remaining stories before running retrospective
+2. Continue with partial retrospective (not recommended)
+3. Run sprint-planning to refresh story tracking
+   </output>
+
+<ask if="{{non_interactive}} == false">Epic is incomplete. Continue anyway? (yes/no)</ask>
+
+  <check if="user says no">
+    <action>HALT</action>
+  </check>
+
+<action if="user says yes">Set {{partial_retrospective}} = true</action>
+</check>
+
+<check if="{{result_complete}} == true">
+  <output>✅ Epic {{epic_number}} is complete - all {{result_done_stories}} stories done!
+
+Ready to proceed with retrospective.
+</output>
+</check>
+
 <action>Load the completed epic from: {output_folder}/prd/epic-{{epic_number}}.md</action>
 <action>Extract epic details:
 
@@ -361,6 +403,27 @@ See you at sprint planning once prep work is done!"
 ```
 
 <action>Save retrospective summary to: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md</action>
+
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+  <param>action: complete_retrospective</param>
+  <param>epic_id: {{completed_number}}</param>
+</invoke-workflow>
+
+<check if="{{result_success}} == true">
+  <output>✅ Retrospective marked as completed in sprint-status.yaml
+
+Retrospective key: {{result_retro_key}}
+Status: {{result_old_status}} → {{result_new_status}}
+</output>
+</check>
+
+<check if="{{result_success}} == false">
+  <output>⚠️ Could not update retrospective status: {{result_error}}
+
+Retrospective document was saved, but sprint-status.yaml may need manual update.
+</output>
+</check>
+
 <action>Confirm all action items have been captured</action>
 <action>Remind user to schedule prep sprint if needed</action>
 <output>**✅ Retrospective Complete, {user_name}!**
@@ -368,6 +431,7 @@ See you at sprint planning once prep work is done!"
 **Epic Review:**
 
 - Epic {{completed_number}}: {{epic_title}} reviewed
+- Retrospective Status: {{result_new_status}}
 - Retrospective saved: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md
 - Action Items: {{action_count}}
 - Preparation Tasks: {{prep_task_count}}
@@ -379,8 +443,10 @@ See you at sprint planning once prep work is done!"
 2. Execute preparation sprint (Est: {{prep_days}} days)
 3. Complete critical path items before Epic {{next_number}}
 4. Begin Epic {{next_number}} planning when preparation complete
-   </output>
-   </step>
+   - Load PM agent and run `epic-tech-context` for next epic
+   - Or continue with existing contexted epics
+     </output>
+     </step>
 
 </workflow>
 

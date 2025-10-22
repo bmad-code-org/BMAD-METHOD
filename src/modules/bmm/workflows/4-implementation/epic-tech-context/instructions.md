@@ -16,6 +16,29 @@
     <action>Resolve output file path using workflow variables and initialize by writing the template.</action>
   </step>
 
+  <step n="1.5" goal="Validate epic in sprint status">
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: get_epic_status</param>
+      <param>epic_id: {{epic_id}}</param>
+    </invoke-workflow>
+
+    <check if="{{result_found}} == false">
+      <output>⚠️ Epic {{epic_id}} not found in sprint-status.yaml
+
+This epic hasn't been registered in the sprint plan yet.
+Run sprint-planning workflow to initialize epic tracking.
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <check if="{{result_status}} == 'contexted'">
+      <output>ℹ️ Epic {{epic_id}} already marked as contexted
+
+Continuing to regenerate tech spec...
+      </output>
+    </check>
+  </step>
+
   <step n="2" goal="Overview and scope">
     <action>Read COMPLETE PRD and Architecture files.</action>
     <template-output file="{default_output_file}">
@@ -68,18 +91,31 @@
 
   <step n="8" goal="Validate and complete">
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
+
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: update_epic_status</param>
+      <param>epic_id: {{epic_id}}</param>
+      <param>new_status: contexted</param>
+    </invoke-workflow>
+
+    <check if="{{result_success}} == false">
+      <output>⚠️ Could not update epic status: {{result_error}}</output>
+    </check>
+
     <output>**✅ Tech Spec Generated Successfully, {user_name}!**
 
 **Epic Details:**
 - Epic ID: {{epic_id}}
 - Epic Title: {{epic_title}}
 - Tech Spec File: {{default_output_file}}
+- Epic Status: {{result_new_status}} (was {{result_old_status}})
 
 **Note:** This is a JIT (Just-In-Time) workflow - run again for other epics as needed.
 
 **Next Steps:**
 1. If more epics need tech specs: Run tech-spec again with different epic_id
 2. If all tech specs complete: Proceed to Phase 4 implementation
+   - Load SM agent and run `create-story` to begin implementing stories
     </output>
   </step>
 

@@ -15,19 +15,72 @@
 
 <workflow>
 
-  <step n="1" goal="Locate and load story">
-    <action>If {{story_path}} explicitly provided → use it</action>
-    <action>Otherwise list story-*.md files from {{story_dir}}, sort by modified time</action>
-    <ask optional="true" if="{{non_interactive}} == false">Select story or enter path</ask>
-    <action if="{{non_interactive}} == true">Auto-select most recent</action>
+  <step n="1" goal="Locate and load story from sprint status">
+    <check if="{{story_path}} is provided">
+      <action>Use {{story_path}} directly</action>
+      <action>Read COMPLETE story file</action>
+      <action>Extract story_key from filename or metadata</action>
+      <goto>task_check</goto>
+    </check>
 
-    <action>Read COMPLETE story file from {{story_path}}</action>
+    <action>Query sprint-status for ready stories:</action>
+
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: get_next_story</param>
+      <param>filter_status: ready-for-dev</param>
+    </invoke-workflow>
+
+    <check if="{{result_found}} == false">
+      <output>📋 No ready-for-dev stories found in sprint-status.yaml
+
+**Options:**
+1. Run `story-ready` to mark drafted stories as ready
+2. Run `create-story` if no stories are drafted yet
+3. Check sprint-status.yaml to see current story states
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <action>Use {{result_story_key}} to find story file in {{story_dir}}</action>
+    <action>Read COMPLETE story file from discovered path</action>
+    <action>Store {{result_story_key}} for later status updates</action>
+
+    <anchor id="task_check" />
+
     <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
     <action>Identify first incomplete task (unchecked [ ]) in Tasks/Subtasks</action>
 
     <check>If no incomplete tasks → <goto step="6">Completion sequence</goto></check>
     <check>If story file inaccessible → HALT: "Cannot develop story without access to story file"</check>
     <check>If task requirements ambiguous → ASK user to clarify or HALT</check>
+  </step>
+
+  <step n="1.5" goal="Mark story in-progress in sprint status">
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: get_story_status</param>
+      <param>story_key: {{result_story_key}}</param>
+    </invoke-workflow>
+
+    <check if="{{result_status}} == 'ready-for-dev'">
+      <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+        <param>action: update_story_status</param>
+        <param>story_key: {{result_story_key}}</param>
+        <param>new_status: in-progress</param>
+        <param>validate: true</param>
+      </invoke-workflow>
+
+      <check if="{{result_success}} == true">
+        <output>🚀 Starting work on story {{result_story_key}}
+Status updated: {{result_old_status}} → {{result_new_status}}
+        </output>
+      </check>
+    </check>
+
+    <check if="{{result_status}} == 'in-progress'">
+      <output>⏯️ Resuming work on story {{result_story_key}}
+Story is already marked in-progress
+      </output>
+    </check>
   </step>
 
   <step n="2" goal="Plan and implement task">
@@ -76,6 +129,21 @@
     <action>Confirm File List includes every changed file</action>
     <action>Execute story definition-of-done checklist, if the story includes one</action>
     <action>Update the story Status to: Ready for Review</action>
+
+    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
+      <param>action: update_story_status</param>
+      <param>story_key: {{result_story_key}}</param>
+      <param>new_status: review</param>
+      <param>validate: true</param>
+    </invoke-workflow>
+
+    <check if="{{result_success}} == false">
+      <output>⚠️ Story file updated, but sprint-status update failed: {{result_error}}
+
+Story is marked Ready for Review in file, but sprint-status.yaml may be out of sync.
+      </output>
+    </check>
+
     <check>If any task is incomplete → Return to step 1 to complete remaining work (Do NOT finish with partial progress)</check>
     <check>If regression failures exist → STOP and resolve before completing</check>
     <check>If File List is incomplete → Update it before completing</check>
@@ -89,14 +157,16 @@
 
 **Story Details:**
 - Story ID: {{current_story_id}}
+- Story Key: {{result_story_key}}
 - Title: {{current_story_title}}
 - File: {{story_path}}
-- Status: Ready for Review
+- Status: {{result_new_status}} (was {{result_old_status}})
 
 **Next Steps:**
 1. Review the implemented story and test the changes
 2. Verify all acceptance criteria are met
-3. When satisfied, mark story complete and continue with next story
+3. Run `review-story` workflow for senior developer review
+4. When review passes, run `story-done` to mark complete
     </output>
   </step>
 
