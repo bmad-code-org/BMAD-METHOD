@@ -13,7 +13,7 @@ user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/2-plan-workflows/ux"
+installed_path: "{project-root}/bmad/bmm/workflows/2-plan-workflows/ux-spec"
 instructions: "{installed_path}/instructions-ux.md"
 template: "{installed_path}/ux-spec-template.md"
 
@@ -31,7 +31,7 @@ web_bundle:
   name: "ux-spec"
   description: "UX/UI specification workflow for defining user experience and interface design. Creates comprehensive UX documentation including wireframes, user flows, component specifications, and design system guidelines."
   author: "BMad"
-  instructions: "bmad/bmm/workflows/2-plan-workflows/ux/instructions-ux.md"
+  instructions: "bmad/bmm/workflows/2-plan-workflows/ux-spec/instructions-ux.md"
   web_bundle_files:
-    - "bmad/bmm/workflows/2-plan-workflows/ux/instructions-ux.md"
-    - "bmad/bmm/workflows/2-plan-workflows/ux/ux-spec-template.md"
+    - "bmad/bmm/workflows/2-plan-workflows/ux-spec/instructions-ux.md"
+    - "bmad/bmm/workflows/2-plan-workflows/ux-spec/ux-spec-template.md"

@@ -385,7 +385,7 @@ plan-project (Phase 2)
 | Phase              | Primary Agents      | Supporting Agents           |
 | ------------------ | ------------------- | --------------------------- |
 | **Analysis**       | Analyst, Researcher | PM, PO                      |
-| **Planning**       | PM                  | Analyst, UX Expert          |
+| **Planning**       | PM                  | Analyst, UX Designer        |
 | **Solutioning**    | Architect           | PM, Tech Lead               |
 | **Implementation** | SM, DEV             | SR, PM (for correct-course) |
 

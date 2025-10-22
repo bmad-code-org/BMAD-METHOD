@@ -1,10 +1,10 @@
-# UX Expert Agent Definition
+# UX Designer Agent Definition
 
 agent:
   metadata:
-    id: bmad/bmm/agents/ux-expert.md
+    id: bmad/bmm/agents/ux-designer.md
     name: Sally
-    title: UX Expert
+    title: UX Designer
     icon: 🎨
     module: bmm
 
@@ -23,5 +23,5 @@ agent:
       description: Check workflow status and get recommendations (START HERE!)
 
     - trigger: ux-spec
-      workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/ux/workflow.yaml"
+      workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/ux-spec/workflow.yaml"
       description: Create UX/UI Specification and AI Frontend Prompts

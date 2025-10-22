@@ -52,7 +52,7 @@ phases:
         note: "Integrate with existing patterns"
       - id: "ux-spec"
         conditional: "if_has_ui"
-        agent: "ux-expert"
+        agent: "ux-designer"
         command: "ux-spec"
 
   - phase: 3

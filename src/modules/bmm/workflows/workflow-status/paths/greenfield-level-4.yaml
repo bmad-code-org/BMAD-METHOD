@@ -37,7 +37,7 @@ phases:
         output: "Comprehensive product requirements document"
       - id: "ux-spec"
         required: true
-        agent: "ux-expert"
+        agent: "ux-designer"
         command: "ux-spec"
         note: "Multiple UI/UX specifications needed"
 

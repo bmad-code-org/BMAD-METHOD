@@ -36,7 +36,7 @@ phases:
         output: "High-level requirements and epic definitions"
       - id: "ux-spec"
         conditional: "if_has_ui"
-        agent: "ux-expert"
+        agent: "ux-designer"
         command: "ux-spec"
 
   - phase: 3

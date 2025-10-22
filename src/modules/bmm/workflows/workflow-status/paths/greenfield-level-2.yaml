@@ -36,7 +36,7 @@ phases:
         output: "Creates PRD with epics.md and story list"
       - id: "ux-spec"
         conditional: "if_has_ui"
-        agent: "ux-expert"
+        agent: "ux-designer"
         command: "ux-spec"
       - id: "tech-spec"
         optional: true
