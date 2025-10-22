@@ -76,6 +76,8 @@
 - [ ] Repeating steps have appropriate repeat attribute (repeat="3", repeat="for-each-X", repeat="until-approved")
 - [ ] Conditional steps have if="condition" attribute
 - [ ] XML tags used correctly (<action>, <ask>, <check>, <goto>, <invoke-workflow>, <template-output>)
+- [ ] No nested tag references in content (use "action tags" not "<action> tags")
+- [ ] Tag references use descriptive text without angle brackets for clarity
 - [ ] Steps are focused (single goal per step)
 - [ ] Instructions are specific with limits ("Write 1-2 paragraphs" not "Write about")
 - [ ] Examples provided where helpful
@@ -120,9 +122,9 @@ _List any cleanup recommendations:_
 
 ## Audit Summary
 
-**Total Checks:** 70
-**Passed:** **\_** / 70
-**Failed:** **\_** / 70
+**Total Checks:** 72
+**Passed:** **\_** / 72
+**Failed:** **\_** / 72
 **Pass Rate:** **\_**%
 
 **Recommendation:**

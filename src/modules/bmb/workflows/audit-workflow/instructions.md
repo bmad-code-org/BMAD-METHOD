@@ -115,11 +115,30 @@ Display summary:
 - Check optional usage in template metadata
 - Ensure no confusion between date and model training cutoff
 
+**Nested Tag Reference Check:**
+
+- Search for XML tag references within tags (e.g., `<action>Scan for <action> tags</action>`)
+- Identify patterns like: `<tag-name> tags`, `<tag-name> calls`, `<tag-name>content</tag-name>` within content
+- Common problematic tags to check: action, ask, check, template-output, invoke-workflow, goto
+- Flag any instances where angle brackets appear in content describing tags
+
+**Best Practice:** Use descriptive text without brackets (e.g., "action tags" instead of "<action> tags")
+
+**Rationale:**
+
+- Prevents XML parsing ambiguity
+- Improves readability for humans and LLMs
+- LLMs understand "action tags" = `<action>` tags from context
+
+<action>Scan instructions.md for nested tag references using pattern: &lt;(action|ask|check|template-output|invoke-workflow|goto|step|elicit-required)&gt; within text content</action>
+<action>Record any instances of nested tag references with line numbers</action>
 <action>Record any improper config variable usage</action>
 <template-output>config_usage_issues</template-output>
 
 <check>If config usage issues found:</check>
 <action>Add to issues list with severity: IMPORTANT</action>
+<check>If nested tag references found:</check>
+<action>Add to issues list with severity: CLARITY (recommend using descriptive text without angle brackets)</action>
 </step>
 
 <step n="5" goal="Web bundle validation" optional="true">
@@ -142,17 +161,17 @@ Display summary:
 - [ ] All files referenced in instructions listed
 
 **Workflow Dependency Scan:**
-<action>Scan instructions.md for <invoke-workflow> tags</action>
+<action>Scan instructions.md for invoke-workflow tags</action>
 <action>Extract workflow paths from invocations</action>
 <action>Verify each called workflow.yaml is in web_bundle_files</action>
 <action>**CRITICAL**: Check if existing_workflows field is present when workflows are invoked</action>
-<action>If <invoke-workflow> calls exist, existing_workflows MUST map workflow variables to paths</action>
+<action>If invoke-workflow calls exist, existing_workflows MUST map workflow variables to paths</action>
 <action>Example: If instructions use {core_brainstorming}, web_bundle needs:
 existing_workflows: - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"
 </action>
 
 **File Reference Scan:**
-<action>Scan instructions.md for file references in <action> tags</action>
+<action>Scan instructions.md for file references in action tags</action>
 <action>Check for CSV, JSON, YAML, MD files referenced</action>
 <action>Verify all referenced files are in web_bundle_files</action>
 
@@ -203,17 +222,17 @@ existing_workflows: - core_brainstorming: "bmad/core/workflows/brainstorming/wor
 
 <step n="7" goal="Template variable mapping" if="workflow_type == 'document'">
 <action>Extract all template variables from template.md: {{variable_name}} pattern</action>
-<action>Scan instructions.md for corresponding <template-output>variable_name</template-output> tags</action>
+<action>Scan instructions.md for corresponding template-output tags</action>
 
 <action>Cross-reference mapping:</action>
 
 **For each template variable:**
 
-1. Is there a matching <template-output> tag? (mark as MAPPED)
+1. Is there a matching template-output tag? (mark as MAPPED)
 2. Is it a standard config variable? (mark as CONFIG_VAR - optional)
 3. Is it unmapped? (mark as MISSING_OUTPUT)
 
-**For each <template-output> tag:**
+**For each template-output tag:**
 
 1. Is there a matching template variable? (mark as USED)
 2. Is it orphaned? (mark as UNUSED_OUTPUT)
@@ -277,7 +296,7 @@ existing_workflows: - core_brainstorming: "bmad/core/workflows/brainstorming/wor
 
 ---
 
-## 3. Config Variable Usage
+## 3. Config Variable Usage & Instruction Quality
 
 {{config_usage_issues}}
 
@@ -285,6 +304,7 @@ existing_workflows: - core_brainstorming: "bmad/core/workflows/brainstorming/wor
 **User Name:** {{user_name_status}}
 **Output Folder:** {{output_folder_status}}
 **Date:** {{date_status}}
+**Nested Tag References:** {{nested_tag_count}} instances found
 
 ---
 
