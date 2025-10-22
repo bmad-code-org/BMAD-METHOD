@@ -10,20 +10,24 @@
 <step n="1" goal="Story Context Setup">
 
 <action>Check if context data was provided with workflow invocation</action>
-<check>If data attribute was passed to this workflow:</check>
-<action>Load the context document from the data file path</action>
-<action>Study the background information, brand details, or subject matter</action>
-<action>Use the provided context to inform story development</action>
-<action>Acknowledge the focused storytelling goal</action>
-<ask response="story_refinement">I see we're crafting a story based on the context provided. What specific angle or emphasis would you like?</ask>
-<check>Else (no context data provided):</check>
-<action>Proceed with context gathering</action>
-<ask response="story_purpose">1. What's the purpose of this story? (e.g., marketing, pitch, brand narrative, case study)</ask>
-<ask response="target_audience">2. Who is your target audience?</ask>
-<ask response="key_messages">3. What key messages or takeaways do you want the audience to have?</ask>
-<ask>4. Any constraints? (length, tone, medium, existing brand guidelines)</ask>
+
+<check if="data attribute was passed to this workflow">
+  <action>Load the context document from the data file path</action>
+  <action>Study the background information, brand details, or subject matter</action>
+  <action>Use the provided context to inform story development</action>
+  <action>Acknowledge the focused storytelling goal</action>
+  <ask response="story_refinement">I see we're crafting a story based on the context provided. What specific angle or emphasis would you like?</ask>
+</check>
+
+<check if="no context data provided">
+  <action>Proceed with context gathering</action>
+  <ask response="story_purpose">1. What's the purpose of this story? (e.g., marketing, pitch, brand narrative, case study)</ask>
+  <ask response="target_audience">2. Who is your target audience?</ask>
+  <ask response="key_messages">3. What key messages or takeaways do you want the audience to have?</ask>
+  <ask>4. Any constraints? (length, tone, medium, existing brand guidelines)</ask>
 
 <critical>Wait for user response before proceeding. This context shapes the narrative approach.</critical>
+</check>
 
 <template-output>story_purpose, target_audience, key_messages</template-output>
 
@@ -53,13 +57,14 @@ I can help craft your story using these proven narrative frameworks:
 Which framework best fits your purpose? (Enter 1-10, or ask for my recommendation)
 </ask>
 
-<check>If user asks for recommendation:</check>
-<action>Analyze story_purpose, target_audience, and key_messages</action>
-<action>Recommend best-fit framework with clear rationale</action>
-<example>
-Based on your {{story_purpose}} for {{target_audience}}, I recommend:
-**{{framework_name}}** because {{rationale}}
-</example>
+<check if="user asks for recommendation">
+  <action>Analyze story_purpose, target_audience, and key_messages</action>
+  <action>Recommend best-fit framework with clear rationale</action>
+  <example>
+  Based on your {{story_purpose}} for {{target_audience}}, I recommend:
+  **{{framework_name}}** because {{rationale}}
+  </example>
+</check>
 
 <template-output>story_type, framework_name</template-output>
 

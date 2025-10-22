@@ -50,9 +50,9 @@
     <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
     <action>Identify first incomplete task (unchecked [ ]) in Tasks/Subtasks</action>
 
-    <check>If no incomplete tasks → <goto step="6">Completion sequence</goto></check>
-    <check>If story file inaccessible → HALT: "Cannot develop story without access to story file"</check>
-    <check>If task requirements ambiguous → ASK user to clarify or HALT</check>
+    <action if="no incomplete tasks"><goto step="6">Completion sequence</goto></action>
+    <action if="story file inaccessible">HALT: "Cannot develop story without access to story file"</action>
+    <action if="task requirements ambiguous">ASK user to clarify or HALT</action>
   </step>
 
   <step n="1.5" goal="Mark story in-progress in sprint status">
@@ -88,11 +88,11 @@ Story is already marked in-progress
     <action>Plan implementation steps and edge cases; write down a brief plan in Dev Agent Record → Debug Log</action>
     <action>Implement the task COMPLETELY including all subtasks, following architecture patterns and coding standards in this repo</action>
     <action>Handle error conditions and edge cases appropriately</action>
-    <check>If unapproved dependencies are needed → ASK user for approval before adding</check>
-    <check>If 3 consecutive implementation failures occur → HALT and request guidance</check>
-    <check>If required configuration is missing → HALT: "Cannot proceed without necessary configuration files"</check>
-    <check>If {{run_until_complete}} == true → Do not stop after partial progress; continue iterating tasks until all ACs are satisfied or a HALT condition triggers</check>
-    <check>Do NOT propose to pause for review, standups, or validation until Step 6 gates are satisfied</check>
+    <action if="unapproved dependencies are needed">ASK user for approval before adding</action>
+    <action if="3 consecutive implementation failures occur">HALT and request guidance</action>
+    <action if="required configuration is missing">HALT: "Cannot proceed without necessary configuration files"</action>
+    <action if="{{run_until_complete}} == true">Do not stop after partial progress; continue iterating tasks until all ACs are satisfied or a HALT condition triggers</action>
+    <critical>Do NOT propose to pause for review, standups, or validation until Step 6 gates are satisfied</critical>
   </step>
 
   <step n="3" goal="Author comprehensive tests">
@@ -108,8 +108,8 @@ Story is already marked in-progress
     <action>Run the new tests to verify implementation correctness</action>
     <action>Run linting and code quality checks if configured</action>
     <action>Validate implementation meets ALL story acceptance criteria; if ACs include quantitative thresholds (e.g., test pass rate), ensure they are met before marking complete</action>
-    <check>If regression tests fail → STOP and fix before continuing</check>
-    <check>If new tests fail → STOP and fix before continuing</check>
+    <action if="regression tests fail">STOP and fix before continuing</action>
+    <action if="new tests fail">STOP and fix before continuing</action>
   </step>
 
   <step n="5" goal="Mark task complete and update story">
@@ -118,9 +118,9 @@ Story is already marked in-progress
     <action>Add completion notes to Dev Agent Record if significant changes were made (summarize intent, approach, and any follow-ups)</action>
     <action>Append a brief entry to Change Log describing the change</action>
     <action>Save the story file</action>
-    <check>Determine if more incomplete tasks remain</check>
-    <check>If more tasks remain → <goto step="1">Next task</goto></check>
-    <check>If no tasks remain → <goto step="6">Completion</goto></check>
+    <action>Determine if more incomplete tasks remain</action>
+    <action if="more tasks remain"><goto step="1">Next task</goto></action>
+    <action if="no tasks remain"><goto step="6">Completion</goto></action>
   </step>
 
   <step n="6" goal="Story completion sequence">
@@ -144,9 +144,9 @@ Story is marked Ready for Review in file, but sprint-status.yaml may be out of s
       </output>
     </check>
 
-    <check>If any task is incomplete → Return to step 1 to complete remaining work (Do NOT finish with partial progress)</check>
-    <check>If regression failures exist → STOP and resolve before completing</check>
-    <check>If File List is incomplete → Update it before completing</check>
+    <action if="any task is incomplete">Return to step 1 to complete remaining work (Do NOT finish with partial progress)</action>
+    <action if="regression failures exist">STOP and resolve before completing</action>
+    <action if="File List is incomplete">Update it before completing</action>
   </step>
 
   <step n="7" goal="Validation and handoff" optional="true">

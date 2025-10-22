@@ -33,8 +33,8 @@
 </check-item>
 
 <halt-condition>
-<check>If trigger is unclear: "Cannot proceed without understanding what caused the need for change"</check>
-<check>If no evidence provided: "Need concrete evidence or examples of the issue before analyzing impact"</check>
+<action if="trigger is unclear">HALT: "Cannot proceed without understanding what caused the need for change"</action>
+<action if="no evidence provided">HALT: "Need concrete evidence or examples of the issue before analyzing impact"</action>
 </halt-condition>
 
 </section>
@@ -261,9 +261,9 @@
 </check-item>
 
 <halt-condition>
-<check>If any critical section cannot be completed: "Cannot proceed to proposal without complete impact analysis"</check>
-<check>If user approval not obtained: "Must have explicit approval before implementing changes"</check>
-<check>If handoff responsibilities unclear: "Must clearly define who will execute the proposed changes"</check>
+<action if="any critical section cannot be completed">HALT: "Cannot proceed to proposal without complete impact analysis"</action>
+<action if="user approval not obtained">HALT: "Must have explicit approval before implementing changes"</action>
+<action if="handoff responsibilities unclear">HALT: "Must clearly define who will execute the proposed changes"</action>
 </halt-condition>
 
 </section>

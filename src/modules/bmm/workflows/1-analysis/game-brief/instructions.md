@@ -300,9 +300,10 @@ This brief will serve as the primary input for creating the Game Design Document
 - Proceed to GDD workflow: `workflow gdd`
 - Validate assumptions with target players</ask>
 
-<check>If user chooses option 3 (executive summary):</check>
-<action>Create condensed 3-page executive brief focusing on: core concept, target market, gameplay pillars, key differentiators, and success criteria</action>
-<action>Save as: {output_folder}/game-brief-executive-{{game_name}}-{{date}}.md</action>
+<check if="user chooses option 3 (executive summary)">
+  <action>Create condensed 3-page executive brief focusing on: core concept, target market, gameplay pillars, key differentiators, and success criteria</action>
+  <action>Save as: {output_folder}/game-brief-executive-{{game_name}}-{{date}}.md</action>
+</check>
 
 <template-output>final_brief</template-output>
 <template-output>executive_brief</template-output>

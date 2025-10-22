@@ -264,9 +264,10 @@ Which approach works best for you?</ask>
 
 This brief will serve as the primary input for creating the Product Requirements Document (PRD).</ask>
 
-<check>If user chooses option 3 (executive summary):</check>
-<action>Create condensed 3-page executive brief focusing on: problem statement, proposed solution, target users, MVP scope, financial impact, and strategic alignment</action>
-<action>Save as: {output_folder}/product-brief-executive-{{project_name}}-{{date}}.md</action>
+<check if="user chooses option 3 (executive summary)">
+  <action>Create condensed 3-page executive brief focusing on: problem statement, proposed solution, target users, MVP scope, financial impact, and strategic alignment</action>
+  <action>Save as: {output_folder}/product-brief-executive-{{project_name}}-{{date}}.md</action>
+</check>
 
 <template-output>final_brief</template-output>
 <template-output>executive_brief</template-output>
