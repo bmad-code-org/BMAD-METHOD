@@ -28,29 +28,6 @@
     <action>READ COMPLETE FILES for all items found in the prioritized set. Store content and paths for citation.</action>
   </step>
 
-  <step n="2.5" goal="Get story to draft from status file">
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-      <param>mode: data</param>
-      <param>data_request: next_story</param>
-    </invoke-workflow>
-
-    <check if="status_exists == true AND todo_story_id != ''">
-      <action>Use extracted story information:</action>
-      - {{todo_story_id}}: The story ID to draft
-      - {{todo_story_title}}: The story title
-      - {{todo_story_file}}: The exact story file path to create
-
-      <critical>This is the PRIMARY source - DO NOT search or guess</critical>
-
-      <action>Set {{story_path}} = {story_dir}/{{todo_story_file}}</action>
-      <action>Skip legacy discovery in Step 3</action>
-    </check>
-
-    <check if="status_exists == false OR todo_story_id == ''">
-      <action>Fall back to legacy story discovery in Step 3</action>
-    </check>
-  </step>
-
   <step n="3" goal="Determine target story (do not prompt in #yolo)">
     <action>List existing story markdown files in {{story_dir}} matching pattern: "story-<epic>.<story>.md"</action>
     <check>If none found → Set {{epic_num}}=1 and {{story_num}}=1</check>
@@ -99,56 +76,18 @@
     <action>Save document unconditionally (non-interactive default). In interactive mode, allow user confirmation.</action>
     <check>If {{auto_run_context}} == true → <invoke-workflow path="{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml">Pass {{story_path}} = {default_output_file}</invoke-workflow></check>
     <action>Report created/updated story path</action>
-  </step>
-
-  <step n="9" goal="Update status file on completion">
-    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-    <action>Find the most recent file (by date in filename)</action>
-
-    <check if="status file exists">
-      <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-        <param>mode: update</param>
-        <param>action: set_current_workflow</param>
-        <param>workflow_name: create-story</param>
-      </invoke-workflow>
-
-      <check if="success == true">
-        <output>✅ Status updated: Story {{story_id}} drafted</output>
-      </check>
-
-      <output>**✅ Story Created Successfully, {user_name}!**
+    <output>**✅ Story Created Successfully, {user_name}!**
 
 **Story Details:**
 - Story ID: {{story_id}}
 - File: {{story_file}}
 - Status: Draft (needs review)
 
-**Status file updated:**
-- Current step: create-story (Story {{story_id}}) ✓
-- Progress: {{new_progress_percentage}}%
-
 **Next Steps:**
 1. Review the drafted story in {{story_file}}
 2. When satisfied, run `story-ready` to approve for development
 3. Or edit the story file and re-run `create-story` to update
-
-Check status anytime with: `workflow-status`
-      </output>
-    </check>
-
-    <check if="status file not found">
-      <output>**✅ Story Created Successfully, {user_name}!**
-
-**Story Details:**
-- Story ID: {{story_id}}
-- File: {{story_file}}
-- Status: Draft
-
-Note: Running in standalone mode (no status file).
-
-To track progress across workflows, run `workflow-status` first.
-      </output>
-    </check>
+    </output>
   </step>
 
 </workflow>

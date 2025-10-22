@@ -61,8 +61,6 @@ Parse these fields:
 - FIELD_TYPE
 - CURRENT_PHASE
 - CURRENT_WORKFLOW
-- TODO_STORY
-- IN_PROGRESS_STORY
 - NEXT_ACTION
 - NEXT_COMMAND
 - NEXT_AGENT
@@ -204,27 +202,6 @@ Your choice:</ask>
   <action>Parse status file completely</action>
   <template-output>status_exists = true</template-output>
 
-  <check if="data_request == next_story">
-    <action>Extract from Development Queue section</action>
-    <template-output>todo_story_id = {{TODO_STORY}}</template-output>
-    <template-output>todo_story_title = {{TODO_TITLE}}</template-output>
-    <template-output>in_progress_story = {{IN_PROGRESS_STORY}}</template-output>
-    <template-output>stories_sequence = {{STORIES_SEQUENCE}}</template-output>
-    <template-output>stories_done = {{STORIES_DONE}}</template-output>
-
-    <action>Determine story file path based on ID format</action>
-    <check if='todo_story_id matches "N.M" format'>
-      <template-output>todo_story_file = "story-{{N}}.{{M}}.md"</template-output>
-    </check>
-    <check if='todo_story_id matches "slug-N" format'>
-      <template-output>todo_story_file = "story-{{slug}}-{{N}}.md"</template-output>
-    </check>
-    <check if='todo_story_id matches "slug" format'>
-      <template-output>todo_story_file = "story-{{slug}}.md"</template-output>
-    </check>
-
-  </check>
-
   <check if="data_request == project_config">
     <template-output>project_name = {{PROJECT_NAME}}</template-output>
     <template-output>project_type = {{PROJECT_TYPE}}</template-output>
@@ -305,10 +282,6 @@ Your choice:</ask>
     - Update PHASE_X_COMPLETE to true
     - Update CURRENT_PHASE to next phase (if applicable)
 
-    <check if="populate_stories_from parameter provided">
-      <action>Trigger story population (see populate_stories action below)</action>
-    </check>
-
     <action>Update LAST_UPDATED to {{date}}</action>
     <action>Save status file</action>
 
@@ -316,140 +289,6 @@ Your choice:</ask>
     <template-output>next_workflow = {{determined next workflow}}</template-output>
     <template-output>next_agent = {{determined next agent}}</template-output>
     <template-output>phase_complete = {{true/false}}</template-output>
-
-  </check>
-
-  <!-- ============================================= -->
-  <!-- ACTION: populate_stories -->
-  <!-- ============================================= -->
-  <check if="action == populate_stories">
-    <action>Get {{epics_file}} parameter (required - path to epics.md)</action>
-
-    <action>Read {{epics_file}} completely</action>
-    <action>Parse all story definitions from epic sections</action>
-    <action>Extract story IDs in sequential order (e.g., story-1.1, story-1.2, story-2.1...)</action>
-    <action>Extract story titles for each ID</action>
-
-    <action>Build ordered story list:</action>
-    - Format: JSON array or comma-separated
-    - Example: ["story-1.1", "story-1.2", "story-1.3", "story-2.1"]
-
-    <action>Update status file:</action>
-    - STORIES_SEQUENCE: {{ordered_story_list}}
-    - TODO_STORY: {{first_story_id}}
-    - TODO_TITLE: {{first_story_title}}
-    - IN_PROGRESS_STORY: (empty)
-    - IN_PROGRESS_TITLE: (empty)
-    - STORIES_DONE: []
-
-    <action>Update LAST_UPDATED to {{date}}</action>
-    <action>Save status file</action>
-
-    <template-output>success = true</template-output>
-    <template-output>total_stories = {{count}}</template-output>
-    <template-output>first_story = {{first_story_id}}</template-output>
-
-  </check>
-
-  <!-- ============================================= -->
-  <!-- ACTION: start_story (TODO → IN PROGRESS) -->
-  <!-- ============================================= -->
-  <check if="action == start_story">
-    <action>Get current TODO_STORY from status file</action>
-
-    <check if="TODO_STORY is empty">
-      <template-output>success = false</template-output>
-      <template-output>error = "No TODO story to start"</template-output>
-      <action>Return to calling workflow</action>
-    </check>
-
-    <action>Move TODO → IN PROGRESS:</action>
-    - IN_PROGRESS_STORY: {{current TODO_STORY}}
-    - IN_PROGRESS_TITLE: {{current TODO_TITLE}}
-
-    <action>Find next story in STORIES_SEQUENCE after current TODO_STORY</action>
-
-    <check if="next story found">
-      <action>Move next story to TODO:</action>
-      - TODO_STORY: {{next_story_id}}
-      - TODO_TITLE: {{next_story_title}}
-    </check>
-
-    <check if="no next story">
-      <action>Clear TODO:</action>
-      - TODO_STORY: (empty)
-      - TODO_TITLE: (empty)
-    </check>
-
-    <action>Update NEXT_ACTION and NEXT_COMMAND:</action>
-    - NEXT_ACTION: "Implement story {{IN_PROGRESS_STORY}}"
-    - NEXT_COMMAND: "dev-story"
-    - NEXT_AGENT: "dev"
-
-    <action>Update LAST_UPDATED to {{date}}</action>
-    <action>Save status file</action>
-
-    <template-output>success = true</template-output>
-    <template-output>in_progress_story = {{IN_PROGRESS_STORY}}</template-output>
-    <template-output>next_todo = {{TODO_STORY or empty}}</template-output>
-
-  </check>
-
-  <!-- ============================================= -->
-  <!-- ACTION: complete_story (IN PROGRESS → DONE) -->
-  <!-- ============================================= -->
-  <check if="action == complete_story">
-    <action>Get current IN_PROGRESS_STORY from status file</action>
-
-    <check if="IN_PROGRESS_STORY is empty">
-      <template-output>success = false</template-output>
-      <template-output>error = "No IN PROGRESS story to complete"</template-output>
-      <action>Return to calling workflow</action>
-    </check>
-
-    <action>Move IN PROGRESS → DONE:</action>
-    - Add {{IN_PROGRESS_STORY}} to STORIES_DONE list
-
-    <action>Move TODO → IN PROGRESS:</action>
-    - IN_PROGRESS_STORY: {{current TODO_STORY}}
-    - IN_PROGRESS_TITLE: {{current TODO_TITLE}}
-
-    <action>Find next story in STORIES_SEQUENCE after current TODO_STORY</action>
-
-    <check if="next story found">
-      <action>Move next story to TODO:</action>
-      - TODO_STORY: {{next_story_id}}
-      - TODO_TITLE: {{next_story_title}}
-    </check>
-
-    <check if="no next story">
-      <action>Clear TODO:</action>
-      - TODO_STORY: (empty)
-      - TODO_TITLE: (empty)
-    </check>
-
-    <check if="all stories complete (STORIES_DONE == STORIES_SEQUENCE)">
-      <action>Mark Phase 4 complete:</action>
-      - PHASE_4_COMPLETE: true
-      - CURRENT_WORKFLOW: "Complete"
-      - NEXT_ACTION: "All stories complete!"
-      - NEXT_COMMAND: (empty)
-    </check>
-
-    <check if="stories remain">
-      <action>Update NEXT_ACTION:</action>
-      - If IN_PROGRESS_STORY exists: "Implement story {{IN_PROGRESS_STORY}}"
-      - If only TODO_STORY exists: "Draft story {{TODO_STORY}}"
-      - NEXT_COMMAND: "dev-story" or "create-story"
-    </check>
-
-    <action>Update LAST_UPDATED to {{date}}</action>
-    <action>Save status file</action>
-
-    <template-output>success = true</template-output>
-    <template-output>completed_story = {{completed_story_id}}</template-output>
-    <template-output>stories_remaining = {{count}}</template-output>
-    <template-output>all_complete = {{true/false}}</template-output>
 
   </check>
 
@@ -481,7 +320,7 @@ Your choice:</ask>
   <!-- ============================================= -->
   <check if="action not recognized">
     <template-output>success = false</template-output>
-    <template-output>error = "Unknown action: {{action}}. Valid actions: complete_workflow, populate_stories, start_story, complete_story, set_current_workflow"</template-output>
+    <template-output>error = "Unknown action: {{action}}. Valid actions: complete_workflow, set_current_workflow"</template-output>
   </check>
 
 </check>

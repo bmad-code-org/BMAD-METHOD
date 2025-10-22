@@ -20,22 +20,7 @@ FACILITATION NOTES:
 
 <workflow>
 
-<step n="1" goal="Check workflow status">
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-  <param>mode: init-check</param>
-</invoke-workflow>
-
-<check if="status_exists == false">
-  <output>⚠️ {{suggestion}}
-
-Running in standalone mode - no progress tracking.</output>
-<action>Set standalone_mode = true</action>
-</check>
-
-<action>Store {{status_file_path}} for later updates (if exists)</action>
-</step>
-
-<step n="2" goal="Epic Context Discovery">
+<step n="1" goal="Epic Context Discovery">
 <action>Help the user identify which epic was just completed through natural conversation</action>
 <action>Attempt to auto-detect by checking {output_folder}/stories/ for the highest numbered completed story and extracting the epic number</action>
 <action>If auto-detection succeeds, confirm with user: "It looks like Epic {{epic_number}} was just completed - is that correct?"</action>
@@ -378,37 +363,15 @@ See you at sprint planning once prep work is done!"
 <action>Save retrospective summary to: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md</action>
 <action>Confirm all action items have been captured</action>
 <action>Remind user to schedule prep sprint if needed</action>
-</step>
-
-<step n="9" goal="Update status file on completion">
-<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-<action>Find the most recent file (by date in filename)</action>
-
-<check if="status file exists">
-  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-    <param>mode: update</param>
-    <param>action: complete_workflow</param>
-    <param>workflow_name: retrospective</param>
-  </invoke-workflow>
-
-  <check if="success == true">
-    <output>✅ Status updated: Retrospective complete for Epic {{completed_number}}</output>
-  </check>
-</check>
-
-<output>**✅ Retrospective Complete**
+<output>**✅ Retrospective Complete, {user_name}!**
 
 **Epic Review:**
 
 - Epic {{completed_number}}: {{epic_title}} reviewed
+- Retrospective saved: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md
 - Action Items: {{action_count}}
 - Preparation Tasks: {{prep_task_count}}
 - Critical Path Items: {{critical_count}}
-
-**Status file updated:**
-
-- Current step: retrospective (Epic {{completed_number}}) ✓
-- Progress: {{new_progress_percentage}}%
 
 **Next Steps:**
 
@@ -416,27 +379,7 @@ See you at sprint planning once prep work is done!"
 2. Execute preparation sprint (Est: {{prep_days}} days)
 3. Complete critical path items before Epic {{next_number}}
 4. Begin Epic {{next_number}} planning when preparation complete
-
-Check status anytime with: `workflow-status`
-</output>
-</check>
-
-<check if="status file not found">
-  <output>**✅ Retrospective Complete, {user_name}!**
-
-**Epic Review:**
-
-- Epic {{completed_number}}: {{epic_title}} reviewed
-- Retrospective saved: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md
-
-Note: Running in standalone mode (no status file).
-
-**Next Steps:**
-
-1. Execute preparation sprint
-2. Begin Epic {{next_number}} planning
    </output>
-   </check>
    </step>
 
 </workflow>

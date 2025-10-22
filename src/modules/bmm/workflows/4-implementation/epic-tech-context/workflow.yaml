@@ -7,8 +7,6 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
-document_output_language: "{config_source}:document_output_language"
-user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Inputs expected ( check output_folder or ask user if missing)
@@ -26,17 +24,6 @@ instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
 # Output configuration
-default_output_file: "{project-root}/docs/tech-spec-epic-{{epic_id}}.md"
+default_output_file: "{output_folder}/tech-spec-epic-{{epic_id}}.md"
 
-# Variables
-variables:
-  non_interactive: true
-
-web_bundle:
-  name: "tech-spec"
-  description: "Generate a comprehensive Technical Specification from PRD and Architecture with acceptance criteria and traceability mapping"
-  author: "BMAD BMM"
-  web_bundle_files:
-    - "bmad/bmm/workflows/4-implementation/epic-tech-context/template.md"
-    - "bmad/bmm/workflows/4-implementation/epic-tech-context/instructions.md"
-    - "bmad/bmm/workflows/4-implementation/epic-tech-context/checklist.md"
+web_bundle: false

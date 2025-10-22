@@ -8,8 +8,6 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
-document_output_language: "{config_source}:document_output_language"
-user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Workflow components
@@ -18,9 +16,8 @@ instructions: "{installed_path}/instructions.md"
 
 # Variables and inputs
 variables:
+  story_path: "" # Explicit path to story file
   story_dir: "{config_source}:dev_story_location" # Directory where stories are stored
-  status_file: "{output_folder}/bmm-workflow-status.md" # Status file to update
-  auto_update_status: true # Always update status file
 
 # Output configuration - no output file, just status updates
 default_output_file: ""

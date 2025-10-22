@@ -1,0 +1,53 @@
+name: sprint-status
+description: "Helper workflow for reading and updating sprint-status.yaml tracking file. Provides query and update operations for Phase 4 implementation workflows."
+author: "BMad Method"
+
+# Critical variables
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/bmad/bmm/workflows/helpers/sprint-status"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+# Sprint status file location
+status_file: "{output_folder}/sprint-status.yaml"
+
+# Input parameters (provided by calling workflow)
+# Action is REQUIRED - all others depend on the action type
+variables:
+  action: "" # REQUIRED: get_next_story | list_stories | get_story_status | get_epic_status | check_epic_complete | update_story_status | update_epic_status | complete_retrospective | validate_transition | get_metadata | get_file_path
+
+  # Query parameters
+  story_key: "" # For: get_story_status, update_story_status
+  epic_id: "" # For: get_epic_status, check_epic_complete, update_epic_status, complete_retrospective
+  filter_status: "" # For: get_next_story, list_stories - values: backlog | drafted | ready-for-dev | in-progress | review | done
+  epic_filter: "" # For: get_next_story, list_stories - limit to specific epic (e.g., "epic-1")
+  limit: 10 # For: list_stories - max results to return
+
+  # Update parameters
+  new_status: "" # For: update_story_status, update_epic_status - target status
+
+  # Validation parameters
+  from_status: "" # For: validate_transition
+  to_status: "" # For: validate_transition
+
+  # Options
+  validate: true # For: update_story_status - enforce legal transitions
+  dry_run: false # For: update operations - test without saving
+  show_output: true # Show helper messages (caller can override)
+
+# Output variables (returned to calling workflow)
+# All results are prefixed with result_* for clarity
+# Specific variables depend on action - see instructions.md for details
+
+# Common returns (most actions):
+#   result_success: true | false
+#   result_error: error message (if failed)
+#
+# Action-specific returns documented in instructions.md
+
+web_bundle: false

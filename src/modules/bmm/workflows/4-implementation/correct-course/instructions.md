@@ -9,15 +9,6 @@
 
 <workflow>
 
-<step n="0" goal="Check project status" optional="true">
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-  <param>mode: init-check</param>
-</invoke-workflow>
-
-<output>Running correct-course workflow for sprint change management.
-{{#if status_exists}}Status tracking enabled.{{else}}Note: No status file - running standalone.{{/if}}</output>
-</step>
-
 <step n="1" goal="Initialize Change Navigation">
   <action>Confirm change trigger and gather user description of the issue</action>
   <action>Ask: "What specific issue or change has been identified that requires navigation?"</action>

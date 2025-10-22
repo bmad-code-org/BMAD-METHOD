@@ -19,15 +19,6 @@ PHASE_2_COMPLETE: {{phase_2_complete}}
 PHASE_3_COMPLETE: {{phase_3_complete}}
 PHASE_4_COMPLETE: {{phase_4_complete}}
 
-## Development Queue
-
-STORIES_SEQUENCE: {{ordered_story_list}}
-TODO_STORY: {{todo_story}}
-TODO_TITLE: {{todo_title}}
-IN_PROGRESS_STORY: {{in_progress_story}}
-IN_PROGRESS_TITLE: {{in_progress_title}}
-STORIES_DONE: {{completed_story_list}}
-
 ## Next Action
 
 NEXT_ACTION: {{next_action}}

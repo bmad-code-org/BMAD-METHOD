@@ -11,25 +11,7 @@
 <critical>DOCUMENT OUTPUT: Technical XML context file. Concise, structured, project-relative paths only. User skill level ({user_skill_level}) affects conversation style ONLY, not context content.</critical>
 
 <workflow>
-  <step n="1" goal="Validate workflow sequence">
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-      <param>mode: validate</param>
-      <param>calling_workflow: story-context</param>
-    </invoke-workflow>
-
-    <check if="warning != ''">
-      <output>{{warning}}</output>
-      <ask>Continue with story-context anyway? (y/n)</ask>
-      <check if="n">
-        <output>{{suggestion}}</output>
-        <action>Exit workflow</action>
-      </check>
-    </check>
-
-    <action>Store {{status_file_path}} for later updates</action>
-  </step>
-
-  <step n="2" goal="Locate story and initialize output">
+  <step n="1" goal="Locate story and initialize output">
     <action>If {{story_path}} provided and valid → use it; else auto-discover from {{story_dir}}.</action>
     <action>Auto-discovery: read {{story_dir}} (dev_story_location). If invalid/missing or contains no .md files, ASK for a story file path or directory to scan.</action>
     <action>If a directory is provided, list markdown files named "story-*.md" recursively; sort by last modified time; display top {{story_selection_limit}} with index, filename, path, modified time.</action>
@@ -45,7 +27,7 @@
     <template-output file="{default_output_file}">so_that</template-output>
   </step>
 
-  <step n="3" goal="Collect relevant documentation">
+  <step n="2" goal="Collect relevant documentation">
     <action>Scan docs and src module docs for items relevant to this story's domain: search keywords from story title, ACs, and tasks.</action>
     <action>Prefer authoritative sources: PRD, Architecture, Front-end Spec, Testing standards, module-specific docs.</action>
     <action>For each discovered document: convert absolute paths to project-relative format by removing {project-root} prefix. Store only relative paths (e.g., "docs/prd.md" not "/Users/.../docs/prd.md").</action>
@@ -58,7 +40,7 @@
     </template-output>
   </step>
 
-  <step n="4" goal="Analyze existing code, interfaces, and constraints">
+  <step n="3" goal="Analyze existing code, interfaces, and constraints">
     <action>Search source tree for modules, files, and symbols matching story intent and AC keywords (controllers, services, components, tests).</action>
     <action>Identify existing interfaces/APIs the story should reuse rather than recreate.</action>
     <action>Extract development constraints from Dev Notes and architecture (patterns, layers, testing requirements).</action>
@@ -83,7 +65,7 @@
     </template-output>
   </step>
 
-  <step n="5" goal="Gather dependencies and frameworks">
+  <step n="4" goal="Gather dependencies and frameworks">
     <action>Detect dependency manifests and frameworks in the repo:
       - Node: package.json (dependencies/devDependencies)
       - Python: pyproject.toml/requirements.txt
@@ -95,7 +77,7 @@
     </template-output>
   </step>
 
-  <step n="6" goal="Testing standards and ideas">
+  <step n="5" goal="Testing standards and ideas">
     <action>From Dev Notes, architecture docs, testing docs, and existing tests, extract testing standards (frameworks, patterns, locations).</action>
     <template-output file="{default_output_file}">
       Populate tests.standards with a concise paragraph
@@ -104,68 +86,27 @@
     </template-output>
   </step>
 
-  <step n="7" goal="Validate and save">
+  <step n="6" goal="Validate and save">
     <action>Validate output XML structure and content.</action>
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
   </step>
 
-  <step n="8" goal="Update story status and context reference">
+  <step n="7" goal="Update story status and context reference">
     <action>Open {{story_path}}; if Status == 'Draft' then set to 'ContextReadyDraft'; otherwise leave unchanged.</action>
     <action>Under 'Dev Agent Record' → 'Context Reference' (create if missing), add or update a list item for {default_output_file}.</action>
     <action>Save the story file.</action>
-  </step>
-
-  <step n="9" goal="Update status file on completion">
-    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-    <action>Find the most recent file (by date in filename)</action>
-
-    <check if="status file exists">
-      <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-        <param>mode: update</param>
-        <param>action: set_current_workflow</param>
-        <param>workflow_name: story-context</param>
-      </invoke-workflow>
-
-      <check if="success == true">
-        <output>✅ Status updated: Context generated for Story {{story_id}}</output>
-      </check>
-
-      <output>**✅ Story Context Generated Successfully, {user_name}!**
+    <output>**✅ Story Context Generated Successfully, {user_name}!**
 
 **Story Details:**
 - Story ID: {{story_id}}
 - Title: {{story_title}}
 - Context File: {{default_output_file}}
-
-**Status file updated:**
-- Current step: story-context (Story {{story_id}}) ✓
-- Progress: {{new_progress_percentage}}%
 
 **Next Steps:**
 1. Load DEV agent (bmad/bmm/agents/dev.md)
 2. Run `dev-story` workflow to implement the story
 3. The context file will provide comprehensive implementation guidance
-
-Check status anytime with: `workflow-status`
-      </output>
-    </check>
-
-    <check if="status file not found">
-      <output>**✅ Story Context Generated Successfully, {user_name}!**
-
-**Story Details:**
-- Story ID: {{story_id}}
-- Title: {{story_title}}
-- Context File: {{default_output_file}}
-
-Note: Running in standalone mode (no status file).
-
-To track progress across workflows, run `workflow-status` first.
-
-**Next Steps:**
-1. Load DEV agent and run `dev-story` to implement
-      </output>
-    </check>
+    </output>
   </step>
 
 </workflow>
