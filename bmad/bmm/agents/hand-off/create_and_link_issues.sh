@@ -129,14 +129,28 @@ if [ $push_rc -ne 0 ]; then
     echo "Fork $fork_full already exists."
   fi
 
-  # Add fork remote if missing
+  # Add fork remote if missing (prefer HTTPS to avoid SSH key prompts)
   if ! git remote get-url fork >/dev/null 2>&1; then
-    echo "Adding git remote 'fork' -> git@github.com:$fork_full.git"
-    git remote add fork "git@github.com:$fork_full.git" || git remote add fork "https://github.com/$fork_full.git"
+    echo "Adding git remote 'fork' -> https://github.com/$fork_full.git"
+    git remote add fork "https://github.com/$fork_full.git" || git remote add fork "git@github.com:$fork_full.git"
   fi
 
-  # Push branch to fork
+  # Push branch to fork (try once, then retry over HTTPS if needed)
+  set +e
   HUSKY_SKIP_HOOKS=1 git push --set-upstream fork "$branch_name"
+  push_fork_rc=$?
+  set -e
+  if [ $push_fork_rc -ne 0 ]; then
+    echo "Push to fork via current remote failed. Retrying with HTTPS remote..."
+    git remote set-url fork "https://github.com/$fork_full.git"
+    set +e
+    HUSKY_SKIP_HOOKS=1 git push --set-upstream fork "$branch_name"
+    push_fork_rc2=$?
+    set -e
+    if [ $push_fork_rc2 -ne 0 ]; then
+      echo "Failed to push to fork over HTTPS as well. Please check your gh authentication or push permissions on the fork."
+    fi
+  fi
   # Create a PR from fork into upstream
   gh pr create --repo "$upstream_repo" --title "chore: import sprint issues" --body-file /tmp/sprint_import_summary.txt --head "$username:$branch_name" --base main --draft || true
   echo "Done. A draft PR has been opened from your fork ($fork_full)."
