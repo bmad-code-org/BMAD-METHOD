@@ -290,6 +290,43 @@ _Generated on {{date}}_
 - **`<action if="">`** - Single conditional action (cleaner, more concise)
 - **`<check if="">...</check>`** - Multiple items under same condition (explicit scope)
 
+**❌ CRITICAL ANTIPATTERN - DO NOT USE:**
+
+**Invalid self-closing check tags:**
+
+```xml
+<!-- ❌ WRONG - Invalid XML structure -->
+<check>If condition met:</check>
+<action>Do something</action>
+
+<!-- ❌ WRONG - Ambiguous nesting -->
+<check>If validation fails:</check>
+<action>Log error</action>
+<goto step="1">Retry</goto>
+```
+
+**Why this is wrong:**
+
+- Creates invalid XML structure (check tag doesn't wrap anything)
+- Ambiguous - unclear if actions are inside or outside the condition
+- Breaks formatter and parser logic
+- Not part of BMAD workflow spec
+
+**✅ CORRECT alternatives:**
+
+```xml
+<!-- ✅ Single action - use inline if -->
+<action if="condition met">Do something</action>
+
+<!-- ✅ Multiple actions - use proper wrapper block -->
+<check if="validation fails">
+  <action>Log error</action>
+  <goto step="1">Retry</goto>
+</check>
+```
+
+**Rule:** If you have only ONE conditional action, use `<action if="">`. If you have MULTIPLE conditional actions, use `<check if="">...</check>` wrapper with a closing tag.
+
 ### Loops
 
 ```xml

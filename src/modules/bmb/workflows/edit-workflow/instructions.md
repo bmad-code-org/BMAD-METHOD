@@ -86,8 +86,8 @@ Present the editing menu to the user:
 <step n="4" goal="Load relevant documentation">
 Based on the selected edit type, load appropriate reference materials:
 
-<check>If option 2 (Add/fix standard config):</check>
-<action>Prepare standard config block template:</action>
+<check if="option 2 (Add/fix standard config) selected">
+  <action>Prepare standard config block template:</action>
 
 ```yaml
 # Critical variables from config
@@ -102,48 +102,54 @@ date: system-generated
 <action>Identify missing config variables to add</action>
 <action>Check instructions.md for config variable usage</action>
 <action>Check template.md for config variable usage</action>
+</check>
 
-<check>If editing instructions or adding features:</check>
-<action>Review the "Writing Instructions" section of the creation guide</action>
-<action>Load example workflows from {project-root}/bmad/bmm/workflows/ for patterns</action>
+<check if="editing instructions or adding features">
+  <action>Review the "Writing Instructions" section of the creation guide</action>
+  <action>Load example workflows from {project-root}/bmad/bmm/workflows/ for patterns</action>
+</check>
 
-<check>If editing templates:</check>
-<action>Review the "Templates and Variables" section of the creation guide</action>
-<action>Ensure variable naming conventions are followed</action>
+<check if="editing templates">
+  <action>Review the "Templates and Variables" section of the creation guide</action>
+  <action>Ensure variable naming conventions are followed</action>
+</check>
 
-<check>If editing validation:</check>
-<action>Review the "Validation" section and measurable criteria examples</action>
+<action if="editing validation">Review the "Validation" section and measurable criteria examples</action>
 
-<check>If option 9 (Remove bloat):</check>
-<action>Cross-reference all workflow.yaml fields against instructions.md and template.md</action>
-<action>Identify yaml fields not used in any file</action>
-<action>Check for duplicate fields in web_bundle section</action>
+<check if="option 9 (Remove bloat) selected">
+  <action>Cross-reference all workflow.yaml fields against instructions.md and template.md</action>
+  <action>Identify yaml fields not used in any file</action>
+  <action>Check for duplicate fields in web_bundle section</action>
+</check>
 
-<check>If configuring web bundle:</check>
-<action>Review the "Web Bundles" section of the creation guide</action>
-<action>Scan all workflow files for referenced resources</action>
-<action>Create inventory of all files that must be included</action>
-<action>Scan instructions for <invoke-workflow> calls - those yamls must be included</action>
+<check if="configuring web bundle">
+  <action>Review the "Web Bundles" section of the creation guide</action>
+  <action>Scan all workflow files for referenced resources</action>
+  <action>Create inventory of all files that must be included</action>
+  <action>Scan instructions for invoke-workflow calls - those yamls must be included</action>
+</check>
 
-<check>If fixing critical issues:</check>
-<action>Load the workflow execution engine documentation</action>
-<action>Verify all required elements are present</action>
+<check if="fixing critical issues">
+  <action>Load the workflow execution engine documentation</action>
+  <action>Verify all required elements are present</action>
+</check>
 
-<check>If adjusting instruction style (option 11):</check>
-<action>Analyze current instruction style in instructions.md:</action>
+<check if="adjusting instruction style (option 11) selected">
+  <action>Analyze current instruction style in instructions.md:</action>
 
-- Count <action> tags vs <ask> tags
+- Count action tags vs ask tags
 - Identify goal-oriented language ("guide", "explore", "help") vs prescriptive ("choose", "select", "specify")
 - Assess whether steps are open-ended or structured with specific options
   <action>Determine current dominant style: intent-based, prescriptive, or mixed</action>
   <action>Load the instruction style guide section from create-workflow</action>
+  </check>
   </step>
 
 <step n="5" goal="Perform edits" repeat="until-complete">
 Based on the selected focus area:
 
-<check>If configuring web bundle (option 7):</check>
-<action>Check if web_bundle section exists in workflow.yaml</action>
+<check if="configuring web bundle (option 7) selected">
+  <action>Check if web_bundle section exists in workflow.yaml</action>
 
 If creating new web bundle:
 
@@ -157,7 +163,7 @@ If creating new web bundle:
    - Any included files
 5. Scan template.md for any includes
 6. Create complete web_bundle_files array
-7. **CRITICAL**: Check for <invoke-workflow> calls in instructions:
+7. **CRITICAL**: Check for invoke-workflow calls in instructions:
    - If workflow invokes other workflows, add existing_workflows field
    - Maps workflow variable name to bmad/-relative path
    - Signals bundler to recursively include invoked workflow's web_bundle
@@ -170,9 +176,10 @@ If updating existing web bundle:
 2. Check for missing files in web_bundle_files
 3. Remove any config dependencies
 4. Update file list with newly referenced files
+   </check>
 
-<check>If adjusting instruction style (option 11):</check>
-<action>Present current style analysis to user:</action>
+<check if="adjusting instruction style (option 11) selected">
+  <action>Present current style analysis to user:</action>
 
 **Current Instruction Style Analysis:**
 
@@ -233,8 +240,8 @@ Even workflows with a primary style should use the other when appropriate. For e
 
 <ask>What would you like to do?
 
-1. **Make more intent-based** - Convert prescriptive <ask> tags to goal-oriented <action> tags where appropriate
-2. **Make more prescriptive** - Convert open-ended <action> tags to specific <ask> tags with options
+1. **Make more intent-based** - Convert prescriptive ask tags to goal-oriented action tags where appropriate
+2. **Make more prescriptive** - Convert open-ended action tags to specific ask tags with options
 3. **Optimize mix** - Use intent-based for complex steps, prescriptive for simple data collection
 4. **Review specific steps** - Show me each step and let me decide individually
 5. **Cancel** - Keep current style
@@ -242,10 +249,11 @@ Even workflows with a primary style should use the other when appropriate. For e
 Select option (1-5):</ask>
 
 <action>Store user's style adjustment preference as {{style_adjustment_choice}}</action>
+</check>
 
-<check>If choice is 1 (make more intent-based):</check>
-<action>Identify prescriptive <ask> tags that could be converted to intent-based <action> tags</action>
-<action>For each candidate conversion:
+<check if="choice is 1 (make more intent-based)">
+  <action>Identify prescriptive ask tags that could be converted to intent-based action tags</action>
+  <action>For each candidate conversion:
 
 - Show original prescriptive version
 - Suggest intent-based alternative focused on goals
@@ -253,10 +261,11 @@ Select option (1-5):</ask>
 - Ask for approval
   </action>
   <action>Apply approved conversions</action>
+  </check>
 
-<check>If choice is 2 (make more prescriptive):</check>
-<action>Identify open-ended <action> tags that could be converted to prescriptive <ask> tags</action>
-<action>For each candidate conversion:
+<check if="choice is 2 (make more prescriptive)">
+  <action>Identify open-ended action tags that could be converted to prescriptive ask tags</action>
+  <action>For each candidate conversion:
 
 - Show original intent-based version
 - Suggest prescriptive alternative with specific options
@@ -264,10 +273,11 @@ Select option (1-5):</ask>
 - Ask for approval
   </action>
   <action>Apply approved conversions</action>
+  </check>
 
-<check>If choice is 3 (optimize mix):</check>
-<action>Analyze each step for complexity and purpose</action>
-<action>Recommend style for each step:
+<check if="choice is 3 (optimize mix)">
+  <action>Analyze each step for complexity and purpose</action>
+  <action>Recommend style for each step:
 
 - Simple data collection → Prescriptive
 - Complex discovery → Intent-based
@@ -278,19 +288,20 @@ Select option (1-5):</ask>
   </action>
   <action>Show recommendations with reasoning</action>
   <action>Apply approved optimizations</action>
+  </check>
 
-<check>If choice is 4 (review specific steps):</check>
-<action>Present each step one at a time</action>
-<action>For each step:
+<check if="choice is 4 (review specific steps)">
+  <action>Present each step one at a time</action>
+  <action>For each step:
 
 - Show current instruction text
 - Identify current style (intent-based, prescriptive, or mixed)
 - Offer to keep, convert to intent-based, or convert to prescriptive
 - Apply user's choice before moving to next step
   </action>
+  </check>
 
-<check>If choice is 5 (cancel):</check>
-<goto step="3">Return to editing menu</goto>
+<action if="choice is 5 (cancel)"><goto step="3">Return to editing menu</goto></action>
 
 <action>Show the current content that will be edited</action>
 <action>Explain the proposed changes and why they improve the workflow</action>
@@ -305,16 +316,17 @@ Select option (1-5):</ask>
 - [d] Done with edits
   </ask>
 
-<check>If user selects 'a':</check>
-<action>Apply the changes to the file</action>
-<action>Log the change for the summary</action>
+<check if="user selects 'a'">
+  <action>Apply the changes to the file</action>
+  <action>Log the change for the summary</action>
+</check>
 
-<check>If user selects 'e':</check>
-<ask>What modifications would you like to make?</ask>
-<goto step="5">Regenerate with modifications</goto>
+<check if="user selects 'e'">
+  <ask>What modifications would you like to make?</ask>
+  <goto step="5">Regenerate with modifications</goto>
+</check>
 
-<check>If user selects 'd':</check>
-<continue>Proceed to validation</continue>
+<action if="user selects 'd'"><continue>Proceed to validation</continue></action>
 </step>
 
 <step n="6" goal="Validate all changes" optional="true">
@@ -361,10 +373,12 @@ Select option (1-5):</ask>
 - [ ] Called workflows (<invoke-workflow>) included in web_bundle_files
 - [ ] Complete file inventory verified
 
-<check>If any validation fails:</check>
-<ask>Issues found. Would you like to fix them? (y/n)</ask>
-<check>If yes:</check>
-<goto step="5">Return to editing</goto>
+<check if="any validation fails">
+  <ask>Issues found. Would you like to fix them? (y/n)</ask>
+  <check if="yes">
+    <goto step="5">Return to editing</goto>
+  </check>
+</check>
 </step>
 
 <step n="7" goal="Generate change summary">
@@ -385,8 +399,7 @@ Select option (1-5):</ask>
 - Exit
   </ask>
 
-<check>If test workflow:</check>
-<action>Invoke the edited workflow for testing</action>
+<action if="test workflow">Invoke the edited workflow for testing</action>
 </step>
 
 </workflow>

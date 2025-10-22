@@ -67,8 +67,7 @@ For Modules:
 
 <step n="3" goal="Determine Target Module and Location">
 <ask>Which module should this belong to? (eg. bmm, bmb, cis, bmm-legacy, or custom)</ask>
-<check>If custom module:</check>
-  <ask>Enter custom module code (kebab-case):</ask>
+<action if="custom module"><ask>Enter custom module code (kebab-case):</ask></action>
 <action>Determine installation path based on type and module</action>
 <critical>IMPORTANT: All paths must use final BMAD installation locations, not src paths!</critical>
 <action>Show user the target location: {project-root}/bmad/{{target_module}}/{{item_type}}/{{item_name}}</action>
@@ -79,16 +78,19 @@ For Modules:
 <step n="4" goal="Choose Conversion Strategy">
 <action>Based on item type and complexity, choose approach:</action>
 
-<check>If agent conversion:</check>
-<check>If simple agent (basic persona + commands):</check>
-<action>Use direct conversion to v6 agent YAML format</action>
-<goto step="5a">Direct Agent Conversion</goto>
-<check>If complex agent with embedded workflows:</check>
-<action>Plan to invoke create-agent workflow</action>
-<goto step="5b">Workflow-Assisted Agent Creation</goto>
+<check if="agent conversion">
+  <check if="simple agent (basic persona + commands)">
+    <action>Use direct conversion to v6 agent YAML format</action>
+    <goto step="5a">Direct Agent Conversion</goto>
+  </check>
+  <check if="complex agent with embedded workflows">
+    <action>Plan to invoke create-agent workflow</action>
+    <goto step="5b">Workflow-Assisted Agent Creation</goto>
+  </check>
+</check>
 
-<check>If template or task conversion to workflow:</check>
-<action>Analyze the v4 item to determine workflow type:</action>
+<check if="template or task conversion to workflow">
+  <action>Analyze the v4 item to determine workflow type:</action>
 
 - Does it generate a specific document type? → Document workflow
 - Does it produce structured output files? → Document workflow
@@ -104,14 +106,14 @@ For Modules:
 4. Meta-workflow (coordinates other workflows)
    Select 1-4:</ask>
 
-<check>If template conversion:</check>
-<goto step="5c">Template-to-Workflow Conversion</goto>
-<check>If task conversion:</check>
-<goto step="5e">Task-to-Workflow Conversion</goto>
+<action if="template conversion"><goto step="5c">Template-to-Workflow Conversion</goto></action>
+<action if="task conversion"><goto step="5e">Task-to-Workflow Conversion</goto></action>
+</check>
 
-<check>If full module conversion:</check>
-<action>Plan to invoke create-module workflow</action>
-<goto step="5d">Module Creation</goto>
+<check if="full module conversion">
+  <action>Plan to invoke create-module workflow</action>
+  <goto step="5d">Module Creation</goto>
+</check>
 </step>
 
 <step n="5a" goal="Direct Agent Conversion" optional="true">
@@ -262,15 +264,17 @@ date: system-generated
    - User interaction patterns → appropriate v6 tags
 
 3. Based on confirmed workflow type:
-   <check>If Document workflow:</check>
+   <check if="Document workflow">
    - Create template.md from output patterns
    - Map generation steps to instructions
-   - Add <template-output> tags for sections
+   - Add template-output tags for sections
+     </check>
 
-   <check>If Action workflow:</check>
-   - Set template: false in workflow.yaml
-   - Focus on action sequences in instructions
-   - Preserve execution logic
+   <check if="Action workflow">
+     - Set template: false in workflow.yaml
+     - Focus on action sequences in instructions
+     - Preserve execution logic
+   </check>
 
 4. Handle special v4 patterns:
    - 1-9 elicitation menus → v6 <invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
@@ -341,9 +345,10 @@ For Modules:
 
 <action>Show validation results to user</action>
 <ask>Any issues to fix before finalizing? (y/n)</ask>
-<check>If yes:</check>
+<check if="yes">
 <action>Address specific issues</action>
 <goto step="6">Re-validate</goto>
+</check>
 </step>
 
 <step n="7" goal="Migration Report">
@@ -360,15 +365,13 @@ For Modules:
 
 <step n="8" goal="Cleanup and Finalize">
 <ask>Archive original v4 files? (y/n)</ask>
-<check>If yes:</check>
-  <action>Move v4 files to: {project-root}/archive/v4-legacy/{{date}}/</action>
+<action if="yes">Move v4 files to: {project-root}/archive/v4-legacy/{{date}}/</action>
 
 <action>Show user the final converted items and their locations</action>
 <action>Provide any post-conversion instructions or recommendations</action>
 
 <ask>Would you like to convert another legacy item? (y/n)</ask>
-<check>If yes:</check>
-<goto step="1">Start new conversion</goto>
+<action if="yes"><goto step="1">Start new conversion</goto></action>
 </step>
 
 </workflow>

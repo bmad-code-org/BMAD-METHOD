@@ -78,6 +78,9 @@
 - [ ] XML tags used correctly (<action>, <ask>, <check>, <goto>, <invoke-workflow>, <template-output>)
 - [ ] No nested tag references in content (use "action tags" not "<action> tags")
 - [ ] Tag references use descriptive text without angle brackets for clarity
+- [ ] No conditional execution antipattern (no self-closing <check> tags)
+- [ ] Single conditionals use <action if="condition"> (inline)
+- [ ] Multiple conditionals use <check if="condition">...</check> (wrapper block with closing tag)
 - [ ] Steps are focused (single goal per step)
 - [ ] Instructions are specific with limits ("Write 1-2 paragraphs" not "Write about")
 - [ ] Examples provided where helpful

@@ -8,16 +8,18 @@
 <workflow>
 
 <step n="-1" goal="Optional brainstorming for agent ideas" optional="true">
-<ask>Do you want to brainstorm agent ideas first? [y/n]</ask>
+  <ask>Do you want to brainstorm agent ideas first? [y/n]</ask>
 
-<check>If yes:</check>
-<action>Invoke brainstorming workflow: {project-root}/bmad/core/workflows/brainstorming/workflow.yaml</action>
-<action>Pass context data: {installed_path}/brainstorm-context.md</action>
-<action>Wait for brainstorming session completion</action>
-<action>Use brainstorming output to inform agent identity and persona development in following steps</action>
+  <check if="user answered yes">
+    <action>Invoke brainstorming workflow: {project-root}/bmad/core/workflows/brainstorming/workflow.yaml</action>
+    <action>Pass context data: {installed_path}/brainstorm-context.md</action>
+    <action>Wait for brainstorming session completion</action>
+    <action>Use brainstorming output to inform agent identity and persona development in following steps</action>
+  </check>
 
-<check>If no:</check>
-<action>Proceed directly to Step 0</action>
+  <check if="user answered no">
+    <action>Proceed directly to Step 0</action>
+  </check>
 
 <template-output>brainstorming_results</template-output>
 </step>
@@ -48,15 +50,17 @@
 
 **Path Determination:**
 
-<check>If Module agent:</check>
-<action>Discover which module system fits best (bmm, bmb, cis, or custom)</action>
-<action>Store as {{target_module}} for path determination</action>
-<note>Agent will be saved to: bmad/{{target_module}}/agents/</note>
+  <check if="module agent selected">
+    <action>Discover which module system fits best (bmm, bmb, cis, or custom)</action>
+    <action>Store as {{target_module}} for path determination</action>
+    <note>Agent will be saved to: bmad/{{target_module}}/agents/</note>
+  </check>
 
-<check>If Simple/Expert agent (standalone):</check>
-<action>Explain this will be their personal agent, not tied to a module</action>
-<note>Agent will be saved to: bmad/agents/{{agent-name}}/</note>
-<note>All sidecar files will be in the same folder</note>
+  <check if="standalone agent selected">
+    <action>Explain this will be their personal agent, not tied to a module</action>
+    <note>Agent will be saved to: bmad/agents/{{agent-name}}/</note>
+    <note>All sidecar files will be in the same folder</note>
+  </check>
 
 <critical>Determine agent location:</critical>
 
@@ -163,15 +167,14 @@ menu:
 
 <action>Generate the complete YAML incorporating all discovered elements:</action>
 
-<example>
-```yaml
-agent:
-  metadata:
-    id: bmad/{{target_module}}/agents/{{agent_filename}}.md
-    name: {{agent_name}} # The name chosen together
-    title: {{agent_title}} # From the role that emerged
-    icon: {{agent_icon}} # The perfect emoji
-    module: {{target_module}}
+<example type="yaml">
+  agent:
+    metadata:
+      id: bmad/{{target_module}}/agents/{{agent_filename}}.md
+      name: {{agent_name}} # The name chosen together
+      title: {{agent_title}} # From the role that emerged
+      icon: {{agent_icon}} # The perfect emoji
+      module: {{target_module}}
 
 persona:
 role: |
@@ -188,11 +191,10 @@ prompts: {{if discussed}}
 critical_actions: {{if needed}}
 
 menu: {{The capabilities built}}
-
-````
 </example>
 
 <critical>Save based on agent type:</critical>
+
 - If Module Agent: Save to {module_output_file}
 - If Standalone (Simple/Expert): Save to {standalone_output_file}
 
@@ -204,29 +206,31 @@ menu: {{The capabilities built}}
 <step n="7" goal="Optional personalization" optional="true">
 <ask>Would you like to create a customization file? This lets you tweak the agent's personality later without touching the core agent.</ask>
 
-<check>If interested:</check>
-<action>Explain how the customization file gives them a playground to experiment with different personality traits, add new commands, or adjust responses as they get to know the agent better</action>
+  <check if="user interested">
+    <action>Explain how the customization file gives them a playground to experiment with different personality traits, add new commands, or adjust responses as they get to know the agent better</action>
 
-<action>Create customization file at: {config_output_file}</action>
+    <action>Create customization file at: {config_output_file}</action>
 
-<example>
-```yaml
-# Personal tweaks for {{agent_name}}
-# Experiment freely - changes merge at build time
-agent:
-  metadata:
-    name: '' # Try nicknames!
-  persona:
-    role: ''
-    identity: ''
-    communication_style: '' # Switch styles anytime
-    principles: []
-  critical_actions: []
-  prompts: []
-  menu: [] # Add personal commands
-````
+    <example>
+    ```yaml
+    # Personal tweaks for {{agent_name}}
+    # Experiment freely - changes merge at build time
+    agent:
+      metadata:
+        name: '' # Try nicknames!
+      persona:
+        role: ''
+        identity: ''
+        communication_style: '' # Switch styles anytime
+        principles: []
+      critical_actions: []
+      prompts: []
+      menu: [] # Add personal commands
+    ````
 
-</example>
+    </example>
+
+  </check>
 
 <template-output>agent_config</template-output>
 </step>
@@ -298,23 +302,27 @@ Add domain-specific resources here.
 </step>
 
 <step n="8b" goal="Handle build tools availability">
-<action>Check if BMAD build tools are available in this project</action>
+  <action>Check if BMAD build tools are available in this project</action>
 
-<check>If in BMAD-METHOD project with build tools:</check>
-<action>Proceed normally - agent will be built later by the installer</action>
+  <check if="BMAD-METHOD project with build tools">
+    <action>Proceed normally - agent will be built later by the installer</action>
+  </check>
 
-<check>If NO build tools available (external project):</check>
-<ask>Build tools not detected in this project. Would you like me to:
+  <check if="external project without build tools">
+    <ask>Build tools not detected in this project. Would you like me to:
 
-1. Generate the compiled agent (.md with XML) ready to use
-2. Keep the YAML and build it elsewhere
-3. Provide both formats
-   </ask>
+    1. Generate the compiled agent (.md with XML) ready to use
+    2. Keep the YAML and build it elsewhere
+    3. Provide both formats
+    </ask>
 
-<check>If option 1 or 3 selected:</check>
-<action>Generate compiled agent XML with proper structure including activation rules, persona sections, and menu items</action>
-<action>Save compiled version as {{agent_filename}}.md</action>
-<action>Provide path for .claude/commands/ or similar</action>
+    <check if="option 1 or 3 selected">
+      <action>Generate compiled agent XML with proper structure including activation rules, persona sections, and menu items</action>
+      <action>Save compiled version as {{agent_filename}}.md</action>
+      <action>Provide path for .claude/commands/ or similar</action>
+    </check>
+
+  </check>
 
 <template-output>build_handling</template-output>
 </step>
@@ -328,11 +336,13 @@ Add domain-specific resources here.
 - Command functionality verification
 - Personality settings confirmation
 
-<check>If issues found:</check>
-<action>Explain the issue conversationally and fix it</action>
+  <check if="validation issues found">
+    <action>Explain the issue conversationally and fix it</action>
+  </check>
 
-<check>If all good:</check>
-<action>Celebrate that the agent passed all checks and is ready</action>
+  <check if="validation passed">
+    <action>Celebrate that the agent passed all checks and is ready</action>
+  </check>
 
 **Technical Checks (behind the scenes):**
 
@@ -365,8 +375,9 @@ Add domain-specific resources here.
 - List the commands available
 - Suggest trying the first command to see it in action
 
-<check>If Expert agent:</check>
-<action>Remind user to add any special knowledge or data the agent might need to its workspace</action>
+  <check if="expert agent">
+    <action>Remind user to add any special knowledge or data the agent might need to its workspace</action>
+  </check>
 
 <action>Explore what user would like to do next - test the agent, create a teammate, or tweak personality</action>
 

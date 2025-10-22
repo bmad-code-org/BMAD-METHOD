@@ -10,14 +10,16 @@
 <step n="-1" goal="Optional brainstorming for module ideas" optional="true">
 <ask>Do you want to brainstorm module ideas first? [y/n]</ask>
 
-<check>If yes:</check>
-<action>Invoke brainstorming workflow: {brainstorming_workflow}</action>
-<action>Pass context data: {brainstorming_context}</action>
-<action>Wait for brainstorming session completion</action>
-<action>Use brainstorming output to inform module concept, agent lineup, and workflow portfolio in following steps</action>
+<check if="yes">
+  <action>Invoke brainstorming workflow: {brainstorming_workflow}</action>
+  <action>Pass context data: {brainstorming_context}</action>
+  <action>Wait for brainstorming session completion</action>
+  <action>Use brainstorming output to inform module concept, agent lineup, and workflow portfolio in following steps</action>
+</check>
 
-<check>If no:</check>
-<action>Proceed directly to Step 0</action>
+<check if="no">
+  <action>Proceed directly to Step 0</action>
+</check>
 
 <template-output>brainstorming_results</template-output>
 </step>
@@ -25,17 +27,20 @@
 <step n="0" goal="Check for module brief" optional="true">
 <ask>Do you have a module brief or should we create one? [have/create/skip]</ask>
 
-<check>If create:</check>
-<action>Invoke module-brief workflow: {project-root}/bmad/bmb/workflows/module-brief/workflow.yaml</action>
-<action>Wait for module brief completion</action>
-<action>Load the module brief to use as blueprint</action>
+<check if="create">
+  <action>Invoke module-brief workflow: {project-root}/bmad/bmb/workflows/module-brief/workflow.yaml</action>
+  <action>Wait for module brief completion</action>
+  <action>Load the module brief to use as blueprint</action>
+</check>
 
-<check>If have:</check>
-<ask>Provide path to module brief document</ask>
-<action>Load the module brief and use it to pre-populate all planning sections</action>
+<check if="have">
+  <ask>Provide path to module brief document</ask>
+  <action>Load the module brief and use it to pre-populate all planning sections</action>
+</check>
 
-<check>If skip:</check>
-<action>Proceed directly to Step 1</action>
+<check if="skip">
+  <action>Proceed directly to Step 1</action>
+</check>
 
 <template-output>module_brief</template-output>
 </step>
@@ -113,8 +118,7 @@
 **Tasks Planning (optional):**
 <ask>Any special tasks that don't warrant full workflows?</ask>
 
-<check>If tasks needed:</check>
-<action>For each task, capture name, purpose, and whether standalone or supporting</action>
+<action if="tasks needed">For each task, capture name, purpose, and whether standalone or supporting</action>
 
 <template-output>module_components</template-output>
 </step>
@@ -221,17 +225,19 @@
 <step n="5" goal="Create first agent" optional="true">
 <ask>Create your first agent now? [yes/no]</ask>
 
-<check>If yes:</check>
-<action>Invoke agent builder workflow: {agent_builder}</action>
-<action>Pass module_components as context input</action>
-<action>Guide them to create the primary agent for the module</action>
+<check if="yes">
+  <action>Invoke agent builder workflow: {agent_builder}</action>
+  <action>Pass module_components as context input</action>
+  <action>Guide them to create the primary agent for the module</action>
 
 <critical>Save to module's agents folder:</critical>
 
 - Save to {{module_path}}/agents/
+  </check>
 
-<check>If no:</check>
-<action>Create placeholder file in agents folder with TODO notes including agent name, purpose, and type</action>
+<check if="no">
+  <action>Create placeholder file in agents folder with TODO notes including agent name, purpose, and type</action>
+</check>
 
 <template-output>first_agent</template-output>
 </step>
@@ -239,17 +245,19 @@
 <step n="6" goal="Create first workflow" optional="true">
 <ask>Create your first workflow now? [yes/no]</ask>
 
-<check>If yes:</check>
-<action>Invoke workflow builder: {workflow_builder}</action>
-<action>Pass module_components as context input</action>
-<action>Guide them to create the primary workflow</action>
+<check if="yes">
+  <action>Invoke workflow builder: {workflow_builder}</action>
+  <action>Pass module_components as context input</action>
+  <action>Guide them to create the primary workflow</action>
 
 <critical>Save to module's workflows folder:</critical>
 
 - Save to {{module_path}}/workflows/
+  </check>
 
-<check>If no:</check>
-<action>Create placeholder workflow folder structure with TODO notes for workflow.yaml, instructions.md, and template.md if document workflow</action>
+<check if="no">
+  <action>Create placeholder workflow folder structure with TODO notes for workflow.yaml, instructions.md, and template.md if document workflow</action>
+</check>
 
 <template-output>first_workflow</template-output>
 </step>
@@ -325,24 +333,24 @@ prompt:
 
 <ask>Does your module need custom installation logic (database setup, API registration, etc.)?</ask>
 
-<check>If yes, create installer.js:</check>
+<check if="yes, create installer.js">
+  ```javascript
+  // {{module_name}} Module Installer
+  // Custom installation logic
 
-```javascript
-// {{module_name}} Module Installer
-// Custom installation logic
+/\*\*
 
-/**
- * Module installation hook
- * Called after files are copied but before IDE configuration
- *
- * @param {Object} options - Installation options
- * @param {string} options.projectRoot - Project root directory
- * @param {Object} options.config - Module configuration from install-config.yaml
- * @param {Array} options.installedIDEs - List of IDE codes being configured
- * @param {Object} options.logger - Logger instance (log, warn, error methods)
- * @returns {boolean} - true if successful, false to abort installation
- */
-async function install(options) {
+- Module installation hook
+- Called after files are copied but before IDE configuration
+-
+- @param {Object} options - Installation options
+- @param {string} options.projectRoot - Project root directory
+- @param {Object} options.config - Module configuration from install-config.yaml
+- @param {Array} options.installedIDEs - List of IDE codes being configured
+- @param {Object} options.logger - Logger instance (log, warn, error methods)
+- @returns {boolean} - true if successful, false to abort installation
+  \*/
+  async function install(options) {
   const { projectRoot, config, installedIDEs, logger } = options;
 
   logger.log('Running {{module_name}} custom installer...');
@@ -357,17 +365,21 @@ async function install(options) {
 
   logger.log('{{module_name}} custom installation complete!');
   return true;
+
 }
 
 module.exports = { install };
-```
+
+`````
 
 <critical>Save location:</critical>
 
 - Save to {{module_path}}/\_module-installer/installer.js
+</check>
 
-<check>If no:</check>
+<check if="no">
 <action>Skip installer.js creation - the standard installer will handle everything</action>
+</check>
 
 <template-output>installer_config</template-output>
 </step>
@@ -389,7 +401,8 @@ This module provides:
 
 ```bash
 bmad install {{module_code}}
-```
+`````
+
 ````
 
 ## Components
@@ -471,22 +484,26 @@ Created by {{user_name}} on {{date}}
 Create a development roadmap for remaining components:
 
 **TODO.md file:**
+
 ```markdown
 # {{module_name}} Development Roadmap
 
 ## Phase 1: Core Components
+
 {{phase1_tasks}}
 
 ## Phase 2: Enhanced Features
+
 {{phase2_tasks}}
 
 ## Phase 3: Polish and Integration
+
 {{phase3_tasks}}
 
 ## Quick Commands
 
 Create new agent:
-````
+```
 
 workflow create-agent
 
