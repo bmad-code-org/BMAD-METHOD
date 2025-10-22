@@ -71,60 +71,65 @@ phases:
   - phase: 4
     name: "Implementation"
     required: true
+    phase_initialization:
+      - id: "sprint-planning"
+        required: true
+        agent: "sm"
+        command: "sprint-planning"
+        note: "Initialize sprint tracking - run once when entering Phase 4"
     epic_loop: "for_each_epic"
-    epic_workflows:
-      - id: "tech-spec"
-        required: true
-        agent: "sm"
-        command: "tech-spec"
-        note: "JIT per epic - creates stories considering existing code"
-    story_loop: "for_each_story_in_epic"
-    story_workflows:
-      - id: "create-story"
-        required: true
-        agent: "sm"
-        command: "create-story"
-      - id: "story-context"
-        required: true
-        agent: "sm"
-        command: "story-context"
-        note: "Extensive existing code context required"
-      - id: "validate-story-context"
-        required: true
-        agent: "sm"
-        command: "validate-story-context"
-      - id: "story-ready"
-        required: true
-        agent: "sm"
-        command: "story-ready"
-      - id: "dev-story"
-        required: true
-        agent: "dev"
-        command: "dev-story"
-      - id: "review-story"
-        required: true
-        agent: "dev"
-        command: "review-story"
-        note: "Rigorous review for enterprise changes"
-      - id: "correct-course"
-        conditional: "if_review_fails"
-        agent: "dev"
-        command: "correct-course"
-      - id: "integration-test"
-        required: true
-        agent: "dev"
-        command: "integration-test"
-        note: "Test integration with existing systems"
-      - id: "story-done"
-        required: true
-        agent: "dev"
-        command: "story-done"
-    epic_completion:
-      - id: "retrospective"
-        required: true
-        agent: "sm"
-        command: "retrospective"
-        note: "Critical for enterprise-scale learning"
+    epic_iteration:
+      setup_workflows:
+        - id: "tech-spec"
+          required: true
+          agent: "sm"
+          command: "tech-spec"
+          note: "JIT per epic - creates stories considering existing code"
+
+      story_loop: "for_each_story_in_epic"
+      story_workflows:
+        - id: "create-story"
+          required: true
+          agent: "sm"
+          command: "create-story"
+        - id: "story-context"
+          required: true
+          agent: "sm"
+          command: "story-context"
+          note: "Extensive existing code context required"
+        - id: "validate-story-context"
+          optional: true
+          agent: "sm"
+          command: "validate-story-context"
+        - id: "story-ready"
+          optional: true
+          agent: "sm"
+          command: "story-ready"
+        - id: "dev-story"
+          required: true
+          agent: "dev"
+          command: "dev-story"
+        - id: "review-story"
+          optional: true
+          agent: "dev"
+          command: "review-story"
+          note: "Rigorous review for enterprise changes"
+        - id: "integration-test"
+          optional: true
+          agent: "dev"
+          command: "integration-test"
+          note: "Test integration with existing systems"
+        - id: "story-done"
+          required: true
+          agent: "dev"
+          command: "story-done"
+
+      completion_workflows:
+        - id: "retrospective"
+          required: true
+          agent: "sm"
+          command: "retrospective"
+          note: "Critical for enterprise-scale learning"
 
 story_naming: "story-<epic>.<story>.md"
 story_example: "story-1.1.md, story-2.3.md"
