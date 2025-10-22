@@ -1,0 +1,30 @@
+# Party Mode - Multi-Agent Group Discussion Workflow
+name: "party-mode"
+description: "Orchestrates group discussions between all installed BMAD agents, enabling natural multi-agent conversations"
+author: "BMad"
+
+# Critical data sources - manifest and config overrides
+# Uses {bmad-root} to resolve from actual BMAD core, not project directory
+# This allows party-mode to work from any symlinked project
+config_source: "{bmad-root}/config.yaml"
+installed_path: "{bmad-root}/workflows/party-mode"
+manifest: "{config_source}:party_mode.manifest"
+agent_overrides: "{config_source}:party_mode.agent_overrides"
+output_folder: "{config_source}:party_mode.output_folder"
+date: system-generated
+
+# Template-based output configuration
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+default_output_file: "{output_folder}/party-mode-{{date}}.md"
+
+variables:
+  auto_continue_steps: "{config_source}:auto_continue_steps" # Skip manual confirmation prompts between steps when enabled
+
+# Exit conditions
+exit_triggers:
+  - "*exit"
+  - "end party mode"
+  - "stop party mode"
+
+web_bundle: false
