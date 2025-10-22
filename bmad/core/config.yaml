@@ -7,7 +7,7 @@ communication_language: "en-AU"
 output_folder: "/Users/hbl/Documents/BMAD-METHOD/bmad/output"
 
 # Auto-execution
-auto_continue_steps: false
+auto_continue_steps: true # In party mode, agents work autonomously
 
 # Party Mode Configuration
 party_mode:
