@@ -1,0 +1,239 @@
+[
+  {
+    "spec": {
+      "id": "smoke-basic",
+      "name": "Chrome MCP Smoke Check",
+      "description": "Ensure chrome-devtools-mcp responds to basic tool invocation.",
+      "category": "Smoke Checks",
+      "steps": [
+        {
+          "id": "list-pages",
+          "description": "List currently open Chrome pages",
+          "tool": "list_pages"
+        }
+      ],
+      "role": "QA Automation",
+      "expectedStatus": "passing"
+    },
+    "status": "passed",
+    "steps": [
+      {
+        "step": {
+          "id": "list-pages",
+          "description": "List currently open Chrome pages",
+          "tool": "list_pages"
+        },
+        "status": "passed",
+        "startTime": "2025-10-16T09:50:29.269Z",
+        "endTime": "2025-10-16T09:50:30.241Z",
+        "durationMs": 972,
+        "response": {
+          "raw": {
+            "content": [
+              {
+                "type": "text",
+                "text": "# list_pages response\n## Pages\n0: about:blank [selected]"
+              }
+            ]
+          },
+          "structured": [
+            {
+              "type": "text",
+              "text": "# list_pages response\n## Pages\n0: about:blank [selected]"
+            }
+          ],
+          "text": "# list_pages response\n## Pages\n0: about:blank [selected]"
+        }
+      }
+    ],
+    "startedAt": "2025-10-16T09:50:29.269Z",
+    "completedAt": "2025-10-16T09:50:30.243Z",
+    "durationMs": 974,
+    "expectedStatus": "passing"
+  },
+  {
+    "spec": {
+      "id": "navigation-example",
+      "name": "Navigate to Example Domain",
+      "description": "Confirm chrome-devtools-mcp can navigate to a public site and detect expected content.",
+      "category": "Navigation Journeys",
+      "steps": [
+        {
+          "id": "go-to-example",
+          "description": "Navigate to https://example.com",
+          "tool": "navigate_page",
+          "params": {
+            "url": "https://example.com"
+          }
+        },
+        {
+          "id": "verify-title",
+          "description": "Confirm the Example Domain page title is correct",
+          "tool": "evaluate_script",
+          "params": {
+            "function": "() => document.title"
+          },
+          "expect": {
+            "type": "textIncludes",
+            "value": "Example Domain"
+          }
+        },
+        {
+          "id": "wait-for-heading",
+          "description": "Wait for the Example Domain heading to appear",
+          "tool": "wait_for",
+          "params": {
+            "text": "Example Domain"
+          },
+          "expect": {
+            "type": "textIncludes",
+            "value": "Example Domain"
+          }
+        },
+        {
+          "id": "snapshot",
+          "description": "Capture the page snapshot for debugging context",
+          "tool": "take_snapshot"
+        }
+      ],
+      "role": "QA Automation",
+      "expectedStatus": "passing"
+    },
+    "status": "passed",
+    "steps": [
+      {
+        "step": {
+          "id": "go-to-example",
+          "description": "Navigate to https://example.com",
+          "tool": "navigate_page",
+          "params": {
+            "url": "https://example.com"
+          }
+        },
+        "status": "passed",
+        "startTime": "2025-10-16T09:50:30.244Z",
+        "endTime": "2025-10-16T09:50:31.400Z",
+        "durationMs": 1156,
+        "response": {
+          "raw": {
+            "content": [
+              {
+                "type": "text",
+                "text": "# navigate_page response\n## Pages\n0: https://example.com/ [selected]"
+              }
+            ]
+          },
+          "structured": [
+            {
+              "type": "text",
+              "text": "# navigate_page response\n## Pages\n0: https://example.com/ [selected]"
+            }
+          ],
+          "text": "# navigate_page response\n## Pages\n0: https://example.com/ [selected]"
+        }
+      },
+      {
+        "step": {
+          "id": "verify-title",
+          "description": "Confirm the Example Domain page title is correct",
+          "tool": "evaluate_script",
+          "params": {
+            "function": "() => document.title"
+          },
+          "expect": {
+            "type": "textIncludes",
+            "value": "Example Domain"
+          }
+        },
+        "status": "passed",
+        "startTime": "2025-10-16T09:50:31.400Z",
+        "endTime": "2025-10-16T09:50:31.606Z",
+        "durationMs": 206,
+        "response": {
+          "raw": {
+            "content": [
+              {
+                "type": "text",
+                "text": "# evaluate_script response\nScript ran on page and returned:\n```json\n\"Example Domain\"\n```"
+              }
+            ]
+          },
+          "structured": [
+            {
+              "type": "text",
+              "text": "# evaluate_script response\nScript ran on page and returned:\n```json\n\"Example Domain\"\n```"
+            }
+          ],
+          "text": "# evaluate_script response\nScript ran on page and returned:\n```json\n\"Example Domain\"\n```"
+        }
+      },
+      {
+        "step": {
+          "id": "wait-for-heading",
+          "description": "Wait for the Example Domain heading to appear",
+          "tool": "wait_for",
+          "params": {
+            "text": "Example Domain"
+          },
+          "expect": {
+            "type": "textIncludes",
+            "value": "Example Domain"
+          }
+        },
+        "status": "passed",
+        "startTime": "2025-10-16T09:50:31.606Z",
+        "endTime": "2025-10-16T09:50:31.625Z",
+        "durationMs": 19,
+        "response": {
+          "raw": {
+            "content": [
+              {
+                "type": "text",
+                "text": "# wait_for response\nElement with text \"Example Domain\" found.\n## Page content\nuid=1_0 RootWebArea \"Example Domain\"\n  uid=1_1 heading \"Example Domain\" level=\"1\"\n  uid=1_2 StaticText \"This domain is for use in documentation examples without needing permission. Avoid use in operations.\"\n  uid=1_3 link \"Learn more\"\n    uid=1_4 StaticText \"Learn more\"\n"
+              }
+            ]
+          },
+          "structured": [
+            {
+              "type": "text",
+              "text": "# wait_for response\nElement with text \"Example Domain\" found.\n## Page content\nuid=1_0 RootWebArea \"Example Domain\"\n  uid=1_1 heading \"Example Domain\" level=\"1\"\n  uid=1_2 StaticText \"This domain is for use in documentation examples without needing permission. Avoid use in operations.\"\n  uid=1_3 link \"Learn more\"\n    uid=1_4 StaticText \"Learn more\"\n"
+            }
+          ],
+          "text": "# wait_for response\nElement with text \"Example Domain\" found.\n## Page content\nuid=1_0 RootWebArea \"Example Domain\"\n  uid=1_1 heading \"Example Domain\" level=\"1\"\n  uid=1_2 StaticText \"This domain is for use in documentation examples without needing permission. Avoid use in operations.\"\n  uid=1_3 link \"Learn more\"\n    uid=1_4 StaticText \"Learn more\"\n"
+        }
+      },
+      {
+        "step": {
+          "id": "snapshot",
+          "description": "Capture the page snapshot for debugging context",
+          "tool": "take_snapshot"
+        },
+        "status": "passed",
+        "startTime": "2025-10-16T09:50:31.625Z",
+        "endTime": "2025-10-16T09:50:31.626Z",
+        "durationMs": 1,
+        "response": {
+          "raw": {
+            "content": [
+              {
+                "type": "text",
+                "text": "# take_snapshot response\n## Page content\nuid=2_0 RootWebArea \"Example Domain\"\n  uid=2_1 heading \"Example Domain\" level=\"1\"\n  uid=2_2 StaticText \"This domain is for use in documentation examples without needing permission. Avoid use in operations.\"\n  uid=2_3 link \"Learn more\"\n    uid=2_4 StaticText \"Learn more\"\n"
+              }
+            ]
+          },
+          "structured": [
+            {
+              "type": "text",
+              "text": "# take_snapshot response\n## Page content\nuid=2_0 RootWebArea \"Example Domain\"\n  uid=2_1 heading \"Example Domain\" level=\"1\"\n  uid=2_2 StaticText \"This domain is for use in documentation examples without needing permission. Avoid use in operations.\"\n  uid=2_3 link \"Learn more\"\n    uid=2_4 StaticText \"Learn more\"\n"
+            }
+          ],
+          "text": "# take_snapshot response\n## Page content\nuid=2_0 RootWebArea \"Example Domain\"\n  uid=2_1 heading \"Example Domain\" level=\"1\"\n  uid=2_2 StaticText \"This domain is for use in documentation examples without needing permission. Avoid use in operations.\"\n  uid=2_3 link \"Learn more\"\n    uid=2_4 StaticText \"Learn more\"\n"
+        }
+      }
+    ],
+    "startedAt": "2025-10-16T09:50:30.244Z",
+    "completedAt": "2025-10-16T09:50:31.626Z",
+    "durationMs": 1382,
+    "expectedStatus": "passing"
+  }
+]

@@ -1,0 +1,29 @@
+id: navigation-example
+name: Navigate to Example Domain
+description: Confirm chrome-devtools-mcp can navigate to a public site and detect expected content.
+category: Navigation Journeys
+steps:
+  - id: go-to-example
+    description: Navigate to https://example.com
+    tool: navigate_page
+    params:
+      url: "https://example.com"
+  - id: verify-title
+    description: Confirm the Example Domain page title is correct
+    tool: evaluate_script
+    params:
+      function: "() => document.title"
+    expect:
+      type: textIncludes
+      value: "Example Domain"
+  - id: wait-for-heading
+    description: Wait for the Example Domain heading to appear
+    tool: wait_for
+    params:
+      text: "Example Domain"
+    expect:
+      type: textIncludes
+      value: "Example Domain"
+  - id: snapshot
+    description: Capture the page snapshot for debugging context
+    tool: take_snapshot

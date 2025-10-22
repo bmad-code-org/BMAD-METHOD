@@ -1,0 +1,114 @@
+
+• Core
+
+  - brainstorming: Facilitates an adaptive ideation session—ingesting optional context, letting the user
+    pick (or receive) technique flows, then guiding each brainstorming phase interactively with recorded
+    outputs (bmad/core/workflows/brainstorming/instructions.md:9-153).
+  - party-mode: Loads the agent manifest plus overrides, introduces every persona to the user, then
+    orchestrates round-based, in-character group dialogue with exit handling and moderation rules (bmad/
+    core/workflows/party-mode/instructions.md:8-182).
+  - bmad-init: Checks for the installed BMAD version, presents a simple maintenance menu, and currently
+    just loops until exit while flagging forthcoming automation features (src/core/workflows/bmad-init/
+    instructions.md:5-76).
+
+  Analysis
+
+  - brainstorm-project: Reads a project context brief, calls the core brainstorming workflow with that
+    guidance, and confirms results were saved for the session (bmad/bmm/workflows/1-analysis/brainstorm-
+    project/instructions.md:10-35).
+  - brainstorm-game: Adds game-targeted context and extra ideation techniques (MDA, core loops, fantasy
+    mining, etc.) before running the core brainstorming engine and closing out the session (bmad/bmm/
+    workflows/1-analysis/brainstorm-game/instructions.md:7-35).
+  - product-brief: Collaboratively builds a product vision—capturing problem statements, differentiated
+    solutions, user segments, success metrics, MVP scope, financial/strategic alignment, and next-phase
+    outlook (bmad/bmm/workflows/1-analysis/product-brief/instructions.md:8-190).
+  - game-brief: Guides teams through naming the game, choosing collaboration mode, refining concept/
+    audience/pillars, setting constraints, and cataloging inspirations to produce a comprehensive brief
+    (bmad/bmm/workflows/1-analysis/game-brief/instructions.md:8-200).
+  - research: Routes the user to a specialized flow (market, deep-prompt, technical, competitive,
+    user, or domain research) and loads the matching instruction set for in-depth execution (bmad/
+    bmm/workflows/1-analysis/research/instructions-router.md:11-96). The market path covers discovery,
+    live intelligence gathering, and TAM/SAM/SOM modeling (bmad/bmm/workflows/1-analysis/research/
+    instructions-market.md:11-180); the deep-prompt branch crafts platform-specific research prompts with
+    scoped inputs and outputs (bmad/bmm/workflows/1-analysis/research/instructions-deep-prompt.md:10-
+    160); the technical branch drives requirements capture, option discovery, and comparative analysis
+    for architecture decisions (bmad/bmm/workflows/1-analysis/research/instructions-technical.md:9-160).
+
+  Planning
+
+  - plan-project: Assesses project type/level, records findings to project-workflow-analysis.md,
+    and dispatches to GDD, PRD, or tech-spec flows with the proper continuation context (bmad/bmm/
+    workflows/2-plan/instructions-router.md:80-212).
+  - tech-spec-sm: For level-0 changes, confirms scope, generates a definitive tech spec with unambiguous
+    decisions, and optionally validates cohesion before implementation handoff (bmad/bmm/workflows/2-
+    plan/tech-spec/instructions-sm.md:11-135).
+  - prd: Provides two instruction sets—levels 1–2 capture focused PRDs, minimal NFRs, simple epics,
+    and cohesion checks (bmad/bmm/workflows/2-plan/prd/instructions-med.md:13-193); levels 3–4 expand
+    into strategic goals, extensive FR/NFR catalogs, detailed epics, and architect handoffs (bmad/bmm/
+    workflows/2-plan/prd/instructions-lg.md:13-198).
+  - ux-spec: Builds a complete UX specification by gathering context/inputs, defining personas and
+    design principles, mapping IA and flows, locking component and visual systems, and documenting
+    accessibility/responsive strategies (bmad/bmm/workflows/2-plan/ux/instructions-ux.md:11-198).
+  - gdd: Produces a game design document—detecting game type, pulling in briefs, defining pillars/loops,
+    injecting type-specific fragments, and covering progression, systems, content, and balancing needs
+    (bmad/bmm/workflows/2-plan/gdd/instructions-gdd.md:5-185).
+  - narrative: After a GDD, this workflow assesses narrative complexity, then shapes premise, themes,
+    structure, beats, characters, and branching/narrative devices with user-led collaboration (bmad/bmm/
+    workflows/2-plan/narrative/instructions-narrative.md:12-200).
+
+  Solutioning
+
+  - solution-architecture: Validates prereqs (PRD, UX spec), skips level-0 work, digests requirements/UX
+    artifacts, adapts verbosity to user skill, and develops architecture outputs aligned to project scale
+    (bmad/bmm/workflows/3-solutioning/instructions.md:8-188).
+  - tech-spec: Consumes PRD plus architecture, then fills a tech spec template with detailed design
+    sections, NFRs, dependency mapping, acceptance criteria traceability, risks, and validation (bmad/
+    bmm/workflows/3-solutioning/tech-spec/instructions.md:10-72).
+
+  Implementation
+
+  - story-context: Auto-finds or asks for a target story, compiles relevant docs/code/interfaces/
+    dependencies/testing guidance into XML, validates, and links the context back to the story (bmad/bmm/
+    workflows/4-implementation/story-context/instructions.md:10-73).
+  - create-story: Resolves planning inputs, determines the next story slot, derives requirements and
+    tasks from tech specs/epics/PRDs, writes or updates the story file, and can auto-trigger context
+    assembly (bmad/bmm/workflows/4-implementation/create-story/instructions.md:11-78).
+  - dev-story: Forces sequential implementation—selecting the next incomplete task, coding with required
+    tests, rerunning suites, updating checklists/logs, and only marking stories ready once all gates pass
+    (bmad/bmm/workflows/4-implementation/dev-story/instructions.md:14-84).
+  - review-story: Locates a ready story, gathers context/specs, checks stack best practices (with MCP/web
+    fallbacks), audits code vs. ACs, produces severity-tagged findings, and appends a structured review
+    section (bmad/bmm/workflows/4-implementation/review-story/instructions.md:13-173).
+  - retrospective: Scrum-master-led workflow that compiles epic metrics, surfaces agent perspectives on
+    what went well/needs improvement, and prepares the next epic with dependencies, risks, and actions
+    (bmad/bmm/workflows/4-implementation/retrospective/instructions.md:18-193).
+  - correct-course: Manages sprint-altering changes by running a thorough checklist, drafting artifact-
+    specific edits, assembling a sprint change proposal, and routing it based on scope (minor/moderate/
+    major) (bmad/bmm/workflows/4-implementation/correct-course/instructions.md:8-194).
+
+  Test & Quality
+
+  - testarch-atdd: Validates readiness, authors failing acceptance/component tests with fixtures and
+    checklists, and hands them to devs to drive implementation (bmad/bmm/workflows/testarch/atdd/
+    instructions.md:6-40).
+  - testarch-automate: After story completion, expands automation suites using risk-informed priorities,
+    fixture patterns, and deterministic practices, documenting results and scripts (bmad/bmm/workflows/
+    testarch/automate/instructions.md:6-41).
+  - testarch-ci: Establishes or updates CI pipelines—detecting platforms, scaffolding jobs, enabling
+    selective runs and burn-ins, and delivering workflows plus documentation/secrets checklists (bmad/
+    bmm/workflows/testarch/ci/instructions.md:6-42).
+  - testarch-framework: Confirms prerequisites then scaffolds Playwright/Cypress setups with config,
+    support structure, env files, and documentation tailored to the stack (bmad/bmm/workflows/testarch/
+    framework/instructions.md:6-40).
+  - testarch-gate: Aggregates prior assessments, applies deterministic PASS/CONCERNS/FAIL/WAIVED logic,
+    and records the decision with rationale and follow-ups in gate YAML (bmad/bmm/workflows/testarch/
+    gate/instructions.md:6-36).
+  - testarch-nfr: Evaluates non-functional targets against evidence, classifies status, recommends
+    mitigations, and outputs NFR reports plus gate updates (bmad/bmm/workflows/testarch/nfr-assess/
+    instructions.md:6-36).
+  - testarch-test-design: Scores risks, maps coverage priorities by level, and delivers a risk
+    matrix plus test coverage plan tied to mitigations (bmad/bmm/workflows/testarch/test-design/
+    instructions.md:6-41).
+  - testarch-trace: Ensures every acceptance criterion traces to implemented tests, flags coverage
+    gaps, and generates traceability matrices with gate snippets (bmad/bmm/workflows/testarch/trace/
+    instructions.md:6-37).

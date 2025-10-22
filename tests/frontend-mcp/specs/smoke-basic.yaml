@@ -1,0 +1,8 @@
+id: smoke-basic
+name: Chrome MCP Smoke Check
+description: Ensure chrome-devtools-mcp responds to basic tool invocation.
+category: Smoke Checks
+steps:
+  - id: list-pages
+    description: List currently open Chrome pages
+    tool: list_pages

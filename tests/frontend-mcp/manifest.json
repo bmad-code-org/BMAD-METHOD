@@ -1,0 +1,30 @@
+{
+  "batches": [
+    {
+      "id": "smoke",
+      "category": "Smoke Checks",
+      "scenarios": [
+        {
+          "id": "mcp-smoke-basic",
+          "file": "tests/frontend-mcp/specs/smoke-basic.yaml",
+          "description": "Basic chrome-devtools-mcp connectivity check",
+          "role": "QA Automation",
+          "expectedStatus": "passing"
+        }
+      ]
+    },
+    {
+      "id": "navigation",
+      "category": "Navigation Journeys",
+      "scenarios": [
+        {
+          "id": "mcp-navigation-example",
+          "file": "tests/frontend-mcp/specs/navigation-example.yaml",
+          "description": "Navigate to Example Domain and verify page contents",
+          "role": "QA Automation",
+          "expectedStatus": "passing"
+        }
+      ]
+    }
+  ]
+}

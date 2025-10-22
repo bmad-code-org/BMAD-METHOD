@@ -1,0 +1,52 @@
+{
+  "spec": {
+    "id": "smoke-basic",
+    "name": "Chrome MCP Smoke Check",
+    "description": "Ensure chrome-devtools-mcp responds to basic tool invocation.",
+    "category": "Smoke Checks",
+    "steps": [
+      {
+        "id": "list-pages",
+        "description": "List currently open Chrome pages",
+        "tool": "list_pages"
+      }
+    ],
+    "role": "QA Automation",
+    "expectedStatus": "passing"
+  },
+  "status": "passed",
+  "steps": [
+    {
+      "step": {
+        "id": "list-pages",
+        "description": "List currently open Chrome pages",
+        "tool": "list_pages"
+      },
+      "status": "passed",
+      "startTime": "2025-10-16T09:50:29.269Z",
+      "endTime": "2025-10-16T09:50:30.241Z",
+      "durationMs": 972,
+      "response": {
+        "raw": {
+          "content": [
+            {
+              "type": "text",
+              "text": "# list_pages response\n## Pages\n0: about:blank [selected]"
+            }
+          ]
+        },
+        "structured": [
+          {
+            "type": "text",
+            "text": "# list_pages response\n## Pages\n0: about:blank [selected]"
+          }
+        ],
+        "text": "# list_pages response\n## Pages\n0: about:blank [selected]"
+      }
+    }
+  ],
+  "startedAt": "2025-10-16T09:50:29.269Z",
+  "completedAt": "2025-10-16T09:50:30.243Z",
+  "durationMs": 974,
+  "expectedStatus": "passing"
+}
