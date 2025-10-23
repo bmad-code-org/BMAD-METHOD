@@ -1,0 +1,482 @@
+# UX Pattern Catalog - Knowledge base for UX design decisions
+# This enables intelligent, composable UX patterns instead of rigid templates
+
+# ⚠️ CRITICAL: Use WebSearch to verify current design system versions during workflow execution
+
+design_systems:
+  web:
+    material_ui:
+      name: "Material UI"
+      current_version: "5.15"
+      platform: "Web (React)"
+      good_for: ["Enterprise apps", "Data-heavy interfaces", "Google ecosystem", "Accessibility"]
+      not_ideal_for: ["Unique brand identity", "Minimal designs", "Non-React"]
+      components: "300+"
+      accessibility: "WCAG 2.1 AA compliant"
+      theming: "Extensive theming system"
+      documentation: "Excellent"
+      learning_curve: "Moderate"
+      bundle_size: "Large (can be optimized)"
+      beginner_friendly: true
+
+    shadcn_ui:
+      name: "shadcn/ui"
+      current_version: "Latest"
+      platform: "Web (React + Tailwind)"
+      good_for: ["Modern apps", "Full customization", "Tailwind users", "Copy-paste approach"]
+      not_ideal_for: ["Non-Tailwind projects", "Quick prototyping", "Beginners"]
+      components: "50+ (growing)"
+      accessibility: "WCAG 2.1 AA via Radix primitives"
+      theming: "Full Tailwind theming"
+      documentation: "Good"
+      learning_curve: "Easy if familiar with Tailwind"
+      bundle_size: "Minimal (tree-shakeable)"
+      beginner_friendly: false
+
+    chakra_ui:
+      name: "Chakra UI"
+      current_version: "2.8"
+      platform: "Web (React)"
+      good_for: ["Accessible apps", "Rapid development", "Dark mode", "Component composition"]
+      not_ideal_for: ["Complex customization", "Non-React"]
+      components: "50+"
+      accessibility: "WCAG 2.1 AA compliant (accessibility-first)"
+      theming: "Powerful theming system"
+      documentation: "Excellent"
+      learning_curve: "Easy"
+      bundle_size: "Moderate"
+      beginner_friendly: true
+
+    ant_design:
+      name: "Ant Design"
+      current_version: "5.12"
+      platform: "Web (React)"
+      good_for: ["Enterprise", "Admin panels", "Data tables", "Chinese market"]
+      not_ideal_for: ["Consumer apps", "Minimal designs", "Non-React"]
+      components: "60+"
+      accessibility: "Good (improving)"
+      theming: "Less design tokens"
+      documentation: "Excellent"
+      learning_curve: "Easy"
+      bundle_size: "Large"
+      beginner_friendly: true
+
+    radix_ui:
+      name: "Radix UI"
+      current_version: "1.0+"
+      platform: "Web (React)"
+      good_for: ["Full control", "Unstyled primitives", "Custom design systems"]
+      not_ideal_for: ["Quick prototyping", "Pre-styled needs", "Beginners"]
+      components: "25+ primitives"
+      accessibility: "WCAG 2.1 AA compliant (accessibility-first)"
+      theming: "Bring your own styles"
+      documentation: "Excellent"
+      learning_curve: "Moderate to Hard"
+      bundle_size: "Minimal"
+      beginner_friendly: false
+
+    tailwind_ui:
+      name: "Tailwind UI"
+      platform: "Web (Any framework + Tailwind)"
+      good_for: ["Tailwind users", "Marketing sites", "High-quality examples"]
+      not_ideal_for: ["Non-Tailwind", "Free tier"]
+      components: "500+ examples (paid)"
+      accessibility: "Good"
+      theming: "Tailwind theming"
+      documentation: "Excellent"
+      learning_curve: "Easy if familiar with Tailwind"
+      bundle_size: "Minimal"
+      beginner_friendly: true
+
+    headless_ui:
+      name: "Headless UI"
+      current_version: "1.7"
+      platform: "Web (React, Vue)"
+      good_for: ["Unstyled primitives", "Full control", "Tailwind users"]
+      not_ideal_for: ["Pre-styled needs", "Quick prototyping"]
+      components: "13 primitives"
+      accessibility: "WCAG 2.1 AA compliant"
+      theming: "Bring your own styles"
+      documentation: "Good"
+      learning_curve: "Moderate"
+      bundle_size: "Minimal"
+      beginner_friendly: false
+
+  mobile:
+    ios_hig:
+      name: "iOS Human Interface Guidelines"
+      platform: "iOS"
+      good_for: ["iOS apps", "Native feel", "Apple ecosystem"]
+      not_ideal_for: ["Cross-platform", "Custom branding"]
+      components: "Native UIKit components"
+      accessibility: "Built-in VoiceOver support"
+      documentation: "Excellent (Apple HIG)"
+      learning_curve: "Moderate"
+      beginner_friendly: true
+
+    material_design:
+      name: "Material Design (Mobile)"
+      platform: "Android"
+      good_for: ["Android apps", "Google ecosystem", "Accessibility"]
+      not_ideal_for: ["iOS", "Custom branding"]
+      components: "Material Components for Android"
+      accessibility: "Built-in TalkBack support"
+      documentation: "Excellent"
+      learning_curve: "Moderate"
+      beginner_friendly: true
+
+    react_native_paper:
+      name: "React Native Paper"
+      platform: "React Native (iOS & Android)"
+      good_for: ["Cross-platform", "Material Design", "Quick development"]
+      not_ideal_for: ["Native platform guidelines", "Highly custom designs"]
+      components: "30+"
+      accessibility: "Good"
+      documentation: "Good"
+      learning_curve: "Easy"
+      beginner_friendly: true
+
+button_hierarchy_patterns:
+  standard:
+    name: "Standard Button Hierarchy"
+    primary:
+      description: "Most important action on screen"
+      style: "Filled with primary color, high contrast"
+      usage: "One per screen (save, submit, next, create)"
+      example: "Submit Form, Create Account, Save Changes"
+
+    secondary:
+      description: "Alternative or supporting action"
+      style: "Outlined or subtle fill with secondary color"
+      usage: "Secondary actions, cancel alternatives"
+      example: "Cancel, Go Back, Learn More"
+
+    tertiary:
+      description: "Least prominent action"
+      style: "Text-only button, minimal styling"
+      usage: "Low-priority actions, links"
+      example: "Skip, Dismiss, View Details"
+
+    destructive:
+      description: "Dangerous or irreversible action"
+      style: "Red or error color, often requires confirmation"
+      usage: "Delete, remove, clear data"
+      example: "Delete Account, Remove Item, Clear All"
+
+feedback_patterns:
+  toast_notification:
+    name: "Toast Notification"
+    good_for: ["Non-blocking feedback", "Success confirmations", "Quick info"]
+    not_ideal_for: ["Critical errors", "Required user action", "Detailed messages"]
+    placement: ["Top-right", "Bottom-center", "Top-center"]
+    duration: "2-5 seconds (auto-dismiss)"
+    actions: "Optional undo or action button"
+
+  inline_message:
+    name: "Inline Message"
+    good_for: ["Form validation", "Contextual errors", "Field-specific feedback"]
+    not_ideal_for: ["Global messages", "Unrelated to visible content"]
+    placement: "Adjacent to related element"
+    duration: "Persistent until fixed or dismissed"
+    actions: "Minimal (usually just dismiss or fix)"
+
+  modal_alert:
+    name: "Modal Alert/Dialog"
+    good_for: ["Critical errors", "Blocking actions", "Required confirmations"]
+    not_ideal_for: ["Non-critical info", "Frequent messages", "Quick feedback"]
+    placement: "Center overlay"
+    duration: "Requires user dismissal"
+    actions: "Clear action buttons (OK, Cancel, etc.)"
+
+  banner:
+    name: "Banner Notification"
+    good_for: ["System-wide messages", "Important updates", "Persistent alerts"]
+    not_ideal_for: ["Transient feedback", "Frequent changes"]
+    placement: "Top of page/screen"
+    duration: "Persistent until dismissed"
+    actions: "Optional actions or dismiss"
+
+form_patterns:
+  labels:
+    above_input:
+      name: "Labels Above Input"
+      good_for: ["Clarity", "Mobile-friendly", "Accessibility"]
+      not_ideal_for: ["Horizontal space constraints"]
+      style: "Label above, left-aligned"
+
+    floating_label:
+      name: "Floating/Inline Label"
+      good_for: ["Space efficiency", "Modern aesthetic", "Material Design"]
+      not_ideal_for: ["Accessibility (can be confusing)", "Complex forms"]
+      style: "Label inside input, floats on focus"
+
+    side_by_side:
+      name: "Side-by-Side Label"
+      good_for: ["Dense forms", "Desktop layouts", "Admin panels"]
+      not_ideal_for: ["Mobile", "Long labels", "Accessibility"]
+      style: "Label to left of input, aligned"
+
+  validation:
+    on_blur:
+      name: "Validate on Blur"
+      description: "Check field when user leaves it"
+      good_for: "Immediate feedback without being disruptive"
+      timing: "After user finishes typing and moves away"
+
+    on_change:
+      name: "Validate on Change"
+      description: "Real-time validation as user types"
+      good_for: "Password strength, character limits, format checking"
+      timing: "As user types (debounced)"
+
+    on_submit:
+      name: "Validate on Submit"
+      description: "Check all fields when form submitted"
+      good_for: "Simple forms, avoiding interruption"
+      timing: "When user clicks submit"
+
+    progressive:
+      name: "Progressive Validation"
+      description: "Validate completed fields immediately, others on submit"
+      good_for: "Balance between guidance and interruption"
+      timing: "Hybrid approach"
+
+modal_patterns:
+  sizes:
+    small:
+      width: "400-500px"
+      usage: "Confirmations, simple alerts, single-field inputs"
+
+    medium:
+      width: "600-800px"
+      usage: "Forms, detailed content, most common use case"
+
+    large:
+      width: "900-1200px"
+      usage: "Complex forms, content preview, rich media"
+
+    fullscreen:
+      width: "100% viewport"
+      usage: "Mobile primarily, immersive experiences"
+
+  dismiss_behavior:
+    click_outside:
+      description: "Click backdrop to close"
+      good_for: "Non-critical modals, user-initiated"
+      not_ideal_for: "Unsaved changes, critical confirmations"
+
+    escape_key:
+      description: "Press ESC to close"
+      good_for: "All modals (accessibility)"
+      implementation: "Always include for keyboard users"
+
+    explicit_close:
+      description: "Must click X or Cancel button"
+      good_for: "Critical modals, unsaved changes, confirmations"
+      not_ideal_for: "Frequent, non-blocking interactions"
+
+navigation_patterns:
+  sidebar:
+    name: "Sidebar Navigation"
+    good_for: ["Desktop apps", "Many sections", "Persistent navigation"]
+    not_ideal_for: ["Simple sites", "Few sections", "Mobile-only"]
+    variants:
+      - "Always visible (desktop)"
+      - "Collapsible (hamburger on mobile)"
+      - "Mini sidebar (icons only, expands on hover)"
+
+  top_nav:
+    name: "Top Navigation Bar"
+    good_for: ["Marketing sites", "Few sections", "Mobile-friendly"]
+    not_ideal_for: ["Many menu items", "Deep hierarchies"]
+    variants:
+      - "Horizontal menu"
+      - "Mega menu (dropdown panels)"
+      - "Hamburger menu (mobile)"
+
+  tabs:
+    name: "Tab Navigation"
+    good_for: ["Related content sections", "Switching views", "Settings"]
+    not_ideal_for: ["Unrelated sections", "Too many tabs (>7)"]
+    variants:
+      - "Horizontal tabs"
+      - "Vertical tabs"
+      - "Pill tabs"
+
+  bottom_nav:
+    name: "Bottom Navigation (Mobile)"
+    good_for: ["Mobile apps", "3-5 primary sections", "Quick switching"]
+    not_ideal_for: ["Desktop", "Many sections", "Deep hierarchies"]
+    best_practices: "3-5 items, icon + label, highlight active"
+
+empty_state_patterns:
+  first_use:
+    description: "User's first time, no content yet"
+    components:
+      - "Illustration or icon"
+      - "Welcoming message"
+      - "Clear call-to-action (create first item)"
+      - "Optional: Tutorial or guide link"
+
+  no_results:
+    description: "Search or filter returned nothing"
+    components:
+      - "Clear message (No results found for 'X')"
+      - "Suggestions (check spelling, try different keywords)"
+      - "Alternative action (clear filters, browse all)"
+
+  cleared_content:
+    description: "User deleted/cleared content"
+    components:
+      - "Acknowledgment (Content cleared)"
+      - "Undo option (if possible)"
+      - "Action to create new content"
+
+confirmation_patterns:
+  no_confirmation:
+    description: "No confirmation dialog, immediate action with undo"
+    good_for: "Low-risk actions, undo available"
+    example: "Archive email (with undo toast)"
+
+  simple_confirmation:
+    description: "Single confirmation dialog"
+    good_for: "Moderate-risk actions"
+    example: "Delete item? [Cancel] [Delete]"
+
+  typed_confirmation:
+    description: "User must type specific text to confirm"
+    good_for: "High-risk, irreversible actions"
+    example: "Type 'DELETE' to confirm account deletion"
+
+  multi_step_confirmation:
+    description: "Multiple confirmations or checkboxes"
+    good_for: "Critical, irreversible, high-impact actions"
+    example: "Delete account: check consequences, type confirmation, verify email"
+
+loading_patterns:
+  spinner:
+    name: "Spinner/Circular Progress"
+    good_for: ["Unknown duration", "Small areas", "Button states"]
+    usage: "Indeterminate progress"
+
+  progress_bar:
+    name: "Linear Progress Bar"
+    good_for: ["Known duration", "File uploads", "Multi-step processes"]
+    usage: "Determinate progress (0-100%)"
+
+  skeleton_screen:
+    name: "Skeleton/Placeholder"
+    good_for: ["Content loading", "Better perceived performance", "Layout stability"]
+    usage: "Show content structure while loading"
+
+  optimistic_ui:
+    name: "Optimistic Update"
+    good_for: ["Instant feedback", "High success rate actions", "Smooth UX"]
+    usage: "Show result immediately, rollback if fails"
+
+responsive_breakpoints:
+  mobile_first:
+    sm: "640px (small phones)"
+    md: "768px (tablets portrait)"
+    lg: "1024px (tablets landscape, small desktops)"
+    xl: "1280px (desktops)"
+    xxl: "1536px (large desktops)"
+
+  common_devices:
+    mobile: "320px - 767px"
+    tablet: "768px - 1023px"
+    desktop: "1024px+"
+
+interaction_patterns:
+  drag_and_drop:
+    good_for: ["Reordering lists", "File uploads", "Visual organization"]
+    not_ideal_for: ["Mobile (touch conflicts)", "Accessibility (needs fallback)"]
+    accessibility: "Must provide keyboard alternative"
+
+  swipe_gestures:
+    good_for: ["Mobile navigation", "Quick actions (swipe to delete)", "Cards"]
+    not_ideal_for: ["Desktop", "Ambiguous actions"]
+    best_practices: "Visual feedback, undo option"
+
+  infinite_scroll:
+    good_for: ["Social feeds", "Discovery", "Engagement"]
+    not_ideal_for: ["Finding specific items", "Footer access", "Performance"]
+    best_practices: "Load more button as fallback, preserve scroll position"
+
+  pagination:
+    good_for: ["Data tables", "Search results", "Performance", "Findability"]
+    not_ideal_for: ["Social feeds", "Real-time content"]
+    variants: ["Numbered pages", "Previous/Next", "Load More button"]
+
+animation_guidelines:
+  duration:
+    micro: "50-100ms (button hover, checkbox toggle)"
+    small: "150-250ms (dropdown open, tooltip appear)"
+    medium: "250-400ms (modal open, drawer slide)"
+    large: "400-600ms (page transitions, complex animations)"
+
+  easing:
+    ease_out: "Decelerates (entering animations)"
+    ease_in: "Accelerates (exiting animations)"
+    ease_in_out: "Both (moving between states)"
+    linear: "Constant speed (loading spinners)"
+
+  principles:
+    - "Animations should feel natural, not robotic"
+    - "Use for feedback, transitions, and delight"
+    - "Don't slow down user tasks"
+    - "Respect prefers-reduced-motion"
+    - "60fps (under 16ms per frame)"
+
+accessibility_patterns:
+  keyboard_navigation:
+    tab_order: "Logical, top-to-bottom, left-to-right"
+    skip_links: "Skip to main content"
+    focus_trapping: "Modal keeps focus inside"
+    escape_key: "Close modals, cancel actions"
+
+  screen_readers:
+    landmarks: "header, nav, main, aside, footer"
+    headings: "h1-h6 hierarchy (don't skip levels)"
+    aria_labels: "Descriptive labels for icon buttons"
+    live_regions: "Announce dynamic content changes"
+
+  color_contrast:
+    wcag_aa:
+      normal_text: "4.5:1 contrast ratio"
+      large_text: "3:1 contrast ratio (18pt+ or 14pt+ bold)"
+      ui_components: "3:1 contrast ratio"
+
+    wcag_aaa:
+      normal_text: "7:1 contrast ratio"
+      large_text: "4.5:1 contrast ratio"
+
+# Novel UX Pattern Examples (for inspiration)
+novel_patterns_inspiration:
+  - pattern: "Swipe to match"
+    origin: "Tinder"
+    innovation: "Gamified decision-making through gesture"
+
+  - pattern: "Stories (ephemeral content)"
+    origin: "Snapchat, then Instagram"
+    innovation: "Time-limited content creates urgency and authenticity"
+
+  - pattern: "Infinite canvas"
+    origin: "Figma, Miro"
+    innovation: "Spatial organization without page boundaries"
+
+  - pattern: "Real-time collaborative cursors"
+    origin: "Figma, Google Docs"
+    innovation: "See others' activity in real-time"
+
+  - pattern: "Pull to refresh"
+    origin: "Tweetie (Twitter client)"
+    innovation: "Natural gesture for content updates"
+
+  - pattern: "Card-based swiping"
+    origin: "Tinder, then widely adopted"
+    innovation: "Binary decisions through kinetic interaction"
+
+  - pattern: "Algorithmic feed"
+    origin: "Facebook, TikTok"
+    innovation: "Personalized infinite content discovery"

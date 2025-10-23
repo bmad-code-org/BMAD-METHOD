@@ -22,6 +22,16 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Check workflow status and get recommendations (START HERE!)
 
+    - trigger: create-design
+      workflow: "{project-root}/bmad/bmm/workflows/1-discover-workflows/design-thinking/workflow.yaml"
+      description: Conduct Design Thinking Workshop to Define the User Specification
+
+    - trigger: validate-design
+      workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/validate-ux-design/workflow.yaml"
+      checklist: "{project-root}/bmad/bmm/workflows/2-plan-workflows/validate-ux-design/checklist.md"
+      document: "{output_folder}/ux-spec.md"
+      description: Validate UX Specification and Design Artifacts
+
     - trigger: ux-spec
       workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/ux-spec/workflow.yaml"
       description: Create UX/UI Specification and AI Frontend Prompts

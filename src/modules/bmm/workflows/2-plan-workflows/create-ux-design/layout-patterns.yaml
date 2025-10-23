@@ -1,0 +1,419 @@
+# Layout Patterns - Guide for design direction generation
+# Maps project types and content to layout strategies
+
+navigation_patterns:
+  sidebar_navigation:
+    description: "Vertical navigation panel on left or right"
+    best_for: ["Desktop apps", "Dashboards", "Admin panels", "Content-heavy sites"]
+    not_ideal_for: ["Simple sites", "Mobile-only", "Few sections (<5)"]
+
+    variants:
+      always_visible:
+        description: "Sidebar always shown on desktop"
+        width: "200-280px"
+        good_for: "Frequent navigation, many sections"
+
+      collapsible:
+        description: "Can collapse to icons only"
+        collapsed_width: "60-80px"
+        expanded_width: "200-280px"
+        good_for: "Space efficiency, user control"
+
+      mini_sidebar:
+        description: "Icons only, expands on hover"
+        collapsed_width: "60-80px"
+        good_for: "Maximum content space, familiar users"
+
+    mobile_strategy: "Hamburger menu or bottom nav"
+    examples: ["Notion", "Slack", "VS Code", "Gmail"]
+
+  top_navigation:
+    description: "Horizontal navigation bar at top"
+    best_for: ["Marketing sites", "Simple apps", "Few sections", "Mobile-friendly"]
+    not_ideal_for: ["Many menu items (>7)", "Deep hierarchies"]
+
+    variants:
+      horizontal_menu:
+        description: "Simple horizontal list"
+        max_items: "5-7"
+        good_for: "Simple sites, clear hierarchy"
+
+      mega_menu:
+        description: "Dropdown panels with rich content"
+        good_for: "Complex sites, many subsections, ecommerce"
+
+      sticky_header:
+        description: "Nav stays at top when scrolling"
+        good_for: "Easy access, wayfinding"
+        considerations: "Takes screen space, can annoy users"
+
+    mobile_strategy: "Hamburger menu"
+    examples: ["Apple", "Stripe", "Most marketing sites"]
+
+  tab_navigation:
+    description: "Horizontal tabs for section switching"
+    best_for: ["Related content", "Settings", "Multi-view pages"]
+    not_ideal_for: ["Unrelated sections", "Too many tabs (>7)"]
+    max_tabs: "5-7 recommended"
+    placement: ["Below header", "Page level", "Within cards"]
+    examples: ["Settings pages", "Product details", "Profile pages"]
+
+  bottom_navigation:
+    description: "Navigation bar at bottom (mobile)"
+    best_for: ["Mobile apps", "3-5 primary sections", "Quick switching"]
+    not_ideal_for: ["Desktop", "Many sections", "Deep hierarchies"]
+    ideal_items: "3-5 (4 is optimal)"
+    each_item: "Icon + short label"
+    examples: ["Instagram", "Twitter app", "Most mobile apps"]
+
+  floating_action_button:
+    description: "Primary action button floating over content"
+    best_for: ["Mobile apps", "Single primary action", "Content-first"]
+    placement: "Bottom-right (usually)"
+    examples: ["Gmail (compose)", "Google Maps (directions)", "Notes (new note)"]
+
+content_organization:
+  card_based:
+    description: "Content in distinct card containers"
+    best_for: ["Scannable content", "Mixed content types", "Visual hierarchy"]
+    not_ideal_for: ["Dense data", "Text-heavy content"]
+
+    variants:
+      grid:
+        description: "Equal-sized cards in grid"
+        good_for: "Products, gallery, uniform items"
+        examples: ["Pinterest", "Airbnb listings", "YouTube videos"]
+
+      masonry:
+        description: "Variable-height cards in columns"
+        good_for: "Mixed content heights, visual interest"
+        examples: ["Pinterest", "Unsplash", "Dribbble"]
+
+      horizontal_scroll:
+        description: "Cards in horizontal row"
+        good_for: "Categories, featured items, mobile"
+        examples: ["Netflix rows", "App Store Today"]
+
+    styling:
+      elevated: "Drop shadows, floating appearance"
+      bordered: "Subtle borders, flat appearance"
+
+    spacing:
+      tight: "8-12px gaps (dense, lots of content)"
+      medium: "16-24px gaps (balanced)"
+      spacious: "32-48px gaps (premium, breathing room)"
+
+  list_based:
+    description: "Linear list of items"
+    best_for: ["Scannable data", "Chronological content", "Dense information"]
+    not_ideal_for: ["Visual content", "Products", "Gallery"]
+
+    variants:
+      simple_list:
+        description: "Text-only list"
+        good_for: "Simple data, settings, menus"
+
+      rich_list:
+        description: "Items with images, meta, actions"
+        good_for: "Email, messages, activity feeds"
+        examples: ["Gmail inbox", "Twitter feed", "LinkedIn feed"]
+
+      grouped_list:
+        description: "Lists with section headers"
+        good_for: "Categorized content, settings"
+
+    interaction:
+      clickable_rows: "Entire row is clickable"
+      action_buttons: "Explicit action buttons in row"
+      swipe_actions: "Swipe to reveal actions (mobile)"
+
+  table_based:
+    description: "Data in rows and columns"
+    best_for: ["Structured data", "Comparisons", "Admin panels", "Analytics"]
+    not_ideal_for: ["Mobile", "Varied content", "Storytelling"]
+
+    mobile_strategy:
+      horizontal_scroll: "Scroll table horizontally"
+      hide_columns: "Show only essential columns"
+      card_view: "Convert each row to card"
+
+    features:
+      - "Sortable columns"
+      - "Filterable data"
+      - "Pagination or infinite scroll"
+      - "Row selection"
+      - "Inline editing"
+
+    examples: ["Admin dashboards", "Analytics", "Data management"]
+
+  dashboard_layout:
+    description: "Widget-based information display"
+    best_for: ["Data visualization", "Monitoring", "Analytics", "Admin"]
+
+    patterns:
+      fixed_grid:
+        description: "Predefined widget positions"
+        good_for: "Consistent layout, simple dashboards"
+
+      customizable_grid:
+        description: "Users can rearrange widgets"
+        good_for: "Power users, personalization"
+        examples: ["Google Analytics", "Jira dashboards"]
+
+      responsive_grid:
+        description: "Widgets reflow based on screen size"
+        good_for: "Mobile support, adaptive layouts"
+
+  feed_based:
+    description: "Continuous stream of content"
+    best_for: ["Social media", "News", "Activity", "Discovery"]
+
+    loading:
+      infinite_scroll: "Load more as user scrolls"
+      load_more_button: "Explicit action to load more"
+      pagination: "Page numbers for browsing"
+
+    examples: ["Facebook", "Twitter", "Instagram", "LinkedIn"]
+
+layout_density:
+  spacious:
+    description: "Lots of white space, breathing room"
+    spacing: "32-64px between sections"
+    card_padding: "24-32px"
+    best_for: ["Premium brands", "Focus", "Minimal content"]
+    examples: ["Apple", "Stripe landing", "Premium portfolios"]
+    feeling: "Premium, focused, calm, elegant"
+
+  balanced:
+    description: "Moderate spacing, comfortable reading"
+    spacing: "16-32px between sections"
+    card_padding: "16-24px"
+    best_for: ["Most applications", "General content"]
+    examples: ["Medium", "Notion", "Most SaaS apps"]
+    feeling: "Professional, balanced, clear"
+
+  dense:
+    description: "Compact layout, maximum information"
+    spacing: "8-16px between sections"
+    card_padding: "12-16px"
+    best_for: ["Data-heavy", "Power users", "Admin panels"]
+    examples: ["Gmail", "Google Analytics", "IDE interfaces"]
+    feeling: "Efficient, information-rich, powerful"
+
+content_hierarchy:
+  hero_first:
+    description: "Large hero section, then supporting content"
+    best_for: ["Marketing sites", "Landing pages", "Product pages"]
+    hero_height: "60-100vh"
+    examples: ["Stripe", "Apple product pages", "SaaS landing pages"]
+
+  content_first:
+    description: "Jump straight to content, minimal header"
+    best_for: ["Blogs", "News", "Content platforms", "Reading"]
+    examples: ["Medium", "News sites", "Wikipedia"]
+
+  balanced_hierarchy:
+    description: "Clear but not overwhelming hero"
+    best_for: ["General applications", "Balanced focus"]
+    hero_height: "40-60vh"
+
+visual_weight:
+  minimal:
+    description: "Flat, no shadows, subtle borders"
+    characteristics:
+      - "No or minimal shadows"
+      - "Flat colors"
+      - "Thin or no borders"
+      - "Lots of white space"
+    best_for: ["Modern brands", "Focus", "Clarity"]
+    examples: ["Apple", "Google (recent)", "Superhuman"]
+
+  subtle_depth:
+    description: "Light shadows, gentle elevation"
+    characteristics:
+      - "Subtle drop shadows"
+      - "Light borders"
+      - "Layered appearance"
+      - "Comfortable spacing"
+    best_for: ["Most applications", "Professional look"]
+    examples: ["Notion", "Airtable", "Linear"]
+
+  material_depth:
+    description: "Distinct shadows, clear elevation"
+    characteristics:
+      - "Defined shadows"
+      - "Clear layering"
+      - "Elevation system"
+      - "Floating elements"
+    best_for: ["Tactile feel", "Clarity", "Guidance"]
+    examples: ["Material Design apps", "Gmail", "Google Drive"]
+
+  rich_visual:
+    description: "Gradients, textures, visual interest"
+    characteristics:
+      - "Gradients"
+      - "Background patterns"
+      - "Visual flourishes"
+      - "Rich shadows"
+    best_for: ["Consumer brands", "Engagement", "Delight"]
+    examples: ["Stripe (gradients)", "Instagram", "Spotify"]
+
+column_layouts:
+  single_column:
+    description: "One content column, centered"
+    max_width: "600-800px"
+    best_for: ["Reading", "Focus", "Mobile-first", "Forms"]
+    examples: ["Medium articles", "Substack", "Simple apps"]
+
+  two_column:
+    description: "Main content + sidebar"
+    ratios:
+      main_sidebar: "2:1 or 3:1 (main content wider)"
+      equal: "1:1 (rare, only for equal importance)"
+    best_for: ["Blogs with sidebar", "Docs with nav", "Dashboard with filters"]
+    mobile_strategy: "Stack vertically"
+
+  three_column:
+    description: "Left nav + main content + right sidebar"
+    typical_use: "Left nav, center content, right metadata/ads"
+    best_for: ["Complex apps", "Social media", "News sites"]
+    mobile_strategy: "Collapse to single column with hamburger"
+    examples: ["Twitter", "Reddit", "Facebook"]
+
+  multi_column_grid:
+    description: "2, 3, 4, or more columns"
+    columns:
+      two: "Tablets, small screens"
+      three: "Desktop standard"
+      four_plus: "Large screens, galleries"
+    best_for: ["Products", "Gallery", "Cards", "Uniform content"]
+    responsive:
+      mobile: "1 column"
+      tablet: "2 columns"
+      desktop: "3-4 columns"
+      large_desktop: "4-6 columns"
+
+modal_and_overlay_patterns:
+  center_modal:
+    sizes: ["Small (400-500px)", "Medium (600-800px)", "Large (900-1200px)"]
+    best_for: ["Forms", "Confirmations", "Detailed content"]
+
+  drawer_side_panel:
+    position: "Right (common) or left"
+    width: "320-600px"
+    best_for: ["Filters", "Settings", "Details", "Navigation"]
+    examples: ["E-commerce filters", "Gmail compose", "Slack channel details"]
+
+  fullscreen_modal:
+    description: "Takes entire viewport"
+    best_for: ["Mobile primarily", "Complex forms", "Immersive content"]
+    mobile: "Often default on mobile"
+
+  popover:
+    description: "Small overlay near trigger element"
+    best_for: ["Tooltips", "Quick actions", "Contextual menus"]
+    size: "Small (200-400px)"
+
+responsive_strategies:
+  mobile_first:
+    approach: "Design for mobile, enhance for desktop"
+    best_for: ["Consumer apps", "High mobile traffic", "Content-first"]
+    breakpoints:
+      - "Mobile: 320-767px (base design)"
+      - "Tablet: 768-1023px (add space, possibly columns)"
+      - "Desktop: 1024px+ (full layout, sidebars)"
+
+  desktop_first:
+    approach: "Design for desktop, adapt for mobile"
+    best_for: ["B2B apps", "Desktop-heavy usage", "Complex interfaces"]
+    consideration: "Risk of poor mobile experience"
+
+  adaptive_layout:
+    approach: "Different layouts for different screens, not just scaling"
+    examples:
+      - "Desktop: Sidebar nav | Mobile: Bottom nav"
+      - "Desktop: 3 columns | Tablet: 2 columns | Mobile: 1 column"
+      - "Desktop: Table | Mobile: Card list"
+
+design_direction_variations:
+  # These combine multiple patterns to create distinct design approaches
+
+  dense_dashboard:
+    description: "Information-rich, efficient, power user focused"
+    patterns:
+      navigation: "Mini sidebar or always-visible sidebar"
+      content: "Dashboard layout with widgets"
+      density: "Dense"
+      visual_weight: "Minimal or subtle depth"
+      hierarchy: "Balanced, not hero-heavy"
+    best_for: ["Analytics", "Admin panels", "Data tools", "Power users"]
+
+  spacious_explorer:
+    description: "Generous spacing, discovery-oriented, visual"
+    patterns:
+      navigation: "Top nav or hidden sidebar"
+      content: "Card-based grid or masonry"
+      density: "Spacious"
+      visual_weight: "Rich visual or subtle depth"
+      hierarchy: "Hero-first or balanced"
+    best_for: ["Content platforms", "Discovery", "Visual products", "Inspiration"]
+
+  focused_creator:
+    description: "Minimal distractions, content creation focus"
+    patterns:
+      navigation: "Minimal top bar or hidden"
+      content: "Single column or two-column with tools"
+      density: "Spacious to balanced"
+      visual_weight: "Minimal"
+      hierarchy: "Content-first"
+    best_for: ["Writing tools", "Editors", "Creative apps", "Focus work"]
+
+  social_feed:
+    description: "Engagement-focused, endless content, familiar"
+    patterns:
+      navigation: "Top bar + bottom nav (mobile)"
+      content: "Feed-based with rich cards"
+      density: "Balanced"
+      visual_weight: "Subtle depth to rich"
+      hierarchy: "Content-first"
+    best_for: ["Social media", "Content feeds", "Community platforms"]
+
+  enterprise_portal:
+    description: "Professional, data-heavy, multi-section"
+    patterns:
+      navigation: "Sidebar (always visible or collapsible)"
+      content: "Dashboard or table-based"
+      density: "Dense to balanced"
+      visual_weight: "Minimal to subtle"
+      hierarchy: "Balanced"
+    best_for: ["B2B SaaS", "Admin tools", "Enterprise apps"]
+
+  marketing_showcase:
+    description: "Visual storytelling, conversion-focused, impressive"
+    patterns:
+      navigation: "Top nav (sticky or hero)"
+      content: "Hero-first with sections"
+      density: "Spacious"
+      visual_weight: "Rich visual"
+      hierarchy: "Hero-first"
+    best_for: ["Landing pages", "Marketing sites", "Product showcases"]
+
+  minimal_focus:
+    description: "Distraction-free, content-centric, elegant"
+    patterns:
+      navigation: "Minimal or hidden"
+      content: "Single column, centered"
+      density: "Spacious"
+      visual_weight: "Minimal"
+      hierarchy: "Content-first"
+    best_for: ["Reading", "Focus apps", "Premium brands", "Portfolios"]
+
+  playful_interactive:
+    description: "Fun, engaging, delightful, consumer-friendly"
+    patterns:
+      navigation: "Creative (could be any, with personality)"
+      content: "Card-based or custom layouts"
+      density: "Balanced to spacious"
+      visual_weight: "Rich visual"
+      hierarchy: "Hero or balanced"
+    best_for: ["Consumer apps", "Gaming", "Entertainment", "Kids"]
