@@ -205,7 +205,49 @@
 
 ---
 
-## 14. Decision Rationale
+## 14. Cross-Workflow Alignment (Epics File Update)
+
+**As UX design progresses, you discover implementation details that affect the story breakdown**
+
+### Stories Discovered During UX Design
+
+- [ ] **Review epics.md file** for alignment with UX design
+- [ ] **New stories identified** during UX design that weren't in epics.md:
+  - [ ] Custom component build stories (if significant)
+  - [ ] UX pattern implementation stories
+  - [ ] Animation/transition stories
+  - [ ] Responsive adaptation stories
+  - [ ] Accessibility implementation stories
+  - [ ] Edge case handling stories discovered during journey design
+  - [ ] Onboarding/empty state stories
+  - [ ] Error state handling stories
+
+### Story Complexity Adjustments
+
+- [ ] **Existing stories complexity reassessed** based on UX design:
+  - [ ] Stories that are now more complex (UX revealed additional requirements)
+  - [ ] Stories that are simpler (design system handles more than expected)
+  - [ ] Stories that should be split (UX design shows multiple components/flows)
+  - [ ] Stories that can be combined (UX design shows they're tightly coupled)
+
+### Epic Alignment
+
+- [ ] **Epic scope still accurate** after UX design
+- [ ] **New epic needed** for discovered work (if significant)
+- [ ] **Epic ordering might change** based on UX dependencies
+
+### Action Items for Epics File Update
+
+- [ ] **List of new stories to add** to epics.md documented
+- [ ] **Complexity adjustments noted** for existing stories
+- [ ] **Update epics.md** OR flag for architecture review first
+- [ ] **Rationale documented** for why new stories/changes are needed
+
+**Note:** If significant story changes are identified, consider running architecture workflow BEFORE updating epics.md, since architecture decisions might reveal additional adjustments needed.
+
+---
+
+## 15. Decision Rationale
 
 **Unlike template-driven workflows, this workflow should document WHY**
 
@@ -219,7 +261,7 @@
 
 ---
 
-## 15. Implementation Readiness
+## 16. Implementation Readiness
 
 - [ ] **Designers can create high-fidelity mockups** from this spec
 - [ ] **Developers can implement** with clear UX guidance
@@ -231,7 +273,7 @@
 
 ---
 
-## 16. Critical Failures (Auto-Fail)
+## 17. Critical Failures (Auto-Fail)
 
 - [ ] ❌ **No visual collaboration** (color themes or design mockups not generated)
 - [ ] ❌ **User not involved in decisions** (auto-generated without collaboration)

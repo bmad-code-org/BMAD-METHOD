@@ -97,9 +97,10 @@ The workflow adapts automatically based on project assessment, but key configura
 │   ├── instructions-narrative.md  # Narrative design instructions
 │   ├── narrative-template.md      # Narrative planning template
 │   └── workflow.yaml
-└── ux/
-    ├── instructions-ux.md         # UX specification instructions
-    ├── ux-spec-template.md        # UX specification template
+└── create-ux-design/
+    ├── instructions.md            # UX design instructions
+    ├── ux-design-template.md      # UX design template
+    ├── checklist.md               # UX design validation checklist
     └── workflow.yaml
 ```
 

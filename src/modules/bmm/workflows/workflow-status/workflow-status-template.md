@@ -25,21 +25,6 @@ NEXT_ACTION: {{next_action}}
 NEXT_COMMAND: {{next_command}}
 NEXT_AGENT: {{next_agent}}
 
-## Story Backlog
-
-{{#backlog_stories}}
-
-- {{story_id}}: {{story_title}}
-  {{/backlog_stories}}
-
-## Completed Stories
-
-{{#done_stories}}
-
-- {{story_id}}: {{completed_date}}
-  {{/done_stories}}
-
 ---
 
 _Last Updated: {{last_updated}}_
-_Status Version: 2.0_

@@ -46,10 +46,10 @@ phases:
         agent: "pm"
         command: "prd"
         output: "Comprehensive PRD considering existing system"
-      - id: "ux-spec"
+      - id: "create-design"
         required: true
-        agent: "pm"
-        command: "ux-spec"
+        agent: "ux-designer"
+        command: "create-design"
         note: "Multiple UI/UX specifications"
 
   - phase: 3

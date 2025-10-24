@@ -50,10 +50,10 @@ phases:
         command: "tech-spec"
         output: "Creates spec with multiple story files"
         note: "Integrate with existing patterns"
-      - id: "ux-spec"
+      - id: "create-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
-        command: "ux-spec"
+        command: "create-design"
 
   - phase: 3
     name: "Solutioning"

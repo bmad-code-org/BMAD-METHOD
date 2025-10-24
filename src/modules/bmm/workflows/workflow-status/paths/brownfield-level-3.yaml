@@ -44,10 +44,10 @@ phases:
         agent: "pm"
         command: "prd"
         output: "Requirements with integration points"
-      - id: "ux-spec"
+      - id: "create-design"
         conditional: "if_has_ui"
-        agent: "pm"
-        command: "ux-spec"
+        agent: "ux-designer"
+        command: "create-design"
         note: "Must align with existing UI patterns"
 
   - phase: 3

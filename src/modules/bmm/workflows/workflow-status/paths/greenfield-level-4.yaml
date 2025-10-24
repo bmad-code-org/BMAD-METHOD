@@ -16,7 +16,7 @@ phases:
         agent: "analyst"
         command: "brainstorm-project"
       - id: "research"
-        required: true
+        required: false
         agent: "analyst"
         command: "research"
         note: "Extensive research across multiple domains"
@@ -35,10 +35,10 @@ phases:
         agent: "pm"
         command: "prd"
         output: "Comprehensive product requirements document"
-      - id: "ux-spec"
+      - id: "create-design"
         required: true
         agent: "ux-designer"
-        command: "ux-spec"
+        command: "create-design"
         note: "Multiple UI/UX specifications needed"
 
   - phase: 3

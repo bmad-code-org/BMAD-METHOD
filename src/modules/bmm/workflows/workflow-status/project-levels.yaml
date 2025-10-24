@@ -39,7 +39,7 @@ levels:
     title: "Enterprise Scale"
     stories: "40+ stories"
     description: "Multiple products, enterprise architecture"
-    documentation: "Full suite - PRD, architecture, product specs"
+    documentation: "PRD + architecture + JIT tech specs"
     architecture: true
 
 # Quick detection hints for workflow-init

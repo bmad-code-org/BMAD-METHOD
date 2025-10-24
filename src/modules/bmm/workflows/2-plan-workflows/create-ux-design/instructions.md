@@ -37,7 +37,7 @@ For integrated use, run `workflow-init` first for better context.
 </check>
 </step>
 
-<step n="1" goal="Load context and understand the vision">
+<step n="1a" goal="Confirm project understanding or gather basic context">
   <critical>A UX designer must understand the WHY before designing the HOW</critical>
 
 <action>Attempt to load context documents using fuzzy matching: - PRD: {prd_file} - Product Brief: {brief_file} - Brainstorming: {brainstorm_file}
@@ -53,6 +53,14 @@ For integrated use, run `workflow-init` first for better context.
       - Brand personality hints
       - Competitive landscape references
     </action>
+
+    <output>I've loaded your project documentation. Let me confirm what I'm seeing:
+
+**Project:** {{project_summary_from_docs}}
+**Target Users:** {{user_summary_from_docs}}</output>
+
+    <ask>Does this match your understanding? Any corrections or additions?</ask>
+
   </check>
 
   <check if="no_documents_found">
@@ -63,17 +71,11 @@ For integrated use, run `workflow-init` first for better context.
 **Who is this for?** Describe your ideal user.</ask>
 </check>
 
-  <check if="documents_found">
-    <output>I've loaded your project documentation. Let me confirm what I'm seeing:
+<template-output>project_and_users_confirmed</template-output>
+</step>
 
-**Project:** {{project_summary_from_docs}}
-**Target Users:** {{user_summary_from_docs}}
-
-Does this match your understanding?</output>
-
-    <ask>Sounds good? Any corrections?</ask>
-
-  </check>
+<step n="1b" goal="Understand core experience and platform">
+  <critical>Now we discover the ONE thing that defines this experience</critical>
 
 <ask>Now let's dig into the experience itself.
 
@@ -85,6 +87,12 @@ Does this match your understanding?</output>
 
 **Platform:**
 Where will users experience this? (Web, mobile app, desktop, multiple platforms)</ask>
+
+<template-output>core_experience_and_platform</template-output>
+</step>
+
+<step n="1c" goal="Discover the desired emotional response">
+  <critical>Emotion drives behavior - this shapes everything</critical>
 
 <ask>This is crucial - **what should users FEEL when using this?**
 
@@ -100,43 +108,45 @@ Not what they'll do, but what emotion or state they should experience:
 
 Really think about the emotional response you want. What feeling would make them tell a friend about this?</ask>
 
+<template-output>desired_emotional_response</template-output>
+</step>
+
+<step n="1d" goal="Gather inspiration and analyze UX patterns">
+  <critical>Learn from what users already love</critical>
+
 <ask>**Inspiration time!**
 
 Name 2-3 apps your users already love and USE regularly.
-
-For each one, tell me:
-
-- What do they do well from a UX perspective?
-- What makes the experience compelling?
 
 Feel free to share:
 
 - App names (I'll look them up to see current UX)
 - Screenshots (if you have examples of what you like)
-- Links to products or demos</ask>
+- Links to products or demos
 
-  <action>For each app mentioned:
-  <WebSearch>{{app_name}} current interface UX design 2025</WebSearch>
-  <action>Analyze what makes that app's UX effective</action>
-  <action>Note patterns and principles that could apply to this project</action>
-  </action>
+For each one, what do they do well from a UX perspective? What makes the experience compelling?</ask>
 
-  <action>If screenshots provided:
-  <action>Analyze screenshots for UX patterns, visual style, interaction patterns</action>
-  <action>Note what user finds compelling about these examples</action>
-  </action>
+<action>For each app mentioned:
+<WebSearch>{{app_name}} current interface UX design 2025</WebSearch>
+<action>Analyze what makes that app's UX effective</action>
+<action>Note patterns and principles that could apply to this project</action>
+</action>
 
-  <action>Analyze project for UX complexity indicators:
-  - Number of distinct user roles or personas
-  - Number of primary user journeys
-  - Interaction complexity (simple CRUD vs rich interactions)
-  - Platform requirements (single vs multi-platform)
-  - Real-time collaboration needs
-  - Content creation vs consumption
-  - Novel interaction patterns
-    </action>
+<action>If screenshots provided:
+<action>Analyze screenshots for UX patterns, visual style, interaction patterns</action>
+<action>Note what user finds compelling about these examples</action>
+</action>
 
-  <action>Based on {user_skill_level}, set facilitation approach:
+<template-output>inspiration_analysis</template-output>
+</step>
+
+<step n="1e" goal="Synthesize understanding and set facilitation mode">
+  <critical>Now analyze complexity and set the right facilitation approach</critical>
+
+<action>Analyze project for UX complexity indicators: - Number of distinct user roles or personas - Number of primary user journeys - Interaction complexity (simple CRUD vs rich interactions) - Platform requirements (single vs multi-platform) - Real-time collaboration needs - Content creation vs consumption - Novel interaction patterns
+</action>
+
+<action>Based on {user_skill_level}, set facilitation approach:
 
     <check if="{user_skill_level} == 'expert'">
       Set mode: UX_EXPERT
@@ -161,11 +171,10 @@ Feel free to share:
       - Focus on "why this matters for users"
       - Protect from overwhelming choices
     </check>
+
   </action>
 
-  <action>Synthesize and reflect understanding back to {user_name}:
-
-"Here's what I'm understanding about {{project_name}}:
+<output>Here's what I'm understanding about {{project_name}}:
 
 **Vision:** {{project_vision_summary}}
 **Users:** {{user_summary}}
@@ -176,10 +185,7 @@ Feel free to share:
 
 **UX Complexity:** {{complexity_assessment}}
 
-This helps me understand both what we're building and the experience we're aiming for. It will guide every design decision we make together."
-</action>
-
-<ask>Does this capture your vision? Anything I'm missing or misunderstanding?</ask>
+This helps me understand both what we're building and the experience we're aiming for. Let's start designing!</output>
 
 <action>Load UX design template: {template}</action>
 <action>Initialize output document at {default_output_file}</action>
@@ -277,9 +283,8 @@ Or tell me:
   <template-output>design_system_decision</template-output>
   </step>
 
-<step n="3" goal="Define core experience and discover novel patterns">
-  <critical>Every great app has a defining experience - identify and design it</critical>
-  <critical>Some projects need INVENTED UX patterns, not just standard solutions</critical>
+<step n="3a" goal="Identify the defining experience">
+  <critical>Every great app has a defining experience - identify it first</critical>
 
 <action>Based on PRD/brief analysis, identify the core user experience: - What is the primary action users will repeat? - What makes this app unique vs. competitors? - What should be delightfully easy?
 </action>
@@ -319,62 +324,96 @@ When someone describes your app to a friend, what would they say?
 
   </action>
 
+<template-output>defining_experience</template-output>
+</step>
+
+<step n="3b" goal="Design novel UX pattern (if needed)">
+  <critical>Skip this step if standard patterns apply. Run only if novel pattern detected.</critical>
+
   <check if="novel_pattern_detected">
-    <action>Engage in collaborative UX pattern design:
-      "The {{pattern_name}} interaction is novel - no established pattern exists yet!
+    <output>The **{{pattern_name}}** interaction is novel - no established pattern exists yet!
 
-      Core UX challenge: {{challenge_description}}
+Core UX challenge: {{challenge_description}}
 
-      This is exciting - we get to invent the user experience together. Let's design this interaction by thinking through:
+This is exciting - we get to invent the user experience together. Let's design this interaction systematically.</output>
 
-      1. **User Goal:** What does the user want to accomplish?
-      2. **Trigger:** How should they initiate this action? (button, gesture, voice, drag, etc.)
-      3. **Feedback:** What should they see/feel happening?
-      4. **Success:** How do they know it succeeded?
-      5. **Errors:** What if something goes wrong? How do they recover?
+    <ask>Let's think through the core mechanics of this {{pattern_name}} interaction:
 
-      Walk me through your mental model for this interaction - the ideal experience from the user's perspective."
-    </action>
+1. **User Goal:** What does the user want to accomplish?
+2. **Trigger:** How should they initiate this action? (button, gesture, voice, drag, etc.)
+3. **Feedback:** What should they see/feel happening?
+4. **Success:** How do they know it succeeded?
+5. **Errors:** What if something goes wrong? How do they recover?
 
-    <action>Use advanced elicitation for UX innovation:
-      "Let's explore this interaction more deeply.
+Walk me through your mental model for this interaction - the ideal experience from the user's perspective.</ask>
 
-      - What apps have SIMILAR (not identical) patterns we could learn from?
-      - What's the absolute fastest this action could complete?
-      - What's the most delightful way to give feedback?
-      - Should this work on mobile differently than desktop?
-      - What would make someone show this to a friend?"
-    </action>
-
-    <action>Document the novel UX pattern:
-      Pattern Name: {{pattern_name}}
-      User Goal: {{what_user_accomplishes}}
-      Trigger: {{how_initiated}}
-      Interaction Flow:
-        1. {{step_1}}
-        2. {{step_2}}
-        3. {{step_3}}
-      Visual Feedback: {{what_user_sees}}
-      States: {{default_loading_success_error}}
-      Platform Considerations: {{desktop_vs_mobile_vs_tablet}}
-      Accessibility: {{keyboard_screen_reader_support}}
-      Inspiration: {{similar_patterns_from_other_apps}}
-    </action>
+    <template-output>novel_pattern_mechanics</template-output>
 
   </check>
 
-<action>Define the core experience principles: - Speed: How fast should key actions feel? - Guidance: How much hand-holding do users need? - Flexibility: How much control vs. simplicity? - Feedback: Subtle or celebratory?
+  <check if="!novel_pattern_detected">
+    <action>Skip to Step 3d - standard patterns apply</action>
+  </check>
+</step>
+
+<step n="3c" goal="Explore novel pattern deeply (if novel)">
+  <critical>Skip if not designing novel pattern</critical>
+
+  <check if="novel_pattern_detected">
+    <ask>Let's explore the {{pattern_name}} interaction more deeply to make it exceptional:
+
+- **Similar Patterns:** What apps have SIMILAR (not identical) patterns we could learn from?
+- **Speed:** What's the absolute fastest this action could complete?
+- **Delight:** What's the most delightful way to give feedback?
+- **Platform:** Should this work on mobile differently than desktop?
+- **Shareability:** What would make someone show this to a friend?</ask>
+
+      <action>Document the novel UX pattern:
+        Pattern Name: {{pattern_name}}
+        User Goal: {{what_user_accomplishes}}
+        Trigger: {{how_initiated}}
+        Interaction Flow:
+          1. {{step_1}}
+          2. {{step_2}}
+          3. {{step_3}}
+        Visual Feedback: {{what_user_sees}}
+        States: {{default_loading_success_error}}
+        Platform Considerations: {{desktop_vs_mobile_vs_tablet}}
+        Accessibility: {{keyboard_screen_reader_support}}
+        Inspiration: {{similar_patterns_from_other_apps}}
+      </action>
+
+      <template-output>novel_pattern_details</template-output>
+
+    </check>
+
+    <check if="!novel_pattern_detected">
+      <action>Skip to Step 3d - standard patterns apply</action>
+    </check>
+  </step>
+
+<step n="3d" goal="Define core experience principles">
+  <critical>Establish the guiding principles for the entire experience</critical>
+
+<action>Based on the defining experience and any novel patterns, define the core experience principles: - Speed: How fast should key actions feel? - Guidance: How much hand-holding do users need? - Flexibility: How much control vs. simplicity? - Feedback: Subtle or celebratory?
 </action>
 
-<template-output>core_experience</template-output>
-<template-output>novel_ux_patterns</template-output>
+<output>Core experience principles established:
+
+**Speed:** {{speed_principle}}
+**Guidance:** {{guidance_principle}}
+**Flexibility:** {{flexibility_principle}}
+**Feedback:** {{feedback_principle}}
+
+These principles will guide every UX decision from here forward.</output>
+
+<template-output>core_experience_principles</template-output>
 </step>
 
 <step n="4" goal="Discover visual foundation through color theme exploration">
   <critical>Visual design isn't decoration - it communicates brand and guides attention</critical>
   <critical>SHOW options, don't just describe them - generate HTML visualizations</critical>
-
-<action>Load color psychology data: {color_psychology}</action>
+  <critical>Use color psychology principles: blue=trust, red=energy, green=growth/calm, purple=creativity, etc.</critical>
 
 <ask>Do you have existing brand guidelines or a specific color palette in mind? (y/n)
 
@@ -512,6 +551,7 @@ What speaks to you?
 <step n="5" goal="Generate design direction mockups for visual decision-making">
   <critical>This is the game-changer - SHOW actual design directions, don't just discuss them</critical>
   <critical>Users make better decisions when they SEE options, not imagine them</critical>
+  <critical>Consider platform norms: desktop apps often use sidebar nav, mobile apps use bottom nav or tabs</critical>
 
 <action>Based on PRD and core experience, identify 2-3 key screens to mock up:
 
@@ -529,7 +569,7 @@ What speaks to you?
 
   </action>
 
-<action>Generate 6-8 different design direction variations:
+<action>Generate 6-8 different design direction variations exploring different UX approaches:
 
     Vary these dimensions:
 
@@ -839,8 +879,7 @@ Component: {{custom_component_name}}
 <step n="8" goal="Define UX pattern decisions for consistency">
   <critical>These are implementation patterns for UX - ensure consistency across the app</critical>
   <critical>Like the architecture workflow's implementation patterns, but for user experience</critical>
-
-<action>Load UX pattern catalog: {ux_pattern_catalog}</action>
+  <critical>These decisions prevent "it works differently on every page" confusion</critical>
 
 <action>Based on chosen components and journeys, identify UX consistency decisions needed:
 
@@ -905,17 +944,38 @@ Component: {{custom_component_name}}
 
   </action>
 
-<action>For each pattern category, facilitate decision:
+<output>I've identified {{pattern_count}} UX pattern categories that need consistent decisions across your app. Let's make these decisions together to ensure users get a consistent experience.
 
-    <action>For each pattern, present options and recommendation:
-      "Let's decide how {{pattern_category}} works throughout your app.
+These patterns determine how {{project_name}} behaves in common situations - like how buttons work, how forms validate, how modals behave, etc.</output>
 
-      If we don't decide now, it might work differently on different screens and confuse users.
+<ask>For each pattern category below, I'll present options and a recommendation. Tell me your preferences or ask questions.
 
-      **Options:** {{option_a}} vs {{option_b}} vs {{option_c_if_applicable}}
+**Pattern Categories to Decide:**
 
-      **My Recommendation:** {{choice}} for {{reason}}"
-    </action>
+- Button hierarchy (primary, secondary, destructive)
+- Feedback patterns (success, error, loading)
+- Form patterns (labels, validation, help text)
+- Modal patterns (size, dismiss, focus)
+- Navigation patterns (active state, back button)
+- Empty state patterns
+- Confirmation patterns (delete, unsaved changes)
+- Notification patterns
+- Search patterns
+- Date/time patterns
+
+For each one, do you want to:
+
+1. Go through each pattern category one by one (thorough)
+2. Focus only on the most critical patterns for your app (focused)
+3. Let me recommend defaults and you override where needed (efficient)</ask>
+
+<action>Based on user choice, facilitate pattern decisions with appropriate depth: - If thorough: Present all categories with options and reasoning - If focused: Identify 3-5 critical patterns based on app type - If efficient: Recommend smart defaults, ask for overrides
+
+    For each pattern decision, document:
+    - Pattern category
+    - Chosen approach
+    - Rationale (why this choice for this app)
+    - Example scenarios where it applies
 
   </action>
 
@@ -1063,6 +1123,128 @@ Based on your deployment intent: {{recommendation}}
       <param>workflow_name: create-ux-design</param>
     </invoke-workflow>
   </check>
+
+<ask>🎨 **One more thing!** Want to see your design come to life?
+
+I can generate interactive HTML mockups using all your design choices:
+
+**1. Key Screens Showcase** - 6-8 panels showing your app's main screens (home, core action, settings, etc.) with your chosen:
+
+- Color theme and typography
+- Design direction and layout
+- Component styles
+- Navigation patterns
+
+**2. User Journey Visualization** - Step-by-step HTML mockup of one of your critical user journeys with:
+
+- Each screen in the flow
+- Interactive transitions
+- Success states and feedback
+- All your design decisions applied
+
+**3. Something else** - Tell me what you want to see!
+
+**4. Skip for now** - I'll just finalize the documentation
+
+What would you like?</ask>
+
+  <check if="user_choice == 'key_screens' or similar">
+    <action>Generate comprehensive multi-panel HTML showcase:
+
+      Create: {final_app_showcase_html}
+
+      Include 6-8 screens representing:
+      - Landing/Home screen
+      - Main dashboard or feed
+      - Core action screen (primary user task)
+      - Profile or settings
+      - Create/Edit screen
+      - Results or success state
+      - Modal/dialog examples
+      - Empty states
+
+      Apply ALL design decisions:
+      - {{chosen_color_theme}} with exact colors
+      - {{chosen_design_direction}} layout and hierarchy
+      - {{design_system}} components styled per decisions
+      - {{typography_system}} applied consistently
+      - {{spacing_system}} and responsive breakpoints
+      - {{ux_patterns}} for consistency
+      - {{accessibility_requirements}}
+
+      Make it interactive:
+      - Hover states on buttons
+      - Tab switching where applicable
+      - Modal overlays
+      - Form validation states
+      - Navigation highlighting
+
+      Output as single HTML file with inline CSS and minimal JavaScript
+    </action>
+
+    <output>✨ **Created: {final_app_showcase_html}**
+
+Open this file in your browser to see {{project_name}} come to life with all your design choices applied! You can:
+
+- Navigate between screens
+- See hover and interactive states
+- Experience your chosen design direction
+- Share with stakeholders for feedback
+
+This showcases exactly what developers will build.</output>
+</check>
+
+  <check if="user_choice == 'user_journey' or similar">
+    <ask>Which user journey would you like to visualize?
+
+{{list_of_designed_journeys}}
+
+Pick one, or tell me which flow you want to see!</ask>
+
+    <action>Generate step-by-step journey HTML:
+
+      Create: {journey_visualization_html}
+
+      For {{selected_journey}}:
+      - Show each step as a full screen
+      - Include navigation between steps (prev/next buttons)
+      - Apply all design decisions consistently
+      - Show state changes and feedback
+      - Include success/error scenarios
+      - Annotate design decisions on hover
+
+      Make it feel like a real user flow through the app
+    </action>
+
+    <output>✨ **Created: {journey_visualization_html}**
+
+Walk through the {{selected_journey}} flow step-by-step in your browser! This shows the exact experience users will have, with all your UX decisions applied.</output>
+</check>
+
+  <check if="user_choice == 'something_else'">
+    <ask>Tell me what you'd like to visualize! I can generate HTML mockups for:
+- Specific screens or features
+- Interactive components
+- Responsive breakpoint comparisons
+- Accessibility features in action
+- Animation and transition concepts
+- Whatever you envision!
+
+What should I create?</ask>
+
+    <action>Generate custom HTML visualization based on user request:
+      - Parse what they want to see
+      - Apply all relevant design decisions
+      - Create interactive HTML mockup
+      - Make it visually compelling and functional
+    </action>
+
+    <output>✨ **Created: {{custom_visualization_file}}**
+
+{{description_of_what_was_created}}
+
+Open in browser to explore!</output>
+</check>
 
 <output>**✅ UX Design Specification Complete!**
 
