@@ -10,19 +10,26 @@
 <critical>This workflow is run by DEV agent AFTER user confirms a story is approved (Definition of Done is complete)</critical>
 <critical>Workflow: Update story file status to Done</critical>
 
-<step n="1" goal="Find reviewed story and mark done">
+<step n="1" goal="Find reviewed story to mark done" tag="sprint-status">
 
 <action>If {{story_path}} is provided → use it directly; extract story_key from filename or metadata; GOTO mark_done</action>
 
-<action>Otherwise query sprint-status for reviewed stories:</action>
+<critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Read ALL lines from beginning to end - do not skip any content</action>
+<action>Parse the development_status section completely</action>
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-  <param>action: list_stories</param>
-  <param>filter_status: review</param>
-  <param>limit: 10</param>
-</invoke-workflow>
+<action>Find ALL stories (reading in order from top to bottom) where:
 
-<check if="{{result_count}} == 0">
+- Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+- NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+- Status value equals "review"
+  </action>
+
+<action>Collect up to 10 review story keys in order (limit for display purposes)</action>
+<action>Count total review stories found</action>
+
+<check if="no review stories found">
   <output>📋 No stories in review status found
 
 All stories are either still in development or already done.
@@ -38,9 +45,9 @@ All stories are either still in development or already done.
 
 <action>Display available reviewed stories:
 
-**Stories Ready to Mark Done ({{result_count}} found):**
+**Stories Ready to Mark Done ({{review_count}} found):**
 
-{{result_story_list}}
+{{list_of_review_story_keys}}
 
 </action>
 
@@ -69,16 +76,17 @@ All stories are either still in development or already done.
 </action>
 
 <action>Save the story file</action>
+</step>
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-  <param>action: update_story_status</param>
-  <param>story_key: {{story_key}}</param>
-  <param>new_status: done</param>
-  <param>validate: true</param>
-</invoke-workflow>
+<step n="2" goal="Update sprint status to done" tag="sprint-status">
+<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Find development_status key matching {{story_key}}</action>
+<action>Verify current status is "review" (expected previous state)</action>
+<action>Update development_status[{{story_key}}] = "done"</action>
+<action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-<check if="{{result_success}} == false">
-  <output>⚠️ Story file updated, but could not update sprint-status: {{result_error}}
+<check if="story key not found in file">
+  <output>⚠️ Story file updated, but could not update sprint-status: {{story_key}} not found
 
 Story is marked Done in file, but sprint-status.yaml may be out of sync.
 </output>
@@ -86,12 +94,12 @@ Story is marked Done in file, but sprint-status.yaml may be out of sync.
 
 </step>
 
-<step n="2" goal="Confirm completion to user">
+<step n="3" goal="Confirm completion to user">
 
 <output>**Story Approved and Marked Done, {user_name}!**
 
 ✅ Story file updated: `{{story_file}}` → Status: Done
-✅ Sprint status updated: {{result_old_status}} → {{result_new_status}}
+✅ Sprint status updated: review → done
 
 **Completed Story:**
 

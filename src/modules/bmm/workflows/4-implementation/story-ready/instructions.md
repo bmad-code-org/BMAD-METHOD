@@ -10,19 +10,26 @@
 <critical>This workflow is run by SM agent AFTER user reviews a drafted story and confirms it's ready for development</critical>
 <critical>Simple workflow: Update story file status to Ready</critical>
 
-<step n="1" goal="Find drafted story and mark as ready">
+<step n="1" goal="Find drafted story to mark ready" tag="sprint-status">
 
 <action>If {{story_path}} is provided → use it directly; extract story_key from filename or metadata; GOTO mark_ready</action>
 
-<action>Otherwise query sprint-status for drafted stories:</action>
+<critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Read ALL lines from beginning to end - do not skip any content</action>
+<action>Parse the development_status section completely</action>
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-  <param>action: list_stories</param>
-  <param>filter_status: drafted</param>
-  <param>limit: 10</param>
-</invoke-workflow>
+<action>Find ALL stories (reading in order from top to bottom) where:
 
-<check if="{{result_count}} == 0">
+- Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+- NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+- Status value equals "drafted"
+  </action>
+
+<action>Collect up to 10 drafted story keys in order (limit for display purposes)</action>
+<action>Count total drafted stories found</action>
+
+<check if="no drafted stories found">
   <output>📋 No drafted stories found in sprint-status.yaml
 
 All stories are either still in backlog or already marked ready/in-progress/done.
@@ -37,14 +44,14 @@ All stories are either still in backlog or already marked ready/in-progress/done
 
 <action>Display available drafted stories:
 
-**Drafted Stories Available ({{result_count}} found):**
+**Drafted Stories Available ({{drafted_count}} found):**
 
-{{result_story_list}}
+{{list_of_drafted_story_keys}}
 
 </action>
 
 <ask if="{{non_interactive}} == false">Select the drafted story to mark as Ready (enter story key or number):</ask>
-<action if="{{non_interactive}} == true">Auto-select first story from result_stories</action>
+<action if="{{non_interactive}} == true">Auto-select first story from the list</action>
 
 <action>Resolve selected story_key from user input or auto-selection</action>
 <action>Find matching story file in {{story_dir}} using story_key pattern</action>
@@ -57,16 +64,17 @@ All stories are either still in backlog or already marked ready/in-progress/done
 <action>Find the "Status:" line (usually at the top)</action>
 <action>Update story file: Change Status to "Ready"</action>
 <action>Save the story file</action>
+</step>
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-  <param>action: update_story_status</param>
-  <param>story_key: {{story_key}}</param>
-  <param>new_status: ready-for-dev</param>
-  <param>validate: true</param>
-</invoke-workflow>
+<step n="2" goal="Update sprint status to ready-for-dev" tag="sprint-status">
+<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Find development_status key matching {{story_key}}</action>
+<action>Verify current status is "drafted" (expected previous state)</action>
+<action>Update development_status[{{story_key}}] = "ready-for-dev"</action>
+<action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-<check if="{{result_success}} == false">
-  <output>⚠️ Story file updated, but could not update sprint-status: {{result_error}}
+<check if="story key not found in file">
+  <output>⚠️ Story file updated, but could not update sprint-status: {{story_key}} not found
 
 You may need to run sprint-planning to refresh tracking.
 </output>
@@ -74,12 +82,12 @@ You may need to run sprint-planning to refresh tracking.
 
 </step>
 
-<step n="2" goal="Confirm completion to user">
+<step n="3" goal="Confirm completion to user">
 
 <output>**Story Marked Ready for Development, {user_name}!**
 
 ✅ Story file updated: `{{story_file}}` → Status: Ready
-✅ Sprint status updated: {{result_old_status}} → {{result_new_status}}
+✅ Sprint status updated: drafted → ready-for-dev
 
 **Story Details:**
 

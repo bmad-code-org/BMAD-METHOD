@@ -15,7 +15,7 @@
 
 <workflow>
 
-  <step n="1" goal="Locate and load story from sprint status">
+  <step n="1" goal="Find next ready story and load it" tag="sprint-status">
     <check if="{{story_path}} is provided">
       <action>Use {{story_path}} directly</action>
       <action>Read COMPLETE story file</action>
@@ -23,14 +23,18 @@
       <goto>task_check</goto>
     </check>
 
-    <action>Query sprint-status for ready stories:</action>
+    <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read ALL lines from beginning to end - do not skip any content</action>
+    <action>Parse the development_status section completely to understand story order</action>
 
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: get_next_story</param>
-      <param>filter_status: ready-for-dev</param>
-    </invoke-workflow>
+    <action>Find the FIRST story (by reading in order from top to bottom) where:
+      - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+      - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+      - Status value equals "ready-for-dev"
+    </action>
 
-    <check if="{{result_found}} == false">
+    <check if="no ready-for-dev story found">
       <output>📋 No ready-for-dev stories found in sprint-status.yaml
 
 **Options:**
@@ -41,9 +45,9 @@
       <action>HALT</action>
     </check>
 
-    <action>Use {{result_story_key}} to find story file in {{story_dir}}</action>
+    <action>Store the found story_key (e.g., "1-2-user-authentication") for later status updates</action>
+    <action>Find matching story file in {{story_dir}} using story_key pattern</action>
     <action>Read COMPLETE story file from discovered path</action>
-    <action>Store {{result_story_key}} for later status updates</action>
 
     <anchor id="task_check" />
 
@@ -55,30 +59,28 @@
     <action if="task requirements ambiguous">ASK user to clarify or HALT</action>
   </step>
 
-  <step n="1.5" goal="Mark story in-progress in sprint status">
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: get_story_status</param>
-      <param>story_key: {{result_story_key}}</param>
-    </invoke-workflow>
+  <step n="1.5" goal="Mark story in-progress" tag="sprint-status">
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read all development_status entries to find {{story_key}}</action>
+    <action>Get current status value for development_status[{{story_key}}]</action>
 
-    <check if="{{result_status}} == 'ready-for-dev'">
-      <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-        <param>action: update_story_status</param>
-        <param>story_key: {{result_story_key}}</param>
-        <param>new_status: in-progress</param>
-        <param>validate: true</param>
-      </invoke-workflow>
-
-      <check if="{{result_success}} == true">
-        <output>🚀 Starting work on story {{result_story_key}}
-Status updated: {{result_old_status}} → {{result_new_status}}
-        </output>
-      </check>
+    <check if="current status == 'ready-for-dev'">
+      <action>Update development_status[{{story_key}}] = "in-progress"</action>
+      <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
+      <output>🚀 Starting work on story {{story_key}}
+Status updated: ready-for-dev → in-progress
+      </output>
     </check>
 
-    <check if="{{result_status}} == 'in-progress'">
-      <output>⏯️ Resuming work on story {{result_story_key}}
+    <check if="current status == 'in-progress'">
+      <output>⏯️ Resuming work on story {{story_key}}
 Story is already marked in-progress
+      </output>
+    </check>
+
+    <check if="current status is neither ready-for-dev nor in-progress">
+      <output>⚠️ Unexpected story status: {{current_status}}
+Expected ready-for-dev or in-progress. Continuing anyway...
       </output>
     </check>
   </step>
@@ -123,22 +125,22 @@ Story is already marked in-progress
     <action if="no tasks remain"><goto step="6">Completion</goto></action>
   </step>
 
-  <step n="6" goal="Story completion sequence">
+  <step n="6" goal="Story completion and mark for review" tag="sprint-status">
     <action>Verify ALL tasks and subtasks are marked [x] (re-scan the story document now)</action>
     <action>Run the full regression suite (do not skip)</action>
     <action>Confirm File List includes every changed file</action>
     <action>Execute story definition-of-done checklist, if the story includes one</action>
     <action>Update the story Status to: Ready for Review</action>
 
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: update_story_status</param>
-      <param>story_key: {{result_story_key}}</param>
-      <param>new_status: review</param>
-      <param>validate: true</param>
-    </invoke-workflow>
+    <!-- Mark story ready for review -->
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Find development_status key matching {{story_key}}</action>
+    <action>Verify current status is "in-progress" (expected previous state)</action>
+    <action>Update development_status[{{story_key}}] = "review"</action>
+    <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-    <check if="{{result_success}} == false">
-      <output>⚠️ Story file updated, but sprint-status update failed: {{result_error}}
+    <check if="story key not found in file">
+      <output>⚠️ Story file updated, but sprint-status update failed: {{story_key}} not found
 
 Story is marked Ready for Review in file, but sprint-status.yaml may be out of sync.
       </output>
@@ -157,10 +159,10 @@ Story is marked Ready for Review in file, but sprint-status.yaml may be out of s
 
 **Story Details:**
 - Story ID: {{current_story_id}}
-- Story Key: {{result_story_key}}
+- Story Key: {{story_key}}
 - Title: {{current_story_title}}
 - File: {{story_path}}
-- Status: {{result_new_status}} (was {{result_old_status}})
+- Status: review (was in-progress)
 
 **Next Steps:**
 1. Review the implemented story and test the changes

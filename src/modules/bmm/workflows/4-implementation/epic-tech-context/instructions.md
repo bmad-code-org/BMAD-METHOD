@@ -16,13 +16,15 @@
     <action>Resolve output file path using workflow variables and initialize by writing the template.</action>
   </step>
 
-  <step n="1.5" goal="Validate epic in sprint status">
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: get_epic_status</param>
-      <param>epic_id: {{epic_id}}</param>
-    </invoke-workflow>
+  <step n="1.5" goal="Validate epic exists in sprint status" tag="sprint-status">
+    <critical>MUST read COMPLETE sprint-status.yaml file to find epic status</critical>
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read ALL development_status entries</action>
 
-    <check if="{{result_found}} == false">
+    <action>Look for epic key "epic-{{epic_id}}" in development_status</action>
+    <action>Get current status value if epic exists</action>
+
+    <check if="epic not found">
       <output>⚠️ Epic {{epic_id}} not found in sprint-status.yaml
 
 This epic hasn't been registered in the sprint plan yet.
@@ -31,7 +33,7 @@ Run sprint-planning workflow to initialize epic tracking.
       <action>HALT</action>
     </check>
 
-    <check if="{{result_status}} == 'contexted'">
+    <check if="epic status == 'contexted'">
       <output>ℹ️ Epic {{epic_id}} already marked as contexted
 
 Continuing to regenerate tech spec...
@@ -89,17 +91,18 @@ Continuing to regenerate tech spec...
     </template-output>
   </step>
 
-  <step n="8" goal="Validate and complete">
+  <step n="8" goal="Validate and mark epic contexted" tag="sprint-status">
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
 
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: update_epic_status</param>
-      <param>epic_id: {{epic_id}}</param>
-      <param>new_status: contexted</param>
-    </invoke-workflow>
+    <!-- Mark epic as contexted -->
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Find development_status key "epic-{{epic_id}}"</action>
+    <action>Verify current status is "backlog" (expected previous state)</action>
+    <action>Update development_status["epic-{{epic_id}}"] = "contexted"</action>
+    <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-    <check if="{{result_success}} == false">
-      <output>⚠️ Could not update epic status: {{result_error}}</output>
+    <check if="epic key not found in file">
+      <output>⚠️ Could not update epic status: epic-{{epic_id}} not found</output>
     </check>
 
     <output>**✅ Tech Spec Generated Successfully, {user_name}!**
@@ -108,7 +111,7 @@ Continuing to regenerate tech spec...
 - Epic ID: {{epic_id}}
 - Epic Title: {{epic_title}}
 - Tech Spec File: {{default_output_file}}
-- Epic Status: {{result_new_status}} (was {{result_old_status}})
+- Epic Status: contexted (was backlog)
 
 **Note:** This is a JIT (Just-In-Time) workflow - run again for other epics as needed.
 

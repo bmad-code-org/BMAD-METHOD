@@ -11,12 +11,52 @@
 <critical>DOCUMENT OUTPUT: Technical XML context file. Concise, structured, project-relative paths only. User skill level ({user_skill_level}) affects conversation style ONLY, not context content.</critical>
 
 <workflow>
-  <step n="1" goal="Locate story and initialize output">
-    <action>If {{story_path}} provided and valid → use it; else auto-discover from {{story_dir}}.</action>
-    <action>Auto-discovery: read {{story_dir}} (dev_story_location). If invalid/missing or contains no .md files, ASK for a story file path or directory to scan.</action>
-    <action>If a directory is provided, list markdown files named "story-*.md" recursively; sort by last modified time; display top {{story_selection_limit}} with index, filename, path, modified time.</action>
-    <ask optional="true" if="{{non_interactive}} == false">"Select a story (1-{{story_selection_limit}}) or enter a path:"</ask>
-    <action>If {{non_interactive}} == true: choose the most recently modified story automatically. If none found, HALT with a clear message to provide 'story_path' or 'story_dir'. Else resolve selection into {{story_path}} and READ COMPLETE file.</action>
+  <step n="1" goal="Find drafted story from sprint status" tag="sprint-status">
+    <action>If {{story_path}} provided and valid → use it; extract story_key from filename/metadata; GOTO initialize_context</action>
+
+    <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read ALL lines from beginning to end - do not skip any content</action>
+    <action>Parse the development_status section completely</action>
+
+    <action>Find ALL stories (reading in order from top to bottom) where:
+      - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+      - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+      - Status value equals "drafted"
+    </action>
+
+    <action>Collect up to 10 drafted story keys in order (limit for display purposes)</action>
+    <action>Count total drafted stories found</action>
+
+    <check if="no drafted stories found">
+      <output>📋 No drafted stories found in sprint-status.yaml
+
+All stories are either still in backlog or already marked ready/in-progress/done.
+
+**Options:**
+1. Run `create-story` to draft more stories
+2. Run `sprint-planning` to refresh story tracking
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <action>Display available drafted stories:
+
+**Drafted Stories Available ({{drafted_count}} found):**
+
+{{list_of_drafted_story_keys}}
+
+    </action>
+
+    <ask if="{{non_interactive}} == false">Select the drafted story to generate context for (enter story key or number):</ask>
+    <action if="{{non_interactive}} == true">Auto-select first story from the list</action>
+
+    <action>Resolve selected story_key from user input or auto-selection</action>
+    <action>Find matching story file in {{story_dir}} using story_key pattern</action>
+    <action>Resolve {{story_path}} and READ COMPLETE file</action>
+
+    <anchor id="initialize_context" />
+
     <action>Extract {{epic_id}}, {{story_id}}, {{story_title}}, {{story_status}} from filename/content; parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes.</action>
     <action>Extract user story fields (asA, iWant, soThat).</action>
     <action>Store project root path for relative path conversion: extract from {project-root} variable.</action>
@@ -91,16 +131,36 @@
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
   </step>
 
-  <step n="7" goal="Update story status and context reference">
-    <action>Open {{story_path}}; if Status == 'Draft' then set to 'ContextReadyDraft'; otherwise leave unchanged.</action>
+  <step n="7" goal="Update story file and mark ready for dev" tag="sprint-status">
+    <action>Open {{story_path}}</action>
+    <action>Find the "Status:" line (usually at the top)</action>
+    <action>Update story file: Change Status to "Ready"</action>
     <action>Under 'Dev Agent Record' → 'Context Reference' (create if missing), add or update a list item for {default_output_file}.</action>
     <action>Save the story file.</action>
+
+    <!-- Update sprint status to mark ready-for-dev -->
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Find development_status key matching {{story_key}}</action>
+    <action>Verify current status is "drafted" (expected previous state)</action>
+    <action>Update development_status[{{story_key}}] = "ready-for-dev"</action>
+    <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
+
+    <check if="story key not found in file">
+      <output>⚠️ Story file updated, but could not update sprint-status: {{story_key}} not found
+
+You may need to run sprint-planning to refresh tracking.
+      </output>
+    </check>
+
     <output>**✅ Story Context Generated Successfully, {user_name}!**
 
 **Story Details:**
 - Story ID: {{story_id}}
+- Story Key: {{story_key}}
 - Title: {{story_title}}
 - Context File: {{default_output_file}}
+- Story Status: Ready (was Draft)
+- Sprint Status: ready-for-dev (was drafted)
 
 **Next Steps:**
 1. Load DEV agent (bmad/bmm/agents/dev.md)

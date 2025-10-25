@@ -14,7 +14,7 @@
 
 <workflow>
 
-  <step n="1" goal="Locate story and verify review status">
+  <step n="1" goal="Find story ready for review" tag="sprint-status">
     <check if="{{story_path}} is provided">
       <action>Use {{story_path}} directly</action>
       <action>Read COMPLETE file and parse sections</action>
@@ -22,15 +22,21 @@
       <goto>verify_status</goto>
     </check>
 
-    <action>Query sprint-status for review stories:</action>
+    <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read ALL lines from beginning to end - do not skip any content</action>
+    <action>Parse the development_status section completely</action>
 
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: list_stories</param>
-      <param>filter_status: review</param>
-      <param>limit: 10</param>
-    </invoke-workflow>
+    <action>Find ALL stories (reading in order from top to bottom) where:
+      - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+      - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+      - Status value equals "review"
+    </action>
 
-    <check if="{{result_count}} == 0">
+    <action>Collect up to 10 review story keys in order (limit for display purposes)</action>
+    <action>Count total review stories found</action>
+
+    <check if="no review stories found">
       <output>📋 No stories in review status found
 
 **Options:**
@@ -42,14 +48,14 @@
 
     <action>Display available review stories:
 
-**Stories Ready for Review ({{result_count}} found):**
+**Stories Ready for Review ({{review_count}} found):**
 
-{{result_story_list}}
+{{list_of_review_story_keys}}
 
     </action>
 
     <ask if="{{non_interactive}} == false">Select story to review (enter story key or number):</ask>
-    <action if="{{non_interactive}} == true">Auto-select first story from result_stories</action>
+    <action if="{{non_interactive}} == true">Auto-select first story from the list</action>
 
     <action>Resolve selected story_key and find file path in {{story_dir}}</action>
     <action>Resolve {{story_path}} and read the COMPLETE file</action>
@@ -118,26 +124,25 @@
     <action>Save the story file.</action>
   </step>
 
-  <step n="7.5" goal="Update sprint-status based on review outcome">
+  <step n="7.5" goal="Update sprint status based on review outcome" tag="sprint-status">
     <action>Determine target status based on review outcome:
       - If {{outcome}} == "Approve" → target_status = "done"
       - If {{outcome}} == "Changes Requested" → target_status = "in-progress"
       - If {{outcome}} == "Blocked" → target_status = "review" (stay in review)
     </action>
 
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: update_story_status</param>
-      <param>story_key: {{story_key}}</param>
-      <param>new_status: {{target_status}}</param>
-      <param>validate: true</param>
-    </invoke-workflow>
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read all development_status entries to find {{story_key}}</action>
+    <action>Verify current status is "review" (expected previous state)</action>
+    <action>Update development_status[{{story_key}}] = {{target_status}}</action>
+    <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-    <check if="{{result_success}} == true">
-      <output>✅ Sprint status updated: {{result_old_status}} → {{result_new_status}}</output>
+    <check if="update successful">
+      <output>✅ Sprint status updated: review → {{target_status}}</output>
     </check>
 
-    <check if="{{result_success}} == false">
-      <output>⚠️ Could not update sprint-status: {{result_error}}
+    <check if="story key not found">
+      <output>⚠️ Could not update sprint-status: {{story_key}} not found
 
 Review was saved to story file, but sprint-status.yaml may be out of sync.
       </output>
@@ -170,7 +175,7 @@ Review was saved to story file, but sprint-status.yaml may be out of sync.
 - Story: {{epic_num}}.{{story_num}}
 - Story Key: {{story_key}}
 - Review Outcome: {{outcome}}
-- Sprint Status: {{result_new_status}}
+- Sprint Status: {{target_status}}
 - Action Items: {{action_item_count}}
 
 **Next Steps:**

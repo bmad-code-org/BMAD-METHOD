@@ -28,15 +28,19 @@
     <action>READ COMPLETE FILES for all items found in the prioritized set. Store content and paths for citation.</action>
   </step>
 
-  <step n="3" goal="Determine target story from sprint status">
-    <action>Query sprint-status for next backlog story:</action>
+  <step n="3" goal="Find next backlog story to draft" tag="sprint-status">
+    <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read ALL lines from beginning to end - do not skip any content</action>
+    <action>Parse the development_status section completely to understand story order</action>
 
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: get_next_story</param>
-      <param>filter_status: backlog</param>
-    </invoke-workflow>
+    <action>Find the FIRST story (by reading in order from top to bottom) where:
+      - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+      - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+      - Status value equals "backlog"
+    </action>
 
-    <check if="{{result_found}} == false">
+    <check if="no backlog story found">
       <output>📋 No backlog stories found in sprint-status.yaml
 
 All stories are either already drafted or completed.
@@ -49,13 +53,16 @@ All stories are either already drafted or completed.
       <action>HALT</action>
     </check>
 
-    <action>Parse {{result_story_key}} to extract epic_num, story_num, and story_title
-      Example: "1-2-user-authentication" → epic_num=1, story_num=2, title="user-authentication"
+    <action>Extract from found story key (e.g., "1-2-user-authentication"):
+      - epic_num: first number before dash (e.g., "1")
+      - story_num: second number after first dash (e.g., "2")
+      - story_title: remainder after second dash (e.g., "user-authentication")
     </action>
     <action>Set {{story_id}} = "{{epic_num}}.{{story_num}}"</action>
+    <action>Store story_key for later use (e.g., "1-2-user-authentication")</action>
 
     <action>Verify story is enumerated in {{epics_file}}. If not found, HALT with message:</action>
-    <action>"Story {{result_story_key}} not found in epics.md. Please load PM agent and run correct-course to sync epics, then rerun create-story."</action>
+    <action>"Story {{story_key}} not found in epics.md. Please load PM agent and run correct-course to sync epics, then rerun create-story."</action>
 
     <action>Check if story file already exists at expected path in {{story_dir}}</action>
     <check if="story file exists">
@@ -97,19 +104,20 @@ Will update existing story file rather than creating new one.
     <template-output file="{default_output_file}">change_log</template-output>
   </step>
 
-  <step n="8" goal="Validate, save, and optionally generate context">
+  <step n="8" goal="Validate, save, and mark story drafted" tag="sprint-status">
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Save document unconditionally (non-interactive default). In interactive mode, allow user confirmation.</action>
 
-    <invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-      <param>action: update_story_status</param>
-      <param>story_key: {{result_story_key}}</param>
-      <param>new_status: drafted</param>
-      <param>validate: true</param>
-    </invoke-workflow>
+    <!-- Mark story as drafted in sprint status -->
+    <action>Update {{output_folder}}/sprint-status.yaml</action>
+    <action>Load the FULL file and read all development_status entries</action>
+    <action>Find development_status key matching {{story_key}}</action>
+    <action>Verify current status is "backlog" (expected previous state)</action>
+    <action>Update development_status[{{story_key}}] = "drafted"</action>
+    <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-    <check if="{{result_success}} == false">
-      <output>⚠️ Could not update story status: {{result_error}}
+    <check if="story key not found in file">
+      <output>⚠️ Could not update story status: {{story_key}} not found in sprint-status.yaml
 
 Story file was created successfully, but sprint-status.yaml was not updated.
 You may need to run sprint-planning to refresh tracking.
@@ -122,9 +130,9 @@ You may need to run sprint-planning to refresh tracking.
 
 **Story Details:**
 - Story ID: {{story_id}}
-- Story Key: {{result_story_key}}
+- Story Key: {{story_key}}
 - File: {{story_file}}
-- Status: {{result_new_status}} (was {{result_old_status}})
+- Status: drafted (was backlog)
 
 **Next Steps:**
 1. Review the drafted story in {{story_file}}

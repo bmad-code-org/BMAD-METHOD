@@ -7,17 +7,12 @@ Aside from stability and bug fixes found during the alpha period - the main focu
 - NPX installer
 - github pipelines, branch protection, vulnerability scanners
 - subagent injections reenabled
-- Solutioning Architecture
-  - is not asking for advanced elicitation
-  - the order of the document needs to rework the start to first align on what type of project architecture it is
-  - the architect put out some other not asked for documents as part of the final step
-  - the architect started dumping out the epic 1 tech spec with way too much prescriptive code in it
-- both the PRD and the solutioning process need to work in more of the questioning before dumping out a section (this might be happening since so much is already known from the brief though)
-- the UX Agent ux-spec process needs updates to be MUCH more interactive
-- the UX agent needs to be given commands to generate comps or mock ups in HTML - it works really well, just need to make it an actual thing the agent offers to do
+- docs docs docs
 
 --- done ---
 
+- Done - UX Expert replaced with UX Designer and has a massively improved create-design workflow.
+- Done - Architecture Reworked, searches web, more user interactive
 - Done - Sprint Status Workflow to generate the story status tracker
 - Done - Brownfield v6 integrated into the workflow.
 - Done - Full workflow single file tracking.

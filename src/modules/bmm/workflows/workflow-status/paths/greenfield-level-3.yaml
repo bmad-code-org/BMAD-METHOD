@@ -57,7 +57,7 @@ phases:
         agent: "architect"
         command: "validate-architecture"
       - id: "solutioning-gate-check"
-        required: true
+        recommended: true
         agent: "architect"
         command: "solutioning-gate-check"
         note: "Validate PRD + UX + architecture cohesion before implementation"

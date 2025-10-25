@@ -160,6 +160,9 @@ Is that correct? (y/n or tell me what's different)</ask>
 <check if="answer == y">
   <action>Save status file to {output_folder}/bmm-workflow-status.md</action>
   <output>✅ Status file created! Next up: {{next_agent}} agent, run `{{next_command}}`</output>
+  <check if="next_agent !== current_agent">
+    <output>It is strongly recommended to clear the context or start a new chat and load the next agent to execute the next command from that agents help menu, unless there is something else I can do for you first.</output>
+  </check>
 </check>
 </step>
 

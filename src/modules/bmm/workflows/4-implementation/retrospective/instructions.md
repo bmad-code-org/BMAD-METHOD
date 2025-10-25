@@ -20,30 +20,40 @@ FACILITATION NOTES:
 
 <workflow>
 
-<step n="1" goal="Epic Context Discovery">
+<step n="1" goal="Epic Context Discovery and verify completion" tag="sprint-status">
 <action>Help the user identify which epic was just completed through natural conversation</action>
 <action>Attempt to auto-detect by checking {output_folder}/stories/ for the highest numbered completed story and extracting the epic number</action>
 <action>If auto-detection succeeds, confirm with user: "It looks like Epic {{epic_number}} was just completed - is that correct?"</action>
 <action>If auto-detection fails or user indicates different epic, ask them to share which epic they just completed</action>
 
-<action>Verify epic completion status in sprint-status:</action>
+<action>Verify epic completion status:</action>
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-  <param>action: check_epic_complete</param>
-  <param>epic_id: {{epic_number}}</param>
-</invoke-workflow>
+<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Read ALL development_status entries</action>
 
-<check if="{{result_complete}} == false">
+<action>Find all stories for epic {{epic_number}}:
+
+- Look for keys starting with "{{epic_number}}-" (e.g., "1-1-", "1-2-", etc.)
+- Exclude epic key itself ("epic-{{epic_number}}")
+- Exclude retrospective key ("epic-{{epic_number}}-retrospective")
+  </action>
+
+<action>Count total stories found for this epic</action>
+<action>Count stories with status = "done"</action>
+<action>Collect list of pending story keys (status != "done")</action>
+<action>Determine if complete: true if all stories are done, false otherwise</action>
+
+<check if="epic is not complete">
   <output>⚠️ Epic {{epic_number}} is not yet complete for retrospective
 
 **Epic Status:**
 
-- Total Stories: {{result_total_stories}}
-- Completed (Done): {{result_done_stories}}
-- Pending: {{result_total_stories - result_done_stories}}
+- Total Stories: {{total_stories}}
+- Completed (Done): {{done_stories}}
+- Pending: {{pending_count}}
 
 **Pending Stories:**
-{{result_pending_stories}}
+{{pending_story_list}}
 
 **Options:**
 
@@ -61,8 +71,8 @@ FACILITATION NOTES:
 <action if="user says yes">Set {{partial_retrospective}} = true</action>
 </check>
 
-<check if="{{result_complete}} == true">
-  <output>✅ Epic {{epic_number}} is complete - all {{result_done_stories}} stories done!
+<check if="epic is complete">
+  <output>✅ Epic {{epic_number}} is complete - all {{done_stories}} stories done!
 
 Ready to proceed with retrospective.
 </output>
@@ -403,27 +413,32 @@ See you at sprint planning once prep work is done!"
 ```
 
 <action>Save retrospective summary to: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md</action>
+</step>
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/helpers/sprint-status">
-  <param>action: complete_retrospective</param>
-  <param>epic_id: {{completed_number}}</param>
-</invoke-workflow>
+<step n="9" goal="Mark retrospective completed in sprint status" tag="sprint-status">
+<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Find development_status key "epic-{{completed_number}}-retrospective"</action>
+<action>Verify current status is "optional" (expected previous state)</action>
+<action>Update development_status["epic-{{completed_number}}-retrospective"] = "completed"</action>
+<action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-<check if="{{result_success}} == true">
+<check if="update successful">
   <output>✅ Retrospective marked as completed in sprint-status.yaml
 
-Retrospective key: {{result_retro_key}}
-Status: {{result_old_status}} → {{result_new_status}}
+Retrospective key: epic-{{completed_number}}-retrospective
+Status: optional → completed
 </output>
 </check>
 
-<check if="{{result_success}} == false">
-  <output>⚠️ Could not update retrospective status: {{result_error}}
+<check if="retrospective key not found">
+  <output>⚠️ Could not update retrospective status: epic-{{completed_number}}-retrospective not found
 
 Retrospective document was saved, but sprint-status.yaml may need manual update.
 </output>
 </check>
+</step>
 
+<step n="10" goal="Final summary">
 <action>Confirm all action items have been captured</action>
 <action>Remind user to schedule prep sprint if needed</action>
 <output>**✅ Retrospective Complete, {user_name}!**
@@ -431,7 +446,7 @@ Retrospective document was saved, but sprint-status.yaml may need manual update.
 **Epic Review:**
 
 - Epic {{completed_number}}: {{epic_title}} reviewed
-- Retrospective Status: {{result_new_status}}
+- Retrospective Status: completed
 - Retrospective saved: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md
 - Action Items: {{action_count}}
 - Preparation Tasks: {{prep_task_count}}
