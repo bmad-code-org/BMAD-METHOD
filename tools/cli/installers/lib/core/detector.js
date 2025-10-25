@@ -211,10 +211,11 @@ class Detector {
 
     // Check inside various IDE command folders for legacy bmad folders
     // List of IDE config folders that might have commands directories
-    const ideConfigFolders = ['.claude', '.crush', '.continue', '.cursor', '.windsurf', '.cline', '.roo-cline'];
+    const ideConfigFolders = ['.opencode', '.claude', '.crush', '.continue', '.cursor', '.windsurf', '.cline', '.roo-cline'];
 
     for (const ideFolder of ideConfigFolders) {
-      const commandsPath = path.join(projectDir, ideFolder, 'commands');
+      const commandsDirName = ideFolder === '.opencode' ? 'command' : 'commands';
+      const commandsPath = path.join(projectDir, ideFolder, commandsDirName);
       if (await fs.pathExists(commandsPath)) {
         try {
           const commandEntries = await fs.readdir(commandsPath, { withFileTypes: true });
