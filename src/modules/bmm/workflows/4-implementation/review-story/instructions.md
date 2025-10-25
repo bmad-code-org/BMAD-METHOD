@@ -64,7 +64,7 @@
 
     <action>Extract {{epic_num}} and {{story_num}} from filename (e.g., story-2.3.*.md) and story metadata if available</action>
     <action>Parse sections: Status, Story, Acceptance Criteria, Tasks/Subtasks (and completion states), Dev Notes, Dev Agent Record (Context Reference, Completion Notes, File List), Change Log</action>
-    <action if="Status is not one of {{allow_status_values}}">HALT with message: "Story status must be 'Ready for Review' to proceed" (accept 'Review' as equivalent).</action>
+    <action if="Status is not one of {{allow_status_values}}">HALT with message: "Story status must be 'review' to proceed".</action>
     <action if="story cannot be read">HALT.</action>
   </step>
 

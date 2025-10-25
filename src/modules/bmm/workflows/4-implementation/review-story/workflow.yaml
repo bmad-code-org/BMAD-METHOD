@@ -24,8 +24,7 @@ variables:
   story_dir: "{config_source}:dev_story_location" # Directory containing story markdown files
   story_selection_limit: 10
   allow_status_values: |
-    - Ready for Review
-    - Review
+    - review
   auto_discover_context: true
   auto_discover_tech_spec: true
   tech_spec_search_dir: "{project-root}/docs"
@@ -38,8 +37,8 @@ variables:
   enable_mcp_doc_search: true # Prefer enabled MCP servers for doc/best-practice lookup
   enable_web_fallback: true # Fallback to web search/read-url if MCP not available
   update_status_on_result: true # If true, update story Status based on review outcome
-  status_on_approve: "Review Passed"
-  status_on_changes_requested: "InProgress"
+  status_on_approve: "done"
+  status_on_changes_requested: "in-progress"
   # Persistence controls for review action items and notes
   persist_action_items: true
   # Valid targets: story_tasks, story_review_section, backlog_file, epic_followups

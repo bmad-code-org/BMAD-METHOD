@@ -37,7 +37,8 @@ variables:
   non_interactive: true # Generate without elicitation; avoid interactive prompts
 
 # Output configuration
-default_output_file: "{story_dir}/story-{{epic_num}}.{{story_num}}.md"
+# Uses story_key from sprint-status.yaml (e.g., "1-2-user-authentication")
+default_output_file: "{story_dir}/{{story_key}}.md"
 
 recommended_inputs:
   - epics: "Epic breakdown (epics.md)"

@@ -134,7 +134,7 @@ All stories are either still in backlog or already marked ready/in-progress/done
   <step n="7" goal="Update story file and mark ready for dev" tag="sprint-status">
     <action>Open {{story_path}}</action>
     <action>Find the "Status:" line (usually at the top)</action>
-    <action>Update story file: Change Status to "Ready"</action>
+    <action>Update story file: Change Status to "ready-for-dev"</action>
     <action>Under 'Dev Agent Record' → 'Context Reference' (create if missing), add or update a list item for {default_output_file}.</action>
     <action>Save the story file.</action>
 
@@ -152,21 +152,31 @@ You may need to run sprint-planning to refresh tracking.
       </output>
     </check>
 
-    <output>**✅ Story Context Generated Successfully, {user_name}!**
+    <action>Communicate to {user_name} that story context has been successfully generated</action>
+    <action>Summarize what was accomplished: story ID, story key, title, context file location</action>
+    <action>Explain that story status is now "ready-for-dev" (was "drafted") and sprint status is "ready-for-dev" (was "drafted")</action>
+    <action>Highlight the value of the generated context: provides docs, code references, interfaces, constraints, and test guidance</action>
 
-**Story Details:**
-- Story ID: {{story_id}}
-- Story Key: {{story_key}}
-- Title: {{story_title}}
-- Context File: {{default_output_file}}
-- Story Status: Ready (was Draft)
-- Sprint Status: ready-for-dev (was drafted)
+    <action>Based on {user_skill_level}, ask if user would like to understand:
+      - What information was gathered in the context file
+      - How the context file will help during implementation
+      - What the next steps are
+      - Anything else about the context generation process
+    </action>
 
-**Next Steps:**
-1. Load DEV agent (bmad/bmm/agents/dev.md)
-2. Run `dev-story` workflow to implement the story
-3. The context file will provide comprehensive implementation guidance
-    </output>
+    <check if="user asks for explanations">
+      <action>Provide clear explanations tailored to {user_skill_level}</action>
+      <action>Reference specific sections of the generated context when helpful</action>
+    </check>
+
+    <action>Once explanations are complete (or user indicates no questions), suggest logical next steps</action>
+    <action>Common next steps to suggest (but allow user flexibility):
+      - Review the generated context file to understand implementation guidance
+      - Load DEV agent and run `dev-story` workflow to implement the story
+      - Check sprint-status.yaml to see which stories are ready for development
+      - Generate context for additional drafted stories if needed
+    </action>
+    <action>Remain flexible - allow user to choose their own path or ask for other assistance</action>
   </step>
 
 </workflow>

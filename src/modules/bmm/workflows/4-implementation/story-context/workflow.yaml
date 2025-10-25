@@ -8,6 +8,8 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+story_path: "{config_source}:dev_story_location"
+context_path: "{config_source}:dev_story_location"
 date: system-generated
 
 # Workflow components
@@ -26,10 +28,7 @@ variables:
   non_interactive: true
 
 # Output configuration
-default_output_file: "{story_dir}/story-context-{{epic_id}}.{{story_id}}.xml"
-
-# Recommended inputs
-recommended_inputs:
-  - story_markdown: "Path to a story markdown file to build context for"
+# Uses story_key from sprint-status.yaml (e.g., "1-2-user-authentication")
+default_output_file: "{story_dir}/{{story_key}}.context.md"
 
 web_bundle: false

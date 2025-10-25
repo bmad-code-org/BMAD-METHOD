@@ -62,7 +62,7 @@ All stories are either still in development or already done.
 <action>Extract story_id and story_title from the file</action>
 
 <action>Find the "Status:" line (usually at the top)</action>
-<action>Update story file: Change Status to "Done"</action>
+<action>Update story file: Change Status to "done"</action>
 
 <action>Add completion notes to Dev Agent Record section:</action>
 <action>Find "## Dev Agent Record" section and add:
@@ -98,7 +98,7 @@ Story is marked Done in file, but sprint-status.yaml may be out of sync.
 
 <output>**Story Approved and Marked Done, {user_name}!**
 
-✅ Story file updated: `{{story_file}}` → Status: Done
+✅ Story file updated: `{{story_file}}` → Status: done
 ✅ Sprint status updated: review → done
 
 **Completed Story:**

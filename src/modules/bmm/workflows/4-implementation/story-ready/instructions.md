@@ -62,7 +62,7 @@ All stories are either still in backlog or already marked ready/in-progress/done
 <action>Extract story_id and story_title from the file</action>
 
 <action>Find the "Status:" line (usually at the top)</action>
-<action>Update story file: Change Status to "Ready"</action>
+<action>Update story file: Change Status to "ready-for-dev"</action>
 <action>Save the story file</action>
 </step>
 
@@ -86,7 +86,7 @@ You may need to run sprint-planning to refresh tracking.
 
 <output>**Story Marked Ready for Development, {user_name}!**
 
-✅ Story file updated: `{{story_file}}` → Status: Ready
+✅ Story file updated: `{{story_file}}` → Status: ready-for-dev
 ✅ Sprint status updated: drafted → ready-for-dev
 
 **Story Details:**
@@ -95,7 +95,7 @@ You may need to run sprint-planning to refresh tracking.
 - **Key:** {{story_key}}
 - **Title:** {{story_title}}
 - **File:** `{{story_file}}`
-- **Status:** Ready for development
+- **Status:** ready-for-dev
 
 **Next Steps:**
 
