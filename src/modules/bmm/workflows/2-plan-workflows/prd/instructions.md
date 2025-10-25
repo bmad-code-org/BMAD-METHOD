@@ -428,19 +428,10 @@ For each epic from the epic list, expand with full story details:
 
 **Next Steps:**
 
-{{#if project_level == 2}}
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- **Optional:** Review PRD and epics with stakeholders, or run `create-design` if you have UI requirements
 
-- Review PRD and epics with stakeholders
-- **Next:** Run `tech-spec` for lightweight technical planning
-- Then proceed to implementation
-  {{/if}}
-
-{{#if project_level >= 3}}
-
-- Review PRD and epics with stakeholders
-- **Next:** Run `create-architecture` for full technical design
-- Then proceed to implementation
-  {{/if}}
+Check status anytime with: `workflow-status`
 
 Would you like to:
 

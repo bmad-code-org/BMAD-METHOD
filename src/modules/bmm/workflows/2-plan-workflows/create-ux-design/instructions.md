@@ -1256,32 +1256,26 @@ Open in browser to explore!</output>
 
 **Recommended Next Steps:**
 
-1. **Validate UX Specification** (Recommended first!) - Run the validation checklist with \*validate-design
-   - Ensures collaborative process was followed
-   - Validates visual artifacts were generated
-   - Confirms decision rationale is documented
-   - Verifies implementation readiness
+{{#if tracking_mode == true}}
 
-2. **Follow-Up Workflows** - This specification can serve as input to:
-   - **Wireframe Generation Workflow** - Create detailed wireframes from user flows
-   - **Figma Design Workflow** - Generate Figma files via MCP integration
-   - **Interactive Prototype Workflow** - Build clickable HTML prototypes
-   - **Component Showcase Workflow** - Create interactive component library
-   - **AI Frontend Prompt Workflow** - Generate prompts for v0, Lovable, Bolt
-   - **Solution Architecture Workflow** - Define technical architecture with UX context
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- **Optional:** Run validation with \*validate-design, or generate additional UX artifacts (wireframes, prototypes, etc.)
 
-As additional workflows are run, they will add their outputs to the "Optional Enhancement Deliverables" section of the UX specification.
-</output>
+Check status anytime with: `workflow-status`
+{{else}}
+Since no workflow is in progress:
 
-  <check if="tracking_mode == true">
-    <output>
+- Run validation checklist with \*validate-design (recommended)
+- Refer to the BMM workflow guide if unsure what to do next
+- Or run `workflow-init` to create a workflow path and get guided next steps
 
-**Planning Workflow Integration:**
+**Optional Follow-Up Workflows:**
 
-Status updated. Next suggested workflow: {{next_workflow_from_status}}
-Run with: workflow {{next_workflow_name}}
-</output>
-</check>
+- Wireframe Generation / Figma Design / Interactive Prototype workflows
+- Component Showcase / AI Frontend Prompt workflows
+- Solution Architecture workflow (with UX context)
+  {{/if}}
+  </output>
 
 <template-output>completion_summary</template-output>
 </step>

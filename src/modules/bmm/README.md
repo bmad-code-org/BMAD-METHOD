@@ -31,7 +31,7 @@ The heart of BMM - structured workflows for the four development phases:
    - `product-brief` - Product strategy
 
 2. **Planning Phase** (Required)
-   - `plan-project` - Scale-adaptive project planning
+   - `prd` - Scale-adaptive project planning
    - Routes to appropriate documentation based on project complexity
 
 3. **Solutioning Phase** (Level 3-4 projects)
@@ -69,7 +69,7 @@ Test architecture and quality assurance components. The **[Test Architect (TEA) 
 ```bash
 # Load the PM agent - either via slash command or drag and drop or @ the agent file.
 # Once loaded, the agent should greet you and offer a menu of options. You can enter:
-`*plan-project`
+`*prd`
 ```
 
 ## Key Concepts

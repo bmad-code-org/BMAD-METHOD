@@ -303,14 +303,19 @@ This brief will serve as the primary input for creating the Product Requirements
 
 **Next Steps:**
 
-1. Review the product brief document
-2. Gather any additional stakeholder input
-3. Run `plan-project` workflow to create PRD from this brief
-
 {{#if standalone_mode != true}}
+
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- **Optional:** Gather additional stakeholder input or run research workflows before proceeding
+
 Check status anytime with: `workflow-status`
-{{/if}}
-</output>
-</step>
+{{else}}
+Since no workflow is in progress:
+
+- Refer to the BMM workflow guide if unsure what to do next
+- Or run `workflow-init` to create a workflow path and get guided next steps
+  {{/if}}
+  </output>
+  </step>
 
 </workflow>

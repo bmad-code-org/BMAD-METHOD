@@ -130,7 +130,7 @@ Automatically consults TEA knowledge base:
 
 **Before framework:**
 
-- **plan-project** (Phase 2): Determines project scope and testing needs
+- **prd** (Phase 2): Determines project scope and testing needs
 - **workflow-status**: Verifies project readiness
 
 **After framework:**

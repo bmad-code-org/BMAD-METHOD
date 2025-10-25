@@ -89,23 +89,21 @@
 **Status Updated:**
 
 - Progress tracking updated
-  {{else}}
-  Note: Running in standalone mode (no status file).
-  To track progress across workflows, run `workflow-init` first.
-  {{/if}}
 
 **Next Steps:**
 
-1. Review game brainstorming results
-2. Consider running:
-   - `research` workflow for market/game research
-   - `game-brief` workflow to formalize game vision
-   - Or proceed directly to `plan-project` if ready
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- **Optional:** You can run other analysis workflows (research, game-brief) before proceeding
 
-{{#if standalone_mode != true}}
 Check status anytime with: `workflow-status`
-{{/if}}
-</output>
-</step>
+{{else}}
+**Next Steps:**
+Since no workflow is in progress:
+
+- Refer to the BMM workflow guide if unsure what to do next
+- Or run `workflow-init` to create a workflow path and get guided next steps
+  {{/if}}
+  </output>
+  </step>
 
 </workflow>

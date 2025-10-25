@@ -18,7 +18,7 @@ TEA integrates across the entire BMad development lifecycle, providing quality a
 ┌──────────────────────────────────────────────────────────┐
 │             BMM Phase 2: PLANNING                        │
 │                                                          │
-│  PM: *plan-project                                       │
+│  PM: *prd                                       │
 │       ↓                                                  │
 │  TEA: *framework ──→ *ci ──→ *test-design                │
 │       └─────────┬─────────────┘                          │
@@ -105,7 +105,7 @@ This complexity **requires specialized documentation** (this guide), **extensive
 
 1. Run the core planning workflows first:
    - Analyst `*product-brief`
-   - Product Manager `*plan-project`
+   - Product Manager `*prd`
    - Architect `*create-architecture`
 2. Confirm `bmad/bmm/config.yaml` defines `project_name`, `output_folder`, `dev_story_location`, and language settings.
 3. Ensure a test test framework setup exists; if not, use `*framework` command to create a test framework setup, prior to development.
@@ -116,14 +116,14 @@ This complexity **requires specialized documentation** (this guide), **extensive
 
 ### Greenfield Feature Launch (Level 2)
 
-| Phase              | Test Architect                                                            | Dev / Team                                                                     | Outputs                                                                      |
-| ------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| Setup              | -                                                                         | Analyst `*product-brief`, PM `*plan-project`, Architect `*create-architecture` | `{output_folder}/product-brief*.md`, `PRD.md`, `epics.md`, `architecture.md` |
-| Pre-Implementation | Run `*framework` (if harness missing), `*ci`, and `*test-design`          | Review risk/design/CI guidance, align backlog                                  | Test scaffold, CI pipeline, risk and coverage strategy                       |
-| Story Prep         | -                                                                         | Scrum Master `*create-story`, `*story-context`                                 | Story markdown + context XML                                                 |
-| Implementation     | (Optional) Trigger `*atdd` before dev to supply failing tests + checklist | Implement story guided by ATDD checklist                                       | Failing acceptance tests + implementation checklist                          |
-| Post-Dev           | Execute `*automate`, (Optional) `*test-review`, re-run `*trace`           | Address recommendations, update code/tests                                     | Regression specs, quality report, refreshed coverage matrix                  |
-| Release            | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)         | Confirm Definition of Done, share release notes                                | Quality audit, Gate YAML + release summary (owners, waivers)                 |
+| Phase              | Test Architect                                                            | Dev / Team                                                            | Outputs                                                                      |
+| ------------------ | ------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Setup              | -                                                                         | Analyst `*product-brief`, PM `*prd`, Architect `*create-architecture` | `{output_folder}/product-brief*.md`, `PRD.md`, `epics.md`, `architecture.md` |
+| Pre-Implementation | Run `*framework` (if harness missing), `*ci`, and `*test-design`          | Review risk/design/CI guidance, align backlog                         | Test scaffold, CI pipeline, risk and coverage strategy                       |
+| Story Prep         | -                                                                         | Scrum Master `*create-story`, `*story-context`                        | Story markdown + context XML                                                 |
+| Implementation     | (Optional) Trigger `*atdd` before dev to supply failing tests + checklist | Implement story guided by ATDD checklist                              | Failing acceptance tests + implementation checklist                          |
+| Post-Dev           | Execute `*automate`, (Optional) `*test-review`, re-run `*trace`           | Address recommendations, update code/tests                            | Regression specs, quality report, refreshed coverage matrix                  |
+| Release            | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)         | Confirm Definition of Done, share release notes                       | Quality audit, Gate YAML + release summary (owners, waivers)                 |
 
 <details>
 <summary>Execution Notes</summary>
@@ -139,7 +139,7 @@ This complexity **requires specialized documentation** (this guide), **extensive
 <details>
 <summary>Worked Example – “Nova CRM” Greenfield Feature</summary>
 
-1. **Planning:** Analyst runs `*product-brief`; PM executes `*plan-project` to produce PRD and epics; Architect completes `*create-architecture` for the new module.
+1. **Planning:** Analyst runs `*product-brief`; PM executes `*prd` to produce PRD and epics; Architect completes `*create-architecture` for the new module.
 2. **Setup:** TEA checks harness via `*framework`, configures `*ci`, and runs `*test-design` to capture risk/coverage plans.
 3. **Story Prep:** Scrum Master generates the story via `*create-story`; PO validates using `*solutioning-gate-check`.
 4. **Implementation:** TEA optionally runs `*atdd`; Dev implements with guidance from failing tests and the plan.
@@ -174,7 +174,7 @@ This complexity **requires specialized documentation** (this guide), **extensive
 <details>
 <summary>Worked Example – “Atlas Payments” Brownfield Story</summary>
 
-1. **Context Refresh:** Analyst reruns `*product-brief`; PM executes `*plan-project` to update PRD, analysis, and `epics.md`; Architect triggers `*create-architecture` capturing legacy payment flows.
+1. **Context Refresh:** Analyst reruns `*product-brief`; PM executes `*prd` to update PRD, analysis, and `epics.md`; Architect triggers `*create-architecture` capturing legacy payment flows.
 2. **Baseline Coverage:** TEA executes `*trace` to record current coverage in `docs/qa/assessments/atlas-payment-trace.md`.
 3. **Risk and Design:** `*test-design` flags settlement edge cases, plans mitigations, and allocates new API/E2E scenarios with P0 priorities.
 4. **Story Prep:** Scrum Master generates `stories/story-1.1.md` via `*create-story`, automatically pulling updated context.

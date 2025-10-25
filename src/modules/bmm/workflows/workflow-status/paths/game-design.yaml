@@ -50,6 +50,10 @@ phases:
         agent: "architect"
         command: "create-architecture"
         note: "Engine architecture, networking, systems"
+      - id: "validate-architecture"
+        optional: true
+        agent: "architect"
+        command: "validate-architecture"
       - id: "solutioning-gate-check"
         required: true
         agent: "architect"

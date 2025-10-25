@@ -188,12 +188,14 @@ The BMM module follows a comprehensive four-phase methodology. Each phase adapts
 - `brainstorm-project` - Generate and refine project concepts
 - `research` - Market research, deep research, prompt generation
 - `product-brief` - Document initial product vision
+- `workflow-init` or `workflow-status` will set up or get the the status of a guided workflow
 
 **Game Designer Agent** _(for game projects)_:
 
 - `brainstorm-game` - Game-specific ideation
 - `game-brief` - Game concept documentation
 - `research` - Game market and technical research
+- `workflow-init` or `workflow-status` will set up or get the the status of a guided workflow
 
 ---
 
@@ -201,18 +203,18 @@ The BMM module follows a comprehensive four-phase methodology. Each phase adapts
 
 **PM Agent**:
 
-- `plan-project` - Creates scale-adaptive PRD or GDD
+- `prd` - Creates scale-adaptive PRD for level 2-4 workflows
 
 The planning workflow adapts to:
 
 - Project complexity (Levels 0-4)
-- Project type (web, mobile, embedded, game, etc.)
+- Project type (web, mobile, embedded, etc.)
 - New vs. existing codebase
 - Team structure
 
 **Game Designer Agent** _(for game projects)_:
 
-- `plan-game` - Uses same workflow but optimized for Game Design Documents
+- `gdd` - Uses a specialized game design document workflow optimized for Game Design Documents
 
 ---
 

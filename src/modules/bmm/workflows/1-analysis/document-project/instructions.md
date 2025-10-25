@@ -43,7 +43,7 @@
 
   <check if="warning != ''">
     <output>{{warning}}</output>
-    <output>Note: This may be auto-invoked by plan-project for brownfield documentation.</output>
+    <output>Note: This may be auto-invoked by prd for brownfield documentation.</output>
     <ask>Continue with documentation? (y/n)</ask>
     <check if="n">
       <output>{{suggestion}}</output>
@@ -186,7 +186,7 @@ Your choice [1/2/3]:
   </invoke-workflow>
 
   <check if="success == true">
-    <output>Status updated! Next: {{next_workflow}}</output>
+    <output>Status updated!</output>
   </check>
 </check>
 
@@ -202,12 +202,20 @@ Your choice [1/2/3]:
 **Status Updated:**
 
 - Progress tracking updated
-  {{else}}
-  **Note:** Running in standalone mode
-  {{/if}}
+
+**Next Steps:**
+
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
 
 Check status anytime with: `workflow-status`
-</output>
+{{else}}
+**Next Steps:**
+Since no workflow is in progress:
+
+- Refer to the BMM workflow guide if unsure what to do next
+- Or run `workflow-init` to create a workflow path and get guided next steps
+  {{/if}}
+  </output>
 
 </step>
 

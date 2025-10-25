@@ -304,7 +304,7 @@ Automatically consults TEA knowledge base:
 
 **Before test-design:**
 
-- **plan-project** (Phase 2): Creates PRD and epics
+- **prd** (Phase 2): Creates PRD and epics
 - **architecture** (Phase 3): Defines technical approach
 - **tech-spec** (Phase 3): Implementation details
 

@@ -32,7 +32,7 @@ The BMM (BMAD Method Module) orchestrates software development through four dist
 │                    PHASE 2: PLANNING                         │
 │              (Scale-Adaptive Router - by type)               │
 ├──────────────────────────────────────────────────────────────┤
-│  SOFTWARE: plan-project          GAMES: gdd            │
+│  SOFTWARE: prd          GAMES: gdd            │
 │      ├──→ Level 0: tech-spec only      ├──→ GDD (all levels) │
 │      ├──→ Level 1: tech-spec only      └──→ Narrative design │
 │      ├──→ Level 2: PRD + tech-spec                           │
@@ -358,7 +358,7 @@ Status: Done        (User approved via story-done, DoD complete)
 ### Brownfield Projects
 
 ```
-plan-project (Phase 2)
+workflow-init (Phase 2)
     ├─→ Check: Is existing codebase documented?
     │   ├─→ YES: Proceed with planning
     │   └─→ NO: HALT with message:
@@ -454,7 +454,7 @@ plan-project (Phase 2)
 | Creating all tech specs upfront   | Use JIT approach - one epic at a time |
 | Skipping story-context generation | Always run after create-story         |
 | Batching story creation           | Create one story at a time            |
-| Ignoring scale levels             | Let plan-project determine level      |
+| Ignoring scale levels             | Let workflow init determine level     |
 | Planning brownfield without docs  | Run brownfield-analysis first         |
 | Not running retrospectives        | Schedule after every epic             |
 
