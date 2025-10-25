@@ -154,15 +154,6 @@ Is that correct? (y/n or tell me what's different)</ask>
 <template-output>phase_2_complete</template-output>
 <template-output>phase_3_complete</template-output>
 <template-output>phase_4_complete</template-output>
-<template-output>ordered_story_list = "[]"</template-output>
-<template-output>todo_story</template-output>
-<template-output>todo_title</template-output>
-<template-output>in_progress_story</template-output>
-<template-output>in_progress_title</template-output>
-<template-output>completed_story_list = "[]"</template-output>
-<template-output>backlog_count</template-output>
-<template-output>done_count</template-output>
-<template-output>total_stories</template-output>
 
 <ask>Ready to create your workflow status file? (y/n)</ask>
 

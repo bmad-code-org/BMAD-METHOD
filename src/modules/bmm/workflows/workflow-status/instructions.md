@@ -77,13 +77,6 @@ Parse these fields:
 **Phase:** {{CURRENT_PHASE}}
 **Current Workflow:** {{CURRENT_WORKFLOW}}
 
-{{#if CURRENT_PHASE == "4-Implementation"}}
-**Development Queue:**
-
-- TODO: {{TODO_STORY}} - {{TODO_TITLE}}
-- IN PROGRESS: {{IN_PROGRESS_STORY}} - {{IN_PROGRESS_TITLE}}
-  {{/if}}
-
 ## 🎯 Your Options
 
 {{#if CURRENT_WORKFLOW != "complete"}}

@@ -37,30 +37,9 @@ phases:
   - phase: 4
     name: "Implementation"
     required: true
-    phase_initialization:
+    workflows:
       - id: "sprint-planning"
         required: true
         agent: "sm"
         command: "sprint-planning"
-        note: "Initialize sprint tracking - run once when entering Phase 4"
-    workflows:
-      - id: "create-story"
-        required: true
-        agent: "sm"
-        command: "create-story"
-      - id: "story-context"
-        required: true
-        agent: "sm"
-        command: "story-context"
-      - id: "dev-story"
-        required: true
-        agent: "dev"
-        command: "dev-story"
-      - id: "story-done"
-        required: true
-        agent: "dev"
-        command: "story-done"
-
-story_naming: "story-<short-title>.md"
-story_example: "story-fix-login.md"
-max_stories: 1
+        note: "Creates sprint plan with all stories - subsequent work tracked in sprint plan output, not workflow-status"
