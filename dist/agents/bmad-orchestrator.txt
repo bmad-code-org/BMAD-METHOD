@@ -168,6 +168,7 @@ dependencies:
 
 ==================== START: .bmad-core/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Elicitation Task
 
 ## Purpose
@@ -289,6 +290,7 @@ Choose a number (0-8) or 9 to proceed:
 
 ==================== START: .bmad-core/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -394,6 +396,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-core/tasks/kb-mode-interaction.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # KB Mode Interaction Task
 
 ## Purpose
@@ -473,6 +476,7 @@ Or ask me about anything else related to BMad-Method!
 
 ==================== START: .bmad-core/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # BMAD™ Knowledge Base
 
 ## Overview
@@ -575,6 +579,7 @@ npx bmad-method install
   - **Cline**: VS Code extension with AI features
   - **Roo Code**: Web-based IDE with agent support
   - **GitHub Copilot**: VS Code extension with AI peer programming assistant
+  - **Auggie CLI (Augment Code)**: AI-powered development environment
 
 **Note for VS Code Users**: BMAD-METHOD™ assumes when you mention "VS Code" that you're using it with an AI-powered extension like GitHub Copilot, Cline, or Roo. Standard VS Code without AI capabilities cannot run BMad agents. The installer includes built-in support for Cline and Roo.
 
@@ -1283,6 +1288,7 @@ Use the **expansion-creator** pack to build your own:
 
 ==================== START: .bmad-core/data/elicitation-methods.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Elicitation Methods Data
 
 ## Core Reflective Methods
@@ -1441,6 +1447,7 @@ Use the **expansion-creator** pack to build your own:
 
 ==================== START: .bmad-core/utils/workflow-management.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Workflow Management
 
 Enables BMad orchestrator to manage and execute team workflows.

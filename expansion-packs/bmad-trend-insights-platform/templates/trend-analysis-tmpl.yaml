@@ -1,0 +1,433 @@
+metadata:
+  name: Deep Trend Analysis
+  description: Comprehensive single-trend analysis with market intelligence and strategic recommendations
+  version: 1.0.0
+  template_type: analysis
+
+sections:
+  - id: executive_summary
+    title: Executive Summary
+    required: true
+    fields:
+      - name: trend_name
+        label: Trend Name
+        type: text
+        required: true
+
+      - name: category
+        label: Category
+        type: text
+        required: true
+
+      - name: status
+        label: Status
+        type: select
+        options: ["🔥 Rising", "⚡ Hot", "📊 Stable", "📉 Declining"]
+        required: true
+
+      - name: opportunity_score
+        label: Opportunity Score (1-10)
+        type: number
+        min: 1
+        max: 10
+        required: true
+
+      - name: summary
+        label: Summary
+        type: text
+        placeholder: "2-3 sentence summary of the trend and key takeaway"
+        required: true
+
+  - id: what_is_it
+    title: What Is It?
+    required: true
+    fields:
+      - name: description
+        label: Description
+        type: longtext
+        placeholder: "Clear, comprehensive description of the trend"
+        required: true
+
+      - name: origin
+        label: Origin
+        type: text
+        placeholder: "Where it started and when"
+        required: false
+
+      - name: key_characteristics
+        label: Key Characteristics
+        type: list
+        min_items: 3
+        required: true
+
+  - id: trend_data
+    title: Trend Data & Metrics
+    required: true
+    fields:
+      - name: search_volume
+        label: Current Search Volume
+        type: select
+        options: ["High", "Medium", "Low"]
+        required: true
+
+      - name: trajectory
+        label: Trajectory
+        type: text
+        placeholder: "e.g., Rising 45%, Stable, Declining 20%"
+        required: true
+
+      - name: geographic_hotspots
+        label: Geographic Hotspots
+        type: list
+        required: false
+
+      - name: peak_periods
+        label: Peak Periods
+        type: text
+        placeholder: "Seasonal patterns if any"
+        required: false
+
+      - name: related_searches
+        label: Top Related Searches
+        type: list
+        min_items: 3
+        max_items: 10
+        required: true
+
+      - name: social_platforms
+        label: Primary Social Platforms
+        type: list
+        required: false
+
+      - name: hashtags
+        label: Relevant Hashtags
+        type: list
+        required: false
+
+      - name: influencer_activity
+        label: Notable Influencers/Advocates
+        type: list
+        required: false
+
+  - id: why_trending
+    title: Why It's Trending
+    required: true
+    fields:
+      - name: primary_drivers
+        label: Primary Drivers
+        type: repeatable_section
+        min_items: 2
+        max_items: 5
+        fields:
+          - name: driver_name
+            label: Driver Name
+            type: text
+            required: true
+
+          - name: explanation
+            label: Explanation
+            type: text
+            required: true
+
+      - name: functional_need
+        label: Functional Need Fulfilled
+        type: text
+        placeholder: "What problem it solves"
+        required: true
+
+      - name: emotional_need
+        label: Emotional Need Fulfilled
+        type: text
+        placeholder: "How it makes people feel"
+        required: false
+
+      - name: social_need
+        label: Social Need Fulfilled
+        type: text
+        placeholder: "Identity/status/belonging aspects"
+        required: false
+
+      - name: target_demographics
+        label: Target Demographics
+        type: text
+        placeholder: "Age, gender, location, income"
+        required: true
+
+      - name: target_psychographics
+        label: Target Psychographics
+        type: text
+        placeholder: "Values, interests, lifestyle"
+        required: true
+
+      - name: pain_points
+        label: Pain Points
+        type: text
+        placeholder: "What they're struggling with"
+        required: true
+
+  - id: market_landscape
+    title: Market Landscape
+    required: true
+    fields:
+      - name: market_size
+        label: Current Market Size
+        type: text
+        placeholder: "Size/revenue if available"
+        required: false
+
+      - name: growth_rate
+        label: Growth Rate
+        type: text
+        placeholder: "Annual growth percentage"
+        required: false
+
+      - name: projections
+        label: Future Projections
+        type: text
+        required: false
+
+      - name: key_players
+        label: Key Players
+        type: repeatable_section
+        min_items: 1
+        max_items: 5
+        fields:
+          - name: company_name
+            label: Company/Brand Name
+            type: text
+            required: true
+
+          - name: offering
+            label: What They Offer
+            type: text
+            required: true
+
+          - name: positioning
+            label: Positioning
+            type: text
+            required: false
+
+      - name: price_points
+        label: Price Points
+        type: repeatable_section
+        fields:
+          - name: tier
+            label: Tier
+            type: select
+            options: ["Budget", "Mid-range", "Premium"]
+            required: true
+
+          - name: range
+            label: Price Range
+            type: text
+            required: true
+
+      - name: market_gaps
+        label: Market Gaps
+        type: list
+        placeholder: "Underserved segments or needs"
+        required: true
+
+  - id: trend_assessment
+    title: Trend Assessment
+    required: true
+    fields:
+      - name: sustainability_verdict
+        label: Sustainability Verdict
+        type: select
+        options: ["✅ Sustainable Trend", "⚠️ Monitor Closely", "❌ Likely Fad"]
+        required: true
+
+      - name: evidence
+        label: Evidence
+        type: list
+        placeholder: "Positive indicators, risk factors, concerns"
+        required: true
+
+      - name: market_size_score
+        label: Market Size Score (1-10)
+        type: number
+        min: 1
+        max: 10
+        required: true
+
+      - name: market_size_reasoning
+        label: Market Size Reasoning
+        type: text
+        required: true
+
+      - name: competition_score
+        label: Competition Score (1-10)
+        type: number
+        min: 1
+        max: 10
+        required: true
+
+      - name: competition_reasoning
+        label: Competition Reasoning
+        type: text
+        required: true
+
+      - name: barriers_score
+        label: Barriers to Entry Score (1-10)
+        type: number
+        min: 1
+        max: 10
+        required: true
+
+      - name: barriers_reasoning
+        label: Barriers Reasoning
+        type: text
+        required: true
+
+      - name: timing_score
+        label: Timing Score (1-10)
+        type: number
+        min: 1
+        max: 10
+        required: true
+
+      - name: timing_reasoning
+        label: Timing Reasoning
+        type: text
+        required: true
+
+      - name: alignment_score
+        label: Macro Trend Alignment Score (1-10)
+        type: number
+        min: 1
+        max: 10
+        required: true
+
+      - name: alignment_reasoning
+        label: Alignment Reasoning
+        type: text
+        required: true
+
+  - id: recommendations
+    title: Strategic Recommendations
+    required: true
+    fields:
+      - name: entrepreneur_opportunity
+        label: Opportunity for Entrepreneurs
+        type: text
+        required: true
+
+      - name: entrepreneur_approach
+        label: Approach for Entrepreneurs
+        type: list
+        min_items: 3
+        required: true
+
+      - name: entrepreneur_quick_test
+        label: Quick Test
+        type: text
+        placeholder: "Fast, low-cost way to validate"
+        required: false
+
+      - name: content_creator_angles
+        label: Content Angles
+        type: list
+        required: false
+
+      - name: content_creator_platforms
+        label: Best Platforms for Content
+        type: list
+        required: false
+
+      - name: content_creator_keywords
+        label: SEO Keywords
+        type: list
+        required: false
+
+      - name: investor_thesis
+        label: Investment Thesis
+        type: text
+        required: false
+
+      - name: investor_companies
+        label: Companies to Watch
+        type: list
+        required: false
+
+      - name: investor_timing
+        label: Investment Timing
+        type: select
+        options: ["Now", "Soon", "Wait"]
+        required: false
+
+  - id: risk_factors
+    title: Risk Factors
+    required: true
+    fields:
+      - name: risks
+        label: Identified Risks
+        type: repeatable_section
+        min_items: 1
+        max_items: 5
+        fields:
+          - name: risk_name
+            label: Risk Name
+            type: text
+            required: true
+
+          - name: description
+            label: Description
+            type: text
+            required: true
+
+          - name: likelihood
+            label: Likelihood
+            type: select
+            options: ["High", "Medium", "Low"]
+            required: false
+
+  - id: future_outlook
+    title: Future Outlook
+    required: true
+    fields:
+      - name: twelve_month_projection
+        label: 12-Month Projection
+        type: text
+        placeholder: "Where this trend is headed"
+        required: true
+
+      - name: best_case
+        label: Best Case Scenario
+        type: text
+        required: false
+
+      - name: most_likely
+        label: Most Likely Scenario
+        type: text
+        required: true
+
+      - name: worst_case
+        label: Worst Case Scenario
+        type: text
+        required: false
+
+  - id: sources
+    title: Sources & Data
+    required: true
+    fields:
+      - name: sources
+        label: Data Sources
+        type: list
+        required: true
+
+      - name: analysis_date
+        label: Analysis Date
+        type: date
+        required: true
+
+      - name: next_review
+        label: Next Review Date
+        type: text
+        placeholder: "Suggested follow-up timing"
+        required: false
+
+output:
+  format: markdown
+  filename_pattern: "trend-analysis-{trend_name}-{date}.md"
+  include_metadata_footer: true

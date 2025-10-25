@@ -105,6 +105,7 @@ dependencies:
 
 ==================== START: .bmad-core/tasks/brownfield-create-epic.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Brownfield Epic Task
 
 ## Purpose
@@ -269,6 +270,7 @@ The epic creation is successful when:
 
 ==================== START: .bmad-core/tasks/brownfield-create-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Brownfield Story Task
 
 ## Purpose
@@ -420,6 +422,7 @@ The story creation is successful when:
 
 ==================== START: .bmad-core/tasks/correct-course.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Correct Course Task
 
 ## Purpose
@@ -494,6 +497,7 @@ The story creation is successful when:
 
 ==================== START: .bmad-core/tasks/create-deep-research-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -776,6 +780,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 
 ==================== START: .bmad-core/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -881,6 +886,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-core/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -971,6 +977,7 @@ The LLM will:
 
 ==================== START: .bmad-core/tasks/shard-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document Sharding Task
 
 ## Purpose
@@ -1650,6 +1657,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/change-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Change Navigation Checklist
 
 **Purpose:** To systematically guide the selected Agent and user through the analysis and planning required when a significant change (pivot, tech issue, missing requirement, failed story) is identified during the BMad workflow.
@@ -1836,6 +1844,7 @@ Keep it action-oriented and forward-looking.]]
 
 ==================== START: .bmad-core/checklists/pm-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Product Manager (PM) Requirements Checklist
 
 This checklist serves as a comprehensive framework to ensure the Product Requirements Document (PRD) and Epic definitions are complete, well-structured, and appropriately scoped for MVP development. The PM should systematically work through each item during the product definition process.
@@ -2210,6 +2219,7 @@ After presenting the report, ask if the user wants:
 
 ==================== START: .bmad-core/data/technical-preferences.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # User-Defined Preferred Patterns and Preferences
 
 None Listed

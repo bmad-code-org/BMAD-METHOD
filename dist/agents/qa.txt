@@ -55,10 +55,7 @@ agent:
   id: qa
   title: Test Architect & Quality Advisor
   icon: 🧪
-  whenToUse:  Use for comprehensive test architecture review, quality gate decisions, 
-    and code improvement. Provides thorough analysis including requirements 
-    traceability, risk assessment, and test strategy. 
-    Advisory only - teams choose their quality bar.
+  whenToUse: Use for comprehensive test architecture review, quality gate decisions, and code improvement. Provides thorough analysis including requirements traceability, risk assessment, and test strategy. Advisory only - teams choose their quality bar.
   customization: null
 persona:
   role: Test Architect with Quality Advisory Authority
@@ -111,6 +108,7 @@ dependencies:
 
 ==================== START: .bmad-core/tasks/nfr-assess.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # nfr-assess
 
 Quick NFR validation focused on the core four: security, performance, reliability, maintainability.
@@ -458,6 +456,7 @@ performance_deep_dive:
 
 ==================== START: .bmad-core/tasks/qa-gate.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # qa-gate
 
 Create or update a quality gate decision file for a story based on review findings.
@@ -623,6 +622,7 @@ Gate: CONCERNS → qa.qaLocation/gates/{epic}.{story}-{slug}.yml
 
 ==================== START: .bmad-core/tasks/review-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # review-story
 
 Perform a comprehensive test architecture review with quality gate decision. This adaptive, risk-aware review creates both a story update and a detailed gate file.
@@ -941,6 +941,7 @@ After review:
 
 ==================== START: .bmad-core/tasks/risk-profile.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # risk-profile
 
 Generate a comprehensive risk assessment matrix for a story implementation using probability × impact analysis.
@@ -1298,6 +1299,7 @@ Risk profile: qa.qaLocation/assessments/{epic}.{story}-risk-{YYYYMMDD}.md
 
 ==================== START: .bmad-core/tasks/test-design.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # test-design
 
 Create comprehensive test scenarios with appropriate test level recommendations for story implementation.
@@ -1476,6 +1478,7 @@ Before finalizing, verify:
 
 ==================== START: .bmad-core/tasks/trace-requirements.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # trace-requirements
 
 Map story requirements to test cases using Given-When-Then patterns for comprehensive traceability.
@@ -1991,6 +1994,7 @@ sections:
 
 ==================== START: .bmad-core/data/technical-preferences.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # User-Defined Preferred Patterns and Preferences
 
 None Listed

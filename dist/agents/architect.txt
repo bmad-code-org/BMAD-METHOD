@@ -106,6 +106,7 @@ dependencies:
 
 ==================== START: .bmad-core/tasks/create-deep-research-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -388,6 +389,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 
 ==================== START: .bmad-core/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -493,6 +495,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-core/tasks/document-project.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document an Existing Project
 
 ## Purpose
@@ -840,6 +843,7 @@ Apply the advanced elicitation task after major sections to refine based on user
 
 ==================== START: .bmad-core/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -1694,8 +1698,8 @@ sections:
           - **UI/UX Consistency:** {{ui_compatibility}}
           - **Performance Impact:** {{performance_constraints}}
 
-  - id: tech-stack-alignment
-    title: Tech Stack Alignment
+  - id: tech-stack
+    title: Tech Stack
     instruction: |
       Ensure new components align with existing technology choices:
 
@@ -1857,8 +1861,8 @@ sections:
 
           **Error Handling:** {{error_handling_strategy}}
 
-  - id: source-tree-integration
-    title: Source Tree Integration
+  - id: source-tree
+    title: Source Tree
     instruction: |
       Define how new code will integrate with existing project structure:
 
@@ -1927,7 +1931,7 @@ sections:
           **Monitoring:** {{monitoring_approach}}
 
   - id: coding-standards
-    title: Coding Standards and Conventions
+    title: Coding Standards
     instruction: |
       Ensure new code follows existing project conventions:
 
@@ -3113,6 +3117,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/architect-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Architect Solution Validation Checklist
 
 This checklist serves as a comprehensive framework for the Architect to validate the technical design and architecture before development execution. The Architect should systematically work through each item, ensuring the architecture is robust, scalable, secure, and aligned with the product requirements.
@@ -3555,6 +3560,7 @@ After presenting the report, ask the user if they would like detailed analysis o
 
 ==================== START: .bmad-core/data/technical-preferences.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # User-Defined Preferred Patterns and Preferences
 
 None Listed
