@@ -1,0 +1,369 @@
+metadata:
+  name: Trend Insights Report
+  description: Comprehensive trend analysis report covering multiple trends, patterns, and opportunities
+  version: 1.0.0
+  template_type: report
+
+sections:
+  - id: header
+    title: Report Header
+    required: true
+    fields:
+      - name: report_title
+        label: Report Title
+        type: text
+        placeholder: "Internet Pipes: Trend Insights Report - [Category]"
+        required: true
+
+      - name: category
+        label: Category/Focus Area
+        type: text
+        placeholder: "e.g., Wellness, Technology, Food & Beverage"
+        required: true
+
+      - name: report_date
+        label: Report Date
+        type: date
+        required: true
+
+      - name: analysis_period
+        label: Analysis Period
+        type: text
+        placeholder: "e.g., Q4 2024 - Q1 2025"
+        required: true
+
+  - id: executive_summary
+    title: Executive Summary
+    required: true
+    fields:
+      - name: overview
+        label: Overview
+        type: longtext
+        placeholder: "3-4 paragraphs covering: state of trends, key patterns, biggest opportunities, critical recommendations"
+        required: true
+
+      - name: trends_analyzed
+        label: Number of Trends Analyzed
+        type: number
+        required: true
+
+      - name: rising_stars
+        label: Rising Stars Count
+        type: number
+        required: false
+
+      - name: hidden_gems
+        label: Hidden Gems Count
+        type: number
+        required: false
+
+      - name: top_opportunities
+        label: Top 3 Recommended Opportunities
+        type: list
+        required: true
+
+  - id: trending_now
+    title: Trending Now - Detailed Analysis
+    required: true
+    repeatable: true
+    min_items: 5
+    max_items: 15
+    fields:
+      - name: trend_name
+        label: Trend Name
+        type: text
+        required: true
+
+      - name: status
+        label: Status
+        type: select
+        options: ["Emerging 🌱", "Rising 🚀", "Hot ⚡", "Mainstream 📊", "Declining 📉"]
+        required: true
+
+      - name: opportunity_score
+        label: Opportunity Score (1-10)
+        type: number
+        min: 1
+        max: 10
+        required: true
+
+      - name: description
+        label: What It Is
+        type: text
+        placeholder: "Clear 1-2 sentence description"
+        required: true
+
+      - name: why_trending
+        label: Why It's Trending
+        type: list
+        placeholder: "List 2-3 primary drivers"
+        required: true
+
+      - name: search_interest
+        label: Search Interest
+        type: select
+        options: ["Rising", "High", "Moderate", "Low", "Declining"]
+        required: true
+
+      - name: market_size
+        label: Market Size
+        type: text
+        placeholder: "If available, e.g., $500M"
+        required: false
+
+      - name: competition
+        label: Competition Level
+        type: select
+        options: ["Low", "Medium", "High"]
+        required: true
+
+      - name: price_range
+        label: Price Range
+        type: text
+        placeholder: "e.g., $10-$50"
+        required: false
+
+      - name: target_audience
+        label: Target Audience
+        type: text
+        placeholder: "Demographics and psychographics"
+        required: true
+
+      - name: key_players
+        label: Key Players
+        type: list
+        placeholder: "Top 2-3 brands/companies"
+        required: false
+
+      - name: market_gap
+        label: Market Gap
+        type: text
+        placeholder: "Specific underserved opportunity"
+        required: false
+
+      - name: why_it_matters
+        label: Why It Matters
+        type: text
+        placeholder: "Strategic insight"
+        required: true
+
+      - name: opportunity
+        label: Opportunity
+        type: text
+        placeholder: "Specific way to capitalize"
+        required: true
+
+  - id: pattern_analysis
+    title: Pattern Analysis
+    required: true
+    fields:
+      - name: macro_themes
+        label: Macro Themes
+        type: repeatable_section
+        min_items: 2
+        max_items: 5
+        fields:
+          - name: theme_name
+            label: Theme Name
+            type: text
+            required: true
+
+          - name: description
+            label: Description
+            type: text
+            required: true
+
+          - name: trends_in_cluster
+            label: Trends in This Cluster
+            type: list
+            required: true
+
+          - name: consumer_insight
+            label: What It Reveals
+            type: text
+            required: true
+
+          - name: opportunity
+            label: Opportunity
+            type: text
+            required: true
+
+      - name: consumer_insights
+        label: Consumer Behavior Insights
+        type: longtext
+        placeholder: "What people want, underlying needs (functional, emotional, social, novelty)"
+        required: true
+
+  - id: opportunity_matrix
+    title: Opportunity Matrix
+    required: true
+    fields:
+      - name: sweet_spot
+        label: High Opportunity / Low Competition (Sweet Spot)
+        type: list
+        placeholder: "Trends offering best risk/reward"
+        required: true
+
+      - name: competitive_play
+        label: High Opportunity / High Competition
+        type: list
+        placeholder: "Large markets but crowded"
+        required: false
+
+      - name: niche_play
+        label: Low Competition / Low Opportunity (Niche)
+        type: list
+        placeholder: "Small but potentially loyal audiences"
+        required: false
+
+      - name: avoid
+        label: High Competition / Low Opportunity (Avoid)
+        type: list
+        placeholder: "Oversaturated with limited upside"
+        required: false
+
+  - id: strategic_recommendations
+    title: Strategic Recommendations
+    required: true
+    fields:
+      - name: top_opportunities
+        label: Top 3 Opportunities to Pursue
+        type: repeatable_section
+        min_items: 3
+        max_items: 3
+        fields:
+          - name: opportunity_name
+            label: Opportunity Name
+            type: text
+            required: true
+
+          - name: reasoning
+            label: Why (Reasoning)
+            type: text
+            required: true
+
+          - name: target_audience
+            label: Target Audience
+            type: text
+            required: true
+
+          - name: go_to_market
+            label: Go-to-Market Strategy
+            type: text
+            required: true
+
+          - name: investment_level
+            label: Investment Level
+            type: text
+            placeholder: "e.g., $5K, Low time commitment"
+            required: false
+
+          - name: timeline
+            label: Expected Timeline
+            type: text
+            required: false
+
+          - name: success_metrics
+            label: Success Metrics
+            type: text
+            required: false
+
+      - name: quick_wins
+        label: Quick Wins (Start This Week)
+        type: list
+        required: true
+
+      - name: content_strategy
+        label: Content Strategy
+        type: longtext
+        placeholder: "Topic clusters and SEO opportunities"
+        required: false
+
+  - id: risk_assessment
+    title: Risk Assessment
+    required: true
+    fields:
+      - name: cautionary_trends
+        label: Trends to Watch Cautiously
+        type: list
+        required: false
+
+      - name: potential_fads
+        label: Potential Fads
+        type: list
+        required: false
+
+      - name: external_risks
+        label: External Risks
+        type: longtext
+        placeholder: "Regulatory, economic, cultural risks"
+        required: false
+
+  - id: future_outlook
+    title: 6-Month Outlook
+    required: true
+    fields:
+      - name: likely_to_grow
+        label: Trends Likely to Grow
+        type: list
+        required: true
+
+      - name: likely_to_peak
+        label: Trends Likely to Peak
+        type: list
+        required: false
+
+      - name: emerging_signals
+        label: Emerging Signals to Monitor
+        type: list
+        required: false
+
+  - id: methodology
+    title: Methodology & Sources
+    required: true
+    fields:
+      - name: data_sources
+        label: Data Sources
+        type: list
+        placeholder: "Google Trends, social media, news, e-commerce, etc."
+        required: true
+
+      - name: analysis_period
+        label: Analysis Period
+        type: text
+        required: true
+
+      - name: limitations
+        label: Limitations
+        type: text
+        required: false
+
+  - id: next_steps
+    title: Next Steps
+    required: true
+    fields:
+      - name: immediate_actions
+        label: Immediate Actions (This Week)
+        type: checklist
+        required: true
+
+      - name: short_term_actions
+        label: Short-term Actions (This Month)
+        type: checklist
+        required: false
+
+      - name: long_term_actions
+        label: Long-term Actions (This Quarter)
+        type: checklist
+        required: false
+
+      - name: deep_dive_recommendations
+        label: Trends Worth Deep-Diving
+        type: list
+        required: false
+
+output:
+  format: markdown
+  filename_pattern: "trend-report-{category}-{date}.md"
+  include_table_of_contents: true
+  include_metadata_footer: true

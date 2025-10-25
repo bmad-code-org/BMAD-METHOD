@@ -86,6 +86,7 @@ dependencies:
 
 ==================== START: .bmad-core/tasks/correct-course.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Correct Course Task
 
 ## Purpose
@@ -160,6 +161,7 @@ dependencies:
 
 ==================== START: .bmad-core/tasks/create-next-story.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Next Story Task
 
 ## Purpose
@@ -276,6 +278,7 @@ ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
 
 ==================== START: .bmad-core/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -507,6 +510,7 @@ sections:
 
 ==================== START: .bmad-core/checklists/story-draft-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Story Draft Checklist
 
 The Scrum Master should use this checklist to validate that each story contains sufficient context for a developer agent to implement it successfully, while assuming the dev agent has reasonable capabilities to figure things out.

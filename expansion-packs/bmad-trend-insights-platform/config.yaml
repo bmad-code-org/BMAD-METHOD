@@ -1,0 +1,7 @@
+name: bmad-trend-insights-platform
+version: 1.0.0
+short-title: Trend Insights Platform
+description: Discover emerging trends using the Internet Pipes methodology - analyze digital footprints to find what people actually want
+author: BMAD Community
+slashPrefix: BmadTrend
+markdownExploder: false

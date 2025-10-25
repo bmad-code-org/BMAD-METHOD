@@ -1,0 +1,422 @@
+metadata:
+  name: Niche Opportunity Analysis
+  description: Analysis of underserved niche opportunities within broader trends
+  version: 1.0.0
+  template_type: analysis
+
+sections:
+  - id: header
+    title: Analysis Header
+    required: true
+    fields:
+      - name: broader_trend
+        label: Broader Trend/Category
+        type: text
+        required: true
+
+      - name: exploration_date
+        label: Exploration Date
+        type: date
+        required: true
+
+      - name: niches_discovered
+        label: Number of Niches Discovered
+        type: number
+        required: true
+
+      - name: top_recommendation
+        label: Top Recommendation
+        type: text
+        required: true
+
+  - id: executive_summary
+    title: Executive Summary
+    required: true
+    fields:
+      - name: summary
+        label: Summary
+        type: longtext
+        placeholder: "Overview of niche exploration and key findings"
+        required: true
+
+      - name: high_potential_count
+        label: High-Potential Niches Count
+        type: number
+        required: false
+
+      - name: emerging_microtrends_count
+        label: Emerging Micro-Trends Count
+        type: number
+        required: false
+
+  - id: broader_context
+    title: Broader Trend Context
+    required: true
+    fields:
+      - name: trend_description
+        label: What It Is
+        type: text
+        required: true
+
+      - name: market_size
+        label: Market Size
+        type: text
+        required: false
+
+      - name: stage
+        label: Stage
+        type: select
+        options: ["Emerging", "Growth", "Mature", "Declining"]
+        required: true
+
+      - name: saturated_areas
+        label: Saturated Areas (Avoid)
+        type: repeatable_section
+        min_items: 1
+        fields:
+          - name: area
+            label: Saturated Area
+            type: text
+            required: true
+
+          - name: reason
+            label: Why It's Overcrowded
+            type: text
+            required: true
+
+  - id: niche_opportunities
+    title: Niche Opportunities Discovered
+    required: true
+    repeatable: true
+    min_items: 3
+    max_items: 10
+    fields:
+      - name: niche_name
+        label: Niche Name
+        type: text
+        required: true
+
+      - name: niche_type
+        label: Type
+        type: select
+        options: ["Demographic", "Use-case", "Value Proposition", "Format/Delivery", "Intersection"]
+        required: true
+
+      - name: opportunity_score
+        label: Opportunity Score (1-10)
+        type: number
+        min: 1
+        max: 10
+        required: true
+
+      - name: description
+        label: What It Is
+        type: text
+        placeholder: "Who it serves and how it's different"
+        required: true
+
+      - name: why_underserved
+        label: Why It's Underserved
+        type: list
+        min_items: 2
+        required: true
+
+      - name: audience_size
+        label: Audience Size
+        type: text
+        placeholder: "Estimated size - thousands, millions?"
+        required: true
+
+      - name: demographics
+        label: Demographics
+        type: text
+        required: true
+
+      - name: psychographics
+        label: Psychographics
+        type: text
+        placeholder: "What they care about"
+        required: true
+
+      - name: pain_points
+        label: Pain Points
+        type: text
+        required: true
+
+      - name: search_interest
+        label: Search Interest
+        type: select
+        options: ["Rising", "Moderate", "Low"]
+        required: true
+
+      - name: competition
+        label: Competition
+        type: select
+        options: ["Low", "Medium", "High"]
+        required: true
+
+      - name: price_points
+        label: Price Points
+        type: text
+        required: false
+
+      - name: community
+        label: Community
+        type: select
+        options: ["Active", "Growing", "None"]
+        required: false
+
+      - name: opportunity
+        label: Opportunity
+        type: text
+        placeholder: "Specific way to serve this niche"
+        required: true
+
+      - name: entry_strategy
+        label: Entry Strategy
+        type: list
+        min_items: 3
+        required: true
+
+      - name: advantages
+        label: Why It's Promising
+        type: list
+        min_items: 3
+        required: true
+
+      - name: challenges
+        label: Challenges
+        type: list
+        min_items: 1
+        required: true
+
+      - name: best_for
+        label: Best For
+        type: text
+        placeholder: "Type of person/business that should pursue this"
+        required: true
+
+  - id: microtrends
+    title: Emerging Micro-Trends
+    required: false
+    fields:
+      - name: microtrends
+        label: Micro-Trends
+        type: repeatable_section
+        fields:
+          - name: name
+            label: Micro-Trend Name
+            type: text
+            required: true
+
+          - name: signals
+            label: What We're Seeing
+            type: text
+            required: true
+
+          - name: growth_potential
+            label: Why It Might Grow
+            type: text
+            required: true
+
+          - name: risk_level
+            label: Risk Level
+            type: select
+            options: ["High", "Very High"]
+            required: true
+
+          - name: for_whom
+            label: For
+            type: text
+            placeholder: "Type of person willing to experiment"
+            required: false
+
+  - id: opportunity_matrix
+    title: Niche Opportunity Matrix
+    required: true
+    fields:
+      - name: sweet_spot
+        label: High Potential / Low Competition (Sweet Spot)
+        type: repeatable_section
+        fields:
+          - name: niche_name
+            label: Niche Name
+            type: text
+            required: true
+
+          - name: why_sweet_spot
+            label: Why It's a Sweet Spot
+            type: text
+            required: true
+
+          - name: quick_move
+            label: Quick Move
+            type: text
+            required: false
+
+          - name: investment_level
+            label: Investment Level
+            type: select
+            options: ["Low", "Medium", "High"]
+            required: false
+
+      - name: growing_market
+        label: Moderate Potential / Low Competition (Growing Market)
+        type: repeatable_section
+        required: false
+        fields:
+          - name: niche_name
+            label: Niche Name
+            type: text
+            required: true
+
+          - name: opportunity
+            label: The Opportunity
+            type: text
+            required: true
+
+          - name: growth_driver
+            label: Growth Driver
+            type: text
+            required: false
+
+      - name: differentiation_required
+        label: High Potential / High Competition (Differentiation Required)
+        type: repeatable_section
+        required: false
+        fields:
+          - name: niche_name
+            label: Niche Name
+            type: text
+            required: true
+
+          - name: challenge
+            label: The Challenge
+            type: text
+            required: true
+
+          - name: how_to_win
+            label: How to Win
+            type: text
+            required: false
+
+      - name: passion_niches
+        label: Passion Niches (Loyal but Small)
+        type: repeatable_section
+        required: false
+        fields:
+          - name: niche_name
+            label: Niche Name
+            type: text
+            required: true
+
+          - name: community
+            label: The Community
+            type: text
+            required: true
+
+          - name: best_approach
+            label: Best Approach
+            type: text
+            required: false
+
+  - id: recommendations
+    title: Strategic Recommendations
+    required: true
+    fields:
+      - name: top_niches
+        label: Top 3 Niches to Pursue
+        type: repeatable_section
+        min_items: 1
+        max_items: 3
+        fields:
+          - name: rank
+            label: Rank
+            type: number
+            required: true
+
+          - name: niche_name
+            label: Niche Name
+            type: text
+            required: true
+
+          - name: why_ranked
+            label: Why This Ranking
+            type: text
+            required: true
+
+          - name: ideal_pursuer
+            label: Who Should Pursue This
+            type: text
+            placeholder: "Ideal founder/business type, required skills/resources"
+            required: true
+
+          - name: go_to_market
+            label: Go-to-Market Plan
+            type: longtext
+            placeholder: "Month-by-month actions"
+            required: true
+
+          - name: success_metrics
+            label: Success Metrics
+            type: text
+            required: false
+
+          - name: expected_timeline
+            label: Expected Timeline
+            type: text
+            placeholder: "When to see traction"
+            required: false
+
+          - name: investment_required
+            label: Investment Required
+            type: text
+            required: false
+
+  - id: niche_validation
+    title: Niche Validation Checklist
+    required: true
+    fields:
+      - name: validation_steps
+        label: Validation Steps
+        type: checklist
+        items:
+          - "Search volume exists (at least some people looking)"
+          - "Forum/community discussions found"
+          - "Social media evidence of interest"
+          - "Related product/service search"
+          - "Fewer than X direct competitors"
+          - "Existing solutions have gaps/weaknesses"
+          - "Room for differentiation exists"
+          - "Not dominated by major players"
+          - "Audience size sufficient"
+          - "Willingness to pay evidence found"
+          - "Reachable through specific channels"
+          - "Margins can support the business"
+          - "Aligns with your skills/interests"
+          - "Within your budget constraints"
+        required: false
+
+  - id: next_steps
+    title: Next Steps
+    required: true
+    fields:
+      - name: immediate_actions
+        label: Immediate Actions (This Week)
+        type: checklist
+        required: true
+
+      - name: validation_phase
+        label: Validation Phase (This Month)
+        type: checklist
+        required: false
+
+      - name: next_analysis
+        label: Next Analysis Recommendations
+        type: list
+        required: false
+
+output:
+  format: markdown
+  filename_pattern: "niche-analysis-{broader_trend}-{date}.md"
+  include_metadata_footer: true

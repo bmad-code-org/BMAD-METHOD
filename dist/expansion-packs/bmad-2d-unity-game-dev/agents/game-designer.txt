@@ -101,6 +101,7 @@ dependencies:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -206,6 +207,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -296,6 +298,7 @@ The LLM will:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/shard-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Document Sharding Task
 
 ## Purpose
@@ -485,6 +488,7 @@ Document sharded successfully:
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/game-design-brainstorming.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Brainstorming Techniques Task
 
 This task provides a comprehensive toolkit of creative brainstorming techniques specifically designed for game design ideation and innovative thinking. The game designer can use these techniques to facilitate productive brainstorming sessions focused on game mechanics, player experience, and creative concepts.
@@ -779,6 +783,7 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-deep-research-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -1061,6 +1066,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Game Design Elicitation Task
 
 ## Purpose
@@ -2732,6 +2738,7 @@ sections:
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-design-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Document Quality Checklist
 
 ## Document Completeness
@@ -2937,6 +2944,7 @@ _Outline immediate next actions for the team based on this assessment._
 
 ==================== START: .bmad-2d-unity-game-dev/data/bmad-kb.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # BMad Knowledge Base - 2D Unity Game Development
 
 ## Overview

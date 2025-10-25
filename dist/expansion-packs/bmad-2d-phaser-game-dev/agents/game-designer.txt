@@ -96,6 +96,7 @@ dependencies:
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/create-doc.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -201,6 +202,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/execute-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -291,6 +293,7 @@ The LLM will:
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/game-design-brainstorming.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Brainstorming Techniques Task
 
 This task provides a comprehensive toolkit of creative brainstorming techniques specifically designed for game design ideation and innovative thinking. The game designer can use these techniques to facilitate productive brainstorming sessions focused on game mechanics, player experience, and creative concepts.
@@ -585,6 +588,7 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/create-deep-research-prompt.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -867,6 +871,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/advanced-elicitation.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Advanced Game Design Elicitation Task
 
 ## Purpose
@@ -2176,6 +2181,7 @@ sections:
 
 ==================== START: .bmad-2d-phaser-game-dev/checklists/game-design-checklist.md ====================
 <!-- Powered by BMAD™ Core -->
+
 # Game Design Document Quality Checklist
 
 ## Document Completeness

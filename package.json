@@ -17,7 +17,7 @@
     "url": "git+https://github.com/bmadcode/BMAD-METHOD.git"
   },
   "license": "MIT",
-  "author": "Brian (BMad) Madison",
+  "author": "Brian (BMad)",
   "main": "tools/cli.js",
   "bin": {
     "bmad": "tools/bmad-npx-wrapper.js",
@@ -107,5 +107,12 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "bugs": {
+    "url": "https://github.com/bmadcode/BMAD-METHOD/issues"
+  },
+  "homepage": "https://github.com/bmadcode/BMAD-METHOD#readme"
 }
