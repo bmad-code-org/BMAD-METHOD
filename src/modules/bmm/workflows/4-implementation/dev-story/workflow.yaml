@@ -14,7 +14,6 @@ installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/dev-story"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
-# This is an action workflow (no output template document)
 template: false
 
 # Variables (can be provided by caller)
