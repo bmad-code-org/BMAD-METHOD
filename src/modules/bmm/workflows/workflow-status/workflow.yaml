@@ -1,6 +1,6 @@
 # Workflow Status - Master Router and Status Tracker
 name: workflow-status
-description: "Lightweight status checker - answers 'what should I do now?' for any agent. Reads simple key-value status file for instant parsing. Use workflow-init for new projects."
+description: 'Lightweight status checker - answers "what should I do now?" for any agent. Reads simple key-value status file for instant parsing. Use workflow-init for new projects.'
 author: "BMad"
 
 # Critical variables from config

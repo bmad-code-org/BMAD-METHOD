@@ -126,7 +126,7 @@ The installer is a multi-stage system that handles agent compilation, IDE integr
 
 ### IDE Support
 
-The installer supports **14 IDE environments** through a base-derived architecture. Each IDE handler extends `BaseIDE` and implements IDE-specific artifact generation.
+The installer supports **15 IDE environments** through a base-derived architecture. Each IDE handler extends `BaseIDE` and implements IDE-specific artifact generation.
 
 **Supported IDEs** (as of v6-alpha):
 
@@ -134,6 +134,7 @@ The installer supports **14 IDE environments** through a base-derived architectu
 | ---------------- | ----------------- | ---------------------- |
 | `codex`          | Claude Code       | `.claude/commands/`    |
 | `claude-code`    | Claude Code (alt) | `.claude/commands/`    |
+| `opencode`       | OpenCode          | `.opencode`            |
 | `windsurf`       | Windsurf          | `.windsurf/workflows/` |
 | `cursor`         | Cursor            | `.cursor/rules/`       |
 | `cline`          | Cline             | `.clinerules/`         |
