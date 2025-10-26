@@ -28,8 +28,11 @@ class ManifestGenerator {
     const cfgDir = path.join(bmadDir, '_cfg');
     await fs.ensureDir(cfgDir);
 
-    // Store modules list
-    this.modules = ['core', ...selectedModules];
+    // Store modules list (all modules including preserved ones)
+    const preservedModules = options.preservedModules || [];
+    this.modules = ['core', ...selectedModules, ...preservedModules];
+    this.updatedModules = ['core', ...selectedModules]; // Only these get rescanned
+    this.preservedModules = preservedModules; // These stay as-is in CSVs
     this.bmadDir = bmadDir;
     this.allInstalledFiles = installedFiles;
 
@@ -365,18 +368,65 @@ class ManifestGenerator {
   }
 
   /**
+   * Read existing CSV and preserve rows for modules NOT being updated
+   * @param {string} csvPath - Path to existing CSV file
+   * @param {number} moduleColumnIndex - Which column contains the module name (0-indexed)
+   * @returns {Array} Preserved CSV rows (without header)
+   */
+  async getPreservedCsvRows(csvPath, moduleColumnIndex) {
+    if (!(await fs.pathExists(csvPath)) || this.preservedModules.length === 0) {
+      return [];
+    }
+
+    try {
+      const content = await fs.readFile(csvPath, 'utf8');
+      const lines = content.trim().split('\n');
+
+      // Skip header row
+      const dataRows = lines.slice(1);
+      const preservedRows = [];
+
+      for (const row of dataRows) {
+        // Simple CSV parsing (handles quoted values)
+        const columns = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+        const cleanColumns = columns.map((c) => c.replaceAll(/^"|"$/g, ''));
+
+        const moduleValue = cleanColumns[moduleColumnIndex];
+
+        // Keep this row if it belongs to a preserved module
+        if (this.preservedModules.includes(moduleValue)) {
+          preservedRows.push(row);
+        }
+      }
+
+      return preservedRows;
+    } catch (error) {
+      console.warn(`Warning: Failed to read existing CSV ${csvPath}:`, error.message);
+      return [];
+    }
+  }
+
+  /**
    * Write workflow manifest CSV
    * @returns {string} Path to the manifest file
    */
   async writeWorkflowManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'workflow-manifest.csv');
 
+    // Get preserved rows from existing CSV (module is column 2, 0-indexed)
+    const preservedRows = await this.getPreservedCsvRows(csvPath, 2);
+
     // Create CSV header
     let csv = 'name,description,module,path\n';
 
-    // Add rows
+    // Add new rows for updated modules
     for (const workflow of this.workflows) {
       csv += `"${workflow.name}","${workflow.description}","${workflow.module}","${workflow.path}"\n`;
+    }
+
+    // Add preserved rows for modules we didn't update
+    for (const row of preservedRows) {
+      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);
@@ -390,12 +440,20 @@ class ManifestGenerator {
   async writeAgentManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'agent-manifest.csv');
 
+    // Get preserved rows from existing CSV (module is column 8, 0-indexed)
+    const preservedRows = await this.getPreservedCsvRows(csvPath, 8);
+
     // Create CSV header with persona fields
     let csv = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path\n';
 
-    // Add rows
+    // Add new rows for updated modules
     for (const agent of this.agents) {
       csv += `"${agent.name}","${agent.displayName}","${agent.title}","${agent.icon}","${agent.role}","${agent.identity}","${agent.communicationStyle}","${agent.principles}","${agent.module}","${agent.path}"\n`;
+    }
+
+    // Add preserved rows for modules we didn't update
+    for (const row of preservedRows) {
+      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);
@@ -409,12 +467,20 @@ class ManifestGenerator {
   async writeTaskManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'task-manifest.csv');
 
+    // Get preserved rows from existing CSV (module is column 3, 0-indexed)
+    const preservedRows = await this.getPreservedCsvRows(csvPath, 3);
+
     // Create CSV header
     let csv = 'name,displayName,description,module,path\n';
 
-    // Add rows
+    // Add new rows for updated modules
     for (const task of this.tasks) {
       csv += `"${task.name}","${task.displayName}","${task.description}","${task.module}","${task.path}"\n`;
+    }
+
+    // Add preserved rows for modules we didn't update
+    for (const row of preservedRows) {
+      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);
@@ -443,6 +509,9 @@ class ManifestGenerator {
    */
   async writeFilesManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'files-manifest.csv');
+
+    // Get preserved rows from existing CSV (module is column 2, 0-indexed)
+    const preservedRows = await this.getPreservedCsvRows(csvPath, 2);
 
     // Create CSV header with hash column
     let csv = 'type,name,module,path,hash\n';
@@ -490,9 +559,14 @@ class ManifestGenerator {
       return a.name.localeCompare(b.name);
     });
 
-    // Add rows
+    // Add rows for updated modules
     for (const file of allFiles) {
       csv += `"${file.type}","${file.name}","${file.module}","${file.path}","${file.hash}"\n`;
+    }
+
+    // Add preserved rows for modules we didn't update
+    for (const row of preservedRows) {
+      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);

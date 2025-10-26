@@ -162,8 +162,15 @@ class Installer {
       }
     }
 
-    // Collect configurations for modules (core was already collected in UI.promptInstall if interactive)
-    const moduleConfigs = await this.configCollector.collectAllConfigurations(config.modules || [], path.resolve(config.directory));
+    // Collect configurations for modules (skip if quick update already collected them)
+    let moduleConfigs;
+    if (config._quickUpdate) {
+      // Quick update already collected all configs, use them directly
+      moduleConfigs = this.configCollector.collectedConfig;
+    } else {
+      // Regular install - collect configurations (core was already collected in UI.promptInstall if interactive)
+      moduleConfigs = await this.configCollector.collectAllConfigurations(config.modules || [], path.resolve(config.directory));
+    }
 
     // Tool selection will be collected after we determine if it's a reinstall/update/new install
 
@@ -199,7 +206,7 @@ class Installer {
       spinner.text = 'Checking for existing installation...';
       const existingInstall = await this.detector.detect(bmadDir);
 
-      if (existingInstall.installed && !config.force) {
+      if (existingInstall.installed && !config.force && !config._quickUpdate) {
         spinner.stop();
 
         console.log(chalk.yellow('\n⚠️  Existing BMAD installation detected'));
@@ -300,18 +307,78 @@ class Installer {
             console.log(chalk.dim('DEBUG: No modified files detected'));
           }
         }
+      } else if (existingInstall.installed && config._quickUpdate) {
+        // Quick update mode - automatically treat as update without prompting
+        spinner.text = 'Preparing quick update...';
+        config._isUpdate = true;
+        config._existingInstall = existingInstall;
+
+        // Detect custom and modified files BEFORE updating
+        const existingFilesManifest = await this.readFilesManifest(bmadDir);
+        const { customFiles, modifiedFiles } = await this.detectCustomFiles(bmadDir, existingFilesManifest);
+
+        config._customFiles = customFiles;
+        config._modifiedFiles = modifiedFiles;
+
+        // Back up custom files
+        if (customFiles.length > 0) {
+          const tempBackupDir = path.join(projectDir, '.bmad-custom-backup-temp');
+          await fs.ensureDir(tempBackupDir);
+
+          spinner.start(`Backing up ${customFiles.length} custom files...`);
+          for (const customFile of customFiles) {
+            const relativePath = path.relative(bmadDir, customFile);
+            const backupPath = path.join(tempBackupDir, relativePath);
+            await fs.ensureDir(path.dirname(backupPath));
+            await fs.copy(customFile, backupPath);
+          }
+          spinner.succeed(`Backed up ${customFiles.length} custom files`);
+          config._tempBackupDir = tempBackupDir;
+        }
+
+        // Back up modified files
+        if (modifiedFiles.length > 0) {
+          const tempModifiedBackupDir = path.join(projectDir, '.bmad-modified-backup-temp');
+          await fs.ensureDir(tempModifiedBackupDir);
+
+          spinner.start(`Backing up ${modifiedFiles.length} modified files...`);
+          for (const modifiedFile of modifiedFiles) {
+            const relativePath = path.relative(bmadDir, modifiedFile.path);
+            const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
+            await fs.ensureDir(path.dirname(tempBackupPath));
+            await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
+          }
+          spinner.succeed(`Backed up ${modifiedFiles.length} modified files`);
+          config._tempModifiedBackupDir = tempModifiedBackupDir;
+        }
       }
 
       // Now collect tool configurations after we know if it's a reinstall
+      // Skip for quick update since we already have the IDE list
       spinner.stop();
-      const toolSelection = await this.collectToolConfigurations(
-        path.resolve(config.directory),
-        config.modules,
-        config._isFullReinstall || false,
-        config._previouslyConfiguredIdes || [],
-      );
+      let toolSelection;
+      if (config._quickUpdate) {
+        // Quick update already has IDEs configured, skip prompting
+        // Set a flag to indicate all IDEs are pre-configured
+        const preConfiguredIdes = {};
+        for (const ide of config.ides || []) {
+          preConfiguredIdes[ide] = { _alreadyConfigured: true };
+        }
+        toolSelection = {
+          ides: config.ides || [],
+          skipIde: !config.ides || config.ides.length === 0,
+          configurations: preConfiguredIdes,
+        };
+      } else {
+        toolSelection = await this.collectToolConfigurations(
+          path.resolve(config.directory),
+          config.modules,
+          config._isFullReinstall || false,
+          config._previouslyConfiguredIdes || [],
+        );
+      }
 
-      // Merge tool selection into config
+      // Merge tool selection into config (for both quick update and regular flow)
       config.ides = toolSelection.ides;
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
@@ -385,8 +452,13 @@ class Installer {
       // Generate CSV manifests for workflows, agents, tasks AND ALL FILES with hashes BEFORE IDE setup
       spinner.start('Generating workflow and agent manifests...');
       const manifestGen = new ManifestGenerator();
+
+      // Include preserved modules (from quick update) in the manifest
+      const allModulesToList = config._preserveModules ? [...(config.modules || []), ...config._preserveModules] : config.modules || [];
+
       const manifestStats = await manifestGen.generateManifests(bmadDir, config.modules || [], this.installedFiles, {
         ides: config.ides || [],
+        preservedModules: config._preserveModules || [], // Scan these from installed bmad/ dir
       });
 
       spinner.succeed(
@@ -1346,6 +1418,112 @@ class Installer {
     } else {
       // Selective update - preserve user modifications
       await this.fileOps.syncDirectory(sourcePath, targetPath);
+    }
+  }
+
+  /**
+   * Quick update method - preserves all settings and only prompts for new config fields
+   * @param {Object} config - Configuration with directory
+   * @returns {Object} Update result
+   */
+  async quickUpdate(config) {
+    const ora = require('ora');
+    const spinner = ora('Starting quick update...').start();
+
+    try {
+      const projectDir = path.resolve(config.directory);
+      const bmadDir = path.join(projectDir, 'bmad');
+
+      // Check if bmad directory exists
+      if (!(await fs.pathExists(bmadDir))) {
+        spinner.fail('No BMAD installation found');
+        throw new Error(`BMAD not installed at ${bmadDir}. Use regular install for first-time setup.`);
+      }
+
+      spinner.text = 'Detecting installed modules and configuration...';
+
+      // Detect existing installation
+      const existingInstall = await this.detector.detect(bmadDir);
+      const installedModules = existingInstall.modules.map((m) => m.id);
+      const configuredIdes = existingInstall.ides || [];
+
+      // Get available modules (what we have source for)
+      const availableModules = await this.moduleManager.listAvailable();
+      const availableModuleIds = new Set(availableModules.map((m) => m.id));
+
+      // Only update modules that are BOTH installed AND available (we have source for)
+      const modulesToUpdate = installedModules.filter((id) => availableModuleIds.has(id));
+      const skippedModules = installedModules.filter((id) => !availableModuleIds.has(id));
+
+      spinner.succeed(`Found ${modulesToUpdate.length} module(s) to update and ${configuredIdes.length} configured tool(s)`);
+
+      if (skippedModules.length > 0) {
+        console.log(chalk.yellow(`⚠️  Skipping ${skippedModules.length} module(s) - no source available: ${skippedModules.join(', ')}`));
+      }
+
+      // Load existing configs and collect new fields (if any)
+      console.log(chalk.cyan('\n📋 Checking for new configuration options...'));
+      await this.configCollector.loadExistingConfig(projectDir);
+
+      let promptedForNewFields = false;
+
+      // Check core config for new fields
+      const corePrompted = await this.configCollector.collectModuleConfigQuick('core', projectDir, true);
+      if (corePrompted) {
+        promptedForNewFields = true;
+      }
+
+      // Check each module we're updating for new fields (NOT skipped modules)
+      for (const moduleName of modulesToUpdate) {
+        const modulePrompted = await this.configCollector.collectModuleConfigQuick(moduleName, projectDir, true);
+        if (modulePrompted) {
+          promptedForNewFields = true;
+        }
+      }
+
+      if (!promptedForNewFields) {
+        console.log(chalk.green('✓ All configuration is up to date, no new options to configure'));
+      }
+
+      // Add metadata
+      this.configCollector.collectedConfig._meta = {
+        version: require(path.join(getProjectRoot(), 'package.json')).version,
+        installDate: new Date().toISOString(),
+        lastModified: new Date().toISOString(),
+      };
+
+      // Now run the full installation with the collected configs
+      spinner.start('Updating BMAD installation...');
+
+      // Build the config object for the installer
+      const installConfig = {
+        directory: projectDir,
+        installCore: true,
+        modules: modulesToUpdate, // Only update modules we have source for
+        ides: configuredIdes,
+        skipIde: configuredIdes.length === 0,
+        coreConfig: this.configCollector.collectedConfig.core,
+        actionType: 'install', // Use regular install flow
+        _quickUpdate: true, // Flag to skip certain prompts
+        _preserveModules: skippedModules, // Preserve these in manifest even though we didn't update them
+      };
+
+      // Call the standard install method
+      const result = await this.install(installConfig);
+
+      spinner.succeed('Quick update complete!');
+
+      return {
+        success: true,
+        moduleCount: modulesToUpdate.length + 1, // +1 for core
+        hadNewFields: promptedForNewFields,
+        modules: ['core', ...modulesToUpdate],
+        skippedModules: skippedModules,
+        ides: configuredIdes,
+      };
+    } catch (error) {
+      spinner.fail('Quick update failed');
+      throw error;
     }
   }
 

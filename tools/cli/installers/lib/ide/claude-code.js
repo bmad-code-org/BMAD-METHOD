@@ -128,8 +128,12 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     }
 
     // Process Claude Code specific injections for installed modules
-    // Use pre-collected configuration if available
-    if (options.preCollectedConfig) {
+    // Use pre-collected configuration if available, or skip if already configured
+    if (options.preCollectedConfig && options.preCollectedConfig._alreadyConfigured) {
+      // IDE is already configured from previous installation, skip prompting
+      // Just process with default/existing configuration
+      await this.processModuleInjectionsWithConfig(projectDir, bmadDir, options, {});
+    } else if (options.preCollectedConfig) {
       await this.processModuleInjectionsWithConfig(projectDir, bmadDir, options, options.preCollectedConfig);
     } else {
       await this.processModuleInjections(projectDir, bmadDir, options);

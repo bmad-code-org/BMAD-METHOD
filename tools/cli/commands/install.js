@@ -23,6 +23,15 @@ module.exports = {
         return;
       }
 
+      // Handle quick update separately
+      if (config.actionType === 'quick-update') {
+        const result = await installer.quickUpdate(config);
+        console.log(chalk.green('\n✨ Quick update complete!'));
+        console.log(chalk.cyan(`Updated ${result.moduleCount} modules with preserved settings`));
+        process.exit(0);
+        return;
+      }
+
       // Regular install/update flow
       const result = await installer.install(config);
 

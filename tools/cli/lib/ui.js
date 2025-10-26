@@ -35,11 +35,21 @@ class UI {
           name: 'actionType',
           message: 'What would you like to do?',
           choices: [
-            { name: 'Update BMAD Installation', value: 'install' },
+            { name: 'Quick Update (Settings Preserved)', value: 'quick-update' },
+            { name: 'Modify BMAD Installation (Confirm or change each setting)', value: 'install' },
             { name: 'Compile Agents (Quick rebuild of all agent .md files)', value: 'compile' },
           ],
+          default: 'quick-update',
         },
       ]);
+
+      // Handle quick update separately
+      if (actionType === 'quick-update') {
+        return {
+          actionType: 'quick-update',
+          directory: confirmedDirectory,
+        };
+      }
 
       // Handle agent compilation separately
       if (actionType === 'compile') {

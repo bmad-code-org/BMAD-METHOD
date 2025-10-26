@@ -89,7 +89,7 @@ my-custom-module/
 
 ### Example: install-config.yaml
 
-**Reference**: `/Users/brianmadison/dev/BMAD-METHOD/src/modules/bmm/_module-installer/install-config.yaml`
+**Reference**: `/src/modules/bmm/_module-installer/install-config.yaml`
 
 ```yaml
 # Module metadata
