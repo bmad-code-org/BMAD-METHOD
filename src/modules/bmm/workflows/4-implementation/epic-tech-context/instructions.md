@@ -8,20 +8,56 @@
 <critical>If required inputs cannot be auto-discovered HALT with a clear message listing missing documents, allow user to provide them to proceed.</critical>
 
 <workflow>
-  <step n="1" goal="Collect inputs and initialize">
+  <step n="1" goal="Collect inputs and discover next epic" tag="sprint-status">
     <action>Identify PRD and Architecture documents from recommended_inputs. Attempt to auto-discover at default paths.</action>
-    <ask if="inputs are missing">ask the user for file paths. HALT and wait for docs to proceed with the rest of step 2</ask>
+    <ask if="inputs are missing">ask the user for file paths. HALT and wait for docs to proceed</ask>
 
-    <action>Extract {{epic_title}} and {{epic_id}} from PRD.</action>
+    <!-- Intelligent Epic Discovery -->
+    <critical>MUST read COMPLETE sprint-status.yaml file to discover next epic</critical>
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read ALL development_status entries</action>
+    <action>Find all epics with status "backlog" (not yet contexted)</action>
+    <action>Identify the FIRST backlog epic as the suggested default</action>
+
+    <check if="backlog epics found">
+      <output>📋 **Next Epic Suggested:** Epic {{suggested_epic_id}}: {{suggested_epic_title}}</output>
+      <ask>Use this epic?
+- [y] Yes, use {{suggested_epic_id}}
+- [n] No, let me specify a different epic_id
+      </ask>
+
+      <check if="user selects 'n'">
+        <ask>Enter the epic_id you want to context</ask>
+        <action>Store user-provided epic_id as {{epic_id}}</action>
+      </check>
+
+      <check if="user selects 'y'">
+        <action>Use {{suggested_epic_id}} as {{epic_id}}</action>
+      </check>
+    </check>
+
+    <check if="no backlog epics found">
+      <output>✅ All epics are already contexted!
+
+No epics with status "backlog" found in sprint-status.yaml.
+      </output>
+      <ask>Do you want to re-context an existing epic? Enter epic_id or [q] to quit:</ask>
+
+      <check if="user enters epic_id">
+        <action>Store as {{epic_id}}</action>
+      </check>
+
+      <check if="user enters 'q'">
+        <action>HALT - No work needed</action>
+      </check>
+    </check>
+
+    <action>Extract {{epic_title}} from PRD based on {{epic_id}}.</action>
     <action>Resolve output file path using workflow variables and initialize by writing the template.</action>
   </step>
 
-  <step n="1.5" goal="Validate epic exists in sprint status" tag="sprint-status">
-    <critical>MUST read COMPLETE sprint-status.yaml file to find epic status</critical>
-    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
-    <action>Read ALL development_status entries</action>
-
-    <action>Look for epic key "epic-{{epic_id}}" in development_status</action>
+  <step n="2" goal="Validate epic exists in sprint status" tag="sprint-status">
+    <action>Look for epic key "epic-{{epic_id}}" in development_status (already loaded from step 1)</action>
     <action>Get current status value if epic exists</action>
 
     <check if="epic not found">
@@ -41,7 +77,7 @@ Continuing to regenerate tech spec...
     </check>
   </step>
 
-  <step n="2" goal="Overview and scope">
+  <step n="3" goal="Overview and scope">
     <action>Read COMPLETE PRD and Architecture files.</action>
     <template-output file="{default_output_file}">
       Replace {{overview}} with a concise 1-2 paragraph summary referencing PRD context and goals
@@ -50,7 +86,7 @@ Continuing to regenerate tech spec...
     </template-output>
   </step>
 
-  <step n="3" goal="Detailed design">
+  <step n="4" goal="Detailed design">
     <action>Derive concrete implementation specifics from Architecture and PRD (CRITICAL: NO invention).</action>
     <template-output file="{default_output_file}">
       Replace {{services_modules}} with a table or bullets listing services/modules with responsibilities, inputs/outputs, and owners
@@ -60,7 +96,7 @@ Continuing to regenerate tech spec...
     </template-output>
   </step>
 
-  <step n="4" goal="Non-functional requirements">
+  <step n="5" goal="Non-functional requirements">
     <template-output file="{default_output_file}">
       Replace {{nfr_performance}} with measurable targets (latency, throughput); link to any performance requirements in PRD/Architecture
       Replace {{nfr_security}} with authn/z requirements, data handling, threat notes; cite source sections
@@ -69,14 +105,14 @@ Continuing to regenerate tech spec...
     </template-output>
   </step>
 
-  <step n="5" goal="Dependencies and integrations">
+  <step n="6" goal="Dependencies and integrations">
     <action>Scan repository for dependency manifests (e.g., package.json, pyproject.toml, go.mod, Unity Packages/manifest.json).</action>
     <template-output file="{default_output_file}">
       Replace {{dependencies_integrations}} with a structured list of dependencies and integration points with version or commit constraints when known
     </template-output>
   </step>
 
-  <step n="6" goal="Acceptance criteria and traceability">
+  <step n="7" goal="Acceptance criteria and traceability">
     <action>Extract acceptance criteria from PRD; normalize into atomic, testable statements.</action>
     <template-output file="{default_output_file}">
       Replace {{acceptance_criteria}} with a numbered list of testable acceptance criteria
@@ -84,14 +120,14 @@ Continuing to regenerate tech spec...
     </template-output>
   </step>
 
-  <step n="7" goal="Risks and test strategy">
+  <step n="8" goal="Risks and test strategy">
     <template-output file="{default_output_file}">
       Replace {{risks_assumptions_questions}} with explicit list (each item labeled as Risk/Assumption/Question) with mitigation or next step
       Replace {{test_strategy}} with a brief plan (test levels, frameworks, coverage of ACs, edge cases)
     </template-output>
   </step>
 
-  <step n="8" goal="Validate and mark epic contexted" tag="sprint-status">
+  <step n="9" goal="Validate and mark epic contexted" tag="sprint-status">
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
 
     <!-- Mark epic as contexted -->
@@ -116,9 +152,7 @@ Continuing to regenerate tech spec...
 **Note:** This is a JIT (Just-In-Time) workflow - run again for other epics as needed.
 
 **Next Steps:**
-1. If more epics need tech specs: Run tech-spec again with different epic_id
-2. If all tech specs complete: Proceed to Phase 4 implementation
-   - Load SM agent and run `create-story` to begin implementing stories
+1. Load SM agent and run `create-story` to begin implementing the first story under this epic.
     </output>
   </step>
 

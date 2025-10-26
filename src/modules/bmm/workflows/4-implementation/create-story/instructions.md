@@ -134,10 +134,12 @@ You may need to run sprint-planning to refresh tracking.
 - File: {{story_file}}
 - Status: drafted (was backlog)
 
+**⚠️ Important:** The following workflows are context-intensive. It's recommended to clear context and restart the SM agent before running the next command.
+
 **Next Steps:**
 1. Review the drafted story in {{story_file}}
-2. When satisfied, run `story-ready` to approve for development
-3. Or edit the story file and re-run `create-story` to update
+2. **[RECOMMENDED]** Run `story-context` to generate technical context XML and mark story ready for development (combines context + ready in one step)
+3. Or run `story-ready` to manually mark the story ready without generating technical context
     </output>
   </step>
 
