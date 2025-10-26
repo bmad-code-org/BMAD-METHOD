@@ -66,8 +66,6 @@
 
   <step n="3" goal="Detect tech stack and establish best-practice reference set">
     <action>Detect primary ecosystem(s) by scanning for manifests (e.g., package.json, pyproject.toml, go.mod, Dockerfile). Record key frameworks (e.g., Node/Express, React/Vue, Python/FastAPI, etc.).</action>
-    <action>If {{enable_mcp_doc_search}} and MCP servers are available → Use them to search for up-to-date best practices, security advisories, and framework-specific guidance relevant to the detected stack and the story's domain.</action>
-    <action>If MCP is unavailable or insufficient and {{enable_web_fallback}} → Perform targeted web searches and fetch authoritative references (framework docs, OWASP, language style guides). Prefer official documentation and widely-recognized standards.</action>
     <action>Synthesize a concise "Best-Practices and References" note capturing any updates or considerations that should influence the review (cite links and versions if available).</action>
   </step>
 

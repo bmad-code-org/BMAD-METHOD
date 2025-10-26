@@ -78,7 +78,7 @@ Continuing to regenerate tech spec...
   </step>
 
   <step n="3" goal="Overview and scope">
-    <action>Read COMPLETE PRD and Architecture files.</action>
+    <action>Read COMPLETE found {recommended_inputs}.</action>
     <template-output file="{default_output_file}">
       Replace {{overview}} with a concise 1-2 paragraph summary referencing PRD context and goals
       Replace {{objectives_scope}} with explicit in-scope and out-of-scope bullets
@@ -87,7 +87,7 @@ Continuing to regenerate tech spec...
   </step>
 
   <step n="4" goal="Detailed design">
-    <action>Derive concrete implementation specifics from Architecture and PRD (CRITICAL: NO invention).</action>
+    <action>Derive concrete implementation specifics from all {recommended_inputs} (CRITICAL: NO invention). If a epic tech spec precedes this one and exists, maintain consistency where appropriate.</action>
     <template-output file="{default_output_file}">
       Replace {{services_modules}} with a table or bullets listing services/modules with responsibilities, inputs/outputs, and owners
       Replace {{data_models}} with normalized data model definitions (entities, fields, types, relationships); include schema snippets where available

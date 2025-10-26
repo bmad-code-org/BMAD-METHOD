@@ -16,6 +16,9 @@ recommended_inputs:
   - spec
   - architecture
   - ux_spec
+  - ux-design
+  - if there is an index.md then read the index.md to find other related docs that could be relevant
+  - prior epic tech-specs for model, style and consistency reference
 
 # Workflow components
 installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/epic-tech-context"
