@@ -19,7 +19,7 @@ instructions: "{installed_path}/instructions.md"
 template: "{project-root}/bmad/bmm/workflows/workflow-status/workflow-status-template.md"
 
 # Path data files
-path_files: "{project-root}/src/modules/bmm/workflows/workflow-status/paths/"
+path_files: "{project-root}/bmad/bmm/workflows/workflow-status/paths/"
 
 # Output configuration
 default_output_file: "{output_folder}/bmm-workflow-status.md"

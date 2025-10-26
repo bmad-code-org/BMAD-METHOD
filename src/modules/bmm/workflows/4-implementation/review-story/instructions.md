@@ -55,7 +55,7 @@
   </step>
 
   <step n="2" goal="Resolve story context file and specification inputs">
-    <action>Locate story context file: Under Dev Agent Record → Context Reference, read referenced path(s). If missing, search {{output_folder}} for files matching pattern "story-{{epic_num}}.{{story_num}}*.context.md" and use the most recent.</action>
+    <action>Locate story context file: Under Dev Agent Record → Context Reference, read referenced path(s). If missing, search {{output_folder}} for files matching pattern "story-{{epic_num}}.{{story_num}}*.context.xml" and use the most recent.</action>
     <action if="no story context file found">Continue but record a WARNING in review notes: "No story context file found"</action>
 
     <action>Locate Epic Tech Spec: Search {{tech_spec_search_dir}} with glob {{tech_spec_glob_template}} (resolve {{epic_num}})</action>

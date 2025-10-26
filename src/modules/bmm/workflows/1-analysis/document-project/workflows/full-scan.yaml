@@ -4,7 +4,7 @@ description: "Complete project documentation workflow (initial scan or full resc
 author: "BMad"
 
 # This is a sub-workflow called by document-project/workflow.yaml
-parent_workflow: "{project-root}/src/modules/bmm/workflows/1-analysis/document-project/workflow.yaml"
+parent_workflow: "{project-root}/bmad/bmm/workflows/1-analysis/document-project/workflow.yaml"
 
 # Critical variables inherited from parent
 config_source: "{project-root}/bmad/bmb/config.yaml"
@@ -13,15 +13,15 @@ user_name: "{config_source}:user_name"
 date: system-generated
 
 # Data files
-project_types_csv: "{project-root}/src/modules/bmm/workflows/1-analysis/document-project/data/project-types.csv"
-documentation_requirements_csv: "{project-root}/src/modules/bmm/workflows/1-analysis/document-project/data/documentation-requirements.csv"
-architecture_registry_csv: "{project-root}/src/modules/bmm/workflows/1-analysis/document-project/data/architecture-registry.csv"
+project_types_csv: "{project-root}/bmad/bmm/workflows/1-analysis/document-project/data/project-types.csv"
+documentation_requirements_csv: "{project-root}/bmad/bmm/workflows/1-analysis/document-project/data/documentation-requirements.csv"
+architecture_registry_csv: "{project-root}/bmad/bmm/workflows/1-analysis/document-project/data/architecture-registry.csv"
 
 # Module path and component files
-installed_path: "{project-root}/src/modules/bmm/workflows/1-analysis/document-project/workflows"
+installed_path: "{project-root}/bmad/bmm/workflows/1-analysis/document-project/workflows"
 template: false # Action workflow
 instructions: "{installed_path}/full-scan-instructions.md"
-validation: "{project-root}/src/modules/bmm/workflows/1-analysis/document-project/checklist.md"
+validation: "{project-root}/bmad/bmm/workflows/1-analysis/document-project/checklist.md"
 
 # Runtime inputs (passed from parent workflow)
 workflow_mode: "" # "initial_scan" or "full_rescan"

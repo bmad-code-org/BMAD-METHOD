@@ -184,13 +184,3 @@ injections:
   <cmds>...</cmds>
 </agent>
 ```
-
-## Testing Checklist
-
-- [ ] Injection points are properly named and unique
-- [ ] injections.yaml is valid YAML with correct structure
-- [ ] Content formatting is preserved after injection
-- [ ] Installation works without the IDE (injection points removed)
-- [ ] Installation works with the IDE (content properly injected)
-- [ ] Subagents/files are copied to correct locations
-- [ ] No IDE-specific content remains when different IDE selected

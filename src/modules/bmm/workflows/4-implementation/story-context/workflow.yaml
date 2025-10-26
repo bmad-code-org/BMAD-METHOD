@@ -25,6 +25,6 @@ variables:
 
 # Output configuration
 # Uses story_key from sprint-status.yaml (e.g., "1-2-user-authentication")
-default_output_file: "{story_dir}/{{story_key}}.context.md"
+default_output_file: "{story_dir}/{{story_key}}.context.xml"
 
 web_bundle: false

@@ -49,6 +49,6 @@ variables:
 recommended_inputs:
   - story: "Path to the story file (auto-discovered if omitted - finds first story with status 'review')"
   - tech_spec: "Epic technical specification document (auto-discovered)"
-  - story_context_file: "Story context file (.context.md) (auto-discovered)"
+  - story_context_file: "Story context file (.context.xml) (auto-discovered)"
 
 web_bundle: false

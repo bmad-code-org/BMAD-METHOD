@@ -1,4 +1,4 @@
-# BMAD v6 Installation & Module System Reference
+# BMAD Installation & Module System Reference
 
 ## Table of Contents
 
@@ -13,63 +13,36 @@
 
 ## Overview
 
-BMAD v6 is a modular AI agent framework with intelligent installation, platform-agnostic support, and configuration inheritance.
+BMad Core is a modular AI agent framework with intelligent installation, platform-agnostic support, and configuration inheritance.
 
 ### Key Features
 
-- **Modular Design**: Core + optional modules (BMM, CIS)
+- **Modular Design**: Core + optional modules (BMB, BMM, CIS)
 - **Smart Installation**: Interactive configuration with dependency resolution
-- **Multi-Platform**: Supports 15+ AI coding platforms
-- **Clean Architecture**: Centralized `bmad/` directory, no source pollution
-
-## Quick Start
-
-```bash
-# Interactive installation (recommended)
-bmad install
-
-# Install specific modules
-bmad install -m bmm cis
-
-# Full installation
-bmad install -f
-
-# Check status
-bmad status
-```
-
-### Installation Options
-
-- `-d <path>`: Target directory (default: current)
-- `-m <modules...>`: Specific modules (bmm, cis)
-- `-f`: Full installation
-- `-c`: Core only
-- `-i <ide...>`: Configure specific IDEs
-- `--skip-ide`: Skip IDE configuration
-- `-v`: Verbose output
+- **Clean Architecture**: Centralized `bmad/` directory add to project, no source pollution with multiple folders added
 
 ## Architecture
 
-### Directory Structure
+### Directory Structure upon installation
 
 ```
 project-root/
-├── bmad/                    # Centralized installation
-│   ├── _cfg/               # Configuration
-│   │   ├── agents/         # Agent configs
-│   │   └── agent-party.xml # Agent manifest
-│   ├── core/               # Core module
+├── bmad/                      # Centralized installation
+│   ├── _cfg/                  # Configuration
+│   │   ├── agents/            # Agent configs
+│   │   └── agent-manifest.csv # Agent manifest
+│   ├── core/                  # Core module
 │   │   ├── agents/
 │   │   ├── tasks/
 │   │   └── config.yaml
-│   ├── bmm/                # BMad Method module
+│   ├── bmm/                   # BMad Method module
 │   │   ├── agents/
 │   │   ├── tasks/
-│   │   ├── templates/
+│   │   ├── workflows/
 │   │   └── config.yaml
-│   └── cis/                # Creative Innovation Studio
+│   └── cis/                   # Creative Innovation Studio
 │       └── ...
-└── .claude/                # Platform-specific (example)
+└── .claude/                   # Platform-specific (example)
     └── agents/
 ```
 
@@ -78,11 +51,10 @@ project-root/
 1. **Detection**: Check existing installation
 2. **Selection**: Choose modules interactively or via CLI
 3. **Configuration**: Collect module-specific settings
-4. **Platform Setup**: Configure AI coding platforms
-5. **Installation**: Process and copy files
-6. **Generation**: Create config files with inheritance
-7. **Post-Install**: Run module installers
-8. **Manifest**: Track installed components
+4. **Installation**: Compile Process and copy files
+5. **Generation**: Create config files with inheritance
+6. **Post-Install**: Run module installers
+7. **Manifest**: Track installed components
 
 ### Key Exclusions
 

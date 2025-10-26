@@ -1,6 +1,6 @@
 # BMM - BMad Method Module
 
-The BMM (BMad Method Module) is the core orchestration system for the BMad Method v6a, providing comprehensive software development lifecycle management through specialized agents, workflows, teams, and tasks.
+The BMM (BMad Method Module) is the core orchestration system for the BMad Method, providing comprehensive software development lifecycle management through specialized agents, workflows, teams, and tasks.
 
 ## 📚 Essential Reading
 
@@ -120,17 +120,13 @@ BMM integrates seamlessly with the BMad Core framework, leveraging:
 
 - [BMM Workflows Guide](./workflows/README.md) - **Start here!**
 - [Test Architect (TEA) Guide](./testarch/README.md) - Quality assurance and testing strategy
-- [Agent Documentation](./agents/README.md) - Individual agent capabilities
-- [Team Configurations](./teams/README.md) - Pre-built team setups
-- [Task Library](./tasks/README.md) - Reusable task components
 
 ## Best Practices
 
 1. **Always start with the workflows** - Let workflows guide your process
 2. **Respect the scale** - Don't over-document small projects
-3. **Embrace iteration** - Use retrospectives to continuously improve
-4. **Trust the process** - The v6a methodology has been carefully designed
+3. **Trust the process** - The methodology has been carefully designed
 
 ---
 
-For detailed information about the complete BMad Method v6a workflow system, see the [BMM Workflows README](./workflows/README.md).
+For detailed information about the complete BMad Method workflow system, see the [BMM Workflows README](./workflows/README.md).

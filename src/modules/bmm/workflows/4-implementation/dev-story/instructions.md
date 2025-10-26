@@ -1,7 +1,7 @@
 # Develop Story - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
@@ -52,7 +52,7 @@
 
     <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Dev Agent Record, File List, Change Log, Status</action>
 
-    <action>Check if context file exists at: {{story_dir}}/{{story_key}}.context.md</action>
+    <action>Check if context file exists at: {{story_dir}}/{{story_key}}.context.xml</action>
     <check if="context file exists">
       <action>Read COMPLETE context file</action>
       <action>Parse all sections: story details, artifacts (docs, code, dependencies), interfaces, constraints, tests</action>
@@ -105,15 +105,15 @@ Expected ready-for-dev or in-progress. Continuing anyway...
     <action if="new or different than what is documented dependencies are needed">ASK user for approval before adding</action>
     <action if="3 consecutive implementation failures occur">HALT and request guidance</action>
     <action if="required configuration is missing">HALT: "Cannot proceed without necessary configuration files"</action>
-    <action if="{{run_until_complete}} == true">Do not stop after partial progress; continue iterating tasks until all ACs are satisfied or a HALT condition triggers</action>
-    <critical>Do NOT propose to pause for review, standups, or validation until Step 6 gates are satisfied</critical>
+    <critical>Do not stop after partial progress; continue iterating tasks until all ACs are satisfied and tested or a HALT condition triggers</critical>
+    <critical>Do NOT propose to pause for review, stand-ups, or validation until Step 6 gates are satisfied</critical>
   </step>
 
   <step n="3" goal="Author comprehensive tests">
     <action>Create unit tests for business logic and core functionality introduced/changed by the task</action>
-    <action>Add integration tests for component interactions where applicable</action>
-    <action>Include end-to-end tests for critical user flows if applicable</action>
-    <action>Cover edge cases and error handling scenarios noted in the plan</action>
+    <action>Add integration tests for component interactions where desired by test plan or story notes</action>
+    <action>Include end-to-end tests for critical user flows where desired by test plan or story notes</action>
+    <action>Cover edge cases and error handling scenarios noted in the test plan or story notes</action>
   </step>
 
   <step n="4" goal="Run validations and tests">

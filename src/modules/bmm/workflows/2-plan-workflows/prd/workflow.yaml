@@ -26,7 +26,7 @@ status_file: "{output_folder}/bmm-workflow-status.md"
 default_output_file: "{output_folder}/PRD.md"
 epics_output_file: "{output_folder}/epics.md"
 technical_decisions_file: "{output_folder}/technical-decisions.md"
-technical_decisions_template: "{project-root}/src/modules/bmm/_module-installer/assets/technical-decisions.md"
+technical_decisions_template: "{project-root}/bmad/bmm/_module-installer/assets/technical-decisions.md"
 
 # Recommended input documents
 recommended_inputs:

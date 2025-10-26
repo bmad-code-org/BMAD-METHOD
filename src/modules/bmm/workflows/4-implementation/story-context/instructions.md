@@ -9,7 +9,7 @@
 <critical>If story_path is provided, use it. Otherwise, find the first story with status "drafted" in sprint-status.yaml. If none found, HALT.</critical>
 <critical>Check if context file already exists. If it does, ask user if they want to replace it, verify it, or cancel.</critical>
 
-<critical>DOCUMENT OUTPUT: Technical context file (.context.md). Concise, structured, project-relative paths only.</critical>
+<critical>DOCUMENT OUTPUT: Technical context file (.context.xml). Concise, structured, project-relative paths only.</critical>
 
 <workflow>
   <step n="1" goal="Find drafted story and check for existing context" tag="sprint-status">
