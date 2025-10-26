@@ -16,6 +16,7 @@ const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/p
 const { AgentPartyGenerator } = require('../../../lib/agent-party-generator');
 const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
+const { IdeConfigManager } = require('./ide-config-manager');
 
 class Installer {
   constructor() {
@@ -28,6 +29,7 @@ class Installer {
     this.xmlHandler = new XmlHandler();
     this.dependencyResolver = new DependencyResolver();
     this.configCollector = new ConfigCollector();
+    this.ideConfigManager = new IdeConfigManager();
     this.installedFiles = []; // Track all installed files
   }
 
@@ -59,8 +61,18 @@ class Installer {
       previouslyConfiguredIdes = existingInstall.ides || [];
     }
 
+    // Load saved IDE configurations for already-configured IDEs
+    const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
+
     // Collect IDE-specific configurations if any were selected
     const ideConfigurations = {};
+
+    // First, add saved configs for already-configured IDEs
+    for (const ide of toolConfig.ides || []) {
+      if (previouslyConfiguredIdes.includes(ide) && savedIdeConfigs[ide]) {
+        ideConfigurations[ide] = savedIdeConfigs[ide];
+      }
+    }
 
     if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
       // Determine which IDEs are newly selected (not previously configured)
@@ -358,11 +370,17 @@ class Installer {
       spinner.stop();
       let toolSelection;
       if (config._quickUpdate) {
-        // Quick update already has IDEs configured, skip prompting
-        // Set a flag to indicate all IDEs are pre-configured
+        // Quick update already has IDEs configured, use saved configurations
         const preConfiguredIdes = {};
+        const savedIdeConfigs = config._savedIdeConfigs || {};
+
         for (const ide of config.ides || []) {
-          preConfiguredIdes[ide] = { _alreadyConfigured: true };
+          // Use saved config if available, otherwise mark as already configured (legacy)
+          if (savedIdeConfigs[ide]) {
+            preConfiguredIdes[ide] = savedIdeConfigs[ide];
+          } else {
+            preConfiguredIdes[ide] = { _alreadyConfigured: true };
+          }
         }
         toolSelection = {
           ides: config.ides || [],
@@ -467,7 +485,12 @@ class Installer {
 
       // Configure IDEs and copy documentation
       if (!config.skipIde && config.ides && config.ides.length > 0) {
-        spinner.start('Configuring IDEs...');
+        // Check if any IDE might need prompting (no pre-collected config)
+        const needsPrompting = config.ides.some((ide) => !ideConfigurations[ide]);
+
+        if (!needsPrompting) {
+          spinner.start('Configuring IDEs...');
+        }
 
         // Temporarily suppress console output if not verbose
         const originalLog = console.log;
@@ -476,7 +499,16 @@ class Installer {
         }
 
         for (const ide of config.ides) {
-          spinner.text = `Configuring ${ide}...`;
+          // Only show spinner if we have pre-collected config (no prompts expected)
+          if (ideConfigurations[ide] && !needsPrompting) {
+            spinner.text = `Configuring ${ide}...`;
+          } else if (!ideConfigurations[ide]) {
+            // Stop spinner before prompting
+            if (spinner.isSpinning) {
+              spinner.stop();
+            }
+            console.log(chalk.cyan(`\nConfiguring ${ide}...`));
+          }
 
           // Pass pre-collected configuration to avoid re-prompting
           await this.ideManager.setup(ide, projectDir, bmadDir, {
@@ -484,12 +516,26 @@ class Installer {
             preCollectedConfig: ideConfigurations[ide] || null,
             verbose: config.verbose,
           });
+
+          // Save IDE configuration for future updates
+          if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
+            await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide]);
+          }
+
+          // Restart spinner if we stopped it
+          if (!ideConfigurations[ide] && !spinner.isSpinning) {
+            spinner.start('Configuring IDEs...');
+          }
         }
 
         // Restore console.log
         console.log = originalLog;
 
-        spinner.succeed(`Configured ${config.ides.length} IDE${config.ides.length > 1 ? 's' : ''}`);
+        if (spinner.isSpinning) {
+          spinner.succeed(`Configured ${config.ides.length} IDE${config.ides.length > 1 ? 's' : ''}`);
+        } else {
+          console.log(chalk.green(`✓ Configured ${config.ides.length} IDE${config.ides.length > 1 ? 's' : ''}`));
+        }
 
         // Copy IDE-specific documentation
         spinner.start('Copying IDE documentation...');
@@ -1447,6 +1493,9 @@ class Installer {
       const installedModules = existingInstall.modules.map((m) => m.id);
       const configuredIdes = existingInstall.ides || [];
 
+      // Load saved IDE configurations
+      const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
+
       // Get available modules (what we have source for)
       const availableModules = await this.moduleManager.listAvailable();
       const availableModuleIds = new Set(availableModules.map((m) => m.id));
@@ -1506,6 +1555,7 @@ class Installer {
         actionType: 'install', // Use regular install flow
         _quickUpdate: true, // Flag to skip certain prompts
         _preserveModules: skippedModules, // Preserve these in manifest even though we didn't update them
+        _savedIdeConfigs: savedIdeConfigs, // Pass saved IDE configs to installer
       };
 
       // Call the standard install method

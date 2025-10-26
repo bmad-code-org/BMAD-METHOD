@@ -47,7 +47,7 @@ dev_story_location:
 # TEA Agent Configuration
 tea_use_mcp_enhancements:
   prompt: "Enable Playwright MCP capabilities (healing, exploratory, verification)?"
-  default: true
+  default: false
   result: "{value}"
 # kb_location:
 #   prompt: "Where should bmad knowledge base articles be stored?"
