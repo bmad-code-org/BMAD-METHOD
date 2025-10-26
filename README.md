@@ -1,5 +1,36 @@
 # BMAD-METHOD™: Universal AI Agent Framework
 
+> ## 🚨 **IMPORTANT VERSION ANNOUNCEMENT** 🚨
+>
+> ### Current Stable: v4.x | Next Major: v6 Alpha
+>
+> - **v4.x** - The current stable release version available via npm
+> - **v5** - Skipped (replaced by v6)
+> - **[v6-alpha](https://github.com/bmad-code-org/BMAD-METHOD/tree/v6-alpha)** - **NOW AVAILABLE FOR EARLY TESTING!**
+>
+> ### 🧪 Try v6 Alpha (Early Adopters Only)
+>
+> The next major version of BMAD-METHOD is now available for early experimentation and testing. This is a complete rewrite with significant architectural changes.
+>
+> **⚠️ WARNING: v6-alpha is for early adopters who are comfortable with:**
+>
+> - Potential breaking changes
+> - Daily updates and instability
+> - Incomplete features
+> - Experimental functionality
+>
+> **📅 Timeline:** Official beta version will be merged mid-October 2025
+>
+> **To try v6-alpha:**
+>
+> ```bash
+> git clone https://github.com/bmad-code-org/BMAD-METHOD.git
+> cd BMAD-METHOD
+> git checkout v6-alpha
+> ```
+>
+> ---
+
 [![Version](https://img.shields.io/npm/v/bmad-method?color=blue&label=version)](https://www.npmjs.com/package/bmad-method)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
