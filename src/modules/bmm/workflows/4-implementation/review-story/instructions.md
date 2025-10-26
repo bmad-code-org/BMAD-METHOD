@@ -1,13 +1,13 @@
 # Senior Developer Review - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
-<critical>This workflow performs a Senior Developer Review on a story flagged Ready for Review, appends structured review notes, and can update the story status based on the outcome.</critical>
-<critical>Default execution mode: #yolo (non-interactive). Only ask if {{non_interactive}} == false. If auto-discovery of the target story fails, HALT with a clear message to provide 'story_path' or 'story_dir'.</critical>
-<critical>Only modify the story file in these areas: Status (optional per settings), Dev Agent Record (Completion Notes), File List (if corrections are needed), Change Log, and the appended "Senior Developer Review (AI)" section at the end of the document.</critical>
+<critical>This workflow performs a Senior Developer Review on a story with status "review", appends structured review notes, and updates the story status based on outcome.</critical>
+<critical>If story_path is provided, use it. Otherwise, find the first story in sprint-status.yaml with status "review". If none found, HALT and ask for clarification.</critical>
+<critical>Only modify the story file in these areas: Status, Dev Agent Record (Completion Notes), File List (if corrections needed), Change Log, and the appended "Senior Developer Review (AI)" section.</critical>
 <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
 
 <critical>DOCUMENT OUTPUT: Technical review reports. Structured findings with severity levels and action items. User skill level ({user_skill_level}) affects conversation style ONLY, not review content.</critical>
@@ -17,63 +17,51 @@
   <step n="1" goal="Find story ready for review" tag="sprint-status">
     <check if="{{story_path}} is provided">
       <action>Use {{story_path}} directly</action>
-      <action>Read COMPLETE file and parse sections</action>
+      <action>Read COMPLETE story file and parse sections</action>
       <action>Extract story_key from filename or story metadata</action>
-      <goto>verify_status</goto>
+      <action>Verify Status is "review" - if not, HALT with message: "Story status must be 'review' to proceed"</action>
     </check>
 
-    <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
-    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
-    <action>Read ALL lines from beginning to end - do not skip any content</action>
-    <action>Parse the development_status section completely</action>
+    <check if="{{story_path}} is NOT provided">
+      <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+      <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+      <action>Read ALL lines from beginning to end - do not skip any content</action>
+      <action>Parse the development_status section completely</action>
 
-    <action>Find ALL stories (reading in order from top to bottom) where:
-      - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
-      - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
-      - Status value equals "review"
-    </action>
+      <action>Find FIRST story (reading in order from top to bottom) where:
+        - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+        - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+        - Status value equals "review"
+      </action>
 
-    <action>Collect up to 10 review story keys in order (limit for display purposes)</action>
-    <action>Count total review stories found</action>
+      <check if="no story with status 'review' found">
+        <output>📋 No stories with status "review" found
 
-    <check if="no review stories found">
-      <output>📋 No stories in review status found
-
-**Options:**
-1. Run `dev-story` to implement and mark stories ready for review
+**Next Steps:**
+1. Run `dev-story` to implement and mark a story ready for review
 2. Check sprint-status.yaml for current story states
-      </output>
-      <action>HALT</action>
+        </output>
+        <action>HALT</action>
+      </check>
+
+      <action>Use the first story found with status "review"</action>
+      <action>Resolve story file path in {{story_dir}}</action>
+      <action>Read the COMPLETE story file</action>
     </check>
 
-    <action>Display available review stories:
-
-**Stories Ready for Review ({{review_count}} found):**
-
-{{list_of_review_story_keys}}
-
-    </action>
-
-    <ask if="{{non_interactive}} == false">Select story to review (enter story key or number):</ask>
-    <action if="{{non_interactive}} == true">Auto-select first story from the list</action>
-
-    <action>Resolve selected story_key and find file path in {{story_dir}}</action>
-    <action>Resolve {{story_path}} and read the COMPLETE file</action>
-
-    <anchor id="verify_status" />
-
-    <action>Extract {{epic_num}} and {{story_num}} from filename (e.g., story-2.3.*.md) and story metadata if available</action>
+    <action>Extract {{epic_num}} and {{story_num}} from filename (e.g., story-2.3.*.md) and story metadata</action>
     <action>Parse sections: Status, Story, Acceptance Criteria, Tasks/Subtasks (and completion states), Dev Notes, Dev Agent Record (Context Reference, Completion Notes, File List), Change Log</action>
-    <action if="Status is not one of {{allow_status_values}}">HALT with message: "Story status must be 'review' to proceed".</action>
-    <action if="story cannot be read">HALT.</action>
+    <action if="story cannot be read">HALT with message: "Unable to read story file"</action>
   </step>
 
-  <step n="2" goal="Resolve context and specification inputs">
-    <action>Locate Story Context: Under Dev Agent Record → Context Reference, read referenced path(s). If missing and {{auto_discover_context}}: search {{output_folder}} for files named "story-context-{{epic_num}}.{{story_num}}*.xml"; pick the most recent.</action>
-    <action if="no context found">Continue but record a WARNING in review notes: "No Story Context found".</action>
-    <action>Locate Epic Tech Spec: If {{auto_discover_tech_spec}}, search {{tech_spec_search_dir}} with glob {{tech_spec_glob_template}} (resolve {{epic_num}}); else use provided input.</action>
-    <action if="no tech spec found">Continue but record a WARNING in review notes: "No Tech Spec found for epic {{epic_num}}".</action>
-    <action>Load architecture/standards docs: For each file name in {{arch_docs_file_names}} within {{arch_docs_search_dirs}}, read if exists. Collect any testing, coding standards, security, and architectural patterns.</action>
+  <step n="2" goal="Resolve story context file and specification inputs">
+    <action>Locate story context file: Under Dev Agent Record → Context Reference, read referenced path(s). If missing, search {{output_folder}} for files matching pattern "story-{{epic_num}}.{{story_num}}*.context.md" and use the most recent.</action>
+    <action if="no story context file found">Continue but record a WARNING in review notes: "No story context file found"</action>
+
+    <action>Locate Epic Tech Spec: Search {{tech_spec_search_dir}} with glob {{tech_spec_glob_template}} (resolve {{epic_num}})</action>
+    <action if="no tech spec found">Continue but record a WARNING in review notes: "No Tech Spec found for epic {{epic_num}}"</action>
+
+    <action>Load architecture/standards docs: For each file name in {{arch_docs_file_names}} within {{arch_docs_search_dirs}}, read if exists. Collect testing, coding standards, security, and architectural patterns.</action>
   </step>
 
   <step n="3" goal="Detect tech stack and establish best-practice reference set">
@@ -124,7 +112,7 @@
     <action>Save the story file.</action>
   </step>
 
-  <step n="7.5" goal="Update sprint status based on review outcome" tag="sprint-status">
+  <step n="8" goal="Update sprint status based on review outcome" tag="sprint-status">
     <action>Determine target status based on review outcome:
       - If {{outcome}} == "Approve" → target_status = "done"
       - If {{outcome}} == "Changes Requested" → target_status = "in-progress"
@@ -149,12 +137,12 @@ Review was saved to story file, but sprint-status.yaml may be out of sync.
     </check>
   </step>
 
-  <step n="8" goal="Persist action items to tasks/backlog/epic">
+  <step n="9" goal="Persist action items to tasks/backlog/epic">
     <action>Normalize Action Items into a structured list: description, severity (High/Med/Low), type (Bug/TechDebt/Enhancement), suggested owner (if known), related AC/file references.</action>
-    <action if="{{persist_action_items}} == true and 'story_tasks' in {{persist_targets}}">
+    <ask if="action items exist and 'story_tasks' in {{persist_targets}}">Add {{action_item_count}} follow-up items to story Tasks/Subtasks?</ask>
+    <action if="user confirms or no ask needed">
       Append under the story's "Tasks / Subtasks" a new subsection titled "Review Follow-ups (AI)", adding each item as an unchecked checkbox in imperative form, prefixed with "[AI-Review]" and severity. Example: "- [ ] [AI-Review][High] Add input validation on server route /api/x (AC #2)".
     </action>
-    <ask optional="true" if="{{non_interactive}} == false">Confirm adding follow-ups into story Tasks/Subtasks. Proceed?</ask>
     <action if="{{persist_action_items}} == true and 'backlog_file' in {{persist_targets}}">
       If {{backlog_file}} does not exist, copy {installed_path}/backlog_template.md to {{backlog_file}} location.
       Append a row per action item with Date={{date}}, Story={{epic_num}}.{{story_num}}, Epic={{epic_num}}, Type, Severity, Owner (or "TBD"), Status="Open", Notes with short context and file refs.
@@ -166,7 +154,7 @@ Review was saved to story file, but sprint-status.yaml may be out of sync.
     <action>Optionally invoke tests or linters to verify quick fixes if any were applied as part of review (requires user approval for any dependency changes).</action>
   </step>
 
-  <step n="9" goal="Validation and completion">
+  <step n="10" goal="Validation and completion">
     <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Report workflow completion.</action>
     <output>**✅ Story Review Complete, {user_name}!**

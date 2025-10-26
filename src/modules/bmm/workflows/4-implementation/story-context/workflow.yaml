@@ -8,8 +8,8 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
 story_path: "{config_source}:dev_story_location"
-context_path: "{config_source}:dev_story_location"
 date: system-generated
 
 # Workflow components
@@ -20,12 +20,8 @@ validation: "{installed_path}/checklist.md"
 
 # Variables and inputs
 variables:
-  story_path: "" # Explicit story path; auto-discovered if empty
+  story_path: "" # Optional: Explicit story path. If not provided, finds first story with status "drafted"
   story_dir: "{config_source}:dev_story_location"
-  story_selection_limit: 10
-  tech_spec_search_dir: "{project-root}/docs"
-  tech_spec_glob_template: "tech-spec-epic-{{epic_id}}*.md"
-  non_interactive: true
 
 # Output configuration
 # Uses story_key from sprint-status.yaml (e.g., "1-2-user-authentication")

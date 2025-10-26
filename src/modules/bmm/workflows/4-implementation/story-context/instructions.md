@@ -1,67 +1,89 @@
 <!-- BMAD BMM Story Context Assembly Instructions (v6) -->
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
-<critical>This workflow assembles a Story Context XML for a single user story by extracting ACs, tasks, relevant docs/code, interfaces, constraints, and testing guidance to support implementation.</critical>
-<critical>Default execution mode: #yolo (non-interactive). Only ask if {{non_interactive}} == false. If auto-discovery fails, HALT and request 'story_path' or 'story_dir'.</critical>
+<critical>This workflow assembles a Story Context file for a single drafted story by extracting acceptance criteria, tasks, relevant docs/code, interfaces, constraints, and testing guidance.</critical>
+<critical>If story_path is provided, use it. Otherwise, find the first story with status "drafted" in sprint-status.yaml. If none found, HALT.</critical>
+<critical>Check if context file already exists. If it does, ask user if they want to replace it, verify it, or cancel.</critical>
 
-<critical>DOCUMENT OUTPUT: Technical XML context file. Concise, structured, project-relative paths only. User skill level ({user_skill_level}) affects conversation style ONLY, not context content.</critical>
+<critical>DOCUMENT OUTPUT: Technical context file (.context.md). Concise, structured, project-relative paths only.</critical>
 
 <workflow>
-  <step n="1" goal="Find drafted story from sprint status" tag="sprint-status">
-    <action>If {{story_path}} provided and valid → use it; extract story_key from filename/metadata; GOTO initialize_context</action>
+  <step n="1" goal="Find drafted story and check for existing context" tag="sprint-status">
+    <check if="{{story_path}} is provided">
+      <action>Use {{story_path}} directly</action>
+      <action>Read COMPLETE story file and parse sections</action>
+      <action>Extract story_key from filename or story metadata</action>
+      <action>Verify Status is "drafted" - if not, HALT with message: "Story status must be 'drafted' to generate context"</action>
+    </check>
 
-    <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
-    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
-    <action>Read ALL lines from beginning to end - do not skip any content</action>
-    <action>Parse the development_status section completely</action>
+    <check if="{{story_path}} is NOT provided">
+      <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+      <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+      <action>Read ALL lines from beginning to end - do not skip any content</action>
+      <action>Parse the development_status section completely</action>
 
-    <action>Find ALL stories (reading in order from top to bottom) where:
-      - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
-      - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
-      - Status value equals "drafted"
-    </action>
+      <action>Find FIRST story (reading in order from top to bottom) where:
+        - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+        - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+        - Status value equals "drafted"
+      </action>
 
-    <action>Collect up to 10 drafted story keys in order (limit for display purposes)</action>
-    <action>Count total drafted stories found</action>
-
-    <check if="no drafted stories found">
-      <output>📋 No drafted stories found in sprint-status.yaml
+      <check if="no story with status 'drafted' found">
+        <output>📋 No drafted stories found in sprint-status.yaml
 
 All stories are either still in backlog or already marked ready/in-progress/done.
 
-**Options:**
+**Next Steps:**
 1. Run `create-story` to draft more stories
 2. Run `sprint-planning` to refresh story tracking
-      </output>
-      <action>HALT</action>
+        </output>
+        <action>HALT</action>
+      </check>
+
+      <action>Use the first drafted story found</action>
+      <action>Find matching story file in {{story_dir}} using story_key pattern</action>
+      <action>Read the COMPLETE story file</action>
     </check>
 
-    <action>Display available drafted stories:
+    <action>Extract {{epic_id}}, {{story_id}}, {{story_title}}, {{story_status}} from filename/content</action>
+    <action>Parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes</action>
+    <action>Extract user story fields (asA, iWant, soThat)</action>
+    <template-output file="{default_output_file}">story_tasks</template-output>
+    <template-output file="{default_output_file}">acceptance_criteria</template-output>
 
-**Drafted Stories Available ({{drafted_count}} found):**
+    <!-- Check if context file already exists -->
+    <action>Check if file exists at {default_output_file}</action>
 
-{{list_of_drafted_story_keys}}
+    <check if="context file already exists">
+      <output>⚠️ Context file already exists: {default_output_file}
 
-    </action>
+**What would you like to do?**
+1. **Replace** - Generate new context file (overwrites existing)
+2. **Verify** - Validate existing context file
+3. **Cancel** - Exit without changes
+      </output>
+      <ask>Choose action (replace/verify/cancel):</ask>
 
-    <ask if="{{non_interactive}} == false">Select the drafted story to generate context for (enter story key or number):</ask>
-    <action if="{{non_interactive}} == true">Auto-select first story from the list</action>
+      <check if="user chooses verify">
+        <action>GOTO validation_step</action>
+      </check>
 
-    <action>Resolve selected story_key from user input or auto-selection</action>
-    <action>Find matching story file in {{story_dir}} using story_key pattern</action>
-    <action>Resolve {{story_path}} and READ COMPLETE file</action>
+      <check if="user chooses cancel">
+        <action>HALT with message: "Context generation cancelled"</action>
+      </check>
 
-    <anchor id="initialize_context" />
+      <check if="user chooses replace">
+        <action>Continue to generate new context file</action>
+      </check>
+    </check>
 
-    <action>Extract {{epic_id}}, {{story_id}}, {{story_title}}, {{story_status}} from filename/content; parse sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes.</action>
-    <action>Extract user story fields (asA, iWant, soThat).</action>
-    <action>Store project root path for relative path conversion: extract from {project-root} variable.</action>
-    <action>Define path normalization function: convert any absolute path to project-relative by removing project root prefix.</action>
-    <action>Initialize output by writing template to {default_output_file}.</action>
+    <action>Store project root path for relative path conversion: extract from {project-root} variable</action>
+    <action>Define path normalization function: convert any absolute path to project-relative by removing project root prefix</action>
+    <action>Initialize output by writing template to {default_output_file}</action>
     <template-output file="{default_output_file}">as_a</template-output>
     <template-output file="{default_output_file}">i_want</template-output>
     <template-output file="{default_output_file}">so_that</template-output>
@@ -127,7 +149,8 @@ All stories are either still in backlog or already marked ready/in-progress/done
   </step>
 
   <step n="6" goal="Validate and save">
-    <action>Validate output XML structure and content.</action>
+    <anchor id="validation_step" />
+    <action>Validate output context file structure and content</action>
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
   </step>
 
@@ -152,31 +175,26 @@ You may need to run sprint-planning to refresh tracking.
       </output>
     </check>
 
-    <action>Communicate to {user_name} that story context has been successfully generated</action>
-    <action>Summarize what was accomplished: story ID, story key, title, context file location</action>
-    <action>Explain that story status is now "ready-for-dev" (was "drafted") and sprint status is "ready-for-dev" (was "drafted")</action>
-    <action>Highlight the value of the generated context: provides docs, code references, interfaces, constraints, and test guidance</action>
+    <output>✅ Story context generated successfully, {user_name}!
 
-    <action>Based on {user_skill_level}, ask if user would like to understand:
-      - What information was gathered in the context file
-      - How the context file will help during implementation
-      - What the next steps are
-      - Anything else about the context generation process
-    </action>
+**Story Details:**
+- Story: {{epic_id}}.{{story_id}} - {{story_title}}
+- Story Key: {{story_key}}
+- Context File: {default_output_file}
+- Status: drafted → ready-for-dev
 
-    <check if="user asks for explanations">
-      <action>Provide clear explanations tailored to {user_skill_level}</action>
-      <action>Reference specific sections of the generated context when helpful</action>
-    </check>
+**Context Includes:**
+- Documentation artifacts and references
+- Existing code and interfaces
+- Dependencies and frameworks
+- Testing standards and ideas
+- Development constraints
 
-    <action>Once explanations are complete (or user indicates no questions), suggest logical next steps</action>
-    <action>Common next steps to suggest (but allow user flexibility):
-      - Review the generated context file to understand implementation guidance
-      - Load DEV agent and run `dev-story` workflow to implement the story
-      - Check sprint-status.yaml to see which stories are ready for development
-      - Generate context for additional drafted stories if needed
-    </action>
-    <action>Remain flexible - allow user to choose their own path or ask for other assistance</action>
+**Next Steps:**
+1. Review the context file: {default_output_file}
+2. Run `dev-story` to implement the story
+3. Generate context for more drafted stories if needed
+    </output>
   </step>
 
 </workflow>

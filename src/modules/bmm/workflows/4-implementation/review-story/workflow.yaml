@@ -8,6 +8,8 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
@@ -20,13 +22,8 @@ template: false
 
 # Variables (can be provided by caller)
 variables:
-  story_path: "" # Explicit path to a story markdown file
-  story_dir: "{config_source}:dev_story_location" # Directory containing story markdown files
-  story_selection_limit: 10
-  allow_status_values: |
-    - review
-  auto_discover_context: true
-  auto_discover_tech_spec: true
+  story_path: "" # Optional: Explicit path to story file. If not provided, finds first story with status "review"
+  story_dir: "{config_source}:dev_story_location" # Directory containing story files
   tech_spec_search_dir: "{project-root}/docs"
   tech_spec_glob_template: "tech-spec-epic-{{epic_num}}*.md"
   arch_docs_search_dirs: |
@@ -36,9 +33,6 @@ variables:
     - architecture.md
   enable_mcp_doc_search: true # Prefer enabled MCP servers for doc/best-practice lookup
   enable_web_fallback: true # Fallback to web search/read-url if MCP not available
-  update_status_on_result: true # If true, update story Status based on review outcome
-  status_on_approve: "done"
-  status_on_changes_requested: "in-progress"
   # Persistence controls for review action items and notes
   persist_action_items: true
   # Valid targets: story_tasks, story_review_section, backlog_file, epic_followups
@@ -50,13 +44,11 @@ variables:
   backlog_file: "{project-root}/docs/backlog.md"
   update_epic_followups: true
   epic_followups_section_title: "Post-Review Follow-ups"
-  create_github_issues: false
-  non_interactive: true
 
 # Recommended inputs
 recommended_inputs:
-  - story_markdown: "Path to the story markdown file flagged Ready for Review"
-  - tech_spec: "Epic technical specification document (auto-discovered if omitted)"
-  - story_context: "Story Context XML path (auto-discovered if omitted)"
+  - story: "Path to the story file (auto-discovered if omitted - finds first story with status 'review')"
+  - tech_spec: "Epic technical specification document (auto-discovered)"
+  - story_context_file: "Story context file (.context.md) (auto-discovered)"
 
 web_bundle: false

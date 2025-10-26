@@ -28,7 +28,7 @@ FACILITATION NOTES:
 
 <action>Verify epic completion status:</action>
 
-<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Load the FULL file: {output_folder}/sprint-status.yaml</action>
 <action>Read ALL development_status entries</action>
 
 <action>Find all stories for epic {{epic_number}}:
@@ -416,7 +416,7 @@ See you at sprint planning once prep work is done!"
 </step>
 
 <step n="9" goal="Mark retrospective completed in sprint status" tag="sprint-status">
-<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Load the FULL file: {output_folder}/sprint-status.yaml</action>
 <action>Find development_status key "epic-{{completed_number}}-retrospective"</action>
 <action>Verify current status is "optional" (expected previous state)</action>
 <action>Update development_status["epic-{{completed_number}}-retrospective"] = "completed"</action>

@@ -7,6 +7,8 @@ config_source: "{project-root}/bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/retrospective"
@@ -17,9 +19,6 @@ mode: interactive
 trigger: "Run AFTER completing an epic"
 
 required_inputs:
-  - completed_epic: "The epic that was just completed"
-  - stories_folder: "{output_folder}/stories/"
-  - epics_folder: "{output_folder}/prd/"
   - agent_manifest: "{project-root}/bmad/_cfg/agent-manifest.csv"
 
 output_artifacts:
