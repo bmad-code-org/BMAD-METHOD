@@ -34,3 +34,7 @@ recommended_inputs:
 
 # Validation criteria data
 validation_criteria: "{installed_path}/validation-criteria.yaml"
+
+standalone: true
+
+web_bundle: false

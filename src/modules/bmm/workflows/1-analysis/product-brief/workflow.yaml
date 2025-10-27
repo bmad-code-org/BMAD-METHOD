@@ -28,8 +28,7 @@ validation: "{installed_path}/checklist.md"
 # Output configuration
 default_output_file: "{output_folder}/product-brief-{{project_name}}-{{date}}.md"
 
-# Workflow settings
-autonomous: false # This is an interactive workflow requiring user collaboration
+standalone: true
 
 web_bundle:
   name: "product-brief"

@@ -51,4 +51,6 @@ recommended_inputs:
   - tech_spec: "Epic technical specification document (auto-discovered)"
   - story_context_file: "Story context file (.context.xml) (auto-discovered)"
 
+standalone: true
+
 web_bundle: false

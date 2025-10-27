@@ -50,3 +50,5 @@ features:
   - "Novel pattern design for unique concepts"
   - "Intelligent pattern identification - LLM figures out what patterns matter"
   - "Implementation patterns for agent consistency"
+
+standalone: true

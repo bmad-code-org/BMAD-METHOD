@@ -36,4 +36,6 @@ variables:
 # Output configuration
 default_output_file: "{status_file}"
 
+standalone: true
+
 web_bundle: false

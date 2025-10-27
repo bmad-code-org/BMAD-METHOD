@@ -25,5 +25,6 @@ path_files: "{installed_path}/paths/"
 # Output configuration - reads existing status
 default_output_file: "{output_folder}/bmm-workflow-status.md"
 
-# This is now a lightweight router workflow
+standalone: true
+
 web_bundle: false

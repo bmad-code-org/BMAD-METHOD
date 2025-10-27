@@ -27,4 +27,6 @@ variables:
 # Uses story_key from sprint-status.yaml (e.g., "1-2-user-authentication")
 default_output_file: "{story_dir}/{{story_key}}.context.xml"
 
+standalone: true
+
 web_bundle: false

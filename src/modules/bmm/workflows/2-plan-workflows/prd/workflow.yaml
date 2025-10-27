@@ -33,6 +33,8 @@ recommended_inputs:
   - product_brief: "{output_folder}/product-brief.md"
   - market_research: "{output_folder}/market-research.md"
 
+standalone: true
+
 web_bundle:
   name: "prd"
   description: "Unified PRD workflow for project levels 2-4. Produces strategic PRD and tactical epic breakdown. Hands off to architecture workflow for technical design. Note: Level 0-1 use tech-spec workflow."

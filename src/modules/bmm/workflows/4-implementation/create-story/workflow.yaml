@@ -45,4 +45,6 @@ recommended_inputs:
   - prd: "PRD document"
   - architecture: "Architecture (optional)"
 
+standalone: true
+
 web_bundle: false

@@ -27,6 +27,8 @@ brain_techniques: "{installed_path}/brain-methods.csv"
 # Output configuration
 default_output_file: "{output_folder}/brainstorming-session-results-{{date}}.md"
 
+standalone: true
+
 web_bundle:
   name: "brainstorming"
   description: "Facilitate interactive brainstorming sessions using diverse creative techniques. This workflow facilitates interactive brainstorming sessions using diverse creative techniques. The session is highly interactive, with the AI acting as a facilitator to guide the user through various ideation methods to generate and refine creative solutions."

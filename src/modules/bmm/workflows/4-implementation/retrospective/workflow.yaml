@@ -40,4 +40,6 @@ validation_required:
   - technical_health: "Is codebase in stable, maintainable state?"
   - blocker_resolution: "Any unresolved blockers that will impact next epic?"
 
+standalone: true
+
 web_bundle: false

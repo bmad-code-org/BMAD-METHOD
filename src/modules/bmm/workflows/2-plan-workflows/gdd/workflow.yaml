@@ -30,6 +30,8 @@ recommended_inputs:
   - narrative_design: "{output_folder}/narrative-design.md"
   - market_research: "{output_folder}/market-research.md"
 
+standalone: true
+
 web_bundle:
   name: "gdd"
   description: "Game Design Document workflow for all game project levels - from small prototypes to full AAA games. Generates comprehensive GDD with game mechanics, systems, progression, and implementation guidance."

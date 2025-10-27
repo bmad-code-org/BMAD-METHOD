@@ -23,4 +23,6 @@ installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/dev-story"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
+standalone: true
+
 web_bundle: false

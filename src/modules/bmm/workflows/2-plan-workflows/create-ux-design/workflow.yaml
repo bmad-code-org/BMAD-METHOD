@@ -39,17 +39,4 @@ default_output_file: "{output_folder}/ux-design-specification.md"
 color_themes_html: "{output_folder}/ux-color-themes.html"
 design_directions_html: "{output_folder}/ux-design-directions.html"
 
-# Workflow metadata
-version: "1.0.0"
-paradigm: "visual-collaboration-driven"
-execution_time: "45-120 minutes depending on project complexity and user engagement"
-features:
-  - "Design system discovery and selection"
-  - "Live HTML color theme visualization"
-  - "6-8 design direction mockup generation"
-  - "Adaptive facilitation by skill level"
-  - "Novel UX pattern design for unique concepts"
-  - "Progressive document building (saves after each step)"
-  - "Visual decision-making with actual mockups"
-  - "WebSearch for current design systems and trends"
-  - "Serves as input to follow-up workflows (wireframes, Figma, prototypes, architecture)"
+standalone: true

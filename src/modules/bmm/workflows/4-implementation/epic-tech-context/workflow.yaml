@@ -29,4 +29,6 @@ validation: "{installed_path}/checklist.md"
 # Output configuration
 default_output_file: "{output_folder}/tech-spec-epic-{{epic_id}}.md"
 
+standalone: true
+
 web_bundle: false

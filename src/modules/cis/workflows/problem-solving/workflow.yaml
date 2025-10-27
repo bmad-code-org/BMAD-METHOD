@@ -29,6 +29,8 @@ solving_methods: "{installed_path}/solving-methods.csv"
 # Output configuration
 default_output_file: "{output_folder}/problem-solution-{{date}}.md"
 
+standalone: true
+
 web_bundle:
   name: "problem-solving"
   description: "Apply systematic problem-solving methodologies to crack complex challenges. This workflow guides through problem diagnosis, root cause analysis, creative solution generation, evaluation, and implementation planning using proven frameworks."
