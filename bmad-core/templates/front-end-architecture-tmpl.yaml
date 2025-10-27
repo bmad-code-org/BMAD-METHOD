@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: frontend-architecture-template-v2
   name: Frontend Architecture Document
@@ -16,16 +17,16 @@ sections:
     title: Template and Framework Selection
     instruction: |
       Review provided documents including PRD, UX-UI Specification, and main Architecture Document. Focus on extracting technical implementation details needed for AI frontend tools and developer agents. Ask the user for any of these documents if you are unable to locate and were not provided.
-      
+
       Before proceeding with frontend architecture design, check if the project is using a frontend starter template or existing codebase:
-      
+
       1. Review the PRD, main architecture document, and brainstorming brief for mentions of:
          - Frontend starter templates (e.g., Create React App, Next.js, Vite, Vue CLI, Angular CLI, etc.)
          - UI kit or component library starters
          - Existing frontend projects being used as a foundation
          - Admin dashboard templates or other specialized starters
          - Design system implementations
-      
+
       2. If a frontend starter template or existing project is mentioned:
          - Ask the user to provide access via one of these methods:
            - Link to the starter template documentation
@@ -41,7 +42,7 @@ sections:
            - Testing setup and patterns
            - Build and development scripts
          - Use this analysis to ensure your frontend architecture aligns with the starter's patterns
-      
+
       3. If no frontend starter is mentioned but this is a new UI, ensure we know what the ui language and framework is:
          - Based on the framework choice, suggest appropriate starters:
            - React: Create React App, Next.js, Vite + React
@@ -49,11 +50,11 @@ sections:
            - Angular: Angular CLI
            - Or suggest popular UI templates if applicable
          - Explain benefits specific to frontend development
-      
+
       4. If the user confirms no starter template will be used:
          - Note that all tooling, bundling, and configuration will need manual setup
          - Proceed with frontend architecture from scratch
-      
+
       Document the starter template decision and any constraints it imposes before proceeding.
     sections:
       - id: changelog
@@ -75,12 +76,24 @@ sections:
         rows:
           - ["Framework", "{{framework}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["UI Library", "{{ui_library}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["State Management", "{{state_management}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
+          - [
+              "State Management",
+              "{{state_management}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
           - ["Routing", "{{routing_library}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Build Tool", "{{build_tool}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Styling", "{{styling_solution}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Testing", "{{test_framework}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["Component Library", "{{component_lib}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
+          - [
+              "Component Library",
+              "{{component_lib}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
           - ["Form Handling", "{{form_library}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Animation", "{{animation_lib}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Dev Tools", "{{dev_tools}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]

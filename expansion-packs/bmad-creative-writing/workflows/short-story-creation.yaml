@@ -1,0 +1,64 @@
+# <!-- Powered by BMAD™ Core -->
+# workflows/short-story-creation.yaml
+name: short-story-creation
+title: Short Story Creation Workflow
+description: |
+  Pipeline for drafting and polishing a standalone short story (up to ~7,500 words).
+
+triggers:
+  - command: /short-story
+  - intent: "write a short story"
+
+inputs:
+  - working_title
+  - genre
+  - target_word_count
+
+agents:
+  - plot-architect
+  - character-psychologist
+  - genre-specialist
+  - narrative-designer
+  - editor
+  - beta-reader
+
+steps:
+  - id: premise
+    title: Generate premise
+    agent: plot-architect
+    outputs: premise
+
+  - id: outline
+    title: Create compact outline
+    agent: plot-architect
+    inputs: premise
+    outputs: outline
+
+  - id: draft
+    title: Draft story
+    agent: narrative-designer
+    inputs: outline
+    outputs: draft_story
+
+  - id: tightening
+    title: Tighten prose & pacing
+    agent: editor
+    inputs: draft_story
+    outputs: tightened_story
+
+  - id: beta_read
+    title: Beta read
+    agent: beta-reader
+    inputs: tightened_story
+    outputs: beta_feedback
+
+  - id: final_edit
+    title: Final edit & proof
+    agent: editor
+    inputs:
+      - tightened_story
+      - beta_feedback
+    outputs: final_story
+
+outputs:
+  - final_story

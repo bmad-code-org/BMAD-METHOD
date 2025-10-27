@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Correct Course Task
 
 ## Purpose

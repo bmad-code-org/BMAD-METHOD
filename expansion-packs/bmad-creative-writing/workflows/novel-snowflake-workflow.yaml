@@ -1,0 +1,69 @@
+# <!-- Powered by BMAD™ Core -->
+---
+workflow:
+  id: novel-snowflake-workflow
+  name: Snowflake Novel Workflow
+  description: >-
+    10‑step Snowflake Method culminating in professional critic review.
+  phases:
+    premise:
+      - agent: plot-architect
+        task: brainstorm-premise
+        output: premise.txt
+    paragraph:
+      - agent: plot-architect
+        task: expand-premise
+        input: premise.txt
+        output: premise-paragraph.md
+    characters:
+      - agent: character-psychologist
+        task: develop-character
+        input: premise-paragraph.md
+        output: character-summaries.md
+    synopsis:
+      - agent: plot-architect
+        task: expand-synopsis
+        input: premise-paragraph.md
+        output: synopsis.md
+    deep-character:
+      - agent: character-psychologist
+        task: character-depth-pass
+        input: character-summaries.md
+        output: characters.md
+    scene-list:
+      - agent: plot-architect
+        task: generate-scene-list
+        input:
+          - synopsis.md
+          - characters.md
+        output: scene-list.md
+    outline:
+      - agent: plot-architect
+        task: outline-scenes
+        input: scene-list.md
+        output: snowflake-outline.md
+    drafting:
+      - agent: editor
+        task: create-draft-section
+        input: snowflake-outline.md
+        repeat: per-chapter
+        output: draft-manuscript.md
+    polish:
+      - agent: beta-reader
+        task: provide-feedback
+        input: draft-manuscript.md
+        output: beta-notes.md
+      - agent: editor
+        task: incorporate-feedback
+        input:
+          - draft-manuscript.md
+          - beta-notes.md
+        output: final-manuscript.md
+    critique:
+      - agent: book-critic
+        task: critical-review
+        input: final-manuscript.md
+        output: critic-review.md
+  completion_criteria:
+    - critic-review.md exists
+# end

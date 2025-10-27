@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Infrastructure Change Validation Checklist
 
 This checklist serves as a comprehensive framework for validating infrastructure changes before deployment to production. The DevOps/Platform Engineer should systematically work through each item, ensuring the infrastructure is secure, compliant, resilient, and properly implemented according to organizational standards.

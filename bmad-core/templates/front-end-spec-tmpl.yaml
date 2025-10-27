@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: frontend-spec-template-v2
   name: UI/UX Specification
@@ -16,7 +17,7 @@ sections:
     title: Introduction
     instruction: |
       Review provided documents including Project Brief, PRD, and any user research to gather context. Focus on understanding user needs, pain points, and desired outcomes before beginning the specification.
-      
+
       Establish the document's purpose and scope. Keep the content below but ensure project name is properly substituted.
     content: |
       This document defines the user experience goals, information architecture, user flows, and visual design specifications for {{project_name}}'s user interface. It serves as the foundation for visual design and frontend development, ensuring a cohesive and user-centered experience.
@@ -25,7 +26,7 @@ sections:
         title: Overall UX Goals & Principles
         instruction: |
           Work with the user to establish and document the following. If not already defined, facilitate a discussion to determine:
-          
+
           1. Target User Personas - elicit details or confirm existing ones from PRD
           2. Key Usability Goals - understand what success looks like for users
           3. Core Design Principles - establish 3-5 guiding principles
@@ -66,7 +67,7 @@ sections:
     title: Information Architecture (IA)
     instruction: |
       Collaborate with the user to create a comprehensive information architecture:
-      
+
       1. Build a Site Map or Screen Inventory showing all major areas
       2. Define the Navigation Structure (primary, secondary, breadcrumbs)
       3. Use Mermaid diagrams for visual representation
@@ -96,22 +97,22 @@ sections:
         title: Navigation Structure
         template: |
           **Primary Navigation:** {{primary_nav_description}}
-          
+
           **Secondary Navigation:** {{secondary_nav_description}}
-          
+
           **Breadcrumb Strategy:** {{breadcrumb_strategy}}
 
   - id: user-flows
     title: User Flows
     instruction: |
       For each critical user task identified in the PRD:
-      
+
       1. Define the user's goal clearly
       2. Map out all steps including decision points
       3. Consider edge cases and error states
       4. Use Mermaid flow diagrams for clarity
       5. Link to external tools (Figma/Miro) if detailed flows exist there
-      
+
       Create subsections for each major flow.
     elicit: true
     repeatable: true
@@ -120,9 +121,9 @@ sections:
         title: "{{flow_name}}"
         template: |
           **User Goal:** {{flow_goal}}
-          
+
           **Entry Points:** {{entry_points}}
-          
+
           **Success Criteria:** {{success_criteria}}
         sections:
           - id: flow-diagram
@@ -153,14 +154,14 @@ sections:
             title: "{{screen_name}}"
             template: |
               **Purpose:** {{screen_purpose}}
-              
+
               **Key Elements:**
               - {{element_1}}
               - {{element_2}}
               - {{element_3}}
-              
+
               **Interaction Notes:** {{interaction_notes}}
-              
+
               **Design File Reference:** {{specific_frame_link}}
 
   - id: component-library
@@ -179,11 +180,11 @@ sections:
             title: "{{component_name}}"
             template: |
               **Purpose:** {{component_purpose}}
-              
+
               **Variants:** {{component_variants}}
-              
+
               **States:** {{component_states}}
-              
+
               **Usage Guidelines:** {{usage_guidelines}}
 
   - id: branding-style
@@ -229,13 +230,13 @@ sections:
         title: Iconography
         template: |
           **Icon Library:** {{icon_library}}
-          
+
           **Usage Guidelines:** {{icon_guidelines}}
       - id: spacing-layout
         title: Spacing & Layout
         template: |
           **Grid System:** {{grid_system}}
-          
+
           **Spacing Scale:** {{spacing_scale}}
 
   - id: accessibility
@@ -253,12 +254,12 @@ sections:
           - Color contrast ratios: {{contrast_requirements}}
           - Focus indicators: {{focus_requirements}}
           - Text sizing: {{text_requirements}}
-          
+
           **Interaction:**
           - Keyboard navigation: {{keyboard_requirements}}
           - Screen reader support: {{screen_reader_requirements}}
           - Touch targets: {{touch_requirements}}
-          
+
           **Content:**
           - Alternative text: {{alt_text_requirements}}
           - Heading structure: {{heading_requirements}}
@@ -285,11 +286,11 @@ sections:
         title: Adaptation Patterns
         template: |
           **Layout Changes:** {{layout_adaptations}}
-          
+
           **Navigation Changes:** {{nav_adaptations}}
-          
+
           **Content Priority:** {{content_adaptations}}
-          
+
           **Interaction Changes:** {{interaction_adaptations}}
 
   - id: animation
@@ -323,7 +324,7 @@ sections:
     title: Next Steps
     instruction: |
       After completing the UI/UX specification:
-      
+
       1. Recommend review with stakeholders
       2. Suggest creating/updating visual designs in design tool
       3. Prepare for handoff to Design Architect for frontend architecture

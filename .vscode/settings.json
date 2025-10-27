@@ -40,5 +40,30 @@
     "tileset",
     "Trae",
     "VNET"
-  ]
+  ],
+  "json.schemas": [
+    {
+      "fileMatch": ["package.json"],
+      "url": "https://json.schemastore.org/package.json"
+    },
+    {
+      "fileMatch": [".vscode/settings.json"],
+      "url": "vscode://schemas/settings/folder"
+    }
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[yaml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "prettier.prettierPath": "node_modules/prettier",
+  "prettier.requireConfig": true,
+  "yaml.format.enable": false,
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "yaml"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.rulers": [100]
 }

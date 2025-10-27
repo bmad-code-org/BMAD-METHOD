@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: infrastructure-platform-template-v2
   name: Platform Infrastructure Implementation
@@ -28,7 +29,7 @@ sections:
   - id: initial-setup
     instruction: |
       Initial Setup
-      
+
       1. Replace {{project_name}} with the actual project name throughout the document
       2. Gather and review required inputs:
          - **Infrastructure Architecture Document** (Primary input - REQUIRED)
@@ -37,10 +38,10 @@ sections:
          - Technology Stack Document
          - Infrastructure Checklist
          - NOTE: If Infrastructure Architecture Document is missing, HALT and request: "I need the Infrastructure Architecture Document to proceed with platform implementation. This document defines the infrastructure design that we'll be implementing."
-      
+
       3. Validate that the infrastructure architecture has been reviewed and approved
       4. <critical_rule>All platform implementation must align with the approved infrastructure architecture. Any deviations require architect approval.</critical_rule>
-      
+
       Output file location: `docs/platform-infrastructure/platform-implementation.md`
 
   - id: executive-summary
@@ -113,7 +114,7 @@ sections:
           # Example Terraform for VPC setup
           module "vpc" {
             source = "./modules/vpc"
-          
+
             cidr_block = "{{vpc_cidr}}"
             availability_zones = {{availability_zones}}
             public_subnets = {{public_subnets}}
@@ -508,7 +509,7 @@ sections:
           // K6 Load Test Example
           import http from 'k6/http';
           import { check } from 'k6';
-          
+
           export let options = {
             stages: [
               { duration: '5m', target: {{target_users}} },
@@ -622,7 +623,7 @@ sections:
     instruction: Final Review - Ensure all platform layers are properly implemented, integrated, and documented. Verify that the implementation fully supports the BMAD methodology and all agent workflows. Confirm successful validation against the infrastructure checklist.
     content: |
       ---
-      
+
       _Platform Version: 1.0_
       _Implementation Date: {{implementation_date}}_
       _Next Review: {{review_date}}_

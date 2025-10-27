@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: prd-template-v2
   name: Product Requirements Document
@@ -56,7 +57,7 @@ sections:
     condition: PRD has UX/UI requirements
     instruction: |
       Capture high-level UI/UX vision to guide Design Architect and to inform story creation. Steps:
-      
+
       1. Pre-fill all subsections with educated guesses based on project context
       2. Present the complete rendered section to user
       3. Clearly let the user know where assumptions were made
@@ -98,7 +99,7 @@ sections:
     title: Technical Assumptions
     instruction: |
       Gather technical decisions that will guide the Architect. Steps:
-      
+
       1. Check if {root}/data/technical-preferences.yaml or an attached technical-preferences file exists - use it to pre-populate choices
       2. Ask user about: languages, frameworks, starter templates, libraries, APIs, deployment targets
       3. For unknowns, offer guidance based on project goals and MVP scope
@@ -126,9 +127,9 @@ sections:
     title: Epic List
     instruction: |
       Present a high-level list of all epics for user approval. Each epic should have a title and a short (1 sentence) goal statement. This allows the user to review the overall structure before diving into details.
-      
+
       CRITICAL: Epics MUST be logically sequential following agile best practices:
-      
+
       - Each epic should deliver a significant, end-to-end, fully deployable increment of testable functionality
       - Epic 1 must establish foundational project infrastructure (app setup, Git, CI/CD, core services) unless we are adding new functionality to an existing app, while also delivering an initial piece of functionality, even as simple as a health-check route or display of a simple canary page - remember this when we produce the stories for the first epic!
       - Each subsequent epic builds upon previous epics' functionality delivering major blocks of functionality that provide tangible value to users or business when deployed
@@ -147,11 +148,11 @@ sections:
     repeatable: true
     instruction: |
       After the epic list is approved, present each epic with all its stories and acceptance criteria as a complete review unit.
-      
+
       For each epic provide expanded goal (2-3 sentences describing the objective and value all the stories will achieve).
-      
+
       CRITICAL STORY SEQUENCING REQUIREMENTS:
-      
+
       - Stories within each epic MUST be logically sequential
       - Each story should be a "vertical slice" delivering complete functionality aside from early enabler stories for project foundation
       - No story should depend on work from a later story or epic
@@ -179,7 +180,7 @@ sections:
             repeatable: true
             instruction: |
               Define clear, comprehensive, and testable acceptance criteria that:
-              
+
               - Precisely define what "done" means from a functional perspective
               - Are unambiguous and serve as basis for verification
               - Include any critical non-functional requirements from the PRD

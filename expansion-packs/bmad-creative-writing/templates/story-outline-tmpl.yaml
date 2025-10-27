@@ -1,0 +1,96 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: story-outline
+  name: Story Outline Template
+  version: 1.0
+  description: Comprehensive outline for narrative works
+  output:
+    format: markdown
+    filename: "{{title}}-outline.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+sections:
+  - id: overview
+    title: Story Overview
+    instruction: |
+      Create high-level story summary including:
+      - Premise in one sentence
+      - Core conflict
+      - Genre and tone
+      - Target audience
+      - Unique selling proposition
+  - id: structure
+    title: Three-Act Structure
+    subsections:
+      - id: act1
+        title: Act 1 - Setup
+        instruction: |
+          Detail Act 1 including:
+          - Opening image/scene
+          - World establishment
+          - Character introductions
+          - Inciting incident
+          - Debate/refusal
+          - Break into Act 2
+        elicit: true
+      - id: act2a
+        title: Act 2A - Fun and Games
+        instruction: |
+          Map first half of Act 2:
+          - Promise of premise delivery
+          - B-story introduction
+          - Rising complications
+          - Midpoint approach
+        elicit: true
+      - id: act2b
+        title: Act 2B - Raising Stakes
+        instruction: |
+          Map second half of Act 2:
+          - Midpoint reversal
+          - Stakes escalation
+          - Bad guys close in
+          - All is lost moment
+          - Dark night of the soul
+        elicit: true
+      - id: act3
+        title: Act 3 - Resolution
+        instruction: |
+          Design climax and resolution:
+          - Break into Act 3
+          - Climax preparation
+          - Final confrontation
+          - Resolution
+          - Final image
+        elicit: true
+  - id: characters
+    title: Character Arcs
+    instruction: |
+      Map transformation arcs for main characters:
+      - Starting point (flaws/wounds)
+      - Catalyst for change
+      - Resistance/setbacks
+      - Breakthrough moment
+      - End state (growth achieved)
+    elicit: true
+  - id: themes
+    title: Themes & Meaning
+    instruction: |
+      Identify thematic elements:
+      - Central theme/question
+      - How plot explores theme
+      - Character relationships to theme
+      - Symbolic representations
+      - Thematic resolution
+  - id: scenes
+    title: Scene Breakdown
+    instruction: |
+      Create scene-by-scene outline with:
+      - Scene purpose (advance plot/character)
+      - Key events
+      - Emotional trajectory
+      - Hook/cliffhanger
+    repeatable: true
+    elicit: true

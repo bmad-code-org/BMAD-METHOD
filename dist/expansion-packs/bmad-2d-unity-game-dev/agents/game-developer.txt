@@ -97,6 +97,7 @@ dependencies:
 ==================== END: .bmad-2d-unity-game-dev/agents/game-developer.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/execute-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -108,7 +109,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 ## Instructions
 
 1. **Initial Assessment**
-
    - If user or the task being run provides a checklist name:
      - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
      - If multiple matches found, ask user to clarify
@@ -121,14 +121,12 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
 
 2. **Document and Artifact Gathering**
-
    - Each checklist will specify its required documents/artifacts at the beginning
    - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
 
 3. **Checklist Processing**
 
    If in interactive mode:
-
    - Work through each section of the checklist one at a time
    - For each section:
      - Review all items in the section following instructions for that section embedded in the checklist
@@ -137,7 +135,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
 
    If in YOLO mode:
-
    - Process all sections at once
    - Create a comprehensive report of all findings
    - Present the complete analysis to the user
@@ -145,7 +142,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 4. **Validation Approach**
 
    For each checklist item:
-
    - Read and understand the requirement
    - Look for evidence in the documentation that satisfies the requirement
    - Consider both explicit mentions and implicit coverage
@@ -159,7 +155,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 5. **Section Analysis**
 
    For each section:
-
    - think step by step to calculate pass rate
    - Identify common themes in failed items
    - Provide specific recommendations for improvement
@@ -169,7 +164,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 6. **Final Report**
 
    Prepare a summary that includes:
-
    - Overall checklist completion status
    - Pass rates by section
    - List of failed items with context
@@ -193,6 +187,7 @@ The LLM will:
 ==================== END: .bmad-2d-unity-game-dev/tasks/execute-checklist.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/validate-next-story.md ====================
+<!-- Powered by BMAD™ Core -->
 # Validate Next Story Task
 
 ## Purpose
@@ -330,6 +325,7 @@ Provide a structured validation report including:
 ==================== END: .bmad-2d-unity-game-dev/tasks/validate-next-story.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-story-dod-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Game Development Story Definition of Done (DoD) Checklist
 
 ## Instructions for Developer Agent
@@ -357,7 +353,6 @@ The goal is quality delivery, not just checking boxes.]]
 1. **Requirements Met:**
 
    [[LLM: Be specific - list each requirement and whether it's complete. Include game-specific requirements from GDD]]
-
    - [ ] All functional requirements specified in the story are implemented.
    - [ ] All acceptance criteria defined in the story are met.
    - [ ] Game Design Document (GDD) requirements referenced in the story are implemented.
@@ -366,7 +361,6 @@ The goal is quality delivery, not just checking boxes.]]
 2. **Coding Standards & Project Structure:**
 
    [[LLM: Code quality matters for maintainability. Check Unity-specific patterns and C# standards]]
-
    - [ ] All new/modified code strictly adheres to `Operational Guidelines`.
    - [ ] All new/modified code aligns with `Project Structure` (Scripts/, Prefabs/, Scenes/, etc.).
    - [ ] Adherence to `Tech Stack` for Unity version and packages used.
@@ -380,7 +374,6 @@ The goal is quality delivery, not just checking boxes.]]
 3. **Testing:**
 
    [[LLM: Testing proves your code works. Include Unity-specific testing with NUnit and manual testing]]
-
    - [ ] All required unit tests (NUnit) as per the story and testing strategy are implemented.
    - [ ] All required integration tests (if applicable) are implemented.
    - [ ] Manual testing performed in Unity Editor for all game functionality.
@@ -392,7 +385,6 @@ The goal is quality delivery, not just checking boxes.]]
 4. **Functionality & Verification:**
 
    [[LLM: Did you actually run and test your code in Unity? Be specific about game mechanics tested]]
-
    - [ ] Functionality has been manually verified in Unity Editor and play mode.
    - [ ] Game mechanics work as specified in the GDD.
    - [ ] Player controls and input handling work correctly.
@@ -405,7 +397,6 @@ The goal is quality delivery, not just checking boxes.]]
 5. **Story Administration:**
 
    [[LLM: Documentation helps the next developer. Include Unity-specific implementation notes]]
-
    - [ ] All tasks within the story file are marked as complete.
    - [ ] Any clarifications or decisions made during development are documented.
    - [ ] Unity-specific implementation details documented (scene changes, prefab modifications).
@@ -415,7 +406,6 @@ The goal is quality delivery, not just checking boxes.]]
 6. **Dependencies, Build & Configuration:**
 
    [[LLM: Build issues block everyone. Ensure Unity project builds for all target platforms]]
-
    - [ ] Unity project builds successfully without errors.
    - [ ] Project builds for all target platforms (desktop/mobile as specified).
    - [ ] Any new Unity packages or Asset Store items were pre-approved OR approved by user.
@@ -427,7 +417,6 @@ The goal is quality delivery, not just checking boxes.]]
 7. **Game-Specific Quality:**
 
    [[LLM: Game quality matters. Check performance, game feel, and player experience]]
-
    - [ ] Frame rate meets target (30/60 FPS) on all platforms.
    - [ ] Memory usage within acceptable limits.
    - [ ] Game feel and responsiveness meet design requirements.
@@ -439,7 +428,6 @@ The goal is quality delivery, not just checking boxes.]]
 8. **Documentation (If Applicable):**
 
    [[LLM: Good documentation prevents future confusion. Include Unity-specific docs]]
-
    - [ ] Code documentation (XML comments) for public APIs complete.
    - [ ] Unity component documentation in Inspector updated.
    - [ ] User-facing documentation updated, if changes impact players.

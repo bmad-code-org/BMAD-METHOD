@@ -1,0 +1,56 @@
+# <!-- Powered by BMAD™ Core -->
+workflow:
+  id: novel-greenfield-workflow
+  name: Greenfield Novel Workflow
+  description: >-
+    End‑to‑end pipeline for writing a brand‑new novel: concept → outline → draft →
+    beta feedback → polish → professional critique.
+  phases:
+    ideation:
+      - agent: narrative-designer
+        task: brainstorm-premise
+        output: concept-brief.md
+      - agent: world-builder
+        task: build-world
+        input: concept-brief.md
+        output: world-guide.md
+      - agent: character-psychologist
+        task: develop-character
+        input: concept-brief.md
+        output: characters.md
+    outlining:
+      - agent: plot-architect
+        task: analyze-story-structure
+        input:
+          - concept-brief.md
+          - world-guide.md
+          - characters.md
+        output: story-outline.md
+    drafting:
+      - agent: editor
+        task: create-draft-section
+        input: story-outline.md
+        repeat: per-chapter
+        output: draft-manuscript.md
+      - agent: dialog-specialist
+        task: workshop-dialog
+        input: draft-manuscript.md
+        output: dialog-pass.md
+    revision:
+      - agent: beta-reader
+        task: provide-feedback
+        input: draft-manuscript.md
+        output: beta-notes.md
+      - agent: editor
+        task: incorporate-feedback
+        input:
+          - draft-manuscript.md
+          - beta-notes.md
+        output: polished-manuscript.md
+    critique:
+      - agent: book-critic
+        task: critical-review
+        input: polished-manuscript.md
+        output: critic-review.md
+  completion_criteria:
+    - critic-review.md exists

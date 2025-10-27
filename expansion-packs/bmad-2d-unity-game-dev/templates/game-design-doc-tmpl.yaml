@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: game-design-doc-template-v3
   name: Game Design Document (GDD)
@@ -95,7 +96,7 @@ sections:
         instruction: Define the 30-60 second loop that players will repeat. Be specific about timing and player actions for Unity implementation.
         template: |
           **Primary Loop ({{duration}} seconds):**
-          
+
           1. {{action_1}} ({{time_1}}s) - {{unity_component}}
           2. {{action_2}} ({{time_2}}s) - {{unity_component}}
           3. {{action_3}} ({{time_3}}s) - {{unity_component}}
@@ -107,12 +108,12 @@ sections:
         instruction: Clearly define success and failure states with Unity-specific implementation notes
         template: |
           **Victory Conditions:**
-          
+
           - {{win_condition_1}} - Unity Event: {{unity_event}}
           - {{win_condition_2}} - Unity Event: {{unity_event}}
-          
+
           **Failure States:**
-          
+
           - {{loss_condition_1}} - Trigger: {{unity_trigger}}
           - {{loss_condition_2}} - Trigger: {{unity_trigger}}
         examples:
@@ -132,22 +133,22 @@ sections:
             title: "{{mechanic_name}}"
             template: |
               **Description:** {{detailed_description}}
-              
+
               **Player Input:** {{input_method}} - Unity Input System: {{input_action}}
-              
+
               **System Response:** {{game_response}}
-              
+
               **Unity Implementation Notes:**
-              
+
               - **Components Needed:** {{component_list}}
               - **Physics Requirements:** {{physics_2d_setup}}
               - **Animation States:** {{animator_states}}
               - **Performance Considerations:** {{optimization_notes}}
-              
+
               **Dependencies:** {{other_mechanics_needed}}
-              
+
               **Script Architecture:**
-              
+
               - {{script_name}}.cs - {{responsibility}}
               - {{manager_script}}.cs - {{management_role}}
             examples:
@@ -173,15 +174,15 @@ sections:
         title: Player Progression
         template: |
           **Progression Type:** {{linear|branching|metroidvania}}
-          
+
           **Key Milestones:**
-          
+
           1. **{{milestone_1}}** - {{unlock_description}} - Unity: {{scriptable_object_update}}
           2. **{{milestone_2}}** - {{unlock_description}} - Unity: {{scriptable_object_update}}
           3. **{{milestone_3}}** - {{unlock_description}} - Unity: {{scriptable_object_update}}
-          
+
           **Save Data Structure:**
-          
+
           ```csharp
           [System.Serializable]
           public class PlayerProgress
@@ -197,13 +198,13 @@ sections:
         template: |
           **Tutorial Phase:** {{duration}} - {{difficulty_description}}
           - Unity Config: {{scriptable_object_values}}
-          
+
           **Early Game:** {{duration}} - {{difficulty_description}}
           - Unity Config: {{scriptable_object_values}}
-          
+
           **Mid Game:** {{duration}} - {{difficulty_description}}
           - Unity Config: {{scriptable_object_values}}
-          
+
           **Late Game:** {{duration}} - {{difficulty_description}}
           - Unity Config: {{scriptable_object_values}}
         examples:
@@ -236,22 +237,22 @@ sections:
               **Target Duration:** {{target_time}}
               **Key Elements:** {{required_mechanics}}
               **Difficulty Rating:** {{relative_difficulty}}
-              
+
               **Unity Scene Structure:**
-              
+
               - **Environment:** {{tilemap_setup}}
               - **Gameplay Objects:** {{prefab_list}}
               - **Lighting:** {{lighting_setup}}
               - **Audio:** {{audio_sources}}
-              
+
               **Level Flow Template:**
-              
+
               - **Introduction:** {{intro_description}} - Area: {{unity_area_bounds}}
               - **Challenge:** {{main_challenge}} - Mechanics: {{active_components}}
               - **Resolution:** {{completion_requirement}} - Trigger: {{completion_trigger}}
-              
+
               **Reusable Prefabs:**
-              
+
               - {{prefab_name}} - {{prefab_purpose}}
             examples:
               - "Environment: TilemapRenderer with Platform tileset, Lighting: 2D Global Light + Point Lights"
@@ -262,9 +263,9 @@ sections:
           **Total Levels:** {{number}}
           **Unlock Pattern:** {{progression_method}}
           **Scene Management:** {{unity_scene_loading}}
-          
+
           **Unity Scene Organization:**
-          
+
           - Scene Naming: {{naming_convention}}
           - Addressable Assets: {{addressable_groups}}
           - Loading Screens: {{loading_implementation}}
@@ -289,13 +290,13 @@ sections:
           **Physics:** {{2D Only|3D Only|Hybrid}}
           **Scripting Backend:** {{Mono|IL2CPP}}
           **API Compatibility:** {{.NET Standard 2.1|.NET Framework}}
-          
+
           **Required Packages:**
-          
+
           - {{package_name}} {{version}} - {{purpose}}
-          
+
           **Project Settings:**
-          
+
           - Color Space: {{Linear|Gamma}}
           - Quality Settings: {{quality_levels}}
           - Physics Settings: {{physics_config}}
@@ -309,9 +310,9 @@ sections:
           **Memory Usage:** <{{memory_limit}}MB heap, <{{texture_memory}}MB textures
           **Load Times:** <{{load_time}}s initial, <{{level_load}}s between levels
           **Battery Usage:** Optimized for mobile devices - {{battery_target}} hours gameplay
-          
+
           **Unity Profiler Targets:**
-          
+
           - CPU Frame Time: <{{cpu_time}}ms
           - GPU Frame Time: <{{gpu_time}}ms
           - GC Allocs: <{{gc_limit}}KB per frame
@@ -322,20 +323,20 @@ sections:
         title: Platform Specific Requirements
         template: |
           **Desktop:**
-          
+
           - Resolution: {{min_resolution}} - {{max_resolution}}
           - Input: Keyboard, Mouse, Gamepad ({{gamepad_support}})
           - Build Target: {{desktop_targets}}
-          
+
           **Mobile:**
-          
+
           - Resolution: {{mobile_min}} - {{mobile_max}}
           - Input: Touch, Accelerometer ({{sensor_support}})
           - OS: iOS {{ios_min}}+, Android {{android_min}}+ (API {{api_level}})
           - Device Requirements: {{device_specs}}
-          
+
           **Web (if applicable):**
-          
+
           - WebGL Version: {{webgl_version}}
           - Browser Support: {{browser_list}}
           - Compression: {{compression_format}}
@@ -346,21 +347,21 @@ sections:
         instruction: Define asset specifications for Unity pipeline optimization
         template: |
           **2D Art Assets:**
-          
+
           - Sprites: {{sprite_resolution}} at {{ppu}} PPU
           - Texture Format: {{texture_compression}}
           - Atlas Strategy: {{sprite_atlas_setup}}
           - Animation: {{animation_type}} at {{framerate}} FPS
-          
+
           **Audio Assets:**
-          
+
           - Music: {{audio_format}} at {{sample_rate}} Hz
           - SFX: {{sfx_format}} at {{sfx_sample_rate}} Hz
           - Compression: {{audio_compression}}
           - 3D Audio: {{spatial_audio}}
-          
+
           **UI Assets:**
-          
+
           - Canvas Resolution: {{ui_resolution}}
           - UI Scale Mode: {{scale_mode}}
           - Font: {{font_requirements}}
@@ -381,17 +382,17 @@ sections:
         title: Code Architecture Pattern
         template: |
           **Architecture Pattern:** {{MVC|MVVM|ECS|Component-Based|Custom}}
-          
+
           **Core Systems Required:**
-          
+
           - **Scene Management:** {{scene_manager_approach}}
           - **State Management:** {{state_pattern_implementation}}
           - **Event System:** {{event_system_choice}}
           - **Object Pooling:** {{pooling_strategy}}
           - **Save/Load System:** {{save_system_approach}}
-          
+
           **Folder Structure:**
-          
+
           ```
           Assets/
           ├── _Project/
@@ -401,9 +402,9 @@ sections:
           │   ├── Scenes/
           │   └── {{additional_folders}}
           ```
-          
+
           **Naming Conventions:**
-          
+
           - Scripts: {{script_naming}}
           - Prefabs: {{prefab_naming}}
           - Scenes: {{scene_naming}}
@@ -414,19 +415,19 @@ sections:
         title: Unity Systems Integration
         template: |
           **Required Unity Systems:**
-          
+
           - **Input System:** {{input_implementation}}
           - **Animation System:** {{animation_approach}}
           - **Physics Integration:** {{physics_usage}}
           - **Rendering Features:** {{rendering_requirements}}
           - **Asset Streaming:** {{asset_loading_strategy}}
-          
+
           **Third-Party Integrations:**
-          
+
           - {{integration_name}}: {{integration_purpose}}
-          
+
           **Performance Systems:**
-          
+
           - **Profiling Integration:** {{profiling_setup}}
           - **Memory Management:** {{memory_strategy}}
           - **Build Pipeline:** {{build_automation}}
@@ -437,20 +438,20 @@ sections:
         title: Data Management
         template: |
           **Save Data Architecture:**
-          
+
           - **Format:** {{PlayerPrefs|JSON|Binary|Cloud}}
           - **Structure:** {{save_data_organization}}
           - **Encryption:** {{security_approach}}
           - **Cloud Sync:** {{cloud_integration}}
-          
+
           **Configuration Data:**
-          
+
           - **ScriptableObjects:** {{scriptable_object_usage}}
           - **Settings Management:** {{settings_system}}
           - **Localization:** {{localization_approach}}
-          
+
           **Runtime Data:**
-          
+
           - **Caching Strategy:** {{cache_implementation}}
           - **Memory Pools:** {{pooling_objects}}
           - **Asset References:** {{asset_reference_system}}
@@ -678,15 +679,15 @@ sections:
         instruction: Provide guidance for the Story Manager (SM) agent on how to break down this GDD into implementable user stories
         template: |
           **Epic Prioritization:** {{epic_order_rationale}}
-          
+
           **Story Sizing Guidelines:**
-          
+
           - Foundation stories: {{foundation_story_scope}}
           - Feature stories: {{feature_story_scope}}
           - Polish stories: {{polish_story_scope}}
-          
+
           **Unity-Specific Story Considerations:**
-          
+
           - Each story should result in testable Unity scenes or prefabs
           - Include specific Unity components and systems in acceptance criteria
           - Consider cross-platform testing requirements

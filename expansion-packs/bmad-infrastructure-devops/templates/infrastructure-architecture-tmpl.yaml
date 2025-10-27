@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: infrastructure-architecture-template-v2
   name: Infrastructure Architecture
@@ -27,18 +28,18 @@ sections:
   - id: initial-setup
     instruction: |
       Initial Setup
-      
+
       1. Replace {{project_name}} with the actual project name throughout the document
       2. Gather and review required inputs:
          - Product Requirements Document (PRD) - Required for business needs and scale requirements
          - Main System Architecture - Required for infrastructure dependencies
          - Technical Preferences/Tech Stack Document - Required for technology choices
          - PRD Technical Assumptions - Required for cross-referencing repository and service architecture
-      
+
       If any required documents are missing, ask user: "I need the following documents to create a comprehensive infrastructure architecture: [list missing]. Would you like to proceed with available information or provide the missing documents first?"
-      
+
       3. <critical_rule>Cross-reference with PRD Technical Assumptions to ensure infrastructure decisions align with repository and service architecture decisions made in the system architecture.</critical_rule>
-      
+
       Output file location: `docs/infrastructure-architecture.md`
 
   - id: infrastructure-overview
@@ -67,7 +68,7 @@ sections:
       - Repository Structure
       - State Management
       - Dependency Management
-      
+
       <critical_rule>All infrastructure must be defined as code. No manual resource creation in production environments.</critical_rule>
 
   - id: environment-configuration
@@ -103,7 +104,7 @@ sections:
     title: Network Architecture
     instruction: |
       Design network topology considering security zones, traffic patterns, and compliance requirements. Reference main architecture for service communication patterns.
-      
+
       Create Mermaid diagram showing:
       - VPC/Network structure
       - Security zones and boundaries
@@ -166,7 +167,7 @@ sections:
     title: Data Resources
     instruction: |
       Design data infrastructure based on data architecture from main system design. Consider data volumes, access patterns, compliance, and recovery requirements.
-      
+
       Create data flow diagram showing:
       - Database topology
       - Replication patterns
@@ -187,7 +188,7 @@ sections:
       - Data Encryption
       - Compliance Controls
       - Security Scanning & Monitoring
-      
+
       <critical_rule>Apply principle of least privilege for all access controls. Document all security exceptions with business justification.</critical_rule>
 
   - id: shared-responsibility
@@ -223,7 +224,7 @@ sections:
     title: CI/CD Pipeline
     instruction: |
       Design deployment pipeline that balances speed with safety. Include progressive deployment strategies and automated quality gates.
-      
+
       Create pipeline diagram showing:
       - Build stages
       - Test gates
@@ -254,7 +255,7 @@ sections:
       - Recovery Procedures
       - RTO & RPO Targets
       - DR Testing Approach
-      
+
       <critical_rule>DR procedures must be tested at least quarterly. Document test results and improvement actions.</critical_rule>
 
   - id: cost-optimization
@@ -296,15 +297,15 @@ sections:
     title: DevOps/Platform Feasibility Review
     instruction: |
       CRITICAL STEP - Present architectural blueprint summary to DevOps/Platform Engineering Agent for feasibility review. Request specific feedback on:
-      
+
       - **Operational Complexity:** Are the proposed patterns implementable with current tooling and expertise?
       - **Resource Constraints:** Do infrastructure requirements align with available resources and budgets?
       - **Security Implementation:** Are security patterns achievable with current security toolchain?
       - **Operational Overhead:** Will the proposed architecture create excessive operational burden?
       - **Technology Constraints:** Are selected technologies compatible with existing infrastructure?
-      
+
       Document all feasibility feedback and concerns raised. Iterate on architectural decisions based on operational constraints and feedback.
-      
+
       <critical_rule>Address all critical feasibility concerns before proceeding to final architecture documentation. If critical blockers identified, revise architecture before continuing.</critical_rule>
     sections:
       - id: feasibility-results
@@ -322,7 +323,7 @@ sections:
         title: Validation Framework
         content: |
           This infrastructure architecture will be validated using the comprehensive `infrastructure-checklist.md`, with particular focus on Section 12: Architecture Documentation Validation. The checklist ensures:
-          
+
           - Completeness of architecture documentation
           - Consistency with broader system architecture
           - Appropriate level of detail for different stakeholders
@@ -332,12 +333,12 @@ sections:
         title: Validation Process
         content: |
           The architecture documentation validation should be performed:
-          
+
           - After initial architecture development
           - After significant architecture changes
           - Before major implementation phases
           - During periodic architecture reviews
-          
+
           The Platform Engineer should use the infrastructure checklist to systematically validate all aspects of this architecture document.
 
   - id: implementation-handoff
@@ -348,7 +349,7 @@ sections:
         title: Architecture Decision Records (ADRs)
         content: |
           Create ADRs for key infrastructure decisions:
-          
+
           - Cloud provider selection rationale
           - Container orchestration platform choice
           - Networking architecture decisions
@@ -358,7 +359,7 @@ sections:
         title: Implementation Validation Criteria
         content: |
           Define specific criteria for validating correct implementation:
-          
+
           - Infrastructure as Code quality gates
           - Security compliance checkpoints
           - Performance benchmarks
@@ -418,7 +419,7 @@ sections:
     instruction: Final Review - Ensure all sections are complete and consistent. Verify feasibility review was conducted and all concerns addressed. Apply final validation against infrastructure checklist.
     content: |
       ---
-      
+
       _Document Version: 1.0_
       _Last Updated: {{current_date}}_
       _Next Review: {{review_date}}_

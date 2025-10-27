@@ -1,0 +1,245 @@
+workflow:
+  id: godot-game-dev-greenfield
+  name: Godot Game Development - Greenfield Project
+  description: Specialized workflow for creating games from concept to implementation using Godot Engine 4.x with GDScript and C#. Guides teams through Godot-specific design patterns, node-based architecture, scene composition, signal systems, and resource management. Emphasizes Godot's unique features like AnimationTree, shader language, and built-in physics while maintaining 60+ FPS performance targets.
+  type: greenfield
+  project_types:
+    - godot-2d-game
+    - godot-3d-game
+    - godot-mobile-game
+    - godot-web-export
+    - godot-vr-game
+    - godot-multiplayer-game
+  sequence:
+    - agent: game-designer
+      creates: project-brief.md
+      optional_steps:
+        - godot_genre_analysis
+        - godot_asset_store_research
+        - target_platform_capabilities
+      notes: "Define game concept with Godot's strengths in mind (2D pixel-perfect, procedural generation, shader effects). Consider Godot's export targets and platform-specific features. SAVE OUTPUT: Copy final project-brief.md to your project's docs/design/ folder."
+
+    - agent: game-designer
+      creates: game-design-doc.md
+      requires: project-brief.md
+      optional_steps:
+        - godot_node_system_planning
+        - scene_hierarchy_design
+        - input_map_configuration
+      notes: "Create Godot-specific GDD defining node hierarchies, scene transitions, input actions, and resource preloading strategies. Map mechanics to Godot's built-in nodes (Area2D, CharacterBody2D, RigidBody2D). SAVE OUTPUT: Copy final game-design-doc.md to your project's docs/design/ folder."
+
+    - agent: game-designer
+      creates: level-design-doc.md (optional)
+      requires: game-design-doc.md
+      optional_steps:
+        - tilemap_system_design
+        - scene_instancing_strategy
+        - godot_room_system_planning
+      notes: "OPTIONAL BUT RECOMMENDED: Design levels using Godot's TileMap, GridMap, or modular scene approach. Define scene instancing patterns, resource groups, and level streaming strategy. SAVE OUTPUT: Copy final level-design-doc.md to your project's docs/design/ folder."
+
+    - agent: game-pm
+      creates: prd.md
+      requires:
+        - project-brief.md
+        - game-design-doc.md
+      notes: "Creates PRD from project brief using game-prd-tmpl. SAVE OUTPUT: Copy final prd.md to your project's docs/ folder."
+
+    - agent: game-architect
+      creates: architecture.md
+      requires:
+        - game-design-doc.md
+        - prd.md
+      optional_steps:
+        - godot_autoload_architecture
+        - signal_bus_design
+        - resource_loading_strategy
+        - gdextension_evaluation
+      notes: "Design Godot-specific architecture: autoload singletons, signal bus patterns, scene tree organization, resource loading (preload vs load), and GDScript/C#/GDExtension strategy. Define custom nodes, resources, and editor tools. SAVE OUTPUT: Copy final architecture.md to your project's docs/architecture/ folder."
+
+    - agent: game-pm
+      updates: prd.md (if needed)
+      requires: architecture.md
+      condition: architecture_suggests_prd_changes
+      notes: "If game-architect suggests story changes, update PRD and re-export the complete unredacted prd.md to docs/ folder."
+
+    - agent: game-po
+      validates: all_artifacts
+      uses: po-master-checklist
+      notes: "Validates all documents for consistency and completeness. May require updates to any document."
+
+    - agent: various
+      updates: any_flagged_documents
+      condition: po_checklist_issues
+      notes: "If game-po finds issues, return to relevant agent to fix and re-export updated documents to docs/ folder."
+
+    - project_setup_guidance:
+        action: initialize_godot_project
+        notes: "Create Godot 4.x project with proper folder structure: scenes/, scripts/, resources/, shaders/, addons/. Configure project settings: rendering (Forward+/Mobile), physics tick rate, input map, autoloads. Install GUT for GDScript testing, configure export presets for target platforms."
+
+    - agent: game-po
+      action: shard_documents
+      creates: sharded_docs
+      requires: all_artifacts_in_project
+      notes: |
+        Shard documents for IDE development:
+        - Option A: Use PO agent to shard: @game-po then ask to shard docs/prd.md
+        - Option B: Manual: Drag shard-doc task + docs/prd.md into chat
+        - Creates docs/prd/ and docs/architecture/ folders with sharded content
+
+    - agent: game-sm
+      action: create_story
+      creates: story.md
+      requires: sharded_docs
+      repeats: for_each_epic
+      notes: |
+        Story creation cycle:
+        - SM Agent (New Chat): @game-sm → *create
+        - Creates next story from sharded docs
+        - Story starts in "Draft" status
+
+    - agent: game-qa
+      action: test_design
+      updates: story.md
+      requires: story.md
+      optional: true
+      condition: user_wants_test_design
+      notes: |
+        OPTIONAL: Design tests for draft story        
+        - Analyze story for possible risks
+        - Create tests to mitigate those risks
+
+    - agent: game-po
+      action: review_draft_story
+      updates: story.md
+      requires: story.md
+      optional: true
+      condition: user_wants_story_review
+      notes: |
+        OPTIONAL: Review and approve draft story        
+        - Review story completeness and alignment
+        - Update story status: Draft → Approved
+
+    - agent: game-dev
+      action: implement_story
+      creates: implementation_files
+      requires: story.md
+      notes: |
+        Dev Agent (New Chat): @game-dev
+        - Implements approved story
+        - Updates File List with all changes
+        - Marks story as "Review" when complete
+
+    - agent: game-qa
+      action: review_implementation
+      updates: implementation_files
+      requires: implementation_files
+      optional: true
+      notes: |
+        OPTIONAL: QA Agent (New Chat): @qa → review-story
+        - Senior dev review with refactoring ability
+        - Fixes small issues directly
+        - Leaves checklist for remaining items
+        - Updates story status (Review → Done or stays Review)
+
+    - agent: game-dev
+      action: address_qa_feedback
+      updates: implementation_files
+      condition: qa_left_unchecked_items
+      notes: |
+        If QA left unchecked items:
+        - Dev Agent (New Chat): Address remaining items
+        - Return to QA for final approval
+
+    - repeat_development_cycle: ""
+      action: continue_for_all_stories
+      notes: |
+        Repeat story cycle (SM → Dev → QA) for all epic stories
+        Continue until all stories in PRD are complete
+
+    - agent: game-po
+      action: epic_retrospective
+      creates: epic-retrospective.md
+      condition: epic_complete
+      optional: true
+      notes: |
+        OPTIONAL: After epic completion
+        - NOTE: epic-retrospective task coming soon
+        - Validate epic was completed correctly
+        - Document learnings and improvements
+
+    - workflow_end: ""
+      action: project_complete
+      notes: |
+        All stories implemented and reviewed!
+        Project development phase complete.
+
+        Reference: {root}/data/bmad-kb.md#IDE Development Workflow
+
+  flow_diagram: |
+    ```mermaid
+    graph TD
+        A[Start: Greenfield Project] --> B[game-designer: project-brief.md]
+        B --> C[game-pm: prd.md]
+        C --> D[game-architect: architecture.md]
+        D --> E{Architecture suggests PRD changes?}
+        E -->|Yes| F[game-pm: update prd.md]
+        E-->|No| G[game-po: validate all artifacts]
+        F--> G
+        G --> I{game-po finds issues?}
+        I -->|Yes| J[Return to relevant agent for fixes]
+        I -->|No| K[game-po: shard documents]
+        J --> H
+
+        K --> L[game-sm: create story]
+        L --> M{Review draft story?}
+        M -->|Yes| N[game-po: review & approve story]
+        M -->|No| O[game-dev: implement story]
+        N --> O
+        O --> P{QA review?}
+        P -->|Yes| Q[game-qa: review implementation]
+        P -->|No| R{More stories?}
+        Q --> S{QA found issues?}
+        S -->|Yes| T[game-dev: address QA feedback]
+        S -->|No| R
+        T --> Q
+        R -->|Yes| L
+        R -->|No| U{Epic retrospective?}
+        U -->|Yes| V[game-po: epic retrospective]
+        U -->|No| W[Project Complete]
+        V --> W
+
+        B -.-> B1[Optional: brainstorming]
+        B -.-> B2[Optional: market research]
+        C -.-> C1[Optional: user research]
+        F -.-> D1[Optional: technical research]
+
+        style W fill:#90EE90
+        style K fill:#ADD8E6
+        style L fill:#ADD8E6
+        style O fill:#ADD8E6
+        style B fill:#FFE4B5
+        style C fill:#FFE4B5
+        style D fill:#FFE4B5
+        style E fill:#FFE4B5
+        style N fill:#F0E68C
+        style Q fill:#F0E68C
+        style V fill:#F0E68C
+    ```
+
+  decision_guidance:
+    when_to_use:
+      - Building complex Godot games with multiple scenes
+      - Implementing networked multiplayer with Godot's high-level API
+      - Complex feature requirements
+      - Need comprehensive documentation
+      - Long-term maintenance expected
+
+  handoff_prompts:
+    analyst_to_pm: "Project brief is complete. Save it as docs/project-brief.md in your project, then create the PRD."
+    pm_to_ux: "PRD is ready. Save it as docs/prd.md in your project, then create the UI/UX specification."
+    ux_to_architect: "UI/UX spec complete. Save it as docs/front-end-spec.md in your project, then create the fullstack architecture."
+    architect_review: "Architecture complete. Save it as docs/architecture.md. Do you suggest any changes to the PRD stories or need new stories added?"
+    architect_to_pm: "Please update the PRD with the suggested story changes, then re-export the complete prd.md to docs/."
+    updated_to_po: "All documents ready in docs/ folder. Please validate all artifacts for consistency."
+    po_issues: "PO found issues with [document]. Please return to [agent] to fix and re-save the updated document."
+    complete: "All planning artifacts validated and saved in docs/ folder. Move to IDE environment to begin development."

@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 workflow:
   id: game-prototype
   name: Game Prototype Development
@@ -44,7 +45,7 @@ workflow:
       notes: Implement stories in priority order. Test frequently and adjust design based on what feels fun. Document discoveries.
   workflow_end:
     action: prototype_evaluation
-    notes: 'Prototype complete. Evaluate core mechanics, gather feedback, and decide next steps: iterate, expand, or archive.'
+    notes: "Prototype complete. Evaluate core mechanics, gather feedback, and decide next steps: iterate, expand, or archive."
   game_jam_sequence:
     - step: jam_concept
       agent: game-designer

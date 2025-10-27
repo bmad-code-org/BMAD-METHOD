@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: game-architecture-template-v2
   name: Game Architecture Document
@@ -14,7 +15,7 @@ sections:
   - id: initial-setup
     instruction: |
       This template creates a comprehensive game architecture document specifically for Phaser 3 + TypeScript projects. This should provide the technical foundation for all game development stories and epics.
-      
+
       If available, review any provided documents: Game Design Document (GDD), Technical Preferences. This architecture should support all game mechanics defined in the GDD.
 
   - id: introduction
@@ -22,7 +23,7 @@ sections:
     instruction: Establish the document's purpose and scope for game development
     content: |
       This document outlines the complete technical architecture for {{game_title}}, a 2D game built with Phaser 3 and TypeScript. It serves as the technical foundation for AI-driven game development, ensuring consistency and scalability across all game systems.
-      
+
       This architecture is designed to support the gameplay mechanics defined in the Game Design Document while maintaining 60 FPS performance and cross-platform compatibility.
     sections:
       - id: change-log
@@ -41,7 +42,7 @@ sections:
         title: Architecture Summary
         instruction: |
           Provide a comprehensive overview covering:
-          
+
           - Game engine choice and configuration
           - Project structure and organization
           - Key systems and their interactions
@@ -129,23 +130,23 @@ sections:
         title: Scene Management System
         template: |
           **Purpose:** Handle game flow and scene transitions
-          
+
           **Key Components:**
-          
+
           - Scene loading and unloading
           - Data passing between scenes
           - Transition effects
           - Memory management
-          
+
           **Implementation Requirements:**
-          
+
           - Preload scene for asset loading
           - Menu system with navigation
           - Gameplay scenes with state management
           - Pause/resume functionality
-          
+
           **Files to Create:**
-          
+
           - `src/scenes/BootScene.ts`
           - `src/scenes/PreloadScene.ts`
           - `src/scenes/MenuScene.ts`
@@ -155,23 +156,23 @@ sections:
         title: Game State Management
         template: |
           **Purpose:** Track player progress and game status
-          
+
           **State Categories:**
-          
+
           - Player progress (levels, unlocks)
           - Game settings (audio, controls)
           - Session data (current level, score)
           - Persistent data (achievements, statistics)
-          
+
           **Implementation Requirements:**
-          
+
           - Save/load system with localStorage
           - State validation and error recovery
           - Cross-session data persistence
           - Settings management
-          
+
           **Files to Create:**
-          
+
           - `src/systems/GameState.ts`
           - `src/systems/SaveManager.ts`
           - `src/types/GameData.ts`
@@ -179,23 +180,23 @@ sections:
         title: Asset Management System
         template: |
           **Purpose:** Efficient loading and management of game assets
-          
+
           **Asset Categories:**
-          
+
           - Sprite sheets and animations
           - Audio files and music
           - Level data and configurations
           - UI assets and fonts
-          
+
           **Implementation Requirements:**
-          
+
           - Progressive loading strategy
           - Asset caching and optimization
           - Error handling for failed loads
           - Memory management for large assets
-          
+
           **Files to Create:**
-          
+
           - `src/systems/AssetManager.ts`
           - `src/config/AssetConfig.ts`
           - `src/utils/AssetLoader.ts`
@@ -203,23 +204,23 @@ sections:
         title: Input Management System
         template: |
           **Purpose:** Handle all player input across platforms
-          
+
           **Input Types:**
-          
+
           - Keyboard controls
           - Mouse/pointer interaction
           - Touch gestures (mobile)
           - Gamepad support (optional)
-          
+
           **Implementation Requirements:**
-          
+
           - Input mapping and configuration
           - Touch-friendly mobile controls
           - Input buffering for responsive gameplay
           - Customizable control schemes
-          
+
           **Files to Create:**
-          
+
           - `src/systems/InputManager.ts`
           - `src/utils/TouchControls.ts`
           - `src/types/InputTypes.ts`
@@ -232,19 +233,19 @@ sections:
             title: "{{mechanic_name}} System"
             template: |
               **Purpose:** {{system_purpose}}
-              
+
               **Core Functionality:**
-              
+
               - {{feature_1}}
               - {{feature_2}}
               - {{feature_3}}
-              
+
               **Dependencies:** {{required_systems}}
-              
+
               **Performance Considerations:** {{optimization_notes}}
-              
+
               **Files to Create:**
-              
+
               - `src/systems/{{system_name}}.ts`
               - `src/gameObjects/{{related_object}}.ts`
               - `src/types/{{system_types}}.ts`
@@ -252,65 +253,65 @@ sections:
         title: Physics & Collision System
         template: |
           **Physics Engine:** {{physics_choice}} (Arcade Physics/Matter.js)
-          
+
           **Collision Categories:**
-          
+
           - Player collision
           - Enemy interactions
           - Environmental objects
           - Collectibles and items
-          
+
           **Implementation Requirements:**
-          
+
           - Optimized collision detection
           - Physics body management
           - Collision callbacks and events
           - Performance monitoring
-          
+
           **Files to Create:**
-          
+
           - `src/systems/PhysicsManager.ts`
           - `src/utils/CollisionGroups.ts`
       - id: audio-system
         title: Audio System
         template: |
           **Audio Requirements:**
-          
+
           - Background music with looping
           - Sound effects for actions
           - Audio settings and volume control
           - Mobile audio optimization
-          
+
           **Implementation Features:**
-          
+
           - Audio sprite management
           - Dynamic music system
           - Spatial audio (if applicable)
           - Audio pooling for performance
-          
+
           **Files to Create:**
-          
+
           - `src/systems/AudioManager.ts`
           - `src/config/AudioConfig.ts`
       - id: ui-system
         title: UI System
         template: |
           **UI Components:**
-          
+
           - HUD elements (score, health, etc.)
           - Menu navigation
           - Modal dialogs
           - Settings screens
-          
+
           **Implementation Requirements:**
-          
+
           - Responsive layout system
           - Touch-friendly interface
           - Keyboard navigation support
           - Animation and transitions
-          
+
           **Files to Create:**
-          
+
           - `src/systems/UIManager.ts`
           - `src/gameObjects/UI/`
           - `src/types/UITypes.ts`

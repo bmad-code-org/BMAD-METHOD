@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 workflow:
   id: game-dev-greenfield
   name: Game Development - Greenfield Project
@@ -17,21 +18,21 @@ workflow:
         - brainstorming_session
         - game_research_prompt
         - player_research
-      notes: 'Start with brainstorming game concepts, then create comprehensive game brief. SAVE OUTPUT: Copy final game-brief.md to your project''s docs/design/ folder.'
+      notes: "Start with brainstorming game concepts, then create comprehensive game brief. SAVE OUTPUT: Copy final game-brief.md to your project's docs/design/ folder."
     - agent: game-designer
       creates: game-design-doc.md
       requires: game-brief.md
       optional_steps:
         - competitive_analysis
         - technical_research
-      notes: 'Create detailed Game Design Document using game-design-doc-tmpl. Defines all gameplay mechanics, progression, and technical requirements. SAVE OUTPUT: Copy final game-design-doc.md to your project''s docs/design/ folder.'
+      notes: "Create detailed Game Design Document using game-design-doc-tmpl. Defines all gameplay mechanics, progression, and technical requirements. SAVE OUTPUT: Copy final game-design-doc.md to your project's docs/design/ folder."
     - agent: game-designer
       creates: level-design-doc.md
       requires: game-design-doc.md
       optional_steps:
         - level_prototyping
         - difficulty_analysis
-      notes: 'Create level design framework using level-design-doc-tmpl. Establishes content creation guidelines and performance requirements. SAVE OUTPUT: Copy final level-design-doc.md to your project''s docs/design/ folder.'
+      notes: "Create level design framework using level-design-doc-tmpl. Establishes content creation guidelines and performance requirements. SAVE OUTPUT: Copy final level-design-doc.md to your project's docs/design/ folder."
     - agent: solution-architect
       creates: game-architecture.md
       requires:
@@ -41,7 +42,7 @@ workflow:
         - technical_research_prompt
         - performance_analysis
         - platform_research
-      notes: 'Create comprehensive technical architecture using game-architecture-tmpl. Defines Phaser 3 systems, performance optimization, and code structure. SAVE OUTPUT: Copy final game-architecture.md to your project''s docs/architecture/ folder.'
+      notes: "Create comprehensive technical architecture using game-architecture-tmpl. Defines Phaser 3 systems, performance optimization, and code structure. SAVE OUTPUT: Copy final game-architecture.md to your project's docs/architecture/ folder."
     - agent: game-designer
       validates: design_consistency
       requires: all_design_documents
@@ -66,7 +67,7 @@ workflow:
       optional_steps:
         - quick_brainstorming
         - concept_validation
-      notes: 'Create focused game brief for prototype. Emphasize core mechanics and immediate playability. SAVE OUTPUT: Copy final game-brief.md to your project''s docs/ folder.'
+      notes: "Create focused game brief for prototype. Emphasize core mechanics and immediate playability. SAVE OUTPUT: Copy final game-brief.md to your project's docs/ folder."
     - agent: game-designer
       creates: prototype-design.md
       uses: create-doc prototype-design OR create-game-story

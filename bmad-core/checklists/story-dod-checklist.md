@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Story Definition of Done (DoD) Checklist
 
 ## Instructions for Developer Agent
@@ -25,14 +27,12 @@ The goal is quality delivery, not just checking boxes.]]
 1. **Requirements Met:**
 
    [[LLM: Be specific - list each requirement and whether it's complete]]
-
    - [ ] All functional requirements specified in the story are implemented.
    - [ ] All acceptance criteria defined in the story are met.
 
 2. **Coding Standards & Project Structure:**
 
    [[LLM: Code quality matters for maintainability. Check each item carefully]]
-
    - [ ] All new/modified code strictly adheres to `Operational Guidelines`.
    - [ ] All new/modified code aligns with `Project Structure` (file locations, naming, etc.).
    - [ ] Adherence to `Tech Stack` for technologies/versions used (if story introduces or modifies tech usage).
@@ -44,7 +44,6 @@ The goal is quality delivery, not just checking boxes.]]
 3. **Testing:**
 
    [[LLM: Testing proves your code works. Be honest about test coverage]]
-
    - [ ] All required unit tests as per the story and `Operational Guidelines` Testing Strategy are implemented.
    - [ ] All required integration tests (if applicable) as per the story and `Operational Guidelines` Testing Strategy are implemented.
    - [ ] All tests (unit, integration, E2E if applicable) pass successfully.
@@ -53,14 +52,12 @@ The goal is quality delivery, not just checking boxes.]]
 4. **Functionality & Verification:**
 
    [[LLM: Did you actually run and test your code? Be specific about what you tested]]
-
    - [ ] Functionality has been manually verified by the developer (e.g., running the app locally, checking UI, testing API endpoints).
    - [ ] Edge cases and potential error conditions considered and handled gracefully.
 
 5. **Story Administration:**
 
    [[LLM: Documentation helps the next developer. What should they know?]]
-
    - [ ] All tasks within the story file are marked as complete.
    - [ ] Any clarifications or decisions made during development are documented in the story file or linked appropriately.
    - [ ] The story wrap up section has been completed with notes of changes or information relevant to the next story or overall project, the agent model that was primarily used during development, and the changelog of any changes is properly updated.
@@ -68,7 +65,6 @@ The goal is quality delivery, not just checking boxes.]]
 6. **Dependencies, Build & Configuration:**
 
    [[LLM: Build issues block everyone. Ensure everything compiles and runs cleanly]]
-
    - [ ] Project builds successfully without errors.
    - [ ] Project linting passes
    - [ ] Any new dependencies added were either pre-approved in the story requirements OR explicitly approved by the user during development (approval documented in story file).
@@ -79,7 +75,6 @@ The goal is quality delivery, not just checking boxes.]]
 7. **Documentation (If Applicable):**
 
    [[LLM: Good documentation prevents future confusion. What needs explaining?]]
-
    - [ ] Relevant inline code documentation (e.g., JSDoc, TSDoc, Python docstrings) for new public APIs or complex logic is complete.
    - [ ] User-facing documentation updated, if changes impact users.
    - [ ] Technical documentation (e.g., READMEs, system diagrams) updated if significant architectural changes were made.

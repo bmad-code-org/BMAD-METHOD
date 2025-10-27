@@ -1,0 +1,174 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: Version bump type
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event.repository.fork != true || vars.ENABLE_CI_IN_FORK == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests and validation
+        run: |
+          npm run validate
+          npm run format:check
+          npm run lint
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        run: npm run version:${{ github.event.inputs.version_bump }}
+
+      - name: Get new version and previous tag
+        id: version
+        run: |
+          echo "new_version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+          echo "previous_tag=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Update installer package.json
+        run: |
+          sed -i 's/"version": ".*"/"version": "${{ steps.version.outputs.new_version }}"/' tools/installer/package.json
+
+      - name: Build project
+        run: npm run build
+
+      - name: Commit version bump
+        run: |
+          git add .
+          git commit -m "release: bump to v${{ steps.version.outputs.new_version }}"
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          # Get commits since last tag
+          COMMITS=$(git log ${{ steps.version.outputs.previous_tag }}..HEAD --pretty=format:"- %s" --reverse)
+
+          # Categorize commits
+          FEATURES=$(echo "$COMMITS" | grep -E "^- (feat|Feature)" || true)
+          FIXES=$(echo "$COMMITS" | grep -E "^- (fix|Fix)" || true)  
+          CHORES=$(echo "$COMMITS" | grep -E "^- (chore|Chore)" || true)
+          OTHERS=$(echo "$COMMITS" | grep -v -E "^- (feat|Feature|fix|Fix|chore|Chore|release:|Release:)" || true)
+
+          # Build release notes
+          cat > release_notes.md << 'EOF'
+          ## 🚀 What's New in v${{ steps.version.outputs.new_version }}
+
+          EOF
+
+          if [ ! -z "$FEATURES" ]; then
+            echo "### ✨ New Features" >> release_notes.md
+            echo "$FEATURES" >> release_notes.md
+            echo "" >> release_notes.md
+          fi
+
+          if [ ! -z "$FIXES" ]; then
+            echo "### 🐛 Bug Fixes" >> release_notes.md
+            echo "$FIXES" >> release_notes.md
+            echo "" >> release_notes.md
+          fi
+
+          if [ ! -z "$OTHERS" ]; then
+            echo "### 📦 Other Changes" >> release_notes.md
+            echo "$OTHERS" >> release_notes.md
+            echo "" >> release_notes.md
+          fi
+
+          if [ ! -z "$CHORES" ]; then
+            echo "### 🔧 Maintenance" >> release_notes.md
+            echo "$CHORES" >> release_notes.md
+            echo "" >> release_notes.md
+          fi
+
+          cat >> release_notes.md << 'EOF'
+
+          ## 📦 Installation
+
+          ```bash
+          npx bmad-method install
+          ```
+
+          **Full Changelog**: https://github.com/bmadcode/BMAD-METHOD/compare/${{ steps.version.outputs.previous_tag }}...v${{ steps.version.outputs.new_version }}
+          EOF
+
+          # Output for GitHub Actions
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+          cat release_notes.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create and push tag
+        run: |
+          # Check if tag already exists
+          if git rev-parse "v${{ steps.version.outputs.new_version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ steps.version.outputs.new_version }} already exists, skipping tag creation"
+          else
+            git tag -a "v${{ steps.version.outputs.new_version }}" -m "Release v${{ steps.version.outputs.new_version }}"
+            git push origin "v${{ steps.version.outputs.new_version }}"
+          fi
+
+      - name: Push changes to main
+        run: |
+          if git push origin HEAD:main 2>/dev/null; then
+            echo "✅ Successfully pushed to main branch"
+          else
+            echo "⚠️ Could not push to main (protected branch). This is expected."
+            echo "📝 Version bump and tag were created successfully."
+          fi
+
+      - name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version.outputs.new_version }}
+          release_name: "BMad Method v${{ steps.version.outputs.new_version }}"
+          body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+          draft: false
+          prerelease: false
+
+      - name: Summary
+        run: |
+          echo "🎉 Successfully released v${{ steps.version.outputs.new_version }}!"
+          echo "📦 Published to NPM with @latest tag"
+          echo "🏷️ Git tag: v${{ steps.version.outputs.new_version }}"
+          echo "✅ Users running 'npx bmad-method install' will now get version ${{ steps.version.outputs.new_version }}"
+          echo ""
+          echo "📝 Release notes preview:"
+          cat release_notes.md

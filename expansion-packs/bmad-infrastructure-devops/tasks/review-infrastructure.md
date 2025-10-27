@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Infrastructure Review Task
 
 ## Purpose
@@ -32,7 +34,6 @@ To conduct a thorough review of existing infrastructure to identify improvement 
 ### 3. Conduct Systematic Review
 
 - **If "Incremental Mode" was selected:**
-
   - For each section of the infrastructure checklist:
     - **a. Present Section Focus:** Explain what aspects of infrastructure this section reviews
     - **b. Work Through Items:** Examine each checklist item against current infrastructure

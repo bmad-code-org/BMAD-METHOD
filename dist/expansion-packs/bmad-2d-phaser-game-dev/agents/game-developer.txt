@@ -102,6 +102,7 @@ dependencies:
 ==================== END: .bmad-2d-phaser-game-dev/agents/game-developer.md ====================
 
 ==================== START: .bmad-2d-phaser-game-dev/tasks/execute-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -113,7 +114,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 ## Instructions
 
 1. **Initial Assessment**
-
    - If user or the task being run provides a checklist name:
      - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
      - If multiple matches found, ask user to clarify
@@ -126,14 +126,12 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
 
 2. **Document and Artifact Gathering**
-
    - Each checklist will specify its required documents/artifacts at the beginning
    - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
 
 3. **Checklist Processing**
 
    If in interactive mode:
-
    - Work through each section of the checklist one at a time
    - For each section:
      - Review all items in the section following instructions for that section embedded in the checklist
@@ -142,7 +140,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
 
    If in YOLO mode:
-
    - Process all sections at once
    - Create a comprehensive report of all findings
    - Present the complete analysis to the user
@@ -150,7 +147,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 4. **Validation Approach**
 
    For each checklist item:
-
    - Read and understand the requirement
    - Look for evidence in the documentation that satisfies the requirement
    - Consider both explicit mentions and implicit coverage
@@ -164,7 +160,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 5. **Section Analysis**
 
    For each section:
-
    - think step by step to calculate pass rate
    - Identify common themes in failed items
    - Provide specific recommendations for improvement
@@ -174,7 +169,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 6. **Final Report**
 
    Prepare a summary that includes:
-
    - Overall checklist completion status
    - Pass rates by section
    - List of failed items with context
@@ -198,6 +192,7 @@ The LLM will:
 ==================== END: .bmad-2d-phaser-game-dev/tasks/execute-checklist.md ====================
 
 ==================== START: .bmad-2d-phaser-game-dev/templates/game-architecture-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: game-architecture-template-v2
   name: Game Architecture Document
@@ -214,7 +209,7 @@ sections:
   - id: initial-setup
     instruction: |
       This template creates a comprehensive game architecture document specifically for Phaser 3 + TypeScript projects. This should provide the technical foundation for all game development stories and epics.
-      
+
       If available, review any provided documents: Game Design Document (GDD), Technical Preferences. This architecture should support all game mechanics defined in the GDD.
 
   - id: introduction
@@ -222,7 +217,7 @@ sections:
     instruction: Establish the document's purpose and scope for game development
     content: |
       This document outlines the complete technical architecture for {{game_title}}, a 2D game built with Phaser 3 and TypeScript. It serves as the technical foundation for AI-driven game development, ensuring consistency and scalability across all game systems.
-      
+
       This architecture is designed to support the gameplay mechanics defined in the Game Design Document while maintaining 60 FPS performance and cross-platform compatibility.
     sections:
       - id: change-log
@@ -241,7 +236,7 @@ sections:
         title: Architecture Summary
         instruction: |
           Provide a comprehensive overview covering:
-          
+
           - Game engine choice and configuration
           - Project structure and organization
           - Key systems and their interactions
@@ -329,23 +324,23 @@ sections:
         title: Scene Management System
         template: |
           **Purpose:** Handle game flow and scene transitions
-          
+
           **Key Components:**
-          
+
           - Scene loading and unloading
           - Data passing between scenes
           - Transition effects
           - Memory management
-          
+
           **Implementation Requirements:**
-          
+
           - Preload scene for asset loading
           - Menu system with navigation
           - Gameplay scenes with state management
           - Pause/resume functionality
-          
+
           **Files to Create:**
-          
+
           - `src/scenes/BootScene.ts`
           - `src/scenes/PreloadScene.ts`
           - `src/scenes/MenuScene.ts`
@@ -355,23 +350,23 @@ sections:
         title: Game State Management
         template: |
           **Purpose:** Track player progress and game status
-          
+
           **State Categories:**
-          
+
           - Player progress (levels, unlocks)
           - Game settings (audio, controls)
           - Session data (current level, score)
           - Persistent data (achievements, statistics)
-          
+
           **Implementation Requirements:**
-          
+
           - Save/load system with localStorage
           - State validation and error recovery
           - Cross-session data persistence
           - Settings management
-          
+
           **Files to Create:**
-          
+
           - `src/systems/GameState.ts`
           - `src/systems/SaveManager.ts`
           - `src/types/GameData.ts`
@@ -379,23 +374,23 @@ sections:
         title: Asset Management System
         template: |
           **Purpose:** Efficient loading and management of game assets
-          
+
           **Asset Categories:**
-          
+
           - Sprite sheets and animations
           - Audio files and music
           - Level data and configurations
           - UI assets and fonts
-          
+
           **Implementation Requirements:**
-          
+
           - Progressive loading strategy
           - Asset caching and optimization
           - Error handling for failed loads
           - Memory management for large assets
-          
+
           **Files to Create:**
-          
+
           - `src/systems/AssetManager.ts`
           - `src/config/AssetConfig.ts`
           - `src/utils/AssetLoader.ts`
@@ -403,23 +398,23 @@ sections:
         title: Input Management System
         template: |
           **Purpose:** Handle all player input across platforms
-          
+
           **Input Types:**
-          
+
           - Keyboard controls
           - Mouse/pointer interaction
           - Touch gestures (mobile)
           - Gamepad support (optional)
-          
+
           **Implementation Requirements:**
-          
+
           - Input mapping and configuration
           - Touch-friendly mobile controls
           - Input buffering for responsive gameplay
           - Customizable control schemes
-          
+
           **Files to Create:**
-          
+
           - `src/systems/InputManager.ts`
           - `src/utils/TouchControls.ts`
           - `src/types/InputTypes.ts`
@@ -432,19 +427,19 @@ sections:
             title: "{{mechanic_name}} System"
             template: |
               **Purpose:** {{system_purpose}}
-              
+
               **Core Functionality:**
-              
+
               - {{feature_1}}
               - {{feature_2}}
               - {{feature_3}}
-              
+
               **Dependencies:** {{required_systems}}
-              
+
               **Performance Considerations:** {{optimization_notes}}
-              
+
               **Files to Create:**
-              
+
               - `src/systems/{{system_name}}.ts`
               - `src/gameObjects/{{related_object}}.ts`
               - `src/types/{{system_types}}.ts`
@@ -452,65 +447,65 @@ sections:
         title: Physics & Collision System
         template: |
           **Physics Engine:** {{physics_choice}} (Arcade Physics/Matter.js)
-          
+
           **Collision Categories:**
-          
+
           - Player collision
           - Enemy interactions
           - Environmental objects
           - Collectibles and items
-          
+
           **Implementation Requirements:**
-          
+
           - Optimized collision detection
           - Physics body management
           - Collision callbacks and events
           - Performance monitoring
-          
+
           **Files to Create:**
-          
+
           - `src/systems/PhysicsManager.ts`
           - `src/utils/CollisionGroups.ts`
       - id: audio-system
         title: Audio System
         template: |
           **Audio Requirements:**
-          
+
           - Background music with looping
           - Sound effects for actions
           - Audio settings and volume control
           - Mobile audio optimization
-          
+
           **Implementation Features:**
-          
+
           - Audio sprite management
           - Dynamic music system
           - Spatial audio (if applicable)
           - Audio pooling for performance
-          
+
           **Files to Create:**
-          
+
           - `src/systems/AudioManager.ts`
           - `src/config/AudioConfig.ts`
       - id: ui-system
         title: UI System
         template: |
           **UI Components:**
-          
+
           - HUD elements (score, health, etc.)
           - Menu navigation
           - Modal dialogs
           - Settings screens
-          
+
           **Implementation Requirements:**
-          
+
           - Responsive layout system
           - Touch-friendly interface
           - Keyboard navigation support
           - Animation and transitions
-          
+
           **Files to Create:**
-          
+
           - `src/systems/UIManager.ts`
           - `src/gameObjects/UI/`
           - `src/types/UITypes.ts`
@@ -814,6 +809,7 @@ sections:
 ==================== END: .bmad-2d-phaser-game-dev/templates/game-architecture-tmpl.yaml ====================
 
 ==================== START: .bmad-2d-phaser-game-dev/checklists/game-story-dod-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Game Development Story Definition of Done Checklist
 
 ## Story Completeness
@@ -977,6 +973,7 @@ _Any specific concerns, recommendations, or clarifications needed before develop
 ==================== END: .bmad-2d-phaser-game-dev/checklists/game-story-dod-checklist.md ====================
 
 ==================== START: .bmad-2d-phaser-game-dev/data/development-guidelines.md ====================
+<!-- Powered by BMAD™ Core -->
 # Game Development Guidelines
 
 ## Overview
@@ -1052,7 +1049,7 @@ interface GameState {
 interface GameSettings {
   musicVolume: number;
   sfxVolume: number;
-  difficulty: "easy" | "normal" | "hard";
+  difficulty: 'easy' | 'normal' | 'hard';
   controls: ControlScheme;
 }
 ```
@@ -1093,12 +1090,12 @@ class GameScene extends Phaser.Scene {
   private inputManager!: InputManager;
 
   constructor() {
-    super({ key: "GameScene" });
+    super({ key: 'GameScene' });
   }
 
   preload(): void {
     // Load only scene-specific assets
-    this.load.image("player", "assets/player.png");
+    this.load.image('player', 'assets/player.png');
   }
 
   create(data: SceneData): void {
@@ -1123,7 +1120,7 @@ class GameScene extends Phaser.Scene {
     this.inputManager.destroy();
 
     // Remove event listeners
-    this.events.off("*");
+    this.events.off('*');
   }
 }
 ```
@@ -1132,13 +1129,13 @@ class GameScene extends Phaser.Scene {
 
 ```typescript
 // Proper scene transitions with data
-this.scene.start("NextScene", {
+this.scene.start('NextScene', {
   playerScore: this.playerScore,
   currentLevel: this.currentLevel + 1,
 });
 
 // Scene overlays for UI
-this.scene.launch("PauseMenuScene");
+this.scene.launch('PauseMenuScene');
 this.scene.pause();
 ```
 
@@ -1182,7 +1179,7 @@ class Player extends GameEntity {
   private health!: HealthComponent;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y, "player");
+    super(scene, x, y, 'player');
 
     this.movement = this.addComponent(new MovementComponent(this));
     this.health = this.addComponent(new HealthComponent(this, 100));
@@ -1202,7 +1199,7 @@ class GameManager {
 
   constructor(scene: Phaser.Scene) {
     if (GameManager.instance) {
-      throw new Error("GameManager already exists!");
+      throw new Error('GameManager already exists!');
     }
 
     this.scene = scene;
@@ -1212,7 +1209,7 @@ class GameManager {
 
   static getInstance(): GameManager {
     if (!GameManager.instance) {
-      throw new Error("GameManager not initialized!");
+      throw new Error('GameManager not initialized!');
     }
     return GameManager.instance;
   }
@@ -1259,7 +1256,7 @@ class BulletPool {
     }
 
     // Pool exhausted - create new bullet
-    console.warn("Bullet pool exhausted, creating new bullet");
+    console.warn('Bullet pool exhausted, creating new bullet');
     return new Bullet(this.scene, 0, 0);
   }
 
@@ -1359,12 +1356,12 @@ class InputManager {
   }
 
   private setupKeyboard(): void {
-    this.keys = this.scene.input.keyboard.addKeys("W,A,S,D,SPACE,ESC,UP,DOWN,LEFT,RIGHT");
+    this.keys = this.scene.input.keyboard.addKeys('W,A,S,D,SPACE,ESC,UP,DOWN,LEFT,RIGHT');
   }
 
   private setupTouch(): void {
-    this.scene.input.on("pointerdown", this.handlePointerDown, this);
-    this.scene.input.on("pointerup", this.handlePointerUp, this);
+    this.scene.input.on('pointerdown', this.handlePointerDown, this);
+    this.scene.input.on('pointerup', this.handlePointerUp, this);
   }
 
   update(): void {
@@ -1391,9 +1388,9 @@ class InputManager {
 class AssetManager {
   loadAssets(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.scene.load.on("filecomplete", this.handleFileComplete, this);
-      this.scene.load.on("loaderror", this.handleLoadError, this);
-      this.scene.load.on("complete", () => resolve());
+      this.scene.load.on('filecomplete', this.handleFileComplete, this);
+      this.scene.load.on('loaderror', this.handleLoadError, this);
+      this.scene.load.on('complete', () => resolve());
 
       this.scene.load.start();
     });
@@ -1409,8 +1406,8 @@ class AssetManager {
   private loadFallbackAsset(key: string): void {
     // Load placeholder or default assets
     switch (key) {
-      case "player":
-        this.scene.load.image("player", "assets/defaults/default-player.png");
+      case 'player':
+        this.scene.load.image('player', 'assets/defaults/default-player.png');
         break;
       default:
         console.warn(`No fallback for asset: ${key}`);
@@ -1437,11 +1434,11 @@ class GameSystem {
 
   private attemptRecovery(context: string): void {
     switch (context) {
-      case "update":
+      case 'update':
         // Reset system state
         this.reset();
         break;
-      case "render":
+      case 'render':
         // Disable visual effects
         this.disableEffects();
         break;
@@ -1461,7 +1458,7 @@ class GameSystem {
 
 ```typescript
 // Example test for game mechanics
-describe("HealthComponent", () => {
+describe('HealthComponent', () => {
   let healthComponent: HealthComponent;
 
   beforeEach(() => {
@@ -1469,18 +1466,18 @@ describe("HealthComponent", () => {
     healthComponent = new HealthComponent(mockEntity, 100);
   });
 
-  test("should initialize with correct health", () => {
+  test('should initialize with correct health', () => {
     expect(healthComponent.currentHealth).toBe(100);
     expect(healthComponent.maxHealth).toBe(100);
   });
 
-  test("should handle damage correctly", () => {
+  test('should handle damage correctly', () => {
     healthComponent.takeDamage(25);
     expect(healthComponent.currentHealth).toBe(75);
     expect(healthComponent.isAlive()).toBe(true);
   });
 
-  test("should handle death correctly", () => {
+  test('should handle death correctly', () => {
     healthComponent.takeDamage(150);
     expect(healthComponent.currentHealth).toBe(0);
     expect(healthComponent.isAlive()).toBe(false);
@@ -1493,7 +1490,7 @@ describe("HealthComponent", () => {
 **Scene Testing:**
 
 ```typescript
-describe("GameScene Integration", () => {
+describe('GameScene Integration', () => {
   let scene: GameScene;
   let mockGame: Phaser.Game;
 
@@ -1503,7 +1500,7 @@ describe("GameScene Integration", () => {
     scene = new GameScene();
   });
 
-  test("should initialize all systems", () => {
+  test('should initialize all systems', () => {
     scene.create({});
 
     expect(scene.gameManager).toBeDefined();
@@ -1564,25 +1561,21 @@ src/
 ### Story Implementation Process
 
 1. **Read Story Requirements:**
-
    - Understand acceptance criteria
    - Identify technical requirements
    - Review performance constraints
 
 2. **Plan Implementation:**
-
    - Identify files to create/modify
    - Consider component architecture
    - Plan testing approach
 
 3. **Implement Feature:**
-
    - Follow TypeScript strict mode
    - Use established patterns
    - Maintain 60 FPS performance
 
 4. **Test Implementation:**
-
    - Write unit tests for game logic
    - Test cross-platform functionality
    - Validate performance targets

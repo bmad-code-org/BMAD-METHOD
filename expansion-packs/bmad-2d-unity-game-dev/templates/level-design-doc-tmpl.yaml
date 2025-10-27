@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: level-design-doc-template-v2
   name: Level Design Document
@@ -14,7 +15,7 @@ sections:
   - id: initial-setup
     instruction: |
       This template creates comprehensive level design documentation that guides both content creation and technical implementation. This document should provide enough detail for developers to create level loading systems and for designers to create specific levels.
-      
+
       If available, review: Game Design Document (GDD), Game Architecture Document. This document should align with the game mechanics and technical systems defined in those documents.
 
   - id: introduction
@@ -22,7 +23,7 @@ sections:
     instruction: Establish the purpose and scope of level design for this game
     content: |
       This document defines the level design framework for {{game_title}}, providing guidelines for creating engaging, balanced levels that support the core gameplay mechanics defined in the Game Design Document.
-      
+
       This framework ensures consistency across all levels while providing flexibility for creative level design within established technical and design constraints.
     sections:
       - id: change-log
@@ -69,29 +70,29 @@ sections:
         title: "{{category_name}} Levels"
         template: |
           **Purpose:** {{gameplay_purpose}}
-          
+
           **Target Duration:** {{min_time}} - {{max_time}} minutes
-          
+
           **Difficulty Range:** {{difficulty_scale}}
-          
+
           **Key Mechanics Featured:**
-          
+
           - {{mechanic_1}} - {{usage_description}}
           - {{mechanic_2}} - {{usage_description}}
-          
+
           **Player Objectives:**
-          
+
           - Primary: {{primary_objective}}
           - Secondary: {{secondary_objective}}
           - Hidden: {{secret_objective}}
-          
+
           **Success Criteria:**
-          
+
           - {{completion_requirement_1}}
           - {{completion_requirement_2}}
-          
+
           **Technical Requirements:**
-          
+
           - Maximum entities: {{entity_limit}}
           - Performance target: {{fps_target}} FPS
           - Memory budget: {{memory_limit}}MB
@@ -106,11 +107,11 @@ sections:
         instruction: Based on GDD requirements, define the overall level organization
         template: |
           **Organization Type:** {{linear|hub_world|open_world}}
-          
+
           **Total Level Count:** {{number}}
-          
+
           **World Breakdown:**
-          
+
           - World 1: {{level_count}} levels - {{theme}} - {{difficulty_range}}
           - World 2: {{level_count}} levels - {{theme}} - {{difficulty_range}}
           - World 3: {{level_count}} levels - {{theme}} - {{difficulty_range}}
@@ -145,7 +146,7 @@ sections:
         instruction: Define how players access new levels
         template: |
           **Progression Gates:**
-          
+
           - Linear progression: Complete previous level
           - Star requirements: {{star_count}} stars to unlock
           - Skill gates: Demonstrate {{skill_requirement}}
@@ -160,17 +161,17 @@ sections:
         instruction: Define all environmental components that can be used in levels
         template: |
           **Terrain Types:**
-          
+
           - {{terrain_1}}: {{properties_and_usage}}
           - {{terrain_2}}: {{properties_and_usage}}
-          
+
           **Interactive Objects:**
-          
+
           - {{object_1}}: {{behavior_and_purpose}}
           - {{object_2}}: {{behavior_and_purpose}}
-          
+
           **Hazards and Obstacles:**
-          
+
           - {{hazard_1}}: {{damage_and_behavior}}
           - {{hazard_2}}: {{damage_and_behavior}}
       - id: collectibles-rewards
@@ -178,18 +179,18 @@ sections:
         instruction: Define all collectible items and their placement rules
         template: |
           **Collectible Types:**
-          
+
           - {{collectible_1}}: {{value_and_purpose}}
           - {{collectible_2}}: {{value_and_purpose}}
-          
+
           **Placement Guidelines:**
-          
+
           - Mandatory collectibles: {{placement_rules}}
           - Optional collectibles: {{placement_rules}}
           - Secret collectibles: {{placement_rules}}
-          
+
           **Reward Distribution:**
-          
+
           - Easy to find: {{percentage}}%
           - Moderate challenge: {{percentage}}%
           - High skill required: {{percentage}}%
@@ -198,18 +199,18 @@ sections:
         instruction: Define how enemies should be placed and balanced in levels
         template: |
           **Enemy Categories:**
-          
+
           - {{enemy_type_1}}: {{behavior_and_usage}}
           - {{enemy_type_2}}: {{behavior_and_usage}}
-          
+
           **Placement Principles:**
-          
+
           - Introduction encounters: {{guideline}}
           - Standard encounters: {{guideline}}
           - Challenge encounters: {{guideline}}
-          
+
           **Difficulty Scaling:**
-          
+
           - Enemy count progression: {{scaling_rule}}
           - Enemy type introduction: {{pacing_rule}}
           - Encounter complexity: {{complexity_rule}}
@@ -222,14 +223,14 @@ sections:
         title: Level Layout Principles
         template: |
           **Spatial Design:**
-          
+
           - Grid size: {{grid_dimensions}}
           - Minimum path width: {{width_units}}
           - Maximum vertical distance: {{height_units}}
           - Safe zones placement: {{safety_guidelines}}
-          
+
           **Navigation Design:**
-          
+
           - Clear path indication: {{visual_cues}}
           - Landmark placement: {{landmark_rules}}
           - Dead end avoidance: {{dead_end_policy}}
@@ -239,13 +240,13 @@ sections:
         instruction: Define how to control the rhythm and pace of gameplay within levels
         template: |
           **Action Sequences:**
-          
+
           - High intensity duration: {{max_duration}}
           - Rest period requirement: {{min_rest_time}}
           - Intensity variation: {{pacing_pattern}}
-          
+
           **Learning Sequences:**
-          
+
           - New mechanic introduction: {{teaching_method}}
           - Practice opportunity: {{practice_duration}}
           - Skill application: {{application_context}}
@@ -254,14 +255,14 @@ sections:
         instruction: Define how to create appropriate challenges for each level type
         template: |
           **Challenge Types:**
-          
+
           - Execution challenges: {{skill_requirements}}
           - Puzzle challenges: {{complexity_guidelines}}
           - Time challenges: {{time_pressure_rules}}
           - Resource challenges: {{resource_management}}
-          
+
           **Difficulty Calibration:**
-          
+
           - Skill check frequency: {{frequency_guidelines}}
           - Failure recovery: {{retry_mechanics}}
           - Hint system integration: {{help_system}}
@@ -275,7 +276,7 @@ sections:
         instruction: Define how level data should be structured for implementation
         template: |
           **Level File Format:**
-          
+
           - Data format: {{json|yaml|custom}}
           - File naming: `level_{{world}}_{{number}}.{{extension}}`
           - Data organization: {{structure_description}}
@@ -313,14 +314,14 @@ sections:
         instruction: Define how level assets are organized and loaded
         template: |
           **Tilemap Requirements:**
-          
+
           - Tile size: {{tile_dimensions}}px
           - Tileset organization: {{tileset_structure}}
           - Layer organization: {{layer_system}}
           - Collision data: {{collision_format}}
-          
+
           **Audio Integration:**
-          
+
           - Background music: {{music_requirements}}
           - Ambient sounds: {{ambient_system}}
           - Dynamic audio: {{dynamic_audio_rules}}
@@ -329,19 +330,19 @@ sections:
         instruction: Define performance requirements for level systems
         template: |
           **Entity Limits:**
-          
+
           - Maximum active entities: {{entity_limit}}
           - Maximum particles: {{particle_limit}}
           - Maximum audio sources: {{audio_limit}}
-          
+
           **Memory Management:**
-          
+
           - Texture memory budget: {{texture_memory}}MB
           - Audio memory budget: {{audio_memory}}MB
           - Level loading time: <{{load_time}}s
-          
+
           **Culling and LOD:**
-          
+
           - Off-screen culling: {{culling_distance}}
           - Level-of-detail rules: {{lod_system}}
           - Asset streaming: {{streaming_requirements}}
@@ -354,13 +355,13 @@ sections:
         title: Automated Testing
         template: |
           **Performance Testing:**
-          
+
           - Frame rate validation: Maintain {{fps_target}} FPS
           - Memory usage monitoring: Stay under {{memory_limit}}MB
           - Loading time verification: Complete in <{{load_time}}s
-          
+
           **Gameplay Testing:**
-          
+
           - Completion path validation: All objectives achievable
           - Collectible accessibility: All items reachable
           - Softlock prevention: No unwinnable states
@@ -388,14 +389,14 @@ sections:
         title: Balance Validation
         template: |
           **Metrics Collection:**
-          
+
           - Completion rate: Target {{completion_percentage}}%
           - Average completion time: {{target_time}} ± {{variance}}
           - Death count per level: <{{max_deaths}}
           - Collectible discovery rate: {{discovery_percentage}}%
-          
+
           **Iteration Guidelines:**
-          
+
           - Adjustment criteria: {{criteria_for_changes}}
           - Testing sample size: {{minimum_testers}}
           - Validation period: {{testing_duration}}
@@ -408,14 +409,14 @@ sections:
         title: Design Phase
         template: |
           **Concept Development:**
-          
+
           1. Define level purpose and goals
           2. Create rough layout sketch
           3. Identify key mechanics and challenges
           4. Estimate difficulty and duration
-          
+
           **Documentation Requirements:**
-          
+
           - Level design brief
           - Layout diagrams
           - Mechanic integration notes
@@ -424,15 +425,15 @@ sections:
         title: Implementation Phase
         template: |
           **Technical Implementation:**
-          
+
           1. Create level data file
           2. Build tilemap and layout
           3. Place entities and objects
           4. Configure level logic and triggers
           5. Integrate audio and visual effects
-          
+
           **Quality Assurance:**
-          
+
           1. Automated testing execution
           2. Internal playtesting
           3. Performance validation
@@ -441,14 +442,14 @@ sections:
         title: Integration Phase
         template: |
           **Game Integration:**
-          
+
           1. Level progression integration
           2. Save system compatibility
           3. Analytics integration
           4. Achievement system integration
-          
+
           **Final Validation:**
-          
+
           1. Full game context testing
           2. Performance regression testing
           3. Platform compatibility verification

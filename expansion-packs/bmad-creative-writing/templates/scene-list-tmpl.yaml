@@ -1,0 +1,55 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: scene-list-tmpl
+  name: Scene List
+  version: 1.0
+  description: Table summarizing every scene for outlining phase
+  output:
+    format: markdown
+    filename: "{{title}}-scene-list.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: overview
+    title: Scene List Overview
+    instruction: |
+      Create overview of scene structure:
+      - Total number of scenes
+      - Act breakdown
+      - Pacing considerations
+      - Key turning points
+    elicit: true
+
+  - id: scenes
+    title: Scene Details
+    instruction: |
+      For each scene, define:
+      - Scene number and title
+      - POV character
+      - Setting (time and place)
+      - Scene goal
+      - Conflict/obstacle
+      - Outcome/disaster
+      - Emotional arc
+      - Hook for next scene
+    repeatable: true
+    elicit: true
+    sections:
+      - id: scene_entry
+        title: "Scene {{scene_number}}: {{scene_title}}"
+        template: |
+          **POV:** {{pov_character}}
+          **Setting:** {{time_place}}
+
+          **Goal:** {{scene_goal}}
+          **Conflict:** {{scene_conflict}}
+          **Outcome:** {{scene_outcome}}
+
+          **Emotional Arc:** {{emotional_journey}}
+          **Hook:** {{next_scene_hook}}
+
+          **Notes:** {{additional_notes}}

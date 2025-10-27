@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: game-design-doc-template-v2
   name: Game Design Document (GDD)
@@ -14,7 +15,7 @@ sections:
   - id: initial-setup
     instruction: |
       This template creates a comprehensive Game Design Document that will serve as the foundation for all game development work. The GDD should be detailed enough that developers can create user stories and epics from it. Focus on gameplay systems, mechanics, and technical requirements that can be broken down into implementable features.
-      
+
       If available, review any provided documents or ask if any are optionally available: Project Brief, Market Research, Competitive Analysis
 
   - id: executive-summary
@@ -59,7 +60,7 @@ sections:
         instruction: Define the 30-60 second loop that players will repeat. Be specific about timing and player actions.
         template: |
           **Primary Loop ({{duration}} seconds):**
-          
+
           1. {{action_1}} ({{time_1}}s)
           2. {{action_2}} ({{time_2}}s)
           3. {{action_3}} ({{time_3}}s)
@@ -69,12 +70,12 @@ sections:
         instruction: Clearly define success and failure states
         template: |
           **Victory Conditions:**
-          
+
           - {{win_condition_1}}
           - {{win_condition_2}}
-          
+
           **Failure States:**
-          
+
           - {{loss_condition_1}}
           - {{loss_condition_2}}
 
@@ -90,17 +91,17 @@ sections:
             title: "{{mechanic_name}}"
             template: |
               **Description:** {{detailed_description}}
-              
+
               **Player Input:** {{input_method}}
-              
+
               **System Response:** {{game_response}}
-              
+
               **Implementation Notes:**
-              
+
               - {{tech_requirement_1}}
               - {{tech_requirement_2}}
               - {{performance_consideration}}
-              
+
               **Dependencies:** {{other_mechanics_needed}}
       - id: controls
         title: Controls
@@ -119,9 +120,9 @@ sections:
         title: Player Progression
         template: |
           **Progression Type:** {{linear|branching|metroidvania}}
-          
+
           **Key Milestones:**
-          
+
           1. **{{milestone_1}}** - {{unlock_description}}
           2. **{{milestone_2}}** - {{unlock_description}}
           3. **{{milestone_3}}** - {{unlock_description}}
@@ -158,9 +159,9 @@ sections:
               **Duration:** {{target_time}}
               **Key Elements:** {{required_mechanics}}
               **Difficulty:** {{relative_difficulty}}
-              
+
               **Structure Template:**
-              
+
               - Introduction: {{intro_description}}
               - Challenge: {{main_challenge}}
               - Resolution: {{completion_requirement}}
@@ -186,13 +187,13 @@ sections:
         title: Platform Specific
         template: |
           **Desktop:**
-          
+
           - Resolution: {{min_resolution}} - {{max_resolution}}
           - Input: Keyboard, Mouse, Gamepad
           - Browser: Chrome 80+, Firefox 75+, Safari 13+
-          
+
           **Mobile:**
-          
+
           - Resolution: {{mobile_min}} - {{mobile_max}}
           - Input: Touch, Tilt (optional)
           - OS: iOS 13+, Android 8+
@@ -201,14 +202,14 @@ sections:
         instruction: Define asset specifications for the art and audio teams
         template: |
           **Visual Assets:**
-          
+
           - Art Style: {{style_description}}
           - Color Palette: {{color_specification}}
           - Animation: {{animation_requirements}}
           - UI Resolution: {{ui_specs}}
-          
+
           **Audio Assets:**
-          
+
           - Music Style: {{music_genre}}
           - Sound Effects: {{sfx_requirements}}
           - Voice Acting: {{voice_needs}}
@@ -221,7 +222,7 @@ sections:
         title: Engine Configuration
         template: |
           **Phaser 3 Setup:**
-          
+
           - TypeScript: Strict mode enabled
           - Physics: {{physics_system}} (Arcade/Matter)
           - Renderer: WebGL with Canvas fallback
@@ -230,7 +231,7 @@ sections:
         title: Code Architecture
         template: |
           **Required Systems:**
-          
+
           - Scene Management
           - State Management
           - Asset Loading
@@ -242,7 +243,7 @@ sections:
         title: Data Management
         template: |
           **Save Data:**
-          
+
           - Progress tracking
           - Settings persistence
           - Statistics collection

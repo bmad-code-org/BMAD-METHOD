@@ -3,6 +3,8 @@ node_modules/
 pnpm-lock.yaml
 bun.lock
 deno.lock
+pnpm-workspace.yaml
+package-lock.json
 
 # Logs
 logs/
@@ -23,21 +25,24 @@ Thumbs.db
 # Development tools and configs
 .prettierignore
 .prettierrc
-.husky/
 
 # IDE and editor configs
 .windsurf/
 .trae/
-.bmad*/.cursor/
+.bmad*/
+.cursor/
 
 # AI assistant files
 CLAUDE.md
 .ai/*
 .claude
 .gemini
+.iflow
 
 # Project-specific
 .bmad-core
 .bmad-creator-tools
 test-project-install/*
 sample-project/*
+flattened-codebase.xml
+*.stats.md

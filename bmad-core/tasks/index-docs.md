@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Index Documentation Task
 
 ## Purpose
@@ -11,14 +13,12 @@ You are now operating as a Documentation Indexer. Your goal is to ensure all doc
 ### Required Steps
 
 1. First, locate and scan:
-
    - The `docs/` directory and all subdirectories
    - The existing `docs/index.md` file (create if absent)
    - All markdown (`.md`) and text (`.txt`) files in the documentation structure
    - Note the folder structure for hierarchical organization
 
 2. For the existing `docs/index.md`:
-
    - Parse current entries
    - Note existing file references and descriptions
    - Identify any broken links or missing files
@@ -26,7 +26,6 @@ You are now operating as a Documentation Indexer. Your goal is to ensure all doc
    - Preserve existing folder sections
 
 3. For each documentation file found:
-
    - Extract the title (from first heading or filename)
    - Generate a brief description by analyzing the content
    - Create a relative markdown link to the file
@@ -35,7 +34,6 @@ You are now operating as a Documentation Indexer. Your goal is to ensure all doc
    - If missing or outdated, prepare an update
 
 4. For any missing or non-existent files found in index:
-
    - Present a list of all entries that reference non-existent files
    - For each entry:
      - Show the full entry details (title, path, description)
@@ -88,7 +86,6 @@ Documents within the `another-folder/` directory:
 ### [Nested Document](./another-folder/document.md)
 
 Description of nested document.
-
 ```
 
 ### Index Entry Format
@@ -157,7 +154,6 @@ For each file referenced in the index but not found in the filesystem:
 ### Special Cases
 
 1. **Sharded Documents**: If a folder contains an `index.md` file, treat it as a sharded document:
-
    - Use the folder's `index.md` title as the section title
    - List the folder's documents as subsections
    - Note in the description that this is a multi-part document

@@ -1,9 +1,7 @@
-#!/usr/bin/env node
-
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const yaml = require('js-yaml');
-const { execSync } = require('child_process');
+const { execSync } = require('node:child_process');
 
 // Dynamic import for ES module
 let chalk;
@@ -26,43 +24,50 @@ async function formatYamlContent(content, filename) {
     // First try to fix common YAML issues
     let fixedContent = content
       // Fix "commands :" -> "commands:"
-      .replace(/^(\s*)(\w+)\s+:/gm, '$1$2:')
+      .replaceAll(/^(\s*)(\w+)\s+:/gm, '$1$2:')
       // Fix inconsistent list indentation
-      .replace(/^(\s*)-\s{3,}/gm, '$1- ');
-    
+      .replaceAll(/^(\s*)-\s{3,}/gm, '$1- ');
+
     // Skip auto-fixing for .roomodes files - they have special nested structure
     if (!filename.includes('.roomodes')) {
       fixedContent = fixedContent
         // Fix unquoted list items that contain special characters or multiple parts
-        .replace(/^(\s*)-\s+(.*)$/gm, (match, indent, content) => {
+        .replaceAll(/^(\s*)-\s+(.*)$/gm, (match, indent, content) => {
           // Skip if already quoted
           if (content.startsWith('"') && content.endsWith('"')) {
             return match;
           }
           // If the content contains special YAML characters or looks complex, quote it
           // BUT skip if it looks like a proper YAML key-value pair (like "key: value")
-          if ((content.includes(':') || content.includes('-') || content.includes('{') || content.includes('}')) && 
-              !content.match(/^\w+:\s/)) {
+          if (
+            (content.includes(':') ||
+              content.includes('-') ||
+              content.includes('{') ||
+              content.includes('}')) &&
+            !/^\w+:\s/.test(content)
+          ) {
             // Remove any existing quotes first, escape internal quotes, then add proper quotes
-            const cleanContent = content.replace(/^["']|["']$/g, '').replace(/"/g, '\\"');
+            const cleanContent = content
+              .replaceAll(/^["']|["']$/g, '')
+              .replaceAll('"', String.raw`\"`);
             return `${indent}- "${cleanContent}"`;
           }
           return match;
         });
     }
-    
+
     // Debug: show what we're trying to parse
     if (fixedContent !== content) {
       console.log(chalk.blue(`🔧 Applied YAML fixes to ${filename}`));
     }
-    
+
     // Parse and re-dump YAML to format it
     const parsed = yaml.load(fixedContent);
     const formatted = yaml.dump(parsed, {
       indent: 2,
       lineWidth: -1, // Disable line wrapping
       noRefs: true,
-      sortKeys: false // Preserve key order
+      sortKeys: false, // Preserve key order
     });
     return formatted;
   } catch (error) {
@@ -80,7 +85,7 @@ async function processMarkdownFile(filePath) {
 
   // Fix untyped code blocks by adding 'text' type
   // Match ``` at start of line followed by newline, but only if it's an opening fence
-  newContent = newContent.replace(/^```\n([\s\S]*?)\n```$/gm, '```text\n$1\n```');
+  newContent = newContent.replaceAll(/^```\n([\s\S]*?)\n```$/gm, '```text\n$1\n```');
   if (newContent !== content) {
     modified = true;
     console.log(chalk.blue(`🔧 Added 'text' type to untyped code blocks in ${filePath}`));
@@ -90,30 +95,30 @@ async function processMarkdownFile(filePath) {
   const yamlBlockRegex = /```ya?ml\n([\s\S]*?)\n```/g;
   let match;
   const replacements = [];
-  
+
   while ((match = yamlBlockRegex.exec(newContent)) !== null) {
     const [fullMatch, yamlContent] = match;
     const formatted = await formatYamlContent(yamlContent, filePath);
     if (formatted !== null) {
       // Remove trailing newline that js-yaml adds
       const trimmedFormatted = formatted.replace(/\n$/, '');
-      
+
       if (trimmedFormatted !== yamlContent) {
         modified = true;
         console.log(chalk.green(`✓ Formatted YAML in ${filePath}`));
       }
-      
+
       replacements.push({
         start: match.index,
         end: match.index + fullMatch.length,
-        replacement: `\`\`\`yaml\n${trimmedFormatted}\n\`\`\``
+        replacement: `\`\`\`yaml\n${trimmedFormatted}\n\`\`\``,
       });
     }
   }
-  
+
   // Apply replacements in reverse order to maintain indices
-  for (let i = replacements.length - 1; i >= 0; i--) {
-    const { start, end, replacement } = replacements[i];
+  for (let index = replacements.length - 1; index >= 0; index--) {
+    const { start, end, replacement } = replacements[index];
     newContent = newContent.slice(0, start) + replacement + newContent.slice(end);
   }
 
@@ -128,11 +133,11 @@ async function processYamlFile(filePath) {
   await initializeModules();
   const content = fs.readFileSync(filePath, 'utf8');
   const formatted = await formatYamlContent(content, filePath);
-  
+
   if (formatted === null) {
     return false; // Syntax error
   }
-  
+
   if (formatted !== content) {
     fs.writeFileSync(filePath, formatted);
     return true;
@@ -155,10 +160,10 @@ async function lintYamlFile(filePath) {
 
 async function main() {
   await initializeModules();
-  const args = process.argv.slice(2);
+  const arguments_ = process.argv.slice(2);
   const glob = require('glob');
-  
-  if (args.length === 0) {
+
+  if (arguments_.length === 0) {
     console.error('Usage: node yaml-format.js <file1> [file2] ...');
     process.exit(1);
   }
@@ -169,38 +174,44 @@ async function main() {
 
   // Expand glob patterns and collect all files
   const allFiles = [];
-  for (const arg of args) {
-    if (arg.includes('*')) {
+  for (const argument of arguments_) {
+    if (argument.includes('*')) {
       // It's a glob pattern
-      const matches = glob.sync(arg);
+      const matches = glob.sync(argument);
       allFiles.push(...matches);
     } else {
       // It's a direct file path
-      allFiles.push(arg);
+      allFiles.push(argument);
     }
   }
 
   for (const filePath of allFiles) {
     if (!fs.existsSync(filePath)) {
       // Skip silently for glob patterns that don't match anything
-      if (!args.some(arg => arg.includes('*') && filePath === arg)) {
+      if (!arguments_.some((argument) => argument.includes('*') && filePath === argument)) {
         console.error(chalk.red(`❌ File not found: ${filePath}`));
         hasErrors = true;
       }
       continue;
     }
 
-    const ext = path.extname(filePath).toLowerCase();
+    const extension = path.extname(filePath).toLowerCase();
     const basename = path.basename(filePath).toLowerCase();
-    
+
     try {
       let changed = false;
-      if (ext === '.md') {
+      if (extension === '.md') {
         changed = await processMarkdownFile(filePath);
-      } else if (ext === '.yaml' || ext === '.yml' || basename.includes('roomodes') || basename.includes('.yaml') || basename.includes('.yml')) {
+      } else if (
+        extension === '.yaml' ||
+        extension === '.yml' ||
+        basename.includes('roomodes') ||
+        basename.includes('.yaml') ||
+        basename.includes('.yml')
+      ) {
         // Handle YAML files and special cases like .roomodes
         changed = await processYamlFile(filePath);
-        
+
         // Also run linting
         const lintPassed = await lintYamlFile(filePath);
         if (!lintPassed) hasErrors = true;
@@ -208,7 +219,7 @@ async function main() {
         // Skip silently for unsupported files
         continue;
       }
-      
+
       if (changed) {
         hasChanges = true;
         filesProcessed.push(filePath);
@@ -220,8 +231,10 @@ async function main() {
   }
 
   if (hasChanges) {
-    console.log(chalk.green(`\n✨ YAML formatting completed! Modified ${filesProcessed.length} files:`));
-    filesProcessed.forEach(file => console.log(chalk.blue(`  📝 ${file}`)));
+    console.log(
+      chalk.green(`\n✨ YAML formatting completed! Modified ${filesProcessed.length} files:`),
+    );
+    for (const file of filesProcessed) console.log(chalk.blue(`  📝 ${file}`));
   }
 
   if (hasErrors) {
@@ -231,7 +244,7 @@ async function main() {
 }
 
 if (require.main === module) {
-  main().catch(error => {
+  main().catch((error) => {
     console.error('Error:', error);
     process.exit(1);
   });

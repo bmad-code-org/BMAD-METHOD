@@ -53,7 +53,6 @@ activation-instructions:
   - Assess user goal against available agents and workflows in this bundle
   - If clear match to an agent's expertise, suggest transformation with *agent command
   - If project-oriented, suggest *workflow-guidance to explore options
-  - Load resources only when needed - never pre-load
 agent:
   name: BMad Orchestrator
   id: bmad-orchestrator
@@ -77,21 +76,16 @@ persona:
     - Always remind users that commands require * prefix
 commands:
   help: Show this guide with available agents and workflows
-  chat-mode: Start conversational mode for detailed assistance
-  kb-mode: Load full BMad knowledge base
-  status: Show current context, active agent, and progress
   agent: Transform into a specialized agent (list if name not specified)
-  exit: Return to BMad or exit session
-  task: Run a specific task (list if name not specified)
-  workflow: Start a specific workflow (list if name not specified)
-  workflow-guidance: Get personalized help selecting the right workflow
-  plan: Create detailed workflow plan before starting
-  plan-status: Show current workflow plan progress
-  plan-update: Update workflow plan status
+  chat-mode: Start conversational mode for detailed assistance
   checklist: Execute a checklist (list if name not specified)
-  yolo: Toggle skip confirmations mode
-  party-mode: Group chat with all agents
   doc-out: Output full document
+  kb-mode: Load full BMad knowledge base
+  party-mode: Group chat with all agents
+  status: Show current context, active agent, and progress
+  task: Run a specific task (list if name not specified)
+  yolo: Toggle skip confirmations mode
+  exit: Return to BMad or exit session
 help-display-template: |
   === BMad Orchestrator Commands ===
   All commands must start with * (asterisk)
@@ -160,19 +154,20 @@ workflow-guidance:
   - Only recommend workflows that actually exist in the current bundle
   - When *workflow-guidance is called, start an interactive session and list all available workflows with brief descriptions
 dependencies:
+  data:
+    - bmad-kb.md
+    - elicitation-methods.md
   tasks:
     - advanced-elicitation.md
     - create-doc.md
     - kb-mode-interaction.md
-  data:
-    - bmad-kb.md
-    - elicitation-methods.md
   utils:
     - workflow-management.md
 ```
 ==================== END: .bmad-core/agents/bmad-orchestrator.md ====================
 
 ==================== START: .bmad-core/tasks/advanced-elicitation.md ====================
+<!-- Powered by BMAD™ Core -->
 # Advanced Elicitation Task
 
 ## Purpose
@@ -293,6 +288,7 @@ Choose a number (0-8) or 9 to proceed:
 ==================== END: .bmad-core/tasks/advanced-elicitation.md ====================
 
 ==================== START: .bmad-core/tasks/create-doc.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -397,6 +393,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 ==================== END: .bmad-core/tasks/create-doc.md ====================
 
 ==================== START: .bmad-core/tasks/kb-mode-interaction.md ====================
+<!-- Powered by BMAD™ Core -->
 # KB Mode Interaction Task
 
 ## Purpose
@@ -405,7 +402,7 @@ Provide a user-friendly interface to the BMad knowledge base without overwhelmin
 
 ## Instructions
 
-When entering KB mode (*kb-mode), follow these steps:
+When entering KB mode (\*kb-mode), follow these steps:
 
 ### 1. Welcome and Guide
 
@@ -447,12 +444,12 @@ Or ask me about anything else related to BMad-Method!
 When user is done or wants to exit KB mode:
 
 - Summarize key points discussed if helpful
-- Remind them they can return to KB mode anytime with *kb-mode
+- Remind them they can return to KB mode anytime with \*kb-mode
 - Suggest next steps based on what was discussed
 
 ## Example Interaction
 
-**User**: *kb-mode
+**User**: \*kb-mode
 
 **Assistant**: I've entered KB mode and have access to the full BMad knowledge base. I can help you with detailed information about any aspect of BMad-Method.
 
@@ -475,11 +472,12 @@ Or ask me about anything else related to BMad-Method!
 ==================== END: .bmad-core/tasks/kb-mode-interaction.md ====================
 
 ==================== START: .bmad-core/data/bmad-kb.md ====================
-# BMad Knowledge Base
+<!-- Powered by BMAD™ Core -->
+# BMAD™ Knowledge Base
 
 ## Overview
 
-BMad-Method (Breakthrough Method of Agile AI-driven Development) is a framework that combines AI agents with Agile development methodologies. The v4 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments.
+BMAD-METHOD™ (Breakthrough Method of Agile AI-driven Development) is a framework that combines AI agents with Agile development methodologies. The v4 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments.
 
 ### Key Features
 
@@ -578,7 +576,7 @@ npx bmad-method install
   - **Roo Code**: Web-based IDE with agent support
   - **GitHub Copilot**: VS Code extension with AI peer programming assistant
 
-**Note for VS Code Users**: BMad-Method assumes when you mention "VS Code" that you're using it with an AI-powered extension like GitHub Copilot, Cline, or Roo. Standard VS Code without AI capabilities cannot run BMad agents. The installer includes built-in support for Cline and Roo.
+**Note for VS Code Users**: BMAD-METHOD™ assumes when you mention "VS Code" that you're using it with an AI-powered extension like GitHub Copilot, Cline, or Roo. Standard VS Code without AI capabilities cannot run BMad agents. The installer includes built-in support for Cline and Roo.
 
 **Verify Installation**:
 
@@ -586,7 +584,7 @@ npx bmad-method install
 - IDE-specific integration files created
 - All agent commands/rules/modes available
 
-**Remember**: At its core, BMad-Method is about mastering and harnessing prompt engineering. Any IDE with AI agent support can use BMad - the framework provides the structured prompts and workflows that make AI development effective
+**Remember**: At its core, BMAD-METHOD™ is about mastering and harnessing prompt engineering. Any IDE with AI agent support can use BMad - the framework provides the structured prompts and workflows that make AI development effective
 
 ### Environment Selection Guide
 
@@ -655,7 +653,7 @@ npx bmad-method install
 
 ## Core Configuration (core-config.yaml)
 
-**New in V4**: The `bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
+**New in V4**: The `.bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
 
 ### What is core-config.yaml?
 
@@ -775,7 +773,7 @@ You are the "Vibe CEO" - thinking like a CEO with unlimited resources and a sing
 
 - **Claude Code**: `/agent-name` (e.g., `/bmad-master`)
 - **Cursor**: `@agent-name` (e.g., `@bmad-master`)
-- **Windsurf**: `@agent-name` (e.g., `@bmad-master`)
+- **Windsurf**: `/agent-name` (e.g., `/bmad-master`)
 - **Trae**: `@agent-name` (e.g., `@bmad-master`)
 - **Roo Code**: Select mode from mode selector (e.g., `bmad-master`)
 - **GitHub Copilot**: Open the Chat view (`⌃⌘I` on Mac, `Ctrl+Alt+I` on Windows/Linux) and select **Agent** from the chat mode selector.
@@ -830,7 +828,7 @@ You are the "Vibe CEO" - thinking like a CEO with unlimited resources and a sing
 
 ### System Overview
 
-The BMad-Method is built around a modular architecture centered on the `bmad-core` directory, which serves as the brain of the entire system. This design enables the framework to operate effectively in both IDE environments (like Cursor, VS Code) and web-based AI interfaces (like ChatGPT, Gemini).
+The BMAD-METHOD™ is built around a modular architecture centered on the `bmad-core` directory, which serves as the brain of the entire system. This design enables the framework to operate effectively in both IDE environments (like Cursor, VS Code) and web-based AI interfaces (like ChatGPT, Gemini).
 
 ### Key Architectural Components
 
@@ -1019,7 +1017,7 @@ Each status change requires user verification and approval before proceeding.
 #### Greenfield Development
 
 - Business analysis and market research
-- Product requirements and feature definition  
+- Product requirements and feature definition
 - System architecture and design
 - Development execution
 - Testing and deployment
@@ -1128,8 +1126,11 @@ Templates with Level 2 headings (`##`) can be automatically sharded:
 
 ```markdown
 ## Goals and Background Context
-## Requirements  
+
+## Requirements
+
 ## User Interface Design Goals
+
 ## Success Metrics
 ```
 
@@ -1182,7 +1183,7 @@ Use the `shard-doc` task or `@kayvan/markdown-tree-parser` tool for automatic sh
 - **Keep conversations focused** - One agent, one task per conversation
 - **Review everything** - Always review and approve before marking complete
 
-## Contributing to BMad-Method
+## Contributing to BMAD-METHOD™
 
 ### Quick Contribution Guidelines
 
@@ -1214,7 +1215,7 @@ For full details, see `CONTRIBUTING.md`. Key points:
 
 ### What Are Expansion Packs?
 
-Expansion packs extend BMad-Method beyond traditional software development into ANY domain. They provide specialized agent teams, templates, and workflows while keeping the core framework lean and focused on development.
+Expansion packs extend BMAD-METHOD™ beyond traditional software development into ANY domain. They provide specialized agent teams, templates, and workflows while keeping the core framework lean and focused on development.
 
 ### Why Use Expansion Packs?
 
@@ -1281,21 +1282,25 @@ Use the **expansion-creator** pack to build your own:
 ==================== END: .bmad-core/data/bmad-kb.md ====================
 
 ==================== START: .bmad-core/data/elicitation-methods.md ====================
+<!-- Powered by BMAD™ Core -->
 # Elicitation Methods Data
 
 ## Core Reflective Methods
 
 **Expand or Contract for Audience**
+
 - Ask whether to 'expand' (add detail, elaborate) or 'contract' (simplify, clarify)
 - Identify specific target audience if relevant
 - Tailor content complexity and depth accordingly
 
 **Explain Reasoning (CoT Step-by-Step)**
+
 - Walk through the step-by-step thinking process
 - Reveal underlying assumptions and decision points
 - Show how conclusions were reached from current role's perspective
 
 **Critique and Refine**
+
 - Review output for flaws, inconsistencies, or improvement areas
 - Identify specific weaknesses from role's expertise
 - Suggest refined version reflecting domain knowledge
@@ -1303,12 +1308,14 @@ Use the **expansion-creator** pack to build your own:
 ## Structural Analysis Methods
 
 **Analyze Logical Flow and Dependencies**
+
 - Examine content structure for logical progression
 - Check internal consistency and coherence
 - Identify and validate dependencies between elements
 - Confirm effective ordering and sequencing
 
 **Assess Alignment with Overall Goals**
+
 - Evaluate content contribution to stated objectives
 - Identify any misalignments or gaps
 - Interpret alignment from specific role's perspective
@@ -1317,12 +1324,14 @@ Use the **expansion-creator** pack to build your own:
 ## Risk and Challenge Methods
 
 **Identify Potential Risks and Unforeseen Issues**
+
 - Brainstorm potential risks from role's expertise
 - Identify overlooked edge cases or scenarios
 - Anticipate unintended consequences
 - Highlight implementation challenges
 
 **Challenge from Critical Perspective**
+
 - Adopt critical stance on current content
 - Play devil's advocate from specified viewpoint
 - Argue against proposal highlighting weaknesses
@@ -1331,12 +1340,14 @@ Use the **expansion-creator** pack to build your own:
 ## Creative Exploration Methods
 
 **Tree of Thoughts Deep Dive**
+
 - Break problem into discrete "thoughts" or intermediate steps
 - Explore multiple reasoning paths simultaneously
 - Use self-evaluation to classify each path as "sure", "likely", or "impossible"
 - Apply search algorithms (BFS/DFS) to find optimal solution paths
 
 **Hindsight is 20/20: The 'If Only...' Reflection**
+
 - Imagine retrospective scenario based on current content
 - Identify the one "if only we had known/done X..." insight
 - Describe imagined consequences humorously or dramatically
@@ -1345,6 +1356,7 @@ Use the **expansion-creator** pack to build your own:
 ## Multi-Persona Collaboration Methods
 
 **Agile Team Perspective Shift**
+
 - Rotate through different Scrum team member viewpoints
 - Product Owner: Focus on user value and business impact
 - Scrum Master: Examine process flow and team dynamics
@@ -1352,12 +1364,14 @@ Use the **expansion-creator** pack to build your own:
 - QA: Identify testing scenarios and quality concerns
 
 **Stakeholder Round Table**
+
 - Convene virtual meeting with multiple personas
 - Each persona contributes unique perspective on content
 - Identify conflicts and synergies between viewpoints
 - Synthesize insights into actionable recommendations
 
 **Meta-Prompting Analysis**
+
 - Step back to analyze the structure and logic of current approach
 - Question the format and methodology being used
 - Suggest alternative frameworks or mental models
@@ -1366,24 +1380,28 @@ Use the **expansion-creator** pack to build your own:
 ## Advanced 2025 Techniques
 
 **Self-Consistency Validation**
+
 - Generate multiple reasoning paths for same problem
 - Compare consistency across different approaches
 - Identify most reliable and robust solution
 - Highlight areas where approaches diverge and why
 
 **ReWOO (Reasoning Without Observation)**
+
 - Separate parametric reasoning from tool-based actions
 - Create reasoning plan without external dependencies
 - Identify what can be solved through pure reasoning
 - Optimize for efficiency and reduced token usage
 
 **Persona-Pattern Hybrid**
+
 - Combine specific role expertise with elicitation pattern
 - Architect + Risk Analysis: Deep technical risk assessment
 - UX Expert + User Journey: End-to-end experience critique
 - PM + Stakeholder Analysis: Multi-perspective impact review
 
 **Emergent Collaboration Discovery**
+
 - Allow multiple perspectives to naturally emerge
 - Identify unexpected insights from persona interactions
 - Explore novel combinations of viewpoints
@@ -1392,18 +1410,21 @@ Use the **expansion-creator** pack to build your own:
 ## Game-Based Elicitation Methods
 
 **Red Team vs Blue Team**
+
 - Red Team: Attack the proposal, find vulnerabilities
 - Blue Team: Defend and strengthen the approach
 - Competitive analysis reveals blind spots
 - Results in more robust, battle-tested solutions
 
 **Innovation Tournament**
+
 - Pit multiple alternative approaches against each other
 - Score each approach across different criteria
 - Crowd-source evaluation from different personas
 - Identify winning combination of features
 
 **Escape Room Challenge**
+
 - Present content as constraints to work within
 - Find creative solutions within tight limitations
 - Identify minimum viable approach
@@ -1412,12 +1433,14 @@ Use the **expansion-creator** pack to build your own:
 ## Process Control
 
 **Proceed / No Further Actions**
+
 - Acknowledge choice to finalize current work
 - Accept output as-is or move to next step
 - Prepare to continue without additional elicitation
 ==================== END: .bmad-core/data/elicitation-methods.md ====================
 
 ==================== START: .bmad-core/utils/workflow-management.md ====================
+<!-- Powered by BMAD™ Core -->
 # Workflow Management
 
 Enables BMad orchestrator to manage and execute team workflows.

@@ -1,0 +1,82 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: chapter-draft-tmpl
+  name: Chapter Draft
+  version: 1.0
+  description: Guided structure for writing a full chapter
+  output:
+    format: markdown
+    filename: "chapter-{{chapter_number}}.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: chapter_header
+    title: Chapter Header
+    instruction: |
+      Define chapter metadata:
+      - Chapter number
+      - Chapter title
+      - POV character
+      - Timeline/date
+      - Word count target
+    elicit: true
+
+  - id: opening_hook
+    title: Opening Hook
+    instruction: |
+      Create compelling opening (1-2 paragraphs):
+      - Grab reader attention
+      - Establish scene setting
+      - Connect to previous chapter
+      - Set chapter tone
+      - Introduce chapter conflict
+    elicit: true
+
+  - id: rising_action
+    title: Rising Action
+    instruction: |
+      Develop the chapter body:
+      - Build tension progressively
+      - Develop character interactions
+      - Advance plot threads
+      - Include sensory details
+      - Balance dialogue and narrative
+      - Create mini-conflicts
+    elicit: true
+
+  - id: climax_turn
+    title: Climax/Turning Point
+    instruction: |
+      Create chapter peak moment:
+      - Major revelation or decision
+      - Conflict confrontation
+      - Emotional high point
+      - Plot twist or reversal
+      - Character growth moment
+    elicit: true
+
+  - id: resolution
+    title: Resolution/Cliffhanger
+    instruction: |
+      End chapter effectively:
+      - Resolve immediate conflict
+      - Set up next chapter
+      - Leave question or tension
+      - Emotional resonance
+      - Page-turner element
+    elicit: true
+
+  - id: dialogue_review
+    title: Dialogue Review
+    instruction: |
+      Review and enhance dialogue:
+      - Character voice consistency
+      - Subtext and tension
+      - Natural flow
+      - Action beats
+      - Dialect/speech patterns
+    elicit: true

@@ -103,6 +103,7 @@ dependencies:
 ==================== END: .bmad-2d-unity-game-dev/agents/game-architect.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-doc.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -207,6 +208,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 ==================== END: .bmad-2d-unity-game-dev/tasks/create-doc.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/create-deep-research-prompt.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -230,63 +232,54 @@ CRITICAL: First, help the user select the most appropriate research focus based 
 Present these numbered options to the user:
 
 1. **Product Validation Research**
-
    - Validate product hypotheses and market fit
    - Test assumptions about user needs and solutions
    - Assess technical and business feasibility
    - Identify risks and mitigation strategies
 
 2. **Market Opportunity Research**
-
    - Analyze market size and growth potential
    - Identify market segments and dynamics
    - Assess market entry strategies
    - Evaluate timing and market readiness
 
 3. **User & Customer Research**
-
    - Deep dive into user personas and behaviors
    - Understand jobs-to-be-done and pain points
    - Map customer journeys and touchpoints
    - Analyze willingness to pay and value perception
 
 4. **Competitive Intelligence Research**
-
    - Detailed competitor analysis and positioning
    - Feature and capability comparisons
    - Business model and strategy analysis
    - Identify competitive advantages and gaps
 
 5. **Technology & Innovation Research**
-
    - Assess technology trends and possibilities
    - Evaluate technical approaches and architectures
    - Identify emerging technologies and disruptions
    - Analyze build vs. buy vs. partner options
 
 6. **Industry & Ecosystem Research**
-
    - Map industry value chains and dynamics
    - Identify key players and relationships
    - Analyze regulatory and compliance factors
    - Understand partnership opportunities
 
 7. **Strategic Options Research**
-
    - Evaluate different strategic directions
    - Assess business model alternatives
    - Analyze go-to-market strategies
    - Consider expansion and scaling paths
 
 8. **Risk & Feasibility Research**
-
    - Identify and assess various risk factors
    - Evaluate implementation challenges
    - Analyze resource requirements
    - Consider regulatory and legal implications
 
 9. **Custom Research Focus**
-
    - User-defined research objectives
    - Specialized domain investigation
    - Cross-functional research needs
@@ -455,13 +448,11 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 ### 5. Review and Refinement
 
 1. **Present Complete Prompt**
-
    - Show the full research prompt
    - Explain key elements and rationale
    - Highlight any assumptions made
 
 2. **Gather Feedback**
-
    - Are the objectives clear and correct?
    - Do the questions address all concerns?
    - Is the scope appropriate?
@@ -499,6 +490,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 ==================== END: .bmad-2d-unity-game-dev/tasks/create-deep-research-prompt.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/shard-doc.md ====================
+<!-- Powered by BMAD™ Core -->
 # Document Sharding Task
 
 ## Purpose
@@ -592,13 +584,11 @@ CRITICAL: Use proper parsing that understands markdown context. A ## inside a co
 For each extracted section:
 
 1. **Generate filename**: Convert the section heading to lowercase-dash-case
-
    - Remove special characters
    - Replace spaces with dashes
    - Example: "## Tech Stack" → `tech-stack.md`
 
 2. **Adjust heading levels**:
-
    - The level 2 heading becomes level 1 (# instead of ##) in the sharded new document
    - All subsection levels decrease by 1:
 
@@ -689,6 +679,7 @@ Document sharded successfully:
 ==================== END: .bmad-2d-unity-game-dev/tasks/shard-doc.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/document-project.md ====================
+<!-- Powered by BMAD™ Core -->
 # Document an Existing Project
 
 ## Purpose
@@ -802,9 +793,9 @@ This document captures the CURRENT STATE of the [Project Name] codebase, includi
 
 ### Change Log
 
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| [Date] | 1.0 | Initial brownfield analysis | [Analyst] |
+| Date   | Version | Description                 | Author    |
+| ------ | ------- | --------------------------- | --------- |
+| [Date] | 1.0     | Initial brownfield analysis | [Analyst] |
 
 ## Quick Reference - Key Files and Entry Points
 
@@ -827,11 +818,11 @@ This document captures the CURRENT STATE of the [Project Name] codebase, includi
 
 ### Actual Tech Stack (from package.json/requirements.txt)
 
-| Category | Technology | Version | Notes |
-|----------|------------|---------|--------|
-| Runtime | Node.js | 16.x | [Any constraints] |
-| Framework | Express | 4.18.2 | [Custom middleware?] |
-| Database | PostgreSQL | 13 | [Connection pooling setup] |
+| Category  | Technology | Version | Notes                      |
+| --------- | ---------- | ------- | -------------------------- |
+| Runtime   | Node.js    | 16.x    | [Any constraints]          |
+| Framework | Express    | 4.18.2  | [Custom middleware?]       |
+| Database  | PostgreSQL | 13      | [Connection pooling setup] |
 
 etc...
 
@@ -870,6 +861,7 @@ project-root/
 ### Data Models
 
 Instead of duplicating, reference actual model files:
+
 - **User Model**: See `src/models/User.js`
 - **Order Model**: See `src/models/Order.js`
 - **Related Types**: TypeScript definitions in `src/types/`
@@ -899,10 +891,10 @@ Instead of duplicating, reference actual model files:
 
 ### External Services
 
-| Service | Purpose | Integration Type | Key Files |
-|---------|---------|------------------|-----------|
-| Stripe | Payments | REST API | `src/integrations/stripe/` |
-| SendGrid | Emails | SDK | `src/services/emailService.js` |
+| Service  | Purpose  | Integration Type | Key Files                      |
+| -------- | -------- | ---------------- | ------------------------------ |
+| Stripe   | Payments | REST API         | `src/integrations/stripe/`     |
+| SendGrid | Emails   | SDK              | `src/services/emailService.js` |
 
 etc...
 
@@ -947,6 +939,7 @@ npm run test:integration  # Runs integration tests (requires local DB)
 ### Files That Will Need Modification
 
 Based on the enhancement requirements, these files will be affected:
+
 - `src/services/userService.js` - Add new user fields
 - `src/models/User.js` - Update schema
 - `src/routes/userRoutes.js` - New endpoints
@@ -1033,6 +1026,7 @@ Apply the advanced elicitation task after major sections to refine based on user
 ==================== END: .bmad-2d-unity-game-dev/tasks/document-project.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/execute-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -1044,7 +1038,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 ## Instructions
 
 1. **Initial Assessment**
-
    - If user or the task being run provides a checklist name:
      - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
      - If multiple matches found, ask user to clarify
@@ -1057,14 +1050,12 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
 
 2. **Document and Artifact Gathering**
-
    - Each checklist will specify its required documents/artifacts at the beginning
    - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
 
 3. **Checklist Processing**
 
    If in interactive mode:
-
    - Work through each section of the checklist one at a time
    - For each section:
      - Review all items in the section following instructions for that section embedded in the checklist
@@ -1073,7 +1064,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
 
    If in YOLO mode:
-
    - Process all sections at once
    - Create a comprehensive report of all findings
    - Present the complete analysis to the user
@@ -1081,7 +1071,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 4. **Validation Approach**
 
    For each checklist item:
-
    - Read and understand the requirement
    - Look for evidence in the documentation that satisfies the requirement
    - Consider both explicit mentions and implicit coverage
@@ -1095,7 +1084,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 5. **Section Analysis**
 
    For each section:
-
    - think step by step to calculate pass rate
    - Identify common themes in failed items
    - Provide specific recommendations for improvement
@@ -1105,7 +1093,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 6. **Final Report**
 
    Prepare a summary that includes:
-
    - Overall checklist completion status
    - Pass rates by section
    - List of failed items with context
@@ -1129,6 +1116,7 @@ The LLM will:
 ==================== END: .bmad-2d-unity-game-dev/tasks/execute-checklist.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/tasks/advanced-elicitation.md ====================
+<!-- Powered by BMAD™ Core -->
 # Advanced Game Design Elicitation Task
 
 ## Purpose
@@ -1149,7 +1137,6 @@ The LLM will:
 2. If the section contains game flow diagrams, level layouts, or system diagrams, explain each diagram briefly with game development context before offering elicitation options (e.g., "The gameplay loop diagram shows how player actions lead to rewards and progression. Notice how each step maintains player engagement and creates opportunities for skill development.")
 
 3. If the section contains multiple game elements (like multiple mechanics, multiple levels, multiple systems, etc.), inform the user they can apply elicitation actions to:
-
    - The entire section as a whole
    - Individual game elements within the section (specify which element when selecting an action)
 
@@ -1243,6 +1230,7 @@ The questions and perspectives offered should always consider:
 ==================== END: .bmad-2d-unity-game-dev/tasks/advanced-elicitation.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/templates/game-architecture-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: game-architecture-template-v3
   name: Game Architecture Document
@@ -2276,6 +2264,7 @@ sections:
 ==================== END: .bmad-2d-unity-game-dev/templates/game-architecture-tmpl.yaml ====================
 
 ==================== START: .bmad-2d-unity-game-dev/checklists/game-architect-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Game Architect Solution Validation Checklist
 
 This checklist serves as a comprehensive framework for the Game Architect to validate the technical design and architecture before game development execution. The Game Architect should systematically work through each item, ensuring the game architecture is robust, scalable, performant, and aligned with the Game Design Document requirements.
@@ -2633,34 +2622,29 @@ Ask the user if they want to work through the checklist:
 Generate a comprehensive validation report that includes:
 
 1. Executive Summary
-
    - Overall game architecture readiness (High/Medium/Low)
    - Critical risks for game development
    - Key strengths of the game architecture
    - Unity-specific assessment
 
 2. Game Systems Analysis
-
    - Pass rate for each major system section
    - Most concerning gaps in game architecture
    - Systems requiring immediate attention
    - Unity integration completeness
 
 3. Performance Risk Assessment
-
    - Top 5 performance risks for the game
    - Mobile platform specific concerns
    - Frame rate stability risks
    - Memory usage concerns
 
 4. Implementation Recommendations
-
    - Must-fix items before development
    - Unity-specific improvements needed
    - Game development workflow enhancements
 
 5. AI Agent Implementation Readiness
-
    - Game-specific concerns for AI implementation
    - Unity component complexity assessment
    - Areas needing additional clarification
@@ -2675,6 +2659,7 @@ After presenting the report, ask the user if they would like detailed analysis o
 ==================== END: .bmad-2d-unity-game-dev/checklists/game-architect-checklist.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/data/development-guidelines.md ====================
+<!-- Powered by BMAD™ Core -->
 # Game Development Guidelines (Unity & C#)
 
 ## Overview
@@ -3208,25 +3193,21 @@ Assets/
 ### Story Implementation Process
 
 1. **Read Story Requirements:**
-
    - Understand acceptance criteria
    - Identify technical requirements
    - Review performance constraints
 
 2. **Plan Implementation:**
-
    - Identify files to create/modify
    - Consider Unity's component-based architecture
    - Plan testing approach
 
 3. **Implement Feature:**
-
    - Write clean C# code following all guidelines
    - Use established patterns
    - Maintain stable FPS performance
 
 4. **Test Implementation:**
-
    - Write edit mode tests for game logic
    - Write play mode tests for integration testing
    - Test cross-platform functionality
@@ -3268,6 +3249,7 @@ These guidelines ensure consistent, high-quality game development that meets per
 ==================== END: .bmad-2d-unity-game-dev/data/development-guidelines.md ====================
 
 ==================== START: .bmad-2d-unity-game-dev/data/bmad-kb.md ====================
+<!-- Powered by BMAD™ Core -->
 # BMad Knowledge Base - 2D Unity Game Development
 
 ## Overview
@@ -3540,7 +3522,6 @@ that can handle [specific game requirements] with stable performance."
 **Prerequisites**: Game planning documents must exist in `docs/` folder of Unity project
 
 1. **Document Sharding** (CRITICAL STEP for Game Development):
-
    - Documents created by Game Designer/Architect (in Web or IDE) MUST be sharded for development
    - Use core BMad agents or tools to shard:
      a) **Manual**: Use core BMad `shard-doc` task if available
@@ -3563,20 +3544,17 @@ Resulting Unity Project Folder Structure:
 3. **Game Development Cycle** (Sequential, one game story at a time):
 
    **CRITICAL CONTEXT MANAGEMENT for Unity Development**:
-
    - **Context windows matter!** Always use fresh, clean context windows
    - **Model selection matters!** Use most powerful thinking model for Game SM story creation
    - **ALWAYS start new chat between Game SM, Game Dev, and QA work**
 
    **Step 1 - Game Story Creation**:
-
    - **NEW CLEAN CHAT** → Select powerful model → `/bmad2du/game-sm` → `*draft`
    - Game SM executes create-game-story task using `game-story-tmpl`
    - Review generated story in `docs/game-stories/`
    - Update status from "Draft" to "Approved"
 
    **Step 2 - Unity Game Story Implementation**:
-
    - **NEW CLEAN CHAT** → `/bmad2du/game-developer`
    - Agent asks which game story to implement
    - Include story file content to save game dev agent lookup time
@@ -3585,7 +3563,6 @@ Resulting Unity Project Folder Structure:
    - Game Dev marks story as "Review" when complete with all Unity tests passing
 
    **Step 3 - Game QA Review**:
-
    - **NEW CLEAN CHAT** → Use core `@qa` agent → execute review-story task
    - QA performs senior Unity developer code review
    - QA can refactor and improve Unity code directly
@@ -3625,14 +3602,12 @@ Since this expansion pack doesn't include specific brownfield templates, you'll 
 
 1. **Upload Unity project to Web UI** (GitHub URL, files, or zip)
 2. **Create adapted Game Design Document**: `/bmad2du/game-designer` - Modify `game-design-doc-tmpl` to include:
-
    - Analysis of existing game systems
    - Integration points for new features
    - Compatibility requirements
    - Risk assessment for changes
 
 3. **Game Architecture Planning**:
-
    - Use `/bmad2du/game-architect` with `game-architecture-tmpl`
    - Focus on how new features integrate with existing Unity systems
    - Plan for gradual rollout and testing
@@ -3733,7 +3708,7 @@ Use the `shard-doc` task or `@kayvan/markdown-tree-parser` tool for automatic ga
 
 - **Claude Code**: `/bmad2du/game-designer`, `/bmad2du/game-developer`, `/bmad2du/game-sm`, `/bmad2du/game-architect`
 - **Cursor**: `@bmad2du/game-designer`, `@bmad2du/game-developer`, `@bmad2du/game-sm`, `@bmad2du/game-architect`
-- **Windsurf**: `@bmad2du/game-designer`, `@bmad2du/game-developer`, `@bmad2du/game-sm`, `@bmad2du/game-architect`
+- **Windsurf**: `/bmad2du/game-designer`, `/bmad2du/game-developer`, `/bmad2du/game-sm`, `/bmad2du/game-architect`
 - **Trae**: `@bmad2du/game-designer`, `@bmad2du/game-developer`, `@bmad2du/game-sm`, `@bmad2du/game-architect`
 - **Roo Code**: Select mode from mode selector with bmad2du prefix
 - **GitHub Copilot**: Open the Chat view (`⌃⌘I` on Mac, `Ctrl+Alt+I` on Windows/Linux) and select the appropriate game agent.

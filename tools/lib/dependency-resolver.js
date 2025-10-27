@@ -1,5 +1,5 @@
-const fs = require('fs').promises;
-const path = require('path');
+const fs = require('node:fs').promises;
+const path = require('node:path');
 const yaml = require('js-yaml');
 const { extractYamlFromAgent } = require('./yaml-utils');
 
@@ -14,23 +14,23 @@ class DependencyResolver {
   async resolveAgentDependencies(agentId) {
     const agentPath = path.join(this.bmadCore, 'agents', `${agentId}.md`);
     const agentContent = await fs.readFile(agentPath, 'utf8');
-    
+
     // Extract YAML from markdown content with command cleaning
     const yamlContent = extractYamlFromAgent(agentContent, true);
     if (!yamlContent) {
       throw new Error(`No YAML configuration found in agent ${agentId}`);
     }
-    
+
     const agentConfig = yaml.load(yamlContent);
-    
+
     const dependencies = {
       agent: {
         id: agentId,
         path: agentPath,
         content: agentContent,
-        config: agentConfig
+        config: agentConfig,
       },
-      resources: []
+      resources: [],
     };
 
     // Personas are now embedded in agent configs, no need to resolve separately
@@ -52,49 +52,49 @@ class DependencyResolver {
     const teamPath = path.join(this.bmadCore, 'agent-teams', `${teamId}.yaml`);
     const teamContent = await fs.readFile(teamPath, 'utf8');
     const teamConfig = yaml.load(teamContent);
-    
+
     const dependencies = {
       team: {
         id: teamId,
         path: teamPath,
         content: teamContent,
-        config: teamConfig
+        config: teamConfig,
       },
       agents: [],
-      resources: new Map() // Use Map to deduplicate resources
+      resources: new Map(), // Use Map to deduplicate resources
     };
 
     // Always add bmad-orchestrator agent first if it's a team
     const bmadAgent = await this.resolveAgentDependencies('bmad-orchestrator');
     dependencies.agents.push(bmadAgent.agent);
-    bmadAgent.resources.forEach(res => {
+    for (const res of bmadAgent.resources) {
       dependencies.resources.set(res.path, res);
-    });
+    }
 
     // Resolve all agents in the team
     let agentsToResolve = teamConfig.agents || [];
-    
+
     // Handle wildcard "*" - include all agents except bmad-master
     if (agentsToResolve.includes('*')) {
       const allAgents = await this.listAgents();
       // Remove wildcard and add all agents except those already in the list and bmad-master
-      agentsToResolve = agentsToResolve.filter(a => a !== '*');
+      agentsToResolve = agentsToResolve.filter((a) => a !== '*');
       for (const agent of allAgents) {
         if (!agentsToResolve.includes(agent) && agent !== 'bmad-master') {
           agentsToResolve.push(agent);
         }
       }
     }
-    
+
     for (const agentId of agentsToResolve) {
       if (agentId === 'bmad-orchestrator' || agentId === 'bmad-master') continue; // Already added or excluded
       const agentDeps = await this.resolveAgentDependencies(agentId);
       dependencies.agents.push(agentDeps.agent);
-      
+
       // Add resources with deduplication
-      agentDeps.resources.forEach(res => {
+      for (const res of agentDeps.resources) {
         dependencies.resources.set(res.path, res);
-      });
+      }
     }
 
     // Resolve workflows
@@ -104,7 +104,7 @@ class DependencyResolver {
     }
 
     // Convert Map back to array
-    dependencies.resources = Array.from(dependencies.resources.values());
+    dependencies.resources = [...dependencies.resources.values()];
 
     return dependencies;
   }
@@ -123,12 +123,12 @@ class DependencyResolver {
       try {
         filePath = path.join(this.bmadCore, type, id);
         content = await fs.readFile(filePath, 'utf8');
-      } catch (e) {
+      } catch {
         // If not found in bmad-core, try common folder
         try {
           filePath = path.join(this.common, type, id);
           content = await fs.readFile(filePath, 'utf8');
-        } catch (e2) {
+        } catch {
           // File not found in either location
         }
       }
@@ -142,7 +142,7 @@ class DependencyResolver {
         type,
         id,
         path: filePath,
-        content
+        content,
       };
 
       this.cache.set(cacheKey, resource);
@@ -156,10 +156,8 @@ class DependencyResolver {
   async listAgents() {
     try {
       const files = await fs.readdir(path.join(this.bmadCore, 'agents'));
-      return files
-        .filter(f => f.endsWith('.md'))
-        .map(f => f.replace('.md', ''));
-    } catch (error) {
+      return files.filter((f) => f.endsWith('.md')).map((f) => f.replace('.md', ''));
+    } catch {
       return [];
     }
   }
@@ -167,10 +165,8 @@ class DependencyResolver {
   async listTeams() {
     try {
       const files = await fs.readdir(path.join(this.bmadCore, 'agent-teams'));
-      return files
-        .filter(f => f.endsWith('.yaml'))
-        .map(f => f.replace('.yaml', ''));
-    } catch (error) {
+      return files.filter((f) => f.endsWith('.yaml')).map((f) => f.replace('.yaml', ''));
+    } catch {
       return [];
     }
   }

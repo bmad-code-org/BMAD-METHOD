@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Game Design Brainstorming Techniques Task
 
 This task provides a comprehensive toolkit of creative brainstorming techniques specifically designed for game design ideation and innovative thinking. The game designer can use these techniques to facilitate productive brainstorming sessions focused on game mechanics, player experience, and creative concepts.
@@ -9,7 +11,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 [[LLM: Begin by understanding the game design context and goals. Ask clarifying questions if needed to determine the best approach for game-specific ideation.]]
 
 1. **Establish Game Context**
-
    - Understand the game genre or opportunity area
    - Identify target audience and platform constraints
    - Determine session goals (concept exploration vs. mechanic refinement)
@@ -27,7 +28,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 1. **"What If" Game Scenarios**
    [[LLM: Generate provocative what-if questions that challenge game design assumptions and expand thinking beyond current genre limitations.]]
-
    - What if players could rewind time in any genre?
    - What if the game world reacted to the player's real-world location?
    - What if failure was more rewarding than success?
@@ -36,7 +36,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 2. **Cross-Genre Fusion**
    [[LLM: Help user combine unexpected game genres and mechanics to create unique experiences.]]
-
    - "How might [genre A] mechanics work in [genre B]?"
    - Puzzle mechanics in action games
    - Dating sim elements in strategy games
@@ -45,7 +44,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 3. **Player Motivation Reversal**
    [[LLM: Flip traditional player motivations to reveal new gameplay possibilities.]]
-
    - What if losing was the goal?
    - What if cooperation was forced in competitive games?
    - What if players had to help their enemies?
@@ -62,7 +60,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 1. **SCAMPER for Game Mechanics**
    [[LLM: Guide through each SCAMPER prompt specifically for game design.]]
-
    - **S** = Substitute: What mechanics can be substituted? (walking → flying → swimming)
    - **C** = Combine: What systems can be merged? (inventory + character growth)
    - **A** = Adapt: What mechanics from other media? (books, movies, sports)
@@ -73,7 +70,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 2. **Player Agency Spectrum**
    [[LLM: Explore different levels of player control and agency across game systems.]]
-
    - Full Control: Direct character movement, combat, building
    - Indirect Control: Setting rules, giving commands, environmental changes
    - Influence Only: Suggestions, preferences, emotional reactions
@@ -81,7 +77,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 3. **Temporal Game Design**
    [[LLM: Explore how time affects gameplay and player experience.]]
-
    - Real-time vs. turn-based mechanics
    - Time travel and manipulation
    - Persistent vs. session-based progress
@@ -92,7 +87,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 1. **Emotion-First Design**
    [[LLM: Start with target emotions and work backward to mechanics that create them.]]
-
    - Target Emotion: Wonder → Mechanics: Discovery, mystery, scale
    - Target Emotion: Triumph → Mechanics: Challenge, skill growth, recognition
    - Target Emotion: Connection → Mechanics: Cooperation, shared goals, communication
@@ -100,7 +94,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 2. **Player Archetype Brainstorming**
    [[LLM: Design for different player types and motivations.]]
-
    - Achievers: Progression, completion, mastery
    - Explorers: Discovery, secrets, world-building
    - Socializers: Interaction, cooperation, community
@@ -109,7 +102,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 3. **Accessibility-First Innovation**
    [[LLM: Generate ideas that make games more accessible while creating new gameplay.]]
-
    - Visual impairment considerations leading to audio-focused mechanics
    - Motor accessibility inspiring one-handed or simplified controls
    - Cognitive accessibility driving clear feedback and pacing
@@ -119,7 +111,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 1. **Environmental Storytelling**
    [[LLM: Brainstorm ways the game world itself tells stories without explicit narrative.]]
-
    - How does the environment show history?
    - What do interactive objects reveal about characters?
    - How can level design communicate mood?
@@ -127,7 +118,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 2. **Player-Generated Narrative**
    [[LLM: Explore ways players create their own stories through gameplay.]]
-
    - Emergent storytelling through player choices
    - Procedural narrative generation
    - Player-to-player story sharing
@@ -135,7 +125,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 3. **Genre Expectation Subversion**
    [[LLM: Identify and deliberately subvert player expectations within genres.]]
-
    - Fantasy RPG where magic is mundane
    - Horror game where monsters are friendly
    - Racing game where going slow is optimal
@@ -145,7 +134,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 1. **Platform-Specific Design**
    [[LLM: Generate ideas that leverage unique platform capabilities.]]
-
    - Mobile: GPS, accelerometer, camera, always-connected
    - Web: URLs, tabs, social sharing, real-time collaboration
    - Console: Controllers, TV viewing, couch co-op
@@ -153,7 +141,6 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 
 2. **Constraint-Based Creativity**
    [[LLM: Use technical or design constraints as creative catalysts.]]
-
    - One-button games
    - Games without graphics
    - Games that play in notification bars
@@ -199,19 +186,16 @@ This task provides a comprehensive toolkit of creative brainstorming techniques 
 [[LLM: Guide the brainstorming session with appropriate pacing for game design exploration.]]
 
 1. **Inspiration Phase** (10-15 min)
-
    - Reference existing games and mechanics
    - Explore player experiences and emotions
    - Gather visual and thematic inspiration
 
 2. **Divergent Exploration** (25-35 min)
-
    - Generate many game concepts or mechanics
    - Use expansion and fusion techniques
    - Encourage wild and impossible ideas
 
 3. **Player-Centered Filtering** (15-20 min)
-
    - Consider target audience reactions
    - Evaluate emotional impact and engagement
    - Group ideas by player experience goals

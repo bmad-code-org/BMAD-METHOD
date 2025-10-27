@@ -43,18 +43,18 @@ class ResourceLocator {
    */
   async findFiles(pattern, options = {}) {
     const cacheKey = `${pattern}:${JSON.stringify(options)}`;
-    
+
     if (this._globCache.has(cacheKey)) {
       return this._globCache.get(cacheKey);
     }
 
     const { glob } = await moduleManager.getModules(['glob']);
     const files = await glob(pattern, options);
-    
+
     // Cache for 5 minutes
     this._globCache.set(cacheKey, files);
     setTimeout(() => this._globCache.delete(cacheKey), 5 * 60 * 1000);
-    
+
     return files;
   }
 
@@ -65,7 +65,7 @@ class ResourceLocator {
    */
   async getAgentPath(agentId) {
     const cacheKey = `agent:${agentId}`;
-    
+
     if (this._pathCache.has(cacheKey)) {
       return this._pathCache.get(cacheKey);
     }
@@ -96,7 +96,7 @@ class ResourceLocator {
    */
   async getAvailableAgents() {
     const cacheKey = 'all-agents';
-    
+
     if (this._pathCache.has(cacheKey)) {
       return this._pathCache.get(cacheKey);
     }
@@ -107,14 +107,11 @@ class ResourceLocator {
 
     // Get agents from bmad-core
     const coreAgents = await this.findFiles('agents/*.md', {
-      cwd: this.getBmadCorePath()
+      cwd: this.getBmadCorePath(),
     });
 
     for (const agentFile of coreAgents) {
-      const content = await fs.readFile(
-        path.join(this.getBmadCorePath(), agentFile),
-        'utf8'
-      );
+      const content = await fs.readFile(path.join(this.getBmadCorePath(), agentFile), 'utf8');
       const yamlContent = extractYamlFromAgent(content);
       if (yamlContent) {
         try {
@@ -123,9 +120,9 @@ class ResourceLocator {
             id: path.basename(agentFile, '.md'),
             name: metadata.agent_name || path.basename(agentFile, '.md'),
             description: metadata.description || 'No description available',
-            source: 'core'
+            source: 'core',
           });
-        } catch (e) {
+        } catch {
           // Skip invalid agents
         }
       }
@@ -144,7 +141,7 @@ class ResourceLocator {
    */
   async getExpansionPacks() {
     const cacheKey = 'expansion-packs';
-    
+
     if (this._pathCache.has(cacheKey)) {
       return this._pathCache.get(cacheKey);
     }
@@ -154,7 +151,7 @@ class ResourceLocator {
 
     if (await fs.pathExists(expansionPacksPath)) {
       const entries = await fs.readdir(expansionPacksPath, { withFileTypes: true });
-      
+
       for (const entry of entries) {
         if (entry.isDirectory()) {
           const configPath = path.join(expansionPacksPath, entry.name, 'config.yaml');
@@ -167,11 +164,12 @@ class ResourceLocator {
                 name: config.name || entry.name,
                 version: config.version || '1.0.0',
                 description: config.description || 'No description available',
-                shortTitle: config['short-title'] || config.description || 'No description available',
+                shortTitle:
+                  config['short-title'] || config.description || 'No description available',
                 author: config.author || 'Unknown',
-                path: path.join(expansionPacksPath, entry.name)
+                path: path.join(expansionPacksPath, entry.name),
               });
-            } catch (e) {
+            } catch {
               // Skip invalid packs
             }
           }
@@ -193,13 +191,13 @@ class ResourceLocator {
    */
   async getTeamConfig(teamId) {
     const cacheKey = `team:${teamId}`;
-    
+
     if (this._pathCache.has(cacheKey)) {
       return this._pathCache.get(cacheKey);
     }
 
     const teamPath = path.join(this.getBmadCorePath(), 'agent-teams', `${teamId}.yaml`);
-    
+
     if (await fs.pathExists(teamPath)) {
       try {
         const yaml = require('js-yaml');
@@ -207,7 +205,7 @@ class ResourceLocator {
         const config = yaml.load(content);
         this._pathCache.set(cacheKey, config);
         return config;
-      } catch (e) {
+      } catch {
         return null;
       }
     }
@@ -222,7 +220,7 @@ class ResourceLocator {
    */
   async getAgentDependencies(agentId) {
     const cacheKey = `deps:${agentId}`;
-    
+
     if (this._pathCache.has(cacheKey)) {
       return this._pathCache.get(cacheKey);
     }
@@ -244,11 +242,11 @@ class ResourceLocator {
       const yaml = require('js-yaml');
       const metadata = yaml.load(yamlContent);
       const dependencies = metadata.dependencies || {};
-      
+
       // Flatten dependencies
       const allDeps = [];
       const byType = {};
-      
+
       for (const [type, deps] of Object.entries(dependencies)) {
         if (Array.isArray(deps)) {
           byType[type] = deps;
@@ -261,7 +259,7 @@ class ResourceLocator {
       const result = { all: allDeps, byType };
       this._pathCache.set(cacheKey, result);
       return result;
-    } catch (e) {
+    } catch {
       return { all: [], byType: {} };
     }
   }
@@ -281,13 +279,13 @@ class ResourceLocator {
    */
   async getIdeConfig(ideId) {
     const cacheKey = `ide:${ideId}`;
-    
+
     if (this._pathCache.has(cacheKey)) {
       return this._pathCache.get(cacheKey);
     }
 
     const idePath = path.join(this.getBmadCorePath(), 'ide-rules', `${ideId}.yaml`);
-    
+
     if (await fs.pathExists(idePath)) {
       try {
         const yaml = require('js-yaml');
@@ -295,7 +293,7 @@ class ResourceLocator {
         const config = yaml.load(content);
         this._pathCache.set(cacheKey, config);
         return config;
-      } catch (e) {
+      } catch {
         return null;
       }
     }

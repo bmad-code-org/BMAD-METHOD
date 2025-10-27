@@ -1,0 +1,26 @@
+name: Discord Notification
+
+"on":
+  [
+    pull_request,
+    release,
+    create,
+    delete,
+    issue_comment,
+    pull_request_review,
+    pull_request_review_comment,
+  ]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: github.event.repository.fork != true || vars.ENABLE_CI_IN_FORK == 'true'
+    steps:
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "Triggered by ${{ github.event_name }}"
+          color: 0x5865F2

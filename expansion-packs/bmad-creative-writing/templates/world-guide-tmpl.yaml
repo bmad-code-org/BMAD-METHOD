@@ -1,0 +1,89 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: world-guide-tmpl
+  name: World Guide
+  version: 1.0
+  description: Structured document for geography, cultures, magic systems, and history
+  output:
+    format: markdown
+    filename: "{{world_name}}-world-guide.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: overview
+    title: World Overview
+    instruction: |
+      Create comprehensive world overview including:
+      - World name and type (fantasy, sci-fi, etc.)
+      - Overall tone and atmosphere
+      - Technology/magic level
+      - Time period equivalent
+
+  - id: geography
+    title: Geography
+    instruction: |
+      Define the physical world:
+      - Continents and regions
+      - Key landmarks and natural features
+      - Climate zones
+      - Important cities/settlements
+    elicit: true
+
+  - id: cultures
+    title: Cultures & Factions
+    instruction: |
+      Detail cultures and factions:
+      - Name and description
+      - Core values and beliefs
+      - Leadership structure
+      - Relationships with other groups
+      - Conflicts and tensions
+    repeatable: true
+    elicit: true
+
+  - id: magic_technology
+    title: Magic/Technology System
+    instruction: |
+      Define the world's special systems:
+      - Source of power/technology
+      - How it works
+      - Who can use it
+      - Limitations and costs
+      - Impact on society
+    elicit: true
+
+  - id: history
+    title: Historical Timeline
+    instruction: |
+      Create key historical events:
+      - Founding events
+      - Major wars/conflicts
+      - Golden ages
+      - Disasters/cataclysms
+      - Recent history
+    elicit: true
+
+  - id: economics
+    title: Economics & Trade
+    instruction: |
+      Define economic systems:
+      - Currency and trade
+      - Major resources
+      - Trade routes
+      - Economic disparities
+    elicit: true
+
+  - id: religion
+    title: Religion & Mythology
+    instruction: |
+      Detail belief systems:
+      - Deities/higher powers
+      - Creation myths
+      - Religious practices
+      - Sacred sites
+      - Religious conflicts
+    elicit: true

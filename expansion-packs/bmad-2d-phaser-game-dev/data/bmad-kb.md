@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Game Development BMad Knowledge Base
 
 ## Overview
@@ -39,13 +41,11 @@ You are developing games as a "Player Experience CEO" - thinking like a game dir
 ### Phase 1: Game Concept and Design
 
 1. **Game Designer**: Start with brainstorming and concept development
-
    - Use \*brainstorm to explore game concepts and mechanics
    - Create Game Brief using game-brief-tmpl
    - Develop core game pillars and player experience goals
 
 2. **Game Designer**: Create comprehensive Game Design Document
-
    - Use game-design-doc-tmpl to create detailed GDD
    - Define all game mechanics, progression, and balance
    - Specify technical requirements and platform targets
@@ -65,13 +65,11 @@ You are developing games as a "Player Experience CEO" - thinking like a game dir
 ### Phase 3: Story-Driven Development
 
 5. **Game Scrum Master**: Break down design into development stories
-
    - Use create-game-story task to create detailed implementation stories
    - Each story should be immediately actionable by game developers
    - Apply game-story-dod-checklist to ensure story quality
 
 6. **Game Developer**: Implement game features story by story
-
    - Follow TypeScript strict mode and Phaser 3 best practices
    - Maintain 60 FPS performance target throughout development
    - Use test-driven development for game logic components

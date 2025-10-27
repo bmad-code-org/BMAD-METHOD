@@ -1,0 +1,78 @@
+# <!-- Powered by BMAD™ Core -->
+# workflows/series-planning.yaml
+name: series-planning
+title: Series Planning Workflow
+description: |
+  Plan a multi‑book or multi‑season narrative series, including overarching arcs
+  and individual installment roadmaps.
+
+triggers:
+  - command: /series-plan
+  - intent: "plan a series"
+
+inputs:
+  - series_title
+  - genre
+  - num_installments
+
+agents:
+  - plot-architect
+  - world-builder
+  - character-psychologist
+  - narrative-designer
+  - genre-specialist
+  - editor
+
+steps:
+  - id: high_concept
+    title: Define series high concept
+    agent: plot-architect
+    outputs: high_concept
+
+  - id: world_bible
+    title: Build series bible (world, rules, tone)
+    agent: world-builder
+    inputs: high_concept
+    outputs: series_bible
+
+  - id: character_arcs
+    title: Map long‑arc character development
+    agent: character-psychologist
+    inputs:
+      - high_concept
+      - series_bible
+    outputs: character_arc_map
+
+  - id: installment_overviews
+    title: Plot each installment overview
+    agent: plot-architect
+    repeat: num_installments
+    inputs:
+      - high_concept
+      - character_arc_map
+    outputs: installment_overviews
+
+  - id: genre_alignment
+    title: Genre & market alignment check
+    agent: genre-specialist
+    inputs: installment_overviews
+    outputs: market_positioning
+
+  - id: roadmap
+    title: Compile master roadmap
+    agent: narrative-designer
+    inputs:
+      - series_bible
+      - character_arc_map
+      - installment_overviews
+      - market_positioning
+    outputs: series_roadmap
+
+  - id: editorial_review
+    title: Editorial review
+    agent: editor
+    inputs: series_roadmap
+    outputs: final_series_plan
+
+outputs:
+  - final_series_plan

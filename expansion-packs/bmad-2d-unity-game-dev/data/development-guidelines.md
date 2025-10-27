@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Game Development Guidelines (Unity & C#)
 
 ## Overview
@@ -531,25 +533,21 @@ Assets/
 ### Story Implementation Process
 
 1. **Read Story Requirements:**
-
    - Understand acceptance criteria
    - Identify technical requirements
    - Review performance constraints
 
 2. **Plan Implementation:**
-
    - Identify files to create/modify
    - Consider Unity's component-based architecture
    - Plan testing approach
 
 3. **Implement Feature:**
-
    - Write clean C# code following all guidelines
    - Use established patterns
    - Maintain stable FPS performance
 
 4. **Test Implementation:**
-
    - Write edit mode tests for game logic
    - Write play mode tests for integration testing
    - Test cross-platform functionality

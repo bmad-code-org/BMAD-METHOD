@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: game-brief-template-v2
   name: Game Brief
@@ -14,7 +15,7 @@ sections:
   - id: initial-setup
     instruction: |
       This template creates a comprehensive game brief that serves as the foundation for all subsequent game development work. The brief should capture the essential vision, scope, and requirements needed to create a detailed Game Design Document.
-      
+
       This brief is typically created early in the ideation process, often after brainstorming sessions, to crystallize the game concept before moving into detailed design.
 
   - id: game-vision
@@ -71,7 +72,7 @@ sections:
         repeatable: true
         template: |
           **Core Mechanic: {{mechanic_name}}**
-          
+
           - **Description:** {{how_it_works}}
           - **Player Value:** {{why_its_fun}}
           - **Implementation Scope:** {{complexity_estimate}}
@@ -98,12 +99,12 @@ sections:
         title: Technical Constraints
         template: |
           **Platform Requirements:**
-          
+
           - Primary: {{platform_1}} - {{requirements}}
           - Secondary: {{platform_2}} - {{requirements}}
-          
+
           **Technical Specifications:**
-          
+
           - Engine: Phaser 3 + TypeScript
           - Performance Target: {{fps_target}} FPS on {{target_device}}
           - Memory Budget: <{{memory_limit}}MB
@@ -141,10 +142,10 @@ sections:
         title: Competitive Analysis
         template: |
           **Direct Competitors:**
-          
+
           - {{competitor_1}}: {{strengths_and_weaknesses}}
           - {{competitor_2}}: {{strengths_and_weaknesses}}
-          
+
           **Differentiation Strategy:**
           {{how_we_differ_and_why_thats_valuable}}
       - id: market-opportunity
@@ -168,16 +169,16 @@ sections:
         title: Content Categories
         template: |
           **Core Content:**
-          
+
           - {{content_type_1}}: {{quantity_and_description}}
           - {{content_type_2}}: {{quantity_and_description}}
-          
+
           **Optional Content:**
-          
+
           - {{optional_content_type}}: {{quantity_and_description}}
-          
+
           **Replay Elements:**
-          
+
           - {{replayability_features}}
       - id: difficulty-accessibility
         title: Difficulty and Accessibility
@@ -244,13 +245,13 @@ sections:
         title: Player Experience Metrics
         template: |
           **Engagement Goals:**
-          
+
           - Tutorial completion rate: >{{percentage}}%
           - Average session length: {{duration}} minutes
           - Player retention: D1 {{d1}}%, D7 {{d7}}%, D30 {{d30}}%
-          
+
           **Quality Benchmarks:**
-          
+
           - Player satisfaction: >{{rating}}/10
           - Completion rate: >{{percentage}}%
           - Technical performance: {{fps_target}} FPS consistent
@@ -258,13 +259,13 @@ sections:
         title: Development Metrics
         template: |
           **Technical Targets:**
-          
+
           - Zero critical bugs at launch
           - Performance targets met on all platforms
           - Load times under {{seconds}}s
-          
+
           **Process Goals:**
-          
+
           - Development timeline adherence
           - Feature scope completion
           - Quality assurance standards
@@ -273,7 +274,7 @@ sections:
         condition: has_business_goals
         template: |
           **Commercial Goals:**
-          
+
           - {{revenue_target}} in first {{time_period}}
           - {{user_acquisition_target}} players in first {{time_period}}
           - {{retention_target}} monthly active users
@@ -326,12 +327,12 @@ sections:
         title: Validation Plan
         template: |
           **Concept Testing:**
-          
+
           - {{validation_method_1}} - {{timeline}}
           - {{validation_method_2}} - {{timeline}}
-          
+
           **Prototype Testing:**
-          
+
           - {{testing_approach}} - {{timeline}}
           - {{feedback_collection_method}} - {{timeline}}
 

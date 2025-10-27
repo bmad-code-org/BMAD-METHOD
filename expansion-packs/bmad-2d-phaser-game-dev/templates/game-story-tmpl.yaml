@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: game-story-template-v2
   name: Game Development Story
@@ -14,13 +15,13 @@ sections:
   - id: initial-setup
     instruction: |
       This template creates detailed game development stories that are immediately actionable by game developers. Each story should focus on a single, implementable feature that contributes to the overall game functionality.
-      
+
       Before starting, ensure you have access to:
-      
+
       - Game Design Document (GDD)
       - Game Architecture Document
       - Any existing stories in this epic
-      
+
       The story should be specific enough that a developer can implement it without requiring additional design decisions.
 
   - id: story-header
@@ -69,12 +70,12 @@ sections:
         title: Files to Create/Modify
         template: |
           **New Files:**
-          
+
           - `{{file_path_1}}` - {{purpose}}
           - `{{file_path_2}}` - {{purpose}}
-          
+
           **Modified Files:**
-          
+
           - `{{existing_file_1}}` - {{changes_needed}}
           - `{{existing_file_2}}` - {{changes_needed}}
       - id: class-interface-definitions
@@ -89,15 +90,15 @@ sections:
               {{property_2}}: {{type}};
               {{method_1}}({{params}}): {{return_type}};
           }
-          
+
           // {{class_name}}
           class {{class_name}} extends {{phaser_class}} {
               private {{property}}: {{type}};
-          
+
               constructor({{params}}) {
                   // Implementation requirements
               }
-          
+
               public {{method}}({{params}}): {{return_type}} {
                   // Method requirements
               }
@@ -107,15 +108,15 @@ sections:
         instruction: Specify how this feature integrates with existing systems
         template: |
           **Scene Integration:**
-          
+
           - {{scene_name}}: {{integration_details}}
-          
+
           **System Dependencies:**
-          
+
           - {{system_name}}: {{dependency_description}}
-          
+
           **Event Communication:**
-          
+
           - Emits: `{{event_name}}` when {{condition}}
           - Listens: `{{event_name}}` to {{response}}
 
@@ -127,7 +128,7 @@ sections:
         title: Dev Agent Record
         template: |
           **Tasks:**
-          
+
           - [ ] {{task_1_description}}
           - [ ] {{task_2_description}}
           - [ ] {{task_3_description}}
@@ -135,18 +136,18 @@ sections:
           - [ ] Write unit tests for {{component}}
           - [ ] Integration testing with {{related_system}}
           - [ ] Performance testing and optimization
-          
+
           **Debug Log:**
           | Task | File | Change | Reverted? |
           |------|------|--------|-----------|
           | | | | |
-          
+
           **Completion Notes:**
-          
+
           <!-- Only note deviations from requirements, keep under 50 words -->
-          
+
           **Change Log:**
-          
+
           <!-- Only requirement changes during implementation -->
 
   - id: game-design-context
@@ -154,13 +155,13 @@ sections:
     instruction: Reference the specific sections of the GDD that this story implements
     template: |
       **GDD Reference:** {{section_name}} ({{page_or_section_number}})
-      
+
       **Game Mechanic:** {{mechanic_name}}
-      
+
       **Player Experience Goal:** {{experience_description}}
-      
+
       **Balance Parameters:**
-      
+
       - {{parameter_1}}: {{value_or_range}}
       - {{parameter_2}}: {{value_or_range}}
 
@@ -172,11 +173,11 @@ sections:
         title: Unit Tests
         template: |
           **Test Files:**
-          
+
           - `tests/{{component_name}}.test.ts`
-          
+
           **Test Scenarios:**
-          
+
           - {{test_scenario_1}}
           - {{test_scenario_2}}
           - {{edge_case_test}}
@@ -184,12 +185,12 @@ sections:
         title: Game Testing
         template: |
           **Manual Test Cases:**
-          
+
           1. {{test_case_1_description}}
-          
+
              - Expected: {{expected_behavior}}
              - Performance: {{performance_expectation}}
-          
+
           2. {{test_case_2_description}}
              - Expected: {{expected_behavior}}
              - Edge Case: {{edge_case_handling}}
@@ -197,7 +198,7 @@ sections:
         title: Performance Tests
         template: |
           **Metrics to Verify:**
-          
+
           - Frame rate maintains {{fps_target}} FPS
           - Memory usage stays under {{memory_limit}}MB
           - {{feature_specific_performance_metric}}
@@ -207,15 +208,15 @@ sections:
     instruction: List any dependencies that must be completed before this story can be implemented
     template: |
       **Story Dependencies:**
-      
+
       - {{story_id}}: {{dependency_description}}
-      
+
       **Technical Dependencies:**
-      
+
       - {{system_or_file}}: {{requirement}}
-      
+
       **Asset Dependencies:**
-      
+
       - {{asset_type}}: {{asset_description}}
       - Location: `{{asset_path}}`
 
@@ -238,16 +239,16 @@ sections:
     instruction: Any additional context, design decisions, or implementation notes
     template: |
       **Implementation Notes:**
-      
+
       - {{note_1}}
       - {{note_2}}
-      
+
       **Design Decisions:**
-      
+
       - {{decision_1}}: {{rationale}}
       - {{decision_2}}: {{rationale}}
-      
+
       **Future Considerations:**
-      
+
       - {{future_enhancement_1}}
       - {{future_optimization_1}}

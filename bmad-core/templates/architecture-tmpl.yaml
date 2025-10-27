@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: architecture-template-v2
   name: Architecture Document
@@ -20,20 +21,20 @@ sections:
       - id: intro-content
         content: |
           This document outlines the overall project architecture for {{project_name}}, including backend systems, shared services, and non-UI specific concerns. Its primary goal is to serve as the guiding architectural blueprint for AI-driven development, ensuring consistency and adherence to chosen patterns and technologies.
-          
+
           **Relationship to Frontend Architecture:**
           If the project includes a significant user interface, a separate Frontend Architecture Document will detail the frontend-specific design and MUST be used in conjunction with this document. Core technology stack choices documented herein (see "Tech Stack") are definitive for the entire project, including any frontend components.
       - id: starter-template
         title: Starter Template or Existing Project
         instruction: |
           Before proceeding further with architecture design, check if the project is based on a starter template or existing codebase:
-          
+
           1. Review the PRD and brainstorming brief for any mentions of:
           - Starter templates (e.g., Create React App, Next.js, Vue CLI, Angular CLI, etc.)
           - Existing projects or codebases being used as a foundation
           - Boilerplate projects or scaffolding tools
           - Previous projects to be cloned or adapted
-          
+
           2. If a starter template or existing project is mentioned:
           - Ask the user to provide access via one of these methods:
             - Link to the starter template documentation
@@ -46,16 +47,16 @@ sections:
             - Existing architectural patterns and conventions
             - Any limitations or constraints imposed by the starter
           - Use this analysis to inform and align your architecture decisions
-          
+
           3. If no starter template is mentioned but this is a greenfield project:
           - Suggest appropriate starter templates based on the tech stack preferences
           - Explain the benefits (faster setup, best practices, community support)
           - Let the user decide whether to use one
-          
+
           4. If the user confirms no starter template will be used:
           - Proceed with architecture design from scratch
           - Note that manual setup will be required for all tooling and configuration
-          
+
           Document the decision here before proceeding with the architecture design. If none, just say N/A
         elicit: true
       - id: changelog
@@ -83,7 +84,7 @@ sections:
         title: High Level Overview
         instruction: |
           Based on the PRD's Technical Assumptions section, describe:
-          
+
           1. The main architectural style (e.g., Monolith, Microservices, Serverless, Event-Driven)
           2. Repository structure decision from PRD (Monorepo/Polyrepo)
           3. Service architecture decision from PRD
@@ -100,17 +101,17 @@ sections:
           - Data flow directions
           - External integrations
           - User entry points
-          
+
       - id: architectural-patterns
         title: Architectural and Design Patterns
         instruction: |
           List the key high-level patterns that will guide the architecture. For each pattern:
-          
+
           1. Present 2-3 viable options if multiple exist
           2. Provide your recommendation with clear rationale
           3. Get user confirmation before finalizing
           4. These patterns should align with the PRD's technical assumptions and project goals
-          
+
           Common patterns to consider:
           - Architectural style patterns (Serverless, Event-Driven, Microservices, CQRS, Hexagonal)
           - Code organization patterns (Dependency Injection, Repository, Module, Factory)
@@ -126,23 +127,23 @@ sections:
     title: Tech Stack
     instruction: |
       This is the DEFINITIVE technology selection section. Work with the user to make specific choices:
-      
+
       1. Review PRD technical assumptions and any preferences from {root}/data/technical-preferences.yaml or an attached technical-preferences
       2. For each category, present 2-3 viable options with pros/cons
       3. Make a clear recommendation based on project needs
       4. Get explicit user approval for each selection
       5. Document exact versions (avoid "latest" - pin specific versions)
       6. This table is the single source of truth - all other docs must reference these choices
-      
+
       Key decisions to finalize - before displaying the table, ensure you are aware of or ask the user about - let the user know if they are not sure on any that you can also provide suggestions with rationale:
-      
+
       - Starter templates (if any)
       - Languages and runtimes with exact versions
       - Frameworks and libraries / packages
       - Cloud provider and key services choices
       - Database and storage solutions - if unclear suggest sql or nosql or other types depending on the project and depending on cloud provider offer a suggestion
       - Development tools
-      
+
       Upon render of the table, ensure the user is aware of the importance of this sections choices, should also look for gaps or disagreements with anything, ask for any clarifications if something is unclear why its in the list, and also right away elicit feedback - this statement and the options should be rendered and then prompt right all before allowing user input.
     elicit: true
     sections:
@@ -166,13 +167,13 @@ sections:
     title: Data Models
     instruction: |
       Define the core data models/entities:
-      
+
       1. Review PRD requirements and identify key business entities
       2. For each model, explain its purpose and relationships
       3. Include key attributes and data types
       4. Show relationships between models
       5. Discuss design decisions with user
-      
+
       Create a clear conceptual model before moving to database schema.
     elicit: true
     repeatable: true
@@ -181,11 +182,11 @@ sections:
         title: "{{model_name}}"
         template: |
           **Purpose:** {{model_purpose}}
-          
+
           **Key Attributes:**
           - {{attribute_1}}: {{type_1}} - {{description_1}}
           - {{attribute_2}}: {{type_2}} - {{description_2}}
-          
+
           **Relationships:**
           - {{relationship_1}}
           - {{relationship_2}}
@@ -194,7 +195,7 @@ sections:
     title: Components
     instruction: |
       Based on the architectural patterns, tech stack, and data models from above:
-      
+
       1. Identify major logical components/services and their responsibilities
       2. Consider the repository structure (monorepo/polyrepo) from PRD
       3. Define clear boundaries and interfaces between components
@@ -203,7 +204,7 @@ sections:
       - Key interfaces/APIs exposed
       - Dependencies on other components
       - Technology specifics based on tech stack choices
-      
+
       5. Create component diagrams where helpful
     elicit: true
     sections:
@@ -212,13 +213,13 @@ sections:
         title: "{{component_name}}"
         template: |
           **Responsibility:** {{component_description}}
-          
+
           **Key Interfaces:**
           - {{interface_1}}
           - {{interface_2}}
-          
+
           **Dependencies:** {{dependencies}}
-          
+
           **Technology Stack:** {{component_tech_details}}
       - id: component-diagrams
         title: Component Diagrams
@@ -235,13 +236,13 @@ sections:
     condition: Project requires external API integrations
     instruction: |
       For each external service integration:
-      
+
       1. Identify APIs needed based on PRD requirements and component design
       2. If documentation URLs are unknown, ask user for specifics
       3. Document authentication methods and security considerations
       4. List specific endpoints that will be used
       5. Note any rate limits or usage constraints
-      
+
       If no external APIs are needed, state this explicitly and skip to next section.
     elicit: true
     repeatable: true
@@ -254,10 +255,10 @@ sections:
           - **Base URL(s):** {{api_base_url}}
           - **Authentication:** {{auth_method}}
           - **Rate Limits:** {{rate_limits}}
-          
+
           **Key Endpoints Used:**
           - `{{method}} {{endpoint_path}}` - {{endpoint_purpose}}
-          
+
           **Integration Notes:** {{integration_considerations}}
 
   - id: core-workflows
@@ -266,13 +267,13 @@ sections:
     mermaid_type: sequence
     instruction: |
       Illustrate key system workflows using sequence diagrams:
-      
+
       1. Identify critical user journeys from PRD
       2. Show component interactions including external APIs
       3. Include error handling paths
       4. Document async operations
       5. Create both high-level and detailed diagrams as needed
-      
+
       Focus on workflows that clarify architecture decisions or complex interactions.
     elicit: true
 
@@ -283,13 +284,13 @@ sections:
     language: yaml
     instruction: |
       If the project includes a REST API:
-      
+
       1. Create an OpenAPI 3.0 specification
       2. Include all endpoints from epics/stories
       3. Define request/response schemas based on data models
       4. Document authentication requirements
       5. Include example requests/responses
-      
+
       Use YAML format for better readability. If no REST API, skip this section.
     elicit: true
     template: |
@@ -306,13 +307,13 @@ sections:
     title: Database Schema
     instruction: |
       Transform the conceptual data models into concrete database schemas:
-      
+
       1. Use the database type(s) selected in Tech Stack
       2. Create schema definitions using appropriate notation
       3. Include indexes, constraints, and relationships
       4. Consider performance and scalability
       5. For NoSQL, show document structures
-      
+
       Present schema in format appropriate to database type (SQL DDL, JSON schema, etc.)
     elicit: true
 
@@ -322,14 +323,14 @@ sections:
     language: plaintext
     instruction: |
       Create a project folder structure that reflects:
-      
+
       1. The chosen repository structure (monorepo/polyrepo)
       2. The service architecture (monolith/microservices/serverless)
       3. The selected tech stack and languages
       4. Component organization from above
       5. Best practices for the chosen frameworks
       6. Clear separation of concerns
-      
+
       Adapt the structure based on project needs. For monorepos, show service separation. For serverless, show function organization. Include language-specific conventions.
     elicit: true
     examples:
@@ -347,13 +348,13 @@ sections:
     title: Infrastructure and Deployment
     instruction: |
       Define the deployment architecture and practices:
-      
+
       1. Use IaC tool selected in Tech Stack
       2. Choose deployment strategy appropriate for the architecture
       3. Define environments and promotion flow
       4. Establish rollback procedures
       5. Consider security, monitoring, and cost optimization
-      
+
       Get user input on deployment preferences and CI/CD tool choices.
     elicit: true
     sections:
@@ -389,13 +390,13 @@ sections:
     title: Error Handling Strategy
     instruction: |
       Define comprehensive error handling approach:
-      
+
       1. Choose appropriate patterns for the language/framework from Tech Stack
       2. Define logging standards and tools
       3. Establish error categories and handling rules
       4. Consider observability and debugging needs
       5. Ensure security (no sensitive data in logs)
-      
+
       This section guides both AI and human developers in consistent error handling.
     elicit: true
     sections:
@@ -442,13 +443,13 @@ sections:
     title: Coding Standards
     instruction: |
       These standards are MANDATORY for AI agents. Work with user to define ONLY the critical rules needed to prevent bad code. Explain that:
-      
+
       1. This section directly controls AI developer behavior
       2. Keep it minimal - assume AI knows general best practices
       3. Focus on project-specific conventions and gotchas
       4. Overly detailed standards bloat context and slow development
       5. Standards will be extracted to separate file for dev agent use
-      
+
       For each standard, get explicit user confirmation it's necessary.
     elicit: true
     sections:
@@ -470,7 +471,7 @@ sections:
           - "Never use console.log in production code - use logger"
           - "All API responses must use ApiResponse wrapper type"
           - "Database queries must use repository pattern, never direct ORM"
-          
+
           Avoid obvious rules like "use SOLID principles" or "write clean code"
         repeatable: true
         template: "- **{{rule_name}}:** {{rule_description}}"
@@ -488,14 +489,14 @@ sections:
     title: Test Strategy and Standards
     instruction: |
       Work with user to define comprehensive test strategy:
-      
+
       1. Use test frameworks from Tech Stack
       2. Decide on TDD vs test-after approach
       3. Define test organization and naming
       4. Establish coverage goals
       5. Determine integration test infrastructure
       6. Plan for test data and external dependencies
-      
+
       Note: Basic info goes in Coding Standards for dev agent. This detailed section is for QA agent and team reference.
     elicit: true
     sections:
@@ -516,7 +517,7 @@ sections:
               - **Location:** {{unit_test_location}}
               - **Mocking Library:** {{mocking_library}}
               - **Coverage Requirement:** {{unit_coverage}}
-              
+
               **AI Agent Requirements:**
               - Generate tests for all public methods
               - Cover edge cases and error conditions
@@ -558,7 +559,7 @@ sections:
     title: Security
     instruction: |
       Define MANDATORY security requirements for AI and human developers:
-      
+
       1. Focus on implementation-specific rules
       2. Reference security tools from Tech Stack
       3. Define clear patterns for common scenarios
@@ -627,16 +628,16 @@ sections:
     title: Next Steps
     instruction: |
       After completing the architecture:
-      
+
       1. If project has UI components:
       - Use "Frontend Architecture Mode"
       - Provide this document as input
-      
+
       2. For all projects:
       - Review with Product Owner
       - Begin story implementation with Dev agent
       - Set up infrastructure with DevOps agent
-      
+
       3. Include specific prompts for next agents if needed
     sections:
       - id: architect-prompt

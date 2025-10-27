@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: fullstack-architecture-template-v2
   name: Fullstack Architecture Document
@@ -19,33 +20,33 @@ sections:
     elicit: true
     content: |
       This document outlines the complete fullstack architecture for {{project_name}}, including backend systems, frontend implementation, and their integration. It serves as the single source of truth for AI-driven development, ensuring consistency across the entire technology stack.
-      
+
       This unified approach combines what would traditionally be separate backend and frontend architecture documents, streamlining the development process for modern fullstack applications where these concerns are increasingly intertwined.
     sections:
       - id: starter-template
         title: Starter Template or Existing Project
         instruction: |
           Before proceeding with architecture design, check if the project is based on any starter templates or existing codebases:
-          
+
           1. Review the PRD and other documents for mentions of:
           - Fullstack starter templates (e.g., T3 Stack, MEAN/MERN starters, Django + React templates)
           - Monorepo templates (e.g., Nx, Turborepo starters)
           - Platform-specific starters (e.g., Vercel templates, AWS Amplify starters)
           - Existing projects being extended or cloned
-          
+
           2. If starter templates or existing projects are mentioned:
           - Ask the user to provide access (links, repos, or files)
           - Analyze to understand pre-configured choices and constraints
           - Note any architectural decisions already made
           - Identify what can be modified vs what must be retained
-          
+
           3. If no starter is mentioned but this is greenfield:
           - Suggest appropriate fullstack starters based on tech preferences
           - Consider platform-specific options (Vercel, AWS, etc.)
           - Let user decide whether to use one
-          
+
           4. Document the decision and any constraints it imposes
-          
+
           If none, state "N/A - Greenfield project"
       - id: changelog
         title: Change Log
@@ -71,17 +72,17 @@ sections:
         title: Platform and Infrastructure Choice
         instruction: |
           Based on PRD requirements and technical assumptions, make a platform recommendation:
-          
+
           1. Consider common patterns (not an exhaustive list, use your own best judgement and search the web as needed for emerging trends):
           - **Vercel + Supabase**: For rapid development with Next.js, built-in auth/storage
           - **AWS Full Stack**: For enterprise scale with Lambda, API Gateway, S3, Cognito
           - **Azure**: For .NET ecosystems or enterprise Microsoft environments
           - **Google Cloud**: For ML/AI heavy applications or Google ecosystem integration
-          
+
           2. Present 2-3 viable options with clear pros/cons
           3. Make a recommendation with rationale
           4. Get explicit user confirmation
-          
+
           Document the choice and key services that will be used.
         template: |
           **Platform:** {{selected_platform}}
@@ -91,7 +92,7 @@ sections:
         title: Repository Structure
         instruction: |
           Define the repository approach based on PRD requirements and platform choice, explain your rationale or ask questions to the user if unsure:
-          
+
           1. For modern fullstack apps, monorepo is often preferred
           2. Consider tooling (Nx, Turborepo, Lerna, npm workspaces)
           3. Define package/app boundaries
@@ -113,7 +114,7 @@ sections:
           - Databases and storage
           - External integrations
           - CDN and caching layers
-          
+
           Use appropriate diagram type for clarity.
       - id: architectural-patterns
         title: Architectural Patterns
@@ -123,7 +124,7 @@ sections:
           - Frontend patterns (e.g., Component-based, State management)
           - Backend patterns (e.g., Repository, CQRS, Event-driven)
           - Integration patterns (e.g., BFF, API Gateway)
-          
+
           For each pattern, provide recommendation and rationale.
         repeatable: true
         template: "- **{{pattern_name}}:** {{pattern_description}} - _Rationale:_ {{rationale}}"
@@ -137,7 +138,7 @@ sections:
     title: Tech Stack
     instruction: |
       This is the DEFINITIVE technology selection for the entire project. Work with user to finalize all choices. This table is the single source of truth - all development must use these exact versions.
-      
+
       Key areas to cover:
       - Frontend and backend languages/frameworks
       - Databases and caching
@@ -146,7 +147,7 @@ sections:
       - Testing tools for both frontend and backend
       - Build and deployment tools
       - Monitoring and logging
-      
+
       Upon render, elicit feedback immediately.
     elicit: true
     sections:
@@ -156,11 +157,29 @@ sections:
         columns: [Category, Technology, Version, Purpose, Rationale]
         rows:
           - ["Frontend Language", "{{fe_language}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["Frontend Framework", "{{fe_framework}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["UI Component Library", "{{ui_library}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
+          - [
+              "Frontend Framework",
+              "{{fe_framework}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
+          - [
+              "UI Component Library",
+              "{{ui_library}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
           - ["State Management", "{{state_mgmt}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Backend Language", "{{be_language}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["Backend Framework", "{{be_framework}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
+          - [
+              "Backend Framework",
+              "{{be_framework}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
           - ["API Style", "{{api_style}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Database", "{{database}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Cache", "{{cache}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
@@ -181,14 +200,14 @@ sections:
     title: Data Models
     instruction: |
       Define the core data models/entities that will be shared between frontend and backend:
-      
+
       1. Review PRD requirements and identify key business entities
       2. For each model, explain its purpose and relationships
       3. Include key attributes and data types
       4. Show relationships between models
       5. Create TypeScript interfaces that can be shared
       6. Discuss design decisions with user
-      
+
       Create a clear conceptual model before moving to database schema.
     elicit: true
     repeatable: true
@@ -197,7 +216,7 @@ sections:
         title: "{{model_name}}"
         template: |
           **Purpose:** {{model_purpose}}
-          
+
           **Key Attributes:**
           - {{attribute_1}}: {{type_1}} - {{description_1}}
           - {{attribute_2}}: {{type_2}} - {{description_2}}
@@ -216,7 +235,7 @@ sections:
     title: API Specification
     instruction: |
       Based on the chosen API style from Tech Stack:
-      
+
       1. If REST API, create an OpenAPI 3.0 specification
       2. If GraphQL, provide the GraphQL schema
       3. If tRPC, show router definitions
@@ -224,7 +243,7 @@ sections:
       5. Define request/response schemas based on data models
       6. Document authentication requirements
       7. Include example requests/responses
-      
+
       Use appropriate format for the chosen API style. If no API (e.g., static site), skip this section.
     elicit: true
     sections:
@@ -259,7 +278,7 @@ sections:
     title: Components
     instruction: |
       Based on the architectural patterns, tech stack, and data models from above:
-      
+
       1. Identify major logical components/services across the fullstack
       2. Consider both frontend and backend components
       3. Define clear boundaries and interfaces between components
@@ -268,7 +287,7 @@ sections:
       - Key interfaces/APIs exposed
       - Dependencies on other components
       - Technology specifics based on tech stack choices
-      
+
       5. Create component diagrams where helpful
     elicit: true
     sections:
@@ -277,13 +296,13 @@ sections:
         title: "{{component_name}}"
         template: |
           **Responsibility:** {{component_description}}
-          
+
           **Key Interfaces:**
           - {{interface_1}}
           - {{interface_2}}
-          
+
           **Dependencies:** {{dependencies}}
-          
+
           **Technology Stack:** {{component_tech_details}}
       - id: component-diagrams
         title: Component Diagrams
@@ -300,13 +319,13 @@ sections:
     condition: Project requires external API integrations
     instruction: |
       For each external service integration:
-      
+
       1. Identify APIs needed based on PRD requirements and component design
       2. If documentation URLs are unknown, ask user for specifics
       3. Document authentication methods and security considerations
       4. List specific endpoints that will be used
       5. Note any rate limits or usage constraints
-      
+
       If no external APIs are needed, state this explicitly and skip to next section.
     elicit: true
     repeatable: true
@@ -319,10 +338,10 @@ sections:
           - **Base URL(s):** {{api_base_url}}
           - **Authentication:** {{auth_method}}
           - **Rate Limits:** {{rate_limits}}
-          
+
           **Key Endpoints Used:**
           - `{{method}} {{endpoint_path}}` - {{endpoint_purpose}}
-          
+
           **Integration Notes:** {{integration_considerations}}
 
   - id: core-workflows
@@ -331,14 +350,14 @@ sections:
     mermaid_type: sequence
     instruction: |
       Illustrate key system workflows using sequence diagrams:
-      
+
       1. Identify critical user journeys from PRD
       2. Show component interactions including external APIs
       3. Include both frontend and backend flows
       4. Include error handling paths
       5. Document async operations
       6. Create both high-level and detailed diagrams as needed
-      
+
       Focus on workflows that clarify architecture decisions or complex interactions.
     elicit: true
 
@@ -346,13 +365,13 @@ sections:
     title: Database Schema
     instruction: |
       Transform the conceptual data models into concrete database schemas:
-      
+
       1. Use the database type(s) selected in Tech Stack
       2. Create schema definitions using appropriate notation
       3. Include indexes, constraints, and relationships
       4. Consider performance and scalability
       5. For NoSQL, show document structures
-      
+
       Present schema in format appropriate to database type (SQL DDL, JSON schema, etc.)
     elicit: true
 
@@ -488,60 +507,60 @@ sections:
     type: code
     language: plaintext
     examples:
-    - |
-      {{project-name}}/
-      ├── .github/                    # CI/CD workflows
-      │   └── workflows/
-      │       ├── ci.yaml
-      │       └── deploy.yaml
-      ├── apps/                       # Application packages
-      │   ├── web/                    # Frontend application
-      │   │   ├── src/
-      │   │   │   ├── components/     # UI components
-      │   │   │   ├── pages/          # Page components/routes
-      │   │   │   ├── hooks/          # Custom React hooks
-      │   │   │   ├── services/       # API client services
-      │   │   │   ├── stores/         # State management
-      │   │   │   ├── styles/         # Global styles/themes
-      │   │   │   └── utils/          # Frontend utilities
-      │   │   ├── public/             # Static assets
-      │   │   ├── tests/              # Frontend tests
-      │   │   └── package.json
-      │   └── api/                    # Backend application
-      │       ├── src/
-      │       │   ├── routes/         # API routes/controllers
-      │       │   ├── services/       # Business logic
-      │       │   ├── models/         # Data models
-      │       │   ├── middleware/     # Express/API middleware
-      │       │   ├── utils/          # Backend utilities
-      │       │   └── {{serverless_or_server_entry}}
-      │       ├── tests/              # Backend tests
-      │       └── package.json
-      ├── packages/                   # Shared packages
-      │   ├── shared/                 # Shared types/utilities
-      │   │   ├── src/
-      │   │   │   ├── types/          # TypeScript interfaces
-      │   │   │   ├── constants/      # Shared constants
-      │   │   │   └── utils/          # Shared utilities
-      │   │   └── package.json
-      │   ├── ui/                     # Shared UI components
-      │   │   ├── src/
-      │   │   └── package.json
-      │   └── config/                 # Shared configuration
-      │       ├── eslint/
-      │       ├── typescript/
-      │       └── jest/
-      ├── infrastructure/             # IaC definitions
-      │   └── {{iac_structure}}
-      ├── scripts/                    # Build/deploy scripts
-      ├── docs/                       # Documentation
-      │   ├── prd.md
-      │   ├── front-end-spec.md
-      │   └── fullstack-architecture.md
-      ├── .env.example                # Environment template
-      ├── package.json                # Root package.json
-      ├── {{monorepo_config}}         # Monorepo configuration
-      └── README.md
+      - |
+        {{project-name}}/
+        ├── .github/                    # CI/CD workflows
+        │   └── workflows/
+        │       ├── ci.yaml
+        │       └── deploy.yaml
+        ├── apps/                       # Application packages
+        │   ├── web/                    # Frontend application
+        │   │   ├── src/
+        │   │   │   ├── components/     # UI components
+        │   │   │   ├── pages/          # Page components/routes
+        │   │   │   ├── hooks/          # Custom React hooks
+        │   │   │   ├── services/       # API client services
+        │   │   │   ├── stores/         # State management
+        │   │   │   ├── styles/         # Global styles/themes
+        │   │   │   └── utils/          # Frontend utilities
+        │   │   ├── public/             # Static assets
+        │   │   ├── tests/              # Frontend tests
+        │   │   └── package.json
+        │   └── api/                    # Backend application
+        │       ├── src/
+        │       │   ├── routes/         # API routes/controllers
+        │       │   ├── services/       # Business logic
+        │       │   ├── models/         # Data models
+        │       │   ├── middleware/     # Express/API middleware
+        │       │   ├── utils/          # Backend utilities
+        │       │   └── {{serverless_or_server_entry}}
+        │       ├── tests/              # Backend tests
+        │       └── package.json
+        ├── packages/                   # Shared packages
+        │   ├── shared/                 # Shared types/utilities
+        │   │   ├── src/
+        │   │   │   ├── types/          # TypeScript interfaces
+        │   │   │   ├── constants/      # Shared constants
+        │   │   │   └── utils/          # Shared utilities
+        │   │   └── package.json
+        │   ├── ui/                     # Shared UI components
+        │   │   ├── src/
+        │   │   └── package.json
+        │   └── config/                 # Shared configuration
+        │       ├── eslint/
+        │       ├── typescript/
+        │       └── jest/
+        ├── infrastructure/             # IaC definitions
+        │   └── {{iac_structure}}
+        ├── scripts/                    # Build/deploy scripts
+        ├── docs/                       # Documentation
+        │   ├── prd.md
+        │   ├── front-end-spec.md
+        │   └── fullstack-architecture.md
+        ├── .env.example                # Environment template
+        ├── package.json                # Root package.json
+        ├── {{monorepo_config}}         # Monorepo configuration
+        └── README.md
 
   - id: development-workflow
     title: Development Workflow
@@ -568,13 +587,13 @@ sections:
             template: |
               # Start all services
               {{start_all_command}}
-              
+
               # Start frontend only
               {{start_frontend_command}}
-              
+
               # Start backend only
               {{start_backend_command}}
-              
+
               # Run tests
               {{test_commands}}
       - id: environment-config
@@ -587,10 +606,10 @@ sections:
             template: |
               # Frontend (.env.local)
               {{frontend_env_vars}}
-              
+
               # Backend (.env)
               {{backend_env_vars}}
-              
+
               # Shared
               {{shared_env_vars}}
 
@@ -607,7 +626,7 @@ sections:
           - **Build Command:** {{frontend_build_command}}
           - **Output Directory:** {{frontend_output_dir}}
           - **CDN/Edge:** {{cdn_strategy}}
-          
+
           **Backend Deployment:**
           - **Platform:** {{backend_deploy_platform}}
           - **Build Command:** {{backend_build_command}}
@@ -638,12 +657,12 @@ sections:
           - CSP Headers: {{csp_policy}}
           - XSS Prevention: {{xss_strategy}}
           - Secure Storage: {{storage_strategy}}
-          
+
           **Backend Security:**
           - Input Validation: {{validation_approach}}
           - Rate Limiting: {{rate_limit_config}}
           - CORS Policy: {{cors_config}}
-          
+
           **Authentication Security:**
           - Token Storage: {{token_strategy}}
           - Session Management: {{session_approach}}
@@ -655,7 +674,7 @@ sections:
           - Bundle Size Target: {{bundle_size}}
           - Loading Strategy: {{loading_approach}}
           - Caching Strategy: {{fe_cache_strategy}}
-          
+
           **Backend Performance:**
           - Response Time Target: {{response_target}}
           - Database Optimization: {{db_optimization}}
@@ -671,10 +690,10 @@ sections:
         type: code
         language: text
         template: |
-                  E2E Tests
-                 /        \
-            Integration Tests
-               /            \
+          E2E Tests
+          /        \
+          Integration Tests
+          /            \
           Frontend Unit  Backend Unit
       - id: test-organization
         title: Test Organization
@@ -793,7 +812,7 @@ sections:
           - JavaScript errors
           - API response times
           - User interactions
-          
+
           **Backend Metrics:**
           - Request rate
           - Error rate

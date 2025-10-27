@@ -1,0 +1,78 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: premise-brief-tmpl
+  name: Premise Brief
+  version: 1.0
+  description: One-page document expanding a 1-sentence idea into a paragraph with stakes
+  output:
+    format: markdown
+    filename: "{{title}}-premise.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: one_sentence
+    title: One-Sentence Summary
+    instruction: |
+      Create a compelling one-sentence summary that captures:
+      - The protagonist
+      - The central conflict
+      - The stakes
+      Example: "When [inciting incident], [protagonist] must [goal] or else [stakes]."
+    elicit: true
+
+  - id: expanded_paragraph
+    title: Expanded Paragraph
+    instruction: |
+      Expand the premise into a full paragraph (5-7 sentences) including:
+      - Setup and world context
+      - Protagonist introduction
+      - Inciting incident
+      - Central conflict
+      - Stakes and urgency
+      - Hint at resolution path
+    elicit: true
+
+  - id: protagonist
+    title: Protagonist Profile
+    instruction: |
+      Define the main character:
+      - Name and role
+      - Core desire/goal
+      - Internal conflict
+      - What makes them unique
+      - Why readers will care
+    elicit: true
+
+  - id: antagonist
+    title: Antagonist/Opposition
+    instruction: |
+      Define the opposing force:
+      - Nature of opposition (person, society, nature, self)
+      - Antagonist's goal
+      - Why they oppose protagonist
+      - Their power/advantage
+    elicit: true
+
+  - id: stakes
+    title: Stakes
+    instruction: |
+      Clarify what's at risk:
+      - Personal stakes for protagonist
+      - Broader implications
+      - Ticking clock element
+      - Consequences of failure
+    elicit: true
+
+  - id: unique_hook
+    title: Unique Hook
+    instruction: |
+      What makes this story special:
+      - Fresh angle or twist
+      - Unique world element
+      - Unexpected character aspect
+      - Genre-blending elements
+    elicit: true

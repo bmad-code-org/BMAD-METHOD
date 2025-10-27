@@ -1,0 +1,85 @@
+# <!-- Powered by BMAD™ Core -->
+# workflows/screenplay-development.yaml
+name: screenplay-development
+title: Screenplay Development Workflow
+description: |
+  Develop a feature‑length screenplay from concept to polished shooting script.
+
+triggers:
+  - command: /screenplay
+  - intent: "write a screenplay"
+
+inputs:
+  - working_title
+  - genre
+  - target_length_pages
+
+agents:
+  - plot-architect
+  - character-psychologist
+  - genre-specialist
+  - narrative-designer
+  - dialog-specialist
+  - editor
+  - beta-reader
+
+steps:
+  - id: logline
+    title: Craft logline & premise
+    agent: plot-architect
+    outputs: logline
+
+  - id: beat_sheet
+    title: Create beat sheet (Save the Cat, etc.)
+    agent: plot-architect
+    inputs: logline
+    outputs: beat_sheet
+
+  - id: treatment
+    title: Expand into prose treatment
+    agent: narrative-designer
+    inputs: beat_sheet
+    outputs: treatment
+
+  - id: character_bios
+    title: Write character bios
+    agent: character-psychologist
+    inputs: treatment
+    outputs: character_bios
+
+  - id: first_draft
+    title: Draft screenplay
+    agent: narrative-designer
+    inputs:
+      - treatment
+      - character_bios
+    outputs: draft_script
+
+  - id: dialogue_polish
+    title: Dialogue polish
+    agent: dialog-specialist
+    inputs: draft_script
+    outputs: dialogue_polished_script
+
+  - id: format_check
+    title: Format & technical check (Final Draft / Fountain)
+    agent: editor
+    inputs: dialogue_polished_script
+    outputs: production_ready_script
+
+  - id: beta_read
+    title: Table read feedback
+    agent: beta-reader
+    inputs: production_ready_script
+    outputs: beta_script_notes
+
+  - id: final_script
+    title: Final shooting script
+    agent: editor
+    inputs:
+      - production_ready_script
+      - beta_script_notes
+    outputs: final_screenplay
+
+outputs:
+  - final_screenplay

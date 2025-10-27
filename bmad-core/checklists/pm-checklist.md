@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Product Manager (PM) Requirements Checklist
 
 This checklist serves as a comprehensive framework to ensure the Product Requirements Document (PRD) and Epic definitions are complete, well-structured, and appropriately scoped for MVP development. The PM should systematically work through each item during the product definition process.
@@ -304,7 +306,6 @@ Ask the user if they want to work through the checklist:
 Create a comprehensive validation report that includes:
 
 1. Executive Summary
-
    - Overall PRD completeness (percentage)
    - MVP scope appropriateness (Too Large/Just Right/Too Small)
    - Readiness for architecture phase (Ready/Nearly Ready/Not Ready)
@@ -312,26 +313,22 @@ Create a comprehensive validation report that includes:
 
 2. Category Analysis Table
    Fill in the actual table with:
-
    - Status: PASS (90%+ complete), PARTIAL (60-89%), FAIL (<60%)
    - Critical Issues: Specific problems that block progress
 
 3. Top Issues by Priority
-
    - BLOCKERS: Must fix before architect can proceed
    - HIGH: Should fix for quality
    - MEDIUM: Would improve clarity
    - LOW: Nice to have
 
 4. MVP Scope Assessment
-
    - Features that might be cut for true MVP
    - Missing features that are essential
    - Complexity concerns
    - Timeline realism
 
 5. Technical Readiness
-
    - Clarity of technical constraints
    - Identified technical risks
    - Areas needing architect investigation

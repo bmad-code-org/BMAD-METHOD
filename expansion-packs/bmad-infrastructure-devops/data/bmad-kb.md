@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # BMad Infrastructure DevOps Expansion Pack Knowledge Base
 
 ## Overview
@@ -247,17 +249,14 @@ A comprehensive 16-section checklist covering:
 ### Common Issues
 
 1. **Infrastructure Drift**
-
    - Solution: Implement drift detection in IaC pipelines
    - Prevention: Restrict manual changes, enforce GitOps
 
 2. **Cost Overruns**
-
    - Solution: Implement cost monitoring and alerts
    - Prevention: Resource tagging, budget limits
 
 3. **Performance Problems**
-
    - Solution: Review monitoring data, scale resources
    - Prevention: Load testing, capacity planning
 

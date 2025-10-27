@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Create Game Development Story Task
 
 ## Purpose

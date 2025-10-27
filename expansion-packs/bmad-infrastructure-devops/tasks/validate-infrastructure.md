@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Infrastructure Validation Task
 
 ## Purpose
@@ -55,7 +57,6 @@ To comprehensively validate platform infrastructure changes against security, re
 ### 4. Execute Comprehensive Platform Validation Process
 
 - **If "Incremental Mode" was selected:**
-
   - For each section of the infrastructure checklist (Sections 1-16):
     - **a. Present Section Purpose:** Explain what this section validates and why it's important for platform operations
     - **b. Work Through Items:** Present each checklist item, guide the user through validation, and document compliance or gaps

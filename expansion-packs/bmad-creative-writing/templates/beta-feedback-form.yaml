@@ -1,0 +1,97 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: beta-feedback-form-tmpl
+  name: Beta Feedback Form
+  version: 1.0
+  description: Structured questionnaire for beta readers
+  output:
+    format: markdown
+    filename: "beta-feedback-{{reader_name}}.md"
+
+workflow:
+  elicitation: true
+  allow_skip: true
+
+sections:
+  - id: reader_info
+    title: Reader Information
+    instruction: |
+      Collect reader details:
+      - Reader name
+      - Reading experience level
+      - Genre preferences
+      - Date of feedback
+    elicit: true
+
+  - id: overall_impressions
+    title: Overall Impressions
+    instruction: |
+      Gather general reactions:
+      - What worked well overall
+      - What confused or bored you
+      - Most memorable moments
+      - Overall rating (1-10)
+    elicit: true
+
+  - id: characters
+    title: Character Feedback
+    instruction: |
+      Evaluate character development:
+      - Favorite character and why
+      - Least engaging character and why
+      - Character believability
+      - Character arc satisfaction
+      - Dialogue authenticity
+    elicit: true
+
+  - id: plot_pacing
+    title: Plot & Pacing
+    instruction: |
+      Assess story structure:
+      - High-point scenes
+      - Slowest sections
+      - Plot holes or confusion
+      - Pacing issues
+      - Predictability concerns
+    elicit: true
+
+  - id: world_setting
+    title: World & Setting
+    instruction: |
+      Review world-building:
+      - Setting clarity
+      - World consistency
+      - Immersion level
+      - Description balance
+    elicit: true
+
+  - id: emotional_response
+    title: Emotional Response
+    instruction: |
+      Document emotional impact:
+      - Strong emotions felt
+      - Scenes that moved you
+      - Connection to characters
+      - Satisfaction with ending
+    elicit: true
+
+  - id: technical_issues
+    title: Technical Issues
+    instruction: |
+      Note any technical problems:
+      - Grammar/spelling errors
+      - Continuity issues
+      - Formatting problems
+      - Confusing passages
+    elicit: true
+
+  - id: suggestions
+    title: Final Suggestions
+    instruction: |
+      Provide improvement recommendations:
+      - Top three improvements needed
+      - Would you recommend to others
+      - Comparison to similar books
+      - Additional comments
+    elicit: true

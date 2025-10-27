@@ -1,0 +1,50 @@
+# <!-- Powered by BMAD™ Core -->
+---
+workflow:
+  id: novel-serial-workflow
+  name: Iterative Release Novel Workflow
+  description: >-
+    Web‑serial cycle with regular releases, reader feedback, and season‑end
+    professional critique.
+  phases:
+    sprint-planning:
+      - agent: plot-architect
+        task: select-next-arc
+        output: release-plan.md
+    chapter-loop:
+      - agent: editor
+        task: create-draft-section
+        input: release-plan.md
+        repeat: per-chapter
+        output: chapter-draft.md
+      - agent: dialog-specialist
+        task: workshop-dialog
+        input: chapter-draft.md
+        output: chapter-dialog.md
+      - agent: beta-reader
+        task: quick-feedback
+        input: chapter-dialog.md
+        output: chapter-notes.md
+      - agent: editor
+        task: final-polish
+        input:
+          - chapter-dialog.md
+          - chapter-notes.md
+        output: chapter-final.md
+      - agent: editor
+        task: publish-chapter
+        input: chapter-final.md
+        output: publication-log.md
+    retrospective:
+      - agent: beta-reader
+        task: analyze-reader-feedback
+        input: publication-log.md
+        output: retro.md
+    season-critique:
+      - agent: book-critic
+        task: critical-review
+        input: publication-log.md
+        output: critic-review.md
+  completion_criteria:
+    - publication-log.md exists
+    - critic-review.md exists

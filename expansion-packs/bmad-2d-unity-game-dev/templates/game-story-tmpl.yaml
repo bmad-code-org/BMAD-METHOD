@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 template:
   id: game-story-template-v3
   name: Game Development Story
@@ -14,13 +15,13 @@ sections:
   - id: initial-setup
     instruction: |
       This template creates detailed game development stories that are immediately actionable by game developers. Each story should focus on a single, implementable feature that contributes to the overall game functionality.
-      
+
       Before starting, ensure you have access to:
-      
+
       - Game Design Document (GDD)
       - Game Architecture Document
       - Any existing stories in this epic
-      
+
       The story should be specific enough that a developer can implement it without requiring additional design decisions.
 
   - id: story-header
@@ -69,12 +70,12 @@ sections:
         title: Files to Create/Modify
         template: |
           **New Files:**
-          
+
           - `{{file_path_1}}` - {{purpose}}
           - `{{file_path_2}}` - {{purpose}}
-          
+
           **Modified Files:**
-          
+
           - `{{existing_file_1}}` - {{changes_needed}}
           - `{{existing_file_2}}` - {{changes_needed}}
       - id: class-interface-definitions
@@ -157,13 +158,13 @@ sections:
     instruction: Reference the specific sections of the GDD that this story implements
     template: |
       **GDD Reference:** {{section_name}} ({{page_or_section_number}})
-      
+
       **Game Mechanic:** {{mechanic_name}}
-      
+
       **Player Experience Goal:** {{experience_description}}
-      
+
       **Balance Parameters:**
-      
+
       - {{parameter_1}}: {{value_or_range}}
       - {{parameter_2}}: {{value_or_range}}
 
@@ -210,15 +211,15 @@ sections:
     instruction: List any dependencies that must be completed before this story can be implemented
     template: |
       **Story Dependencies:**
-      
+
       - {{story_id}}: {{dependency_description}}
-      
+
       **Technical Dependencies:**
-      
+
       - {{system_or_file}}: {{requirement}}
-      
+
       **Asset Dependencies:**
-      
+
       - {{asset_type}}: {{asset_description}}
       - Location: `{{asset_path}}`
 
@@ -241,16 +242,16 @@ sections:
     instruction: Any additional context, design decisions, or implementation notes
     template: |
       **Implementation Notes:**
-      
+
       - {{note_1}}
       - {{note_2}}
-      
+
       **Design Decisions:**
-      
+
       - {{decision_1}}: {{rationale}}
       - {{decision_2}}: {{rationale}}
-      
+
       **Future Considerations:**
-      
+
       - {{future_enhancement_1}}
       - {{future_optimization_1}}

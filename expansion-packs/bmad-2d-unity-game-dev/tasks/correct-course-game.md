@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Correct Course Task - Game Development
 
 ## Purpose
@@ -14,7 +16,6 @@
 ### 1. Initial Setup & Mode Selection
 
 - **Acknowledge Task & Inputs:**
-
   - Confirm with the user that the "Game Development Correct Course Task" is being initiated.
   - Verify the change trigger (e.g., performance issue, platform constraint, gameplay feedback, technical blocker).
   - Confirm access to relevant game artifacts:
@@ -35,7 +36,6 @@
 ### 2. Execute Game Development Checklist Analysis
 
 - Systematically work through the game-change-checklist sections:
-
   1. **Change Context & Game Impact**
   2. **Feature/System Impact Analysis**
   3. **Technical Artifact Conflict Resolution**
@@ -60,7 +60,6 @@
 Based on the analysis and agreed path forward:
 
 - **Identify affected game artifacts requiring updates:**
-
   - GDD sections (mechanics, systems, progression)
   - Technical specifications (architecture, performance targets)
   - Unity-specific configurations (build settings, quality settings)
@@ -69,7 +68,6 @@ Based on the analysis and agreed path forward:
   - Platform-specific adaptations
 
 - **Draft explicit changes for each artifact:**
-
   - **Game Stories:** Revise story text, Unity-specific acceptance criteria, technical constraints
   - **Technical Specs:** Update architecture diagrams, component hierarchies, performance budgets
   - **Unity Configurations:** Propose settings changes, optimization strategies, platform variants
@@ -89,14 +87,12 @@ Based on the analysis and agreed path forward:
 - Create a comprehensive proposal document containing:
 
   **A. Change Summary:**
-
   - Original issue (performance, gameplay, technical constraint)
   - Game systems affected
   - Platform/performance implications
   - Chosen solution approach
 
   **B. Technical Impact Analysis:**
-
   - Unity architecture changes needed
   - Performance implications (with metrics)
   - Platform compatibility effects
@@ -104,14 +100,12 @@ Based on the analysis and agreed path forward:
   - Third-party dependency impacts
 
   **C. Specific Proposed Edits:**
-
   - For each game story: "Change Story GS-X.Y from: [old] To: [new]"
   - For technical specs: "Update Unity Architecture Section X: [changes]"
   - For GDD: "Modify [Feature] in Section Y: [updates]"
   - For configurations: "Change [Setting] from [old_value] to [new_value]"
 
   **D. Implementation Considerations:**
-
   - Required Unity version updates
   - Asset reimport needs
   - Shader recompilation requirements
@@ -123,7 +117,6 @@ Based on the analysis and agreed path forward:
 - Provide the finalized document to the user
 
 - **Based on change scope:**
-
   - **Minor adjustments (can be handled in current sprint):**
     - Confirm task completion
     - Suggest handoff to game-dev agent for implementation
@@ -137,7 +130,6 @@ Based on the analysis and agreed path forward:
 ## Output Deliverables
 
 - **Primary:** "Game Development Change Proposal" document containing:
-
   - Game-specific change analysis
   - Technical impact assessment with Unity context
   - Platform and performance considerations

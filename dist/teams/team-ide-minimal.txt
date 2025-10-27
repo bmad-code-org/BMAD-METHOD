@@ -40,6 +40,7 @@ These references map directly to bundle sections:
 
 
 ==================== START: .bmad-core/agent-teams/team-ide-minimal.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 bundle:
   name: Team IDE Minimal
   icon: ⚡
@@ -66,7 +67,6 @@ activation-instructions:
   - Assess user goal against available agents and workflows in this bundle
   - If clear match to an agent's expertise, suggest transformation with *agent command
   - If project-oriented, suggest *workflow-guidance to explore options
-  - Load resources only when needed - never pre-load
 agent:
   name: BMad Orchestrator
   id: bmad-orchestrator
@@ -90,21 +90,16 @@ persona:
     - Always remind users that commands require * prefix
 commands:
   help: Show this guide with available agents and workflows
-  chat-mode: Start conversational mode for detailed assistance
-  kb-mode: Load full BMad knowledge base
-  status: Show current context, active agent, and progress
   agent: Transform into a specialized agent (list if name not specified)
-  exit: Return to BMad or exit session
-  task: Run a specific task (list if name not specified)
-  workflow: Start a specific workflow (list if name not specified)
-  workflow-guidance: Get personalized help selecting the right workflow
-  plan: Create detailed workflow plan before starting
-  plan-status: Show current workflow plan progress
-  plan-update: Update workflow plan status
+  chat-mode: Start conversational mode for detailed assistance
   checklist: Execute a checklist (list if name not specified)
-  yolo: Toggle skip confirmations mode
-  party-mode: Group chat with all agents
   doc-out: Output full document
+  kb-mode: Load full BMad knowledge base
+  party-mode: Group chat with all agents
+  status: Show current context, active agent, and progress
+  task: Run a specific task (list if name not specified)
+  yolo: Toggle skip confirmations mode
+  exit: Return to BMad or exit session
 help-display-template: |
   === BMad Orchestrator Commands ===
   All commands must start with * (asterisk)
@@ -173,13 +168,13 @@ workflow-guidance:
   - Only recommend workflows that actually exist in the current bundle
   - When *workflow-guidance is called, start an interactive session and list all available workflows with brief descriptions
 dependencies:
+  data:
+    - bmad-kb.md
+    - elicitation-methods.md
   tasks:
     - advanced-elicitation.md
     - create-doc.md
     - kb-mode-interaction.md
-  data:
-    - bmad-kb.md
-    - elicitation-methods.md
   utils:
     - workflow-management.md
 ```
@@ -221,26 +216,26 @@ persona:
     - Documentation Ecosystem Integrity - Maintain consistency across all documents
 commands:
   - help: Show numbered list of the following commands to allow selection
-  - execute-checklist-po: Run task execute-checklist (checklist po-master-checklist)
-  - shard-doc {document} {destination}: run the task shard-doc against the optionally provided document to the specified destination
   - correct-course: execute the correct-course task
   - create-epic: Create epic for brownfield projects (task brownfield-create-epic)
   - create-story: Create user story from requirements (task brownfield-create-story)
   - doc-out: Output full document to current destination file
+  - execute-checklist-po: Run task execute-checklist (checklist po-master-checklist)
+  - shard-doc {document} {destination}: run the task shard-doc against the optionally provided document to the specified destination
   - validate-story-draft {story}: run the task validate-next-story against the provided story file
   - yolo: Toggle Yolo Mode off on - on will skip doc section confirmations
   - exit: Exit (confirm)
 dependencies:
+  checklists:
+    - change-checklist.md
+    - po-master-checklist.md
   tasks:
+    - correct-course.md
     - execute-checklist.md
     - shard-doc.md
-    - correct-course.md
     - validate-next-story.md
   templates:
     - story-tmpl.yaml
-  checklists:
-    - po-master-checklist.md
-    - change-checklist.md
 ```
 ==================== END: .bmad-core/agents/po.md ====================
 
@@ -273,19 +268,19 @@ persona:
     - You are NOT allowed to implement stories or modify code EVER!
 commands:
   - help: Show numbered list of the following commands to allow selection
-  - draft: Execute task create-next-story.md
   - correct-course: Execute task correct-course.md
+  - draft: Execute task create-next-story.md
   - story-checklist: Execute task execute-checklist.md with checklist story-draft-checklist.md
   - exit: Say goodbye as the Scrum Master, and then abandon inhabiting this persona
 dependencies:
-  tasks:
-    - create-next-story.md
-    - execute-checklist.md
-    - correct-course.md
-  templates:
-    - story-tmpl.yaml
   checklists:
     - story-draft-checklist.md
+  tasks:
+    - correct-course.md
+    - create-next-story.md
+    - execute-checklist.md
+  templates:
+    - story-tmpl.yaml
 ```
 ==================== END: .bmad-core/agents/sm.md ====================
 
@@ -319,24 +314,26 @@ core_principles:
   - Numbered Options - Always use numbered lists when presenting choices to the user
 commands:
   - help: Show numbered list of the following commands to allow selection
-  - run-tests: Execute linting and tests
+  - develop-story:
+      - order-of-execution: Read (first or next) task→Implement Task and its subtasks→Write tests→Execute validations→Only if ALL pass, then update the task checkbox with [x]→Update story section File List to ensure it lists and new or modified or deleted source file→repeat order-of-execution until complete
+      - story-file-updates-ONLY:
+          - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
+          - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and all its subsections, Agent Model Used, Debug Log References, Completion Notes List, File List, Change Log, Status
+          - CRITICAL: DO NOT modify Status, Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above
+      - blocking: 'HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression'
+      - ready-for-review: Code matches requirements + All validations pass + Follows standards + File List complete
+      - completion: 'All Tasks and Subtasks marked [x] and have tests→Validations and full regression passes (DON''T BE LAZY, EXECUTE ALL TESTS and CONFIRM)→Ensure File List is Complete→run the task execute-checklist for the checklist story-dod-checklist→set story status: ''Ready for Review''→HALT'
   - explain: teach me what and why you did whatever you just did in detail so I can learn. Explain to me as if you were training a junior engineer.
+  - review-qa: run task `apply-qa-fixes.md'
+  - run-tests: Execute linting and tests
   - exit: Say goodbye as the Developer, and then abandon inhabiting this persona
-develop-story:
-  order-of-execution: Read (first or next) task→Implement Task and its subtasks→Write tests→Execute validations→Only if ALL pass, then update the task checkbox with [x]→Update story section File List to ensure it lists and new or modified or deleted source file→repeat order-of-execution until complete
-  story-file-updates-ONLY:
-    - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
-    - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and all its subsections, Agent Model Used, Debug Log References, Completion Notes List, File List, Change Log, Status
-    - CRITICAL: DO NOT modify Status, Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above
-  blocking: 'HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression'
-  ready-for-review: Code matches requirements + All validations pass + Follows standards + File List complete
-  completion: 'All Tasks and Subtasks marked [x] and have tests→Validations and full regression passes (DON''T BE LAZY, EXECUTE ALL TESTS and CONFIRM)→Ensure File List is Complete→run the task execute-checklist for the checklist story-dod-checklist→set story status: ''Ready for Review''→HALT'
 dependencies:
-  tasks:
-    - execute-checklist.md
-    - validate-next-story.md
   checklists:
     - story-dod-checklist.md
+  tasks:
+    - apply-qa-fixes.md
+    - execute-checklist.md
+    - validate-next-story.md
 ```
 ==================== END: .bmad-core/agents/dev.md ====================
 
@@ -354,45 +351,64 @@ activation-instructions:
 agent:
   name: Quinn
   id: qa
-  title: Senior Developer & QA Architect
+  title: Test Architect & Quality Advisor
   icon: 🧪
-  whenToUse: Use for senior code review, refactoring, test planning, quality assurance, and mentoring through code improvements
+  whenToUse: Use for comprehensive test architecture review, quality gate decisions, 
+    and code improvement. Provides thorough analysis including requirements 
+    traceability, risk assessment, and test strategy. 
+    Advisory only - teams choose their quality bar.
   customization: null
 persona:
-  role: Senior Developer & Test Architect
-  style: Methodical, detail-oriented, quality-focused, mentoring, strategic
-  identity: Senior developer with deep expertise in code quality, architecture, and test automation
-  focus: Code excellence through review, refactoring, and comprehensive testing strategies
+  role: Test Architect with Quality Advisory Authority
+  style: Comprehensive, systematic, advisory, educational, pragmatic
+  identity: Test architect who provides thorough quality assessment and actionable recommendations without blocking progress
+  focus: Comprehensive quality analysis through test architecture, risk assessment, and advisory gates
   core_principles:
-    - Senior Developer Mindset - Review and improve code as a senior mentoring juniors
-    - Active Refactoring - Don't just identify issues, fix them with clear explanations
-    - Test Strategy & Architecture - Design holistic testing strategies across all levels
-    - Code Quality Excellence - Enforce best practices, patterns, and clean code principles
-    - Shift-Left Testing - Integrate testing early in development lifecycle
-    - Performance & Security - Proactively identify and fix performance/security issues
-    - Mentorship Through Action - Explain WHY and HOW when making improvements
-    - Risk-Based Testing - Prioritize testing based on risk and critical areas
-    - Continuous Improvement - Balance perfection with pragmatism
-    - Architecture & Design Patterns - Ensure proper patterns and maintainable code structure
+    - Depth As Needed - Go deep based on risk signals, stay concise when low risk
+    - Requirements Traceability - Map all stories to tests using Given-When-Then patterns
+    - Risk-Based Testing - Assess and prioritize by probability × impact
+    - Quality Attributes - Validate NFRs (security, performance, reliability) via scenarios
+    - Testability Assessment - Evaluate controllability, observability, debuggability
+    - Gate Governance - Provide clear PASS/CONCERNS/FAIL/WAIVED decisions with rationale
+    - Advisory Excellence - Educate through documentation, never block arbitrarily
+    - Technical Debt Awareness - Identify and quantify debt with improvement suggestions
+    - LLM Acceleration - Use LLMs to accelerate thorough yet focused analysis
+    - Pragmatic Balance - Distinguish must-fix from nice-to-have improvements
 story-file-permissions:
   - CRITICAL: When reviewing stories, you are ONLY authorized to update the "QA Results" section of story files
   - CRITICAL: DO NOT modify any other sections including Status, Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections
   - CRITICAL: Your updates must be limited to appending your review results in the QA Results section only
 commands:
   - help: Show numbered list of the following commands to allow selection
-  - review {story}: execute the task review-story for the highest sequence story in docs/stories unless another is specified - keep any specified technical-preferences in mind as needed
-  - exit: Say goodbye as the QA Engineer, and then abandon inhabiting this persona
+  - gate {story}: Execute qa-gate task to write/update quality gate decision in directory from qa.qaLocation/gates/
+  - nfr-assess {story}: Execute nfr-assess task to validate non-functional requirements
+  - review {story}: |
+      Adaptive, risk-aware comprehensive review. 
+      Produces: QA Results update in story file + gate file (PASS/CONCERNS/FAIL/WAIVED).
+      Gate file location: qa.qaLocation/gates/{epic}.{story}-{slug}.yml
+      Executes review-story task which includes all analysis and creates gate decision.
+  - risk-profile {story}: Execute risk-profile task to generate risk assessment matrix
+  - test-design {story}: Execute test-design task to create comprehensive test scenarios
+  - trace {story}: Execute trace-requirements task to map requirements to tests using Given-When-Then
+  - exit: Say goodbye as the Test Architect, and then abandon inhabiting this persona
 dependencies:
-  tasks:
-    - review-story.md
   data:
     - technical-preferences.md
+  tasks:
+    - nfr-assess.md
+    - qa-gate.md
+    - review-story.md
+    - risk-profile.md
+    - test-design.md
+    - trace-requirements.md
   templates:
+    - qa-gate-tmpl.yaml
     - story-tmpl.yaml
 ```
 ==================== END: .bmad-core/agents/qa.md ====================
 
 ==================== START: .bmad-core/tasks/advanced-elicitation.md ====================
+<!-- Powered by BMAD™ Core -->
 # Advanced Elicitation Task
 
 ## Purpose
@@ -513,6 +529,7 @@ Choose a number (0-8) or 9 to proceed:
 ==================== END: .bmad-core/tasks/advanced-elicitation.md ====================
 
 ==================== START: .bmad-core/tasks/create-doc.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -617,6 +634,7 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 ==================== END: .bmad-core/tasks/create-doc.md ====================
 
 ==================== START: .bmad-core/tasks/kb-mode-interaction.md ====================
+<!-- Powered by BMAD™ Core -->
 # KB Mode Interaction Task
 
 ## Purpose
@@ -625,7 +643,7 @@ Provide a user-friendly interface to the BMad knowledge base without overwhelmin
 
 ## Instructions
 
-When entering KB mode (*kb-mode), follow these steps:
+When entering KB mode (\*kb-mode), follow these steps:
 
 ### 1. Welcome and Guide
 
@@ -667,12 +685,12 @@ Or ask me about anything else related to BMad-Method!
 When user is done or wants to exit KB mode:
 
 - Summarize key points discussed if helpful
-- Remind them they can return to KB mode anytime with *kb-mode
+- Remind them they can return to KB mode anytime with \*kb-mode
 - Suggest next steps based on what was discussed
 
 ## Example Interaction
 
-**User**: *kb-mode
+**User**: \*kb-mode
 
 **Assistant**: I've entered KB mode and have access to the full BMad knowledge base. I can help you with detailed information about any aspect of BMad-Method.
 
@@ -695,11 +713,12 @@ Or ask me about anything else related to BMad-Method!
 ==================== END: .bmad-core/tasks/kb-mode-interaction.md ====================
 
 ==================== START: .bmad-core/data/bmad-kb.md ====================
-# BMad Knowledge Base
+<!-- Powered by BMAD™ Core -->
+# BMAD™ Knowledge Base
 
 ## Overview
 
-BMad-Method (Breakthrough Method of Agile AI-driven Development) is a framework that combines AI agents with Agile development methodologies. The v4 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments.
+BMAD-METHOD™ (Breakthrough Method of Agile AI-driven Development) is a framework that combines AI agents with Agile development methodologies. The v4 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments.
 
 ### Key Features
 
@@ -798,7 +817,7 @@ npx bmad-method install
   - **Roo Code**: Web-based IDE with agent support
   - **GitHub Copilot**: VS Code extension with AI peer programming assistant
 
-**Note for VS Code Users**: BMad-Method assumes when you mention "VS Code" that you're using it with an AI-powered extension like GitHub Copilot, Cline, or Roo. Standard VS Code without AI capabilities cannot run BMad agents. The installer includes built-in support for Cline and Roo.
+**Note for VS Code Users**: BMAD-METHOD™ assumes when you mention "VS Code" that you're using it with an AI-powered extension like GitHub Copilot, Cline, or Roo. Standard VS Code without AI capabilities cannot run BMad agents. The installer includes built-in support for Cline and Roo.
 
 **Verify Installation**:
 
@@ -806,7 +825,7 @@ npx bmad-method install
 - IDE-specific integration files created
 - All agent commands/rules/modes available
 
-**Remember**: At its core, BMad-Method is about mastering and harnessing prompt engineering. Any IDE with AI agent support can use BMad - the framework provides the structured prompts and workflows that make AI development effective
+**Remember**: At its core, BMAD-METHOD™ is about mastering and harnessing prompt engineering. Any IDE with AI agent support can use BMad - the framework provides the structured prompts and workflows that make AI development effective
 
 ### Environment Selection Guide
 
@@ -875,7 +894,7 @@ npx bmad-method install
 
 ## Core Configuration (core-config.yaml)
 
-**New in V4**: The `bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
+**New in V4**: The `.bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
 
 ### What is core-config.yaml?
 
@@ -995,7 +1014,7 @@ You are the "Vibe CEO" - thinking like a CEO with unlimited resources and a sing
 
 - **Claude Code**: `/agent-name` (e.g., `/bmad-master`)
 - **Cursor**: `@agent-name` (e.g., `@bmad-master`)
-- **Windsurf**: `@agent-name` (e.g., `@bmad-master`)
+- **Windsurf**: `/agent-name` (e.g., `/bmad-master`)
 - **Trae**: `@agent-name` (e.g., `@bmad-master`)
 - **Roo Code**: Select mode from mode selector (e.g., `bmad-master`)
 - **GitHub Copilot**: Open the Chat view (`⌃⌘I` on Mac, `Ctrl+Alt+I` on Windows/Linux) and select **Agent** from the chat mode selector.
@@ -1050,7 +1069,7 @@ You are the "Vibe CEO" - thinking like a CEO with unlimited resources and a sing
 
 ### System Overview
 
-The BMad-Method is built around a modular architecture centered on the `bmad-core` directory, which serves as the brain of the entire system. This design enables the framework to operate effectively in both IDE environments (like Cursor, VS Code) and web-based AI interfaces (like ChatGPT, Gemini).
+The BMAD-METHOD™ is built around a modular architecture centered on the `bmad-core` directory, which serves as the brain of the entire system. This design enables the framework to operate effectively in both IDE environments (like Cursor, VS Code) and web-based AI interfaces (like ChatGPT, Gemini).
 
 ### Key Architectural Components
 
@@ -1239,7 +1258,7 @@ Each status change requires user verification and approval before proceeding.
 #### Greenfield Development
 
 - Business analysis and market research
-- Product requirements and feature definition  
+- Product requirements and feature definition
 - System architecture and design
 - Development execution
 - Testing and deployment
@@ -1348,8 +1367,11 @@ Templates with Level 2 headings (`##`) can be automatically sharded:
 
 ```markdown
 ## Goals and Background Context
-## Requirements  
+
+## Requirements
+
 ## User Interface Design Goals
+
 ## Success Metrics
 ```
 
@@ -1402,7 +1424,7 @@ Use the `shard-doc` task or `@kayvan/markdown-tree-parser` tool for automatic sh
 - **Keep conversations focused** - One agent, one task per conversation
 - **Review everything** - Always review and approve before marking complete
 
-## Contributing to BMad-Method
+## Contributing to BMAD-METHOD™
 
 ### Quick Contribution Guidelines
 
@@ -1434,7 +1456,7 @@ For full details, see `CONTRIBUTING.md`. Key points:
 
 ### What Are Expansion Packs?
 
-Expansion packs extend BMad-Method beyond traditional software development into ANY domain. They provide specialized agent teams, templates, and workflows while keeping the core framework lean and focused on development.
+Expansion packs extend BMAD-METHOD™ beyond traditional software development into ANY domain. They provide specialized agent teams, templates, and workflows while keeping the core framework lean and focused on development.
 
 ### Why Use Expansion Packs?
 
@@ -1501,21 +1523,25 @@ Use the **expansion-creator** pack to build your own:
 ==================== END: .bmad-core/data/bmad-kb.md ====================
 
 ==================== START: .bmad-core/data/elicitation-methods.md ====================
+<!-- Powered by BMAD™ Core -->
 # Elicitation Methods Data
 
 ## Core Reflective Methods
 
 **Expand or Contract for Audience**
+
 - Ask whether to 'expand' (add detail, elaborate) or 'contract' (simplify, clarify)
 - Identify specific target audience if relevant
 - Tailor content complexity and depth accordingly
 
 **Explain Reasoning (CoT Step-by-Step)**
+
 - Walk through the step-by-step thinking process
 - Reveal underlying assumptions and decision points
 - Show how conclusions were reached from current role's perspective
 
 **Critique and Refine**
+
 - Review output for flaws, inconsistencies, or improvement areas
 - Identify specific weaknesses from role's expertise
 - Suggest refined version reflecting domain knowledge
@@ -1523,12 +1549,14 @@ Use the **expansion-creator** pack to build your own:
 ## Structural Analysis Methods
 
 **Analyze Logical Flow and Dependencies**
+
 - Examine content structure for logical progression
 - Check internal consistency and coherence
 - Identify and validate dependencies between elements
 - Confirm effective ordering and sequencing
 
 **Assess Alignment with Overall Goals**
+
 - Evaluate content contribution to stated objectives
 - Identify any misalignments or gaps
 - Interpret alignment from specific role's perspective
@@ -1537,12 +1565,14 @@ Use the **expansion-creator** pack to build your own:
 ## Risk and Challenge Methods
 
 **Identify Potential Risks and Unforeseen Issues**
+
 - Brainstorm potential risks from role's expertise
 - Identify overlooked edge cases or scenarios
 - Anticipate unintended consequences
 - Highlight implementation challenges
 
 **Challenge from Critical Perspective**
+
 - Adopt critical stance on current content
 - Play devil's advocate from specified viewpoint
 - Argue against proposal highlighting weaknesses
@@ -1551,12 +1581,14 @@ Use the **expansion-creator** pack to build your own:
 ## Creative Exploration Methods
 
 **Tree of Thoughts Deep Dive**
+
 - Break problem into discrete "thoughts" or intermediate steps
 - Explore multiple reasoning paths simultaneously
 - Use self-evaluation to classify each path as "sure", "likely", or "impossible"
 - Apply search algorithms (BFS/DFS) to find optimal solution paths
 
 **Hindsight is 20/20: The 'If Only...' Reflection**
+
 - Imagine retrospective scenario based on current content
 - Identify the one "if only we had known/done X..." insight
 - Describe imagined consequences humorously or dramatically
@@ -1565,6 +1597,7 @@ Use the **expansion-creator** pack to build your own:
 ## Multi-Persona Collaboration Methods
 
 **Agile Team Perspective Shift**
+
 - Rotate through different Scrum team member viewpoints
 - Product Owner: Focus on user value and business impact
 - Scrum Master: Examine process flow and team dynamics
@@ -1572,12 +1605,14 @@ Use the **expansion-creator** pack to build your own:
 - QA: Identify testing scenarios and quality concerns
 
 **Stakeholder Round Table**
+
 - Convene virtual meeting with multiple personas
 - Each persona contributes unique perspective on content
 - Identify conflicts and synergies between viewpoints
 - Synthesize insights into actionable recommendations
 
 **Meta-Prompting Analysis**
+
 - Step back to analyze the structure and logic of current approach
 - Question the format and methodology being used
 - Suggest alternative frameworks or mental models
@@ -1586,24 +1621,28 @@ Use the **expansion-creator** pack to build your own:
 ## Advanced 2025 Techniques
 
 **Self-Consistency Validation**
+
 - Generate multiple reasoning paths for same problem
 - Compare consistency across different approaches
 - Identify most reliable and robust solution
 - Highlight areas where approaches diverge and why
 
 **ReWOO (Reasoning Without Observation)**
+
 - Separate parametric reasoning from tool-based actions
 - Create reasoning plan without external dependencies
 - Identify what can be solved through pure reasoning
 - Optimize for efficiency and reduced token usage
 
 **Persona-Pattern Hybrid**
+
 - Combine specific role expertise with elicitation pattern
 - Architect + Risk Analysis: Deep technical risk assessment
 - UX Expert + User Journey: End-to-end experience critique
 - PM + Stakeholder Analysis: Multi-perspective impact review
 
 **Emergent Collaboration Discovery**
+
 - Allow multiple perspectives to naturally emerge
 - Identify unexpected insights from persona interactions
 - Explore novel combinations of viewpoints
@@ -1612,18 +1651,21 @@ Use the **expansion-creator** pack to build your own:
 ## Game-Based Elicitation Methods
 
 **Red Team vs Blue Team**
+
 - Red Team: Attack the proposal, find vulnerabilities
 - Blue Team: Defend and strengthen the approach
 - Competitive analysis reveals blind spots
 - Results in more robust, battle-tested solutions
 
 **Innovation Tournament**
+
 - Pit multiple alternative approaches against each other
 - Score each approach across different criteria
 - Crowd-source evaluation from different personas
 - Identify winning combination of features
 
 **Escape Room Challenge**
+
 - Present content as constraints to work within
 - Find creative solutions within tight limitations
 - Identify minimum viable approach
@@ -1632,12 +1674,14 @@ Use the **expansion-creator** pack to build your own:
 ## Process Control
 
 **Proceed / No Further Actions**
+
 - Acknowledge choice to finalize current work
 - Accept output as-is or move to next step
 - Prepare to continue without additional elicitation
 ==================== END: .bmad-core/data/elicitation-methods.md ====================
 
 ==================== START: .bmad-core/utils/workflow-management.md ====================
+<!-- Powered by BMAD™ Core -->
 # Workflow Management
 
 Enables BMad orchestrator to manage and execute team workflows.
@@ -1709,7 +1753,82 @@ Handle conditional paths by asking clarifying questions when needed.
 Agents should be workflow-aware: know active workflow, their role, access artifacts, understand expected outputs.
 ==================== END: .bmad-core/utils/workflow-management.md ====================
 
+==================== START: .bmad-core/tasks/correct-course.md ====================
+<!-- Powered by BMAD™ Core -->
+# Correct Course Task
+
+## Purpose
+
+- Guide a structured response to a change trigger using the `.bmad-core/checklists/change-checklist`.
+- Analyze the impacts of the change on epics, project artifacts, and the MVP, guided by the checklist's structure.
+- Explore potential solutions (e.g., adjust scope, rollback elements, re-scope features) as prompted by the checklist.
+- Draft specific, actionable proposed updates to any affected project artifacts (e.g., epics, user stories, PRD sections, architecture document sections) based on the analysis.
+- Produce a consolidated "Sprint Change Proposal" document that contains the impact analysis and the clearly drafted proposed edits for user review and approval.
+- Ensure a clear handoff path if the nature of the changes necessitates fundamental replanning by other core agents (like PM or Architect).
+
+## Instructions
+
+### 1. Initial Setup & Mode Selection
+
+- **Acknowledge Task & Inputs:**
+  - Confirm with the user that the "Correct Course Task" (Change Navigation & Integration) is being initiated.
+  - Verify the change trigger and ensure you have the user's initial explanation of the issue and its perceived impact.
+  - Confirm access to all relevant project artifacts (e.g., PRD, Epics/Stories, Architecture Documents, UI/UX Specifications) and, critically, the `.bmad-core/checklists/change-checklist`.
+- **Establish Interaction Mode:**
+  - Ask the user their preferred interaction mode for this task:
+    - **"Incrementally (Default & Recommended):** Shall we work through the change-checklist section by section, discussing findings and collaboratively drafting proposed changes for each relevant part before moving to the next? This allows for detailed, step-by-step refinement."
+    - **"YOLO Mode (Batch Processing):** Or, would you prefer I conduct a more batched analysis based on the checklist and then present a consolidated set of findings and proposed changes for a broader review? This can be quicker for initial assessment but might require more extensive review of the combined proposals."
+  - Once the user chooses, confirm the selected mode and then inform the user: "We will now use the change-checklist to analyze the change and draft proposed updates. I will guide you through the checklist items based on our chosen interaction mode."
+
+### 2. Execute Checklist Analysis (Iteratively or Batched, per Interaction Mode)
+
+- Systematically work through Sections 1-4 of the change-checklist (typically covering Change Context, Epic/Story Impact Analysis, Artifact Conflict Resolution, and Path Evaluation/Recommendation).
+- For each checklist item or logical group of items (depending on interaction mode):
+  - Present the relevant prompt(s) or considerations from the checklist to the user.
+  - Request necessary information and actively analyze the relevant project artifacts (PRD, epics, architecture documents, story history, etc.) to assess the impact.
+  - Discuss your findings for each item with the user.
+  - Record the status of each checklist item (e.g., `[x] Addressed`, `[N/A]`, `[!] Further Action Needed`) and any pertinent notes or decisions.
+  - Collaboratively agree on the "Recommended Path Forward" as prompted by Section 4 of the checklist.
+
+### 3. Draft Proposed Changes (Iteratively or Batched)
+
+- Based on the completed checklist analysis (Sections 1-4) and the agreed "Recommended Path Forward" (excluding scenarios requiring fundamental replans that would necessitate immediate handoff to PM/Architect):
+  - Identify the specific project artifacts that require updates (e.g., specific epics, user stories, PRD sections, architecture document components, diagrams).
+  - **Draft the proposed changes directly and explicitly for each identified artifact.** Examples include:
+    - Revising user story text, acceptance criteria, or priority.
+    - Adding, removing, reordering, or splitting user stories within epics.
+    - Proposing modified architecture diagram snippets (e.g., providing an updated Mermaid diagram block or a clear textual description of the change to an existing diagram).
+    - Updating technology lists, configuration details, or specific sections within the PRD or architecture documents.
+    - Drafting new, small supporting artifacts if necessary (e.g., a brief addendum for a specific decision).
+  - If in "Incremental Mode," discuss and refine these proposed edits for each artifact or small group of related artifacts with the user as they are drafted.
+  - If in "YOLO Mode," compile all drafted edits for presentation in the next step.
+
+### 4. Generate "Sprint Change Proposal" with Edits
+
+- Synthesize the complete change-checklist analysis (covering findings from Sections 1-4) and all the agreed-upon proposed edits (from Instruction 3) into a single document titled "Sprint Change Proposal." This proposal should align with the structure suggested by Section 5 of the change-checklist.
+- The proposal must clearly present:
+  - **Analysis Summary:** A concise overview of the original issue, its analyzed impact (on epics, artifacts, MVP scope), and the rationale for the chosen path forward.
+  - **Specific Proposed Edits:** For each affected artifact, clearly show or describe the exact changes (e.g., "Change Story X.Y from: [old text] To: [new text]", "Add new Acceptance Criterion to Story A.B: [new AC]", "Update Section 3.2 of Architecture Document as follows: [new/modified text or diagram description]").
+- Present the complete draft of the "Sprint Change Proposal" to the user for final review and feedback. Incorporate any final adjustments requested by the user.
+
+### 5. Finalize & Determine Next Steps
+
+- Obtain explicit user approval for the "Sprint Change Proposal," including all the specific edits documented within it.
+- Provide the finalized "Sprint Change Proposal" document to the user.
+- **Based on the nature of the approved changes:**
+  - **If the approved edits sufficiently address the change and can be implemented directly or organized by a PO/SM:** State that the "Correct Course Task" is complete regarding analysis and change proposal, and the user can now proceed with implementing or logging these changes (e.g., updating actual project documents, backlog items). Suggest handoff to a PO/SM agent for backlog organization if appropriate.
+  - **If the analysis and proposed path (as per checklist Section 4 and potentially Section 6) indicate that the change requires a more fundamental replan (e.g., significant scope change, major architectural rework):** Clearly state this conclusion. Advise the user that the next step involves engaging the primary PM or Architect agents, using the "Sprint Change Proposal" as critical input and context for that deeper replanning effort.
+
+## Output Deliverables
+
+- **Primary:** A "Sprint Change Proposal" document (in markdown format). This document will contain:
+  - A summary of the change-checklist analysis (issue, impact, rationale for the chosen path).
+  - Specific, clearly drafted proposed edits for all affected project artifacts.
+- **Implicit:** An annotated change-checklist (or the record of its completion) reflecting the discussions, findings, and decisions made during the process.
+==================== END: .bmad-core/tasks/correct-course.md ====================
+
 ==================== START: .bmad-core/tasks/execute-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -1721,7 +1840,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 ## Instructions
 
 1. **Initial Assessment**
-
    - If user or the task being run provides a checklist name:
      - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
      - If multiple matches found, ask user to clarify
@@ -1734,14 +1852,12 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
 
 2. **Document and Artifact Gathering**
-
    - Each checklist will specify its required documents/artifacts at the beginning
    - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
 
 3. **Checklist Processing**
 
    If in interactive mode:
-
    - Work through each section of the checklist one at a time
    - For each section:
      - Review all items in the section following instructions for that section embedded in the checklist
@@ -1750,7 +1866,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
 
    If in YOLO mode:
-
    - Process all sections at once
    - Create a comprehensive report of all findings
    - Present the complete analysis to the user
@@ -1758,7 +1873,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 4. **Validation Approach**
 
    For each checklist item:
-
    - Read and understand the requirement
    - Look for evidence in the documentation that satisfies the requirement
    - Consider both explicit mentions and implicit coverage
@@ -1772,7 +1886,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 5. **Section Analysis**
 
    For each section:
-
    - think step by step to calculate pass rate
    - Identify common themes in failed items
    - Provide specific recommendations for improvement
@@ -1782,7 +1895,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 6. **Final Report**
 
    Prepare a summary that includes:
-
    - Overall checklist completion status
    - Pass rates by section
    - List of failed items with context
@@ -1806,6 +1918,7 @@ The LLM will:
 ==================== END: .bmad-core/tasks/execute-checklist.md ====================
 
 ==================== START: .bmad-core/tasks/shard-doc.md ====================
+<!-- Powered by BMAD™ Core -->
 # Document Sharding Task
 
 ## Purpose
@@ -1899,13 +2012,11 @@ CRITICAL: Use proper parsing that understands markdown context. A ## inside a co
 For each extracted section:
 
 1. **Generate filename**: Convert the section heading to lowercase-dash-case
-
    - Remove special characters
    - Replace spaces with dashes
    - Example: "## Tech Stack" → `tech-stack.md`
 
 2. **Adjust heading levels**:
-
    - The level 2 heading becomes level 1 (# instead of ##) in the sharded new document
    - All subsection levels decrease by 1:
 
@@ -1995,80 +2106,8 @@ Document sharded successfully:
 - Ensure the sharding is reversible (could reconstruct the original from shards)
 ==================== END: .bmad-core/tasks/shard-doc.md ====================
 
-==================== START: .bmad-core/tasks/correct-course.md ====================
-# Correct Course Task
-
-## Purpose
-
-- Guide a structured response to a change trigger using the `.bmad-core/checklists/change-checklist`.
-- Analyze the impacts of the change on epics, project artifacts, and the MVP, guided by the checklist's structure.
-- Explore potential solutions (e.g., adjust scope, rollback elements, re-scope features) as prompted by the checklist.
-- Draft specific, actionable proposed updates to any affected project artifacts (e.g., epics, user stories, PRD sections, architecture document sections) based on the analysis.
-- Produce a consolidated "Sprint Change Proposal" document that contains the impact analysis and the clearly drafted proposed edits for user review and approval.
-- Ensure a clear handoff path if the nature of the changes necessitates fundamental replanning by other core agents (like PM or Architect).
-
-## Instructions
-
-### 1. Initial Setup & Mode Selection
-
-- **Acknowledge Task & Inputs:**
-  - Confirm with the user that the "Correct Course Task" (Change Navigation & Integration) is being initiated.
-  - Verify the change trigger and ensure you have the user's initial explanation of the issue and its perceived impact.
-  - Confirm access to all relevant project artifacts (e.g., PRD, Epics/Stories, Architecture Documents, UI/UX Specifications) and, critically, the `.bmad-core/checklists/change-checklist`.
-- **Establish Interaction Mode:**
-  - Ask the user their preferred interaction mode for this task:
-    - **"Incrementally (Default & Recommended):** Shall we work through the change-checklist section by section, discussing findings and collaboratively drafting proposed changes for each relevant part before moving to the next? This allows for detailed, step-by-step refinement."
-    - **"YOLO Mode (Batch Processing):** Or, would you prefer I conduct a more batched analysis based on the checklist and then present a consolidated set of findings and proposed changes for a broader review? This can be quicker for initial assessment but might require more extensive review of the combined proposals."
-  - Once the user chooses, confirm the selected mode and then inform the user: "We will now use the change-checklist to analyze the change and draft proposed updates. I will guide you through the checklist items based on our chosen interaction mode."
-
-### 2. Execute Checklist Analysis (Iteratively or Batched, per Interaction Mode)
-
-- Systematically work through Sections 1-4 of the change-checklist (typically covering Change Context, Epic/Story Impact Analysis, Artifact Conflict Resolution, and Path Evaluation/Recommendation).
-- For each checklist item or logical group of items (depending on interaction mode):
-  - Present the relevant prompt(s) or considerations from the checklist to the user.
-  - Request necessary information and actively analyze the relevant project artifacts (PRD, epics, architecture documents, story history, etc.) to assess the impact.
-  - Discuss your findings for each item with the user.
-  - Record the status of each checklist item (e.g., `[x] Addressed`, `[N/A]`, `[!] Further Action Needed`) and any pertinent notes or decisions.
-  - Collaboratively agree on the "Recommended Path Forward" as prompted by Section 4 of the checklist.
-
-### 3. Draft Proposed Changes (Iteratively or Batched)
-
-- Based on the completed checklist analysis (Sections 1-4) and the agreed "Recommended Path Forward" (excluding scenarios requiring fundamental replans that would necessitate immediate handoff to PM/Architect):
-  - Identify the specific project artifacts that require updates (e.g., specific epics, user stories, PRD sections, architecture document components, diagrams).
-  - **Draft the proposed changes directly and explicitly for each identified artifact.** Examples include:
-    - Revising user story text, acceptance criteria, or priority.
-    - Adding, removing, reordering, or splitting user stories within epics.
-    - Proposing modified architecture diagram snippets (e.g., providing an updated Mermaid diagram block or a clear textual description of the change to an existing diagram).
-    - Updating technology lists, configuration details, or specific sections within the PRD or architecture documents.
-    - Drafting new, small supporting artifacts if necessary (e.g., a brief addendum for a specific decision).
-  - If in "Incremental Mode," discuss and refine these proposed edits for each artifact or small group of related artifacts with the user as they are drafted.
-  - If in "YOLO Mode," compile all drafted edits for presentation in the next step.
-
-### 4. Generate "Sprint Change Proposal" with Edits
-
-- Synthesize the complete change-checklist analysis (covering findings from Sections 1-4) and all the agreed-upon proposed edits (from Instruction 3) into a single document titled "Sprint Change Proposal." This proposal should align with the structure suggested by Section 5 of the change-checklist.
-- The proposal must clearly present:
-  - **Analysis Summary:** A concise overview of the original issue, its analyzed impact (on epics, artifacts, MVP scope), and the rationale for the chosen path forward.
-  - **Specific Proposed Edits:** For each affected artifact, clearly show or describe the exact changes (e.g., "Change Story X.Y from: [old text] To: [new text]", "Add new Acceptance Criterion to Story A.B: [new AC]", "Update Section 3.2 of Architecture Document as follows: [new/modified text or diagram description]").
-- Present the complete draft of the "Sprint Change Proposal" to the user for final review and feedback. Incorporate any final adjustments requested by the user.
-
-### 5. Finalize & Determine Next Steps
-
-- Obtain explicit user approval for the "Sprint Change Proposal," including all the specific edits documented within it.
-- Provide the finalized "Sprint Change Proposal" document to the user.
-- **Based on the nature of the approved changes:**
-  - **If the approved edits sufficiently address the change and can be implemented directly or organized by a PO/SM:** State that the "Correct Course Task" is complete regarding analysis and change proposal, and the user can now proceed with implementing or logging these changes (e.g., updating actual project documents, backlog items). Suggest handoff to a PO/SM agent for backlog organization if appropriate.
-  - **If the analysis and proposed path (as per checklist Section 4 and potentially Section 6) indicate that the change requires a more fundamental replan (e.g., significant scope change, major architectural rework):** Clearly state this conclusion. Advise the user that the next step involves engaging the primary PM or Architect agents, using the "Sprint Change Proposal" as critical input and context for that deeper replanning effort.
-
-## Output Deliverables
-
-- **Primary:** A "Sprint Change Proposal" document (in markdown format). This document will contain:
-  - A summary of the change-checklist analysis (issue, impact, rationale for the chosen path).
-  - Specific, clearly drafted proposed edits for all affected project artifacts.
-- **Implicit:** An annotated change-checklist (or the record of its completion) reflecting the discussions, findings, and decisions made during the process.
-==================== END: .bmad-core/tasks/correct-course.md ====================
-
 ==================== START: .bmad-core/tasks/validate-next-story.md ====================
+<!-- Powered by BMAD™ Core -->
 # Validate Next Story Task
 
 ## Purpose
@@ -2206,6 +2245,7 @@ Provide a structured validation report including:
 ==================== END: .bmad-core/tasks/validate-next-story.md ====================
 
 ==================== START: .bmad-core/templates/story-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: story-template-v2
   name: Story Document
@@ -2220,7 +2260,7 @@ workflow:
   elicitation: advanced-elicitation
 
 agent_config:
-  editable_sections: 
+  editable_sections:
     - Status
     - Story
     - Acceptance Criteria
@@ -2237,7 +2277,7 @@ sections:
     instruction: Select the current status of the story
     owner: scrum-master
     editors: [scrum-master, dev-agent]
-    
+
   - id: story
     title: Story
     type: template-text
@@ -2249,7 +2289,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master]
-    
+
   - id: acceptance-criteria
     title: Acceptance Criteria
     type: numbered-list
@@ -2257,7 +2297,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master]
-    
+
   - id: tasks-subtasks
     title: Tasks / Subtasks
     type: bullet-list
@@ -2274,7 +2314,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master, dev-agent]
-    
+
   - id: dev-notes
     title: Dev Notes
     instruction: |
@@ -2298,7 +2338,7 @@ sections:
         elicit: true
         owner: scrum-master
         editors: [scrum-master]
-        
+
   - id: change-log
     title: Change Log
     type: table
@@ -2306,7 +2346,7 @@ sections:
     instruction: Track changes made to this story document
     owner: scrum-master
     editors: [scrum-master, dev-agent, qa-agent]
-    
+
   - id: dev-agent-record
     title: Dev Agent Record
     instruction: This section is populated by the development agent during implementation
@@ -2319,25 +2359,25 @@ sections:
         instruction: Record the specific AI agent model and version used for development
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: debug-log-references
         title: Debug Log References
         instruction: Reference any debug logs or traces generated during development
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: completion-notes
         title: Completion Notes List
         instruction: Notes about the completion of tasks and any issues encountered
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: file-list
         title: File List
         instruction: List all files created, modified, or affected during story implementation
         owner: dev-agent
         editors: [dev-agent]
-        
+
   - id: qa-results
     title: QA Results
     instruction: Results from QA Agent QA review of the completed story implementation
@@ -2345,7 +2385,194 @@ sections:
     editors: [qa-agent]
 ==================== END: .bmad-core/templates/story-tmpl.yaml ====================
 
+==================== START: .bmad-core/checklists/change-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
+# Change Navigation Checklist
+
+**Purpose:** To systematically guide the selected Agent and user through the analysis and planning required when a significant change (pivot, tech issue, missing requirement, failed story) is identified during the BMad workflow.
+
+**Instructions:** Review each item with the user. Mark `[x]` for completed/confirmed, `[N/A]` if not applicable, or add notes for discussion points.
+
+[[LLM: INITIALIZATION INSTRUCTIONS - CHANGE NAVIGATION
+
+Changes during development are inevitable, but how we handle them determines project success or failure.
+
+Before proceeding, understand:
+
+1. This checklist is for SIGNIFICANT changes that affect the project direction
+2. Minor adjustments within a story don't require this process
+3. The goal is to minimize wasted work while adapting to new realities
+4. User buy-in is critical - they must understand and approve changes
+
+Required context:
+
+- The triggering story or issue
+- Current project state (completed stories, current epic)
+- Access to PRD, architecture, and other key documents
+- Understanding of remaining work planned
+
+APPROACH:
+This is an interactive process with the user. Work through each section together, discussing implications and options. The user makes final decisions, but provide expert guidance on technical feasibility and impact.
+
+REMEMBER: Changes are opportunities to improve, not failures. Handle them professionally and constructively.]]
+
+---
+
+## 1. Understand the Trigger & Context
+
+[[LLM: Start by fully understanding what went wrong and why. Don't jump to solutions yet. Ask probing questions:
+
+- What exactly happened that triggered this review?
+- Is this a one-time issue or symptomatic of a larger problem?
+- Could this have been anticipated earlier?
+- What assumptions were incorrect?
+
+Be specific and factual, not blame-oriented.]]
+
+- [ ] **Identify Triggering Story:** Clearly identify the story (or stories) that revealed the issue.
+- [ ] **Define the Issue:** Articulate the core problem precisely.
+  - [ ] Is it a technical limitation/dead-end?
+  - [ ] Is it a newly discovered requirement?
+  - [ ] Is it a fundamental misunderstanding of existing requirements?
+  - [ ] Is it a necessary pivot based on feedback or new information?
+  - [ ] Is it a failed/abandoned story needing a new approach?
+- [ ] **Assess Initial Impact:** Describe the immediate observed consequences (e.g., blocked progress, incorrect functionality, non-viable tech).
+- [ ] **Gather Evidence:** Note any specific logs, error messages, user feedback, or analysis that supports the issue definition.
+
+## 2. Epic Impact Assessment
+
+[[LLM: Changes ripple through the project structure. Systematically evaluate:
+
+1. Can we salvage the current epic with modifications?
+2. Do future epics still make sense given this change?
+3. Are we creating or eliminating dependencies?
+4. Does the epic sequence need reordering?
+
+Think about both immediate and downstream effects.]]
+
+- [ ] **Analyze Current Epic:**
+  - [ ] Can the current epic containing the trigger story still be completed?
+  - [ ] Does the current epic need modification (story changes, additions, removals)?
+  - [ ] Should the current epic be abandoned or fundamentally redefined?
+- [ ] **Analyze Future Epics:**
+  - [ ] Review all remaining planned epics.
+  - [ ] Does the issue require changes to planned stories in future epics?
+  - [ ] Does the issue invalidate any future epics?
+  - [ ] Does the issue necessitate the creation of entirely new epics?
+  - [ ] Should the order/priority of future epics be changed?
+- [ ] **Summarize Epic Impact:** Briefly document the overall effect on the project's epic structure and flow.
+
+## 3. Artifact Conflict & Impact Analysis
+
+[[LLM: Documentation drives development in BMad. Check each artifact:
+
+1. Does this change invalidate documented decisions?
+2. Are architectural assumptions still valid?
+3. Do user flows need rethinking?
+4. Are technical constraints different than documented?
+
+Be thorough - missed conflicts cause future problems.]]
+
+- [ ] **Review PRD:**
+  - [ ] Does the issue conflict with the core goals or requirements stated in the PRD?
+  - [ ] Does the PRD need clarification or updates based on the new understanding?
+- [ ] **Review Architecture Document:**
+  - [ ] Does the issue conflict with the documented architecture (components, patterns, tech choices)?
+  - [ ] Are specific components/diagrams/sections impacted?
+  - [ ] Does the technology list need updating?
+  - [ ] Do data models or schemas need revision?
+  - [ ] Are external API integrations affected?
+- [ ] **Review Frontend Spec (if applicable):**
+  - [ ] Does the issue conflict with the FE architecture, component library choice, or UI/UX design?
+  - [ ] Are specific FE components or user flows impacted?
+- [ ] **Review Other Artifacts (if applicable):**
+  - [ ] Consider impact on deployment scripts, IaC, monitoring setup, etc.
+- [ ] **Summarize Artifact Impact:** List all artifacts requiring updates and the nature of the changes needed.
+
+## 4. Path Forward Evaluation
+
+[[LLM: Present options clearly with pros/cons. For each path:
+
+1. What's the effort required?
+2. What work gets thrown away?
+3. What risks are we taking?
+4. How does this affect timeline?
+5. Is this sustainable long-term?
+
+Be honest about trade-offs. There's rarely a perfect solution.]]
+
+- [ ] **Option 1: Direct Adjustment / Integration:**
+  - [ ] Can the issue be addressed by modifying/adding future stories within the existing plan?
+  - [ ] Define the scope and nature of these adjustments.
+  - [ ] Assess feasibility, effort, and risks of this path.
+- [ ] **Option 2: Potential Rollback:**
+  - [ ] Would reverting completed stories significantly simplify addressing the issue?
+  - [ ] Identify specific stories/commits to consider for rollback.
+  - [ ] Assess the effort required for rollback.
+  - [ ] Assess the impact of rollback (lost work, data implications).
+  - [ ] Compare the net benefit/cost vs. Direct Adjustment.
+- [ ] **Option 3: PRD MVP Review & Potential Re-scoping:**
+  - [ ] Is the original PRD MVP still achievable given the issue and constraints?
+  - [ ] Does the MVP scope need reduction (removing features/epics)?
+  - [ ] Do the core MVP goals need modification?
+  - [ ] Are alternative approaches needed to meet the original MVP intent?
+  - [ ] **Extreme Case:** Does the issue necessitate a fundamental replan or potentially a new PRD V2 (to be handled by PM)?
+- [ ] **Select Recommended Path:** Based on the evaluation, agree on the most viable path forward.
+
+## 5. Sprint Change Proposal Components
+
+[[LLM: The proposal must be actionable and clear. Ensure:
+
+1. The issue is explained in plain language
+2. Impacts are quantified where possible
+3. The recommended path has clear rationale
+4. Next steps are specific and assigned
+5. Success criteria for the change are defined
+
+This proposal guides all subsequent work.]]
+
+(Ensure all agreed-upon points from previous sections are captured in the proposal)
+
+- [ ] **Identified Issue Summary:** Clear, concise problem statement.
+- [ ] **Epic Impact Summary:** How epics are affected.
+- [ ] **Artifact Adjustment Needs:** List of documents to change.
+- [ ] **Recommended Path Forward:** Chosen solution with rationale.
+- [ ] **PRD MVP Impact:** Changes to scope/goals (if any).
+- [ ] **High-Level Action Plan:** Next steps for stories/updates.
+- [ ] **Agent Handoff Plan:** Identify roles needed (PM, Arch, Design Arch, PO).
+
+## 6. Final Review & Handoff
+
+[[LLM: Changes require coordination. Before concluding:
+
+1. Is the user fully aligned with the plan?
+2. Do all stakeholders understand the impacts?
+3. Are handoffs to other agents clear?
+4. Is there a rollback plan if the change fails?
+5. How will we validate the change worked?
+
+Get explicit approval - implicit agreement causes problems.
+
+FINAL REPORT:
+After completing the checklist, provide a concise summary:
+
+- What changed and why
+- What we're doing about it
+- Who needs to do what
+- When we'll know if it worked
+
+Keep it action-oriented and forward-looking.]]
+
+- [ ] **Review Checklist:** Confirm all relevant items were discussed.
+- [ ] **Review Sprint Change Proposal:** Ensure it accurately reflects the discussion and decisions.
+- [ ] **User Approval:** Obtain explicit user approval for the proposal.
+- [ ] **Confirm Next Steps:** Reiterate the handoff plan and the next actions to be taken by specific agents.
+
+---
+==================== END: .bmad-core/checklists/change-checklist.md ====================
+
 ==================== START: .bmad-core/checklists/po-master-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Product Owner (PO) Master Validation Checklist
 
 This checklist serves as a comprehensive framework for the Product Owner to validate project plans before development execution. It adapts intelligently based on project type (greenfield vs brownfield) and includes UI/UX considerations when applicable.
@@ -2356,14 +2583,12 @@ PROJECT TYPE DETECTION:
 First, determine the project type by checking:
 
 1. Is this a GREENFIELD project (new from scratch)?
-
    - Look for: New project initialization, no existing codebase references
    - Check for: prd.md, architecture.md, new project setup stories
 
 2. Is this a BROWNFIELD project (enhancing existing system)?
-
    - Look for: References to existing codebase, enhancement/modification language
-   - Check for: brownfield-prd.md, brownfield-architecture.md, existing system analysis
+   - Check for: prd.md, architecture.md, existing system analysis
 
 3. Does the project include UI/UX components?
    - Check for: frontend-architecture.md, UI/UX specifications, design files
@@ -2381,8 +2606,8 @@ For GREENFIELD projects:
 
 For BROWNFIELD projects:
 
-- brownfield-prd.md - The brownfield enhancement requirements
-- brownfield-architecture.md - The enhancement architecture
+- prd.md - The brownfield enhancement requirements
+- architecture.md - The enhancement architecture
 - Existing project codebase access (CRITICAL - cannot proceed without this)
 - Current deployment configuration and infrastructure details
 - Database schemas, API documentation, monitoring setup
@@ -2695,7 +2920,6 @@ Ask the user if they want to work through the checklist:
 Generate a comprehensive validation report that adapts to project type:
 
 1. Executive Summary
-
    - Project type: [Greenfield/Brownfield] with [UI/No UI]
    - Overall readiness (percentage)
    - Go/No-Go recommendation
@@ -2705,42 +2929,36 @@ Generate a comprehensive validation report that adapts to project type:
 2. Project-Specific Analysis
 
    FOR GREENFIELD:
-
    - Setup completeness
    - Dependency sequencing
    - MVP scope appropriateness
    - Development timeline feasibility
 
    FOR BROWNFIELD:
-
    - Integration risk level (High/Medium/Low)
    - Existing system impact assessment
    - Rollback readiness
    - User disruption potential
 
 3. Risk Assessment
-
    - Top 5 risks by severity
    - Mitigation recommendations
    - Timeline impact of addressing issues
    - [BROWNFIELD] Specific integration risks
 
 4. MVP Completeness
-
    - Core features coverage
    - Missing essential functionality
    - Scope creep identified
    - True MVP vs over-engineering
 
 5. Implementation Readiness
-
    - Developer clarity score (1-10)
    - Ambiguous requirements count
    - Missing technical details
    - [BROWNFIELD] Integration point clarity
 
 6. Recommendations
-
    - Must-fix before development
    - Should-fix for quality
    - Consider for improvement
@@ -2789,192 +3007,8 @@ After presenting the report, ask if the user wants:
 - **REJECTED**: The plan requires significant revision to address critical deficiencies.
 ==================== END: .bmad-core/checklists/po-master-checklist.md ====================
 
-==================== START: .bmad-core/checklists/change-checklist.md ====================
-# Change Navigation Checklist
-
-**Purpose:** To systematically guide the selected Agent and user through the analysis and planning required when a significant change (pivot, tech issue, missing requirement, failed story) is identified during the BMad workflow.
-
-**Instructions:** Review each item with the user. Mark `[x]` for completed/confirmed, `[N/A]` if not applicable, or add notes for discussion points.
-
-[[LLM: INITIALIZATION INSTRUCTIONS - CHANGE NAVIGATION
-
-Changes during development are inevitable, but how we handle them determines project success or failure.
-
-Before proceeding, understand:
-
-1. This checklist is for SIGNIFICANT changes that affect the project direction
-2. Minor adjustments within a story don't require this process
-3. The goal is to minimize wasted work while adapting to new realities
-4. User buy-in is critical - they must understand and approve changes
-
-Required context:
-
-- The triggering story or issue
-- Current project state (completed stories, current epic)
-- Access to PRD, architecture, and other key documents
-- Understanding of remaining work planned
-
-APPROACH:
-This is an interactive process with the user. Work through each section together, discussing implications and options. The user makes final decisions, but provide expert guidance on technical feasibility and impact.
-
-REMEMBER: Changes are opportunities to improve, not failures. Handle them professionally and constructively.]]
-
----
-
-## 1. Understand the Trigger & Context
-
-[[LLM: Start by fully understanding what went wrong and why. Don't jump to solutions yet. Ask probing questions:
-
-- What exactly happened that triggered this review?
-- Is this a one-time issue or symptomatic of a larger problem?
-- Could this have been anticipated earlier?
-- What assumptions were incorrect?
-
-Be specific and factual, not blame-oriented.]]
-
-- [ ] **Identify Triggering Story:** Clearly identify the story (or stories) that revealed the issue.
-- [ ] **Define the Issue:** Articulate the core problem precisely.
-  - [ ] Is it a technical limitation/dead-end?
-  - [ ] Is it a newly discovered requirement?
-  - [ ] Is it a fundamental misunderstanding of existing requirements?
-  - [ ] Is it a necessary pivot based on feedback or new information?
-  - [ ] Is it a failed/abandoned story needing a new approach?
-- [ ] **Assess Initial Impact:** Describe the immediate observed consequences (e.g., blocked progress, incorrect functionality, non-viable tech).
-- [ ] **Gather Evidence:** Note any specific logs, error messages, user feedback, or analysis that supports the issue definition.
-
-## 2. Epic Impact Assessment
-
-[[LLM: Changes ripple through the project structure. Systematically evaluate:
-
-1. Can we salvage the current epic with modifications?
-2. Do future epics still make sense given this change?
-3. Are we creating or eliminating dependencies?
-4. Does the epic sequence need reordering?
-
-Think about both immediate and downstream effects.]]
-
-- [ ] **Analyze Current Epic:**
-  - [ ] Can the current epic containing the trigger story still be completed?
-  - [ ] Does the current epic need modification (story changes, additions, removals)?
-  - [ ] Should the current epic be abandoned or fundamentally redefined?
-- [ ] **Analyze Future Epics:**
-  - [ ] Review all remaining planned epics.
-  - [ ] Does the issue require changes to planned stories in future epics?
-  - [ ] Does the issue invalidate any future epics?
-  - [ ] Does the issue necessitate the creation of entirely new epics?
-  - [ ] Should the order/priority of future epics be changed?
-- [ ] **Summarize Epic Impact:** Briefly document the overall effect on the project's epic structure and flow.
-
-## 3. Artifact Conflict & Impact Analysis
-
-[[LLM: Documentation drives development in BMad. Check each artifact:
-
-1. Does this change invalidate documented decisions?
-2. Are architectural assumptions still valid?
-3. Do user flows need rethinking?
-4. Are technical constraints different than documented?
-
-Be thorough - missed conflicts cause future problems.]]
-
-- [ ] **Review PRD:**
-  - [ ] Does the issue conflict with the core goals or requirements stated in the PRD?
-  - [ ] Does the PRD need clarification or updates based on the new understanding?
-- [ ] **Review Architecture Document:**
-  - [ ] Does the issue conflict with the documented architecture (components, patterns, tech choices)?
-  - [ ] Are specific components/diagrams/sections impacted?
-  - [ ] Does the technology list need updating?
-  - [ ] Do data models or schemas need revision?
-  - [ ] Are external API integrations affected?
-- [ ] **Review Frontend Spec (if applicable):**
-  - [ ] Does the issue conflict with the FE architecture, component library choice, or UI/UX design?
-  - [ ] Are specific FE components or user flows impacted?
-- [ ] **Review Other Artifacts (if applicable):**
-  - [ ] Consider impact on deployment scripts, IaC, monitoring setup, etc.
-- [ ] **Summarize Artifact Impact:** List all artifacts requiring updates and the nature of the changes needed.
-
-## 4. Path Forward Evaluation
-
-[[LLM: Present options clearly with pros/cons. For each path:
-
-1. What's the effort required?
-2. What work gets thrown away?
-3. What risks are we taking?
-4. How does this affect timeline?
-5. Is this sustainable long-term?
-
-Be honest about trade-offs. There's rarely a perfect solution.]]
-
-- [ ] **Option 1: Direct Adjustment / Integration:**
-  - [ ] Can the issue be addressed by modifying/adding future stories within the existing plan?
-  - [ ] Define the scope and nature of these adjustments.
-  - [ ] Assess feasibility, effort, and risks of this path.
-- [ ] **Option 2: Potential Rollback:**
-  - [ ] Would reverting completed stories significantly simplify addressing the issue?
-  - [ ] Identify specific stories/commits to consider for rollback.
-  - [ ] Assess the effort required for rollback.
-  - [ ] Assess the impact of rollback (lost work, data implications).
-  - [ ] Compare the net benefit/cost vs. Direct Adjustment.
-- [ ] **Option 3: PRD MVP Review & Potential Re-scoping:**
-  - [ ] Is the original PRD MVP still achievable given the issue and constraints?
-  - [ ] Does the MVP scope need reduction (removing features/epics)?
-  - [ ] Do the core MVP goals need modification?
-  - [ ] Are alternative approaches needed to meet the original MVP intent?
-  - [ ] **Extreme Case:** Does the issue necessitate a fundamental replan or potentially a new PRD V2 (to be handled by PM)?
-- [ ] **Select Recommended Path:** Based on the evaluation, agree on the most viable path forward.
-
-## 5. Sprint Change Proposal Components
-
-[[LLM: The proposal must be actionable and clear. Ensure:
-
-1. The issue is explained in plain language
-2. Impacts are quantified where possible
-3. The recommended path has clear rationale
-4. Next steps are specific and assigned
-5. Success criteria for the change are defined
-
-This proposal guides all subsequent work.]]
-
-(Ensure all agreed-upon points from previous sections are captured in the proposal)
-
-- [ ] **Identified Issue Summary:** Clear, concise problem statement.
-- [ ] **Epic Impact Summary:** How epics are affected.
-- [ ] **Artifact Adjustment Needs:** List of documents to change.
-- [ ] **Recommended Path Forward:** Chosen solution with rationale.
-- [ ] **PRD MVP Impact:** Changes to scope/goals (if any).
-- [ ] **High-Level Action Plan:** Next steps for stories/updates.
-- [ ] **Agent Handoff Plan:** Identify roles needed (PM, Arch, Design Arch, PO).
-
-## 6. Final Review & Handoff
-
-[[LLM: Changes require coordination. Before concluding:
-
-1. Is the user fully aligned with the plan?
-2. Do all stakeholders understand the impacts?
-3. Are handoffs to other agents clear?
-4. Is there a rollback plan if the change fails?
-5. How will we validate the change worked?
-
-Get explicit approval - implicit agreement causes problems.
-
-FINAL REPORT:
-After completing the checklist, provide a concise summary:
-
-- What changed and why
-- What we're doing about it
-- Who needs to do what
-- When we'll know if it worked
-
-Keep it action-oriented and forward-looking.]]
-
-- [ ] **Review Checklist:** Confirm all relevant items were discussed.
-- [ ] **Review Sprint Change Proposal:** Ensure it accurately reflects the discussion and decisions.
-- [ ] **User Approval:** Obtain explicit user approval for the proposal.
-- [ ] **Confirm Next Steps:** Reiterate the handoff plan and the next actions to be taken by specific agents.
-
----
-==================== END: .bmad-core/checklists/change-checklist.md ====================
-
 ==================== START: .bmad-core/tasks/create-next-story.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Next Story Task
 
 ## Purpose
@@ -3090,6 +3124,7 @@ ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
 ==================== END: .bmad-core/tasks/create-next-story.md ====================
 
 ==================== START: .bmad-core/checklists/story-draft-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Story Draft Checklist
 
 The Scrum Master should use this checklist to validate that each story contains sufficient context for a developer agent to implement it successfully, while assuming the dev agent has reasonable capabilities to figure things out.
@@ -3209,19 +3244,16 @@ Note: We don't need every file listed - just the important ones.]]
 Generate a concise validation report:
 
 1. Quick Summary
-
    - Story readiness: READY / NEEDS REVISION / BLOCKED
    - Clarity score (1-10)
    - Major gaps identified
 
 2. Fill in the validation table with:
-
    - PASS: Requirements clearly met
    - PARTIAL: Some gaps but workable
    - FAIL: Critical information missing
 
 3. Specific Issues (if any)
-
    - List concrete problems to fix
    - Suggest specific improvements
    - Identify any blocking dependencies
@@ -3248,7 +3280,160 @@ Be pragmatic - perfect documentation doesn't exist, but it must be enough to pro
 - BLOCKED: External information required (specify what information)
 ==================== END: .bmad-core/checklists/story-draft-checklist.md ====================
 
+==================== START: .bmad-core/tasks/apply-qa-fixes.md ====================
+<!-- Powered by BMAD™ Core -->
+# apply-qa-fixes
+
+Implement fixes based on QA results (gate and assessments) for a specific story. This task is for the Dev agent to systematically consume QA outputs and apply code/test changes while only updating allowed sections in the story file.
+
+## Purpose
+
+- Read QA outputs for a story (gate YAML + assessment markdowns)
+- Create a prioritized, deterministic fix plan
+- Apply code and test changes to close gaps and address issues
+- Update only the allowed story sections for the Dev agent
+
+## Inputs
+
+```yaml
+required:
+  - story_id: '{epic}.{story}' # e.g., "2.2"
+  - qa_root: from `.bmad-core/core-config.yaml` key `qa.qaLocation` (e.g., `docs/project/qa`)
+  - story_root: from `.bmad-core/core-config.yaml` key `devStoryLocation` (e.g., `docs/project/stories`)
+
+optional:
+  - story_title: '{title}' # derive from story H1 if missing
+  - story_slug: '{slug}' # derive from title (lowercase, hyphenated) if missing
+```
+
+## QA Sources to Read
+
+- Gate (YAML): `{qa_root}/gates/{epic}.{story}-*.yml`
+  - If multiple, use the most recent by modified time
+- Assessments (Markdown):
+  - Test Design: `{qa_root}/assessments/{epic}.{story}-test-design-*.md`
+  - Traceability: `{qa_root}/assessments/{epic}.{story}-trace-*.md`
+  - Risk Profile: `{qa_root}/assessments/{epic}.{story}-risk-*.md`
+  - NFR Assessment: `{qa_root}/assessments/{epic}.{story}-nfr-*.md`
+
+## Prerequisites
+
+- Repository builds and tests run locally (Deno 2)
+- Lint and test commands available:
+  - `deno lint`
+  - `deno test -A`
+
+## Process (Do not skip steps)
+
+### 0) Load Core Config & Locate Story
+
+- Read `.bmad-core/core-config.yaml` and resolve `qa_root` and `story_root`
+- Locate story file in `{story_root}/{epic}.{story}.*.md`
+  - HALT if missing and ask for correct story id/path
+
+### 1) Collect QA Findings
+
+- Parse the latest gate YAML:
+  - `gate` (PASS|CONCERNS|FAIL|WAIVED)
+  - `top_issues[]` with `id`, `severity`, `finding`, `suggested_action`
+  - `nfr_validation.*.status` and notes
+  - `trace` coverage summary/gaps
+  - `test_design.coverage_gaps[]`
+  - `risk_summary.recommendations.must_fix[]` (if present)
+- Read any present assessment markdowns and extract explicit gaps/recommendations
+
+### 2) Build Deterministic Fix Plan (Priority Order)
+
+Apply in order, highest priority first:
+
+1. High severity items in `top_issues` (security/perf/reliability/maintainability)
+2. NFR statuses: all FAIL must be fixed → then CONCERNS
+3. Test Design `coverage_gaps` (prioritize P0 scenarios if specified)
+4. Trace uncovered requirements (AC-level)
+5. Risk `must_fix` recommendations
+6. Medium severity issues, then low
+
+Guidance:
+
+- Prefer tests closing coverage gaps before/with code changes
+- Keep changes minimal and targeted; follow project architecture and TS/Deno rules
+
+### 3) Apply Changes
+
+- Implement code fixes per plan
+- Add missing tests to close coverage gaps (unit first; integration where required by AC)
+- Keep imports centralized via `deps.ts` (see `docs/project/typescript-rules.md`)
+- Follow DI boundaries in `src/core/di.ts` and existing patterns
+
+### 4) Validate
+
+- Run `deno lint` and fix issues
+- Run `deno test -A` until all tests pass
+- Iterate until clean
+
+### 5) Update Story (Allowed Sections ONLY)
+
+CRITICAL: Dev agent is ONLY authorized to update these sections of the story file. Do not modify any other sections (e.g., QA Results, Story, Acceptance Criteria, Dev Notes, Testing):
+
+- Tasks / Subtasks Checkboxes (mark any fix subtask you added as done)
+- Dev Agent Record →
+  - Agent Model Used (if changed)
+  - Debug Log References (commands/results, e.g., lint/tests)
+  - Completion Notes List (what changed, why, how)
+  - File List (all added/modified/deleted files)
+- Change Log (new dated entry describing applied fixes)
+- Status (see Rule below)
+
+Status Rule:
+
+- If gate was PASS and all identified gaps are closed → set `Status: Ready for Done`
+- Otherwise → set `Status: Ready for Review` and notify QA to re-run the review
+
+### 6) Do NOT Edit Gate Files
+
+- Dev does not modify gate YAML. If fixes address issues, request QA to re-run `review-story` to update the gate
+
+## Blocking Conditions
+
+- Missing `.bmad-core/core-config.yaml`
+- Story file not found for `story_id`
+- No QA artifacts found (neither gate nor assessments)
+  - HALT and request QA to generate at least a gate file (or proceed only with clear developer-provided fix list)
+
+## Completion Checklist
+
+- deno lint: 0 problems
+- deno test -A: all tests pass
+- All high severity `top_issues` addressed
+- NFR FAIL → resolved; CONCERNS minimized or documented
+- Coverage gaps closed or explicitly documented with rationale
+- Story updated (allowed sections only) including File List and Change Log
+- Status set according to Status Rule
+
+## Example: Story 2.2
+
+Given gate `docs/project/qa/gates/2.2-*.yml` shows
+
+- `coverage_gaps`: Back action behavior untested (AC2)
+- `coverage_gaps`: Centralized dependencies enforcement untested (AC4)
+
+Fix plan:
+
+- Add a test ensuring the Toolkit Menu "Back" action returns to Main Menu
+- Add a static test verifying imports for service/view go through `deps.ts`
+- Re-run lint/tests and update Dev Agent Record + File List accordingly
+
+## Key Principles
+
+- Deterministic, risk-first prioritization
+- Minimal, maintainable changes
+- Tests validate behavior and close gaps
+- Strict adherence to allowed story update areas
+- Gate ownership remains with QA; Dev signals readiness via Status
+==================== END: .bmad-core/tasks/apply-qa-fixes.md ====================
+
 ==================== START: .bmad-core/checklists/story-dod-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Story Definition of Done (DoD) Checklist
 
 ## Instructions for Developer Agent
@@ -3276,14 +3461,12 @@ The goal is quality delivery, not just checking boxes.]]
 1. **Requirements Met:**
 
    [[LLM: Be specific - list each requirement and whether it's complete]]
-
    - [ ] All functional requirements specified in the story are implemented.
    - [ ] All acceptance criteria defined in the story are met.
 
 2. **Coding Standards & Project Structure:**
 
    [[LLM: Code quality matters for maintainability. Check each item carefully]]
-
    - [ ] All new/modified code strictly adheres to `Operational Guidelines`.
    - [ ] All new/modified code aligns with `Project Structure` (file locations, naming, etc.).
    - [ ] Adherence to `Tech Stack` for technologies/versions used (if story introduces or modifies tech usage).
@@ -3295,7 +3478,6 @@ The goal is quality delivery, not just checking boxes.]]
 3. **Testing:**
 
    [[LLM: Testing proves your code works. Be honest about test coverage]]
-
    - [ ] All required unit tests as per the story and `Operational Guidelines` Testing Strategy are implemented.
    - [ ] All required integration tests (if applicable) as per the story and `Operational Guidelines` Testing Strategy are implemented.
    - [ ] All tests (unit, integration, E2E if applicable) pass successfully.
@@ -3304,14 +3486,12 @@ The goal is quality delivery, not just checking boxes.]]
 4. **Functionality & Verification:**
 
    [[LLM: Did you actually run and test your code? Be specific about what you tested]]
-
    - [ ] Functionality has been manually verified by the developer (e.g., running the app locally, checking UI, testing API endpoints).
    - [ ] Edge cases and potential error conditions considered and handled gracefully.
 
 5. **Story Administration:**
 
    [[LLM: Documentation helps the next developer. What should they know?]]
-
    - [ ] All tasks within the story file are marked as complete.
    - [ ] Any clarifications or decisions made during development are documented in the story file or linked appropriately.
    - [ ] The story wrap up section has been completed with notes of changes or information relevant to the next story or overall project, the agent model that was primarily used during development, and the changelog of any changes is properly updated.
@@ -3319,7 +3499,6 @@ The goal is quality delivery, not just checking boxes.]]
 6. **Dependencies, Build & Configuration:**
 
    [[LLM: Build issues block everyone. Ensure everything compiles and runs cleanly]]
-
    - [ ] Project builds successfully without errors.
    - [ ] Project linting passes
    - [ ] Any new dependencies added were either pre-approved in the story requirements OR explicitly approved by the user during development (approval documented in story file).
@@ -3330,7 +3509,6 @@ The goal is quality delivery, not just checking boxes.]]
 7. **Documentation (If Applicable):**
 
    [[LLM: Good documentation prevents future confusion. What needs explaining?]]
-
    - [ ] Relevant inline code documentation (e.g., JSDoc, TSDoc, Python docstrings) for new public APIs or complex logic is complete.
    - [ ] User-facing documentation updated, if changes impact users.
    - [ ] Technical documentation (e.g., READMEs, system diagrams) updated if significant architectural changes were made.
@@ -3352,10 +3530,533 @@ Be honest - it's better to flag issues now than have them discovered later.]]
 - [ ] I, the Developer Agent, confirm that all applicable items above have been addressed.
 ==================== END: .bmad-core/checklists/story-dod-checklist.md ====================
 
+==================== START: .bmad-core/tasks/nfr-assess.md ====================
+<!-- Powered by BMAD™ Core -->
+# nfr-assess
+
+Quick NFR validation focused on the core four: security, performance, reliability, maintainability.
+
+## Inputs
+
+```yaml
+required:
+  - story_id: '{epic}.{story}' # e.g., "1.3"
+  - story_path: `.bmad-core/core-config.yaml` for the `devStoryLocation`
+
+optional:
+  - architecture_refs: `.bmad-core/core-config.yaml` for the `architecture.architectureFile`
+  - technical_preferences: `.bmad-core/core-config.yaml` for the `technicalPreferences`
+  - acceptance_criteria: From story file
+```
+
+## Purpose
+
+Assess non-functional requirements for a story and generate:
+
+1. YAML block for the gate file's `nfr_validation` section
+2. Brief markdown assessment saved to `qa.qaLocation/assessments/{epic}.{story}-nfr-{YYYYMMDD}.md`
+
+## Process
+
+### 0. Fail-safe for Missing Inputs
+
+If story_path or story file can't be found:
+
+- Still create assessment file with note: "Source story not found"
+- Set all selected NFRs to CONCERNS with notes: "Target unknown / evidence missing"
+- Continue with assessment to provide value
+
+### 1. Elicit Scope
+
+**Interactive mode:** Ask which NFRs to assess
+**Non-interactive mode:** Default to core four (security, performance, reliability, maintainability)
+
+```text
+Which NFRs should I assess? (Enter numbers or press Enter for default)
+[1] Security (default)
+[2] Performance (default)
+[3] Reliability (default)
+[4] Maintainability (default)
+[5] Usability
+[6] Compatibility
+[7] Portability
+[8] Functional Suitability
+
+> [Enter for 1-4]
+```
+
+### 2. Check for Thresholds
+
+Look for NFR requirements in:
+
+- Story acceptance criteria
+- `docs/architecture/*.md` files
+- `docs/technical-preferences.md`
+
+**Interactive mode:** Ask for missing thresholds
+**Non-interactive mode:** Mark as CONCERNS with "Target unknown"
+
+```text
+No performance requirements found. What's your target response time?
+> 200ms for API calls
+
+No security requirements found. Required auth method?
+> JWT with refresh tokens
+```
+
+**Unknown targets policy:** If a target is missing and not provided, mark status as CONCERNS with notes: "Target unknown"
+
+### 3. Quick Assessment
+
+For each selected NFR, check:
+
+- Is there evidence it's implemented?
+- Can we validate it?
+- Are there obvious gaps?
+
+### 4. Generate Outputs
+
+## Output 1: Gate YAML Block
+
+Generate ONLY for NFRs actually assessed (no placeholders):
+
+```yaml
+# Gate YAML (copy/paste):
+nfr_validation:
+  _assessed: [security, performance, reliability, maintainability]
+  security:
+    status: CONCERNS
+    notes: 'No rate limiting on auth endpoints'
+  performance:
+    status: PASS
+    notes: 'Response times < 200ms verified'
+  reliability:
+    status: PASS
+    notes: 'Error handling and retries implemented'
+  maintainability:
+    status: CONCERNS
+    notes: 'Test coverage at 65%, target is 80%'
+```
+
+## Deterministic Status Rules
+
+- **FAIL**: Any selected NFR has critical gap or target clearly not met
+- **CONCERNS**: No FAILs, but any NFR is unknown/partial/missing evidence
+- **PASS**: All selected NFRs meet targets with evidence
+
+## Quality Score Calculation
+
+```
+quality_score = 100
+- 20 for each FAIL attribute
+- 10 for each CONCERNS attribute
+Floor at 0, ceiling at 100
+```
+
+If `technical-preferences.md` defines custom weights, use those instead.
+
+## Output 2: Brief Assessment Report
+
+**ALWAYS save to:** `qa.qaLocation/assessments/{epic}.{story}-nfr-{YYYYMMDD}.md`
+
+```markdown
+# NFR Assessment: {epic}.{story}
+
+Date: {date}
+Reviewer: Quinn
+
+<!-- Note: Source story not found (if applicable) -->
+
+## Summary
+
+- Security: CONCERNS - Missing rate limiting
+- Performance: PASS - Meets <200ms requirement
+- Reliability: PASS - Proper error handling
+- Maintainability: CONCERNS - Test coverage below target
+
+## Critical Issues
+
+1. **No rate limiting** (Security)
+   - Risk: Brute force attacks possible
+   - Fix: Add rate limiting middleware to auth endpoints
+
+2. **Test coverage 65%** (Maintainability)
+   - Risk: Untested code paths
+   - Fix: Add tests for uncovered branches
+
+## Quick Wins
+
+- Add rate limiting: ~2 hours
+- Increase test coverage: ~4 hours
+- Add performance monitoring: ~1 hour
+```
+
+## Output 3: Story Update Line
+
+**End with this line for the review task to quote:**
+
+```
+NFR assessment: qa.qaLocation/assessments/{epic}.{story}-nfr-{YYYYMMDD}.md
+```
+
+## Output 4: Gate Integration Line
+
+**Always print at the end:**
+
+```
+Gate NFR block ready → paste into qa.qaLocation/gates/{epic}.{story}-{slug}.yml under nfr_validation
+```
+
+## Assessment Criteria
+
+### Security
+
+**PASS if:**
+
+- Authentication implemented
+- Authorization enforced
+- Input validation present
+- No hardcoded secrets
+
+**CONCERNS if:**
+
+- Missing rate limiting
+- Weak encryption
+- Incomplete authorization
+
+**FAIL if:**
+
+- No authentication
+- Hardcoded credentials
+- SQL injection vulnerabilities
+
+### Performance
+
+**PASS if:**
+
+- Meets response time targets
+- No obvious bottlenecks
+- Reasonable resource usage
+
+**CONCERNS if:**
+
+- Close to limits
+- Missing indexes
+- No caching strategy
+
+**FAIL if:**
+
+- Exceeds response time limits
+- Memory leaks
+- Unoptimized queries
+
+### Reliability
+
+**PASS if:**
+
+- Error handling present
+- Graceful degradation
+- Retry logic where needed
+
+**CONCERNS if:**
+
+- Some error cases unhandled
+- No circuit breakers
+- Missing health checks
+
+**FAIL if:**
+
+- No error handling
+- Crashes on errors
+- No recovery mechanisms
+
+### Maintainability
+
+**PASS if:**
+
+- Test coverage meets target
+- Code well-structured
+- Documentation present
+
+**CONCERNS if:**
+
+- Test coverage below target
+- Some code duplication
+- Missing documentation
+
+**FAIL if:**
+
+- No tests
+- Highly coupled code
+- No documentation
+
+## Quick Reference
+
+### What to Check
+
+```yaml
+security:
+  - Authentication mechanism
+  - Authorization checks
+  - Input validation
+  - Secret management
+  - Rate limiting
+
+performance:
+  - Response times
+  - Database queries
+  - Caching usage
+  - Resource consumption
+
+reliability:
+  - Error handling
+  - Retry logic
+  - Circuit breakers
+  - Health checks
+  - Logging
+
+maintainability:
+  - Test coverage
+  - Code structure
+  - Documentation
+  - Dependencies
+```
+
+## Key Principles
+
+- Focus on the core four NFRs by default
+- Quick assessment, not deep analysis
+- Gate-ready output format
+- Brief, actionable findings
+- Skip what doesn't apply
+- Deterministic status rules for consistency
+- Unknown targets → CONCERNS, not guesses
+
+---
+
+## Appendix: ISO 25010 Reference
+
+<details>
+<summary>Full ISO 25010 Quality Model (click to expand)</summary>
+
+### All 8 Quality Characteristics
+
+1. **Functional Suitability**: Completeness, correctness, appropriateness
+2. **Performance Efficiency**: Time behavior, resource use, capacity
+3. **Compatibility**: Co-existence, interoperability
+4. **Usability**: Learnability, operability, accessibility
+5. **Reliability**: Maturity, availability, fault tolerance
+6. **Security**: Confidentiality, integrity, authenticity
+7. **Maintainability**: Modularity, reusability, testability
+8. **Portability**: Adaptability, installability
+
+Use these when assessing beyond the core four.
+
+</details>
+
+<details>
+<summary>Example: Deep Performance Analysis (click to expand)</summary>
+
+```yaml
+performance_deep_dive:
+  response_times:
+    p50: 45ms
+    p95: 180ms
+    p99: 350ms
+  database:
+    slow_queries: 2
+    missing_indexes: ['users.email', 'orders.user_id']
+  caching:
+    hit_rate: 0%
+    recommendation: 'Add Redis for session data'
+  load_test:
+    max_rps: 150
+    breaking_point: 200 rps
+```
+
+</details>
+==================== END: .bmad-core/tasks/nfr-assess.md ====================
+
+==================== START: .bmad-core/tasks/qa-gate.md ====================
+<!-- Powered by BMAD™ Core -->
+# qa-gate
+
+Create or update a quality gate decision file for a story based on review findings.
+
+## Purpose
+
+Generate a standalone quality gate file that provides a clear pass/fail decision with actionable feedback. This gate serves as an advisory checkpoint for teams to understand quality status.
+
+## Prerequisites
+
+- Story has been reviewed (manually or via review-story task)
+- Review findings are available
+- Understanding of story requirements and implementation
+
+## Gate File Location
+
+**ALWAYS** check the `.bmad-core/core-config.yaml` for the `qa.qaLocation/gates`
+
+Slug rules:
+
+- Convert to lowercase
+- Replace spaces with hyphens
+- Strip punctuation
+- Example: "User Auth - Login!" becomes "user-auth-login"
+
+## Minimal Required Schema
+
+```yaml
+schema: 1
+story: '{epic}.{story}'
+gate: PASS|CONCERNS|FAIL|WAIVED
+status_reason: '1-2 sentence explanation of gate decision'
+reviewer: 'Quinn'
+updated: '{ISO-8601 timestamp}'
+top_issues: [] # Empty array if no issues
+waiver: { active: false } # Only set active: true if WAIVED
+```
+
+## Schema with Issues
+
+```yaml
+schema: 1
+story: '1.3'
+gate: CONCERNS
+status_reason: 'Missing rate limiting on auth endpoints poses security risk.'
+reviewer: 'Quinn'
+updated: '2025-01-12T10:15:00Z'
+top_issues:
+  - id: 'SEC-001'
+    severity: high # ONLY: low|medium|high
+    finding: 'No rate limiting on login endpoint'
+    suggested_action: 'Add rate limiting middleware before production'
+  - id: 'TEST-001'
+    severity: medium
+    finding: 'No integration tests for auth flow'
+    suggested_action: 'Add integration test coverage'
+waiver: { active: false }
+```
+
+## Schema when Waived
+
+```yaml
+schema: 1
+story: '1.3'
+gate: WAIVED
+status_reason: 'Known issues accepted for MVP release.'
+reviewer: 'Quinn'
+updated: '2025-01-12T10:15:00Z'
+top_issues:
+  - id: 'PERF-001'
+    severity: low
+    finding: 'Dashboard loads slowly with 1000+ items'
+    suggested_action: 'Implement pagination in next sprint'
+waiver:
+  active: true
+  reason: 'MVP release - performance optimization deferred'
+  approved_by: 'Product Owner'
+```
+
+## Gate Decision Criteria
+
+### PASS
+
+- All acceptance criteria met
+- No high-severity issues
+- Test coverage meets project standards
+
+### CONCERNS
+
+- Non-blocking issues present
+- Should be tracked and scheduled
+- Can proceed with awareness
+
+### FAIL
+
+- Acceptance criteria not met
+- High-severity issues present
+- Recommend return to InProgress
+
+### WAIVED
+
+- Issues explicitly accepted
+- Requires approval and reason
+- Proceed despite known issues
+
+## Severity Scale
+
+**FIXED VALUES - NO VARIATIONS:**
+
+- `low`: Minor issues, cosmetic problems
+- `medium`: Should fix soon, not blocking
+- `high`: Critical issues, should block release
+
+## Issue ID Prefixes
+
+- `SEC-`: Security issues
+- `PERF-`: Performance issues
+- `REL-`: Reliability issues
+- `TEST-`: Testing gaps
+- `MNT-`: Maintainability concerns
+- `ARCH-`: Architecture issues
+- `DOC-`: Documentation gaps
+- `REQ-`: Requirements issues
+
+## Output Requirements
+
+1. **ALWAYS** create gate file at: `qa.qaLocation/gates` from `.bmad-core/core-config.yaml`
+2. **ALWAYS** append this exact format to story's QA Results section:
+
+   ```text
+   Gate: {STATUS} → qa.qaLocation/gates/{epic}.{story}-{slug}.yml
+   ```
+
+3. Keep status_reason to 1-2 sentences maximum
+4. Use severity values exactly: `low`, `medium`, or `high`
+
+## Example Story Update
+
+After creating gate file, append to story's QA Results section:
+
+```markdown
+## QA Results
+
+### Review Date: 2025-01-12
+
+### Reviewed By: Quinn (Test Architect)
+
+[... existing review content ...]
+
+### Gate Status
+
+Gate: CONCERNS → qa.qaLocation/gates/{epic}.{story}-{slug}.yml
+```
+
+## Key Principles
+
+- Keep it minimal and predictable
+- Fixed severity scale (low/medium/high)
+- Always write to standard path
+- Always update story with gate reference
+- Clear, actionable findings
+==================== END: .bmad-core/tasks/qa-gate.md ====================
+
 ==================== START: .bmad-core/tasks/review-story.md ====================
+<!-- Powered by BMAD™ Core -->
 # review-story
 
-When a developer agent marks a story as "Ready for Review", perform a comprehensive senior developer code review with the ability to refactor and improve code directly.
+Perform a comprehensive test architecture review with quality gate decision. This adaptive, risk-aware review creates both a story update and a detailed gate file.
+
+## Inputs
+
+```yaml
+required:
+  - story_id: '{epic}.{story}' # e.g., "1.3"
+  - story_path: '{devStoryLocation}/{epic}.{story}.*.md' # Path from core-config.yaml
+  - story_title: '{title}' # If missing, derive from story file H1
+  - story_slug: '{slug}' # If missing, derive from title (lowercase, hyphenated)
+```
 
 ## Prerequisites
 
@@ -3363,72 +4064,101 @@ When a developer agent marks a story as "Ready for Review", perform a comprehens
 - Developer has completed all tasks and updated the File List
 - All automated tests are passing
 
-## Review Process
+## Review Process - Adaptive Test Architecture
 
-1. **Read the Complete Story**
-   - Review all acceptance criteria
-   - Understand the dev notes and requirements
-   - Note any completion notes from the developer
+### 1. Risk Assessment (Determines Review Depth)
 
-2. **Verify Implementation Against Dev Notes Guidance**
-   - Review the "Dev Notes" section for specific technical guidance provided to the developer
-   - Verify the developer's implementation follows the architectural patterns specified in Dev Notes
-   - Check that file locations match the project structure guidance in Dev Notes
-   - Confirm any specified libraries, frameworks, or technical approaches were used correctly
-   - Validate that security considerations mentioned in Dev Notes were implemented
+**Auto-escalate to deep review when:**
 
-3. **Focus on the File List**
-   - Verify all files listed were actually created/modified
-   - Check for any missing files that should have been updated
-   - Ensure file locations align with the project structure guidance from Dev Notes
+- Auth/payment/security files touched
+- No tests added to story
+- Diff > 500 lines
+- Previous gate was FAIL/CONCERNS
+- Story has > 5 acceptance criteria
 
-4. **Senior Developer Code Review**
-   - Review code with the eye of a senior developer
-   - If changes form a cohesive whole, review them together
-   - If changes are independent, review incrementally file by file
-   - Focus on:
-     - Code architecture and design patterns
-     - Refactoring opportunities
-     - Code duplication or inefficiencies
-     - Performance optimizations
-     - Security concerns
-     - Best practices and patterns
+### 2. Comprehensive Analysis
 
-5. **Active Refactoring**
-   - As a senior developer, you CAN and SHOULD refactor code where improvements are needed
-   - When refactoring:
-     - Make the changes directly in the files
-     - Explain WHY you're making the change
-     - Describe HOW the change improves the code
-     - Ensure all tests still pass after refactoring
-     - Update the File List if you modify additional files
+**A. Requirements Traceability**
 
-6. **Standards Compliance Check**
-   - Verify adherence to `docs/coding-standards.md`
-   - Check compliance with `docs/unified-project-structure.md`
-   - Validate testing approach against `docs/testing-strategy.md`
-   - Ensure all guidelines mentioned in the story are followed
+- Map each acceptance criteria to its validating tests (document mapping with Given-When-Then, not test code)
+- Identify coverage gaps
+- Verify all requirements have corresponding test cases
 
-7. **Acceptance Criteria Validation**
-   - Verify each AC is fully implemented
-   - Check for any missing functionality
-   - Validate edge cases are handled
+**B. Code Quality Review**
 
-8. **Test Coverage Review**
-   - Ensure unit tests cover edge cases
-   - Add missing tests if critical coverage is lacking
-   - Verify integration tests (if required) are comprehensive
-   - Check that test assertions are meaningful
-   - Look for missing test scenarios
+- Architecture and design patterns
+- Refactoring opportunities (and perform them)
+- Code duplication or inefficiencies
+- Performance optimizations
+- Security vulnerabilities
+- Best practices adherence
 
-9. **Documentation and Comments**
-   - Verify code is self-documenting where possible
-   - Add comments for complex logic if missing
-   - Ensure any API changes are documented
+**C. Test Architecture Assessment**
 
-## Update Story File - QA Results Section ONLY
+- Test coverage adequacy at appropriate levels
+- Test level appropriateness (what should be unit vs integration vs e2e)
+- Test design quality and maintainability
+- Test data management strategy
+- Mock/stub usage appropriateness
+- Edge case and error scenario coverage
+- Test execution time and reliability
+
+**D. Non-Functional Requirements (NFRs)**
+
+- Security: Authentication, authorization, data protection
+- Performance: Response times, resource usage
+- Reliability: Error handling, recovery mechanisms
+- Maintainability: Code clarity, documentation
+
+**E. Testability Evaluation**
+
+- Controllability: Can we control the inputs?
+- Observability: Can we observe the outputs?
+- Debuggability: Can we debug failures easily?
+
+**F. Technical Debt Identification**
+
+- Accumulated shortcuts
+- Missing tests
+- Outdated dependencies
+- Architecture violations
+
+### 3. Active Refactoring
+
+- Refactor code where safe and appropriate
+- Run tests to ensure changes don't break functionality
+- Document all changes in QA Results section with clear WHY and HOW
+- Do NOT alter story content beyond QA Results section
+- Do NOT change story Status or File List; recommend next status only
+
+### 4. Standards Compliance Check
+
+- Verify adherence to `docs/coding-standards.md`
+- Check compliance with `docs/unified-project-structure.md`
+- Validate testing approach against `docs/testing-strategy.md`
+- Ensure all guidelines mentioned in the story are followed
+
+### 5. Acceptance Criteria Validation
+
+- Verify each AC is fully implemented
+- Check for any missing functionality
+- Validate edge cases are handled
+
+### 6. Documentation and Comments
+
+- Verify code is self-documenting where possible
+- Add comments for complex logic if missing
+- Ensure any API changes are documented
+
+## Output 1: Update Story File - QA Results Section ONLY
 
 **CRITICAL**: You are ONLY authorized to update the "QA Results" section of the story file. DO NOT modify any other sections.
+
+**QA Results Anchor Rule:**
+
+- If `## QA Results` doesn't exist, append it at end of file
+- If it exists, append a new dated entry below existing entries
+- Never edit other sections
 
 After review and any refactoring, append your results to the story file in the QA Results section:
 
@@ -3436,25 +4166,31 @@ After review and any refactoring, append your results to the story file in the Q
 ## QA Results
 
 ### Review Date: [Date]
-### Reviewed By: Quinn (Senior Developer QA)
+
+### Reviewed By: Quinn (Test Architect)
 
 ### Code Quality Assessment
+
 [Overall assessment of implementation quality]
 
 ### Refactoring Performed
+
 [List any refactoring you performed with explanations]
+
 - **File**: [filename]
   - **Change**: [what was changed]
   - **Why**: [reason for change]
   - **How**: [how it improves the code]
 
 ### Compliance Check
+
 - Coding Standards: [✓/✗] [notes if any]
 - Project Structure: [✓/✗] [notes if any]
 - Testing Strategy: [✓/✗] [notes if any]
 - All ACs Met: [✓/✗] [notes if any]
 
 ### Improvements Checklist
+
 [Check off items you handled yourself, leave unchecked for dev to address]
 
 - [x] Refactored user service for better error handling (services/user.service.ts)
@@ -3464,22 +4200,144 @@ After review and any refactoring, append your results to the story file in the Q
 - [ ] Update API documentation for new error codes
 
 ### Security Review
+
 [Any security concerns found and whether addressed]
 
 ### Performance Considerations
+
 [Any performance issues found and whether addressed]
 
-### Final Status
-[✓ Approved - Ready for Done] / [✗ Changes Required - See unchecked items above]
+### Files Modified During Review
+
+[If you modified files, list them here - ask Dev to update File List]
+
+### Gate Status
+
+Gate: {STATUS} → qa.qaLocation/gates/{epic}.{story}-{slug}.yml
+Risk profile: qa.qaLocation/assessments/{epic}.{story}-risk-{YYYYMMDD}.md
+NFR assessment: qa.qaLocation/assessments/{epic}.{story}-nfr-{YYYYMMDD}.md
+
+# Note: Paths should reference core-config.yaml for custom configurations
+
+### Recommended Status
+
+[✓ Ready for Done] / [✗ Changes Required - See unchecked items above]
+(Story owner decides final status)
 ```
+
+## Output 2: Create Quality Gate File
+
+**Template and Directory:**
+
+- Render from `../templates/qa-gate-tmpl.yaml`
+- Create directory defined in `qa.qaLocation/gates` (see `.bmad-core/core-config.yaml`) if missing
+- Save to: `qa.qaLocation/gates/{epic}.{story}-{slug}.yml`
+
+Gate file structure:
+
+```yaml
+schema: 1
+story: '{epic}.{story}'
+story_title: '{story title}'
+gate: PASS|CONCERNS|FAIL|WAIVED
+status_reason: '1-2 sentence explanation of gate decision'
+reviewer: 'Quinn (Test Architect)'
+updated: '{ISO-8601 timestamp}'
+
+top_issues: [] # Empty if no issues
+waiver: { active: false } # Set active: true only if WAIVED
+
+# Extended fields (optional but recommended):
+quality_score: 0-100 # 100 - (20*FAILs) - (10*CONCERNS) or use technical-preferences.md weights
+expires: '{ISO-8601 timestamp}' # Typically 2 weeks from review
+
+evidence:
+  tests_reviewed: { count }
+  risks_identified: { count }
+  trace:
+    ac_covered: [1, 2, 3] # AC numbers with test coverage
+    ac_gaps: [4] # AC numbers lacking coverage
+
+nfr_validation:
+  security:
+    status: PASS|CONCERNS|FAIL
+    notes: 'Specific findings'
+  performance:
+    status: PASS|CONCERNS|FAIL
+    notes: 'Specific findings'
+  reliability:
+    status: PASS|CONCERNS|FAIL
+    notes: 'Specific findings'
+  maintainability:
+    status: PASS|CONCERNS|FAIL
+    notes: 'Specific findings'
+
+recommendations:
+  immediate: # Must fix before production
+    - action: 'Add rate limiting'
+      refs: ['api/auth/login.ts']
+  future: # Can be addressed later
+    - action: 'Consider caching'
+      refs: ['services/data.ts']
+```
+
+### Gate Decision Criteria
+
+**Deterministic rule (apply in order):**
+
+If risk_summary exists, apply its thresholds first (≥9 → FAIL, ≥6 → CONCERNS), then NFR statuses, then top_issues severity.
+
+1. **Risk thresholds (if risk_summary present):**
+   - If any risk score ≥ 9 → Gate = FAIL (unless waived)
+   - Else if any score ≥ 6 → Gate = CONCERNS
+
+2. **Test coverage gaps (if trace available):**
+   - If any P0 test from test-design is missing → Gate = CONCERNS
+   - If security/data-loss P0 test missing → Gate = FAIL
+
+3. **Issue severity:**
+   - If any `top_issues.severity == high` → Gate = FAIL (unless waived)
+   - Else if any `severity == medium` → Gate = CONCERNS
+
+4. **NFR statuses:**
+   - If any NFR status is FAIL → Gate = FAIL
+   - Else if any NFR status is CONCERNS → Gate = CONCERNS
+   - Else → Gate = PASS
+
+- WAIVED only when waiver.active: true with reason/approver
+
+Detailed criteria:
+
+- **PASS**: All critical requirements met, no blocking issues
+- **CONCERNS**: Non-critical issues found, team should review
+- **FAIL**: Critical issues that should be addressed
+- **WAIVED**: Issues acknowledged but explicitly waived by team
+
+### Quality Score Calculation
+
+```text
+quality_score = 100 - (20 × number of FAILs) - (10 × number of CONCERNS)
+Bounded between 0 and 100
+```
+
+If `technical-preferences.md` defines custom weights, use those instead.
+
+### Suggested Owner Convention
+
+For each issue in `top_issues`, include a `suggested_owner`:
+
+- `dev`: Code changes needed
+- `sm`: Requirements clarification needed
+- `po`: Business decision needed
 
 ## Key Principles
 
-- You are a SENIOR developer reviewing junior/mid-level work
-- You have the authority and responsibility to improve code directly
+- You are a Test Architect providing comprehensive quality assessment
+- You have the authority to improve code directly when appropriate
 - Always explain your changes for learning purposes
 - Balance between perfection and pragmatism
-- Focus on significant improvements, not nitpicks
+- Focus on risk-based prioritization
+- Provide actionable recommendations with clear ownership
 
 ## Blocking Conditions
 
@@ -3495,12 +4353,924 @@ Stop the review and request clarification if:
 
 After review:
 
-1. If all items are checked and approved: Update story status to "Done"
-2. If unchecked items remain: Keep status as "Review" for dev to address
-3. Always provide constructive feedback and explanations for learning
+1. Update the QA Results section in the story file
+2. Create the gate file in directory from `qa.qaLocation/gates`
+3. Recommend status: "Ready for Done" or "Changes Required" (owner decides)
+4. If files were modified, list them in QA Results and ask Dev to update File List
+5. Always provide constructive feedback and actionable recommendations
 ==================== END: .bmad-core/tasks/review-story.md ====================
 
+==================== START: .bmad-core/tasks/risk-profile.md ====================
+<!-- Powered by BMAD™ Core -->
+# risk-profile
+
+Generate a comprehensive risk assessment matrix for a story implementation using probability × impact analysis.
+
+## Inputs
+
+```yaml
+required:
+  - story_id: '{epic}.{story}' # e.g., "1.3"
+  - story_path: 'docs/stories/{epic}.{story}.*.md'
+  - story_title: '{title}' # If missing, derive from story file H1
+  - story_slug: '{slug}' # If missing, derive from title (lowercase, hyphenated)
+```
+
+## Purpose
+
+Identify, assess, and prioritize risks in the story implementation. Provide risk mitigation strategies and testing focus areas based on risk levels.
+
+## Risk Assessment Framework
+
+### Risk Categories
+
+**Category Prefixes:**
+
+- `TECH`: Technical Risks
+- `SEC`: Security Risks
+- `PERF`: Performance Risks
+- `DATA`: Data Risks
+- `BUS`: Business Risks
+- `OPS`: Operational Risks
+
+1. **Technical Risks (TECH)**
+   - Architecture complexity
+   - Integration challenges
+   - Technical debt
+   - Scalability concerns
+   - System dependencies
+
+2. **Security Risks (SEC)**
+   - Authentication/authorization flaws
+   - Data exposure vulnerabilities
+   - Injection attacks
+   - Session management issues
+   - Cryptographic weaknesses
+
+3. **Performance Risks (PERF)**
+   - Response time degradation
+   - Throughput bottlenecks
+   - Resource exhaustion
+   - Database query optimization
+   - Caching failures
+
+4. **Data Risks (DATA)**
+   - Data loss potential
+   - Data corruption
+   - Privacy violations
+   - Compliance issues
+   - Backup/recovery gaps
+
+5. **Business Risks (BUS)**
+   - Feature doesn't meet user needs
+   - Revenue impact
+   - Reputation damage
+   - Regulatory non-compliance
+   - Market timing
+
+6. **Operational Risks (OPS)**
+   - Deployment failures
+   - Monitoring gaps
+   - Incident response readiness
+   - Documentation inadequacy
+   - Knowledge transfer issues
+
+## Risk Analysis Process
+
+### 1. Risk Identification
+
+For each category, identify specific risks:
+
+```yaml
+risk:
+  id: 'SEC-001' # Use prefixes: SEC, PERF, DATA, BUS, OPS, TECH
+  category: security
+  title: 'Insufficient input validation on user forms'
+  description: 'Form inputs not properly sanitized could lead to XSS attacks'
+  affected_components:
+    - 'UserRegistrationForm'
+    - 'ProfileUpdateForm'
+  detection_method: 'Code review revealed missing validation'
+```
+
+### 2. Risk Assessment
+
+Evaluate each risk using probability × impact:
+
+**Probability Levels:**
+
+- `High (3)`: Likely to occur (>70% chance)
+- `Medium (2)`: Possible occurrence (30-70% chance)
+- `Low (1)`: Unlikely to occur (<30% chance)
+
+**Impact Levels:**
+
+- `High (3)`: Severe consequences (data breach, system down, major financial loss)
+- `Medium (2)`: Moderate consequences (degraded performance, minor data issues)
+- `Low (1)`: Minor consequences (cosmetic issues, slight inconvenience)
+
+### Risk Score = Probability × Impact
+
+- 9: Critical Risk (Red)
+- 6: High Risk (Orange)
+- 4: Medium Risk (Yellow)
+- 2-3: Low Risk (Green)
+- 1: Minimal Risk (Blue)
+
+### 3. Risk Prioritization
+
+Create risk matrix:
+
+```markdown
+## Risk Matrix
+
+| Risk ID  | Description             | Probability | Impact     | Score | Priority |
+| -------- | ----------------------- | ----------- | ---------- | ----- | -------- |
+| SEC-001  | XSS vulnerability       | High (3)    | High (3)   | 9     | Critical |
+| PERF-001 | Slow query on dashboard | Medium (2)  | Medium (2) | 4     | Medium   |
+| DATA-001 | Backup failure          | Low (1)     | High (3)   | 3     | Low      |
+```
+
+### 4. Risk Mitigation Strategies
+
+For each identified risk, provide mitigation:
+
+```yaml
+mitigation:
+  risk_id: 'SEC-001'
+  strategy: 'preventive' # preventive|detective|corrective
+  actions:
+    - 'Implement input validation library (e.g., validator.js)'
+    - 'Add CSP headers to prevent XSS execution'
+    - 'Sanitize all user inputs before storage'
+    - 'Escape all outputs in templates'
+  testing_requirements:
+    - 'Security testing with OWASP ZAP'
+    - 'Manual penetration testing of forms'
+    - 'Unit tests for validation functions'
+  residual_risk: 'Low - Some zero-day vulnerabilities may remain'
+  owner: 'dev'
+  timeline: 'Before deployment'
+```
+
+## Outputs
+
+### Output 1: Gate YAML Block
+
+Generate for pasting into gate file under `risk_summary`:
+
+**Output rules:**
+
+- Only include assessed risks; do not emit placeholders
+- Sort risks by score (desc) when emitting highest and any tabular lists
+- If no risks: totals all zeros, omit highest, keep recommendations arrays empty
+
+```yaml
+# risk_summary (paste into gate file):
+risk_summary:
+  totals:
+    critical: X # score 9
+    high: Y # score 6
+    medium: Z # score 4
+    low: W # score 2-3
+  highest:
+    id: SEC-001
+    score: 9
+    title: 'XSS on profile form'
+  recommendations:
+    must_fix:
+      - 'Add input sanitization & CSP'
+    monitor:
+      - 'Add security alerts for auth endpoints'
+```
+
+### Output 2: Markdown Report
+
+**Save to:** `qa.qaLocation/assessments/{epic}.{story}-risk-{YYYYMMDD}.md`
+
+```markdown
+# Risk Profile: Story {epic}.{story}
+
+Date: {date}
+Reviewer: Quinn (Test Architect)
+
+## Executive Summary
+
+- Total Risks Identified: X
+- Critical Risks: Y
+- High Risks: Z
+- Risk Score: XX/100 (calculated)
+
+## Critical Risks Requiring Immediate Attention
+
+### 1. [ID]: Risk Title
+
+**Score: 9 (Critical)**
+**Probability**: High - Detailed reasoning
+**Impact**: High - Potential consequences
+**Mitigation**:
+
+- Immediate action required
+- Specific steps to take
+  **Testing Focus**: Specific test scenarios needed
+
+## Risk Distribution
+
+### By Category
+
+- Security: X risks (Y critical)
+- Performance: X risks (Y critical)
+- Data: X risks (Y critical)
+- Business: X risks (Y critical)
+- Operational: X risks (Y critical)
+
+### By Component
+
+- Frontend: X risks
+- Backend: X risks
+- Database: X risks
+- Infrastructure: X risks
+
+## Detailed Risk Register
+
+[Full table of all risks with scores and mitigations]
+
+## Risk-Based Testing Strategy
+
+### Priority 1: Critical Risk Tests
+
+- Test scenarios for critical risks
+- Required test types (security, load, chaos)
+- Test data requirements
+
+### Priority 2: High Risk Tests
+
+- Integration test scenarios
+- Edge case coverage
+
+### Priority 3: Medium/Low Risk Tests
+
+- Standard functional tests
+- Regression test suite
+
+## Risk Acceptance Criteria
+
+### Must Fix Before Production
+
+- All critical risks (score 9)
+- High risks affecting security/data
+
+### Can Deploy with Mitigation
+
+- Medium risks with compensating controls
+- Low risks with monitoring in place
+
+### Accepted Risks
+
+- Document any risks team accepts
+- Include sign-off from appropriate authority
+
+## Monitoring Requirements
+
+Post-deployment monitoring for:
+
+- Performance metrics for PERF risks
+- Security alerts for SEC risks
+- Error rates for operational risks
+- Business KPIs for business risks
+
+## Risk Review Triggers
+
+Review and update risk profile when:
+
+- Architecture changes significantly
+- New integrations added
+- Security vulnerabilities discovered
+- Performance issues reported
+- Regulatory requirements change
+```
+
+## Risk Scoring Algorithm
+
+Calculate overall story risk score:
+
+```text
+Base Score = 100
+For each risk:
+  - Critical (9): Deduct 20 points
+  - High (6): Deduct 10 points
+  - Medium (4): Deduct 5 points
+  - Low (2-3): Deduct 2 points
+
+Minimum score = 0 (extremely risky)
+Maximum score = 100 (minimal risk)
+```
+
+## Risk-Based Recommendations
+
+Based on risk profile, recommend:
+
+1. **Testing Priority**
+   - Which tests to run first
+   - Additional test types needed
+   - Test environment requirements
+
+2. **Development Focus**
+   - Code review emphasis areas
+   - Additional validation needed
+   - Security controls to implement
+
+3. **Deployment Strategy**
+   - Phased rollout for high-risk changes
+   - Feature flags for risky features
+   - Rollback procedures
+
+4. **Monitoring Setup**
+   - Metrics to track
+   - Alerts to configure
+   - Dashboard requirements
+
+## Integration with Quality Gates
+
+**Deterministic gate mapping:**
+
+- Any risk with score ≥ 9 → Gate = FAIL (unless waived)
+- Else if any score ≥ 6 → Gate = CONCERNS
+- Else → Gate = PASS
+- Unmitigated risks → Document in gate
+
+### Output 3: Story Hook Line
+
+**Print this line for review task to quote:**
+
+```text
+Risk profile: qa.qaLocation/assessments/{epic}.{story}-risk-{YYYYMMDD}.md
+```
+
+## Key Principles
+
+- Identify risks early and systematically
+- Use consistent probability × impact scoring
+- Provide actionable mitigation strategies
+- Link risks to specific test requirements
+- Track residual risk after mitigation
+- Update risk profile as story evolves
+==================== END: .bmad-core/tasks/risk-profile.md ====================
+
+==================== START: .bmad-core/tasks/test-design.md ====================
+<!-- Powered by BMAD™ Core -->
+# test-design
+
+Create comprehensive test scenarios with appropriate test level recommendations for story implementation.
+
+## Inputs
+
+```yaml
+required:
+  - story_id: '{epic}.{story}' # e.g., "1.3"
+  - story_path: '{devStoryLocation}/{epic}.{story}.*.md' # Path from core-config.yaml
+  - story_title: '{title}' # If missing, derive from story file H1
+  - story_slug: '{slug}' # If missing, derive from title (lowercase, hyphenated)
+```
+
+## Purpose
+
+Design a complete test strategy that identifies what to test, at which level (unit/integration/e2e), and why. This ensures efficient test coverage without redundancy while maintaining appropriate test boundaries.
+
+## Dependencies
+
+```yaml
+data:
+  - test-levels-framework.md # Unit/Integration/E2E decision criteria
+  - test-priorities-matrix.md # P0/P1/P2/P3 classification system
+```
+
+## Process
+
+### 1. Analyze Story Requirements
+
+Break down each acceptance criterion into testable scenarios. For each AC:
+
+- Identify the core functionality to test
+- Determine data variations needed
+- Consider error conditions
+- Note edge cases
+
+### 2. Apply Test Level Framework
+
+**Reference:** Load `test-levels-framework.md` for detailed criteria
+
+Quick rules:
+
+- **Unit**: Pure logic, algorithms, calculations
+- **Integration**: Component interactions, DB operations
+- **E2E**: Critical user journeys, compliance
+
+### 3. Assign Priorities
+
+**Reference:** Load `test-priorities-matrix.md` for classification
+
+Quick priority assignment:
+
+- **P0**: Revenue-critical, security, compliance
+- **P1**: Core user journeys, frequently used
+- **P2**: Secondary features, admin functions
+- **P3**: Nice-to-have, rarely used
+
+### 4. Design Test Scenarios
+
+For each identified test need, create:
+
+```yaml
+test_scenario:
+  id: '{epic}.{story}-{LEVEL}-{SEQ}'
+  requirement: 'AC reference'
+  priority: P0|P1|P2|P3
+  level: unit|integration|e2e
+  description: 'What is being tested'
+  justification: 'Why this level was chosen'
+  mitigates_risks: ['RISK-001'] # If risk profile exists
+```
+
+### 5. Validate Coverage
+
+Ensure:
+
+- Every AC has at least one test
+- No duplicate coverage across levels
+- Critical paths have multiple levels
+- Risk mitigations are addressed
+
+## Outputs
+
+### Output 1: Test Design Document
+
+**Save to:** `qa.qaLocation/assessments/{epic}.{story}-test-design-{YYYYMMDD}.md`
+
+```markdown
+# Test Design: Story {epic}.{story}
+
+Date: {date}
+Designer: Quinn (Test Architect)
+
+## Test Strategy Overview
+
+- Total test scenarios: X
+- Unit tests: Y (A%)
+- Integration tests: Z (B%)
+- E2E tests: W (C%)
+- Priority distribution: P0: X, P1: Y, P2: Z
+
+## Test Scenarios by Acceptance Criteria
+
+### AC1: {description}
+
+#### Scenarios
+
+| ID           | Level       | Priority | Test                      | Justification            |
+| ------------ | ----------- | -------- | ------------------------- | ------------------------ |
+| 1.3-UNIT-001 | Unit        | P0       | Validate input format     | Pure validation logic    |
+| 1.3-INT-001  | Integration | P0       | Service processes request | Multi-component flow     |
+| 1.3-E2E-001  | E2E         | P1       | User completes journey    | Critical path validation |
+
+[Continue for all ACs...]
+
+## Risk Coverage
+
+[Map test scenarios to identified risks if risk profile exists]
+
+## Recommended Execution Order
+
+1. P0 Unit tests (fail fast)
+2. P0 Integration tests
+3. P0 E2E tests
+4. P1 tests in order
+5. P2+ as time permits
+```
+
+### Output 2: Gate YAML Block
+
+Generate for inclusion in quality gate:
+
+```yaml
+test_design:
+  scenarios_total: X
+  by_level:
+    unit: Y
+    integration: Z
+    e2e: W
+  by_priority:
+    p0: A
+    p1: B
+    p2: C
+  coverage_gaps: [] # List any ACs without tests
+```
+
+### Output 3: Trace References
+
+Print for use by trace-requirements task:
+
+```text
+Test design matrix: qa.qaLocation/assessments/{epic}.{story}-test-design-{YYYYMMDD}.md
+P0 tests identified: {count}
+```
+
+## Quality Checklist
+
+Before finalizing, verify:
+
+- [ ] Every AC has test coverage
+- [ ] Test levels are appropriate (not over-testing)
+- [ ] No duplicate coverage across levels
+- [ ] Priorities align with business risk
+- [ ] Test IDs follow naming convention
+- [ ] Scenarios are atomic and independent
+
+## Key Principles
+
+- **Shift left**: Prefer unit over integration, integration over E2E
+- **Risk-based**: Focus on what could go wrong
+- **Efficient coverage**: Test once at the right level
+- **Maintainability**: Consider long-term test maintenance
+- **Fast feedback**: Quick tests run first
+==================== END: .bmad-core/tasks/test-design.md ====================
+
+==================== START: .bmad-core/tasks/trace-requirements.md ====================
+<!-- Powered by BMAD™ Core -->
+# trace-requirements
+
+Map story requirements to test cases using Given-When-Then patterns for comprehensive traceability.
+
+## Purpose
+
+Create a requirements traceability matrix that ensures every acceptance criterion has corresponding test coverage. This task helps identify gaps in testing and ensures all requirements are validated.
+
+**IMPORTANT**: Given-When-Then is used here for documenting the mapping between requirements and tests, NOT for writing the actual test code. Tests should follow your project's testing standards (no BDD syntax in test code).
+
+## Prerequisites
+
+- Story file with clear acceptance criteria
+- Access to test files or test specifications
+- Understanding of the implementation
+
+## Traceability Process
+
+### 1. Extract Requirements
+
+Identify all testable requirements from:
+
+- Acceptance Criteria (primary source)
+- User story statement
+- Tasks/subtasks with specific behaviors
+- Non-functional requirements mentioned
+- Edge cases documented
+
+### 2. Map to Test Cases
+
+For each requirement, document which tests validate it. Use Given-When-Then to describe what the test validates (not how it's written):
+
+```yaml
+requirement: 'AC1: User can login with valid credentials'
+test_mappings:
+  - test_file: 'auth/login.test.ts'
+    test_case: 'should successfully login with valid email and password'
+    # Given-When-Then describes WHAT the test validates, not HOW it's coded
+    given: 'A registered user with valid credentials'
+    when: 'They submit the login form'
+    then: 'They are redirected to dashboard and session is created'
+    coverage: full
+
+  - test_file: 'e2e/auth-flow.test.ts'
+    test_case: 'complete login flow'
+    given: 'User on login page'
+    when: 'Entering valid credentials and submitting'
+    then: 'Dashboard loads with user data'
+    coverage: integration
+```
+
+### 3. Coverage Analysis
+
+Evaluate coverage for each requirement:
+
+**Coverage Levels:**
+
+- `full`: Requirement completely tested
+- `partial`: Some aspects tested, gaps exist
+- `none`: No test coverage found
+- `integration`: Covered in integration/e2e tests only
+- `unit`: Covered in unit tests only
+
+### 4. Gap Identification
+
+Document any gaps found:
+
+```yaml
+coverage_gaps:
+  - requirement: 'AC3: Password reset email sent within 60 seconds'
+    gap: 'No test for email delivery timing'
+    severity: medium
+    suggested_test:
+      type: integration
+      description: 'Test email service SLA compliance'
+
+  - requirement: 'AC5: Support 1000 concurrent users'
+    gap: 'No load testing implemented'
+    severity: high
+    suggested_test:
+      type: performance
+      description: 'Load test with 1000 concurrent connections'
+```
+
+## Outputs
+
+### Output 1: Gate YAML Block
+
+**Generate for pasting into gate file under `trace`:**
+
+```yaml
+trace:
+  totals:
+    requirements: X
+    full: Y
+    partial: Z
+    none: W
+  planning_ref: 'qa.qaLocation/assessments/{epic}.{story}-test-design-{YYYYMMDD}.md'
+  uncovered:
+    - ac: 'AC3'
+      reason: 'No test found for password reset timing'
+  notes: 'See qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.md'
+```
+
+### Output 2: Traceability Report
+
+**Save to:** `qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.md`
+
+Create a traceability report with:
+
+```markdown
+# Requirements Traceability Matrix
+
+## Story: {epic}.{story} - {title}
+
+### Coverage Summary
+
+- Total Requirements: X
+- Fully Covered: Y (Z%)
+- Partially Covered: A (B%)
+- Not Covered: C (D%)
+
+### Requirement Mappings
+
+#### AC1: {Acceptance Criterion 1}
+
+**Coverage: FULL**
+
+Given-When-Then Mappings:
+
+- **Unit Test**: `auth.service.test.ts::validateCredentials`
+  - Given: Valid user credentials
+  - When: Validation method called
+  - Then: Returns true with user object
+
+- **Integration Test**: `auth.integration.test.ts::loginFlow`
+  - Given: User with valid account
+  - When: Login API called
+  - Then: JWT token returned and session created
+
+#### AC2: {Acceptance Criterion 2}
+
+**Coverage: PARTIAL**
+
+[Continue for all ACs...]
+
+### Critical Gaps
+
+1. **Performance Requirements**
+   - Gap: No load testing for concurrent users
+   - Risk: High - Could fail under production load
+   - Action: Implement load tests using k6 or similar
+
+2. **Security Requirements**
+   - Gap: Rate limiting not tested
+   - Risk: Medium - Potential DoS vulnerability
+   - Action: Add rate limit tests to integration suite
+
+### Test Design Recommendations
+
+Based on gaps identified, recommend:
+
+1. Additional test scenarios needed
+2. Test types to implement (unit/integration/e2e/performance)
+3. Test data requirements
+4. Mock/stub strategies
+
+### Risk Assessment
+
+- **High Risk**: Requirements with no coverage
+- **Medium Risk**: Requirements with only partial coverage
+- **Low Risk**: Requirements with full unit + integration coverage
+```
+
+## Traceability Best Practices
+
+### Given-When-Then for Mapping (Not Test Code)
+
+Use Given-When-Then to document what each test validates:
+
+**Given**: The initial context the test sets up
+
+- What state/data the test prepares
+- User context being simulated
+- System preconditions
+
+**When**: The action the test performs
+
+- What the test executes
+- API calls or user actions tested
+- Events triggered
+
+**Then**: What the test asserts
+
+- Expected outcomes verified
+- State changes checked
+- Values validated
+
+**Note**: This is for documentation only. Actual test code follows your project's standards (e.g., describe/it blocks, no BDD syntax).
+
+### Coverage Priority
+
+Prioritize coverage based on:
+
+1. Critical business flows
+2. Security-related requirements
+3. Data integrity requirements
+4. User-facing features
+5. Performance SLAs
+
+### Test Granularity
+
+Map at appropriate levels:
+
+- Unit tests for business logic
+- Integration tests for component interaction
+- E2E tests for user journeys
+- Performance tests for NFRs
+
+## Quality Indicators
+
+Good traceability shows:
+
+- Every AC has at least one test
+- Critical paths have multiple test levels
+- Edge cases are explicitly covered
+- NFRs have appropriate test types
+- Clear Given-When-Then for each test
+
+## Red Flags
+
+Watch for:
+
+- ACs with no test coverage
+- Tests that don't map to requirements
+- Vague test descriptions
+- Missing edge case coverage
+- NFRs without specific tests
+
+## Integration with Gates
+
+This traceability feeds into quality gates:
+
+- Critical gaps → FAIL
+- Minor gaps → CONCERNS
+- Missing P0 tests from test-design → CONCERNS
+
+### Output 3: Story Hook Line
+
+**Print this line for review task to quote:**
+
+```text
+Trace matrix: qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.md
+```
+
+- Full coverage → PASS contribution
+
+## Key Principles
+
+- Every requirement must be testable
+- Use Given-When-Then for clarity
+- Identify both presence and absence
+- Prioritize based on risk
+- Make recommendations actionable
+==================== END: .bmad-core/tasks/trace-requirements.md ====================
+
+==================== START: .bmad-core/templates/qa-gate-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: qa-gate-template-v1
+  name: Quality Gate Decision
+  version: 1.0
+  output:
+    format: yaml
+    filename: qa.qaLocation/gates/{{epic_num}}.{{story_num}}-{{story_slug}}.yml
+    title: "Quality Gate: {{epic_num}}.{{story_num}}"
+
+# Required fields (keep these first)
+schema: 1
+story: "{{epic_num}}.{{story_num}}"
+story_title: "{{story_title}}"
+gate: "{{gate_status}}" # PASS|CONCERNS|FAIL|WAIVED
+status_reason: "{{status_reason}}" # 1-2 sentence summary of why this gate decision
+reviewer: "Quinn (Test Architect)"
+updated: "{{iso_timestamp}}"
+
+# Always present but only active when WAIVED
+waiver: { active: false }
+
+# Issues (if any) - Use fixed severity: low | medium | high
+top_issues: []
+
+# Risk summary (from risk-profile task if run)
+risk_summary:
+  totals: { critical: 0, high: 0, medium: 0, low: 0 }
+  recommendations:
+    must_fix: []
+    monitor: []
+
+# Examples section using block scalars for clarity
+examples:
+  with_issues: |
+    top_issues:
+      - id: "SEC-001"
+        severity: high  # ONLY: low|medium|high
+        finding: "No rate limiting on login endpoint"
+        suggested_action: "Add rate limiting middleware before production"
+      - id: "TEST-001"  
+        severity: medium
+        finding: "Missing integration tests for auth flow"
+        suggested_action: "Add test coverage for critical paths"
+
+  when_waived: |
+    waiver:
+      active: true
+      reason: "Accepted for MVP release - will address in next sprint"
+      approved_by: "Product Owner"
+
+# ============ Optional Extended Fields ============
+# Uncomment and use if your team wants more detail
+
+optional_fields_examples:
+  quality_and_expiry: |
+    quality_score: 75  # 0-100 (optional scoring)
+    expires: "2025-01-26T00:00:00Z"  # Optional gate freshness window
+
+  evidence: |
+    evidence:
+      tests_reviewed: 15
+      risks_identified: 3
+      trace:
+        ac_covered: [1, 2, 3]  # AC numbers with test coverage
+        ac_gaps: [4]  # AC numbers lacking coverage
+
+  nfr_validation: |
+    nfr_validation:
+      security: { status: CONCERNS, notes: "Rate limiting missing" }
+      performance: { status: PASS, notes: "" }
+      reliability: { status: PASS, notes: "" }
+      maintainability: { status: PASS, notes: "" }
+
+  history: |
+    history:  # Append-only audit trail
+      - at: "2025-01-12T10:00:00Z"
+        gate: FAIL
+        note: "Initial review - missing tests"
+      - at: "2025-01-12T15:00:00Z"  
+        gate: CONCERNS
+        note: "Tests added but rate limiting still missing"
+
+  risk_summary: |
+    risk_summary:  # From risk-profile task
+      totals:
+        critical: 0
+        high: 0
+        medium: 0
+        low: 0
+      # 'highest' is emitted only when risks exist
+      recommendations:
+        must_fix: []
+        monitor: []
+
+  recommendations: |
+    recommendations:
+      immediate:  # Must fix before production
+        - action: "Add rate limiting to auth endpoints"
+          refs: ["api/auth/login.ts:42-68"]
+      future:  # Can be addressed later
+        - action: "Consider caching for better performance"
+          refs: ["services/data.service.ts"]
+==================== END: .bmad-core/templates/qa-gate-tmpl.yaml ====================
+
 ==================== START: .bmad-core/data/technical-preferences.md ====================
+<!-- Powered by BMAD™ Core -->
 # User-Defined Preferred Patterns and Preferences
 
 None Listed

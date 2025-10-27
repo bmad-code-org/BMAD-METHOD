@@ -1,0 +1,91 @@
+# <!-- Powered by BMAD™ Core -->
+# workflows/novel-writing.yaml
+name: novel-writing
+title: Novel Writing Workflow
+description: |
+  End‑to‑end pipeline for drafting, revising, and polishing a full‑length novel
+  using the BMAD™ Creative Writing team.
+
+triggers:
+  - command: /novel
+  - intent: "write a novel"
+
+inputs:
+  - working_title
+  - genre
+  - target_word_count
+
+agents:
+  - plot-architect
+  - world-builder
+  - character-psychologist
+  - genre-specialist
+  - narrative-designer
+  - dialog-specialist
+  - editor
+  - beta-reader
+
+steps:
+  - id: generate_outline
+    title: Generate high‑level outline
+    agent: plot-architect
+    uses: templates/story-outline-tmpl.yaml
+    outputs: outline
+
+  - id: develop_characters
+    title: Flesh out characters
+    agent: character-psychologist
+    inputs: outline
+    uses: templates/character-profile-tmpl.yaml
+    outputs: character_profiles
+
+  - id: build_world
+    title: Develop setting and worldbuilding
+    agent: world-builder
+    inputs: outline
+    outputs: world_bible
+
+  - id: scene_list
+    title: Expand outline into scene list
+    agent: narrative-designer
+    inputs:
+      - outline
+      - character_profiles
+      - world_bible
+    outputs: scene_list
+
+  - id: draft
+    title: Draft manuscript
+    agent: narrative-designer
+    repeat_for: scene_list
+    outputs: raw_chapters
+
+  - id: dialogue_pass
+    title: Polish dialogue
+    agent: dialog-specialist
+    inputs: raw_chapters
+    outputs: dialogue_polished
+
+  - id: developmental_edit
+    title: Developmental edit
+    agent: editor
+    inputs:
+      - dialogue_polished
+    outputs: revised_manuscript
+
+  - id: beta_read
+    title: Beta read and feedback
+    agent: beta-reader
+    inputs: revised_manuscript
+    outputs: beta_notes
+
+  - id: final_edit
+    title: Final copy‑edit and proof
+    agent: editor
+    inputs:
+      - revised_manuscript
+      - beta_notes
+    outputs: final_manuscript
+
+outputs:
+  - final_manuscript

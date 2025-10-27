@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # game-developer
 
 ACTIVATION-NOTICE: This file contains your full agent operating guidelines. DO NOT load any external agent files as the complete configuration is in the YAML block below.
@@ -60,10 +62,10 @@ commands:
 task-execution:
   flow: Read story → Implement game feature → Write tests → Pass tests → Update [x] → Next task
   updates-ONLY:
-    - "Checkboxes: [ ] not started | [-] in progress | [x] complete"
-    - "Debug Log: | Task | File | Change | Reverted? |"
-    - "Completion Notes: Deviations only, <50 words"
-    - "Change Log: Requirement changes only"
+    - 'Checkboxes: [ ] not started | [-] in progress | [x] complete'
+    - 'Debug Log: | Task | File | Change | Reverted? |'
+    - 'Completion Notes: Deviations only, <50 words'
+    - 'Change Log: Requirement changes only'
   blocking: Unapproved deps | Ambiguous after story check | 3 failures | Missing game config
   done: Game feature works + Tests pass + 60 FPS + No lint errors + Follows Phaser 3 best practices
 dependencies:

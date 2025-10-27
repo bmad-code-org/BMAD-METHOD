@@ -1,0 +1,98 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: cover-design-brief-tmpl
+  name: Cover Design Brief
+  version: 1.0
+  description: Structured form capturing creative and technical details for cover design
+  output:
+    format: markdown
+    filename: "{{title}}-cover-brief.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+
+sections:
+  - id: book_metadata
+    title: Book Metadata
+    instruction: |
+      Define book information:
+      - Title and subtitle
+      - Author name
+      - Series name and number (if applicable)
+      - Genre and subgenre
+      - Target audience demographics
+      - Publication date
+    elicit: true
+
+  - id: technical_specs
+    title: Technical Specifications
+    instruction: |
+      Specify print requirements:
+      - Trim size (e.g., 6x9 inches)
+      - Page count estimate
+      - Paper type and color
+      - Print type (POD, offset)
+      - Cover finish (matte/glossy)
+      - Spine width calculation
+    elicit: true
+
+  - id: creative_direction
+    title: Creative Direction
+    instruction: |
+      Define visual style:
+      - Mood/tone keywords (3-5 words)
+      - Primary imagery concepts
+      - Color palette preferences
+      - Font style direction
+      - Competitor covers for reference
+      - What to avoid
+    elicit: true
+
+  - id: front_cover
+    title: Front Cover Elements
+    instruction: |
+      Specify front cover components:
+      - Title treatment style
+      - Author name placement
+      - Series branding
+      - Tagline or quote
+      - Visual hierarchy
+      - Special effects (foil, embossing)
+    elicit: true
+
+  - id: spine_design
+    title: Spine Design
+    instruction: |
+      Design spine layout:
+      - Title orientation
+      - Author name
+      - Publisher logo
+      - Series numbering
+      - Color/pattern continuation
+    elicit: true
+
+  - id: back_cover
+    title: Back Cover Content
+    instruction: |
+      Plan back cover elements:
+      - Book blurb (150-200 words)
+      - Review quotes (2-3)
+      - Author bio (50 words)
+      - Author photo placement
+      - ISBN/barcode location
+      - Publisher information
+      - Website/social media
+    elicit: true
+
+  - id: digital_versions
+    title: Digital Versions
+    instruction: |
+      Specify digital adaptations:
+      - Ebook cover requirements
+      - Thumbnail optimization
+      - Social media versions
+      - Website banner version
+      - Resolution requirements
+    elicit: true

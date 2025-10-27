@@ -1,0 +1,20 @@
+# <!-- Powered by BMAD™ Core -->
+bundle:
+  name: Creative Writing Team
+  icon: ✍️
+  description: Complete creative writing team for fiction, narrative design, and storytelling projects
+agents:
+  - plot-architect
+  - character-psychologist
+  - world-builder
+  - editor
+  - beta-reader
+  - dialog-specialist
+  - narrative-designer
+  - genre-specialist
+  - book-critic # newly added professional critic agent
+workflows:
+  - novel-writing
+  - screenplay-development
+  - short-story-creation
+  - series-planning

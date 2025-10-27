@@ -1,0 +1,92 @@
+# <!-- Powered by BMAD™ Core -->
+---
+template:
+  id: character-profile
+  name: Character Profile Template
+  version: 1.0
+  description: Deep character development worksheet
+  output:
+    format: markdown
+    filename: "{{character_name}}-profile.md"
+
+workflow:
+  elicitation: true
+  allow_skip: false
+sections:
+  - id: basics
+    title: Basic Information
+    instruction: |
+      Create character foundation:
+      - Full name and nicknames
+      - Age and birthday
+      - Physical description
+      - Occupation/role
+      - Social status
+      - First impression
+  - id: psychology
+    title: Psychological Profile
+    instruction: |
+      Develop internal landscape:
+      - Core wound/ghost
+      - Lie they believe
+      - Want (external goal)
+      - Need (internal growth)
+      - Fear (greatest)
+      - Personality type/temperament
+      - Defense mechanisms
+    elicit: true
+  - id: backstory
+    title: Backstory
+    instruction: |
+      Create formative history:
+      - Family dynamics
+      - Defining childhood event
+      - Education/training
+      - Past relationships
+      - Failures and successes
+      - Secrets held
+    elicit: true
+  - id: voice
+    title: Voice & Dialog
+    instruction: |
+      Define speaking patterns:
+      - Vocabulary level
+      - Speech rhythm
+      - Favorite phrases
+      - Topics they avoid
+      - How they argue
+      - Humor style
+      - Three sample lines
+    elicit: true
+  - id: relationships
+    title: Relationships
+    instruction: |
+      Map connections:
+      - Family relationships
+      - Romantic history/interests
+      - Friends and allies
+      - Enemies and rivals
+      - Mentor figures
+      - Power dynamics
+  - id: arc
+    title: Character Arc
+    instruction: |
+      Design transformation:
+      - Starting state
+      - Inciting incident impact
+      - Resistance to change
+      - Turning points
+      - Dark moment
+      - Breakthrough
+      - End state
+    elicit: true
+  - id: details
+    title: Unique Details
+    instruction: |
+      Add memorable specifics:
+      - Habits and mannerisms
+      - Prized possessions
+      - Daily routine
+      - Pet peeves
+      - Hidden talents
+      - Contradictions

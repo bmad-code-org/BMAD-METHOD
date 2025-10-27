@@ -1,3 +1,5 @@
+<!-- Powered by BMAD™ Core -->
+
 # Game Development Story Definition of Done (DoD) Checklist
 
 ## Instructions for Developer Agent
@@ -25,7 +27,6 @@ The goal is quality delivery, not just checking boxes.]]
 1. **Requirements Met:**
 
    [[LLM: Be specific - list each requirement and whether it's complete. Include game-specific requirements from GDD]]
-
    - [ ] All functional requirements specified in the story are implemented.
    - [ ] All acceptance criteria defined in the story are met.
    - [ ] Game Design Document (GDD) requirements referenced in the story are implemented.
@@ -34,7 +35,6 @@ The goal is quality delivery, not just checking boxes.]]
 2. **Coding Standards & Project Structure:**
 
    [[LLM: Code quality matters for maintainability. Check Unity-specific patterns and C# standards]]
-
    - [ ] All new/modified code strictly adheres to `Operational Guidelines`.
    - [ ] All new/modified code aligns with `Project Structure` (Scripts/, Prefabs/, Scenes/, etc.).
    - [ ] Adherence to `Tech Stack` for Unity version and packages used.
@@ -48,7 +48,6 @@ The goal is quality delivery, not just checking boxes.]]
 3. **Testing:**
 
    [[LLM: Testing proves your code works. Include Unity-specific testing with NUnit and manual testing]]
-
    - [ ] All required unit tests (NUnit) as per the story and testing strategy are implemented.
    - [ ] All required integration tests (if applicable) are implemented.
    - [ ] Manual testing performed in Unity Editor for all game functionality.
@@ -60,7 +59,6 @@ The goal is quality delivery, not just checking boxes.]]
 4. **Functionality & Verification:**
 
    [[LLM: Did you actually run and test your code in Unity? Be specific about game mechanics tested]]
-
    - [ ] Functionality has been manually verified in Unity Editor and play mode.
    - [ ] Game mechanics work as specified in the GDD.
    - [ ] Player controls and input handling work correctly.
@@ -73,7 +71,6 @@ The goal is quality delivery, not just checking boxes.]]
 5. **Story Administration:**
 
    [[LLM: Documentation helps the next developer. Include Unity-specific implementation notes]]
-
    - [ ] All tasks within the story file are marked as complete.
    - [ ] Any clarifications or decisions made during development are documented.
    - [ ] Unity-specific implementation details documented (scene changes, prefab modifications).
@@ -83,7 +80,6 @@ The goal is quality delivery, not just checking boxes.]]
 6. **Dependencies, Build & Configuration:**
 
    [[LLM: Build issues block everyone. Ensure Unity project builds for all target platforms]]
-
    - [ ] Unity project builds successfully without errors.
    - [ ] Project builds for all target platforms (desktop/mobile as specified).
    - [ ] Any new Unity packages or Asset Store items were pre-approved OR approved by user.
@@ -95,7 +91,6 @@ The goal is quality delivery, not just checking boxes.]]
 7. **Game-Specific Quality:**
 
    [[LLM: Game quality matters. Check performance, game feel, and player experience]]
-
    - [ ] Frame rate meets target (30/60 FPS) on all platforms.
    - [ ] Memory usage within acceptable limits.
    - [ ] Game feel and responsiveness meet design requirements.
@@ -107,7 +102,6 @@ The goal is quality delivery, not just checking boxes.]]
 8. **Documentation (If Applicable):**
 
    [[LLM: Good documentation prevents future confusion. Include Unity-specific docs]]
-
    - [ ] Code documentation (XML comments) for public APIs complete.
    - [ ] Unity component documentation in Inspector updated.
    - [ ] User-facing documentation updated, if changes impact players.

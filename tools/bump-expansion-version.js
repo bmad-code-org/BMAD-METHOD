@@ -1,17 +1,15 @@
-#!/usr/bin/env node
-
 // Load required modules
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const yaml = require('js-yaml');
 
 // Parse CLI arguments
-const args = process.argv.slice(2);
-const packId = args[0];
-const bumpType = args[1] || 'minor';
+const arguments_ = process.argv.slice(2);
+const packId = arguments_[0];
+const bumpType = arguments_[1] || 'minor';
 
 // Validate arguments
-if (!packId || args.length > 2) {
+if (!packId || arguments_.length > 2) {
   console.log('Usage: node bump-expansion-version.js <expansion-pack-id> [major|minor|patch]');
   console.log('Default: minor');
   console.log('Example: node bump-expansion-version.js bmad-creator-tools patch');
@@ -28,10 +26,18 @@ function bumpVersion(currentVersion, type) {
   const [major, minor, patch] = currentVersion.split('.').map(Number);
 
   switch (type) {
-    case 'major': return `${major + 1}.0.0`;
-    case 'minor': return `${major}.${minor + 1}.0`;
-    case 'patch': return `${major}.${minor}.${patch + 1}`;
-    default: return currentVersion;
+    case 'major': {
+      return `${major + 1}.0.0`;
+    }
+    case 'minor': {
+      return `${major}.${minor + 1}.0`;
+    }
+    case 'patch': {
+      return `${major}.${minor}.${patch + 1}`;
+    }
+    default: {
+      return currentVersion;
+    }
   }
 }
 
@@ -47,11 +53,11 @@ async function updateVersion() {
     const packsDir = path.join(__dirname, '..', 'expansion-packs');
     const entries = fs.readdirSync(packsDir, { withFileTypes: true });
 
-    entries.forEach(entry => {
+    for (const entry of entries) {
       if (entry.isDirectory() && !entry.name.startsWith('.')) {
         console.log(`  - ${entry.name}`);
       }
-    });
+    }
 
     process.exit(1);
   }
@@ -72,8 +78,9 @@ async function updateVersion() {
     console.log(`\n✓ Successfully bumped ${packId} with ${bumpType} version bump`);
     console.log('\nNext steps:');
     console.log(`1. Test the changes`);
-    console.log(`2. Commit: git add -A && git commit -m "chore: bump ${packId} version (${bumpType})"`);
-
+    console.log(
+      `2. Commit: git add -A && git commit -m "chore: bump ${packId} version (${bumpType})"`,
+    );
   } catch (error) {
     console.error('Error updating version:', error.message);
     process.exit(1);

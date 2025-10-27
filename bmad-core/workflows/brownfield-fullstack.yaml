@@ -1,3 +1,4 @@
+# <!-- Powered by BMAD™ Core -->
 workflow:
   id: brownfield-fullstack
   name: Brownfield Full-Stack Enhancement
@@ -20,7 +21,7 @@ workflow:
         - Single story (< 4 hours) → Use brownfield-create-story task
         - Small feature (1-3 stories) → Use brownfield-create-epic task  
         - Major enhancement (multiple epics) → Continue with full workflow
-        
+
         Ask user: "Can you describe the enhancement scope? Is this a small fix, a feature addition, or a major enhancement requiring architectural changes?"
 
     - step: routing_decision
@@ -159,7 +160,7 @@ workflow:
         - Dev Agent (New Chat): Address remaining items
         - Return to QA for final approval
 
-    - repeat_development_cycle:
+    - step: repeat_development_cycle
       action: continue_for_all_stories
       notes: |
         Repeat story cycle (SM → Dev → QA) for all epic stories
@@ -176,12 +177,12 @@ workflow:
         - Validate epic was completed correctly
         - Document learnings and improvements
 
-    - workflow_end:
+    - step: workflow_end
       action: project_complete
       notes: |
         All stories implemented and reviewed!
         Project development phase complete.
-        
+
         Reference: {root}/data/bmad-kb.md#IDE Development Workflow
 
   flow_diagram: |
@@ -265,33 +266,33 @@ workflow:
       {{if single_story}}: Proceeding with brownfield-create-story task for immediate implementation.
       {{if small_feature}}: Creating focused epic with brownfield-create-epic task.
       {{if major_enhancement}}: Continuing with comprehensive planning workflow.
-    
+
     documentation_assessment: |
       Documentation assessment complete:
       {{if adequate}}: Existing documentation is sufficient. Proceeding directly to PRD creation.
       {{if inadequate}}: Running document-project to capture current system state before PRD.
-    
+
     document_project_to_pm: |
       Project analysis complete. Key findings documented in:
       - {{document_list}}
       Use these findings to inform PRD creation and avoid re-analyzing the same aspects.
-    
+
     pm_to_architect_decision: |
       PRD complete and saved as docs/prd.md. 
       Architectural changes identified: {{yes/no}}
       {{if yes}}: Proceeding to create architecture document for: {{specific_changes}}
       {{if no}}: No architectural changes needed. Proceeding to validation.
-    
+
     architect_to_po: "Architecture complete. Save it as docs/architecture.md. Please validate all artifacts for integration safety."
-    
+
     po_to_sm: |
       All artifacts validated. 
       Documentation type available: {{sharded_prd / brownfield_docs}}
       {{if sharded}}: Use standard create-next-story task.
       {{if brownfield}}: Use create-brownfield-story task to handle varied documentation formats.
-    
+
     sm_story_creation: |
       Creating story from {{documentation_type}}.
       {{if missing_context}}: May need to gather additional context from user during story creation.
-    
+
     complete: "All planning artifacts validated and development can begin. Stories will be created based on available documentation format."

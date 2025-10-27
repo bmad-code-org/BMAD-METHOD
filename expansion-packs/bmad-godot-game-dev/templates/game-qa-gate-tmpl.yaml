@@ -1,0 +1,186 @@
+template:
+  id: godot-qa-gate-template-v2
+  name: Godot Game Quality Gate Decision
+  version: 2.0
+  output:
+    format: yaml
+    filename: docs/qa/gates/{{epic_num}}.{{story_num}}-{{story_slug}}.yml
+    title: "Godot Quality Gate: {{epic_num}}.{{story_num}}"
+
+# Required fields (keep these first)
+schema: 1
+story: "{{epic_num}}.{{story_num}}"
+story_title: "{{story_title}}"
+gate: "{{gate_status}}" # PASS|CONCERNS|FAIL|WAIVED
+status_reason: "{{status_reason}}" # 1-2 sentence summary focusing on TDD compliance and 60+ FPS performance
+reviewer: "Linus (Godot Game Test Architect)"
+updated: "{{iso_timestamp}}"
+
+# Always present but only active when WAIVED
+waiver: { active: false }
+
+# Godot-specific Issues (if any) - Use fixed severity: low | medium | high
+top_issues: [] # Focus on performance drops below 60 FPS, missing TDD tests, wrong language choices
+
+# Risk summary (from risk-profile task if run)
+risk_summary:
+  totals: { critical: 0, high: 0, medium: 0, low: 0 }
+  recommendations:
+    must_fix: []
+    monitor: []
+
+# Godot examples section using block scalars for clarity
+examples:
+  with_issues: |
+    top_issues:
+      - id: "PERF-001"
+        severity: high  # ONLY: low|medium|high
+        finding: "Frame rate drops to 45 FPS during particle spawning"
+        suggested_action: "Implement object pooling for particle systems"
+      - id: "TDD-001"  
+        severity: high
+        finding: "No GUT tests for player controller despite GDScript implementation"
+        suggested_action: "Add GUT test coverage before marking story complete"
+      - id: "LANG-001"
+        severity: medium
+        finding: "Physics system using GDScript instead of C# causing performance issues"
+        suggested_action: "Refactor physics calculations to C# for better performance"
+
+  when_waived: |
+    waiver:
+      active: true
+      reason: "Performance at 55 FPS acceptable for early access - optimization planned for next sprint"
+      approved_by: "Product Owner"
+
+# ============ Optional Extended Fields ============
+# Uncomment and use if your team wants more detail
+# CRITICAL: Gates should FAIL if performance drops below 60 FPS or TDD is not followed
+
+optional_fields_examples:
+  quality_and_expiry: |
+    quality_score: 75  # 100 - (20*FAILs) - (10*CONCERNS) - (5*FPS_drops_below_60)
+    expires: "2025-01-26T00:00:00Z"  # Optional gate freshness window
+
+  evidence: |
+    evidence:
+      gut_tests_reviewed: 15  # GDScript tests
+      godottest_reviewed: 8   # C# tests
+      performance_validated: true  # 60+ FPS confirmed
+      language_strategy_verified: true  # GDScript/C# choices appropriate
+      trace:
+        ac_covered: [1, 2, 3]  # AC numbers with GUT/GoDotTest coverage
+        ac_gaps: [4]  # AC numbers lacking TDD coverage
+        fps_validation: "60+ FPS on all target platforms"
+
+  nfr_validation: |
+    nfr_validation:
+      performance: { status: PASS, notes: "60+ FPS maintained, frame time <16.67ms" }
+      tdd_compliance: { status: PASS, notes: "GUT coverage 85%, GoDotTest coverage 80%" }
+      language_strategy: { status: PASS, notes: "GDScript for logic, C# for physics - appropriate" }
+      object_pooling: { status: CONCERNS, notes: "Pooling missing for bullet spawns" }
+      signal_cleanup: { status: PASS, notes: "All signals properly disconnected" }
+      platform_exports: { status: PASS, notes: "Export templates configured for all targets" }
+
+  history: |
+    history:  # Append-only audit trail
+      - at: "2025-01-12T10:00:00Z"
+        gate: FAIL
+        note: "Initial review - FPS dropped to 45, no GUT tests"
+      - at: "2025-01-12T15:00:00Z"  
+        gate: CONCERNS
+        note: "GUT tests added, FPS improved to 58 - needs object pooling"
+
+  risk_summary: |
+    risk_summary:  # From Godot risk-profile task
+      totals:
+        critical: 0  # FPS < 30 or no TDD
+        high: 0      # FPS < 60 or wrong language choice
+        medium: 0    # Missing optimizations
+        low: 0       # Minor issues
+      # 'highest' is emitted only when risks exist
+      recommendations:
+        must_fix: []  # Performance below 60 FPS, missing TDD
+        monitor: []   # Language strategy concerns
+
+  recommendations: |
+    recommendations:
+      immediate:  # Must fix before production
+        - action: "Implement object pooling for all spawned entities"
+          refs: ["res://scripts/spawners/bullet_spawner.gd:42-68"]
+        - action: "Add GUT tests for player controller"
+          refs: ["res://scripts/player/player_controller.gd"]
+        - action: "Optimize particle system to maintain 60+ FPS"
+          refs: ["res://scenes/effects/particles.tscn"]
+      future:  # Can be addressed later
+        - action: "Consider migrating physics to C# for 20% performance gain"
+          refs: ["res://scripts/physics/physics_manager.gd"]
+        - action: "Add performance benchmarks to GUT test suite"
+          refs: ["res://tests/"]
+
+  godot_performance_metrics: |
+    godot_metrics:
+      frame_rate:
+        current: 62  # Current FPS
+        target: 60   # Minimum acceptable (FAIL if below)
+        peak: 120    # Best achieved
+      frame_time:
+        current_ms: 16.1  # Current frame time
+        target_ms: 16.67  # Maximum for 60 FPS
+      memory:
+        scene_mb: 45      # Scene memory usage
+        texture_mb: 128   # Texture memory
+        pool_count: 5     # Active object pools
+      draw_calls:
+        current: 85
+        budget: 100       # Platform-specific budget
+      language_distribution:
+        gdscript_files: 45  # With static typing
+        csharp_files: 12    # Performance-critical systems
+
+  test_coverage_metrics: |
+    test_coverage:
+      gut_tests:
+        total: 45
+        passing: 43
+        coverage_percent: 85
+        performance_tests: 8  # Tests validating 60+ FPS
+      godottest_tests:
+        total: 20
+        passing: 20
+        coverage_percent: 80
+        physics_tests: 15     # C# physics validation
+      tdd_compliance:
+        stories_with_tests_first: 18
+        stories_without_tests: 2
+        compliance_percent: 90
+
+# ============ Godot Gate Decision Criteria ============
+# Apply these rules in order to determine gate status:
+
+gate_decision_rules: |
+  1. AUTOMATIC FAIL CONDITIONS:
+     - Performance below 60 FPS on any target platform
+     - No TDD tests (neither GUT nor GoDotTest)
+     - Memory leaks detected (signals not cleaned up)
+     - Wrong language choice causing performance issues
+     - Object pooling missing for frequently spawned entities
+     
+  2. CONCERNS CONDITIONS:
+     - Performance between 55-59 FPS
+     - TDD coverage below 80%
+     - Static typing not used in GDScript
+     - LINQ usage in C# hot paths
+     - Scene transitions exceeding 3 seconds
+     
+  3. PASS CONDITIONS:
+     - Consistent 60+ FPS across all platforms
+     - GUT/GoDotTest coverage >= 80%
+     - Appropriate language choices (GDScript for logic, C# for performance)
+     - Object pooling implemented for all spawned entities
+     - All signals properly connected and cleaned up
+     
+  4. WAIVER ONLY WITH:
+     - Product Owner approval
+     - Clear remediation plan
+     - Timeline for fixing issues
+     - Risk acceptance documented

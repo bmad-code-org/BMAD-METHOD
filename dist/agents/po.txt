@@ -75,30 +75,105 @@ persona:
     - Documentation Ecosystem Integrity - Maintain consistency across all documents
 commands:
   - help: Show numbered list of the following commands to allow selection
-  - execute-checklist-po: Run task execute-checklist (checklist po-master-checklist)
-  - shard-doc {document} {destination}: run the task shard-doc against the optionally provided document to the specified destination
   - correct-course: execute the correct-course task
   - create-epic: Create epic for brownfield projects (task brownfield-create-epic)
   - create-story: Create user story from requirements (task brownfield-create-story)
   - doc-out: Output full document to current destination file
+  - execute-checklist-po: Run task execute-checklist (checklist po-master-checklist)
+  - shard-doc {document} {destination}: run the task shard-doc against the optionally provided document to the specified destination
   - validate-story-draft {story}: run the task validate-next-story against the provided story file
   - yolo: Toggle Yolo Mode off on - on will skip doc section confirmations
   - exit: Exit (confirm)
 dependencies:
+  checklists:
+    - change-checklist.md
+    - po-master-checklist.md
   tasks:
+    - correct-course.md
     - execute-checklist.md
     - shard-doc.md
-    - correct-course.md
     - validate-next-story.md
   templates:
     - story-tmpl.yaml
-  checklists:
-    - po-master-checklist.md
-    - change-checklist.md
 ```
 ==================== END: .bmad-core/agents/po.md ====================
 
+==================== START: .bmad-core/tasks/correct-course.md ====================
+<!-- Powered by BMAD™ Core -->
+# Correct Course Task
+
+## Purpose
+
+- Guide a structured response to a change trigger using the `.bmad-core/checklists/change-checklist`.
+- Analyze the impacts of the change on epics, project artifacts, and the MVP, guided by the checklist's structure.
+- Explore potential solutions (e.g., adjust scope, rollback elements, re-scope features) as prompted by the checklist.
+- Draft specific, actionable proposed updates to any affected project artifacts (e.g., epics, user stories, PRD sections, architecture document sections) based on the analysis.
+- Produce a consolidated "Sprint Change Proposal" document that contains the impact analysis and the clearly drafted proposed edits for user review and approval.
+- Ensure a clear handoff path if the nature of the changes necessitates fundamental replanning by other core agents (like PM or Architect).
+
+## Instructions
+
+### 1. Initial Setup & Mode Selection
+
+- **Acknowledge Task & Inputs:**
+  - Confirm with the user that the "Correct Course Task" (Change Navigation & Integration) is being initiated.
+  - Verify the change trigger and ensure you have the user's initial explanation of the issue and its perceived impact.
+  - Confirm access to all relevant project artifacts (e.g., PRD, Epics/Stories, Architecture Documents, UI/UX Specifications) and, critically, the `.bmad-core/checklists/change-checklist`.
+- **Establish Interaction Mode:**
+  - Ask the user their preferred interaction mode for this task:
+    - **"Incrementally (Default & Recommended):** Shall we work through the change-checklist section by section, discussing findings and collaboratively drafting proposed changes for each relevant part before moving to the next? This allows for detailed, step-by-step refinement."
+    - **"YOLO Mode (Batch Processing):** Or, would you prefer I conduct a more batched analysis based on the checklist and then present a consolidated set of findings and proposed changes for a broader review? This can be quicker for initial assessment but might require more extensive review of the combined proposals."
+  - Once the user chooses, confirm the selected mode and then inform the user: "We will now use the change-checklist to analyze the change and draft proposed updates. I will guide you through the checklist items based on our chosen interaction mode."
+
+### 2. Execute Checklist Analysis (Iteratively or Batched, per Interaction Mode)
+
+- Systematically work through Sections 1-4 of the change-checklist (typically covering Change Context, Epic/Story Impact Analysis, Artifact Conflict Resolution, and Path Evaluation/Recommendation).
+- For each checklist item or logical group of items (depending on interaction mode):
+  - Present the relevant prompt(s) or considerations from the checklist to the user.
+  - Request necessary information and actively analyze the relevant project artifacts (PRD, epics, architecture documents, story history, etc.) to assess the impact.
+  - Discuss your findings for each item with the user.
+  - Record the status of each checklist item (e.g., `[x] Addressed`, `[N/A]`, `[!] Further Action Needed`) and any pertinent notes or decisions.
+  - Collaboratively agree on the "Recommended Path Forward" as prompted by Section 4 of the checklist.
+
+### 3. Draft Proposed Changes (Iteratively or Batched)
+
+- Based on the completed checklist analysis (Sections 1-4) and the agreed "Recommended Path Forward" (excluding scenarios requiring fundamental replans that would necessitate immediate handoff to PM/Architect):
+  - Identify the specific project artifacts that require updates (e.g., specific epics, user stories, PRD sections, architecture document components, diagrams).
+  - **Draft the proposed changes directly and explicitly for each identified artifact.** Examples include:
+    - Revising user story text, acceptance criteria, or priority.
+    - Adding, removing, reordering, or splitting user stories within epics.
+    - Proposing modified architecture diagram snippets (e.g., providing an updated Mermaid diagram block or a clear textual description of the change to an existing diagram).
+    - Updating technology lists, configuration details, or specific sections within the PRD or architecture documents.
+    - Drafting new, small supporting artifacts if necessary (e.g., a brief addendum for a specific decision).
+  - If in "Incremental Mode," discuss and refine these proposed edits for each artifact or small group of related artifacts with the user as they are drafted.
+  - If in "YOLO Mode," compile all drafted edits for presentation in the next step.
+
+### 4. Generate "Sprint Change Proposal" with Edits
+
+- Synthesize the complete change-checklist analysis (covering findings from Sections 1-4) and all the agreed-upon proposed edits (from Instruction 3) into a single document titled "Sprint Change Proposal." This proposal should align with the structure suggested by Section 5 of the change-checklist.
+- The proposal must clearly present:
+  - **Analysis Summary:** A concise overview of the original issue, its analyzed impact (on epics, artifacts, MVP scope), and the rationale for the chosen path forward.
+  - **Specific Proposed Edits:** For each affected artifact, clearly show or describe the exact changes (e.g., "Change Story X.Y from: [old text] To: [new text]", "Add new Acceptance Criterion to Story A.B: [new AC]", "Update Section 3.2 of Architecture Document as follows: [new/modified text or diagram description]").
+- Present the complete draft of the "Sprint Change Proposal" to the user for final review and feedback. Incorporate any final adjustments requested by the user.
+
+### 5. Finalize & Determine Next Steps
+
+- Obtain explicit user approval for the "Sprint Change Proposal," including all the specific edits documented within it.
+- Provide the finalized "Sprint Change Proposal" document to the user.
+- **Based on the nature of the approved changes:**
+  - **If the approved edits sufficiently address the change and can be implemented directly or organized by a PO/SM:** State that the "Correct Course Task" is complete regarding analysis and change proposal, and the user can now proceed with implementing or logging these changes (e.g., updating actual project documents, backlog items). Suggest handoff to a PO/SM agent for backlog organization if appropriate.
+  - **If the analysis and proposed path (as per checklist Section 4 and potentially Section 6) indicate that the change requires a more fundamental replan (e.g., significant scope change, major architectural rework):** Clearly state this conclusion. Advise the user that the next step involves engaging the primary PM or Architect agents, using the "Sprint Change Proposal" as critical input and context for that deeper replanning effort.
+
+## Output Deliverables
+
+- **Primary:** A "Sprint Change Proposal" document (in markdown format). This document will contain:
+  - A summary of the change-checklist analysis (issue, impact, rationale for the chosen path).
+  - Specific, clearly drafted proposed edits for all affected project artifacts.
+- **Implicit:** An annotated change-checklist (or the record of its completion) reflecting the discussions, findings, and decisions made during the process.
+==================== END: .bmad-core/tasks/correct-course.md ====================
+
 ==================== START: .bmad-core/tasks/execute-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -110,7 +185,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 ## Instructions
 
 1. **Initial Assessment**
-
    - If user or the task being run provides a checklist name:
      - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
      - If multiple matches found, ask user to clarify
@@ -123,14 +197,12 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
 
 2. **Document and Artifact Gathering**
-
    - Each checklist will specify its required documents/artifacts at the beginning
    - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
 
 3. **Checklist Processing**
 
    If in interactive mode:
-
    - Work through each section of the checklist one at a time
    - For each section:
      - Review all items in the section following instructions for that section embedded in the checklist
@@ -139,7 +211,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
 
    If in YOLO mode:
-
    - Process all sections at once
    - Create a comprehensive report of all findings
    - Present the complete analysis to the user
@@ -147,7 +218,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 4. **Validation Approach**
 
    For each checklist item:
-
    - Read and understand the requirement
    - Look for evidence in the documentation that satisfies the requirement
    - Consider both explicit mentions and implicit coverage
@@ -161,7 +231,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 5. **Section Analysis**
 
    For each section:
-
    - think step by step to calculate pass rate
    - Identify common themes in failed items
    - Provide specific recommendations for improvement
@@ -171,7 +240,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 6. **Final Report**
 
    Prepare a summary that includes:
-
    - Overall checklist completion status
    - Pass rates by section
    - List of failed items with context
@@ -195,6 +263,7 @@ The LLM will:
 ==================== END: .bmad-core/tasks/execute-checklist.md ====================
 
 ==================== START: .bmad-core/tasks/shard-doc.md ====================
+<!-- Powered by BMAD™ Core -->
 # Document Sharding Task
 
 ## Purpose
@@ -288,13 +357,11 @@ CRITICAL: Use proper parsing that understands markdown context. A ## inside a co
 For each extracted section:
 
 1. **Generate filename**: Convert the section heading to lowercase-dash-case
-
    - Remove special characters
    - Replace spaces with dashes
    - Example: "## Tech Stack" → `tech-stack.md`
 
 2. **Adjust heading levels**:
-
    - The level 2 heading becomes level 1 (# instead of ##) in the sharded new document
    - All subsection levels decrease by 1:
 
@@ -384,80 +451,8 @@ Document sharded successfully:
 - Ensure the sharding is reversible (could reconstruct the original from shards)
 ==================== END: .bmad-core/tasks/shard-doc.md ====================
 
-==================== START: .bmad-core/tasks/correct-course.md ====================
-# Correct Course Task
-
-## Purpose
-
-- Guide a structured response to a change trigger using the `.bmad-core/checklists/change-checklist`.
-- Analyze the impacts of the change on epics, project artifacts, and the MVP, guided by the checklist's structure.
-- Explore potential solutions (e.g., adjust scope, rollback elements, re-scope features) as prompted by the checklist.
-- Draft specific, actionable proposed updates to any affected project artifacts (e.g., epics, user stories, PRD sections, architecture document sections) based on the analysis.
-- Produce a consolidated "Sprint Change Proposal" document that contains the impact analysis and the clearly drafted proposed edits for user review and approval.
-- Ensure a clear handoff path if the nature of the changes necessitates fundamental replanning by other core agents (like PM or Architect).
-
-## Instructions
-
-### 1. Initial Setup & Mode Selection
-
-- **Acknowledge Task & Inputs:**
-  - Confirm with the user that the "Correct Course Task" (Change Navigation & Integration) is being initiated.
-  - Verify the change trigger and ensure you have the user's initial explanation of the issue and its perceived impact.
-  - Confirm access to all relevant project artifacts (e.g., PRD, Epics/Stories, Architecture Documents, UI/UX Specifications) and, critically, the `.bmad-core/checklists/change-checklist`.
-- **Establish Interaction Mode:**
-  - Ask the user their preferred interaction mode for this task:
-    - **"Incrementally (Default & Recommended):** Shall we work through the change-checklist section by section, discussing findings and collaboratively drafting proposed changes for each relevant part before moving to the next? This allows for detailed, step-by-step refinement."
-    - **"YOLO Mode (Batch Processing):** Or, would you prefer I conduct a more batched analysis based on the checklist and then present a consolidated set of findings and proposed changes for a broader review? This can be quicker for initial assessment but might require more extensive review of the combined proposals."
-  - Once the user chooses, confirm the selected mode and then inform the user: "We will now use the change-checklist to analyze the change and draft proposed updates. I will guide you through the checklist items based on our chosen interaction mode."
-
-### 2. Execute Checklist Analysis (Iteratively or Batched, per Interaction Mode)
-
-- Systematically work through Sections 1-4 of the change-checklist (typically covering Change Context, Epic/Story Impact Analysis, Artifact Conflict Resolution, and Path Evaluation/Recommendation).
-- For each checklist item or logical group of items (depending on interaction mode):
-  - Present the relevant prompt(s) or considerations from the checklist to the user.
-  - Request necessary information and actively analyze the relevant project artifacts (PRD, epics, architecture documents, story history, etc.) to assess the impact.
-  - Discuss your findings for each item with the user.
-  - Record the status of each checklist item (e.g., `[x] Addressed`, `[N/A]`, `[!] Further Action Needed`) and any pertinent notes or decisions.
-  - Collaboratively agree on the "Recommended Path Forward" as prompted by Section 4 of the checklist.
-
-### 3. Draft Proposed Changes (Iteratively or Batched)
-
-- Based on the completed checklist analysis (Sections 1-4) and the agreed "Recommended Path Forward" (excluding scenarios requiring fundamental replans that would necessitate immediate handoff to PM/Architect):
-  - Identify the specific project artifacts that require updates (e.g., specific epics, user stories, PRD sections, architecture document components, diagrams).
-  - **Draft the proposed changes directly and explicitly for each identified artifact.** Examples include:
-    - Revising user story text, acceptance criteria, or priority.
-    - Adding, removing, reordering, or splitting user stories within epics.
-    - Proposing modified architecture diagram snippets (e.g., providing an updated Mermaid diagram block or a clear textual description of the change to an existing diagram).
-    - Updating technology lists, configuration details, or specific sections within the PRD or architecture documents.
-    - Drafting new, small supporting artifacts if necessary (e.g., a brief addendum for a specific decision).
-  - If in "Incremental Mode," discuss and refine these proposed edits for each artifact or small group of related artifacts with the user as they are drafted.
-  - If in "YOLO Mode," compile all drafted edits for presentation in the next step.
-
-### 4. Generate "Sprint Change Proposal" with Edits
-
-- Synthesize the complete change-checklist analysis (covering findings from Sections 1-4) and all the agreed-upon proposed edits (from Instruction 3) into a single document titled "Sprint Change Proposal." This proposal should align with the structure suggested by Section 5 of the change-checklist.
-- The proposal must clearly present:
-  - **Analysis Summary:** A concise overview of the original issue, its analyzed impact (on epics, artifacts, MVP scope), and the rationale for the chosen path forward.
-  - **Specific Proposed Edits:** For each affected artifact, clearly show or describe the exact changes (e.g., "Change Story X.Y from: [old text] To: [new text]", "Add new Acceptance Criterion to Story A.B: [new AC]", "Update Section 3.2 of Architecture Document as follows: [new/modified text or diagram description]").
-- Present the complete draft of the "Sprint Change Proposal" to the user for final review and feedback. Incorporate any final adjustments requested by the user.
-
-### 5. Finalize & Determine Next Steps
-
-- Obtain explicit user approval for the "Sprint Change Proposal," including all the specific edits documented within it.
-- Provide the finalized "Sprint Change Proposal" document to the user.
-- **Based on the nature of the approved changes:**
-  - **If the approved edits sufficiently address the change and can be implemented directly or organized by a PO/SM:** State that the "Correct Course Task" is complete regarding analysis and change proposal, and the user can now proceed with implementing or logging these changes (e.g., updating actual project documents, backlog items). Suggest handoff to a PO/SM agent for backlog organization if appropriate.
-  - **If the analysis and proposed path (as per checklist Section 4 and potentially Section 6) indicate that the change requires a more fundamental replan (e.g., significant scope change, major architectural rework):** Clearly state this conclusion. Advise the user that the next step involves engaging the primary PM or Architect agents, using the "Sprint Change Proposal" as critical input and context for that deeper replanning effort.
-
-## Output Deliverables
-
-- **Primary:** A "Sprint Change Proposal" document (in markdown format). This document will contain:
-  - A summary of the change-checklist analysis (issue, impact, rationale for the chosen path).
-  - Specific, clearly drafted proposed edits for all affected project artifacts.
-- **Implicit:** An annotated change-checklist (or the record of its completion) reflecting the discussions, findings, and decisions made during the process.
-==================== END: .bmad-core/tasks/correct-course.md ====================
-
 ==================== START: .bmad-core/tasks/validate-next-story.md ====================
+<!-- Powered by BMAD™ Core -->
 # Validate Next Story Task
 
 ## Purpose
@@ -595,6 +590,7 @@ Provide a structured validation report including:
 ==================== END: .bmad-core/tasks/validate-next-story.md ====================
 
 ==================== START: .bmad-core/templates/story-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: story-template-v2
   name: Story Document
@@ -609,7 +605,7 @@ workflow:
   elicitation: advanced-elicitation
 
 agent_config:
-  editable_sections: 
+  editable_sections:
     - Status
     - Story
     - Acceptance Criteria
@@ -626,7 +622,7 @@ sections:
     instruction: Select the current status of the story
     owner: scrum-master
     editors: [scrum-master, dev-agent]
-    
+
   - id: story
     title: Story
     type: template-text
@@ -638,7 +634,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master]
-    
+
   - id: acceptance-criteria
     title: Acceptance Criteria
     type: numbered-list
@@ -646,7 +642,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master]
-    
+
   - id: tasks-subtasks
     title: Tasks / Subtasks
     type: bullet-list
@@ -663,7 +659,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master, dev-agent]
-    
+
   - id: dev-notes
     title: Dev Notes
     instruction: |
@@ -687,7 +683,7 @@ sections:
         elicit: true
         owner: scrum-master
         editors: [scrum-master]
-        
+
   - id: change-log
     title: Change Log
     type: table
@@ -695,7 +691,7 @@ sections:
     instruction: Track changes made to this story document
     owner: scrum-master
     editors: [scrum-master, dev-agent, qa-agent]
-    
+
   - id: dev-agent-record
     title: Dev Agent Record
     instruction: This section is populated by the development agent during implementation
@@ -708,25 +704,25 @@ sections:
         instruction: Record the specific AI agent model and version used for development
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: debug-log-references
         title: Debug Log References
         instruction: Reference any debug logs or traces generated during development
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: completion-notes
         title: Completion Notes List
         instruction: Notes about the completion of tasks and any issues encountered
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: file-list
         title: File List
         instruction: List all files created, modified, or affected during story implementation
         owner: dev-agent
         editors: [dev-agent]
-        
+
   - id: qa-results
     title: QA Results
     instruction: Results from QA Agent QA review of the completed story implementation
@@ -734,7 +730,194 @@ sections:
     editors: [qa-agent]
 ==================== END: .bmad-core/templates/story-tmpl.yaml ====================
 
+==================== START: .bmad-core/checklists/change-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
+# Change Navigation Checklist
+
+**Purpose:** To systematically guide the selected Agent and user through the analysis and planning required when a significant change (pivot, tech issue, missing requirement, failed story) is identified during the BMad workflow.
+
+**Instructions:** Review each item with the user. Mark `[x]` for completed/confirmed, `[N/A]` if not applicable, or add notes for discussion points.
+
+[[LLM: INITIALIZATION INSTRUCTIONS - CHANGE NAVIGATION
+
+Changes during development are inevitable, but how we handle them determines project success or failure.
+
+Before proceeding, understand:
+
+1. This checklist is for SIGNIFICANT changes that affect the project direction
+2. Minor adjustments within a story don't require this process
+3. The goal is to minimize wasted work while adapting to new realities
+4. User buy-in is critical - they must understand and approve changes
+
+Required context:
+
+- The triggering story or issue
+- Current project state (completed stories, current epic)
+- Access to PRD, architecture, and other key documents
+- Understanding of remaining work planned
+
+APPROACH:
+This is an interactive process with the user. Work through each section together, discussing implications and options. The user makes final decisions, but provide expert guidance on technical feasibility and impact.
+
+REMEMBER: Changes are opportunities to improve, not failures. Handle them professionally and constructively.]]
+
+---
+
+## 1. Understand the Trigger & Context
+
+[[LLM: Start by fully understanding what went wrong and why. Don't jump to solutions yet. Ask probing questions:
+
+- What exactly happened that triggered this review?
+- Is this a one-time issue or symptomatic of a larger problem?
+- Could this have been anticipated earlier?
+- What assumptions were incorrect?
+
+Be specific and factual, not blame-oriented.]]
+
+- [ ] **Identify Triggering Story:** Clearly identify the story (or stories) that revealed the issue.
+- [ ] **Define the Issue:** Articulate the core problem precisely.
+  - [ ] Is it a technical limitation/dead-end?
+  - [ ] Is it a newly discovered requirement?
+  - [ ] Is it a fundamental misunderstanding of existing requirements?
+  - [ ] Is it a necessary pivot based on feedback or new information?
+  - [ ] Is it a failed/abandoned story needing a new approach?
+- [ ] **Assess Initial Impact:** Describe the immediate observed consequences (e.g., blocked progress, incorrect functionality, non-viable tech).
+- [ ] **Gather Evidence:** Note any specific logs, error messages, user feedback, or analysis that supports the issue definition.
+
+## 2. Epic Impact Assessment
+
+[[LLM: Changes ripple through the project structure. Systematically evaluate:
+
+1. Can we salvage the current epic with modifications?
+2. Do future epics still make sense given this change?
+3. Are we creating or eliminating dependencies?
+4. Does the epic sequence need reordering?
+
+Think about both immediate and downstream effects.]]
+
+- [ ] **Analyze Current Epic:**
+  - [ ] Can the current epic containing the trigger story still be completed?
+  - [ ] Does the current epic need modification (story changes, additions, removals)?
+  - [ ] Should the current epic be abandoned or fundamentally redefined?
+- [ ] **Analyze Future Epics:**
+  - [ ] Review all remaining planned epics.
+  - [ ] Does the issue require changes to planned stories in future epics?
+  - [ ] Does the issue invalidate any future epics?
+  - [ ] Does the issue necessitate the creation of entirely new epics?
+  - [ ] Should the order/priority of future epics be changed?
+- [ ] **Summarize Epic Impact:** Briefly document the overall effect on the project's epic structure and flow.
+
+## 3. Artifact Conflict & Impact Analysis
+
+[[LLM: Documentation drives development in BMad. Check each artifact:
+
+1. Does this change invalidate documented decisions?
+2. Are architectural assumptions still valid?
+3. Do user flows need rethinking?
+4. Are technical constraints different than documented?
+
+Be thorough - missed conflicts cause future problems.]]
+
+- [ ] **Review PRD:**
+  - [ ] Does the issue conflict with the core goals or requirements stated in the PRD?
+  - [ ] Does the PRD need clarification or updates based on the new understanding?
+- [ ] **Review Architecture Document:**
+  - [ ] Does the issue conflict with the documented architecture (components, patterns, tech choices)?
+  - [ ] Are specific components/diagrams/sections impacted?
+  - [ ] Does the technology list need updating?
+  - [ ] Do data models or schemas need revision?
+  - [ ] Are external API integrations affected?
+- [ ] **Review Frontend Spec (if applicable):**
+  - [ ] Does the issue conflict with the FE architecture, component library choice, or UI/UX design?
+  - [ ] Are specific FE components or user flows impacted?
+- [ ] **Review Other Artifacts (if applicable):**
+  - [ ] Consider impact on deployment scripts, IaC, monitoring setup, etc.
+- [ ] **Summarize Artifact Impact:** List all artifacts requiring updates and the nature of the changes needed.
+
+## 4. Path Forward Evaluation
+
+[[LLM: Present options clearly with pros/cons. For each path:
+
+1. What's the effort required?
+2. What work gets thrown away?
+3. What risks are we taking?
+4. How does this affect timeline?
+5. Is this sustainable long-term?
+
+Be honest about trade-offs. There's rarely a perfect solution.]]
+
+- [ ] **Option 1: Direct Adjustment / Integration:**
+  - [ ] Can the issue be addressed by modifying/adding future stories within the existing plan?
+  - [ ] Define the scope and nature of these adjustments.
+  - [ ] Assess feasibility, effort, and risks of this path.
+- [ ] **Option 2: Potential Rollback:**
+  - [ ] Would reverting completed stories significantly simplify addressing the issue?
+  - [ ] Identify specific stories/commits to consider for rollback.
+  - [ ] Assess the effort required for rollback.
+  - [ ] Assess the impact of rollback (lost work, data implications).
+  - [ ] Compare the net benefit/cost vs. Direct Adjustment.
+- [ ] **Option 3: PRD MVP Review & Potential Re-scoping:**
+  - [ ] Is the original PRD MVP still achievable given the issue and constraints?
+  - [ ] Does the MVP scope need reduction (removing features/epics)?
+  - [ ] Do the core MVP goals need modification?
+  - [ ] Are alternative approaches needed to meet the original MVP intent?
+  - [ ] **Extreme Case:** Does the issue necessitate a fundamental replan or potentially a new PRD V2 (to be handled by PM)?
+- [ ] **Select Recommended Path:** Based on the evaluation, agree on the most viable path forward.
+
+## 5. Sprint Change Proposal Components
+
+[[LLM: The proposal must be actionable and clear. Ensure:
+
+1. The issue is explained in plain language
+2. Impacts are quantified where possible
+3. The recommended path has clear rationale
+4. Next steps are specific and assigned
+5. Success criteria for the change are defined
+
+This proposal guides all subsequent work.]]
+
+(Ensure all agreed-upon points from previous sections are captured in the proposal)
+
+- [ ] **Identified Issue Summary:** Clear, concise problem statement.
+- [ ] **Epic Impact Summary:** How epics are affected.
+- [ ] **Artifact Adjustment Needs:** List of documents to change.
+- [ ] **Recommended Path Forward:** Chosen solution with rationale.
+- [ ] **PRD MVP Impact:** Changes to scope/goals (if any).
+- [ ] **High-Level Action Plan:** Next steps for stories/updates.
+- [ ] **Agent Handoff Plan:** Identify roles needed (PM, Arch, Design Arch, PO).
+
+## 6. Final Review & Handoff
+
+[[LLM: Changes require coordination. Before concluding:
+
+1. Is the user fully aligned with the plan?
+2. Do all stakeholders understand the impacts?
+3. Are handoffs to other agents clear?
+4. Is there a rollback plan if the change fails?
+5. How will we validate the change worked?
+
+Get explicit approval - implicit agreement causes problems.
+
+FINAL REPORT:
+After completing the checklist, provide a concise summary:
+
+- What changed and why
+- What we're doing about it
+- Who needs to do what
+- When we'll know if it worked
+
+Keep it action-oriented and forward-looking.]]
+
+- [ ] **Review Checklist:** Confirm all relevant items were discussed.
+- [ ] **Review Sprint Change Proposal:** Ensure it accurately reflects the discussion and decisions.
+- [ ] **User Approval:** Obtain explicit user approval for the proposal.
+- [ ] **Confirm Next Steps:** Reiterate the handoff plan and the next actions to be taken by specific agents.
+
+---
+==================== END: .bmad-core/checklists/change-checklist.md ====================
+
 ==================== START: .bmad-core/checklists/po-master-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Product Owner (PO) Master Validation Checklist
 
 This checklist serves as a comprehensive framework for the Product Owner to validate project plans before development execution. It adapts intelligently based on project type (greenfield vs brownfield) and includes UI/UX considerations when applicable.
@@ -745,14 +928,12 @@ PROJECT TYPE DETECTION:
 First, determine the project type by checking:
 
 1. Is this a GREENFIELD project (new from scratch)?
-
    - Look for: New project initialization, no existing codebase references
    - Check for: prd.md, architecture.md, new project setup stories
 
 2. Is this a BROWNFIELD project (enhancing existing system)?
-
    - Look for: References to existing codebase, enhancement/modification language
-   - Check for: brownfield-prd.md, brownfield-architecture.md, existing system analysis
+   - Check for: prd.md, architecture.md, existing system analysis
 
 3. Does the project include UI/UX components?
    - Check for: frontend-architecture.md, UI/UX specifications, design files
@@ -770,8 +951,8 @@ For GREENFIELD projects:
 
 For BROWNFIELD projects:
 
-- brownfield-prd.md - The brownfield enhancement requirements
-- brownfield-architecture.md - The enhancement architecture
+- prd.md - The brownfield enhancement requirements
+- architecture.md - The enhancement architecture
 - Existing project codebase access (CRITICAL - cannot proceed without this)
 - Current deployment configuration and infrastructure details
 - Database schemas, API documentation, monitoring setup
@@ -1084,7 +1265,6 @@ Ask the user if they want to work through the checklist:
 Generate a comprehensive validation report that adapts to project type:
 
 1. Executive Summary
-
    - Project type: [Greenfield/Brownfield] with [UI/No UI]
    - Overall readiness (percentage)
    - Go/No-Go recommendation
@@ -1094,42 +1274,36 @@ Generate a comprehensive validation report that adapts to project type:
 2. Project-Specific Analysis
 
    FOR GREENFIELD:
-
    - Setup completeness
    - Dependency sequencing
    - MVP scope appropriateness
    - Development timeline feasibility
 
    FOR BROWNFIELD:
-
    - Integration risk level (High/Medium/Low)
    - Existing system impact assessment
    - Rollback readiness
    - User disruption potential
 
 3. Risk Assessment
-
    - Top 5 risks by severity
    - Mitigation recommendations
    - Timeline impact of addressing issues
    - [BROWNFIELD] Specific integration risks
 
 4. MVP Completeness
-
    - Core features coverage
    - Missing essential functionality
    - Scope creep identified
    - True MVP vs over-engineering
 
 5. Implementation Readiness
-
    - Developer clarity score (1-10)
    - Ambiguous requirements count
    - Missing technical details
    - [BROWNFIELD] Integration point clarity
 
 6. Recommendations
-
    - Must-fix before development
    - Should-fix for quality
    - Consider for improvement
@@ -1177,188 +1351,3 @@ After presenting the report, ask if the user wants:
 - **CONDITIONAL**: The plan requires specific adjustments before proceeding.
 - **REJECTED**: The plan requires significant revision to address critical deficiencies.
 ==================== END: .bmad-core/checklists/po-master-checklist.md ====================
-
-==================== START: .bmad-core/checklists/change-checklist.md ====================
-# Change Navigation Checklist
-
-**Purpose:** To systematically guide the selected Agent and user through the analysis and planning required when a significant change (pivot, tech issue, missing requirement, failed story) is identified during the BMad workflow.
-
-**Instructions:** Review each item with the user. Mark `[x]` for completed/confirmed, `[N/A]` if not applicable, or add notes for discussion points.
-
-[[LLM: INITIALIZATION INSTRUCTIONS - CHANGE NAVIGATION
-
-Changes during development are inevitable, but how we handle them determines project success or failure.
-
-Before proceeding, understand:
-
-1. This checklist is for SIGNIFICANT changes that affect the project direction
-2. Minor adjustments within a story don't require this process
-3. The goal is to minimize wasted work while adapting to new realities
-4. User buy-in is critical - they must understand and approve changes
-
-Required context:
-
-- The triggering story or issue
-- Current project state (completed stories, current epic)
-- Access to PRD, architecture, and other key documents
-- Understanding of remaining work planned
-
-APPROACH:
-This is an interactive process with the user. Work through each section together, discussing implications and options. The user makes final decisions, but provide expert guidance on technical feasibility and impact.
-
-REMEMBER: Changes are opportunities to improve, not failures. Handle them professionally and constructively.]]
-
----
-
-## 1. Understand the Trigger & Context
-
-[[LLM: Start by fully understanding what went wrong and why. Don't jump to solutions yet. Ask probing questions:
-
-- What exactly happened that triggered this review?
-- Is this a one-time issue or symptomatic of a larger problem?
-- Could this have been anticipated earlier?
-- What assumptions were incorrect?
-
-Be specific and factual, not blame-oriented.]]
-
-- [ ] **Identify Triggering Story:** Clearly identify the story (or stories) that revealed the issue.
-- [ ] **Define the Issue:** Articulate the core problem precisely.
-  - [ ] Is it a technical limitation/dead-end?
-  - [ ] Is it a newly discovered requirement?
-  - [ ] Is it a fundamental misunderstanding of existing requirements?
-  - [ ] Is it a necessary pivot based on feedback or new information?
-  - [ ] Is it a failed/abandoned story needing a new approach?
-- [ ] **Assess Initial Impact:** Describe the immediate observed consequences (e.g., blocked progress, incorrect functionality, non-viable tech).
-- [ ] **Gather Evidence:** Note any specific logs, error messages, user feedback, or analysis that supports the issue definition.
-
-## 2. Epic Impact Assessment
-
-[[LLM: Changes ripple through the project structure. Systematically evaluate:
-
-1. Can we salvage the current epic with modifications?
-2. Do future epics still make sense given this change?
-3. Are we creating or eliminating dependencies?
-4. Does the epic sequence need reordering?
-
-Think about both immediate and downstream effects.]]
-
-- [ ] **Analyze Current Epic:**
-  - [ ] Can the current epic containing the trigger story still be completed?
-  - [ ] Does the current epic need modification (story changes, additions, removals)?
-  - [ ] Should the current epic be abandoned or fundamentally redefined?
-- [ ] **Analyze Future Epics:**
-  - [ ] Review all remaining planned epics.
-  - [ ] Does the issue require changes to planned stories in future epics?
-  - [ ] Does the issue invalidate any future epics?
-  - [ ] Does the issue necessitate the creation of entirely new epics?
-  - [ ] Should the order/priority of future epics be changed?
-- [ ] **Summarize Epic Impact:** Briefly document the overall effect on the project's epic structure and flow.
-
-## 3. Artifact Conflict & Impact Analysis
-
-[[LLM: Documentation drives development in BMad. Check each artifact:
-
-1. Does this change invalidate documented decisions?
-2. Are architectural assumptions still valid?
-3. Do user flows need rethinking?
-4. Are technical constraints different than documented?
-
-Be thorough - missed conflicts cause future problems.]]
-
-- [ ] **Review PRD:**
-  - [ ] Does the issue conflict with the core goals or requirements stated in the PRD?
-  - [ ] Does the PRD need clarification or updates based on the new understanding?
-- [ ] **Review Architecture Document:**
-  - [ ] Does the issue conflict with the documented architecture (components, patterns, tech choices)?
-  - [ ] Are specific components/diagrams/sections impacted?
-  - [ ] Does the technology list need updating?
-  - [ ] Do data models or schemas need revision?
-  - [ ] Are external API integrations affected?
-- [ ] **Review Frontend Spec (if applicable):**
-  - [ ] Does the issue conflict with the FE architecture, component library choice, or UI/UX design?
-  - [ ] Are specific FE components or user flows impacted?
-- [ ] **Review Other Artifacts (if applicable):**
-  - [ ] Consider impact on deployment scripts, IaC, monitoring setup, etc.
-- [ ] **Summarize Artifact Impact:** List all artifacts requiring updates and the nature of the changes needed.
-
-## 4. Path Forward Evaluation
-
-[[LLM: Present options clearly with pros/cons. For each path:
-
-1. What's the effort required?
-2. What work gets thrown away?
-3. What risks are we taking?
-4. How does this affect timeline?
-5. Is this sustainable long-term?
-
-Be honest about trade-offs. There's rarely a perfect solution.]]
-
-- [ ] **Option 1: Direct Adjustment / Integration:**
-  - [ ] Can the issue be addressed by modifying/adding future stories within the existing plan?
-  - [ ] Define the scope and nature of these adjustments.
-  - [ ] Assess feasibility, effort, and risks of this path.
-- [ ] **Option 2: Potential Rollback:**
-  - [ ] Would reverting completed stories significantly simplify addressing the issue?
-  - [ ] Identify specific stories/commits to consider for rollback.
-  - [ ] Assess the effort required for rollback.
-  - [ ] Assess the impact of rollback (lost work, data implications).
-  - [ ] Compare the net benefit/cost vs. Direct Adjustment.
-- [ ] **Option 3: PRD MVP Review & Potential Re-scoping:**
-  - [ ] Is the original PRD MVP still achievable given the issue and constraints?
-  - [ ] Does the MVP scope need reduction (removing features/epics)?
-  - [ ] Do the core MVP goals need modification?
-  - [ ] Are alternative approaches needed to meet the original MVP intent?
-  - [ ] **Extreme Case:** Does the issue necessitate a fundamental replan or potentially a new PRD V2 (to be handled by PM)?
-- [ ] **Select Recommended Path:** Based on the evaluation, agree on the most viable path forward.
-
-## 5. Sprint Change Proposal Components
-
-[[LLM: The proposal must be actionable and clear. Ensure:
-
-1. The issue is explained in plain language
-2. Impacts are quantified where possible
-3. The recommended path has clear rationale
-4. Next steps are specific and assigned
-5. Success criteria for the change are defined
-
-This proposal guides all subsequent work.]]
-
-(Ensure all agreed-upon points from previous sections are captured in the proposal)
-
-- [ ] **Identified Issue Summary:** Clear, concise problem statement.
-- [ ] **Epic Impact Summary:** How epics are affected.
-- [ ] **Artifact Adjustment Needs:** List of documents to change.
-- [ ] **Recommended Path Forward:** Chosen solution with rationale.
-- [ ] **PRD MVP Impact:** Changes to scope/goals (if any).
-- [ ] **High-Level Action Plan:** Next steps for stories/updates.
-- [ ] **Agent Handoff Plan:** Identify roles needed (PM, Arch, Design Arch, PO).
-
-## 6. Final Review & Handoff
-
-[[LLM: Changes require coordination. Before concluding:
-
-1. Is the user fully aligned with the plan?
-2. Do all stakeholders understand the impacts?
-3. Are handoffs to other agents clear?
-4. Is there a rollback plan if the change fails?
-5. How will we validate the change worked?
-
-Get explicit approval - implicit agreement causes problems.
-
-FINAL REPORT:
-After completing the checklist, provide a concise summary:
-
-- What changed and why
-- What we're doing about it
-- Who needs to do what
-- When we'll know if it worked
-
-Keep it action-oriented and forward-looking.]]
-
-- [ ] **Review Checklist:** Confirm all relevant items were discussed.
-- [ ] **Review Sprint Change Proposal:** Ensure it accurately reflects the discussion and decisions.
-- [ ] **User Approval:** Obtain explicit user approval for the proposal.
-- [ ] **Confirm Next Steps:** Reiterate the handoff plan and the next actions to be taken by specific agents.
-
----
-==================== END: .bmad-core/checklists/change-checklist.md ====================

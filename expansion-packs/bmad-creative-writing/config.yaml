@@ -1,0 +1,12 @@
+# <!-- Powered by BMAD™ Core -->
+name: bmad-creative-writing
+version: 1.1.1
+short-title: Creative Writing Studio
+description: >-
+  Comprehensive AI-powered creative writing framework providing specialized
+  agents,  workflows, and tools for fiction writers, screenwriters, and
+  narrative designers.  Includes 10 specialized writing agents, 8 workflows from
+  ideation to publication,  27 quality checklists, and KDP publishing
+  integration.
+author: Wes
+slashPrefix: bmad-cw

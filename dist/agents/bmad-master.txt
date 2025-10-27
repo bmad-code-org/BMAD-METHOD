@@ -50,6 +50,7 @@ activation-instructions:
   - The agent.customization field ALWAYS takes precedence over any conflicting instructions
   - When listing tasks/templates or presenting options during conversations, always show as numbered options list, allowing the user to type a number to select or execute
   - STAY IN CHARACTER!
+  - 'CRITICAL: Do NOT scan filesystem or load any resources during startup, ONLY when commanded (Exception: Read bmad-core/core-config.yaml during activation)'
 agent:
   name: BMad Master
   id: bmad-master
@@ -67,27 +68,39 @@ persona:
     - Process (*) commands immediately, All commands require * prefix when used (e.g., *help)
 commands:
   - help: Show these listed commands in a numbered list
-  - kb: Toggle KB mode off (default) or on, when on will load and reference the .bmad-core/data/bmad-kb.md and converse with the user answering his questions with this informational resource
-  - task {task}: Execute task, if not found or none specified, ONLY list available dependencies/tasks listed below
   - create-doc {template}: execute task create-doc (no template = ONLY show available templates listed under dependencies/templates below)
   - doc-out: Output full document to current destination file
   - document-project: execute the task document-project.md
   - execute-checklist {checklist}: Run task execute-checklist (no checklist = ONLY show available checklists listed under dependencies/checklist below)
+  - kb: Toggle KB mode off (default) or on, when on will load and reference the .bmad-core/data/bmad-kb.md and converse with the user answering his questions with this informational resource
   - shard-doc {document} {destination}: run the task shard-doc against the optionally provided document to the specified destination
+  - task {task}: Execute task, if not found or none specified, ONLY list available dependencies/tasks listed below
   - yolo: Toggle Yolo Mode
   - exit: Exit (confirm)
 dependencies:
+  checklists:
+    - architect-checklist.md
+    - change-checklist.md
+    - pm-checklist.md
+    - po-master-checklist.md
+    - story-dod-checklist.md
+    - story-draft-checklist.md
+  data:
+    - bmad-kb.md
+    - brainstorming-techniques.md
+    - elicitation-methods.md
+    - technical-preferences.md
   tasks:
     - advanced-elicitation.md
-    - facilitate-brainstorming-session.md
     - brownfield-create-epic.md
     - brownfield-create-story.md
     - correct-course.md
     - create-deep-research-prompt.md
     - create-doc.md
-    - document-project.md
     - create-next-story.md
+    - document-project.md
     - execute-checklist.md
+    - facilitate-brainstorming-session.md
     - generate-ai-frontend-prompt.md
     - index-docs.md
     - shard-doc.md
@@ -103,11 +116,6 @@ dependencies:
     - prd-tmpl.yaml
     - project-brief-tmpl.yaml
     - story-tmpl.yaml
-  data:
-    - bmad-kb.md
-    - brainstorming-techniques.md
-    - elicitation-methods.md
-    - technical-preferences.md
   workflows:
     - brownfield-fullstack.md
     - brownfield-service.md
@@ -115,17 +123,11 @@ dependencies:
     - greenfield-fullstack.md
     - greenfield-service.md
     - greenfield-ui.md
-  checklists:
-    - architect-checklist.md
-    - change-checklist.md
-    - pm-checklist.md
-    - po-master-checklist.md
-    - story-dod-checklist.md
-    - story-draft-checklist.md
 ```
 ==================== END: .bmad-core/agents/bmad-master.md ====================
 
 ==================== START: .bmad-core/tasks/advanced-elicitation.md ====================
+<!-- Powered by BMAD™ Core -->
 # Advanced Elicitation Task
 
 ## Purpose
@@ -245,146 +247,8 @@ Choose a number (0-8) or 9 to proceed:
 - **Maintain Flow**: Keep the process moving efficiently
 ==================== END: .bmad-core/tasks/advanced-elicitation.md ====================
 
-==================== START: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
----
-docOutputLocation: docs/brainstorming-session-results.md
-template: ".bmad-core/templates/brainstorming-output-tmpl.yaml"
----
-
-# Facilitate Brainstorming Session Task
-
-Facilitate interactive brainstorming sessions with users. Be creative and adaptive in applying techniques.
-
-## Process
-
-### Step 1: Session Setup
-
-Ask 4 context questions (don't preview what happens next):
-
-1. What are we brainstorming about?
-2. Any constraints or parameters?
-3. Goal: broad exploration or focused ideation?
-4. Do you want a structured document output to reference later? (Default Yes)
-
-### Step 2: Present Approach Options
-
-After getting answers to Step 1, present 4 approach options (numbered):
-
-1. User selects specific techniques
-2. Analyst recommends techniques based on context
-3. Random technique selection for creative variety
-4. Progressive technique flow (start broad, narrow down)
-
-### Step 3: Execute Techniques Interactively
-
-**KEY PRINCIPLES:**
-
-- **FACILITATOR ROLE**: Guide user to generate their own ideas through questions, prompts, and examples
-- **CONTINUOUS ENGAGEMENT**: Keep user engaged with chosen technique until they want to switch or are satisfied
-- **CAPTURE OUTPUT**: If (default) document output requested, capture all ideas generated in each technique section to the document from the beginning.
-
-**Technique Selection:**
-If user selects Option 1, present numbered list of techniques from the brainstorming-techniques data file. User can select by number..
-
-**Technique Execution:**
-
-1. Apply selected technique according to data file description
-2. Keep engaging with technique until user indicates they want to:
-   - Choose a different technique
-   - Apply current ideas to a new technique  
-   - Move to convergent phase
-   - End session
-
-**Output Capture (if requested):**
-For each technique used, capture:
-
-- Technique name and duration
-- Key ideas generated by user
-- Insights and patterns identified
-- User's reflections on the process
-
-### Step 4: Session Flow
-
-1. **Warm-up** (5-10 min) - Build creative confidence
-2. **Divergent** (20-30 min) - Generate quantity over quality
-3. **Convergent** (15-20 min) - Group and categorize ideas
-4. **Synthesis** (10-15 min) - Refine and develop concepts
-
-### Step 5: Document Output (if requested)
-
-Generate structured document with these sections:
-
-**Executive Summary**
-
-- Session topic and goals
-- Techniques used and duration
-- Total ideas generated
-- Key themes and patterns identified
-
-**Technique Sections** (for each technique used)
-
-- Technique name and description
-- Ideas generated (user's own words)
-- Insights discovered
-- Notable connections or patterns
-
-**Idea Categorization**
-
-- **Immediate Opportunities** - Ready to implement now
-- **Future Innovations** - Requires development/research
-- **Moonshots** - Ambitious, transformative concepts
-- **Insights & Learnings** - Key realizations from session
-
-**Action Planning**
-
-- Top 3 priority ideas with rationale
-- Next steps for each priority
-- Resources/research needed
-- Timeline considerations
-
-**Reflection & Follow-up**
-
-- What worked well in this session
-- Areas for further exploration
-- Recommended follow-up techniques
-- Questions that emerged for future sessions
-
-## Key Principles
-
-- **YOU ARE A FACILITATOR**: Guide the user to brainstorm, don't brainstorm for them (unless they request it persistently)
-- **INTERACTIVE DIALOGUE**: Ask questions, wait for responses, build on their ideas
-- **ONE TECHNIQUE AT A TIME**: Don't mix multiple techniques in one response
-- **CONTINUOUS ENGAGEMENT**: Stay with one technique until user wants to switch
-- **DRAW IDEAS OUT**: Use prompts and examples to help them generate their own ideas
-- **REAL-TIME ADAPTATION**: Monitor engagement and adjust approach as needed
-- Maintain energy and momentum
-- Defer judgment during generation
-- Quantity leads to quality (aim for 100 ideas in 60 minutes)
-- Build on ideas collaboratively
-- Document everything in output document
-
-## Advanced Engagement Strategies
-
-**Energy Management**
-
-- Check engagement levels: "How are you feeling about this direction?"
-- Offer breaks or technique switches if energy flags
-- Use encouraging language and celebrate idea generation
-
-**Depth vs. Breadth**
-
-- Ask follow-up questions to deepen ideas: "Tell me more about that..."
-- Use "Yes, and..." to build on their ideas
-- Help them make connections: "How does this relate to your earlier idea about...?"
-
-**Transition Management**
-
-- Always ask before switching techniques: "Ready to try a different approach?"
-- Offer options: "Should we explore this idea deeper or generate more alternatives?"
-- Respect their process and timing
-==================== END: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
-
 ==================== START: .bmad-core/tasks/brownfield-create-epic.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Brownfield Epic Task
 
 ## Purpose
@@ -548,6 +412,7 @@ The epic creation is successful when:
 ==================== END: .bmad-core/tasks/brownfield-create-epic.md ====================
 
 ==================== START: .bmad-core/tasks/brownfield-create-story.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Brownfield Story Task
 
 ## Purpose
@@ -698,6 +563,7 @@ The story creation is successful when:
 ==================== END: .bmad-core/tasks/brownfield-create-story.md ====================
 
 ==================== START: .bmad-core/tasks/correct-course.md ====================
+<!-- Powered by BMAD™ Core -->
 # Correct Course Task
 
 ## Purpose
@@ -771,6 +637,7 @@ The story creation is successful when:
 ==================== END: .bmad-core/tasks/correct-course.md ====================
 
 ==================== START: .bmad-core/tasks/create-deep-research-prompt.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Deep Research Prompt Task
 
 This task helps create comprehensive research prompts for various types of deep analysis. It can process inputs from brainstorming sessions, project briefs, market research, or specific research questions to generate targeted prompts for deeper investigation.
@@ -794,63 +661,54 @@ CRITICAL: First, help the user select the most appropriate research focus based 
 Present these numbered options to the user:
 
 1. **Product Validation Research**
-
    - Validate product hypotheses and market fit
    - Test assumptions about user needs and solutions
    - Assess technical and business feasibility
    - Identify risks and mitigation strategies
 
 2. **Market Opportunity Research**
-
    - Analyze market size and growth potential
    - Identify market segments and dynamics
    - Assess market entry strategies
    - Evaluate timing and market readiness
 
 3. **User & Customer Research**
-
    - Deep dive into user personas and behaviors
    - Understand jobs-to-be-done and pain points
    - Map customer journeys and touchpoints
    - Analyze willingness to pay and value perception
 
 4. **Competitive Intelligence Research**
-
    - Detailed competitor analysis and positioning
    - Feature and capability comparisons
    - Business model and strategy analysis
    - Identify competitive advantages and gaps
 
 5. **Technology & Innovation Research**
-
    - Assess technology trends and possibilities
    - Evaluate technical approaches and architectures
    - Identify emerging technologies and disruptions
    - Analyze build vs. buy vs. partner options
 
 6. **Industry & Ecosystem Research**
-
    - Map industry value chains and dynamics
    - Identify key players and relationships
    - Analyze regulatory and compliance factors
    - Understand partnership opportunities
 
 7. **Strategic Options Research**
-
    - Evaluate different strategic directions
    - Assess business model alternatives
    - Analyze go-to-market strategies
    - Consider expansion and scaling paths
 
 8. **Risk & Feasibility Research**
-
    - Identify and assess various risk factors
    - Evaluate implementation challenges
    - Analyze resource requirements
    - Consider regulatory and legal implications
 
 9. **Custom Research Focus**
-
    - User-defined research objectives
    - Specialized domain investigation
    - Cross-functional research needs
@@ -1019,13 +877,11 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 ### 5. Review and Refinement
 
 1. **Present Complete Prompt**
-
    - Show the full research prompt
    - Explain key elements and rationale
    - Highlight any assumptions made
 
 2. **Gather Feedback**
-
    - Are the objectives clear and correct?
    - Do the questions address all concerns?
    - Is the scope appropriate?
@@ -1063,6 +919,7 @@ CRITICAL: collaborate with the user to develop specific, actionable research que
 ==================== END: .bmad-core/tasks/create-deep-research-prompt.md ====================
 
 ==================== START: .bmad-core/tasks/create-doc.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Document from Template (YAML Driven)
 
 ## ⚠️ CRITICAL EXECUTION NOTICE ⚠️
@@ -1166,351 +1023,8 @@ User can type `#yolo` to toggle to YOLO mode (process all sections at once).
 - End with "Select 1-9 or just type your question/feedback:"
 ==================== END: .bmad-core/tasks/create-doc.md ====================
 
-==================== START: .bmad-core/tasks/document-project.md ====================
-# Document an Existing Project
-
-## Purpose
-
-Generate comprehensive documentation for existing projects optimized for AI development agents. This task creates structured reference materials that enable AI agents to understand project context, conventions, and patterns for effective contribution to any codebase.
-
-## Task Instructions
-
-### 1. Initial Project Analysis
-
-**CRITICAL:** First, check if a PRD or requirements document exists in context. If yes, use it to focus your documentation efforts on relevant areas only.
-
-**IF PRD EXISTS**:
-
-- Review the PRD to understand what enhancement/feature is planned
-- Identify which modules, services, or areas will be affected
-- Focus documentation ONLY on these relevant areas
-- Skip unrelated parts of the codebase to keep docs lean
-
-**IF NO PRD EXISTS**:
-Ask the user:
-
-"I notice you haven't provided a PRD or requirements document. To create more focused and useful documentation, I recommend one of these options:
-
-1. **Create a PRD first** - Would you like me to help create a brownfield PRD before documenting? This helps focus documentation on relevant areas.
-
-2. **Provide existing requirements** - Do you have a requirements document, epic, or feature description you can share?
-
-3. **Describe the focus** - Can you briefly describe what enhancement or feature you're planning? For example:
-   - 'Adding payment processing to the user service'
-   - 'Refactoring the authentication module'
-   - 'Integrating with a new third-party API'
-
-4. **Document everything** - Or should I proceed with comprehensive documentation of the entire codebase? (Note: This may create excessive documentation for large projects)
-
-Please let me know your preference, or I can proceed with full documentation if you prefer."
-
-Based on their response:
-
-- If they choose option 1-3: Use that context to focus documentation
-- If they choose option 4 or decline: Proceed with comprehensive analysis below
-
-Begin by conducting analysis of the existing project. Use available tools to:
-
-1. **Project Structure Discovery**: Examine the root directory structure, identify main folders, and understand the overall organization
-2. **Technology Stack Identification**: Look for package.json, requirements.txt, Cargo.toml, pom.xml, etc. to identify languages, frameworks, and dependencies
-3. **Build System Analysis**: Find build scripts, CI/CD configurations, and development commands
-4. **Existing Documentation Review**: Check for README files, docs folders, and any existing documentation
-5. **Code Pattern Analysis**: Sample key files to understand coding patterns, naming conventions, and architectural approaches
-
-Ask the user these elicitation questions to better understand their needs:
-
-- What is the primary purpose of this project?
-- Are there any specific areas of the codebase that are particularly complex or important for agents to understand?
-- What types of tasks do you expect AI agents to perform on this project? (e.g., bug fixes, feature additions, refactoring, testing)
-- Are there any existing documentation standards or formats you prefer?
-- What level of technical detail should the documentation target? (junior developers, senior developers, mixed team)
-- Is there a specific feature or enhancement you're planning? (This helps focus documentation)
-
-### 2. Deep Codebase Analysis
-
-CRITICAL: Before generating documentation, conduct extensive analysis of the existing codebase:
-
-1. **Explore Key Areas**:
-   - Entry points (main files, index files, app initializers)
-   - Configuration files and environment setup
-   - Package dependencies and versions
-   - Build and deployment configurations
-   - Test suites and coverage
-
-2. **Ask Clarifying Questions**:
-   - "I see you're using [technology X]. Are there any custom patterns or conventions I should document?"
-   - "What are the most critical/complex parts of this system that developers struggle with?"
-   - "Are there any undocumented 'tribal knowledge' areas I should capture?"
-   - "What technical debt or known issues should I document?"
-   - "Which parts of the codebase change most frequently?"
-
-3. **Map the Reality**:
-   - Identify ACTUAL patterns used (not theoretical best practices)
-   - Find where key business logic lives
-   - Locate integration points and external dependencies
-   - Document workarounds and technical debt
-   - Note areas that differ from standard patterns
-
-**IF PRD PROVIDED**: Also analyze what would need to change for the enhancement
-
-### 3. Core Documentation Generation
-
-[[LLM: Generate a comprehensive BROWNFIELD architecture document that reflects the ACTUAL state of the codebase.
-
-**CRITICAL**: This is NOT an aspirational architecture document. Document what EXISTS, including:
-
-- Technical debt and workarounds
-- Inconsistent patterns between different parts
-- Legacy code that can't be changed
-- Integration constraints
-- Performance bottlenecks
-
-**Document Structure**:
-
-# [Project Name] Brownfield Architecture Document
-
-## Introduction
-
-This document captures the CURRENT STATE of the [Project Name] codebase, including technical debt, workarounds, and real-world patterns. It serves as a reference for AI agents working on enhancements.
-
-### Document Scope
-
-[If PRD provided: "Focused on areas relevant to: {enhancement description}"]
-[If no PRD: "Comprehensive documentation of entire system"]
-
-### Change Log
-
-| Date | Version | Description | Author |
-|------|---------|-------------|--------|
-| [Date] | 1.0 | Initial brownfield analysis | [Analyst] |
-
-## Quick Reference - Key Files and Entry Points
-
-### Critical Files for Understanding the System
-
-- **Main Entry**: `src/index.js` (or actual entry point)
-- **Configuration**: `config/app.config.js`, `.env.example`
-- **Core Business Logic**: `src/services/`, `src/domain/`
-- **API Definitions**: `src/routes/` or link to OpenAPI spec
-- **Database Models**: `src/models/` or link to schema files
-- **Key Algorithms**: [List specific files with complex logic]
-
-### If PRD Provided - Enhancement Impact Areas
-
-[Highlight which files/modules will be affected by the planned enhancement]
-
-## High Level Architecture
-
-### Technical Summary
-
-### Actual Tech Stack (from package.json/requirements.txt)
-
-| Category | Technology | Version | Notes |
-|----------|------------|---------|--------|
-| Runtime | Node.js | 16.x | [Any constraints] |
-| Framework | Express | 4.18.2 | [Custom middleware?] |
-| Database | PostgreSQL | 13 | [Connection pooling setup] |
-
-etc...
-
-### Repository Structure Reality Check
-
-- Type: [Monorepo/Polyrepo/Hybrid]
-- Package Manager: [npm/yarn/pnpm]
-- Notable: [Any unusual structure decisions]
-
-## Source Tree and Module Organization
-
-### Project Structure (Actual)
-
-```text
-project-root/
-├── src/
-│   ├── controllers/     # HTTP request handlers
-│   ├── services/        # Business logic (NOTE: inconsistent patterns between user and payment services)
-│   ├── models/          # Database models (Sequelize)
-│   ├── utils/           # Mixed bag - needs refactoring
-│   └── legacy/          # DO NOT MODIFY - old payment system still in use
-├── tests/               # Jest tests (60% coverage)
-├── scripts/             # Build and deployment scripts
-└── config/              # Environment configs
-```
-
-### Key Modules and Their Purpose
-
-- **User Management**: `src/services/userService.js` - Handles all user operations
-- **Authentication**: `src/middleware/auth.js` - JWT-based, custom implementation
-- **Payment Processing**: `src/legacy/payment.js` - CRITICAL: Do not refactor, tightly coupled
-- **[List other key modules with their actual files]**
-
-## Data Models and APIs
-
-### Data Models
-
-Instead of duplicating, reference actual model files:
-- **User Model**: See `src/models/User.js`
-- **Order Model**: See `src/models/Order.js`
-- **Related Types**: TypeScript definitions in `src/types/`
-
-### API Specifications
-
-- **OpenAPI Spec**: `docs/api/openapi.yaml` (if exists)
-- **Postman Collection**: `docs/api/postman-collection.json`
-- **Manual Endpoints**: [List any undocumented endpoints discovered]
-
-## Technical Debt and Known Issues
-
-### Critical Technical Debt
-
-1. **Payment Service**: Legacy code in `src/legacy/payment.js` - tightly coupled, no tests
-2. **User Service**: Different pattern than other services, uses callbacks instead of promises
-3. **Database Migrations**: Manually tracked, no proper migration tool
-4. **[Other significant debt]**
-
-### Workarounds and Gotchas
-
-- **Environment Variables**: Must set `NODE_ENV=production` even for staging (historical reason)
-- **Database Connections**: Connection pool hardcoded to 10, changing breaks payment service
-- **[Other workarounds developers need to know]**
-
-## Integration Points and External Dependencies
-
-### External Services
-
-| Service | Purpose | Integration Type | Key Files |
-|---------|---------|------------------|-----------|
-| Stripe | Payments | REST API | `src/integrations/stripe/` |
-| SendGrid | Emails | SDK | `src/services/emailService.js` |
-
-etc...
-
-### Internal Integration Points
-
-- **Frontend Communication**: REST API on port 3000, expects specific headers
-- **Background Jobs**: Redis queue, see `src/workers/`
-- **[Other integrations]**
-
-## Development and Deployment
-
-### Local Development Setup
-
-1. Actual steps that work (not ideal steps)
-2. Known issues with setup
-3. Required environment variables (see `.env.example`)
-
-### Build and Deployment Process
-
-- **Build Command**: `npm run build` (webpack config in `webpack.config.js`)
-- **Deployment**: Manual deployment via `scripts/deploy.sh`
-- **Environments**: Dev, Staging, Prod (see `config/environments/`)
-
-## Testing Reality
-
-### Current Test Coverage
-
-- Unit Tests: 60% coverage (Jest)
-- Integration Tests: Minimal, in `tests/integration/`
-- E2E Tests: None
-- Manual Testing: Primary QA method
-
-### Running Tests
-
-```bash
-npm test           # Runs unit tests
-npm run test:integration  # Runs integration tests (requires local DB)
-```
-
-## If Enhancement PRD Provided - Impact Analysis
-
-### Files That Will Need Modification
-
-Based on the enhancement requirements, these files will be affected:
-- `src/services/userService.js` - Add new user fields
-- `src/models/User.js` - Update schema
-- `src/routes/userRoutes.js` - New endpoints
-- [etc...]
-
-### New Files/Modules Needed
-
-- `src/services/newFeatureService.js` - New business logic
-- `src/models/NewFeature.js` - New data model
-- [etc...]
-
-### Integration Considerations
-
-- Will need to integrate with existing auth middleware
-- Must follow existing response format in `src/utils/responseFormatter.js`
-- [Other integration points]
-
-## Appendix - Useful Commands and Scripts
-
-### Frequently Used Commands
-
-```bash
-npm run dev         # Start development server
-npm run build       # Production build
-npm run migrate     # Run database migrations
-npm run seed        # Seed test data
-```
-
-### Debugging and Troubleshooting
-
-- **Logs**: Check `logs/app.log` for application logs
-- **Debug Mode**: Set `DEBUG=app:*` for verbose logging
-- **Common Issues**: See `docs/troubleshooting.md`]]
-
-### 4. Document Delivery
-
-1. **In Web UI (Gemini, ChatGPT, Claude)**:
-   - Present the entire document in one response (or multiple if too long)
-   - Tell user to copy and save as `docs/brownfield-architecture.md` or `docs/project-architecture.md`
-   - Mention it can be sharded later in IDE if needed
-
-2. **In IDE Environment**:
-   - Create the document as `docs/brownfield-architecture.md`
-   - Inform user this single document contains all architectural information
-   - Can be sharded later using PO agent if desired
-
-The document should be comprehensive enough that future agents can understand:
-
-- The actual state of the system (not idealized)
-- Where to find key files and logic
-- What technical debt exists
-- What constraints must be respected
-- If PRD provided: What needs to change for the enhancement]]
-
-### 5. Quality Assurance
-
-CRITICAL: Before finalizing the document:
-
-1. **Accuracy Check**: Verify all technical details match the actual codebase
-2. **Completeness Review**: Ensure all major system components are documented
-3. **Focus Validation**: If user provided scope, verify relevant areas are emphasized
-4. **Clarity Assessment**: Check that explanations are clear for AI agents
-5. **Navigation**: Ensure document has clear section structure for easy reference
-
-Apply the advanced elicitation task after major sections to refine based on user feedback.
-
-## Success Criteria
-
-- Single comprehensive brownfield architecture document created
-- Document reflects REALITY including technical debt and workarounds
-- Key files and modules are referenced with actual paths
-- Models/APIs reference source files rather than duplicating content
-- If PRD provided: Clear impact analysis showing what needs to change
-- Document enables AI agents to navigate and understand the actual codebase
-- Technical constraints and "gotchas" are clearly documented
-
-## Notes
-
-- This task creates ONE document that captures the TRUE state of the system
-- References actual files rather than duplicating content when possible
-- Documents technical debt, workarounds, and constraints honestly
-- For brownfield projects with PRD: Provides clear enhancement impact analysis
-- The goal is PRACTICAL documentation for AI agents doing real work
-==================== END: .bmad-core/tasks/document-project.md ====================
-
 ==================== START: .bmad-core/tasks/create-next-story.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create Next Story Task
 
 ## Purpose
@@ -1625,7 +1139,355 @@ ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
   - Next steps: For Complex stories, suggest the user carefully review the story draft and also optionally have the PO run the task `.bmad-core/tasks/validate-next-story`
 ==================== END: .bmad-core/tasks/create-next-story.md ====================
 
+==================== START: .bmad-core/tasks/document-project.md ====================
+<!-- Powered by BMAD™ Core -->
+# Document an Existing Project
+
+## Purpose
+
+Generate comprehensive documentation for existing projects optimized for AI development agents. This task creates structured reference materials that enable AI agents to understand project context, conventions, and patterns for effective contribution to any codebase.
+
+## Task Instructions
+
+### 1. Initial Project Analysis
+
+**CRITICAL:** First, check if a PRD or requirements document exists in context. If yes, use it to focus your documentation efforts on relevant areas only.
+
+**IF PRD EXISTS**:
+
+- Review the PRD to understand what enhancement/feature is planned
+- Identify which modules, services, or areas will be affected
+- Focus documentation ONLY on these relevant areas
+- Skip unrelated parts of the codebase to keep docs lean
+
+**IF NO PRD EXISTS**:
+Ask the user:
+
+"I notice you haven't provided a PRD or requirements document. To create more focused and useful documentation, I recommend one of these options:
+
+1. **Create a PRD first** - Would you like me to help create a brownfield PRD before documenting? This helps focus documentation on relevant areas.
+
+2. **Provide existing requirements** - Do you have a requirements document, epic, or feature description you can share?
+
+3. **Describe the focus** - Can you briefly describe what enhancement or feature you're planning? For example:
+   - 'Adding payment processing to the user service'
+   - 'Refactoring the authentication module'
+   - 'Integrating with a new third-party API'
+
+4. **Document everything** - Or should I proceed with comprehensive documentation of the entire codebase? (Note: This may create excessive documentation for large projects)
+
+Please let me know your preference, or I can proceed with full documentation if you prefer."
+
+Based on their response:
+
+- If they choose option 1-3: Use that context to focus documentation
+- If they choose option 4 or decline: Proceed with comprehensive analysis below
+
+Begin by conducting analysis of the existing project. Use available tools to:
+
+1. **Project Structure Discovery**: Examine the root directory structure, identify main folders, and understand the overall organization
+2. **Technology Stack Identification**: Look for package.json, requirements.txt, Cargo.toml, pom.xml, etc. to identify languages, frameworks, and dependencies
+3. **Build System Analysis**: Find build scripts, CI/CD configurations, and development commands
+4. **Existing Documentation Review**: Check for README files, docs folders, and any existing documentation
+5. **Code Pattern Analysis**: Sample key files to understand coding patterns, naming conventions, and architectural approaches
+
+Ask the user these elicitation questions to better understand their needs:
+
+- What is the primary purpose of this project?
+- Are there any specific areas of the codebase that are particularly complex or important for agents to understand?
+- What types of tasks do you expect AI agents to perform on this project? (e.g., bug fixes, feature additions, refactoring, testing)
+- Are there any existing documentation standards or formats you prefer?
+- What level of technical detail should the documentation target? (junior developers, senior developers, mixed team)
+- Is there a specific feature or enhancement you're planning? (This helps focus documentation)
+
+### 2. Deep Codebase Analysis
+
+CRITICAL: Before generating documentation, conduct extensive analysis of the existing codebase:
+
+1. **Explore Key Areas**:
+   - Entry points (main files, index files, app initializers)
+   - Configuration files and environment setup
+   - Package dependencies and versions
+   - Build and deployment configurations
+   - Test suites and coverage
+
+2. **Ask Clarifying Questions**:
+   - "I see you're using [technology X]. Are there any custom patterns or conventions I should document?"
+   - "What are the most critical/complex parts of this system that developers struggle with?"
+   - "Are there any undocumented 'tribal knowledge' areas I should capture?"
+   - "What technical debt or known issues should I document?"
+   - "Which parts of the codebase change most frequently?"
+
+3. **Map the Reality**:
+   - Identify ACTUAL patterns used (not theoretical best practices)
+   - Find where key business logic lives
+   - Locate integration points and external dependencies
+   - Document workarounds and technical debt
+   - Note areas that differ from standard patterns
+
+**IF PRD PROVIDED**: Also analyze what would need to change for the enhancement
+
+### 3. Core Documentation Generation
+
+[[LLM: Generate a comprehensive BROWNFIELD architecture document that reflects the ACTUAL state of the codebase.
+
+**CRITICAL**: This is NOT an aspirational architecture document. Document what EXISTS, including:
+
+- Technical debt and workarounds
+- Inconsistent patterns between different parts
+- Legacy code that can't be changed
+- Integration constraints
+- Performance bottlenecks
+
+**Document Structure**:
+
+# [Project Name] Brownfield Architecture Document
+
+## Introduction
+
+This document captures the CURRENT STATE of the [Project Name] codebase, including technical debt, workarounds, and real-world patterns. It serves as a reference for AI agents working on enhancements.
+
+### Document Scope
+
+[If PRD provided: "Focused on areas relevant to: {enhancement description}"]
+[If no PRD: "Comprehensive documentation of entire system"]
+
+### Change Log
+
+| Date   | Version | Description                 | Author    |
+| ------ | ------- | --------------------------- | --------- |
+| [Date] | 1.0     | Initial brownfield analysis | [Analyst] |
+
+## Quick Reference - Key Files and Entry Points
+
+### Critical Files for Understanding the System
+
+- **Main Entry**: `src/index.js` (or actual entry point)
+- **Configuration**: `config/app.config.js`, `.env.example`
+- **Core Business Logic**: `src/services/`, `src/domain/`
+- **API Definitions**: `src/routes/` or link to OpenAPI spec
+- **Database Models**: `src/models/` or link to schema files
+- **Key Algorithms**: [List specific files with complex logic]
+
+### If PRD Provided - Enhancement Impact Areas
+
+[Highlight which files/modules will be affected by the planned enhancement]
+
+## High Level Architecture
+
+### Technical Summary
+
+### Actual Tech Stack (from package.json/requirements.txt)
+
+| Category  | Technology | Version | Notes                      |
+| --------- | ---------- | ------- | -------------------------- |
+| Runtime   | Node.js    | 16.x    | [Any constraints]          |
+| Framework | Express    | 4.18.2  | [Custom middleware?]       |
+| Database  | PostgreSQL | 13      | [Connection pooling setup] |
+
+etc...
+
+### Repository Structure Reality Check
+
+- Type: [Monorepo/Polyrepo/Hybrid]
+- Package Manager: [npm/yarn/pnpm]
+- Notable: [Any unusual structure decisions]
+
+## Source Tree and Module Organization
+
+### Project Structure (Actual)
+
+```text
+project-root/
+├── src/
+│   ├── controllers/     # HTTP request handlers
+│   ├── services/        # Business logic (NOTE: inconsistent patterns between user and payment services)
+│   ├── models/          # Database models (Sequelize)
+│   ├── utils/           # Mixed bag - needs refactoring
+│   └── legacy/          # DO NOT MODIFY - old payment system still in use
+├── tests/               # Jest tests (60% coverage)
+├── scripts/             # Build and deployment scripts
+└── config/              # Environment configs
+```
+
+### Key Modules and Their Purpose
+
+- **User Management**: `src/services/userService.js` - Handles all user operations
+- **Authentication**: `src/middleware/auth.js` - JWT-based, custom implementation
+- **Payment Processing**: `src/legacy/payment.js` - CRITICAL: Do not refactor, tightly coupled
+- **[List other key modules with their actual files]**
+
+## Data Models and APIs
+
+### Data Models
+
+Instead of duplicating, reference actual model files:
+
+- **User Model**: See `src/models/User.js`
+- **Order Model**: See `src/models/Order.js`
+- **Related Types**: TypeScript definitions in `src/types/`
+
+### API Specifications
+
+- **OpenAPI Spec**: `docs/api/openapi.yaml` (if exists)
+- **Postman Collection**: `docs/api/postman-collection.json`
+- **Manual Endpoints**: [List any undocumented endpoints discovered]
+
+## Technical Debt and Known Issues
+
+### Critical Technical Debt
+
+1. **Payment Service**: Legacy code in `src/legacy/payment.js` - tightly coupled, no tests
+2. **User Service**: Different pattern than other services, uses callbacks instead of promises
+3. **Database Migrations**: Manually tracked, no proper migration tool
+4. **[Other significant debt]**
+
+### Workarounds and Gotchas
+
+- **Environment Variables**: Must set `NODE_ENV=production` even for staging (historical reason)
+- **Database Connections**: Connection pool hardcoded to 10, changing breaks payment service
+- **[Other workarounds developers need to know]**
+
+## Integration Points and External Dependencies
+
+### External Services
+
+| Service  | Purpose  | Integration Type | Key Files                      |
+| -------- | -------- | ---------------- | ------------------------------ |
+| Stripe   | Payments | REST API         | `src/integrations/stripe/`     |
+| SendGrid | Emails   | SDK              | `src/services/emailService.js` |
+
+etc...
+
+### Internal Integration Points
+
+- **Frontend Communication**: REST API on port 3000, expects specific headers
+- **Background Jobs**: Redis queue, see `src/workers/`
+- **[Other integrations]**
+
+## Development and Deployment
+
+### Local Development Setup
+
+1. Actual steps that work (not ideal steps)
+2. Known issues with setup
+3. Required environment variables (see `.env.example`)
+
+### Build and Deployment Process
+
+- **Build Command**: `npm run build` (webpack config in `webpack.config.js`)
+- **Deployment**: Manual deployment via `scripts/deploy.sh`
+- **Environments**: Dev, Staging, Prod (see `config/environments/`)
+
+## Testing Reality
+
+### Current Test Coverage
+
+- Unit Tests: 60% coverage (Jest)
+- Integration Tests: Minimal, in `tests/integration/`
+- E2E Tests: None
+- Manual Testing: Primary QA method
+
+### Running Tests
+
+```bash
+npm test           # Runs unit tests
+npm run test:integration  # Runs integration tests (requires local DB)
+```
+
+## If Enhancement PRD Provided - Impact Analysis
+
+### Files That Will Need Modification
+
+Based on the enhancement requirements, these files will be affected:
+
+- `src/services/userService.js` - Add new user fields
+- `src/models/User.js` - Update schema
+- `src/routes/userRoutes.js` - New endpoints
+- [etc...]
+
+### New Files/Modules Needed
+
+- `src/services/newFeatureService.js` - New business logic
+- `src/models/NewFeature.js` - New data model
+- [etc...]
+
+### Integration Considerations
+
+- Will need to integrate with existing auth middleware
+- Must follow existing response format in `src/utils/responseFormatter.js`
+- [Other integration points]
+
+## Appendix - Useful Commands and Scripts
+
+### Frequently Used Commands
+
+```bash
+npm run dev         # Start development server
+npm run build       # Production build
+npm run migrate     # Run database migrations
+npm run seed        # Seed test data
+```
+
+### Debugging and Troubleshooting
+
+- **Logs**: Check `logs/app.log` for application logs
+- **Debug Mode**: Set `DEBUG=app:*` for verbose logging
+- **Common Issues**: See `docs/troubleshooting.md`]]
+
+### 4. Document Delivery
+
+1. **In Web UI (Gemini, ChatGPT, Claude)**:
+   - Present the entire document in one response (or multiple if too long)
+   - Tell user to copy and save as `docs/brownfield-architecture.md` or `docs/project-architecture.md`
+   - Mention it can be sharded later in IDE if needed
+
+2. **In IDE Environment**:
+   - Create the document as `docs/brownfield-architecture.md`
+   - Inform user this single document contains all architectural information
+   - Can be sharded later using PO agent if desired
+
+The document should be comprehensive enough that future agents can understand:
+
+- The actual state of the system (not idealized)
+- Where to find key files and logic
+- What technical debt exists
+- What constraints must be respected
+- If PRD provided: What needs to change for the enhancement]]
+
+### 5. Quality Assurance
+
+CRITICAL: Before finalizing the document:
+
+1. **Accuracy Check**: Verify all technical details match the actual codebase
+2. **Completeness Review**: Ensure all major system components are documented
+3. **Focus Validation**: If user provided scope, verify relevant areas are emphasized
+4. **Clarity Assessment**: Check that explanations are clear for AI agents
+5. **Navigation**: Ensure document has clear section structure for easy reference
+
+Apply the advanced elicitation task after major sections to refine based on user feedback.
+
+## Success Criteria
+
+- Single comprehensive brownfield architecture document created
+- Document reflects REALITY including technical debt and workarounds
+- Key files and modules are referenced with actual paths
+- Models/APIs reference source files rather than duplicating content
+- If PRD provided: Clear impact analysis showing what needs to change
+- Document enables AI agents to navigate and understand the actual codebase
+- Technical constraints and "gotchas" are clearly documented
+
+## Notes
+
+- This task creates ONE document that captures the TRUE state of the system
+- References actual files rather than duplicating content when possible
+- Documents technical debt, workarounds, and constraints honestly
+- For brownfield projects with PRD: Provides clear enhancement impact analysis
+- The goal is PRACTICAL documentation for AI agents doing real work
+==================== END: .bmad-core/tasks/document-project.md ====================
+
 ==================== START: .bmad-core/tasks/execute-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Checklist Validation Task
 
 This task provides instructions for validating documentation against checklists. The agent MUST follow these instructions to ensure thorough and systematic validation of documents.
@@ -1637,7 +1499,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 ## Instructions
 
 1. **Initial Assessment**
-
    - If user or the task being run provides a checklist name:
      - Try fuzzy matching (e.g. "architecture checklist" -> "architect-checklist")
      - If multiple matches found, ask user to clarify
@@ -1650,14 +1511,12 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - All at once (YOLO mode - recommended for checklists, there will be a summary of sections at the end to discuss)
 
 2. **Document and Artifact Gathering**
-
    - Each checklist will specify its required documents/artifacts at the beginning
    - Follow the checklist's specific instructions for what to gather, generally a file can be resolved in the docs folder, if not or unsure, halt and ask or confirm with the user.
 
 3. **Checklist Processing**
 
    If in interactive mode:
-
    - Work through each section of the checklist one at a time
    - For each section:
      - Review all items in the section following instructions for that section embedded in the checklist
@@ -1666,7 +1525,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
      - Get user confirmation before proceeding to next section or if any thing major do we need to halt and take corrective action
 
    If in YOLO mode:
-
    - Process all sections at once
    - Create a comprehensive report of all findings
    - Present the complete analysis to the user
@@ -1674,7 +1532,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 4. **Validation Approach**
 
    For each checklist item:
-
    - Read and understand the requirement
    - Look for evidence in the documentation that satisfies the requirement
    - Consider both explicit mentions and implicit coverage
@@ -1688,7 +1545,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 5. **Section Analysis**
 
    For each section:
-
    - think step by step to calculate pass rate
    - Identify common themes in failed items
    - Provide specific recommendations for improvement
@@ -1698,7 +1554,6 @@ If the user asks or does not specify a specific checklist, list the checklists a
 6. **Final Report**
 
    Prepare a summary that includes:
-
    - Overall checklist completion status
    - Pass rates by section
    - List of failed items with context
@@ -1721,7 +1576,148 @@ The LLM will:
 - Offer to provide detailed analysis of any section, especially those with warnings or failures
 ==================== END: .bmad-core/tasks/execute-checklist.md ====================
 
+==================== START: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
+<!-- Powered by BMAD™ Core -->
+---
+docOutputLocation: docs/brainstorming-session-results.md
+template: '.bmad-core/templates/brainstorming-output-tmpl.yaml'
+---
+
+# Facilitate Brainstorming Session Task
+
+Facilitate interactive brainstorming sessions with users. Be creative and adaptive in applying techniques.
+
+## Process
+
+### Step 1: Session Setup
+
+Ask 4 context questions (don't preview what happens next):
+
+1. What are we brainstorming about?
+2. Any constraints or parameters?
+3. Goal: broad exploration or focused ideation?
+4. Do you want a structured document output to reference later? (Default Yes)
+
+### Step 2: Present Approach Options
+
+After getting answers to Step 1, present 4 approach options (numbered):
+
+1. User selects specific techniques
+2. Analyst recommends techniques based on context
+3. Random technique selection for creative variety
+4. Progressive technique flow (start broad, narrow down)
+
+### Step 3: Execute Techniques Interactively
+
+**KEY PRINCIPLES:**
+
+- **FACILITATOR ROLE**: Guide user to generate their own ideas through questions, prompts, and examples
+- **CONTINUOUS ENGAGEMENT**: Keep user engaged with chosen technique until they want to switch or are satisfied
+- **CAPTURE OUTPUT**: If (default) document output requested, capture all ideas generated in each technique section to the document from the beginning.
+
+**Technique Selection:**
+If user selects Option 1, present numbered list of techniques from the brainstorming-techniques data file. User can select by number..
+
+**Technique Execution:**
+
+1. Apply selected technique according to data file description
+2. Keep engaging with technique until user indicates they want to:
+   - Choose a different technique
+   - Apply current ideas to a new technique
+   - Move to convergent phase
+   - End session
+
+**Output Capture (if requested):**
+For each technique used, capture:
+
+- Technique name and duration
+- Key ideas generated by user
+- Insights and patterns identified
+- User's reflections on the process
+
+### Step 4: Session Flow
+
+1. **Warm-up** (5-10 min) - Build creative confidence
+2. **Divergent** (20-30 min) - Generate quantity over quality
+3. **Convergent** (15-20 min) - Group and categorize ideas
+4. **Synthesis** (10-15 min) - Refine and develop concepts
+
+### Step 5: Document Output (if requested)
+
+Generate structured document with these sections:
+
+**Executive Summary**
+
+- Session topic and goals
+- Techniques used and duration
+- Total ideas generated
+- Key themes and patterns identified
+
+**Technique Sections** (for each technique used)
+
+- Technique name and description
+- Ideas generated (user's own words)
+- Insights discovered
+- Notable connections or patterns
+
+**Idea Categorization**
+
+- **Immediate Opportunities** - Ready to implement now
+- **Future Innovations** - Requires development/research
+- **Moonshots** - Ambitious, transformative concepts
+- **Insights & Learnings** - Key realizations from session
+
+**Action Planning**
+
+- Top 3 priority ideas with rationale
+- Next steps for each priority
+- Resources/research needed
+- Timeline considerations
+
+**Reflection & Follow-up**
+
+- What worked well in this session
+- Areas for further exploration
+- Recommended follow-up techniques
+- Questions that emerged for future sessions
+
+## Key Principles
+
+- **YOU ARE A FACILITATOR**: Guide the user to brainstorm, don't brainstorm for them (unless they request it persistently)
+- **INTERACTIVE DIALOGUE**: Ask questions, wait for responses, build on their ideas
+- **ONE TECHNIQUE AT A TIME**: Don't mix multiple techniques in one response
+- **CONTINUOUS ENGAGEMENT**: Stay with one technique until user wants to switch
+- **DRAW IDEAS OUT**: Use prompts and examples to help them generate their own ideas
+- **REAL-TIME ADAPTATION**: Monitor engagement and adjust approach as needed
+- Maintain energy and momentum
+- Defer judgment during generation
+- Quantity leads to quality (aim for 100 ideas in 60 minutes)
+- Build on ideas collaboratively
+- Document everything in output document
+
+## Advanced Engagement Strategies
+
+**Energy Management**
+
+- Check engagement levels: "How are you feeling about this direction?"
+- Offer breaks or technique switches if energy flags
+- Use encouraging language and celebrate idea generation
+
+**Depth vs. Breadth**
+
+- Ask follow-up questions to deepen ideas: "Tell me more about that..."
+- Use "Yes, and..." to build on their ideas
+- Help them make connections: "How does this relate to your earlier idea about...?"
+
+**Transition Management**
+
+- Always ask before switching techniques: "Ready to try a different approach?"
+- Offer options: "Should we explore this idea deeper or generate more alternatives?"
+- Respect their process and timing
+==================== END: .bmad-core/tasks/facilitate-brainstorming-session.md ====================
+
 ==================== START: .bmad-core/tasks/generate-ai-frontend-prompt.md ====================
+<!-- Powered by BMAD™ Core -->
 # Create AI Frontend Prompt Task
 
 ## Purpose
@@ -1776,6 +1772,7 @@ You will now synthesize the inputs and the above principles into a final, compre
 ==================== END: .bmad-core/tasks/generate-ai-frontend-prompt.md ====================
 
 ==================== START: .bmad-core/tasks/index-docs.md ====================
+<!-- Powered by BMAD™ Core -->
 # Index Documentation Task
 
 ## Purpose
@@ -1789,14 +1786,12 @@ You are now operating as a Documentation Indexer. Your goal is to ensure all doc
 ### Required Steps
 
 1. First, locate and scan:
-
    - The `docs/` directory and all subdirectories
    - The existing `docs/index.md` file (create if absent)
    - All markdown (`.md`) and text (`.txt`) files in the documentation structure
    - Note the folder structure for hierarchical organization
 
 2. For the existing `docs/index.md`:
-
    - Parse current entries
    - Note existing file references and descriptions
    - Identify any broken links or missing files
@@ -1804,7 +1799,6 @@ You are now operating as a Documentation Indexer. Your goal is to ensure all doc
    - Preserve existing folder sections
 
 3. For each documentation file found:
-
    - Extract the title (from first heading or filename)
    - Generate a brief description by analyzing the content
    - Create a relative markdown link to the file
@@ -1813,7 +1807,6 @@ You are now operating as a Documentation Indexer. Your goal is to ensure all doc
    - If missing or outdated, prepare an update
 
 4. For any missing or non-existent files found in index:
-
    - Present a list of all entries that reference non-existent files
    - For each entry:
      - Show the full entry details (title, path, description)
@@ -1866,7 +1859,6 @@ Documents within the `another-folder/` directory:
 ### [Nested Document](./another-folder/document.md)
 
 Description of nested document.
-
 ```
 
 ### Index Entry Format
@@ -1935,7 +1927,6 @@ For each file referenced in the index but not found in the filesystem:
 ### Special Cases
 
 1. **Sharded Documents**: If a folder contains an `index.md` file, treat it as a sharded document:
-
    - Use the folder's `index.md` title as the section title
    - List the folder's documents as subsections
    - Note in the description that this is a multi-part document
@@ -1958,6 +1949,7 @@ Would you like to proceed with documentation indexing? Please provide the requir
 ==================== END: .bmad-core/tasks/index-docs.md ====================
 
 ==================== START: .bmad-core/tasks/shard-doc.md ====================
+<!-- Powered by BMAD™ Core -->
 # Document Sharding Task
 
 ## Purpose
@@ -2051,13 +2043,11 @@ CRITICAL: Use proper parsing that understands markdown context. A ## inside a co
 For each extracted section:
 
 1. **Generate filename**: Convert the section heading to lowercase-dash-case
-
    - Remove special characters
    - Replace spaces with dashes
    - Example: "## Tech Stack" → `tech-stack.md`
 
 2. **Adjust heading levels**:
-
    - The level 2 heading becomes level 1 (# instead of ##) in the sharded new document
    - All subsection levels decrease by 1:
 
@@ -2148,6 +2138,7 @@ Document sharded successfully:
 ==================== END: .bmad-core/tasks/shard-doc.md ====================
 
 ==================== START: .bmad-core/templates/architecture-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: architecture-template-v2
   name: Architecture Document
@@ -2170,20 +2161,20 @@ sections:
       - id: intro-content
         content: |
           This document outlines the overall project architecture for {{project_name}}, including backend systems, shared services, and non-UI specific concerns. Its primary goal is to serve as the guiding architectural blueprint for AI-driven development, ensuring consistency and adherence to chosen patterns and technologies.
-          
+
           **Relationship to Frontend Architecture:**
           If the project includes a significant user interface, a separate Frontend Architecture Document will detail the frontend-specific design and MUST be used in conjunction with this document. Core technology stack choices documented herein (see "Tech Stack") are definitive for the entire project, including any frontend components.
       - id: starter-template
         title: Starter Template or Existing Project
         instruction: |
           Before proceeding further with architecture design, check if the project is based on a starter template or existing codebase:
-          
+
           1. Review the PRD and brainstorming brief for any mentions of:
           - Starter templates (e.g., Create React App, Next.js, Vue CLI, Angular CLI, etc.)
           - Existing projects or codebases being used as a foundation
           - Boilerplate projects or scaffolding tools
           - Previous projects to be cloned or adapted
-          
+
           2. If a starter template or existing project is mentioned:
           - Ask the user to provide access via one of these methods:
             - Link to the starter template documentation
@@ -2196,16 +2187,16 @@ sections:
             - Existing architectural patterns and conventions
             - Any limitations or constraints imposed by the starter
           - Use this analysis to inform and align your architecture decisions
-          
+
           3. If no starter template is mentioned but this is a greenfield project:
           - Suggest appropriate starter templates based on the tech stack preferences
           - Explain the benefits (faster setup, best practices, community support)
           - Let the user decide whether to use one
-          
+
           4. If the user confirms no starter template will be used:
           - Proceed with architecture design from scratch
           - Note that manual setup will be required for all tooling and configuration
-          
+
           Document the decision here before proceeding with the architecture design. If none, just say N/A
         elicit: true
       - id: changelog
@@ -2233,7 +2224,7 @@ sections:
         title: High Level Overview
         instruction: |
           Based on the PRD's Technical Assumptions section, describe:
-          
+
           1. The main architectural style (e.g., Monolith, Microservices, Serverless, Event-Driven)
           2. Repository structure decision from PRD (Monorepo/Polyrepo)
           3. Service architecture decision from PRD
@@ -2250,17 +2241,17 @@ sections:
           - Data flow directions
           - External integrations
           - User entry points
-          
+
       - id: architectural-patterns
         title: Architectural and Design Patterns
         instruction: |
           List the key high-level patterns that will guide the architecture. For each pattern:
-          
+
           1. Present 2-3 viable options if multiple exist
           2. Provide your recommendation with clear rationale
           3. Get user confirmation before finalizing
           4. These patterns should align with the PRD's technical assumptions and project goals
-          
+
           Common patterns to consider:
           - Architectural style patterns (Serverless, Event-Driven, Microservices, CQRS, Hexagonal)
           - Code organization patterns (Dependency Injection, Repository, Module, Factory)
@@ -2276,23 +2267,23 @@ sections:
     title: Tech Stack
     instruction: |
       This is the DEFINITIVE technology selection section. Work with the user to make specific choices:
-      
+
       1. Review PRD technical assumptions and any preferences from .bmad-core/data/technical-preferences.yaml or an attached technical-preferences
       2. For each category, present 2-3 viable options with pros/cons
       3. Make a clear recommendation based on project needs
       4. Get explicit user approval for each selection
       5. Document exact versions (avoid "latest" - pin specific versions)
       6. This table is the single source of truth - all other docs must reference these choices
-      
+
       Key decisions to finalize - before displaying the table, ensure you are aware of or ask the user about - let the user know if they are not sure on any that you can also provide suggestions with rationale:
-      
+
       - Starter templates (if any)
       - Languages and runtimes with exact versions
       - Frameworks and libraries / packages
       - Cloud provider and key services choices
       - Database and storage solutions - if unclear suggest sql or nosql or other types depending on the project and depending on cloud provider offer a suggestion
       - Development tools
-      
+
       Upon render of the table, ensure the user is aware of the importance of this sections choices, should also look for gaps or disagreements with anything, ask for any clarifications if something is unclear why its in the list, and also right away elicit feedback - this statement and the options should be rendered and then prompt right all before allowing user input.
     elicit: true
     sections:
@@ -2316,13 +2307,13 @@ sections:
     title: Data Models
     instruction: |
       Define the core data models/entities:
-      
+
       1. Review PRD requirements and identify key business entities
       2. For each model, explain its purpose and relationships
       3. Include key attributes and data types
       4. Show relationships between models
       5. Discuss design decisions with user
-      
+
       Create a clear conceptual model before moving to database schema.
     elicit: true
     repeatable: true
@@ -2331,11 +2322,11 @@ sections:
         title: "{{model_name}}"
         template: |
           **Purpose:** {{model_purpose}}
-          
+
           **Key Attributes:**
           - {{attribute_1}}: {{type_1}} - {{description_1}}
           - {{attribute_2}}: {{type_2}} - {{description_2}}
-          
+
           **Relationships:**
           - {{relationship_1}}
           - {{relationship_2}}
@@ -2344,7 +2335,7 @@ sections:
     title: Components
     instruction: |
       Based on the architectural patterns, tech stack, and data models from above:
-      
+
       1. Identify major logical components/services and their responsibilities
       2. Consider the repository structure (monorepo/polyrepo) from PRD
       3. Define clear boundaries and interfaces between components
@@ -2353,7 +2344,7 @@ sections:
       - Key interfaces/APIs exposed
       - Dependencies on other components
       - Technology specifics based on tech stack choices
-      
+
       5. Create component diagrams where helpful
     elicit: true
     sections:
@@ -2362,13 +2353,13 @@ sections:
         title: "{{component_name}}"
         template: |
           **Responsibility:** {{component_description}}
-          
+
           **Key Interfaces:**
           - {{interface_1}}
           - {{interface_2}}
-          
+
           **Dependencies:** {{dependencies}}
-          
+
           **Technology Stack:** {{component_tech_details}}
       - id: component-diagrams
         title: Component Diagrams
@@ -2385,13 +2376,13 @@ sections:
     condition: Project requires external API integrations
     instruction: |
       For each external service integration:
-      
+
       1. Identify APIs needed based on PRD requirements and component design
       2. If documentation URLs are unknown, ask user for specifics
       3. Document authentication methods and security considerations
       4. List specific endpoints that will be used
       5. Note any rate limits or usage constraints
-      
+
       If no external APIs are needed, state this explicitly and skip to next section.
     elicit: true
     repeatable: true
@@ -2404,10 +2395,10 @@ sections:
           - **Base URL(s):** {{api_base_url}}
           - **Authentication:** {{auth_method}}
           - **Rate Limits:** {{rate_limits}}
-          
+
           **Key Endpoints Used:**
           - `{{method}} {{endpoint_path}}` - {{endpoint_purpose}}
-          
+
           **Integration Notes:** {{integration_considerations}}
 
   - id: core-workflows
@@ -2416,13 +2407,13 @@ sections:
     mermaid_type: sequence
     instruction: |
       Illustrate key system workflows using sequence diagrams:
-      
+
       1. Identify critical user journeys from PRD
       2. Show component interactions including external APIs
       3. Include error handling paths
       4. Document async operations
       5. Create both high-level and detailed diagrams as needed
-      
+
       Focus on workflows that clarify architecture decisions or complex interactions.
     elicit: true
 
@@ -2433,13 +2424,13 @@ sections:
     language: yaml
     instruction: |
       If the project includes a REST API:
-      
+
       1. Create an OpenAPI 3.0 specification
       2. Include all endpoints from epics/stories
       3. Define request/response schemas based on data models
       4. Document authentication requirements
       5. Include example requests/responses
-      
+
       Use YAML format for better readability. If no REST API, skip this section.
     elicit: true
     template: |
@@ -2456,13 +2447,13 @@ sections:
     title: Database Schema
     instruction: |
       Transform the conceptual data models into concrete database schemas:
-      
+
       1. Use the database type(s) selected in Tech Stack
       2. Create schema definitions using appropriate notation
       3. Include indexes, constraints, and relationships
       4. Consider performance and scalability
       5. For NoSQL, show document structures
-      
+
       Present schema in format appropriate to database type (SQL DDL, JSON schema, etc.)
     elicit: true
 
@@ -2472,14 +2463,14 @@ sections:
     language: plaintext
     instruction: |
       Create a project folder structure that reflects:
-      
+
       1. The chosen repository structure (monorepo/polyrepo)
       2. The service architecture (monolith/microservices/serverless)
       3. The selected tech stack and languages
       4. Component organization from above
       5. Best practices for the chosen frameworks
       6. Clear separation of concerns
-      
+
       Adapt the structure based on project needs. For monorepos, show service separation. For serverless, show function organization. Include language-specific conventions.
     elicit: true
     examples:
@@ -2497,13 +2488,13 @@ sections:
     title: Infrastructure and Deployment
     instruction: |
       Define the deployment architecture and practices:
-      
+
       1. Use IaC tool selected in Tech Stack
       2. Choose deployment strategy appropriate for the architecture
       3. Define environments and promotion flow
       4. Establish rollback procedures
       5. Consider security, monitoring, and cost optimization
-      
+
       Get user input on deployment preferences and CI/CD tool choices.
     elicit: true
     sections:
@@ -2539,13 +2530,13 @@ sections:
     title: Error Handling Strategy
     instruction: |
       Define comprehensive error handling approach:
-      
+
       1. Choose appropriate patterns for the language/framework from Tech Stack
       2. Define logging standards and tools
       3. Establish error categories and handling rules
       4. Consider observability and debugging needs
       5. Ensure security (no sensitive data in logs)
-      
+
       This section guides both AI and human developers in consistent error handling.
     elicit: true
     sections:
@@ -2592,13 +2583,13 @@ sections:
     title: Coding Standards
     instruction: |
       These standards are MANDATORY for AI agents. Work with user to define ONLY the critical rules needed to prevent bad code. Explain that:
-      
+
       1. This section directly controls AI developer behavior
       2. Keep it minimal - assume AI knows general best practices
       3. Focus on project-specific conventions and gotchas
       4. Overly detailed standards bloat context and slow development
       5. Standards will be extracted to separate file for dev agent use
-      
+
       For each standard, get explicit user confirmation it's necessary.
     elicit: true
     sections:
@@ -2620,7 +2611,7 @@ sections:
           - "Never use console.log in production code - use logger"
           - "All API responses must use ApiResponse wrapper type"
           - "Database queries must use repository pattern, never direct ORM"
-          
+
           Avoid obvious rules like "use SOLID principles" or "write clean code"
         repeatable: true
         template: "- **{{rule_name}}:** {{rule_description}}"
@@ -2638,14 +2629,14 @@ sections:
     title: Test Strategy and Standards
     instruction: |
       Work with user to define comprehensive test strategy:
-      
+
       1. Use test frameworks from Tech Stack
       2. Decide on TDD vs test-after approach
       3. Define test organization and naming
       4. Establish coverage goals
       5. Determine integration test infrastructure
       6. Plan for test data and external dependencies
-      
+
       Note: Basic info goes in Coding Standards for dev agent. This detailed section is for QA agent and team reference.
     elicit: true
     sections:
@@ -2666,7 +2657,7 @@ sections:
               - **Location:** {{unit_test_location}}
               - **Mocking Library:** {{mocking_library}}
               - **Coverage Requirement:** {{unit_coverage}}
-              
+
               **AI Agent Requirements:**
               - Generate tests for all public methods
               - Cover edge cases and error conditions
@@ -2708,7 +2699,7 @@ sections:
     title: Security
     instruction: |
       Define MANDATORY security requirements for AI and human developers:
-      
+
       1. Focus on implementation-specific rules
       2. Reference security tools from Tech Stack
       3. Define clear patterns for common scenarios
@@ -2777,16 +2768,16 @@ sections:
     title: Next Steps
     instruction: |
       After completing the architecture:
-      
+
       1. If project has UI components:
       - Use "Frontend Architecture Mode"
       - Provide this document as input
-      
+
       2. For all projects:
       - Review with Product Owner
       - Begin story implementation with Dev agent
       - Set up infrastructure with DevOps agent
-      
+
       3. Include specific prompts for next agents if needed
     sections:
       - id: architect-prompt
@@ -2801,6 +2792,7 @@ sections:
 ==================== END: .bmad-core/templates/architecture-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/brownfield-architecture-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: brownfield-architecture-template-v2
   name: Brownfield Enhancement Architecture
@@ -2819,40 +2811,40 @@ sections:
     title: Introduction
     instruction: |
       IMPORTANT - SCOPE AND ASSESSMENT REQUIRED:
-      
+
       This architecture document is for SIGNIFICANT enhancements to existing projects that require comprehensive architectural planning. Before proceeding:
-      
+
       1. **Verify Complexity**: Confirm this enhancement requires architectural planning. For simple additions, recommend: "For simpler changes that don't require architectural planning, consider using the brownfield-create-epic or brownfield-create-story task with the Product Owner instead."
-      
+
       2. **REQUIRED INPUTS**:
-         - Completed brownfield-prd.md
+         - Completed prd.md
          - Existing project technical documentation (from docs folder or user-provided)
          - Access to existing project structure (IDE or uploaded files)
-      
+
       3. **DEEP ANALYSIS MANDATE**: You MUST conduct thorough analysis of the existing codebase, architecture patterns, and technical constraints before making ANY architectural recommendations. Every suggestion must be based on actual project analysis, not assumptions.
-      
+
       4. **CONTINUOUS VALIDATION**: Throughout this process, explicitly validate your understanding with the user. For every architectural decision, confirm: "Based on my analysis of your existing system, I recommend [decision] because [evidence from actual project]. Does this align with your system's reality?"
-      
+
       If any required inputs are missing, request them before proceeding.
     elicit: true
     sections:
       - id: intro-content
         content: |
           This document outlines the architectural approach for enhancing {{project_name}} with {{enhancement_description}}. Its primary goal is to serve as the guiding architectural blueprint for AI-driven development of new features while ensuring seamless integration with the existing system.
-          
+
           **Relationship to Existing Architecture:**
           This document supplements existing project architecture by defining how new components will integrate with current systems. Where conflicts arise between new and existing patterns, this document provides guidance on maintaining consistency while implementing enhancements.
       - id: existing-project-analysis
         title: Existing Project Analysis
         instruction: |
           Analyze the existing project structure and architecture:
-          
+
           1. Review existing documentation in docs folder
           2. Examine current technology stack and versions
           3. Identify existing architectural patterns and conventions
           4. Note current deployment and infrastructure setup
           5. Document any constraints or limitations
-          
+
           CRITICAL: After your analysis, explicitly validate your findings: "Based on my analysis of your project, I've identified the following about your existing system: [key findings]. Please confirm these observations are accurate before I proceed with architectural recommendations."
         elicit: true
         sections:
@@ -2881,12 +2873,12 @@ sections:
     title: Enhancement Scope and Integration Strategy
     instruction: |
       Define how the enhancement will integrate with the existing system:
-      
+
       1. Review the brownfield PRD enhancement scope
       2. Identify integration points with existing code
       3. Define boundaries between new and existing functionality
       4. Establish compatibility requirements
-      
+
       VALIDATION CHECKPOINT: Before presenting the integration strategy, confirm: "Based on my analysis, the integration approach I'm proposing takes into account [specific existing system characteristics]. These integration points and boundaries respect your current architecture patterns. Is this assessment accurate?"
     elicit: true
     sections:
@@ -2915,7 +2907,7 @@ sections:
     title: Tech Stack Alignment
     instruction: |
       Ensure new components align with existing technology choices:
-      
+
       1. Use existing technology stack as the foundation
       2. Only introduce new technologies if absolutely necessary
       3. Justify any new additions with clear rationale
@@ -2938,7 +2930,7 @@ sections:
     title: Data Models and Schema Changes
     instruction: |
       Define new data models and how they integrate with existing schema:
-      
+
       1. Identify new entities required for the enhancement
       2. Define relationships with existing data models
       3. Plan database schema changes (additions, modifications)
@@ -2954,11 +2946,11 @@ sections:
             template: |
               **Purpose:** {{model_purpose}}
               **Integration:** {{integration_with_existing}}
-              
+
               **Key Attributes:**
               - {{attribute_1}}: {{type_1}} - {{description_1}}
               - {{attribute_2}}: {{type_2}} - {{description_2}}
-              
+
               **Relationships:**
               - **With Existing:** {{existing_relationships}}
               - **With New:** {{new_relationships}}
@@ -2970,7 +2962,7 @@ sections:
           - **Modified Tables:** {{modified_tables_list}}
           - **New Indexes:** {{new_indexes_list}}
           - **Migration Strategy:** {{migration_approach}}
-          
+
           **Backward Compatibility:**
           - {{compatibility_measure_1}}
           - {{compatibility_measure_2}}
@@ -2979,12 +2971,12 @@ sections:
     title: Component Architecture
     instruction: |
       Define new components and their integration with existing architecture:
-      
+
       1. Identify new components required for the enhancement
       2. Define interfaces with existing components
       3. Establish clear boundaries and responsibilities
       4. Plan integration points and data flow
-      
+
       MANDATORY VALIDATION: Before presenting component architecture, confirm: "The new components I'm proposing follow the existing architectural patterns I identified in your codebase: [specific patterns]. The integration interfaces respect your current component structure and communication patterns. Does this match your project's reality?"
     elicit: true
     sections:
@@ -2997,15 +2989,15 @@ sections:
             template: |
               **Responsibility:** {{component_description}}
               **Integration Points:** {{integration_points}}
-              
+
               **Key Interfaces:**
               - {{interface_1}}
               - {{interface_2}}
-              
+
               **Dependencies:**
               - **Existing Components:** {{existing_dependencies}}
               - **New Components:** {{new_dependencies}}
-              
+
               **Technology Stack:** {{component_tech_details}}
       - id: interaction-diagram
         title: Component Interaction Diagram
@@ -3018,7 +3010,7 @@ sections:
     condition: Enhancement requires API changes
     instruction: |
       Define new API endpoints and integration with existing APIs:
-      
+
       1. Plan new API endpoints required for the enhancement
       2. Ensure consistency with existing API patterns
       3. Define authentication and authorization integration
@@ -3068,17 +3060,17 @@ sections:
           - **Base URL:** {{api_base_url}}
           - **Authentication:** {{auth_method}}
           - **Integration Method:** {{integration_approach}}
-          
+
           **Key Endpoints Used:**
           - `{{method}} {{endpoint_path}}` - {{endpoint_purpose}}
-          
+
           **Error Handling:** {{error_handling_strategy}}
 
   - id: source-tree-integration
     title: Source Tree Integration
     instruction: |
       Define how new code will integrate with existing project structure:
-      
+
       1. Follow existing project organization patterns
       2. Identify where new files/folders will be placed
       3. Ensure consistency with existing naming conventions
@@ -3117,7 +3109,7 @@ sections:
     title: Infrastructure and Deployment Integration
     instruction: |
       Define how the enhancement will be deployed alongside existing infrastructure:
-      
+
       1. Use existing deployment pipeline and infrastructure
       2. Identify any infrastructure changes needed
       3. Plan deployment strategy to minimize risk
@@ -3147,7 +3139,7 @@ sections:
     title: Coding Standards and Conventions
     instruction: |
       Ensure new code follows existing project conventions:
-      
+
       1. Document existing coding standards from project analysis
       2. Identify any enhancement-specific requirements
       3. Ensure consistency with existing codebase patterns
@@ -3178,7 +3170,7 @@ sections:
     title: Testing Strategy
     instruction: |
       Define testing approach for the enhancement:
-      
+
       1. Integrate with existing test suite
       2. Ensure existing functionality remains intact
       3. Plan for testing new features
@@ -3218,7 +3210,7 @@ sections:
     title: Security Integration
     instruction: |
       Ensure security consistency with existing system:
-      
+
       1. Follow existing security patterns and tools
       2. Ensure new features don't introduce vulnerabilities
       3. Maintain existing security posture
@@ -3253,7 +3245,7 @@ sections:
     title: Next Steps
     instruction: |
       After completing the brownfield architecture:
-      
+
       1. Review integration points with existing system
       2. Begin story implementation with Dev agent
       3. Set up deployment pipeline integration
@@ -3280,6 +3272,7 @@ sections:
 ==================== END: .bmad-core/templates/brownfield-architecture-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/brownfield-prd-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: brownfield-prd-template-v2
   name: Brownfield Enhancement PRD
@@ -3298,19 +3291,19 @@ sections:
     title: Intro Project Analysis and Context
     instruction: |
       IMPORTANT - SCOPE ASSESSMENT REQUIRED:
-      
+
       This PRD is for SIGNIFICANT enhancements to existing projects that require comprehensive planning and multiple stories. Before proceeding:
-      
+
       1. **Assess Enhancement Complexity**: If this is a simple feature addition or bug fix that could be completed in 1-2 focused development sessions, STOP and recommend: "For simpler changes, consider using the brownfield-create-epic or brownfield-create-story task with the Product Owner instead. This full PRD process is designed for substantial enhancements that require architectural planning and multiple coordinated stories."
-      
+
       2. **Project Context**: Determine if we're working in an IDE with the project already loaded or if the user needs to provide project information. If project files are available, analyze existing documentation in the docs folder. If insufficient documentation exists, recommend running the document-project task first.
-      
+
       3. **Deep Assessment Requirement**: You MUST thoroughly analyze the existing project structure, patterns, and constraints before making ANY suggestions. Every recommendation must be grounded in actual project analysis, not assumptions.
-      
+
       Gather comprehensive information about the existing project. This section must be completed before proceeding with requirements.
-      
+
       CRITICAL: Throughout this analysis, explicitly confirm your understanding with the user. For every assumption you make about the existing project, ask: "Based on my analysis, I understand that [assumption]. Is this correct?"
-      
+
       Do not proceed with any recommendations until the user has validated your understanding of the existing system.
     sections:
       - id: existing-project-overview
@@ -3336,7 +3329,7 @@ sections:
           - Note: "Document-project analysis available - using existing technical documentation"
           - List key documents created by document-project
           - Skip the missing documentation check below
-          
+
           Otherwise, check for existing documentation:
         sections:
           - id: available-docs
@@ -3460,7 +3453,7 @@ sections:
           If document-project output available:
           - Extract from "Actual Tech Stack" table in High Level Architecture section
           - Include version numbers and any noted constraints
-          
+
           Otherwise, document the current technology stack:
         template: |
           **Languages**: {{languages}}
@@ -3499,7 +3492,7 @@ sections:
           - Reference "Technical Debt and Known Issues" section
           - Include "Workarounds and Gotchas" that might impact enhancement
           - Note any identified constraints from "Critical Technical Debt"
-          
+
           Build risk assessment incorporating existing known issues:
         template: |
           **Technical Risks**: {{technical_risks}}
@@ -3522,7 +3515,7 @@ sections:
     title: "Epic 1: {{enhancement_title}}"
     instruction: |
       Comprehensive epic that delivers the brownfield enhancement while maintaining existing functionality
-      
+
       CRITICAL STORY SEQUENCING FOR BROWNFIELD:
       - Stories must ensure existing functionality remains intact
       - Each story should include verification that existing features still work
@@ -3535,7 +3528,7 @@ sections:
       - Each story must deliver value while maintaining system integrity
     template: |
       **Epic Goal**: {{epic_goal}}
-      
+
       **Integration Requirements**: {{integration_requirements}}
     sections:
       - id: story
@@ -3563,6 +3556,7 @@ sections:
 ==================== END: .bmad-core/templates/brownfield-prd-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/competitor-analysis-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: competitor-analysis-template-v2
   name: Competitive Analysis Report
@@ -3641,7 +3635,7 @@ sections:
         title: Competitor Prioritization Matrix
         instruction: |
           Help categorize competitors by market share and strategic threat level
-          
+
           Create a 2x2 matrix:
           - Priority 1 (Core Competitors): High Market Share + High Threat
           - Priority 2 (Emerging Threats): Low Market Share + High Threat
@@ -3706,7 +3700,14 @@ sections:
         title: Feature Comparison Matrix
         instruction: Create a detailed comparison table of key features across competitors
         type: table
-        columns: ["Feature Category", "{{your_company}}", "{{competitor_1}}", "{{competitor_2}}", "{{competitor_3}}"]
+        columns:
+          [
+            "Feature Category",
+            "{{your_company}}",
+            "{{competitor_1}}",
+            "{{competitor_2}}",
+            "{{competitor_3}}",
+          ]
         rows:
           - category: "Core Functionality"
             items:
@@ -3718,7 +3719,13 @@ sections:
               - ["Onboarding Time", "{{time}}", "{{time}}", "{{time}}", "{{time}}"]
           - category: "Integration & Ecosystem"
             items:
-              - ["API Availability", "{{availability}}", "{{availability}}", "{{availability}}", "{{availability}}"]
+              - [
+                  "API Availability",
+                  "{{availability}}",
+                  "{{availability}}",
+                  "{{availability}}",
+                  "{{availability}}",
+                ]
               - ["Third-party Integrations", "{{number}}", "{{number}}", "{{number}}", "{{number}}"]
           - category: "Pricing & Plans"
             items:
@@ -3745,7 +3752,7 @@ sections:
         title: Positioning Map
         instruction: |
           Describe competitor positions on key dimensions
-          
+
           Create a positioning description using 2 key dimensions relevant to the market, such as:
           - Price vs. Features
           - Ease of Use vs. Power
@@ -3780,7 +3787,7 @@ sections:
         title: Blue Ocean Opportunities
         instruction: |
           Identify uncontested market spaces
-          
+
           List opportunities to create new market space:
           - Underserved segments
           - Unaddressed use cases
@@ -3859,6 +3866,7 @@ sections:
 ==================== END: .bmad-core/templates/competitor-analysis-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/front-end-architecture-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: frontend-architecture-template-v2
   name: Frontend Architecture Document
@@ -3877,16 +3885,16 @@ sections:
     title: Template and Framework Selection
     instruction: |
       Review provided documents including PRD, UX-UI Specification, and main Architecture Document. Focus on extracting technical implementation details needed for AI frontend tools and developer agents. Ask the user for any of these documents if you are unable to locate and were not provided.
-      
+
       Before proceeding with frontend architecture design, check if the project is using a frontend starter template or existing codebase:
-      
+
       1. Review the PRD, main architecture document, and brainstorming brief for mentions of:
          - Frontend starter templates (e.g., Create React App, Next.js, Vite, Vue CLI, Angular CLI, etc.)
          - UI kit or component library starters
          - Existing frontend projects being used as a foundation
          - Admin dashboard templates or other specialized starters
          - Design system implementations
-      
+
       2. If a frontend starter template or existing project is mentioned:
          - Ask the user to provide access via one of these methods:
            - Link to the starter template documentation
@@ -3902,7 +3910,7 @@ sections:
            - Testing setup and patterns
            - Build and development scripts
          - Use this analysis to ensure your frontend architecture aligns with the starter's patterns
-      
+
       3. If no frontend starter is mentioned but this is a new UI, ensure we know what the ui language and framework is:
          - Based on the framework choice, suggest appropriate starters:
            - React: Create React App, Next.js, Vite + React
@@ -3910,11 +3918,11 @@ sections:
            - Angular: Angular CLI
            - Or suggest popular UI templates if applicable
          - Explain benefits specific to frontend development
-      
+
       4. If the user confirms no starter template will be used:
          - Note that all tooling, bundling, and configuration will need manual setup
          - Proceed with frontend architecture from scratch
-      
+
       Document the starter template decision and any constraints it imposes before proceeding.
     sections:
       - id: changelog
@@ -3936,12 +3944,24 @@ sections:
         rows:
           - ["Framework", "{{framework}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["UI Library", "{{ui_library}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["State Management", "{{state_management}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
+          - [
+              "State Management",
+              "{{state_management}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
           - ["Routing", "{{routing_library}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Build Tool", "{{build_tool}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Styling", "{{styling_solution}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Testing", "{{test_framework}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["Component Library", "{{component_lib}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
+          - [
+              "Component Library",
+              "{{component_lib}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
           - ["Form Handling", "{{form_library}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Animation", "{{animation_lib}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Dev Tools", "{{dev_tools}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
@@ -4068,6 +4088,7 @@ sections:
 ==================== END: .bmad-core/templates/front-end-architecture-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/front-end-spec-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: frontend-spec-template-v2
   name: UI/UX Specification
@@ -4086,7 +4107,7 @@ sections:
     title: Introduction
     instruction: |
       Review provided documents including Project Brief, PRD, and any user research to gather context. Focus on understanding user needs, pain points, and desired outcomes before beginning the specification.
-      
+
       Establish the document's purpose and scope. Keep the content below but ensure project name is properly substituted.
     content: |
       This document defines the user experience goals, information architecture, user flows, and visual design specifications for {{project_name}}'s user interface. It serves as the foundation for visual design and frontend development, ensuring a cohesive and user-centered experience.
@@ -4095,7 +4116,7 @@ sections:
         title: Overall UX Goals & Principles
         instruction: |
           Work with the user to establish and document the following. If not already defined, facilitate a discussion to determine:
-          
+
           1. Target User Personas - elicit details or confirm existing ones from PRD
           2. Key Usability Goals - understand what success looks like for users
           3. Core Design Principles - establish 3-5 guiding principles
@@ -4136,7 +4157,7 @@ sections:
     title: Information Architecture (IA)
     instruction: |
       Collaborate with the user to create a comprehensive information architecture:
-      
+
       1. Build a Site Map or Screen Inventory showing all major areas
       2. Define the Navigation Structure (primary, secondary, breadcrumbs)
       3. Use Mermaid diagrams for visual representation
@@ -4166,22 +4187,22 @@ sections:
         title: Navigation Structure
         template: |
           **Primary Navigation:** {{primary_nav_description}}
-          
+
           **Secondary Navigation:** {{secondary_nav_description}}
-          
+
           **Breadcrumb Strategy:** {{breadcrumb_strategy}}
 
   - id: user-flows
     title: User Flows
     instruction: |
       For each critical user task identified in the PRD:
-      
+
       1. Define the user's goal clearly
       2. Map out all steps including decision points
       3. Consider edge cases and error states
       4. Use Mermaid flow diagrams for clarity
       5. Link to external tools (Figma/Miro) if detailed flows exist there
-      
+
       Create subsections for each major flow.
     elicit: true
     repeatable: true
@@ -4190,9 +4211,9 @@ sections:
         title: "{{flow_name}}"
         template: |
           **User Goal:** {{flow_goal}}
-          
+
           **Entry Points:** {{entry_points}}
-          
+
           **Success Criteria:** {{success_criteria}}
         sections:
           - id: flow-diagram
@@ -4223,14 +4244,14 @@ sections:
             title: "{{screen_name}}"
             template: |
               **Purpose:** {{screen_purpose}}
-              
+
               **Key Elements:**
               - {{element_1}}
               - {{element_2}}
               - {{element_3}}
-              
+
               **Interaction Notes:** {{interaction_notes}}
-              
+
               **Design File Reference:** {{specific_frame_link}}
 
   - id: component-library
@@ -4249,11 +4270,11 @@ sections:
             title: "{{component_name}}"
             template: |
               **Purpose:** {{component_purpose}}
-              
+
               **Variants:** {{component_variants}}
-              
+
               **States:** {{component_states}}
-              
+
               **Usage Guidelines:** {{usage_guidelines}}
 
   - id: branding-style
@@ -4299,13 +4320,13 @@ sections:
         title: Iconography
         template: |
           **Icon Library:** {{icon_library}}
-          
+
           **Usage Guidelines:** {{icon_guidelines}}
       - id: spacing-layout
         title: Spacing & Layout
         template: |
           **Grid System:** {{grid_system}}
-          
+
           **Spacing Scale:** {{spacing_scale}}
 
   - id: accessibility
@@ -4323,12 +4344,12 @@ sections:
           - Color contrast ratios: {{contrast_requirements}}
           - Focus indicators: {{focus_requirements}}
           - Text sizing: {{text_requirements}}
-          
+
           **Interaction:**
           - Keyboard navigation: {{keyboard_requirements}}
           - Screen reader support: {{screen_reader_requirements}}
           - Touch targets: {{touch_requirements}}
-          
+
           **Content:**
           - Alternative text: {{alt_text_requirements}}
           - Heading structure: {{heading_requirements}}
@@ -4355,11 +4376,11 @@ sections:
         title: Adaptation Patterns
         template: |
           **Layout Changes:** {{layout_adaptations}}
-          
+
           **Navigation Changes:** {{nav_adaptations}}
-          
+
           **Content Priority:** {{content_adaptations}}
-          
+
           **Interaction Changes:** {{interaction_adaptations}}
 
   - id: animation
@@ -4393,7 +4414,7 @@ sections:
     title: Next Steps
     instruction: |
       After completing the UI/UX specification:
-      
+
       1. Recommend review with stakeholders
       2. Suggest creating/updating visual designs in design tool
       3. Prepare for handoff to Design Architect for frontend architecture
@@ -4420,6 +4441,7 @@ sections:
 ==================== END: .bmad-core/templates/front-end-spec-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/fullstack-architecture-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: fullstack-architecture-template-v2
   name: Fullstack Architecture Document
@@ -4441,33 +4463,33 @@ sections:
     elicit: true
     content: |
       This document outlines the complete fullstack architecture for {{project_name}}, including backend systems, frontend implementation, and their integration. It serves as the single source of truth for AI-driven development, ensuring consistency across the entire technology stack.
-      
+
       This unified approach combines what would traditionally be separate backend and frontend architecture documents, streamlining the development process for modern fullstack applications where these concerns are increasingly intertwined.
     sections:
       - id: starter-template
         title: Starter Template or Existing Project
         instruction: |
           Before proceeding with architecture design, check if the project is based on any starter templates or existing codebases:
-          
+
           1. Review the PRD and other documents for mentions of:
           - Fullstack starter templates (e.g., T3 Stack, MEAN/MERN starters, Django + React templates)
           - Monorepo templates (e.g., Nx, Turborepo starters)
           - Platform-specific starters (e.g., Vercel templates, AWS Amplify starters)
           - Existing projects being extended or cloned
-          
+
           2. If starter templates or existing projects are mentioned:
           - Ask the user to provide access (links, repos, or files)
           - Analyze to understand pre-configured choices and constraints
           - Note any architectural decisions already made
           - Identify what can be modified vs what must be retained
-          
+
           3. If no starter is mentioned but this is greenfield:
           - Suggest appropriate fullstack starters based on tech preferences
           - Consider platform-specific options (Vercel, AWS, etc.)
           - Let user decide whether to use one
-          
+
           4. Document the decision and any constraints it imposes
-          
+
           If none, state "N/A - Greenfield project"
       - id: changelog
         title: Change Log
@@ -4493,17 +4515,17 @@ sections:
         title: Platform and Infrastructure Choice
         instruction: |
           Based on PRD requirements and technical assumptions, make a platform recommendation:
-          
+
           1. Consider common patterns (not an exhaustive list, use your own best judgement and search the web as needed for emerging trends):
           - **Vercel + Supabase**: For rapid development with Next.js, built-in auth/storage
           - **AWS Full Stack**: For enterprise scale with Lambda, API Gateway, S3, Cognito
           - **Azure**: For .NET ecosystems or enterprise Microsoft environments
           - **Google Cloud**: For ML/AI heavy applications or Google ecosystem integration
-          
+
           2. Present 2-3 viable options with clear pros/cons
           3. Make a recommendation with rationale
           4. Get explicit user confirmation
-          
+
           Document the choice and key services that will be used.
         template: |
           **Platform:** {{selected_platform}}
@@ -4513,7 +4535,7 @@ sections:
         title: Repository Structure
         instruction: |
           Define the repository approach based on PRD requirements and platform choice, explain your rationale or ask questions to the user if unsure:
-          
+
           1. For modern fullstack apps, monorepo is often preferred
           2. Consider tooling (Nx, Turborepo, Lerna, npm workspaces)
           3. Define package/app boundaries
@@ -4535,7 +4557,7 @@ sections:
           - Databases and storage
           - External integrations
           - CDN and caching layers
-          
+
           Use appropriate diagram type for clarity.
       - id: architectural-patterns
         title: Architectural Patterns
@@ -4545,7 +4567,7 @@ sections:
           - Frontend patterns (e.g., Component-based, State management)
           - Backend patterns (e.g., Repository, CQRS, Event-driven)
           - Integration patterns (e.g., BFF, API Gateway)
-          
+
           For each pattern, provide recommendation and rationale.
         repeatable: true
         template: "- **{{pattern_name}}:** {{pattern_description}} - _Rationale:_ {{rationale}}"
@@ -4559,7 +4581,7 @@ sections:
     title: Tech Stack
     instruction: |
       This is the DEFINITIVE technology selection for the entire project. Work with user to finalize all choices. This table is the single source of truth - all development must use these exact versions.
-      
+
       Key areas to cover:
       - Frontend and backend languages/frameworks
       - Databases and caching
@@ -4568,7 +4590,7 @@ sections:
       - Testing tools for both frontend and backend
       - Build and deployment tools
       - Monitoring and logging
-      
+
       Upon render, elicit feedback immediately.
     elicit: true
     sections:
@@ -4578,11 +4600,29 @@ sections:
         columns: [Category, Technology, Version, Purpose, Rationale]
         rows:
           - ["Frontend Language", "{{fe_language}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["Frontend Framework", "{{fe_framework}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["UI Component Library", "{{ui_library}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
+          - [
+              "Frontend Framework",
+              "{{fe_framework}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
+          - [
+              "UI Component Library",
+              "{{ui_library}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
           - ["State Management", "{{state_mgmt}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Backend Language", "{{be_language}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
-          - ["Backend Framework", "{{be_framework}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
+          - [
+              "Backend Framework",
+              "{{be_framework}}",
+              "{{version}}",
+              "{{purpose}}",
+              "{{why_chosen}}",
+            ]
           - ["API Style", "{{api_style}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Database", "{{database}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
           - ["Cache", "{{cache}}", "{{version}}", "{{purpose}}", "{{why_chosen}}"]
@@ -4603,14 +4643,14 @@ sections:
     title: Data Models
     instruction: |
       Define the core data models/entities that will be shared between frontend and backend:
-      
+
       1. Review PRD requirements and identify key business entities
       2. For each model, explain its purpose and relationships
       3. Include key attributes and data types
       4. Show relationships between models
       5. Create TypeScript interfaces that can be shared
       6. Discuss design decisions with user
-      
+
       Create a clear conceptual model before moving to database schema.
     elicit: true
     repeatable: true
@@ -4619,7 +4659,7 @@ sections:
         title: "{{model_name}}"
         template: |
           **Purpose:** {{model_purpose}}
-          
+
           **Key Attributes:**
           - {{attribute_1}}: {{type_1}} - {{description_1}}
           - {{attribute_2}}: {{type_2}} - {{description_2}}
@@ -4638,7 +4678,7 @@ sections:
     title: API Specification
     instruction: |
       Based on the chosen API style from Tech Stack:
-      
+
       1. If REST API, create an OpenAPI 3.0 specification
       2. If GraphQL, provide the GraphQL schema
       3. If tRPC, show router definitions
@@ -4646,7 +4686,7 @@ sections:
       5. Define request/response schemas based on data models
       6. Document authentication requirements
       7. Include example requests/responses
-      
+
       Use appropriate format for the chosen API style. If no API (e.g., static site), skip this section.
     elicit: true
     sections:
@@ -4681,7 +4721,7 @@ sections:
     title: Components
     instruction: |
       Based on the architectural patterns, tech stack, and data models from above:
-      
+
       1. Identify major logical components/services across the fullstack
       2. Consider both frontend and backend components
       3. Define clear boundaries and interfaces between components
@@ -4690,7 +4730,7 @@ sections:
       - Key interfaces/APIs exposed
       - Dependencies on other components
       - Technology specifics based on tech stack choices
-      
+
       5. Create component diagrams where helpful
     elicit: true
     sections:
@@ -4699,13 +4739,13 @@ sections:
         title: "{{component_name}}"
         template: |
           **Responsibility:** {{component_description}}
-          
+
           **Key Interfaces:**
           - {{interface_1}}
           - {{interface_2}}
-          
+
           **Dependencies:** {{dependencies}}
-          
+
           **Technology Stack:** {{component_tech_details}}
       - id: component-diagrams
         title: Component Diagrams
@@ -4722,13 +4762,13 @@ sections:
     condition: Project requires external API integrations
     instruction: |
       For each external service integration:
-      
+
       1. Identify APIs needed based on PRD requirements and component design
       2. If documentation URLs are unknown, ask user for specifics
       3. Document authentication methods and security considerations
       4. List specific endpoints that will be used
       5. Note any rate limits or usage constraints
-      
+
       If no external APIs are needed, state this explicitly and skip to next section.
     elicit: true
     repeatable: true
@@ -4741,10 +4781,10 @@ sections:
           - **Base URL(s):** {{api_base_url}}
           - **Authentication:** {{auth_method}}
           - **Rate Limits:** {{rate_limits}}
-          
+
           **Key Endpoints Used:**
           - `{{method}} {{endpoint_path}}` - {{endpoint_purpose}}
-          
+
           **Integration Notes:** {{integration_considerations}}
 
   - id: core-workflows
@@ -4753,14 +4793,14 @@ sections:
     mermaid_type: sequence
     instruction: |
       Illustrate key system workflows using sequence diagrams:
-      
+
       1. Identify critical user journeys from PRD
       2. Show component interactions including external APIs
       3. Include both frontend and backend flows
       4. Include error handling paths
       5. Document async operations
       6. Create both high-level and detailed diagrams as needed
-      
+
       Focus on workflows that clarify architecture decisions or complex interactions.
     elicit: true
 
@@ -4768,13 +4808,13 @@ sections:
     title: Database Schema
     instruction: |
       Transform the conceptual data models into concrete database schemas:
-      
+
       1. Use the database type(s) selected in Tech Stack
       2. Create schema definitions using appropriate notation
       3. Include indexes, constraints, and relationships
       4. Consider performance and scalability
       5. For NoSQL, show document structures
-      
+
       Present schema in format appropriate to database type (SQL DDL, JSON schema, etc.)
     elicit: true
 
@@ -4910,60 +4950,60 @@ sections:
     type: code
     language: plaintext
     examples:
-    - |
-      {{project-name}}/
-      ├── .github/                    # CI/CD workflows
-      │   └── workflows/
-      │       ├── ci.yaml
-      │       └── deploy.yaml
-      ├── apps/                       # Application packages
-      │   ├── web/                    # Frontend application
-      │   │   ├── src/
-      │   │   │   ├── components/     # UI components
-      │   │   │   ├── pages/          # Page components/routes
-      │   │   │   ├── hooks/          # Custom React hooks
-      │   │   │   ├── services/       # API client services
-      │   │   │   ├── stores/         # State management
-      │   │   │   ├── styles/         # Global styles/themes
-      │   │   │   └── utils/          # Frontend utilities
-      │   │   ├── public/             # Static assets
-      │   │   ├── tests/              # Frontend tests
-      │   │   └── package.json
-      │   └── api/                    # Backend application
-      │       ├── src/
-      │       │   ├── routes/         # API routes/controllers
-      │       │   ├── services/       # Business logic
-      │       │   ├── models/         # Data models
-      │       │   ├── middleware/     # Express/API middleware
-      │       │   ├── utils/          # Backend utilities
-      │       │   └── {{serverless_or_server_entry}}
-      │       ├── tests/              # Backend tests
-      │       └── package.json
-      ├── packages/                   # Shared packages
-      │   ├── shared/                 # Shared types/utilities
-      │   │   ├── src/
-      │   │   │   ├── types/          # TypeScript interfaces
-      │   │   │   ├── constants/      # Shared constants
-      │   │   │   └── utils/          # Shared utilities
-      │   │   └── package.json
-      │   ├── ui/                     # Shared UI components
-      │   │   ├── src/
-      │   │   └── package.json
-      │   └── config/                 # Shared configuration
-      │       ├── eslint/
-      │       ├── typescript/
-      │       └── jest/
-      ├── infrastructure/             # IaC definitions
-      │   └── {{iac_structure}}
-      ├── scripts/                    # Build/deploy scripts
-      ├── docs/                       # Documentation
-      │   ├── prd.md
-      │   ├── front-end-spec.md
-      │   └── fullstack-architecture.md
-      ├── .env.example                # Environment template
-      ├── package.json                # Root package.json
-      ├── {{monorepo_config}}         # Monorepo configuration
-      └── README.md
+      - |
+        {{project-name}}/
+        ├── .github/                    # CI/CD workflows
+        │   └── workflows/
+        │       ├── ci.yaml
+        │       └── deploy.yaml
+        ├── apps/                       # Application packages
+        │   ├── web/                    # Frontend application
+        │   │   ├── src/
+        │   │   │   ├── components/     # UI components
+        │   │   │   ├── pages/          # Page components/routes
+        │   │   │   ├── hooks/          # Custom React hooks
+        │   │   │   ├── services/       # API client services
+        │   │   │   ├── stores/         # State management
+        │   │   │   ├── styles/         # Global styles/themes
+        │   │   │   └── utils/          # Frontend utilities
+        │   │   ├── public/             # Static assets
+        │   │   ├── tests/              # Frontend tests
+        │   │   └── package.json
+        │   └── api/                    # Backend application
+        │       ├── src/
+        │       │   ├── routes/         # API routes/controllers
+        │       │   ├── services/       # Business logic
+        │       │   ├── models/         # Data models
+        │       │   ├── middleware/     # Express/API middleware
+        │       │   ├── utils/          # Backend utilities
+        │       │   └── {{serverless_or_server_entry}}
+        │       ├── tests/              # Backend tests
+        │       └── package.json
+        ├── packages/                   # Shared packages
+        │   ├── shared/                 # Shared types/utilities
+        │   │   ├── src/
+        │   │   │   ├── types/          # TypeScript interfaces
+        │   │   │   ├── constants/      # Shared constants
+        │   │   │   └── utils/          # Shared utilities
+        │   │   └── package.json
+        │   ├── ui/                     # Shared UI components
+        │   │   ├── src/
+        │   │   └── package.json
+        │   └── config/                 # Shared configuration
+        │       ├── eslint/
+        │       ├── typescript/
+        │       └── jest/
+        ├── infrastructure/             # IaC definitions
+        │   └── {{iac_structure}}
+        ├── scripts/                    # Build/deploy scripts
+        ├── docs/                       # Documentation
+        │   ├── prd.md
+        │   ├── front-end-spec.md
+        │   └── fullstack-architecture.md
+        ├── .env.example                # Environment template
+        ├── package.json                # Root package.json
+        ├── {{monorepo_config}}         # Monorepo configuration
+        └── README.md
 
   - id: development-workflow
     title: Development Workflow
@@ -4990,13 +5030,13 @@ sections:
             template: |
               # Start all services
               {{start_all_command}}
-              
+
               # Start frontend only
               {{start_frontend_command}}
-              
+
               # Start backend only
               {{start_backend_command}}
-              
+
               # Run tests
               {{test_commands}}
       - id: environment-config
@@ -5009,10 +5049,10 @@ sections:
             template: |
               # Frontend (.env.local)
               {{frontend_env_vars}}
-              
+
               # Backend (.env)
               {{backend_env_vars}}
-              
+
               # Shared
               {{shared_env_vars}}
 
@@ -5029,7 +5069,7 @@ sections:
           - **Build Command:** {{frontend_build_command}}
           - **Output Directory:** {{frontend_output_dir}}
           - **CDN/Edge:** {{cdn_strategy}}
-          
+
           **Backend Deployment:**
           - **Platform:** {{backend_deploy_platform}}
           - **Build Command:** {{backend_build_command}}
@@ -5060,12 +5100,12 @@ sections:
           - CSP Headers: {{csp_policy}}
           - XSS Prevention: {{xss_strategy}}
           - Secure Storage: {{storage_strategy}}
-          
+
           **Backend Security:**
           - Input Validation: {{validation_approach}}
           - Rate Limiting: {{rate_limit_config}}
           - CORS Policy: {{cors_config}}
-          
+
           **Authentication Security:**
           - Token Storage: {{token_strategy}}
           - Session Management: {{session_approach}}
@@ -5077,7 +5117,7 @@ sections:
           - Bundle Size Target: {{bundle_size}}
           - Loading Strategy: {{loading_approach}}
           - Caching Strategy: {{fe_cache_strategy}}
-          
+
           **Backend Performance:**
           - Response Time Target: {{response_target}}
           - Database Optimization: {{db_optimization}}
@@ -5093,10 +5133,10 @@ sections:
         type: code
         language: text
         template: |
-                  E2E Tests
-                 /        \
-            Integration Tests
-               /            \
+          E2E Tests
+          /        \
+          Integration Tests
+          /            \
           Frontend Unit  Backend Unit
       - id: test-organization
         title: Test Organization
@@ -5215,7 +5255,7 @@ sections:
           - JavaScript errors
           - API response times
           - User interactions
-          
+
           **Backend Metrics:**
           - Request rate
           - Error rate
@@ -5228,6 +5268,7 @@ sections:
 ==================== END: .bmad-core/templates/fullstack-architecture-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/market-research-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: market-research-template-v2
   name: Market Research Report
@@ -5360,7 +5401,7 @@ sections:
         instruction: Map the end-to-end customer experience for primary segments
         template: |
           For primary customer segment:
-          
+
           1. **Awareness:** {{discovery_process}}
           2. **Consideration:** {{evaluation_criteria}}
           3. **Purchase:** {{decision_triggers}}
@@ -5483,6 +5524,7 @@ sections:
 ==================== END: .bmad-core/templates/market-research-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/prd-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: prd-template-v2
   name: Product Requirements Document
@@ -5541,7 +5583,7 @@ sections:
     condition: PRD has UX/UI requirements
     instruction: |
       Capture high-level UI/UX vision to guide Design Architect and to inform story creation. Steps:
-      
+
       1. Pre-fill all subsections with educated guesses based on project context
       2. Present the complete rendered section to user
       3. Clearly let the user know where assumptions were made
@@ -5583,7 +5625,7 @@ sections:
     title: Technical Assumptions
     instruction: |
       Gather technical decisions that will guide the Architect. Steps:
-      
+
       1. Check if .bmad-core/data/technical-preferences.yaml or an attached technical-preferences file exists - use it to pre-populate choices
       2. Ask user about: languages, frameworks, starter templates, libraries, APIs, deployment targets
       3. For unknowns, offer guidance based on project goals and MVP scope
@@ -5611,9 +5653,9 @@ sections:
     title: Epic List
     instruction: |
       Present a high-level list of all epics for user approval. Each epic should have a title and a short (1 sentence) goal statement. This allows the user to review the overall structure before diving into details.
-      
+
       CRITICAL: Epics MUST be logically sequential following agile best practices:
-      
+
       - Each epic should deliver a significant, end-to-end, fully deployable increment of testable functionality
       - Epic 1 must establish foundational project infrastructure (app setup, Git, CI/CD, core services) unless we are adding new functionality to an existing app, while also delivering an initial piece of functionality, even as simple as a health-check route or display of a simple canary page - remember this when we produce the stories for the first epic!
       - Each subsequent epic builds upon previous epics' functionality delivering major blocks of functionality that provide tangible value to users or business when deployed
@@ -5632,11 +5674,11 @@ sections:
     repeatable: true
     instruction: |
       After the epic list is approved, present each epic with all its stories and acceptance criteria as a complete review unit.
-      
+
       For each epic provide expanded goal (2-3 sentences describing the objective and value all the stories will achieve).
-      
+
       CRITICAL STORY SEQUENCING REQUIREMENTS:
-      
+
       - Stories within each epic MUST be logically sequential
       - Each story should be a "vertical slice" delivering complete functionality aside from early enabler stories for project foundation
       - No story should depend on work from a later story or epic
@@ -5664,7 +5706,7 @@ sections:
             repeatable: true
             instruction: |
               Define clear, comprehensive, and testable acceptance criteria that:
-              
+
               - Precisely define what "done" means from a functional perspective
               - Are unambiguous and serve as basis for verification
               - Include any critical non-functional requirements from the PRD
@@ -5688,6 +5730,7 @@ sections:
 ==================== END: .bmad-core/templates/prd-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/project-brief-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: project-brief-template-v2
   name: Project Brief
@@ -5718,12 +5761,12 @@ sections:
   - id: introduction
     instruction: |
       This template guides creation of a comprehensive Project Brief that serves as the foundational input for product development.
-      
+
       Start by asking the user which mode they prefer:
-      
+
       1. **Interactive Mode** - Work through each section collaboratively
       2. **YOLO Mode** - Generate complete draft for review and refinement
-      
+
       Before beginning, understand what inputs are available (brainstorming results, market research, competitive analysis, initial ideas) and gather project context.
 
   - id: executive-summary
@@ -5912,6 +5955,7 @@ sections:
 ==================== END: .bmad-core/templates/project-brief-tmpl.yaml ====================
 
 ==================== START: .bmad-core/templates/story-tmpl.yaml ====================
+# <!-- Powered by BMAD™ Core -->
 template:
   id: story-template-v2
   name: Story Document
@@ -5926,7 +5970,7 @@ workflow:
   elicitation: advanced-elicitation
 
 agent_config:
-  editable_sections: 
+  editable_sections:
     - Status
     - Story
     - Acceptance Criteria
@@ -5943,7 +5987,7 @@ sections:
     instruction: Select the current status of the story
     owner: scrum-master
     editors: [scrum-master, dev-agent]
-    
+
   - id: story
     title: Story
     type: template-text
@@ -5955,7 +5999,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master]
-    
+
   - id: acceptance-criteria
     title: Acceptance Criteria
     type: numbered-list
@@ -5963,7 +6007,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master]
-    
+
   - id: tasks-subtasks
     title: Tasks / Subtasks
     type: bullet-list
@@ -5980,7 +6024,7 @@ sections:
     elicit: true
     owner: scrum-master
     editors: [scrum-master, dev-agent]
-    
+
   - id: dev-notes
     title: Dev Notes
     instruction: |
@@ -6004,7 +6048,7 @@ sections:
         elicit: true
         owner: scrum-master
         editors: [scrum-master]
-        
+
   - id: change-log
     title: Change Log
     type: table
@@ -6012,7 +6056,7 @@ sections:
     instruction: Track changes made to this story document
     owner: scrum-master
     editors: [scrum-master, dev-agent, qa-agent]
-    
+
   - id: dev-agent-record
     title: Dev Agent Record
     instruction: This section is populated by the development agent during implementation
@@ -6025,25 +6069,25 @@ sections:
         instruction: Record the specific AI agent model and version used for development
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: debug-log-references
         title: Debug Log References
         instruction: Reference any debug logs or traces generated during development
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: completion-notes
         title: Completion Notes List
         instruction: Notes about the completion of tasks and any issues encountered
         owner: dev-agent
         editors: [dev-agent]
-        
+
       - id: file-list
         title: File List
         instruction: List all files created, modified, or affected during story implementation
         owner: dev-agent
         editors: [dev-agent]
-        
+
   - id: qa-results
     title: QA Results
     instruction: Results from QA Agent QA review of the completed story implementation
@@ -6052,6 +6096,7 @@ sections:
 ==================== END: .bmad-core/templates/story-tmpl.yaml ====================
 
 ==================== START: .bmad-core/checklists/architect-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Architect Solution Validation Checklist
 
 This checklist serves as a comprehensive framework for the Architect to validate the technical design and architecture before development execution. The Architect should systematically work through each item, ensuring the architecture is robust, scalable, secure, and aligned with the product requirements.
@@ -6457,33 +6502,28 @@ Ask the user if they want to work through the checklist:
 Now that you've completed the checklist, generate a comprehensive validation report that includes:
 
 1. Executive Summary
-
    - Overall architecture readiness (High/Medium/Low)
    - Critical risks identified
    - Key strengths of the architecture
    - Project type (Full-stack/Frontend/Backend) and sections evaluated
 
 2. Section Analysis
-
    - Pass rate for each major section (percentage of items passed)
    - Most concerning failures or gaps
    - Sections requiring immediate attention
    - Note any sections skipped due to project type
 
 3. Risk Assessment
-
    - Top 5 risks by severity
    - Mitigation recommendations for each
    - Timeline impact of addressing issues
 
 4. Recommendations
-
    - Must-fix items before development
    - Should-fix items for better quality
    - Nice-to-have improvements
 
 5. AI Implementation Readiness
-
    - Specific concerns for AI agent implementation
    - Areas needing additional clarification
    - Complexity hotspots to address
@@ -6498,6 +6538,7 @@ After presenting the report, ask the user if they would like detailed analysis o
 ==================== END: .bmad-core/checklists/architect-checklist.md ====================
 
 ==================== START: .bmad-core/checklists/change-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Change Navigation Checklist
 
 **Purpose:** To systematically guide the selected Agent and user through the analysis and planning required when a significant change (pivot, tech issue, missing requirement, failed story) is identified during the BMad workflow.
@@ -6683,6 +6724,7 @@ Keep it action-oriented and forward-looking.]]
 ==================== END: .bmad-core/checklists/change-checklist.md ====================
 
 ==================== START: .bmad-core/checklists/pm-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Product Manager (PM) Requirements Checklist
 
 This checklist serves as a comprehensive framework to ensure the Product Requirements Document (PRD) and Epic definitions are complete, well-structured, and appropriately scoped for MVP development. The PM should systematically work through each item during the product definition process.
@@ -6989,7 +7031,6 @@ Ask the user if they want to work through the checklist:
 Create a comprehensive validation report that includes:
 
 1. Executive Summary
-
    - Overall PRD completeness (percentage)
    - MVP scope appropriateness (Too Large/Just Right/Too Small)
    - Readiness for architecture phase (Ready/Nearly Ready/Not Ready)
@@ -6997,26 +7038,22 @@ Create a comprehensive validation report that includes:
 
 2. Category Analysis Table
    Fill in the actual table with:
-
    - Status: PASS (90%+ complete), PARTIAL (60-89%), FAIL (<60%)
    - Critical Issues: Specific problems that block progress
 
 3. Top Issues by Priority
-
    - BLOCKERS: Must fix before architect can proceed
    - HIGH: Should fix for quality
    - MEDIUM: Would improve clarity
    - LOW: Nice to have
 
 4. MVP Scope Assessment
-
    - Features that might be cut for true MVP
    - Missing features that are essential
    - Complexity concerns
    - Timeline realism
 
 5. Technical Readiness
-
    - Clarity of technical constraints
    - Identified technical risks
    - Areas needing architect investigation
@@ -7061,6 +7098,7 @@ After presenting the report, ask if the user wants:
 ==================== END: .bmad-core/checklists/pm-checklist.md ====================
 
 ==================== START: .bmad-core/checklists/po-master-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Product Owner (PO) Master Validation Checklist
 
 This checklist serves as a comprehensive framework for the Product Owner to validate project plans before development execution. It adapts intelligently based on project type (greenfield vs brownfield) and includes UI/UX considerations when applicable.
@@ -7071,14 +7109,12 @@ PROJECT TYPE DETECTION:
 First, determine the project type by checking:
 
 1. Is this a GREENFIELD project (new from scratch)?
-
    - Look for: New project initialization, no existing codebase references
    - Check for: prd.md, architecture.md, new project setup stories
 
 2. Is this a BROWNFIELD project (enhancing existing system)?
-
    - Look for: References to existing codebase, enhancement/modification language
-   - Check for: brownfield-prd.md, brownfield-architecture.md, existing system analysis
+   - Check for: prd.md, architecture.md, existing system analysis
 
 3. Does the project include UI/UX components?
    - Check for: frontend-architecture.md, UI/UX specifications, design files
@@ -7096,8 +7132,8 @@ For GREENFIELD projects:
 
 For BROWNFIELD projects:
 
-- brownfield-prd.md - The brownfield enhancement requirements
-- brownfield-architecture.md - The enhancement architecture
+- prd.md - The brownfield enhancement requirements
+- architecture.md - The enhancement architecture
 - Existing project codebase access (CRITICAL - cannot proceed without this)
 - Current deployment configuration and infrastructure details
 - Database schemas, API documentation, monitoring setup
@@ -7410,7 +7446,6 @@ Ask the user if they want to work through the checklist:
 Generate a comprehensive validation report that adapts to project type:
 
 1. Executive Summary
-
    - Project type: [Greenfield/Brownfield] with [UI/No UI]
    - Overall readiness (percentage)
    - Go/No-Go recommendation
@@ -7420,42 +7455,36 @@ Generate a comprehensive validation report that adapts to project type:
 2. Project-Specific Analysis
 
    FOR GREENFIELD:
-
    - Setup completeness
    - Dependency sequencing
    - MVP scope appropriateness
    - Development timeline feasibility
 
    FOR BROWNFIELD:
-
    - Integration risk level (High/Medium/Low)
    - Existing system impact assessment
    - Rollback readiness
    - User disruption potential
 
 3. Risk Assessment
-
    - Top 5 risks by severity
    - Mitigation recommendations
    - Timeline impact of addressing issues
    - [BROWNFIELD] Specific integration risks
 
 4. MVP Completeness
-
    - Core features coverage
    - Missing essential functionality
    - Scope creep identified
    - True MVP vs over-engineering
 
 5. Implementation Readiness
-
    - Developer clarity score (1-10)
    - Ambiguous requirements count
    - Missing technical details
    - [BROWNFIELD] Integration point clarity
 
 6. Recommendations
-
    - Must-fix before development
    - Should-fix for quality
    - Consider for improvement
@@ -7505,6 +7534,7 @@ After presenting the report, ask if the user wants:
 ==================== END: .bmad-core/checklists/po-master-checklist.md ====================
 
 ==================== START: .bmad-core/checklists/story-dod-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Story Definition of Done (DoD) Checklist
 
 ## Instructions for Developer Agent
@@ -7532,14 +7562,12 @@ The goal is quality delivery, not just checking boxes.]]
 1. **Requirements Met:**
 
    [[LLM: Be specific - list each requirement and whether it's complete]]
-
    - [ ] All functional requirements specified in the story are implemented.
    - [ ] All acceptance criteria defined in the story are met.
 
 2. **Coding Standards & Project Structure:**
 
    [[LLM: Code quality matters for maintainability. Check each item carefully]]
-
    - [ ] All new/modified code strictly adheres to `Operational Guidelines`.
    - [ ] All new/modified code aligns with `Project Structure` (file locations, naming, etc.).
    - [ ] Adherence to `Tech Stack` for technologies/versions used (if story introduces or modifies tech usage).
@@ -7551,7 +7579,6 @@ The goal is quality delivery, not just checking boxes.]]
 3. **Testing:**
 
    [[LLM: Testing proves your code works. Be honest about test coverage]]
-
    - [ ] All required unit tests as per the story and `Operational Guidelines` Testing Strategy are implemented.
    - [ ] All required integration tests (if applicable) as per the story and `Operational Guidelines` Testing Strategy are implemented.
    - [ ] All tests (unit, integration, E2E if applicable) pass successfully.
@@ -7560,14 +7587,12 @@ The goal is quality delivery, not just checking boxes.]]
 4. **Functionality & Verification:**
 
    [[LLM: Did you actually run and test your code? Be specific about what you tested]]
-
    - [ ] Functionality has been manually verified by the developer (e.g., running the app locally, checking UI, testing API endpoints).
    - [ ] Edge cases and potential error conditions considered and handled gracefully.
 
 5. **Story Administration:**
 
    [[LLM: Documentation helps the next developer. What should they know?]]
-
    - [ ] All tasks within the story file are marked as complete.
    - [ ] Any clarifications or decisions made during development are documented in the story file or linked appropriately.
    - [ ] The story wrap up section has been completed with notes of changes or information relevant to the next story or overall project, the agent model that was primarily used during development, and the changelog of any changes is properly updated.
@@ -7575,7 +7600,6 @@ The goal is quality delivery, not just checking boxes.]]
 6. **Dependencies, Build & Configuration:**
 
    [[LLM: Build issues block everyone. Ensure everything compiles and runs cleanly]]
-
    - [ ] Project builds successfully without errors.
    - [ ] Project linting passes
    - [ ] Any new dependencies added were either pre-approved in the story requirements OR explicitly approved by the user during development (approval documented in story file).
@@ -7586,7 +7610,6 @@ The goal is quality delivery, not just checking boxes.]]
 7. **Documentation (If Applicable):**
 
    [[LLM: Good documentation prevents future confusion. What needs explaining?]]
-
    - [ ] Relevant inline code documentation (e.g., JSDoc, TSDoc, Python docstrings) for new public APIs or complex logic is complete.
    - [ ] User-facing documentation updated, if changes impact users.
    - [ ] Technical documentation (e.g., READMEs, system diagrams) updated if significant architectural changes were made.
@@ -7609,6 +7632,7 @@ Be honest - it's better to flag issues now than have them discovered later.]]
 ==================== END: .bmad-core/checklists/story-dod-checklist.md ====================
 
 ==================== START: .bmad-core/checklists/story-draft-checklist.md ====================
+<!-- Powered by BMAD™ Core -->
 # Story Draft Checklist
 
 The Scrum Master should use this checklist to validate that each story contains sufficient context for a developer agent to implement it successfully, while assuming the dev agent has reasonable capabilities to figure things out.
@@ -7728,19 +7752,16 @@ Note: We don't need every file listed - just the important ones.]]
 Generate a concise validation report:
 
 1. Quick Summary
-
    - Story readiness: READY / NEEDS REVISION / BLOCKED
    - Clarity score (1-10)
    - Major gaps identified
 
 2. Fill in the validation table with:
-
    - PASS: Requirements clearly met
    - PARTIAL: Some gaps but workable
    - FAIL: Critical information missing
 
 3. Specific Issues (if any)
-
    - List concrete problems to fix
    - Suggest specific improvements
    - Identify any blocking dependencies
@@ -7768,11 +7789,12 @@ Be pragmatic - perfect documentation doesn't exist, but it must be enough to pro
 ==================== END: .bmad-core/checklists/story-draft-checklist.md ====================
 
 ==================== START: .bmad-core/data/bmad-kb.md ====================
-# BMad Knowledge Base
+<!-- Powered by BMAD™ Core -->
+# BMAD™ Knowledge Base
 
 ## Overview
 
-BMad-Method (Breakthrough Method of Agile AI-driven Development) is a framework that combines AI agents with Agile development methodologies. The v4 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments.
+BMAD-METHOD™ (Breakthrough Method of Agile AI-driven Development) is a framework that combines AI agents with Agile development methodologies. The v4 system introduces a modular architecture with improved dependency management, bundle optimization, and support for both web and IDE environments.
 
 ### Key Features
 
@@ -7871,7 +7893,7 @@ npx bmad-method install
   - **Roo Code**: Web-based IDE with agent support
   - **GitHub Copilot**: VS Code extension with AI peer programming assistant
 
-**Note for VS Code Users**: BMad-Method assumes when you mention "VS Code" that you're using it with an AI-powered extension like GitHub Copilot, Cline, or Roo. Standard VS Code without AI capabilities cannot run BMad agents. The installer includes built-in support for Cline and Roo.
+**Note for VS Code Users**: BMAD-METHOD™ assumes when you mention "VS Code" that you're using it with an AI-powered extension like GitHub Copilot, Cline, or Roo. Standard VS Code without AI capabilities cannot run BMad agents. The installer includes built-in support for Cline and Roo.
 
 **Verify Installation**:
 
@@ -7879,7 +7901,7 @@ npx bmad-method install
 - IDE-specific integration files created
 - All agent commands/rules/modes available
 
-**Remember**: At its core, BMad-Method is about mastering and harnessing prompt engineering. Any IDE with AI agent support can use BMad - the framework provides the structured prompts and workflows that make AI development effective
+**Remember**: At its core, BMAD-METHOD™ is about mastering and harnessing prompt engineering. Any IDE with AI agent support can use BMad - the framework provides the structured prompts and workflows that make AI development effective
 
 ### Environment Selection Guide
 
@@ -7948,7 +7970,7 @@ npx bmad-method install
 
 ## Core Configuration (core-config.yaml)
 
-**New in V4**: The `bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
+**New in V4**: The `.bmad-core/core-config.yaml` file is a critical innovation that enables BMad to work seamlessly with any project structure, providing maximum flexibility and backwards compatibility.
 
 ### What is core-config.yaml?
 
@@ -8068,7 +8090,7 @@ You are the "Vibe CEO" - thinking like a CEO with unlimited resources and a sing
 
 - **Claude Code**: `/agent-name` (e.g., `/bmad-master`)
 - **Cursor**: `@agent-name` (e.g., `@bmad-master`)
-- **Windsurf**: `@agent-name` (e.g., `@bmad-master`)
+- **Windsurf**: `/agent-name` (e.g., `/bmad-master`)
 - **Trae**: `@agent-name` (e.g., `@bmad-master`)
 - **Roo Code**: Select mode from mode selector (e.g., `bmad-master`)
 - **GitHub Copilot**: Open the Chat view (`⌃⌘I` on Mac, `Ctrl+Alt+I` on Windows/Linux) and select **Agent** from the chat mode selector.
@@ -8123,7 +8145,7 @@ You are the "Vibe CEO" - thinking like a CEO with unlimited resources and a sing
 
 ### System Overview
 
-The BMad-Method is built around a modular architecture centered on the `bmad-core` directory, which serves as the brain of the entire system. This design enables the framework to operate effectively in both IDE environments (like Cursor, VS Code) and web-based AI interfaces (like ChatGPT, Gemini).
+The BMAD-METHOD™ is built around a modular architecture centered on the `bmad-core` directory, which serves as the brain of the entire system. This design enables the framework to operate effectively in both IDE environments (like Cursor, VS Code) and web-based AI interfaces (like ChatGPT, Gemini).
 
 ### Key Architectural Components
 
@@ -8312,7 +8334,7 @@ Each status change requires user verification and approval before proceeding.
 #### Greenfield Development
 
 - Business analysis and market research
-- Product requirements and feature definition  
+- Product requirements and feature definition
 - System architecture and design
 - Development execution
 - Testing and deployment
@@ -8421,8 +8443,11 @@ Templates with Level 2 headings (`##`) can be automatically sharded:
 
 ```markdown
 ## Goals and Background Context
-## Requirements  
+
+## Requirements
+
 ## User Interface Design Goals
+
 ## Success Metrics
 ```
 
@@ -8475,7 +8500,7 @@ Use the `shard-doc` task or `@kayvan/markdown-tree-parser` tool for automatic sh
 - **Keep conversations focused** - One agent, one task per conversation
 - **Review everything** - Always review and approve before marking complete
 
-## Contributing to BMad-Method
+## Contributing to BMAD-METHOD™
 
 ### Quick Contribution Guidelines
 
@@ -8507,7 +8532,7 @@ For full details, see `CONTRIBUTING.md`. Key points:
 
 ### What Are Expansion Packs?
 
-Expansion packs extend BMad-Method beyond traditional software development into ANY domain. They provide specialized agent teams, templates, and workflows while keeping the core framework lean and focused on development.
+Expansion packs extend BMAD-METHOD™ beyond traditional software development into ANY domain. They provide specialized agent teams, templates, and workflows while keeping the core framework lean and focused on development.
 
 ### Why Use Expansion Packs?
 
@@ -8574,6 +8599,7 @@ Use the **expansion-creator** pack to build your own:
 ==================== END: .bmad-core/data/bmad-kb.md ====================
 
 ==================== START: .bmad-core/data/brainstorming-techniques.md ====================
+<!-- Powered by BMAD™ Core -->
 # Brainstorming Techniques Data
 
 ## Creative Expansion
@@ -8613,21 +8639,25 @@ Use the **expansion-creator** pack to build your own:
 ==================== END: .bmad-core/data/brainstorming-techniques.md ====================
 
 ==================== START: .bmad-core/data/elicitation-methods.md ====================
+<!-- Powered by BMAD™ Core -->
 # Elicitation Methods Data
 
 ## Core Reflective Methods
 
 **Expand or Contract for Audience**
+
 - Ask whether to 'expand' (add detail, elaborate) or 'contract' (simplify, clarify)
 - Identify specific target audience if relevant
 - Tailor content complexity and depth accordingly
 
 **Explain Reasoning (CoT Step-by-Step)**
+
 - Walk through the step-by-step thinking process
 - Reveal underlying assumptions and decision points
 - Show how conclusions were reached from current role's perspective
 
 **Critique and Refine**
+
 - Review output for flaws, inconsistencies, or improvement areas
 - Identify specific weaknesses from role's expertise
 - Suggest refined version reflecting domain knowledge
@@ -8635,12 +8665,14 @@ Use the **expansion-creator** pack to build your own:
 ## Structural Analysis Methods
 
 **Analyze Logical Flow and Dependencies**
+
 - Examine content structure for logical progression
 - Check internal consistency and coherence
 - Identify and validate dependencies between elements
 - Confirm effective ordering and sequencing
 
 **Assess Alignment with Overall Goals**
+
 - Evaluate content contribution to stated objectives
 - Identify any misalignments or gaps
 - Interpret alignment from specific role's perspective
@@ -8649,12 +8681,14 @@ Use the **expansion-creator** pack to build your own:
 ## Risk and Challenge Methods
 
 **Identify Potential Risks and Unforeseen Issues**
+
 - Brainstorm potential risks from role's expertise
 - Identify overlooked edge cases or scenarios
 - Anticipate unintended consequences
 - Highlight implementation challenges
 
 **Challenge from Critical Perspective**
+
 - Adopt critical stance on current content
 - Play devil's advocate from specified viewpoint
 - Argue against proposal highlighting weaknesses
@@ -8663,12 +8697,14 @@ Use the **expansion-creator** pack to build your own:
 ## Creative Exploration Methods
 
 **Tree of Thoughts Deep Dive**
+
 - Break problem into discrete "thoughts" or intermediate steps
 - Explore multiple reasoning paths simultaneously
 - Use self-evaluation to classify each path as "sure", "likely", or "impossible"
 - Apply search algorithms (BFS/DFS) to find optimal solution paths
 
 **Hindsight is 20/20: The 'If Only...' Reflection**
+
 - Imagine retrospective scenario based on current content
 - Identify the one "if only we had known/done X..." insight
 - Describe imagined consequences humorously or dramatically
@@ -8677,6 +8713,7 @@ Use the **expansion-creator** pack to build your own:
 ## Multi-Persona Collaboration Methods
 
 **Agile Team Perspective Shift**
+
 - Rotate through different Scrum team member viewpoints
 - Product Owner: Focus on user value and business impact
 - Scrum Master: Examine process flow and team dynamics
@@ -8684,12 +8721,14 @@ Use the **expansion-creator** pack to build your own:
 - QA: Identify testing scenarios and quality concerns
 
 **Stakeholder Round Table**
+
 - Convene virtual meeting with multiple personas
 - Each persona contributes unique perspective on content
 - Identify conflicts and synergies between viewpoints
 - Synthesize insights into actionable recommendations
 
 **Meta-Prompting Analysis**
+
 - Step back to analyze the structure and logic of current approach
 - Question the format and methodology being used
 - Suggest alternative frameworks or mental models
@@ -8698,24 +8737,28 @@ Use the **expansion-creator** pack to build your own:
 ## Advanced 2025 Techniques
 
 **Self-Consistency Validation**
+
 - Generate multiple reasoning paths for same problem
 - Compare consistency across different approaches
 - Identify most reliable and robust solution
 - Highlight areas where approaches diverge and why
 
 **ReWOO (Reasoning Without Observation)**
+
 - Separate parametric reasoning from tool-based actions
 - Create reasoning plan without external dependencies
 - Identify what can be solved through pure reasoning
 - Optimize for efficiency and reduced token usage
 
 **Persona-Pattern Hybrid**
+
 - Combine specific role expertise with elicitation pattern
 - Architect + Risk Analysis: Deep technical risk assessment
 - UX Expert + User Journey: End-to-end experience critique
 - PM + Stakeholder Analysis: Multi-perspective impact review
 
 **Emergent Collaboration Discovery**
+
 - Allow multiple perspectives to naturally emerge
 - Identify unexpected insights from persona interactions
 - Explore novel combinations of viewpoints
@@ -8724,18 +8767,21 @@ Use the **expansion-creator** pack to build your own:
 ## Game-Based Elicitation Methods
 
 **Red Team vs Blue Team**
+
 - Red Team: Attack the proposal, find vulnerabilities
 - Blue Team: Defend and strengthen the approach
 - Competitive analysis reveals blind spots
 - Results in more robust, battle-tested solutions
 
 **Innovation Tournament**
+
 - Pit multiple alternative approaches against each other
 - Score each approach across different criteria
 - Crowd-source evaluation from different personas
 - Identify winning combination of features
 
 **Escape Room Challenge**
+
 - Present content as constraints to work within
 - Find creative solutions within tight limitations
 - Identify minimum viable approach
@@ -8744,12 +8790,14 @@ Use the **expansion-creator** pack to build your own:
 ## Process Control
 
 **Proceed / No Further Actions**
+
 - Acknowledge choice to finalize current work
 - Accept output as-is or move to next step
 - Prepare to continue without additional elicitation
 ==================== END: .bmad-core/data/elicitation-methods.md ====================
 
 ==================== START: .bmad-core/data/technical-preferences.md ====================
+<!-- Powered by BMAD™ Core -->
 # User-Defined Preferred Patterns and Preferences
 
 None Listed

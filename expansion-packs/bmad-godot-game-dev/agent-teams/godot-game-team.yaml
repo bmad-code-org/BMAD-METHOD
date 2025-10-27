@@ -1,0 +1,18 @@
+bundle:
+  name: Godot Game Team
+  icon: 🎮
+  description: Game Development team specialized in games using Godot Engine, GDScript and C#.
+agents:
+  - game-analyst
+  - bmad-orchestrator
+  - game-designer
+  - game-architect
+  - game-developer
+  - game-qa
+  - game-sm
+  - game-po
+  - game-pm
+  - game-ux-expert
+workflows:
+  - game-dev-greenfield.md
+  - game-prototype.md
