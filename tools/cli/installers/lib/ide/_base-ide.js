@@ -156,15 +156,16 @@ class BaseIdeSetup {
   /**
    * Get list of tasks from BMAD installation
    * @param {string} bmadDir - BMAD installation directory
+   * @param {boolean} standaloneOnly - If true, only return standalone tasks
    * @returns {Array} List of task files
    */
-  async getTasks(bmadDir) {
+  async getTasks(bmadDir, standaloneOnly = false) {
     const tasks = [];
 
-    // Get core tasks
+    // Get core tasks (scan for both .md and .xml)
     const coreTasksPath = path.join(bmadDir, 'core', 'tasks');
     if (await fs.pathExists(coreTasksPath)) {
-      const coreTasks = await this.scanDirectory(coreTasksPath, '.md');
+      const coreTasks = await this.scanDirectoryWithStandalone(coreTasksPath, ['.md', '.xml']);
       tasks.push(
         ...coreTasks.map((t) => ({
           ...t,
@@ -179,7 +180,7 @@ class BaseIdeSetup {
       if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg' && entry.name !== 'agents') {
         const moduleTasksPath = path.join(bmadDir, entry.name, 'tasks');
         if (await fs.pathExists(moduleTasksPath)) {
-          const moduleTasks = await this.scanDirectory(moduleTasksPath, '.md');
+          const moduleTasks = await this.scanDirectoryWithStandalone(moduleTasksPath, ['.md', '.xml']);
           tasks.push(
             ...moduleTasks.map((t) => ({
               ...t,
@@ -190,13 +191,157 @@ class BaseIdeSetup {
       }
     }
 
+    // Filter by standalone if requested
+    if (standaloneOnly) {
+      return tasks.filter((t) => t.standalone === true);
+    }
+
     return tasks;
   }
 
   /**
-   * Scan a directory for files with specific extension
+   * Get list of tools from BMAD installation
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {boolean} standaloneOnly - If true, only return standalone tools
+   * @returns {Array} List of tool files
+   */
+  async getTools(bmadDir, standaloneOnly = false) {
+    const tools = [];
+
+    // Get core tools (scan for both .md and .xml)
+    const coreToolsPath = path.join(bmadDir, 'core', 'tools');
+    if (await fs.pathExists(coreToolsPath)) {
+      const coreTools = await this.scanDirectoryWithStandalone(coreToolsPath, ['.md', '.xml']);
+      tools.push(
+        ...coreTools.map((t) => ({
+          ...t,
+          module: 'core',
+        })),
+      );
+    }
+
+    // Get module tools
+    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg' && entry.name !== 'agents') {
+        const moduleToolsPath = path.join(bmadDir, entry.name, 'tools');
+        if (await fs.pathExists(moduleToolsPath)) {
+          const moduleTools = await this.scanDirectoryWithStandalone(moduleToolsPath, ['.md', '.xml']);
+          tools.push(
+            ...moduleTools.map((t) => ({
+              ...t,
+              module: entry.name,
+            })),
+          );
+        }
+      }
+    }
+
+    // Filter by standalone if requested
+    if (standaloneOnly) {
+      return tools.filter((t) => t.standalone === true);
+    }
+
+    return tools;
+  }
+
+  /**
+   * Get list of workflows from BMAD installation
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {boolean} standaloneOnly - If true, only return standalone workflows
+   * @returns {Array} List of workflow files
+   */
+  async getWorkflows(bmadDir, standaloneOnly = false) {
+    const workflows = [];
+
+    // Get core workflows
+    const coreWorkflowsPath = path.join(bmadDir, 'core', 'workflows');
+    if (await fs.pathExists(coreWorkflowsPath)) {
+      const coreWorkflows = await this.findWorkflowYamlFiles(coreWorkflowsPath);
+      workflows.push(
+        ...coreWorkflows.map((w) => ({
+          ...w,
+          module: 'core',
+        })),
+      );
+    }
+
+    // Get module workflows
+    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg' && entry.name !== 'agents') {
+        const moduleWorkflowsPath = path.join(bmadDir, entry.name, 'workflows');
+        if (await fs.pathExists(moduleWorkflowsPath)) {
+          const moduleWorkflows = await this.findWorkflowYamlFiles(moduleWorkflowsPath);
+          workflows.push(
+            ...moduleWorkflows.map((w) => ({
+              ...w,
+              module: entry.name,
+            })),
+          );
+        }
+      }
+    }
+
+    // Filter by standalone if requested
+    if (standaloneOnly) {
+      return workflows.filter((w) => w.standalone === true);
+    }
+
+    return workflows;
+  }
+
+  /**
+   * Recursively find workflow.yaml files
+   * @param {string} dir - Directory to search
+   * @returns {Array} List of workflow file info objects
+   */
+  async findWorkflowYamlFiles(dir) {
+    const workflows = [];
+
+    if (!(await fs.pathExists(dir))) {
+      return workflows;
+    }
+
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        // Recursively search subdirectories
+        const subWorkflows = await this.findWorkflowYamlFiles(fullPath);
+        workflows.push(...subWorkflows);
+      } else if (entry.isFile() && entry.name === 'workflow.yaml') {
+        // Read workflow.yaml to get name and standalone property
+        try {
+          const yaml = require('js-yaml');
+          const content = await fs.readFile(fullPath, 'utf8');
+          const workflowData = yaml.load(content);
+
+          if (workflowData && workflowData.name) {
+            workflows.push({
+              name: workflowData.name,
+              path: fullPath,
+              relativePath: path.relative(dir, fullPath),
+              filename: entry.name,
+              description: workflowData.description || '',
+              standalone: workflowData.standalone === true, // Check standalone property
+            });
+          }
+        } catch {
+          // Skip invalid workflow files
+        }
+      }
+    }
+
+    return workflows;
+  }
+
+  /**
+   * Scan a directory for files with specific extension(s)
    * @param {string} dir - Directory to scan
-   * @param {string} ext - File extension to match
+   * @param {string|Array<string>} ext - File extension(s) to match (e.g., '.md' or ['.md', '.xml'])
    * @returns {Array} List of file info objects
    */
   async scanDirectory(dir, ext) {
@@ -205,6 +350,9 @@ class BaseIdeSetup {
     if (!(await fs.pathExists(dir))) {
       return files;
     }
+
+    // Normalize ext to array
+    const extensions = Array.isArray(ext) ? ext : [ext];
 
     const entries = await fs.readdir(dir, { withFileTypes: true });
 
@@ -215,13 +363,88 @@ class BaseIdeSetup {
         // Recursively scan subdirectories
         const subFiles = await this.scanDirectory(fullPath, ext);
         files.push(...subFiles);
-      } else if (entry.isFile() && entry.name.endsWith(ext)) {
-        files.push({
-          name: path.basename(entry.name, ext),
-          path: fullPath,
-          relativePath: path.relative(dir, fullPath),
-          filename: entry.name,
-        });
+      } else if (entry.isFile()) {
+        // Check if file matches any of the extensions
+        const matchedExt = extensions.find((e) => entry.name.endsWith(e));
+        if (matchedExt) {
+          files.push({
+            name: path.basename(entry.name, matchedExt),
+            path: fullPath,
+            relativePath: path.relative(dir, fullPath),
+            filename: entry.name,
+          });
+        }
+      }
+    }
+
+    return files;
+  }
+
+  /**
+   * Scan a directory for files with specific extension(s) and check standalone attribute
+   * @param {string} dir - Directory to scan
+   * @param {string|Array<string>} ext - File extension(s) to match (e.g., '.md' or ['.md', '.xml'])
+   * @returns {Array} List of file info objects with standalone property
+   */
+  async scanDirectoryWithStandalone(dir, ext) {
+    const files = [];
+
+    if (!(await fs.pathExists(dir))) {
+      return files;
+    }
+
+    // Normalize ext to array
+    const extensions = Array.isArray(ext) ? ext : [ext];
+
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        // Recursively scan subdirectories
+        const subFiles = await this.scanDirectoryWithStandalone(fullPath, ext);
+        files.push(...subFiles);
+      } else if (entry.isFile()) {
+        // Check if file matches any of the extensions
+        const matchedExt = extensions.find((e) => entry.name.endsWith(e));
+        if (matchedExt) {
+          // Read file content to check for standalone attribute
+          let standalone = false;
+          try {
+            const content = await fs.readFile(fullPath, 'utf8');
+
+            // Check for standalone="true" in XML files
+            if (entry.name.endsWith('.xml')) {
+              // Look for standalone="true" in the opening tag (task or tool)
+              const standaloneMatch = content.match(/<(?:task|tool)[^>]+standalone="true"/);
+              standalone = !!standaloneMatch;
+            } else if (entry.name.endsWith('.md')) {
+              // Check for standalone: true in YAML frontmatter
+              const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
+              if (frontmatterMatch) {
+                const yaml = require('js-yaml');
+                try {
+                  const frontmatter = yaml.load(frontmatterMatch[1]);
+                  standalone = frontmatter.standalone === true;
+                } catch {
+                  // Ignore YAML parse errors
+                }
+              }
+            }
+          } catch {
+            // If we can't read the file, assume not standalone
+            standalone = false;
+          }
+
+          files.push({
+            name: path.basename(entry.name, matchedExt),
+            path: fullPath,
+            relativePath: path.relative(dir, fullPath),
+            filename: entry.name,
+            standalone: standalone,
+          });
+        }
       }
     }
 

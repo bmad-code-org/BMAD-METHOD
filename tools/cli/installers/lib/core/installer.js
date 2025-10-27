@@ -439,7 +439,13 @@ class Installer {
         // Install partial modules (only dependencies)
         for (const [module, files] of Object.entries(resolution.byModule)) {
           if (!config.modules.includes(module) && module !== 'core') {
-            const totalFiles = files.agents.length + files.tasks.length + files.templates.length + files.data.length + files.other.length;
+            const totalFiles =
+              files.agents.length +
+              files.tasks.length +
+              files.tools.length +
+              files.templates.length +
+              files.data.length +
+              files.other.length;
             if (totalFiles > 0) {
               spinner.start(`Installing ${module} dependencies...`);
               await this.installPartialModule(module, bmadDir, files);
@@ -480,67 +486,77 @@ class Installer {
       });
 
       spinner.succeed(
-        `Manifests generated: ${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.files} files`,
+        `Manifests generated: ${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools, ${manifestStats.files} files`,
       );
 
       // Configure IDEs and copy documentation
       if (!config.skipIde && config.ides && config.ides.length > 0) {
-        // Check if any IDE might need prompting (no pre-collected config)
-        const needsPrompting = config.ides.some((ide) => !ideConfigurations[ide]);
+        // Filter out any undefined/null values from the IDE list
+        const validIdes = config.ides.filter((ide) => ide && typeof ide === 'string');
 
-        if (!needsPrompting) {
-          spinner.start('Configuring IDEs...');
-        }
+        if (validIdes.length === 0) {
+          console.log(chalk.yellow('⚠️  No valid IDEs selected. Skipping IDE configuration.'));
+        } else {
+          // Check if any IDE might need prompting (no pre-collected config)
+          const needsPrompting = validIdes.some((ide) => !ideConfigurations[ide]);
 
-        // Temporarily suppress console output if not verbose
-        const originalLog = console.log;
-        if (!config.verbose) {
-          console.log = () => {};
-        }
-
-        for (const ide of config.ides) {
-          // Only show spinner if we have pre-collected config (no prompts expected)
-          if (ideConfigurations[ide] && !needsPrompting) {
-            spinner.text = `Configuring ${ide}...`;
-          } else if (!ideConfigurations[ide]) {
-            // Stop spinner before prompting
-            if (spinner.isSpinning) {
-              spinner.stop();
-            }
-            console.log(chalk.cyan(`\nConfiguring ${ide}...`));
-          }
-
-          // Pass pre-collected configuration to avoid re-prompting
-          await this.ideManager.setup(ide, projectDir, bmadDir, {
-            selectedModules: config.modules || [],
-            preCollectedConfig: ideConfigurations[ide] || null,
-            verbose: config.verbose,
-          });
-
-          // Save IDE configuration for future updates
-          if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
-            await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide]);
-          }
-
-          // Restart spinner if we stopped it
-          if (!ideConfigurations[ide] && !spinner.isSpinning) {
+          if (!needsPrompting) {
             spinner.start('Configuring IDEs...');
           }
+
+          // Temporarily suppress console output if not verbose
+          const originalLog = console.log;
+          if (!config.verbose) {
+            console.log = () => {};
+          }
+
+          for (const ide of validIdes) {
+            // Only show spinner if we have pre-collected config (no prompts expected)
+            if (ideConfigurations[ide] && !needsPrompting) {
+              spinner.text = `Configuring ${ide}...`;
+            } else if (!ideConfigurations[ide]) {
+              // Stop spinner before prompting
+              if (spinner.isSpinning) {
+                spinner.stop();
+              }
+              console.log(chalk.cyan(`\nConfiguring ${ide}...`));
+            }
+
+            // Pass pre-collected configuration to avoid re-prompting
+            await this.ideManager.setup(ide, projectDir, bmadDir, {
+              selectedModules: config.modules || [],
+              preCollectedConfig: ideConfigurations[ide] || null,
+              verbose: config.verbose,
+            });
+
+            // Save IDE configuration for future updates
+            if (ideConfigurations[ide] && !ideConfigurations[ide]._alreadyConfigured) {
+              await this.ideConfigManager.saveIdeConfig(bmadDir, ide, ideConfigurations[ide]);
+            }
+
+            // Restart spinner if we stopped it
+            if (!ideConfigurations[ide] && !spinner.isSpinning) {
+              spinner.start('Configuring IDEs...');
+            }
+          }
+
+          // Restore console.log
+          console.log = originalLog;
+
+          if (spinner.isSpinning) {
+            spinner.succeed(`Configured ${validIdes.length} IDE${validIdes.length > 1 ? 's' : ''}`);
+          } else {
+            console.log(chalk.green(`✓ Configured ${validIdes.length} IDE${validIdes.length > 1 ? 's' : ''}`));
+          }
         }
 
-        // Restore console.log
-        console.log = originalLog;
-
-        if (spinner.isSpinning) {
-          spinner.succeed(`Configured ${config.ides.length} IDE${config.ides.length > 1 ? 's' : ''}`);
-        } else {
-          console.log(chalk.green(`✓ Configured ${config.ides.length} IDE${config.ides.length > 1 ? 's' : ''}`));
+        // Copy IDE-specific documentation (only for valid IDEs)
+        const validIdesForDocs = (config.ides || []).filter((ide) => ide && typeof ide === 'string');
+        if (validIdesForDocs.length > 0) {
+          spinner.start('Copying IDE documentation...');
+          await this.copyIdeDocumentation(validIdesForDocs, bmadDir);
+          spinner.succeed('IDE documentation copied');
         }
-
-        // Copy IDE-specific documentation
-        spinner.start('Copying IDE documentation...');
-        await this.copyIdeDocumentation(config.ides, bmadDir);
-        spinner.succeed('IDE documentation copied');
       }
 
       // Run module-specific installers after IDE setup
@@ -951,6 +967,22 @@ class Installer {
         const fileName = path.basename(taskPath);
         const sourcePath = path.join(sourceBase, 'tasks', fileName);
         const targetPath = path.join(tasksDir, fileName);
+
+        if (await fs.pathExists(sourcePath)) {
+          await fs.copy(sourcePath, targetPath);
+          this.installedFiles.push(targetPath);
+        }
+      }
+    }
+
+    if (files.tools && files.tools.length > 0) {
+      const toolsDir = path.join(targetBase, 'tools');
+      await fs.ensureDir(toolsDir);
+
+      for (const toolPath of files.tools) {
+        const fileName = path.basename(toolPath);
+        const sourcePath = path.join(sourceBase, 'tools', fileName);
+        const targetPath = path.join(toolsDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
           await fs.copy(sourcePath, targetPath);

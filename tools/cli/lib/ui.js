@@ -109,6 +109,11 @@ class UI {
     if (configuredIdes.length > 0) {
       ideChoices.push(new inquirer.Separator('── Previously Configured ──'));
       for (const ideValue of configuredIdes) {
+        // Skip empty or invalid IDE values
+        if (!ideValue || typeof ideValue !== 'string') {
+          continue;
+        }
+
         // Find the IDE in either preferred or other lists
         const preferredIde = preferredIdes.find((ide) => ide.value === ideValue);
         const otherIde = otherIdes.find((ide) => ide.value === ideValue);
@@ -121,6 +126,9 @@ class UI {
             checked: true, // Previously configured IDEs are checked by default
           });
           processedIdes.add(ide.value);
+        } else {
+          // Warn about unrecognized IDE (but don't fail)
+          console.log(chalk.yellow(`⚠️  Previously configured IDE '${ideValue}' is no longer available`));
         }
       }
     }

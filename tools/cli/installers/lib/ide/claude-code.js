@@ -3,6 +3,7 @@ const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { WorkflowCommandGenerator } = require('./workflow-command-generator');
+const { TaskToolCommandGenerator } = require('./task-tool-command-generator');
 const {
   loadModuleInjectionConfig,
   shouldApplyInjection,
@@ -146,10 +147,21 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     const workflowGen = new WorkflowCommandGenerator();
     const workflowResult = await workflowGen.generateWorkflowCommands(projectDir, bmadDir);
 
+    // Generate task and tool commands from manifests (if they exist)
+    const taskToolGen = new TaskToolCommandGenerator();
+    const taskToolResult = await taskToolGen.generateTaskToolCommands(projectDir, bmadDir);
+
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents installed`));
     if (workflowResult.generated > 0) {
       console.log(chalk.dim(`  - ${workflowResult.generated} workflow commands generated`));
+    }
+    if (taskToolResult.generated > 0) {
+      console.log(
+        chalk.dim(
+          `  - ${taskToolResult.generated} task/tool commands generated (${taskToolResult.tasks} tasks, ${taskToolResult.tools} tools)`,
+        ),
+      );
     }
     console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, bmadCommandsDir)}`));
 

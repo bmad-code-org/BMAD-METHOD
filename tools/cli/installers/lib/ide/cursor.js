@@ -28,18 +28,22 @@ class CursorSetup extends BaseIdeSetup {
 
     await this.ensureDir(bmadRulesDir);
 
-    // Get agents and tasks
+    // Get agents, tasks, tools, and workflows (standalone only)
     const agents = await this.getAgents(bmadDir);
-    const tasks = await this.getTasks(bmadDir);
+    const tasks = await this.getTasks(bmadDir, true);
+    const tools = await this.getTools(bmadDir, true);
+    const workflows = await this.getWorkflows(bmadDir, true);
 
     // Create directories for each module
     const modules = new Set();
-    for (const item of [...agents, ...tasks]) modules.add(item.module);
+    for (const item of [...agents, ...tasks, ...tools, ...workflows]) modules.add(item.module);
 
     for (const module of modules) {
       await this.ensureDir(path.join(bmadRulesDir, module));
       await this.ensureDir(path.join(bmadRulesDir, module, 'agents'));
       await this.ensureDir(path.join(bmadRulesDir, module, 'tasks'));
+      await this.ensureDir(path.join(bmadRulesDir, module, 'tools'));
+      await this.ensureDir(path.join(bmadRulesDir, module, 'workflows'));
     }
 
     // Process and copy agents
@@ -70,36 +74,68 @@ class CursorSetup extends BaseIdeSetup {
       taskCount++;
     }
 
+    // Process and copy tools
+    let toolCount = 0;
+    for (const tool of tools) {
+      const content = await this.readAndProcess(tool.path, {
+        module: tool.module,
+        name: tool.name,
+      });
+
+      const targetPath = path.join(bmadRulesDir, tool.module, 'tools', `${tool.name}.mdc`);
+
+      await this.writeFile(targetPath, content);
+      toolCount++;
+    }
+
+    // Process and copy workflows
+    let workflowCount = 0;
+    for (const workflow of workflows) {
+      const content = await this.readAndProcess(workflow.path, {
+        module: workflow.module,
+        name: workflow.name,
+      });
+
+      const targetPath = path.join(bmadRulesDir, workflow.module, 'workflows', `${workflow.name}.mdc`);
+
+      await this.writeFile(targetPath, content);
+      workflowCount++;
+    }
+
     // Create BMAD index file (but NOT .cursorrules - user manages that)
-    await this.createBMADIndex(bmadRulesDir, agents, tasks, modules);
+    await this.createBMADIndex(bmadRulesDir, agents, tasks, tools, workflows, modules);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents installed`));
     console.log(chalk.dim(`  - ${taskCount} tasks installed`));
+    console.log(chalk.dim(`  - ${toolCount} tools installed`));
+    console.log(chalk.dim(`  - ${workflowCount} workflows installed`));
     console.log(chalk.dim(`  - Rules directory: ${path.relative(projectDir, bmadRulesDir)}`));
 
     return {
       success: true,
       agents: agentCount,
       tasks: taskCount,
+      tools: toolCount,
+      workflows: workflowCount,
     };
   }
 
   /**
    * Create BMAD index file for easy navigation
    */
-  async createBMADIndex(bmadRulesDir, agents, tasks, modules) {
+  async createBMADIndex(bmadRulesDir, agents, tasks, tools, workflows, modules) {
     const indexPath = path.join(bmadRulesDir, 'index.mdc');
 
     let content = `---
 description: BMAD Method - Master Index
-globs: 
+globs:
 alwaysApply: true
 ---
 
 # BMAD Method - Cursor Rules Index
 
-This is the master index for all BMAD agents and tasks available in your project.
+This is the master index for all BMAD agents, tasks, tools, and workflows available in your project.
 
 ## Installation Complete!
 
@@ -111,6 +147,8 @@ BMAD rules have been installed to: \`.cursor/rules/bmad/\`
 
 - Reference specific agents: @bmad/{module}/agents/{agent-name}
 - Reference specific tasks: @bmad/{module}/tasks/{task-name}
+- Reference specific tools: @bmad/{module}/tools/{tool-name}
+- Reference specific workflows: @bmad/{module}/workflows/{workflow-name}
 - Reference entire modules: @bmad/{module}
 - Reference this index: @bmad/index
 
@@ -140,6 +178,26 @@ BMAD rules have been installed to: \`.cursor/rules/bmad/\`
         }
         content += '\n';
       }
+
+      // List tools for this module
+      const moduleTools = tools.filter((t) => t.module === module);
+      if (moduleTools.length > 0) {
+        content += `**Tools:**\n`;
+        for (const tool of moduleTools) {
+          content += `- @bmad/${module}/tools/${tool.name} - ${tool.name}\n`;
+        }
+        content += '\n';
+      }
+
+      // List workflows for this module
+      const moduleWorkflows = workflows.filter((w) => w.module === module);
+      if (moduleWorkflows.length > 0) {
+        content += `**Workflows:**\n`;
+        for (const workflow of moduleWorkflows) {
+          content += `- @bmad/${module}/workflows/${workflow.name} - ${workflow.name}\n`;
+        }
+        content += '\n';
+      }
     }
 
     content += `
@@ -148,13 +206,15 @@ BMAD rules have been installed to: \`.cursor/rules/bmad/\`
 - All BMAD rules are Manual type - reference them explicitly when needed
 - Agents provide persona-based assistance with specific expertise
 - Tasks are reusable workflows for common operations
+- Tools provide specialized functionality
+- Workflows orchestrate multi-step processes
 - Each agent includes an activation block for proper initialization
 
 ## Configuration
 
 BMAD rules are configured as Manual rules (alwaysApply: false) to give you control
 over when they're included in your context. Reference them explicitly when you need
-specific agent expertise or task workflows.
+specific agent expertise, task workflows, tools, or guided workflows.
 `;
 
     await this.writeFile(indexPath, content);
@@ -182,6 +242,8 @@ specific agent expertise or task workflows.
     // Determine the type and description based on content
     const isAgent = content.includes('<agent');
     const isTask = content.includes('<task');
+    const isTool = content.includes('<tool');
+    const isWorkflow = content.includes('workflow:') || content.includes('name:');
 
     let description = '';
     let globs = '';
@@ -191,16 +253,22 @@ specific agent expertise or task workflows.
       const titleMatch = content.match(/title="([^"]+)"/);
       const title = titleMatch ? titleMatch[1] : metadata.name;
       description = `BMAD ${metadata.module.toUpperCase()} Agent: ${title}`;
-
-      // Manual rules for agents don't need globs
       globs = '';
     } else if (isTask) {
       // Extract task name if available
-      const nameMatch = content.match(/<name>([^<]+)<\/name>/);
+      const nameMatch = content.match(/name="([^"]+)"/);
       const taskName = nameMatch ? nameMatch[1] : metadata.name;
       description = `BMAD ${metadata.module.toUpperCase()} Task: ${taskName}`;
-
-      // Tasks might be auto-attached to certain file types
+      globs = '';
+    } else if (isTool) {
+      // Extract tool name if available
+      const nameMatch = content.match(/name="([^"]+)"/);
+      const toolName = nameMatch ? nameMatch[1] : metadata.name;
+      description = `BMAD ${metadata.module.toUpperCase()} Tool: ${toolName}`;
+      globs = '';
+    } else if (isWorkflow) {
+      // Workflow
+      description = `BMAD ${metadata.module.toUpperCase()} Workflow: ${metadata.name}`;
       globs = '';
     } else {
       description = `BMAD ${metadata.module.toUpperCase()}: ${metadata.name}`;

@@ -1,4 +1,5 @@
-<task id="bmad/core/tasks/index-docs" name="Index Docs" webskip="true">
+<task id="bmad/core/tasks/index-docs" name="Index Docs"
+  description="Generates or updates an index.md of all documents in the specified directory" webskip="true" standalone="true">
   <llm critical="true">
     <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
     <i>DO NOT skip steps or change the sequence</i>
@@ -17,7 +18,8 @@
     </step>
 
     <step n="3" title="Generate Descriptions">
-      <i>Read each file to understand its actual purpose and create brief (3-10 word) descriptions based on the content, not just the filename</i>
+      <i>Read each file to understand its actual purpose and create brief (3-10 word) descriptions based on the content, not just the
+        filename</i>
     </step>
 
     <step n="4" title="Create/Update Index">

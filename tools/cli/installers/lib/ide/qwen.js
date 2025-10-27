@@ -37,18 +37,22 @@ class QwenSetup extends BaseIdeSetup {
     // Clean up old configuration if exists
     await this.cleanupOldConfig(qwenDir);
 
-    // Get agents and tasks
+    // Get agents, tasks, tools, and workflows (standalone only for tools/workflows)
     const agents = await getAgentsFromBmad(bmadDir, options.selectedModules || []);
     const tasks = await getTasksFromBmad(bmadDir, options.selectedModules || []);
+    const tools = await this.getTools(bmadDir, true);
+    const workflows = await this.getWorkflows(bmadDir, true);
 
     // Create directories for each module (including standalone)
     const modules = new Set();
-    for (const item of [...agents, ...tasks]) modules.add(item.module);
+    for (const item of [...agents, ...tasks, ...tools, ...workflows]) modules.add(item.module);
 
     for (const module of modules) {
       await this.ensureDir(path.join(bmadCommandsDir, module));
       await this.ensureDir(path.join(bmadCommandsDir, module, 'agents'));
       await this.ensureDir(path.join(bmadCommandsDir, module, 'tasks'));
+      await this.ensureDir(path.join(bmadCommandsDir, module, 'tools'));
+      await this.ensureDir(path.join(bmadCommandsDir, module, 'workflows'));
     }
 
     // Create TOML files for each agent
@@ -75,7 +79,7 @@ class QwenSetup extends BaseIdeSetup {
         name: task.name,
       });
 
-      const targetPath = path.join(bmadCommandsDir, task.module, 'agents', `${agent.name}.toml`);
+      const targetPath = path.join(bmadCommandsDir, task.module, 'tasks', `${task.name}.toml`);
 
       await this.writeFile(targetPath, content);
 
@@ -83,15 +87,51 @@ class QwenSetup extends BaseIdeSetup {
       console.log(chalk.green(`  ✓ Added task: /bmad:${task.module}:tasks:${task.name}`));
     }
 
+    // Create TOML files for each tool
+    let toolCount = 0;
+    for (const tool of tools) {
+      const content = await this.readAndProcess(tool.path, {
+        module: tool.module,
+        name: tool.name,
+      });
+
+      const targetPath = path.join(bmadCommandsDir, tool.module, 'tools', `${tool.name}.toml`);
+
+      await this.writeFile(targetPath, content);
+
+      toolCount++;
+      console.log(chalk.green(`  ✓ Added tool: /bmad:${tool.module}:tools:${tool.name}`));
+    }
+
+    // Create TOML files for each workflow
+    let workflowCount = 0;
+    for (const workflow of workflows) {
+      const content = await this.readAndProcess(workflow.path, {
+        module: workflow.module,
+        name: workflow.name,
+      });
+
+      const targetPath = path.join(bmadCommandsDir, workflow.module, 'workflows', `${workflow.name}.toml`);
+
+      await this.writeFile(targetPath, content);
+
+      workflowCount++;
+      console.log(chalk.green(`  ✓ Added workflow: /bmad:${workflow.module}:workflows:${workflow.name}`));
+    }
+
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents configured`));
     console.log(chalk.dim(`  - ${taskCount} tasks configured`));
+    console.log(chalk.dim(`  - ${toolCount} tools configured`));
+    console.log(chalk.dim(`  - ${workflowCount} workflows configured`));
     console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, bmadCommandsDir)}`));
 
     return {
       success: true,
       agents: agentCount,
       tasks: taskCount,
+      tools: toolCount,
+      workflows: workflowCount,
     };
   }
 
@@ -177,6 +217,8 @@ class QwenSetup extends BaseIdeSetup {
     // Determine the type and description based on content
     const isAgent = content.includes('<agent');
     const isTask = content.includes('<task');
+    const isTool = content.includes('<tool');
+    const isWorkflow = content.includes('workflow:') || content.includes('name:');
 
     let description = '';
 
@@ -187,9 +229,17 @@ class QwenSetup extends BaseIdeSetup {
       description = `BMAD ${metadata.module.toUpperCase()} Agent: ${title}`;
     } else if (isTask) {
       // Extract task name if available
-      const nameMatch = content.match(/<name>([^<]+)<\/name>/);
+      const nameMatch = content.match(/name="([^"]+)"/);
       const taskName = nameMatch ? nameMatch[1] : metadata.name;
       description = `BMAD ${metadata.module.toUpperCase()} Task: ${taskName}`;
+    } else if (isTool) {
+      // Extract tool name if available
+      const nameMatch = content.match(/name="([^"]+)"/);
+      const toolName = nameMatch ? nameMatch[1] : metadata.name;
+      description = `BMAD ${metadata.module.toUpperCase()} Tool: ${toolName}`;
+    } else if (isWorkflow) {
+      // Workflow
+      description = `BMAD ${metadata.module.toUpperCase()} Workflow: ${metadata.name}`;
     } else {
       description = `BMAD ${metadata.module.toUpperCase()}: ${metadata.name}`;
     }

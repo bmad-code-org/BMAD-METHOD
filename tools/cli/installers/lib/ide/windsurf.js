@@ -27,18 +27,22 @@ class WindsurfSetup extends BaseIdeSetup {
 
     await this.ensureDir(workflowsDir);
 
-    // Get agents and tasks
+    // Get agents, tasks, tools, and workflows (standalone only)
     const agents = await this.getAgents(bmadDir);
-    const tasks = await this.getTasks(bmadDir);
+    const tasks = await this.getTasks(bmadDir, true);
+    const tools = await this.getTools(bmadDir, true);
+    const workflows = await this.getWorkflows(bmadDir, true);
 
     // Create directories for each module
     const modules = new Set();
-    for (const item of [...agents, ...tasks]) modules.add(item.module);
+    for (const item of [...agents, ...tasks, ...tools, ...workflows]) modules.add(item.module);
 
     for (const module of modules) {
       await this.ensureDir(path.join(workflowsDir, module));
       await this.ensureDir(path.join(workflowsDir, module, 'agents'));
       await this.ensureDir(path.join(workflowsDir, module, 'tasks'));
+      await this.ensureDir(path.join(workflowsDir, module, 'tools'));
+      await this.ensureDir(path.join(workflowsDir, module, 'workflows'));
     }
 
     // Process agents as workflows with organized structure
@@ -65,9 +69,35 @@ class WindsurfSetup extends BaseIdeSetup {
       taskCount++;
     }
 
+    // Process tools as workflows with organized structure
+    let toolCount = 0;
+    for (const tool of tools) {
+      const content = await this.readFile(tool.path);
+      const processedContent = this.createToolWorkflowContent(tool, content);
+
+      // Organized path: module/tools/tool-name.md
+      const targetPath = path.join(workflowsDir, tool.module, 'tools', `${tool.name}.md`);
+      await this.writeFile(targetPath, processedContent);
+      toolCount++;
+    }
+
+    // Process workflows with organized structure
+    let workflowCount = 0;
+    for (const workflow of workflows) {
+      const content = await this.readFile(workflow.path);
+      const processedContent = this.createWorkflowWorkflowContent(workflow, content);
+
+      // Organized path: module/workflows/workflow-name.md
+      const targetPath = path.join(workflowsDir, workflow.module, 'workflows', `${workflow.name}.md`);
+      await this.writeFile(targetPath, processedContent);
+      workflowCount++;
+    }
+
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents installed`));
     console.log(chalk.dim(`  - ${taskCount} tasks installed`));
+    console.log(chalk.dim(`  - ${toolCount} tools installed`));
+    console.log(chalk.dim(`  - ${workflowCount} workflows installed`));
     console.log(chalk.dim(`  - Organized in modules: ${[...modules].join(', ')}`));
     console.log(chalk.dim(`  - Workflows directory: ${path.relative(projectDir, workflowsDir)}`));
 
@@ -75,7 +105,8 @@ class WindsurfSetup extends BaseIdeSetup {
     if (options.showHints !== false) {
       console.log(chalk.dim('\n  Windsurf workflow settings:'));
       console.log(chalk.dim('  - auto_execution_mode: 3 (recommended for agents)'));
-      console.log(chalk.dim('  - auto_execution_mode: 2 (recommended for tasks)'));
+      console.log(chalk.dim('  - auto_execution_mode: 2 (recommended for tasks/tools)'));
+      console.log(chalk.dim('  - auto_execution_mode: 1 (recommended for workflows)'));
       console.log(chalk.dim('  - Workflows can be triggered via the Windsurf menu'));
     }
 
@@ -83,6 +114,8 @@ class WindsurfSetup extends BaseIdeSetup {
       success: true,
       agents: agentCount,
       tasks: taskCount,
+      tools: toolCount,
+      workflows: workflowCount,
     };
   }
 
@@ -109,6 +142,36 @@ ${content}`;
     let workflowContent = `---
 description: task-${task.name}
 auto_execution_mode: 2
+---
+
+${content}`;
+
+    return workflowContent;
+  }
+
+  /**
+   * Create workflow content for a tool
+   */
+  createToolWorkflowContent(tool, content) {
+    // Create simple Windsurf frontmatter matching original format
+    let workflowContent = `---
+description: tool-${tool.name}
+auto_execution_mode: 2
+---
+
+${content}`;
+
+    return workflowContent;
+  }
+
+  /**
+   * Create workflow content for a workflow
+   */
+  createWorkflowWorkflowContent(workflow, content) {
+    // Create simple Windsurf frontmatter matching original format
+    let workflowContent = `---
+description: ${workflow.name}
+auto_execution_mode: 1
 ---
 
 ${content}`;

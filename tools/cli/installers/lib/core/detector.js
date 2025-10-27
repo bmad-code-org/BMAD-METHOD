@@ -117,7 +117,8 @@ class Detector {
 
     // Check for IDE configurations from manifest
     if (result.manifest && result.manifest.ides) {
-      result.ides = result.manifest.ides;
+      // Filter out any undefined/null values
+      result.ides = result.manifest.ides.filter((ide) => ide && typeof ide === 'string');
     }
 
     // Mark as installed if we found core or modules

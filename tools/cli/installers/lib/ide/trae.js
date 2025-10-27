@@ -27,39 +27,74 @@ class TraeSetup extends BaseIdeSetup {
 
     await this.ensureDir(rulesDir);
 
-    // Get agents and tasks
+    // Get agents, tasks, tools, and workflows (standalone only)
     const agents = await this.getAgents(bmadDir);
-    const tasks = await this.getTasks(bmadDir);
+    const tasks = await this.getTasks(bmadDir, true);
+    const tools = await this.getTools(bmadDir, true);
+    const workflows = await this.getWorkflows(bmadDir, true);
 
     // Process agents as rules
-    let ruleCount = 0;
+    let agentCount = 0;
     for (const agent of agents) {
       const content = await this.readFile(agent.path);
       const processedContent = this.createAgentRule(agent, content, bmadDir, projectDir);
 
       const targetPath = path.join(rulesDir, `${agent.module}-${agent.name}.md`);
       await this.writeFile(targetPath, processedContent);
-      ruleCount++;
+      agentCount++;
     }
 
     // Process tasks as rules
+    let taskCount = 0;
     for (const task of tasks) {
       const content = await this.readFile(task.path);
       const processedContent = this.createTaskRule(task, content);
 
       const targetPath = path.join(rulesDir, `task-${task.module}-${task.name}.md`);
       await this.writeFile(targetPath, processedContent);
-      ruleCount++;
+      taskCount++;
     }
 
+    // Process tools as rules
+    let toolCount = 0;
+    for (const tool of tools) {
+      const content = await this.readFile(tool.path);
+      const processedContent = this.createToolRule(tool, content);
+
+      const targetPath = path.join(rulesDir, `tool-${tool.module}-${tool.name}.md`);
+      await this.writeFile(targetPath, processedContent);
+      toolCount++;
+    }
+
+    // Process workflows as rules
+    let workflowCount = 0;
+    for (const workflow of workflows) {
+      const content = await this.readFile(workflow.path);
+      const processedContent = this.createWorkflowRule(workflow, content);
+
+      const targetPath = path.join(rulesDir, `workflow-${workflow.module}-${workflow.name}.md`);
+      await this.writeFile(targetPath, processedContent);
+      workflowCount++;
+    }
+
+    const totalRules = agentCount + taskCount + toolCount + workflowCount;
+
     console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${ruleCount} rules created`));
+    console.log(chalk.dim(`  - ${agentCount} agent rules created`));
+    console.log(chalk.dim(`  - ${taskCount} task rules created`));
+    console.log(chalk.dim(`  - ${toolCount} tool rules created`));
+    console.log(chalk.dim(`  - ${workflowCount} workflow rules created`));
+    console.log(chalk.dim(`  - Total: ${totalRules} rules`));
     console.log(chalk.dim(`  - Rules directory: ${path.relative(projectDir, rulesDir)}`));
     console.log(chalk.dim(`  - Agents can be activated with @{agent-name}`));
 
     return {
       success: true,
-      rules: ruleCount,
+      rules: totalRules,
+      agents: agentCount,
+      tasks: taskCount,
+      tools: toolCount,
+      workflows: workflowCount,
     };
   }
 
@@ -114,7 +149,7 @@ Part of the BMAD ${agent.module.toUpperCase()} module.
    */
   createTaskRule(task, content) {
     // Extract task name from content
-    const nameMatch = content.match(/<name>([^<]+)<\/name>/);
+    const nameMatch = content.match(/name="([^"]+)"/);
     const taskName = nameMatch ? nameMatch[1] : this.formatTitle(task.name);
 
     let ruleContent = `# ${taskName} Task Rule
@@ -134,6 +169,64 @@ Reference this task with \`@task-${task.name}\` to execute the defined workflow.
 ## Module
 
 Part of the BMAD ${task.module.toUpperCase()} module.
+`;
+
+    return ruleContent;
+  }
+
+  /**
+   * Create rule content for a tool
+   */
+  createToolRule(tool, content) {
+    // Extract tool name from content
+    const nameMatch = content.match(/name="([^"]+)"/);
+    const toolName = nameMatch ? nameMatch[1] : this.formatTitle(tool.name);
+
+    let ruleContent = `# ${toolName} Tool Rule
+
+This rule defines the ${toolName} tool.
+
+## Tool Definition
+
+When this tool is triggered, execute the following:
+
+${content}
+
+## Usage
+
+Reference this tool with \`@tool-${tool.name}\` to execute it.
+
+## Module
+
+Part of the BMAD ${tool.module.toUpperCase()} module.
+`;
+
+    return ruleContent;
+  }
+
+  /**
+   * Create rule content for a workflow
+   */
+  createWorkflowRule(workflow, content) {
+    let ruleContent = `# ${workflow.name} Workflow Rule
+
+This rule defines the ${workflow.name} workflow.
+
+## Workflow Description
+
+${workflow.description || 'No description provided'}
+
+## Workflow Definition
+
+${content}
+
+## Usage
+
+Reference this workflow with \`@workflow-${workflow.name}\` to execute the guided workflow.
+
+## Module
+
+Part of the BMAD ${workflow.module.toUpperCase()} module.
 `;
 
     return ruleContent;

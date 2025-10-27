@@ -599,6 +599,7 @@ class DependencyResolver {
         organized[module] = {
           agents: [],
           tasks: [],
+          tools: [],
           templates: [],
           data: [],
           other: [],
@@ -626,6 +627,8 @@ class DependencyResolver {
         organized[module].agents.push(file);
       } else if (relative.startsWith('tasks/') || file.includes('/tasks/')) {
         organized[module].tasks.push(file);
+      } else if (relative.startsWith('tools/') || file.includes('/tools/')) {
+        organized[module].tools.push(file);
       } else if (relative.includes('template') || file.includes('/templates/')) {
         organized[module].templates.push(file);
       } else if (relative.includes('data/')) {
@@ -646,7 +649,8 @@ class DependencyResolver {
 
     for (const [module, files] of Object.entries(organized)) {
       const isSelected = selectedModules.includes(module) || module === 'core';
-      const totalFiles = files.agents.length + files.tasks.length + files.templates.length + files.data.length + files.other.length;
+      const totalFiles =
+        files.agents.length + files.tasks.length + files.tools.length + files.templates.length + files.data.length + files.other.length;
 
       if (totalFiles > 0) {
         console.log(chalk.cyan(`\n  ${module.toUpperCase()} module:`));

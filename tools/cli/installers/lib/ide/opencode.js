@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const yaml = require('js-yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const { WorkflowCommandGenerator } = require('./workflow-command-generator');
+const { TaskToolCommandGenerator } = require('./task-tool-command-generator');
 
 const { getAgentsFromBmad } = require('./shared/bmad-artifacts');
 
@@ -13,7 +14,7 @@ const { getAgentsFromBmad } = require('./shared/bmad-artifacts');
  */
 class OpenCodeSetup extends BaseIdeSetup {
   constructor() {
-    super('opencode', 'OpenCode', false);
+    super('opencode', 'OpenCode', true); // Mark as preferred/recommended
     this.configDir = '.opencode';
     this.commandsDir = 'command';
     this.agentsDir = 'agent';
@@ -64,10 +65,21 @@ class OpenCodeSetup extends BaseIdeSetup {
       workflowCommandCount++;
     }
 
+    // Install task and tool commands
+    const taskToolGen = new TaskToolCommandGenerator();
+    const taskToolResult = await taskToolGen.generateTaskToolCommands(projectDir, bmadDir, commandsBaseDir);
+
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents installed to .opencode/agent/bmad/`));
     if (workflowCommandCount > 0) {
       console.log(chalk.dim(`  - ${workflowCommandCount} workflow commands generated to .opencode/command/bmad/`));
+    }
+    if (taskToolResult.generated > 0) {
+      console.log(
+        chalk.dim(
+          `  - ${taskToolResult.generated} task/tool commands generated (${taskToolResult.tasks} tasks, ${taskToolResult.tools} tools)`,
+        ),
+      );
     }
 
     return {

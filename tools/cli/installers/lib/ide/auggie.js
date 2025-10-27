@@ -83,9 +83,11 @@ class AuggieSetup extends BaseIdeSetup {
       return { success: false, reason: 'no-locations' };
     }
 
-    // Get agents and tasks
+    // Get agents, tasks, tools, and workflows (standalone only)
     const agents = await this.getAgents(bmadDir);
-    const tasks = await this.getTasks(bmadDir);
+    const tasks = await this.getTasks(bmadDir, true);
+    const tools = await this.getTools(bmadDir, true);
+    const workflows = await this.getWorkflows(bmadDir, true);
 
     let totalInstalled = 0;
 
@@ -93,11 +95,16 @@ class AuggieSetup extends BaseIdeSetup {
     for (const location of locations) {
       console.log(chalk.dim(`\n  Installing to: ${location}`));
 
-      const agentsDir = path.join(location, 'agents');
-      const tasksDir = path.join(location, 'tasks');
+      const bmadCommandsDir = path.join(location, 'bmad');
+      const agentsDir = path.join(bmadCommandsDir, 'agents');
+      const tasksDir = path.join(bmadCommandsDir, 'tasks');
+      const toolsDir = path.join(bmadCommandsDir, 'tools');
+      const workflowsDir = path.join(bmadCommandsDir, 'workflows');
 
       await this.ensureDir(agentsDir);
       await this.ensureDir(tasksDir);
+      await this.ensureDir(toolsDir);
+      await this.ensureDir(workflowsDir);
 
       // Install agents
       for (const agent of agents) {
@@ -119,7 +126,29 @@ class AuggieSetup extends BaseIdeSetup {
         totalInstalled++;
       }
 
-      console.log(chalk.green(`  ✓ Installed ${agents.length} agents and ${tasks.length} tasks`));
+      // Install tools
+      for (const tool of tools) {
+        const content = await this.readFile(tool.path);
+        const commandContent = this.createToolCommand(tool, content);
+
+        const targetPath = path.join(toolsDir, `${tool.module}-${tool.name}.md`);
+        await this.writeFile(targetPath, commandContent);
+        totalInstalled++;
+      }
+
+      // Install workflows
+      for (const workflow of workflows) {
+        const content = await this.readFile(workflow.path);
+        const commandContent = this.createWorkflowCommand(workflow, content);
+
+        const targetPath = path.join(workflowsDir, `${workflow.module}-${workflow.name}.md`);
+        await this.writeFile(targetPath, commandContent);
+        totalInstalled++;
+      }
+
+      console.log(
+        chalk.green(`  ✓ Installed ${agents.length} agents, ${tasks.length} tasks, ${tools.length} tools, ${workflows.length} workflows`),
+      );
     }
 
     console.log(chalk.green(`\n✓ ${this.name} configured:`));
@@ -217,7 +246,7 @@ BMAD ${agent.module.toUpperCase()} module
    * Create task command content
    */
   createTaskCommand(task, content) {
-    const nameMatch = content.match(/<name>([^<]+)<\/name>/);
+    const nameMatch = content.match(/name="([^"]+)"/);
     const taskName = nameMatch ? nameMatch[1] : this.formatTitle(task.name);
 
     return `# ${taskName} Task
@@ -233,6 +262,44 @@ BMAD ${task.module.toUpperCase()} module
   }
 
   /**
+   * Create tool command content
+   */
+  createToolCommand(tool, content) {
+    const nameMatch = content.match(/name="([^"]+)"/);
+    const toolName = nameMatch ? nameMatch[1] : this.formatTitle(tool.name);
+
+    return `# ${toolName} Tool
+
+## Activation
+Type \`@tool-${tool.name}\` to execute this tool.
+
+${content}
+
+## Module
+BMAD ${tool.module.toUpperCase()} module
+`;
+  }
+
+  /**
+   * Create workflow command content
+   */
+  createWorkflowCommand(workflow, content) {
+    return `# ${workflow.name} Workflow
+
+## Description
+${workflow.description || 'No description provided'}
+
+## Activation
+Type \`@workflow-${workflow.name}\` to execute this workflow.
+
+${content}
+
+## Module
+BMAD ${workflow.module.toUpperCase()} module
+`;
+  }
+
+  /**
    * Cleanup Auggie configuration
    */
   async cleanup(projectDir) {
@@ -244,22 +311,19 @@ BMAD ${task.module.toUpperCase()} module
     for (const location of locations) {
       const agentsDir = path.join(location, 'agents');
       const tasksDir = path.join(location, 'tasks');
+      const toolsDir = path.join(location, 'tools');
+      const workflowsDir = path.join(location, 'workflows');
 
-      if (await fs.pathExists(agentsDir)) {
-        // Remove only BMAD files (those with module prefix)
-        const files = await fs.readdir(agentsDir);
-        for (const file of files) {
-          if (file.includes('-') && file.endsWith('.md')) {
-            await fs.remove(path.join(agentsDir, file));
-          }
-        }
-      }
+      const dirs = [agentsDir, tasksDir, toolsDir, workflowsDir];
 
-      if (await fs.pathExists(tasksDir)) {
-        const files = await fs.readdir(tasksDir);
-        for (const file of files) {
-          if (file.includes('-') && file.endsWith('.md')) {
-            await fs.remove(path.join(tasksDir, file));
+      for (const dir of dirs) {
+        if (await fs.pathExists(dir)) {
+          // Remove only BMAD files (those with module prefix)
+          const files = await fs.readdir(dir);
+          for (const file of files) {
+            if (file.includes('-') && file.endsWith('.md')) {
+              await fs.remove(path.join(dir, file));
+            }
           }
         }
       }
