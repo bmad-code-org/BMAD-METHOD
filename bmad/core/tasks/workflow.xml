@@ -70,6 +70,14 @@
       <substep n="2c" title="Handle Special Output Tags">
         <if tag="template-output">
           <mandate>Generate content for this section</mandate>
+          <mandate critical="true">MARKDOWN FORMATTING RULES - Critical for proper rendering across all markdown parsers:
+            1. ALWAYS add blank line before and after bullet lists (-, *, +)
+            2. ALWAYS add blank line before and after numbered lists (1., 2., etc.)
+            3. ALWAYS add blank line before and after tables (| header |)
+            4. ALWAYS add blank line before and after code blocks (```)
+            5. Use - for bullets consistently (not * or +)
+            6. Use language identifier for code fences (```bash, ```javascript, etc.)
+          </mandate>
           <mandate>Save to file (Write first time, Edit subsequent)</mandate>
           <action>Show checkpoint separator: ━━━━━━━━━━━━━━━━━━━━━━━</action>
           <action>Display generated content</action>
