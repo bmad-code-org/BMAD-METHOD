@@ -1,0 +1,47 @@
+# Agent Handoff Receive Workflow - Load handoff from previous agent
+name: handoff-receive
+description: "Receive and process a handoff from the previous agent by reading the most recent handoff memory from Serena. Displays actionable summary with task, context, files to review, and success criteria."
+author: "BMad Core"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/core/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Module paths
+installed_path: "{project-root}/bmad/core/workflows/handoff-receive"
+template: false # Action workflow - no document generation
+instructions: "{installed_path}/instructions.md"
+
+# Dependencies and requirements
+required_tools:
+  - Serena MCP (mcp__serena__activate_project, mcp__serena__list_memories, mcp__serena__read_memory)
+
+# BMAD integration notes
+integration_notes: |
+  This workflow complements the BMAD /workflow-status command:
+  - /workflow-status: Check current state and next recommended action
+  - /handoff: Save detailed context for next agent
+  - /handoff-receive: Load handoff and display actionable summary (this workflow)
+
+  Together they enable seamless agent-to-agent context preservation.
+
+# Selection algorithm
+selection_algorithm: |
+  Find most recent handoff using precedence:
+  1. Sort by timestamp (newest first) - parse YYYY-MM-DD-HHmmss from filename
+  2. If timestamps equal: Prefer agent matching current workflow phase
+  3. If multiple matches: Present numbered list for manual selection
+
+# Supported formats
+supported_formats:
+  - new: "*-handoff-YYYY-MM-DD-HHmmss" # Timestamped format (preferred)
+  - legacy: "*-handoff-YYYY-MM-DD" # Date-only format (backward compatible)
+
+# Version and compatibility
+version: "1.0.0"
+bmad_version: "6.0.0-alpha.0"
+requires_serena: true
+backward_compatible: true # Supports legacy date-only format

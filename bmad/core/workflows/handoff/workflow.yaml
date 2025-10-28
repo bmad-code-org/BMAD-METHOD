@@ -1,0 +1,39 @@
+# Agent Handoff Workflow - Create handoff memory for next agent
+name: handoff
+description: "Create comprehensive handoff memory for the next agent and save it to Serena. Preserves context between agent sessions including work completed, current state, files to review, and success criteria."
+author: "BMad Core"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/core/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Module paths
+installed_path: "{project-root}/bmad/core/workflows/handoff"
+template: false # Action workflow - no document generation
+instructions: "{installed_path}/instructions.md"
+
+# Dependencies and requirements
+required_tools:
+  - Serena MCP (mcp__serena__activate_project, mcp__serena__write_memory)
+  - BMAD workflow status file (docs/bmm-workflow-status.md)
+
+# Expected inputs
+recommended_inputs:
+  - workflow_status: "{output_folder}/bmm-workflow-status.md"
+
+# BMAD integration notes
+integration_notes: |
+  This workflow complements the BMAD /workflow-status command:
+  - /workflow-status: Check current state and next recommended action
+  - /handoff: Save detailed context for next agent (this workflow)
+  - /handoff-receive: Load handoff and display actionable summary
+
+  Together they enable seamless agent-to-agent context preservation.
+
+# Version and compatibility
+version: "1.0.0"
+bmad_version: "6.0.0-alpha.0"
+requires_serena: true

@@ -42,6 +42,11 @@ cursor
 CLAUDE.local.md
 .serena/
 
+# Claude Code - ignore .claude directory except commands folder (for slash command distribution)
+.claude/*
+!.claude/commands/
+!.claude/commands/**
+
 # Project-specific
 .bmad-core
 .bmad-creator-tools
