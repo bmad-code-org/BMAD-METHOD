@@ -2,7 +2,7 @@
 
 ## Activating Agents
 
-BMAD agents are installed as OpenCode agents in `.opencode/agent/BMAD/{module_name}` and workflow commands in `.opencode/command/BMAD/{module_name}`.
+BMAD agents are installed as OpenCode agents in `.opencode/agent/{module_name}` and workflow commands in `.opencode/command/{module_name}`.
 
 ### How to Use
 
