@@ -31,7 +31,7 @@ class OpenCodeSetup extends BaseIdeSetup {
     await this.ensureDir(commandsBaseDir);
 
     // Install primary agents with flat naming: bmad-agent-{module}-{name}.md
-    const agents = await getAgentsFromBmad(agentsBaseDir, options.selectedModules || []);
+    const agents = await getAgentsFromBmad(bmadDir, options.selectedModules || []);
 
     let agentCount = 0;
     for (const agent of agents) {
@@ -42,7 +42,7 @@ class OpenCodeSetup extends BaseIdeSetup {
 
       const agentContent = this.createAgentContent(processed, agent);
       // Flat structure in command folder: bmad-agent-{module}-{name}.md
-      const targetPath = path.join(agentsDir, `bmad-agent-${agent.module}-${agent.name}.md`);
+      const targetPath = path.join(agentsBaseDir, `bmad-agent-${agent.module}-${agent.name}.md`);
       await this.writeFile(targetPath, agentContent);
       agentCount++;
     }
