@@ -59,3 +59,9 @@ tools/template-test-generator/test-scenarios/
 # Test Install Output
 
 z*/
+
+# Patch archives (exclude from VCS)
+.claude/
+.husky/
+.patch/
+.vscode/
