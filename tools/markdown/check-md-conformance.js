@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * MD Conformance Checker (CommonMark-oriented)
  *
@@ -67,7 +66,7 @@ function isFenceStart(line) {
 
 function fenceLanguage(line) {
   const m = line.match(/^\s*```\s*([a-zA-Z0-9_+-]+)?/);
-  return m ? (m[1] || '') : '';
+  return m ? m[1] || '' : '';
 }
 
 function isBlank(line) {
@@ -84,17 +83,16 @@ function checkFile(filePath) {
   let fenceStartLine = -1;
 
   // Pass 1: fence tracking to avoid interpreting list/table inside code blocks
-  const excluded = new Array(lines.length).fill(false);
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  const excluded = Array.from({ length: lines.length }).fill(false);
+  for (const [i, line] of lines.entries()) {
     if (isFenceStart(line)) {
-      if (!inFence) {
-        inFence = true;
-        fenceStartLine = i;
-      } else {
+      if (inFence) {
         // closing fence
         inFence = false;
         fenceStartLine = -1;
+      } else {
+        inFence = true;
+        fenceStartLine = i;
       }
       excluded[i] = true;
       continue;
@@ -109,7 +107,19 @@ function checkFile(filePath) {
     if (excluded[i]) {
       if (isFenceStart(lines[i])) {
         // Fence boundary
-        if (!inFence) {
+        if (inFence) {
+          // closing
+          inFence = false;
+          // blank line after?
+          const next = i + 1;
+          if (next < lines.length && !isBlank(lines[next])) {
+            violations.push({
+              type: 'fence-blank-after',
+              line: i + 1,
+              message: 'Missing blank line after code fence',
+            });
+          }
+        } else {
           // opening
           inFence = true;
           // language present?
@@ -128,18 +138,6 @@ function checkFile(filePath) {
               type: 'fence-blank-before',
               line: i + 1,
               message: 'Missing blank line before code fence',
-            });
-          }
-        } else {
-          // closing
-          inFence = false;
-          // blank line after?
-          const next = i + 1;
-          if (next < lines.length && !isBlank(lines[next])) {
-            violations.push({
-              type: 'fence-blank-after',
-              line: i + 1,
-              message: 'Missing blank line after code fence',
             });
           }
         }
@@ -211,8 +209,7 @@ function checkFile(filePath) {
       const start = i;
       // scan forward while lines look like table lines
       let end = start;
-      while (end < lines.length && isTableLine(lines[end])) end++;
-
+      while (end < lines.length && !excluded[end] && isTableLine(lines[end])) end++;
       // Require immediate previous line to be blank
       const prev = start - 1;
       if (prev >= 0 && !isBlank(lines[prev])) {
@@ -284,6 +281,19 @@ function main() {
     }
   }
 
+  process.exit(1);
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = { checkFile };
+{
+  console.log(`\n- ${path.relative(process.cwd(), file)}`);
+  for (const v of violations) {
+    console.log(`  L${v.line.toString().padStart(4, ' ')}  ${v.type}  ${v.message}`);
+  }
   process.exit(1);
 }
 

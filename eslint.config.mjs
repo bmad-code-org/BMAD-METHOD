@@ -11,6 +11,7 @@ export default [
       'dist/**',
       'coverage/**',
       '**/*.min.js',
+      '.patch/**',
       'test/template-test-generator/**',
       'test/template-test-generator/**/*.js',
       'test/template-test-generator/**/*.md',
