@@ -58,7 +58,7 @@ The Decision Architecture workflow is a complete reimagining of how architectura
 
 ## Workflow Structure
 
-```
+```text
 Step 0: Validate workflow and extract project configuration
 Step 0.5: Validate workflow sequencing
 Step 1: Load PRD and understand project context
@@ -156,7 +156,7 @@ Step 7 handles unique or complex patterns that need to be INVENTED:
    - Implementation guidance for agents
 
 4. **Example**:
-   ```
+   ```yaml
    PRD: "Users can create 'circles' of friends with overlapping membership"
    ↓
    Workflow detects: This is a novel social structure pattern
@@ -194,7 +194,7 @@ Step 8 prevents agent conflicts by defining patterns for consistency:
    - Skips obvious patterns that the tech choice determines
 
 4. **Example**:
-   ```
+   ```text
    Tech chosen: REST API + PostgreSQL + React
    ↓
    LLM identifies needs:
@@ -220,7 +220,7 @@ When the workflow detects a project type that has a starter template:
 
 ### Example Flow
 
-```
+```text
 PRD says: "Next.js web application with authentication"
 ↓
 Workflow finds: create-next-app and create-t3-app
@@ -239,80 +239,3 @@ First story becomes: "npx create t3-app@latest my-app --trpc --nextauth --prisma
 ```bash
 # In your BMAD-enabled project
 workflow architecture
-```
-
-The AI agent will:
-
-1. Load your PRD and epics
-2. Identify critical decisions needed
-3. Facilitate discussion on each decision
-4. Generate a comprehensive architecture document
-5. Validate completeness
-
-## Design Principles
-
-1. **Facilitation over Prescription** - Guide users to good decisions rather than imposing templates
-2. **Intelligence over Templates** - Use AI understanding rather than rigid structures
-3. **Decisions over Details** - Focus on what prevents agent conflicts, not implementation minutiae
-4. **Adaptation over Uniformity** - Meet users where they are while ensuring quality output
-5. **Collaboration over Output** - The conversation matters as much as the document
-
-## For Developers
-
-This workflow assumes:
-
-- Single developer + AI agents (not teams)
-- Speed matters (decisions in minutes, not days)
-- AI agents need clear constraints to prevent conflicts
-- The architecture document is for agents, not humans
-
-## Migration from architecture
-
-Projects using the old `architecture` workflow should:
-
-1. Complete any in-progress architecture work
-2. Use `architecture` for new projects
-3. The old workflow remains available but is deprecated
-
-## Version
-
-1.3.2 - UX specification integration and fuzzy file matching
-
-- Added UX spec as optional input with fuzzy file matching
-- Updated workflow.yaml with input file references
-- Starter template selection now considers UX requirements
-- Added UX alignment validation to checklist
-- Instructions use variable references for flexible file names
-
-  1.3.1 - Workflow refinement and standardization
-
-- Added workflow status checking at start (Steps 0 and 0.5)
-- Added workflow status updating at end (Step 12)
-- Reorganized step numbering for clarity (removed fractional steps)
-- Enhanced with intent-based approach throughout
-- Improved cohesiveness across all workflow components
-
-  1.3.0 - Novel pattern design for unique architectures
-
-- Added novel pattern design (now Step 7, formerly Step 5.3)
-- Detects novel concepts in PRD that need architectural invention
-- Facilitates design collaboration with sequence diagrams
-- Uses elicitation for innovative approaches
-- Documents custom patterns for multi-epic consistency
-
-  1.2.0 - Implementation patterns for agent consistency
-
-- Added implementation patterns (now Step 8, formerly Step 5.5)
-- Created principle-based pattern-categories.csv (7 principles, not 118 prescriptions)
-- Core principle: "What could agents decide differently?"
-- LLM uses principle to identify patterns beyond the categories
-- Prevents agent conflicts through intelligent pattern discovery
-
-  1.1.0 - Enhanced with starter template discovery and version verification
-
-- Added intelligent starter template detection and integration (now Step 2)
-- Added dynamic version verification via web search
-- Starter decisions are documented as "PROVIDED BY STARTER"
-- First implementation story uses starter initialization command
-
-  1.0.0 - Initial release replacing architecture workflow
