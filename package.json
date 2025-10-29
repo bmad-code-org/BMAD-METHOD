@@ -39,6 +39,7 @@
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
   "lint:md": "npm run check:md:all",
   "pre-release": "npm run format:check && npm run lint && npm test && npm run validate:schemas && npm run validate:bundles && npm run check:md:all",
+  "pre-release:md": "npm run check:md:all",
     "prepare": "husky",
     "rebundle": "node tools/cli/bundlers/bundle-web.js rebundle",
     "release:major": "gh workflow run \"Manual Release\" -f version_bump=major",
