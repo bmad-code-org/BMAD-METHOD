@@ -1,0 +1,49 @@
+diff --git a/tools/cli.js b/tools/cli.js
+index 5014cf06..26320be3 100644
+--- a/tools/cli.js
++++ b/tools/cli.js
+@@ -21,7 +21,7 @@ program
+   .option('--no-clean', 'Skip cleaning output directories')
+   .action(async (options) => {
+     const builder = new WebBuilder({
+-      rootDir: process.cwd(),
++      rootDir: process.env.INIT_CWD || process.cwd(),
+     });
+ 
+     try {
+@@ -64,7 +64,7 @@ program
+   .option('--no-clean', 'Skip cleaning output directories')
+   .action(async (options) => {
+     const builder = new WebBuilder({
+-      rootDir: process.cwd(),
++      rootDir: process.env.INIT_CWD || process.cwd(),
+     });
+ 
+     try {
+@@ -87,7 +87,7 @@ program
+   .command('list:agents')
+   .description('List all available agents')
+   .action(async () => {
+-    const builder = new WebBuilder({ rootDir: process.cwd() });
++    const builder = new WebBuilder({ rootDir: process.env.INIT_CWD || process.cwd() });
+     const agents = await builder.resolver.listAgents();
+     console.log('Available agents:');
+     for (const agent of agents) console.log(`  - ${agent}`);
+@@ -98,7 +98,7 @@ program
+   .command('list:expansions')
+   .description('List all available expansion packs')
+   .action(async () => {
+-    const builder = new WebBuilder({ rootDir: process.cwd() });
++    const builder = new WebBuilder({ rootDir: process.env.INIT_CWD || process.cwd() });
+     const expansions = await builder.listExpansionPacks();
+     console.log('Available expansion packs:');
+     for (const expansion of expansions) console.log(`  - ${expansion}`);
+@@ -109,7 +109,7 @@ program
+   .command('validate')
+   .description('Validate agent and team configurations')
+   .action(async () => {
+-    const builder = new WebBuilder({ rootDir: process.cwd() });
++    const builder = new WebBuilder({ rootDir: process.env.INIT_CWD || process.cwd() });
+     try {
+       // Validate by attempting to build all agents and teams
+       const agents = await builder.resolver.listAgents();

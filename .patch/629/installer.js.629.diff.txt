@@ -1,0 +1,123 @@
+diff --git a/tools/installer/lib/installer.js b/tools/installer/lib/installer.js
+index d04830d7..f89ddf3f 100644
+--- a/tools/installer/lib/installer.js
++++ b/tools/installer/lib/installer.js
+@@ -1987,6 +1987,118 @@ class Installer {
+     return null;
+   }
+ 
++  async updateManifestOnly(config) {
++    const spinner = ora('Updating manifest files...').start();
++
++    try {
++      // Store the original CWD where npx was executed
++      const originalCwd = process.env.INIT_CWD || process.env.PWD || process.cwd();
++
++      // Resolve installation directory relative to where the user ran the command
++      let installDir = path.isAbsolute(config.directory)
++        ? config.directory
++        : path.resolve(originalCwd, config.directory);
++
++      if (path.basename(installDir) === '.bmad-core') {
++        // If user points directly to .bmad-core, treat its parent as the project root
++        installDir = path.dirname(installDir);
++      }
++
++      const bmadCoreDir = path.join(installDir, '.bmad-core');
++
++      // Verify .bmad-core exists
++      if (!(await fileManager.pathExists(bmadCoreDir))) {
++        spinner.fail('No .bmad-core directory found in specified location');
++        console.log(`\nPlease run regular installation first at: ${installDir}`);
++        process.exit(1);
++      }
++
++      const manifestPath = path.join(bmadCoreDir, 'install-manifest.yaml');
++
++      // Verify install-manifest.yaml exists
++      if (!(await fileManager.pathExists(manifestPath))) {
++        spinner.fail('No install-manifest.yaml found in .bmad-core');
++        console.log('\nPlease run regular installation first to create manifest.');
++        process.exit(1);
++      }
++
++      spinner.text = 'Reading existing manifest...';
++
++      // Read existing manifest to preserve metadata
++      const existingManifest = await fileManager.readYamlFile(manifestPath);
++      const coreVersion = await this.getCoreVersion();
++      const timestamp = new Date().toISOString();
++
++      spinner.text = 'Scanning core installation files...';
++
++      // Scan core agents and data files
++      const resourceLocatorInstance = await resourceLocator.createResourceLocator(installDir);
++      const coreFiles = await resourceLocatorInstance.scanCoreResources();
++
++      // Generate manifest with updated file information
++      const updatedManifest = {
++        version: coreVersion,
++        timestamp,
++        installedAt: existingManifest.installedAt || timestamp,
++        lastUpdated: timestamp,
++        core: {
++          agents: coreFiles.agents || [],
++          data: coreFiles.data || [],
++          files: coreFiles.files || [],
++        },
++        expansions: existingManifest.expansions || [],
++      };
++
++      // Update manifest file
++      spinner.text = 'Writing updated manifest...';
++      await fileManager.writeYamlFile(manifestPath, updatedManifest);
++
++      // Update expansion pack manifests if they exist
++      const expansionsPath = path.join(installDir, 'expansions');
++      if (await fileManager.pathExists(expansionsPath)) {
++        spinner.text = 'Updating expansion pack manifests...';
++
++        const glob = require('glob');
++        const expansionDirs = glob.sync('*/', {
++          cwd: expansionsPath,
++          absolute: true,
++        });
++
++        for (const expansionDir of expansionDirs) {
++          const packManifestPath = path.join(expansionDir, 'manifest.yaml');
++          if (await fileManager.pathExists(packManifestPath)) {
++            try {
++              const packManifest = await fileManager.readYamlFile(packManifestPath);
++              packManifest.lastUpdated = timestamp;
++              packManifest.coreVersion = coreVersion;
++              await fileManager.writeYamlFile(packManifestPath, packManifest);
++            } catch {
++              // Continue if individual expansion manifest fails
++            }
++          }
++        }
++      }
++
++      spinner.succeed('Manifest files updated successfully!');
++
++      // Display summary
++      console.log(chalk.bold('\n✓ Installation Summary'));
++      console.log(chalk.dim('─'.repeat(50)));
++      console.log(`  ${chalk.cyan('Core Version:')} ${coreVersion}`);
++      console.log(`  ${chalk.cyan('Installation Dir:')} ${installDir}`);
++      console.log(`  ${chalk.cyan('Updated:')} ${timestamp}`);
++      console.log(`  ${chalk.cyan('Core Agents:')} ${updatedManifest.core.agents?.length || 0}`);
++      console.log(`  ${chalk.cyan('Data Files:')} ${updatedManifest.core.data?.length || 0}`);
++      console.log(`  ${chalk.cyan('Total Files:')} ${updatedManifest.core.files?.length || 0}`);
++      console.log(chalk.dim('─'.repeat(50)));
++      console.log(chalk.green('\n✓ Manifest update complete!'));
++    } catch (error) {
++      spinner.fail(`Failed to update manifest: ${error.message}`);
++      console.error('Error details:', error);
++      process.exit(1);
++    }
++  }
++
+   async flatten(options) {
+     const { spawn } = require('node:child_process');
+     const flattenerPath = path.join(__dirname, '..', '..', 'flattener', 'main.js');

@@ -1,0 +1,46 @@
+diff --git a/tools/flattener/main.js b/tools/flattener/main.js
+index 50a831bf..665d79e4 100644
+--- a/tools/flattener/main.js
++++ b/tools/flattener/main.js
+@@ -70,7 +70,7 @@ program
+   .name('bmad-flatten')
+   .description('BMAD-METHOD™ codebase flattener tool')
+   .version('1.0.0')
+-  .option('-i, --input <path>', 'Input directory to flatten', process.cwd())
++  .option('-i, --input <path>', 'Input directory to flatten', process.env.INIT_CWD || process.cwd())
+   .option('-o, --output <path>', 'Output file path', 'flattened-codebase.xml')
+   .action(async (options) => {
+     let inputDir = path.resolve(options.input);
+@@ -87,7 +87,7 @@ program
+     const noPathArguments = !userSpecifiedInput && !userSpecifiedOutput;
+ 
+     if (noPathArguments) {
+-      const detectedRoot = await findProjectRoot(process.cwd());
++      const detectedRoot = await findProjectRoot(process.env.INIT_CWD || process.cwd());
+       const suggestedOutput = detectedRoot
+         ? path.join(detectedRoot, 'flattened-codebase.xml')
+         : path.resolve('flattened-codebase.xml');
+@@ -101,7 +101,10 @@ program
+           inputDir = detectedRoot;
+           outputPath = suggestedOutput;
+         } else {
+-          inputDir = await promptPath('Enter input directory path', process.cwd());
++          inputDir = await promptPath(
++            'Enter input directory path',
++            process.env.INIT_CWD || process.cwd(),
++          );
+           outputPath = await promptPath(
+             'Enter output file path',
+             path.join(inputDir, 'flattened-codebase.xml'),
+@@ -109,7 +112,10 @@ program
+         }
+       } else {
+         console.log('Could not auto-detect a project root.');
+-        inputDir = await promptPath('Enter input directory path', process.cwd());
++        inputDir = await promptPath(
++          'Enter input directory path',
++          process.env.INIT_CWD || process.cwd(),
++        );
+         outputPath = await promptPath(
+           'Enter output file path',
+           path.join(inputDir, 'flattened-codebase.xml'),

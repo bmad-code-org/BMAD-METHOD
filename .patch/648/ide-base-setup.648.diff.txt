@@ -1,0 +1,13 @@
+diff --git a/tools/installer/lib/ide-base-setup.js b/tools/installer/lib/ide-base-setup.js
+index d47d8d5d..b2da7409 100644
+--- a/tools/installer/lib/ide-base-setup.js
++++ b/tools/installer/lib/ide-base-setup.js
+@@ -189,8 +189,6 @@ class BaseIdeSetup {
+     if (format === 'mdc') {
+       // MDC format for Cursor
+       content = '---\n';
+-      content += 'description: \n';
+-      content += 'globs: []\n';
+       content += 'alwaysApply: false\n';
+       content += '---\n\n';
+     }

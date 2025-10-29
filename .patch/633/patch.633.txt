@@ -1,0 +1,124 @@
+=== PR #633: feat - Use INIT_CWD as Default Directory ===
+
+DESCRIPTION:
+Enables proper directory resolution when using npm run with --prefix flag by using INIT_CWD
+as the default directory context instead of always falling back to process.cwd(). This allows
+tools and installer to respect the npm execution context properly.
+
+COMMIT SHA: 5615a910
+
+BRANCH: feature/use-init-cwd-default-dir-633
+
+MODIFIED FILES: 6
+- tools/builders/web-builder.js
+- tools/cli.js
+- tools/flattener/main.js
+- tools/installer/bin/bmad.js
+- tools/installer/lib/installer.js
+- tools/upgraders/v3-to-v4-upgrader.js
+
+=== CHANGES SUMMARY ===
+
+1. tools/builders/web-builder.js (1 change)
+   - Constructor: rootDir = options.rootDir || process.env.INIT_CWD || process.cwd()
+
+2. tools/cli.js (5 changes)
+   - build command: rootDir: process.env.INIT_CWD || process.cwd()
+   - build:expansions command: rootDir: process.env.INIT_CWD || process.cwd()
+   - list:agents command: rootDir: process.env.INIT_CWD || process.cwd()
+   - list:expansions command: rootDir: process.env.INIT_CWD || process.cwd()
+   - validate command: rootDir: process.env.INIT_CWD || process.cwd()
+
+3. tools/flattener/main.js (3 changes)
+   - Option default: process.env.INIT_CWD || process.cwd()
+   - findProjectRoot call: process.env.INIT_CWD || process.cwd()
+   - promptPath calls: process.env.INIT_CWD || process.cwd() (2 locations)
+
+4. tools/installer/bin/bmad.js (2 changes)
+   - flatten command option: process.env.INIT_CWD || process.cwd()
+   - promptInstallation directory default: path.resolve(process.env.INIT_CWD || '.')
+
+5. tools/installer/lib/installer.js (4 changes)
+   - findInstallation start: currentDir = process.env.INIT_CWD || process.cwd()
+   - .bmad-core check: path.basename(process.env.INIT_CWD || process.cwd())
+   - flatten spawn cwd: cwd: process.env.INIT_CWD || process.cwd()
+
+6. tools/upgraders/v3-to-v4-upgrader.js (1 change)
+   - Prompt default: default: process.env.INIT_CWD || process.cwd()
+
+=== TECHNICAL DETAILS ===
+
+Key Pattern: All changes follow the pattern:
+  OLD: process.cwd()  or  path.resolve('.')  or  option default value
+  NEW: process.env.INIT_CWD || process.cwd()  or  path.resolve(process.env.INIT_CWD || '.')
+
+INIT_CWD Environment Variable:
+- Set by npm when running scripts with --prefix flag
+- Represents the directory from which npm was invoked
+- Fallback to process.cwd() ensures backward compatibility
+- Enables proper context when using: npm run install:bmad --prefix /path/to/project
+
+=== VALIDATION RESULTS ===
+
+✅ npm run validate: PASS
+   - All 10 agents validated successfully
+   - All 4 teams validated successfully
+
+✅ npm run lint: PASS
+   - 3 pre-existing lint errors (unrelated to PR #633)
+   - No new lint issues introduced
+   - Cross-platform compatibility maintained
+
+=== BENEFITS ===
+
+1. **npm --prefix Support:** Tools now respect npm's --prefix flag correctly
+2. **Better UX:** Users don't need to manually specify paths when using --prefix
+3. **Backward Compatible:** Falls back to process.cwd() if INIT_CWD not set
+4. **Consistent:** All tools and commands follow same pattern
+5. **Environment Aware:** Respects npm execution context properly
+
+=== USAGE EXAMPLES ===
+
+# Before (had to specify full path):
+npm run install:bmad --prefix /my/project
+
+# Now (uses npm's context automatically):
+cd /my/project && npm run install:bmad --prefix .
+
+# Or from parent directory:
+npm run install:bmad --prefix /my/project
+# Tool automatically uses /my/project as working directory
+
+=== RELATED FILES ===
+
+diff files: .patch/633/
+- web-builder.js.633.diff.txt
+- cli.js.633.diff.txt
+- main.js.633.diff.txt (flattener/main.js)
+- bmad.js.633.diff.txt
+- installer.js.633.diff.txt
+- upgrader.js.633.diff.txt (v3-to-v4-upgrader.js)
+
+Total changes: 27 additions, 18 deletions across 6 files
+
+=== IMPLEMENTATION STATISTICS ===
+
+Total Occurrences: 17
+- Direct process.cwd() replacements: 14
+- path.resolve('.') replacements: 1
+- Option default replacements: 2
+
+Files Modified: 6
+Lines Added: 27
+Lines Deleted: 18
+Net Change: +9 lines
+
+=== NOTES ===
+
+- All changes are non-breaking and backward compatible
+- INIT_CWD is only set by npm, so fallback is always safe
+- Pattern is consistent across entire codebase
+- Enables better integration with npm workspace features
+- Proper handling of both absolute and relative paths maintained
+
+GitHub PR: https://github.com/bmad-code-org/BMAD-METHOD/pull/633

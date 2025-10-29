@@ -1,0 +1,21 @@
+# IMPORTANT: This .patch directory is permanent and should NEVER be removed or added to .gitignore
+#
+# Purpose: Maintains comprehensive diff documentation for all implemented PRs
+# Each PR gets a numbered subdirectory (e.g., .patch/573/, .patch/586/, .patch/629/, .patch/633/)
+# containing all modified files' diffs and a summary document
+#
+# This serves as:
+# - Historical record of all implemented features
+# - Reference for code review and understanding changes
+# - Permanent documentation alongside git history
+# - Audit trail of project modifications
+#
+# Policy: .patch directory is ALWAYS KEPT and maintained across all branches and operations
+# Never delete this folder or its contents during development, merging, or any git operation
+# 
+# Protection Mechanisms:
+# 1. .gitkeep ensures folder is always tracked in git
+# 2. .gitattributes ensures proper file handling
+# 3. pre-commit hook prevents accidental deletion
+# 4. .patch/README.md provides detailed documentation
+# 5. .PATCH-PROTECTION-POLICY.md sets explicit rules

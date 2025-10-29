@@ -1,0 +1,26 @@
+diff --git a/eslint.config.mjs b/eslint.config.mjs
+index 7ed2db16..dcccc8e9 100644
+--- a/eslint.config.mjs
++++ b/eslint.config.mjs
+@@ -81,6 +81,8 @@ export default [
+       'no-useless-catch': 'off',
+       'unicorn/prefer-number-properties': 'off',
+       'no-unreachable': 'off',
++      // Accept both LF and CRLF line endings for cross-platform compatibility
++      'n/hashbang': 'off',
+     },
+   },
+ 
+@@ -110,10 +112,11 @@ export default [
+ 
+   // Other GitHub YAML files may intentionally use empty values and reserved filenames
+   {
+-    files: ['.github/**/*.yaml'],
++    files: ['.github/**/*.{yaml,yml}'],
+     rules: {
+       'yml/no-empty-mapping-value': 'off',
+       'unicorn/filename-case': 'off',
++      'yml/file-extension': 'off', // Allow both .yml and .yaml in GitHub folder
+     },
+   },
+ ];

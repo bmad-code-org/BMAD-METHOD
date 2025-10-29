@@ -1,0 +1,36 @@
+name: Markdown Conformance
+
+on:
+  pull_request:
+    branches:
+      - main
+      - v6-alpha
+    paths:
+      - '**/*.md'
+      - 'tools/markdown/**'
+      - '.github/workflows/markdown-conformance.yml'
+
+jobs:
+  check-markdown:
+    name: Check Markdown Conformance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run markdown conformance checks
+        run: npm run check:md:all
+      
+      - name: Run markdownlint (optional)
+        run: npm run lint:md
+        continue-on-error: true

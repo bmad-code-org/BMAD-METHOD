@@ -1,0 +1,22 @@
+diff --git a/tools/installer/config/install.config.yaml b/tools/installer/config/install.config.yaml
+index 3aa7464c..550fed7a 100644
+--- a/tools/installer/config/install.config.yaml
++++ b/tools/installer/config/install.config.yaml
+@@ -118,6 +118,17 @@ ide-configurations:
+       # 1. Open the mode selector in VSCode
+       # 2. Select a bmad-{agent} mode (e.g. "bmad-dev")
+       # 3. The AI adopts that agent's persona and capabilities
++  aicockpit:
++    name: AI Cockpit
++    format: custom
++    modes-file: .aicockpitmodes
++    rules-dir: .aicockpit/rules/
++    workflows-dir: .aicockpit/workflows/
++    instructions: |
++      # To use BMAD™ agents in AI Cockpit:
++      # 1. Open the mode selector in VSCode
++      # 2. Select a bmad-{agent} mode (e.g. "bmad-dev")
++      # 3. The AI adopts that agent's persona and capabilities
+ 
+   qwen-code:
+     name: Qwen Code

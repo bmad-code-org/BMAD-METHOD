@@ -1,0 +1,225 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+      "1-create-prd": {
+      "prompt": "{file:./agent/1-create-prd.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "1. Define Scope: use to clearly outlining what needs to be built with a Product Requirement Document (PRD)"
+    },
+        "2-generate-tasks": {
+      "prompt": "{file:./agent/2-generate-tasks.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "2. Detailed Planning: use to break down the PRD into a granular, actionable task list"
+    },
+        "3-process-task-list": {
+      "prompt": "{file:./agent/3-process-task-list.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "3. Iterative Implementation: use to guide the AI to tackle one task at a time, allowing you to review and approve each change"
+    },   
+    "ux-expert": {
+      "prompt": "{file:./agent/ux-expert.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for UI/UX design, wireframes, prototypes, front-end specifications, and user experience optimization"
+    },
+    "scrum-master": {
+      "prompt": "{file:./agent/scrum-master.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for story creation, epic management, retrospectives in party-mode, and agile process guidance"
+    },
+    "qa-test": {
+      "prompt": "{file:./agent/qa-test-architect.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for comprehensive test architecture review, quality gate decisions, and code improvement. Provides thorough analysis including requirements traceability, risk assessment, and test strategy. Advisory only - teams choose their quality bar."
+    },
+    "product-owner": {
+      "prompt": "{file:./agent/product-owner.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for backlog management, story refinement, acceptance criteria, sprint planning, and prioritization decisions"
+    },
+    "product-manager": {
+      "prompt": "{file:./agent/product-manager.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for creating PRDs, product strategy, feature prioritization, roadmap planning, and stakeholder communication"
+    },
+    "full-stack-dev": {
+      "prompt": "{file:./agent/full-stack-dev.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "'Use for code implementation, debugging, refactoring, and development best practices'"
+    },
+    "orchestrator": {
+      "prompt": "{file:./agent/orchestrator.md}",
+      "mode": "primary",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for workflow coordination, multi-agent tasks, role switching guidance, and when unsure which specialist to consult"
+    },
+    "master": {
+      "prompt": "{file:./agent/master.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use when you need comprehensive expertise across all domains, running 1 off tasks that do not require a persona, or just wanting to use the same agent for many things."
+    },
+    "holistic-architect": {
+      "prompt": "{file:./agent/holistic-architect.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for system design, architecture documents, technology selection, API design, and infrastructure planning"
+    },
+    "business-analyst": {
+      "prompt": "{file:./agent/business-analyst.md}",
+      "mode": "all",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true
+      },
+      "description": "Use for market research, brainstorming, competitive analysis, creating project briefs, initial project discovery, and documenting existing projects (brownfield)"
+    }
+  },
+  "command": {
+    "tasks:validate-next-story": {
+      "template": "{file:./tasks/validate-next-story.md}",
+      "description": "To comprehensively validate a story draft before implementation begins, ensuring it is complete, accurate, and provides sufficient context for successful development. This task identifies issues and gaps that need to be addressed, preventing hallucinations and ensuring implementation readiness."
+    },
+    "tasks:trace-requirements": {
+      "template": "{file:./tasks/trace-requirements.md}",
+      "description": "Create a requirements traceability matrix that ensures every acceptance criterion has corresponding test coverage. This task helps identify gaps in testing and ensures all requirements are validated."
+    },
+    "tasks:test-design": {
+      "template": "{file:./tasks/test-design.md}",
+      "description": "Design a complete test strategy that identifies what to test, at which level (unit/integration/e2e), and why. This ensures efficient test coverage without redundancy while maintaining appropriate test boundaries."
+    },
+    "tasks:shard-doc": {
+      "template": "{file:./tasks/shard-doc.md}",
+      "description": "Split a large document into multiple smaller documents based on level 2 sections Create a folder structure to organize the sharded documents Maintain all content integrity including code blocks, diagrams, and markdown formatting"
+    },
+    "tasks:risk-profile": {
+      "template": "{file:./tasks/risk-profile.md}",
+      "description": "Identify, assess, and prioritize risks in the story implementation. Provide risk mitigation strategies and testing focus areas based on risk levels."
+    },
+    "tasks:review-story": {
+      "template": "{file:./tasks/review-story.md}",
+      "description": "Perform a comprehensive test architecture review with quality gate decision. This adaptive, risk-aware review creates both a story update and a detailed gate file."
+    },
+    "tasks:qa-gate": {
+      "template": "{file:./tasks/qa-gate.md}",
+      "description": "Generate a standalone quality gate file that provides a clear pass/fail decision with actionable feedback. This gate serves as an advisory checkpoint for teams to understand quality status."
+    },
+    "tasks:nfr-assess": {
+      "template": "{file:./tasks/nfr-assess.md}",
+      "description": "Assess non-functional requirements for a story and generate:"
+    },
+    "tasks:index-docs": {
+      "template": "{file:./tasks/index-docs.md}",
+      "description": "This task maintains the integrity and completeness of the docs/index.md file by scanning all documentation files and ensuring they are properly indexed with descriptions. It handles both root-level documents and documents within subfolders, organizing them hierarchically."
+    },
+    "tasks:generate-ai-frontend-prompt": {
+      "template": "{file:./tasks/generate-ai-frontend-prompt.md}",
+      "description": "To generate a masterful, comprehensive, and optimized prompt that can be used with any AI-driven frontend development tool (e.g., Vercel v0, Lovable.ai, or similar) to scaffold or generate significant portions of a frontend application."
+    },
+    "tasks:facilitate-brainstorming-session": {
+      "template": "{file:./tasks/facilitate-brainstorming-session.md}",
+      "description": "Facilitate interactive brainstorming sessions with users. Be creative and adaptive in applying techniques." 
+    },
+    "tasks:execute-checklist": {
+      "template": "{file:./tasks/execute-checklist.md}",
+      "description": "This task provides instructions for validating documentation against checklists."      
+    },
+    "tasks:document-project": {
+      "template": "{file:./tasks/document-project.md}",
+      "description": "Generate comprehensive documentation for existing projects optimized for AI development agents. This task creates structured reference materials that enable AI agents to understand project context, conventions, and patterns for effective contribution to any codebase."
+    },
+    "tasks:create-next-story": {
+      "template": "{file:./tasks/create-next-story.md}",
+      "description": "To identify the next logical story based on project progress and epic definitions, and then to prepare a comprehensive, self-contained, and actionable story file using the Story Template."
+    },
+    "tasks:create-doc": {
+      "template": "{file:./tasks/create-doc.md}",
+      "description": "Create Document from Template (YAML Driven)"
+    },
+    "tasks:create-deep-research-prompt": {
+      "template": "{file:./tasks/create-deep-research-prompt.md}",
+      "description": "Generate well-structured research prompts"
+    },
+    "tasks:create-brownfield-story": {
+      "template": "{file:./tasks/create-brownfield-story.md}",
+      "description": "Create detailed, implementation-ready stories for brownfield projects where traditional sharded PRD/architecture documents may not exist. This task bridges the gap between various documentation formats (document-project output, brownfield PRDs, epics, or user documentation) and executable stories for the Dev agent."
+    },
+    "tasks:correct-course": {
+      "template": "{file:./tasks/correct-course.md}",
+      "description": "Guide a structured response to a change trigger using the .checklists/change-checklist."
+    },
+    "tasks:brownfield-create-story": {
+      "template": "{file:./tasks/brownfield-create-story.md}",
+      "description": "Create a single user story for very small brownfield enhancements that can be completed in one focused development session. This task is for minimal additions or bug fixes that require existing system integration awareness."
+    },
+    "tasks:brownfield-create-epic": {
+      "template": "{file:./tasks/brownfield-create-epic.md}",
+      "description": "Create a single epic for smaller brownfield enhancements that don't require the full PRD and Architecture documentation process. This task is for isolated features or modifications that can be completed within a focused scope."
+    },
+    "tasks:apply-qa-fixes": {
+      "template": "{file:./tasks/apply-qa-fixes.md}",
+      "description": "Read QA outputs for a story (gate YAML + assessment markdowns) Create a prioritized, deterministic fix plan Apply code and test changes to close gaps and address issues Update only the allowed story sections for the Dev agent"
+    },
+    "tasks:advanced-elicitation": {
+      "template": "{file:./tasks/advanced-elicitation.md}",
+      "description": "Provide optional reflective and brainstorming actions to enhance content quality Enable deeper exploration of ideas through structured elicitation techniques Support iterative refinement through multiple analytical perspectives Usable during template-driven document creation or any chat conversation"
+    }
+  }
+}

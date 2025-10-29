@@ -1,0 +1,13 @@
+diff --git a/tools/installer/lib/ide-setup.js b/tools/installer/lib/ide-setup.js
+index a3882333..a2677942 100644
+--- a/tools/installer/lib/ide-setup.js
++++ b/tools/installer/lib/ide-setup.js
+@@ -2176,7 +2176,7 @@ ${taskContent}
+ 
+         let chatmodeContent = `---
+ description: "${description.replaceAll('"', String.raw`\"`)}"
+-tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems', 'usages', 'editFiles', 'runCommands', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure']
++tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems', 'usages', 'editFiles', 'new', 'runCommands', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure']
+ ---
+ 
+ `;

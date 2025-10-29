@@ -1,0 +1,14 @@
+diff --git a/tools/installer/package.json b/tools/installer/package.json
+index 77b59dbf..2cbdbf7a 100644
+--- a/tools/installer/package.json
++++ b/tools/installer/package.json
+@@ -32,7 +32,9 @@
+   "dependencies": {
+     "chalk": "^4.1.2",
+     "commander": "^14.0.0",
++    "comment-json": "^4.2.3",
+     "fs-extra": "^11.3.0",
++    "glob": "^10.3.10",
+     "inquirer": "^8.2.6",
+     "js-yaml": "^4.1.0",
+     "ora": "^5.4.1",

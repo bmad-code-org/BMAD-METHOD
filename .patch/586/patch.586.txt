@@ -1,0 +1,32 @@
+
+create a new git branch Feature/aicockpit integration #586
+
+https://github.com/bmad-code-org/BMAD-METHOD/pull/586
+
+
+
+PS C:\Users\kdejo\DEV\bmad-v6> npm run lint    
+
+> bmad-method@4.44.0 lint
+> eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0
+
+
+C:\Users\kdejo\DEV\bmad-v6\.github\ISSUE_TEMPLATE\config.yml
+  1:1  error  Expected extension '.yaml' but used extension '.yml'  yml/file-extension
+
+C:\Users\kdejo\DEV\bmad-v6\tools\bmad-npx-wrapper.js
+  1:1  error  This file must have Unix linebreaks (LF)  n/hashbang
+
+C:\Users\kdejo\DEV\bmad-v6\tools\installer\bin\bmad.js
+  1:1  error  This file must have Unix linebreaks (LF)  n/hashbang
+
+✖ 3 problems (3 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+ 
+
+can we change this test to not care about it, it should accept both \n and \r\n 
+
+like we made a patch in .patch\test-agent-schema.js.573.diff.txt 
+
+
+

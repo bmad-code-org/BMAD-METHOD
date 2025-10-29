@@ -1,0 +1,262 @@
+MD Conformance: FAIL (219 violation(s) in 21 file(s))
+
+- docs\bmad-brownfield-guide.md
+  L  83  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 446  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 472  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 478  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 525  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 644  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  13  list-blank-before  Missing blank line before list
+  L  43  list-blank-before  Missing blank line before list
+  L  59  list-blank-before  Missing blank line before list
+  L  71  list-blank-before  Missing blank line before list
+  L 118  list-blank-before  Missing blank line before list
+  L 129  list-blank-before  Missing blank line before list
+  L 146  list-blank-before  Missing blank line before list
+  L 156  list-blank-before  Missing blank line before list
+  L 172  list-blank-before  Missing blank line before list
+  L 186  list-blank-before  Missing blank line before list
+  L 195  list-blank-before  Missing blank line before list
+  L 240  list-blank-before  Missing blank line before list
+  L 246  list-blank-before  Missing blank line before list
+  L 252  list-blank-before  Missing blank line before list
+  L 270  list-blank-before  Missing blank line before list
+  L 277  list-blank-before  Missing blank line before list
+  L 291  list-blank-before  Missing blank line before list
+  L 298  list-blank-before  Missing blank line before list
+  L 312  list-blank-before  Missing blank line before list
+  L 319  list-blank-before  Missing blank line before list
+  L 336  list-blank-before  Missing blank line before list
+  L 343  list-blank-before  Missing blank line before list
+  L 351  list-blank-before  Missing blank line before list
+  L 366  list-blank-before  Missing blank line before list
+  L 373  list-blank-before  Missing blank line before list
+  L 383  list-blank-before  Missing blank line before list
+  L 407  list-blank-before  Missing blank line before list
+  L 415  list-blank-before  Missing blank line before list
+  L 432  list-blank-before  Missing blank line before list
+  L 439  list-blank-before  Missing blank line before list
+  L 497  list-blank-before  Missing blank line before list
+  L 558  list-blank-before  Missing blank line before list
+  L 566  list-blank-before  Missing blank line before list
+  L 577  list-blank-before  Missing blank line before list
+  L 584  list-blank-before  Missing blank line before list
+  L 590  list-blank-before  Missing blank line before list
+  L 607  list-blank-before  Missing blank line before list
+  L 626  list-blank-before  Missing blank line before list
+  L 638  list-blank-before  Missing blank line before list
+  L 664  list-blank-before  Missing blank line before list
+  L 676  list-blank-before  Missing blank line before list
+  L 683  list-blank-before  Missing blank line before list
+  L 692  list-blank-before  Missing blank line before list
+  L 697  list-blank-before  Missing blank line before list
+  L 703  list-blank-before  Missing blank line before list
+  L 712  list-blank-before  Missing blank line before list
+  L 728  list-blank-before  Missing blank line before list
+  L 738  list-blank-before  Missing blank line before list
+  L 748  list-blank-before  Missing blank line before list
+  L 753  list-blank-before  Missing blank line before list
+  L 762  list-blank-before  Missing blank line before list
+  L 773  list-blank-before  Missing blank line before list
+  L 782  list-blank-before  Missing blank line before list
+  L 791  list-blank-before  Missing blank line before list
+  L 797  list-blank-before  Missing blank line before list
+  L 804  list-blank-before  Missing blank line before list
+  L 811  list-blank-before  Missing blank line before list
+  L 817  list-blank-before  Missing blank line before list
+  L 830  list-blank-before  Missing blank line before list
+  L 845  list-blank-before  Missing blank line before list
+  L 859  list-blank-before  Missing blank line before list
+  L 873  list-blank-before  Missing blank line before list
+  L 892  list-blank-before  Missing blank line before list
+  L 915  list-blank-before  Missing blank line before list
+  L 921  list-blank-before  Missing blank line before list
+  L 930  list-blank-before  Missing blank line before list
+  L 937  list-blank-before  Missing blank line before list
+  L 955  list-blank-before  Missing blank line before list
+  L 960  list-blank-before  Missing blank line before list
+  L 969  list-blank-before  Missing blank line before list
+  L 974  list-blank-before  Missing blank line before list
+  L 984  list-blank-before  Missing blank line before list
+  L 989  list-blank-before  Missing blank line before list
+  L1001  list-blank-before  Missing blank line before list
+  L1006  list-blank-before  Missing blank line before list
+  L1020  list-blank-before  Missing blank line before list
+  L1026  list-blank-before  Missing blank line before list
+  L1031  list-blank-before  Missing blank line before list
+  L1038  list-blank-before  Missing blank line before list
+  L1055  list-blank-before  Missing blank line before list
+  L1062  list-blank-before  Missing blank line before list
+  L1112  list-blank-before  Missing blank line before list
+  L1123  list-blank-before  Missing blank line before list
+  L1130  list-blank-before  Missing blank line before list
+  L1136  list-blank-before  Missing blank line before list
+  L1147  list-blank-before  Missing blank line before list
+  L1154  list-blank-before  Missing blank line before list
+  L1168  list-blank-before  Missing blank line before list
+  L1175  list-blank-before  Missing blank line before list
+  L1185  list-blank-before  Missing blank line before list
+  L1193  list-blank-before  Missing blank line before list
+  L1201  list-blank-before  Missing blank line before list
+  L1212  list-blank-before  Missing blank line before list
+  L1218  list-blank-before  Missing blank line before list
+  L1241  list-blank-before  Missing blank line before list
+  L  27  table-blank-before  Missing blank line before table
+  L  33  table-blank-after  Missing blank line after table
+  L 397  table-blank-before  Missing blank line before table
+  L 403  table-blank-after  Missing blank line after table
+  L 484  table-blank-before  Missing blank line before table
+  L 493  table-blank-after  Missing blank line after table
+  L1043  table-blank-before  Missing blank line before table
+  L1049  table-blank-after  Missing blank line after table
+
+- docs\conversion-report-shard-doc-2025-10-26.md
+  L  68  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  11  list-blank-before  Missing blank line before list
+  L  19  list-blank-before  Missing blank line before list
+  L  41  list-blank-before  Missing blank line before list
+  L  52  list-blank-before  Missing blank line before list
+  L 101  list-blank-before  Missing blank line before list
+  L 108  list-blank-before  Missing blank line before list
+  L 115  list-blank-before  Missing blank line before list
+  L 123  list-blank-before  Missing blank line before list
+  L 150  list-blank-before  Missing blank line before list
+  L 163  list-blank-before  Missing blank line before list
+  L 176  list-blank-before  Missing blank line before list
+
+- docs\ide-info\auggie.md
+  L  21  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  15  list-blank-before  Missing blank line before list
+  L  29  list-blank-before  Missing blank line before list
+
+- docs\ide-info\claude-code.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  23  list-blank-before  Missing blank line before list
+
+- docs\ide-info\cline.md
+  L  27  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  14  list-blank-before  Missing blank line before list
+  L  21  list-blank-before  Missing blank line before list
+
+- docs\ide-info\codex.md
+  L  11  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\crush.md
+  L  16  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  28  list-blank-before  Missing blank line before list
+
+- docs\ide-info\cursor.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  23  list-blank-before  Missing blank line before list
+
+- docs\ide-info\gemini.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  23  list-blank-before  Missing blank line before list
+
+- docs\ide-info\github-copilot.md
+  L   9  list-blank-before  Missing blank line before list
+  L  18  list-blank-before  Missing blank line before list
+  L  24  list-blank-before  Missing blank line before list
+
+- docs\ide-info\iflow.md
+  L  16  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  24  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  31  list-blank-before  Missing blank line before list
+
+- docs\ide-info\kilo.md
+  L   9  list-blank-before  Missing blank line before list
+  L  16  list-blank-before  Missing blank line before list
+  L  22  list-blank-before  Missing blank line before list
+
+- docs\ide-info\opencode.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  22  list-blank-before  Missing blank line before list
+
+- docs\ide-info\qwen.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  23  list-blank-before  Missing blank line before list
+
+- docs\ide-info\roo.md
+  L   9  list-blank-before  Missing blank line before list
+  L  18  list-blank-before  Missing blank line before list
+  L  25  list-blank-before  Missing blank line before list
+
+- docs\ide-info\trae.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  23  list-blank-before  Missing blank line before list
+
+- docs\ide-info\windsurf.md
+  L   9  list-blank-before  Missing blank line before list
+  L  15  list-blank-before  Missing blank line before list
+  L  20  list-blank-before  Missing blank line before list
+
+- docs\installers-bundlers\ide-injections.md
+  L  21  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 134  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  56  list-blank-before  Missing blank line before list
+  L  75  list-blank-before  Missing blank line before list
+  L 117  list-blank-before  Missing blank line before list
+  L 125  list-blank-before  Missing blank line before list
+
+- docs\installers-bundlers\installers-modules-platforms-reference.md
+  L  28  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  92  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 217  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 239  fence-blank-before  Missing blank line before code fence
+  L   5  list-blank-before  Missing blank line before list
+  L  20  list-blank-before  Missing blank line before list
+  L  51  list-blank-before  Missing blank line before list
+  L  61  list-blank-before  Missing blank line before list
+  L  71  list-blank-before  Missing blank line before list
+  L  78  list-blank-before  Missing blank line before list
+  L  86  list-blank-before  Missing blank line before list
+  L 151  list-blank-before  Missing blank line before list
+  L 158  list-blank-before  Missing blank line before list
+  L 169  list-blank-before  Missing blank line before list
+  L 178  list-blank-before  Missing blank line before list
+  L 198  list-blank-before  Missing blank line before list
+  L 207  list-blank-before  Missing blank line before list
+  L 215  list-blank-before  Missing blank line before list
+  L 226  list-blank-before  Missing blank line before list
+  L 238  list-blank-before  Missing blank line before list
+  L 238  list-blank-after  Missing blank line after list
+  L 250  list-blank-before  Missing blank line before list
+  L 291  list-blank-before  Missing blank line before list
+  L 310  list-blank-before  Missing blank line before list
+  L 317  list-blank-before  Missing blank line before list
+  L 273  table-blank-before  Missing blank line before table
+  L 280  table-blank-after  Missing blank line after table
+  L 298  table-blank-before  Missing blank line before table
+  L 304  table-blank-after  Missing blank line after table
+
+- docs\installers-bundlers\web-bundler-usage.md
+  L  37  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  52  list-blank-before  Missing blank line before list
+
+- docs\v4-to-v6-upgrade.md
+  L  54  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  64  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  13  list-blank-before  Missing blank line before list
+  L  18  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+  L  90  list-blank-before  Missing blank line before list
+  L 103  list-blank-before  Missing blank line before list
+  L 136  list-blank-before  Missing blank line before list
+  L 148  list-blank-before  Missing blank line before list
+  L 179  list-blank-before  Missing blank line before list
+  L 190  list-blank-before  Missing blank line before list
+  L 212  list-blank-before  Missing blank line before list
+  L 223  list-blank-before  Missing blank line before list
+  L  35  table-blank-before  Missing blank line before table
+  L  42  table-blank-after  Missing blank line after table

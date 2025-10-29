@@ -1,0 +1,59 @@
+please revert git to v6-alpha
+
+mkdir .patch\830
+create git branch patch-830
+use git branch patch-830
+
+read https://github.com/bmad-code-org/BMAD-METHOD/pull/830
+
+and copy into .patch\830\
+
+create the PR-830-Summary.md
+read the PR-830-Summary.md
+
+copy the full conversation from 
+https://github.com/bmad-code-org/BMAD-METHOD/pull/830
+and save it as PR-830-conversation.md 
+
+then update the .patch/830/PR-830-Summary.md 
+to also review the external web resources 
+to fully understand the issue
+
+
+create a plan.md
+and create a todo.md list 
+
+to detect the issues, 
+make tests with --dry-run option to find the issues in the code,
+
+look at our previous patches in .patch if some of it has already potentially been fixed 
+
+make fixes with --dry-run option  to the issues,
+add tests with --dry-run option  to test the fixes,
+test the fixes,
+apply the fixes when there are no problems
+
+please continue with the plan and todo list
+
+# Run all validation checks
+npm run pre-release
+
+# Or run them individually:
+npm run validate     # Validate agent/team configs
+npm run format:check # Check code formatting
+npm run lint        # Check for linting issues
+
+# Fix all issues automatically
+npm run fix
+
+# Or fix individually:
+npm run format      # Fix formatting issues
+npm run lint:fix    # Fix linting issues
+
+please send our message of more tests needed to
+https://github.com/bmad-code-org/BMAD-METHOD/pull/830/
+
+copy all added and changed code files to .patch\830\ 
+but maintain the directory tree
+
+cd . && copy .\patch ..\.patch -r

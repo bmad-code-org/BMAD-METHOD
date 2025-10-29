@@ -1,0 +1,1213 @@
+MD Conformance: FAIL (1094 violation(s) in 59 file(s))
+
+- bmad\bmb\README.md
+  L  11  list-blank-before  Missing blank line before list
+  L  21  list-blank-before  Missing blank line before list
+  L  29  list-blank-before  Missing blank line before list
+  L  39  list-blank-before  Missing blank line before list
+  L  48  list-blank-before  Missing blank line before list
+  L  57  list-blank-before  Missing blank line before list
+  L  84  list-blank-before  Missing blank line before list
+  L  93  list-blank-before  Missing blank line before list
+  L 102  list-blank-before  Missing blank line before list
+  L 111  list-blank-before  Missing blank line before list
+  L 118  list-blank-before  Missing blank line before list
+  L 126  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\audit-workflow\checklist.md
+  L   5  list-blank-before  Missing blank line before list
+  L  15  list-blank-before  Missing blank line before list
+  L  25  list-blank-before  Missing blank line before list
+  L  36  list-blank-before  Missing blank line before list
+  L  47  list-blank-before  Missing blank line before list
+  L  63  list-blank-before  Missing blank line before list
+  L  73  list-blank-before  Missing blank line before list
+  L  92  list-blank-before  Missing blank line before list
+  L 104  list-blank-before  Missing blank line before list
+  L 112  list-blank-before  Missing blank line before list
+  L 120  list-blank-before  Missing blank line before list
+  L 135  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\audit-workflow\instructions.md
+  L 146  fence-blank-before  Missing blank line before code fence
+  L 152  fence-blank-before  Missing blank line before code fence
+  L 160  fence-blank-before  Missing blank line before code fence
+  L  15  list-blank-before  Missing blank line before list
+  L  24  list-blank-before  Missing blank line before list
+  L  36  list-blank-before  Missing blank line before list
+  L  46  list-blank-before  Missing blank line before list
+  L  52  list-blank-before  Missing blank line before list
+  L  73  list-blank-before  Missing blank line before list
+  L  79  list-blank-before  Missing blank line before list
+  L  97  list-blank-before  Missing blank line before list
+  L 103  list-blank-before  Missing blank line before list
+  L 109  list-blank-before  Missing blank line before list
+  L 115  list-blank-before  Missing blank line before list
+  L 121  list-blank-before  Missing blank line before list
+  L 130  list-blank-before  Missing blank line before list
+  L 136  list-blank-before  Missing blank line before list
+  L 142  list-blank-before  Missing blank line before list
+  L 185  list-blank-before  Missing blank line before list
+  L 191  list-blank-before  Missing blank line before list
+  L 225  list-blank-before  Missing blank line before list
+  L 231  list-blank-before  Missing blank line before list
+  L 238  list-blank-before  Missing blank line before list
+  L 243  list-blank-before  Missing blank line before list
+  L 263  list-blank-before  Missing blank line before list
+  L 269  list-blank-before  Missing blank line before list
+  L 274  list-blank-before  Missing blank line before list
+  L 333  list-blank-before  Missing blank line before list
+  L 336  list-blank-after  Missing blank line after list
+  L 164  table-blank-before  Missing blank line before table
+  L 164  table-blank-after  Missing blank line after table
+
+- bmad\bmb\workflows\audit-workflow\template.md
+  L  14  list-blank-before  Missing blank line before list
+  L 100  list-blank-before  Missing blank line before list
+  L 111  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\convert-legacy\checklist.md
+  L   7  list-blank-before  Missing blank line before list
+  L  18  list-blank-before  Missing blank line before list
+  L  26  list-blank-before  Missing blank line before list
+  L  36  list-blank-before  Missing blank line before list
+  L  47  list-blank-before  Missing blank line before list
+  L  57  list-blank-before  Missing blank line before list
+  L  66  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+  L  86  list-blank-before  Missing blank line before list
+  L  93  list-blank-before  Missing blank line before list
+  L 105  list-blank-before  Missing blank line before list
+  L 114  list-blank-before  Missing blank line before list
+  L 123  list-blank-before  Missing blank line before list
+  L 131  list-blank-before  Missing blank line before list
+  L 140  list-blank-before  Missing blank line before list
+  L 148  list-blank-before  Missing blank line before list
+  L 157  list-blank-before  Missing blank line before list
+  L 164  list-blank-before  Missing blank line before list
+  L 173  list-blank-before  Missing blank line before list
+  L 180  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\convert-legacy\instructions.md
+  L  13  list-blank-before  Missing blank line before list
+  L  16  list-blank-after  Missing blank line after list
+  L  25  list-blank-before  Missing blank line before list
+  L  34  list-blank-before  Missing blank line before list
+  L  45  list-blank-before  Missing blank line before list
+  L  53  list-blank-before  Missing blank line before list
+  L  61  list-blank-before  Missing blank line before list
+  L  64  list-blank-after  Missing blank line after list
+  L  95  list-blank-before  Missing blank line before list
+  L 103  list-blank-before  Missing blank line before list
+  L 106  list-blank-after  Missing blank line after list
+  L 122  list-blank-before  Missing blank line before list
+  L 158  list-blank-before  Missing blank line before list
+  L 160  list-blank-after  Missing blank line after list
+  L 169  list-blank-before  Missing blank line before list
+  L 177  list-blank-before  Missing blank line before list
+  L 180  list-blank-after  Missing blank line after list
+  L 189  list-blank-before  Missing blank line before list
+  L 225  list-blank-before  Missing blank line before list
+  L 228  list-blank-after  Missing blank line after list
+  L 244  list-blank-before  Missing blank line before list
+  L 245  list-blank-after  Missing blank line after list
+  L 254  list-blank-before  Missing blank line before list
+  L 266  list-blank-after  Missing blank line after list
+  L 268  list-blank-before  Missing blank line before list
+  L 270  list-blank-after  Missing blank line after list
+  L 274  list-blank-before  Missing blank line before list
+  L 276  list-blank-after  Missing blank line after list
+  L 279  list-blank-before  Missing blank line before list
+  L 299  list-blank-before  Missing blank line before list
+  L 302  list-blank-after  Missing blank line after list
+  L 316  list-blank-before  Missing blank line before list
+  L 323  list-blank-before  Missing blank line before list
+  L 330  list-blank-before  Missing blank line before list
+  L 341  list-blank-before  Missing blank line before list
+  L 356  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\convert-legacy\README.md
+  L  51  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  43  list-blank-before  Missing blank line before list
+  L  65  list-blank-before  Missing blank line before list
+  L  76  list-blank-before  Missing blank line before list
+  L  84  list-blank-before  Missing blank line before list
+  L  93  list-blank-before  Missing blank line before list
+  L 101  list-blank-before  Missing blank line before list
+  L 111  list-blank-before  Missing blank line before list
+  L 119  list-blank-before  Missing blank line before list
+  L 128  list-blank-before  Missing blank line before list
+  L 136  list-blank-before  Missing blank line before list
+  L 146  list-blank-before  Missing blank line before list
+  L 153  list-blank-before  Missing blank line before list
+  L 160  list-blank-before  Missing blank line before list
+  L 168  list-blank-before  Missing blank line before list
+  L 176  list-blank-before  Missing blank line before list
+  L 183  list-blank-before  Missing blank line before list
+  L 192  list-blank-before  Missing blank line before list
+  L 198  list-blank-before  Missing blank line before list
+  L 205  list-blank-before  Missing blank line before list
+  L 216  list-blank-before  Missing blank line before list
+  L 221  list-blank-before  Missing blank line before list
+  L 226  list-blank-before  Missing blank line before list
+  L 231  list-blank-before  Missing blank line before list
+  L 238  list-blank-before  Missing blank line before list
+  L 245  list-blank-before  Missing blank line before list
+  L 255  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-agent\agent-architecture.md
+  L 188  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  34  list-blank-before  Missing blank line before list
+  L  54  list-blank-before  Missing blank line before list
+  L  91  list-blank-before  Missing blank line before list
+  L 107  list-blank-before  Missing blank line before list
+  L 114  list-blank-before  Missing blank line before list
+  L 175  list-blank-before  Missing blank line before list
+  L 242  list-blank-before  Missing blank line before list
+  L 249  list-blank-before  Missing blank line before list
+  L 256  list-blank-before  Missing blank line before list
+  L 312  list-blank-before  Missing blank line before list
+  L 320  list-blank-before  Missing blank line before list
+  L 328  list-blank-before  Missing blank line before list
+  L 336  list-blank-before  Missing blank line before list
+  L 348  list-blank-before  Missing blank line before list
+  L 360  list-blank-before  Missing blank line before list
+  L 366  list-blank-before  Missing blank line before list
+  L 373  list-blank-before  Missing blank line before list
+  L 379  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-agent\agent-command-patterns.md
+  L 513  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  37  list-blank-before  Missing blank line before list
+  L  50  list-blank-before  Missing blank line before list
+  L  59  list-blank-before  Missing blank line before list
+  L  96  list-blank-before  Missing blank line before list
+  L 102  list-blank-before  Missing blank line before list
+  L 129  list-blank-before  Missing blank line before list
+  L 241  list-blank-before  Missing blank line before list
+  L 249  list-blank-before  Missing blank line before list
+  L 255  list-blank-before  Missing blank line before list
+  L 433  list-blank-before  Missing blank line before list
+  L 553  list-blank-before  Missing blank line before list
+  L 562  list-blank-before  Missing blank line before list
+  L 612  list-blank-before  Missing blank line before list
+  L 619  list-blank-before  Missing blank line before list
+  L 626  list-blank-before  Missing blank line before list
+  L 746  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-agent\agent-types.md
+  L  13  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  33  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 170  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 276  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  51  list-blank-before  Missing blank line before list
+  L  59  list-blank-before  Missing blank line before list
+  L 112  list-blank-before  Missing blank line before list
+  L 120  list-blank-before  Missing blank line before list
+  L 190  list-blank-before  Missing blank line before list
+  L 198  list-blank-before  Missing blank line before list
+  L 255  list-blank-before  Missing blank line before list
+  L 262  list-blank-before  Missing blank line before list
+  L 269  list-blank-before  Missing blank line before list
+  L 282  list-blank-before  Missing blank line before list
+  L 288  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-agent\brainstorm-context.md
+  L  13  list-blank-before  Missing blank line before list
+  L  25  list-blank-before  Missing blank line before list
+  L  32  list-blank-before  Missing blank line before list
+  L  39  list-blank-before  Missing blank line before list
+  L  46  list-blank-before  Missing blank line before list
+  L  54  list-blank-before  Missing blank line before list
+  L  64  list-blank-before  Missing blank line before list
+  L  73  list-blank-before  Missing blank line before list
+  L  84  list-blank-before  Missing blank line before list
+  L  89  list-blank-before  Missing blank line before list
+  L  99  list-blank-before  Missing blank line before list
+  L 106  list-blank-before  Missing blank line before list
+  L 113  list-blank-before  Missing blank line before list
+  L 122  list-blank-before  Missing blank line before list
+  L 128  list-blank-before  Missing blank line before list
+  L 134  list-blank-before  Missing blank line before list
+  L 142  list-blank-before  Missing blank line before list
+  L 150  list-blank-before  Missing blank line before list
+  L 164  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-agent\checklist.md
+  L   7  list-blank-before  Missing blank line before list
+  L  14  list-blank-before  Missing blank line before list
+  L  20  list-blank-before  Missing blank line before list
+  L  27  list-blank-before  Missing blank line before list
+  L  35  list-blank-before  Missing blank line before list
+  L  41  list-blank-before  Missing blank line before list
+  L  46  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-agent\communication-styles.md
+  L 143  list-blank-before  Missing blank line before list
+  L 166  list-blank-before  Missing blank line before list
+  L 175  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-agent\instructions.md
+  L 177  fence-blank-before  Missing blank line before code fence
+  L 183  fence-blank-after  Missing blank line after code fence
+  L 256  fence-blank-before  Missing blank line before code fence
+  L 288  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  45  list-blank-before  Missing blank line before list
+  L  67  list-blank-before  Missing blank line before list
+  L  97  list-blank-before  Missing blank line before list
+  L 140  list-blank-before  Missing blank line before list
+  L 146  list-blank-before  Missing blank line before list
+  L 158  list-blank-before  Missing blank line before list
+  L 172  list-blank-before  Missing blank line before list
+  L 173  list-blank-after  Missing blank line after list
+  L 196  list-blank-before  Missing blank line before list
+  L 239  list-blank-before  Missing blank line before list
+  L 355  list-blank-before  Missing blank line before list
+  L 357  list-blank-after  Missing blank line after list
+  L 376  list-blank-before  Missing blank line before list
+  L 390  list-blank-before  Missing blank line before list
+  L 405  list-blank-before  Missing blank line before list
+  L 411  list-blank-before  Missing blank line before list
+  L 416  list-blank-before  Missing blank line before list
+  L 221  table-blank-before  Missing blank line before table
+  L 221  table-blank-after  Missing blank line after table
+  L 223  table-blank-before  Missing blank line before table
+  L 223  table-blank-after  Missing blank line after table
+  L 225  table-blank-before  Missing blank line before table
+  L 225  table-blank-after  Missing blank line after table
+
+- bmad\bmb\workflows\create-agent\README.md
+  L  27  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  51  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  37  list-blank-before  Missing blank line before list
+  L  67  list-blank-before  Missing blank line before list
+  L  74  list-blank-before  Missing blank line before list
+  L  81  list-blank-before  Missing blank line before list
+  L  89  list-blank-before  Missing blank line before list
+  L  97  list-blank-before  Missing blank line before list
+  L 110  list-blank-before  Missing blank line before list
+  L 116  list-blank-before  Missing blank line before list
+  L 152  list-blank-before  Missing blank line before list
+  L 193  list-blank-before  Missing blank line before list
+  L 204  list-blank-before  Missing blank line before list
+  L 211  list-blank-before  Missing blank line before list
+  L 231  list-blank-before  Missing blank line before list
+  L 239  list-blank-before  Missing blank line before list
+  L 247  list-blank-before  Missing blank line before list
+  L 259  list-blank-before  Missing blank line before list
+  L 265  list-blank-before  Missing blank line before list
+  L 271  list-blank-before  Missing blank line before list
+  L 279  list-blank-before  Missing blank line before list
+  L 284  list-blank-before  Missing blank line before list
+  L 289  list-blank-before  Missing blank line before list
+  L 296  list-blank-before  Missing blank line before list
+  L 303  list-blank-before  Missing blank line before list
+  L 313  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-module\brainstorm-context.md
+  L  13  list-blank-before  Missing blank line before list
+  L  25  list-blank-before  Missing blank line before list
+  L  32  list-blank-before  Missing blank line before list
+  L  39  list-blank-before  Missing blank line before list
+  L  45  list-blank-before  Missing blank line before list
+  L  53  list-blank-before  Missing blank line before list
+  L  61  list-blank-before  Missing blank line before list
+  L  89  list-blank-before  Missing blank line before list
+  L  95  list-blank-before  Missing blank line before list
+  L 101  list-blank-before  Missing blank line before list
+  L 109  list-blank-before  Missing blank line before list
+  L 117  list-blank-before  Missing blank line before list
+  L 129  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-module\checklist.md
+  L   7  list-blank-before  Missing blank line before list
+  L  16  list-blank-before  Missing blank line before list
+  L  24  list-blank-before  Missing blank line before list
+  L  34  list-blank-before  Missing blank line before list
+  L  43  list-blank-before  Missing blank line before list
+  L  51  list-blank-before  Missing blank line before list
+  L  59  list-blank-before  Missing blank line before list
+  L  67  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+  L  86  list-blank-before  Missing blank line before list
+  L  93  list-blank-before  Missing blank line before list
+  L 101  list-blank-before  Missing blank line before list
+  L 109  list-blank-before  Missing blank line before list
+  L 120  list-blank-before  Missing blank line before list
+  L 127  list-blank-before  Missing blank line before list
+  L 136  list-blank-before  Missing blank line before list
+  L 143  list-blank-before  Missing blank line before list
+  L 151  list-blank-before  Missing blank line before list
+  L 157  list-blank-before  Missing blank line before list
+  L 163  list-blank-before  Missing blank line before list
+  L 171  list-blank-before  Missing blank line before list
+  L 178  list-blank-before  Missing blank line before list
+  L 184  list-blank-before  Missing blank line before list
+  L 192  list-blank-before  Missing blank line before list
+  L 199  list-blank-before  Missing blank line before list
+  L 226  list-blank-before  Missing blank line before list
+  L 232  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-module\instructions.md
+  L 159  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 175  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 185  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 337  fence-blank-before  Missing blank line before code fence
+  L 390  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 402  fence-blank-after  Missing blank line after code fence
+  L 404  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 404  fence-blank-before  Missing blank line before code fence
+  L 426  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 432  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 437  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 437  fence-blank-before  Missing blank line before code fence
+  L 443  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 478  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 488  fence-blank-after  Missing blank line after code fence
+  L 506  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 506  fence-blank-before  Missing blank line before code fence
+  L 513  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 513  fence-blank-before  Missing blank line before code fence
+  L 521  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 521  fence-blank-before  Missing blank line before code fence
+  L  63  list-blank-before  Missing blank line before list
+  L  73  list-blank-before  Missing blank line before list
+  L  81  list-blank-before  Missing blank line before list
+  L  97  list-blank-before  Missing blank line before list
+  L 110  list-blank-before  Missing blank line before list
+  L 131  list-blank-before  Missing blank line before list
+  L 137  list-blank-before  Missing blank line before list
+  L 143  list-blank-before  Missing blank line before list
+  L 155  list-blank-before  Missing blank line before list
+  L 205  list-blank-before  Missing blank line before list
+  L 213  list-blank-before  Missing blank line before list
+  L 235  list-blank-before  Missing blank line before list
+  L 235  list-blank-after  Missing blank line after list
+  L 255  list-blank-before  Missing blank line before list
+  L 255  list-blank-after  Missing blank line after list
+  L 332  list-blank-before  Missing blank line before list
+  L 377  list-blank-before  Missing blank line before list
+  L 377  list-blank-after  Missing blank line after list
+  L 424  list-blank-before  Missing blank line before list
+  L 430  list-blank-before  Missing blank line before list
+  L 436  list-blank-before  Missing blank line before list
+  L 436  list-blank-after  Missing blank line after list
+  L 462  list-blank-before  Missing blank line before list
+  L 470  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-module\module-structure.md
+  L  11  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 290  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 304  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 322  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 344  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  46  list-blank-before  Missing blank line before list
+  L  56  list-blank-before  Missing blank line before list
+  L  66  list-blank-before  Missing blank line before list
+  L  74  list-blank-before  Missing blank line before list
+  L  81  list-blank-before  Missing blank line before list
+  L  92  list-blank-before  Missing blank line before list
+  L  98  list-blank-before  Missing blank line before list
+  L 106  list-blank-before  Missing blank line before list
+  L 113  list-blank-before  Missing blank line before list
+  L 121  list-blank-before  Missing blank line before list
+  L 129  list-blank-before  Missing blank line before list
+  L 135  list-blank-before  Missing blank line before list
+  L 190  list-blank-before  Missing blank line before list
+  L 225  list-blank-before  Missing blank line before list
+  L 234  list-blank-before  Missing blank line before list
+  L 263  list-blank-before  Missing blank line before list
+  L 269  list-blank-before  Missing blank line before list
+  L 275  list-blank-before  Missing blank line before list
+  L 282  list-blank-before  Missing blank line before list
+  L 351  list-blank-before  Missing blank line before list
+  L 361  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-module\README.md
+  L  43  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  35  list-blank-before  Missing blank line before list
+  L  61  list-blank-before  Missing blank line before list
+  L  68  list-blank-before  Missing blank line before list
+  L  76  list-blank-before  Missing blank line before list
+  L  82  list-blank-before  Missing blank line before list
+  L  90  list-blank-before  Missing blank line before list
+  L  96  list-blank-before  Missing blank line before list
+  L 104  list-blank-before  Missing blank line before list
+  L 110  list-blank-before  Missing blank line before list
+  L 118  list-blank-before  Missing blank line before list
+  L 127  list-blank-before  Missing blank line before list
+  L 138  list-blank-before  Missing blank line before list
+  L 147  list-blank-before  Missing blank line before list
+  L 155  list-blank-before  Missing blank line before list
+  L 161  list-blank-before  Missing blank line before list
+  L 168  list-blank-before  Missing blank line before list
+  L 179  list-blank-before  Missing blank line before list
+  L 184  list-blank-before  Missing blank line before list
+  L 189  list-blank-before  Missing blank line before list
+  L 196  list-blank-before  Missing blank line before list
+  L 203  list-blank-before  Missing blank line before list
+  L 213  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-workflow\brainstorm-context.md
+  L  13  list-blank-before  Missing blank line before list
+  L  25  list-blank-before  Missing blank line before list
+  L  32  list-blank-before  Missing blank line before list
+  L  40  list-blank-before  Missing blank line before list
+  L  47  list-blank-before  Missing blank line before list
+  L  57  list-blank-before  Missing blank line before list
+  L  67  list-blank-before  Missing blank line before list
+  L  75  list-blank-before  Missing blank line before list
+  L  83  list-blank-before  Missing blank line before list
+  L  92  list-blank-before  Missing blank line before list
+  L  99  list-blank-before  Missing blank line before list
+  L 106  list-blank-before  Missing blank line before list
+  L 112  list-blank-before  Missing blank line before list
+  L 124  list-blank-before  Missing blank line before list
+  L 134  list-blank-before  Missing blank line before list
+  L 144  list-blank-before  Missing blank line before list
+  L 154  list-blank-before  Missing blank line before list
+  L 162  list-blank-before  Missing blank line before list
+  L 170  list-blank-before  Missing blank line before list
+  L 185  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-workflow\checklist.md
+  L   5  list-blank-before  Missing blank line before list
+  L  15  list-blank-before  Missing blank line before list
+  L  25  list-blank-before  Missing blank line before list
+  L  33  list-blank-before  Missing blank line before list
+  L  41  list-blank-before  Missing blank line before list
+  L  48  list-blank-before  Missing blank line before list
+  L  55  list-blank-before  Missing blank line before list
+  L  62  list-blank-before  Missing blank line before list
+  L  83  list-blank-before  Missing blank line before list
+  L  91  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-workflow\instructions.md
+  L  16  list-blank-before  Missing blank line before list
+  L  22  list-blank-before  Missing blank line before list
+  L  26  list-blank-after  Missing blank line after list
+  L  37  list-blank-before  Missing blank line before list
+  L  42  list-blank-after  Missing blank line after list
+  L  50  list-blank-before  Missing blank line before list
+  L  63  list-blank-before  Missing blank line before list
+  L  69  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+  L  91  list-blank-before  Missing blank line before list
+  L  98  list-blank-before  Missing blank line before list
+  L 108  list-blank-before  Missing blank line before list
+  L 129  list-blank-before  Missing blank line before list
+  L 137  list-blank-before  Missing blank line before list
+  L 149  list-blank-before  Missing blank line before list
+  L 163  list-blank-before  Missing blank line before list
+  L 171  list-blank-before  Missing blank line before list
+  L 179  list-blank-before  Missing blank line before list
+  L 183  list-blank-after  Missing blank line after list
+  L 188  list-blank-before  Missing blank line before list
+  L 198  list-blank-before  Missing blank line before list
+  L 202  list-blank-after  Missing blank line after list
+  L 207  list-blank-before  Missing blank line before list
+  L 216  list-blank-before  Missing blank line before list
+  L 219  list-blank-after  Missing blank line after list
+  L 233  list-blank-before  Missing blank line before list
+  L 241  list-blank-before  Missing blank line before list
+  L 298  list-blank-before  Missing blank line before list
+  L 304  list-blank-before  Missing blank line before list
+  L 305  list-blank-after  Missing blank line after list
+  L 313  list-blank-before  Missing blank line before list
+  L 342  list-blank-before  Missing blank line before list
+  L 388  list-blank-before  Missing blank line before list
+  L 423  list-blank-before  Missing blank line before list
+  L 455  list-blank-before  Missing blank line before list
+  L 463  list-blank-before  Missing blank line before list
+  L 473  list-blank-before  Missing blank line before list
+  L 473  list-blank-after  Missing blank line after list
+  L 481  list-blank-before  Missing blank line before list
+  L 494  list-blank-before  Missing blank line before list
+  L 505  list-blank-before  Missing blank line before list
+  L 514  list-blank-before  Missing blank line before list
+  L 519  list-blank-before  Missing blank line before list
+  L 527  list-blank-before  Missing blank line before list
+  L 527  list-blank-after  Missing blank line after list
+  L 537  list-blank-before  Missing blank line before list
+  L 537  list-blank-after  Missing blank line after list
+  L 541  list-blank-before  Missing blank line before list
+  L 555  list-blank-before  Missing blank line before list
+  L 555  list-blank-after  Missing blank line after list
+  L 560  list-blank-before  Missing blank line before list
+  L 572  list-blank-before  Missing blank line before list
+  L 580  list-blank-before  Missing blank line before list
+  L 589  list-blank-before  Missing blank line before list
+  L 598  list-blank-before  Missing blank line before list
+  L 600  list-blank-after  Missing blank line after list
+  L 609  list-blank-before  Missing blank line before list
+  L 615  list-blank-before  Missing blank line before list
+  L 624  list-blank-before  Missing blank line before list
+  L 632  list-blank-before  Missing blank line before list
+  L 636  list-blank-before  Missing blank line before list
+  L 637  list-blank-after  Missing blank line after list
+  L 640  list-blank-before  Missing blank line before list
+  L 688  list-blank-before  Missing blank line before list
+  L 695  list-blank-before  Missing blank line before list
+  L 708  list-blank-before  Missing blank line before list
+  L 713  list-blank-after  Missing blank line after list
+
+- bmad\bmb\workflows\create-workflow\README.md
+  L  27  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  44  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  33  list-blank-before  Missing blank line before list
+  L  69  list-blank-before  Missing blank line before list
+  L  76  list-blank-before  Missing blank line before list
+  L  86  list-blank-before  Missing blank line before list
+  L  93  list-blank-before  Missing blank line before list
+  L 124  list-blank-before  Missing blank line before list
+  L 131  list-blank-before  Missing blank line before list
+  L 138  list-blank-before  Missing blank line before list
+  L 145  list-blank-before  Missing blank line before list
+  L 153  list-blank-before  Missing blank line before list
+  L 168  list-blank-before  Missing blank line before list
+  L 174  list-blank-before  Missing blank line before list
+  L 182  list-blank-before  Missing blank line before list
+  L 190  list-blank-before  Missing blank line before list
+  L 198  list-blank-before  Missing blank line before list
+  L 208  list-blank-before  Missing blank line before list
+  L 215  list-blank-before  Missing blank line before list
+  L 223  list-blank-before  Missing blank line before list
+  L 232  list-blank-before  Missing blank line before list
+  L 237  list-blank-before  Missing blank line before list
+  L 242  list-blank-before  Missing blank line before list
+  L 249  list-blank-before  Missing blank line before list
+  L 256  list-blank-before  Missing blank line before list
+  L 270  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\create-workflow\workflow-creation-guide.md
+  L  84  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  91  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   7  list-blank-before  Missing blank line before list
+  L  74  list-blank-before  Missing blank line before list
+  L 136  list-blank-before  Missing blank line before list
+  L 145  list-blank-before  Missing blank line before list
+  L 183  list-blank-before  Missing blank line before list
+  L 190  list-blank-before  Missing blank line before list
+  L 199  list-blank-before  Missing blank line before list
+  L 205  list-blank-before  Missing blank line before list
+  L 226  list-blank-before  Missing blank line before list
+  L 235  list-blank-before  Missing blank line before list
+  L 240  list-blank-before  Missing blank line before list
+  L 245  list-blank-before  Missing blank line before list
+  L 266  list-blank-before  Missing blank line before list
+  L 274  list-blank-before  Missing blank line before list
+  L 311  list-blank-before  Missing blank line before list
+  L 320  list-blank-before  Missing blank line before list
+  L 328  list-blank-before  Missing blank line before list
+  L 413  list-blank-before  Missing blank line before list
+  L 438  list-blank-before  Missing blank line before list
+  L 456  list-blank-before  Missing blank line before list
+  L 491  list-blank-before  Missing blank line before list
+  L 500  list-blank-before  Missing blank line before list
+  L 509  list-blank-before  Missing blank line before list
+  L 517  list-blank-before  Missing blank line before list
+  L 527  list-blank-before  Missing blank line before list
+  L 542  list-blank-before  Missing blank line before list
+  L 554  list-blank-before  Missing blank line before list
+  L 568  list-blank-before  Missing blank line before list
+  L 580  list-blank-before  Missing blank line before list
+  L 587  list-blank-before  Missing blank line before list
+  L 664  list-blank-before  Missing blank line before list
+  L 715  list-blank-before  Missing blank line before list
+  L 722  list-blank-before  Missing blank line before list
+  L 791  list-blank-before  Missing blank line before list
+  L 811  list-blank-before  Missing blank line before list
+  L 848  list-blank-before  Missing blank line before list
+  L 857  list-blank-before  Missing blank line before list
+  L 966  list-blank-before  Missing blank line before list
+  L 974  list-blank-before  Missing blank line before list
+  L 983  list-blank-before  Missing blank line before list
+  L 990  list-blank-before  Missing blank line before list
+  L1015  list-blank-before  Missing blank line before list
+  L1029  list-blank-before  Missing blank line before list
+  L1036  list-blank-before  Missing blank line before list
+  L1070  list-blank-before  Missing blank line before list
+  L1128  list-blank-before  Missing blank line before list
+  L1134  list-blank-before  Missing blank line before list
+  L1140  list-blank-before  Missing blank line before list
+  L1149  list-blank-before  Missing blank line before list
+  L  64  table-blank-before  Missing blank line before table
+  L  70  table-blank-after  Missing blank line after table
+
+- bmad\bmb\workflows\create-workflow\workflow-template\checklist.md
+  L   5  list-blank-before  Missing blank line before list
+  L  14  list-blank-before  Missing blank line before list
+  L  21  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\edit-agent\checklist.md
+  L   7  list-blank-before  Missing blank line before list
+  L  13  list-blank-before  Missing blank line before list
+  L  20  list-blank-before  Missing blank line before list
+  L  30  list-blank-before  Missing blank line before list
+  L  39  list-blank-before  Missing blank line before list
+  L  48  list-blank-before  Missing blank line before list
+  L  56  list-blank-before  Missing blank line before list
+  L  63  list-blank-before  Missing blank line before list
+  L  70  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+  L  87  list-blank-before  Missing blank line before list
+  L  94  list-blank-before  Missing blank line before list
+  L 101  list-blank-before  Missing blank line before list
+  L 109  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\edit-agent\instructions.md
+  L  17  list-blank-before  Missing blank line before list
+  L  21  list-blank-after  Missing blank line after list
+  L  26  list-blank-before  Missing blank line before list
+  L  32  list-blank-after  Missing blank line after list
+  L  39  list-blank-before  Missing blank line before list
+  L  58  list-blank-before  Missing blank line before list
+  L  66  list-blank-before  Missing blank line before list
+  L  70  list-blank-after  Missing blank line after list
+  L  77  list-blank-before  Missing blank line before list
+  L  88  list-blank-before  Missing blank line before list
+  L 103  list-blank-before  Missing blank line before list
+  L 124  list-blank-after  Missing blank line after list
+  L 131  list-blank-before  Missing blank line before list
+  L 138  list-blank-before  Missing blank line before list
+  L 146  list-blank-before  Missing blank line before list
+  L 154  list-blank-before  Missing blank line before list
+  L 162  list-blank-before  Missing blank line before list
+  L 169  list-blank-before  Missing blank line before list
+  L 172  list-blank-after  Missing blank line after list
+  L 179  list-blank-before  Missing blank line before list
+  L 188  list-blank-before  Missing blank line before list
+  L 190  list-blank-after  Missing blank line after list
+  L 201  list-blank-before  Missing blank line before list
+  L 204  list-blank-after  Missing blank line after list
+  L 215  list-blank-before  Missing blank line before list
+  L 220  list-blank-before  Missing blank line before list
+  L 221  list-blank-after  Missing blank line after list
+  L 232  list-blank-before  Missing blank line before list
+  L 250  list-blank-before  Missing blank line before list
+  L 257  list-blank-before  Missing blank line before list
+  L 259  list-blank-after  Missing blank line after list
+  L 266  list-blank-before  Missing blank line before list
+  L 270  list-blank-before  Missing blank line before list
+  L 274  list-blank-before  Missing blank line before list
+  L 281  list-blank-before  Missing blank line before list
+  L 284  list-blank-after  Missing blank line after list
+
+- bmad\bmb\workflows\edit-agent\README.md
+  L  97  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 107  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  19  list-blank-before  Missing blank line before list
+  L  28  list-blank-before  Missing blank line before list
+  L  34  list-blank-before  Missing blank line before list
+  L  46  list-blank-before  Missing blank line before list
+  L  63  list-blank-before  Missing blank line before list
+  L  75  list-blank-before  Missing blank line before list
+  L  83  list-blank-before  Missing blank line before list
+  L  91  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\edit-module\checklist.md
+  L   7  list-blank-before  Missing blank line before list
+  L  19  list-blank-before  Missing blank line before list
+  L  27  list-blank-before  Missing blank line before list
+  L  33  list-blank-before  Missing blank line before list
+  L  42  list-blank-before  Missing blank line before list
+  L  49  list-blank-before  Missing blank line before list
+  L  57  list-blank-before  Missing blank line before list
+  L  65  list-blank-before  Missing blank line before list
+  L  73  list-blank-before  Missing blank line before list
+  L  82  list-blank-before  Missing blank line before list
+  L  91  list-blank-before  Missing blank line before list
+  L  99  list-blank-before  Missing blank line before list
+  L 106  list-blank-before  Missing blank line before list
+  L 112  list-blank-before  Missing blank line before list
+  L 120  list-blank-before  Missing blank line before list
+  L 129  list-blank-before  Missing blank line before list
+  L 137  list-blank-before  Missing blank line before list
+  L 145  list-blank-before  Missing blank line before list
+  L 152  list-blank-before  Missing blank line before list
+  L 161  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\edit-module\instructions.md
+  L  16  list-blank-before  Missing blank line before list
+  L  22  list-blank-after  Missing blank line after list
+  L  27  list-blank-before  Missing blank line before list
+  L  29  list-blank-after  Missing blank line after list
+  L  34  list-blank-before  Missing blank line before list
+  L  41  list-blank-after  Missing blank line after list
+  L  48  list-blank-before  Missing blank line before list
+  L  68  list-blank-before  Missing blank line before list
+  L  78  list-blank-before  Missing blank line before list
+  L  84  list-blank-after  Missing blank line after list
+  L  91  list-blank-before  Missing blank line before list
+  L 102  list-blank-before  Missing blank line before list
+  L 118  list-blank-before  Missing blank line before list
+  L 139  list-blank-after  Missing blank line after list
+  L 146  list-blank-before  Missing blank line before list
+  L 154  list-blank-before  Missing blank line before list
+  L 162  list-blank-before  Missing blank line before list
+  L 170  list-blank-before  Missing blank line before list
+  L 178  list-blank-before  Missing blank line before list
+  L 187  list-blank-before  Missing blank line before list
+  L 195  list-blank-before  Missing blank line before list
+  L 199  list-blank-after  Missing blank line after list
+  L 206  list-blank-before  Missing blank line before list
+  L 211  list-blank-before  Missing blank line before list
+  L 211  list-blank-after  Missing blank line after list
+  L 218  list-blank-before  Missing blank line before list
+  L 227  list-blank-before  Missing blank line before list
+  L 229  list-blank-after  Missing blank line after list
+  L 240  list-blank-before  Missing blank line before list
+  L 244  list-blank-after  Missing blank line after list
+  L 255  list-blank-before  Missing blank line before list
+  L 260  list-blank-before  Missing blank line before list
+  L 261  list-blank-after  Missing blank line after list
+  L 272  list-blank-before  Missing blank line before list
+  L 291  list-blank-before  Missing blank line before list
+  L 298  list-blank-before  Missing blank line before list
+  L 300  list-blank-after  Missing blank line after list
+  L 307  list-blank-before  Missing blank line before list
+  L 311  list-blank-before  Missing blank line before list
+  L 315  list-blank-before  Missing blank line before list
+  L 319  list-blank-before  Missing blank line before list
+  L 323  list-blank-before  Missing blank line before list
+  L 330  list-blank-before  Missing blank line before list
+  L 333  list-blank-after  Missing blank line after list
+
+- bmad\bmb\workflows\edit-module\README.md
+  L  75  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 164  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 175  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  19  list-blank-before  Missing blank line before list
+  L  29  list-blank-before  Missing blank line before list
+  L  35  list-blank-before  Missing blank line before list
+  L  47  list-blank-before  Missing blank line before list
+  L  64  list-blank-before  Missing blank line before list
+  L 114  list-blank-before  Missing blank line before list
+  L 122  list-blank-before  Missing blank line before list
+  L 132  list-blank-before  Missing blank line before list
+  L 140  list-blank-before  Missing blank line before list
+  L 150  list-blank-before  Missing blank line before list
+  L 156  list-blank-before  Missing blank line before list
+  L 184  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\edit-workflow\checklist.md
+  L   5  list-blank-before  Missing blank line before list
+  L  12  list-blank-before  Missing blank line before list
+  L  19  list-blank-before  Missing blank line before list
+  L  26  list-blank-before  Missing blank line before list
+  L  35  list-blank-before  Missing blank line before list
+  L  44  list-blank-before  Missing blank line before list
+  L  51  list-blank-before  Missing blank line before list
+  L  58  list-blank-before  Missing blank line before list
+  L  65  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\edit-workflow\instructions.md
+  L  16  list-blank-before  Missing blank line before list
+  L  20  list-blank-after  Missing blank line after list
+  L  25  list-blank-before  Missing blank line before list
+  L  27  list-blank-after  Missing blank line after list
+  L  32  list-blank-before  Missing blank line before list
+  L  41  list-blank-after  Missing blank line after list
+  L  48  list-blank-before  Missing blank line before list
+  L  68  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+  L  82  list-blank-after  Missing blank line after list
+  L  89  list-blank-before  Missing blank line before list
+  L 100  list-blank-before  Missing blank line before list
+  L 112  list-blank-before  Missing blank line before list
+  L 127  list-blank-before  Missing blank line before list
+  L 149  list-blank-after  Missing blank line after list
+  L 156  list-blank-before  Missing blank line before list
+  L 165  list-blank-before  Missing blank line before list
+  L 174  list-blank-before  Missing blank line before list
+  L 182  list-blank-before  Missing blank line before list
+  L 190  list-blank-before  Missing blank line before list
+  L 198  list-blank-before  Missing blank line before list
+  L 206  list-blank-before  Missing blank line before list
+  L 214  list-blank-before  Missing blank line before list
+  L 218  list-blank-after  Missing blank line after list
+  L 225  list-blank-before  Missing blank line before list
+  L 234  list-blank-before  Missing blank line before list
+  L 236  list-blank-after  Missing blank line after list
+  L 247  list-blank-before  Missing blank line before list
+  L 251  list-blank-after  Missing blank line after list
+  L 262  list-blank-before  Missing blank line before list
+  L 267  list-blank-before  Missing blank line before list
+  L 268  list-blank-after  Missing blank line after list
+  L 279  list-blank-before  Missing blank line before list
+  L 298  list-blank-before  Missing blank line before list
+  L 305  list-blank-before  Missing blank line before list
+  L 307  list-blank-after  Missing blank line after list
+  L 314  list-blank-before  Missing blank line before list
+  L 318  list-blank-before  Missing blank line before list
+  L 322  list-blank-before  Missing blank line before list
+  L 326  list-blank-before  Missing blank line before list
+  L 333  list-blank-before  Missing blank line before list
+  L 336  list-blank-after  Missing blank line after list
+
+- bmad\bmb\workflows\edit-workflow\README.md
+  L  19  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  25  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  11  list-blank-before  Missing blank line before list
+  L  31  list-blank-before  Missing blank line before list
+  L  37  list-blank-before  Missing blank line before list
+  L  42  list-blank-before  Missing blank line before list
+  L  60  list-blank-before  Missing blank line before list
+  L  67  list-blank-before  Missing blank line before list
+  L  76  list-blank-before  Missing blank line before list
+  L  83  list-blank-before  Missing blank line before list
+  L  92  list-blank-before  Missing blank line before list
+  L  99  list-blank-before  Missing blank line before list
+  L 107  list-blank-before  Missing blank line before list
+  L 117  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\module-brief\checklist.md
+  L   5  list-blank-before  Missing blank line before list
+  L  13  list-blank-before  Missing blank line before list
+  L  20  list-blank-before  Missing blank line before list
+  L  28  list-blank-before  Missing blank line before list
+  L  36  list-blank-before  Missing blank line before list
+  L  44  list-blank-before  Missing blank line before list
+  L  52  list-blank-before  Missing blank line before list
+  L  60  list-blank-before  Missing blank line before list
+  L  68  list-blank-before  Missing blank line before list
+  L  75  list-blank-before  Missing blank line before list
+  L  83  list-blank-before  Missing blank line before list
+  L  91  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\module-brief\instructions.md
+  L  11  list-blank-before  Missing blank line before list
+  L  17  list-blank-before  Missing blank line before list
+  L  26  list-blank-before  Missing blank line before list
+  L  33  list-blank-before  Missing blank line before list
+  L  45  list-blank-before  Missing blank line before list
+  L  50  list-blank-before  Missing blank line before list
+  L  54  list-blank-before  Missing blank line before list
+  L  62  list-blank-before  Missing blank line before list
+  L  73  list-blank-before  Missing blank line before list
+  L  80  list-blank-before  Missing blank line before list
+  L  96  list-blank-before  Missing blank line before list
+  L 101  list-blank-before  Missing blank line before list
+  L 106  list-blank-before  Missing blank line before list
+  L 111  list-blank-before  Missing blank line before list
+  L 126  list-blank-before  Missing blank line before list
+  L 141  list-blank-before  Missing blank line before list
+  L 147  list-blank-before  Missing blank line before list
+  L 153  list-blank-before  Missing blank line before list
+  L 165  list-blank-before  Missing blank line before list
+  L 171  list-blank-before  Missing blank line before list
+  L 183  list-blank-before  Missing blank line before list
+  L 189  list-blank-before  Missing blank line before list
+  L 195  list-blank-before  Missing blank line before list
+  L 207  list-blank-before  Missing blank line before list
+  L 212  list-blank-before  Missing blank line before list
+  L 218  list-blank-before  Missing blank line before list
+  L 230  list-blank-before  Missing blank line before list
+  L 236  list-blank-before  Missing blank line before list
+  L 242  list-blank-before  Missing blank line before list
+  L 257  list-blank-before  Missing blank line before list
+  L 259  list-blank-after  Missing blank line after list
+
+- bmad\bmb\workflows\module-brief\README.md
+  L  53  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  44  list-blank-before  Missing blank line before list
+  L  68  list-blank-before  Missing blank line before list
+  L  74  list-blank-before  Missing blank line before list
+  L  81  list-blank-before  Missing blank line before list
+  L  90  list-blank-before  Missing blank line before list
+  L  97  list-blank-before  Missing blank line before list
+  L 108  list-blank-before  Missing blank line before list
+  L 115  list-blank-before  Missing blank line before list
+  L 124  list-blank-before  Missing blank line before list
+  L 131  list-blank-before  Missing blank line before list
+  L 140  list-blank-before  Missing blank line before list
+  L 147  list-blank-before  Missing blank line before list
+  L 154  list-blank-before  Missing blank line before list
+  L 163  list-blank-before  Missing blank line before list
+  L 170  list-blank-before  Missing blank line before list
+  L 185  list-blank-before  Missing blank line before list
+  L 193  list-blank-before  Missing blank line before list
+  L 199  list-blank-before  Missing blank line before list
+  L 206  list-blank-before  Missing blank line before list
+  L 217  list-blank-before  Missing blank line before list
+  L 222  list-blank-before  Missing blank line before list
+  L 227  list-blank-before  Missing blank line before list
+  L 232  list-blank-before  Missing blank line before list
+  L 239  list-blank-before  Missing blank line before list
+  L 246  list-blank-before  Missing blank line before list
+  L 257  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\module-brief\template.md
+  L 198  list-blank-before  Missing blank line before list
+  L 250  list-blank-before  Missing blank line before list
+  L 268  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\redoc\checklist.md
+  L   5  list-blank-before  Missing blank line before list
+  L  12  list-blank-before  Missing blank line before list
+  L  19  list-blank-before  Missing blank line before list
+  L  29  list-blank-before  Missing blank line before list
+  L  38  list-blank-before  Missing blank line before list
+  L  49  list-blank-before  Missing blank line before list
+  L  62  list-blank-before  Missing blank line before list
+  L  71  list-blank-before  Missing blank line before list
+  L  79  list-blank-before  Missing blank line before list
+  L  86  list-blank-before  Missing blank line before list
+
+- bmad\bmb\workflows\redoc\instructions.md
+  L  14  list-blank-before  Missing blank line before list
+  L  18  list-blank-after  Missing blank line after list
+  L  23  list-blank-before  Missing blank line before list
+  L  26  list-blank-after  Missing blank line after list
+  L  31  list-blank-before  Missing blank line before list
+  L  32  list-blank-after  Missing blank line after list
+  L  37  list-blank-before  Missing blank line before list
+  L  41  list-blank-after  Missing blank line after list
+  L  52  list-blank-before  Missing blank line before list
+  L  55  list-blank-after  Missing blank line after list
+  L  60  list-blank-before  Missing blank line before list
+  L  62  list-blank-after  Missing blank line after list
+  L  67  list-blank-before  Missing blank line before list
+  L  68  list-blank-after  Missing blank line after list
+  L  80  list-blank-before  Missing blank line before list
+  L 110  list-blank-before  Missing blank line before list
+  L 130  list-blank-after  Missing blank line after list
+  L 138  list-blank-before  Missing blank line before list
+  L 158  list-blank-after  Missing blank line after list
+  L 163  list-blank-before  Missing blank line before list
+  L 183  list-blank-after  Missing blank line after list
+  L 189  list-blank-before  Missing blank line before list
+  L 197  list-blank-before  Missing blank line before list
+  L 218  list-blank-before  Missing blank line before list
+  L 222  list-blank-after  Missing blank line after list
+  L 228  list-blank-before  Missing blank line before list
+  L 230  list-blank-after  Missing blank line after list
+  L 235  list-blank-before  Missing blank line before list
+  L 241  list-blank-after  Missing blank line after list
+  L 252  list-blank-before  Missing blank line before list
+  L 255  list-blank-after  Missing blank line after list
+
+- bmad\bmb\workflows\redoc\README.md
+  L  25  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  14  list-blank-before  Missing blank line before list
+  L  31  list-blank-before  Missing blank line before list
+  L  41  list-blank-before  Missing blank line before list
+  L  45  list-blank-before  Missing blank line before list
+  L  55  list-blank-before  Missing blank line before list
+  L  61  list-blank-before  Missing blank line before list
+  L  67  list-blank-before  Missing blank line before list
+  L  78  list-blank-before  Missing blank line before list
+  L  85  list-blank-before  Missing blank line before list
+
+- bmad\bmd\agents\cli-chief-sidecar\instructions.md
+  L   7  list-blank-before  Missing blank line before list
+  L  14  list-blank-before  Missing blank line before list
+  L  34  list-blank-before  Missing blank line before list
+  L  42  list-blank-before  Missing blank line before list
+  L  50  list-blank-before  Missing blank line before list
+  L  59  list-blank-before  Missing blank line before list
+  L  66  list-blank-before  Missing blank line before list
+  L  73  list-blank-before  Missing blank line before list
+  L  83  list-blank-before  Missing blank line before list
+  L  91  list-blank-before  Missing blank line before list
+  L  99  list-blank-before  Missing blank line before list
+
+- bmad\bmd\agents\cli-chief-sidecar\knowledge\cli-reference.md
+  L  49  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  11  list-blank-before  Missing blank line before list
+  L  27  list-blank-before  Missing blank line before list
+  L  33  list-blank-before  Missing blank line before list
+  L  38  list-blank-before  Missing blank line before list
+  L  44  list-blank-before  Missing blank line before list
+  L  66  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+  L  84  list-blank-before  Missing blank line before list
+  L  90  list-blank-before  Missing blank line before list
+  L  99  list-blank-before  Missing blank line before list
+  L 107  list-blank-before  Missing blank line before list
+  L 115  list-blank-before  Missing blank line before list
+
+- bmad\bmd\agents\cli-chief-sidecar\knowledge\README.md
+  L  13  list-blank-before  Missing blank line before list
+  L  22  list-blank-before  Missing blank line before list
+  L  29  list-blank-before  Missing blank line before list
+  L  36  list-blank-before  Missing blank line before list
+  L  43  list-blank-before  Missing blank line before list
+  L  50  list-blank-before  Missing blank line before list
+  L  57  list-blank-before  Missing blank line before list
+
+- bmad\bmd\agents\cli-chief-sidecar\memories.md
+  L   5  list-blank-before  Missing blank line before list
+  L  46  list-blank-before  Missing blank line before list
+  L  48  list-blank-after  Missing blank line after list
+
+- bmad\bmd\agents\doc-keeper-sidecar\instructions.md
+  L   7  list-blank-before  Missing blank line before list
+  L  16  list-blank-before  Missing blank line before list
+  L  42  list-blank-before  Missing blank line before list
+  L  51  list-blank-before  Missing blank line before list
+  L  60  list-blank-before  Missing blank line before list
+  L  69  list-blank-before  Missing blank line before list
+  L  79  list-blank-before  Missing blank line before list
+  L  88  list-blank-before  Missing blank line before list
+  L  99  list-blank-before  Missing blank line before list
+  L 107  list-blank-before  Missing blank line before list
+  L 115  list-blank-before  Missing blank line before list
+  L 123  list-blank-before  Missing blank line before list
+  L 130  list-blank-before  Missing blank line before list
+  L 138  list-blank-before  Missing blank line before list
+  L 149  list-blank-before  Missing blank line before list
+  L 157  list-blank-before  Missing blank line before list
+  L 165  list-blank-before  Missing blank line before list
+  L 173  list-blank-before  Missing blank line before list
+
+- bmad\bmd\agents\doc-keeper-sidecar\knowledge\README.md
+  L   9  list-blank-before  Missing blank line before list
+  L  16  list-blank-before  Missing blank line before list
+  L  25  list-blank-before  Missing blank line before list
+  L  32  list-blank-before  Missing blank line before list
+  L  39  list-blank-before  Missing blank line before list
+  L  46  list-blank-before  Missing blank line before list
+  L  53  list-blank-before  Missing blank line before list
+  L  60  list-blank-before  Missing blank line before list
+  L  67  list-blank-before  Missing blank line before list
+  L  76  list-blank-before  Missing blank line before list
+
+- bmad\bmd\agents\doc-keeper-sidecar\memories.md
+  L   5  list-blank-before  Missing blank line before list
+  L  80  list-blank-before  Missing blank line before list
+  L  82  list-blank-after  Missing blank line after list
+
+- bmad\bmd\agents\release-chief-sidecar\instructions.md
+  L   7  list-blank-before  Missing blank line before list
+  L  15  list-blank-before  Missing blank line before list
+  L  37  list-blank-before  Missing blank line before list
+  L  48  list-blank-before  Missing blank line before list
+  L  58  list-blank-before  Missing blank line before list
+  L  67  list-blank-before  Missing blank line before list
+  L  75  list-blank-before  Missing blank line before list
+  L  87  list-blank-before  Missing blank line before list
+  L  93  list-blank-before  Missing blank line before list
+  L  99  list-blank-before  Missing blank line before list
+  L 105  list-blank-before  Missing blank line before list
+  L 115  list-blank-before  Missing blank line before list
+  L 126  list-blank-before  Missing blank line before list
+  L 134  list-blank-before  Missing blank line before list
+  L 145  list-blank-before  Missing blank line before list
+  L 153  list-blank-before  Missing blank line before list
+  L 161  list-blank-before  Missing blank line before list
+
+- bmad\bmd\agents\release-chief-sidecar\knowledge\README.md
+  L   9  list-blank-before  Missing blank line before list
+  L  17  list-blank-before  Missing blank line before list
+  L  26  list-blank-before  Missing blank line before list
+  L  33  list-blank-before  Missing blank line before list
+  L  40  list-blank-before  Missing blank line before list
+  L  47  list-blank-before  Missing blank line before list
+  L  54  list-blank-before  Missing blank line before list
+  L  61  list-blank-before  Missing blank line before list
+  L  68  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+
+- bmad\bmd\agents\release-chief-sidecar\memories.md
+  L   5  list-blank-before  Missing blank line before list
+  L  66  list-blank-before  Missing blank line before list
+  L  68  list-blank-after  Missing blank line after list
+
+- bmad\bmd\README.md
+  L 144  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  10  list-blank-before  Missing blank line before list
+  L  17  list-blank-before  Missing blank line before list
+  L  38  list-blank-before  Missing blank line before list
+  L  65  list-blank-before  Missing blank line before list
+  L  94  list-blank-before  Missing blank line before list
+  L 119  list-blank-before  Missing blank line before list
+  L 171  list-blank-before  Missing blank line before list
+  L 181  list-blank-before  Missing blank line before list
+
+- bmad\core\workflows\brainstorming\instructions.md
+  L  39  list-blank-before  Missing blank line before list
+  L  62  list-blank-before  Missing blank line before list
+  L  81  list-blank-before  Missing blank line before list
+  L 104  list-blank-before  Missing blank line before list
+  L 112  list-blank-before  Missing blank line before list
+  L 112  list-blank-after  Missing blank line after list
+  L 116  list-blank-before  Missing blank line before list
+  L 116  list-blank-after  Missing blank line after list
+  L 141  list-blank-before  Missing blank line before list
+  L 146  list-blank-before  Missing blank line before list
+  L 152  list-blank-before  Missing blank line before list
+  L 170  list-blank-before  Missing blank line before list
+  L 174  list-blank-after  Missing blank line after list
+  L 179  list-blank-before  Missing blank line before list
+  L 195  list-blank-before  Missing blank line before list
+  L 212  list-blank-before  Missing blank line before list
+  L 235  list-blank-before  Missing blank line before list
+  L 241  list-blank-before  Missing blank line before list
+  L 253  list-blank-before  Missing blank line before list
+  L 275  list-blank-before  Missing blank line before list
+  L 290  list-blank-before  Missing blank line before list
+  L 305  list-blank-before  Missing blank line before list
+
+- bmad\core\workflows\brainstorming\README.md
+  L  48  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  13  list-blank-before  Missing blank line before list
+  L  40  list-blank-before  Missing blank line before list
+  L  63  list-blank-before  Missing blank line before list
+  L  70  list-blank-before  Missing blank line before list
+  L  77  list-blank-before  Missing blank line before list
+  L  87  list-blank-before  Missing blank line before list
+  L  95  list-blank-before  Missing blank line before list
+  L 103  list-blank-before  Missing blank line before list
+  L 111  list-blank-before  Missing blank line before list
+  L 121  list-blank-before  Missing blank line before list
+  L 127  list-blank-before  Missing blank line before list
+  L 134  list-blank-before  Missing blank line before list
+  L 142  list-blank-before  Missing blank line before list
+  L 148  list-blank-before  Missing blank line before list
+  L 154  list-blank-before  Missing blank line before list
+  L 160  list-blank-before  Missing blank line before list
+  L 166  list-blank-before  Missing blank line before list
+  L 174  list-blank-before  Missing blank line before list
+  L 179  list-blank-before  Missing blank line before list
+  L 187  list-blank-before  Missing blank line before list
+  L 196  list-blank-before  Missing blank line before list
+  L 203  list-blank-before  Missing blank line before list
+  L 212  list-blank-before  Missing blank line before list
+  L 221  list-blank-before  Missing blank line before list
+  L 232  list-blank-before  Missing blank line before list
+  L 239  list-blank-before  Missing blank line before list
+  L 247  list-blank-before  Missing blank line before list
+  L 254  list-blank-before  Missing blank line before list
+  L 264  list-blank-before  Missing blank line before list
+
+- bmad\core\workflows\brainstorming\template.md
+  L  57  list-blank-before  Missing blank line before list
+  L  64  list-blank-before  Missing blank line before list
+  L  71  list-blank-before  Missing blank line before list
+  L  96  list-blank-before  Missing blank line before list
+
+- bmad\core\workflows\party-mode\instructions.md
+  L  11  list-blank-before  Missing blank line before list
+  L  40  list-blank-before  Missing blank line before list
+  L  56  list-blank-before  Missing blank line before list
+  L  59  list-blank-after  Missing blank line after list
+  L  67  list-blank-before  Missing blank line before list
+  L  73  list-blank-before  Missing blank line before list
+  L 166  list-blank-before  Missing blank line before list
+  L 168  list-blank-after  Missing blank line after list
+
+- bmad\docs\claude-code-instructions.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L   9  list-blank-before  Missing blank line before list
+  L  23  list-blank-before  Missing blank line before list
+
+- bmad\docs\codex-instructions.md
+  L  11  fence-language-missing  Code fence missing language identifier (e.g., ```bash)

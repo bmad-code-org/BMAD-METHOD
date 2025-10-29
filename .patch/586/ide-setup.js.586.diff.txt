@@ -1,0 +1,152 @@
+diff --git a/tools/installer/lib/ide-setup.js b/tools/installer/lib/ide-setup.js
+index a3882333..0845c91e 100644
+--- a/tools/installer/lib/ide-setup.js
++++ b/tools/installer/lib/ide-setup.js
+@@ -72,6 +72,9 @@ class IdeSetup extends BaseIdeSetup {
+       case 'kilo': {
+         return this.setupKilocode(installDir, selectedAgent);
+       }
++      case 'aicockpit': {
++        return this.setupAICockpit(installDir, selectedAgent);
++      }
+       case 'gemini': {
+         return this.setupGeminiCli(installDir, selectedAgent);
+       }
+@@ -1921,6 +1924,137 @@ class IdeSetup extends BaseIdeSetup {
+     return true;
+   }
+ 
++  async setupAICockpit(installDir, selectedAgent) {
++    const ideConfig = await configLoader.getIdeConfiguration('aicockpit');
++    if (!ideConfig) {
++      console.log(chalk.red('✗ AI Cockpit configuration not found in install.config.yaml'));
++      return false;
++    }
++
++    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
++    const tasks = await this.getAllTaskIds(installDir);
++
++    // 1. Setup .aicockpitmodes file
++    const modesFilePath = path.join(installDir, ideConfig['modes-file']);
++    try {
++      let existingModes = [],
++        existingContent = '';
++      if (await fileManager.pathExists(modesFilePath)) {
++        existingContent = await fileManager.readFile(modesFilePath);
++        for (const match of existingContent.matchAll(/- slug: ([\w-]+)/g)) {
++          existingModes.push(match[1]);
++        }
++      }
++
++      let newModesContent = '';
++
++      for (const agentId of agents) {
++        const slug = agentId.startsWith('bmad-') ? agentId : `bmad-${agentId}`;
++        if (existingModes.includes(slug)) {
++          console.log(chalk.dim(`Skipping ${agentId} - already exists in .aicockpitmodes`));
++          continue;
++        }
++
++        const agentPath = await this.findAgentPath(agentId, installDir);
++        if (!agentPath) {
++          console.log(chalk.red(`✗ Could not find agent file for ${agentId}`));
++          continue;
++        }
++
++        const agentContent = await fileManager.readFile(agentPath);
++        const yamlMatch = agentContent.match(/```ya?ml\r?\n([\s\S]*?)```/);
++        if (!yamlMatch) {
++          console.log(chalk.red(`✗ Could not extract YAML block for ${agentId}`));
++          continue;
++        }
++
++        const yamlContent = yamlMatch[1];
++        const parsedYaml = yaml.load(yamlContent);
++
++        const title = parsedYaml?.agent?.title || (await this.getAgentTitle(agentId, installDir));
++        const icon = parsedYaml?.agent?.icon || '🤖';
++        const roleDefinition = parsedYaml?.persona?.role || `You are a ${title}.`;
++
++        // The custom instructions are the entire agent file content.
++        const customInstructions = agentContent;
++
++        // Indent a string for YAML block scalar
++        const indent = (str) =>
++          str
++            .split('\n')
++            .map((s) => `      ${s}`)
++            .join('\n');
++
++        newModesContent += ` - slug: ${slug}\n`;
++        newModesContent += `   name: '${icon} ${title}'\n`;
++        newModesContent += `   roleDefinition: |\n`;
++        newModesContent += `${indent(roleDefinition)}\n`;
++        newModesContent += `   groups:\n`;
++        newModesContent += `    - read\n`;
++        newModesContent += `    - browser\n`;
++        newModesContent += `    - edit\n`;
++        newModesContent += `    - mcp\n`;
++        newModesContent += `   customInstructions: |\n`;
++        newModesContent += `${indent(customInstructions)}\n`;
++      }
++
++      const finalModesContent = existingContent
++        ? existingContent.trim() + '\n' + newModesContent
++        : 'customModes:\n' + newModesContent;
++
++      await fileManager.writeFile(modesFilePath, finalModesContent);
++      console.log(chalk.green(`✓ Created/updated ${ideConfig['modes-file']} file in project root`));
++    } catch (error) {
++      console.log(chalk.red(`✗ Failed to create ${ideConfig['modes-file']}:`, error.message));
++      return false;
++    }
++
++    // 2. Setup .aicockpit/rules/ directory
++    try {
++      const rulesDir = path.join(installDir, ideConfig['rules-dir']);
++      await fileManager.ensureDirectory(rulesDir);
++      for (const agentId of agents) {
++        const agentPath = await this.findAgentPath(agentId, installDir);
++        if (agentPath) {
++          const agentContent = await fileManager.readFile(agentPath);
++          const rulePath = path.join(rulesDir, `${agentId}.md`);
++          await fileManager.writeFile(rulePath, agentContent);
++          console.log(chalk.green(`✓ Created agent rule: ${agentId}.md`));
++        }
++      }
++      console.log(chalk.green(`✓ Created agent rules in ${ideConfig['rules-dir']}`));
++    } catch (error) {
++      console.log(chalk.red(`✗ Failed to create agent rules:`, error.message));
++      return false;
++    }
++
++    // 3. Setup .aicockpit/workflows/ directory
++    try {
++      const workflowsDir = path.join(installDir, ideConfig['workflows-dir']);
++      await fileManager.ensureDirectory(workflowsDir);
++      for (const taskId of tasks) {
++        const taskPath = await this.findTaskPath(taskId, installDir);
++        if (taskPath) {
++          const taskContent = await fileManager.readFile(taskPath);
++          const workflowPath = path.join(workflowsDir, `${taskId}.md`);
++          await fileManager.writeFile(workflowPath, taskContent);
++          console.log(chalk.green(`✓ Created task workflow: ${taskId}.md`));
++        }
++      }
++      console.log(chalk.green(`✓ Created task workflows in ${ideConfig['workflows-dir']}`));
++    } catch (error) {
++      console.log(chalk.red(`✗ Failed to create task workflows:`, error.message));
++      return false;
++    }
++
++    console.log(chalk.green(`✓ AI Cockpit setup complete!`));
++    console.log(
++      chalk.dim('Custom modes, agent rules, and task workflows are now available in AI Cockpit'),
++    );
++
++    return true;
++  }
++
+   async setupCline(installDir, selectedAgent) {
+     const clineRulesDir = path.join(installDir, '.clinerules');
+     const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);

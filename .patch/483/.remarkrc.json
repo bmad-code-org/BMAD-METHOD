@@ -1,0 +1,16 @@
+{
+  "plugins": [
+    "remark-preset-lint-recommended",
+    ["remark-lint-maximum-line-length", false],
+    ["remark-lint-list-item-indent", "one"],
+    ["remark-lint-emphasis-marker", false],
+    ["remark-lint-strong-marker", false],
+    ["remark-lint-unordered-list-marker-style", false],
+    ["remark-lint-ordered-list-marker-style", false],
+    ["remark-lint-maximum-heading-length", false],
+    ["remark-lint-no-duplicate-headings", false],
+    ["remark-lint-no-undefined-references", false],
+    ["remark-lint-heading-style", false],
+    ["remark-lint-final-newline", true]
+  ]
+}

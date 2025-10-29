@@ -1,0 +1,14 @@
+diff --git a/bmad-core/tasks/apply-qa-fixes.md b/bmad-core/tasks/apply-qa-fixes.md
+index 6af3037e..2047d49e 100644
+--- a/bmad-core/tasks/apply-qa-fixes.md
++++ b/bmad-core/tasks/apply-qa-fixes.md
+@@ -104,8 +104,8 @@ CRITICAL: Dev agent is ONLY authorized to update these sections of the story file
+ 
+ Status Rule:
+ 
+-- If gate was PASS and all identified gaps are closed → set `Status: Ready for Done`
+-- Otherwise → set `Status: Ready for Review` and notify QA to re-run the review
++- If gate was PASS and all identified gaps are closed → set `Status: Done`
++- Otherwise → set `Status: Review` and notify QA to re-run the review
+ 
+ ### 6) Do NOT Edit Gate Files

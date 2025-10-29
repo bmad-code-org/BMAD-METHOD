@@ -1,0 +1,6 @@
+version: 0.5.0
+installed_at: "2024-06-01T00:00:00Z"
+ides:
+  - vscode
+legacy_folder_name: .bmad-core
+last_updated: "2024-12-01T00:00:00Z"

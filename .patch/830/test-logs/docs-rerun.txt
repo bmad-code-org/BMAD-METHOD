@@ -1,0 +1,58 @@
+MD Conformance: FAIL (27 violation(s) in 15 file(s))
+
+- docs\bmad-brownfield-guide.md
+  L  83  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 446  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 472  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 478  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 525  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 644  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\conversion-report-shard-doc-2025-10-26.md
+  L  68  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\auggie.md
+  L  21  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\cline.md
+  L  27  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\codex.md
+  L  11  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\crush.md
+  L  16  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\gemini.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\iflow.md
+  L  16  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  24  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\opencode.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\qwen.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\ide-info\trae.md
+  L  15  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\installers-bundlers\ide-injections.md
+  L  21  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 134  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\installers-bundlers\installers-modules-platforms-reference.md
+  L  28  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  92  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 217  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L 239  fence-blank-before  Missing blank line before code fence
+  L 238  list-blank-after  Missing blank line after list
+
+- docs\installers-bundlers\web-bundler-usage.md
+  L  37  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+
+- docs\v4-to-v6-upgrade.md
+  L  54  fence-language-missing  Code fence missing language identifier (e.g., ```bash)
+  L  64  fence-language-missing  Code fence missing language identifier (e.g., ```bash)

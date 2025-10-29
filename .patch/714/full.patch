@@ -1,0 +1,108 @@
+diff --git a/tools/installer/bin/bmad.js b/tools/installer/bin/bmad.js
+index d016b268..7fed8090 100755
+--- a/tools/installer/bin/bmad.js
++++ b/tools/installer/bin/bmad.js
+@@ -49,7 +49,7 @@ program
+   .option('-d, --directory <path>', 'Installation directory')
+   .option(
+     '-i, --ide <ide...>',
+-    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, cline, gemini, qwen-code, github-copilot, codex, codex-web, auggie-cli, iflow-cli, opencode, other)',
++    'Configure for specific IDE(s) - can specify multiple (cursor, claude-code, windsurf, trae, roo, kilo, kiro, cline, gemini, qwen-code, github-copilot, codex, codex-web, auggie-cli, iflow-cli, opencode, other)',
+   )
+   .option(
+     '-e, --expansion-packs <packs...>',
+@@ -402,6 +402,7 @@ async function promptInstallation() {
+           { name: 'Trae', value: 'trae' }, // { name: 'Trae', value: 'trae'}
+           { name: 'Roo Code', value: 'roo' },
+           { name: 'Kilo Code', value: 'kilo' },
++          { name: 'Kiro IDE', value: 'kiro' },
+           { name: 'Cline', value: 'cline' },
+           { name: 'Gemini CLI', value: 'gemini' },
+           { name: 'Qwen Code', value: 'qwen-code' },
+diff --git a/tools/installer/config/install.config.yaml b/tools/installer/config/install.config.yaml
+index 3aa7464c..c2e08405 100644
+--- a/tools/installer/config/install.config.yaml
++++ b/tools/installer/config/install.config.yaml
+@@ -119,6 +119,17 @@ ide-configurations:
+       # 2. Select a bmad-{agent} mode (e.g. "bmad-dev")
+       # 3. The AI adopts that agent's persona and capabilities
+ 
++  kiro:
++    name: Kiro IDE
++    rule-dir: .kiro/steering/
++    format: multi-file
++    command-suffix: .md
++    instructions: |
++      # To use BMad agents in Kiro IDE:
++      # 1. The installer creates agent files in `.kiro/steering/`.
++      # 2. The steering file `bmad.md` is always included.
++      # 3. Type *agent-name (e.g., "*agent-dev", "*agent-pm") to activate the agent.
++
+   qwen-code:
+     name: Qwen Code
+     rule-dir: .qwen/commands/BMad/
+diff --git a/tools/installer/lib/ide-setup.js b/tools/installer/lib/ide-setup.js
+index a3882333..8dc4af41 100644
+--- a/tools/installer/lib/ide-setup.js
++++ b/tools/installer/lib/ide-setup.js
+@@ -72,6 +72,9 @@ class IdeSetup extends BaseIdeSetup {
+       case 'kilo': {
+         return this.setupKilocode(installDir, selectedAgent);
+       }
++      case 'kiro': {
++        return this.setupKiro(installDir, selectedAgent);
++      }
+       case 'gemini': {
+         return this.setupGeminiCli(installDir, selectedAgent);
+       }
+@@ -1921,6 +1924,50 @@ class IdeSetup extends BaseIdeSetup {
+     return true;
+   }
+ 
++  async setupKiro(installDir, selectedAgent) {
++    const steeringDir = path.join(installDir, '.kiro', 'steering');
++    const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);
++
++    // Create steering directory
++    await fileManager.ensureDirectory(steeringDir);
++
++    // Track created agents for bmad.md
++    const agentLinks = [];
++
++    for (const agentId of agents) {
++      const agentPath = await this.findAgentPath(agentId, installDir);
++      if (!agentPath) {
++        console.log(chalk.red(`✗ Could not find agent file for ${agentId}`));
++        continue;
++      }
++
++      const agentContent = await fileManager.readFile(agentPath);
++      const steeringPath = path.join(steeringDir, `${agentId}.md`);
++
++      // Write agent file to steering directory
++      await fileManager.writeFile(steeringPath, agentContent);
++      console.log(chalk.green(`✓ Added agent: ${agentId}`));
++
++      // Add to agent links for bmad.md
++      agentLinks.push(agentId);
++    }
++
++    // Create bmad.md with inclusion header
++    const bmadMdPath = path.join(steeringDir, 'bmad.md');
++    const header = '---\ninclusion: always\n---\n\n';
++    const intro = '# BMad Steering Files\n\nOpen any of the following files to activate that agent:\n\n';
++
++    const agentRefs = agentLinks.map((id) => `- [${id}](./${id}.md)`).join('\n');
++
++    const bmadContent = header + intro + agentRefs;
++    await fileManager.writeFile(bmadMdPath, bmadContent);
++    console.log(chalk.green('✓ Created bmad.md steering file'));
++    console.log(chalk.green('✓ Kiro IDE setup complete!'));
++    console.log(chalk.dim('Steering files are ready in .kiro/steering/'));
++
++    return true;
++  }
++
+   async setupCline(installDir, selectedAgent) {
+     const clineRulesDir = path.join(installDir, '.clinerules');
+     const agents = selectedAgent ? [selectedAgent] : await this.getAllAgentIds(installDir);

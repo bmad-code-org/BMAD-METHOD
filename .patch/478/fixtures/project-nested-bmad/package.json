@@ -1,0 +1,5 @@
+{
+  "name": "test-project-nested-bmad",
+  "version": "1.0.0",
+  "description": "Test fixture for Issue #478 - nested project structure with BMAD in root"
+}
