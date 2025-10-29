@@ -86,68 +86,111 @@ function detectLanguage(content) {
 function fixFile(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const lines = content.split(/\r?\n/);
-  
+
   const fixes = [];
   let modified = false;
-  let inFence = false;
-  let fenceStart = -1;
+
+  // Track any outer fence (of any backtick length >=3) to avoid touching nested content
+  const fenceStack = [];
+
+  // State for a target triple-backtick fence without language that we intend to fix
+  let fixing = false;
+  let fixFenceStart = -1;
+  let fixOpenIndent = '';
   let fenceContent = [];
-  
+
   const newLines = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    
-    // Detect fence start
-    if (/^\s*```\s*$/.test(line)) {
-      if (!inFence) {
-        // Opening fence without language
-        inFence = true;
-        fenceStart = i;
-        fenceContent = [];
-        
-        // We'll hold this line and potentially modify it
-        continue;
-      } else {
-        // Closing fence
+
+    // If we are currently fixing a fence (collecting content until closing ```)
+    if (fixing) {
+      const closeMatch = line.match(/^(\s*)(`{3})(\s*)$/);
+      if (closeMatch) {
+        // Closing the target fence
         const language = detectLanguage(fenceContent.join('\n'));
-        
-        // Add the opening fence with detected language
-        const indent = lines[fenceStart].match(/^(\s*)/)[1];
-        const fixedOpenLine = `${indent}\`\`\`${language}`;
+        const fixedOpenLine = `${fixOpenIndent}\`\`\`${language}`;
+
         newLines.push(fixedOpenLine);
-        
-        // Add the content
         newLines.push(...fenceContent);
-        
-        // Add the closing fence
         newLines.push(line);
-        
+
         fixes.push({
-          line: fenceStart + 1,
-          original: lines[fenceStart],
+          line: fixFenceStart + 1,
+          original: '```',
           fixed: fixedOpenLine,
           detectedLanguage: language,
           contentPreview: fenceContent.slice(0, 2).join('\n').substring(0, 60) + '...'
         });
-        
+
         modified = true;
-        inFence = false;
-        fenceStart = -1;
+        fixing = false;
+        fixFenceStart = -1;
+        fixOpenIndent = '';
         fenceContent = [];
+        continue;
+      } else {
+        fenceContent.push(line);
         continue;
       }
     }
-    
-    if (inFence) {
-      // Collecting fence content
-      fenceContent.push(line);
-    } else {
-      // Regular line outside fence
+
+    // Not currently fixing; detect any fence line (opening or closing)
+    const fenceLineMatch = line.match(/^(\s*)(`{3,})(.*)$/);
+    if (fenceLineMatch) {
+      const indent = fenceLineMatch[1] || '';
+      const ticks = fenceLineMatch[2] || '';
+      const rest = (fenceLineMatch[3] || '').trim();
+      const hasLanguage = rest.length > 0; // simplistic but effective for our cases
+
+      // Determine if this is a closing fence for the current outer fence
+      if (fenceStack.length > 0 && fenceStack[fenceStack.length - 1].ticks === ticks) {
+        // Closing existing fence scope
+        fenceStack.pop();
+        newLines.push(line);
+        continue;
+      }
+
+      // If inside any outer fence, don't attempt to fix nested fences
+      if (fenceStack.length > 0) {
+        newLines.push(line);
+        // Start a nested fence scope if this appears to be an opening fence
+        fenceStack.push({ ticks });
+        continue;
+      }
+
+      // Outside any fence
+      if (ticks === '```' && !hasLanguage) {
+        // Target: opening triple backtick without language; begin fixing mode
+        fixing = true;
+        fixFenceStart = i;
+        fixOpenIndent = indent;
+        fenceContent = [];
+        // Do not push the original opening line; we'll emit the fixed one at close
+        continue;
+      }
+
+      // Any other fence (with language or more backticks): treat as an outer fence start
+      fenceStack.push({ ticks });
       newLines.push(line);
+      continue;
     }
+
+    // Regular non-fence line
+    newLines.push(line);
   }
-  
+
+  // If we ended while "fixing" and never saw a closing fence, abort changes for safety
+  if (fixing) {
+    return {
+      filePath,
+      fixes: [],
+      modified: false,
+      newContent: content
+    };
+  }
+
   return {
     filePath,
     fixes,
