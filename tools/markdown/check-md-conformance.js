@@ -80,7 +80,6 @@ function checkFile(filePath) {
   const violations = [];
 
   let inFence = false;
-  let fenceStartLine = -1;
 
   // Pass 1: fence tracking to avoid interpreting list/table inside code blocks
   const excluded = Array.from({ length: lines.length }).fill(false);
@@ -89,10 +88,8 @@ function checkFile(filePath) {
       if (inFence) {
         // closing fence
         inFence = false;
-        fenceStartLine = -1;
       } else {
         inFence = true;
-        fenceStartLine = i;
       }
       excluded[i] = true;
       continue;
@@ -281,19 +278,6 @@ function main() {
     }
   }
 
-  process.exit(1);
-}
-
-if (require.main === module) {
-  main();
-}
-
-module.exports = { checkFile };
-{
-  console.log(`\n- ${path.relative(process.cwd(), file)}`);
-  for (const v of violations) {
-    console.log(`  L${v.line.toString().padStart(4, ' ')}  ${v.type}  ${v.message}`);
-  }
   process.exit(1);
 }
 

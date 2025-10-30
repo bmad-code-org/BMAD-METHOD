@@ -95,7 +95,7 @@ function fixFile(filePath) {
   let fixing = false;
   let fixFenceStart = -1;
   let fixOpenIndent = '';
-  let fixOpenTicks = '';
+  let fixOpenLine = '';
   let fixOpenLen = 0;
   let fenceContent = [];
 
@@ -117,7 +117,7 @@ function fixFile(filePath) {
 
           fixes.push({
             line: fixFenceStart + 1,
-            original: fixOpenTicks,
+            original: fixOpenLine,
             fixed: fixedOpenLine,
             detectedLanguage: language,
             contentPreview: fenceContent.slice(0, 2).join('\n').slice(0, 60) + '...',
@@ -127,7 +127,7 @@ function fixFile(filePath) {
           fixing = false;
           fixFenceStart = -1;
           fixOpenIndent = '';
-          fixOpenTicks = '';
+          fixOpenLine = '';
           fixOpenLen = 0;
           fenceContent = [];
           continue;
@@ -146,7 +146,6 @@ function fixFile(filePath) {
       const ticksLen = ticks.length;
       const rest = fenceLineMatch[3] || '';
       const restTrim = rest.trim();
-      const hasLanguage = restTrim.length > 0; // simplistic but effective for our cases
 
       // Determine if this is a closing fence for the current outer fence
       if (fenceStack.length > 0) {
@@ -173,7 +172,7 @@ function fixFile(filePath) {
         fixing = true;
         fixFenceStart = i;
         fixOpenIndent = indent;
-        fixOpenTicks = ticks;
+        fixOpenLine = line;
         fixOpenLen = ticksLen;
         fenceContent = [];
         // Do not push the original opening line; we'll emit the fixed one at close
