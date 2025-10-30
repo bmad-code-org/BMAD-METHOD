@@ -15,7 +15,8 @@ let installer;
 let packageName;
 try {
   // Try installer context first (when run from tools/installer/)
-  version = require('../package.json').version;
+  // Always read version from root package.json to avoid hardcoded versions
+  version = require('../../../package.json').version;
   packageName = require('../package.json').name;
   installer = require('../lib/installer');
 } catch (error) {
