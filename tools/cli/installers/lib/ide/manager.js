@@ -96,6 +96,51 @@ class IdeManager {
     return this.getAvailableIdes().filter((ide) => !ide.preferred);
   }
 
+  getHandler(ideName) {
+    return this.handlers.get((ideName || '').toLowerCase());
+  }
+
+  getDisplayName(ideName) {
+    const handler = this.getHandler(ideName);
+    return handler?.displayName || handler?.name || ideName;
+  }
+
+  getStateDir(bmadDir) {
+    return path.join(bmadDir, '_cfg', 'ide-state');
+  }
+
+  getStatePath(bmadDir, ideName) {
+    return path.join(this.getStateDir(bmadDir), `${ideName}.json`);
+  }
+
+  async loadPersistedConfig(ideName, bmadDir) {
+    try {
+      const statePath = this.getStatePath(bmadDir, ideName.toLowerCase());
+      if (!(await fs.pathExists(statePath))) {
+        return null;
+      }
+      return await fs.readJson(statePath);
+    } catch {
+      return null;
+    }
+  }
+
+  async savePersistedConfig(ideName, bmadDir, config) {
+    const stateDir = this.getStateDir(bmadDir);
+    await fs.ensureDir(stateDir);
+
+    const statePath = this.getStatePath(bmadDir, ideName.toLowerCase());
+
+    if (config === null || config === undefined) {
+      if (await fs.pathExists(statePath)) {
+        await fs.remove(statePath);
+      }
+      return;
+    }
+
+    await fs.writeJson(statePath, config, { spaces: 2 });
+  }
+
   /**
    * Setup IDE configuration
    * @param {string} ideName - Name of the IDE
@@ -104,7 +149,7 @@ class IdeManager {
    * @param {Object} options - Setup options
    */
   async setup(ideName, projectDir, bmadDir, options = {}) {
-    const handler = this.handlers.get(ideName.toLowerCase());
+    const handler = this.getHandler(ideName);
 
     if (!handler) {
       console.warn(chalk.yellow(`⚠️  IDE '${ideName}' is not yet supported`));
@@ -113,8 +158,19 @@ class IdeManager {
     }
 
     try {
-      await handler.setup(projectDir, bmadDir, options);
-      return { success: true, ide: ideName };
+      const handlerOptions = {
+        ...options,
+        mode: options.mode || 'install',
+      };
+      const result = (await handler.setup(projectDir, bmadDir, handlerOptions)) || {};
+      const payload = typeof result === 'object' && result !== null ? result : {};
+      const success = typeof payload.success === 'boolean' ? payload.success : true;
+
+      return {
+        ide: ideName,
+        ...payload,
+        success,
+      };
     } catch (error) {
       console.error(chalk.red(`Failed to setup ${ideName}:`), error.message);
       return { success: false, error: error.message };

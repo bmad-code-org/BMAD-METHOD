@@ -92,6 +92,9 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
+    const mode = options.mode || 'install';
+    const preCollectedConfig = options.preCollectedConfig || null;
+
     // Create .claude/commands directory structure
     const claudeDir = path.join(projectDir, this.configDir);
     const commandsDir = path.join(claudeDir, this.commandsDir);
@@ -129,10 +132,15 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
     // Process Claude Code specific injections for installed modules
     // Use pre-collected configuration if available
-    if (options.preCollectedConfig) {
-      await this.processModuleInjectionsWithConfig(projectDir, bmadDir, options, options.preCollectedConfig);
+    let finalConfig = preCollectedConfig;
+
+    if (preCollectedConfig) {
+      await this.processModuleInjectionsWithConfig(projectDir, bmadDir, options, preCollectedConfig);
     } else {
-      await this.processModuleInjections(projectDir, bmadDir, options);
+      const injectionResult = await this.processModuleInjections(projectDir, bmadDir, options);
+      if (injectionResult) {
+        finalConfig = injectionResult;
+      }
     }
 
     // Skip CLAUDE.md creation - let user manage their own CLAUDE.md file
@@ -149,9 +157,12 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     }
     console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, bmadCommandsDir)}`));
 
+    const hasConfig = finalConfig && (finalConfig.subagentChoices || finalConfig.installLocation);
+
     return {
       success: true,
       agents: agentCount,
+      persistedConfig: hasConfig ? finalConfig : null,
     };
   }
 
@@ -211,7 +222,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     const { subagentChoices, installLocation } = preCollectedConfig;
 
     // Get the actual source directory (not the installation directory)
-    await this.processModuleInjectionsInternal({
+    return await this.processModuleInjectionsInternal({
       projectDir,
       modules,
       handler: 'claude-code',
@@ -247,6 +258,8 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     if (updatedLocation) {
       installLocation = updatedLocation;
     }
+
+    return { subagentChoices, installLocation };
   }
 
   async processModuleInjectionsInternal({ projectDir, modules, handler, subagentChoices, installLocation, interactive = false }) {

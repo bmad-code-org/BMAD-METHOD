@@ -69,6 +69,8 @@ class RooSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
+    const preCollectedConfig = options.preCollectedConfig || null;
+
     // Check for existing .roomodes file
     const roomodesPath = path.join(projectDir, this.configFile);
     let existingModes = [];
@@ -88,7 +90,7 @@ class RooSetup extends BaseIdeSetup {
     const agents = await this.getAgents(bmadDir);
 
     // Use pre-collected configuration if available
-    const config = options.preCollectedConfig || {};
+    const config = preCollectedConfig || {};
     let permissionChoice = config.permissions || options.permissions || 'dev';
 
     // Create modes content
@@ -140,6 +142,7 @@ class RooSetup extends BaseIdeSetup {
       success: true,
       modes: addedCount,
       skipped: skippedCount,
+      persistedConfig: { permissions: permissionChoice },
     };
   }
 

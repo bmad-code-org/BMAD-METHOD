@@ -52,6 +52,8 @@ class ClineSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
+    const preCollectedConfig = options.preCollectedConfig || null;
+
     // Create .clinerules directory
     const clineRulesDir = path.join(projectDir, this.configDir);
     await this.ensureDir(clineRulesDir);
@@ -61,7 +63,7 @@ class ClineSetup extends BaseIdeSetup {
     const tasks = await this.getTasks(bmadDir);
 
     // Use pre-collected configuration if available
-    const config = options.preCollectedConfig || {};
+    const config = preCollectedConfig || {};
     const orderingStrategy = config.ordering || options.ordering || 'module';
 
     // Process agents as rules with ordering
@@ -111,6 +113,7 @@ class ClineSetup extends BaseIdeSetup {
       success: true,
       rules: ruleCount,
       ordering: orderingStrategy,
+      persistedConfig: { ordering: orderingStrategy },
     };
   }
 

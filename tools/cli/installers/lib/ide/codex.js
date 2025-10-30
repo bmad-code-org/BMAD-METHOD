@@ -46,7 +46,9 @@ class CodexSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    const config = options.preCollectedConfig || {};
+    const preCollectedConfig = options.preCollectedConfig || null;
+
+    const config = preCollectedConfig || {};
     const mode = config.codexMode || options.codexMode || 'cli';
 
     const { artifacts, counts } = await this.collectClaudeArtifacts(projectDir, bmadDir, options);
@@ -93,6 +95,7 @@ class CodexSetup extends BaseIdeSetup {
       counts,
       destination: destDir,
       written,
+      persistedConfig: { codexMode: mode },
     };
   }
 

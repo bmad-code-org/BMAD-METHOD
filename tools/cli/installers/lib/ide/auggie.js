@@ -74,8 +74,10 @@ class AuggieSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
+    const preCollectedConfig = options.preCollectedConfig || null;
+
     // Use pre-collected configuration if available
-    const config = options.preCollectedConfig || {};
+    const config = preCollectedConfig || {};
     const locations = await this.getInstallLocations(projectDir, { ...options, auggieLocations: config.auggieLocations });
 
     if (locations.length === 0) {
@@ -126,10 +128,18 @@ class AuggieSetup extends BaseIdeSetup {
     console.log(chalk.dim(`  - ${totalInstalled} total commands installed`));
     console.log(chalk.dim(`  - ${locations.length} location(s) configured`));
 
+    const persistedLocations =
+      config.auggieLocations && config.auggieLocations.length > 0
+        ? config.auggieLocations
+        : this.collapsePersistedLocations(projectDir, locations);
+
     return {
       success: true,
       commands: totalInstalled,
       locations: locations.length,
+      persistedConfig: {
+        auggieLocations: persistedLocations,
+      },
     };
   }
 
@@ -192,6 +202,28 @@ class AuggieSetup extends BaseIdeSetup {
     }
 
     return locations;
+  }
+
+  /**
+   * Collapse resolved filesystem paths back to persisted selector values.
+   * @param {string} projectDir
+   * @param {string[]} resolvedLocations
+   * @returns {string[]}
+   */
+  collapsePersistedLocations(projectDir, resolvedLocations) {
+    const projectAugmentPath = path.normalize(path.join(projectDir, '.augment', 'commands'));
+    const results = [];
+
+    for (const location of resolvedLocations) {
+      const normalized = path.normalize(location);
+      if (normalized === projectAugmentPath) {
+        results.push('.augment/commands');
+      } else {
+        results.push(location);
+      }
+    }
+
+    return results;
   }
 
   /**

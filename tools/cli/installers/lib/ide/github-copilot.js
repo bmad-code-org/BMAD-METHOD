@@ -92,8 +92,10 @@ class GitHubCopilotSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
+    const preCollectedConfig = options.preCollectedConfig || null;
+
     // Configure VS Code settings using pre-collected config if available
-    const config = options.preCollectedConfig || {};
+    const config = preCollectedConfig || {};
     await this.configureVsCodeSettings(projectDir, { ...options, ...config });
 
     // Create .github/chatmodes directory
@@ -127,6 +129,7 @@ class GitHubCopilotSetup extends BaseIdeSetup {
       success: true,
       chatmodes: modeCount,
       settings: true,
+      persistedConfig: config && Object.keys(config).length > 0 ? config : null,
     };
   }
 
