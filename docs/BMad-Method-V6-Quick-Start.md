@@ -326,11 +326,11 @@ A: Yes, once you learn the flow. Use the Quick Reference in Step 2 to go directl
 
 ## Key Takeaways
 
-✅ **Always use fresh chats** - Load agents in new chats for each workflow to avoid context issues
-✅ **Let workflow-status guide you** - Load any agent and ask for status when unsure what's next
-✅ **Level matters** - Small projects (0-1) use tech-spec, larger projects (2+) need PRD and architecture
-✅ **Tracking is automatic** - The status files update themselves, no manual editing needed
-✅ **Agents are flexible** - Use menu numbers, shortcuts (\*prd), or natural language
+- ✅ **Always use fresh chats** - Load agents in new chats for each workflow to avoid context issues
+- ✅ **Let workflow-status guide you** - Load any agent and ask for status when unsure what's next
+- ✅ **Level matters** - Small projects (0-1) use tech-spec, larger projects (2+) need PRD and architecture
+- ✅ **Tracking is automatic** - The status files update themselves, no manual editing needed
+- ✅ **Agents are flexible** - Use menu numbers, shortcuts (\*prd), or natural language
 
 **Ready to start building?** Install BMad, load the Analyst, run workflow-init, and let the agents guide you!
 
