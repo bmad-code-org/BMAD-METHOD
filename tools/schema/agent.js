@@ -176,6 +176,8 @@ function buildMenuItemSchema() {
       tmpl: createNonEmptyString('agent.menu[].tmpl').optional(),
       data: createNonEmptyString('agent.menu[].data').optional(),
       'run-workflow': createNonEmptyString('agent.menu[].run-workflow').optional(),
+      checklist: createNonEmptyString('agent.menu[].checklist').optional(),
+      document: createNonEmptyString('agent.menu[].document').optional(),
     })
     .strict()
     .superRefine((value, ctx) => {

@@ -1210,7 +1210,7 @@ If you used BMad Method v4, here's how to transition:
 **Documentation:**
 
 - [BMM Workflows Guide](../src/modules/bmm/workflows/README.md) - Complete v6 workflow reference
-- [Test Architect Guide](../src/modules/bmm/testarch/README.md) - Quality and testing strategy
+- [Test Architect Guide](@bmad/bmm/docs/tea-README.md) - Quality and testing strategy
 - [BMM Module README](../src/modules/bmm/README.md) - Module overview
 
 **Community:**

@@ -630,7 +630,7 @@ flowchart TD
 **Documentation:**
 
 - [BMM Workflows Guide](../workflows/README.md)
-- [Test Architect Guide](../testarch/README.md)
+- [Test Architect Guide](@bmad/bmm/docs/tea-README.md)
 - [BMM Module README](../README.md)
 
 ---

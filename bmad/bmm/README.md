@@ -34,7 +34,7 @@ All BMM-specific documentation is organized in the `docs/` folder:
 ### Workflows & Reference
 
 - **[Workflows Guide](./workflows/README.md)** - Complete v6 workflow system (ESSENTIAL)
-- **[Test Architect Guide](./testarch/README.md)** - Testing strategy and quality assurance
+- **[Test Architect Guide](@bmad/bmm/docs/tea-README.md)** - Testing strategy and quality assurance
 
 ## Module Structure
 
@@ -93,7 +93,7 @@ Atomic work units composing into larger workflows.
 
 ### 🏗️ Test Architecture
 
-**[TEA Guide](./testarch/README.md)** - Comprehensive testing strategy across 9 specialized workflows.
+**[TEA Guide](@bmad/bmm/docs/tea-README.md)** - Comprehensive testing strategy across 9 specialized workflows.
 
 ## Quick Start
 
@@ -161,7 +161,7 @@ Dynamic technical guidance generated for each story, providing exact expertise w
 - **[Scale Adaptive System](./docs/scale-adaptive-system.md)** - Understanding project levels
 - **[Brownfield Guide](./docs/brownfield-guide.md)** - Working with existing code
 - **[Workflows Guide](./workflows/README.md)** - Complete workflow reference
-- **[Test Architect Guide](./testarch/README.md)** - Testing strategy
+- **[Test Architect Guide](@bmad/bmm/docs/tea-README.md)** - Testing strategy
 - **[IDE Setup](../../../docs/ide-info/)** - Environment configuration
 
 ---
