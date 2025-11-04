@@ -127,7 +127,7 @@ Comprehensive documentation for all BMM workflows organized by phase:
   - Complete story lifecycle
   - One-story-at-a-time discipline
 
-- **[Testing & QA Workflows](./workflows-testing.md)** - Comprehensive quality assurance (1,420 lines)
+- **[Testing & QA Workflows](./tea-README.md)** - Comprehensive quality assurance (1,420 lines)
   - Test strategy, automation, quality gates
   - TEA agent and test healing
   - BMad-integrated vs standalone modes

@@ -35,6 +35,7 @@ type,name,module,path,hash
 "md","instructions","bmb","bmad/bmb/workflows/module-brief/instructions.md","e2275373850ea0745f396ad0c3aa192f06081b52d98777650f6b645333b62926"
 "md","instructions","bmb","bmad/bmb/workflows/redoc/instructions.md","21dd93b64455f8dd475b508ae9f1076d7e179e99fb6f197476071706b78e3592"
 "md","module-structure","bmb","bmad/bmb/workflows/create-module/module-structure.md","3bdf1d55eec2fccc2c9f44a08f4e0dc489ce47396ff39fa59a82836a911faa54"
+"md","tea-README","bmm","bmad/bmm/docs/tea-README.md","2ae906adc1edde5ba3af2a20d78d9cef640897347ec46453233d611115c3e1ac"
 "md","README","bmb","bmad/bmb/README.md","aa2beac1fb84267cbaa6d7eb541da824c34177a17cd227f11b189ab3a1e06d33"
 "md","README","bmb","bmad/bmb/workflows/convert-legacy/README.md","2c11bcf8d974e4f0e0e03f948df42097592751a3aeb9c443fa6cecf05819d49b"
 "md","README","bmb","bmad/bmb/workflows/create-agent/README.md","f4da5c16fb4847252b09b82d70f027ae08e78b75bb101601f2ca3d2c2c884736"

@@ -156,7 +156,7 @@ For detailed technical documentation on specific complex workflows:
 
 Quality assurance guidance:
 
-- **[Test Architect Guide](../testarch/README.md)** - Comprehensive testing strategy
+- **[Test Architect Guide](./tea-README.md)** - Comprehensive testing strategy
   - Test design workflows
   - Quality gates
   - Risk assessment
