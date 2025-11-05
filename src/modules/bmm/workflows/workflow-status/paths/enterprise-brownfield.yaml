@@ -66,6 +66,20 @@ phases:
         command: "create-design"
         note: "Recommended - must integrate with existing UX patterns"
 
+      - id: "framework"
+        optional: true
+        agent: "tea"
+        command: "framework"
+        output: "Test framework scaffold (Playwright/Cypress)"
+        note: "Initialize or modernize test framework - critical if brownfield lacks proper test infrastructure"
+
+      - id: "ci"
+        optional: true
+        agent: "tea"
+        command: "ci"
+        output: "CI/CD test pipeline configuration"
+        note: "Establish or enhance CI pipeline with regression testing strategy"
+
   - phase: 2
     name: "Solutioning"
     required: true
@@ -78,25 +92,18 @@ phases:
         note: "Distills brownfield context + adds security/scalability/compliance design"
 
       - id: "create-security-architecture"
-        required: true
+        optional: true
         agent: "architect"
         command: "create-security-architecture"
         output: "Security architecture for brownfield integration"
-        note: "Future workflow - threat model, auth integration, audit requirements"
+        note: "Future workflow - optional extended enterprise workflow for threat model, auth integration, audit requirements"
 
       - id: "create-devops-strategy"
-        required: true
+        optional: true
         agent: "architect"
         command: "create-devops-strategy"
         output: "DevOps strategy for brownfield deployment"
-        note: "Future workflow - CI/CD integration, deployment strategy, monitoring"
-
-      - id: "create-test-strategy"
-        required: true
-        agent: "tea"
-        command: "create-test-strategy"
-        output: "Test strategy including regression testing"
-        note: "Future workflow - critical for brownfield to prevent breaking existing functionality"
+        note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
 
       - id: "validate-architecture"
         optional: true

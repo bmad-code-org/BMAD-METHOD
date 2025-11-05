@@ -32,9 +32,8 @@ graph TB
 
         subgraph Optional["<b>ENTERPRISE ADDITIONS (Optional)</b>"]
             direction LR
-            TestArch["<b>TEA: test-architecture</b><br/>(Future)"]
-            SecArch["<b>Architect: security-architecture</b>"]
-            DevOps["<b>Architect: devops-strategy</b>"]
+            SecArch["<b>Architect: security-architecture</b><br/>(Future)"]
+            DevOps["<b>Architect: devops-strategy</b><br/>(Future)"]
         end
 
         GateCheck["<b>Architect: solutioning-gate-check</b><br/>Validation before Phase 4"]
@@ -69,7 +68,6 @@ graph TB
 
     style SkipArch fill:#aed581,stroke:#1b5e20,stroke-width:2px,color:#000
     style Architecture fill:#42a5f5,stroke:#0d47a1,stroke-width:2px,color:#000
-    style TestArch fill:#ef9a9a,stroke:#c62828,stroke-width:2px,color:#000
     style SecArch fill:#ef9a9a,stroke:#c62828,stroke-width:2px,color:#000
     style DevOps fill:#ef9a9a,stroke:#c62828,stroke-width:2px,color:#000
     style GateCheck fill:#42a5f5,stroke:#0d47a1,stroke-width:2px,color:#000
@@ -352,12 +350,13 @@ Planning (prd by PM)
 ```
 Planning (prd by PM - same as BMad Method)
   → architecture (Architect)
-  → Optional: test-architecture (TEA, future)
-  → Optional: security-architecture (Architect)
-  → Optional: devops-strategy (Architect)
+  → Optional: security-architecture (Architect, future)
+  → Optional: devops-strategy (Architect, future)
   → solutioning-gate-check (Architect)
   → Phase 4 (Implementation)
 ```
+
+**Note on TEA (Test Architect):** TEA is fully operational with 8 workflows across all phases. TEA validates architecture testability during Phase 3 reviews but does not have a dedicated solutioning workflow. TEA's primary setup occurs in Phase 2 (`*framework`, `*ci`, `*test-design`) and testing execution in Phase 4 (`*atdd`, `*automate`, `*test-review`, `*trace`, `*nfr-assess`).
 
 **Note:** Enterprise uses the same planning and architecture as BMad Method. The only difference is optional extended workflows added AFTER architecture but BEFORE gate check.
 
@@ -422,10 +421,12 @@ Architecture documents are living. Update them as you learn during implementatio
 ### Enterprise
 
 - **Planning:** prd (PM) - same as BMad Method
-- **Solutioning:** architecture (Architect) → Optional extended workflows (test-architecture, security-architecture, devops-strategy) → solutioning-gate-check (Architect)
+- **Solutioning:** architecture (Architect) → Optional extended workflows (security-architecture, devops-strategy) → solutioning-gate-check (Architect)
 - **Implementation:** sprint-planning → epic-tech-context → dev-story
 
 **Key Difference:** Enterprise adds optional extended workflows AFTER architecture but BEFORE gate check. Everything else is identical to BMad Method.
+
+**Note:** TEA (Test Architect) operates across all phases and validates architecture testability but is not a Phase 3-specific workflow. See [Test Architecture Guide](./test-architecture.md) for TEA's full lifecycle integration.
 
 ---
 
