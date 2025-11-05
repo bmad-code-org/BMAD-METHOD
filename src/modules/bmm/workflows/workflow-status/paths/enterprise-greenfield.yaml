@@ -54,6 +54,20 @@ phases:
         command: "create-design"
         note: "Highly recommended for enterprise - design system and patterns"
 
+      - id: "framework"
+        optional: true
+        agent: "tea"
+        command: "framework"
+        output: "Test framework scaffold (Playwright/Cypress)"
+        note: "Initialize production-ready test framework - run once per project"
+
+      - id: "ci"
+        optional: true
+        agent: "tea"
+        command: "ci"
+        output: "CI/CD test pipeline configuration"
+        note: "Scaffold CI workflow with selective testing, burn-in, caching"
+
   - phase: 2
     name: "Solutioning"
     required: true
@@ -66,25 +80,18 @@ phases:
         note: "Includes scalability, multi-tenancy, integration architecture"
 
       - id: "create-security-architecture"
-        required: true
+        optional: true
         agent: "architect"
         command: "create-security-architecture"
         output: "Security architecture and threat model"
-        note: "Future workflow - security design, auth, compliance"
+        note: "Future workflow - optional extended enterprise workflow for security design, auth, compliance"
 
       - id: "create-devops-strategy"
-        required: true
+        optional: true
         agent: "architect"
         command: "create-devops-strategy"
         output: "DevOps pipeline and infrastructure plan"
-        note: "Future workflow - CI/CD, deployment, monitoring"
-
-      - id: "create-test-strategy"
-        required: true
-        agent: "tea"
-        command: "create-test-strategy"
-        output: "Comprehensive test strategy"
-        note: "Future workflow - test approach, automation, quality gates"
+        note: "Future workflow - optional extended enterprise workflow for CI/CD, deployment, monitoring"
 
       - id: "validate-architecture"
         optional: true

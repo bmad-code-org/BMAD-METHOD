@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": ["SlashCommand(/init)"],
+    "deny": [],
+    "ask": []
+  }
+}
