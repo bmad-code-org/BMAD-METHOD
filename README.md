@@ -35,11 +35,15 @@ The **BMad-CORE** powers the **BMad Method** (probably why you're here!), but yo
     - [C.O.R.E. Philosophy](#core-philosophy)
   - [Modules](#modules)
     - [BMad Method (BMM) - AI-Driven Agile Development](#bmad-method-bmm---ai-driven-agile-development)
+      - [v6 Highlights](#v6-highlights)
+  - [🚀 Quick Start](#-quick-start)
     - [BMad Builder (BMB) - Create Custom Solutions](#bmad-builder-bmb---create-custom-solutions)
     - [Creative Intelligence Suite (CIS) - Innovation \& Creativity](#creative-intelligence-suite-cis---innovation--creativity)
-  - [🚀 Quick Start](#-quick-start)
   - [Installation](#installation)
   - [🎯 Working with Agents \& Commands](#-working-with-agents--commands)
+    - [Method 1: Agent Menu (Recommended for Beginners)](#method-1-agent-menu-recommended-for-beginners)
+    - [Method 2: Direct Slash Commands](#method-2-direct-slash-commands)
+    - [Method 3: Party Mode Execution](#method-3-party-mode-execution)
   - [Key Features](#key-features)
     - [🎨 Update-Safe Customization](#-update-safe-customization)
     - [🚀 Intelligent Installation](#-intelligent-installation)
@@ -47,6 +51,10 @@ The **BMad-CORE** powers the **BMad Method** (probably why you're here!), but yo
     - [📄 Document Sharding (Advanced)](#-document-sharding-advanced)
   - [Documentation](#documentation)
   - [Community \& Support](#community--support)
+  - [Development \& Quality Checks](#development--quality-checks)
+    - [Testing \& Validation](#testing--validation)
+    - [Code Quality](#code-quality)
+    - [Build \& Development](#build--development)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -349,6 +357,56 @@ Optional optimization for large projects (BMad Method and Enterprise tracks):
 - 🐛 **[GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)** - Report bugs, request features
 - 🎥 **[YouTube Channel](https://www.youtube.com/@BMadCode)** - Video tutorials and walkthroughs
 - ⭐ **[Star this repo](https://github.com/bmad-code-org/BMAD-METHOD)** - Stay updated on releases
+
+---
+
+## Development & Quality Checks
+
+**For contributors working on the BMAD codebase:**
+
+**Requirements:** Node.js 22+ (see `.nvmrc`). Run `nvm use` to switch to the correct version.
+
+### Testing & Validation
+
+```bash
+# Run all quality checks (comprehensive - use before pushing)
+npm test
+
+# Individual test suites
+npm run test:schemas     # Agent schema validation (fixture-based)
+npm run test:install     # Installation component tests (compilation)
+npm run validate:schemas # YAML schema validation
+npm run validate:bundles # Web bundle integrity
+```
+
+### Code Quality
+
+```bash
+# Lint check
+npm run lint
+
+# Auto-fix linting issues
+npm run lint:fix
+
+# Format check
+npm run format:check
+
+# Auto-format all files
+npm run format:fix
+```
+
+### Build & Development
+
+```bash
+# Bundle for web deployment
+npm run bundle
+
+# Test local installation
+npm run install:bmad
+```
+
+**Pre-commit Hook:** Auto-fixes changed files (lint-staged) + validates everything (npm test)
+**CI:** GitHub Actions runs all quality checks in parallel on every PR
 
 ---
 

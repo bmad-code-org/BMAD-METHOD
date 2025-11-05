@@ -34,7 +34,7 @@ Thumbs.db
 .bmad*/.cursor/
 
 # AI assistant files
-CLAUDE.md
+# CLAUDE.md # we need this for Claude Code reviews
 .ai/*
 cursor
 .gemini
