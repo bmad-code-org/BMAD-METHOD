@@ -1,132 +1,92 @@
-# {{MODULE_NAME}} Installation Configuration Template
-# This file defines how the module gets installed into a BMAD system
+# {{MODULE_NAME}} Module Configuration
+# This file defines installation questions and module configuration values
 
-module_name: "{{MODULE_NAME}}"
-module_code: "{{MODULE_CODE}}"
-author: "{{AUTHOR}}"
-installation_date: "{{DATE}}"
-bmad_version_required: "6.0.0"
+code: "{{MODULE_CODE}}"
+name: "{{MODULE_NAME}}"
+default_selected: "{{DEFAULT_SELECTED}}" # true if this should be selected by default
 
-# Module metadata
-metadata:
-  description: "{{MODULE_DESCRIPTION}}"
-  category: "{{MODULE_CATEGORY}}"
-  tags: ["{{MODULE_TAGS}}"]
-  homepage: "{{MODULE_HOMEPAGE}}"
-  license: "{{MODULE_LICENSE}}"
+# Welcome message shown during installation
+prompt:
+  - "{{WELCOME_MESSAGE_LINE_1}}"
+  - "{{WELCOME_MESSAGE_LINE_2}}"
+# Core config values are automatically inherited:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
 
-# Pre-installation checks
-pre_install_checks:
-  - name: "Check BMAD version"
-    type: "version_check"
-    minimum: "6.0.0"
+# ============================================================================
+# CONFIGURATION FIELDS
+# ============================================================================
+#
+# Each field can be:
+# 1. INTERACTIVE (has 'prompt' - asks user during installation)
+# 2. STATIC (no 'prompt' - just uses 'result' value)
+#
+# Field structure:
+#   field_name:
+#     prompt: "Question to ask user" (optional - omit for static values)
+#     default: "default_value" (optional)
+#     result: "{value}" or "static-value"
+#     single-select: [...] (optional - for dropdown)
+#     multi-select: [...] (optional - for checkboxes)
+#
+# Special placeholders in result:
+#   {value} - replaced with user's answer
+#   {project-root} - replaced with project root path
+#   {directory_name} - replaced with project directory name
+#   {module_code} - replaced with this module's code
+# ============================================================================
 
-  - name: "Check dependencies"
-    type: "module_check"
-    required_modules: [] # List any required modules
+# EXAMPLE: Interactive text input
+# example_project_name:
+#   prompt: "What is your project name?"
+#   default: "{directory_name}"
+#   result: "{value}"
 
-  - name: "Check disk space"
-    type: "disk_check"
-    required_mb: 50
+# EXAMPLE: Interactive single-select dropdown
+# example_skill_level:
+#   prompt: "What is your experience level?"
+#   default: "intermediate"
+#   result: "{value}"
+#   single-select:
+#     - value: "beginner"
+#       label: "Beginner - New to this domain"
+#     - value: "intermediate"
+#       label: "Intermediate - Familiar with basics"
+#     - value: "expert"
+#       label: "Expert - Deep knowledge"
 
-# Installation steps
-install_steps:
-  - name: "Create module directories"
-    action: "mkdir"
-    paths:
-      - "{project-root}/bmad/{{MODULE_CODE}}"
-      - "{project-root}/bmad/{{MODULE_CODE}}/data"
-      - "{project-root}/bmad/{{MODULE_CODE}}/agents"
-      - "{project-root}/bmad/{{MODULE_CODE}}/workflows"
-      - "{project-root}/bmad/{{MODULE_CODE}}/config"
-      - "{project-root}/bmad/{{MODULE_CODE}}/logs"
+# EXAMPLE: Interactive multi-select checkboxes
+# example_features:
+#   prompt:
+#     - "Which features do you want to enable?"
+#     - "(Select all that apply)"
+#   result: "{value}"
+#   multi-select:
+#     - "Feature A"
+#     - "Feature B"
+#     - "Feature C"
 
-  - name: "Copy module configuration"
-    action: "copy"
-    files:
-      - source: "config.yaml"
-        dest: "{project-root}/bmad/{{MODULE_CODE}}/config.yaml"
+# EXAMPLE: Interactive path input
+# example_output_path:
+#   prompt: "Where should outputs be saved?"
+#   default: "output/{{MODULE_CODE}}"
+#   result: "{project-root}/{value}"
 
-  - name: "Copy default data files"
-    action: "copy"
-    optional: true
-    files:
-      - source: "data/*"
-        dest: "{project-root}/bmad/{{MODULE_CODE}}/data/"
+# EXAMPLE: Static value (no user prompt)
+# example_static_setting:
+#   result: "hardcoded-value"
 
-  - name: "Register module in manifest"
-    action: "register"
-    manifest_path: "{project-root}/bmad/_cfg/manifest.yaml"
-    entry:
-      module: "{{MODULE_CODE}}"
-      status: "active"
-      path: "{project-root}/bmad/{{MODULE_CODE}}"
+# EXAMPLE: Static path
+# module_data_path:
+#   result: "{project-root}/bmad/{{MODULE_CODE}}/data"
 
-  - name: "Setup agent shortcuts"
-    action: "create_shortcuts"
-    agents: "{{AGENT_LIST}}"
+# ============================================================================
+# YOUR MODULE CONFIGURATION FIELDS
+# ============================================================================
+# Replace examples above with your module's actual configuration needs.
+# Delete this comment block and the examples when implementing.
+# ============================================================================
 
-  - name: "Initialize module database"
-    action: "exec"
-    optional: true
-    script: "installer.js"
-    function: "initDatabase"
-
-# External assets to install
-external_assets:
-  - description: "Module documentation"
-    source: "assets/docs/*"
-    dest: "{project-root}/docs/{{MODULE_CODE}}/"
-
-  - description: "Example configurations"
-    source: "assets/examples/*"
-    dest: "{project-root}/examples/{{MODULE_CODE}}/"
-    optional: true
-
-# Module configuration defaults
-default_config:
-  output_folder: "{project-root}/output/{{MODULE_CODE}}"
-  data_folder: "{project-root}/bmad/{{MODULE_CODE}}/data"
-  log_level: "info"
-  auto_save: true
-  # {{CUSTOM_CONFIG}}
-
-# Post-installation setup
-post_install:
-  - name: "Run initial setup"
-    action: "workflow"
-    workflow: "{{MODULE_CODE}}-setup"
-    optional: true
-
-  - name: "Generate sample data"
-    action: "exec"
-    script: "installer.js"
-    function: "generateSamples"
-    optional: true
-
-  - name: "Verify installation"
-    action: "test"
-    test_command: "bmad test {{MODULE_CODE}}"
-
-# Post-installation message
-post_install_message: |
-  ✅ {{MODULE_NAME}} has been installed successfully!
-
-  🚀 Quick Start:
-  1. Load the main agent: `agent {{PRIMARY_AGENT}}`
-  2. View available commands: `*help`
-  3. Run the main workflow: `workflow {{PRIMARY_WORKFLOW}}`
-
-  📚 Documentation: {project-root}/docs/{{MODULE_CODE}}/README.md
-  💡 Examples: {project-root}/examples/{{MODULE_CODE}}/
-
-  {{CUSTOM_MESSAGE}}
-
-# Uninstall configuration
-uninstall:
-  preserve_user_data: true
-  remove_paths:
-    - "{project-root}/bmad/{{MODULE_CODE}}"
-    - "{project-root}/docs/{{MODULE_CODE}}"
-  backup_before_remove: true
-  unregister_from_manifest: true
+# TODO: INSERT {MODULE_CONFIG_FIELDS} HERE

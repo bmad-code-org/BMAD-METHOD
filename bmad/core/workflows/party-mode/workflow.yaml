@@ -10,12 +10,14 @@ date: system-generated
 
 # This is an interactive action workflow - no template output
 template: false
-instructions: "{project-root}/src/core/workflows/party-mode/instructions.md"
+instructions: "{project-root}/bmad/core/workflows/party-mode/instructions.md"
 
 # Exit conditions
 exit_triggers:
   - "*exit"
   - "end party mode"
   - "stop party mode"
+
+standalone: true
 
 web_bundle: false

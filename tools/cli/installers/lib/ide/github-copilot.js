@@ -101,20 +101,24 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     const chatmodesDir = path.join(githubDir, this.chatmodesDir);
     await this.ensureDir(chatmodesDir);
 
+    // Clean up any existing BMAD files before reinstalling
+    await this.cleanup(projectDir);
+
     // Get agents
     const agents = await this.getAgents(bmadDir);
 
-    // Create chat mode files
+    // Create chat mode files with bmad- prefix
     let modeCount = 0;
     for (const agent of agents) {
       const content = await this.readFile(agent.path);
       const chatmodeContent = this.createChatmodeContent(agent, content);
 
-      const targetPath = path.join(chatmodesDir, `${agent.module}-${agent.name}.chatmode.md`);
+      // Use bmad- prefix: bmad-agent-{module}-{name}.chatmode.md
+      const targetPath = path.join(chatmodesDir, `bmad-agent-${agent.module}-${agent.name}.chatmode.md`);
       await this.writeFile(targetPath, chatmodeContent);
       modeCount++;
 
-      console.log(chalk.green(`  ✓ Created chat mode: ${agent.module}-${agent.name}`));
+      console.log(chalk.green(`  ✓ Created chat mode: bmad-agent-${agent.module}-${agent.name}`));
     }
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
@@ -259,30 +263,27 @@ Part of the BMAD ${agent.module.toUpperCase()} module.
   }
 
   /**
-   * Cleanup GitHub Copilot configuration
+   * Cleanup GitHub Copilot configuration - surgically remove only BMAD files
    */
   async cleanup(projectDir) {
     const fs = require('fs-extra');
     const chatmodesDir = path.join(projectDir, this.configDir, this.chatmodesDir);
 
     if (await fs.pathExists(chatmodesDir)) {
-      // Remove BMAD chat modes
+      // Only remove files that start with bmad- prefix
       const files = await fs.readdir(chatmodesDir);
       let removed = 0;
 
       for (const file of files) {
-        if (file.endsWith('.chatmode.md')) {
-          const filePath = path.join(chatmodesDir, file);
-          const content = await fs.readFile(filePath, 'utf8');
-
-          if (content.includes('BMAD') && content.includes('Module')) {
-            await fs.remove(filePath);
-            removed++;
-          }
+        if (file.startsWith('bmad-') && file.endsWith('.chatmode.md')) {
+          await fs.remove(path.join(chatmodesDir, file));
+          removed++;
         }
       }
 
-      console.log(chalk.dim(`Removed ${removed} BMAD chat modes from GitHub Copilot`));
+      if (removed > 0) {
+        console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD chat modes`));
+      }
     }
   }
 }

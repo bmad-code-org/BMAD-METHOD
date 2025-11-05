@@ -130,7 +130,7 @@
 4. Save README.md
    </action>
 
-<check>If clarification needed about purpose or unique features → Ask user briefly, then continue</check>
+<action if="clarification needed about purpose or unique features">Ask user briefly, then continue</action>
 </step>
 
 <step n="4" goal="Process mid-level folder documentation" if="target_type requires folder docs">

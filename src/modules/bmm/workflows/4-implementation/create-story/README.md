@@ -85,7 +85,7 @@ The create-story workflow is step 1 in the v6 implementation cycle:
 1. **SM: create-story** ← You are here
 2. SM: story-context (adds JIT technical expertise)
 3. DEV: dev-story (implements with generated context)
-4. DEV/SR: review-story (validates completion)
+4. DEV/SR: code-review (validates completion)
 5. If needed: correct-course (adjusts direction)
 6. After epic: retrospective (captures learnings)
 

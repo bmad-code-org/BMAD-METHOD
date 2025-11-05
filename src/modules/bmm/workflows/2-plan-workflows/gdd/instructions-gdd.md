@@ -22,21 +22,25 @@
 </invoke-workflow>
 
 <check if="status_exists == false">
-  <output>**⚠️ No Workflow Status File Found**
+  <output>**Note: No Workflow Status File Found**
 
-The GDD workflow requires a status file to understand your project context.
+The GDD workflow can run standalone or as part of the BMM workflow path.
 
-Please run `workflow-init` first to:
+**Recommended:** Run `workflow-init` first for:
 
-- Define your project type and level
-- Map out your workflow journey
-- Create the status file
+- Project context tracking
+- Workflow sequencing guidance
+- Progress monitoring across workflows
 
-Run: `workflow-init`
-
-After setup, return here to create your GDD.
+**Or continue standalone** without progress tracking.
 </output>
-<action>Exit workflow - cannot proceed without status file</action>
+<ask>Continue in standalone mode or exit to run workflow-init? (continue/exit)</ask>
+<check if="continue">
+<action>Set standalone_mode = true</action>
+</check>
+<check if="exit">
+<action>Exit workflow</action>
+</check>
 </check>
 
 <check if="status_exists == true">
@@ -390,10 +394,10 @@ Since this is a Level {{project_level}} game project, you need solutioning for p
 
 <action>Generate comprehensive checklist based on project analysis</action>
 
-### Phase 1: Solution Architecture and Engine Selection
+### Phase 1: Architecture and Engine Selection
 
 - [ ] **Run solutioning workflow** (REQUIRED)
-  - Command: `workflow solution-architecture`
+  - Command: `workflow create-architecture`
   - Input: GDD.md, bmm-workflow-status.md
   - Output: architecture.md with engine/platform specifics
   - Note: Registry.csv will provide engine-specific guidance

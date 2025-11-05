@@ -7,15 +7,17 @@ field_type: "brownfield"
 description: "Medium project adding multiple features to existing codebase"
 
 phases:
-  - phase: 0
+  - prerequisite: true
     name: "Documentation"
     conditional: "if_undocumented"
+    note: "NOT a phase - prerequisite for brownfield without docs OR post-completion cleanup"
     workflows:
       - id: "document-project"
         required: true
         agent: "analyst"
         command: "document-project"
-        output: "Codebase documentation"
+        output: "Comprehensive project documentation"
+        purpose: "Understand existing codebase before planning OR create superior final docs after Phase 4"
 
   - phase: 1
     name: "Analysis"
@@ -44,16 +46,20 @@ phases:
         command: "prd"
         output: "Focused PRD for new features"
         note: "Must consider existing system constraints"
+      - id: "validate-prd"
+        optional: true
+        agent: "pm"
+        command: "validate-prd"
       - id: "tech-spec"
         required: true
         agent: "pm"
         command: "tech-spec"
         output: "Creates spec with multiple story files"
         note: "Integrate with existing patterns"
-      - id: "ux-spec"
+      - id: "create-design"
         conditional: "if_has_ui"
-        agent: "ux-expert"
-        command: "ux-spec"
+        agent: "ux-designer"
+        command: "create-design"
 
   - phase: 3
     name: "Solutioning"
@@ -63,33 +69,8 @@ phases:
     name: "Implementation"
     required: true
     workflows:
-      - id: "create-story"
+      - id: "sprint-planning"
         required: true
         agent: "sm"
-        command: "create-story"
-      - id: "story-context"
-        required: true
-        agent: "sm"
-        command: "story-context"
-        note: "Include existing code context"
-      - id: "validate-story-context"
-        optional: true
-        agent: "sm"
-        command: "validate-story-context"
-      - id: "dev-story"
-        required: true
-        agent: "dev"
-        command: "dev-story"
-      - id: "review-story"
-        recommended: true
-        agent: "dev"
-        command: "review-story"
-      - id: "story-approved"
-        required: true
-        agent: "dev"
-        command: "story-approved"
-
-story_naming: "story-<short-title>.md"
-story_example: "story-user-dashboard.md, story-api-integration.md"
-max_stories: 15
-brownfield_note: "Balance new features with existing system stability"
+        command: "sprint-planning"
+        note: "Creates sprint plan with all stories - subsequent work tracked in sprint plan output, not workflow-status"

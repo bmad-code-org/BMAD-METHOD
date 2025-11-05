@@ -583,11 +583,8 @@ Create compelling executive summary with:
 
 **Next Steps:**
 
-1. Review research findings
-2. Share with stakeholders
-3. Consider running:
-   - `product-brief` or `game-brief` to formalize vision
-   - `plan-project` if ready to create PRD/GDD
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- **Optional:** Review findings with stakeholders, or run additional analysis workflows (product-brief, game-brief, etc.)
 
 Check status anytime with: `workflow-status`
 </output>
@@ -602,14 +599,15 @@ Check status anytime with: `workflow-status`
 
 Note: Running in standalone mode (no status file).
 
-To track progress across workflows, run `workflow-status` first.
-
 **Next Steps:**
 
-1. Review research findings
-2. Run product-brief or plan-project workflows
-   </output>
-   </check>
-   </step>
+Since no workflow is in progress:
+
+- Review research findings
+- Refer to the BMM workflow guide if unsure what to do next
+- Or run `workflow-init` to create a workflow path and get guided next steps
+  </output>
+  </check>
+  </step>
 
 </workflow>

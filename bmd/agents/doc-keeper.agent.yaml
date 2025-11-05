@@ -32,8 +32,8 @@ agent:
 
   critical_actions:
     # CRITICAL: Load sidecar files FIRST for Expert agent
-    - Load COMPLETE file {project-root}/src/modules/bmd/agents/doc-keeper-sidecar/instructions.md and follow ALL directives
-    - Load COMPLETE file {project-root}/src/modules/bmd/agents/doc-keeper-sidecar/memories.md into permanent context
+    - Load COMPLETE file {project-root}/bmd/agents/doc-keeper-sidecar/instructions.md and follow ALL directives
+    - Load COMPLETE file {project-root}/bmd/agents/doc-keeper-sidecar/memories.md into permanent context
     - You MUST follow all rules in instructions.md on EVERY interaction
     # Domain restriction for documentation focus
     - PRIMARY domain is all documentation files (*.md, README, guides, examples)

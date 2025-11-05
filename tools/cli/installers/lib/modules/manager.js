@@ -113,7 +113,7 @@ class ModuleManager {
     }
 
     // Copy module files with filtering
-    await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback);
+    await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
 
     // Process agent files to inject activation block
     await this.processAgentFiles(targetPath, moduleName);
@@ -231,13 +231,25 @@ class ModuleManager {
   }
 
   /**
-   * Copy module with filtering for localskip agents
+   * Copy module with filtering for localskip agents and conditional content
    * @param {string} sourcePath - Source module path
    * @param {string} targetPath - Target module path
+   * @param {Function} fileTrackingCallback - Optional callback to track installed files
+   * @param {Object} moduleConfig - Module configuration with conditional flags
    */
-  async copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback = null) {
+  async copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback = null, moduleConfig = {}) {
     // Get all files in source
     const sourceFiles = await this.getFileList(sourcePath);
+
+    // Game development files to conditionally exclude
+    const gameDevFiles = [
+      'agents/game-architect.agent.yaml',
+      'agents/game-designer.agent.yaml',
+      'agents/game-dev.agent.yaml',
+      'workflows/1-analysis/brainstorm-game',
+      'workflows/1-analysis/game-brief',
+      'workflows/2-plan-workflows/gdd',
+    ];
 
     for (const file of sourceFiles) {
       // Skip sub-modules directory - these are IDE-specific and handled separately
@@ -253,6 +265,19 @@ class ModuleManager {
       // Skip config.yaml templates - we'll generate clean ones with actual values
       if (file === 'config.yaml' || file.endsWith('/config.yaml')) {
         continue;
+      }
+
+      // Skip game development content if include_game_planning is false
+      if (moduleConfig.include_game_planning === false) {
+        const shouldSkipGameDev = gameDevFiles.some((gamePath) => {
+          // Check if file path starts with or is within any game dev directory
+          return file === gamePath || file.startsWith(gamePath + '/') || file.startsWith(gamePath + '\\');
+        });
+
+        if (shouldSkipGameDev) {
+          console.log(chalk.dim(`  Skipping game dev content: ${file}`));
+          continue;
+        }
       }
 
       const sourceFile = path.join(sourcePath, file);

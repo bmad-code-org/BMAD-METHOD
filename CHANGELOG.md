@@ -16,10 +16,10 @@ Initial alpha release of a major rewrite and overhaul improvement of past versio
 
 - **Lean Core**: The core of BMad is very simple - common tasks that apply to any future module or agents, along with common agents that will be added to any modules - bmad-web-orchestrator and bmad-master.
 - **BMad Method**: The new BMad Method (AKA bmm) is a complete overhaul of the v4 method, now a fully scale adaptive rewrite. The workflow now scales from small enhancements to massive undertakings across multiple services or architectures, supporting a new vast array of project type, including a full subclass of game development specifics.
-- **BoMB**: The BMad Builder (AKA BoMB) now is able to fully automate creation and conversion of expansion packs from v5 to modules in v5 along with the net new ideation and brainstorming through implementation and testing of net new Modules, Workflows (were tasks and templates), Module Agents, and Standalone Personal Agents
+- **BoMB**: The BMad Builder (AKA BoMB) now is able to fully automate creation and conversion of expansion packs from v6 to modules in v6 along with the net new ideation and brainstorming through implementation and testing of net new Modules, Workflows (were tasks and templates), Module Agents, and Standalone Personal Agents
 - **CIS**: The Creative Intelligence Suite (AKA CIS)
 
-## [v5.0.0] - SKIPPED
+## [v6.0.0] - SKIPPED
 
 **Note**: Version 5.0.0 was skipped due to NPX registry issues that corrupted the version. Development continues with v6.0.0-alpha.0.
 

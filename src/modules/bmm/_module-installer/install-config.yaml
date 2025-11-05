@@ -19,6 +19,11 @@ project_name:
   default: "{directory_name}"
   result: "{value}"
 
+include_game_planning:
+  prompt: "Include Game Planning Agents and Workflows?"
+  default: false
+  result: "{value}"
+
 user_skill_level:
   prompt:
     - "What is your technical experience level?"
@@ -47,7 +52,7 @@ dev_story_location:
 # TEA Agent Configuration
 tea_use_mcp_enhancements:
   prompt: "Enable Playwright MCP capabilities (healing, exploratory, verification)?"
-  default: true
+  default: false
   result: "{value}"
 # kb_location:
 #   prompt: "Where should bmad knowledge base articles be stored?"

@@ -38,10 +38,10 @@ this.modulesSourcePath = getSourcePath('modules'); // Hardcoded to src/modules/
 
 ### Real-World Use Case
 
-- User has BMD module at `/Users/brianmadison/dev/BMAD-METHOD/bmd` (standalone folder)
+- User has a custom foo module at `/Users/username/dev/foo` (standalone folder)
 - Module has agents that need compilation (YAML → Markdown with XML)
 - Module needs IDE integration (generate commands for Claude Code, etc.)
-- Current installer cannot handle this - module must be in `src/modules/` to be discovered
+- Current installer cannot handle this - module must be in `src/modules/foo` to be discovered
 
 ---
 
@@ -54,13 +54,13 @@ this.modulesSourcePath = getSourcePath('modules'); // Hardcoded to src/modules/
 ```
 my-custom-module/
 ├── agents/
-│   └── my-agent.agent.yaml          ← Required: At least one agent
+│   └── my-agent.agent.yaml           ← Required: At least one agent
 ├── workflows/                        ← Optional: Workflow definitions
 │   └── my-workflow/
 │       ├── README.md
 │       └── workflow.yaml
 └── _module-installer/                ← Required: Installation configuration
-    ├── install-config.yaml     ← REQUIRED: Defines config questions
+    ├── install-config.yaml           ← REQUIRED: Defines config questions
     └── installer.js                  ← OPTIONAL: Custom install hooks
 ```
 
@@ -89,7 +89,7 @@ my-custom-module/
 
 ### Example: install-config.yaml
 
-**Reference**: `/Users/brianmadison/dev/BMAD-METHOD/src/modules/bmm/_module-installer/install-config.yaml`
+**Reference**: `/src/modules/bmm/_module-installer/install-config.yaml`
 
 ```yaml
 # Module metadata
@@ -207,7 +207,7 @@ User runs: npm run install:bmad
 
 ---
 
-## Proposed Solution Architecture
+## Proposed Architecture
 
 ### New Command: `install-module`
 
@@ -217,21 +217,7 @@ User runs: npm run install:bmad
 
 ```bash
 # Interactive mode
-bmad install-module
-
-# Non-interactive mode
-bmad install-module \
-  --source /path/to/custom-module \
-  --target /path/to/project \
-  --ides codex,windsurf
-
-# CI/CD mode
-bmad install-module \
-  --source ./my-module \
-  --target . \
-  --ides codex \
-  --non-interactive \
-  --config-file ./module-config.json
+install-module
 ```
 
 ### System Architecture
@@ -248,20 +234,20 @@ bmad install-module \
 │ - Call CustomModuleInstaller                                 │
 └──────────────────────────────────────────────────────────────┘
                     ↓
-┌──────────────────────────────────────────────────────────────┐
-│ NEW: CustomModuleInstaller Class                             │
+┌───────────────────────────────────────────────────────────────┐
+│ NEW: CustomModuleInstaller Class                              │
 │ File: tools/cli/installers/lib/core/custom-module-installer.js│
-│                                                              │
-│ Responsibilities:                                            │
-│ 1. Validate source module structure (ModuleValidator)       │
-│ 2. Ensure core is installed in target                       │
-│ 3. Collect module configuration (ConfigCollector)           │
-│ 4. Install module files (ModuleManager)                     │
-│ 5. Compile agents (YamlXmlBuilder)                          │
-│ 6. Generate IDE artifacts (IdeManager)                      │
-│ 7. Update manifests (ManifestGenerator)                     │
-│ 8. Run custom installer hooks (if exists)                   │
-└──────────────────────────────────────────────────────────────┘
+│                                                               │
+│ Responsibilities:                                             │
+│ 1. Validate source module structure (ModuleValidator)         │
+│ 2. Ensure core is installed in target                         │
+│ 3. Collect module configuration (ConfigCollector)             │
+│ 4. Install module files (ModuleManager)                       │
+│ 5. Compile agents (YamlXmlBuilder)                            │
+│ 6. Generate IDE artifacts (IdeManager)                        │
+│ 7. Update manifests (ManifestGenerator)                       │
+│ 8. Run custom installer hooks (if exists)                     │
+└───────────────────────────────────────────────────────────────┘
                     ↓
 ┌──────────────────────────────────────────────────────────────┐
 │ NEW: ModuleValidator Class                                   │

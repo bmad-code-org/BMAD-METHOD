@@ -55,14 +55,16 @@ class Detector {
     }
 
     // Check for modules
-    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
-    for (const entry of entries) {
-      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg') {
-        const modulePath = path.join(bmadDir, entry.name);
+    // If manifest exists, use it as the source of truth for installed modules
+    // Otherwise fall back to directory scanning (legacy installations)
+    if (manifestData && manifestData.modules && manifestData.modules.length > 0) {
+      // Use manifest module list - these are officially installed modules
+      for (const moduleId of manifestData.modules) {
+        const modulePath = path.join(bmadDir, moduleId);
         const moduleConfigPath = path.join(modulePath, 'config.yaml');
 
         const moduleInfo = {
-          id: entry.name,
+          id: moduleId,
           path: modulePath,
           version: 'unknown',
         };
@@ -72,7 +74,7 @@ class Detector {
             const configContent = await fs.readFile(moduleConfigPath, 'utf8');
             const config = yaml.load(configContent);
             moduleInfo.version = config.version || 'unknown';
-            moduleInfo.name = config.name || entry.name;
+            moduleInfo.name = config.name || moduleId;
             moduleInfo.description = config.description;
           } catch {
             // Ignore config read errors
@@ -81,11 +83,42 @@ class Detector {
 
         result.modules.push(moduleInfo);
       }
+    } else {
+      // Fallback: scan directory for modules (legacy installations without manifest)
+      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg') {
+          const modulePath = path.join(bmadDir, entry.name);
+          const moduleConfigPath = path.join(modulePath, 'config.yaml');
+
+          // Only treat it as a module if it has a config.yaml
+          if (await fs.pathExists(moduleConfigPath)) {
+            const moduleInfo = {
+              id: entry.name,
+              path: modulePath,
+              version: 'unknown',
+            };
+
+            try {
+              const configContent = await fs.readFile(moduleConfigPath, 'utf8');
+              const config = yaml.load(configContent);
+              moduleInfo.version = config.version || 'unknown';
+              moduleInfo.name = config.name || entry.name;
+              moduleInfo.description = config.description;
+            } catch {
+              // Ignore config read errors
+            }
+
+            result.modules.push(moduleInfo);
+          }
+        }
+      }
     }
 
     // Check for IDE configurations from manifest
     if (result.manifest && result.manifest.ides) {
-      result.ides = result.manifest.ides;
+      // Filter out any undefined/null values
+      result.ides = result.manifest.ides.filter((ide) => ide && typeof ide === 'string');
     }
 
     // Mark as installed if we found core or modules
@@ -211,10 +244,11 @@ class Detector {
 
     // Check inside various IDE command folders for legacy bmad folders
     // List of IDE config folders that might have commands directories
-    const ideConfigFolders = ['.claude', '.crush', '.continue', '.cursor', '.windsurf', '.cline', '.roo-cline'];
+    const ideConfigFolders = ['.opencode', '.claude', '.crush', '.continue', '.cursor', '.windsurf', '.cline', '.roo-cline'];
 
     for (const ideFolder of ideConfigFolders) {
-      const commandsPath = path.join(projectDir, ideFolder, 'commands');
+      const commandsDirName = ideFolder === '.opencode' ? 'command' : 'commands';
+      const commandsPath = path.join(projectDir, ideFolder, commandsDirName);
       if (await fs.pathExists(commandsPath)) {
         try {
           const commandEntries = await fs.readdir(commandsPath, { withFileTypes: true });

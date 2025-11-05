@@ -66,7 +66,7 @@ node tools/cli/bundlers/bundle-web.js agent bmm pm     # One agent
 ```bash
 npm run bmad:status              # Installation status
 npm run validate:bundles         # Validate web bundles
-node tools/cli/regenerate-manifests.js    # Regenerate agent-party.xml files
+node tools/cli/regenerate-manifests.js    # Regenerate agent-manifest.csv files
 ```
 
 ---
@@ -126,26 +126,27 @@ The installer is a multi-stage system that handles agent compilation, IDE integr
 
 ### IDE Support
 
-The installer supports **14 IDE environments** through a base-derived architecture. Each IDE handler extends `BaseIDE` and implements IDE-specific artifact generation.
+The installer supports **15 IDE environments** through a base-derived architecture. Each IDE handler extends `BaseIDE` and implements IDE-specific artifact generation.
 
 **Supported IDEs** (as of v6-alpha):
 
-| Code             | Name              | Artifact Location      |
-| ---------------- | ----------------- | ---------------------- |
-| `codex`          | Claude Code       | `.claude/commands/`    |
-| `claude-code`    | Claude Code (alt) | `.claude/commands/`    |
-| `windsurf`       | Windsurf          | `.windsurf/workflows/` |
-| `cursor`         | Cursor            | `.cursor/rules/`       |
-| `cline`          | Cline             | `.clinerules/`         |
-| `github-copilot` | GitHub Copilot    | `.github/copilot/`     |
-| `crush`          | Crush             | `.crush/`              |
-| `auggie`         | Auggie            | `.auggie/`             |
-| `gemini`         | Google Gemini     | `.gemini/`             |
-| `qwen`           | Qwen              | `.qwen/`               |
-| `roo`            | Roo               | `.roo/`                |
-| `trae`           | Trae              | `.trae/`               |
-| `iflow`          | iFlow             | `.iflow/`              |
-| `kilo`           | Kilo              | `.kilo/`               |
+| Code             | Name              | Artifact Location        |
+| ---------------- | ----------------- | ------------------------ |
+| `codex`          | Claude Code       | `.claude/commands/`      |
+| `claude-code`    | Claude Code (alt) | `.claude/commands/`      |
+| `opencode`       | OpenCode          | `.opencode`              |
+| `windsurf`       | Windsurf          | `.windsurf/workflows/`   |
+| `cursor`         | Cursor            | `.cursor/rules/`         |
+| `cline`          | Cline             | `.clinerules/workflows/` |
+| `github-copilot` | GitHub Copilot    | `.github/copilot/`       |
+| `crush`          | Crush             | `.crush/`                |
+| `auggie`         | Auggie            | `.auggie/`               |
+| `gemini`         | Google Gemini     | `.gemini/`               |
+| `qwen`           | Qwen              | `.qwen/`                 |
+| `roo`            | Roo               | `.roo/`                  |
+| `trae`           | Trae              | `.trae/`                 |
+| `iflow`          | iFlow             | `.iflow/`                |
+| `kilo`           | Kilo              | `.kilo/`                 |
 
 **Handler Architecture**:
 
@@ -565,10 +566,10 @@ To add a new handler type (e.g., `validate-workflow`):
 ### Regenerating Manifests
 
 ```bash
-# Regenerate agent-party.xml for all modules
+# Regenerate agent-manifest.csv for all modules
 node tools/cli/regenerate-manifests.js
 
-# Location: src/modules/{module}/agents/agent-party.xml
+# Location: src/modules/{module}/agents/agent-manifest.csv
 ```
 
 ---

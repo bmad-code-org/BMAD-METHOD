@@ -85,7 +85,7 @@ Step 12: Final review and update workflow status
 - **checklist.md** - Validation requirements for the output document
 - **architecture-template.md** - Strict format for the final document
 
-## How It's Different from Old Solution-Architecture
+## How It's Different from Old architecture
 
 | Aspect               | Old Workflow                                 | New Workflow                                    |
 | -------------------- | -------------------------------------------- | ----------------------------------------------- |
@@ -266,9 +266,9 @@ This workflow assumes:
 - AI agents need clear constraints to prevent conflicts
 - The architecture document is for agents, not humans
 
-## Migration from solution-architecture
+## Migration from architecture
 
-Projects using the old `solution-architecture` workflow should:
+Projects using the old `architecture` workflow should:
 
 1. Complete any in-progress architecture work
 2. Use `architecture` for new projects
@@ -315,4 +315,4 @@ Projects using the old `solution-architecture` workflow should:
 - Starter decisions are documented as "PROVIDED BY STARTER"
 - First implementation story uses starter initialization command
 
-  1.0.0 - Initial release replacing solution-architecture workflow
+  1.0.0 - Initial release replacing architecture workflow

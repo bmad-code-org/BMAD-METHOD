@@ -14,6 +14,13 @@ module.exports = {
     try {
       const config = await ui.promptInstall();
 
+      // Handle cancel
+      if (config.actionType === 'cancel') {
+        console.log(chalk.yellow('Installation cancelled.'));
+        process.exit(0);
+        return;
+      }
+
       // Handle agent compilation separately
       if (config.actionType === 'compile') {
         const result = await installer.compileAgents(config);
@@ -21,6 +28,20 @@ module.exports = {
         console.log(chalk.cyan(`Rebuilt ${result.agentCount} agents and ${result.taskCount} tasks`));
         process.exit(0);
         return;
+      }
+
+      // Handle quick update separately
+      if (config.actionType === 'quick-update') {
+        const result = await installer.quickUpdate(config);
+        console.log(chalk.green('\n✨ Quick update complete!'));
+        console.log(chalk.cyan(`Updated ${result.moduleCount} modules with preserved settings`));
+        process.exit(0);
+        return;
+      }
+
+      // Handle reinstall by setting force flag
+      if (config.actionType === 'reinstall') {
+        config._requestedReinstall = true;
       }
 
       // Regular install/update flow

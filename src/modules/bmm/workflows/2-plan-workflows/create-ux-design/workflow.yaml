@@ -1,0 +1,42 @@
+# Create UX Design Workflow Configuration
+name: create-ux-design
+description: "Collaborative UX design facilitation workflow that creates exceptional user experiences through visual exploration and informed decision-making. Unlike template-driven approaches, this workflow facilitates discovery, generates visual options, and collaboratively designs the UX with the user at every step."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+
+# Input requirements - We work from PRD, Brief, or Brainstorming docs
+recommended_inputs:
+  - prd: "Product Requirements Document with features and user journeys"
+  - product_brief: "Product brief with vision and target users"
+  - brainstorming: "Brainstorming documents with ideas and concepts"
+
+# Input file references (fuzzy matched from output folder)
+prd_file: "{output_folder}/bmm-PRD.md or PRD.md or product-requirements.md"
+brief_file: "{output_folder}/product-brief.md or brief.md or project-brief.md"
+brainstorm_file: "{output_folder}/brainstorming.md or brainstorm.md or ideation.md"
+
+# Module path and component files
+installed_path: "{project-root}/bmad/bmm/workflows/2-plan-workflows/create-ux-design"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/ux-design-template.md"
+
+# Knowledge bases for intelligent UX decisions
+ux_pattern_catalog: "{installed_path}/ux-pattern-catalog.yaml"
+color_psychology: "{installed_path}/color-psychology.yaml"
+layout_patterns: "{installed_path}/layout-patterns.yaml"
+
+# Output configuration - Progressive saves throughout workflow
+default_output_file: "{output_folder}/ux-design-specification.md"
+color_themes_html: "{output_folder}/ux-color-themes.html"
+design_directions_html: "{output_folder}/ux-design-directions.html"
+
+standalone: true

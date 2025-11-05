@@ -2,7 +2,6 @@
 
 prompt:
   - "Welcome and thank you for choosing BMAD™! This is the Core Configuration."
-  - "Core Config is personalized configuration that is git ignored."
   - "This will impact all selected modules, either additions or upgrades."
 
 # This is injected into the custom agent activation rules

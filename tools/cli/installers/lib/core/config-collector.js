@@ -26,22 +26,25 @@ class ConfigCollector {
       return false;
     }
 
-    // Try to load existing module configs
-    const modules = ['core', 'bmm', 'cis'];
+    // Dynamically discover all installed modules by scanning bmad directory
+    // A directory is a module ONLY if it contains a config.yaml file
     let foundAny = false;
+    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
 
-    for (const moduleName of modules) {
-      const moduleConfigPath = path.join(bmadDir, moduleName, 'config.yaml');
-      if (await fs.pathExists(moduleConfigPath)) {
-        try {
-          const content = await fs.readFile(moduleConfigPath, 'utf8');
-          const moduleConfig = yaml.load(content);
-          if (moduleConfig) {
-            this.existingConfig[moduleName] = moduleConfig;
-            foundAny = true;
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        const moduleConfigPath = path.join(bmadDir, entry.name, 'config.yaml');
+        if (await fs.pathExists(moduleConfigPath)) {
+          try {
+            const content = await fs.readFile(moduleConfigPath, 'utf8');
+            const moduleConfig = yaml.load(content);
+            if (moduleConfig) {
+              this.existingConfig[entry.name] = moduleConfig;
+              foundAny = true;
+            }
+          } catch {
+            // Ignore parse errors for individual modules
           }
-        } catch {
-          // Ignore parse errors for individual modules
         }
       }
     }
@@ -84,6 +87,203 @@ class ConfigCollector {
     };
 
     return this.collectedConfig;
+  }
+
+  /**
+   * Collect configuration for a single module (Quick Update mode - only new fields)
+   * @param {string} moduleName - Module name
+   * @param {string} projectDir - Target project directory
+   * @param {boolean} silentMode - If true, only prompt for new/missing fields
+   * @returns {boolean} True if new fields were prompted, false if all fields existed
+   */
+  async collectModuleConfigQuick(moduleName, projectDir, silentMode = true) {
+    this.currentProjectDir = projectDir;
+
+    // Load existing config if not already loaded
+    if (!this.existingConfig) {
+      await this.loadExistingConfig(projectDir);
+    }
+
+    // Initialize allAnswers if not already initialized
+    if (!this.allAnswers) {
+      this.allAnswers = {};
+    }
+
+    // Load module's install config schema
+    const installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-config.yaml');
+    const legacyConfigPath = path.join(getModulePath(moduleName), 'config.yaml');
+
+    let configPath = null;
+    if (await fs.pathExists(installerConfigPath)) {
+      configPath = installerConfigPath;
+    } else if (await fs.pathExists(legacyConfigPath)) {
+      configPath = legacyConfigPath;
+    } else {
+      // No config schema for this module - use existing values
+      if (this.existingConfig && this.existingConfig[moduleName]) {
+        if (!this.collectedConfig[moduleName]) {
+          this.collectedConfig[moduleName] = {};
+        }
+        this.collectedConfig[moduleName] = { ...this.existingConfig[moduleName] };
+      }
+      return false;
+    }
+
+    const configContent = await fs.readFile(configPath, 'utf8');
+    const moduleConfig = yaml.load(configContent);
+
+    if (!moduleConfig) {
+      return false;
+    }
+
+    // Compare schema with existing config to find new/missing fields
+    const configKeys = Object.keys(moduleConfig).filter((key) => key !== 'prompt');
+    const existingKeys = this.existingConfig && this.existingConfig[moduleName] ? Object.keys(this.existingConfig[moduleName]) : [];
+
+    const newKeys = configKeys.filter((key) => {
+      const item = moduleConfig[key];
+      // Check if it's a config item and doesn't exist in existing config
+      return item && typeof item === 'object' && item.prompt && !existingKeys.includes(key);
+    });
+
+    // If in silent mode and no new keys, use existing config and skip prompts
+    if (silentMode && newKeys.length === 0) {
+      if (this.existingConfig && this.existingConfig[moduleName]) {
+        if (!this.collectedConfig[moduleName]) {
+          this.collectedConfig[moduleName] = {};
+        }
+        this.collectedConfig[moduleName] = { ...this.existingConfig[moduleName] };
+
+        // Also populate allAnswers for cross-referencing
+        for (const [key, value] of Object.entries(this.existingConfig[moduleName])) {
+          this.allAnswers[`${moduleName}_${key}`] = value;
+        }
+      }
+      return false; // No new fields
+    }
+
+    // If we have new fields, show prompt section and collect only new fields
+    if (newKeys.length > 0) {
+      console.log(chalk.yellow(`\n📋 New configuration options available for ${moduleName}`));
+      if (moduleConfig.prompt) {
+        const prompts = Array.isArray(moduleConfig.prompt) ? moduleConfig.prompt : [moduleConfig.prompt];
+        CLIUtils.displayPromptSection(prompts);
+      }
+
+      const questions = [];
+      for (const key of newKeys) {
+        const item = moduleConfig[key];
+        const question = await this.buildQuestion(moduleName, key, item);
+        if (question) {
+          questions.push(question);
+        }
+      }
+
+      if (questions.length > 0) {
+        console.log(); // Line break before questions
+        const answers = await inquirer.prompt(questions);
+
+        // Store answers for cross-referencing
+        Object.assign(this.allAnswers, answers);
+
+        // Process answers and build result values
+        for (const key of Object.keys(answers)) {
+          const originalKey = key.replace(`${moduleName}_`, '');
+          const item = moduleConfig[originalKey];
+          const value = answers[key];
+
+          let result;
+          if (Array.isArray(value)) {
+            result = value;
+          } else if (item.result) {
+            result = this.processResultTemplate(item.result, value);
+          } else {
+            result = value;
+          }
+
+          if (!this.collectedConfig[moduleName]) {
+            this.collectedConfig[moduleName] = {};
+          }
+          this.collectedConfig[moduleName][originalKey] = result;
+        }
+      }
+    }
+
+    // Copy over existing values for fields that weren't prompted
+    if (this.existingConfig && this.existingConfig[moduleName]) {
+      if (!this.collectedConfig[moduleName]) {
+        this.collectedConfig[moduleName] = {};
+      }
+      for (const [key, value] of Object.entries(this.existingConfig[moduleName])) {
+        if (!this.collectedConfig[moduleName][key]) {
+          this.collectedConfig[moduleName][key] = value;
+          this.allAnswers[`${moduleName}_${key}`] = value;
+        }
+      }
+    }
+
+    return newKeys.length > 0; // Return true if we prompted for new fields
+  }
+
+  /**
+   * Process a result template with value substitution
+   * @param {*} resultTemplate - The result template
+   * @param {*} value - The value to substitute
+   * @returns {*} Processed result
+   */
+  processResultTemplate(resultTemplate, value) {
+    let result = resultTemplate;
+
+    if (typeof result === 'string' && value !== undefined) {
+      if (typeof value === 'string') {
+        result = result.replace('{value}', value);
+      } else if (typeof value === 'boolean' || typeof value === 'number') {
+        if (result === '{value}') {
+          result = value;
+        } else {
+          result = result.replace('{value}', value);
+        }
+      } else {
+        result = value;
+      }
+
+      if (typeof result === 'string') {
+        result = result.replaceAll(/{([^}]+)}/g, (match, configKey) => {
+          if (configKey === 'project-root') {
+            return '{project-root}';
+          }
+          if (configKey === 'value') {
+            return match;
+          }
+
+          let configValue = this.allAnswers[configKey] || this.allAnswers[`${configKey}`];
+          if (!configValue) {
+            for (const [answerKey, answerValue] of Object.entries(this.allAnswers)) {
+              if (answerKey.endsWith(`_${configKey}`)) {
+                configValue = answerValue;
+                break;
+              }
+            }
+          }
+
+          if (!configValue) {
+            for (const mod of Object.keys(this.collectedConfig)) {
+              if (mod !== '_meta' && this.collectedConfig[mod] && this.collectedConfig[mod][configKey]) {
+                configValue = this.collectedConfig[mod][configKey];
+                if (typeof configValue === 'string' && configValue.includes('{project-root}/')) {
+                  configValue = configValue.replace('{project-root}/', '');
+                }
+                break;
+              }
+            }
+          }
+
+          return configValue || match;
+        });
+      }
+    }
+
+    return result;
   }
 
   /**

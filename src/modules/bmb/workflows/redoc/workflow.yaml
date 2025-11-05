@@ -28,5 +28,7 @@ validation: "{installed_path}/checklist.md"
 # Configuration
 autonomous: true # Runs without user checkpoints unless clarification needed
 
+standalone: true
+
 # Web bundle configuration
 web_bundle: false # BMB workflows run locally in BMAD-METHOD project

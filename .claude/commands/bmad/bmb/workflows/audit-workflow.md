@@ -1,3 +1,7 @@
+---
+description: 'Comprehensive workflow quality audit - validates structure, config standards, variable usage, bloat detection, and web_bundle completeness. Performs deep analysis of workflow.yaml, instructions.md, template.md, and web_bundle configuration against BMAD v6 standards.'
+---
+
 # audit-workflow
 
 IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:

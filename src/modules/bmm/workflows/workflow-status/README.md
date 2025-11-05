@@ -70,8 +70,6 @@ PROJECT_LEVEL: 2
 FIELD_TYPE: greenfield
 CURRENT_PHASE: 2-Planning
 CURRENT_WORKFLOW: prd
-TODO_STORY: story-1.2.md
-IN_PROGRESS_STORY: story-1.1.md
 NEXT_ACTION: Continue PRD
 NEXT_COMMAND: prd
 NEXT_AGENT: pm
@@ -79,9 +77,9 @@ NEXT_AGENT: pm
 
 Any agent can instantly grep what they need:
 
-- SM: `grep 'TODO_STORY:' status.md`
-- DEV: `grep 'IN_PROGRESS_STORY:' status.md`
 - Any: `grep 'NEXT_ACTION:' status.md`
+- Any: `grep 'CURRENT_PHASE:' status.md`
+- Any: `grep 'NEXT_COMMAND:' status.md`
 
 ## Project Levels
 
@@ -140,7 +138,7 @@ The init workflow intelligently detects:
 
 ```
 Agent: workflow-status
-Result: "TODO: story-1.2.md, Next: create-story"
+Result: "Current: Phase 2 - Planning, Next: prd (pm agent)"
 ```
 
 ### New Project Setup
@@ -208,12 +206,17 @@ Instead of complex if/else logic:
 
 Other workflows read the status to coordinate:
 
-- `create-story` reads TODO_STORY
-- `dev-story` reads IN_PROGRESS_STORY
 - Any workflow can check CURRENT_PHASE
+- Workflows can verify prerequisites are complete
 - All agents can ask "what should I do?"
 
-The status file is the single source of truth for project state and the hub that keeps all agents synchronized.
+**Phase 4 (Implementation):**
+
+- workflow-status only tracks sprint-planning completion
+- After sprint-planning, all story/epic tracking happens in the sprint plan output file
+- Phase 4 workflows do NOT read/write workflow-status (except sprint-planning for prerequisite verification)
+
+The status file is the single source of truth for Phases 1-3 and the hub that keeps all agents synchronized.
 
 ## Benefits
 

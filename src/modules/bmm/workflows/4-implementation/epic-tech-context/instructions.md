@@ -5,74 +5,80 @@
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 <critical>This workflow generates a comprehensive Technical Specification from PRD and Architecture, including detailed design, NFRs, acceptance criteria, and traceability mapping.</critical>
-<critical>Default execution mode: #yolo (non-interactive). If required inputs cannot be auto-discovered and {{non_interactive}} == true, HALT with a clear message listing missing documents; do not prompt.</critical>
+<critical>If required inputs cannot be auto-discovered HALT with a clear message listing missing documents, allow user to provide them to proceed.</critical>
 
 <workflow>
-  <step n="1" goal="Check and load workflow status file">
-    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-    <action>Find the most recent file (by date in filename: bmm-workflow-status.md)</action>
+  <step n="1" goal="Collect inputs and discover next epic" tag="sprint-status">
+    <action>Identify PRD and Architecture documents from recommended_inputs. Attempt to auto-discover at default paths.</action>
+    <ask if="inputs are missing">ask the user for file paths. HALT and wait for docs to proceed</ask>
 
-    <check if="exists">
-      <action>Load the status file</action>
-      <action>Extract key information:</action>
-      - current_step: What workflow was last run
-      - next_step: What workflow should run next
-      - planned_workflow: The complete workflow journey table
-      - progress_percentage: Current progress
-      - project_level: Project complexity level (0-4)
+    <!-- Intelligent Epic Discovery -->
+    <critical>MUST read COMPLETE sprint-status.yaml file to discover next epic</critical>
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Read ALL development_status entries</action>
+    <action>Find all epics with status "backlog" (not yet contexted)</action>
+    <action>Identify the FIRST backlog epic as the suggested default</action>
 
-      <action>Set status_file_found = true</action>
-      <action>Store status_file_path for later updates</action>
+    <check if="backlog epics found">
+      <output>📋 **Next Epic Suggested:** Epic {{suggested_epic_id}}: {{suggested_epic_title}}</output>
+      <ask>Use this epic?
+- [y] Yes, use {{suggested_epic_id}}
+- [n] No, let me specify a different epic_id
+      </ask>
 
-      <check if="project_level < 3">
-        <ask>**⚠️ Project Level Notice**
+      <check if="user selects 'n'">
+        <ask>Enter the epic_id you want to context</ask>
+        <action>Store user-provided epic_id as {{epic_id}}</action>
+      </check>
 
-Status file shows project_level = {{project_level}}.
-
-Tech-spec workflow is typically only needed for Level 3-4 projects.
-For Level 0-2, solution-architecture usually generates tech specs automatically.
-
-Options:
-1. Continue anyway (manual tech spec generation)
-2. Exit (check if solution-architecture already generated tech specs)
-3. Run workflow-status to verify project configuration
-
-What would you like to do?</ask>
-        <action>If user chooses exit → HALT with message: "Check docs/ folder for existing tech-spec files"</action>
+      <check if="user selects 'y'">
+        <action>Use {{suggested_epic_id}} as {{epic_id}}</action>
       </check>
     </check>
 
-    <check if="not exists">
-      <ask>**No workflow status file found.**
+    <check if="no backlog epics found">
+      <output>✅ All epics are already contexted!
 
-The status file tracks progress across all workflows and stores project configuration.
+No epics with status "backlog" found in sprint-status.yaml.
+      </output>
+      <ask>Do you want to re-context an existing epic? Enter epic_id or [q] to quit:</ask>
 
-Note: This workflow is typically invoked automatically by solution-architecture, or manually for JIT epic tech specs.
+      <check if="user enters epic_id">
+        <action>Store as {{epic_id}}</action>
+      </check>
 
-Options:
-1. Run workflow-status first to create the status file (recommended)
-2. Continue in standalone mode (no progress tracking)
-3. Exit
-
-What would you like to do?</ask>
-      <action>If user chooses option 1 → HALT with message: "Please run workflow-status first, then return to tech-spec"</action>
-      <action>If user chooses option 2 → Set standalone_mode = true and continue</action>
-      <action>If user chooses option 3 → HALT</action>
+      <check if="user enters 'q'">
+        <action>HALT - No work needed</action>
+      </check>
     </check>
-  </step>
 
-  <step n="2" goal="Collect inputs and initialize">
-    <action>Identify PRD and Architecture documents from recommended_inputs. Attempt to auto-discover at default paths.</action>
-    <ask optional="true" if="{{non_interactive}} == false">If inputs are missing, ask the user for file paths.</ask>
-
-    <check if="inputs are missing and {{non_interactive}} == true">HALT with a clear message listing missing documents and do not proceed until user provides sufficient documents to proceed.</check>
-
-    <action>Extract {{epic_title}} and {{epic_id}} from PRD (or ASK if not present).</action>
+    <action>Extract {{epic_title}} from PRD based on {{epic_id}}.</action>
     <action>Resolve output file path using workflow variables and initialize by writing the template.</action>
   </step>
 
+  <step n="2" goal="Validate epic exists in sprint status" tag="sprint-status">
+    <action>Look for epic key "epic-{{epic_id}}" in development_status (already loaded from step 1)</action>
+    <action>Get current status value if epic exists</action>
+
+    <check if="epic not found">
+      <output>⚠️ Epic {{epic_id}} not found in sprint-status.yaml
+
+This epic hasn't been registered in the sprint plan yet.
+Run sprint-planning workflow to initialize epic tracking.
+      </output>
+      <action>HALT</action>
+    </check>
+
+    <check if="epic status == 'contexted'">
+      <output>ℹ️ Epic {{epic_id}} already marked as contexted
+
+Continuing to regenerate tech spec...
+      </output>
+    </check>
+  </step>
+
   <step n="3" goal="Overview and scope">
-    <action>Read COMPLETE PRD and Architecture files.</action>
+    <action>Read COMPLETE found {recommended_inputs}.</action>
     <template-output file="{default_output_file}">
       Replace {{overview}} with a concise 1-2 paragraph summary referencing PRD context and goals
       Replace {{objectives_scope}} with explicit in-scope and out-of-scope bullets
@@ -81,7 +87,7 @@ What would you like to do?</ask>
   </step>
 
   <step n="4" goal="Detailed design">
-    <action>Derive concrete implementation specifics from Architecture and PRD (NO invention).</action>
+    <action>Derive concrete implementation specifics from all {recommended_inputs} (CRITICAL: NO invention). If a epic tech spec precedes this one and exists, maintain consistency where appropriate.</action>
     <template-output file="{default_output_file}">
       Replace {{services_modules}} with a table or bullets listing services/modules with responsibilities, inputs/outputs, and owners
       Replace {{data_models}} with normalized data model definitions (entities, fields, types, relationships); include schema snippets where available
@@ -121,62 +127,33 @@ What would you like to do?</ask>
     </template-output>
   </step>
 
-  <step n="9" goal="Validate">
+  <step n="9" goal="Validate and mark epic contexted" tag="sprint-status">
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
-  </step>
 
-  <step n="10" goal="Update status file on completion">
-    <action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-    <action>Find the most recent file (by date in filename)</action>
+    <!-- Mark epic as contexted -->
+    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <action>Find development_status key "epic-{{epic_id}}"</action>
+    <action>Verify current status is "backlog" (expected previous state)</action>
+    <action>Update development_status["epic-{{epic_id}}"] = "contexted"</action>
+    <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-    <check if="status file exists">
-      <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-        <param>mode: update</param>
-        <param>action: complete_workflow</param>
-        <param>workflow_name: tech-spec</param>
-      </invoke-workflow>
+    <check if="epic key not found in file">
+      <output>⚠️ Could not update epic status: epic-{{epic_id}} not found</output>
+    </check>
 
-      <check if="success == true">
-        <output>✅ Status updated for Epic {{epic_id}} tech-spec</output>
-      </check>
-
-      <output>**✅ Tech Spec Generated Successfully, {user_name}!**
+    <output>**✅ Tech Spec Generated Successfully, {user_name}!**
 
 **Epic Details:**
 - Epic ID: {{epic_id}}
 - Epic Title: {{epic_title}}
 - Tech Spec File: {{default_output_file}}
+- Epic Status: contexted (was backlog)
 
-**Status file updated:**
-- Current step: tech-spec (Epic {{epic_id}}) ✓
-- Progress: {{new_progress_percentage}}%
-
-**Note:** This is a JIT (Just-In-Time) workflow.
-- Run again for other epics that need detailed tech specs
-- Or proceed to Phase 4 (Implementation) if all tech specs are complete
+**Note:** This is a JIT (Just-In-Time) workflow - run again for other epics as needed.
 
 **Next Steps:**
-1. If more epics need tech specs: Run tech-spec again with different epic_id
-2. If all tech specs complete: Proceed to Phase 4 implementation
-3. Check status anytime with: `workflow-status`
-      </output>
-    </check>
-
-    <check if="status file not found">
-      <output>**✅ Tech Spec Generated Successfully, {user_name}!**
-
-**Epic Details:**
-- Epic ID: {{epic_id}}
-- Epic Title: {{epic_title}}
-- Tech Spec File: {{default_output_file}}
-
-Note: Running in standalone mode (no status file).
-
-To track progress across workflows, run `workflow-status` first.
-
-**Note:** This is a JIT workflow - run again for other epics as needed.
-      </output>
-    </check>
+1. Load SM agent and run `create-story` to begin implementing the first story under this epic.
+    </output>
   </step>
 
 </workflow>

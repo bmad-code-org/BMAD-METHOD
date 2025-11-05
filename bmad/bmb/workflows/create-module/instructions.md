@@ -10,14 +10,16 @@
 <step n="-1" goal="Optional brainstorming for module ideas" optional="true">
 <ask>Do you want to brainstorm module ideas first? [y/n]</ask>
 
-<check>If yes:</check>
-<action>Invoke brainstorming workflow: {brainstorming_workflow}</action>
-<action>Pass context data: {brainstorming_context}</action>
-<action>Wait for brainstorming session completion</action>
-<action>Use brainstorming output to inform module concept, agent lineup, and workflow portfolio in following steps</action>
+<check if="yes">
+  <action>Invoke brainstorming workflow: {brainstorming_workflow}</action>
+  <action>Pass context data: {brainstorming_context}</action>
+  <action>Wait for brainstorming session completion</action>
+  <action>Use brainstorming output to inform module concept, agent lineup, and workflow portfolio in following steps</action>
+</check>
 
-<check>If no:</check>
-<action>Proceed directly to Step 0</action>
+<check if="no">
+  <action>Proceed directly to Step 0</action>
+</check>
 
 <template-output>brainstorming_results</template-output>
 </step>
@@ -25,17 +27,20 @@
 <step n="0" goal="Check for module brief" optional="true">
 <ask>Do you have a module brief or should we create one? [have/create/skip]</ask>
 
-<check>If create:</check>
-<action>Invoke module-brief workflow: {project-root}/bmad/bmb/workflows/module-brief/workflow.yaml</action>
-<action>Wait for module brief completion</action>
-<action>Load the module brief to use as blueprint</action>
+<check if="create">
+  <action>Invoke module-brief workflow: {project-root}/bmad/bmb/workflows/module-brief/workflow.yaml</action>
+  <action>Wait for module brief completion</action>
+  <action>Load the module brief to use as blueprint</action>
+</check>
 
-<check>If have:</check>
-<ask>Provide path to module brief document</ask>
-<action>Load the module brief and use it to pre-populate all planning sections</action>
+<check if="have">
+  <ask>Provide path to module brief document</ask>
+  <action>Load the module brief and use it to pre-populate all planning sections</action>
+</check>
 
-<check>If skip:</check>
-<action>Proceed directly to Step 1</action>
+<check if="skip">
+  <action>Proceed directly to Step 1</action>
+</check>
 
 <template-output>module_brief</template-output>
 </step>
@@ -113,8 +118,7 @@
 **Tasks Planning (optional):**
 <ask>Any special tasks that don't warrant full workflows?</ask>
 
-<check>If tasks needed:</check>
-<action>For each task, capture name, purpose, and whether standalone or supporting</action>
+<action if="tasks needed">For each task, capture name, purpose, and whether standalone or supporting</action>
 
 <template-output>module_components</template-output>
 </step>
@@ -154,88 +158,86 @@
 
 ```
 {{module_code}}/
-├── agents/           # Agent definitions
-├── workflows/        # Workflow folders
-├── tasks/           # Task files (if any)
-├── templates/       # Shared templates
-├── data/           # Module data files
-├── config.yaml     # Module configuration
-└── README.md       # Module documentation
+├── agents/                    # Agent definitions
+├── workflows/                 # Workflow folders
+├── tasks/                     # Task files (if any)
+├── templates/                 # Shared templates
+├── data/                      # Module data files
+├── _module-installer/         # Installation configuration
+│   └── install-config.yaml   # Configuration questions (config.yaml generated at install time)
+└── README.md                  # Module documentation
 ```
 
 <action>Create installer directory:</action>
 
+**INSTALLED MODULE STRUCTURE** (generated in target project after installation):
+
+```
+{{module_code}}/
+├── agents/                    # Compiled agents
+├── workflows/                 # Workflow instances
+├── config.yaml               # Generated from install-config.yaml during installation
+└── data/                     # User data directory
+```
+
+**SOURCE MODULE** (\_module-installer is for installation only, not copied to target):
+
 ```
 {{module_code}}/
 ├── _module-installer/
-│   ├── install-config.yaml
-│   ├── installer.js (optional)
-│   └── assets/     # Files to copy during install
-├── config.yaml     # Runtime configuration
-├── agents/         # Agent configs (optional)
-├── workflows/      # Workflow instances
-└── data/          # User data directory
+│   ├── install-config.yaml   # Configuration questions
+│   ├── installer.js          # Optional custom installation logic
+│   └── assets/               # Files to copy during install
 ```
 
 <template-output>directory_structure</template-output>
 </step>
 
-<step n="4" goal="Generate module configuration">
-Create the main module config.yaml:
+<step n="4" goal="Plan module configuration fields">
+<action>Based on the module purpose and components, determine what configuration settings the module needs</action>
 
-```yaml
-# {{module_name}} Module Configuration
-module_name: {{module_name}}
-module_code: {{module_code}}
-author: {{user_name}}
-description: {{module_purpose}}
+**Configuration Field Planning:**
 
-# Module paths
-module_root: "{project-root}/bmad/{{module_code}}"
-installer_path: "{project-root}/bmad/{{module_code}}"
+<ask>Does your module need any user-configurable settings during installation?</ask>
 
-# Component counts
-agents:
-  count: {{agent_count}}
-  list: {{agent_list}}
+**Common configuration patterns:**
 
-workflows:
-  count: {{workflow_count}}
-  list: {{workflow_list}}
+- Output/data paths (where module saves files)
+- Feature toggles (enable/disable functionality)
+- Integration settings (API keys, external services)
+- Behavior preferences (automation level, detail level)
+- User skill level or experience settings
 
-tasks:
-  count: {{task_count}}
-  list: {{task_list}}
+<action>For each configuration field needed, determine:</action>
 
-# Module-specific settings
-{{custom_settings}}
+1. Field name (snake_case)
+2. Whether it's INTERACTIVE (asks user) or STATIC (hardcoded)
+3. Prompt text (if interactive)
+4. Default value
+5. Type: text input, single-select, or multi-select
+6. Result template (how the value gets stored)
 
-# Output configuration
-output_folder: "{project-root}/docs/{{module_code}}"
-data_folder: "{{determined_module_path}}/data"
-```
+<action>Store planned configuration fields for installer generation in step 7</action>
 
-<critical>Save location:</critical>
-
-- Save to {{module_path}}/config.yaml
-
-<template-output>module_config</template-output>
+<template-output>module_config_fields</template-output>
 </step>
 
 <step n="5" goal="Create first agent" optional="true">
 <ask>Create your first agent now? [yes/no]</ask>
 
-<check>If yes:</check>
-<action>Invoke agent builder workflow: {agent_builder}</action>
-<action>Pass module_components as context input</action>
-<action>Guide them to create the primary agent for the module</action>
+<check if="yes">
+  <action>Invoke agent builder workflow: {agent_builder}</action>
+  <action>Pass module_components as context input</action>
+  <action>Guide them to create the primary agent for the module</action>
 
 <critical>Save to module's agents folder:</critical>
 
 - Save to {{module_path}}/agents/
+  </check>
 
-<check>If no:</check>
-<action>Create placeholder file in agents folder with TODO notes including agent name, purpose, and type</action>
+<check if="no">
+  <action>Create placeholder file in agents folder with TODO notes including agent name, purpose, and type</action>
+</check>
 
 <template-output>first_agent</template-output>
 </step>
@@ -243,88 +245,141 @@ data_folder: "{{determined_module_path}}/data"
 <step n="6" goal="Create first workflow" optional="true">
 <ask>Create your first workflow now? [yes/no]</ask>
 
-<check>If yes:</check>
-<action>Invoke workflow builder: {workflow_builder}</action>
-<action>Pass module_components as context input</action>
-<action>Guide them to create the primary workflow</action>
+<check if="yes">
+  <action>Invoke workflow builder: {workflow_builder}</action>
+  <action>Pass module_components as context input</action>
+  <action>Guide them to create the primary workflow</action>
 
 <critical>Save to module's workflows folder:</critical>
 
 - Save to {{module_path}}/workflows/
+  </check>
 
-<check>If no:</check>
-<action>Create placeholder workflow folder structure with TODO notes for workflow.yaml, instructions.md, and template.md if document workflow</action>
+<check if="no">
+  <action>Create placeholder workflow folder structure with TODO notes for workflow.yaml, instructions.md, and template.md if document workflow</action>
+</check>
 
 <template-output>first_workflow</template-output>
 </step>
 
 <step n="7" goal="Setup module installer">
-<action>Load installer templates from: {installer_templates}</action>
+<action>Load installer template from: {installer_templates}/install-config.yaml</action>
 
-Create install-config.yaml:
+<critical>IMPORTANT: Create install-config.yaml NOT install-config.yaml</critical>
+<critical>This is the STANDARD format that BMAD installer uses</critical>
+
+Create \_module-installer/install-config.yaml:
 
 ```yaml
-# {{module_name}} Installation Configuration
-module_name: { { module_name } }
-module_code: { { module_code } }
-installation_date: { { date } }
+# {{module_name}} Module Configuration
+# This file defines installation questions and module configuration values
 
-# Installation steps
-install_steps:
-  - name: 'Create directories'
-    action: 'mkdir'
-    paths:
-      - '{project-root}/bmad/{{module_code}}'
-      - '{project-root}/bmad/{{module_code}}/data'
-      - '{project-root}/bmad/{{module_code}}/agents'
+code: {{module_code}}
+name: "{{module_name}}"
+default_selected: false # Set to true if this should be selected by default
 
-  - name: 'Copy configuration'
-    action: 'copy'
-    source: '{installer_path}/config.yaml'
-    dest: '{project-root}/bmad/{{module_code}}/config.yaml'
+# Welcome message shown during installation
+prompt:
+  - "Thank you for choosing {{module_name}}!"
+  - "{{brief_module_description}}"
 
-  - name: 'Register module'
-    action: 'register'
-    manifest: '{project-root}/bmad/_cfg/manifest.yaml'
+# Core config values are automatically inherited:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
 
-# External assets (if any)
-external_assets:
-  - description: '{{asset_description}}'
-    source: 'assets/{{filename}}'
-    dest: '{{destination_path}}'
+# ============================================================================
+# CONFIGURATION FIELDS (from step 4 planning)
+# ============================================================================
+# Each field can be:
+# 1. INTERACTIVE (has 'prompt' - asks user during installation)
+# 2. STATIC (no 'prompt' - just uses 'result' value)
+# ============================================================================
 
-# Post-install message
-post_install_message: |
-  {{module_name}} has been installed successfully!
+# EXAMPLE Interactive text input:
+# output_path:
+#   prompt: "Where should {{module_code}} save outputs?"
+#   default: "output/{{module_code}}"
+#   result: "{project-root}/{value}"
 
-  To get started:
-  1. Load any {{module_code}} agent
-  2. Use *help to see available commands
-  3. Check README.md for full documentation
+# EXAMPLE Interactive single-select:
+# detail_level:
+#   prompt: "How detailed should outputs be?"
+#   default: "standard"
+#   result: "{value}"
+#   single-select:
+#     - value: "minimal"
+#       label: "Minimal - Brief summaries only"
+#     - value: "standard"
+#       label: "Standard - Balanced detail"
+#     - value: "detailed"
+#       label: "Detailed - Comprehensive information"
+
+# EXAMPLE Static value:
+# module_version:
+#   result: "1.0.0"
+
+# EXAMPLE Static path:
+# data_path:
+#   result: "{project-root}/bmad/{{module_code}}/data"
+
+{{generated_config_fields_from_step_4}}
 ```
 
-Create installer.js stub (optional):
+<critical>Save location:</critical>
 
-```javascript
-// {{module_name}} Module Installer
-// This is a placeholder for complex installation logic
+- Save to {{module_path}}/\_module-installer/install-config.yaml
 
-function installModule(config) {
-  console.log('Installing {{module_name}} module...');
+<ask>Does your module need custom installation logic (database setup, API registration, etc.)?</ask>
 
-  // TODO: Add any complex installation logic here
+<check if="yes, create installer.js">
+  ```javascript
+  // {{module_name}} Module Installer
+  // Custom installation logic
+
+/\*\*
+
+- Module installation hook
+- Called after files are copied but before IDE configuration
+-
+- @param {Object} options - Installation options
+- @param {string} options.projectRoot - Project root directory
+- @param {Object} options.config - Module configuration from install-config.yaml
+- @param {Array} options.installedIDEs - List of IDE codes being configured
+- @param {Object} options.logger - Logger instance (log, warn, error methods)
+- @returns {boolean} - true if successful, false to abort installation
+  \*/
+  async function install(options) {
+  const { projectRoot, config, installedIDEs, logger } = options;
+
+  logger.log('Running {{module_name}} custom installer...');
+
+  // TODO: Add custom installation logic here
   // Examples:
-  // - Database setup
-  // - API key configuration
-  // - External service registration
-  // - File system preparation
+  // - Create database tables
+  // - Download external assets
+  // - Configure API connections
+  // - Initialize data files
+  // - Set up webhooks or integrations
 
-  console.log('{{module_name}} module installed successfully!');
+  logger.log('{{module_name}} custom installation complete!');
   return true;
+
 }
 
-module.exports = { installModule };
-```
+module.exports = { install };
+
+`````
+
+<critical>Save location:</critical>
+
+- Save to {{module_path}}/\_module-installer/installer.js
+</check>
+
+<check if="no">
+<action>Skip installer.js creation - the standard installer will handle everything</action>
+</check>
 
 <template-output>installer_config</template-output>
 </step>
@@ -346,7 +401,8 @@ This module provides:
 
 ```bash
 bmad install {{module_code}}
-```
+`````
+
 ````
 
 ## Components
@@ -428,22 +484,26 @@ Created by {{user_name}} on {{date}}
 Create a development roadmap for remaining components:
 
 **TODO.md file:**
+
 ```markdown
 # {{module_name}} Development Roadmap
 
 ## Phase 1: Core Components
+
 {{phase1_tasks}}
 
 ## Phase 2: Enhanced Features
+
 {{phase2_tasks}}
 
 ## Phase 3: Polish and Integration
+
 {{phase3_tasks}}
 
 ## Quick Commands
 
 Create new agent:
-````
+```
 
 workflow create-agent
 

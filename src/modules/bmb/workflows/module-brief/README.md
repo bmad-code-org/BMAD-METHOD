@@ -261,4 +261,4 @@ For issues or questions:
 
 ---
 
-_Part of the BMad Method v5 - BMB (Builder) Module_
+_Part of the BMad Method v6 - BMB (Builder) Module_

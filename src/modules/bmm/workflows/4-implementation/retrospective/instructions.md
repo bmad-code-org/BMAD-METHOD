@@ -20,26 +20,63 @@ FACILITATION NOTES:
 
 <workflow>
 
-<step n="1" goal="Check workflow status">
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-  <param>mode: init-check</param>
-</invoke-workflow>
-
-<check if="status_exists == false">
-  <output>⚠️ {{suggestion}}
-
-Running in standalone mode - no progress tracking.</output>
-<action>Set standalone_mode = true</action>
-</check>
-
-<action>Store {{status_file_path}} for later updates (if exists)</action>
-</step>
-
-<step n="2" goal="Epic Context Discovery">
+<step n="1" goal="Epic Context Discovery and verify completion" tag="sprint-status">
 <action>Help the user identify which epic was just completed through natural conversation</action>
 <action>Attempt to auto-detect by checking {output_folder}/stories/ for the highest numbered completed story and extracting the epic number</action>
 <action>If auto-detection succeeds, confirm with user: "It looks like Epic {{epic_number}} was just completed - is that correct?"</action>
 <action>If auto-detection fails or user indicates different epic, ask them to share which epic they just completed</action>
+
+<action>Verify epic completion status:</action>
+
+<action>Load the FULL file: {output_folder}/sprint-status.yaml</action>
+<action>Read ALL development_status entries</action>
+
+<action>Find all stories for epic {{epic_number}}:
+
+- Look for keys starting with "{{epic_number}}-" (e.g., "1-1-", "1-2-", etc.)
+- Exclude epic key itself ("epic-{{epic_number}}")
+- Exclude retrospective key ("epic-{{epic_number}}-retrospective")
+  </action>
+
+<action>Count total stories found for this epic</action>
+<action>Count stories with status = "done"</action>
+<action>Collect list of pending story keys (status != "done")</action>
+<action>Determine if complete: true if all stories are done, false otherwise</action>
+
+<check if="epic is not complete">
+  <output>⚠️ Epic {{epic_number}} is not yet complete for retrospective
+
+**Epic Status:**
+
+- Total Stories: {{total_stories}}
+- Completed (Done): {{done_stories}}
+- Pending: {{pending_count}}
+
+**Pending Stories:**
+{{pending_story_list}}
+
+**Options:**
+
+1. Complete remaining stories before running retrospective
+2. Continue with partial retrospective (not recommended)
+3. Run sprint-planning to refresh story tracking
+   </output>
+
+<ask if="{{non_interactive}} == false">Epic is incomplete. Continue anyway? (yes/no)</ask>
+
+  <check if="user says no">
+    <action>HALT</action>
+  </check>
+
+<action if="user says yes">Set {{partial_retrospective}} = true</action>
+</check>
+
+<check if="epic is complete">
+  <output>✅ Epic {{epic_number}} is complete - all {{done_stories}} stories done!
+
+Ready to proceed with retrospective.
+</output>
+</check>
 
 <action>Load the completed epic from: {output_folder}/prd/epic-{{epic_number}}.md</action>
 <action>Extract epic details:
@@ -376,39 +413,44 @@ See you at sprint planning once prep work is done!"
 ```
 
 <action>Save retrospective summary to: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md</action>
-<action>Confirm all action items have been captured</action>
-<action>Remind user to schedule prep sprint if needed</action>
 </step>
 
-<step n="9" goal="Update status file on completion">
-<action>Search {output_folder}/ for files matching pattern: bmm-workflow-status.md</action>
-<action>Find the most recent file (by date in filename)</action>
+<step n="9" goal="Mark retrospective completed in sprint status" tag="sprint-status">
+<action>Load the FULL file: {output_folder}/sprint-status.yaml</action>
+<action>Find development_status key "epic-{{completed_number}}-retrospective"</action>
+<action>Verify current status is "optional" (expected previous state)</action>
+<action>Update development_status["epic-{{completed_number}}-retrospective"] = "completed"</action>
+<action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-<check if="status file exists">
-  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-    <param>mode: update</param>
-    <param>action: complete_workflow</param>
-    <param>workflow_name: retrospective</param>
-  </invoke-workflow>
+<check if="update successful">
+  <output>✅ Retrospective marked as completed in sprint-status.yaml
 
-  <check if="success == true">
-    <output>✅ Status updated: Retrospective complete for Epic {{completed_number}}</output>
-  </check>
+Retrospective key: epic-{{completed_number}}-retrospective
+Status: optional → completed
+</output>
 </check>
 
-<output>**✅ Retrospective Complete**
+<check if="retrospective key not found">
+  <output>⚠️ Could not update retrospective status: epic-{{completed_number}}-retrospective not found
+
+Retrospective document was saved, but sprint-status.yaml may need manual update.
+</output>
+</check>
+</step>
+
+<step n="10" goal="Final summary">
+<action>Confirm all action items have been captured</action>
+<action>Remind user to schedule prep sprint if needed</action>
+<output>**✅ Retrospective Complete, {user_name}!**
 
 **Epic Review:**
 
 - Epic {{completed_number}}: {{epic_title}} reviewed
+- Retrospective Status: completed
+- Retrospective saved: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md
 - Action Items: {{action_count}}
 - Preparation Tasks: {{prep_task_count}}
 - Critical Path Items: {{critical_count}}
-
-**Status file updated:**
-
-- Current step: retrospective (Epic {{completed_number}}) ✓
-- Progress: {{new_progress_percentage}}%
 
 **Next Steps:**
 
@@ -416,28 +458,10 @@ See you at sprint planning once prep work is done!"
 2. Execute preparation sprint (Est: {{prep_days}} days)
 3. Complete critical path items before Epic {{next_number}}
 4. Begin Epic {{next_number}} planning when preparation complete
-
-Check status anytime with: `workflow-status`
-</output>
-</check>
-
-<check if="status file not found">
-  <output>**✅ Retrospective Complete, {user_name}!**
-
-**Epic Review:**
-
-- Epic {{completed_number}}: {{epic_title}} reviewed
-- Retrospective saved: {output_folder}/retrospectives/epic-{{completed_number}}-retro-{{date}}.md
-
-Note: Running in standalone mode (no status file).
-
-**Next Steps:**
-
-1. Execute preparation sprint
-2. Begin Epic {{next_number}} planning
-   </output>
-   </check>
-   </step>
+   - Load PM agent and run `epic-tech-context` for next epic
+   - Or continue with existing contexted epics
+     </output>
+     </step>
 
 </workflow>
 

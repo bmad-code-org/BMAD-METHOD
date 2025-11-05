@@ -27,6 +27,16 @@
 - Path: `bmad/bmb/workflows/create-workflow/workflow.yaml`
 - Interactive workflow builder that guides creation of new BMAD workflows with proper structure and validation for optimal human-AI collaboration. Includes optional brainstorming phase for workflow ideas and design.
 
+**edit-agent**
+
+- Path: `bmad/bmb/workflows/edit-agent/workflow.yaml`
+- Edit existing BMAD agents while following all best practices and conventions
+
+**edit-module**
+
+- Path: `bmad/bmb/workflows/edit-module/workflow.yaml`
+- Edit existing BMAD modules (structure, agents, workflows, documentation) while following all best practices
+
 **edit-workflow**
 
 - Path: `bmad/bmb/workflows/edit-workflow/workflow.yaml`

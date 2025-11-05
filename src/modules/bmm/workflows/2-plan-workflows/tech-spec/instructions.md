@@ -21,21 +21,25 @@
 </invoke-workflow>
 
 <check if="status_exists == false">
-  <output>**⚠️ No Workflow Status File Found**
+  <output>**Note: No Workflow Status File Found**
 
-The tech-spec workflow requires a status file to understand your project context.
+The tech-spec workflow can run standalone or as part of the BMM workflow path.
 
-Please run `workflow-init` first to:
+**Recommended:** Run `workflow-init` first for:
 
-- Define your project type and level
-- Map out your workflow journey
-- Create the status file
+- Project context tracking
+- Workflow sequencing guidance
+- Progress monitoring across workflows
 
-Run: `workflow-init`
-
-After setup, return here to create your tech spec.
+**Or continue standalone** without progress tracking.
 </output>
-<action>Exit workflow - cannot proceed without status file</action>
+<ask>Continue in standalone mode or exit to run workflow-init? (continue/exit)</ask>
+<check if="continue">
+<action>Set standalone_mode = true</action>
+</check>
+<check if="exit">
+<action>Exit workflow</action>
+</check>
 </check>
 
 <check if="status_exists == true">
@@ -226,46 +230,39 @@ Run cohesion validation? (y/n)</ask>
 - **Ready for sprint planning with epic/story breakdown**
 </check>
 
-## Next Steps Checklist
+## Next Steps
 
-<action>Determine appropriate next steps for Level 0 atomic change</action>
+<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <param>mode: update</param>
+  <param>action: complete_workflow</param>
+  <param>workflow_name: tech-spec</param>
+</invoke-workflow>
 
-**Optional Next Steps:**
-
-<check if="change involves UI components">
-  - [ ] **Create simple UX documentation** (if UI change is user-facing)
-    - Note: Full instructions-ux workflow may be overkill for Level 0
-    - Consider documenting just the specific UI change
+<check if="success == true">
+  <output>Status updated!</output>
 </check>
 
-- [ ] **Generate implementation task**
-  - Command: `workflow task-generation`
-  - Uses: tech-spec.md
+<output>**✅ Tech-Spec Complete, {user_name}!**
 
-<check if="change is backend/API only">
+**Deliverables Created:**
+<check if="project_level == 0">
 
-**Recommended Next Steps:**
+- ✅ tech-spec.md - Technical specification
+- ✅ user-story.md - Single user story
+  </check>
 
-- [ ] **Create test plan** for the change
-  - Unit tests for the specific change
-  - Integration test if affects other components
-
-- [ ] **Generate implementation task**
-  - Command: `workflow task-generation`
-  - Uses: tech-spec.md
-
-<ask>**✅ Tech-Spec Complete, {user_name}!**
-
-Next action:
-
-1. Proceed to implementation
-2. Generate development task
-3. Create test plan
-4. Exit workflow
-
-Select option (1-4):</ask>
-
+<check if="project_level == 1">
+- ✅ tech-spec.md - Technical specification
+- ✅ epics.md - Epic and story breakdown
 </check>
+
+**Next Steps:**
+
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- **Optional:** Create test plan or document UI changes if applicable
+
+Check status anytime with: `workflow-status`
+</output>
 
 </step>
 

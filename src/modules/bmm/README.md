@@ -1,6 +1,6 @@
 # BMM - BMad Method Module
 
-The BMM (BMad Method Module) is the core orchestration system for the BMad Method v6a, providing comprehensive software development lifecycle management through specialized agents, workflows, teams, and tasks.
+The BMM (BMad Method Module) is the core orchestration system for the BMad Method, providing comprehensive software development lifecycle management through specialized agents, workflows, teams, and tasks.
 
 ## 📚 Essential Reading
 
@@ -21,6 +21,15 @@ Specialized AI agents for different development roles:
 - **UX** - User experience design
 - And more specialized roles
 
+**Game Development Agents** (Optional):
+During installation, you can optionally include game development specialists:
+
+- **Game Designer** - Creative vision and game design documents (GDD)
+- **Game Developer** - Game-specific implementation
+- **Game Architect** - Game systems and technical infrastructure
+
+These agents come with specialized workflows (`brainstorm-game`, `game-brief`, `gdd`) and are only installed if you select "Include Game Planning Agents and Workflows" during BMM installation.
+
 ### 📋 `/workflows`
 
 The heart of BMM - structured workflows for the four development phases:
@@ -31,7 +40,7 @@ The heart of BMM - structured workflows for the four development phases:
    - `product-brief` - Product strategy
 
 2. **Planning Phase** (Required)
-   - `plan-project` - Scale-adaptive project planning
+   - `prd` - Scale-adaptive project planning
    - Routes to appropriate documentation based on project complexity
 
 3. **Solutioning Phase** (Level 3-4 projects)
@@ -43,8 +52,8 @@ The heart of BMM - structured workflows for the four development phases:
    - `story-ready` - Approve story for development (SM agent)
    - `story-context` - Expertise injection (SM agent)
    - `dev-story` - Implementation (DEV agent)
-   - `story-approved` - Mark story done (DEV agent)
-   - `review-story` - Quality validation (DEV/SR agent)
+   - `story-done` - Mark story done (DEV agent)
+   - `code-review` - Quality validation (DEV/SR agent)
    - `correct-course` - Issue resolution
    - `retrospective` - Continuous improvement
 
@@ -69,7 +78,7 @@ Test architecture and quality assurance components. The **[Test Architect (TEA) 
 ```bash
 # Load the PM agent - either via slash command or drag and drop or @ the agent file.
 # Once loaded, the agent should greet you and offer a menu of options. You can enter:
-`*plan-project`
+`*prd`
 ```
 
 ## Key Concepts
@@ -101,7 +110,7 @@ BACKLOG → TODO → IN PROGRESS → DONE
 - **IN PROGRESS**: Single story approved for DEV to implement
 - **DONE**: Completed stories with dates and points
 
-Agents never search for "next story" - they always read the exact story from the status file. Simple workflows (`story-ready`, `story-approved`) advance the queue automatically.
+Agents never search for "next story" - they always read the exact story from the status file. Simple workflows (`story-ready`, `story-done`) advance the queue automatically.
 
 ### Context Injection
 
@@ -120,17 +129,13 @@ BMM integrates seamlessly with the BMad Core framework, leveraging:
 
 - [BMM Workflows Guide](./workflows/README.md) - **Start here!**
 - [Test Architect (TEA) Guide](./testarch/README.md) - Quality assurance and testing strategy
-- [Agent Documentation](./agents/README.md) - Individual agent capabilities
-- [Team Configurations](./teams/README.md) - Pre-built team setups
-- [Task Library](./tasks/README.md) - Reusable task components
 
 ## Best Practices
 
 1. **Always start with the workflows** - Let workflows guide your process
 2. **Respect the scale** - Don't over-document small projects
-3. **Embrace iteration** - Use retrospectives to continuously improve
-4. **Trust the process** - The v6a methodology has been carefully designed
+3. **Trust the process** - The methodology has been carefully designed
 
 ---
 
-For detailed information about the complete BMad Method v6a workflow system, see the [BMM Workflows README](./workflows/README.md).
+For detailed information about the complete BMad Method workflow system, see the [BMM Workflows README](./workflows/README.md).

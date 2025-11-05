@@ -1,19 +1,8 @@
-# Decision Catalog - Knowledge base for architectural decisions
-# This replaces rigid project-type templates with intelligent, composable decisions
-
-# ⚠️ CRITICAL WARNING ABOUT VERSIONS ⚠️
-# =====================================
-# Version numbers in this file are EXAMPLES ONLY and will become outdated!
-# The workflow MUST use WebSearch to verify current versions during execution.
+# Decision Catalog - Composability knowledge for architectural decisions
+# This provides RELATIONSHIPS and WORKFLOW LOGIC, not generic tech knowledge
 #
-# During facilitation, the AI should:
-# 1. Use this file for patterns and relationships
-# 2. Search for "{{technology}} latest stable version 2024" (or current year)
-# 3. Present the current version found, not the version in this file
-# 4. Document the verified current version in the architecture
-#
-# Versions listed here are for understanding compatibility relationships only.
-# NEVER trust these version numbers - ALWAYS verify current versions!
+# ⚠️ CRITICAL: All version/feature info MUST be verified via WebSearch during workflow
+# This file only provides: triggers, relationships (pairs_with), and opinionated stacks
 
 decision_categories:
   data_persistence:
@@ -22,57 +11,15 @@ decision_categories:
     affects: "most epics"
     options:
       postgresql:
-        name: "PostgreSQL"
-        current_version: "15.4"
-        lts_version: "14.9"
-        good_for: ["relational data", "complex queries", "ACID compliance", "JSON support"]
-        not_ideal_for: ["massive scale writes", "unstructured data"]
-        pairs_with:
-          - "Prisma ORM 5.6"
-          - "TypeORM 0.3"
-          - "Drizzle 0.29"
-          - "node-postgres 8.11"
-        beginner_friendly: true
-
+        pairs_with: ["Prisma ORM", "TypeORM", "Drizzle", "node-postgres"]
       mongodb:
-        name: "MongoDB"
-        current_version: "7.0"
-        lts_version: "6.0"
-        good_for: ["document storage", "flexible schema", "horizontal scaling", "real-time"]
-        not_ideal_for: ["complex relationships", "transactions", "strong consistency"]
-        pairs_with:
-          - "Mongoose 8.0"
-          - "Prisma 5.6"
-          - "MongoDB driver 6.3"
-        beginner_friendly: true
-
+        pairs_with: ["Mongoose", "Prisma", "MongoDB driver"]
       redis:
-        name: "Redis"
-        current_version: "7.2"
-        good_for: ["caching", "sessions", "pub/sub", "real-time", "leaderboards"]
-        not_ideal_for: ["primary data store", "complex queries"]
-        pairs_with:
-          - "ioredis 5.3"
-          - "node-redis 4.6"
-        beginner_friendly: false
-
+        pairs_with: ["ioredis", "node-redis"]
       supabase:
-        name: "Supabase"
-        current_version: "2.39"
-        good_for: ["PostgreSQL with batteries", "real-time", "auth included", "rapid development"]
-        not_ideal_for: ["custom infrastructure", "specific compliance needs"]
-        pairs_with:
-          - "@supabase/supabase-js 2.39"
-        beginner_friendly: true
-
+        pairs_with: ["@supabase/supabase-js"]
       firebase:
-        name: "Firebase Firestore"
-        current_version: "10.7"
-        good_for: ["real-time sync", "offline-first", "serverless", "rapid prototyping"]
-        not_ideal_for: ["complex queries", "data migrations", "cost at scale"]
-        pairs_with:
-          - "firebase-admin 12.0"
-        beginner_friendly: true
+        pairs_with: ["firebase-admin"]
 
   api_pattern:
     triggers: ["API", "client communication", "frontend backend", "service communication"]
@@ -80,48 +27,13 @@ decision_categories:
     affects: "all client-facing epics"
     options:
       rest:
-        name: "REST API"
-        specification: "OpenAPI 3.0"
-        good_for: ["standard CRUD", "caching", "simple patterns", "wide support"]
-        not_ideal_for: ["complex queries", "real-time updates", "over/under fetching"]
-        pairs_with:
-          - "Express 4.18"
-          - "Fastify 4.25"
-          - "NestJS 10.3"
-          - "Hono 3.12"
-        beginner_friendly: true
-
+        pairs_with: ["Express", "Fastify", "NestJS", "Hono"]
       graphql:
-        name: "GraphQL"
-        specification: "GraphQL"
-        current_version: "16.8"
-        good_for: ["flexible queries", "type safety", "avoiding over-fetching", "aggregation"]
-        not_ideal_for: ["simple CRUD", "file uploads", "caching complexity"]
-        pairs_with:
-          - "Apollo Server 4.10"
-          - "GraphQL Yoga 5.1"
-          - "Mercurius 14.0"
-        beginner_friendly: false
-
+        pairs_with: ["Apollo Server", "GraphQL Yoga", "Mercurius"]
       trpc:
-        name: "tRPC"
-        current_version: "10.45"
-        good_for: ["type safety", "TypeScript projects", "full-stack type sharing"]
-        not_ideal_for: ["non-TypeScript clients", "public APIs"]
-        pairs_with:
-          - "Next.js 14"
-          - "React Query 5.17"
-        beginner_friendly: false
-
+        pairs_with: ["Next.js", "React Query"]
       grpc:
-        name: "gRPC"
-        current_version: "1.60"
-        good_for: ["microservices", "binary protocol", "streaming", "performance"]
-        not_ideal_for: ["browser clients", "debugging", "REST ecosystem"]
-        pairs_with:
-          - "@grpc/grpc-js 1.9"
-          - "protobufjs 7.2"
-        beginner_friendly: false
+        pairs_with: ["@grpc/grpc-js", "protobufjs"]
 
   authentication:
     triggers: ["auth", "login", "user management", "security", "identity"]
@@ -129,200 +41,59 @@ decision_categories:
     affects: "security and user epics"
     options:
       nextauth:
-        name: "NextAuth.js"
-        current_version: "4.24"
-        good_for: ["Next.js projects", "OAuth providers", "database sessions", "JWT"]
-        not_ideal_for: ["non-Next.js", "complex RBAC", "native mobile"]
-        pairs_with:
-          - "Next.js 14"
-          - "Prisma 5.6"
-        beginner_friendly: true
-
+        pairs_with: ["Next.js", "Prisma"]
       auth0:
-        name: "Auth0"
-        good_for: ["enterprise", "compliance", "multi-tenant", "social login"]
-        not_ideal_for: ["cost sensitive", "custom requirements"]
-        pairs_with:
-          - "@auth0/nextjs-auth0 3.5"
-          - "auth0 4.2"
-        beginner_friendly: true
-
+        pairs_with: ["@auth0/nextjs-auth0"]
       clerk:
-        name: "Clerk"
-        current_version: "4.29"
-        good_for: ["modern stack", "user management UI", "React/Next.js"]
-        not_ideal_for: ["custom UI requirements", "legacy systems"]
-        pairs_with:
-          - "@clerk/nextjs 4.29"
-        beginner_friendly: true
+        pairs_with: ["@clerk/nextjs"]
+      supabase_auth:
+        pairs_with: ["@supabase/supabase-js"]
+      firebase_auth:
+        pairs_with: ["firebase-admin"]
 
-      supertokens:
-        name: "SuperTokens"
-        current_version: "16.6"
-        good_for: ["open source", "self-hosted", "customizable"]
-        not_ideal_for: ["quick setup", "managed service"]
-        pairs_with:
-          - "supertokens-node 16.6"
-        beginner_friendly: false
-
-  frontend_framework:
-    triggers: ["UI", "frontend", "client", "web app", "user interface"]
-    importance: "critical"
-    affects: "all UI epics"
+  real_time:
+    triggers: ["real-time", "websocket", "live updates", "chat", "collaboration"]
+    importance: "medium"
+    affects: "real-time features"
     options:
-      nextjs:
-        name: "Next.js"
-        current_version: "14.0"
-        good_for: ["full-stack", "SSR/SSG", "React ecosystem", "SEO"]
-        not_ideal_for: ["pure SPA", "non-React", "simple sites"]
-        pairs_with:
-          - "React 18.2"
-          - "TypeScript 5.3"
-          - "Tailwind CSS 3.4"
-        beginner_friendly: true
-
-      react_spa:
-        name: "React SPA"
-        current_version: "18.2"
-        good_for: ["complex interactions", "existing APIs", "flexibility"]
-        not_ideal_for: ["SEO critical", "initial load time"]
-        pairs_with:
-          - "Vite 5.0"
-          - "React Router 6.21"
-          - "TypeScript 5.3"
-        beginner_friendly: true
-
-      vue:
-        name: "Vue.js"
-        current_version: "3.4"
-        good_for: ["progressive enhancement", "simple mental model", "template syntax"]
-        not_ideal_for: ["React ecosystem needs", "hiring pool"]
-        pairs_with:
-          - "Nuxt 3.9"
-          - "Vite 5.0"
-          - "Pinia 2.1"
-        beginner_friendly: true
-
-      solidjs:
-        name: "SolidJS"
-        current_version: "1.8"
-        good_for: ["performance", "fine-grained reactivity", "small bundle"]
-        not_ideal_for: ["ecosystem size", "learning resources"]
-        pairs_with:
-          - "SolidStart 0.4"
-          - "Vite 5.0"
-        beginner_friendly: false
-
-  state_management:
-    triggers: ["state", "store", "client state", "data flow", "redux"]
-    importance: "high"
-    affects: "frontend epics"
-    options:
-      zustand:
-        name: "Zustand"
-        current_version: "4.4"
-        good_for: ["simplicity", "TypeScript", "small bundle", "React"]
-        not_ideal_for: ["time-travel debugging", "Redux ecosystem"]
-        beginner_friendly: true
-
-      redux_toolkit:
-        name: "Redux Toolkit"
-        current_version: "2.0"
-        good_for: ["complex state", "debugging", "ecosystem", "predictable"]
-        not_ideal_for: ["simple apps", "boilerplate"]
-        beginner_friendly: false
-
-      tanstack_query:
-        name: "TanStack Query"
-        current_version: "5.17"
-        good_for: ["server state", "caching", "synchronization", "mutations"]
-        not_ideal_for: ["pure client state", "offline-heavy"]
-        beginner_friendly: true
-
-      jotai:
-        name: "Jotai"
-        current_version: "2.6"
-        good_for: ["atomic state", "React Suspense", "TypeScript"]
-        not_ideal_for: ["debugging tools", "ecosystem size"]
-        beginner_friendly: false
-
-  realtime:
-    triggers: ["real-time", "websocket", "live", "push", "streaming", "collaborative"]
-    importance: "high"
-    affects: "real-time feature epics"
-    options:
-      socketio:
-        name: "Socket.io"
-        current_version: "4.6"
-        good_for: ["fallbacks", "rooms", "namespaces", "reliability"]
-        not_ideal_for: ["raw performance", "simple needs"]
-        pairs_with:
-          - "socket.io-client 4.6"
-        beginner_friendly: true
-
-      websocket_native:
-        name: "Native WebSocket"
-        good_for: ["performance", "simple needs", "no dependencies"]
-        not_ideal_for: ["fallbacks", "reconnection", "complex patterns"]
-        pairs_with:
-          - "ws 8.16"
-        beginner_friendly: false
-
+      socket_io:
+        pairs_with: ["Express", "socket.io-client"]
       pusher:
-        name: "Pusher"
-        good_for: ["managed service", "quick setup", "global infrastructure"]
-        not_ideal_for: ["cost at scale", "self-hosted needs"]
-        pairs_with:
-          - "pusher-js 8.4"
-        beginner_friendly: true
-
+        pairs_with: ["pusher-js"]
       ably:
-        name: "Ably"
-        current_version: "1.2"
-        good_for: ["guaranteed delivery", "presence", "history", "managed"]
-        not_ideal_for: ["cost sensitive", "simple needs"]
-        pairs_with:
-          - "ably 1.2"
-        beginner_friendly: true
+        pairs_with: ["ably"]
+      supabase_realtime:
+        pairs_with: ["@supabase/supabase-js"]
+      firebase_realtime:
+        pairs_with: ["firebase"]
+
+  email:
+    triggers: ["email", "notifications", "transactional email"]
+    importance: "medium"
+    affects: "notification epics"
+    options:
+      resend:
+        pairs_with: ["resend", "react-email"]
+      sendgrid:
+        pairs_with: ["@sendgrid/mail"]
+      postmark:
+        pairs_with: ["postmark"]
+      ses:
+        pairs_with: ["@aws-sdk/client-ses"]
 
   file_storage:
-    triggers: ["file upload", "images", "documents", "media", "blob storage", "assets"]
+    triggers: ["upload", "file storage", "images", "media", "CDN"]
     importance: "medium"
-    affects: "content epics"
+    affects: "media handling epics"
     options:
       s3:
-        name: "AWS S3"
-        good_for: ["scale", "durability", "ecosystem", "CDN integration"]
-        not_ideal_for: ["simple needs", "cost optimization"]
-        pairs_with:
-          - "@aws-sdk/client-s3 3.478"
-          - "multer-s3 3.0"
-        beginner_friendly: false
-
+        pairs_with: ["@aws-sdk/client-s3", "multer"]
       cloudinary:
-        name: "Cloudinary"
-        good_for: ["image optimization", "transformations", "CDN", "easy setup"]
-        not_ideal_for: ["raw files", "cost at scale"]
-        pairs_with:
-          - "cloudinary 1.41"
-        beginner_friendly: true
-
+        pairs_with: ["cloudinary"]
       uploadthing:
-        name: "UploadThing"
-        current_version: "6.0"
-        good_for: ["Next.js", "type safety", "simple setup"]
-        not_ideal_for: ["non-Next.js", "complex requirements"]
-        pairs_with:
-          - "uploadthing 6.0"
-        beginner_friendly: true
-
-      local_storage:
-        name: "Local File System"
-        good_for: ["development", "on-premise", "simple needs"]
-        not_ideal_for: ["scale", "CDN", "distributed systems"]
-        pairs_with:
-          - "multer 1.4"
-        beginner_friendly: true
+        pairs_with: ["uploadthing"]
+      supabase_storage:
+        pairs_with: ["@supabase/supabase-js"]
 
   search:
     triggers: ["search", "full text", "elasticsearch", "algolia", "fuzzy"]
@@ -330,36 +101,13 @@ decision_categories:
     affects: "search and discovery epics"
     options:
       postgres_fts:
-        name: "PostgreSQL Full Text Search"
-        good_for: ["simple search", "no extra infrastructure", "cost effective"]
-        not_ideal_for: ["complex relevance", "fuzzy matching", "facets"]
-        beginner_friendly: true
-
+        pairs_with: ["PostgreSQL"]
       elasticsearch:
-        name: "Elasticsearch"
-        current_version: "8.11"
-        good_for: ["complex search", "analytics", "aggregations", "scale"]
-        not_ideal_for: ["simple needs", "operational overhead"]
-        pairs_with:
-          - "@elastic/elasticsearch 8.11"
-        beginner_friendly: false
-
+        pairs_with: ["@elastic/elasticsearch"]
       algolia:
-        name: "Algolia"
-        good_for: ["instant search", "typo tolerance", "managed service", "speed"]
-        not_ideal_for: ["cost at scale", "data sovereignty"]
-        pairs_with:
-          - "algoliasearch 4.22"
-        beginner_friendly: true
-
+        pairs_with: ["algoliasearch"]
       typesense:
-        name: "Typesense"
-        current_version: "1.7"
-        good_for: ["open source alternative to Algolia", "typo tolerance", "self-hosted"]
-        not_ideal_for: ["managed service needs", "small projects"]
-        pairs_with:
-          - "typesense 1.7"
-        beginner_friendly: false
+        pairs_with: ["typesense"]
 
   background_jobs:
     triggers: ["queue", "jobs", "workers", "async", "background processing", "scheduled"]
@@ -367,39 +115,13 @@ decision_categories:
     affects: "async processing epics"
     options:
       bullmq:
-        name: "BullMQ"
-        current_version: "5.1"
-        good_for: ["Redis-based", "reliable", "dashboard", "Node.js"]
-        not_ideal_for: ["multi-language", "serverless"]
-        pairs_with:
-          - "Redis 7.2"
-        beginner_friendly: true
-
+        pairs_with: ["Redis"]
       sqs:
-        name: "AWS SQS"
-        good_for: ["managed service", "scale", "AWS ecosystem", "serverless"]
-        not_ideal_for: ["local development", "complex patterns"]
-        pairs_with:
-          - "@aws-sdk/client-sqs 3.478"
-        beginner_friendly: false
-
+        pairs_with: ["@aws-sdk/client-sqs"]
       temporal:
-        name: "Temporal"
-        current_version: "1.22"
-        good_for: ["complex workflows", "durability", "long-running", "saga pattern"]
-        not_ideal_for: ["simple jobs", "quick setup"]
-        pairs_with:
-          - "@temporalio/client 1.9"
-        beginner_friendly: false
-
+        pairs_with: ["@temporalio/client"]
       inngest:
-        name: "Inngest"
-        current_version: "3.8"
-        good_for: ["serverless", "event-driven", "TypeScript", "retries"]
-        not_ideal_for: ["self-hosted", "complex workflows"]
-        pairs_with:
-          - "inngest 3.8"
-        beginner_friendly: true
+        pairs_with: ["inngest"]
 
   deployment_target:
     triggers: ["deployment", "hosting", "infrastructure", "cloud", "server"]
@@ -407,277 +129,80 @@ decision_categories:
     affects: "all epics"
     options:
       vercel:
-        name: "Vercel"
-        good_for: ["Next.js", "edge functions", "preview deployments", "simplicity"]
-        not_ideal_for: ["complex backends", "cost at scale", "non-JS"]
-        beginner_friendly: true
-
+        pairs_with: ["Next.js", "serverless functions"]
       aws:
-        name: "AWS"
-        good_for: ["everything", "scale", "compliance", "flexibility"]
-        not_ideal_for: ["simplicity", "predictable costs", "small projects"]
-        beginner_friendly: false
-
+        pairs_with: ["any stack"]
       railway:
-        name: "Railway"
-        good_for: ["simplicity", "databases included", "quick setup"]
-        not_ideal_for: ["enterprise needs", "complex requirements"]
-        beginner_friendly: true
-
+        pairs_with: ["any stack", "managed databases"]
       fly_io:
-        name: "Fly.io"
-        good_for: ["edge deployment", "global distribution", "containers"]
-        not_ideal_for: ["managed databases", "enterprise support"]
-        beginner_friendly: false
+        pairs_with: ["Docker containers"]
 
-# Pattern combinations that work well together
+# Opinionated stack combinations (BMM methodology)
 common_stacks:
   modern_fullstack:
     name: "Modern Full-Stack"
-    components:
-      - "Next.js 14"
-      - "PostgreSQL 15 or Supabase"
-      - "Prisma ORM 5.6"
-      - "NextAuth.js 4.24"
-      - "Tailwind CSS 3.4"
-      - "TypeScript 5.3"
-      - "Vercel deployment"
+    components: ["Next.js", "PostgreSQL or Supabase", "Prisma ORM", "NextAuth.js", "Tailwind CSS", "TypeScript", "Vercel"]
     good_for: "Most web applications"
 
   enterprise_stack:
     name: "Enterprise Stack"
-    components:
-      - "NestJS 10.3"
-      - "PostgreSQL 15"
-      - "TypeORM 0.3"
-      - "Auth0"
-      - "React 18.2 + TypeScript"
-      - "AWS deployment"
-    good_for: "Large scale, compliance needs"
+    components: ["NestJS", "PostgreSQL", "TypeORM", "Auth0", "Redis", "Docker", "AWS"]
+    good_for: "Large-scale enterprise applications"
 
-  startup_stack:
-    name: "Rapid Development Stack"
-    components:
-      - "Next.js 14"
-      - "Supabase"
-      - "Clerk Auth"
-      - "Tailwind CSS 3.4"
-      - "Vercel deployment"
-    good_for: "MVPs and rapid prototyping"
+  rapid_prototype:
+    name: "Rapid Prototype"
+    components: ["Next.js", "Supabase", "shadcn/ui", "Vercel"]
+    good_for: "MVP and rapid development"
 
-  realtime_stack:
-    name: "Real-time Collaboration"
-    components:
-      - "Next.js 14"
-      - "Socket.io 4.6"
-      - "Redis 7.2"
-      - "PostgreSQL 15"
-      - "Railway deployment"
-    good_for: "Collaborative applications"
+  real_time_app:
+    name: "Real-Time Application"
+    components: ["Next.js", "Supabase Realtime", "PostgreSQL", "Prisma", "Socket.io fallback"]
+    good_for: "Chat, collaboration, live updates"
 
-# WARNING: Version numbers are illustrative - actual versions should be verified
-# during workflow execution via web search for current stable versions
+  mobile_app:
+    name: "Mobile Application"
+    components: ["Expo", "React Native", "Supabase or Firebase", "React Query"]
+    good_for: "Cross-platform mobile apps"
 
-# Starter templates that make architectural decisions
+# Starter templates and what decisions they make
 starter_templates:
   create_next_app:
     name: "Create Next App"
-    command_search: "npx create-next-app@latest options"
-    base_command: "npx create-next-app@latest"
-    interactive: true
-    decisions_provided:
-      - "TypeScript vs JavaScript (--typescript flag)"
-      - "ESLint configuration (--eslint flag)"
-      - "Tailwind CSS setup (--tailwind flag)"
-      - "App Router vs Pages Router (--app flag)"
-      - "src/ directory structure (--src-dir flag)"
-      - "Import alias (@/* default)"
-    project_structure: "Standard Next.js structure with app/ or pages/"
-    good_for: ["Web applications", "SSR/SSG needs", "Full-stack React"]
+    command_search: "npx create-next-app@latest"
+    decisions_provided: ["Next.js framework", "TypeScript option", "App Router vs Pages", "Tailwind CSS option", "ESLint"]
+    good_for: ["React web applications", "Full-stack apps", "SSR/SSG"]
 
   create_t3_app:
     name: "Create T3 App"
-    command_search: "create t3 app latest CLI options"
-    base_command: "npm create t3-app@latest"
-    interactive: true
-    decisions_provided:
-      - "Next.js framework (always)"
-      - "TypeScript (always)"
-      - "tRPC for type-safe APIs"
-      - "Prisma ORM"
-      - "NextAuth.js authentication"
-      - "Tailwind CSS"
-      - "Drizzle ORM (alternative to Prisma)"
-    project_structure: "Opinionated full-stack structure"
-    good_for: ["Type-safe full-stack", "Rapid development", "Best practices"]
+    command_search: "npm create t3-app@latest"
+    decisions_provided: ["Next.js", "TypeScript", "tRPC", "Prisma", "NextAuth", "Tailwind CSS"]
+    good_for: ["Type-safe full-stack apps"]
 
   create_vite:
     name: "Create Vite"
-    command_search: "npm create vite templates options"
-    base_command: "npm create vite@latest"
-    interactive: true
-    templates_available:
-      - "vanilla"
-      - "vanilla-ts"
-      - "react"
-      - "react-ts"
-      - "react-swc"
-      - "react-swc-ts"
-      - "vue"
-      - "vue-ts"
-      - "svelte"
-      - "svelte-ts"
-    decisions_provided:
-      - "Build tool (Vite)"
-      - "Framework choice"
-      - "TypeScript setup"
-      - "HMR configuration"
-      - "Development server"
-    project_structure: "Minimal, framework-specific"
-    good_for: ["SPAs", "Fast development", "Modern tooling"]
-
-  create_react_app:
-    name: "Create React App"
-    status: "DEPRECATED - Use Vite or Next.js instead"
-    note: "No longer recommended by React team"
+    command_search: "npm create vite@latest"
+    decisions_provided: ["Framework choice (React/Vue/Svelte)", "TypeScript option", "Vite bundler"]
+    good_for: ["Fast dev SPAs", "Library development"]
 
   create_remix:
     name: "Create Remix"
-    command_search: "npx create-remix latest options"
-    base_command: "npx create-remix@latest"
-    decisions_provided:
-      - "Remix framework"
-      - "TypeScript option"
-      - "Deployment target"
-      - "CSS solution"
+    command_search: "npx create-remix@latest"
+    decisions_provided: ["Remix framework", "TypeScript option", "Deployment target", "CSS solution"]
     good_for: ["Web standards", "Nested routing", "Progressive enhancement"]
 
   nest_new:
     name: "NestJS CLI"
-    command_search: "nest new project options"
-    base_command: "nest new"
-    decisions_provided:
-      - "TypeScript (always)"
-      - "Package manager"
-      - "Testing framework (Jest)"
-      - "Linting (ESLint)"
-      - "Project structure (modules/controllers/services)"
-    project_structure: "Enterprise Angular-style backend"
+    command_search: "nest new project"
+    decisions_provided: ["TypeScript (always)", "Package manager", "Testing framework (Jest)", "Project structure"]
     good_for: ["Enterprise APIs", "Microservices", "GraphQL APIs"]
 
   create_expo_app:
     name: "Create Expo App"
-    command_search: "create-expo-app templates latest"
-    base_command: "npx create-expo-app"
-    decisions_provided:
-      - "React Native setup"
-      - "TypeScript option"
-      - "Navigation library option"
-      - "Expo SDK version"
+    command_search: "npx create-expo-app"
+    decisions_provided: ["React Native", "Expo SDK", "TypeScript option", "Navigation option"]
     good_for: ["Cross-platform mobile", "React Native apps"]
 
-  create_vue:
-    name: "Create Vue"
-    command_search: "npm create vue latest options"
-    base_command: "npm create vue@latest"
-    decisions_provided:
-      - "Vue 3"
-      - "TypeScript option"
-      - "JSX support"
-      - "Vue Router"
-      - "Pinia state management"
-      - "Vitest for testing"
-      - "ESLint + Prettier"
-    good_for: ["Vue applications", "Progressive web apps"]
-
-  create_astro:
-    name: "Create Astro"
-    command_search: "npm create astro latest templates"
-    base_command: "npm create astro@latest"
-    decisions_provided:
-      - "Astro framework"
-      - "TypeScript strictness"
-      - "Template choice"
-      - "Framework integrations"
-    good_for: ["Content sites", "Static sites", "Islands architecture"]
-
-  create_svelte:
-    name: "Create Svelte"
-    command_search: "npm create svelte latest options"
-    base_command: "npm create svelte@latest"
-    decisions_provided:
-      - "SvelteKit framework"
-      - "TypeScript option"
-      - "ESLint"
-      - "Prettier"
-      - "Testing setup"
-    good_for: ["Svelte applications", "Compiled frameworks"]
-
-  cargo_new:
-    name: "Cargo New (Rust)"
-    command_search: "cargo new options binary library"
-    base_command: "cargo new"
-    decisions_provided:
-      - "Binary vs Library (--bin or --lib)"
-      - "Project structure"
-      - "Cargo.toml setup"
-    good_for: ["Rust CLI tools", "Systems programming", "Performance critical"]
-
-  dotnet_new:
-    name: ".NET CLI"
-    command_search: "dotnet new templates list"
-    base_command: "dotnet new"
-    templates_available:
-      - "webapi"
-      - "webapp"
-      - "blazor"
-      - "console"
-      - "classlib"
-    decisions_provided:
-      - "Project type"
-      - ".NET version"
-      - "Authentication option"
-      - "HTTPS configuration"
-    good_for: ["C# applications", "Enterprise", "Windows development"]
-
-  rails_new:
-    name: "Rails New"
-    command_search: "rails new options latest"
-    base_command: "rails new"
-    decisions_provided:
-      - "Database (PostgreSQL/MySQL/SQLite)"
-      - "CSS framework"
-      - "JavaScript approach"
-      - "Testing framework"
-      - "API-only mode"
-    good_for: ["Ruby web apps", "Rapid prototyping", "Convention over configuration"]
-
-  django_startproject:
-    name: "Django Start Project"
-    command_search: "django-admin startproject structure"
-    base_command: "django-admin startproject"
-    decisions_provided:
-      - "Django framework"
-      - "Project structure"
-      - "Settings configuration"
-      - "Database (SQLite default)"
-    good_for: ["Python web apps", "Admin interfaces", "Content management"]
-
-  create_redwood_app:
-    name: "Create RedwoodJS App"
-    command_search: "yarn create redwood-app latest"
-    base_command: "yarn create redwood-app"
-    decisions_provided:
-      - "RedwoodJS framework"
-      - "TypeScript (default)"
-      - "Prisma ORM"
-      - "GraphQL API"
-      - "Storybook"
-      - "Testing setup"
-    project_structure: "Monorepo with api/ and web/"
-    good_for: ["Full-stack JAMstack", "Startups", "Rapid development"]
-
-# Starter template selection heuristics
+# Starter selection heuristics (workflow logic)
 starter_selection_rules:
   by_project_type:
     web_application:
@@ -685,17 +210,13 @@ starter_selection_rules:
       considerations: "SSR needs? → Next.js. Type safety critical? → T3. SPA only? → Vite"
 
     mobile_app:
-      recommended: ["create_expo_app", "react_native_cli"]
-      considerations: "Need native modules? → React Native CLI. Simpler setup? → Expo"
+      recommended: ["create_expo_app"]
+      considerations: "Cross-platform → Expo. Native-heavy → React Native CLI"
 
     api_backend:
-      recommended: ["nest_new", "express_generator", "fastify_cli"]
-      considerations: "Enterprise? → NestJS. Simple? → Express. Performance? → Fastify"
-
-    cli_tool:
-      recommended: ["cargo_new", "go_mod_init", "npm_init"]
-      considerations: "Performance critical? → Rust/Go. Quick script? → Node.js/Python"
+      recommended: ["nest_new"]
+      considerations: "Enterprise → NestJS. Simple → Express starter. Performance → Fastify"
 
     full_stack:
-      recommended: ["create_t3_app", "create_redwood_app", "rails_new"]
-      considerations: "Type safety? → T3. JAMstack? → Redwood. Ruby? → Rails"
+      recommended: ["create_t3_app", "create_remix"]
+      considerations: "Type safety → T3. Web standards → Remix. Monolith → RedwoodJS"

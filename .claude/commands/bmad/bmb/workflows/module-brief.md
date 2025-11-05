@@ -1,3 +1,7 @@
+---
+description: 'Create a comprehensive Module Brief that serves as the blueprint for building new BMAD modules using strategic analysis and creative vision'
+---
+
 # module-brief
 
 IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:

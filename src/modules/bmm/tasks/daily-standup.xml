@@ -3,12 +3,12 @@
     <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
     <i>DO NOT skip steps or change the sequence</i>
     <i>HALT immediately when halt-conditions are met</i>
-    <i>Each andlt;actionandgt; within andlt;stepandgt; is a REQUIRED action to complete that step</i>
+    <i>Each action tag within a step tag is a REQUIRED action to complete that step</i>
     <i>Sections outside flow (validation, output, critical-context) provide essential context - review and apply throughout execution</i>
   </llm>
   <flow>
     <step n="1" title="Project Context Discovery">
-      <action>Check for stories folder at {project-root}{output_folder}/stories/ directory</action>
+      <action>Check for stories folder at {project-root}{output_folder}/stories/</action>
       <action>Find current story by identifying highest numbered story file</action>
       <action>Read story status (In Progress, Ready for Review, etc.)</action>
       <action>Extract agent notes from Dev Agent Record, TEA Results, PO Notes sections</action>
@@ -26,7 +26,7 @@
         - Blockers: {{blockers-from-story}}
 
         Team assembled based on story participants:
-        {{ List Agents from {project-root}/bmad/_cfg/agent-party.xml }}
+        {{ List Agents from {project-root}/bmad/_cfg/agent-manifest.csv }}
       </output>
     </step>
 

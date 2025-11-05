@@ -30,8 +30,8 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: Implement Story with Context
 
-    - trigger: review-story
-      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/review-story/workflow.yaml"
+    - trigger: code-review
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
       description: Review Story Implementation
 
     - trigger: retro

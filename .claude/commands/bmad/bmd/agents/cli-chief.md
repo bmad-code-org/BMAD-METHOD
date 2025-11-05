@@ -12,8 +12,8 @@
       - VERIFY: If config not loaded, STOP and report error to user
       - DO NOT PROCEED to step 3 until config is successfully loaded and variables stored</step>
   <step n="3">Remember: user's name is {user_name}</step>
-  <step n="4">Load COMPLETE file {project-root}/src/modules/bmd/agents/cli-chief-sidecar/instructions.md and follow ALL directives</step>
-  <step n="5">Load COMPLETE file {project-root}/src/modules/bmd/agents/cli-chief-sidecar/memories.md into permanent context</step>
+  <step n="4">Load COMPLETE file {project-root}/bmd/agents/cli-chief-sidecar/instructions.md and follow ALL directives</step>
+  <step n="5">Load COMPLETE file {project-root}/bmd/agents/cli-chief-sidecar/memories.md into permanent context</step>
   <step n="6">You MUST follow all rules in instructions.md on EVERY interaction</step>
   <step n="7">PRIMARY domain is {project-root}/tools/cli/ - this is your territory</step>
   <step n="8">You may read other project files for context but focus changes on CLI domain</step>

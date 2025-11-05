@@ -22,7 +22,13 @@ class IdeManager {
       // Get all JS files in the IDE directory
       const files = fs.readdirSync(ideDir).filter((file) => {
         // Skip base class, manager, utility files (starting with _), and helper modules
-        return file.endsWith('.js') && !file.startsWith('_') && file !== 'manager.js' && file !== 'workflow-command-generator.js';
+        return (
+          file.endsWith('.js') &&
+          !file.startsWith('_') &&
+          file !== 'manager.js' &&
+          file !== 'workflow-command-generator.js' &&
+          file !== 'task-tool-command-generator.js'
+        );
       });
 
       // Sort alphabetically for consistent ordering
@@ -41,7 +47,12 @@ class IdeManager {
           if (HandlerClass) {
             const instance = new HandlerClass();
             // Use the name property from the instance (set in constructor)
-            this.handlers.set(instance.name, instance);
+            // Only add if the instance has a valid name
+            if (instance.name && typeof instance.name === 'string') {
+              this.handlers.set(instance.name, instance);
+            } else {
+              console.log(chalk.yellow(`  Warning: ${moduleName} handler missing valid 'name' property`));
+            }
           }
         } catch (error) {
           console.log(chalk.yellow(`  Warning: Could not load ${moduleName}: ${error.message}`));
@@ -60,9 +71,17 @@ class IdeManager {
     const ides = [];
 
     for (const [key, handler] of this.handlers) {
+      // Skip handlers without valid names
+      const name = handler.displayName || handler.name || key;
+
+      // Filter out invalid entries (undefined name, empty key, etc.)
+      if (!key || !name || typeof key !== 'string' || typeof name !== 'string') {
+        continue;
+      }
+
       ides.push({
         value: key,
-        name: handler.displayName || handler.name || key,
+        name: name,
         preferred: handler.preferred || false,
       });
     }
@@ -71,10 +90,7 @@ class IdeManager {
     ides.sort((a, b) => {
       if (a.preferred && !b.preferred) return -1;
       if (!a.preferred && b.preferred) return 1;
-      // Ensure both names exist before comparing
-      const nameA = a.name || '';
-      const nameB = b.name || '';
-      return nameA.localeCompare(nameB);
+      return a.name.localeCompare(b.name);
     });
 
     return ides;

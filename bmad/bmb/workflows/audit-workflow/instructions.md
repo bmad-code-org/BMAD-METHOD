@@ -5,371 +5,337 @@
 
 <workflow>
 
-<step n="1" goal="Load and analyze target workflow">
-<ask>What is the path to the workflow you want to audit? (provide path to workflow.yaml or workflow folder)</ask>
+  <step n="1" goal="Load and analyze target workflow">
+    <ask>What is the path to the workflow you want to audit? (provide path to workflow.yaml or workflow folder)</ask>
 
-<action>Load the workflow.yaml file from the provided path</action>
-<action>Identify the workflow type (document, action, interactive, autonomous, meta)</action>
-<action>List all associated files:</action>
+    <action>Load the workflow.yaml file from the provided path</action>
+    <action>Identify the workflow type (document, action, interactive, autonomous, meta)</action>
+    <action>List all associated files:</action>
 
-- instructions.md (required for most workflows)
-- template.md (if document workflow)
-- checklist.md (if validation exists)
-- Any data files referenced in yaml
+    - instructions.md (required for most workflows)
+    - template.md (if document workflow)
+    - checklist.md (if validation exists)
+    - Any data files referenced in yaml
 
-<action>Load all discovered files</action>
+    <action>Load all discovered files</action>
 
-Display summary:
+    Display summary:
 
-- Workflow name and description
-- Type of workflow
-- Files present
-- Module assignment
+    - Workflow name and description
+    - Type of workflow
+    - Files present
+    - Module assignment
+
   </step>
 
-<step n="2" goal="Validate standard config block">
-<action>Check workflow.yaml for the standard config block:</action>
+  <step n="2" goal="Validate standard config block">
+    <action>Check workflow.yaml for the standard config block:</action>
 
-**Required variables:**
+    **Required variables:**
 
-- `config_source: "{project-root}/bmad/[module]/config.yaml"`
-- `output_folder: "{config_source}:output_folder"`
-- `user_name: "{config_source}:user_name"`
-- `communication_language: "{config_source}:communication_language"`
-- `date: system-generated`
+    - `config_source: "{project-root}/bmad/[module]/config.yaml"`
+    - `output_folder: "{config_source}:output_folder"`
+    - `user_name: "{config_source}:user_name"`
+    - `communication_language: "{config_source}:communication_language"`
+    - `date: system-generated`
 
-<action>Validate each variable:</action>
+    <action>Validate each variable:</action>
 
-**Config Source Check:**
+    **Config Source Check:**
 
-- [ ] `config_source` is defined
-- [ ] Points to correct module config path
-- [ ] Uses {project-root} variable
+    - [ ] `config_source` is defined
+    - [ ] Points to correct module config path
+    - [ ] Uses {project-root} variable
 
-**Standard Variables Check:**
+    **Standard Variables Check:**
 
-- [ ] `output_folder` pulls from config_source
-- [ ] `user_name` pulls from config_source
-- [ ] `communication_language` pulls from config_source
-- [ ] `date` is set to system-generated
+    - [ ] `output_folder` pulls from config_source
+    - [ ] `user_name` pulls from config_source
+    - [ ] `communication_language` pulls from config_source
+    - [ ] `date` is set to system-generated
 
-<action>Record any missing or incorrect config variables</action>
-<template-output>config_issues</template-output>
+    <action>Record any missing or incorrect config variables</action>
+    <template-output>config_issues</template-output>
 
-<check>If config issues found:</check>
-<action>Add to issues list with severity: CRITICAL</action>
-</step>
+    <action if="config issues found">Add to issues list with severity: CRITICAL</action>
 
-<step n="3" goal="Analyze YAML/Instruction/Template alignment">
-<action>Extract all variables defined in workflow.yaml (excluding standard config block)</action>
-<action>Scan instructions.md for variable usage: {variable_name} pattern</action>
-<action>Scan template.md for variable usage: {{variable_name}} pattern (if exists)</action>
+  </step>
 
-<action>Cross-reference analysis:</action>
+  <step n="3" goal="Analyze YAML/Instruction/Template alignment">
+    <action>Extract all variables defined in workflow.yaml (excluding standard config block)</action>
+    <action>Scan instructions.md for variable usage: {variable_name} pattern</action>
+    <action>Scan template.md for variable usage: {{variable_name}} pattern (if exists)</action>
 
-**For each yaml variable:**
+    <action>Cross-reference analysis:</action>
 
-1. Is it used in instructions.md? (mark as INSTRUCTION_USED)
-2. Is it used in template.md? (mark as TEMPLATE_USED)
-3. Is it neither? (mark as UNUSED_BLOAT)
+    **For each yaml variable:**
 
-**Special cases to ignore:**
+    1. Is it used in instructions.md? (mark as INSTRUCTION_USED)
+    2. Is it used in template.md? (mark as TEMPLATE_USED)
+    3. Is it neither? (mark as UNUSED_BLOAT)
 
-- Standard config variables (config_source, output_folder, user_name, communication_language, date)
-- Workflow metadata (name, description, author)
-- Path variables (installed_path, template, instructions, validation)
-- Web bundle configuration (web_bundle block itself)
+    **Special cases to ignore:**
 
-<action>Identify unused yaml fields (bloat)</action>
-<action>Identify hardcoded values in instructions that should be variables</action>
-<template-output>alignment_issues</template-output>
+    - Standard config variables (config_source, output_folder, user_name, communication_language, date)
+    - Workflow metadata (name, description, author)
+    - Path variables (installed_path, template, instructions, validation)
+    - Web bundle configuration (web_bundle block itself)
 
-<check>If unused variables found:</check>
-<action>Add to issues list with severity: BLOAT</action>
-</step>
+    <action>Identify unused yaml fields (bloat)</action>
+    <action>Identify hardcoded values in instructions that should be variables</action>
+    <template-output>alignment_issues</template-output>
 
-<step n="4" goal="Config variable usage audit">
-<action>Analyze instructions.md for proper config variable usage:</action>
+    <action if="unused variables found">Add to issues list with severity: BLOAT</action>
 
-**Communication Language Check:**
+  </step>
 
-- Search for phrases like "communicate in {communication_language}"
-- Check if greetings/responses use language-aware patterns
-- Verify NO usage of {{communication_language}} in template headers
+  <step n="4" goal="Config variable usage audit">
+    <action>Analyze instructions.md for proper config variable usage:</action>
 
-**User Name Check:**
+    **Communication Language Check:**
 
-- Look for user addressing patterns using {user_name}
-- Check if summaries or greetings personalize with {user_name}
-- Verify optional usage in template metadata (not required)
+    - Search for phrases like "communicate in {communication_language}"
+    - Check if greetings/responses use language-aware patterns
+    - Verify NO usage of {{communication_language}} in template headers
 
-**Output Folder Check:**
+    **User Name Check:**
 
-- Search for file write operations
-- Verify all outputs go to {output_folder} or subdirectories
-- Check for hardcoded paths like "/output/" or "/generated/"
+    - Look for user addressing patterns using {user_name}
+    - Check if summaries or greetings personalize with {user_name}
+    - Verify optional usage in template metadata (not required)
 
-**Date Usage Check:**
+    **Output Folder Check:**
 
-- Verify date is available for agent date awareness
-- Check optional usage in template metadata
-- Ensure no confusion between date and model training cutoff
+    - Search for file write operations
+    - Verify all outputs go to {output_folder} or subdirectories
+    - Check for hardcoded paths like "/output/" or "/generated/"
 
-<action>Record any improper config variable usage</action>
-<template-output>config_usage_issues</template-output>
+    **Date Usage Check:**
 
-<check>If config usage issues found:</check>
-<action>Add to issues list with severity: IMPORTANT</action>
-</step>
+    - Verify date is available for agent date awareness
+    - Check optional usage in template metadata
+    - Ensure no confusion between date and model training cutoff
 
-<step n="5" goal="Web bundle validation" optional="true">
-<check>If workflow.yaml contains web_bundle section:</check>
+    **Nested Tag Reference Check:**
 
-<action>Validate web_bundle structure:</action>
+    - Search for XML tag references within tags (e.g., `<action>Scan for <action> tags</action>`)
+    - Identify patterns like: `<tag-name> tags`, `<tag-name> calls`, `<tag-name>content</tag-name>` within content
+    - Common problematic tags to check: action, ask, check, template-output, invoke-workflow, goto
+    - Flag any instances where angle brackets appear in content describing tags
 
-**Path Validation:**
+    **Best Practice:** Use descriptive text without brackets (e.g., "action tags" instead of "<action> tags")
 
-- [ ] All paths use bmad/-relative format (NOT {project-root})
-- [ ] No {config_source} variables in web_bundle section
-- [ ] Paths match actual file locations
+    **Rationale:**
 
-**Completeness Check:**
+    - Prevents XML parsing ambiguity
+    - Improves readability for humans and LLMs
+    - LLMs understand "action tags" = `<action>` tags from context
 
-- [ ] instructions file listed in web_bundle_files
-- [ ] template file listed (if document workflow)
-- [ ] validation/checklist file listed (if exists)
-- [ ] All data files referenced in yaml listed
-- [ ] All files referenced in instructions listed
+    **Conditional Execution Antipattern Check:**
 
-**Workflow Dependency Scan:**
-<action>Scan instructions.md for <invoke-workflow> tags</action>
-<action>Extract workflow paths from invocations</action>
-<action>Verify each called workflow.yaml is in web_bundle_files</action>
-<action>**CRITICAL**: Check if existing_workflows field is present when workflows are invoked</action>
-<action>If <invoke-workflow> calls exist, existing_workflows MUST map workflow variables to paths</action>
-<action>Example: If instructions use {core_brainstorming}, web_bundle needs:
-existing_workflows: - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"
-</action>
+    - Scan for self-closing check tags: `<check>condition text</check>` (invalid antipattern)
+    - Detect pattern: check tag on one line, followed by action/ask/goto tags (indicates incorrect nesting)
+    - Flag sequences like: `<check>If X:</check>` followed by `<action>do Y</action>`
 
-**File Reference Scan:**
-<action>Scan instructions.md for file references in <action> tags</action>
-<action>Check for CSV, JSON, YAML, MD files referenced</action>
-<action>Verify all referenced files are in web_bundle_files</action>
+    **Correct Patterns:**
 
-<action>Record any missing files or incorrect paths</action>
-<template-output>web_bundle_issues</template-output>
+    - Single conditional: `<action if="condition">Do something</action>`
+    - Multiple actions: `<check if="condition">` followed by nested actions with closing `</check>` tag
 
-<check>If web_bundle issues found:</check>
-<action>Add to issues list with severity: CRITICAL</action>
+    **Antipattern Example (WRONG):**
+    ```xml
+    <check>If condition met:</check>
+    <action>Do something</action>
+    ```
 
-<check>If no web_bundle section exists:</check>
-<action>Note: "No web_bundle configured (may be intentional for local-only workflows)"</action>
-</step>
+    **Correct Example:**
+    ```xml
+    <check if="condition met">
+      <action>Do something</action>
+      <action>Do something else</action>
+    </check>
+    ```
 
-<step n="6" goal="Bloat detection">
-<action>Identify bloat patterns:</action>
+    **Or for single action:**
+    ```xml
+    <action if="condition met">Do something</action>
+    ```
 
-**Unused YAML Fields:**
+    <action>Scan instructions.md for nested tag references using pattern: &lt;(action|ask|check|template-output|invoke-workflow|goto|step|elicit-required)&gt; within text content</action>
+    <action>Record any instances of nested tag references with line numbers</action>
+    <action>Scan instructions.md for conditional execution antipattern: self-closing check tags</action>
+    <action>Detect pattern: `&lt;check&gt;.*&lt;/check&gt;` on single line (self-closing check)</action>
+    <action>Record any antipattern instances with line numbers and suggest corrections</action>
+    <action>Record any improper config variable usage</action>
+    <template-output>config_usage_issues</template-output>
 
-- Variables defined but not used in instructions OR template
-- Duplicate fields between top-level and web_bundle section
-- Commented-out variables that should be removed
+    <action if="config usage issues found">Add to issues list with severity: IMPORTANT</action>
+    <action if="nested tag references found">Add to issues list with severity: CLARITY (recommend using descriptive text without angle brackets)</action>
+    <action if="conditional antipattern found">Add to issues list with severity: CRITICAL (invalid XML structure - must use action if="" or proper check wrapper)</action>
 
-**Hardcoded Values:**
+  </step>
 
-- File paths that should use {output_folder}
-- Generic greetings that should use {user_name}
-- Language-specific text that should use {communication_language}
-- Static dates that should use {date}
+  <step n="5" goal="Web bundle validation" optional="true">
+    <check if="workflow.yaml contains web_bundle section">
 
-**Redundant Configuration:**
+      <action>Validate web_bundle structure:</action>
 
-- Variables that duplicate web_bundle fields
-- Metadata repeated across sections
+      **Path Validation:**
 
-<action>Calculate bloat metrics:</action>
+      - [ ] All paths use bmad/-relative format (NOT {project-root})
+      - [ ] No {config_source} variables in web_bundle section
+      - [ ] Paths match actual file locations
 
-- Total yaml fields: {{total_yaml_fields}}
-- Used fields: {{used_fields}}
-- Unused fields: {{unused_fields}}
-- Bloat percentage: {{bloat_percentage}}%
+      **Completeness Check:**
 
-<action>Record all bloat items with recommendations</action>
-<template-output>bloat_items</template-output>
+      - [ ] instructions file listed in web_bundle_files
+      - [ ] template file listed (if document workflow)
+      - [ ] validation/checklist file listed (if exists)
+      - [ ] All data files referenced in yaml listed
+      - [ ] All files referenced in instructions listed
 
-<check>If bloat detected:</check>
-<action>Add to issues list with severity: CLEANUP</action>
-</step>
+      **Workflow Dependency Scan:**
+      <action>Scan instructions.md for invoke-workflow tags</action>
+      <action>Extract workflow paths from invocations</action>
+      <action>Verify each called workflow.yaml is in web_bundle_files</action>
+      <action>**CRITICAL**: Check if existing_workflows field is present when workflows are invoked</action>
+      <action>If invoke-workflow calls exist, existing_workflows MUST map workflow variables to paths</action>
+      <action>Example: If instructions use {core_brainstorming}, web_bundle needs: existing_workflows: - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"</action>
 
-<step n="7" goal="Template variable mapping" if="workflow_type == 'document'">
-<action>Extract all template variables from template.md: {{variable_name}} pattern</action>
-<action>Scan instructions.md for corresponding <template-output>variable_name</template-output> tags</action>
+      **File Reference Scan:**
+      <action>Scan instructions.md for file references in action tags</action>
+      <action>Check for CSV, JSON, YAML, MD files referenced</action>
+      <action>Verify all referenced files are in web_bundle_files</action>
 
-<action>Cross-reference mapping:</action>
+      <action>Record any missing files or incorrect paths</action>
+      <template-output>web_bundle_issues</template-output>
 
-**For each template variable:**
+      <action if="web_bundle issues found">Add to issues list with severity: CRITICAL</action>
 
-1. Is there a matching <template-output> tag? (mark as MAPPED)
-2. Is it a standard config variable? (mark as CONFIG_VAR - optional)
-3. Is it unmapped? (mark as MISSING_OUTPUT)
+      <action if="no web_bundle section exists">Note: "No web_bundle configured (may be intentional for local-only workflows)"</action>
+    </check>
 
-**For each <template-output> tag:**
+  </step>
 
-1. Is there a matching template variable? (mark as USED)
-2. Is it orphaned? (mark as UNUSED_OUTPUT)
+  <step n="6" goal="Bloat detection">
+    <action>Identify bloat patterns:</action>
 
-<action>Verify variable naming conventions:</action>
+    **Unused YAML Fields:**
 
-- [ ] All template variables use snake_case
-- [ ] Variable names are descriptive (not abbreviated)
-- [ ] Standard config variables properly formatted
+    - Variables defined but not used in instructions OR template
+    - Duplicate fields between top-level and web_bundle section
+    - Commented-out variables that should be removed
 
-<action>Record any mapping issues</action>
-<template-output>template_issues</template-output>
+    **Hardcoded Values:**
 
-<check>If template issues found:</check>
-<action>Add to issues list with severity: IMPORTANT</action>
-</step>
+    - File paths that should use {output_folder}
+    - Generic greetings that should use {user_name}
+    - Language-specific text that should use {communication_language}
+    - Static dates that should use {date}
 
-<step n="8" goal="Generate comprehensive audit report">
-<action>Compile all findings into a structured report</action>
+    **Redundant Configuration:**
 
-<action>Write audit report to {output_folder}/audit-report-{{workflow_name}}-{{date}}.md</action>
+    - Variables that duplicate web_bundle fields
+    - Metadata repeated across sections
 
-**Report Structure:**
+    <action>Calculate bloat metrics:</action>
 
-```markdown
-# Workflow Audit Report
+    - Total yaml fields: {{total_yaml_fields}}
+    - Used fields: {{used_fields}}
+    - Unused fields: {{unused_fields}}
+    - Bloat percentage: {{bloat_percentage}}%
 
-**Workflow:** {{workflow_name}}
-**Audit Date:** {{date}}
-**Auditor:** Audit Workflow (BMAD v6)
-**Workflow Type:** {{workflow_type}}
+    <action>Record all bloat items with recommendations</action>
+    <template-output>bloat_items</template-output>
 
----
+    <action if="bloat detected">Add to issues list with severity: CLEANUP</action>
 
-## Executive Summary
+  </step>
 
-**Overall Status:** {{overall_status}}
+  <step n="7" goal="Template variable mapping" if="workflow_type == 'document'">
+    <action>Extract all template variables from template.md: {{variable_name}} pattern</action>
+    <action>Scan instructions.md for corresponding template-output tags</action>
 
-- Critical Issues: {{critical_count}}
-- Important Issues: {{important_count}}
-- Cleanup Recommendations: {{cleanup_count}}
+    <action>Cross-reference mapping:</action>
 
----
+    **For each template variable:**
 
-## 1. Standard Config Block Validation
+    1. Is there a matching template-output tag? (mark as MAPPED)
+    2. Is it a standard config variable? (mark as CONFIG_VAR - optional)
+    3. Is it unmapped? (mark as MISSING_OUTPUT)
 
-{{config_issues}}
+    **For each template-output tag:**
 
-**Status:** {{config_status}}
+    1. Is there a matching template variable? (mark as USED)
+    2. Is it orphaned? (mark as UNUSED_OUTPUT)
 
----
+    <action>Verify variable naming conventions:</action>
 
-## 2. YAML/Instruction/Template Alignment
+    - [ ] All template variables use snake_case
+    - [ ] Variable names are descriptive (not abbreviated)
+    - [ ] Standard config variables properly formatted
 
-{{alignment_issues}}
+    <action>Record any mapping issues</action>
+    <template-output>template_issues</template-output>
 
-**Variables Analyzed:** {{total_variables}}
-**Used in Instructions:** {{instruction_usage_count}}
-**Used in Template:** {{template_usage_count}}
-**Unused (Bloat):** {{bloat_count}}
+    <action if="template issues found">Add to issues list with severity: IMPORTANT</action>
 
----
+  </step>
 
-## 3. Config Variable Usage
+  <step n="8" goal="Generate comprehensive audit report">
+    <action>Compile all findings and calculate summary metrics</action>
 
-{{config_usage_issues}}
+    <action>Generate executive summary based on issue counts and severity levels</action>
+    <template-output>workflow_type</template-output>
+    <template-output>overall_status</template-output>
+    <template-output>critical_count</template-output>
+    <template-output>important_count</template-output>
+    <template-output>cleanup_count</template-output>
 
-**Communication Language:** {{comm_lang_status}}
-**User Name:** {{user_name_status}}
-**Output Folder:** {{output_folder_status}}
-**Date:** {{date_status}}
+    <action>Generate status summaries for each audit section</action>
+    <template-output>config_status</template-output>
+    <template-output>total_variables</template-output>
+    <template-output>instruction_usage_count</template-output>
+    <template-output>template_usage_count</template-output>
+    <template-output>bloat_count</template-output>
 
----
+    <action>Generate config variable usage status indicators</action>
+    <template-output>comm_lang_status</template-output>
+    <template-output>user_name_status</template-output>
+    <template-output>output_folder_status</template-output>
+    <template-output>date_status</template-output>
+    <template-output>nested_tag_count</template-output>
 
-## 4. Web Bundle Validation
+    <action>Generate web bundle metrics</action>
+    <template-output>web_bundle_exists</template-output>
+    <template-output>web_bundle_file_count</template-output>
+    <template-output>missing_files_count</template-output>
 
-{{web_bundle_issues}}
+    <action>Generate bloat metrics</action>
+    <template-output>bloat_percentage</template-output>
+    <template-output>cleanup_potential</template-output>
 
-**Web Bundle Present:** {{web_bundle_exists}}
-**Files Listed:** {{web_bundle_file_count}}
-**Missing Files:** {{missing_files_count}}
+    <action>Generate template mapping metrics</action>
+    <template-output>template_var_count</template-output>
+    <template-output>mapped_count</template-output>
+    <template-output>missing_mapping_count</template-output>
 
----
+    <action>Compile prioritized recommendations by severity</action>
+    <template-output>critical_recommendations</template-output>
+    <template-output>important_recommendations</template-output>
+    <template-output>cleanup_recommendations</template-output>
 
-## 5. Bloat Detection
+    <action>Display summary to {user_name} in {communication_language}</action>
+    <action>Provide path to full audit report: {output_folder}/audit-report-{{workflow_name}}-{{date}}.md</action>
 
-{{bloat_items}}
+    <ask>Would you like to:
 
-**Bloat Percentage:** {{bloat_percentage}}%
-**Cleanup Potential:** {{cleanup_potential}}
+    - View the full audit report
+    - Fix issues automatically (invoke edit-workflow)
+    - Audit another workflow
+    - Exit
+    </ask>
 
----
-
-## 6. Template Variable Mapping
-
-{{template_issues}}
-
-**Template Variables:** {{template_var_count}}
-**Mapped Correctly:** {{mapped_count}}
-**Missing Mappings:** {{missing_mapping_count}}
-
----
-
-## Recommendations
-
-### Critical (Fix Immediately)
-
-{{critical_recommendations}}
-
-### Important (Address Soon)
-
-{{important_recommendations}}
-
-### Cleanup (Nice to Have)
-
-{{cleanup_recommendations}}
-
----
-
-## Validation Checklist
-
-Use this checklist to verify fixes:
-
-- [ ] All standard config variables present and correct
-- [ ] No unused yaml fields (bloat removed)
-- [ ] Config variables used appropriately in instructions
-- [ ] Web bundle includes all dependencies
-- [ ] Template variables properly mapped
-- [ ] File structure follows v6 conventions
-
----
-
-## Next Steps
-
-1. Review critical issues and fix immediately
-2. Address important issues in next iteration
-3. Consider cleanup recommendations for optimization
-4. Re-run audit after fixes to verify improvements
-
----
-
-**Audit Complete** - Generated by audit-workflow v1.0
-```
-
-<action>Display summary to {user_name} in {communication_language}</action>
-<action>Provide path to full audit report</action>
-
-<ask>Would you like to:
-
-- View the full audit report
-- Fix issues automatically (invoke edit-workflow)
-- Audit another workflow
-- Exit
-  </ask>
-
-<template-output>audit_report_path</template-output>
-</step>
+  </step>
 
 </workflow>

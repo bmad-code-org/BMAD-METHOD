@@ -22,4 +22,6 @@ installed_path: "{project-root}/bmad/bmb/workflows/edit-workflow"
 template: false # This is an action workflow - no template needed
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
+
+standalone: true
 # Web bundle configuration

@@ -25,5 +25,7 @@ validation: "{installed_path}/checklist.md"
 # Output configuration
 default_output_file: "{output_folder}/module-brief-{{module_code}}-{{date}}.md"
 
+standalone: true
+
 # Web bundle configuration
 web_bundle: false # BMB workflows run locally in BMAD-METHOD project

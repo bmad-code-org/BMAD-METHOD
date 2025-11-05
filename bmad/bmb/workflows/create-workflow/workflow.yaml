@@ -35,4 +35,6 @@ workflow_template_path: "{installed_path}/workflow-template"
 # If standalone workflow: Save to custom_workflow_location/{{workflow_name}}
 module_output_folder: "{project-root}/bmad/{{target_module}}/workflows/{{workflow_name}}"
 standalone_output_folder: "{custom_workflow_location}/{{workflow_name}}"
+
+standalone: true
 # Web bundle configuration

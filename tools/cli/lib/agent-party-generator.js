@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 
 const AgentPartyGenerator = {
   /**
-   * Generate agent-party.xml content
+   * Generate agent-manifest.csv content
    * @param {Array} agentDetails - Array of agent details
    * @param {Object} options - Generation options
    * @returns {string} XML content
@@ -28,7 +28,7 @@ const AgentPartyGenerator = {
     let xmlContent = `<!-- Powered by BMAD-CORE™ -->
 <!-- Agent Manifest - Generated during BMAD ${forWeb ? 'bundling' : 'installation'} -->
 <!-- This file contains a summary of all ${forWeb ? 'bundled' : 'installed'} agents for quick reference -->
-<manifest id="bmad/_cfg/agent-party.xml" version="1.0" generated="${new Date().toISOString()}">
+<manifest id="bmad/_cfg/agent-manifest.csv" version="1.0" generated="${new Date().toISOString()}">
   <description>
     Complete roster of ${forWeb ? 'bundled' : 'installed'} BMAD agents with summarized personas for efficient multi-agent orchestration.
     Used by party-mode and other multi-agent coordination features.
@@ -193,7 +193,7 @@ const AgentPartyGenerator = {
   },
 
   /**
-   * Write agent-party.xml to file
+   * Write agent-manifest.csv to file
    */
   async writeAgentParty(filePath, agentDetails, options = {}) {
     const content = this.generateAgentParty(agentDetails, options);

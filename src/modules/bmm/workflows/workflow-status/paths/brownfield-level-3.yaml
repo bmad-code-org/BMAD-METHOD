@@ -7,15 +7,17 @@ field_type: "brownfield"
 description: "Complex integration with existing system architecture"
 
 phases:
-  - phase: 0
+  - prerequisite: true
     name: "Documentation"
     conditional: "if_undocumented"
+    note: "NOT a phase - prerequisite for brownfield without docs OR post-completion cleanup"
     workflows:
       - id: "document-project"
         required: true
         agent: "analyst"
         command: "document-project"
-        output: "Comprehensive codebase documentation"
+        output: "Comprehensive project documentation"
+        purpose: "Understand existing codebase before planning OR create superior final docs after Phase 4"
 
   - phase: 1
     name: "Analysis"
@@ -44,10 +46,14 @@ phases:
         agent: "pm"
         command: "prd"
         output: "Requirements with integration points"
-      - id: "ux-spec"
-        conditional: "if_has_ui"
+      - id: "validate-prd"
+        optional: true
         agent: "pm"
-        command: "ux-spec"
+        command: "validate-prd"
+      - id: "create-design"
+        conditional: "if_has_ui"
+        agent: "ux-designer"
+        command: "create-design"
         note: "Must align with existing UI patterns"
 
   - phase: 3
@@ -69,6 +75,10 @@ phases:
         agent: "architect"
         command: "create-architecture"
         note: "Extension of existing architecture"
+      - id: "validate-architecture"
+        optional: true
+        agent: "architect"
+        command: "validate-architecture"
       - id: "solutioning-gate-check"
         required: true
         agent: "architect"
@@ -77,59 +87,9 @@ phases:
   - phase: 4
     name: "Implementation"
     required: true
-    epic_loop: "for_each_epic"
-    epic_workflows:
-      - id: "tech-spec"
-        required: true
-        agent: "architect"
-        command: "tech-spec"
-        note: "Must respect existing patterns"
-    story_loop: "for_each_story_in_epic"
-    story_workflows:
-      - id: "create-story"
+    workflows:
+      - id: "sprint-planning"
         required: true
         agent: "sm"
-        command: "create-story"
-      - id: "story-context"
-        required: true
-        agent: "sm"
-        command: "story-context"
-        note: "Heavy emphasis on existing code context"
-      - id: "validate-story-context"
-        required: true
-        agent: "sm"
-        command: "validate-story-context"
-        note: "Ensure no breaking changes"
-      - id: "story-ready"
-        recommended: true
-        agent: "sm"
-        command: "story-ready"
-      - id: "dev-story"
-        required: true
-        agent: "dev"
-        command: "dev-story"
-      - id: "review-story"
-        required: true
-        agent: "dev"
-        command: "review-story"
-        note: "Check integration points"
-      - id: "correct-course"
-        conditional: "if_review_fails"
-        agent: "dev"
-        command: "correct-course"
-      - id: "story-approved"
-        required: true
-        agent: "dev"
-        command: "story-approved"
-    epic_completion:
-      - id: "integration-test"
-        required: true
-        agent: "dev"
-        command: "integration-test"
-      - id: "retrospective"
-        required: true
-        agent: "sm"
-        command: "retrospective"
-
-story_naming: "story-<epic>.<story>.md"
-brownfield_note: "All changes must integrate seamlessly with existing system"
+        command: "sprint-planning"
+        note: "Creates sprint plan with all stories - subsequent work tracked in sprint plan output, not workflow-status"

@@ -1,46 +1,19 @@
 const path = require('node:path');
-const { BaseIdeSetup } = require('./_base-ide');
+const fs = require('fs-extra');
 const chalk = require('chalk');
-const inquirer = require('inquirer');
+const { BaseIdeSetup } = require('./_base-ide');
+const { WorkflowCommandGenerator } = require('./workflow-command-generator');
+const { getAgentsFromBmad, getTasksFromBmad } = require('./shared/bmad-artifacts');
 
 /**
  * Cline IDE setup handler
- * Creates rules in .clinerules directory with ordering support
+ * Installs BMAD artifacts to .clinerules/workflows with flattened naming
  */
 class ClineSetup extends BaseIdeSetup {
   constructor() {
-    super('cline', 'Cline');
+    super('cline', 'Cline', true); // preferred IDE
     this.configDir = '.clinerules';
-    this.defaultOrder = {
-      core: 10,
-      bmm: 20,
-      cis: 30,
-      other: 99,
-    };
-  }
-
-  /**
-   * Collect configuration choices before installation
-   * @param {Object} options - Configuration options
-   * @returns {Object} Collected configuration
-   */
-  async collectConfiguration(options = {}) {
-    const response = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'ordering',
-        message: 'How should BMAD rules be ordered in Cline?',
-        choices: [
-          { name: 'By module (core first, then modules)', value: 'module' },
-          { name: 'By importance (dev agents first)', value: 'importance' },
-          { name: 'Alphabetical (simple A-Z ordering)', value: 'alphabetical' },
-          { name: "Custom (I'll reorder manually)", value: 'custom' },
-        ],
-        default: 'module',
-      },
-    ]);
-
-    return { ordering: response.ordering };
+    this.workflowsDir = 'workflows';
   }
 
   /**
@@ -52,249 +25,198 @@ class ClineSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Create .clinerules directory
-    const clineRulesDir = path.join(projectDir, this.configDir);
-    await this.ensureDir(clineRulesDir);
+    // Create .clinerules/workflows directory
+    const clineDir = path.join(projectDir, this.configDir);
+    const workflowsDir = path.join(clineDir, this.workflowsDir);
 
-    // Get agents and tasks
-    const agents = await this.getAgents(bmadDir);
-    const tasks = await this.getTasks(bmadDir);
+    await this.ensureDir(workflowsDir);
 
-    // Use pre-collected configuration if available
-    const config = options.preCollectedConfig || {};
-    const orderingStrategy = config.ordering || options.ordering || 'module';
+    // Clear old BMAD files
+    await this.clearOldBmadFiles(workflowsDir);
 
-    // Process agents as rules with ordering
-    let ruleCount = 0;
-    for (const agent of agents) {
-      const content = await this.readFile(agent.path);
-      const order = this.getOrder(agent, orderingStrategy);
-      const processedContent = this.createAgentRule(agent, content, projectDir);
+    // Collect all artifacts
+    const { artifacts, counts } = await this.collectClineArtifacts(projectDir, bmadDir, options);
 
-      // Use numeric prefix for ordering
-      const prefix = order.toString().padStart(2, '0');
-      const targetPath = path.join(clineRulesDir, `${prefix}-${agent.module}-${agent.name}.md`);
-
-      await this.writeFile(targetPath, processedContent);
-      ruleCount++;
-    }
-
-    // Process tasks with ordering
-    for (const task of tasks) {
-      const content = await this.readFile(task.path);
-      const order = this.getTaskOrder(task, orderingStrategy);
-      const processedContent = this.createTaskRule(task, content);
-
-      // Tasks get higher order numbers to appear after agents
-      const prefix = (order + 50).toString().padStart(2, '0');
-      const targetPath = path.join(clineRulesDir, `${prefix}-task-${task.module}-${task.name}.md`);
-
-      await this.writeFile(targetPath, processedContent);
-      ruleCount++;
-    }
+    // Write flattened files
+    const written = await this.flattenAndWriteArtifacts(artifacts, workflowsDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${ruleCount} rules created in ${path.relative(projectDir, clineRulesDir)}`));
-    console.log(chalk.dim(`  - Ordering: ${orderingStrategy}`));
+    console.log(chalk.dim(`  - ${counts.agents} agents installed`));
+    console.log(chalk.dim(`  - ${counts.tasks} tasks installed`));
+    console.log(chalk.dim(`  - ${counts.workflows} workflow commands installed`));
+    if (counts.workflowLaunchers > 0) {
+      console.log(chalk.dim(`  - ${counts.workflowLaunchers} workflow launchers installed`));
+    }
+    console.log(chalk.dim(`  - ${written} files written to ${path.relative(projectDir, workflowsDir)}`));
 
-    // Important message about toggle system
-    console.log(chalk.yellow('\n  ⚠️  IMPORTANT: Cline Toggle System'));
-    console.log(chalk.cyan('  Rules are OFF by default to avoid context pollution'));
-    console.log(chalk.dim('  To use BMAD agents:'));
-    console.log(chalk.dim('    1. Click rules icon below chat input'));
-    console.log(chalk.dim('    2. Toggle ON the specific agent you need'));
-    console.log(chalk.dim('    3. Type @{agent-name} to activate'));
-    console.log(chalk.dim('    4. Toggle OFF when done to free context'));
-    console.log(chalk.dim('\n  💡 Best practice: Only enable 1-2 agents at a time'));
+    // Usage instructions
+    console.log(chalk.yellow('\n  ⚠️  How to Use Cline Workflows'));
+    console.log(chalk.cyan('  BMAD workflows are available as slash commands in Cline'));
+    console.log(chalk.dim('  Usage:'));
+    console.log(chalk.dim('    - Type / to see available commands'));
+    console.log(chalk.dim('    - All BMAD items start with "bmad-"'));
+    console.log(chalk.dim('    - Example: /bmad-bmm-agents-pm'));
 
     return {
       success: true,
-      rules: ruleCount,
-      ordering: orderingStrategy,
+      agents: counts.agents,
+      tasks: counts.tasks,
+      workflows: counts.workflows,
+      workflowLaunchers: counts.workflowLaunchers,
+      written,
     };
   }
 
   /**
-   * Ask user about rule ordering strategy
+   * Detect Cline installation by checking for .clinerules/workflows directory
    */
-  async askOrderingStrategy() {
-    const response = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'ordering',
-        message: 'How should BMAD rules be ordered in Cline?',
-        choices: [
-          { name: 'By module (core first, then modules)', value: 'module' },
-          { name: 'By importance (dev agents first)', value: 'importance' },
-          { name: 'Alphabetical (simple A-Z ordering)', value: 'alphabetical' },
-          { name: "Custom (I'll reorder manually)", value: 'custom' },
-        ],
-        default: 'module',
-      },
-    ]);
+  async detect(projectDir) {
+    const workflowsDir = path.join(projectDir, this.configDir, this.workflowsDir);
 
-    return response.ordering;
+    if (!(await fs.pathExists(workflowsDir))) {
+      return false;
+    }
+
+    const entries = await fs.readdir(workflowsDir);
+    return entries.some((entry) => entry.startsWith('bmad-'));
   }
 
   /**
-   * Get order number for an agent based on strategy
+   * Collect all artifacts for Cline export
    */
-  getOrder(agent, strategy) {
-    switch (strategy) {
-      case 'module': {
-        return this.defaultOrder[agent.module] || this.defaultOrder.other;
+  async collectClineArtifacts(projectDir, bmadDir, options = {}) {
+    const selectedModules = options.selectedModules || [];
+    const artifacts = [];
+
+    // Get agents
+    const agents = await getAgentsFromBmad(bmadDir, selectedModules);
+    for (const agent of agents) {
+      const content = await this.readAndProcessWithProject(
+        agent.path,
+        {
+          module: agent.module,
+          name: agent.name,
+        },
+        projectDir,
+      );
+
+      artifacts.push({
+        type: 'agent',
+        module: agent.module,
+        sourcePath: agent.path,
+        relativePath: path.join(agent.module, 'agents', `${agent.name}.md`),
+        content,
+      });
+    }
+
+    // Get tasks
+    const tasks = await getTasksFromBmad(bmadDir, selectedModules);
+    for (const task of tasks) {
+      const content = await this.readAndProcessWithProject(
+        task.path,
+        {
+          module: task.module,
+          name: task.name,
+        },
+        projectDir,
+      );
+
+      artifacts.push({
+        type: 'task',
+        module: task.module,
+        sourcePath: task.path,
+        relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
+        content,
+      });
+    }
+
+    // Get workflows
+    const workflowGenerator = new WorkflowCommandGenerator();
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+    artifacts.push(...workflowArtifacts);
+
+    return {
+      artifacts,
+      counts: {
+        agents: agents.length,
+        tasks: tasks.length,
+        workflows: workflowCounts.commands,
+        workflowLaunchers: workflowCounts.launchers,
+      },
+    };
+  }
+
+  /**
+   * Flatten file path to bmad-module-type-name.md format
+   */
+  flattenFilename(relativePath) {
+    const sanitized = relativePath.replaceAll(/[\\/]/g, '-');
+    return `bmad-${sanitized}`;
+  }
+
+  /**
+   * Write all artifacts with flattened names
+   */
+  async flattenAndWriteArtifacts(artifacts, destDir) {
+    let written = 0;
+
+    for (const artifact of artifacts) {
+      const flattenedName = this.flattenFilename(artifact.relativePath);
+      const targetPath = path.join(destDir, flattenedName);
+      await fs.writeFile(targetPath, artifact.content);
+      written++;
+    }
+
+    return written;
+  }
+
+  /**
+   * Clear old BMAD files from the workflows directory
+   */
+  async clearOldBmadFiles(destDir) {
+    if (!(await fs.pathExists(destDir))) {
+      return;
+    }
+
+    const entries = await fs.readdir(destDir);
+
+    for (const entry of entries) {
+      if (!entry.startsWith('bmad-')) {
+        continue;
       }
 
-      case 'importance': {
-        // Prioritize certain agent types
-        if (agent.name.includes('dev') || agent.name.includes('code')) return 10;
-        if (agent.name.includes('architect') || agent.name.includes('design')) return 15;
-        if (agent.name.includes('test') || agent.name.includes('qa')) return 20;
-        if (agent.name.includes('doc') || agent.name.includes('write')) return 25;
-        if (agent.name.includes('review')) return 30;
-        return 40;
-      }
-
-      case 'alphabetical': {
-        // Use a fixed number, files will sort alphabetically by name
-        return 50;
-      }
-
-      default: {
-        // 'custom' or any other value - user will reorder manually
-        return 99;
+      const entryPath = path.join(destDir, entry);
+      const stat = await fs.stat(entryPath);
+      if (stat.isFile()) {
+        await fs.remove(entryPath);
+      } else if (stat.isDirectory()) {
+        await fs.remove(entryPath);
       }
     }
   }
 
   /**
-   * Get order number for a task
+   * Read and process file with project-specific paths
    */
-  getTaskOrder(task, strategy) {
-    // Tasks always come after agents
-    return this.getOrder(task, strategy) + 50;
-  }
-
-  /**
-   * Create rule content for an agent
-   */
-  createAgentRule(agent, content, projectDir) {
-    // Extract metadata
-    const titleMatch = content.match(/title="([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
-
-    // Extract YAML content
-    const yamlMatch = content.match(/```ya?ml\r?\n([\s\S]*?)```/);
-    const yamlContent = yamlMatch ? yamlMatch[1] : content;
-
-    // Get relative path
-    const relativePath = path.relative(projectDir, agent.path).replaceAll('\\', '/');
-
-    let ruleContent = `# ${title} Agent
-
-This rule defines the ${title} persona and project standards.
-
-## Role Definition
-
-When the user types \`@${agent.name}\`, adopt this persona and follow these guidelines:
-
-\`\`\`yaml
-${yamlContent}
-\`\`\`
-
-## Project Standards
-
-- Always maintain consistency with project documentation in BMAD directories
-- Follow the agent's specific guidelines and constraints
-- Update relevant project files when making changes
-- Reference the complete agent definition in [${relativePath}](${relativePath})
-
-## Usage
-
-Type \`@${agent.name}\` to activate this ${title} persona.
-
-## Module
-
-Part of the BMAD ${agent.module.toUpperCase()} module.
-`;
-
-    return ruleContent;
-  }
-
-  /**
-   * Create rule content for a task
-   */
-  createTaskRule(task, content) {
-    // Extract task name
-    const nameMatch = content.match(/<name>([^<]+)<\/name>/);
-    const taskName = nameMatch ? nameMatch[1] : this.formatTitle(task.name);
-
-    let ruleContent = `# ${taskName} Task
-
-This rule defines the ${taskName} task workflow.
-
-## Task Workflow
-
-When this task is referenced, execute the following steps:
-
-${content}
-
-## Project Integration
-
-- This task follows BMAD Method standards
-- Ensure all outputs align with project conventions
-- Update relevant documentation after task completion
-
-## Usage
-
-Reference with \`@task-${task.name}\` to access this workflow.
-
-## Module
-
-Part of the BMAD ${task.module.toUpperCase()} module.
-`;
-
-    return ruleContent;
-  }
-
-  /**
-   * Format name as title
-   */
-  formatTitle(name) {
-    return name
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+  async readAndProcessWithProject(filePath, metadata, projectDir) {
+    const content = await fs.readFile(filePath, 'utf8');
+    return super.processContent(content, metadata, projectDir);
   }
 
   /**
    * Cleanup Cline configuration
    */
   async cleanup(projectDir) {
-    const fs = require('fs-extra');
-    const clineRulesDir = path.join(projectDir, this.configDir);
+    const workflowsDir = path.join(projectDir, this.configDir, this.workflowsDir);
+    await this.clearOldBmadFiles(workflowsDir);
+    console.log(chalk.dim(`Removed ${this.name} BMAD configuration`));
+  }
 
-    if (await fs.pathExists(clineRulesDir)) {
-      // Remove all numbered BMAD rules
-      const files = await fs.readdir(clineRulesDir);
-      let removed = 0;
-
-      for (const file of files) {
-        // Check if it matches our naming pattern (XX-module-name.md)
-        if (/^\d{2}-.*\.md$/.test(file)) {
-          const filePath = path.join(clineRulesDir, file);
-          const content = await fs.readFile(filePath, 'utf8');
-
-          // Verify it's a BMAD rule
-          if (content.includes('BMAD') && content.includes('Module')) {
-            await fs.remove(filePath);
-            removed++;
-          }
-        }
-      }
-
-      console.log(chalk.dim(`Removed ${removed} BMAD rules from Cline`));
-    }
+  /**
+   * Utility: Ensure directory exists
+   */
+  async ensureDir(dirPath) {
+    await fs.ensureDir(dirPath);
   }
 }
 

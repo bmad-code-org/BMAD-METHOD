@@ -1,3 +1,7 @@
+---
+description: 'Interactive workflow to build BMAD Core compliant agents (YAML source compiled to .md during install) with optional brainstorming, persona development, and command structure'
+---
+
 # create-agent
 
 IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:

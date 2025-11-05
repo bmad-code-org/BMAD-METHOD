@@ -296,7 +296,7 @@ test('should do something', async ({ {fixtureName} }) => {
 4. **Work one test at a time** (red → green for each)
 5. **Share progress** in daily standup
 6. **When all tests pass**, refactor code for quality
-7. **When refactoring complete**, run `bmad sm story-approved` to move story to DONE
+7. **When refactoring complete**, run `bmad sm story-done` to move story to DONE
 
 ---
 

@@ -268,4 +268,4 @@ For issues or questions:
 
 ---
 
-_Part of the BMad Method v5 - Creative Ideation and Synthesis (CIS) Module_
+_Part of the BMad Method v6 - Creative Ideation and Synthesis (CIS) Module_

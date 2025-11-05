@@ -27,19 +27,37 @@ class UI {
     const bmadDir = path.join(confirmedDirectory, 'bmad');
     const hasExistingInstall = await fs.pathExists(bmadDir);
 
+    // Track action type (only set if there's an existing installation)
+    let actionType;
+
     // Only show action menu if there's an existing installation
     if (hasExistingInstall) {
-      const { actionType } = await inquirer.prompt([
+      const promptResult = await inquirer.prompt([
         {
           type: 'list',
           name: 'actionType',
           message: 'What would you like to do?',
           choices: [
-            { name: 'Update BMAD Installation', value: 'install' },
+            { name: 'Quick Update (Settings Preserved)', value: 'quick-update' },
+            { name: 'Modify BMAD Installation (Confirm or change each setting)', value: 'update' },
+            { name: 'Remove BMad Folder and Reinstall (Full clean install - BMad Customization Will Be Lost)', value: 'reinstall' },
             { name: 'Compile Agents (Quick rebuild of all agent .md files)', value: 'compile' },
+            { name: 'Cancel', value: 'cancel' },
           ],
+          default: 'quick-update',
         },
       ]);
+
+      // Extract actionType from prompt result
+      actionType = promptResult.actionType;
+
+      // Handle quick update separately
+      if (actionType === 'quick-update') {
+        return {
+          actionType: 'quick-update',
+          directory: confirmedDirectory,
+        };
+      }
 
       // Handle agent compilation separately
       if (actionType === 'compile') {
@@ -48,7 +66,26 @@ class UI {
           directory: confirmedDirectory,
         };
       }
+
+      // Handle cancel
+      if (actionType === 'cancel') {
+        return {
+          actionType: 'cancel',
+          directory: confirmedDirectory,
+        };
+      }
+
+      // Handle reinstall - DON'T return early, let it flow through configuration collection
+      // The installer will handle deletion when it sees actionType === 'reinstall'
+      // For now, just note that we're in reinstall mode and continue below
+
+      // If actionType === 'update' or 'reinstall', continue with normal flow below
     }
+
+    // Collect IDE tool selection EARLY (before module configuration)
+    // This allows users to make all decisions upfront before file copying begins
+    const toolSelection = await this.promptToolSelection(confirmedDirectory, []);
+
     const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
     const coreConfig = await this.collectCoreConfig(confirmedDirectory);
     const moduleChoices = await this.getModuleChoices(installedModuleIds);
@@ -59,13 +96,13 @@ class UI {
     CLIUtils.displayModuleComplete('core', false); // false = don't clear the screen again
 
     return {
-      actionType: 'install', // Explicitly set action type
+      actionType: actionType || 'update', // Preserve reinstall or update action
       directory: confirmedDirectory,
       installCore: true, // Always install core
       modules: selectedModules,
-      // IDE selection moved to after module configuration
-      ides: [],
-      skipIde: true, // Will be handled later
+      // IDE selection collected early, will be configured later
+      ides: toolSelection.ides,
+      skipIde: toolSelection.skipIde,
       coreConfig: coreConfig, // Pass collected core config to installer
     };
   }
@@ -99,6 +136,11 @@ class UI {
     if (configuredIdes.length > 0) {
       ideChoices.push(new inquirer.Separator('── Previously Configured ──'));
       for (const ideValue of configuredIdes) {
+        // Skip empty or invalid IDE values
+        if (!ideValue || typeof ideValue !== 'string') {
+          continue;
+        }
+
         // Find the IDE in either preferred or other lists
         const preferredIde = preferredIdes.find((ide) => ide.value === ideValue);
         const otherIde = otherIdes.find((ide) => ide.value === ideValue);
@@ -111,6 +153,9 @@ class UI {
             checked: true, // Previously configured IDEs are checked by default
           });
           processedIdes.add(ide.value);
+        } else {
+          // Warn about unrecognized IDE (but don't fail)
+          console.log(chalk.yellow(`⚠️  Previously configured IDE '${ideValue}' is no longer available`));
         }
       }
     }

@@ -10,7 +10,8 @@
   <flow>
     <step n="1" title="Setup">
       <action>If checklist not provided, load checklist.md from workflow location</action>
-      <action>If document not provided, ask user: "Which document should I validate?"</action>
+      <action>Try to fuzzy match for files similar to the input document name or if user did not provide the document. If document not
+        provided or unsure, ask user: "Which document should I validate?"</action>
       <action>Load both the checklist and document</action>
     </step>
 

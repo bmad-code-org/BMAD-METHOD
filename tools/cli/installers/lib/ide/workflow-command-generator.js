@@ -24,13 +24,16 @@ class WorkflowCommandGenerator {
       return { generated: 0 };
     }
 
+    // Filter to only standalone workflows
+    const standaloneWorkflows = workflows.filter((w) => w.standalone === 'true' || w.standalone === true);
+
     // Base commands directory
     const baseCommandsDir = path.join(projectDir, '.claude', 'commands', 'bmad');
 
     let generatedCount = 0;
 
-    // Generate a command file for each workflow, organized by module
-    for (const workflow of workflows) {
+    // Generate a command file for each standalone workflow, organized by module
+    for (const workflow of standaloneWorkflows) {
       const moduleWorkflowsDir = path.join(baseCommandsDir, workflow.module, 'workflows');
       await fs.ensureDir(moduleWorkflowsDir);
 
@@ -42,7 +45,7 @@ class WorkflowCommandGenerator {
     }
 
     // Also create a workflow launcher README in each module
-    const groupedWorkflows = this.groupWorkflowsByModule(workflows);
+    const groupedWorkflows = this.groupWorkflowsByModule(standaloneWorkflows);
     await this.createModuleWorkflowLaunchers(baseCommandsDir, groupedWorkflows);
 
     return { generated: generatedCount };
@@ -55,9 +58,12 @@ class WorkflowCommandGenerator {
       return { artifacts: [], counts: { commands: 0, launchers: 0 } };
     }
 
+    // Filter to only standalone workflows
+    const standaloneWorkflows = workflows.filter((w) => w.standalone === 'true' || w.standalone === true);
+
     const artifacts = [];
 
-    for (const workflow of workflows) {
+    for (const workflow of standaloneWorkflows) {
       const commandContent = await this.generateCommandContent(workflow, bmadDir);
       artifacts.push({
         type: 'workflow-command',
@@ -68,7 +74,7 @@ class WorkflowCommandGenerator {
       });
     }
 
-    const groupedWorkflows = this.groupWorkflowsByModule(workflows);
+    const groupedWorkflows = this.groupWorkflowsByModule(standaloneWorkflows);
     for (const [module, launcherContent] of Object.entries(this.buildModuleWorkflowLaunchers(groupedWorkflows))) {
       artifacts.push({
         type: 'workflow-launcher',
@@ -82,7 +88,7 @@ class WorkflowCommandGenerator {
     return {
       artifacts,
       counts: {
-        commands: workflows.length,
+        commands: standaloneWorkflows.length,
         launchers: Object.keys(groupedWorkflows).length,
       },
     };

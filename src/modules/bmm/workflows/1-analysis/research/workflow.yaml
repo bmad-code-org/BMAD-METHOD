@@ -30,6 +30,8 @@ template_technical: "{installed_path}/template-technical.md"
 # Output configuration (dynamic based on research type selected in router)
 default_output_file: "{output_folder}/research-{{research_type}}-{{date}}.md"
 
+standalone: true
+
 web_bundle:
   name: "research"
   description: "Adaptive research workflow supporting multiple research types: market research, deep research prompt generation, technical/architecture evaluation, competitive intelligence, user research, and domain analysis"

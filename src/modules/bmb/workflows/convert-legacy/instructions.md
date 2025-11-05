@@ -1,4 +1,4 @@
-# Convert Legacy - v4 to v5 Conversion Instructions
+# Convert Legacy - v4 to v6 Conversion Instructions
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <parameter name="You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/convert-legacy/workflow.yaml</critical>
@@ -56,19 +56,18 @@ For Modules:
 - Installation requirements
 
 <action>Create a conversion map of what needs to be transformed</action>
-<action>Map v4 patterns to v5 equivalents:
+<action>Map v4 patterns to v6 equivalents:
 
-- v4 Task + Template → v5 Workflow (folder with workflow.yaml, instructions.md, template.md)
-- v4 Agent YAML → v5 Agent YAML format
-- v4 Commands → v5 <menu> with proper handlers
-- v4 Dependencies → v5 workflow references or data files
+- v4 Task + Template → v6 Workflow (folder with workflow.yaml, instructions.md, template.md)
+- v4 Agent YAML → v6 Agent YAML format
+- v4 Commands → v6 <menu> with proper handlers
+- v4 Dependencies → v6 workflow references or data files
   </action>
   </step>
 
 <step n="3" goal="Determine Target Module and Location">
 <ask>Which module should this belong to? (eg. bmm, bmb, cis, bmm-legacy, or custom)</ask>
-<check>If custom module:</check>
-  <ask>Enter custom module code (kebab-case):</ask>
+<action if="custom module"><ask>Enter custom module code (kebab-case):</ask></action>
 <action>Determine installation path based on type and module</action>
 <critical>IMPORTANT: All paths must use final BMAD installation locations, not src paths!</critical>
 <action>Show user the target location: {project-root}/bmad/{{target_module}}/{{item_type}}/{{item_name}}</action>
@@ -79,16 +78,19 @@ For Modules:
 <step n="4" goal="Choose Conversion Strategy">
 <action>Based on item type and complexity, choose approach:</action>
 
-<check>If agent conversion:</check>
-<check>If simple agent (basic persona + commands):</check>
-<action>Use direct conversion to v5 agent YAML format</action>
-<goto step="5a">Direct Agent Conversion</goto>
-<check>If complex agent with embedded workflows:</check>
-<action>Plan to invoke create-agent workflow</action>
-<goto step="5b">Workflow-Assisted Agent Creation</goto>
+<check if="agent conversion">
+  <check if="simple agent (basic persona + commands)">
+    <action>Use direct conversion to v6 agent YAML format</action>
+    <goto step="5a">Direct Agent Conversion</goto>
+  </check>
+  <check if="complex agent with embedded workflows">
+    <action>Plan to invoke create-agent workflow</action>
+    <goto step="5b">Workflow-Assisted Agent Creation</goto>
+  </check>
+</check>
 
-<check>If template or task conversion to workflow:</check>
-<action>Analyze the v4 item to determine workflow type:</action>
+<check if="template or task conversion to workflow">
+  <action>Analyze the v4 item to determine workflow type:</action>
 
 - Does it generate a specific document type? → Document workflow
 - Does it produce structured output files? → Document workflow
@@ -104,34 +106,34 @@ For Modules:
 4. Meta-workflow (coordinates other workflows)
    Select 1-4:</ask>
 
-<check>If template conversion:</check>
-<goto step="5c">Template-to-Workflow Conversion</goto>
-<check>If task conversion:</check>
-<goto step="5e">Task-to-Workflow Conversion</goto>
+<action if="template conversion"><goto step="5c">Template-to-Workflow Conversion</goto></action>
+<action if="task conversion"><goto step="5e">Task-to-Workflow Conversion</goto></action>
+</check>
 
-<check>If full module conversion:</check>
-<action>Plan to invoke create-module workflow</action>
-<goto step="5d">Module Creation</goto>
+<check if="full module conversion">
+  <action>Plan to invoke create-module workflow</action>
+  <goto step="5d">Module Creation</goto>
+</check>
 </step>
 
 <step n="5a" goal="Direct Agent Conversion" optional="true">
-<action>Transform v4 YAML agent to v5 YAML format:</action>
+<action>Transform v4 YAML agent to v6 YAML format:</action>
 
 1. Convert agent metadata structure:
-   - v4 `agent.name` → v5 `agent.metadata.name`
-   - v4 `agent.id` → v5 `agent.metadata.id`
-   - v4 `agent.title` → v5 `agent.metadata.title`
-   - v4 `agent.icon` → v5 `agent.metadata.icon`
-   - Add v5 `agent.metadata.module` field
+   - v4 `agent.name` → v6 `agent.metadata.name`
+   - v4 `agent.id` → v6 `agent.metadata.id`
+   - v4 `agent.title` → v6 `agent.metadata.title`
+   - v4 `agent.icon` → v6 `agent.metadata.icon`
+   - Add v6 `agent.metadata.module` field
 
 2. Transform persona structure:
-   - v4 `persona.role` → v5 `agent.persona.role` (keep as YAML string)
-   - v4 `persona.style` → v5 `agent.persona.communication_style`
-   - v4 `persona.identity` → v5 `agent.persona.identity`
-   - v4 `persona.core_principles` → v5 `agent.persona.principles` (as array)
+   - v4 `persona.role` → v6 `agent.persona.role` (keep as YAML string)
+   - v4 `persona.style` → v6 `agent.persona.communication_style`
+   - v4 `persona.identity` → v6 `agent.persona.identity`
+   - v4 `persona.core_principles` → v6 `agent.persona.principles` (as array)
 
 3. Convert commands to menu:
-   - v4 `commands:` list → v5 `agent.menu:` array
+   - v4 `commands:` list → v6 `agent.menu:` array
    - Each command becomes menu item with:
      - `trigger:` (without \* prefix - added at build)
      - `description:`
@@ -139,18 +141,18 @@ For Modules:
    - Map task references to workflow paths
    - Map template references to workflow invocations
 
-4. Add v5-specific sections (in YAML):
+4. Add v6-specific sections (in YAML):
    - `agent.prompts:` array for inline prompts (if using action: "#id")
    - `agent.critical_actions:` array for startup requirements
    - `agent.activation_rules:` for universal agent rules
 
 5. Handle dependencies and paths:
    - Convert task dependencies to workflow references
-   - Map template dependencies to v5 workflows
+   - Map template dependencies to v6 workflows
    - Preserve checklist and data file references
    - CRITICAL: All paths must use {project-root}/bmad/{{module}}/ NOT src/
 
-<action>Generate the converted v5 agent YAML file (.agent.yaml)</action>
+<action>Generate the converted v6 agent YAML file (.agent.yaml)</action>
 <action>Example path conversions:
 
 - exec="{project-root}/bmad/{{target_module}}/tasks/task-name.md"
@@ -182,7 +184,7 @@ For Modules:
 </step>
 
 <step n="5c" goal="Template-to-Workflow Conversion" optional="true">
-<action>Convert v4 Template (YAML) to v5 Workflow:</action>
+<action>Convert v4 Template (YAML) to v6 Workflow:</action>
 
 1. Extract template metadata:
    - Template id, name, version → workflow.yaml name/description
@@ -202,7 +204,7 @@ For Modules:
    - Nested sections → hierarchical markdown
 
 4. Handle v4 create-doc.md task integration:
-   - Elicitation methods (1-9 menu) → convert to v5 elicitation
+   - Elicitation methods (1-9 menu) → convert to v6 elicitation
    - Agent permissions → note in instructions
    - Processing flow → integrate into workflow steps
 
@@ -247,7 +249,7 @@ date: system-generated
 </step>
 
 <step n="5e" goal="Task-to-Workflow Conversion" optional="true">
-<action>Convert v4 Task (Markdown) to v5 Workflow:</action>
+<action>Convert v4 Task (Markdown) to v6 Workflow:</action>
 
 1. Analyze task purpose and output:
    - Does it generate documents? → Create template.md
@@ -259,21 +261,23 @@ date: system-generated
    - Execution notices and critical rules → workflow.yaml metadata
    - Step-by-step instructions → instructions.md steps
    - Decision trees and branching → flow control tags
-   - User interaction patterns → appropriate v5 tags
+   - User interaction patterns → appropriate v6 tags
 
 3. Based on confirmed workflow type:
-   <check>If Document workflow:</check>
+   <check if="Document workflow">
    - Create template.md from output patterns
    - Map generation steps to instructions
-   - Add <template-output> tags for sections
+   - Add template-output tags for sections
+     </check>
 
-   <check>If Action workflow:</check>
-   - Set template: false in workflow.yaml
-   - Focus on action sequences in instructions
-   - Preserve execution logic
+   <check if="Action workflow">
+     - Set template: false in workflow.yaml
+     - Focus on action sequences in instructions
+     - Preserve execution logic
+   </check>
 
 4. Handle special v4 patterns:
-   - 1-9 elicitation menus → v5 <invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+   - 1-9 elicitation menus → v6 <invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
    - Agent permissions → note in instructions
    - YOLO mode → autonomous flag or optional steps
    - Critical notices → workflow.yaml comments
@@ -317,7 +321,7 @@ For Agents:
 For Workflows:
 
 - [ ] Valid YAML syntax
-- [ ] Instructions follow v5 conventions
+- [ ] Instructions follow v6 conventions
 - [ ] Template variables match
 - [ ] File structure correct
 
@@ -341,15 +345,16 @@ For Modules:
 
 <action>Show validation results to user</action>
 <ask>Any issues to fix before finalizing? (y/n)</ask>
-<check>If yes:</check>
+<check if="yes">
 <action>Address specific issues</action>
 <goto step="6">Re-validate</goto>
+</check>
 </step>
 
 <step n="7" goal="Migration Report">
 <action>Generate conversion report showing:</action>
 - Original v4 location
-- New v5 location
+- New v6 location
 - Items converted
 - Any manual adjustments needed
 - Warnings or notes
@@ -360,15 +365,13 @@ For Modules:
 
 <step n="8" goal="Cleanup and Finalize">
 <ask>Archive original v4 files? (y/n)</ask>
-<check>If yes:</check>
-  <action>Move v4 files to: {project-root}/archive/v4-legacy/{{date}}/</action>
+<action if="yes">Move v4 files to: {project-root}/archive/v4-legacy/{{date}}/</action>
 
 <action>Show user the final converted items and their locations</action>
 <action>Provide any post-conversion instructions or recommendations</action>
 
 <ask>Would you like to convert another legacy item? (y/n)</ask>
-<check>If yes:</check>
-<goto step="1">Start new conversion</goto>
+<action if="yes"><goto step="1">Start new conversion</goto></action>
 </step>
 
 </workflow>

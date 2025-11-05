@@ -34,10 +34,14 @@ phases:
         agent: "pm"
         command: "prd"
         output: "Creates PRD with epics.md and story list"
-      - id: "ux-spec"
+      - id: "validate-prd"
+        optional: true
+        agent: "pm"
+        command: "validate-prd"
+      - id: "create-design"
         conditional: "if_has_ui"
-        agent: "ux-expert"
-        command: "ux-spec"
+        agent: "ux-designer"
+        command: "create-design"
       - id: "tech-spec"
         optional: true
         agent: "pm"
@@ -53,6 +57,10 @@ phases:
         agent: "architect"
         command: "create-architecture"
         output: "System-wide architecture document"
+      - id: "validate-architecture"
+        optional: true
+        agent: "architect"
+        command: "validate-architecture"
       - id: "solutioning-gate-check"
         required: true
         agent: "architect"
@@ -62,43 +70,9 @@ phases:
   - phase: 4
     name: "Implementation"
     required: true
-    loop_type: "for_each_story"
     workflows:
-      - id: "create-story"
+      - id: "sprint-planning"
         required: true
         agent: "sm"
-        command: "create-story"
-      - id: "story-context"
-        required: true
-        agent: "sm"
-        command: "story-context"
-      - id: "validate-story-context"
-        optional: true
-        agent: "sm"
-        command: "validate-story-context"
-      - id: "story-ready"
-        optional: true
-        agent: "sm"
-        command: "story-ready"
-      - id: "dev-story"
-        required: true
-        agent: "dev"
-        command: "dev-story"
-      - id: "review-story"
-        optional: true
-        agent: "dev"
-        command: "review-story"
-      - id: "story-approved"
-        required: true
-        agent: "dev"
-        command: "story-approved"
-    epic_completion:
-      - id: "retrospective"
-        optional: true
-        agent: "sm"
-        command: "retrospective"
-        note: "After each epic completes"
-
-story_naming: "story-<epic>.<story>.md"
-story_example: "story-1.1.md, story-2.3.md"
-epic_structure: "Numbered epics with numbered stories"
+        command: "sprint-planning"
+        note: "Creates sprint plan with all stories - subsequent work tracked in sprint plan output, not workflow-status"

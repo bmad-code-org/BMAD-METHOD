@@ -36,6 +36,8 @@ recommended_inputs:
   - bug_report: "Bug description or issue ticket"
   - feature_request: "Brief feature description"
 
+standalone: true
+
 web_bundle:
   name: "tech-spec-sm"
   description: "Technical specification workflow for Level 0-1 projects. Creates focused tech spec with story generation. Level 0: tech-spec + user story. Level 1: tech-spec + epic/stories."

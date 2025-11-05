@@ -50,6 +50,10 @@ phases:
         agent: "architect"
         command: "create-architecture"
         note: "Engine architecture, networking, systems"
+      - id: "validate-architecture"
+        optional: true
+        agent: "architect"
+        command: "validate-architecture"
       - id: "solutioning-gate-check"
         required: true
         agent: "architect"
@@ -58,66 +62,12 @@ phases:
   - phase: 4
     name: "Implementation"
     required: true
-    note: "Implementation varies by game complexity"
-    level_based_implementation:
-      level_0_1:
-        story_loop: "for_each_story"
-        workflows:
-          - id: "create-story"
-            required: true
-            agent: "sm"
-          - id: "story-context"
-            required: true
-            agent: "sm"
-          - id: "dev-story"
-            required: true
-            agent: "dev"
-          - id: "story-approved"
-            required: true
-            agent: "dev"
-      level_2_4:
-        feature_loop: "for_each_feature"
-        feature_workflows:
-          - id: "tech-spec"
-            optional: true
-            agent: "architect"
-            note: "Per major feature"
-        story_loop: "for_each_story_in_feature"
-        story_workflows:
-          - id: "create-story"
-            required: true
-            agent: "sm"
-          - id: "story-context"
-            required: true
-            agent: "sm"
-          - id: "validate-story-context"
-            optional: true
-            agent: "sm"
-          - id: "dev-story"
-            required: true
-            agent: "dev"
-          - id: "review-story"
-            recommended: true
-            agent: "dev"
-          - id: "story-approved"
-            required: true
-            agent: "dev"
-        feature_completion:
-          - id: "playtest"
-            required: true
-            agent: "game-designer"
-            command: "playtest"
-          - id: "retrospective"
-            optional: true
-            agent: "sm"
-
-story_naming:
-  level_0_1: "story-<feature>.md"
-  level_2_4: "story-<feature>.<n>.md"
-story_examples:
-  - "story-player-movement.md"
-  - "story-inventory-1.md"
-  - "story-combat-system-3.md"
+    workflows:
+      - id: "sprint-planning"
+        required: true
+        agent: "sm"
+        command: "sprint-planning"
+        note: "Creates sprint plan with all stories - subsequent work tracked in sprint plan output, not workflow-status"
 
 special_considerations:
   - "Iterative playtesting throughout development"

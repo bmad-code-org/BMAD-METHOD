@@ -620,8 +620,8 @@ class WebBundler {
     }
     processed.add(filePath);
 
-    // Skip agent-party.xml manifest for web bundles (agents are already bundled)
-    if (filePath === 'bmad/_cfg/agent-party.xml' || filePath.endsWith('/agent-party.xml')) {
+    // Skip agent-manifest.csv manifest for web bundles (agents are already bundled)
+    if (filePath === 'bmad/_cfg/agent-manifest.csv' || filePath.endsWith('/agent-manifest.csv')) {
       return;
     }
 
@@ -1393,8 +1393,8 @@ class WebBundler {
     // Ensure temp directory exists
     await fs.ensureDir(this.tempManifestDir);
 
-    // Generate agent-party.xml using shared generator
-    const agentPartyPath = path.join(this.tempManifestDir, 'agent-party.xml');
+    // Generate agent-manifest.csv using shared generator
+    const agentPartyPath = path.join(this.tempManifestDir, 'agent-manifest.csv');
     await AgentPartyGenerator.writeAgentParty(agentPartyPath, this.discoveredAgents, { forWeb: true });
 
     console.log(chalk.dim('  ✓ Created temporary manifest files'));

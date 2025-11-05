@@ -8,87 +8,94 @@
 <workflow>
 
 <critical>This workflow is run by SM agent AFTER user reviews a drafted story and confirms it's ready for development</critical>
-<critical>NO SEARCHING - SM agent reads status file TODO section to know which story was drafted</critical>
-<critical>Simple workflow: Update story file status, move story TODO → IN PROGRESS, move next story BACKLOG → TODO</critical>
+<critical>Simple workflow: Update story file status to Ready</critical>
 
-<step n="1" goal="Get TODO story from status file">
+<step n="1" goal="Find drafted story to mark ready" tag="sprint-status">
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-  <param>mode: data</param>
-  <param>data_request: next_story</param>
-</invoke-workflow>
+<action>If {{story_path}} is provided → use it directly; extract story_key from filename or metadata; GOTO mark_ready</action>
 
-<check if="status_exists == false OR todo_story_id == ''">
-  <output>❌ No status file or no TODO story found.
+<critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
+<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Read ALL lines from beginning to end - do not skip any content</action>
+<action>Parse the development_status section completely</action>
 
-This workflow requires an active status file with a TODO story.
+<action>Find ALL stories (reading in order from top to bottom) where:
 
-Run `workflow-status` to check your project state.</output>
-<action>Exit workflow</action>
-</check>
+- Key matches pattern: number-number-name (e.g., "1-2-user-auth")
+- NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
+- Status value equals "drafted"
+  </action>
 
-<action>Use extracted story information:</action>
+<action>Collect up to 10 drafted story keys in order (limit for display purposes)</action>
+<action>Count total drafted stories found</action>
 
-- {{todo_story_id}}: Story to mark ready
-- {{todo_story_title}}: Story title
-- {{todo_story_file}}: Story file path
-- {{status_file_path}}: Status file to update
+<check if="no drafted stories found">
+  <output>📋 No drafted stories found in sprint-status.yaml
 
-</step>
+All stories are either still in backlog or already marked ready/in-progress/done.
 
-<step n="2" goal="Update the story file status">
+**Options:**
 
-<action>Read the story file: {story_dir}/{todo_story_file}</action>
+1. Run `create-story` to draft more stories
+2. Run `sprint-planning` to refresh story tracking
+   </output>
+   <action>HALT</action>
+   </check>
+
+<action>Display available drafted stories:
+
+**Drafted Stories Available ({{drafted_count}} found):**
+
+{{list_of_drafted_story_keys}}
+
+</action>
+
+<ask if="{{non_interactive}} == false">Select the drafted story to mark as Ready (enter story key or number):</ask>
+<action if="{{non_interactive}} == true">Auto-select first story from the list</action>
+
+<action>Resolve selected story_key from user input or auto-selection</action>
+<action>Find matching story file in {{story_dir}} using story_key pattern</action>
+
+<anchor id="mark_ready" />
+
+<action>Read the story file from resolved path</action>
+<action>Extract story_id and story_title from the file</action>
 
 <action>Find the "Status:" line (usually at the top)</action>
-
-<action>Update story file:</action>
-
-- Change: `Status: Draft`
-- To: `Status: Ready`
-
+<action>Update story file: Change Status to "ready-for-dev"</action>
 <action>Save the story file</action>
-
 </step>
 
-<step n="3" goal="Update status file - move story TODO → IN PROGRESS">
+<step n="2" goal="Update sprint status to ready-for-dev" tag="sprint-status">
+<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Find development_status key matching {{story_key}}</action>
+<action>Verify current status is "drafted" (expected previous state)</action>
+<action>Update development_status[{{story_key}}] = "ready-for-dev"</action>
+<action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-  <param>mode: update</param>
-  <param>action: start_story</param>
-</invoke-workflow>
+<check if="story key not found in file">
+  <output>⚠️ Story file updated, but could not update sprint-status: {{story_key}} not found
 
-<check if="success == false">
-  <output>⚠️ Failed to update status: {{error}}</output>
-  <output>Story file was updated, but status file update failed.</output>
-</check>
-
-<check if="success == true">
-  <output>Status updated: Story {{in_progress_story}} ready for development.</output>
-  <check if="next_todo != ''">
-    <output>Next TODO: {{next_todo}}</output>
-  </check>
+You may need to run sprint-planning to refresh tracking.
+</output>
 </check>
 
 </step>
 
-<step n="4" goal="Confirm completion to user">
+<step n="3" goal="Confirm completion to user">
 
-<action>Display summary</action>
+<output>**Story Marked Ready for Development, {user_name}!**
 
-**Story Marked Ready for Development, {user_name}!**
+✅ Story file updated: `{{story_file}}` → Status: ready-for-dev
+✅ Sprint status updated: drafted → ready-for-dev
 
-✅ Story file updated: `{{todo_story_file}}` → Status: Ready
-✅ Status file updated: Story moved TODO → IN PROGRESS
-{{#if next_story}}✅ Next story moved: BACKLOG → TODO ({{next_story_id}}: {{next_story_title}}){{/if}}
-{{#if no_more_stories}}✅ All stories have been drafted - backlog is empty{{/if}}
+**Story Details:**
 
-**Current Story (IN PROGRESS):**
-
-- **ID:** {{todo_story_id}}
-- **Title:** {{todo_story_title}}
-- **File:** `{{todo_story_file}}`
-- **Status:** Ready for development
+- **ID:** {{story_id}}
+- **Key:** {{story_key}}
+- **Title:** {{story_title}}
+- **File:** `{{story_file}}`
+- **Status:** ready-for-dev
 
 **Next Steps:**
 

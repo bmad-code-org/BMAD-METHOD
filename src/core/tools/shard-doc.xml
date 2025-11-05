@@ -1,0 +1,100 @@
+<tool id="bmad/core/tasks/shard-doc" name="Shard Document"
+  description="Splits large markdown documents into smaller, organized files based on level 2 (default) sections" webskip="true"
+  standalone="true">
+  <objective>Split large markdown documents into smaller, organized files based on level 2 sections using @kayvan/markdown-tree-parser tool</objective>
+
+  <llm critical="true">
+    <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
+    <i>DO NOT skip steps or change the sequence</i>
+    <i>HALT immediately when halt-conditions are met</i>
+    <i>Each action xml tag within step xml tag is a REQUIRED action to complete that step</i>
+    <i>Sections outside flow (validation, output, critical-context) provide essential context - review and apply throughout execution</i>
+  </llm>
+
+  <critical-context>
+    <i>This task ONLY supports automated sharding via @kayvan/markdown-tree-parser</i>
+    <i>The tool automatically handles: section splitting, heading level adjustment, code block detection, index generation</i>
+    <i>All markdown formatting is preserved during sharding</i>
+  </critical-context>
+
+  <flow>
+    <step n="1" title="Verify Tool Installation">
+      <action>Check if @kayvan/markdown-tree-parser is installed globally</action>
+      <action>Run: npm list -g @kayvan/markdown-tree-parser</action>
+      <action if="not installed">Inform user that tool needs to be installed</action>
+      <action if="not installed">Run: npm install -g @kayvan/markdown-tree-parser</action>
+      <action if="installation fails">HALT with error message about npm/node requirements</action>
+    </step>
+
+    <step n="2" title="Get Source Document">
+      <action>Ask user for the source document path if not provided already</action>
+      <action>Verify file exists and is accessible</action>
+      <action>Verify file is markdown format (.md extension)</action>
+      <action if="file not found or not markdown">HALT with error message</action>
+    </step>
+
+    <step n="3" title="Get Destination Folder">
+      <action>Determine default destination: same location as source file, folder named after source file without .md extension</action>
+      <action>Example: /path/to/architecture.md → /path/to/architecture/</action>
+      <action>Ask user for the destination folder path ([y] to confirm use of default: [suggested-path], else enter a new path)</action>
+      <action if="user accepts default">Use the suggested destination path</action>
+      <action if="user provides custom path">Use the custom destination path</action>
+      <action>Verify destination folder exists or can be created</action>
+      <action>Check write permissions for destination</action>
+      <action if="permission denied">HALT with error message</action>
+    </step>
+
+    <step n="4" title="Execute Sharding">
+      <action>Inform user that sharding is beginning</action>
+      <action>Execute command: md-tree explode [source-document] [destination-folder]</action>
+      <action>Capture command output and any errors</action>
+      <action if="command fails">HALT and display error to user</action>
+    </step>
+
+    <step n="5" title="Verify Output">
+      <action>Check that destination folder contains sharded files</action>
+      <action>Verify index.md was created in destination folder</action>
+      <action>Count the number of files created</action>
+      <action if="no files created">HALT with error message</action>
+    </step>
+
+    <step n="6" title="Report Completion">
+      <action>Display completion report to user including:</action>
+      <i>- Source document path and name</i>
+      <i>- Destination folder path</i>
+      <i>- Number of section files created</i>
+      <i>- Confirmation that index.md was created</i>
+      <i>- Any tool output or warnings</i>
+      <action>Inform user that sharding completed successfully</action>
+    </step>
+  </flow>
+
+  <halt-conditions critical="true">
+    <i>HALT if @kayvan/markdown-tree-parser cannot be installed</i>
+    <i>HALT if Node.js or npm is not available</i>
+    <i>HALT if source document does not exist or is inaccessible</i>
+    <i>HALT if source document is not markdown format (.md)</i>
+    <i>HALT if destination folder cannot be created</i>
+    <i>HALT if user does not have write permissions to destination</i>
+    <i>HALT if md-tree explode command fails</i>
+    <i>HALT if no output files were created</i>
+  </halt-conditions>
+
+  <tool-info>
+    <name>@kayvan/markdown-tree-parser</name>
+    <command>md-tree explode [source-document] [destination-folder]</command>
+    <installation>npm install -g @kayvan/markdown-tree-parser</installation>
+    <requirements>
+      <i>Node.js installed</i>
+      <i>npm package manager</i>
+      <i>Global npm installation permissions</i>
+    </requirements>
+    <features>
+      <i>Automatic section splitting by level 2 headings</i>
+      <i>Automatic heading level adjustment</i>
+      <i>Handles edge cases (code blocks, diagrams)</i>
+      <i>Generates navigable index.md</i>
+      <i>Preserves all markdown formatting</i>
+    </features>
+  </tool-info>
+</tool>

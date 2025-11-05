@@ -20,21 +20,25 @@
 </invoke-workflow>
 
 <check if="status_exists == false">
-  <output>**⚠️ No Workflow Status File Found**
+  <output>**Note: No Workflow Status File Found**
 
-The PRD workflow requires a status file to understand your project context.
+The PRD workflow can run standalone or as part of the BMM workflow path.
 
-Please run `workflow-init` first to:
+**Recommended:** Run `workflow-init` first for:
 
-- Define your project type and level
-- Map out your workflow journey
-- Create the status file
+- Project context tracking
+- Workflow sequencing guidance
+- Progress monitoring across workflows
 
-Run: `workflow-init`
-
-After setup, return here to create your PRD.
+**Or continue standalone** without progress tracking.
 </output>
-<action>Exit workflow - cannot proceed without status file</action>
+<ask>Continue in standalone mode or exit to run workflow-init? (continue/exit)</ask>
+<check if="continue">
+<action>Set standalone_mode = true</action>
+</check>
+<check if="exit">
+<action>Exit workflow</action>
+</check>
 </check>
 
 <check if="status_exists == true">
@@ -428,19 +432,10 @@ For each epic from the epic list, expand with full story details:
 
 **Next Steps:**
 
-{{#if project_level == 2}}
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- **Optional:** Review PRD and epics with stakeholders, or run `create-design` if you have UI requirements
 
-- Review PRD and epics with stakeholders
-- **Next:** Run `tech-spec` for lightweight technical planning
-- Then proceed to implementation
-  {{/if}}
-
-{{#if project_level >= 3}}
-
-- Review PRD and epics with stakeholders
-- **Next:** Run `solution-architecture` for full technical design
-- Then proceed to implementation
-  {{/if}}
+Check status anytime with: `workflow-status`
 
 Would you like to:
 

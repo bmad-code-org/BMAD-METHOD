@@ -72,7 +72,7 @@ Based on type, determine which files are needed:
 Store decisions for later use.
 </step>
 
-<step n="2" goal="Gather workflow metadata">
+<step n="2" goal="Gather workflow metadata and invocation settings">
 Collect essential configuration details:
 - Description (clear purpose statement)
 - Author name (default to user_name or "BMad")
@@ -80,40 +80,149 @@ Collect essential configuration details:
 - Any required input documents
 - Any required tools or dependencies
 
+<action>Determine standalone property - this controls how the workflow can be invoked:
+
+Explain to the user:
+
+**Standalone Property** controls whether the workflow can be invoked directly or only called by other workflows/agents.
+
+**standalone: true (DEFAULT - Recommended for most workflows)**:
+
+- Users can invoke directly via IDE commands or `/workflow-name`
+- Shows up in IDE command palette
+- Can also be called from agent menus or other workflows
+- Use for: User-facing workflows, entry-point workflows, any workflow users run directly
+
+**standalone: false (Use for helper/internal workflows)**:
+
+- Cannot be invoked directly by users
+- Only called via `<invoke-workflow>` from other workflows or agent menus
+- Doesn't appear in IDE command palette
+- Use for: Internal utilities, sub-workflows, helpers that don't make sense standalone
+
+Most workflows should be `standalone: true` to give users direct access.
+</action>
+
+<ask>Should this workflow be directly invokable by users?
+
+1. **Yes (Recommended)** - Users can run it directly (standalone: true)
+2. **No** - Only called by other workflows/agents (standalone: false)
+
+Most workflows choose option 1:</ask>
+
+<action>Store {{standalone_setting}} as true or false based on response</action>
+
 Create the workflow name in kebab-case and verify it doesn't conflict with existing workflows.
 </step>
 
-<step n="3" goal="Design workflow steps">
-Work with user to outline the workflow steps:
-- How many major steps? (Recommend 5-10 max)
+<step n="3" goal="Understand workflow interaction style and design steps">
+<critical>Instruction style and interactivity level fundamentally shape the user experience - choose thoughtfully</critical>
+
+<action>Reference the comprehensive "Instruction Styles: Intent-Based vs Prescriptive" section from the loaded creation guide</action>
+
+<action>Discuss instruction style collaboratively with the user:
+
+Explain that there are two primary approaches:
+
+**Intent-Based (RECOMMENDED as default)**:
+
+- Gives AI goals and principles, lets it adapt conversation naturally
+- More flexible, conversational, responsive to user context
+- Better for: discovery, complex decisions, teaching, varied user skill levels
+- Uses <action> tags with guiding instructions
+- Example from architecture workflow: Facilitates decisions adapting to user_skill_level
+
+**Prescriptive**:
+
+- Provides exact questions and specific options
+- More controlled, predictable, consistent across runs
+- Better for: simple data collection, finite options, compliance, quick setup
+- Uses <ask> tags with specific question text
+- Example: Platform selection with 5 defined choices
+
+Explain that **most workflows should default to intent-based** but use prescriptive for simple data points.
+The architecture workflow is an excellent example of intent-based with prescriptive moments.
+</action>
+
+<ask>For this workflow's PRIMARY style:
+
+1. **Intent-based (Recommended)** - Adaptive, conversational, responds to user context
+2. **Prescriptive** - Structured, consistent, controlled interactions
+3. **Mixed/Balanced** - I'll help you decide step-by-step
+
+What feels right for your workflow's purpose?</ask>
+
+<action>Store {{instruction_style}} preference</action>
+
+<action>Now discuss interactivity level:
+
+Beyond style, consider **how interactive** this workflow should be:
+
+**High Interactivity (Collaborative)**:
+
+- Constant back-and-forth with user
+- User guides direction, AI facilitates
+- Iterative refinement and review
+- Best for: creative work, complex decisions, learning experiences
+- Example: Architecture workflow's collaborative decision-making
+
+**Medium Interactivity (Guided)**:
+
+- Key decision points have interaction
+- AI proposes, user confirms or refines
+- Validation checkpoints
+- Best for: most document workflows, structured processes
+- Example: PRD workflow with sections to review
+
+**Low Interactivity (Autonomous)**:
+
+- Minimal user input required
+- AI works independently with guidelines
+- User reviews final output
+- Best for: automated generation, batch processing
+- Example: Generating user stories from epics
+  </action>
+
+<ask>What interactivity level suits this workflow?
+
+1. **High** - Highly collaborative, user actively involved throughout
+2. **Medium** - Guided with key decision points (most common)
+3. **Low** - Autonomous with final review
+
+Select the level that matches your workflow's purpose:</ask>
+
+<action>Store {{interactivity_level}} preference</action>
+
+<action>Explain how these choices will inform the workflow design:
+
+- Intent-based + High interactivity: Conversational discovery with open questions
+- Intent-based + Medium: Facilitated guidance with confirmation points
+- Intent-based + Low: Principle-based autonomous generation
+- Prescriptive + any level: Structured questions, but frequency varies
+- Mixed: Strategic use of both styles where each works best
+  </action>
+
+<action>Now work with user to outline workflow steps:
+
+- How many major steps? (Recommend 3-7 for most workflows)
 - What is the goal of each step?
 - Which steps are optional?
-- Which steps need user input?
+- Which steps need heavy user collaboration vs autonomous execution?
 - Which steps should repeat?
 - What variables/outputs does each step produce?
 
-<ask>What instruction style should this workflow favor?
+Consider their instruction_style and interactivity_level choices when designing step flow:
 
-**1. Intent-Based (Recommended)** - Guide the LLM with goals and principles, let it adapt conversations naturally
+- High interactivity: More granular steps with collaboration
+- Low interactivity: Larger autonomous steps with review
+- Intent-based: Focus on goals and principles in step descriptions
+- Prescriptive: Define specific questions and options
+  </action>
 
-- More flexible and conversational
-- LLM chooses appropriate questions based on context
-- Better for complex discovery and iterative refinement
-- Example: `<action>Guide user to define their target audience with specific demographics and needs</action>`
+<action>Create a step outline that matches the chosen style and interactivity level</action>
+<action>Note which steps should be intent-based vs prescriptive (if mixed approach)</action>
 
-**2. Prescriptive** - Provide exact wording for questions and options
-
-- More controlled and predictable
-- Ensures consistency across runs
-- Better for simple data collection or specific compliance needs
-- Example: `<ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask>`
-
-Note: Your choice will be the _primary_ style, but we'll use the other when it makes more sense for specific steps.</ask>
-
-<action>Store instruction_style preference (intent-based or prescriptive)</action>
-<action>Explain that both styles have value and will be mixed appropriately</action>
-
-Create a step outline with clear goals and outputs.
+<template-output>step_outline</template-output>
 </step>
 
 <step n="4" goal="Create workflow.yaml">
@@ -130,6 +239,7 @@ Replace all placeholders following the workflow creation guide conventions:
 Include:
 
 - All metadata from steps 1-2
+- **Standalone property**: Use {{standalone_setting}} from step 2 (true or false)
 - Proper paths for installed_path using variable substitution
 - Template/instructions/validation paths based on workflow type:
   - Document workflow: all files (template, instructions, validation)
@@ -150,6 +260,38 @@ date: system-generated
 ```
 
 <critical>This standard config ensures workflows can run autonomously and communicate properly with users</critical>
+
+<critical>ALWAYS include the standalone property:</critical>
+
+```yaml
+standalone: { { standalone_setting } } # true or false from step 2
+```
+
+**Example complete workflow.yaml structure**:
+
+```yaml
+name: 'workflow-name'
+description: 'Clear purpose statement'
+
+# Paths
+installed_path: '{project-root}/bmad/module/workflows/name'
+template: '{installed_path}/template.md'
+instructions: '{installed_path}/instructions.md'
+validation: '{installed_path}/checklist.md'
+
+# Critical variables from config
+config_source: '{project-root}/bmad/module/config.yaml'
+output_folder: '{config_source}:output_folder'
+user_name: '{config_source}:user_name'
+communication_language: '{config_source}:communication_language'
+date: system-generated
+
+# Output
+default_output_file: '{output_folder}/document.md'
+
+# Invocation control
+standalone: true # or false based on step 2 decision
+```
 
 Follow path conventions from guide:
 

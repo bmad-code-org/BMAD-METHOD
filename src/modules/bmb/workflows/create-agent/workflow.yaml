@@ -34,6 +34,8 @@ standalone_output_file: "{custom_agent_location}/{{agent_filename}}.agent.yaml"
 # Optional user override file (auto-created by installer if missing)
 config_output_file: "{project-root}/bmad/_cfg/agents/{{target_module}}-{{agent_filename}}.customize.yaml"
 
+standalone: true
+
 web_bundle:
   name: "create-agent"
   description: "Interactive workflow to build BMAD Core compliant agents (simple, expert, or module types) with optional brainstorming for agent ideas, proper persona development, activation rules, and command structure"

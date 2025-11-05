@@ -1,5 +1,5 @@
 # BMM Project Scale Levels - Source of Truth
-# Reference: /src/modules/bmm/README.md lines 77-85
+# Reference: /bmad/bmm/README.md lines 77-85
 
 levels:
   0:
@@ -31,7 +31,7 @@ levels:
     title: "Complex System"
     stories: "12-40 stories"
     description: "Subsystems, integrations, full architecture"
-    documentation: "PRD + solution architecture + JIT tech specs"
+    documentation: "PRD + architecture + JIT tech specs"
     architecture: true
 
   4:
@@ -39,7 +39,7 @@ levels:
     title: "Enterprise Scale"
     stories: "40+ stories"
     description: "Multiple products, enterprise architecture"
-    documentation: "Full suite - PRD, architecture, product specs"
+    documentation: "PRD + architecture + JIT tech specs"
     architecture: true
 
 # Quick detection hints for workflow-init

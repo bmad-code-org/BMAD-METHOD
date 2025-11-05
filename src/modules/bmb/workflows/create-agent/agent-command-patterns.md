@@ -119,7 +119,7 @@ Execute single operations
 <!-- Task with data -->
 <item cmd="*standup"
    exec="{project-root}/bmad/mmm/tasks/daily-standup.xml"
-   data="{project-root}/bmad/_cfg/agent-party.xml">
+   data="{project-root}/bmad/_cfg/agent-manifest.csv">
   Run agile team standup
 </item>
 ```

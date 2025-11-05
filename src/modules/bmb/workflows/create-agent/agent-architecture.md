@@ -230,7 +230,7 @@ Bad:  ../../../relative/paths/
 ```xml
 <item cmd="*standup"
    exec="{project-root}/bmad/bmm/tasks/daily-standup.xml"
-   data="{project-root}/bmad/_cfg/agent-party.xml">
+   data="{project-root}/bmad/_cfg/agent-manifest.csv">
   Run daily standup
 </item>
 ```
@@ -360,6 +360,13 @@ When building agents:
 - Agents invoke workflows via run-workflow
 - Workflows can be incomplete (marked "todo")
 - Workflow paths must be valid or "todo"
+
+**Workflow Interaction Styles** (BMAD v6 default):
+
+- **Intent-based + Interactive**: Workflows adapt to user context and skill level
+- Workflows collaborate with users, not just extract data
+- See workflow-creation-guide.md "Instruction Styles" section for details
+- When creating workflows for your agent, default to intent-based unless you need prescriptive control
 
 ### With Tasks
 

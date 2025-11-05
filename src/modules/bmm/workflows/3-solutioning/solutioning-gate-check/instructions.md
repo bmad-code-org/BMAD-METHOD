@@ -13,15 +13,25 @@
 </invoke-workflow>
 
 <check if="status_exists == false">
-  <output>**⚠️ No Workflow Status File Found**
+  <output>**Note: No Workflow Status File Found**
 
-The Implementation Ready Check requires a status file to understand your project context.
+The Implementation Ready Check can run standalone or as part of the BMM workflow path.
 
-Please run `workflow-init` first to establish your project configuration.
+**Recommended:** Run `workflow-init` first for:
 
-After setup, return here to validate implementation readiness.
+- Project context tracking
+- Workflow sequencing guidance
+- Progress monitoring across workflows
+
+**Or continue standalone** without progress tracking.
 </output>
-<action>Exit workflow - cannot proceed without status file</action>
+<ask>Continue in standalone mode or exit to run workflow-init? (continue/exit)</ask>
+<check if="continue">
+<action>Set standalone_mode = true</action>
+</check>
+<check if="exit">
+<action>Exit workflow</action>
+</check>
 </check>
 
 <check if="status_exists == true">

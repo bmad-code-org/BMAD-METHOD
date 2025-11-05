@@ -7,3 +7,8 @@ agents:
   - game-designer
   - game-dev
   - game-architect
+
+workflows:
+  - brainstorm-game
+  - game-brief
+  - gdd

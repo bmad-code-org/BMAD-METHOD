@@ -36,5 +36,7 @@ workflow_template_path: "{installed_path}/workflow-template"
 module_output_folder: "{project-root}/bmad/{{target_module}}/workflows/{{workflow_name}}"
 standalone_output_folder: "{custom_workflow_location}/{{workflow_name}}"
 
+standalone: true
+
 # Web bundle configuration
 web_bundle: false # BMB workflows run locally in BMAD-METHOD project

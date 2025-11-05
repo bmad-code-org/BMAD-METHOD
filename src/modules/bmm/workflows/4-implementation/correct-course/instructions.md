@@ -9,15 +9,6 @@
 
 <workflow>
 
-<step n="0" goal="Check project status" optional="true">
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
-  <param>mode: init-check</param>
-</invoke-workflow>
-
-<output>Running correct-course workflow for sprint change management.
-{{#if status_exists}}Status tracking enabled.{{else}}Note: No status file - running standalone.{{/if}}</output>
-</step>
-
 <step n="1" goal="Initialize Change Navigation">
   <action>Confirm change trigger and gather user description of the issue</action>
   <action>Ask: "What specific issue or change has been identified that requires navigation?"</action>
@@ -37,7 +28,7 @@
 </step>
 
 <step n="2" goal="Execute Change Analysis Checklist">
-  <action>Load and execute the systematic analysis from: {project-root}/bmad/bmm/workflows/4-implementation/correct-course/checklist.md</action>
+  <action>Load and execute the systematic analysis from: {checklist}</action>
   <action>Work through each checklist section interactively with the user</action>
   <action>Record status for each checklist item:</action>
     - [x] Done - Item completed successfully
@@ -142,6 +133,7 @@
 - Define success criteria for implementation
 
 <action>Present complete Sprint Change Proposal to user</action>
+<action>Write Sprint Change Proposal document to {default_output_file}</action>
 <ask>Review complete proposal. Continue [c] or Edit [e]?</ask>
 </step>
 

@@ -29,6 +29,8 @@ design_methods: "{installed_path}/design-methods.csv"
 # Output configuration
 default_output_file: "{output_folder}/design-thinking-{{date}}.md"
 
+standalone: true
+
 web_bundle:
   name: "design-thinking"
   description: "Guide human-centered design processes using empathy-driven methodologies. This workflow walks through the design thinking phases - Empathize, Define, Ideate, Prototype, and Test - to create solutions deeply rooted in user needs."

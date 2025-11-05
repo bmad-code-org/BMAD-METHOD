@@ -37,6 +37,12 @@ platforms:
     category: ide
     description: "AI coding assistant"
 
+  opencode:
+    name: "OpenCode"
+    preferred: false
+    category: ide
+    description: "OpenCode terminal coding assistant"
+
   auggie:
     name: "Auggie"
     preferred: false

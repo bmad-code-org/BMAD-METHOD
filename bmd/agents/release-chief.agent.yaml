@@ -32,8 +32,8 @@ agent:
 
   critical_actions:
     # CRITICAL: Load sidecar files FIRST for Expert agent
-    - Load COMPLETE file {project-root}/src/modules/bmd/agents/release-chief-sidecar/instructions.md and follow ALL directives
-    - Load COMPLETE file {project-root}/src/modules/bmd/agents/release-chief-sidecar/memories.md into permanent context
+    - Load COMPLETE file {project-root}/bmd/agents/release-chief-sidecar/instructions.md and follow ALL directives
+    - Load COMPLETE file {project-root}/bmd/agents/release-chief-sidecar/memories.md into permanent context
     - You MUST follow all rules in instructions.md on EVERY interaction
     # Domain restriction for release focus
     - PRIMARY domain is releases, versioning, changelogs, git tags, npm publishing

@@ -25,35 +25,43 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Check workflow status and get recommendations
 
-    - trigger: create-story
-      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
-      description: Create a Draft Story with Context
-
-    - trigger: story-ready
-      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-ready/workflow.yaml"
-      description: Mark drafted story ready for development
-
-    - trigger: story-context
-      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml"
-      description: Assemble dynamic Story Context (XML) from latest docs and code
-
-    - trigger: validate-story-context
-      validate-workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml"
-      description: Validate latest Story Context XML against checklist
-
-    - trigger: retrospective
-      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml"
-      data: "{project-root}/bmad/_cfg/agent-party.xml"
-      description: Facilitate team retrospective after epic/sprint
-
-    - trigger: correct-course
-      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
-      description: Execute correct-course task
+    - trigger: sprint-planning
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/sprint-planning/workflow.yaml"
+      description: Generate or update sprint-status.yaml from epic files
 
     - trigger: epic-tech-context
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/epic-tech-context/workflow.yaml"
-      description: Use the PRD and Architecture to create a Tech-Spec for a specific epic
+      description: (Optional) Use the PRD and Architecture to create a Tech-Spec for a specific epic
 
     - trigger: validate-epic-tech-context
       validate-workflow: "{project-root}/bmad/bmm/workflows/4-implementation/epic-tech-context/workflow.yaml"
-      description: Validate latest Tech Spec against checklist
+      description: (Optional) Validate latest Tech Spec against checklist
+
+    - trigger: create-story
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
+      description: Create a Draft Story
+
+    - trigger: validate-create-story
+      validate-workflow: "{project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
+      description: (Optional) Validate Story Draft with Independent Review
+
+    - trigger: story-context
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml"
+      description: (Optional) Assemble dynamic Story Context (XML) from latest docs and code and mark story ready for dev
+
+    - trigger: validate-story-context
+      validate-workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-context/workflow.yaml"
+      description: (Optional) Validate latest Story Context XML against checklist
+
+    - trigger: story-ready-for-dev
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/story-ready/workflow.yaml"
+      description: (Optional) Mark drafted story ready for dev without generating Story Context
+
+    - trigger: epic-retrospective
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml"
+      data: "{project-root}/bmad/_cfg/agent-manifest.csv"
+      description: (Optional) Facilitate team retrospective after an epic is completed
+
+    - trigger: correct-course
+      workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
+      description: (Optional) Execute correct-course task

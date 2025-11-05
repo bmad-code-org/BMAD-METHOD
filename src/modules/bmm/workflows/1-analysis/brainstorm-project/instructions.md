@@ -72,17 +72,17 @@
 {{#if standalone_mode != true}}
 **Status Updated:**
 - Progress tracking updated
-{{/if}}
 
 **Next Steps:**
-1. Review brainstorming results
-2. Consider running:
-   - `research` workflow for market/technical research
-   - `product-brief` workflow to formalize product vision
-   - Or proceed directly to `plan-project` if ready
+- **Next required:** {{next_workflow}} ({{next_agent}} agent)
+- **Optional:** You can run other analysis workflows (research, product-brief) before proceeding
 
-{{#if standalone_mode != true}}
 Check status anytime with: `workflow-status`
+{{else}}
+**Next Steps:**
+Since no workflow is in progress:
+- Refer to the BMM workflow guide if unsure what to do next
+- Or run `workflow-init` to create a workflow path and get guided next steps
 {{/if}}
     </output>
   </step>

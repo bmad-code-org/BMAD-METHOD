@@ -14,6 +14,7 @@ src/modules/{module-code}/
 ├── agents/                        # Agent definitions (.agent.yaml)
 ├── workflows/                     # Workflow folders
 ├── tasks/                         # Task files
+├── tools/                         # Tool files
 ├── templates/                     # Shared templates
 ├── data/                          # Static data
 ├── _module-installer/             # Installation configuration
@@ -27,11 +28,11 @@ src/modules/{module-code}/
 ├── agents/                        # Compiled agent files (.md)
 ├── workflows/                     # Workflow instances
 ├── tasks/                         # Task files
+├── tools/                         # Tool files
 ├── templates/                     # Templates
 ├── data/                          # Module data
 ├── config.yaml                    # Generated from install-config.yaml
 └── README.md                      # Module documentation
-
 ```
 
 ## Module Types by Complexity

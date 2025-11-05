@@ -22,43 +22,45 @@ class GeminiSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Create .gemini/commands/agents and .gemini/commands/tasks directories
+    // Create .gemini/commands directory (flat structure with bmad- prefix)
     const geminiDir = path.join(projectDir, this.configDir);
     const commandsDir = path.join(geminiDir, this.commandsDir);
-    const agentsDir = path.join(commandsDir, 'agents');
-    const tasksDir = path.join(commandsDir, 'tasks');
 
-    await this.ensureDir(agentsDir);
-    await this.ensureDir(tasksDir);
+    await this.ensureDir(commandsDir);
+
+    // Clean up any existing BMAD files before reinstalling
+    await this.cleanup(projectDir);
 
     // Get agents and tasks
     const agents = await this.getAgents(bmadDir);
     const tasks = await this.getTasks(bmadDir);
 
-    // Install agents as TOML files
+    // Install agents as TOML files with bmad- prefix (flat structure)
     let agentCount = 0;
     for (const agent of agents) {
       const content = await this.readFile(agent.path);
       const tomlContent = this.createAgentToml(agent, content, bmadDir);
 
-      const tomlPath = path.join(agentsDir, `${agent.name}.toml`);
+      // Flat structure: bmad-agent-{module}-{name}.toml
+      const tomlPath = path.join(commandsDir, `bmad-agent-${agent.module}-${agent.name}.toml`);
       await this.writeFile(tomlPath, tomlContent);
       agentCount++;
 
-      console.log(chalk.green(`  ✓ Added agent: /bmad:agents:${agent.name}`));
+      console.log(chalk.green(`  ✓ Added agent: /bmad:agents:${agent.module}:${agent.name}`));
     }
 
-    // Install tasks as TOML files
+    // Install tasks as TOML files with bmad- prefix (flat structure)
     let taskCount = 0;
     for (const task of tasks) {
       const content = await this.readFile(task.path);
       const tomlContent = this.createTaskToml(task, content, bmadDir);
 
-      const tomlPath = path.join(tasksDir, `${task.name}.toml`);
+      // Flat structure: bmad-task-{module}-{name}.toml
+      const tomlPath = path.join(commandsDir, `bmad-task-${task.module}-${task.name}.toml`);
       await this.writeFile(tomlPath, tomlContent);
       taskCount++;
 
-      console.log(chalk.green(`  ✓ Added task: /bmad:tasks:${task.name}`));
+      console.log(chalk.green(`  ✓ Added task: /bmad:tasks:${task.module}:${task.name}`));
     }
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
@@ -126,34 +128,28 @@ Follow all instructions and complete the task as defined.
   }
 
   /**
-   * Cleanup Gemini configuration
+   * Cleanup Gemini configuration - surgically remove only BMAD files
    */
   async cleanup(projectDir) {
     const fs = require('fs-extra');
     const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
-    const agentsDir = path.join(commandsDir, 'agents');
-    const tasksDir = path.join(commandsDir, 'tasks');
 
-    // Remove BMAD TOML files
-    if (await fs.pathExists(agentsDir)) {
-      const files = await fs.readdir(agentsDir);
+    if (await fs.pathExists(commandsDir)) {
+      // Only remove files that start with bmad- prefix
+      const files = await fs.readdir(commandsDir);
+      let removed = 0;
+
       for (const file of files) {
-        if (file.endsWith('.toml')) {
-          await fs.remove(path.join(agentsDir, file));
+        if (file.startsWith('bmad-') && file.endsWith('.toml')) {
+          await fs.remove(path.join(commandsDir, file));
+          removed++;
         }
       }
-    }
 
-    if (await fs.pathExists(tasksDir)) {
-      const files = await fs.readdir(tasksDir);
-      for (const file of files) {
-        if (file.endsWith('.toml')) {
-          await fs.remove(path.join(tasksDir, file));
-        }
+      if (removed > 0) {
+        console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD files`));
       }
     }
-
-    console.log(chalk.dim(`Removed BMAD configuration from Gemini CLI`));
   }
 }
 

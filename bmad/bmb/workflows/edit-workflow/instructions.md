@@ -2,391 +2,341 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/edit-workflow/workflow.yaml</critical>
-<critical>Study the workflow creation guide thoroughly at: {workflow_creation_guide}</critical>
-<critical>Communicate in {communication_language} throughout the workflow editing process</critical>
+<critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication based on context and user needs</critical>
+<critical>The goal is COLLABORATIVE IMPROVEMENT - work WITH the user, not FOR them</critical>
+<critical>Communicate all responses in {communication_language}</critical>
 
 <workflow>
 
-<step n="1" goal="Load and analyze target workflow">
-<ask>What is the path to the workflow you want to edit? (provide path to workflow.yaml or workflow folder)</ask>
+<step n="1" goal="Load and deeply understand the target workflow">
+<ask>What is the path to the workflow you want to edit? (provide path to workflow.yaml or workflow directory)</ask>
 
-<action>Load the workflow.yaml file from the provided path</action>
-<action>Identify the workflow type (document, action, interactive, autonomous, meta)</action>
-<action>List all associated files (template.md, instructions.md, checklist.md, data files)</action>
-<action>Load any existing instructions.md and template.md files if present</action>
+<action>Load the target workflow completely:
 
-Display a summary:
-
-- Workflow name and description
-- Type of workflow
-- Files present
-- Current structure overview
-  </step>
-
-<step n="2" goal="Analyze against best practices">
-<action>Load the complete workflow creation guide from: {workflow_creation_guide}</action>
-<action>Check the workflow against the guide's best practices:</action>
-
-Analyze for:
-
-- **Critical headers**: Are workflow engine references present?
-- **File structure**: Are all expected files present for this workflow type?
-- **Variable consistency**: Do variable names match between files?
-- **Step structure**: Are steps properly numbered and focused?
-- **XML tags**: Are tags used correctly and consistently?
-- **Instructions clarity**: Are instructions specific with examples and limits?
-- **Template variables**: Use snake_case and descriptive names?
-- **Validation criteria**: Are checklist items measurable and specific?
-
-**Standard Config Audit:**
-
-- **workflow.yaml config block**: Check for standard config variables
-  - Is config_source defined?
-  - Are output_folder, user_name, communication_language pulled from config?
-  - Is date set to system-generated?
-- **Instructions usage**: Do instructions use config variables?
-  - Does it communicate in {communication_language}?
-  - Does it address {user_name}?
-  - Does it write to {output_folder}?
-- **Template usage**: Does template.md include config variables in metadata?
-
-**YAML/File Alignment:**
-
-- **Unused yaml fields**: Are there variables in workflow.yaml not used in instructions OR template?
-- **Missing variables**: Are there hardcoded values that should be variables?
-- **Web bundle completeness**: If web_bundle exists, does it include all dependencies?
-  - All referenced files listed?
-  - Called workflows included?
-
-<action>Create a list of identified issues or improvement opportunities</action>
-<action>Prioritize issues by importance (critical, important, nice-to-have)</action>
-</step>
-
-<step n="3" goal="Select editing focus">
-Present the editing menu to the user:
-
-**What aspect would you like to edit?**
-
-1. **Fix critical issues** - Address missing headers, broken references
-2. **Add/fix standard config** - Ensure standard config block and variable usage
-3. **Update workflow.yaml** - Modify configuration, paths, metadata
-4. **Refine instructions** - Improve steps, add detail, fix flow
-5. **Update template** - Fix variables, improve structure (if applicable)
-6. **Enhance validation** - Make checklist more specific and measurable
-7. **Add new features** - Add steps, optional sections, or capabilities
-8. **Configure web bundle** - Add/update web bundle for deployment
-9. **Remove bloat** - Delete unused yaml fields, duplicate values
-10. **Optimize for clarity** - Improve descriptions, add examples
-11. **Adjust instruction style** - Convert between intent-based and prescriptive styles
-12. **Full review and update** - Comprehensive improvements across all files
-
-<ask>Select an option (1-12) or describe a custom edit:</ask>
-</step>
-
-<step n="4" goal="Load relevant documentation">
-Based on the selected edit type, load appropriate reference materials:
-
-<check>If option 2 (Add/fix standard config):</check>
-<action>Prepare standard config block template:</action>
-
-```yaml
-# Critical variables from config
-config_source: '{project-root}/bmad/{module}/config.yaml'
-output_folder: '{config_source}:output_folder'
-user_name: '{config_source}:user_name'
-communication_language: '{config_source}:communication_language'
-date: system-generated
-```
-
-<action>Check if workflow.yaml has existing config section (don't duplicate)</action>
-<action>Identify missing config variables to add</action>
-<action>Check instructions.md for config variable usage</action>
-<action>Check template.md for config variable usage</action>
-
-<check>If editing instructions or adding features:</check>
-<action>Review the "Writing Instructions" section of the creation guide</action>
-<action>Load example workflows from {project-root}/bmad/bmm/workflows/ for patterns</action>
-
-<check>If editing templates:</check>
-<action>Review the "Templates and Variables" section of the creation guide</action>
-<action>Ensure variable naming conventions are followed</action>
-
-<check>If editing validation:</check>
-<action>Review the "Validation" section and measurable criteria examples</action>
-
-<check>If option 9 (Remove bloat):</check>
-<action>Cross-reference all workflow.yaml fields against instructions.md and template.md</action>
-<action>Identify yaml fields not used in any file</action>
-<action>Check for duplicate fields in web_bundle section</action>
-
-<check>If configuring web bundle:</check>
-<action>Review the "Web Bundles" section of the creation guide</action>
-<action>Scan all workflow files for referenced resources</action>
-<action>Create inventory of all files that must be included</action>
-<action>Scan instructions for <invoke-workflow> calls - those yamls must be included</action>
-
-<check>If fixing critical issues:</check>
-<action>Load the workflow execution engine documentation</action>
-<action>Verify all required elements are present</action>
-
-<check>If adjusting instruction style (option 11):</check>
-<action>Analyze current instruction style in instructions.md:</action>
-
-- Count <action> tags vs <ask> tags
-- Identify goal-oriented language ("guide", "explore", "help") vs prescriptive ("choose", "select", "specify")
-- Assess whether steps are open-ended or structured with specific options
-  <action>Determine current dominant style: intent-based, prescriptive, or mixed</action>
-  <action>Load the instruction style guide section from create-workflow</action>
-  </step>
-
-<step n="5" goal="Perform edits" repeat="until-complete">
-Based on the selected focus area:
-
-<check>If configuring web bundle (option 7):</check>
-<action>Check if web_bundle section exists in workflow.yaml</action>
-
-If creating new web bundle:
-
-1. Extract workflow metadata (name, description, author)
-2. Convert all file paths to bmad/-relative format
-3. Remove any {config_source} references
-4. Scan instructions.md for all file references:
-   - Data files (CSV, JSON)
-   - Sub-workflows
-   - Shared templates
-   - Any included files
-5. Scan template.md for any includes
-6. Create complete web_bundle_files array
-7. **CRITICAL**: Check for <invoke-workflow> calls in instructions:
-   - If workflow invokes other workflows, add existing_workflows field
-   - Maps workflow variable name to bmad/-relative path
-   - Signals bundler to recursively include invoked workflow's web_bundle
-   - Example: `existing_workflows: - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"`
-8. Generate web_bundle section
-
-If updating existing web bundle:
-
-1. Verify all paths are bmad/-relative
-2. Check for missing files in web_bundle_files
-3. Remove any config dependencies
-4. Update file list with newly referenced files
-
-<check>If adjusting instruction style (option 11):</check>
-<action>Present current style analysis to user:</action>
-
-**Current Instruction Style Analysis:**
-
-- Current dominant style: {{detected_style}}
-- Intent-based elements: {{intent_count}}
-- Prescriptive elements: {{prescriptive_count}}
-
-**Understanding Intent-Based vs Prescriptive:**
-
-**1. Intent-Based (Recommended)** - Guide the LLM with goals and principles, let it adapt conversations naturally
-
-- More flexible and conversational
-- LLM chooses appropriate questions based on context
-- Better for complex discovery and iterative refinement
-- Example: `<action>Guide user to define their target audience with specific demographics and needs</action>`
-
-**2. Prescriptive** - Provide exact wording for questions and options
-
-- More controlled and predictable
-- Ensures consistency across runs
-- Better for simple data collection or specific compliance needs
-- Example: `<ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask>`
-
-**When to use Intent-Based:**
-
-- Complex discovery processes (user research, requirements gathering)
-- Creative brainstorming and ideation
-- Iterative refinement workflows
-- When user input quality matters more than consistency
-- Workflows requiring adaptation to context
-
-**When to use Prescriptive:**
-
-- Simple data collection (platform, format, yes/no choices)
-- Compliance verification and standards adherence
-- Configuration with finite options
-- When consistency is critical across all executions
-- Quick setup wizards
-
-**Best Practice: Mix Both Styles**
-
-Even workflows with a primary style should use the other when appropriate. For example:
-
-```xml
-<!-- Intent-based workflow with prescriptive moments -->
-<step n="1" goal="Understand user vision">
-  <action>Explore the user's vision, uncovering their creative intent and target experience</action>
-</step>
-
-<step n="2" goal="Capture basic metadata">
-  <ask>What is your target platform? Choose: PC, Console, Mobile, Web</ask> <!-- Prescriptive for simple choice -->
-</step>
-
-<step n="3" goal="Deep dive into details">
-  <action>Guide user to articulate their approach, exploring mechanics and unique aspects</action> <!-- Back to intent-based -->
-</step>
-```
-
-<ask>What would you like to do?
-
-1. **Make more intent-based** - Convert prescriptive <ask> tags to goal-oriented <action> tags where appropriate
-2. **Make more prescriptive** - Convert open-ended <action> tags to specific <ask> tags with options
-3. **Optimize mix** - Use intent-based for complex steps, prescriptive for simple data collection
-4. **Review specific steps** - Show me each step and let me decide individually
-5. **Cancel** - Keep current style
-
-Select option (1-5):</ask>
-
-<action>Store user's style adjustment preference as {{style_adjustment_choice}}</action>
-
-<check>If choice is 1 (make more intent-based):</check>
-<action>Identify prescriptive <ask> tags that could be converted to intent-based <action> tags</action>
-<action>For each candidate conversion:
-
-- Show original prescriptive version
-- Suggest intent-based alternative focused on goals
-- Explain the benefit of the conversion
-- Ask for approval
-  </action>
-  <action>Apply approved conversions</action>
-
-<check>If choice is 2 (make more prescriptive):</check>
-<action>Identify open-ended <action> tags that could be converted to prescriptive <ask> tags</action>
-<action>For each candidate conversion:
-
-- Show original intent-based version
-- Suggest prescriptive alternative with specific options
-- Explain when prescriptive is better here
-- Ask for approval
-  </action>
-  <action>Apply approved conversions</action>
-
-<check>If choice is 3 (optimize mix):</check>
-<action>Analyze each step for complexity and purpose</action>
-<action>Recommend style for each step:
-
-- Simple data collection → Prescriptive
-- Complex discovery → Intent-based
-- Binary decisions → Prescriptive
-- Creative exploration → Intent-based
-- Standards/compliance → Prescriptive
-- Iterative refinement → Intent-based
-  </action>
-  <action>Show recommendations with reasoning</action>
-  <action>Apply approved optimizations</action>
-
-<check>If choice is 4 (review specific steps):</check>
-<action>Present each step one at a time</action>
-<action>For each step:
-
-- Show current instruction text
-- Identify current style (intent-based, prescriptive, or mixed)
-- Offer to keep, convert to intent-based, or convert to prescriptive
-- Apply user's choice before moving to next step
+- workflow.yaml configuration
+- instructions.md (if exists)
+- template.md (if exists)
+- checklist.md (if exists)
+- Any additional data files referenced
   </action>
 
-<check>If choice is 5 (cancel):</check>
-<goto step="3">Return to editing menu</goto>
+<action>Load ALL workflow documentation to inform understanding:
 
-<action>Show the current content that will be edited</action>
-<action>Explain the proposed changes and why they improve the workflow</action>
-<action>Generate the updated content following all conventions from the guide</action>
+- Workflow creation guide: {workflow_creation_guide}
+- Workflow execution engine: {workflow_execution_engine}
+- Study example workflows from: {project-root}/bmad/bmm/workflows/
+  </action>
 
-<ask>Review the proposed changes. Options:
+<action>Analyze the workflow deeply:
 
-- [a] Accept and apply
-- [e] Edit/modify the changes
-- [s] Skip this change
-- [n] Move to next file/section
-- [d] Done with edits
+- Identify workflow type (document, action, interactive, autonomous, meta)
+- Understand purpose and user journey
+- Map out step flow and logic
+- Check variable consistency across files
+- Evaluate instruction style (intent-based vs prescriptive)
+- Assess template structure (if applicable)
+- Review validation criteria
+- Identify config dependencies
+- Check for web bundle configuration
+- Evaluate against best practices from loaded guides
+  </action>
+
+<action>Reflect understanding back to {user_name}:
+
+Present a warm, conversational summary adapted to the workflow's complexity:
+
+- What this workflow accomplishes (its purpose and value)
+- How it's structured (type, steps, interactive points)
+- What you notice (strengths, potential improvements, issues)
+- Your initial assessment based on best practices
+- How it fits in the larger BMAD ecosystem
+
+Be conversational and insightful. Help {user_name} see their workflow through your eyes.
+</action>
+
+<ask>Does this match your understanding of what this workflow should accomplish?</ask>
+<template-output>workflow_understanding</template-output>
+</step>
+
+<step n="2" goal="Discover improvement goals collaboratively">
+<critical>Understand WHAT the user wants to improve and WHY before diving into edits</critical>
+
+<action>Engage in collaborative discovery:
+
+Ask open-ended questions to understand their goals:
+
+- What prompted you to want to edit this workflow?
+- What feedback have you gotten from users running it?
+- Are there specific steps that feel clunky or confusing?
+- Is the workflow achieving its intended outcome?
+- Are there new capabilities you want to add?
+- Is the instruction style working well for your users?
+
+Listen for clues about:
+
+- User experience issues (confusing steps, unclear instructions)
+- Functional issues (broken references, missing validation)
+- Performance issues (too many steps, repetitive, tedious)
+- Maintainability issues (hard to update, bloated, inconsistent variables)
+- Instruction style mismatch (too prescriptive when should be adaptive, or vice versa)
+- Integration issues (doesn't work well with other workflows)
+  </action>
+
+<action>Based on their responses and your analysis from step 1, identify improvement opportunities:
+
+Organize by priority and user goals:
+
+- CRITICAL issues blocking successful runs
+- IMPORTANT improvements enhancing user experience
+- NICE-TO-HAVE enhancements for polish
+
+Present these conversationally, explaining WHY each matters and HOW it would help.
+</action>
+
+<action>Assess instruction style fit:
+
+Based on the workflow's purpose and your analysis:
+
+- Is the current style (intent-based vs prescriptive) appropriate?
+- Would users benefit from more/less structure?
+- Are there steps that should be more adaptive?
+- Are there steps that need more specificity?
+
+Discuss style as part of improvement discovery, not as a separate concern.
+</action>
+
+<action>Collaborate on priorities:
+
+Don't just list options - discuss them:
+
+- "I noticed {{issue}} - this could make users feel {{problem}}. Want to address this?"
+- "The workflow could be more {{improvement}} which would help when {{use_case}}. Worth exploring?"
+- "Based on what you said about {{user_goal}}, we might want to {{suggestion}}. Thoughts?"
+
+Let the conversation flow naturally. Build a shared vision of what "better" looks like.
+</action>
+
+<template-output>improvement_goals</template-output>
+</step>
+
+<step n="3" goal="Facilitate improvements collaboratively" repeat="until-user-satisfied">
+<critical>Work iteratively - improve, review, refine. Never dump all changes at once.</critical>
+
+<action>For each improvement area, facilitate collaboratively:
+
+1. **Explain the current state and why it matters**
+   - Show relevant sections of the workflow
+   - Explain how it works now and implications
+   - Connect to user's goals from step 2
+
+2. **Propose improvements with rationale**
+   - Suggest specific changes that align with best practices
+   - Explain WHY each change helps
+   - Provide examples from the loaded guides when helpful
+   - Show before/after comparisons for clarity
+   - Reference the creation guide's patterns naturally
+
+3. **Collaborate on the approach**
+   - Ask if the proposed change addresses their need
+   - Invite modifications or alternative approaches
+   - Explain tradeoffs when relevant
+   - Adapt based on their feedback
+
+4. **Apply changes iteratively**
+   - Make one focused improvement at a time
+   - Show the updated section
+   - Confirm it meets their expectation
+   - Move to next improvement or refine current one
+     </action>
+
+<action>Common improvement patterns to facilitate:
+
+**If refining instruction style:**
+
+- Discuss where the workflow feels too rigid or too loose
+- Identify steps that would benefit from intent-based approach
+- Identify steps that need prescriptive structure
+- Convert between styles thoughtfully, explaining tradeoffs
+- Show how each style serves the user differently
+- Test proposed changes by reading them aloud
+
+**If improving step flow:**
+
+- Walk through the user journey step by step
+- Identify friction points or redundancy
+- Propose streamlined flow
+- Consider where steps could merge or split
+- Ensure each step has clear goal and value
+- Check that repeat conditions make sense
+
+**If fixing variable consistency:**
+
+- Identify variables used across files
+- Find mismatches in naming or usage
+- Propose consistent naming scheme
+- Update all files to match
+- Verify variables are defined in workflow.yaml
+
+**If enhancing validation:**
+
+- Review current checklist (if exists)
+- Discuss what "done well" looks like
+- Make criteria specific and measurable
+- Add validation for new features
+- Remove outdated or vague criteria
+
+**If updating configuration:**
+
+- Review standard config pattern
+- Check if user context variables are needed
+- Ensure output_folder, user_name, communication_language are used appropriately
+- Add missing config dependencies
+- Clean up unused config fields
+
+**If adding/updating templates:**
+
+- Understand the document structure needed
+- Design template variables that match instruction outputs
+- Ensure variable names are descriptive snake_case
+- Include proper metadata headers
+- Test that all variables can be filled
+
+**If configuring web bundle:**
+
+- Identify all files the workflow depends on
+- Check for invoked workflows (must be included)
+- Verify paths are bmad/-relative
+- Remove config_source dependencies
+- Build complete file list
+
+**If improving user interaction:**
+
+- Find places where <ask> could be more open-ended
+- Add educational context where users might be lost
+- Remove unnecessary confirmation steps
+- Make questions clearer and more purposeful
+- Balance guidance with user autonomy
+  </action>
+
+<action>Throughout improvements, educate when helpful:
+
+Share insights from the guides naturally:
+
+- "The creation guide recommends {{pattern}} for workflows like this"
+- "Looking at examples in BMM, this type of step usually {{approach}}"
+- "The execution engine expects {{structure}} for this to work properly"
+
+Connect improvements to broader BMAD principles without being preachy.
+</action>
+
+<ask>After each significant change:
+
+- "Does this flow feel better for what you're trying to achieve?"
+- "Want to refine this further, or move to the next improvement?"
+- "How does this change affect the user experience?"
   </ask>
 
-<check>If user selects 'a':</check>
-<action>Apply the changes to the file</action>
-<action>Log the change for the summary</action>
-
-<check>If user selects 'e':</check>
-<ask>What modifications would you like to make?</ask>
-<goto step="5">Regenerate with modifications</goto>
-
-<check>If user selects 'd':</check>
-<continue>Proceed to validation</continue>
+<template-output>improvement_implementation</template-output>
 </step>
 
-<step n="6" goal="Validate all changes" optional="true">
-<action>Run a comprehensive validation check:</action>
+<step n="4" goal="Validate improvements holistically">
+<action>Run comprehensive validation conversationally:
 
-**Basic Validation:**
+Don't just check boxes - explain what you're validating and why it matters:
 
-- [ ] All file paths resolve correctly
-- [ ] Variable names are consistent across files
-- [ ] Step numbering is sequential and logical
-- [ ] Required XML tags are properly formatted
-- [ ] No placeholders remain (like {TITLE} or {WORKFLOW_CODE})
-- [ ] Instructions match the workflow type
-- [ ] Template variables match instruction outputs (if applicable)
-- [ ] Checklist criteria are measurable (if present)
-- [ ] Critical headers are present in instructions
-- [ ] YAML syntax is valid
+- "Let me verify all file references resolve correctly..."
+- "Checking that variables are consistent across all files..."
+- "Making sure the step flow is logical and complete..."
+- "Validating template variables match instruction outputs..."
+- "Ensuring config dependencies are properly set up..."
+  </action>
 
-**Standard Config Validation:**
+<action>Load validation checklist: {installed_path}/checklist.md</action>
+<action>Check all items from checklist systematically</action>
 
-- [ ] workflow.yaml contains config_source
-- [ ] output_folder, user_name, communication_language pulled from config
-- [ ] date set to system-generated
-- [ ] Instructions communicate in {communication_language} where appropriate
-- [ ] Instructions address {user_name} where appropriate
-- [ ] Instructions write to {output_folder} for file outputs
-- [ ] Template optionally includes {{user_name}}, {{date}} in metadata (if document workflow)
-- [ ] Template does NOT use {{communication_language}} in headers (agent-only variable)
+<check if="validation_issues_found">
+  <action>Present issues conversationally:
 
-**YAML/File Alignment:**
+Explain what's wrong and implications:
 
-- [ ] All workflow.yaml variables used in instructions OR template
-- [ ] No unused yaml fields (bloat-free)
-- [ ] No duplicate fields between top-level and web_bundle
-- [ ] Template variables match <template-output> tags in instructions
+- "I found {{issue}} which could cause {{problem}} when users run this"
+- "The {{component}} needs {{fix}} because {{reason}}"
 
-**Web bundle validation (if applicable):**
+Propose fixes immediately:
 
-- [ ] web_bundle section present if needed
-- [ ] All paths are bmad/-relative (no {project-root})
-- [ ] No {config_source} variables in web bundle
-- [ ] All referenced files listed in web_bundle_files
-- [ ] Instructions, validation, template paths correct
-- [ ] Called workflows (<invoke-workflow>) included in web_bundle_files
-- [ ] Complete file inventory verified
+- "I can fix this by {{solution}}. Should I?"
+- "We have a couple options here: {{option1}} or {{option2}}. Thoughts?"
+  </action>
 
-<check>If any validation fails:</check>
-<ask>Issues found. Would you like to fix them? (y/n)</ask>
-<check>If yes:</check>
-<goto step="5">Return to editing</goto>
+<action>Fix approved issues and re-validate</action>
+</check>
+
+<check if="validation_passes">
+  <action>Confirm success warmly:
+
+"Excellent! Everything validates cleanly:
+
+- All file references resolve
+- Variables are consistent throughout
+- Step flow is logical and complete
+- Template aligns with instructions (if applicable)
+- Config dependencies are set up correctly
+- Web bundle is complete (if applicable)
+
+Your workflow is in great shape."
+</action>
+</check>
+
+<template-output>validation_results</template-output>
 </step>
 
-<step n="7" goal="Generate change summary">
-<action>Create a summary of all changes made for {user_name} in {communication_language}:</action>
+<step n="5" goal="Review improvements and guide next steps">
+<action>Create a conversational summary of what improved:
 
-**Summary Structure:**
+Tell the story of the transformation:
 
-- Workflow name
-- Changes made (file-by-file descriptions)
-- Improvements (how workflow is now better aligned with best practices)
-- Files modified (complete list with paths)
-- Next steps (suggestions for additional improvements or testing)
+- "We started with {{initial_state}}"
+- "You wanted to {{user_goals}}"
+- "We made these key improvements: {{changes_list}}"
+- "Now your workflow {{improved_capabilities}}"
+
+Highlight the impact:
+
+- "This means users will experience {{benefit}}"
+- "The workflow is now more {{quality}}"
+- "It follows best practices for {{patterns}}"
+  </action>
+
+<action>Guide next steps based on changes made:
+
+If instruction style changed:
+
+- "Since we made the workflow more {{style}}, you might want to test it with a real user to see how it feels"
+
+If template was updated:
+
+- "The template now has {{new_variables}} - run the workflow to generate a sample document"
+
+If this is part of larger module work:
+
+- "This workflow is part of {{module}} - consider if other workflows need similar improvements"
+
+If web bundle was configured:
+
+- "The web bundle is now set up - you can test deploying this workflow standalone"
+
+Be a helpful guide to what comes next, not just a task completer.
+</action>
 
 <ask>Would you like to:
 
-- Test the edited workflow
-- Make additional edits
-- Exit
+- Test the edited workflow by running it
+- Edit another workflow
+- Make additional refinements to this one
+- Return to your module work
   </ask>
 
-<check>If test workflow:</check>
-<action>Invoke the edited workflow for testing</action>
+<template-output>completion_summary</template-output>
 </step>
 
 </workflow>

@@ -258,7 +258,7 @@ To modify this workflow:
   - Enhanced validation for documentation
   - Improved Step 10 with detailed README requirements
 
-- **v5.0.0** - Initial BMAD Core v6 compatible version
+- **v6.0.0** - Initial BMAD Core v6 compatible version
   - Template-based workflow generation
   - Convention enforcement
   - Validation checklist support

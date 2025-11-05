@@ -9,19 +9,23 @@
 <step n="1" goal="Session Setup">
 
 <action>Check if context data was provided with workflow invocation</action>
-<check>If data attribute was passed to this workflow:</check>
-<action>Load the context document from the data file path</action>
-<action>Study the domain knowledge and session focus</action>
-<action>Use the provided context to guide the session</action>
-<action>Acknowledge the focused brainstorming goal</action>
-<ask response="session_refinement">I see we're brainstorming about the specific domain outlined in the context. What particular aspect would you like to explore?</ask>
-<check>Else (no context data provided):</check>
-<action>Proceed with generic context gathering</action>
-<ask response="session_topic">1. What are we brainstorming about?</ask>
-<ask response="stated_goals">2. Are there any constraints or parameters we should keep in mind?</ask>
-<ask>3. Is the goal broad exploration or focused ideation on specific aspects?</ask>
+
+<check if="data attribute was passed to this workflow">
+  <action>Load the context document from the data file path</action>
+  <action>Study the domain knowledge and session focus</action>
+  <action>Use the provided context to guide the session</action>
+  <action>Acknowledge the focused brainstorming goal</action>
+  <ask response="session_refinement">I see we're brainstorming about the specific domain outlined in the context. What particular aspect would you like to explore?</ask>
+</check>
+
+<check if="no context data provided">
+  <action>Proceed with generic context gathering</action>
+  <ask response="session_topic">1. What are we brainstorming about?</ask>
+  <ask response="stated_goals">2. Are there any constraints or parameters we should keep in mind?</ask>
+  <ask>3. Is the goal broad exploration or focused ideation on specific aspects?</ask>
 
 <critical>Wait for user response before proceeding. This context shapes the entire session.</critical>
+</check>
 
 <template-output>session_topic, stated_goals</template-output>
 
@@ -40,19 +44,19 @@ Based on the context from Step 1, present these four approach options:
 Which approach would you prefer? (Enter 1-4)
 </ask>
 
-<check>Based on selection, proceed to appropriate sub-step</check>
-
   <step n="2a" title="User-Selected Techniques" if="selection==1">
     <action>Load techniques from {brain_techniques} CSV file</action>
     <action>Parse: category, technique_name, description, facilitation_prompts</action>
 
-    <check>If strong context from Step 1 (specific problem/goal)</check>
-    <action>Identify 2-3 most relevant categories based on stated_goals</action>
-    <action>Present those categories first with 3-5 techniques each</action>
-    <action>Offer "show all categories" option</action>
+    <check if="strong context from Step 1 (specific problem/goal)">
+      <action>Identify 2-3 most relevant categories based on stated_goals</action>
+      <action>Present those categories first with 3-5 techniques each</action>
+      <action>Offer "show all categories" option</action>
+    </check>
 
-    <check>Else (open exploration)</check>
-    <action>Display all 7 categories with helpful descriptions</action>
+    <check if="open exploration">
+      <action>Display all 7 categories with helpful descriptions</action>
+    </check>
 
     Category descriptions to guide selection:
     - **Structured:** Systematic frameworks for thorough exploration

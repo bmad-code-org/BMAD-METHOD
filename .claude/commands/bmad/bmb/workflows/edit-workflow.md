@@ -1,3 +1,7 @@
+---
+description: 'Edit existing BMAD workflows while following all best practices and conventions'
+---
+
 # edit-workflow
 
 IT IS CRITICAL THAT YOU FOLLOW THESE STEPS - while staying in character as the current agent persona you may have loaded:

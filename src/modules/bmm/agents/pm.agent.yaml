@@ -39,10 +39,12 @@ agent:
       workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/tech-spec/workflow.yaml"
       description: Create Tech Spec for Level 0-1 (sometimes Level 2) projects
 
+    - trigger: validate-tech-spec
+      validate-workflow: "{project-root}/bmad/bmm/workflows/2-plan-workflows/tech-spec/workflow.yaml"
+      checklist: "{project-root}/bmad/bmm/workflows/2-plan-workflows/tech-spec/checklist.md"
+      document: "{output_folder}/tech-spec.md"
+      description: Validate Technical Specification Document
+
     - trigger: correct-course
       workflow: "{project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: Course Correction Analysis
-
-    - trigger: validate
-      exec: "{project-root}/bmad/core/tasks/validate-workflow.xml"
-      description: Validate any document against its workflow checklist

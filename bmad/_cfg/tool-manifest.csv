@@ -1,0 +1,2 @@
+name,displayName,description,module,path,standalone
+"shard-doc","Shard Document","Splits large markdown documents into smaller, organized files based on level 2 (default) sections","core","bmad/core/tools/shard-doc.xml","true"

@@ -79,7 +79,7 @@ create-module/
 
 **Module Configuration**
 
-- Generates main config.yaml with module metadata
+- Defines configuration questions in install-config.yaml (config.yaml generated during installation)
 - Configures component counts and references
 - Sets up output and data folder specifications
 
@@ -101,7 +101,7 @@ create-module/
 
 **Installer Infrastructure**
 
-- Creates install-config.yaml for deployment
+- Creates install-config.yaml with configuration questions for deployment
 - Sets up optional installer.js for complex installation logic
 - Configures post-install messaging and instructions
 
@@ -125,7 +125,9 @@ create-module/
 ### Generated Files
 
 - **Module Directory**: Complete module structure at `{project-root}/bmad/{module_code}/`
-- **Configuration Files**: config.yaml, install-config.yaml
+- **Configuration Files**:
+  - Source: install-config.yaml (configuration questions)
+  - Target: config.yaml (generated from user answers during installation)
 - **Documentation**: README.md, TODO.md development roadmap
 - **Component Placeholders**: Structured folders for agents, workflows, and tasks
 
@@ -215,4 +217,4 @@ For issues or questions:
 
 ---
 
-_Part of the BMad Method v5 - BMB (Builder) Module_
+_Part of the BMad Method v6 - BMB (Builder) Module_
