@@ -50,7 +50,7 @@ jobs:
       - name: ESLint
         run: npm run lint
 
-  schema-validation:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -68,56 +68,11 @@ jobs:
       - name: Validate YAML schemas
         run: npm run validate:schemas
 
-  agent-schema-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
       - name: Run agent schema validation tests
         run: npm run test:schemas
 
-  installation-components:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
       - name: Test agent compilation components
         run: npm run test:install
-
-  bundle-validation:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: ".nvmrc"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Validate web bundles
         run: npm run validate:bundles

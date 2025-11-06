@@ -47,6 +47,9 @@ jobs:
           # Track progress creates a comment showing review progress
           track_progress: true
 
+          # Enable full output for debugging (WARNING: may expose sensitive data in public repos)
+          show_full_output: true
+
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
