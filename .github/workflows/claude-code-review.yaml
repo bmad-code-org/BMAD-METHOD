@@ -40,6 +40,7 @@ jobs:
         id: claude-review
         uses: anthropics/claude-code-action@v1
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           # Using API key for per-token billing plan
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
 
