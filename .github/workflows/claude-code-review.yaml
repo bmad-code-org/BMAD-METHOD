@@ -48,7 +48,7 @@ jobs:
           track_progress: true
 
           # Enable full output for debugging (WARNING: may expose sensitive data in public repos)
-          show_full_output: true
+          # show_full_output: true
 
           prompt: |
             REPO: ${{ github.repository }}
