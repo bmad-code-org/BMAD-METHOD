@@ -105,21 +105,21 @@
 
 <ask>What's your situation with these documents?
 
-a) **Continue this work** - These docs describe what I'm building now
-b) **Override/replace** - These are old, I'm starting something NEW
-c) **Already done** - This work is complete, I'm starting a NEW project
-d) **Not sure** - Let me explain my situation
+1. **Continue this work** - These docs describe what I'm building now
+2. **Override/replace** - These are old, I'm starting something NEW
+3. **Already done** - This work is complete, I'm starting a NEW project
+4. **Not sure** - Let me explain my situation
 
-Your choice [a/b/c/d]:</ask>
+Your choice [1/2/3/4]:</ask>
 
-  <check if="choice == a (Continue)">
+  <check if="choice == 1">
     <output>Got it! I'll create workflow tracking for your existing planning.</output>
     <action>Set continuing_existing_planning = true</action>
     <action>Store found artifacts for auto-completion in workflow status</action>
     <action>Continue to Step 5 (detect track from artifacts)</action>
   </check>
 
-  <check if="choice == b (Override)">
+  <check if="choice == 2">
     <ask>Should I archive these old documents before we start fresh?
 
 I can move them to {output_folder}/archive/ so they're not in the way.
@@ -134,7 +134,7 @@ Archive old docs? (y/n)</ask>
 
   </check>
 
-  <check if="choice == c (Already done)">
+  <check if="choice == 3">
     <ask>Should I archive the completed work before starting your new project? (y/n)</ask>
     <action if="answer == y">Archive old planning docs</action>
     <output>{{#if archived}}✅ Completed work archived{{else}}Ready for your new project!{{/if}}</output>
@@ -142,9 +142,9 @@ Archive old docs? (y/n)</ask>
     <action>Continue to Step 3 (ask about their work)</action>
   </check>
 
-  <check if="choice == d (Not sure)">
+  <check if="choice == 4">
     <ask>Tell me what you're trying to accomplish:</ask>
-    <action>Analyze response and guide to appropriate choice (a, b, or c)</action>
+    <action>Analyze response and guide to appropriate choice (1, 2, or 3)</action>
     <action>Loop back to present choices again with guidance</action>
   </check>
 </check>
@@ -178,14 +178,14 @@ Archive old docs? (y/n)</ask>
 
 <ask>What's happening here?
 
-a) **Continue implementation** - I'm still working on these stories
-b) **Completed** - This work is done, starting something NEW
-c) **Abandoned** - Stopping this, starting over
-d) **Not sure** - Let me explain
+1. **Continue implementation** - I'm still working on these stories
+2. **Completed** - This work is done, starting something NEW
+3. **Abandoned** - Stopping this, starting over
+4. **Not sure** - Let me explain
 
-Your choice [a/b/c/d]:</ask>
+Your choice [1/2/3/4]:</ask>
 
-  <check if="choice == a (Continue)">
+  <check if="choice == 1">
     <action>Check if bmm-workflow-status.yaml exists</action>
 
     <check if="workflow_status_exists">
@@ -216,7 +216,7 @@ I'll create workflow tracking that recognizes your existing work.</output>
 </check>
 </check>
 
-  <check if="choice in [b (Completed), c (Abandoned)]">
+  <check if="choice in [2, 3]">
     <ask>Archive the old work before starting fresh? (y/n)</ask>
     <action if="answer == y">Create archive folder</action>
     <action if="answer == y">Move stories, sprint status, and planning docs to archive</action>
@@ -225,7 +225,7 @@ I'll create workflow tracking that recognizes your existing work.</output>
     <action>Continue to Step 3 (ask about their work)</action>
   </check>
 
-  <check if="choice == d (Not sure)">
+  <check if="choice == 4">
     <ask>Tell me more about your situation:</ask>
     <action>Analyze and guide to appropriate choice</action>
   </check>
@@ -334,29 +334,30 @@ workflows that can help you think through your project more deeply:</output>
 These are completely OPTIONAL but can help clarify your vision before planning.
 
 Your choice:
-a) Yes, brainstorm first
-b) Yes, research first
-c) Yes, both
-d) No, I'm ready to plan
 
-Your choice [a/b/c/d]:</ask>
+1. Yes, brainstorm first
+2. Yes, research first
+3. Yes, both
+4. No, I'm ready to plan
 
-<check if="choice == a">
+Your choice [1/2/3/4]:</ask>
+
+<check if="choice == 1">
   <action>Set brainstorm_requested = true</action>
   <action>Set research_requested = false</action>
 </check>
 
-<check if="choice == b">
+<check if="choice == 2">
   <action>Set brainstorm_requested = false</action>
   <action>Set research_requested = true</action>
 </check>
 
-<check if="choice == c">
+<check if="choice == 3">
   <action>Set brainstorm_requested = true</action>
   <action>Set research_requested = true</action>
 </check>
 
-<check if="choice == d">
+<check if="choice == 4">
   <action>Set brainstorm_requested = false</action>
   <action>Set research_requested = false</action>
 </check>
@@ -507,7 +508,7 @@ or "Add SOC2-compliant audit logging to enterprise app"
 
 Your choice [1/2/3/4]:</ask>
 
-  <check if="choice == 4 (Not sure)">
+  <check if="choice == 4">
     <ask>Tell me more about your concerns or uncertainties:</ask>
     <action>Provide tailored guidance based on their specific concerns</action>
     <action>Present choices again with more specific recommendation</action>
@@ -551,16 +552,15 @@ This comes BEFORE your PRD and helps inform it with strategic thinking.
 
 Would you like to include Product Brief in your workflow?</output>
 
-<ask>a) Yes, include Product Brief
-b) No, skip to PRD
+<ask>1. Yes, include Product Brief 2. No, skip to PRD
 
-Your choice [a/b]:</ask>
+Your choice [1/2]:</ask>
 
-  <check if="choice == a">
+  <check if="choice == 1">
     <action>Set product_brief_requested = true</action>
   </check>
 
-  <check if="choice == b">
+  <check if="choice == 2">
     <action>Set product_brief_requested = false</action>
   </check>
 
