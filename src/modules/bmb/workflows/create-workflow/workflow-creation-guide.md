@@ -1198,7 +1198,7 @@ Web bundles allow workflows to be deployed as self-contained packages for web en
 
 ### Creating a Web Bundle
 
-Add this section to your workflow.yaml ensuring critically all dependant files or workflows are listed:
+Add this section to your workflow.yaml ensuring critically all dependent files or workflows are listed:
 
 ```yaml
 web_bundle:
