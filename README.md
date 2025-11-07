@@ -191,7 +191,7 @@ AI-powered creative facilitation using proven methodologies and techniques.
 
 **Documentation:**
 
-- **[CIS Module Overview](./src/modules/cis/README.md)** - Complete reference
+- **[CIS Module Overview](./src/modules/cis/readme.md)** - Complete reference
 - **[CIS Workflows Guide](./src/modules/cis/workflows/README.md)** - All 5 creative workflows
 
 ---
