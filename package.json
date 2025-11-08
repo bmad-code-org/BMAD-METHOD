@@ -26,6 +26,7 @@
     "bmad:install": "node tools/cli/bmad-cli.js install",
     "bmad:status": "node tools/cli/bmad-cli.js status",
     "bundle": "node tools/cli/bundlers/bundle-web.js all",
+    "convert:chatmodes": "node tools/convert-agents-to-chatmodes.js",
     "flatten": "node tools/flattener/main.js",
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,md,yaml}\"",
     "format:fix": "prettier --write \"**/*.{js,cjs,mjs,json,md,yaml}\"",
