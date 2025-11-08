@@ -2,13 +2,28 @@
 
 ## [Unreleased]
 
+## [6.0.0-alpha.0]
+
+**Release: November 8, 2025**
+
+Initial alpha release of a major rewrite and overhaul improvement of past versions.
+
+### Chat Mode Migration (November 8, 2025)
+
+- **GitHub Copilot Integration**: Complete migration to `.chatmode.md` format for all 24 agents
+  - BMM Module: 10 agents (PM, Analyst, Architect, Dev, UX Expert, SM, TEA, Game Designer, Game Architect, Game Dev)
+  - CIS Module: 5 agents (Storyteller, Innovation Strategist, Design Thinking Coach, Problem Solver, Brainstorming Coach)
+  - BMD Module: 7 agents (Release Chief, CLI Chief, Doc Keeper, plus knowledge/instruction files)
+  - BMB Module: 1 agent (BMad Builder)
+  - Core Module: 1 agent (BMad Master)
+- **Enhanced Tool Access**: CIS agents now include full tool arrays (15 capabilities: codebase, usages, editFiles, runCommands, runTasks, runTests, search, etc.)
+- **Automation**: Created `tools/convert-agents-to-chatmodes.js` for automated YAML-to-chatmode conversion
+- **Agent Frontmatter**: All agents updated with YAML frontmatter for GitHub Copilot compatibility
+- **Quality Assurance**: All 50 agent schema validation tests passing, 17 YAML agents validated
+
 ### Codex Installer
 
 - Codex installer uses custom prompts in `.codex/prompts/`, instead of `AGENTS.md`
-
-## [6.0.0-alpha.0]
-
-**Release: September 28, 2025**
 
 Initial alpha release of a major rewrite and overhaul improvement of past versions.
 
