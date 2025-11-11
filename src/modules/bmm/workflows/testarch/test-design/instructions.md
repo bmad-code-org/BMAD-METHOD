@@ -9,24 +9,77 @@
 
 ## Overview
 
-Plans comprehensive test coverage strategy with risk assessment, priority classification, and execution ordering. This workflow generates a test design document that identifies high-risk areas, maps requirements to test levels, prioritizes scenarios (P0-P3), and provides resource estimates for the testing effort.
+Plans comprehensive test coverage strategy with risk assessment, priority classification, and execution ordering. This workflow operates in **two modes**:
+
+- **System-Level Mode (Phase 3)**: Testability review of architecture before solutioning gate check
+- **Epic-Level Mode (Phase 4)**: Per-epic test planning with risk assessment (current behavior)
+
+The workflow auto-detects which mode to use based on project phase.
 
 ---
 
-## Preflight Requirements
+## Preflight: Detect Mode and Load Context
 
-**Critical:** Verify these requirements before proceeding. If any fail, HALT and notify the user.
+**Critical:** Determine mode before proceeding.
 
-- ✅ Story markdown with acceptance criteria available
-- ✅ PRD or epic documentation exists for context
-- ✅ Architecture documents available (optional but recommended)
-- ✅ Requirements are clear and testable
+### Mode Detection
+
+1. **Check for sprint-status.yaml**
+   - If `{output_folder}/bmm-sprint-status.yaml` exists → **Epic-Level Mode** (Phase 4)
+   - If NOT exists → Check workflow status
+
+2. **Check workflow-status.yaml**
+   - Read `{output_folder}/bmm-workflow-status.yaml`
+   - If `solutioning-gate-check: required` or `solutioning-gate-check: recommended` → **System-Level Mode** (Phase 3)
+   - Otherwise → **Epic-Level Mode** (Phase 4 without sprint status yet)
+
+3. **Mode-Specific Requirements**
+
+   **System-Level Mode (Phase 3 - Testability Review):**
+   - ✅ Architecture document exists (architecture.md or tech-spec)
+   - ✅ PRD exists with functional and non-functional requirements
+   - ✅ Epics documented (epics.md)
+   - ⚠️ Output: `{output_folder}/test-design-system.md`
+
+   **Epic-Level Mode (Phase 4 - Per-Epic Planning):**
+   - ✅ Story markdown with acceptance criteria available
+   - ✅ PRD or epic documentation exists for context
+   - ✅ Architecture documents available (optional but recommended)
+   - ✅ Requirements are clear and testable
+   - ⚠️ Output: `{output_folder}/test-design-epic-{epic_num}.md`
+
+**Halt Condition:** If mode cannot be determined or required files missing, HALT and notify user with missing prerequisites.
 
 ---
 
-## Step 1: Load Context and Requirements
+## Step 1: Load Context (Mode-Aware)
 
-### Actions
+**Mode-Specific Loading:**
+
+### System-Level Mode (Phase 3)
+
+1. **Read Architecture Documentation**
+   - Load architecture.md or tech-spec (REQUIRED)
+   - Load PRD.md for functional and non-functional requirements
+   - Load epics.md for feature scope
+   - Identify technology stack decisions (frameworks, databases, deployment targets)
+   - Note integration points and external system dependencies
+   - Extract NFR requirements (performance SLOs, security requirements, etc.)
+
+2. **Load Knowledge Base Fragments (System-Level)**
+
+   **Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to load:
+   - `nfr-criteria.md` - NFR validation approach (security, performance, reliability, maintainability)
+   - `test-levels-framework.md` - Test levels strategy guidance
+   - `risk-governance.md` - Testability risk identification
+   - `test-quality.md` - Quality standards and Definition of Done
+
+3. **Analyze Existing Test Setup (if brownfield)**
+   - Search for existing test directories
+   - Identify current test framework (if any)
+   - Note testability concerns in existing codebase
+
+### Epic-Level Mode (Phase 4)
 
 1. **Read Requirements Documentation**
    - Load PRD.md for high-level product requirements
@@ -37,6 +90,7 @@ Plans comprehensive test coverage strategy with risk assessment, priority classi
 2. **Load Architecture Context**
    - Read architecture.md for system design
    - Read tech-spec for implementation details
+   - Read test-design-system.md (if exists from Phase 3)
    - Identify technical constraints and dependencies
    - Note integration points and external systems
 
@@ -46,7 +100,7 @@ Plans comprehensive test coverage strategy with risk assessment, priority classi
    - Note areas with insufficient testing
    - Check for flaky or outdated tests
 
-4. **Load Knowledge Base Fragments**
+4. **Load Knowledge Base Fragments (Epic-Level)**
 
    **Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to load:
    - `risk-governance.md` - Risk classification framework (6 categories: TECH, SEC, PERF, DATA, BUS, OPS), automated scoring, gate decision engine, owner tracking (625 lines, 4 examples)
@@ -54,11 +108,118 @@ Plans comprehensive test coverage strategy with risk assessment, priority classi
    - `test-levels-framework.md` - Test level selection guidance (E2E vs API vs Component vs Unit with decision matrix, characteristics, when to use each, 467 lines, 4 examples)
    - `test-priorities-matrix.md` - P0-P3 prioritization criteria (automated priority calculation, risk-based mapping, tagging strategy, time budgets, 389 lines, 2 examples)
 
-**Halt Condition:** If story data or acceptance criteria are missing, check if brownfield exploration is needed. If neither requirements NOR exploration possible, HALT with message: "Test design requires clear requirements, acceptance criteria, or brownfield app URL for exploration"
+**Halt Condition (Epic-Level only):** If story data or acceptance criteria are missing, check if brownfield exploration is needed. If neither requirements NOR exploration possible, HALT with message: "Epic-level test design requires clear requirements, acceptance criteria, or brownfield app URL for exploration"
 
 ---
 
-## Step 1.5: Mode Selection (NEW - Phase 2.5)
+## Step 1.5: System-Level Testability Review (Phase 3 Only)
+
+**Skip this step if Epic-Level Mode.** This step only executes in System-Level Mode.
+
+### Actions
+
+1. **Review Architecture for Testability**
+
+   Evaluate architecture against these criteria:
+
+   **Controllability:**
+   - Can we control system state for testing? (API seeding, factories, database reset)
+   - Are external dependencies mockable? (interfaces, dependency injection)
+   - Can we trigger error conditions? (chaos engineering, fault injection)
+
+   **Observability:**
+   - Can we inspect system state? (logging, metrics, traces)
+   - Are test results deterministic? (no race conditions, clear success/failure)
+   - Can we validate NFRs? (performance metrics, security audit logs)
+
+   **Reliability:**
+   - Are tests isolated? (parallel-safe, stateless, cleanup discipline)
+   - Can we reproduce failures? (deterministic waits, HAR capture, seed data)
+   - Are components loosely coupled? (mockable, testable boundaries)
+
+2. **Identify Architecturally Significant Requirements (ASRs)**
+
+   From PRD NFRs and architecture decisions, identify quality requirements that:
+   - Drive architecture decisions (e.g., "Must handle 10K concurrent users" → caching architecture)
+   - Pose testability challenges (e.g., "Sub-second response time" → performance test infrastructure)
+   - Require special test environments (e.g., "Multi-region deployment" → regional test instances)
+
+   Score each ASR using risk matrix (probability × impact).
+
+3. **Define Test Levels Strategy**
+
+   Based on architecture (mobile, web, API, microservices, monolith):
+   - Recommend unit/integration/E2E split (e.g., 70/20/10 for API-heavy, 40/30/30 for UI-heavy)
+   - Identify test environment needs (local, staging, ephemeral, production-like)
+   - Define testing approach per technology (Playwright for web, Maestro for mobile, k6 for performance)
+
+4. **Assess NFR Testing Approach**
+
+   For each NFR category:
+   - **Security**: Auth/authz tests, OWASP validation, secret handling (Playwright E2E + security tools)
+   - **Performance**: Load/stress/spike testing with k6, SLO/SLA thresholds
+   - **Reliability**: Error handling, retries, circuit breakers, health checks (Playwright + API tests)
+   - **Maintainability**: Coverage targets, code quality gates, observability validation
+
+5. **Flag Testability Concerns**
+
+   Identify architecture decisions that harm testability:
+   - ❌ Tight coupling (no interfaces, hard dependencies)
+   - ❌ No dependency injection (can't mock external services)
+   - ❌ Hardcoded configurations (can't test different envs)
+   - ❌ Missing observability (can't validate NFRs)
+   - ❌ Stateful designs (can't parallelize tests)
+
+   **Critical:** If testability concerns are blockers (e.g., "Architecture makes performance testing impossible"), document as CONCERNS or FAIL recommendation for gate check.
+
+6. **Output System-Level Test Design**
+
+   Write to `{output_folder}/test-design-system.md` containing:
+
+   ```markdown
+   # System-Level Test Design
+
+   ## Testability Assessment
+
+   - Controllability: [PASS/CONCERNS/FAIL with details]
+   - Observability: [PASS/CONCERNS/FAIL with details]
+   - Reliability: [PASS/CONCERNS/FAIL with details]
+
+   ## Architecturally Significant Requirements (ASRs)
+
+   [Risk-scored quality requirements]
+
+   ## Test Levels Strategy
+
+   - Unit: [X%] - [Rationale]
+   - Integration: [Y%] - [Rationale]
+   - E2E: [Z%] - [Rationale]
+
+   ## NFR Testing Approach
+
+   - Security: [Approach with tools]
+   - Performance: [Approach with tools]
+   - Reliability: [Approach with tools]
+   - Maintainability: [Approach with tools]
+
+   ## Test Environment Requirements
+
+   [Infrastructure needs based on deployment architecture]
+
+   ## Testability Concerns (if any)
+
+   [Blockers or concerns that should inform solutioning gate check]
+
+   ## Recommendations for Sprint 0
+
+   [Specific actions for *framework and *ci workflows]
+   ```
+
+**After System-Level Mode:** Skip to Step 4 (Generate Deliverables) - Steps 2-3 are epic-level only.
+
+---
+
+## Step 1.6: Exploratory Mode Selection (Epic-Level Only)
 
 ### Actions
 

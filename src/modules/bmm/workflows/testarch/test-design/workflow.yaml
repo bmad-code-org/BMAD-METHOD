@@ -1,6 +1,6 @@
 # Test Architect workflow: test-design
 name: testarch-test-design
-description: "Plan risk mitigation and test coverage strategy before development with risk assessment and prioritization"
+description: "Two-phase workflow: (1) System-level testability review in Phase 3, or (2) Epic-level test planning in Phase 4. Auto-detects mode based on project phase."
 author: "BMad"
 
 # Critical variables from config
@@ -20,8 +20,12 @@ template: "{installed_path}/test-design-template.md"
 # Variables and inputs
 variables:
   design_level: "full" # full, targeted, minimal - scope of design effort
+  mode: "auto-detect" # auto-detect (default), system-level, epic-level
 
 # Output configuration
+# Note: Actual output file determined dynamically based on mode detection
+# - System-Level (Phase 3): {output_folder}/test-design-system.md
+# - Epic-Level (Phase 4): {output_folder}/test-design-epic-{epic_num}.md
 default_output_file: "{output_folder}/test-design-epic-{epic_num}.md"
 
 # Required tools

@@ -65,6 +65,13 @@ phases:
         output: "System architecture document"
         note: "Complete system design for greenfield projects"
 
+      - id: "test-design"
+        recommended: true
+        agent: "tea"
+        command: "test-design"
+        output: "System-level testability review"
+        note: "Testability assessment before gate check - auto-detects system-level mode"
+
       - id: "validate-architecture"
         optional: true
         agent: "architect"
@@ -75,7 +82,7 @@ phases:
         required: true
         agent: "architect"
         command: "solutioning-gate-check"
-        note: "Validates PRD + UX + Architecture cohesion before implementation"
+        note: "Validates PRD + UX + Architecture + Testability cohesion before implementation"
 
   - phase: 3
     name: "Implementation"

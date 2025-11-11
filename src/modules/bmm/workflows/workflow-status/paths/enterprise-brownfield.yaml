@@ -66,20 +66,6 @@ phases:
         command: "create-design"
         note: "Recommended - must integrate with existing UX patterns"
 
-      - id: "framework"
-        optional: true
-        agent: "tea"
-        command: "framework"
-        output: "Test framework scaffold (Playwright/Cypress)"
-        note: "Initialize or modernize test framework - critical if brownfield lacks proper test infrastructure"
-
-      - id: "ci"
-        optional: true
-        agent: "tea"
-        command: "ci"
-        output: "CI/CD test pipeline configuration"
-        note: "Establish or enhance CI pipeline with regression testing strategy"
-
   - phase: 2
     name: "Solutioning"
     required: true
@@ -90,6 +76,13 @@ phases:
         command: "create-architecture"
         output: "Integration architecture with enterprise considerations"
         note: "Distills brownfield context + adds security/scalability/compliance design"
+
+      - id: "test-design"
+        required: true
+        agent: "tea"
+        command: "test-design"
+        output: "System-level testability review"
+        note: "Enterprise requires testability validation - auto-detects system-level mode"
 
       - id: "create-security-architecture"
         optional: true
@@ -106,7 +99,7 @@ phases:
         note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
 
       - id: "validate-architecture"
-        optional: true
+        recommended: true
         agent: "architect"
         command: "validate-architecture"
 

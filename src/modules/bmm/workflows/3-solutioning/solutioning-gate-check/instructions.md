@@ -204,6 +204,17 @@
 - Over-engineering indicators
   </action>
 
+<action>Check Testability Review (if test-design exists in Phase 3):
+
+**Note:** test-design is recommended for BMad Method, required for Enterprise Method
+
+- Check if {output_folder}/test-design-system.md exists
+- If exists: Review testability assessment (Controllability, Observability, Reliability)
+- If testability concerns documented: Flag for gate decision
+- If missing AND track is Enterprise: Flag as CRITICAL gap
+- If missing AND track is Method: Note as recommendation (not blocker)
+  </action>
+
 <template-output>gap_risk_analysis</template-output>
 </step>
 

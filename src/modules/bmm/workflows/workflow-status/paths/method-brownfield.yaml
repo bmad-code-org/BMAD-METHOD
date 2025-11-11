@@ -75,6 +75,13 @@ phases:
         output: "Integration architecture - solution design for THIS project"
         note: "HIGHLY RECOMMENDED: Distills massive brownfield context into focused solution design. Prevents agent confusion."
 
+      - id: "test-design"
+        recommended: true
+        agent: "tea"
+        command: "test-design"
+        output: "System-level testability review"
+        note: "Testability assessment before gate check - auto-detects system-level mode"
+
       - id: "validate-architecture"
         optional: true
         agent: "architect"

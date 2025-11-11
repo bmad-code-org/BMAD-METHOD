@@ -12,7 +12,7 @@ last-redoc-date: 2025-11-05
 
 ## TEA Workflow Lifecycle
 
-TEA integrates into the BMad development lifecycle during Solutioning (Phase 3) and Implementation (Phase 4):
+TEA integrates into the BMad development lifecycle during Implementation (Phase 4):
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#fff','primaryTextColor':'#000','primaryBorderColor':'#000','lineColor':'#000','secondaryColor':'#fff','tertiaryColor':'#fff','fontSize':'16px','fontFamily':'arial'}}}%%
@@ -25,36 +25,49 @@ graph TB
 
     subgraph Phase3["<b>Phase 3: SOLUTIONING</b>"]
         Architecture["<b>Architect: *architecture</b>"]
-        Framework["<b>TEA: *framework</b>"]
-        CI["<b>TEA: *ci</b>"]
+        TestDesignSys["<b>TEA: *test-design (system-level)</b>"]
+        ValidateArch["<b>Architect: *validate-architecture</b>"]
         GateCheck["<b>Architect: *solutioning-gate-check</b>"]
-        Architecture --> Framework
-        Framework --> CI
-        CI --> GateCheck
-        Phase3Note["<b>Test infrastructure AFTER architecture</b><br/>defines technology stack"]
-        Framework -.-> Phase3Note
+        Architecture --> TestDesignSys
+        TestDesignSys --> ValidateArch
+        ValidateArch --> GateCheck
+        Phase3Note["<b>Testability review before gate</b><br/>Recommended: Method | Required: Enterprise"]
+        TestDesignSys -.-> Phase3Note
     end
 
-    subgraph Phase4["<b>Phase 4: IMPLEMENTATION - Per Epic Cycle</b>"]
-        SprintPlan["<b>SM: *sprint-planning</b>"]
-        TestDesign["<b>TEA: *test-design (per epic)</b>"]
-        CreateStory["<b>SM: *create-story</b>"]
-        ATDD["<b>TEA: *atdd (optional, before dev)</b>"]
-        DevImpl["<b>DEV: implements story</b>"]
-        Automate["<b>TEA: *automate</b>"]
-        TestReview1["<b>TEA: *test-review (optional)</b>"]
-        Trace1["<b>TEA: *trace (refresh coverage)</b>"]
+    subgraph Phase4["<b>Phase 4: IMPLEMENTATION</b>"]
+        subgraph Sprint0["<b>Sprint 0: Infrastructure Setup</b>"]
+            Framework["<b>TEA: *framework</b>"]
+            CI["<b>TEA: *ci</b>"]
+            Framework --> CI
+            Sprint0Note["<b>Test infrastructure setup</b><br/>based on architectural decisions"]
+            Framework -.-> Sprint0Note
+        end
 
+        SprintPlan["<b>SM: *sprint-planning</b>"]
+
+        subgraph PerEpic["<b>Per Epic Cycle</b>"]
+            TestDesign["<b>TEA: *test-design (per epic)</b>"]
+            CreateStory["<b>SM: *create-story</b>"]
+            ATDD["<b>TEA: *atdd (optional, before dev)</b>"]
+            DevImpl["<b>DEV: implements story</b>"]
+            Automate["<b>TEA: *automate</b>"]
+            TestReview1["<b>TEA: *test-review (optional)</b>"]
+            Trace1["<b>TEA: *trace (refresh coverage)</b>"]
+
+            TestDesign --> CreateStory
+            CreateStory --> ATDD
+            ATDD --> DevImpl
+            DevImpl --> Automate
+            Automate --> TestReview1
+            TestReview1 --> Trace1
+            Trace1 -.->|next story| CreateStory
+            TestDesignNote["<b>Test design: 'How do I test THIS epic?'</b><br/>Creates test-design-epic-N.md per epic"]
+            TestDesign -.-> TestDesignNote
+        end
+
+        CI --> SprintPlan
         SprintPlan --> TestDesign
-        TestDesign --> CreateStory
-        CreateStory --> ATDD
-        ATDD --> DevImpl
-        DevImpl --> Automate
-        Automate --> TestReview1
-        TestReview1 --> Trace1
-        Trace1 -.->|next story| CreateStory
-        TestDesignNote["<b>Test design: 'How do I test THIS epic?'</b><br/>Creates test-design-epic-N.md per epic"]
-        TestDesign -.-> TestDesignNote
     end
 
     subgraph Gate["<b>EPIC/RELEASE GATE</b>"]
@@ -79,6 +92,8 @@ graph TB
     style Phase2 fill:#bbdefb,stroke:#0d47a1,stroke-width:3px,color:#000
     style Phase3 fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px,color:#000
     style Phase4 fill:#e1bee7,stroke:#4a148c,stroke-width:3px,color:#000
+    style Sprint0 fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#000
+    style PerEpic fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px,color:#000
     style Gate fill:#ffe082,stroke:#f57c00,stroke-width:3px,color:#000
     style Pass fill:#4caf50,stroke:#1b5e20,stroke-width:3px,color:#000
     style Concerns fill:#ffc107,stroke:#f57f17,stroke-width:3px,color:#000
@@ -91,16 +106,19 @@ graph TB
 - **Phase 0** (Optional): Documentation (brownfield prerequisite - `*document-project`)
 - **Phase 1** (Optional): Discovery/Analysis (`*brainstorm`, `*research`, `*product-brief`)
 - **Phase 2** (Required): Planning (`*prd` creates PRD + epics)
-- **Phase 3** (Track-dependent): Solutioning (`*architecture` → TEA: `*framework`, `*ci` → `*solutioning-gate-check`)
-- **Phase 4** (Required): Implementation (`*sprint-planning` → per-epic: `*test-design` → per-story: dev workflows)
+- **Phase 3** (Required): Solutioning (`*architecture` → `*validate-architecture` → `*solutioning-gate-check`)
+- **Phase 4** (Required): Implementation
+  - **Sprint 0**: Test infrastructure setup (`*framework`, `*ci`) based on architectural decisions
+  - **Sprint Planning**: Load epics into sprint status
+  - **Per-Epic**: `*test-design` → per-story dev workflows
 
-**TEA workflows:** `*framework` and `*ci` run once in Phase 3 after architecture. `*test-design` runs per-epic in Phase 4. Output: `test-design-epic-N.md`.
+**TEA workflows:** `*test-design` runs in Phase 3 (system-level testability review, recommended/required) and Phase 4 (per-epic planning). `*framework` and `*ci` run once in Phase 4 Sprint 0 (after architecture and testability are approved).
 
 Quick Flow track skips Phases 0, 1, and 3. BMad Method and Enterprise use all phases based on project needs.
 
 ### Why TEA is Different from Other BMM Agents
 
-TEA is the only BMM agent that operates in **multiple phases** (Phase 3 and Phase 4) and has its own **knowledge base architecture**.
+TEA is the only BMM agent that operates in **both Phase 3 (Solutioning) and Phase 4 (Implementation)** and has its own **knowledge base architecture**.
 
 <details>
 <summary><strong>Cross-Phase Operation & Unique Architecture</strong></summary>
@@ -114,36 +132,42 @@ Most BMM agents work in a single phase:
 - **Phase 3 (Solutioning)**: Architect agent
 - **Phase 4 (Implementation)**: SM, DEV agents
 
-### TEA: Multi-Phase Quality Agent (Unique Pattern)
+### TEA: Cross-Phase Quality Agent (Unique Pattern)
 
-TEA is **the only agent that operates in multiple phases**:
+TEA is **the only agent that operates in both Phase 3 (Solutioning) and Phase 4 (Implementation)**:
 
 ```
 Phase 1 (Analysis) → [TEA not typically used]
     ↓
 Phase 2 (Planning) → [PM defines requirements - TEA not active]
     ↓
-Phase 3 (Solutioning) → TEA: *framework, *ci (test infrastructure AFTER architecture)
+Phase 3 (Solutioning) → TEA: *test-design (system-level testability review before gate)
     ↓
-Phase 4 (Implementation) → TEA: *test-design (per epic: "how do I test THIS feature?")
-                        → TEA: *atdd, *automate, *test-review, *trace (per story)
+Phase 4 Sprint 0 → TEA: *framework, *ci (test infrastructure setup based on testability review)
+    ↓
+Phase 4 Sprint Planning → [SM loads epics into sprint status]
+    ↓
+Phase 4 Per-Epic → TEA: *test-design (per epic: "how do I test THIS feature?")
+Phase 4 Per-Story → TEA: *atdd, *automate, *test-review, *trace (per story)
     ↓
 Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
 ```
 
-### TEA's 8 Workflows Across Phases
+### TEA's 8 Workflows Across Phase 3-4
 
 **Standard agents**: 1-3 workflows per phase
-**TEA**: 8 workflows across Phase 3, Phase 4, and Release Gate
+**TEA**: 8 workflows spanning Phase 3 Solutioning through Phase 4 Release Gate
 
-| Phase       | TEA Workflows                                         | Frequency        | Purpose                                        |
-| ----------- | ----------------------------------------------------- | ---------------- | ---------------------------------------------- |
-| **Phase 2** | (none)                                                | -                | Planning phase - PM defines requirements       |
-| **Phase 3** | *framework, *ci                                       | Once per project | Setup test infrastructure AFTER architecture   |
-| **Phase 4** | *test-design, *atdd, *automate, *test-review, \*trace | Per epic/story   | Test planning per epic, then per-story testing |
-| **Release** | *nfr-assess, *trace (Phase 2: gate)                   | Per epic/release | Go/no-go decision                              |
+| Phase                 | TEA Workflows                            | Frequency        | Purpose                                        |
+| --------------------- | ---------------------------------------- | ---------------- | ---------------------------------------------- |
+| **Phase 2**           | (none)                                   | -                | Planning phase - PM defines requirements       |
+| **Phase 3**           | \*test-design (system-level)             | Once per project | Testability review before solutioning gate     |
+| **Phase 4 Sprint 0**  | *framework, *ci                          | Once per project | Setup test infrastructure based on testability |
+| **Phase 4 Per-Epic**  | \*test-design (epic-level)               | Per epic         | Test planning: "how do I test THIS epic?"      |
+| **Phase 4 Per-Story** | *atdd, *automate, \*test-review, \*trace | Per story        | Test implementation and quality validation     |
+| **Release Gate**      | *nfr-assess, *trace (Phase 2: gate)      | Per epic/release | Go/no-go decision                              |
 
-**Note**: `*trace` is a two-phase workflow: Phase 1 (traceability) + Phase 2 (gate decision). This reduces cognitive load while maintaining natural workflow.
+**Note**: Like `*trace`, `*test-design` is now a two-phase workflow: Phase 1 (system-level testability review in Phase 3) + Phase 2 (epic-level test planning in Phase 4). Auto-detects mode based on project phase.
 
 ### Unique Directory Architecture
 
@@ -191,24 +215,26 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 **Planning Track:** BMad Method (PRD + Architecture)
 **Use Case:** New projects with standard complexity
 
-| Workflow Stage             | Test Architect                                                    | Dev / Team                                           | Outputs                                                    |
-| -------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------- |
-| **Phase 1**: Discovery     | -                                                                 | Analyst `*product-brief` (optional)                  | `product-brief.md`                                         |
-| **Phase 2**: Planning      | -                                                                 | PM `*prd` (creates PRD + epics)                      | PRD, epics                                                 |
-| **Phase 3**: Solutioning   | Run `*framework`, `*ci` AFTER architecture                        | Architect `*architecture`, `*solutioning-gate-check` | Architecture, test scaffold, CI pipeline                   |
-| **Phase 4**: Sprint Start  | -                                                                 | SM `*sprint-planning`                                | Sprint status file with all epics and stories              |
-| **Phase 4**: Epic Planning | Run `*test-design` for THIS epic (per-epic test plan)             | Review epic scope                                    | `test-design-epic-N.md` with risk assessment and test plan |
-| **Phase 4**: Story Dev     | (Optional) `*atdd` before dev, then `*automate` after             | SM `*create-story`, DEV implements                   | Tests, story implementation                                |
-| **Phase 4**: Story Review  | Execute `*test-review` (optional), re-run `*trace`                | Address recommendations, update code/tests           | Quality report, refreshed coverage matrix                  |
-| **Phase 4**: Release Gate  | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2) | Confirm Definition of Done, share release notes      | Quality audit, Gate YAML + release summary                 |
+| Workflow Stage               | Test Architect                                                    | Dev / Team                                           | Outputs                                                    |
+| ---------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------- |
+| **Phase 1**: Discovery       | -                                                                 | Analyst `*product-brief` (optional)                  | `product-brief.md`                                         |
+| **Phase 2**: Planning        | -                                                                 | PM `*prd` (creates PRD + epics)                      | PRD, epics                                                 |
+| **Phase 3**: Solutioning     | Run `*test-design` (system-level, recommended)                    | Architect `*architecture`, `*solutioning-gate-check` | Architecture, `test-design-system.md` (testability review) |
+| **Phase 4**: Sprint 0        | Run `*framework`, `*ci` based on test-design-system.md            | Setup repo structure, dependencies                   | Test scaffold, CI pipeline, development environment        |
+| **Phase 4**: Sprint Planning | -                                                                 | SM `*sprint-planning`                                | Sprint status file with all epics and stories              |
+| **Phase 4**: Epic Planning   | Run `*test-design` (epic-level, auto-detected)                    | Review epic scope                                    | `test-design-epic-N.md` with risk assessment and test plan |
+| **Phase 4**: Story Dev       | (Optional) `*atdd` before dev, then `*automate` after             | SM `*create-story`, DEV implements                   | Tests, story implementation                                |
+| **Phase 4**: Story Review    | Execute `*test-review` (optional), re-run `*trace`                | Address recommendations, update code/tests           | Quality report, refreshed coverage matrix                  |
+| **Phase 4**: Release Gate    | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2) | Confirm Definition of Done, share release notes      | Quality audit, Gate YAML + release summary                 |
 
 <details>
 <summary>Execution Notes</summary>
 
-- Run `*framework` only once per repo or when modern harness support is missing.
-- **Phase 3 (Solutioning)**: After architecture is complete, run `*framework` and `*ci` to setup test infrastructure based on architectural decisions.
-- **Phase 4 starts**: After solutioning is complete, sprint planning loads all epics.
-- **`*test-design` runs per-epic**: At the beginning of working on each epic, run `*test-design` to create a test plan for THAT specific epic/feature. Output: `test-design-epic-N.md`.
+- **Phase 3 (Solutioning)**: Architect creates architecture document; TEA runs `*test-design` (system-level mode, auto-detected) for testability review; gate check validates planning completeness including testability.
+- **`*test-design` auto-detects mode**: In Phase 3 outputs `test-design-system.md`, in Phase 4 outputs `test-design-epic-N.md`.
+- **Phase 4 Sprint 0**: After architecture is approved and testability validated, run `*framework` and `*ci` to setup test infrastructure. This is implementation work (scaffolding code, installing dependencies, configuring CI), not planning.
+- **Phase 4 Sprint Planning**: After infrastructure is ready, sprint planning loads all epics.
+- **`*test-design` runs per-epic** (Phase 4): At the beginning of each epic, run `*test-design` to create epic-specific test plan. Output: `test-design-epic-N.md`.
 - Use `*atdd` before coding when the team can adopt ATDD; share its checklist with the dev agent.
 - Post-implementation, keep `*trace` current, expand coverage with `*automate`, optionally review test quality with `*test-review`. For release gate, run `*trace` with Phase 2 enabled to get deployment decision.
 - Use `*test-review` after `*atdd` to validate generated tests, after `*automate` to ensure regression quality, or before gate for final audit.
@@ -216,15 +242,16 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 </details>
 
 <details>
-<summary>Worked Example – “Nova CRM” Greenfield Feature</summary>
+<summary>Worked Example – "Nova CRM" Greenfield Feature</summary>
 
 1. **Planning (Phase 2):** Analyst runs `*product-brief`; PM executes `*prd` to produce PRD and epics.
-2. **Solutioning (Phase 3):** Architect completes `*architecture` for the new module; TEA sets up test infrastructure via `*framework` and `*ci` based on architectural decisions; gate check validates planning completeness.
-3. **Sprint Start (Phase 4):** Scrum Master runs `*sprint-planning` to load all epics into sprint status.
-4. **Epic 1 Planning (Phase 4):** TEA runs `*test-design` to create test plan for Epic 1, producing `test-design-epic-1.md` with risk assessment.
-5. **Story Implementation (Phase 4):** For each story in Epic 1, SM generates story via `*create-story`; TEA optionally runs `*atdd`; Dev implements with guidance from failing tests.
-6. **Post-Dev (Phase 4):** TEA runs `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` to refresh coverage.
-7. **Release Gate:** TEA runs `*trace` with Phase 2 enabled to generate gate decision.
+2. **Solutioning (Phase 3):** Architect completes `*architecture` defining tech stack; TEA runs `*test-design` (auto-detects system-level mode) producing `test-design-system.md` with testability review; gate check validates planning completeness including testability.
+3. **Sprint 0 (Phase 4):** TEA sets up test infrastructure via `*framework` and `*ci` based on test-design-system.md; team scaffolds repo structure and dependencies.
+4. **Sprint Planning (Phase 4):** Scrum Master runs `*sprint-planning` to load all epics into sprint status.
+5. **Epic 1 Planning (Phase 4):** TEA runs `*test-design` (auto-detects epic-level mode) to create test plan for Epic 1, producing `test-design-epic-1.md` with risk assessment.
+6. **Story Implementation (Phase 4):** For each story in Epic 1, SM generates story via `*create-story`; TEA optionally runs `*atdd`; Dev implements with guidance from failing tests.
+7. **Post-Dev (Phase 4):** TEA runs `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` to refresh coverage.
+8. **Release Gate:** TEA runs `*trace` with Phase 2 enabled to generate gate decision.
 
 </details>
 
@@ -237,7 +264,9 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 
 - ➕ Phase 0 (Documentation) - Document existing codebase if undocumented
 - ➕ Phase 2: `*trace` - Baseline existing test coverage before planning
-- 🔄 Phase 4: `*test-design` - Focus on regression hotspots and brownfield risks
+- 🔄 Phase 3: `*test-design` (system-level) - Includes brownfield testability concerns
+- 🔄 Phase 4 Sprint 0: `*framework`, `*ci` - May integrate with/replace existing test setup
+- 🔄 Phase 4: `*test-design` (epic-level) - Focus on regression hotspots and brownfield risks
 - 🔄 Phase 4: Story Review - May include `*nfr-assess` if not done earlier
 
 | Workflow Stage                | Test Architect                                                               | Dev / Team                                           | Outputs                                                                |
@@ -245,9 +274,10 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 | **Phase 0**: Documentation ➕ | -                                                                            | Analyst `*document-project` (if undocumented)        | Comprehensive project documentation                                    |
 | **Phase 1**: Discovery        | -                                                                            | Analyst/PM/Architect rerun planning workflows        | Updated planning artifacts in `{output_folder}`                        |
 | **Phase 2**: Planning         | Run ➕ `*trace` (baseline coverage)                                          | PM `*prd` (creates PRD + epics)                      | PRD, epics, ➕ coverage baseline                                       |
-| **Phase 3**: Solutioning      | Run `*framework`, `*ci` AFTER architecture                                   | Architect `*architecture`, `*solutioning-gate-check` | Architecture, test framework, CI pipeline                              |
-| **Phase 4**: Sprint Start     | -                                                                            | SM `*sprint-planning`                                | Sprint status file with all epics and stories                          |
-| **Phase 4**: Epic Planning    | Run `*test-design` for THIS epic 🔄 (regression hotspots)                    | Review epic scope and brownfield risks               | `test-design-epic-N.md` with brownfield risk assessment and mitigation |
+| **Phase 3**: Solutioning      | Run `*test-design` (system-level, recommended) 🔄                            | Architect `*architecture`, `*solutioning-gate-check` | Architecture, `test-design-system.md` (brownfield testability review)  |
+| **Phase 4**: Sprint 0         | Run `*framework`, `*ci` based on test-design-system.md 🔄                    | Modernize/integrate test setup                       | Test scaffold, CI pipeline (may replace existing)                      |
+| **Phase 4**: Sprint Planning  | -                                                                            | SM `*sprint-planning`                                | Sprint status file with all epics and stories                          |
+| **Phase 4**: Epic Planning    | Run `*test-design` (epic-level) 🔄 (regression hotspots)                     | Review epic scope and brownfield risks               | `test-design-epic-N.md` with brownfield risk assessment and mitigation |
 | **Phase 4**: Story Dev        | (Optional) `*atdd` before dev, then `*automate` after                        | SM `*create-story`, DEV implements                   | Tests, story implementation                                            |
 | **Phase 4**: Story Review     | Apply `*test-review` (optional), re-run `*trace`, ➕ `*nfr-assess` if needed | Resolve gaps, update docs/tests                      | Quality report, refreshed coverage matrix, NFR report                  |
 | **Phase 4**: Release Gate     | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)            | Capture sign-offs, share release notes               | Quality audit, Gate YAML + release summary                             |
@@ -256,9 +286,11 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 <summary>Execution Notes</summary>
 
 - Lead with `*trace` during Planning (Phase 2) to baseline existing test coverage before architecture work begins.
-- **Phase 3 (Solutioning)**: After architecture is complete, run `*framework` and `*ci` to modernize test infrastructure. For brownfield, framework may need to integrate with or replace existing test setup.
-- **Phase 4 starts**: After solutioning is complete and sprint planning loads all epics.
-- **`*test-design` runs per-epic**: At the beginning of working on each epic, run `*test-design` to identify regression hotspots, integration risks, and mitigation strategies for THAT specific epic/feature. Output: `test-design-epic-N.md`.
+- **Phase 3 (Solutioning)**: Architect creates architecture document; TEA runs `*test-design` (system-level mode, auto-detected) for testability review including brownfield concerns; gate check validates planning completeness including testability.
+- **`*test-design` auto-detects mode**: In Phase 3 outputs `test-design-system.md`, in Phase 4 outputs `test-design-epic-N.md`.
+- **Phase 4 Sprint 0**: After architecture is approved and testability validated, run `*framework` and `*ci` to modernize test infrastructure. For brownfield, this may integrate with or replace existing test setup.
+- **Phase 4 Sprint Planning**: After infrastructure is ready, sprint planning loads all epics.
+- **`*test-design` runs per-epic** (Phase 4): At the beginning of each epic, run `*test-design` to identify regression hotspots, integration risks, and mitigation strategies. Output: `test-design-epic-N.md`.
 - Use `*atdd` when stories benefit from ATDD; otherwise proceed to implementation and rely on post-dev automation.
 - After development, expand coverage with `*automate`, optionally review test quality with `*test-review`, re-run `*trace` (Phase 2 for gate decision). Run `*nfr-assess` now if non-functional risks weren't addressed earlier.
 - Use `*test-review` to validate existing brownfield tests or audit new tests before gate.
@@ -266,15 +298,16 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 </details>
 
 <details>
-<summary>Worked Example – “Atlas Payments” Brownfield Story</summary>
+<summary>Worked Example – "Atlas Payments" Brownfield Story</summary>
 
 1. **Planning (Phase 2):** PM executes `*prd` to update PRD and `epics.md` (Epic 1: Payment Processing); TEA runs `*trace` to baseline existing coverage.
-2. **Solutioning (Phase 3):** Architect triggers `*architecture` capturing legacy payment flows and integration architecture; TEA sets up `*framework` and `*ci` based on architectural decisions; gate check validates planning.
-3. **Sprint Start (Phase 4):** Scrum Master runs `*sprint-planning` to load Epic 1 into sprint status.
-4. **Epic 1 Planning (Phase 4):** TEA runs `*test-design` for Epic 1 (Payment Processing), producing `test-design-epic-1.md` that flags settlement edge cases, regression hotspots, and mitigation plans.
-5. **Story Implementation (Phase 4):** For each story in Epic 1, SM generates story via `*create-story`; TEA runs `*atdd` producing failing Playwright specs; Dev implements with guidance from tests and checklist.
-6. **Post-Dev (Phase 4):** TEA applies `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` to refresh coverage.
-7. **Release Gate:** TEA performs `*nfr-assess` to validate SLAs, runs `*trace` with Phase 2 enabled to generate gate decision (PASS/CONCERNS/FAIL).
+2. **Solutioning (Phase 3):** Architect triggers `*architecture` capturing legacy payment flows and integration architecture; TEA runs `*test-design` (auto-detects system-level mode) producing `test-design-system.md` with brownfield testability review; gate check validates planning.
+3. **Sprint 0 (Phase 4):** TEA sets up `*framework` and `*ci` based on test-design-system.md, integrating with existing test setup; team modernizes infrastructure.
+4. **Sprint Planning (Phase 4):** Scrum Master runs `*sprint-planning` to load Epic 1 into sprint status.
+5. **Epic 1 Planning (Phase 4):** TEA runs `*test-design` (auto-detects epic-level mode) for Epic 1, producing `test-design-epic-1.md` that flags settlement edge cases, regression hotspots, and mitigation plans.
+6. **Story Implementation (Phase 4):** For each story in Epic 1, SM generates story via `*create-story`; TEA runs `*atdd` producing failing Playwright specs; Dev implements with guidance from tests and checklist.
+7. **Post-Dev (Phase 4):** TEA applies `*automate`, optionally `*test-review` to audit test quality, re-runs `*trace` to refresh coverage.
+8. **Release Gate:** TEA performs `*nfr-assess` to validate SLAs, runs `*trace` with Phase 2 enabled to generate gate decision (PASS/CONCERNS/FAIL).
 
 </details>
 
@@ -287,26 +320,31 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 
 - ➕ Phase 1: `*research` - Domain and compliance research (recommended)
 - ➕ Phase 2: `*nfr-assess` - Capture NFR requirements early (security/performance/reliability)
-- 🔄 Phase 4: `*test-design` - Enterprise focus (compliance, security architecture alignment)
+- 🔄 Phase 3: `*test-design` (system-level) - **Required** for enterprise (vs recommended for Method)
+- 🔄 Phase 4 Sprint 0: `*framework`, `*ci` - Enterprise-grade configurations
+- 🔄 Phase 4: `*test-design` (epic-level) - Enterprise focus (compliance, security architecture alignment)
 - 📦 Release Gate - Archive artifacts and compliance evidence for audits
 
-| Workflow Stage             | Test Architect                                                           | Dev / Team                                           | Outputs                                                            |
-| -------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------ |
-| **Phase 1**: Discovery     | -                                                                        | Analyst ➕ `*research`, `*product-brief`             | Domain research, compliance analysis, product brief                |
-| **Phase 2**: Planning      | Run ➕ `*nfr-assess`                                                     | PM `*prd` (creates PRD + epics), UX `*create-design` | Enterprise PRD, epics, UX design, ➕ NFR documentation             |
-| **Phase 3**: Solutioning   | Run `*framework`, `*ci` AFTER architecture                               | Architect `*architecture`, `*solutioning-gate-check` | Architecture, test framework, CI pipeline                          |
-| **Phase 4**: Sprint Start  | -                                                                        | SM `*sprint-planning`                                | Sprint plan with all epics                                         |
-| **Phase 4**: Epic Planning | Run `*test-design` for THIS epic 🔄 (compliance focus)                   | Review epic scope and compliance requirements        | `test-design-epic-N.md` with security/performance/compliance focus |
-| **Phase 4**: Story Dev     | (Optional) `*atdd`, `*automate`, `*test-review`, `*trace` per story      | SM `*create-story`, DEV implements                   | Tests, fixtures, quality reports, coverage matrices                |
-| **Phase 4**: Release Gate  | Final `*test-review` audit, Run `*trace` (Phase 2), 📦 archive artifacts | Capture sign-offs, 📦 compliance evidence            | Quality audit, updated assessments, gate YAML, 📦 audit trail      |
+| Workflow Stage               | Test Architect                                                           | Dev / Team                                           | Outputs                                                            |
+| ---------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------ |
+| **Phase 1**: Discovery       | -                                                                        | Analyst ➕ `*research`, `*product-brief`             | Domain research, compliance analysis, product brief                |
+| **Phase 2**: Planning        | Run ➕ `*nfr-assess`                                                     | PM `*prd` (creates PRD + epics), UX `*create-design` | Enterprise PRD, epics, UX design, ➕ NFR documentation             |
+| **Phase 3**: Solutioning     | Run `*test-design` (system-level, **required**) 🔄                       | Architect `*architecture`, `*solutioning-gate-check` | Architecture, `test-design-system.md` (enterprise testability)     |
+| **Phase 4**: Sprint 0        | Run `*framework`, `*ci` with enterprise configs 🔄                       | Setup enterprise infrastructure                      | Test scaffold, CI pipeline (selective testing, burn-in, caching)   |
+| **Phase 4**: Sprint Planning | -                                                                        | SM `*sprint-planning`                                | Sprint plan with all epics                                         |
+| **Phase 4**: Epic Planning   | Run `*test-design` (epic-level) 🔄 (compliance focus)                    | Review epic scope and compliance requirements        | `test-design-epic-N.md` with security/performance/compliance focus |
+| **Phase 4**: Story Dev       | (Optional) `*atdd`, `*automate`, `*test-review`, `*trace` per story      | SM `*create-story`, DEV implements                   | Tests, fixtures, quality reports, coverage matrices                |
+| **Phase 4**: Release Gate    | Final `*test-review` audit, Run `*trace` (Phase 2), 📦 archive artifacts | Capture sign-offs, 📦 compliance evidence            | Quality audit, updated assessments, gate YAML, 📦 audit trail      |
 
 <details>
 <summary>Execution Notes</summary>
 
 - `*nfr-assess` runs early in Planning (Phase 2) to capture compliance, security, and performance requirements upfront.
-- **Phase 3 (Solutioning)**: After architecture is complete, run `*framework` and `*ci` with enterprise-grade configurations (selective testing, burn-in jobs, caching, notifications).
-- **Phase 4 starts**: After solutioning is complete and sprint planning loads all epics.
-- **`*test-design` runs per-epic**: At the beginning of working on each epic, run `*test-design` to create an enterprise-focused test plan for THAT specific epic, ensuring alignment with security architecture, performance targets, and compliance requirements. Output: `test-design-epic-N.md`.
+- **Phase 3 (Solutioning)**: Architect creates architecture document with enterprise considerations; TEA runs `*test-design` (system-level mode, **required** for enterprise) for comprehensive testability review; gate check validates planning completeness including testability.
+- **`*test-design` auto-detects mode**: In Phase 3 outputs `test-design-system.md`, in Phase 4 outputs `test-design-epic-N.md`.
+- **Phase 4 Sprint 0**: After architecture is approved and testability validated, run `*framework` and `*ci` with enterprise-grade configurations (selective testing, burn-in jobs, caching, notifications).
+- **Phase 4 Sprint Planning**: After infrastructure is ready, sprint planning loads all epics.
+- **`*test-design` runs per-epic** (Phase 4): At the beginning of each epic, run `*test-design` to create enterprise-focused test plan ensuring alignment with security architecture, performance targets, and compliance requirements. Output: `test-design-epic-N.md`.
 - Use `*atdd` for stories when feasible so acceptance tests can lead implementation.
 - Use `*test-review` per story or sprint to maintain quality standards and ensure compliance with testing best practices.
 - Prior to release, rerun coverage (`*trace`, `*automate`), perform final quality audit with `*test-review`, and formalize the decision with `*trace` Phase 2 (gate decision); archive artifacts for compliance audits.
@@ -314,14 +352,15 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 </details>
 
 <details>
-<summary>Worked Example – “Helios Ledger” Enterprise Release</summary>
+<summary>Worked Example – "Helios Ledger" Enterprise Release</summary>
 
 1. **Planning (Phase 2):** Analyst runs `*research` and `*product-brief`; PM completes `*prd` creating PRD and epics; TEA runs `*nfr-assess` to establish NFR targets.
-2. **Solutioning (Phase 3):** Architect completes `*architecture` with enterprise considerations; TEA sets up `*framework` and `*ci` with enterprise-grade configurations based on architectural decisions; gate check validates planning completeness.
-3. **Sprint Start (Phase 4):** Scrum Master runs `*sprint-planning` to load all epics into sprint status.
-4. **Per-Epic (Phase 4):** For each epic, TEA runs `*test-design` to create epic-specific test plan (e.g., `test-design-epic-1.md`, `test-design-epic-2.md`) with compliance-focused risk assessment.
-5. **Per-Story (Phase 4):** For each story, TEA uses `*atdd`, `*automate`, `*test-review`, and `*trace`; Dev teams iterate on the findings.
-6. **Release Gate:** TEA re-checks coverage, performs final quality audit with `*test-review`, and logs the final gate decision via `*trace` Phase 2, archiving artifacts for compliance.
+2. **Solutioning (Phase 3):** Architect completes `*architecture` with enterprise considerations; TEA runs `*test-design` (auto-detects system-level mode, required) producing `test-design-system.md` with comprehensive testability review; gate check validates planning completeness.
+3. **Sprint 0 (Phase 4):** TEA sets up `*framework` and `*ci` with enterprise-grade configurations based on test-design-system.md; team establishes infrastructure.
+4. **Sprint Planning (Phase 4):** Scrum Master runs `*sprint-planning` to load all epics into sprint status.
+5. **Per-Epic (Phase 4):** For each epic, TEA runs `*test-design` (auto-detects epic-level mode) to create epic-specific test plan (e.g., `test-design-epic-1.md`, `test-design-epic-2.md`) with compliance-focused risk assessment.
+6. **Per-Story (Phase 4):** For each story, TEA uses `*atdd`, `*automate`, `*test-review`, and `*trace`; Dev teams iterate on the findings.
+7. **Release Gate:** TEA re-checks coverage, performs final quality audit with `*test-review`, and logs the final gate decision via `*trace` Phase 2, archiving artifacts for compliance.
 
 </details>
 
