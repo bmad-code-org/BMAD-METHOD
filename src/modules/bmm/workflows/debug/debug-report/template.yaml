@@ -1,0 +1,339 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: defect-analysis-template-v1
+  name: Defect Analysis Report
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/debug/defect-{{defect_id}}.md
+    title: "Defect Analysis Report - DEF-{{defect_id}}"
+
+workflow:
+  mode: rapid
+  elicitation: false
+
+sections:
+  - id: header
+    title: Report Header
+    instruction: Generate report header with metadata
+    sections:
+      - id: metadata
+        title: Report Metadata
+        type: key-value
+        instruction: |
+          Defect ID: DEF-{{defect_id}}
+          Date: {{current_date}}
+          Analyst: {{analyst_name}}
+          Component: {{affected_component}}
+
+  - id: classification
+    title: Defect Classification
+    instruction: Categorize and classify the defect
+    sections:
+      - id: basic-info
+        title: Basic Information
+        type: key-value
+        instruction: |
+          Type: {{defect_type}}
+          Severity: {{severity_level}}
+          Priority: {{priority_level}}
+          Status: {{current_status}}
+          Environment: {{environment}}
+      - id: categorization
+        title: Categorization
+        type: key-value
+        instruction: |
+          Category: {{defect_category}}
+          Subcategory: {{defect_subcategory}}
+          Root Cause Type: {{root_cause_type}}
+          Detection Method: {{how_detected}}
+
+  - id: description
+    title: Defect Description
+    instruction: Comprehensive defect details
+    sections:
+      - id: summary
+        title: Summary
+        type: text
+        instruction: Brief one-line defect summary
+      - id: detailed
+        title: Detailed Description
+        type: paragraphs
+        instruction: Complete description of the defect and its behavior
+      - id: expected
+        title: Expected Behavior
+        type: paragraphs
+        instruction: What should happen under normal conditions
+      - id: actual
+        title: Actual Behavior
+        type: paragraphs
+        instruction: What actually happens when the defect occurs
+      - id: delta
+        title: Delta Analysis
+        type: paragraphs
+        instruction: Analysis of the difference between expected and actual
+
+  - id: reproduction
+    title: Reproduction
+    instruction: How to reproduce the defect
+    sections:
+      - id: prerequisites
+        title: Prerequisites
+        type: bullet-list
+        instruction: Required setup, data, or conditions before reproduction
+      - id: steps
+        title: Steps to Reproduce
+        type: numbered-list
+        instruction: Exact steps to trigger the defect
+      - id: frequency
+        title: Frequency
+        type: key-value
+        instruction: |
+          Reproducibility: {{reproducibility_rate}}
+          Occurrence Pattern: {{occurrence_pattern}}
+          Triggers: {{trigger_conditions}}
+
+  - id: technical-analysis
+    title: Technical Analysis
+    instruction: Deep technical investigation
+    sections:
+      - id: location
+        title: Code Location
+        type: key-value
+        instruction: |
+          File: {{file_path}}
+          Function/Method: {{function_name}}
+          Line Numbers: {{line_numbers}}
+          Module: {{module_name}}
+      - id: code
+        title: Code Snippet
+        type: code-block
+        instruction: |
+          [[LLM: Include the defective code with proper syntax highlighting]]
+      - id: mechanism
+        title: Defect Mechanism
+        type: paragraphs
+        instruction: Detailed explanation of how the defect works
+      - id: data-flow
+        title: Data Flow Analysis
+        type: paragraphs
+        instruction: How data flows through the defective code
+      - id: control-flow
+        title: Control Flow Analysis
+        type: paragraphs
+        instruction: Control flow issues contributing to the defect
+
+  - id: impact-assessment
+    title: Impact Assessment
+    instruction: Comprehensive impact analysis
+    sections:
+      - id: user-impact
+        title: User Impact
+        type: key-value
+        instruction: |
+          Affected Users: {{users_affected}}
+          User Experience: {{ux_impact}}
+          Workaround Available: {{workaround_exists}}
+          Workaround Description: {{workaround_details}}
+      - id: system-impact
+        title: System Impact
+        type: key-value
+        instruction: |
+          Performance: {{performance_impact}}
+          Stability: {{stability_impact}}
+          Security: {{security_impact}}
+          Data Integrity: {{data_impact}}
+      - id: business-impact
+        title: Business Impact
+        type: key-value
+        instruction: |
+          Revenue Impact: {{revenue_impact}}
+          Reputation Risk: {{reputation_risk}}
+          Compliance Issues: {{compliance_impact}}
+          SLA Violations: {{sla_impact}}
+
+  - id: root-cause
+    title: Root Cause
+    instruction: Root cause identification
+    sections:
+      - id: immediate
+        title: Immediate Cause
+        type: paragraphs
+        instruction: The direct cause of the defect
+      - id: underlying
+        title: Underlying Cause
+        type: paragraphs
+        instruction: The deeper systemic cause
+      - id: contributing
+        title: Contributing Factors
+        type: bullet-list
+        instruction: Factors that contributed to the defect
+      - id: prevention-failure
+        title: Prevention Failure
+        type: paragraphs
+        instruction: Why existing processes didn't prevent this defect
+
+  - id: fix-analysis
+    title: Fix Analysis
+    instruction: Solution proposals
+    sections:
+      - id: proposed-fix
+        title: Proposed Fix
+        type: code-block
+        instruction: |
+          [[LLM: Include the corrected code with proper syntax highlighting]]
+      - id: explanation
+        title: Fix Explanation
+        type: paragraphs
+        instruction: Detailed explanation of how the fix works
+      - id: alternatives
+        title: Alternative Solutions
+        type: numbered-list
+        instruction: Other possible solutions with pros/cons
+      - id: tradeoffs
+        title: Trade-offs
+        type: bullet-list
+        instruction: Trade-offs of the chosen solution
+
+  - id: testing-strategy
+    title: Testing Strategy
+    instruction: Comprehensive test plan
+    sections:
+      - id: unit-tests
+        title: Unit Tests Required
+        type: checkbox-list
+        instruction: Unit tests to validate the fix
+      - id: integration-tests
+        title: Integration Tests Required
+        type: checkbox-list
+        instruction: Integration tests needed
+      - id: regression-tests
+        title: Regression Tests Required
+        type: checkbox-list
+        instruction: Regression tests to ensure no breaks
+      - id: edge-cases
+        title: Edge Cases to Test
+        type: bullet-list
+        instruction: Edge cases that must be tested
+      - id: performance-tests
+        title: Performance Tests
+        type: bullet-list
+        instruction: Performance tests if applicable
+
+  - id: risk-assessment
+    title: Risk Assessment
+    instruction: Fix implementation risks
+    sections:
+      - id: fix-risk
+        title: Fix Risk
+        type: key-value
+        instruction: |
+          Implementation Risk: {{implementation_risk}}
+          Regression Risk: {{regression_risk}}
+          Side Effects: {{potential_side_effects}}
+      - id: mitigation
+        title: Mitigation Strategy
+        type: paragraphs
+        instruction: How to mitigate identified risks
+      - id: rollback
+        title: Rollback Plan
+        type: numbered-list
+        instruction: Steps to rollback if fix causes issues
+
+  - id: quality-metrics
+    title: Quality Metrics
+    instruction: Defect and code quality metrics
+    sections:
+      - id: defect-metrics
+        title: Defect Metrics
+        type: key-value
+        instruction: |
+          Escape Stage: {{escape_stage}}
+          Detection Time: {{time_to_detect}}
+          Fix Time: {{time_to_fix}}
+          Test Coverage Before: {{coverage_before}}
+          Test Coverage After: {{coverage_after}}
+      - id: code-metrics
+        title: Code Quality Metrics
+        type: key-value
+        instruction: |
+          Cyclomatic Complexity: {{complexity_score}}
+          Code Duplication: {{duplication_percentage}}
+          Technical Debt: {{tech_debt_impact}}
+
+  - id: prevention-strategy
+    title: Prevention Strategy
+    instruction: How to prevent similar defects
+    sections:
+      - id: immediate-prevention
+        title: Immediate Prevention
+        type: bullet-list
+        instruction: Quick wins to prevent recurrence
+      - id: longterm-prevention
+        title: Long-term Prevention
+        type: bullet-list
+        instruction: Strategic prevention measures
+      - id: process-improvements
+        title: Process Improvements
+        type: bullet-list
+        instruction: Process changes to prevent similar defects
+      - id: tool-enhancements
+        title: Tool Enhancements
+        type: bullet-list
+        instruction: Tool improvements needed
+
+  - id: related-information
+    title: Related Information
+    instruction: Additional context
+    optional: true
+    sections:
+      - id: similar-defects
+        title: Similar Defects
+        type: bullet-list
+        instruction: Links to similar defects in the system
+      - id: related-issues
+        title: Related Issues
+        type: bullet-list
+        instruction: Related tickets or issues
+      - id: dependencies
+        title: Dependencies
+        type: bullet-list
+        instruction: Dependencies affected by this defect
+      - id: documentation
+        title: Documentation Updates Required
+        type: bullet-list
+        instruction: Documentation that needs updating
+
+  - id: action-items
+    title: Action Items
+    instruction: Tasks and assignments
+    sections:
+      - id: actions-table
+        title: Action Items Table
+        type: table
+        columns: [Action, Owner, Due Date, Status]
+        instruction: |
+          [[LLM: Create table with specific action items, owners, and dates]]
+
+  - id: approval
+    title: Approval & Sign-off
+    instruction: Review and approval tracking
+    sections:
+      - id: signoff
+        title: Sign-off
+        type: key-value
+        instruction: |
+          Developer: {{developer_name}} - {{developer_date}}
+          QA: {{qa_name}} - {{qa_date}}
+          Lead: {{lead_name}} - {{lead_date}}
+
+  - id: footer
+    title: Report Footer
+    instruction: Closing metadata
+    sections:
+      - id: timestamps
+        title: Report Timestamps
+        type: key-value
+        instruction: |
+          Report Generated: {{generation_timestamp}}
+          Last Updated: {{last_update}}

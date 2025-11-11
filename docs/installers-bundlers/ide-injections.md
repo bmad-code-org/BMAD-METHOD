@@ -158,7 +158,7 @@ src/modules/bmm/
 
 ```yaml
 injections:
-  - file: 'bmad/bmm/agents/pm.md'
+  - file: '{bmad_folder}/bmm/agents/pm.md'
     point: 'pm-agent-instructions'
     requires: 'any' # Injected if ANY subagent is selected
     content: |
@@ -166,7 +166,7 @@ injections:
         <i>Use 'market-researcher' subagent for analysis</i>
       </llm>
 
-  - file: 'bmad/bmm/templates/prd.md'
+  - file: '{bmad_folder}/bmm/templates/prd.md'
     point: 'prd-goals-context-delegation'
     requires: 'market-researcher' # Only if this specific subagent selected
     content: |

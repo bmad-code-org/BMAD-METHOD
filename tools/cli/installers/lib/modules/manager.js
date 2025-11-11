@@ -557,8 +557,8 @@ class ModuleManager {
 
         // Parse SOURCE workflow path
         // Handle both {bmad_folder} placeholder and hardcoded 'bmad'
-        // Example: {project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml
-        // Or: {project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml
+        // Example: {bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml
+        // Or: {bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml
         const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!sourceMatch) {
           console.warn(chalk.yellow(`      Could not parse workflow path: ${sourceWorkflowPath}`));
@@ -569,7 +569,7 @@ class ModuleManager {
 
         // Parse INSTALL workflow path
         // Handle both {bmad_folder} placeholder and hardcoded 'bmad'
-        // Example: {project-root}/{bmad_folder}/bmgd/workflows/4-production/create-story/workflow.yaml
+        // Example: {bmad_folder}/bmgd/workflows/4-production/create-story/workflow.yaml
         const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!installMatch) {
           console.warn(chalk.yellow(`      Could not parse workflow-install path: ${installWorkflowPath}`));
@@ -622,8 +622,8 @@ class ModuleManager {
   async updateWorkflowConfigSource(workflowYamlPath, newModuleName) {
     let yamlContent = await fs.readFile(workflowYamlPath, 'utf8');
 
-    // Replace config_source: "{project-root}/{bmad_folder}/OLD_MODULE/config.yaml"
-    // with config_source: "{project-root}/{bmad_folder}/NEW_MODULE/config.yaml"
+    // Replace config_source: "{bmad_folder}/OLD_MODULE/config.yaml"
+    // with config_source: "{bmad_folder}/NEW_MODULE/config.yaml"
     // Note: At this point {bmad_folder} has already been replaced with actual folder name
     const configSourcePattern = /config_source:\s*["']?\{project-root\}\/[^/]+\/[^/]+\/config\.yaml["']?/g;
     const newConfigSource = `config_source: "{project-root}/${this.bmadFolderName}/${newModuleName}/config.yaml"`;

@@ -4,7 +4,7 @@ description: "Facilitate interactive brainstorming sessions using diverse creati
 author: "BMad"
 
 # Critical variables load from config_source
-config_source: "{project-root}/{bmad_folder}/cis/config.yaml"
+config_source: "{bmad_folder}/cis/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 date: system-generated
@@ -18,7 +18,7 @@ recommended_inputs:
 # Example: data="{path}/context.md" provides domain-specific guidance
 
 # Module path and component files
-installed_path: "{project-root}/{bmad_folder}/core/workflows/brainstorming"
+installed_path: "{bmad_folder}/core/workflows/brainstorming"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"

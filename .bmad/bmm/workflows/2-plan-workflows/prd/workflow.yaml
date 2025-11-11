@@ -4,7 +4,7 @@ description: "Unified PRD workflow for BMad Method and Enterprise Method tracks.
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/.bmad/bmm/config.yaml"
+config_source: ".bmad/bmm/config.yaml"
 project_name: "{config_source}:project_name"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
@@ -14,7 +14,7 @@ user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd"
+installed_path: ".bmad/bmm/workflows/2-plan-workflows/prd"
 instructions: "{installed_path}/instructions.md"
 
 # Templates

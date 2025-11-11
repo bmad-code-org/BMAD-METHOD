@@ -34,12 +34,12 @@
 
 - [ ] `prompts` defined when using `action: "#id"`
 - [ ] `critical_actions` present if custom activation steps are needed
-- [ ] Customize file (if created) located at `{project-root}/{bmad_folder}/_cfg/agents/{{module}}-{{agent}}.customize.yaml`
+- [ ] Customize file (if created) located at `{bmad_folder}/_cfg/agents/{{module}}-{{agent}}.customize.yaml`
 
 ## Build Verification
 
 - [ ] Run compile to build `.md`: `npm run install:bmad` → "Compile Agents" (or `bmad install` → Compile)
-- [ ] Confirm compiled file exists at `{project-root}/{bmad_folder}/{{module}}/agents/{{agent}}.md`
+- [ ] Confirm compiled file exists at `{bmad_folder}/{{module}}/agents/{{agent}}.md`
 
 ## Final Quality
 

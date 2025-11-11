@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "bmad": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "git+https://github.com/mkellerman/bmad-mcp-server#pr-30",
+        "git+https://github.com/mkellerman/BMAD-METHOD#debug-agent-workflow:/bmad"
+      ]
+    }
+  }
+}

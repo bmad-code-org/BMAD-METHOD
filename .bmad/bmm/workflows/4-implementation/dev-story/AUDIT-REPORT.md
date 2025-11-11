@@ -26,7 +26,7 @@ The dev-story workflow is well-structured and follows most BMAD v6 standards. Th
 
 The workflow.yaml contains all required standard config variables:
 
-- ✓ `config_source: "{project-root}/.bmad/bmm/config.yaml"` - Correctly defined
+- ✓ `config_source: ".bmad/bmm/config.yaml"` - Correctly defined
 - ✓ `output_folder: "{config_source}:output_folder"` - Pulls from config_source
 - ✓ `user_name: "{config_source}:user_name"` - Pulls from config_source
 - ✓ `communication_language: "{config_source}:communication_language"` - Pulls from config_source

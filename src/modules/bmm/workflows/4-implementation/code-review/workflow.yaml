@@ -4,7 +4,7 @@ description: "Perform a Senior Developer code review on a completed story flagge
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
+config_source: "{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -15,7 +15,7 @@ ephemeral_files: "{config_source}:dev_ephemeral_location"
 sprint_status: "{context_dir}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
 
 # Workflow components
-installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/code-review"
+installed_path: "{bmad_folder}/bmm/workflows/4-implementation/code-review"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 

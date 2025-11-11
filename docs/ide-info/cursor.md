@@ -13,13 +13,13 @@ BMAD agents are installed in `.cursor/rules/bmad/` as MDC rules.
 ### Examples
 
 ```
-@bmad/core/agents/dev - Activate dev agent
-@bmad/bmm/agents/architect - Activate architect agent
-@bmad/core - Include all core agents/tasks
+@{bmad_folder}/core/agents/dev - Activate dev agent
+@{bmad_folder}/bmm/agents/architect - Activate architect agent
+@{bmad_folder}/core - Include all core agents/tasks
 ```
 
 ### Notes
 
 - Rules are Manual type - only loaded when explicitly referenced
 - No automatic context pollution
-- Can combine multiple agents: `@bmad/core/agents/dev @bmad/core/agents/test`
+- Can combine multiple agents: `@{bmad_folder}/core/agents/dev @{bmad_folder}/core/agents/test`

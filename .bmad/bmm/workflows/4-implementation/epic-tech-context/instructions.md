@@ -7,43 +7,41 @@
 <critical>This workflow generates a comprehensive Technical Specification from PRD and Architecture, including detailed design, NFRs, acceptance criteria, and traceability mapping.</critical>
 <critical>If required inputs cannot be auto-discovered HALT with a clear message listing missing documents, allow user to provide them to proceed.</critical>
 
-## 📚 Document Discovery - Selective Epic Loading
-
-**Strategy**: This workflow needs only ONE specific epic and its stories, not all epics. This provides huge efficiency gains when epics are sharded.
-
-**Epic Discovery Process (SELECTIVE OPTIMIZATION):**
-
-1. **Determine which epic** you need (epic_num from workflow context or user input)
-2. **Check for sharded version**: Look for `epics/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand structure
-   - **Load ONLY `epic-{epic_num}.md`** (e.g., `epics/epic-3.md` for Epic 3)
-   - DO NOT load all epic files - only the one needed!
-   - This is the key efficiency optimization for large multi-epic projects
-4. **If whole document found**: Load the complete `epics.md` file and extract the relevant epic
-
-**Other Documents (prd, gdd, architecture, ux-design) - Full Load:**
-
-1. **Search for whole document first** - Use fuzzy file matching
-2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand structure
-   - Read ALL section files listed in the index
-   - Treat combined content as single document
-4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
-
-**Priority**: If both whole and sharded versions exist, use the whole document.
-
-**UX-Heavy Projects**: Always check for ux-design documentation as it provides critical context for UI-focused epics and stories.
-
 <workflow>
   <step n="1" goal="Collect inputs and discover next epic" tag="sprint-status">
+    Document Discovery - Selective Epic Loading
+
+    **Strategy**: This workflow needs only ONE specific epic and its stories, not all epics. This provides huge efficiency gains when epics are sharded.
+
+    **Epic Discovery Process (SELECTIVE OPTIMIZATION):**
+
+    1. **Determine which epic** you need (epic_num from workflow context or user input)
+    2. **Check for sharded version**: Look for `epics/index.md`
+    3. **If sharded version found**:
+      - Read `index.md` to understand structure
+      - **Load ONLY `epic-{epic_num}.md`** (e.g., `epics/epic-3.md` for Epic 3)
+      - DO NOT load all epic files - only the one needed!
+      - This is the key efficiency optimization for large multi-epic projects
+    4. **If whole document found**: Load the complete `epics.md` file and extract the relevant epic
+
+    **Other Documents (prd, gdd, architecture, ux-design) - Full Load:**
+
+    1. **Search for whole document first** - Use fuzzy file matching
+    2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
+    3. **If sharded version found**:
+      - Read `index.md` to understand structure
+      - Read ALL section files listed in the index
+      - Treat combined content as single document
+    4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
+
+    **Priority**: If both whole and sharded versions exist, use the whole document.
+
+    **UX-Heavy Projects**: Always check for ux-design documentation as it provides critical context for UI-focused epics and stories.
     <action>Identify PRD and Architecture documents from recommended_inputs. Attempt to auto-discover at default paths.</action>
     <ask if="inputs are missing">ask the user for file paths. HALT and wait for docs to proceed</ask>
 
     <!-- Intelligent Epic Discovery -->
-    <critical>MUST read COMPLETE sprint-status.yaml file to discover next epic</critical>
-    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <critical>MUST read COMPLETE {sprint-status} file to discover next epic</critical>
     <action>Read ALL development_status entries</action>
     <action>Find all epics with status "backlog" (not yet contexted)</action>
     <action>Identify the FIRST backlog epic as the suggested default</action>

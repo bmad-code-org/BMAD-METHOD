@@ -79,7 +79,7 @@ class DependencyResolver {
         // Source directory structure: src/core or src/modules/xxx
         moduleDir = module === 'core' ? path.join(srcDir, 'core') : path.join(srcDir, 'modules', module);
       } else {
-        // Installed directory structure: bmad/core or bmad/modules/xxx
+        // Installed directory structure: {bmad_folder}/core or bmad/modules/xxx
         moduleDir = module === 'core' ? path.join(bmadDir, 'core') : path.join(bmadDir, 'modules', module);
       }
 
@@ -217,7 +217,7 @@ class DependencyResolver {
       refs.add(match[0]);
     }
 
-    // Match file paths like bmad/core/agents/analyst
+    // Match file paths like {bmad_folder}/core/agents/analyst
     const pathPattern = /bmad\/(core|bmm|cis)\/(agents|tasks)\/([a-z0-9-]+)/g;
 
     while ((match = pathPattern.exec(content)) !== null) {
@@ -247,7 +247,7 @@ class DependencyResolver {
       let execPath = match[1];
       if (execPath && execPath !== '*') {
         // Remove {project-root} prefix to get the actual path
-        // Usage is like {project-root}/bmad/core/tasks/foo.md
+        // Usage is like {bmad_folder}/core/tasks/foo.md
         if (execPath.includes('{project-root}')) {
           execPath = execPath.replace('{project-root}', '');
         }
@@ -261,7 +261,7 @@ class DependencyResolver {
       let tmplPath = match[1];
       if (tmplPath && tmplPath !== '*') {
         // Remove {project-root} prefix to get the actual path
-        // Usage is like {project-root}/bmad/core/tasks/foo.md
+        // Usage is like {bmad_folder}/core/tasks/foo.md
         if (tmplPath.includes('{project-root}')) {
           tmplPath = tmplPath.replace('{project-root}', '');
         }
@@ -385,13 +385,13 @@ class DependencyResolver {
         break;
       }
       case 'bmad-path': {
-        // Resolve bmad/ paths (from {project-root}/bmad/... references)
+        // Resolve bmad/ paths (from {bmad_folder}/... references)
         // These are paths relative to the src directory structure
         const bmadPath = dep.dependency.replace(/^bmad\//, '');
 
         // Try to resolve as if it's in src structure
-        // bmad/core/tasks/foo.md -> src/core/tasks/foo.md
-        // bmad/bmm/tasks/bar.md -> src/modules/bmm/tasks/bar.md
+        // {bmad_folder}/core/tasks/foo.md -> src/core/tasks/foo.md
+        // {bmad_folder}/bmm/tasks/bar.md -> src/modules/bmm/tasks/bar.md
 
         if (bmadPath.startsWith('core/')) {
           const corePath = path.join(bmadDir, bmadPath);

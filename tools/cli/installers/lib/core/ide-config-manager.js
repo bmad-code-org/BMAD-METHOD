@@ -4,7 +4,7 @@ const yaml = require('js-yaml');
 
 /**
  * Manages IDE configuration persistence
- * Saves and loads IDE-specific configurations to/from bmad/_cfg/ides/
+ * Saves and loads IDE-specific configurations to/from {bmad_folder}/_cfg/ides/
  */
 class IdeConfigManager {
   constructor() {}

@@ -50,7 +50,7 @@ Generates failing acceptance tests BEFORE implementation following TDD's red-gre
 
 4. **Load Knowledge Base Fragments**
 
-   **Critical:** Consult `{project-root}/.bmad/bmm/testarch/tea-index.csv` to load:
+   **Critical:** Consult `.bmad/bmm/testarch/tea-index.csv` to load:
    - `fixture-architecture.md` - Test fixture patterns with auto-cleanup (pure function → fixture → mergeTests composition, 406 lines, 5 examples)
    - `data-factories.md` - Factory patterns using faker (override patterns, nested factories, API seeding, 498 lines, 5 examples)
    - `component-tdd.md` - Component test strategies (red-green-refactor, provider isolation, accessibility, visual regression, 480 lines, 4 examples)

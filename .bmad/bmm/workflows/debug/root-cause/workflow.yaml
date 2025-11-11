@@ -1,0 +1,71 @@
+# Debug Workflow: Root Cause Analysis
+name: debug-root-cause
+description: "Focused root cause analysis using fishbone (Ishikawa) methodology and 5-Whys technique to identify underlying defect causes."
+author: "BMad Core"
+version: "2.0"
+
+# BMAD Core Configuration
+config_source: ".bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: ".bmad/bmm/workflows/debug/root-cause"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.yaml"
+
+# Output configuration
+default_output_file: "{output_folder}/debug/rca-{{date}}.md"
+
+# Knowledge Base Requirements (BMAD Core)
+knowledge_dependencies:
+  - ".bmad/bmm/knowledge/debug/root-cause-checklist.md"
+  - ".bmad/bmm/knowledge/debug/common-defects.md"
+
+tags:
+  - debug
+  - root-cause
+  - fishbone
+  - analysis
+  - bmad-core
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: true
+  validation_required: true
+  methodical: true
+
+# BMAD Core Workflow Steps
+steps:
+  - id: "load_config"
+    name: "Load Configuration"
+    type: "config"
+    required: true
+
+  - id: "load_knowledge"
+    name: "Load Knowledge Base"
+    type: "knowledge"
+    dependencies: "knowledge_dependencies"
+    required: true
+
+  - id: "execute_workflow"
+    name: "Execute Root Cause Analysis"
+    type: "workflow"
+    source: "instructions"
+    template: "template"
+    required: true
+    methods: ["fishbone", "5-whys", "timeline-analysis"]
+
+  - id: "validate_output"
+    name: "Validate RCA Results"
+    type: "validation"
+    required: true
+    criteria: ["root-cause-identified", "evidence-supported", "actionable-recommendations"]
+
+  - id: "save_output"
+    name: "Save RCA Report"
+    type: "output"
+    destination: "default_output_file"
+    required: true

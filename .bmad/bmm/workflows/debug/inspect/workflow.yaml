@@ -1,0 +1,72 @@
+# Debug Workflow: Fagan Inspection
+name: debug-inspect
+description: "Comprehensive Fagan inspection for systematic bug analysis and resolution. Achieves 60-90% defect detection rates through formal 6-phase methodology."
+author: "BMad Core"
+version: "2.0"
+
+# BMAD Core Configuration
+config_source: ".bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: ".bmad/bmm/workflows/debug/inspect"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.yaml"
+
+# Output configuration
+default_output_file: "{output_folder}/debug/debug-report-{{date}}.md"
+
+# Knowledge Base Requirements (BMAD Core)
+knowledge_dependencies:
+  - ".bmad/bmm/knowledge/debug/debug-inspection-checklist.md"
+  - ".bmad/bmm/knowledge/debug/common-defects.md"
+  - ".bmad/bmm/knowledge/debug/debug-patterns.md"
+
+tags:
+  - debug
+  - inspection
+  - fagan
+  - quality
+  - bmad-core
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: true
+  validation_required: true
+  high_accuracy: true
+
+# BMAD Core Workflow Steps
+steps:
+  - id: "load_config"
+    name: "Load Configuration"
+    type: "config"
+    required: true
+
+  - id: "load_knowledge"
+    name: "Load Knowledge Base"
+    type: "knowledge"
+    dependencies: "knowledge_dependencies"
+    required: true
+
+  - id: "execute_workflow"
+    name: "Execute Fagan Inspection"
+    type: "workflow"
+    source: "instructions"
+    template: "template"
+    required: true
+    phases: ["planning", "overview", "preparation", "inspection", "rework", "follow-up"]
+
+  - id: "validate_output"
+    name: "Validate Inspection Results"
+    type: "validation"
+    required: true
+    criteria: ["completeness", "accuracy", "actionability"]
+
+  - id: "save_output"
+    name: "Save Inspection Report"
+    type: "output"
+    destination: "default_output_file"
+    required: true

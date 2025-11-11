@@ -1,0 +1,63 @@
+# Debug Workflow: Quick Debug
+name: debug-quick
+description: "Rapid triage and initial analysis for simple issues. Provides immediate assessment and suggested next steps."
+author: "BMad Core"
+version: "2.0"
+
+# BMAD Core Configuration
+config_source: "{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{bmad_folder}/bmm/workflows/debug/quick-debug"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+# Knowledge Base Requirements
+knowledge_dependencies:
+  - "{bmad_folder}/bmm/knowledge/debug/debug-patterns.md"
+  - "{bmad_folder}/bmm/knowledge/debug/common-defects.md"
+
+tags:
+  - debug
+  - triage
+  - quick-analysis
+  - bmad-core
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: false
+  validation_required: true
+
+# BMAD Core Workflow Steps
+steps:
+  - id: "load_config"
+    name: "Load Configuration"
+    type: "config"
+    required: true
+
+  - id: "load_knowledge"
+    name: "Load Knowledge Base"
+    type: "knowledge"
+    dependencies: "knowledge_dependencies"
+    required: true
+
+  - id: "execute_workflow"
+    name: "Execute Quick Debug"
+    type: "workflow"
+    source: "instructions"
+    required: true
+
+  - id: "validate_output"
+    name: "Validate Results"
+    type: "validation"
+    required: true
+
+  - id: "save_output"
+    name: "Save Results"
+    type: "output"
+    destination: "output_folder"
+    required: true

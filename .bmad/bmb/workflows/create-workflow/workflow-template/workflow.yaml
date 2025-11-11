@@ -20,7 +20,7 @@ recommended_inputs: # optional, can be omitted
   - example_input: "{project-root}/{path/to/file.md}"
 
 # Module path and component files
-installed_path: "{project-root}/.bmad/{module-code}/workflows/{workflow-code}"
+installed_path: ".bmad/{module-code}/workflows/{workflow-code}"
 template: "{installed_path}/template.md" # optional, can be omitted
 instructions: "{installed_path}/instructions.md" # optional, can be omitted
 validation: "{installed_path}/checklist.md" # optional, can be omitted

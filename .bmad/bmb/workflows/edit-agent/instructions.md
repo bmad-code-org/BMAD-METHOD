@@ -1,7 +1,7 @@
 # Edit Agent - Agent Editor Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/.bmad/bmb/workflows/edit-agent/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: .bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: .bmad/bmb/workflows/edit-agent/workflow.yaml</critical>
 <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication based on context and user needs</critical>
 <critical>The goal is COLLABORATIVE IMPROVEMENT - work WITH the user, not FOR them</critical>
 <critical>Communicate all responses in {communication_language}</critical>

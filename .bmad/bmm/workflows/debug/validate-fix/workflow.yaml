@@ -1,0 +1,67 @@
+# Debug Workflow: Fix Validation
+name: debug-validate-fix
+description: "Verify proposed fix addresses root cause without side effects. Includes regression risk assessment."
+author: "BMad Core"
+version: "2.0"
+
+# BMAD Core Configuration
+config_source: ".bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: ".bmad/bmm/workflows/debug/validate-fix"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+# Knowledge Base Requirements (BMAD Core)
+knowledge_dependencies:
+  - ".bmad/bmm/knowledge/debug/common-defects.md"
+  - ".bmad/bmm/knowledge/debug/debug-patterns.md"
+
+tags:
+  - debug
+  - validation
+  - quality
+  - risk-assessment
+  - bmad-core
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: false
+  validation_required: true
+  risk_assessment: true
+
+# BMAD Core Workflow Steps
+steps:
+  - id: "load_config"
+    name: "Load Configuration"
+    type: "config"
+    required: true
+
+  - id: "load_knowledge"
+    name: "Load Knowledge Base"
+    type: "knowledge"
+    dependencies: "knowledge_dependencies"
+    required: true
+
+  - id: "execute_workflow"
+    name: "Execute Fix Validation"
+    type: "workflow"
+    source: "instructions"
+    required: true
+    phases: ["fix-analysis", "regression-check", "side-effects-assessment", "validation"]
+
+  - id: "validate_output"
+    name: "Validate Assessment Results"
+    type: "validation"
+    required: true
+    criteria: ["fix-effectiveness", "risk-assessment-complete", "recommendations-clear"]
+
+  - id: "save_output"
+    name: "Save Validation Report"
+    type: "output"
+    destination: "output_folder"
+    required: true

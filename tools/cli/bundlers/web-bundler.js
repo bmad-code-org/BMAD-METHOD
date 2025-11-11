@@ -199,7 +199,7 @@ class WebBundler {
 
     // Resolve dependencies with warning tracking
     const dependencyWarnings = [];
-    const { dependencies, skippedWorkflows } = await this.resolveAgentDependencies(agentXml, moduleName, dependencyWarnings);
+    const { dependencies, skippedWorkflows } = await this.resolveAgentDependencies(agentXml, moduleName, dependencyWarnings, agentName);
 
     if (dependencyWarnings.length > 0) {
       this.stats.warnings.push({ agent: agentName, warnings: dependencyWarnings });
@@ -212,8 +212,8 @@ class WebBundler {
       // Process any placeholders in the CSV content
       const processedPartyContent = this.processProjectRootReferences(partyContent);
       // Wrap as text to preserve raw CSV format in CDATA
-      const wrappedParty = this.wrapContentInXml(processedPartyContent, 'bmad/_cfg/agent-manifest.csv', 'text');
-      dependencies.set('bmad/_cfg/agent-manifest.csv', wrappedParty);
+      const wrappedParty = this.wrapContentInXml(processedPartyContent, '{bmad_folder}/_cfg/agent-manifest.csv', 'text');
+      dependencies.set('{bmad_folder}/_cfg/agent-manifest.csv', wrappedParty);
       console.log(chalk.gray(`    + Added party manifest from module default-party.csv`));
     }
 
@@ -275,15 +275,15 @@ class WebBundler {
     // Check if team has a party CSV file (agent manifest)
     const hasPartyFile = teamConfig.party && teamConfig.party.endsWith('.csv');
     if (hasPartyFile) {
-      // Load the party CSV and add it as bmad/_cfg/agent-manifest.csv
+      // Load the party CSV and add it as {bmad_folder}/_cfg/agent-manifest.csv
       const partyPath = path.join(path.dirname(teamPath), teamConfig.party.replace(/^\.\//, ''));
       if (await fs.pathExists(partyPath)) {
         const partyContent = await fs.readFile(partyPath, 'utf8');
         // Process any placeholders in the CSV content
         const processedPartyContent = this.processProjectRootReferences(partyContent);
         // Wrap as text/csv to preserve raw CSV format in CDATA
-        const wrappedParty = this.wrapContentInXml(processedPartyContent, 'bmad/_cfg/agent-manifest.csv', 'text');
-        dependencies.set('bmad/_cfg/agent-manifest.csv', wrappedParty);
+        const wrappedParty = this.wrapContentInXml(processedPartyContent, '{bmad_folder}/_cfg/agent-manifest.csv', 'text');
+        dependencies.set('{bmad_folder}/_cfg/agent-manifest.csv', wrappedParty);
         console.log(chalk.gray(`    + Added agent manifest from: ${teamConfig.party}`));
       } else {
         console.log(chalk.yellow(`    ⚠ Party file not found: ${partyPath}`));
@@ -506,7 +506,7 @@ class WebBundler {
         }
 
         // Parse paths to extract module and workflow location
-        // Support both {project-root}/bmad/... and {project-root}/{bmad_folder}/... patterns
+        // Support both {bmad_folder}/... and {bmad_folder}/... patterns
         const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
         const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
 
@@ -561,7 +561,7 @@ class WebBundler {
     // Replace config_source with new module reference
     // Support both old format (bmad) and new format ({bmad_folder})
     const configSourcePattern = /config_source:\s*["']?\{project-root\}\/(?:\{bmad_folder\}|bmad)\/[^/]+\/config\.yaml["']?/g;
-    const newConfigSource = `config_source: "{project-root}/{bmad_folder}/${newModuleName}/config.yaml"`;
+    const newConfigSource = `config_source: "{bmad_folder}/${newModuleName}/config.yaml"`;
 
     const updatedYaml = yamlContent.replaceAll(configSourcePattern, newConfigSource);
     await fs.writeFile(workflowYamlPath, updatedYaml, 'utf8');
@@ -642,7 +642,7 @@ class WebBundler {
   /**
    * Resolve all dependencies for an agent
    */
-  async resolveAgentDependencies(agentXml, moduleName, warnings = []) {
+  async resolveAgentDependencies(agentXml, moduleName, warnings = [], agentName = null) {
     const dependencies = new Map();
     const processed = new Set();
     const skippedWorkflows = [];
@@ -652,7 +652,7 @@ class WebBundler {
 
     // Process regular file references
     for (const ref of refs) {
-      await this.processFileDependency(ref, dependencies, processed, moduleName, warnings);
+      await this.processFileDependency(ref, dependencies, processed, moduleName, warnings, agentName);
     }
 
     // Process workflow references with special handling
@@ -766,7 +766,7 @@ class WebBundler {
   /**
    * Process a file dependency recursively
    */
-  async processFileDependency(filePath, dependencies, processed, moduleName, warnings = []) {
+  async processFileDependency(filePath, dependencies, processed, moduleName, warnings = [], agentName = null) {
     // Skip workflow YAML files - they're handled by processWorkflowDependency
     if (filePath.includes('/workflow') && filePath.endsWith('workflow.yaml')) {
       return;
@@ -779,7 +779,12 @@ class WebBundler {
     processed.add(filePath);
 
     // Skip agent-manifest.csv manifest for web bundles (agents are already bundled)
-    if (filePath === 'bmad/_cfg/agent-manifest.csv' || filePath.endsWith('/agent-manifest.csv')) {
+    if (filePath === '{bmad_folder}/_cfg/agent-manifest.csv' || filePath.endsWith('/agent-manifest.csv')) {
+      return;
+    }
+
+    // Skip self-referential agent .md file (e.g., debug.agent.yaml referencing {bmad_folder}/bmm/agents/debug.md)
+    if (agentName && filePath.endsWith(`/agents/${agentName}.md`)) {
       return;
     }
 
@@ -816,7 +821,7 @@ class WebBundler {
             let depPath = dep.replaceAll(/['"]/g, '').replace(/^{project-root}\//, '');
             depPath = depPath.replace(/^{bmad_folder}\//, 'bmad/');
             if (depPath && !processed.has(depPath)) {
-              await this.processFileDependency(depPath, dependencies, processed, moduleName, warnings);
+              await this.processFileDependency(depPath, dependencies, processed, moduleName, warnings, agentName);
             }
           }
         }
@@ -830,7 +835,7 @@ class WebBundler {
             let templatePath = template.replaceAll(/['"]/g, '').replace(/^{project-root}\//, '');
             templatePath = templatePath.replace(/^{bmad_folder}\//, 'bmad/');
             if (templatePath && !processed.has(templatePath)) {
-              await this.processFileDependency(templatePath, dependencies, processed, moduleName, warnings);
+              await this.processFileDependency(templatePath, dependencies, processed, moduleName, warnings, agentName);
             }
           }
         }
@@ -1083,7 +1088,7 @@ class WebBundler {
    * Include core workflow task files
    */
   async includeCoreWorkflowFiles(dependencies, processed, moduleName, warnings = []) {
-    const coreWorkflowPath = 'bmad/core/tasks/workflow.xml';
+    const coreWorkflowPath = '{bmad_folder}/core/tasks/workflow.xml';
 
     if (processed.has(coreWorkflowPath)) {
       return;
@@ -1108,7 +1113,7 @@ class WebBundler {
    * Include advanced elicitation files
    */
   async includeAdvancedElicitationFiles(dependencies, processed, moduleName, warnings = []) {
-    const elicitationFiles = ['bmad/core/tasks/adv-elicit.xml', 'bmad/core/tasks/adv-elicit-methods.csv'];
+    const elicitationFiles = ['{bmad_folder}/core/tasks/adv-elicit.xml', '{bmad_folder}/core/tasks/adv-elicit-methods.csv'];
 
     for (const filePath of elicitationFiles) {
       if (processed.has(filePath)) {
@@ -1174,9 +1179,9 @@ class WebBundler {
 
       // Try different path mappings for directories
       const possibleDirs = [
-        // Try as module path: bmad/cis/... -> src/modules/cis/...
+        // Try as module path: {bmad_folder}/cis/... -> src/modules/cis/...
         path.join(this.sourceDir, 'modules', actualPath),
-        // Try as direct path: bmad/core/... -> src/core/...
+        // Try as direct path: {bmad_folder}/core/... -> src/core/...
         path.join(this.sourceDir, actualPath),
       ];
 
@@ -1232,7 +1237,7 @@ class WebBundler {
     filePath = filePath.replace(/^{bmad_folder}$/, 'bmad');
 
     // Check temp directory first for _cfg files
-    if (filePath.startsWith('bmad/_cfg/')) {
+    if (filePath.startsWith('{bmad_folder}/_cfg/')) {
       const filename = filePath.split('/').pop();
       const tempPath = path.join(this.tempManifestDir, filename);
       if (fs.existsSync(tempPath)) {
@@ -1241,9 +1246,9 @@ class WebBundler {
     }
 
     // Handle different path patterns for bmad files
-    // bmad/cis/tasks/brain-session.md -> src/modules/cis/tasks/brain-session.md
-    // bmad/core/tasks/create-doc.md -> src/core/tasks/create-doc.md
-    // bmad/bmm/templates/brief.md -> src/modules/bmm/templates/brief.md
+    // {bmad_folder}/cis/tasks/brain-session.md -> src/modules/cis/tasks/brain-session.md
+    // {bmad_folder}/core/tasks/create-doc.md -> src/core/tasks/create-doc.md
+    // {bmad_folder}/bmm/templates/brief.md -> src/modules/bmm/templates/brief.md
 
     let actualPath = filePath;
 
@@ -1259,9 +1264,9 @@ class WebBundler {
       const possiblePaths = [
         // Try in temp directory first
         path.join(this.tempDir, filePath),
-        // Try as module path: bmad/cis/... -> src/modules/cis/...
+        // Try as module path: {bmad_folder}/cis/... -> src/modules/cis/...
         path.join(this.sourceDir, 'modules', actualPath),
-        // Try as direct path: bmad/core/... -> src/core/...
+        // Try as direct path: {bmad_folder}/core/... -> src/core/...
         path.join(this.sourceDir, actualPath),
         // Try without any prefix in src
         path.join(this.sourceDir, parts.slice(1).join('/')),

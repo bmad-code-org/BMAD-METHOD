@@ -4,7 +4,7 @@ description: "Assemble a dynamic Story Context XML by pulling latest documentati
 author: "BMad"
 
 # Critical variables
-config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
+config_source: "{bmad_folder}/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -13,7 +13,7 @@ story_path: "{config_source}:dev_ephemeral_location"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/story-context"
+installed_path: "{bmad_folder}/bmm/workflows/4-implementation/story-context"
 template: "{installed_path}/context-template.xml"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"

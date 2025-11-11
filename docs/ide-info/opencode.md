@@ -14,7 +14,7 @@ BMAD agents are installed as OpenCode agents in `.opencode/agent/BMAD/{module_na
 
 ```
 /agents - to see a list of agents and switch between them
-/bmad/bmm/workflows/workflow-init - Activate the workflow-init command
+/{bmad_folder}/bmm/workflows/workflow-init - Activate the workflow-init command
 ```
 
 ### Notes

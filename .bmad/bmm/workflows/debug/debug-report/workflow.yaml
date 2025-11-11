@@ -1,0 +1,70 @@
+# Debug Workflow: Debug Report Generation
+name: debug-report
+description: "Generate comprehensive debug report consolidating all findings, analyses, and recommendations from debugging session."
+author: "BMad Core"
+version: "2.0"
+
+# BMAD Core Configuration
+config_source: ".bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: ".bmad/bmm/workflows/debug/debug-report"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.yaml"
+
+# Output configuration
+default_output_file: "{output_folder}/debug/debug-summary-{{date}}.md"
+
+# Knowledge Base Requirements (BMAD Core)
+knowledge_dependencies:
+  - ".bmad/bmm/knowledge/debug/debug-patterns.md"
+  - ".bmad/bmm/knowledge/debug/common-defects.md"
+
+tags:
+  - debug
+  - documentation
+  - reporting
+  - bmad-core
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: false
+  validation_required: true
+  comprehensive: true
+
+# BMAD Core Workflow Steps
+steps:
+  - id: "load_config"
+    name: "Load Configuration"
+    type: "config"
+    required: true
+
+  - id: "load_knowledge"
+    name: "Load Knowledge Base"
+    type: "knowledge"
+    dependencies: "knowledge_dependencies"
+    required: true
+
+  - id: "execute_workflow"
+    name: "Generate Debug Report"
+    type: "workflow"
+    source: "instructions"
+    template: "template"
+    required: true
+    sections: ["executive-summary", "findings", "analysis", "recommendations", "lessons-learned"]
+
+  - id: "validate_output"
+    name: "Validate Report Quality"
+    type: "validation"
+    required: true
+    criteria: ["completeness", "clarity", "actionability", "professional-format"]
+
+  - id: "save_output"
+    name: "Save Debug Report"
+    type: "output"
+    destination: "default_output_file"
+    required: true

@@ -26,7 +26,7 @@
         - Blockers: {{blockers-from-story}}
 
         Team assembled based on story participants:
-        {{ List Agents from {project-root}/{bmad_folder}/_cfg/agent-manifest.csv }}
+        {{ List Agents from {bmad_folder}/_cfg/agent-manifest.csv }}
       </output>
     </step>
 

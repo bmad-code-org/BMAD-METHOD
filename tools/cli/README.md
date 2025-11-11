@@ -220,7 +220,7 @@ Platform specifics are **IDE+module combination hooks** that execute custom logi
 
 ### Manifest System
 
-The installer generates **5 manifest files** in `{target}/bmad/_cfg/`:
+The installer generates **5 manifest files** in `{target}/{bmad_folder}/_cfg/`:
 
 **1. Installation Manifest** (`manifest.yaml`)
 
@@ -401,7 +401,7 @@ Reusable XML fragments in `src/utility/models/fragments/`:
 ```yaml
 agent:
   metadata:
-    id: 'bmad/bmm/agents/pm.md'
+    id: '{bmad_folder}/bmm/agents/pm.md'
     name: 'PM'
     title: 'Product Manager'
   persona:
@@ -409,7 +409,7 @@ agent:
     identity: 'You are an experienced PM...'
   menu:
     - trigger: '*create-brief'
-      workflow: '{project-root}/bmad/bmm/workflows/.../workflow.yaml'
+      workflow: '{bmad_folder}/bmm/workflows/.../workflow.yaml'
 ```
 
 ### Output: IDE (Markdown with XML)
@@ -422,7 +422,7 @@ agent:
 ```xml
 <agent id="..." name="PM">
   <activation critical="MANDATORY">
-    <step n="2">Load {project-root}/bmad/bmm/config.yaml at runtime</step>
+    <step n="2">Load {bmad_folder}/bmm/config.yaml at runtime</step>
     ...
   </activation>
   <persona>...</persona>
@@ -444,8 +444,8 @@ agent:
   <persona>...</persona>
   <menu>...</menu>
   <bundled-files>
-    <file id="bmad/bmm/config.yaml"><![CDATA[...]]></file>
-    <file id="bmad/bmm/workflows/.../workflow.yaml"><![CDATA[...]]></file>
+    <file id="{bmad_folder}/bmm/config.yaml"><![CDATA[...]]></file>
+    <file id="{bmad_folder}/bmm/workflows/.../workflow.yaml"><![CDATA[...]]></file>
     ...
   </bundled-files>
 </agent>

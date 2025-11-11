@@ -104,7 +104,7 @@ class WorkflowCommandGenerator {
 
     // Convert source path to installed path
     // From: /Users/.../src/modules/bmm/workflows/.../workflow.yaml
-    // To: {project-root}/{bmad_folder}/bmm/workflows/.../workflow.yaml
+    // To: {bmad_folder}/bmm/workflows/.../workflow.yaml
     let workflowPath = workflow.path;
 
     // Extract the relative path from source

@@ -64,4 +64,4 @@ specified_framework:
       label: "Custom / Other"
 
 data_path:
-  result: "{project-root}/{bmad_folder}/bmgd/data"
+  result: "{bmad_folder}/bmgd/data"

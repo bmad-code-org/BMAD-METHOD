@@ -14,7 +14,7 @@
     </access-method>
     <rules>
       <rule>NEVER attempt to read files from filesystem - all files are bundled in this XML</rule>
-      <rule>File paths starting with "{bmad_folder}/" or "{project-root}/{bmad_folder}/" refer to &lt;file id="..."&gt; elements</rule>
+      <rule>File paths starting with "{bmad_folder}/" or "{bmad_folder}/" refer to &lt;file id="..."&gt; elements</rule>
       <rule>When instructions reference a file path, locate the corresponding &lt;file&gt; element by matching the id attribute</rule>
       <rule>YAML files are bundled with only their web_bundle section content (flattened to root level)</rule>
     </rules>

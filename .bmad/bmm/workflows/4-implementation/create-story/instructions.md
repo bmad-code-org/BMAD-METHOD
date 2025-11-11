@@ -7,45 +7,46 @@
 <critical>This workflow creates or updates the next user story from epics/PRD and architecture context, saving to the configured stories directory and optionally invoking Story Context.</critical>
 <critical>DOCUMENT OUTPUT: Concise, technical, actionable story specifications. Use tables/lists for acceptance criteria and tasks.</critical>
 
-## 📚 Document Discovery - Selective Epic Loading
-
-**Strategy**: This workflow needs only ONE specific epic and its stories, not all epics. This provides huge efficiency gains when epics are sharded.
-
-**Epic Discovery Process (SELECTIVE OPTIMIZATION):**
-
-1. **Determine which epic** you need (epic_num from story context - e.g., story "3-2-feature-name" needs Epic 3)
-2. **Check for sharded version**: Look for `epics/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand structure
-   - **Load ONLY `epic-{epic_num}.md`** (e.g., `epics/epic-3.md` for Epic 3)
-   - DO NOT load all epic files - only the one needed!
-   - This is the key efficiency optimization for large multi-epic projects
-4. **If whole document found**: Load the complete `epics.md` file and extract the relevant epic
-
-**Other Documents (prd, architecture, ux-design) - Full Load:**
-
-1. **Search for whole document first** - Use fuzzy file matching
-2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand structure
-   - Read ALL section files listed in the index
-   - Treat combined content as single document
-4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
-
-**Priority**: If both whole and sharded versions exist, use the whole document.
-
-**UX-Heavy Projects**: Always check for ux-design documentation as it provides critical context for UI-focused stories.
-
 <workflow>
 
   <step n="1" goal="Load config and initialize">
-    <action>Resolve variables from config_source: story_dir (dev_ephemeral_location), output_folder, user_name, communication_language. If story_dir missing and {{non_interactive}} == false → ASK user to provide a stories directory and update variable. If {{non_interactive}} == true and missing, HALT with a clear message.</action>
+    <action>Resolve variables from config_source: story_dir (dev_ephemeral_location), output_folder, user_name, communication_language. If story_dir missing → ASK user to provide a stories directory and update variable.</action>
     <action>Create {{story_dir}} if it does not exist</action>
     <action>Resolve installed component paths from workflow.yaml: template, instructions, validation</action>
     <action>Resolve recommended inputs if present: epics_file, prd_file, architecture_file</action>
   </step>
 
   <step n="2" goal="Discover and load source documents">
+    <action>
+      Selective Epic Loading
+
+      **Strategy**: This workflow needs only ONE specific epic and its stories, not all epics. This provides huge efficiency gains when epics are sharded.
+
+      **Epic Discovery Process (SELECTIVE OPTIMIZATION):**
+
+      1. **Determine which epic** you need (epic_num from story context - e.g., story "3-2-feature-name" needs Epic 3)
+      2. **Check for sharded version**: Look for `epics/*n*.md` where n is the epic number such as epics/epic-3-foo.md
+      3. **If sharded version found**:
+        - Read `index.md` to understand structure
+        - **Load ONLY `epic-{epic_num}.md`** (e.g., `epics/epic-3.md` for Epic 3)
+        - DO NOT load all epic files - only the one needed!
+        - This is the key efficiency optimization for large multi-epic projects
+      4. **If whole document found**: Load the complete `epics.md` file and extract the relevant epic
+
+      **Other Documents (prd, architecture, ux-design) - Full Load:**
+
+      1. **Search for whole document first** - Use fuzzy file matching
+      2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
+      3. **If sharded version found**:
+        - Read `index.md` to understand structure
+        - Read ALL section files listed in the index
+        - Treat combined content as single document
+      4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
+
+      **Priority**: If both whole and sharded versions exist, use the whole document.
+
+      **UX-Heavy Projects**: Always check for ux-design documentation as it provides critical context for UI-focused stories.
+    </action>
     <critical>PREVIOUS STORY CONTINUITY: Essential for maintaining context and learning from prior development</critical>
 
     <action>Find the previous completed story to extract dev agent learnings and review findings:
@@ -115,19 +116,17 @@
     </action>
 
     <action>If {{tech_spec_file}} empty: derive from {{tech_spec_glob_template}} with {{epic_num}} and search {{tech_spec_search_dir}} recursively. If multiple, pick most recent by modified time.</action>
-    <action>Build a prioritized document set for this epic:
+    <action>Build a prioritized document set for this epic - search and load from {input_file_patterns} list of potential locations:
       1) tech_spec_file (epic-scoped)
-      2) epics_file (acceptance criteria and breakdown)
-      3) prd_file (business requirements and constraints)
-      4) architecture_file (architecture constraints)
-      5) Architecture docs under docs/ and output_folder/: tech-stack.md, unified-project-structure.md, coding-standards.md, testing-strategy.md, backend-architecture.md, frontend-architecture.md, data-models.md, database-schema.md, rest-api-spec.md, external-apis.md (include if present)
+      2) epics_file (acceptance criteria and breakdown) the specific epic the story will be part of
+      3) prd_file (business requirements and constraints) whole or sharded
+      4) architecture_file (architecture constraints) whole or sharded
     </action>
     <action>READ COMPLETE FILES for all items found in the prioritized set. Store content and paths for citation.</action>
   </step>
 
   <step n="3" goal="Find next backlog story to draft" tag="sprint-status">
-    <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
-    <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+    <critical>MUST read COMPLETE {sprint_status} file from start to end to preserve order</critical>
     <action>Read ALL lines from beginning to end - do not skip any content</action>
     <action>Parse the development_status section completely to understand story order</action>
 
@@ -164,7 +163,6 @@ All stories are either already drafted or completed.
     <action>Check if story file already exists at expected path in {{story_dir}}</action>
     <check if="story file exists">
       <output>ℹ️ Story file already exists: {{story_file_path}}
-
 Will update existing story file rather than creating new one.
       </output>
       <action>Set update_mode = true</action>

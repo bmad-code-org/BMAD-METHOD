@@ -259,16 +259,16 @@ Grade:                   {grade}
 
 This review consulted the following knowledge base fragments:
 
-- **[test-quality.md](../../../testarch/knowledge/test-quality.md)** - Definition of Done for tests (no hard waits, <300 lines, <1.5 min, self-cleaning)
-- **[fixture-architecture.md](../../../testarch/knowledge/fixture-architecture.md)** - Pure function → Fixture → mergeTests pattern
-- **[network-first.md](../../../testarch/knowledge/network-first.md)** - Route intercept before navigate (race condition prevention)
-- **[data-factories.md](../../../testarch/knowledge/data-factories.md)** - Factory functions with overrides, API-first setup
-- **[test-levels-framework.md](../../../testarch/knowledge/test-levels-framework.md)** - E2E vs API vs Component vs Unit appropriateness
-- **[tdd-cycles.md](../../../testarch/knowledge/tdd-cycles.md)** - Red-Green-Refactor patterns
-- **[selective-testing.md](../../../testarch/knowledge/selective-testing.md)** - Duplicate coverage detection
-- **[ci-burn-in.md](../../../testarch/knowledge/ci-burn-in.md)** - Flakiness detection patterns (10-iteration loop)
-- **[test-priorities.md](../../../testarch/knowledge/test-priorities.md)** - P0/P1/P2/P3 classification framework
-- **[traceability.md](../../../testarch/knowledge/traceability.md)** - Requirements-to-tests mapping
+- **[test-quality.md](../../../knowledge/tea/test-quality.md)** - Definition of Done for tests (no hard waits, <300 lines, <1.5 min, self-cleaning)
+- **[fixture-architecture.md](../../../knowledge/tea/fixture-architecture.md)** - Pure function → Fixture → mergeTests pattern
+- **[network-first.md](../../../knowledge/tea/network-first.md)** - Route intercept before navigate (race condition prevention)
+- **[data-factories.md](../../../knowledge/tea/data-factories.md)** - Factory functions with overrides, API-first setup
+- **[test-levels-framework.md](../../../knowledge/tea/test-levels-framework.md)** - E2E vs API vs Component vs Unit appropriateness
+- **[tdd-cycles.md](../../../knowledge/tea/tdd-cycles.md)** - Red-Green-Refactor patterns
+- **[selective-testing.md](../../../knowledge/tea/selective-testing.md)** - Duplicate coverage detection
+- **[ci-burn-in.md](../../../knowledge/tea/ci-burn-in.md)** - Flakiness detection patterns (10-iteration loop)
+- **[test-priorities.md](../../../knowledge/tea/test-priorities.md)** - P0/P1/P2/P3 classification framework
+- **[traceability.md](../../../knowledge/tea/traceability.md)** - Requirements-to-tests mapping
 
 See [tea-index.csv](../../../testarch/tea-index.csv) for complete knowledge base.
 
@@ -380,7 +380,7 @@ See [tea-index.csv](../../../testarch/tea-index.csv) for complete knowledge base
 
 If you have questions or feedback on this review:
 
-1. Review patterns in knowledge base: `testarch/knowledge/`
+1. Review patterns in knowledge base: `knowledge/tea/`
 2. Consult tea-index.csv for detailed guidance
 3. Request clarification on specific violations
 4. Pair with QA engineer to apply patterns

@@ -1,7 +1,7 @@
 # Edit Module - Module Editor Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/edit-module/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {bmad_folder}/bmb/workflows/edit-module/workflow.yaml</critical>
 <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication based on context and user needs</critical>
 <critical>The goal is COLLABORATIVE IMPROVEMENT - work WITH the user, not FOR them</critical>
 <critical>Communicate all responses in {communication_language}</critical>
@@ -185,7 +185,7 @@ Let the conversation flow naturally. Build a shared vision of what "better" look
 **If setting up cross-module integration:**
 
 - Identify which workflows from other modules are needed
-- Show how to reference workflows properly: {project-root}/{bmad_folder}/{{module}}/workflows/{{workflow}}/workflow.yaml
+- Show how to reference workflows properly: {bmad_folder}/{{module}}/workflows/{{workflow}}/workflow.yaml
 - Document the integration in README
 - Ensure dependencies are clear
 - Consider adding example usage

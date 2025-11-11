@@ -299,7 +299,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 
 **Special Capabilities:**
 
-- **Knowledge Base Access:** Consults comprehensive testing best practices from `testarch/knowledge/` directory
+- **Knowledge Base Access:** Consults comprehensive testing best practices from `knowledge/tea/` directory
 - **Framework Selection:** Smart framework selection (Playwright vs Cypress) with fixture architecture
 - **Cross-Platform Testing:** Supports testing across web, mobile, and API layers
 
@@ -629,7 +629,7 @@ You can customize any agent's personality without modifying core agent files.
 
 ### Location
 
-**Customization Directory:** `{project-root}/.bmad/_cfg/agents/`
+**Customization Directory:** `.bmad/_cfg/agents/`
 
 **Naming Convention:** `{module}-{agent-name}.customize.yaml`
 
@@ -736,7 +736,7 @@ Other agents collaborate with PM's specialized perspective.
 
 ```bash
 # Create customization file at:
-# {project-root}/.bmad/_cfg/agents/{module}-{agent-name}.customize.yaml
+# .bmad/_cfg/agents/{module}-{agent-name}.customize.yaml
 
 # Example: .bmad/_cfg/agents/bmm-pm.customize.yaml
 ```

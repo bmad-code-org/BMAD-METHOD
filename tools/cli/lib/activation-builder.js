@@ -107,7 +107,7 @@ class ActivationBuilder {
     const fragmentName = forWebBundle ? 'web-bundle-activation-steps.xml' : 'activation-steps.xml';
     const stepsTemplate = await this.loadFragment(fragmentName);
 
-    // Extract basename from agent ID (e.g., "bmad/bmm/agents/pm.md" → "pm")
+    // Extract basename from agent ID (e.g., "{bmad_folder}/bmm/agents/pm.md" → "pm")
     const agentBasename = metadata.id ? metadata.id.split('/').pop().replace('.md', '') : metadata.name || 'agent';
 
     // Build agent-specific steps

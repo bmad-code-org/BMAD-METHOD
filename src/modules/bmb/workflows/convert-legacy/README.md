@@ -84,7 +84,7 @@ convert-legacy/
 - Prompts for target module (bmm, bmb, cis, custom)
 - Determines proper installation paths using v6 conventions
 - Shows target location for user confirmation
-- Ensures all paths use `{project-root}/{bmad_folder}/` format
+- Ensures all paths use `{bmad_folder}/` format
 
 ### Phase 2: Conversion Strategy (Step 4)
 
@@ -126,7 +126,7 @@ convert-legacy/
 **Template-to-Workflow Conversion (5c)**
 
 - Converts YAML template sections to workflow steps
-- Maps `elicit: true` flags to `<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>` tags
+- Maps `elicit: true` flags to `<invoke-task halt="true">{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>` tags
 - Transforms conditional sections to flow control
 - Creates proper template.md from content structure
 - Integrates v4 create-doc.md task patterns
@@ -218,7 +218,7 @@ Converted items follow v6 conventions:
 
 **Issue**: Path conversion errors
 
-- **Solution**: Ensure all references use `{project-root}/{bmad_folder}/` format
+- **Solution**: Ensure all references use `{bmad_folder}/` format
 - **Check**: Review conversion mappings for proper path patterns
 
 **Issue**: Sub-workflow invocation fails

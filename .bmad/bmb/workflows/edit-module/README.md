@@ -106,7 +106,7 @@ Modules can share workflows:
 
 ```yaml
 # In agent menu item:
-workflow: '{project-root}/.bmad/other-module/workflows/shared-workflow/workflow.yaml'
+workflow: '.bmad/other-module/workflows/shared-workflow/workflow.yaml'
 ```
 
 Common patterns:

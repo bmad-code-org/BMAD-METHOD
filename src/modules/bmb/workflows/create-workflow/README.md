@@ -159,7 +159,7 @@ The brainstorming phase invokes the CIS brainstorming workflow to:
 ### Generated Workflow Folder
 
 Creates a complete workflow folder at:
-`{project-root}/{bmad_folder}/{{target_module}}/workflows/{{workflow_name}}/`
+`{bmad_folder}/{{target_module}}/workflows/{{workflow_name}}/`
 
 ### Files Created
 

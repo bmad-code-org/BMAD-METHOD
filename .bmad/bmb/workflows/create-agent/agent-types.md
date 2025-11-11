@@ -216,13 +216,13 @@ agent:
     communication_style: '...'
     principles: ['...']
   critical_actions:
-    - 'Load config from {project-root}/.bmad/{module}/config.yaml'
+    - 'Load config from .bmad/{module}/config.yaml'
   menu:
     - trigger: create-prd
-      workflow: '{project-root}/.bmad/bmm/workflows/prd/workflow.yaml'
+      workflow: '.bmad/bmm/workflows/prd/workflow.yaml'
       description: 'Create PRD'
     - trigger: validate
-      exec: '{project-root}/.bmad/core/tasks/validate-workflow.xml'
+      exec: '.bmad/core/tasks/validate-workflow.xml'
       description: 'Validate document'
 ```
 
@@ -237,12 +237,12 @@ agent:
     <principles>...</principles>
   </persona>
   <critical-actions>
-    <i>Load config from {project-root}/.bmad/{module}/config.yaml</i>
+    <i>Load config from .bmad/{module}/config.yaml</i>
   </critical-actions>
   <menu>
     <item cmd="*help">Show numbered menu</item>
-    <item cmd="*create-prd" run-workflow="{project-root}/.bmad/bmm/workflows/prd/workflow.yaml">Create PRD</item>
-    <item cmd="*validate" exec="{project-root}/.bmad/core/tasks/validate-workflow.xml">Validate document</item>
+    <item cmd="*create-prd" run-workflow=".bmad/bmm/workflows/prd/workflow.yaml">Create PRD</item>
+    <item cmd="*validate" exec=".bmad/core/tasks/validate-workflow.xml">Validate document</item>
     <item cmd="*exit">Exit</item>
   </menu>
 </agent>

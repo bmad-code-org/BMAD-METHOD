@@ -24,7 +24,7 @@ src/modules/{module-code}/
 └── README.md                      # Module documentation
 
 # INSTALLED MODULE (in target project)
-{project-root}/{bmad_folder}/{module-code}/
+{bmad_folder}/{module-code}/
 ├── agents/                        # Compiled agent files (.md)
 ├── workflows/                     # Workflow instances
 ├── tasks/                         # Task files
@@ -145,8 +145,8 @@ For modules that need workflows from other modules but want to remain standalone
 ```yaml
 menu:
   - trigger: command-name
-    workflow: '{project-root}/{bmad_folder}/SOURCE_MODULE/workflows/path/workflow.yaml'
-    workflow-install: '{project-root}/{bmad_folder}/THIS_MODULE/workflows/vendored/workflow.yaml'
+    workflow: '{bmad_folder}/SOURCE_MODULE/workflows/path/workflow.yaml'
+    workflow-install: '{bmad_folder}/THIS_MODULE/workflows/vendored/workflow.yaml'
     description: 'Command description'
 ```
 
@@ -216,7 +216,7 @@ module_version:
   result: '1.0.0'
 
 data_path:
-  result: '{project-root}/{bmad_folder}/module-code/data'
+  result: '{bmad_folder}/module-code/data'
 ```
 
 **Key Points:**

@@ -45,7 +45,8 @@ async function testWebBundler() {
       const hasPersona = content.includes('<persona>');
       const activationBeforePersona = content.indexOf('<activation') < content.indexOf('<persona>');
       const hasManifests =
-        content.includes('<agent-party id="bmad/_cfg/agent-manifest.csv">') && content.includes('<manifest id="bmad/web-manifest.xml">');
+        content.includes('<agent-party id="{bmad_folder}/_cfg/agent-manifest.csv">') &&
+        content.includes('<manifest id="bmad/web-manifest.xml">');
       const hasDependencies = content.includes('<dependencies>');
 
       console.log(chalk.green('✓ Analyst bundle created successfully'));

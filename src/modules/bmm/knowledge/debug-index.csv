@@ -1,0 +1,5 @@
+id,name,description,tags,fragment_file
+debug-inspection,Debug Inspection Checklist,"Systematic checklist for Fagan inspection methodology","inspection,checklist,fagan",knowledge/debug-inspection-checklist.md
+root-cause,Root Cause Checklist,"Fishbone methodology for root cause analysis","root-cause,analysis,checklist",knowledge/root-cause-checklist.md
+common-defects,Common Defects Reference,"Catalog of frequently occurring defect patterns","defects,patterns,reference",knowledge/common-defects.md
+debug-patterns,Debug Patterns Guide,"Proven debugging strategies and methodologies","debugging,patterns,strategies",knowledge/debug-patterns.md

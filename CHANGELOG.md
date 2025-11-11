@@ -227,7 +227,7 @@ Users now have **trustworthy, reality-based, future-oriented guidance** for usin
 
 **Core & Infrastructure (3 files):**
 
-- `bmad/core/tasks/workflow.xml` - Removed elicit-required tag
+- `{bmad_folder}/core/tasks/workflow.xml` - Removed elicit-required tag
 - `src/core/tasks/workflow.xml` - Removed elicit-required tag
 - `package.json` - Version bump
 
@@ -536,7 +536,7 @@ npx bmad-method@6.0.0-alpha.4 install
 
 If upgrading from v6.0.0-alpha.3:
 
-1. New documentation is available in `bmad/bmm/docs/` - review the README.md for navigation
+1. New documentation is available in `{bmad_folder}/bmm/docs/` - review the README.md for navigation
 2. Tech-spec workflow now has enhanced capabilities - review `docs/quick-spec-flow.md`
 3. Product Brief and PRD workflows have new conversational approaches
 4. Paige agent is now available for documentation tasks

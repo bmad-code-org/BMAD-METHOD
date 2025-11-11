@@ -4,7 +4,7 @@ description: "Craft compelling narratives using proven story frameworks and tech
 author: "BMad"
 
 # Critical variables load from config_source
-config_source: "{project-root}/{bmad_folder}/cis/config.yaml"
+config_source: "{bmad_folder}/cis/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -19,7 +19,7 @@ recommended_inputs:
 # Example: data="{path}/brand-info.md" provides brand context
 
 # Module path and component files
-installed_path: "{project-root}/{bmad_folder}/cis/workflows/storytelling"
+installed_path: "{bmad_folder}/cis/workflows/storytelling"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 

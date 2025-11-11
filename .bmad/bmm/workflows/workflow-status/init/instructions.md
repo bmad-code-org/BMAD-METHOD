@@ -1,6 +1,6 @@
 # Workflow Init - Project Setup Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: .bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow-init/workflow.yaml</critical>
 <critical>Communicate in {communication_language} with {user_name}</critical>
 <critical>This workflow handles BOTH new projects AND legacy projects being migrated to BMad Method</critical>
@@ -25,9 +25,10 @@
 
 **Check for implementation artifacts:**
 
-- Story files: {output_folder}/stories/\*.md
-- Sprint status: {output*folder}/\_sprint*.yaml or {output_folder}/sprint-status.yaml
-- Existing workflow status: {output_folder}/bmm-workflow-status.yaml
+- The following could be in or nested under {output_folder} OR {ephemeral_location} - CHECK BOTH LOCATIONS
+  - Story files: {output*folder}/stories/*.md or {ephemeral*location}/stories/*.md
+  - Sprint status: {output_folder}/sprint-status.yaml or {ephemeral_location}/sprint-status.yaml
+  - Existing workflow status: {output_folder}/bmm-workflow-status.yaml or {ephemeral_location}/bmm-workflow-status.yaml
 
 **Check for codebase:**
 

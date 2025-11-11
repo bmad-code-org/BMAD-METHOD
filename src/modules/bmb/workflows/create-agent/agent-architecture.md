@@ -60,7 +60,7 @@ _LLM-Optimized Technical Documentation for Agent Building_
 
 ```xml
 <critical-actions>
-  <i>Load into memory {project-root}/{bmad_folder}/{module}/config.yaml and set variables</i>
+  <i>Load into memory {bmad_folder}/{module}/config.yaml and set variables</i>
   <i>Remember the users name is {user_name}</i>
   <i>ALWAYS communicate in {communication_language}</i>
   <!-- Custom initialization actions -->
@@ -77,7 +77,7 @@ _LLM-Optimized Technical Documentation for Agent Building_
   <i critical="MANDATORY">You MUST follow all rules in instructions.md on EVERY interaction</i>
 
   <!-- Standard initialization -->
-  <i>Load into memory {project-root}/{bmad_folder}/{module}/config.yaml and set variables</i>
+  <i>Load into memory {bmad_folder}/{module}/config.yaml and set variables</i>
   <i>Remember the users name is {user_name}</i>
   <i>ALWAYS communicate in {communication_language}</i>
 
@@ -162,9 +162,9 @@ _LLM-Optimized Technical Documentation for Agent Building_
 
 ```xml
 <module-integration>
-  <module-path>{project-root}/{bmad_folder}/{module-code}</module-path>
+  <module-path>{bmad_folder}/{module-code}</module-path>
   <config-source>{module-path}/config.yaml</config-source>
-  <workflows-path>{project-root}/{bmad_folder}/{module-code}/workflows</workflows-path>
+  <workflows-path>{bmad_folder}/{module-code}/workflows</workflows-path>
 </module-integration>
 ```
 
@@ -186,7 +186,7 @@ Example: `{config_source}:output_folder`
 ### Path Construction
 
 ```
-Good: {project-root}/{bmad_folder}/{module}/agents/
+Good: {bmad_folder}/{module}/agents/
 Bad:  /absolute/path/to/agents/
 Bad:  ../../../relative/paths/
 ```
@@ -197,7 +197,7 @@ Bad:  ../../../relative/paths/
 
 ```xml
 <!-- Full path -->
-<item cmd="*create-prd" run-workflow="{project-root}/{bmad_folder}/bmm/workflows/prd/workflow.yaml">
+<item cmd="*create-prd" run-workflow="{bmad_folder}/bmm/workflows/prd/workflow.yaml">
   Create Product Requirements Document
 </item>
 
@@ -210,7 +210,7 @@ Bad:  ../../../relative/paths/
 ### Task Commands
 
 ```xml
-<item cmd="*validate" exec="{project-root}/{bmad_folder}/core/tasks/validate-workflow.xml">
+<item cmd="*validate" exec="{bmad_folder}/core/tasks/validate-workflow.xml">
   Validate document
 </item>
 ```
@@ -219,8 +219,8 @@ Bad:  ../../../relative/paths/
 
 ```xml
 <item cmd="*brief"
-   exec="{project-root}/{bmad_folder}/core/tasks/create-doc.md"
-   tmpl="{project-root}/{bmad_folder}/bmm/templates/brief.md">
+   exec="{bmad_folder}/core/tasks/create-doc.md"
+   tmpl="{bmad_folder}/bmm/templates/brief.md">
   Create project brief
 </item>
 ```
@@ -229,8 +229,8 @@ Bad:  ../../../relative/paths/
 
 ```xml
 <item cmd="*standup"
-   exec="{project-root}/{bmad_folder}/bmm/tasks/daily-standup.xml"
-   data="{project-root}/{bmad_folder}/_cfg/agent-manifest.csv">
+   exec="{bmad_folder}/bmm/tasks/daily-standup.xml"
+   data="{bmad_folder}/_cfg/agent-manifest.csv">
   Run daily standup
 </item>
 ```
@@ -295,7 +295,7 @@ Bad:  ../../../relative/paths/
 </persona>
 
 <!-- Variable-based paths -->
-<item cmd="*run" exec="{project-root}/{bmad_folder}/module/task.md">
+<item cmd="*run" exec="{bmad_folder}/module/task.md">
 
 <!-- Required commands present -->
 <menu>
@@ -395,7 +395,7 @@ When building agents:
 
 ```xml
 <critical-actions>
-  <i>Load into memory {project-root}/{bmad_folder}/{module}/config.yaml</i>
+  <i>Load into memory {bmad_folder}/{module}/config.yaml</i>
   <i>Remember the users name is {user_name}</i>
   <i>ALWAYS communicate in {communication_language}</i>
 </critical-actions>

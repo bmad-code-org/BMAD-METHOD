@@ -16,18 +16,18 @@ agent:
 
   menu:
     - trigger: correct-course
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml"
-      workflow-install: "{project-root}/{bmad_folder}/bmgd/workflows/4-production/correct-course/workflow.yaml"
+      workflow: "{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml"
+      workflow-install: "{bmad_folder}/bmgd/workflows/4-production/correct-course/workflow.yaml"
       description: Course Correction Analysis
 
     - trigger: create-architecture
-      workflow: "{project-root}/{bmad_folder}/bmgd/workflows/3-technical/game-architecture/workflow.yaml"
+      workflow: "{bmad_folder}/bmgd/workflows/3-technical/game-architecture/workflow.yaml"
       description: Produce a Scale Adaptive Game Architecture
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      workflow: "{bmad_folder}/core/workflows/party-mode/workflow.yaml"
       description: Consult with other expert agents from the party
 
     - trigger: adv-elicit
-      exec: "{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml"
+      exec: "{bmad_folder}/core/tasks/adv-elicit.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results

@@ -1,0 +1,268 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: root-cause-template-v1
+  name: Root Cause Analysis
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/debug/rca-{{timestamp}}.md
+    title: "Root Cause Analysis: {{problem_title}}"
+
+workflow:
+  mode: rapid
+  elicitation: false
+
+sections:
+  - id: header
+    title: Analysis Header
+    instruction: Generate analysis header with metadata
+    sections:
+      - id: metadata
+        title: Analysis Metadata
+        type: key-value
+        instruction: |
+          Analysis ID: RCA-{{timestamp}}
+          Date: {{current_date}}
+          Analyst: {{analyst_name}}
+          Method: Fishbone (Ishikawa) Diagram + 5-Whys
+
+  - id: problem-statement
+    title: Problem Statement
+    instruction: Clear problem definition
+    sections:
+      - id: what
+        title: What
+        type: text
+        instruction: Clear description of the problem
+      - id: when
+        title: When
+        type: text
+        instruction: Timing and frequency of occurrence
+      - id: where
+        title: Where
+        type: text
+        instruction: Location/component affected
+      - id: impact
+        title: Impact
+        type: text
+        instruction: Quantified impact on system/users
+
+  - id: fishbone-analysis
+    title: Fishbone Analysis
+    instruction: |
+      [[LLM: Create ASCII fishbone diagram showing all 6 categories branching into the problem]]
+    sections:
+      - id: diagram
+        title: Fishbone Diagram
+        type: code-block
+        instruction: |
+          ```
+                              {{problem_title}}
+                                     |
+          People ---------------+--------------- Process
+               \               |               /
+                \              |              /
+                 \             |             /
+                  \            |            /
+                   \           |           /
+          Technology ----------+---------- Environment
+                    \          |          /
+                     \         |         /
+                      \        |        /
+                       \       |       /
+                        \      |      /
+              Data -----------+----------- Methods
+          ```
+      - id: people
+        title: People (Developer/User Factors)
+        type: bullet-list
+        instruction: Knowledge gaps, communication issues, training needs, user behavior
+      - id: process
+        title: Process (Development/Deployment)
+        type: bullet-list
+        instruction: Development process, deployment procedures, code review, testing
+      - id: technology
+        title: Technology (Tools/Infrastructure)
+        type: bullet-list
+        instruction: Framework limitations, library issues, tool configurations, infrastructure
+      - id: environment
+        title: Environment (System/Configuration)
+        type: bullet-list
+        instruction: Environment differences, resource constraints, external dependencies
+      - id: data
+        title: Data (Input/State)
+        type: bullet-list
+        instruction: Input validation, data integrity, state management, race conditions
+      - id: methods
+        title: Methods (Algorithms/Design)
+        type: bullet-list
+        instruction: Algorithm correctness, design patterns, architecture decisions
+
+  - id: five-whys
+    title: 5-Whys Analysis
+    instruction: Deep dive to root cause
+    sections:
+      - id: symptom
+        title: Primary Symptom
+        type: text
+        instruction: Starting point for analysis
+      - id: why1
+        title: "1. Why?"
+        type: text
+        instruction: First level cause
+      - id: why2
+        title: "2. Why?"
+        type: text
+        instruction: Second level cause
+      - id: why3
+        title: "3. Why?"
+        type: text
+        instruction: Third level cause
+      - id: why4
+        title: "4. Why?"
+        type: text
+        instruction: Fourth level cause
+      - id: why5
+        title: "5. Why?"
+        type: text
+        instruction: Fifth level cause (root cause)
+      - id: root-cause
+        title: Root Cause
+        type: text
+        instruction: Final identified root cause
+
+  - id: evidence-validation
+    title: Evidence & Validation
+    instruction: Support for conclusions
+    sections:
+      - id: evidence
+        title: Supporting Evidence
+        type: bullet-list
+        instruction: List all evidence supporting the root cause conclusion
+      - id: verification
+        title: Verification Method
+        type: paragraphs
+        instruction: How to verify this is the true root cause
+      - id: confidence
+        title: Confidence Level
+        type: key-value
+        instruction: |
+          Rating: {{confidence_rating}}
+          Justification: {{confidence_justification}}
+
+  - id: root-cause-summary
+    title: Root Cause Summary
+    instruction: Consolidated findings
+    sections:
+      - id: primary
+        title: Primary Root Cause
+        type: key-value
+        instruction: |
+          Cause: {{primary_root_cause}}
+          Category: {{cause_category}}
+          Evidence: {{primary_evidence}}
+      - id: contributing
+        title: Contributing Factors
+        type: numbered-list
+        instruction: Secondary factors that contributed to the problem
+      - id: eliminated
+        title: Eliminated Possibilities
+        type: numbered-list
+        instruction: Potential causes that were ruled out and why
+
+  - id: impact-analysis
+    title: Impact Analysis
+    instruction: Scope and consequences
+    sections:
+      - id: direct
+        title: Direct Impact
+        type: paragraphs
+        instruction: Immediate consequences of the problem
+      - id: indirect
+        title: Indirect Impact
+        type: paragraphs
+        instruction: Secondary effects and ripple impacts
+      - id: recurrence
+        title: Risk of Recurrence
+        type: key-value
+        instruction: |
+          Probability: {{recurrence_probability}}
+          Without intervention: {{risk_without_fix}}
+
+  - id: recommendations
+    title: Recommended Actions
+    instruction: Solutions and prevention
+    sections:
+      - id: immediate
+        title: Immediate Actions
+        type: checkbox-list
+        instruction: Actions to take right now to address the issue
+      - id: short-term
+        title: Short-term Solutions
+        type: checkbox-list
+        instruction: Solutions to implement within the current sprint
+      - id: long-term
+        title: Long-term Prevention
+        type: checkbox-list
+        instruction: Strategic changes to prevent recurrence
+      - id: process-improvements
+        title: Process Improvements
+        type: bullet-list
+        instruction: Process changes to prevent similar issues
+
+  - id: implementation-priority
+    title: Implementation Priority
+    instruction: Action prioritization
+    sections:
+      - id: priority-matrix
+        title: Priority Matrix
+        type: table
+        columns: [Action, Priority, Effort, Impact, Timeline]
+        instruction: |
+          [[LLM: Create prioritized action table with High/Medium/Low ratings]]
+
+  - id: verification-plan
+    title: Verification Plan
+    instruction: Ensuring fix effectiveness
+    sections:
+      - id: success-criteria
+        title: Success Criteria
+        type: bullet-list
+        instruction: How we'll know the root cause is addressed
+      - id: validation-steps
+        title: Validation Steps
+        type: numbered-list
+        instruction: Steps to validate the fix works
+      - id: monitoring-metrics
+        title: Monitoring Metrics
+        type: bullet-list
+        instruction: Metrics to track to ensure problem doesn't recur
+
+  - id: lessons-learned
+    title: Lessons Learned
+    instruction: Knowledge capture
+    sections:
+      - id: insights
+        title: Key Insights
+        type: bullet-list
+        instruction: What we learned from this analysis
+      - id: prevention
+        title: Prevention Strategies
+        type: bullet-list
+        instruction: How to prevent similar issues in the future
+      - id: knowledge-transfer
+        title: Knowledge Transfer
+        type: bullet-list
+        instruction: Information to share with the team
+
+  - id: footer
+    title: Analysis Footer
+    instruction: Closing information
+    sections:
+      - id: completion
+        title: Completion Details
+        type: key-value
+        instruction: |
+          Analysis Completed: {{completion_timestamp}}
+          Review Date: {{review_date}}
+          Owner: {{action_owner}}

@@ -211,7 +211,7 @@ Examples:
 
 <template-output>special_requirements</template-output>
 
-<invoke-task halt="true">{project-root}/.bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">.bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 

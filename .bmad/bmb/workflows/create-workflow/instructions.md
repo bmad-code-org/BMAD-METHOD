@@ -1,7 +1,7 @@
 # Build Workflow - Workflow Builder Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/.bmad/bmb/workflows/create-workflow/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: .bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: .bmad/bmb/workflows/create-workflow/workflow.yaml</critical>
 <critical>You MUST fully understand the workflow creation guide at: {workflow_creation_guide}</critical>
 <critical>Study the guide thoroughly to follow ALL conventions for optimal human-AI collaboration</critical>
 <critical>Communicate in {communication_language} throughout the workflow creation process</critical>
@@ -13,7 +13,7 @@
 
 <action if="user_response == 'y' or user_response == 'yes'">
 Invoke brainstorming workflow to explore ideas and design concepts:
-- Workflow: {project-root}/.bmad/core/workflows/brainstorming/workflow.yaml
+- Workflow: .bmad/core/workflows/brainstorming/workflow.yaml
 - Context data: {installed_path}/brainstorm-context.md
 - Purpose: Generate creative workflow ideas, explore different approaches, and clarify requirements
 
@@ -255,7 +255,7 @@ Include:
 
 ```yaml
 # Critical variables from config
-config_source: '{project-root}/.bmad/{{target_module}}/config.yaml'
+config_source: '.bmad/{{target_module}}/config.yaml'
 output_folder: '{config_source}:output_folder'
 user_name: '{config_source}:user_name'
 communication_language: '{config_source}:communication_language'
@@ -277,13 +277,13 @@ name: 'workflow-name'
 description: 'Clear purpose statement'
 
 # Paths
-installed_path: '{project-root}/.bmad/module/workflows/name'
+installed_path: '.bmad/module/workflows/name'
 template: '{installed_path}/template.md'
 instructions: '{installed_path}/instructions.md'
 validation: '{installed_path}/checklist.md'
 
 # Critical variables from config
-config_source: '{project-root}/.bmad/module/config.yaml'
+config_source: '.bmad/module/config.yaml'
 output_folder: '{config_source}:output_folder'
 user_name: '{config_source}:user_name'
 communication_language: '{config_source}:communication_language'
@@ -314,7 +314,7 @@ Load and use the template at: {template_instructions}
 Generate the instructions.md file following the workflow creation guide:
 
 1. ALWAYS include critical headers:
-   - Workflow engine reference: {project-root}/.bmad/core/tasks/workflow.xml
+   - Workflow engine reference: .bmad/core/tasks/workflow.xml
    - workflow.yaml reference: must be loaded and processed
 
 2. Structure with <workflow> tags containing all steps
@@ -328,7 +328,7 @@ Generate the instructions.md file following the workflow creation guide:
 
 4. Use proper XML tags from guide:
    - Execution: <action>, <check>, <ask>, <goto>, <invoke-workflow>
-   - Output: <template-output>, <invoke-task halt="true">{project-root}/.bmad/core/tasks/adv-elicit.xml</invoke-task>, <critical>, <example>
+   - Output: <template-output>, <invoke-task halt="true">.bmad/core/tasks/adv-elicit.xml</invoke-task>, <critical>, <example>
    - Flow: <loop>, <break>, <continue>
 
 5. Best practices from guide:
@@ -624,7 +624,7 @@ If yes:
 2. Convert all file paths to .bmad/-relative paths:
    - Remove {project-root}/ prefix
    - Remove {config_source} references (use hardcoded values)
-   - Example: "{project-root}/.bmad/bmm/workflows/x" → ".bmad/bmm/workflows/x"
+   - Example: ".bmad/bmm/workflows/x" → ".bmad/bmm/workflows/x"
 
 3. List ALL referenced files by scanning:
 
@@ -642,7 +642,7 @@ If yes:
 
    **Critical: Workflow Dependencies**
    - If instructions call another workflow, that workflow's yaml MUST be in web_bundle_files
-   - Example: `<invoke-workflow>{project-root}/.bmad/core/workflows/x/workflow.yaml</invoke-workflow>`
+   - Example: `<invoke-workflow>.bmad/core/workflows/x/workflow.yaml</invoke-workflow>`
      → Add ".bmad/core/workflows/x/workflow.yaml" to web_bundle_files
 
 4. Create web_bundle_files array with complete list

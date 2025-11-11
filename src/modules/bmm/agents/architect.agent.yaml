@@ -16,27 +16,27 @@ agent:
 
   menu:
     - trigger: workflow-status
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"
+      workflow: "{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"
       description: Check workflow status and get recommendations
 
     - trigger: create-architecture
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.yaml"
+      workflow: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.yaml"
       description: Produce a Scale Adaptive Architecture
 
     - trigger: validate-architecture
-      validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.yaml"
-      checklist: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/checklist.md"
+      validate-workflow: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.yaml"
+      checklist: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/checklist.md"
       document: "{output_folder}/architecture.md"
       description: Validate Architecture Document
 
     - trigger: solutioning-gate-check
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/solutioning-gate-check/workflow.yaml"
+      workflow: "{bmad_folder}/bmm/workflows/3-solutioning/solutioning-gate-check/workflow.yaml"
       description: Validate solutioning complete, ready for Phase 4 (Level 2-4 only)
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      workflow: "{bmad_folder}/core/workflows/party-mode/workflow.yaml"
       description: Consult with other expert agents from the party
 
     - trigger: adv-elicit
-      exec: "{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml"
+      exec: "{bmad_folder}/core/tasks/adv-elicit.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results

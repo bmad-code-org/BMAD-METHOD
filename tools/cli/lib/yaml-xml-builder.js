@@ -181,10 +181,10 @@ class YamlXmlBuilder {
 
     // Agent opening tag
     const agentAttrs = [
-      `id="${metadata.id || ''}"`,
-      `name="${metadata.name || ''}"`,
-      `title="${metadata.title || ''}"`,
-      `icon="${metadata.icon || '🤖'}"`,
+      `id="${this.escapeXml(metadata.id || '')}"`,
+      `name="${this.escapeXml(metadata.name || '')}"`,
+      `title="${this.escapeXml(metadata.title || '')}"`,
+      `icon="${this.escapeXml(metadata.icon || '🤖')}"`,
     ];
 
     // Add localskip attribute if present
@@ -379,7 +379,7 @@ class YamlXmlBuilder {
     const customizeHash = customizeYamlPath ? await this.calculateFileHash(customizeYamlPath) : null;
 
     // Extract module from path (e.g., /path/to/modules/bmm/agents/pm.yaml -> bmm)
-    // or /path/to/bmad/bmm/agents/pm.yaml -> bmm
+    // or /path/to/{bmad_folder}/bmm/agents/pm.yaml -> bmm
     let module = 'core'; // default to core
     const pathParts = agentYamlPath.split(path.sep);
 

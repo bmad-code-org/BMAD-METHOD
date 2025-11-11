@@ -1,6 +1,6 @@
 <task id="{bmad_folder}/core/tasks/adv-elicit.xml" name="Advanced Elicitation" standalone="true"
-  methods="{project-root}/{bmad_folder}/core/tasks/adv-elicit-methods.csv"
-  agent-party="{project-root}/{bmad_folder}/_cfg/agent-manifest.csv">
+  methods="{bmad_folder}/core/tasks/adv-elicit-methods.csv"
+  agent-party="{bmad_folder}/_cfg/agent-manifest.csv">
   <llm critical="true">
     <i>MANDATORY: Execute ALL steps in the flow section IN EXACT ORDER</i>
     <i>DO NOT skip steps or change the sequence</i>

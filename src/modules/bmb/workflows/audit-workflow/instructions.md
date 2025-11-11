@@ -1,7 +1,7 @@
 # Audit Workflow - Workflow Quality Audit Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/audit-workflow/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {bmad_folder}/bmb/workflows/audit-workflow/workflow.yaml</critical>
 
 <workflow>
 
@@ -33,7 +33,7 @@
 
     **Required variables:**
 
-    - `config_source: "{project-root}/{bmad_folder}/[module]/config.yaml"`
+    - `config_source: "{bmad_folder}/[module]/config.yaml"`
     - `output_folder: "{config_source}:output_folder"`
     - `user_name: "{config_source}:user_name"`
     - `communication_language: "{config_source}:communication_language"`

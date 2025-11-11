@@ -1,8 +1,8 @@
 # Build Module - Interactive Module Builder Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/create-module/workflow.yaml</critical>
-<critical>Study existing modules in: {project-root}/{bmad_folder}/ for patterns</critical>
+<critical>The workflow execution engine is governed by: {bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {bmad_folder}/bmb/workflows/create-module/workflow.yaml</critical>
+<critical>Study existing modules in: {bmad_folder}/ for patterns</critical>
 <critical>Communicate in {communication_language} throughout the module creation process</critical>
 
 <workflow>
@@ -28,7 +28,7 @@
 <ask>Do you have a module brief or should we create one? [have/create/skip]</ask>
 
 <check if="create">
-  <action>Invoke module-brief workflow: {project-root}/{bmad_folder}/bmb/workflows/module-brief/workflow.yaml</action>
+  <action>Invoke module-brief workflow: {bmad_folder}/bmb/workflows/module-brief/workflow.yaml</action>
   <action>Wait for module brief completion</action>
   <action>Load the module brief to use as blueprint</action>
 </check>
@@ -322,7 +322,7 @@ prompt:
 
 # EXAMPLE Static path:
 # data_path:
-#   result: "{project-root}/{bmad_folder}/{{module_code}}/data"
+#   result: "{bmad_folder}/{{module_code}}/data"
 
 {{generated_config_fields_from_step_4}}
 ```

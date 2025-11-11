@@ -179,7 +179,7 @@ function replaceProjectRootInFiles(filePaths, projectRoot, removeCompletely = fa
  * @returns {Object} - Installation stats
  */
 function processInstallation(installPath, targetProjectRoot, docsOutputPath = 'docs', verbose = false) {
-  // Ensure project root has trailing slash since usage is like {project-root}/bmad
+  // Ensure project root has trailing slash since usage is like {bmad_folder}
   const projectRootWithSlash = targetProjectRoot.endsWith('/') ? targetProjectRoot : targetProjectRoot + '/';
 
   // Ensure docs path has leading slash (for internal use) but will add trailing slash during replacement

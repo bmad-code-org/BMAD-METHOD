@@ -1,8 +1,8 @@
 # Build Agent - Interactive Agent Builder Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/create-agent/workflow.yaml</critical>
-<critical>Study YAML agent examples in: {project-root}/{bmad_folder}/bmm/agents/ for patterns</critical>
+<critical>The workflow execution engine is governed by: {bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {bmad_folder}/bmb/workflows/create-agent/workflow.yaml</critical>
+<critical>Study YAML agent examples in: {bmad_folder}/bmm/agents/ for patterns</critical>
 <critical>Communicate in {communication_language} throughout the agent creation process</critical>
 
 <workflow>
@@ -11,7 +11,7 @@
   <ask>Do you want to brainstorm agent ideas first? [y/n]</ask>
 
   <check if="user answered yes">
-    <action>Invoke brainstorming workflow: {project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml</action>
+    <action>Invoke brainstorming workflow: {bmad_folder}/core/workflows/brainstorming/workflow.yaml</action>
     <action>Pass context data: {installed_path}/brainstorm-context.md</action>
     <action>Wait for brainstorming session completion</action>
     <action>Use brainstorming output to inform agent identity and persona development in following steps</action>
@@ -197,8 +197,8 @@ menu:
 # For cross-module workflow references (advanced):
 
 - trigger: [another capability]
-  workflow: "{project-root}/{bmad_folder}/SOURCE_MODULE/workflows/path/to/workflow.yaml"
-  workflow-install: "{project-root}/{bmad_folder}/THIS_MODULE/workflows/vendored/path/workflow.yaml"
+  workflow: "{bmad_folder}/SOURCE_MODULE/workflows/path/to/workflow.yaml"
+  workflow-install: "{bmad_folder}/THIS_MODULE/workflows/vendored/path/workflow.yaml"
   description: [description]
 
 `````

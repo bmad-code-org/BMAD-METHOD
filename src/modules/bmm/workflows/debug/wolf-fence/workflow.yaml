@@ -1,0 +1,66 @@
+# Debug Workflow: Wolf Fence (Binary Search)
+name: debug-wolf-fence
+description: "Execute binary search debugging to isolate bug location efficiently. Highly effective for large codebases."
+author: "BMad Core"
+version: "2.0"
+
+# BMAD Core Configuration
+config_source: "{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{bmad_folder}/bmm/workflows/debug/wolf-fence"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+# Knowledge Base Requirements (BMAD Core)
+knowledge_dependencies:
+  - "{bmad_folder}/bmm/knowledge/debug/debug-patterns.md"
+
+tags:
+  - debug
+  - binary-search
+  - isolation
+  - advanced
+  - bmad-core
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: true
+  validation_required: true
+  systematic: true
+
+# BMAD Core Workflow Steps
+steps:
+  - id: "load_config"
+    name: "Load Configuration"
+    type: "config"
+    required: true
+
+  - id: "load_knowledge"
+    name: "Load Knowledge Base"
+    type: "knowledge"
+    dependencies: "knowledge_dependencies"
+    required: true
+
+  - id: "execute_workflow"
+    name: "Execute Binary Search Debugging"
+    type: "workflow"
+    source: "instructions"
+    required: true
+    strategy: ["divide-and-conquer", "bisection", "isolation"]
+
+  - id: "validate_output"
+    name: "Validate Bug Location"
+    type: "validation"
+    required: true
+    criteria: ["location-identified", "reproduction-confirmed", "evidence-documented"]
+
+  - id: "save_output"
+    name: "Save Wolf Fence Results"
+    type: "output"
+    destination: "output_folder"
+    required: true

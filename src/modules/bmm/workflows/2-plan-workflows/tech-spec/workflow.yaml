@@ -4,7 +4,7 @@ description: "Technical specification workflow for Level 0 projects (single atom
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
+config_source: "{bmad_folder}/bmm/config.yaml"
 project_name: "{config_source}:project_name"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
@@ -21,7 +21,7 @@ change_type: runtime-captured
 field_type: runtime-captured
 
 # Workflow components
-installed_path: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/tech-spec"
+installed_path: "{bmad_folder}/bmm/workflows/2-plan-workflows/tech-spec"
 instructions: "{installed_path}/instructions.md"
 template: "{installed_path}/tech-spec-template.md"
 

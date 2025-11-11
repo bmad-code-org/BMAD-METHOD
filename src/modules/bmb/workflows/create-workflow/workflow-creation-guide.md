@@ -25,7 +25,7 @@ Create a folder with these files:
 # workflow.yaml (REQUIRED)
 name: 'my-workflow'
 description: 'What this workflow does'
-installed_path: '{project-root}/{bmad_folder}/module/workflows/my-workflow'
+installed_path: '{bmad_folder}/module/workflows/my-workflow'
 template: '{installed_path}/template.md'
 instructions: '{installed_path}/instructions.md'
 default_output_file: '{output_folder}/output.md'
@@ -104,7 +104,7 @@ name: 'workflow-name'
 description: 'Clear purpose statement'
 
 # Paths
-installed_path: '{project-root}/{bmad_folder}/module/workflows/name'
+installed_path: '{bmad_folder}/module/workflows/name'
 template: '{installed_path}/template.md' # or false
 instructions: '{installed_path}/instructions.md' # or false
 validation: '{installed_path}/checklist.md' # optional
@@ -855,7 +855,7 @@ _Generated on {{date}}_
 **Output:**
 
 - `<template-output>` - Save checkpoint
-- `<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>` - Trigger AI enhancement
+- `<invoke-task halt="true">{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>` - Trigger AI enhancement
 - `<critical>` - Important info
 - `<example>` - Show example
 
@@ -904,7 +904,7 @@ _Generated on {{date}}_
   <step n="2" goal="Define requirements">
     Create functional and non-functional requirements.
     <template-output>requirements</template-output>
-    <invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
+    <invoke-task halt="true">{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
   </step>
 
   <step n="3" goal="Validate">
@@ -1227,7 +1227,7 @@ web_bundle:
 
 1. **Remove Config Dependencies**:
    - Replace `{config_source}:variable` with hardcoded values
-   - Convert `{project-root}/{bmad_folder}/` to `{bmad_folder}/`
+   - Convert `{bmad_folder}/` to `{bmad_folder}/`
 
 2. **Inventory All Files**:
    - Scan instructions.md for file references

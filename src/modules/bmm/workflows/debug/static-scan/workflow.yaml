@@ -1,0 +1,67 @@
+# Debug Workflow: Static Analysis Scan
+name: debug-static-scan
+description: "Perform comprehensive static analysis for common defects. Identifies anti-patterns, security issues, and code smells."
+author: "BMad Core"
+version: "2.0"
+
+# BMAD Core Configuration
+config_source: "{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{bmad_folder}/bmm/workflows/debug/static-scan"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+# Knowledge Base Requirements (BMAD Core)
+knowledge_dependencies:
+  - "{bmad_folder}/bmm/knowledge/debug/common-defects.md"
+  - "{bmad_folder}/bmm/knowledge/debug/debug-patterns.md"
+
+tags:
+  - debug
+  - static-analysis
+  - security
+  - quality
+  - bmad-core
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: false
+  validation_required: true
+  comprehensive: true
+
+# BMAD Core Workflow Steps
+steps:
+  - id: "load_config"
+    name: "Load Configuration"
+    type: "config"
+    required: true
+
+  - id: "load_knowledge"
+    name: "Load Knowledge Base"
+    type: "knowledge"
+    dependencies: "knowledge_dependencies"
+    required: true
+
+  - id: "execute_workflow"
+    name: "Execute Static Analysis"
+    type: "workflow"
+    source: "instructions"
+    required: true
+    analyzers: ["security", "performance", "maintainability", "reliability"]
+
+  - id: "validate_output"
+    name: "Validate Analysis Results"
+    type: "validation"
+    required: true
+    criteria: ["comprehensive-coverage", "actionable-findings", "risk-prioritized"]
+
+  - id: "save_output"
+    name: "Save Analysis Report"
+    type: "output"
+    destination: "output_folder"
+    required: true

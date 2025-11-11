@@ -4,6 +4,6 @@ description: 'Generates or updates an index.md of all documents in the specified
 
 # Index Docs
 
-LOAD and execute the task at: {project-root}/bmad/core/tasks/index-docs.xml
+LOAD and execute the task at: .bmad/core/tasks/index-docs.xml
 
 Follow all instructions in the task file exactly as written.

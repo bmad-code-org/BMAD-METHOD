@@ -214,7 +214,7 @@ BMM adapts to project complexity (Levels 0-4). Documentation is scale-adaptive -
 
 ### Update-Safe Customization
 
-All agent customizations go in `bmad/_cfg/agents/` and survive updates. See your IDE guide and module README for details.
+All agent customizations go in `{bmad_folder}/_cfg/agents/` and survive updates. See your IDE guide and module README for details.
 
 ---
 
