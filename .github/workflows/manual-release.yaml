@@ -61,9 +61,6 @@ jobs:
         run: |
           sed -i 's/"version": ".*"/"version": "${{ steps.version.outputs.new_version }}"/' tools/installer/package.json
 
-      - name: Build project
-        run: npm run build
-
       - name: Generate web bundles
         run: npm run bundle
 

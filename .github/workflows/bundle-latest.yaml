@@ -149,7 +149,7 @@ jobs:
         with:
           repository: bmad-code-org/bmad-bundles
           path: bmad-bundles
-          token: ${{ secrets.BUNDLES_DEPLOY_KEY }}
+          token: ${{ secrets.BUNDLES_PAT }}
 
       - name: Update bundles
         run: |

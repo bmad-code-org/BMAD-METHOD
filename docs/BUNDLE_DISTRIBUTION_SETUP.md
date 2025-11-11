@@ -26,11 +26,13 @@ gh api repos/bmad-code-org/bmad-bundles/pages --method POST -f source[branch]=ma
 # (Optional) confirm status
 gh api repos/bmad-code-org/bmad-bundles/pages --jq '{status,source}'
 
-# 4. Create deploy key
-ssh-keygen -t ed25519 -C "github-actions" -f deploy-key -N ""
-gh repo deploy-key add deploy-key.pub --repo bmad-code-org/bmad-bundles --title "CI" --allow-write
-gh secret set BUNDLES_DEPLOY_KEY --repo bmad-code-org/BMAD-METHOD < deploy-key
-rm deploy-key*
+# 4. Create GitHub PAT and add as secret
+# Go to: https://github.com/settings/tokens/new
+# Scopes: repo (full control)
+# Name: bmad-bundles-ci
+# Then add as secret:
+gh secret set BUNDLES_PAT --repo bmad-code-org/BMAD-METHOD
+# (paste PAT when prompted)
 ```
 
 If the Pages POST returns `409`, the site already exists. If it returns `422` about `main` missing, redo step 2 to push the initial commit.
@@ -43,7 +45,7 @@ If the Pages POST returns `409`, the site already exists. If it returns `422` ab
 
 **On main merge:**
 
-- `.github/workflows/bundle-latest.yml` runs
+- `.github/workflows/bundle-latest.yaml` runs
 - Publishes to: `https://bmad-code-org.github.io/bmad-bundles/`
 
 **On release:**
@@ -69,10 +71,14 @@ npm run release:patch
 
 ## Troubleshooting
 
-**"Permission denied (publickey)"**
+**"Permission denied" or auth errors**
 
 ```bash
-gh secret list --repo bmad-code-org/BMAD-METHOD | grep BUNDLES
+# Verify PAT secret exists
+gh secret list --repo bmad-code-org/BMAD-METHOD | grep BUNDLES_PAT
+
+# If missing, recreate PAT and add secret:
+gh secret set BUNDLES_PAT --repo bmad-code-org/BMAD-METHOD
 ```
 
 **GitHub Pages not updating / need to re-check config**
