@@ -11,10 +11,10 @@
 - **Stable:** `https://github.com/bmad-code-org/BMAD-METHOD/releases/latest`
 - **Latest:** `https://bmad-code-org.github.io/bmad-bundles/`
 
-**2. Copy raw markdown URL:**
+**2. Copy raw XML URL:**
 
 ```
-https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/claude-code/sub-agents/bmm-agent-pm.md
+https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/pm.xml
 ```
 
 **3. Add to AI platform:**
@@ -25,17 +25,17 @@ https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/claude-code/su
 
 ---
 
-## Available Agents
+## Available Modules
 
-### Claude Code
+### BMM (BMad Method)
 
-- [PM](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/claude-code/sub-agents/bmm-agent-pm.md) | [Architect](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/claude-code/sub-agents/bmm-agent-architect.md) | [TEA](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/claude-code/sub-agents/bmm-agent-tea.md) | [Developer](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/claude-code/sub-agents/bmm-agent-dev.md)
-- [All Agents](https://github.com/bmad-code-org/bmad-bundles/tree/main/claude-code/sub-agents)
+- [PM](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/pm.xml) | [Architect](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/architect.xml) | [TEA](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/tea.xml) | [Developer](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/dev.xml)
+- [All BMM Agents](https://github.com/bmad-code-org/bmad-bundles/tree/main/bmm/agents)
 
-### ChatGPT / Gemini
+### BMB / CIS
 
-- [Browse ChatGPT](https://github.com/bmad-code-org/bmad-bundles/tree/main/chatgpt/sub-agents)
-- [Browse Gemini](https://github.com/bmad-code-org/bmad-bundles/tree/main/gemini/sub-agents)
+- [BMB Builder](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmb/agents/bmad-builder.xml)
+- [Browse CIS Agents](https://github.com/bmad-code-org/bmad-bundles/tree/main/cis/agents)
 
 ---
 
@@ -75,13 +75,13 @@ Gives you:
 ## Troubleshooting
 
 **ChatGPT: "File too large"**
-→ Use stable release (compressed) or report issue
+→ Some agents (PM: 166KB, Analyst: 211KB) exceed ChatGPT limits. Use smaller agents or report issue.
 
 **Bundle not loading**
-→ Use raw URL (not GitHub UI link)
+→ Use raw URL (not GitHub UI link). URL should end in `.xml`.
 
 **Out of date**
-→ Wait 2-3 min after main merge, then refresh
+→ Wait 2-3 min after main merge, then refresh.
 
 ---
 

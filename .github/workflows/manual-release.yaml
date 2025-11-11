@@ -68,45 +68,27 @@ jobs:
         run: |
           mkdir -p dist/release-bundles
 
-          # Create staging directory for each platform
-          mkdir -p dist/staging/{claude-code,chatgpt,gemini}
+          # Copy web bundles
+          cp -r web-bundles dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }}
 
-          # Collect all modules per platform
-          cp -r src/modules/bmm/sub-modules/claude-code/* dist/staging/claude-code/ 2>/dev/null || true
-          cp -r src/modules/bmb/sub-modules/claude-code/* dist/staging/claude-code/ 2>/dev/null || true
-          cp -r src/modules/cis/sub-modules/claude-code/* dist/staging/claude-code/ 2>/dev/null || true
+          # Verify bundles exist
+          if [ ! "$(ls -A dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }})" ]; then
+            echo "❌ ERROR: No bundles found"
+            echo "This likely means 'npm run bundle' failed"
+            exit 1
+          fi
 
-          cp -r src/modules/bmm/sub-modules/chatgpt/* dist/staging/chatgpt/ 2>/dev/null || true
-          cp -r src/modules/bmb/sub-modules/chatgpt/* dist/staging/chatgpt/ 2>/dev/null || true
-          cp -r src/modules/cis/sub-modules/chatgpt/* dist/staging/chatgpt/ 2>/dev/null || true
-
-          cp -r src/modules/bmm/sub-modules/gemini/* dist/staging/gemini/ 2>/dev/null || true
-          cp -r src/modules/bmb/sub-modules/gemini/* dist/staging/gemini/ 2>/dev/null || true
-          cp -r src/modules/cis/sub-modules/gemini/* dist/staging/gemini/ 2>/dev/null || true
-
-          # Verify bundles were copied (fail if completely empty)
-          for platform in claude-code chatgpt gemini; do
-            if [ ! "$(ls -A dist/staging/$platform)" ]; then
-              echo "❌ ERROR: No bundles found for $platform"
-              echo "This likely means 'npm run bundle' failed or bundles weren't generated"
-              exit 1
+          # Count and display bundles per module
+          for module in bmm bmb cis bmgd; do
+            if [ -d "dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }}/$module/agents" ]; then
+              COUNT=$(find dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }}/$module/agents -name '*.xml' 2>/dev/null | wc -l)
+              echo "✅ $module: $COUNT agents"
             fi
-            echo "✅ $platform: $(find dist/staging/$platform -name '*.md' | wc -l) bundles"
           done
 
-          # Create platform-specific archives
-          tar -czf dist/release-bundles/bmad-bundles-claude-code-v${{ steps.version.outputs.new_version }}.tar.gz \
-            -C dist/staging/claude-code .
-
-          tar -czf dist/release-bundles/bmad-bundles-chatgpt-v${{ steps.version.outputs.new_version }}.tar.gz \
-            -C dist/staging/chatgpt .
-
-          tar -czf dist/release-bundles/bmad-bundles-gemini-v${{ steps.version.outputs.new_version }}.tar.gz \
-            -C dist/staging/gemini .
-
-          # Create all-platforms archive
-          tar -czf dist/release-bundles/bmad-bundles-all-v${{ steps.version.outputs.new_version }}.tar.gz \
-            -C dist/staging .
+          # Create archive
+          tar -czf dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }}.tar.gz \
+            -C dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }} .
 
       - name: Commit version bump
         run: |
@@ -205,14 +187,11 @@ jobs:
 
             ## 📦 Web Bundles
 
-            Download platform-specific bundles for use in AI platforms:
+            Download XML bundles for use in AI platforms (Claude Projects, ChatGPT, Gemini):
 
-            - `bmad-bundles-claude-code-v${{ steps.version.outputs.new_version }}.tar.gz` - Claude Code / Claude Projects
-            - `bmad-bundles-chatgpt-v${{ steps.version.outputs.new_version }}.tar.gz` - ChatGPT Custom Instructions
-            - `bmad-bundles-gemini-v${{ steps.version.outputs.new_version }}.tar.gz` - Gemini Gems
-            - `bmad-bundles-all-v${{ steps.version.outputs.new_version }}.tar.gz` - All platforms
+            - `bmad-bundles-v${{ steps.version.outputs.new_version }}.tar.gz` - All modules (BMM, BMB, CIS, BMGD)
 
-            **Latest bundles** (bleeding edge): https://bmad-code-org.github.io/bmad-bundles/
+            **Browse online** (bleeding edge): https://bmad-code-org.github.io/bmad-bundles/
           draft: false
           prerelease: ${{ contains(steps.version.outputs.new_version, 'alpha') || contains(steps.version.outputs.new_version, 'beta') }}
           files: |

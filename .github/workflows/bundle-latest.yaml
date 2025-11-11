@@ -33,10 +33,8 @@ jobs:
         run: |
           mkdir -p dist/bundles
 
-          # Copy bundles with clean structure
-          cp -r src/modules/bmm/sub-modules/* dist/bundles/ 2>/dev/null || true
-          cp -r src/modules/bmb/sub-modules/* dist/bundles/ 2>/dev/null || true
-          cp -r src/modules/cis/sub-modules/* dist/bundles/ 2>/dev/null || true
+          # Copy web bundles (XML files from npm run bundle output)
+          cp -r web-bundles/* dist/bundles/ 2>/dev/null || true
 
           # Verify bundles were copied (fail if completely empty)
           if [ ! "$(ls -A dist/bundles)" ]; then
@@ -45,11 +43,11 @@ jobs:
             exit 1
           fi
 
-          # Count bundles per platform
-          for platform in claude-code chatgpt gemini; do
-            if [ -d "dist/bundles/$platform" ]; then
-              COUNT=$(find dist/bundles/$platform -name '*.md' 2>/dev/null | wc -l)
-              echo "✅ $platform: $COUNT bundles"
+          # Count bundles per module
+          for module in bmm bmb cis bmgd; do
+            if [ -d "dist/bundles/$module/agents" ]; then
+              COUNT=$(find dist/bundles/$module/agents -name '*.xml' 2>/dev/null | wc -l)
+              echo "✅ $module: $COUNT agent bundles"
             fi
           done
 
@@ -83,49 +81,41 @@ jobs:
             <p><strong>Last Updated:</strong> <code>$TIMESTAMP</code></p>
             <p><strong>Commit:</strong> <code>$COMMIT_SHA</code></p>
 
-            <h2>Available Platforms</h2>
+            <h2>Available Modules</h2>
 
             <div class="platform">
-              <h3>Claude Code</h3>
+              <h3>BMM (BMad Method)</h3>
               <div class="module">
-                <strong>BMM (BMad Method)</strong><br>
-                <a href="./claude-code/sub-agents/bmm-agent-pm.md">PM Agent</a> |
-                <a href="./claude-code/sub-agents/bmm-agent-architect.md">Architect</a> |
-                <a href="./claude-code/sub-agents/bmm-agent-tea.md">TEA</a> |
-                <a href="./claude-code/sub-agents/bmm-agent-dev.md">Developer</a> |
-                <a href="./claude-code/sub-agents/">All BMM Agents</a>
-              </div>
-              <div class="module">
-                <strong>BMB (BMad Builder)</strong><br>
-                <a href="./claude-code/sub-agents/bmb-agent-builder.md">Builder Agent</a>
-              </div>
-              <div class="module">
-                <strong>CIS (Creative Intelligence Suite)</strong><br>
-                <a href="./claude-code/sub-agents/">CIS Agents</a>
+                <a href="./bmm/agents/pm.xml">PM</a> |
+                <a href="./bmm/agents/architect.xml">Architect</a> |
+                <a href="./bmm/agents/tea.xml">TEA</a> |
+                <a href="./bmm/agents/dev.xml">Developer</a> |
+                <a href="./bmm/agents/analyst.xml">Analyst</a> |
+                <a href="./bmm/agents/sm.xml">Scrum Master</a> |
+                <a href="./bmm/agents/ux-designer.xml">UX Designer</a> |
+                <a href="./bmm/agents/tech-writer.xml">Tech Writer</a> |
+                <a href="./bmm/agents/">All BMM Agents</a>
               </div>
             </div>
 
             <div class="platform">
-              <h3>ChatGPT</h3>
+              <h3>BMB (BMad Builder)</h3>
               <div class="module">
-                <strong>BMM</strong>: <a href="./chatgpt/sub-agents/">Browse BMM Agents</a><br>
-                <strong>BMB</strong>: <a href="./chatgpt/sub-agents/">Browse BMB Agents</a><br>
-                <strong>CIS</strong>: <a href="./chatgpt/sub-agents/">Browse CIS Agents</a>
+                <a href="./bmb/agents/bmad-builder.xml">Builder Agent</a> |
+                <a href="./bmb/agents/">All BMB Agents</a>
               </div>
             </div>
 
             <div class="platform">
-              <h3>Gemini</h3>
+              <h3>CIS (Creative Intelligence Suite)</h3>
               <div class="module">
-                <strong>BMM</strong>: <a href="./gemini/sub-agents/">Browse BMM Agents</a><br>
-                <strong>BMB</strong>: <a href="./gemini/sub-agents/">Browse BMB Agents</a><br>
-                <strong>CIS</strong>: <a href="./gemini/sub-agents/">Browse CIS Agents</a>
+                <a href="./cis/agents/">Browse CIS Agents</a>
               </div>
             </div>
 
             <h2>Usage</h2>
-            <p>Copy the raw markdown URL and paste into your AI platform's custom instructions or project knowledge.</p>
-            <p>Example: <code>https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/claude-code/sub-agents/bmm-agent-pm.md</code></p>
+            <p>Copy the raw XML URL and paste into your AI platform's custom instructions or project knowledge.</p>
+            <p>Example: <code>https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/pm.xml</code></p>
 
             <h2>Installation (Recommended)</h2>
             <p>For full IDE integration with slash commands, use the installer:</p>
