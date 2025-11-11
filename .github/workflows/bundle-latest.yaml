@@ -51,6 +51,55 @@ jobs:
             fi
           done
 
+          # Generate index.html for each agents directory (fixes directory browsing)
+          for module in bmm bmb cis bmgd; do
+            if [ -d "dist/bundles/$module/agents" ]; then
+              cat > "dist/bundles/$module/agents/index.html" << 'DIREOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>MODULE_NAME Agents</title>
+            <style>
+              body { font-family: system-ui; max-width: 800px; margin: 50px auto; padding: 20px; }
+              li { margin: 10px 0; }
+              a { color: #0066cc; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>MODULE_NAME Agents</h1>
+            <ul>
+          AGENT_LINKS
+            </ul>
+            <p><a href="../../">← Back to all modules</a></p>
+          </body>
+          </html>
+          DIREOF
+
+              # Replace MODULE_NAME
+              sed -i "s/MODULE_NAME/${module^^}/g" "dist/bundles/$module/agents/index.html"
+
+              # Generate agent links
+              LINKS=""
+              for file in dist/bundles/$module/agents/*.xml; do
+                if [ -f "$file" ]; then
+                  name=$(basename "$file" .xml)
+                  LINKS="$LINKS      <li><a href=\"./$name.xml\">$name</a></li>\n"
+                fi
+              done
+              sed -i "s|AGENT_LINKS|$LINKS|" "dist/bundles/$module/agents/index.html"
+            fi
+          done
+
+          # Create zip archives per module
+          mkdir -p dist/bundles/downloads
+          for module in bmm bmb cis bmgd; do
+            if [ -d "dist/bundles/$module" ]; then
+              (cd dist/bundles && zip -r downloads/$module-agents.zip $module/)
+              echo "✅ Created $module-agents.zip"
+            fi
+          done
+
           # Create index.html for GitHub Pages
           cat > dist/bundles/index.html << 'EOF'
           <!DOCTYPE html>
@@ -93,25 +142,41 @@ jobs:
                 <a href="./bmm/agents/analyst.xml">Analyst</a> |
                 <a href="./bmm/agents/sm.xml">Scrum Master</a> |
                 <a href="./bmm/agents/ux-designer.xml">UX Designer</a> |
-                <a href="./bmm/agents/tech-writer.xml">Tech Writer</a> |
-                <a href="./bmm/agents/">All BMM Agents</a>
+                <a href="./bmm/agents/tech-writer.xml">Tech Writer</a><br>
+                📁 <a href="./bmm/agents/">Browse All</a> | 📦 <a href="./downloads/bmm-agents.zip">Download Zip</a>
               </div>
             </div>
 
             <div class="platform">
               <h3>BMB (BMad Builder)</h3>
               <div class="module">
-                <a href="./bmb/agents/bmad-builder.xml">Builder Agent</a> |
-                <a href="./bmb/agents/">All BMB Agents</a>
+                <a href="./bmb/agents/bmad-builder.xml">Builder Agent</a><br>
+                📁 <a href="./bmb/agents/">Browse All</a> | 📦 <a href="./downloads/bmb-agents.zip">Download Zip</a>
               </div>
             </div>
 
             <div class="platform">
               <h3>CIS (Creative Intelligence Suite)</h3>
               <div class="module">
-                <a href="./cis/agents/">Browse CIS Agents</a>
+                📁 <a href="./cis/agents/">Browse Agents</a> | 📦 <a href="./downloads/cis-agents.zip">Download Zip</a>
               </div>
             </div>
+
+            <div class="platform">
+              <h3>BMGD (Game Development)</h3>
+              <div class="module">
+                📁 <a href="./bmgd/agents/">Browse Agents</a> | 📦 <a href="./downloads/bmgd-agents.zip">Download Zip</a>
+              </div>
+            </div>
+
+            <h2>Bulk Downloads</h2>
+            <p>Download all agents for a module as a zip archive:</p>
+            <ul>
+              <li><a href="./downloads/bmm-agents.zip">📦 BMM Agents (all 8)</a></li>
+              <li><a href="./downloads/bmb-agents.zip">📦 BMB Agents (all 1)</a></li>
+              <li><a href="./downloads/cis-agents.zip">📦 CIS Agents (all 5)</a></li>
+              <li><a href="./downloads/bmgd-agents.zip">📦 BMGD Agents (all 4)</a></li>
+            </ul>
 
             <h2>Usage</h2>
             <p>Copy the raw XML URL and paste into your AI platform's custom instructions or project knowledge.</p>

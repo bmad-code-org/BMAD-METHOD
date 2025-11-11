@@ -27,15 +27,23 @@ https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/pm.
 
 ## Available Modules
 
+**Bulk Downloads:**
+
+- [📦 BMM Agents (8)](https://bmad-code-org.github.io/bmad-bundles/downloads/bmm-agents.zip)
+- [📦 BMB Agents (1)](https://bmad-code-org.github.io/bmad-bundles/downloads/bmb-agents.zip)
+- [📦 CIS Agents (5)](https://bmad-code-org.github.io/bmad-bundles/downloads/cis-agents.zip)
+- [📦 BMGD Agents (4)](https://bmad-code-org.github.io/bmad-bundles/downloads/bmgd-agents.zip)
+
+**Individual Agents:**
+
 ### BMM (BMad Method)
 
 - [PM](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/pm.xml) | [Architect](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/architect.xml) | [TEA](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/tea.xml) | [Developer](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/dev.xml)
-- [All BMM Agents](https://github.com/bmad-code-org/bmad-bundles/tree/main/bmm/agents)
+- [Browse All](https://bmad-code-org.github.io/bmad-bundles/bmm/agents/)
 
-### BMB / CIS
+### BMB / CIS / BMGD
 
-- [BMB Builder](https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmb/agents/bmad-builder.xml)
-- [Browse CIS Agents](https://github.com/bmad-code-org/bmad-bundles/tree/main/cis/agents)
+- [Browse BMB](https://bmad-code-org.github.io/bmad-bundles/bmb/agents/) | [Browse CIS](https://bmad-code-org.github.io/bmad-bundles/cis/agents/) | [Browse BMGD](https://bmad-code-org.github.io/bmad-bundles/bmgd/agents/)
 
 ---
 
