@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Cursor IDE setup handler
@@ -45,8 +46,14 @@ class CursorSetup extends BaseIdeSetup {
 
     await this.ensureDir(bmadRulesDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only)
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers first
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Convert artifacts to agent format for index creation
+    const agents = agentArtifacts.map((a) => ({ module: a.module, name: a.name }));
+
+    // Get tasks, tools, and workflows (standalone only)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
@@ -63,15 +70,16 @@ class CursorSetup extends BaseIdeSetup {
       await this.ensureDir(path.join(bmadRulesDir, module, 'workflows'));
     }
 
-    // Process and copy agents
+    // Process and write agent launchers with MDC format
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readAndProcess(agent.path, {
-        module: agent.module,
-        name: agent.name,
+    for (const artifact of agentArtifacts) {
+      // Add MDC metadata header to launcher (but don't call processContent which adds activation headers)
+      const content = this.wrapLauncherWithMDC(artifact.content, {
+        module: artifact.module,
+        name: artifact.name,
       });
 
-      const targetPath = path.join(bmadRulesDir, agent.module, 'agents', `${agent.name}.mdc`);
+      const targetPath = path.join(bmadRulesDir, artifact.module, 'agents', `${artifact.name}.mdc`);
 
       await this.writeFile(targetPath, content);
       agentCount++;
@@ -256,6 +264,13 @@ specific agent expertise, task workflows, tools, or guided workflows.
     // First apply base processing (includes activation injection for agents)
     let processed = super.processContent(content, metadata);
 
+    // Strip any existing frontmatter from the processed content
+    // This prevents duplicate frontmatter blocks
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    if (frontmatterRegex.test(processed)) {
+      processed = processed.replace(frontmatterRegex, '');
+    }
+
     // Determine the type and description based on content
     const isAgent = content.includes('<agent');
     const isTask = content.includes('<task');
@@ -303,6 +318,34 @@ alwaysApply: false
 
     // Add the MDC header to the processed content
     return mdcHeader + processed;
+  }
+
+  /**
+   * Wrap launcher content with MDC metadata (without base processing)
+   * Launchers are already complete and should not have activation headers injected
+   */
+  wrapLauncherWithMDC(launcherContent, metadata = {}) {
+    // Strip the launcher's frontmatter - we'll replace it with MDC frontmatter
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = launcherContent.replace(frontmatterRegex, '');
+
+    // Extract metadata from launcher frontmatter for MDC description
+    const nameMatch = launcherContent.match(/name:\s*"([^"]+)"/);
+    const name = nameMatch ? nameMatch[1] : metadata.name;
+
+    const description = `BMAD ${metadata.module.toUpperCase()} Agent: ${name}`;
+
+    // Create MDC metadata header
+    const mdcHeader = `---
+description: ${description}
+globs:
+alwaysApply: false
+---
+
+`;
+
+    // Return MDC header + launcher content (without its original frontmatter)
+    return mdcHeader + contentWithoutFrontmatter;
   }
 }
 

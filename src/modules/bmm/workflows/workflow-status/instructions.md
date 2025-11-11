@@ -1,7 +1,7 @@
 # Workflow Status Check - Multi-Mode Service
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml</critical>
 <critical>This workflow operates in multiple modes: interactive (default), validate, data, init-check, update</critical>
 <critical>Other workflows can call this as a service to avoid duplicating status logic</critical>
 
@@ -79,6 +79,7 @@ Parse these fields from YAML comments and metadata:
 <action>Load workflow path file based on workflow_path field</action>
 <action>Identify current phase from next workflow to be done</action>
 <action>Build list of completed, pending, and optional workflows</action>
+<action>For each workflow, look up its agent from the path file</action>
 
 <output>
 ## 📊 Current Status
@@ -93,7 +94,7 @@ Parse these fields from YAML comments and metadata:
 {{phase_name}}:
 {{#each workflows_in_phase}}
 
-- {{workflow_name}}: {{status_display}}
+- {{workflow_name}} ({{agent}}): {{status_display}}
   {{/each}}
   {{/each}}
 
@@ -118,7 +119,7 @@ Parse these fields from YAML comments and metadata:
 <step n="4" goal="Offer actions">
 <ask>What would you like to do?
 
-1. **Start next workflow** - {{next_workflow_name}} ({{next_agent}} agent)
+1. **Start next workflow** - {{next_workflow_name}} ({{next_agent}})
    {{#if optional_workflows_available}}
 2. **Run optional workflow** - Choose from available options
    {{/if}}

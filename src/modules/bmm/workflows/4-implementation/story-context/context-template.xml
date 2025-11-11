@@ -1,4 +1,4 @@
-<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+<story-context id="{bmad_folder}/bmm/workflows/4-implementation/story-context/template" v="1.0">
   <metadata>
     <epicId>{{epic_id}}</epicId>
     <storyId>{{story_id}}</storyId>

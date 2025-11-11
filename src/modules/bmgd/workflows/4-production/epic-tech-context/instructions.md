@@ -1,7 +1,7 @@
 <!-- BMAD BMM Tech Spec Workflow Instructions (v6) -->
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 <critical>This workflow generates a comprehensive Technical Specification from PRD and Architecture, including detailed design, NFRs, acceptance criteria, and traceability mapping.</critical>
@@ -157,7 +157,7 @@ Continuing to regenerate tech spec...
   </step>
 
   <step n="9" goal="Validate and mark epic contexted" tag="sprint-status">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {bmad_folder}/core/tasks/validate-workflow.xml</invoke-task>
 
     <!-- Mark epic as contexted -->
     <action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>

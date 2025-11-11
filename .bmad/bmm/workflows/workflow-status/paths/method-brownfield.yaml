@@ -1,0 +1,97 @@
+# BMad Method - Brownfield
+# Full product + architecture planning for complex brownfield additions (10-50+ stories typically)
+
+method_name: "BMad Method"
+track: "method"
+field_type: "brownfield"
+description: "Complete product and system design for complex brownfield work"
+
+phases:
+  - prerequisite: true
+    name: "Documentation"
+    conditional: "if_undocumented"
+    note: "NOT a phase - prerequisite for brownfield without docs"
+    workflows:
+      - id: "document-project"
+        required: true
+        agent: "analyst"
+        command: "document-project"
+        output: "Comprehensive project documentation"
+        purpose: "Understand existing codebase before planning"
+
+  - phase: 0
+    name: "Discovery (Optional)"
+    optional: true
+    note: "User-selected during workflow-init"
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+        included_by: "user_choice"
+
+      - id: "research"
+        optional: true
+        agent: "analyst"
+        command: "research"
+        included_by: "user_choice"
+
+      - id: "product-brief"
+        optional: true
+        agent: "analyst"
+        command: "product-brief"
+        included_by: "user_choice"
+        note: "Optional for brownfield, less common than greenfield"
+
+  - phase: 1
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        required: true
+        agent: "pm"
+        command: "prd"
+        output: "PRD focused on new features/changes"
+        note: "Must consider existing system constraints"
+
+      - id: "validate-prd"
+        optional: true
+        agent: "pm"
+        command: "validate-prd"
+
+      - id: "create-design"
+        conditional: "if_has_ui"
+        agent: "ux-designer"
+        command: "create-design"
+
+  - phase: 2
+    name: "Solutioning"
+    required: true
+    workflows:
+      - id: "create-architecture"
+        recommended: true
+        agent: "architect"
+        command: "create-architecture"
+        output: "Integration architecture - solution design for THIS project"
+        note: "HIGHLY RECOMMENDED: Distills massive brownfield context into focused solution design. Prevents agent confusion."
+
+      - id: "validate-architecture"
+        optional: true
+        agent: "architect"
+        command: "validate-architecture"
+
+      - id: "solutioning-gate-check"
+        required: true
+        agent: "architect"
+        command: "solutioning-gate-check"
+        note: "Validates PRD + UX + Architecture (if created) cohesion"
+
+  - phase: 3
+    name: "Implementation"
+    required: true
+    workflows:
+      - id: "sprint-planning"
+        required: true
+        agent: "sm"
+        command: "sprint-planning"
+        note: "Creates sprint plan with stories"

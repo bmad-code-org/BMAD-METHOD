@@ -2,39 +2,17 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const os = require('node:os');
 const chalk = require('chalk');
-const inquirer = require('inquirer');
 const { BaseIdeSetup } = require('./_base-ide');
-const { WorkflowCommandGenerator } = require('./workflow-command-generator');
-const { getAgentsFromBmad, getTasksFromBmad } = require('./shared/bmad-artifacts');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { getTasksFromBmad } = require('./shared/bmad-artifacts');
 
 /**
- * Codex setup handler (supports both CLI and Web)
+ * Codex setup handler (CLI mode)
  */
 class CodexSetup extends BaseIdeSetup {
   constructor() {
     super('codex', 'Codex', true); // preferred IDE
-  }
-
-  /**
-   * Collect configuration choices before installation
-   * @param {Object} options - Configuration options
-   * @returns {Object} Collected configuration
-   */
-  async collectConfiguration(options = {}) {
-    const response = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'mode',
-        message: 'Select Codex deployment mode:',
-        choices: [
-          { name: 'CLI (Command-line interface)', value: 'cli' },
-          { name: 'Web (Browser-based interface)', value: 'web' },
-        ],
-        default: 'cli',
-      },
-    ]);
-
-    return { codexMode: response.mode };
   }
 
   /**
@@ -46,8 +24,8 @@ class CodexSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    const config = options.preCollectedConfig || {};
-    const mode = config.codexMode || options.codexMode || 'cli';
+    // Always use CLI mode
+    const mode = 'cli';
 
     const { artifacts, counts } = await this.collectClaudeArtifacts(projectDir, bmadDir, options);
 
@@ -57,15 +35,12 @@ class CodexSetup extends BaseIdeSetup {
     const written = await this.flattenAndWriteArtifacts(artifacts, destDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - Mode: ${mode === 'web' ? 'Web' : 'CLI'}`));
+    console.log(chalk.dim(`  - Mode: CLI`));
     console.log(chalk.dim(`  - ${counts.agents} agents exported`));
     console.log(chalk.dim(`  - ${counts.tasks} tasks exported`));
     console.log(chalk.dim(`  - ${counts.workflows} workflow commands exported`));
     if (counts.workflowLaunchers > 0) {
       console.log(chalk.dim(`  - ${counts.workflowLaunchers} workflow launchers exported`));
-    }
-    if (counts.subagents > 0) {
-      console.log(chalk.dim(`  - ${counts.subagents} subagents exported`));
     }
     console.log(chalk.dim(`  - ${written} Codex prompt files written`));
     console.log(chalk.dim(`  - Destination: ${destDir}`));
@@ -118,23 +93,17 @@ class CodexSetup extends BaseIdeSetup {
     const selectedModules = options.selectedModules || [];
     const artifacts = [];
 
-    const agents = await getAgentsFromBmad(bmadDir, selectedModules);
-    for (const agent of agents) {
-      const content = await this.readAndProcessWithProject(
-        agent.path,
-        {
-          module: agent.module,
-          name: agent.name,
-        },
-        projectDir,
-      );
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
 
+    for (const artifact of agentArtifacts) {
       artifacts.push({
         type: 'agent',
-        module: agent.module,
-        sourcePath: agent.path,
-        relativePath: path.join(agent.module, 'agents', `${agent.name}.md`),
-        content,
+        module: artifact.module,
+        sourcePath: artifact.sourcePath,
+        relativePath: artifact.relativePath,
+        content: artifact.content,
       });
     }
 
@@ -158,14 +127,14 @@ class CodexSetup extends BaseIdeSetup {
       });
     }
 
-    const workflowGenerator = new WorkflowCommandGenerator();
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
     artifacts.push(...workflowArtifacts);
 
     return {
       artifacts,
       counts: {
-        agents: agents.length,
+        agents: agentArtifacts.length,
         tasks: tasks.length,
         workflows: workflowCounts.commands,
         workflowLaunchers: workflowCounts.launchers,

@@ -28,11 +28,11 @@ workflow redoc
 
 When prompted, provide one of:
 
-- **Module path**: `bmad/bmm` (documents entire module: root, workflows, agents)
-- **Workflows folder**: `bmad/bmm/workflows` (documents all workflows)
-- **Agents folder**: `bmad/bmm/agents` (documents all agents)
-- **Single workflow**: `bmad/bmm/workflows/product-brief` (documents one workflow)
-- **Single agent**: `bmad/bmm/agents/prd-agent.md` (documents one agent)
+- **Module path**: `{bmad_folder}/bmm` (documents entire module: root, workflows, agents)
+- **Workflows folder**: `{bmad_folder}/bmm/workflows` (documents all workflows)
+- **Agents folder**: `{bmad_folder}/bmm/agents` (documents all agents)
+- **Single workflow**: `{bmad_folder}/bmm/workflows/product-brief` (documents one workflow)
+- **Single agent**: `{bmad_folder}/bmm/agents/prd-agent.md` (documents one agent)
 
 ## Inputs
 

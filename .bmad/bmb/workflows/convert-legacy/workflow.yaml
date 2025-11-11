@@ -1,0 +1,32 @@
+# Convert Legacy - BMAD v4 to v6 Converter Configuration
+name: "convert-legacy"
+description: "Converts legacy BMAD v4 or similar items (agents, workflows, modules) to BMad Core compliant format with proper structure and conventions"
+author: "BMad"
+
+# Critical variables load from config_source
+config_source: "{project-root}/.bmad/bmb/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Optional docs that can be provided as input
+recommended_inputs:
+  - legacy_file: "Path to v4 agent, workflow, or module to convert"
+
+# Module path and component files
+installed_path: "{project-root}/.bmad/bmb/workflows/convert-legacy"
+template: false # This is an action/meta workflow - no template needed
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Output configuration - Creates converted items in appropriate module locations
+default_output_folder: "{project-root}/.bmad/{{target_module}}/{{item_type}}/{{item_name}}"
+
+# Sub-workflows that may be invoked for conversion
+sub_workflows:
+  - create_agent: "{project-root}/.bmad/bmb/workflows/create-agent/workflow.yaml"
+  - create_workflow: "{project-root}/.bmad/bmb/workflows/create-workflow/workflow.yaml"
+  - create_module: "{project-root}/.bmad/bmb/workflows/create-module/workflow.yaml"
+
+standalone: true

@@ -35,7 +35,7 @@ workflow brainstorming --data /path/to/context.md
 
 ### Configuration
 
-The workflow leverages configuration from `/bmad/cis/config.yaml`:
+The workflow leverages configuration from `{bmad_folder}/cis/config.yaml`:
 
 - **output_folder**: Where session results are saved
 - **user_name**: Session participant identification
@@ -185,7 +185,7 @@ The workflow includes 36 techniques organized into 7 categories:
 ## Requirements
 
 - No special software requirements
-- Access to the CIS module configuration (`/bmad/cis/config.yaml`)
+- Access to the CIS module configuration (`{bmad_folder}/cis/config.yaml`)
 - Active participation and engagement throughout the interactive session
 - Optional: Domain context document for focused brainstorming
 

@@ -45,7 +45,7 @@
 ## Web Bundle Validation (if applicable)
 
 - [ ] web_bundle section present if workflow needs deployment
-- [ ] All paths in web_bundle use bmad/-relative format (NOT {project-root})
+- [ ] All paths in web_bundle use {bmad_folder}/-relative format (NOT {project-root})
 - [ ] No {config_source} variables in web_bundle section
 - [ ] instructions file listed in web_bundle_files array
 - [ ] template file listed in web_bundle_files (if document workflow)
@@ -53,7 +53,7 @@
 - [ ] All data files (CSV, JSON, YAML) listed in web_bundle_files
 - [ ] All <invoke-workflow> called workflows have their .yaml files in web_bundle_files
 - [ ] **CRITICAL**: If workflow invokes other workflows, existing_workflows field is present
-- [ ] existing_workflows maps workflow variables to bmad/-relative paths correctly
+- [ ] existing_workflows maps workflow variables to {bmad_folder}/-relative paths correctly
 - [ ] All files referenced in instructions <action> tags listed in web_bundle_files
 - [ ] No files listed in web_bundle_files that don't exist
 - [ ] Web bundle metadata (name, description, author) matches top-level metadata

@@ -1,6 +1,6 @@
 # PRD Workflow - Intent-Driven Product Planning
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow uses INTENT-DRIVEN PLANNING - adapt organically to product type and context</critical>
 <critical>Communicate all responses in {communication_language} and adapt deeply to {user_skill_level}</critical>
@@ -115,7 +115,7 @@ Weave in the magic:
 <check if="business focus">
 <template-output>business_metrics</template-output>
 </check>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="3" goal="Scope Definition">
@@ -140,7 +140,7 @@ For complex domains:
 <template-output>mvp_scope</template-output>
 <template-output>growth_features</template-output>
 <template-output>vision_features</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="4" goal="Domain-Specific Exploration" optional="true">
@@ -289,7 +289,7 @@ The magic thread:
 Highlight which requirements deliver the special experience</action>
 
 <template-output>functional_requirements_complete</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="9" goal="Non-Functional Requirements Discovery">
@@ -341,7 +341,7 @@ Skip categories that don't apply!</action>
 Does this capture your product vision?"</action>
 
 <template-output>prd_summary</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 <action>After PRD review and refinement complete:
 

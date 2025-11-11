@@ -8,10 +8,10 @@ BMAD agents come in three distinct types, each designed for different use cases 
 
 ### Standalone Agents (Simple & Expert)
 
-Live in their own dedicated directories under `bmad/agents/`:
+Live in their own dedicated directories under `{bmad_folder}/agents/`:
 
 ```
-bmad/agents/
+{bmad_folder}/agents/
 ├── my-helper/                   # Simple agent
 │   ├── my-helper.agent.yaml     # Agent definition
 │   └── my-helper.md             # Built XML (generated)
@@ -28,10 +28,10 @@ bmad/agents/
 
 ### Module Agents
 
-Part of a module system under `bmad/{module}/agents/`:
+Part of a module system under `{bmad_folder}/{module}/agents/`:
 
 ```
-bmad/bmm/agents/
+{bmad_folder}/bmm/agents/
 ├── product-manager.agent.yaml
 ├── product-manager.md           # Built XML
 ├── business-analyst.agent.yaml
@@ -44,7 +44,7 @@ bmad/bmm/agents/
 
 **Purpose:** Self-contained, standalone agents with embedded capabilities
 
-**Location:** `bmad/agents/{agent-name}/`
+**Location:** `{bmad_folder}/agents/{agent-name}/`
 
 **Characteristics:**
 
@@ -105,7 +105,7 @@ agent:
 
 **Purpose:** Specialized agents with domain expertise and sidecar resources
 
-**Location:** `bmad/agents/{agent-name}/` with sidecar directory
+**Location:** `{bmad_folder}/agents/{agent-name}/` with sidecar directory
 
 **Characteristics:**
 
@@ -168,7 +168,7 @@ agent:
 **Complete Directory Structure:**
 
 ```
-bmad/agents/expert-agent/
+{bmad_folder}/agents/expert-agent/
 ├── expert-agent.agent.yaml      # Agent YAML source
 ├── expert-agent.md              # Built XML (generated)
 └── expert-agent-sidecar/        # Sidecar resources
@@ -183,7 +183,7 @@ bmad/agents/expert-agent/
 
 **Purpose:** Full-featured agents belonging to a module with access to workflows and resources
 
-**Location:** `bmad/{module}/agents/`
+**Location:** `{bmad_folder}/{module}/agents/`
 
 **Characteristics:**
 
@@ -216,20 +216,20 @@ agent:
     communication_style: '...'
     principles: ['...']
   critical_actions:
-    - 'Load config from {project-root}/bmad/{module}/config.yaml'
+    - 'Load config from {project-root}/{bmad_folder}/{module}/config.yaml'
   menu:
     - trigger: create-prd
-      workflow: '{project-root}/bmad/bmm/workflows/prd/workflow.yaml'
+      workflow: '{project-root}/{bmad_folder}/bmm/workflows/prd/workflow.yaml'
       description: 'Create PRD'
     - trigger: validate
-      exec: '{project-root}/bmad/core/tasks/validate-workflow.xml'
+      exec: '{project-root}/{bmad_folder}/core/tasks/validate-workflow.xml'
       description: 'Validate document'
 ```
 
 **XML Structure (built):**
 
 ```xml
-<agent id="bmad/bmm/agents/pm.md" name="John" title="Product Manager" icon="📋">
+<agent id="{bmad_folder}/bmm/agents/pm.md" name="John" title="Product Manager" icon="📋">
   <persona>
     <role>Product Management Expert</role>
     <identity>...</identity>
@@ -237,12 +237,12 @@ agent:
     <principles>...</principles>
   </persona>
   <critical-actions>
-    <i>Load config from {project-root}/bmad/{module}/config.yaml</i>
+    <i>Load config from {project-root}/{bmad_folder}/{module}/config.yaml</i>
   </critical-actions>
   <menu>
     <item cmd="*help">Show numbered menu</item>
-    <item cmd="*create-prd" run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">Create PRD</item>
-    <item cmd="*validate" exec="{project-root}/bmad/core/tasks/validate-workflow.xml">Validate document</item>
+    <item cmd="*create-prd" run-workflow="{project-root}/{bmad_folder}/bmm/workflows/prd/workflow.yaml">Create PRD</item>
+    <item cmd="*validate" exec="{project-root}/{bmad_folder}/core/tasks/validate-workflow.xml">Validate document</item>
     <item cmd="*exit">Exit</item>
   </menu>
 </agent>

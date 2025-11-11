@@ -1,0 +1,222 @@
+# Decision Catalog - Composability knowledge for architectural decisions
+# This provides RELATIONSHIPS and WORKFLOW LOGIC, not generic tech knowledge
+#
+# ⚠️ CRITICAL: All version/feature info MUST be verified via WebSearch during workflow
+# This file only provides: triggers, relationships (pairs_with), and opinionated stacks
+
+decision_categories:
+  data_persistence:
+    triggers: ["database", "storage", "data model", "persistence", "state management"]
+    importance: "critical"
+    affects: "most epics"
+    options:
+      postgresql:
+        pairs_with: ["Prisma ORM", "TypeORM", "Drizzle", "node-postgres"]
+      mongodb:
+        pairs_with: ["Mongoose", "Prisma", "MongoDB driver"]
+      redis:
+        pairs_with: ["ioredis", "node-redis"]
+      supabase:
+        pairs_with: ["@supabase/supabase-js"]
+      firebase:
+        pairs_with: ["firebase-admin"]
+
+  api_pattern:
+    triggers: ["API", "client communication", "frontend backend", "service communication"]
+    importance: "critical"
+    affects: "all client-facing epics"
+    options:
+      rest:
+        pairs_with: ["Express", "Fastify", "NestJS", "Hono"]
+      graphql:
+        pairs_with: ["Apollo Server", "GraphQL Yoga", "Mercurius"]
+      trpc:
+        pairs_with: ["Next.js", "React Query"]
+      grpc:
+        pairs_with: ["@grpc/grpc-js", "protobufjs"]
+
+  authentication:
+    triggers: ["auth", "login", "user management", "security", "identity"]
+    importance: "critical"
+    affects: "security and user epics"
+    options:
+      nextauth:
+        pairs_with: ["Next.js", "Prisma"]
+      auth0:
+        pairs_with: ["@auth0/nextjs-auth0"]
+      clerk:
+        pairs_with: ["@clerk/nextjs"]
+      supabase_auth:
+        pairs_with: ["@supabase/supabase-js"]
+      firebase_auth:
+        pairs_with: ["firebase-admin"]
+
+  real_time:
+    triggers: ["real-time", "websocket", "live updates", "chat", "collaboration"]
+    importance: "medium"
+    affects: "real-time features"
+    options:
+      socket_io:
+        pairs_with: ["Express", "socket.io-client"]
+      pusher:
+        pairs_with: ["pusher-js"]
+      ably:
+        pairs_with: ["ably"]
+      supabase_realtime:
+        pairs_with: ["@supabase/supabase-js"]
+      firebase_realtime:
+        pairs_with: ["firebase"]
+
+  email:
+    triggers: ["email", "notifications", "transactional email"]
+    importance: "medium"
+    affects: "notification epics"
+    options:
+      resend:
+        pairs_with: ["resend", "react-email"]
+      sendgrid:
+        pairs_with: ["@sendgrid/mail"]
+      postmark:
+        pairs_with: ["postmark"]
+      ses:
+        pairs_with: ["@aws-sdk/client-ses"]
+
+  file_storage:
+    triggers: ["upload", "file storage", "images", "media", "CDN"]
+    importance: "medium"
+    affects: "media handling epics"
+    options:
+      s3:
+        pairs_with: ["@aws-sdk/client-s3", "multer"]
+      cloudinary:
+        pairs_with: ["cloudinary"]
+      uploadthing:
+        pairs_with: ["uploadthing"]
+      supabase_storage:
+        pairs_with: ["@supabase/supabase-js"]
+
+  search:
+    triggers: ["search", "full text", "elasticsearch", "algolia", "fuzzy"]
+    importance: "medium"
+    affects: "search and discovery epics"
+    options:
+      postgres_fts:
+        pairs_with: ["PostgreSQL"]
+      elasticsearch:
+        pairs_with: ["@elastic/elasticsearch"]
+      algolia:
+        pairs_with: ["algoliasearch"]
+      typesense:
+        pairs_with: ["typesense"]
+
+  background_jobs:
+    triggers: ["queue", "jobs", "workers", "async", "background processing", "scheduled"]
+    importance: "medium"
+    affects: "async processing epics"
+    options:
+      bullmq:
+        pairs_with: ["Redis"]
+      sqs:
+        pairs_with: ["@aws-sdk/client-sqs"]
+      temporal:
+        pairs_with: ["@temporalio/client"]
+      inngest:
+        pairs_with: ["inngest"]
+
+  deployment_target:
+    triggers: ["deployment", "hosting", "infrastructure", "cloud", "server"]
+    importance: "high"
+    affects: "all epics"
+    options:
+      vercel:
+        pairs_with: ["Next.js", "serverless functions"]
+      aws:
+        pairs_with: ["any stack"]
+      railway:
+        pairs_with: ["any stack", "managed databases"]
+      fly_io:
+        pairs_with: ["Docker containers"]
+
+# Opinionated stack combinations (BMM methodology)
+common_stacks:
+  modern_fullstack:
+    name: "Modern Full-Stack"
+    components: ["Next.js", "PostgreSQL or Supabase", "Prisma ORM", "NextAuth.js", "Tailwind CSS", "TypeScript", "Vercel"]
+    good_for: "Most web applications"
+
+  enterprise_stack:
+    name: "Enterprise Stack"
+    components: ["NestJS", "PostgreSQL", "TypeORM", "Auth0", "Redis", "Docker", "AWS"]
+    good_for: "Large-scale enterprise applications"
+
+  rapid_prototype:
+    name: "Rapid Prototype"
+    components: ["Next.js", "Supabase", "shadcn/ui", "Vercel"]
+    good_for: "MVP and rapid development"
+
+  real_time_app:
+    name: "Real-Time Application"
+    components: ["Next.js", "Supabase Realtime", "PostgreSQL", "Prisma", "Socket.io fallback"]
+    good_for: "Chat, collaboration, live updates"
+
+  mobile_app:
+    name: "Mobile Application"
+    components: ["Expo", "React Native", "Supabase or Firebase", "React Query"]
+    good_for: "Cross-platform mobile apps"
+
+# Starter templates and what decisions they make
+starter_templates:
+  create_next_app:
+    name: "Create Next App"
+    command_search: "npx create-next-app@latest"
+    decisions_provided: ["Next.js framework", "TypeScript option", "App Router vs Pages", "Tailwind CSS option", "ESLint"]
+    good_for: ["React web applications", "Full-stack apps", "SSR/SSG"]
+
+  create_t3_app:
+    name: "Create T3 App"
+    command_search: "npm create t3-app@latest"
+    decisions_provided: ["Next.js", "TypeScript", "tRPC", "Prisma", "NextAuth", "Tailwind CSS"]
+    good_for: ["Type-safe full-stack apps"]
+
+  create_vite:
+    name: "Create Vite"
+    command_search: "npm create vite@latest"
+    decisions_provided: ["Framework choice (React/Vue/Svelte)", "TypeScript option", "Vite bundler"]
+    good_for: ["Fast dev SPAs", "Library development"]
+
+  create_remix:
+    name: "Create Remix"
+    command_search: "npx create-remix@latest"
+    decisions_provided: ["Remix framework", "TypeScript option", "Deployment target", "CSS solution"]
+    good_for: ["Web standards", "Nested routing", "Progressive enhancement"]
+
+  nest_new:
+    name: "NestJS CLI"
+    command_search: "nest new project"
+    decisions_provided: ["TypeScript (always)", "Package manager", "Testing framework (Jest)", "Project structure"]
+    good_for: ["Enterprise APIs", "Microservices", "GraphQL APIs"]
+
+  create_expo_app:
+    name: "Create Expo App"
+    command_search: "npx create-expo-app"
+    decisions_provided: ["React Native", "Expo SDK", "TypeScript option", "Navigation option"]
+    good_for: ["Cross-platform mobile", "React Native apps"]
+
+# Starter selection heuristics (workflow logic)
+starter_selection_rules:
+  by_project_type:
+    web_application:
+      recommended: ["create_next_app", "create_t3_app", "create_vite"]
+      considerations: "SSR needs? → Next.js. Type safety critical? → T3. SPA only? → Vite"
+
+    mobile_app:
+      recommended: ["create_expo_app"]
+      considerations: "Cross-platform → Expo. Native-heavy → React Native CLI"
+
+    api_backend:
+      recommended: ["nest_new"]
+      considerations: "Enterprise → NestJS. Simple → Express starter. Performance → Fastify"
+
+    full_stack:
+      recommended: ["create_t3_app", "create_remix"]
+      considerations: "Type safety → T3. Web standards → Remix. Monolith → RedwoodJS"

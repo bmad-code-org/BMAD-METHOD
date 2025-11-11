@@ -25,7 +25,7 @@ Create a folder with these files:
 # workflow.yaml (REQUIRED)
 name: 'my-workflow'
 description: 'What this workflow does'
-installed_path: '{project-root}/bmad/module/workflows/my-workflow'
+installed_path: '{project-root}/{bmad_folder}/module/workflows/my-workflow'
 template: '{installed_path}/template.md'
 instructions: '{installed_path}/instructions.md'
 default_output_file: '{output_folder}/output.md'
@@ -44,7 +44,7 @@ standalone: true
 ```markdown
 # instructions.md
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow.yaml</critical>
 
 <workflow>
@@ -61,13 +61,13 @@ That's it! To execute, tell the BMAD agent: `workflow path/to/my-workflow/`
 
 ### Tasks vs Workflows
 
-| Aspect         | Task               | Workflow                |
-| -------------- | ------------------ | ----------------------- |
-| **Purpose**    | Single operation   | Multi-step process      |
-| **Format**     | XML                | Folder with YAML config |
-| **Location**   | `/src/core/tasks/` | `/bmad/*/workflows/`    |
-| **User Input** | Minimal            | Extensive               |
-| **Output**     | Variable           | Usually documents       |
+| Aspect         | Task               | Workflow                      |
+| -------------- | ------------------ | ----------------------------- |
+| **Purpose**    | Single operation   | Multi-step process            |
+| **Format**     | XML                | Folder with YAML config       |
+| **Location**   | `/src/core/tasks/` | `/{bmad_folder}/*/workflows/` |
+| **User Input** | Minimal            | Extensive                     |
+| **Output**     | Variable           | Usually documents             |
 
 ### Workflow Types
 
@@ -104,7 +104,7 @@ name: 'workflow-name'
 description: 'Clear purpose statement'
 
 # Paths
-installed_path: '{project-root}/bmad/module/workflows/name'
+installed_path: '{project-root}/{bmad_folder}/module/workflows/name'
 template: '{installed_path}/template.md' # or false
 instructions: '{installed_path}/instructions.md' # or false
 validation: '{installed_path}/checklist.md' # optional
@@ -641,7 +641,7 @@ the technology stack recommendations. Please choose: web, mobile, or desktop.</a
 ```markdown
 # instructions.md
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow.yaml</critical>
 
 <workflow>
@@ -855,7 +855,7 @@ _Generated on {{date}}_
 **Output:**
 
 - `<template-output>` - Save checkpoint
-- `<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>` - Trigger AI enhancement
+- `<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>` - Trigger AI enhancement
 - `<critical>` - Important info
 - `<example>` - Show example
 
@@ -904,7 +904,7 @@ _Generated on {{date}}_
   <step n="2" goal="Define requirements">
     Create functional and non-functional requirements.
     <template-output>requirements</template-output>
-    <invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+    <invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
   </step>
 
   <step n="3" goal="Validate">
@@ -1194,7 +1194,7 @@ Web bundles allow workflows to be deployed as self-contained packages for web en
 1. **Self-Contained**: No external dependencies
 2. **No Config Variables**: Cannot use `{config_source}` references
 3. **Complete File List**: Every referenced file must be listed
-4. **Relative Paths**: Use `bmad/` root paths (no `{project-root}`)
+4. **Relative Paths**: Use `{bmad_folder}/` root paths (no `{project-root}`)
 
 ### Creating a Web Bundle
 
@@ -1206,20 +1206,20 @@ web_bundle:
   description: 'Workflow description'
   author: 'Your Name'
 
-  # Core files (bmad/-relative paths)
-  instructions: 'bmad/module/workflows/workflow/instructions.md'
-  validation: 'bmad/module/workflows/workflow/checklist.md'
-  template: 'bmad/module/workflows/workflow/template.md'
+  # Core files ({bmad_folder}/-relative paths)
+  instructions: '{bmad_folder}/module/workflows/workflow/instructions.md'
+  validation: '{bmad_folder}/module/workflows/workflow/checklist.md'
+  template: '{bmad_folder}/module/workflows/workflow/template.md'
 
   # Data files (no config_source allowed)
-  data_file: 'bmad/module/workflows/workflow/data.csv'
+  data_file: '{bmad_folder}/module/workflows/workflow/data.csv'
 
   # Complete file list - CRITICAL!
   web_bundle_files:
-    - 'bmad/module/workflows/workflow/instructions.md'
-    - 'bmad/module/workflows/workflow/checklist.md'
-    - 'bmad/module/workflows/workflow/template.md'
-    - 'bmad/module/workflows/workflow/data.csv'
+    - '{bmad_folder}/module/workflows/workflow/instructions.md'
+    - '{bmad_folder}/module/workflows/workflow/checklist.md'
+    - '{bmad_folder}/module/workflows/workflow/template.md'
+    - '{bmad_folder}/module/workflows/workflow/data.csv'
     # Include ALL referenced files
 ```
 
@@ -1227,7 +1227,7 @@ web_bundle:
 
 1. **Remove Config Dependencies**:
    - Replace `{config_source}:variable` with hardcoded values
-   - Convert `{project-root}/bmad/` to `bmad/`
+   - Convert `{project-root}/{bmad_folder}/` to `{bmad_folder}/`
 
 2. **Inventory All Files**:
    - Scan instructions.md for file references
@@ -1236,7 +1236,7 @@ web_bundle:
 
 3. **Test Completeness**:
    - Ensure no missing file references
-   - Verify all paths are relative to bmad/
+   - Verify all paths are relative to {bmad_folder}/
 
 ### Example: Complete Web Bundle
 
@@ -1246,37 +1246,37 @@ web_bundle:
   description: 'Requirements analysis workflow'
   author: 'BMad Team'
 
-  instructions: 'bmad/bmm/workflows/analyze-requirements/instructions.md'
-  validation: 'bmad/bmm/workflows/analyze-requirements/checklist.md'
-  template: 'bmad/bmm/workflows/analyze-requirements/template.md'
+  instructions: '{bmad_folder}/bmm/workflows/analyze-requirements/instructions.md'
+  validation: '{bmad_folder}/bmm/workflows/analyze-requirements/checklist.md'
+  template: '{bmad_folder}/bmm/workflows/analyze-requirements/template.md'
 
   # Data files
-  techniques_data: 'bmad/bmm/workflows/analyze-requirements/techniques.csv'
-  patterns_data: 'bmad/bmm/workflows/analyze-requirements/patterns.json'
+  techniques_data: '{bmad_folder}/bmm/workflows/analyze-requirements/techniques.csv'
+  patterns_data: '{bmad_folder}/bmm/workflows/analyze-requirements/patterns.json'
 
   # Sub-workflow reference
-  validation_workflow: 'bmad/bmm/workflows/validate-requirements/workflow.yaml'
+  validation_workflow: '{bmad_folder}/bmm/workflows/validate-requirements/workflow.yaml'
 
   standalone: true
 
   web_bundle_files:
     # Core workflow files
-    - 'bmad/bmm/workflows/analyze-requirements/instructions.md'
-    - 'bmad/bmm/workflows/analyze-requirements/checklist.md'
-    - 'bmad/bmm/workflows/analyze-requirements/template.md'
+    - '{bmad_folder}/bmm/workflows/analyze-requirements/instructions.md'
+    - '{bmad_folder}/bmm/workflows/analyze-requirements/checklist.md'
+    - '{bmad_folder}/bmm/workflows/analyze-requirements/template.md'
 
     # Data files
-    - 'bmad/bmm/workflows/analyze-requirements/techniques.csv'
-    - 'bmad/bmm/workflows/analyze-requirements/patterns.json'
+    - '{bmad_folder}/bmm/workflows/analyze-requirements/techniques.csv'
+    - '{bmad_folder}/bmm/workflows/analyze-requirements/patterns.json'
 
     # Sub-workflow and its files
-    - 'bmad/bmm/workflows/validate-requirements/workflow.yaml'
-    - 'bmad/bmm/workflows/validate-requirements/instructions.md'
-    - 'bmad/bmm/workflows/validate-requirements/checklist.md'
+    - '{bmad_folder}/bmm/workflows/validate-requirements/workflow.yaml'
+    - '{bmad_folder}/bmm/workflows/validate-requirements/instructions.md'
+    - '{bmad_folder}/bmm/workflows/validate-requirements/checklist.md'
 
     # Shared templates referenced in instructions
-    - 'bmad/bmm/templates/requirement-item.md'
-    - 'bmad/bmm/templates/validation-criteria.md'
+    - '{bmad_folder}/bmm/templates/requirement-item.md'
+    - '{bmad_folder}/bmm/templates/validation-criteria.md'
 ```
 
 ## Troubleshooting
@@ -1305,4 +1305,4 @@ web_bundle:
 _For implementation details, see:_
 
 - `/src/core/tasks/workflow.xml` - Execution engine
-- `/bmad/bmm/workflows/` - Production examples
+- `/{bmad_folder}/bmm/workflows/` - Production examples

@@ -46,7 +46,7 @@ Use this checklist to validate agent edits meet BMAD Core standards.
 ## Menu Handler Validation
 
 - [ ] menu-handlers section is present
-- [ ] Workflow handler loads {project-root}/bmad/core/tasks/workflow.xml
+- [ ] Workflow handler loads {project-root}/{bmad_folder}/core/tasks/workflow.xml
 - [ ] Workflow handler passes yaml path as 'workflow-config' parameter
 - [ ] Handlers check for attributes (workflow, exec, tmpl, data, action)
 - [ ] Handler logic is complete and follows patterns

@@ -4,7 +4,7 @@ description: "Collaborative architectural decision facilitation for AI-agent con
 author: "BMad"
 
 # Critical variables
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -37,7 +37,7 @@ input_file_patterns:
     sharded: "{output_folder}/docs/index.md"
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmm/workflows/3-solutioning/architecture"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 template: "{installed_path}/architecture-template.md"
@@ -72,18 +72,18 @@ web_bundle:
   description: "Collaborative architectural decision facilitation for AI-agent consistency. Replaces template-driven architecture with intelligent, adaptive conversation that produces a decision-focused architecture document optimized for preventing agent conflicts."
   author: "BMad"
 
-  # Core workflow files (bmad/-relative paths)
-  instructions: "bmad/bmm/workflows/3-solutioning/architecture/instructions.md"
-  validation: "bmad/bmm/workflows/3-solutioning/architecture/checklist.md"
-  template: "bmad/bmm/workflows/3-solutioning/architecture/architecture-template.md"
+  # Core workflow files ({bmad_folder}/-relative paths)
+  instructions: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/instructions.md"
+  validation: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/checklist.md"
+  template: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/architecture-template.md"
 
   # Knowledge base files for decision making
-  decision_catalog: "bmad/bmm/workflows/3-solutioning/architecture/decision-catalog.yaml"
-  architecture_patterns: "bmad/bmm/workflows/3-solutioning/architecture/architecture-patterns.yaml"
-  pattern_categories: "bmad/bmm/workflows/3-solutioning/architecture/pattern-categories.csv"
+  decision_catalog: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/decision-catalog.yaml"
+  architecture_patterns: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/architecture-patterns.yaml"
+  pattern_categories: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/pattern-categories.csv"
 
   # Task dependencies
-  adv_elicit_task: "bmad/core/tasks/adv-elicit.xml"
+  adv_elicit_task: "{bmad_folder}/core/tasks/adv-elicit.xml"
 
   # Default configuration values (can be overridden during bundle setup)
   defaults:
@@ -99,16 +99,16 @@ web_bundle:
   # Complete file list - ALL files this workflow depends on
   web_bundle_files:
     # Core workflow files
-    - "bmad/bmm/workflows/3-solutioning/architecture/instructions.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/checklist.md"
-    - "bmad/bmm/workflows/3-solutioning/architecture/architecture-template.md"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/architecture/instructions.md"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/architecture/checklist.md"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/architecture/architecture-template.md"
 
     # Knowledge base data files
-    - "bmad/bmm/workflows/3-solutioning/architecture/decision-catalog.yaml"
-    - "bmad/bmm/workflows/3-solutioning/architecture/architecture-patterns.yaml"
-    - "bmad/bmm/workflows/3-solutioning/architecture/pattern-categories.csv"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/architecture/decision-catalog.yaml"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/architecture/architecture-patterns.yaml"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/architecture/pattern-categories.csv"
 
     # Task dependencies (referenced in instructions.md)
-    - "bmad/core/tasks/workflow.xml"
-    - "bmad/core/tasks/adv-elicit.xml"
-    - "bmad/core/tasks/adv-elicit-methods.csv"
+    - "{bmad_folder}/core/tasks/workflow.xml"
+    - "{bmad_folder}/core/tasks/adv-elicit.xml"
+    - "{bmad_folder}/core/tasks/adv-elicit-methods.csv"

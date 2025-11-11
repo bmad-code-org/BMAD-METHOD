@@ -4,7 +4,7 @@ description: "Identify disruption opportunities and architect business model inn
 author: "BMad"
 
 # Critical variables load from config_source
-config_source: "{project-root}/bmad/cis/config.yaml"
+config_source: "{project-root}/{bmad_folder}/cis/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -19,7 +19,7 @@ recommended_inputs:
 # Example: data="{path}/industry-analysis.md" provides market context
 
 # Module path and component files
-installed_path: "{project-root}/bmad/cis/workflows/innovation-strategy"
+installed_path: "{project-root}/{bmad_folder}/cis/workflows/innovation-strategy"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 
@@ -35,9 +35,9 @@ web_bundle:
   name: "innovation-strategy"
   description: "Identify disruption opportunities and architect business model innovation. This workflow guides strategic analysis of markets, competitive dynamics, and business model innovation to uncover sustainable competitive advantages and breakthrough opportunities."
   author: "BMad"
-  instructions: "bmad/cis/workflows/innovation-strategy/instructions.md"
-  template: "bmad/cis/workflows/innovation-strategy/template.md"
+  instructions: "{bmad_folder}/cis/workflows/innovation-strategy/instructions.md"
+  template: "{bmad_folder}/cis/workflows/innovation-strategy/template.md"
   web_bundle_files:
-    - "bmad/cis/workflows/innovation-strategy/instructions.md"
-    - "bmad/cis/workflows/innovation-strategy/template.md"
-    - "bmad/cis/workflows/innovation-strategy/innovation-frameworks.csv"
+    - "{bmad_folder}/cis/workflows/innovation-strategy/instructions.md"
+    - "{bmad_folder}/cis/workflows/innovation-strategy/template.md"
+    - "{bmad_folder}/cis/workflows/innovation-strategy/innovation-frameworks.csv"

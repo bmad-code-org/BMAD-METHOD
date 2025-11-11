@@ -5,7 +5,7 @@ Use this checklist to validate module edits meet BMAD Core standards.
 ## Module Structure Validation
 
 - [ ] Module has clear 3-letter code (bmm, bmb, cis, etc.)
-- [ ] Module is in correct location (src/modules/ for source, bmad/ for installed)
+- [ ] Module is in correct location (src/modules/ for source, {bmad_folder}/ for installed)
 - [ ] agents/ directory exists
 - [ ] workflows/ directory exists
 - [ ] config.yaml exists in module root
@@ -128,7 +128,7 @@ Use this checklist to validate module edits meet BMAD Core standards.
 
 - [ ] Web bundles configured in workflow.yaml files
 - [ ] All referenced files included in web_bundle_files
-- [ ] Paths are bmad/-relative (not project-root)
+- [ ] Paths are {bmad_folder}/-relative (not project-root)
 - [ ] No config_source references in web bundles
 - [ ] Invoked workflows included in dependencies
 

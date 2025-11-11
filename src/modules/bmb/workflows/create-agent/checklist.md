@@ -11,7 +11,7 @@
 
 ### Core Components
 
-- [ ] `metadata.id` points to final compiled path: `bmad/{{module}}/agents/{{agent}}.md`
+- [ ] `metadata.id` points to final compiled path: `{bmad_folder}/{{module}}/agents/{{agent}}.md`
 - [ ] `metadata.module` matches the module folder (e.g., `bmm`, `bmb`, `cis`)
 - [ ] Principles are an array (preferred) or string with clear values
 
@@ -34,12 +34,12 @@
 
 - [ ] `prompts` defined when using `action: "#id"`
 - [ ] `critical_actions` present if custom activation steps are needed
-- [ ] Customize file (if created) located at `{project-root}/bmad/_cfg/agents/{{module}}-{{agent}}.customize.yaml`
+- [ ] Customize file (if created) located at `{project-root}/{bmad_folder}/_cfg/agents/{{module}}-{{agent}}.customize.yaml`
 
 ## Build Verification
 
 - [ ] Run compile to build `.md`: `npm run install:bmad` → "Compile Agents" (or `bmad install` → Compile)
-- [ ] Confirm compiled file exists at `{project-root}/bmad/{{module}}/agents/{{agent}}.md`
+- [ ] Confirm compiled file exists at `{project-root}/{bmad_folder}/{{module}}/agents/{{agent}}.md`
 
 ## Final Quality
 

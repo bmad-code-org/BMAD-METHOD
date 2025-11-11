@@ -56,7 +56,8 @@
     "tileset",
     "tmpl",
     "Trae",
-    "VNET"
+    "VNET",
+    "webskip"
   ],
   "json.schemas": [
     {

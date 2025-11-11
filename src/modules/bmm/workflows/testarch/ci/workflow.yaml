@@ -4,7 +4,7 @@ description: "Scaffold CI/CD quality pipeline with test execution, burn-in loops
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -12,7 +12,7 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/testarch/ci"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/testarch/ci"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 

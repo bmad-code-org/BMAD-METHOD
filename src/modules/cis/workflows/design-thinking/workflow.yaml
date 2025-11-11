@@ -4,7 +4,7 @@ description: "Guide human-centered design processes using empathy-driven methodo
 author: "BMad"
 
 # Critical variables load from config_source
-config_source: "{project-root}/bmad/cis/config.yaml"
+config_source: "{project-root}/{bmad_folder}/cis/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -19,7 +19,7 @@ recommended_inputs:
 # Example: data="{path}/product-context.md" provides project context
 
 # Module path and component files
-installed_path: "{project-root}/bmad/cis/workflows/design-thinking"
+installed_path: "{project-root}/{bmad_folder}/cis/workflows/design-thinking"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 
@@ -35,9 +35,9 @@ web_bundle:
   name: "design-thinking"
   description: "Guide human-centered design processes using empathy-driven methodologies. This workflow walks through the design thinking phases - Empathize, Define, Ideate, Prototype, and Test - to create solutions deeply rooted in user needs."
   author: "BMad"
-  instructions: "bmad/cis/workflows/design-thinking/instructions.md"
-  template: "bmad/cis/workflows/design-thinking/template.md"
+  instructions: "{bmad_folder}/cis/workflows/design-thinking/instructions.md"
+  template: "{bmad_folder}/cis/workflows/design-thinking/template.md"
   web_bundle_files:
-    - "bmad/cis/workflows/design-thinking/instructions.md"
-    - "bmad/cis/workflows/design-thinking/template.md"
-    - "bmad/cis/workflows/design-thinking/design-methods.csv"
+    - "{bmad_folder}/cis/workflows/design-thinking/instructions.md"
+    - "{bmad_folder}/cis/workflows/design-thinking/template.md"
+    - "{bmad_folder}/cis/workflows/design-thinking/design-methods.csv"

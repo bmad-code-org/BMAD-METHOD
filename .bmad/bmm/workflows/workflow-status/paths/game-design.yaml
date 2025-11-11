@@ -1,0 +1,52 @@
+# Game Development - Use BMGD Module
+# Game development workflows have been moved to the BMad Game Development module
+
+project_type: "game"
+level: "all"
+field_type: "any"
+description: "⚠️ Game development requires the BMGD module"
+
+error_message: |
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  🎮 **GAME DEVELOPMENT DETECTED**
+
+  Game development workflows are now part of the **BMad Game Development (BMGD)** module,
+  which provides specialized workflows and agents for game creation.
+
+  **To proceed with game development:**
+
+  1. Install the BMGD module:
+     ```bash
+     bmad install bmgd
+     ```
+
+  2. The BMGD module includes:
+     - Game Designer, Game Developer, Game Architect agents
+     - Game Dev Scrum Master for sprint coordination
+     - Industry-standard game dev workflows:
+       • Phase 1 (Preproduction): brainstorm-game, game-brief
+       • Phase 2 (Design): GDD, narrative design
+       • Phase 3 (Technical): game architecture
+       • Phase 4 (Production): sprint planning, story management
+
+  3. After installation, load the Game Designer or Game Dev Scrum Master agent
+     to begin your game development workflow
+
+  **Why a separate module?**
+  - Game development follows different phases than software development
+  - Specialized agents understand game-specific terminology and patterns
+  - Workflows configured for game development needs (playtesting, balancing, etc.)
+  - Can be used standalone or alongside BMM for complete coverage
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Placeholder phases - this file should not be used for actual workflow tracking
+# Users should install BMGD module instead
+phases:
+  - phase: 1
+    name: "ERROR - Install BMGD Module"
+    workflows:
+      - id: "install-bmgd"
+        required: true
+        note: "Run: bmad install bmgd"

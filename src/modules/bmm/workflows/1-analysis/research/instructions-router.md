@@ -1,6 +1,6 @@
 # Research Workflow Router Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate in {communication_language}, generate documents in {document_output_language}</critical>
 <critical>Web research is ENABLED - always use current {{current_year}} data</critical>

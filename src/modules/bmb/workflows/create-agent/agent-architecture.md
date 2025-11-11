@@ -31,7 +31,7 @@ _LLM-Optimized Technical Documentation for Agent Building_
 
 **Required Attributes:**
 
-- `id` - Unique path identifier (e.g., "bmad/bmm/agents/analyst.md")
+- `id` - Unique path identifier (e.g., "{bmad_folder}/bmm/agents/analyst.md")
 - `name` - Agent's name (e.g., "Mary", "John", "Helper")
 - `title` - Professional title (e.g., "Business Analyst", "Security Engineer")
 - `icon` - Single emoji representing the agent
@@ -60,7 +60,7 @@ _LLM-Optimized Technical Documentation for Agent Building_
 
 ```xml
 <critical-actions>
-  <i>Load into memory {project-root}/bmad/{module}/config.yaml and set variables</i>
+  <i>Load into memory {project-root}/{bmad_folder}/{module}/config.yaml and set variables</i>
   <i>Remember the users name is {user_name}</i>
   <i>ALWAYS communicate in {communication_language}</i>
   <!-- Custom initialization actions -->
@@ -77,7 +77,7 @@ _LLM-Optimized Technical Documentation for Agent Building_
   <i critical="MANDATORY">You MUST follow all rules in instructions.md on EVERY interaction</i>
 
   <!-- Standard initialization -->
-  <i>Load into memory {project-root}/bmad/{module}/config.yaml and set variables</i>
+  <i>Load into memory {project-root}/{bmad_folder}/{module}/config.yaml and set variables</i>
   <i>Remember the users name is {user_name}</i>
   <i>ALWAYS communicate in {communication_language}</i>
 
@@ -162,9 +162,9 @@ _LLM-Optimized Technical Documentation for Agent Building_
 
 ```xml
 <module-integration>
-  <module-path>{project-root}/bmad/{module-code}</module-path>
+  <module-path>{project-root}/{bmad_folder}/{module-code}</module-path>
   <config-source>{module-path}/config.yaml</config-source>
-  <workflows-path>{project-root}/bmad/{module-code}/workflows</workflows-path>
+  <workflows-path>{project-root}/{bmad_folder}/{module-code}/workflows</workflows-path>
 </module-integration>
 ```
 
@@ -186,7 +186,7 @@ Example: `{config_source}:output_folder`
 ### Path Construction
 
 ```
-Good: {project-root}/bmad/{module}/agents/
+Good: {project-root}/{bmad_folder}/{module}/agents/
 Bad:  /absolute/path/to/agents/
 Bad:  ../../../relative/paths/
 ```
@@ -197,7 +197,7 @@ Bad:  ../../../relative/paths/
 
 ```xml
 <!-- Full path -->
-<item cmd="*create-prd" run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
+<item cmd="*create-prd" run-workflow="{project-root}/{bmad_folder}/bmm/workflows/prd/workflow.yaml">
   Create Product Requirements Document
 </item>
 
@@ -210,7 +210,7 @@ Bad:  ../../../relative/paths/
 ### Task Commands
 
 ```xml
-<item cmd="*validate" exec="{project-root}/bmad/core/tasks/validate-workflow.xml">
+<item cmd="*validate" exec="{project-root}/{bmad_folder}/core/tasks/validate-workflow.xml">
   Validate document
 </item>
 ```
@@ -219,8 +219,8 @@ Bad:  ../../../relative/paths/
 
 ```xml
 <item cmd="*brief"
-   exec="{project-root}/bmad/core/tasks/create-doc.md"
-   tmpl="{project-root}/bmad/bmm/templates/brief.md">
+   exec="{project-root}/{bmad_folder}/core/tasks/create-doc.md"
+   tmpl="{project-root}/{bmad_folder}/bmm/templates/brief.md">
   Create project brief
 </item>
 ```
@@ -229,8 +229,8 @@ Bad:  ../../../relative/paths/
 
 ```xml
 <item cmd="*standup"
-   exec="{project-root}/bmad/bmm/tasks/daily-standup.xml"
-   data="{project-root}/bmad/_cfg/agent-manifest.csv">
+   exec="{project-root}/{bmad_folder}/bmm/tasks/daily-standup.xml"
+   data="{project-root}/{bmad_folder}/_cfg/agent-manifest.csv">
   Run daily standup
 </item>
 ```
@@ -295,7 +295,7 @@ Bad:  ../../../relative/paths/
 </persona>
 
 <!-- Variable-based paths -->
-<item cmd="*run" exec="{project-root}/bmad/module/task.md">
+<item cmd="*run" exec="{project-root}/{bmad_folder}/module/task.md">
 
 <!-- Required commands present -->
 <menu>
@@ -395,7 +395,7 @@ When building agents:
 
 ```xml
 <critical-actions>
-  <i>Load into memory {project-root}/bmad/{module}/config.yaml</i>
+  <i>Load into memory {project-root}/{bmad_folder}/{module}/config.yaml</i>
   <i>Remember the users name is {user_name}</i>
   <i>ALWAYS communicate in {communication_language}</i>
 </critical-actions>
@@ -404,7 +404,7 @@ When building agents:
 ### Module Agent Pattern
 
 ```xml
-<agent id="bmad/{module}/agents/{name}.md"
+<agent id="{bmad_folder}/{module}/agents/{name}.md"
        name="{Name}"
        title="{Title}"
        icon="{emoji}">

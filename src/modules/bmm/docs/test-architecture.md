@@ -374,7 +374,7 @@ MCP provides additional capabilities on top of TEA's default AI-based approach:
 }
 ```
 
-**To disable**: Set `tea_use_mcp_enhancements: false` in `bmad/bmm/config.yaml` OR remove MCPs from IDE config.
+**To disable**: Set `tea_use_mcp_enhancements: false` in `{bmad_folder}/bmm/config.yaml` OR remove MCPs from IDE config.
 
 </details>
 

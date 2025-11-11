@@ -1,0 +1,44 @@
+# Research Workflow - Multi-Type Research System
+name: research
+description: "Adaptive research workflow supporting multiple research types: market research, deep research prompt generation, technical/architecture evaluation, competitive intelligence, user research, and domain analysis"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+current_year: system-generated
+current_month: system-generated
+
+# Research behavior - WEB RESEARCH IS DEFAULT
+enable_web_research: true
+
+# Source tracking and verification - CRITICAL FOR ACCURACY
+require_citations: true
+require_source_urls: true
+minimum_sources_per_claim: 2
+fact_check_critical_data: true
+
+# Workflow components - ROUTER PATTERN
+installed_path: "{project-root}/.bmad/bmm/workflows/1-analysis/research"
+instructions: "{installed_path}/instructions-router.md" # Router loads specific instruction sets
+validation: "{installed_path}/checklist.md"
+
+# Research type specific instructions (loaded by router)
+instructions_market: "{installed_path}/instructions-market.md"
+instructions_deep_prompt: "{installed_path}/instructions-deep-prompt.md"
+instructions_technical: "{installed_path}/instructions-technical.md"
+
+# Templates (loaded based on research type)
+template_market: "{installed_path}/template-market.md"
+template_deep_prompt: "{installed_path}/template-deep-prompt.md"
+template_technical: "{installed_path}/template-technical.md"
+
+# Output configuration (dynamic based on research type selected in router)
+default_output_file: "{output_folder}/research-{{research_type}}-{{date}}.md"
+
+standalone: true

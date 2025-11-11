@@ -3,7 +3,7 @@ description: "Generate a comprehensive Technical Specification from PRD and Arch
 author: "BMAD BMM"
 
 # Critical variables
-config_source: "{project-root}/bmad/bmgd/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -47,7 +47,7 @@ input_file_patterns:
     sharded: "{output_folder}/docs/index.md"
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/epic-tech-context"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/epic-tech-context"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"

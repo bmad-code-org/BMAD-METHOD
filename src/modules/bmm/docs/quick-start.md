@@ -29,7 +29,7 @@ BMad Method (BMM) helps you build software through guided workflows with special
 npx bmad-method@alpha install
 ```
 
-The interactive installer will guide you through setup and create a `bmad/` folder with all agents and workflows.
+The interactive installer will guide you through setup and create a `{bmad_folder}/` folder with all agents and workflows.
 
 ---
 

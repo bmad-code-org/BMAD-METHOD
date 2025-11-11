@@ -1,0 +1,60 @@
+# Technical Specification
+name: tech-spec
+description: "Technical specification workflow for Level 0 projects (single atomic changes). Creates focused tech spec for bug fixes, single endpoint additions, or small isolated changes. Tech-spec only - no PRD needed."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+
+# Runtime variables (captured during workflow execution)
+project_level: runtime-captured
+project_type: runtime-captured
+development_context: runtime-captured
+change_type: runtime-captured
+field_type: runtime-captured
+
+# Workflow components
+installed_path: "{project-root}/.bmad/bmm/workflows/2-plan-workflows/tech-spec"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/tech-spec-template.md"
+
+# Story generation instructions (invoked based on level)
+instructions_level0_story: "{installed_path}/instructions-level0-story.md"
+instructions_level1_stories: "{installed_path}/instructions-level1-stories.md"
+
+# Templates
+user_story_template: "{installed_path}/user-story-template.md"
+epics_template: "{installed_path}/epics-template.md"
+
+# Output configuration
+default_output_file: "{output_folder}/tech-spec.md"
+user_story_file: "{output_folder}/user-story.md"
+epics_file: "{output_folder}/epics.md"
+
+# Recommended input documents (optional for Level 0)
+recommended_inputs:
+  - bug_report: "Bug description or issue ticket"
+  - feature_request: "Brief feature description"
+
+# Smart input file references - handles both whole docs and sharded docs
+# Priority: Whole document first, then sharded version
+input_file_patterns:
+  product_brief:
+    whole: "{output_folder}/*brief*.md"
+    sharded: "{output_folder}/*brief*/index.md"
+
+  research:
+    whole: "{output_folder}/*research*.md"
+    sharded: "{output_folder}/*research*/index.md"
+
+  document_project:
+    sharded: "{output_folder}/docs/index.md"
+
+standalone: true

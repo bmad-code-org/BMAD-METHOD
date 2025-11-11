@@ -1,6 +1,6 @@
 # Epic and Story Decomposition - Intent-Based Implementation Planning
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow transforms requirements into BITE-SIZED STORIES for development agents</critical>
 <critical>EVERY story must be completable by a single dev agent in one focused session</critical>
@@ -80,7 +80,7 @@ Present proposed epic structure showing:
 - Why this grouping makes sense</action>
 
 <template-output>epics_summary</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="3" goal="Decompose each epic into bite-sized stories" repeat="for-each-epic">
@@ -138,7 +138,7 @@ For each story in epic {{N}}, output variables following this pattern:
 <action>For each story M in epic {{N}}, generate story content</action>
 <template-output>story*title*{{N}}\_{{M}}</template-output>
 
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="4" goal="Review and finalize epic breakdown">

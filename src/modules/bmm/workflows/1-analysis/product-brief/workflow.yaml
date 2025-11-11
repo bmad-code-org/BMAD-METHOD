@@ -4,7 +4,7 @@ description: "Interactive product brief creation workflow that guides users thro
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -34,7 +34,7 @@ input_file_patterns:
     sharded: "{output_folder}/docs/index.md"
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmm/workflows/1-analysis/product-brief"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
@@ -48,14 +48,14 @@ web_bundle:
   name: "product-brief"
   description: "Interactive product brief creation workflow that guides users through defining their product vision with multiple input sources and conversational collaboration"
   author: "BMad"
-  instructions: "bmad/bmm/workflows/1-analysis/product-brief/instructions.md"
-  validation: "bmad/bmm/workflows/1-analysis/product-brief/checklist.md"
-  template: "bmad/bmm/workflows/1-analysis/product-brief/template.md"
+  instructions: "{bmad_folder}/bmm/workflows/1-analysis/product-brief/instructions.md"
+  validation: "{bmad_folder}/bmm/workflows/1-analysis/product-brief/checklist.md"
+  template: "{bmad_folder}/bmm/workflows/1-analysis/product-brief/template.md"
   web_bundle_files:
     # Core workflow files
-    - "bmad/bmm/workflows/1-analysis/product-brief/template.md"
-    - "bmad/bmm/workflows/1-analysis/product-brief/instructions.md"
-    - "bmad/bmm/workflows/1-analysis/product-brief/checklist.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/product-brief/template.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/product-brief/instructions.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/product-brief/checklist.md"
 
     # Task dependencies (referenced in instructions.md)
-    - "bmad/core/tasks/workflow.xml"
+    - "{bmad_folder}/core/tasks/workflow.xml"

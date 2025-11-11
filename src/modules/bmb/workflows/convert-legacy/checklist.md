@@ -37,7 +37,7 @@
 - [ ] File paths use {project-root} variables
 - [ ] Config values use {config_source}: pattern
 - [ ] Agent follows naming conventions (kebab-case for files)
-- [ ] ALL paths reference {project-root}/bmad/{{module}}/ locations, NOT src/
+- [ ] ALL paths reference {project-root}/{bmad_folder}/{{module}}/ locations, NOT src/
 - [ ] exec, data, run-workflow commands point to final BMAD installation paths
 
 ### For Template/Workflow Conversions
@@ -48,7 +48,7 @@
 - [ ] All sections converted to workflow steps
 - [ ] Section hierarchy maintained in instructions
 - [ ] Variables ({{var}}) preserved in template.md
-- [ ] Elicitation points (elicit: true) converted to <invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+- [ ] Elicitation points (elicit: true) converted to <invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 - [ ] Conditional sections preserved with if="" attributes
 - [ ] Repeatable sections converted to repeat="" attributes
 

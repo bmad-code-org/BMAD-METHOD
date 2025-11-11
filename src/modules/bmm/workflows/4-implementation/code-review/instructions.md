@@ -1,7 +1,7 @@
 # Senior Developer Review - Workflow Instructions
 
 ````xml
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
@@ -16,38 +16,37 @@
 
 <critical>DOCUMENT OUTPUT: Technical review reports. Structured findings with severity levels and action items. User skill level ({user_skill_level}) affects conversation style ONLY, not review content.</critical>
 
-## 📚 Document Discovery - Selective Epic Loading
-
-**Strategy**: This workflow needs only ONE specific epic and its stories for review context, not all epics. This provides huge efficiency gains when epics are sharded.
-
-**Epic Discovery Process (SELECTIVE OPTIMIZATION):**
-
-1. **Determine which epic** you need (epic_num from story being reviewed - e.g., story "3-2-feature-name" needs Epic 3)
-2. **Check for sharded version**: Look for `epics/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand structure
-   - **Load ONLY `epic-{epic_num}.md`** (e.g., `epics/epic-3.md` for Epic 3)
-   - DO NOT load all epic files - only the one needed!
-   - This is the key efficiency optimization for large multi-epic projects
-4. **If whole document found**: Load the complete `epics.md` file and extract the relevant epic
-
-**Other Documents (architecture, ux-design) - Full Load:**
-
-1. **Search for whole document first** - Use fuzzy file matching
-2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand structure
-   - Read ALL section files listed in the index
-   - Treat combined content as single document
-4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
-
-**Priority**: If both whole and sharded versions exist, use the whole document.
-
-**UX-Heavy Projects**: Always check for ux-design documentation as it provides critical context for reviewing UI-focused stories.
-
 <workflow>
 
   <step n="1" goal="Find story ready for review" tag="sprint-status">
+    Document Discovery - Selective Epic Loading
+
+    **Strategy**: This workflow needs only ONE specific epic and its stories for review context, not all epics. This provides huge efficiency gains when epics are sharded.
+
+    **Epic Discovery Process (SELECTIVE OPTIMIZATION):**
+
+    1. **Determine which epic** you need (epic_num from story being reviewed - e.g., story "3-2-feature-name" needs Epic 3)
+    2. **Check for sharded version**: Look for `epics/index.md`
+    3. **If sharded version found**:
+      - Read `index.md` to understand structure
+      - **Load ONLY `epic-{epic_num}.md`** (e.g., `epics/epic-3.md` for Epic 3)
+      - DO NOT load all epic files - only the one needed!
+      - This is the key efficiency optimization for large multi-epic projects
+    4. **If whole document found**: Load the complete `epics.md` file and extract the relevant epic
+
+    **Other Documents (architecture, ux-design) - Full Load:**
+
+    1. **Search for whole document first** - Use fuzzy file matching
+    2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
+    3. **If sharded version found**:
+      - Read `index.md` to understand structure
+      - Read ALL section files listed in the index
+      - Treat combined content as single document
+    4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
+
+    **Priority**: If both whole and sharded versions exist, use the whole document.
+
+    **UX-Heavy Projects**: Always check for ux-design documentation as it provides critical context for reviewing UI-focused stories.
     <check if="{{story_path}} is provided">
       <action>Use {{story_path}} directly</action>
       <action>Read COMPLETE story file and parse sections</action>
@@ -80,17 +79,18 @@
         <check if="option 3 selected">
           <ask>What code would you like me to review?
 
-Provide:
-- File path(s) or directory to review
-- What to review for:
-  • General quality and standards
-  • Requirements compliance
-  • Security concerns
-  • Performance issues
-  • Architecture alignment
-  • Something else (specify)
+          Provide:
+          - File path(s) or directory to review
+          - What to review for:
+            • General quality and standards
+            • Requirements compliance
+            • Security concerns
+            • Performance issues
+            • Architecture alignment
+            • Something else (specify)
 
-Your input:</ask>
+            Your input:?
+          </ask>
 
           <action>Parse user input to extract:
             - {{review_files}}: file paths or directories to review
@@ -363,11 +363,11 @@ Review was saved to story file, but sprint-status.yaml may be out of sync.
       <action if="user confirms or no ask needed">
         Append under the story's "Tasks / Subtasks" a new subsection titled "Review Follow-ups (AI)", adding each item as an unchecked checkbox in imperative form, prefixed with "[AI-Review]" and severity. Example: "- [ ] [AI-Review][High] Add input validation on server route /api/x (AC #2)".
       </action>
-      <action if="{{persist_action_items}} == true and 'backlog_file' in {{persist_targets}}">
+      <action>
         If {{backlog_file}} does not exist, copy {installed_path}/backlog_template.md to {{backlog_file}} location.
         Append a row per action item with Date={{date}}, Story={{epic_num}}.{{story_num}}, Epic={{epic_num}}, Type, Severity, Owner (or "TBD"), Status="Open", Notes with short context and file refs.
       </action>
-      <action if="{{persist_action_items}} == true and ('epic_followups' in {{persist_targets}} or {{update_epic_followups}} == true)">
+      <action>
         If an epic Tech Spec was found: open it and create (if missing) a section titled "{{epic_followups_section_title}}". Append a bullet list of action items scoped to this epic with references back to Story {{epic_num}}.{{story_num}}.
       </action>
       <action>Save modified files.</action>
@@ -376,7 +376,7 @@ Review was saved to story file, but sprint-status.yaml may be out of sync.
   </step>
 
   <step n="10" goal="Validation and completion">
-    <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/bmad/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/{bmad_folder}/core/tasks/validate-workflow.xml</invoke-task>
     <action>Report workflow completion.</action>
 
     <check if="ad_hoc_review_mode == true">

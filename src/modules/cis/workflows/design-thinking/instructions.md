@@ -1,7 +1,7 @@
 # Design Thinking Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project_root}/bmad/cis/workflows/design-thinking/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project_root}/{bmad_folder}/cis/workflows/design-thinking/workflow.yaml</critical>
 <critical>Load and understand design methods from: {design_methods}</critical>
 
 <facilitation-principles>

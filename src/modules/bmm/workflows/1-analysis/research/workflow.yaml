@@ -4,7 +4,7 @@ description: "Adaptive research workflow supporting multiple research types: mar
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -24,7 +24,7 @@ minimum_sources_per_claim: 2
 fact_check_critical_data: true
 
 # Workflow components - ROUTER PATTERN
-installed_path: "{project-root}/bmad/bmm/workflows/1-analysis/research"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/research"
 instructions: "{installed_path}/instructions-router.md" # Router loads specific instruction sets
 validation: "{installed_path}/checklist.md"
 
@@ -47,16 +47,16 @@ web_bundle:
   name: "research"
   description: "Adaptive research workflow supporting multiple research types: market research, deep research prompt generation, technical/architecture evaluation, competitive intelligence, user research, and domain analysis"
   author: "BMad"
-  instructions: "bmad/bmm/workflows/1-analysis/research/instructions-router.md" # Router loads specific instruction sets
-  validation: "bmad/bmm/workflows/1-analysis/research/checklist.md"
+  instructions: "{bmad_folder}/bmm/workflows/1-analysis/research/instructions-router.md" # Router loads specific instruction sets
+  validation: "{bmad_folder}/bmm/workflows/1-analysis/research/checklist.md"
   web_bundle_files:
-    - "bmad/bmm/workflows/1-analysis/research/instructions-router.md"
-    - "bmad/bmm/workflows/1-analysis/research/instructions-market.md"
-    - "bmad/bmm/workflows/1-analysis/research/instructions-deep-prompt.md"
-    - "bmad/bmm/workflows/1-analysis/research/instructions-technical.md"
-    - "bmad/bmm/workflows/1-analysis/research/template-market.md"
-    - "bmad/bmm/workflows/1-analysis/research/template-deep-prompt.md"
-    - "bmad/bmm/workflows/1-analysis/research/template-technical.md"
-    - "bmad/bmm/workflows/1-analysis/research/checklist.md"
-    - "bmad/bmm/workflows/1-analysis/research/checklist-deep-prompt.md"
-    - "bmad/bmm/workflows/1-analysis/research/checklist-technical.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/instructions-router.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/instructions-market.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/instructions-deep-prompt.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/instructions-technical.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/template-market.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/template-deep-prompt.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/template-technical.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/checklist.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/checklist-deep-prompt.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/research/checklist-technical.md"

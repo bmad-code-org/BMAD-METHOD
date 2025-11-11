@@ -4,7 +4,7 @@ description: "Perform a Senior Developer code review on a completed story flagge
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmgd/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -13,7 +13,7 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/code-review"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/code-review"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
@@ -23,7 +23,7 @@ template: false
 # Variables (can be provided by caller)
 variables:
   story_path: "" # Optional: Explicit path to story file. If not provided, finds first story with status "review"
-  story_dir: "{config_source}:dev_story_location" # Directory containing story files
+  story_dir: "{config_source}:dev_ephemeral_location" # Directory containing story files
   tech_spec_search_dir: "{project-root}/docs"
   tech_spec_glob_template: "tech-spec-epic-{{epic_num}}*.md"
   arch_docs_search_dirs: |
@@ -31,16 +31,7 @@ variables:
     - "{output_folder}"
   arch_docs_file_names: |
     - architecture.md
-  enable_mcp_doc_search: true # Prefer enabled MCP servers for doc/best-practice lookup
-  enable_web_fallback: true # Fallback to web search/read-url if MCP not available
-  # Persistence controls for review action items and notes
-  persist_action_items: true
-  # Valid targets: story_tasks, story_review_section, backlog_file, epic_followups
-  persist_targets: |
-    - story_review_section
-    - story_tasks
-    - backlog_file
-    - epic_followups
+
   backlog_file: "{project-root}/docs/backlog.md"
   update_epic_followups: true
   epic_followups_section_title: "Post-Review Follow-ups"

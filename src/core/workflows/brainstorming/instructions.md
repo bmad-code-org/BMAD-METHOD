@@ -3,8 +3,8 @@
 ## Workflow
 
 <workflow>
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project_root}/bmad/core/workflows/brainstorming/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project_root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml</critical>
 
 <step n="1" goal="Session Setup">
 
@@ -254,7 +254,7 @@ Analyze the session to identify deeper patterns:
 2. **Surface key insights** - What realizations emerged during the process? -> insights_learnings
 3. **Note surprising connections** - What unexpected relationships were discovered? -> insights_learnings
 
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 <template-output>key_themes, insights_learnings</template-output>
 

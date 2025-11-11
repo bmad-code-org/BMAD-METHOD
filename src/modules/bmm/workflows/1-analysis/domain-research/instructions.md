@@ -1,6 +1,6 @@
 # Domain Research - Collaborative Domain Exploration
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This is COLLABORATIVE RESEARCH - engage the user as a partner, not just a data source</critical>
 <critical>The goal is PRACTICAL UNDERSTANDING that directly informs requirements and architecture</critical>

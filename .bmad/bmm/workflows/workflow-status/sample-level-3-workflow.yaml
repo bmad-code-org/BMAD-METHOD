@@ -1,0 +1,49 @@
+# Workflow Status Template
+# This tracks progress through phases 1-3 of the BMM methodology
+# Phase 4 (Implementation) is tracked separately in sprint-status.yaml
+
+# generated: 2025-10-29
+# project: Enterprise Customer Portal
+# project_type: software
+# project_level: 3
+# field_type: greenfield
+# workflow_path: greenfield-level-3.yaml
+
+# STATUS DEFINITIONS:
+# ==================
+# Initial Status (before completion):
+#   - required: Must be completed to progress
+#   - optional: Can be completed but not required
+#   - recommended: Strongly suggested but not required
+#   - conditional: Required only if certain conditions met (e.g., if_has_ui)
+#
+# Completion Status:
+#   - {file-path}: File created/found (e.g., "docs/product-brief.md")
+#   - skipped: Optional/conditional workflow that was skipped
+
+generated: 2025-10-29
+project: Enterprise Customer Portal
+project_type: software
+project_level: 3
+field_type: greenfield
+workflow_path: greenfield-level-3.yaml
+
+workflow_status:
+  # Phase 1: Analysis
+  brainstorm-project: docs/brainstorm-session-2025-10-15.md
+  research: docs/research-api-patterns.md
+  product-brief: docs/product-brief.md
+
+  # Phase 2: Planning
+  prd: docs/prd.md
+  validate-prd: skipped
+  create-design: docs/ux-design.md
+
+  # Phase 3: Solutioning
+  create-architecture: required
+  validate-architecture: optional
+  solutioning-gate-check: recommended
+
+  # Phase 4: Implementation
+  sprint-planning: required
+  # Note: Subsequent implementation workflows tracked in sprint-status.yaml

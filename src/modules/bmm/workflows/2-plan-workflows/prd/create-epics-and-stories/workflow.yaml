@@ -4,7 +4,7 @@ description: "Transform PRD requirements into bite-sized stories organized in ep
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 project_name: "{config_source}:project_name"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
@@ -35,7 +35,7 @@ input_file_patterns:
     sharded: "{output_folder}/*domain*brief*/index.md"
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories"
 instructions: "{installed_path}/instructions.md"
 template: "{installed_path}/epics-template.md"
 
@@ -48,8 +48,8 @@ web_bundle:
   name: "create-epics-and-stories"
   description: "Transform PRD requirements into bite-sized stories organized in epics for 200k context dev agents"
   author: "BMad"
-  instructions: "bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/instructions.md"
-  template: "bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/epics-template.md"
+  instructions: "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/instructions.md"
+  template: "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/epics-template.md"
   web_bundle_files:
-    - "bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/instructions.md"
-    - "bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/epics-template.md"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/instructions.md"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/epics-template.md"

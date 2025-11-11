@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * KiloCode IDE setup handler
@@ -36,16 +37,17 @@ class KiloSetup extends BaseIdeSetup {
       console.log(chalk.yellow(`Found existing .kilocodemodes file with ${existingModes.length} modes`));
     }
 
-    // Get agents
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
     // Create modes content
     let newModesContent = '';
     let addedCount = 0;
     let skippedCount = 0;
 
-    for (const agent of agents) {
-      const slug = `bmad-${agent.module}-${agent.name}`;
+    for (const artifact of agentArtifacts) {
+      const slug = `bmad-${artifact.module}-${artifact.name}`;
 
       // Skip if already exists
       if (existingModes.includes(slug)) {
@@ -54,8 +56,7 @@ class KiloSetup extends BaseIdeSetup {
         continue;
       }
 
-      const content = await this.readFile(agent.path);
-      const modeEntry = this.createModeEntry(agent, content, projectDir);
+      const modeEntry = await this.createModeEntry(artifact, projectDir);
 
       newModesContent += modeEntry;
       addedCount++;
@@ -90,32 +91,35 @@ class KiloSetup extends BaseIdeSetup {
   /**
    * Create a mode entry for an agent
    */
-  createModeEntry(agent, content, projectDir) {
-    // Extract metadata
-    const titleMatch = content.match(/title="([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
+  async createModeEntry(artifact, projectDir) {
+    // Extract metadata from launcher content
+    const titleMatch = artifact.content.match(/title="([^"]+)"/);
+    const title = titleMatch ? titleMatch[1] : this.formatTitle(artifact.name);
 
-    const iconMatch = content.match(/icon="([^"]+)"/);
+    const iconMatch = artifact.content.match(/icon="([^"]+)"/);
     const icon = iconMatch ? iconMatch[1] : '🤖';
 
-    const whenToUseMatch = content.match(/whenToUse="([^"]+)"/);
+    const whenToUseMatch = artifact.content.match(/whenToUse="([^"]+)"/);
     const whenToUse = whenToUseMatch ? whenToUseMatch[1] : `Use for ${title} tasks`;
 
-    const roleDefinitionMatch = content.match(/roleDefinition="([^"]+)"/);
+    // Get the activation header from central template
+    const activationHeader = await this.getAgentCommandHeader();
+
+    const roleDefinitionMatch = artifact.content.match(/roleDefinition="([^"]+)"/);
     const roleDefinition = roleDefinitionMatch
       ? roleDefinitionMatch[1]
       : `You are a ${title} specializing in ${title.toLowerCase()} tasks.`;
 
     // Get relative path
-    const relativePath = path.relative(projectDir, agent.path).replaceAll('\\', '/');
+    const relativePath = path.relative(projectDir, artifact.sourcePath).replaceAll('\\', '/');
 
     // Build mode entry (KiloCode uses same schema as Roo)
-    const slug = `bmad-${agent.module}-${agent.name}`;
+    const slug = `bmad-${artifact.module}-${artifact.name}`;
     let modeEntry = ` - slug: ${slug}\n`;
     modeEntry += `   name: '${icon} ${title}'\n`;
     modeEntry += `   roleDefinition: ${roleDefinition}\n`;
     modeEntry += `   whenToUse: ${whenToUse}\n`;
-    modeEntry += `   customInstructions: CRITICAL Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`;
+    modeEntry += `   customInstructions: ${activationHeader} Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`;
     modeEntry += `   groups:\n`;
     modeEntry += `    - read\n`;
     modeEntry += `    - edit\n`;

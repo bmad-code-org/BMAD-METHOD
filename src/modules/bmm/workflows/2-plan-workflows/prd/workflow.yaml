@@ -4,7 +4,7 @@ description: "Unified PRD workflow for BMad Method and Enterprise Method tracks.
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 project_name: "{config_source}:project_name"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
@@ -14,7 +14,7 @@ user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/2-plan-workflows/prd"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd"
 instructions: "{installed_path}/instructions.md"
 
 # Templates
@@ -49,24 +49,24 @@ web_bundle:
   name: "prd"
   description: "Unified PRD workflow for BMad Method and Enterprise Method tracks. Produces strategic PRD and tactical epic breakdown. Hands off to architecture workflow for technical design. Note: Quick Flow track uses tech-spec workflow."
   author: "BMad"
-  instructions: "bmad/bmm/workflows/2-plan-workflows/prd/instructions.md"
-  validation: "bmad/bmm/workflows/2-plan-workflows/prd/checklist.md"
+  instructions: "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/instructions.md"
+  validation: "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/checklist.md"
   web_bundle_files:
     # Core workflow files
-    - "bmad/bmm/workflows/2-plan-workflows/prd/instructions.md"
-    - "bmad/bmm/workflows/2-plan-workflows/prd/prd-template.md"
-    - "bmad/bmm/workflows/2-plan-workflows/prd/project-types.csv"
-    - "bmad/bmm/workflows/2-plan-workflows/prd/domain-complexity.csv"
-    - "bmad/bmm/workflows/2-plan-workflows/prd/checklist.md"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/instructions.md"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/prd-template.md"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/project-types.csv"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/domain-complexity.csv"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/checklist.md"
 
     # Child workflow and its files
-    - "bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/workflow.yaml"
-    - "bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/instructions.md"
-    - "bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/epics-template.md"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/workflow.yaml"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/instructions.md"
+    - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/epics-template.md"
 
     # Task dependencies (referenced in instructions.md)
-    - "bmad/core/tasks/workflow.xml"
-    - "bmad/core/tasks/adv-elicit.xml"
-    - "bmad/core/tasks/adv-elicit-methods.csv"
+    - "{bmad_folder}/core/tasks/workflow.xml"
+    - "{bmad_folder}/core/tasks/adv-elicit.xml"
+    - "{bmad_folder}/core/tasks/adv-elicit-methods.csv"
   child_workflows:
-    - create-epics-and-stories: "bmad/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/workflow.yaml"
+    - create-epics-and-stories: "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/workflow.yaml"

@@ -1,6 +1,6 @@
 # ReDoc Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/src/modules/bmb/workflows/redoc/workflow.yaml</critical>
 <critical>Communicate in {communication_language} throughout the documentation process</critical>
 <critical>This is an AUTONOMOUS workflow - minimize user interaction unless clarification is absolutely required</critical>

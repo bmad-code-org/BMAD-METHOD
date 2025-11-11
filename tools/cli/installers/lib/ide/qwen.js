@@ -2,6 +2,7 @@ const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { getAgentsFromBmad, getTasksFromBmad } = require('./shared/bmad-artifacts');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Qwen Code setup handler
@@ -37,15 +38,18 @@ class QwenSetup extends BaseIdeSetup {
     // Clean up old configuration if exists
     await this.cleanupOldConfig(qwenDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only for tools/workflows)
-    const agents = await getAgentsFromBmad(bmadDir, options.selectedModules || []);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Get tasks, tools, and workflows (standalone only for tools/workflows)
     const tasks = await getTasksFromBmad(bmadDir, options.selectedModules || []);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
 
     // Create directories for each module (including standalone)
     const modules = new Set();
-    for (const item of [...agents, ...tasks, ...tools, ...workflows]) modules.add(item.module);
+    for (const item of [...agentArtifacts, ...tasks, ...tools, ...workflows]) modules.add(item.module);
 
     for (const module of modules) {
       await this.ensureDir(path.join(bmadCommandsDir, module));
@@ -55,20 +59,21 @@ class QwenSetup extends BaseIdeSetup {
       await this.ensureDir(path.join(bmadCommandsDir, module, 'workflows'));
     }
 
-    // Create TOML files for each agent
+    // Create TOML files for each agent launcher
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readAndProcess(agent.path, {
-        module: agent.module,
-        name: agent.name,
+    for (const artifact of agentArtifacts) {
+      // Convert markdown launcher content to TOML format
+      const tomlContent = this.processAgentLauncherContent(artifact.content, {
+        module: artifact.module,
+        name: artifact.name,
       });
 
-      const targetPath = path.join(bmadCommandsDir, agent.module, 'agents', `${agent.name}.toml`);
+      const targetPath = path.join(bmadCommandsDir, artifact.module, 'agents', `${artifact.name}.toml`);
 
-      await this.writeFile(targetPath, content);
+      await this.writeFile(targetPath, tomlContent);
 
       agentCount++;
-      console.log(chalk.green(`  ✓ Added agent: /bmad:${agent.module}:agents:${agent.name}`));
+      console.log(chalk.green(`  ✓ Added agent: /bmad:${artifact.module}:agents:${artifact.name}`));
     }
 
     // Create TOML files for each task
@@ -202,6 +207,29 @@ class QwenSetup extends BaseIdeSetup {
     const fs = require('fs-extra');
     const content = await fs.readFile(filePath, 'utf8');
     return this.processContent(content, metadata);
+  }
+
+  /**
+   * Process agent launcher content and convert to TOML format
+   * @param {string} launcherContent - Launcher markdown content
+   * @param {Object} metadata - File metadata
+   * @returns {string} TOML formatted content
+   */
+  processAgentLauncherContent(launcherContent, metadata = {}) {
+    // Strip frontmatter from launcher content
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = launcherContent.replace(frontmatterRegex, '');
+
+    // Extract title for TOML description
+    const titleMatch = launcherContent.match(/description:\s*"([^"]+)"/);
+    const title = titleMatch ? titleMatch[1] : metadata.name;
+
+    // Create TOML with launcher content (without frontmatter)
+    return `description = "BMAD ${metadata.module.toUpperCase()} Agent: ${title}"
+prompt = """
+${contentWithoutFrontmatter.trim()}
+"""
+`;
   }
 
   /**

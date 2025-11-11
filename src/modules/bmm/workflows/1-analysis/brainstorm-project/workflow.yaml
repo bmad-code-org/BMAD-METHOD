@@ -4,7 +4,7 @@ description: "Facilitate project brainstorming sessions by orchestrating the CIS
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -13,7 +13,7 @@ user_skill_level: "{config_source}:user_skill_level"
 date: system-generated
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmm/workflows/1-analysis/brainstorm-project"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project"
 template: false
 instructions: "{installed_path}/instructions.md"
 
@@ -21,7 +21,7 @@ instructions: "{installed_path}/instructions.md"
 project_context: "{installed_path}/project-context.md"
 
 # CORE brainstorming workflow to invoke
-core_brainstorming: "{project-root}/bmad/core/workflows/brainstorming/workflow.yaml"
+core_brainstorming: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
 
 standalone: true
 
@@ -29,11 +29,11 @@ web_bundle:
   name: "brainstorm-project"
   description: "Facilitate project brainstorming sessions by orchestrating the CIS brainstorming workflow with project-specific context and guidance."
   author: "BMad"
-  instructions: "bmad/bmm/workflows/1-analysis/brainstorm-project/instructions.md"
+  instructions: "{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/instructions.md"
   template: false
   web_bundle_files:
-    - "bmad/bmm/workflows/1-analysis/brainstorm-project/instructions.md"
-    - "bmad/bmm/workflows/1-analysis/brainstorm-project/project-context.md"
-    - "bmad/core/workflows/brainstorming/workflow.yaml"
+    - "{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/instructions.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/project-context.md"
+    - "{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
   existing_workflows:
-    - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"
+    - core_brainstorming: "{bmad_folder}/core/workflows/brainstorming/workflow.yaml"

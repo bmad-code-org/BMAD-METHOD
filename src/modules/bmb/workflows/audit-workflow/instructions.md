@@ -1,7 +1,7 @@
 # Audit Workflow - Workflow Quality Audit Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/audit-workflow/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/audit-workflow/workflow.yaml</critical>
 
 <workflow>
 
@@ -33,7 +33,7 @@
 
     **Required variables:**
 
-    - `config_source: "{project-root}/bmad/[module]/config.yaml"`
+    - `config_source: "{project-root}/{bmad_folder}/[module]/config.yaml"`
     - `output_folder: "{config_source}:output_folder"`
     - `user_name: "{config_source}:user_name"`
     - `communication_language: "{config_source}:communication_language"`
@@ -182,7 +182,7 @@
 
       **Path Validation:**
 
-      - [ ] All paths use bmad/-relative format (NOT {project-root})
+      - [ ] All paths use {bmad_folder}/-relative format (NOT {project-root})
       - [ ] No {config_source} variables in web_bundle section
       - [ ] Paths match actual file locations
 
@@ -200,7 +200,7 @@
       <action>Verify each called workflow.yaml is in web_bundle_files</action>
       <action>**CRITICAL**: Check if existing_workflows field is present when workflows are invoked</action>
       <action>If invoke-workflow calls exist, existing_workflows MUST map workflow variables to paths</action>
-      <action>Example: If instructions use {core_brainstorming}, web_bundle needs: existing_workflows: - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"</action>
+      <action>Example: If instructions use {core_brainstorming}, web_bundle needs: existing_workflows: - core_brainstorming: "{bmad_folder}/core/workflows/brainstorming/workflow.yaml"</action>
 
       **File Reference Scan:**
       <action>Scan instructions.md for file references in action tags</action>

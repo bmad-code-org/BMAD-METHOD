@@ -67,14 +67,14 @@ Execute complete multi-step processes
 ```xml
 <!-- Standard workflow -->
 <item cmd="*create-prd"
-     run-workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
+     run-workflow="{project-root}/{bmad_folder}/bmm/workflows/prd/workflow.yaml">
   Create Product Requirements Document
 </item>
 
 <!-- Workflow with validation -->
 <item cmd="*validate-prd"
      validate-workflow="{output_folder}/prd-draft.md"
-     workflow="{project-root}/bmad/bmm/workflows/prd/workflow.yaml">
+     workflow="{project-root}/{bmad_folder}/bmm/workflows/prd/workflow.yaml">
   Validate PRD Against Checklist
 </item>
 
@@ -112,14 +112,14 @@ Execute single operations
 ```xml
 <!-- Simple task -->
 <item cmd="*validate"
-   exec="{project-root}/bmad/core/tasks/validate-workflow.xml">
+   exec="{project-root}/{bmad_folder}/core/tasks/validate-workflow.xml">
   Validate document against checklist
 </item>
 
 <!-- Task with data -->
 <item cmd="*standup"
-   exec="{project-root}/bmad/mmm/tasks/daily-standup.xml"
-   data="{project-root}/bmad/_cfg/agent-manifest.csv">
+   exec="{project-root}/{bmad_folder}/mmm/tasks/daily-standup.xml"
+   data="{project-root}/{bmad_folder}/_cfg/agent-manifest.csv">
   Run agile team standup
 </item>
 ```
@@ -137,15 +137,15 @@ Generate documents from templates
 
 ```xml
 <item cmd="*brief"
-   exec="{project-root}/bmad/core/tasks/create-doc.md"
-   tmpl="{project-root}/bmad/bmm/templates/brief.md">
+   exec="{project-root}/{bmad_folder}/core/tasks/create-doc.md"
+   tmpl="{project-root}/{bmad_folder}/bmm/templates/brief.md">
   Produce Project Brief
 </item>
 
 <item cmd="*competitor-analysis"
-   exec="{project-root}/bmad/core/tasks/create-doc.md"
-   tmpl="{project-root}/bmad/bmm/templates/competitor.md"
-   data="{project-root}/bmad/_data/market-research.csv">
+   exec="{project-root}/{bmad_folder}/core/tasks/create-doc.md"
+   tmpl="{project-root}/{bmad_folder}/bmm/templates/competitor.md"
+   data="{project-root}/{bmad_folder}/_data/market-research.csv">
   Produce Competitor Analysis
 </item>
 ```
@@ -174,7 +174,7 @@ Direct prompts embedded in commands (Simple agents)
 ```xml
 <!-- Short action attribute with embedded prompt -->
 <item cmd="*list-tasks"
-   action="list all tasks from {project-root}/bmad/_cfg/task-manifest.csv">
+   action="list all tasks from {project-root}/{bmad_folder}/_cfg/task-manifest.csv">
   List Available Tasks
 </item>
 
@@ -227,7 +227,7 @@ For multiline/complex prompts, define them separately and reference by id:
 
     <item cmd="*review-literature"
        action="#literature-review"
-       data="{project-root}/bmad/_data/sources.csv">
+       data="{project-root}/{bmad_folder}/_data/sources.csv">
       Conduct Literature Review
     </item>
 
@@ -407,23 +407,23 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 ```xml
 <!-- Workflow with data -->
 <item cmd="*brainstorm"
-   run-workflow="{project-root}/bmad/core/workflows/brainstorming/workflow.yaml"
-   data="{project-root}/bmad/core/workflows/brainstorming/brain-methods.csv">
+   run-workflow="{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
+   data="{project-root}/{bmad_folder}/core/workflows/brainstorming/brain-methods.csv">
   Creative Brainstorming Session
 </item>
 
 <!-- Action with data -->
 <item cmd="*analyze-metrics"
    action="analyze these metrics and identify trends"
-   data="{project-root}/bmad/_data/performance-metrics.json">
+   data="{project-root}/{bmad_folder}/_data/performance-metrics.json">
   Analyze Performance Metrics
 </item>
 
 <!-- Template with data -->
 <item cmd="*report"
-   exec="{project-root}/bmad/core/tasks/create-doc.md"
-   tmpl="{project-root}/bmad/bmm/templates/report.md"
-   data="{project-root}/bmad/_data/quarterly-results.csv">
+   exec="{project-root}/{bmad_folder}/core/tasks/create-doc.md"
+   tmpl="{project-root}/{bmad_folder}/bmm/templates/report.md"
+   data="{project-root}/{bmad_folder}/_data/quarterly-results.csv">
   Generate Quarterly Report
 </item>
 ```
@@ -572,14 +572,14 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 ```xml
 <!-- Create document -->
 <item cmd="*{action}-{object}"
-   run-workflow="{project-root}/bmad/{module}/workflows/{workflow}/workflow.yaml">
+   run-workflow="{project-root}/{bmad_folder}/{module}/workflows/{workflow}/workflow.yaml">
   {Action} {Object Description}
 </item>
 
 <!-- Validate document -->
 <item cmd="*validate-{object}"
    validate-workflow="{output_folder}/{document}.md"
-   workflow="{project-root}/bmad/{module}/workflows/{workflow}/workflow.yaml">
+   workflow="{project-root}/{bmad_folder}/{module}/workflows/{workflow}/workflow.yaml">
   Validate {Object Description}
 </item>
 ```
@@ -588,7 +588,7 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 
 ```xml
 <item cmd="*{action}"
-   exec="{project-root}/bmad/{module}/tasks/{task}.md">
+   exec="{project-root}/{bmad_folder}/{module}/tasks/{task}.md">
   {Action Description}
 </item>
 ```
@@ -597,8 +597,8 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 
 ```xml
 <item cmd="*{document}"
-   exec="{project-root}/bmad/core/tasks/create-doc.md"
-   tmpl="{project-root}/bmad/{module}/templates/{template}.md">
+   exec="{project-root}/{bmad_folder}/core/tasks/create-doc.md"
+   tmpl="{project-root}/{bmad_folder}/{module}/templates/{template}.md">
   Create {Document Name}
 </item>
 ```
@@ -631,7 +631,7 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 ### Complete Self-Contained Agent
 
 ```xml
-<agent id="bmad/research/agents/analyst.md" name="Research Analyst" icon="🔬">
+<agent id="{bmad_folder}/research/agents/analyst.md" name="Research Analyst" icon="🔬">
   <!-- Embedded prompt library -->
   <prompts>
     <prompt id="swot-analysis">
@@ -688,14 +688,14 @@ The `data` attribute can be added to ANY command type to provide supplementary i
 
     <item cmd="*compete"
        action="#competitive-intel"
-       data="{project-root}/bmad/_data/market-data.csv">
+       data="{project-root}/{bmad_folder}/_data/market-data.csv">
       Analyze Competition
     </item>
 
     <!-- Hybrid: external task with internal data -->
     <item cmd="*report"
-       exec="{project-root}/bmad/core/tasks/create-doc.md"
-       tmpl="{project-root}/bmad/research/templates/report.md">
+       exec="{project-root}/{bmad_folder}/core/tasks/create-doc.md"
+       tmpl="{project-root}/{bmad_folder}/research/templates/report.md">
       Generate Research Report
     </item>
 
@@ -721,7 +721,7 @@ For agents that primarily use embedded logic:
 
     <item cmd="*analyze"
        action="perform statistical analysis on the provided data"
-       data="{project-root}/bmad/_data/dataset.csv">
+       data="{project-root}/{bmad_folder}/_data/dataset.csv">
       Analyze Dataset
     </item>
 

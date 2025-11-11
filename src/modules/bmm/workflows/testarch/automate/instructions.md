@@ -2,7 +2,7 @@
 
 # Test Automation Expansion
 
-**Workflow ID**: `bmad/bmm/testarch/automate`
+**Workflow ID**: `{bmad_folder}/bmm/testarch/automate`
 **Version**: 4.0 (BMad v6)
 
 ---
@@ -83,7 +83,7 @@ Expands test automation coverage by generating comprehensive test suites at appr
 
 5. **Load Knowledge Base Fragments**
 
-   **Critical:** Consult `{project-root}/bmad/bmm/testarch/tea-index.csv` to load:
+   **Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to load:
    - `test-levels-framework.md` - Test level selection (E2E vs API vs Component vs Unit with decision matrix, 467 lines, 4 examples)
    - `test-priorities-matrix.md` - Priority classification (P0-P3 with automated scoring, risk mapping, 389 lines, 2 examples)
    - `fixture-architecture.md` - Test fixture patterns (pure function → fixture → mergeTests, auto-cleanup, 406 lines, 5 examples)

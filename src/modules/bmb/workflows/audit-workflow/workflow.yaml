@@ -4,14 +4,14 @@ description: "Comprehensive workflow quality audit - validates structure, config
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmb/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmb/workflows/audit-workflow"
+installed_path: "{project-root}/{bmad_folder}/bmb/workflows/audit-workflow"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"

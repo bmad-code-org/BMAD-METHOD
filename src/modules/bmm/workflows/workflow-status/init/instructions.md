@@ -1,6 +1,6 @@
 # Workflow Init - Project Setup Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow-init/workflow.yaml</critical>
 <critical>Communicate in {communication_language} with {user_name}</critical>
 <critical>This workflow handles BOTH new projects AND legacy projects being migrated to BMad Method</critical>
@@ -25,9 +25,10 @@
 
 **Check for implementation artifacts:**
 
-- Story files: {output_folder}/stories/\*.md
-- Sprint status: {output*folder}/\_sprint*.yaml or {output_folder}/sprint-status.yaml
-- Existing workflow status: {output_folder}/bmm-workflow-status.yaml
+- The following could be in or nested under {output_folder} OR {ephemeral_location} - CHECK BOTH LOCATIONS
+  - Story files: {output*folder}/stories/*.md or {ephemeral*location}/stories/*.md
+  - Sprint status: {output_folder}/sprint-status.yaml or {ephemeral_location}/sprint-status.yaml
+  - Existing workflow status: {output_folder}/bmm-workflow-status.yaml or {ephemeral_location}/bmm-workflow-status.yaml
 
 **Check for codebase:**
 
@@ -647,8 +648,9 @@ For each phase in path file:
 2. Add comment header: `  # Phase {n}: {Phase Name}`
 3. For each workflow in phase:
    - Check if workflow should be included based on user choices
-   - Add entry: `  {workflow-id}: {default_status}`
+   - Add entry: `  {workflow-id}: {default_status}  # agent: {agent}`
    - Default status from path file (required/optional/recommended/conditional)
+   - Agent from path file (pm/architect/ux-designer/sm/analyst/etc.)
 4. Add blank line between phases
    </action>
 
@@ -666,8 +668,8 @@ For each phase in path file:
 - Architecture: {output*folder}/\_architecture*.md or {output*folder}/\_arch*.md
 - Sprint Planning: {output*folder}/\_sprint*.yaml
 
-**CRITICAL:** If file exists, replace workflow status with ONLY the file path.
-Example: `prd: docs/prd.md` (NOT "completed - docs/prd.md")
+**CRITICAL:** If file exists, replace workflow status with ONLY the file path, preserving agent comment.
+Example: `prd: docs/prd.md  # agent: pm` (NOT "completed - docs/prd.md")
 </action>
 
 <template-output>workflow_path_file</template-output>
@@ -692,60 +694,60 @@ Example: `prd: docs/prd.md` (NOT "completed - docs/prd.md")
 
 {{#if brownfield AND needs_documentation}}
 🔧 **Prerequisites:**
-✅ document-project - Create comprehensive codebase documentation
+✅ document-project - Create comprehensive codebase documentation (analyst agent)
 (Required before planning workflows)
 {{/if}}
 
 {{#if has_discovery_phase}}
 🧠 **Phase 0: Discovery** (Optional - based on your choices)
 {{#if brainstorm_requested}}
-✅ Brainstorm - Creative exploration session
+✅ Brainstorm - Creative exploration session (analyst agent)
 {{/if}}
 {{#if research_requested}}
-✅ Research - Domain and technical research
+✅ Research - Domain and technical research (analyst agent)
 {{/if}}
 {{#if product_brief_requested}}
-✅ Product Brief - Strategic product planning
+✅ Product Brief - Strategic product planning (analyst agent)
 {{/if}}
 {{/if}}
 
 {{#if selected_track == quick-flow}}
 📝 **Phase 1: Planning**
-✅ Tech-Spec - Implementation-focused specification
+✅ Tech-Spec - Implementation-focused specification (pm agent)
 (Auto-detects epic structure if 2+ stories)
 
 🚀 **Phase 2: Implementation**
-✅ Sprint Planning - Create sprint tracking
-✅ Story Development - Implement story-by-story
+✅ Sprint Planning - Create sprint tracking (sm agent)
+✅ Story Development - Implement story-by-story (sm agent)
 {{/if}}
 
 {{#if selected_track in [method, enterprise]}}
 📋 **Phase 1: Planning**
-✅ PRD - Product Requirements Document
-✅ Validate PRD (optional quality check)
-✅ UX Design (if UI components - determined after PRD)
+✅ PRD - Product Requirements Document (pm agent)
+✅ Validate PRD (optional quality check) (pm agent)
+✅ UX Design (if UI components - determined after PRD) (ux-designer agent)
 
 🏗️ **Phase 2: Solutioning**
 {{#if brownfield}}
-✅ Architecture - Integration design (RECOMMENDED for brownfield)
+✅ Architecture - Integration design (RECOMMENDED for brownfield) (architect agent)
 Creates focused solution design from your existing codebase context
 {{else}}
-✅ Architecture - System design document
+✅ Architecture - System design document (architect agent)
 {{/if}}
-✅ Validate Architecture (optional quality check)
-✅ Solutioning Gate Check - Validate all planning aligns before coding
+✅ Validate Architecture (optional quality check) (architect agent)
+✅ Solutioning Gate Check - Validate all planning aligns before coding (architect agent)
 
 🚀 **Phase 3: Implementation**
-✅ Sprint Planning - Create sprint tracking
-✅ Story Development - Implement story-by-story with epic-tech-specs
+✅ Sprint Planning - Create sprint tracking (sm agent)
+✅ Story Development - Implement story-by-story with epic-tech-specs (sm agent)
 {{/if}}
 
 {{#if selected_track == enterprise}}
 
 🏢 **Additional Enterprise Planning:**
-✅ Security Architecture - Threat modeling and security design
-✅ DevOps Strategy - Pipeline and infrastructure planning
-✅ Test Strategy - Comprehensive testing approach
+✅ Security Architecture - Threat modeling and security design (architect agent)
+✅ DevOps Strategy - Pipeline and infrastructure planning (architect agent)
+✅ Test Strategy - Comprehensive testing approach (tea agent)
 {{/if}}
 
 {{#if found_existing_artifacts}}

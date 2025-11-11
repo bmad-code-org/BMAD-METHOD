@@ -49,7 +49,7 @@ This workflow performs comprehensive test quality reviews using TEA's knowledge 
 
 **Actions:**
 
-1. Load relevant knowledge fragments from `{project-root}/bmad/bmm/testarch/tea-index.csv`:
+1. Load relevant knowledge fragments from `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv`:
    - `test-quality.md` - Definition of Done (deterministic tests, isolated with cleanup, explicit assertions, <300 lines, <1.5 min, 658 lines, 5 examples)
    - `fixture-architecture.md` - Pure function → Fixture → mergeTests composition with auto-cleanup (406 lines, 5 examples)
    - `network-first.md` - Route intercept before navigate to prevent race conditions (intercept before navigate, HAR capture, deterministic waiting, 489 lines, 5 examples)

@@ -1,7 +1,7 @@
 # Document Project Workflow Router
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/document-project/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/document-project/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 
 <workflow>
@@ -10,7 +10,7 @@
 
 <step n="1" goal="Validate workflow and get project info">
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+<invoke-workflow path="{project-root}/{bmad_folder}/bmm/workflows/workflow-status">
   <param>mode: data</param>
   <param>data_request: project_config</param>
 </invoke-workflow>
@@ -36,7 +36,7 @@
   </check>
 
   <!-- Now validate sequencing -->
-  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <invoke-workflow path="{project-root}/{bmad_folder}/bmm/workflows/workflow-status">
     <param>mode: validate</param>
     <param>calling_workflow: document-project</param>
   </invoke-workflow>
@@ -179,7 +179,7 @@ Your choice [1/2/3]:
 <step n="4" goal="Update status and complete">
 
 <check if="status_file_found == true">
-  <invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+  <invoke-workflow path="{project-root}/{bmad_folder}/bmm/workflows/workflow-status">
     <param>mode: update</param>
     <param>action: complete_workflow</param>
     <param>workflow_name: document-project</param>

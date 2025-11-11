@@ -3,21 +3,21 @@ description: "Create the next user story markdown from epics/PRD and architectur
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmgd/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/create-story"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
 # Variables and inputs
 variables:
-  story_dir: "{config_source}:dev_story_location" # Directory where stories are stored
+  story_dir: "{config_source}:dev_ephemeral_location" # Directory where stories are stored
   epics_file: "{output_folder}/epics.md" # Preferred source for epic/story breakdown
   prd_file: "{output_folder}/PRD.md" # Fallback for requirements
   architecture_file: "{output_folder}/architecture.md" # Optional architecture context

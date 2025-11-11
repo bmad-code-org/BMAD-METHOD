@@ -4,7 +4,7 @@ description: "Autonomous documentation system that maintains module, workflow, a
 author: "BMad"
 
 # Critical variables
-config_source: "{project-root}/bmad/bmb/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 

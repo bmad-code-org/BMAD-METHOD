@@ -1,28 +1,34 @@
 # BMAD™ Core Configuration
+header: "BMAD™ Core Configuration"
+subheader: "Configure the core settings for your BMAD™ installation.\nThese settings will be used across all modules and agents."
 
-prompt:
-  - "Welcome and thank you for choosing BMAD™! This is the Core Configuration."
-  - "This will impact all selected modules, either additions or upgrades."
+bmad_folder:
+  prompt: "What is the root folder for BMAD installation? (Recommended: .bmad)"
+  default: ".bmad"
+  result: "{value}"
+  regex: "^[a-zA-Z0-9._-]{1,20}$"
 
-# This is injected into the custom agent activation rules
 user_name:
-  prompt: "What is your name?"
+  prompt: "What shall the agents call you?"
   default: "BMad"
   result: "{value}"
 
-# This is injected into the custom agent activation rules and most workflows
 communication_language:
-  prompt: "Preferred Chat Language?"
+  prompt: "Preferred Chat Language/Style? (English, Mandarin, English Pirate, etc...)"
   default: "English"
   result: "{value}"
 
 document_output_language:
   prompt: "Preferred Document Output Language?"
-  default: "English"
+  default: "{communication_language}"
   result: "{value}"
 
-# This is injected into the custom agent activation rules
 output_folder:
   prompt: "Where should the generated output default save location be?"
   default: "docs"
   result: "{project-root}/{value}"
+
+install_user_docs:
+  prompt: "Install user documentation and optimized agent intelligence to each selected modules docs folder?"
+  default: true
+  result: "{value}"

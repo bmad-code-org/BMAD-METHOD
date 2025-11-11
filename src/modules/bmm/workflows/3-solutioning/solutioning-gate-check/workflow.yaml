@@ -4,7 +4,7 @@ description: "Systematically validate that all planning and solutioning phases a
 author: "BMad Builder"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -12,11 +12,11 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow status integration
-workflow_status_workflow: "{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml"
-workflow_paths_dir: "{project-root}/bmad/bmm/workflows/workflow-status/paths"
+workflow_status_workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"
+workflow_paths_dir: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/paths"
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmm/workflows/3-solutioning/solutioning-gate-check"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/solutioning-gate-check"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"

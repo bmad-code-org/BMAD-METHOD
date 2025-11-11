@@ -86,20 +86,20 @@ workflow create-agent
 
 **Standalone Agents:**
 
-- Source: `bmad/agents/{filename}.agent.yaml`
-- Compiled: `bmad/agents/{filename}.md`
+- Source: `{bmad_folder}/agents/{filename}.agent.yaml`
+- Compiled: `{bmad_folder}/agents/{filename}.md`
 
 **Module Agents:**
 
 - Source: `src/modules/{module}/agents/{filename}.agent.yaml`
-- Compiled: `bmad/{module}/agents/{filename}.md`
+- Compiled: `{bmad_folder}/{module}/agents/{filename}.md`
 
 ### YAML Structure
 
 ```yaml
 agent:
   metadata:
-    id: bmad/{module}/agents/{filename}.md
+    id: {bmad_folder}/{module}/agents/{filename}.md
     name: Agent Name
     title: Agent Title
     icon: 🤖
@@ -117,7 +117,7 @@ agent:
 
 ### Optional Customize File
 
-Location: `bmad/_cfg/agents/{module}-{filename}.customize.yaml`
+Location: `{bmad_folder}/_cfg/agents/{module}-{filename}.customize.yaml`
 
 Allows persona and menu overrides that persist through updates.
 

@@ -1,7 +1,7 @@
 # Edit Workflow - Workflow Editor Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/edit-workflow/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/edit-workflow/workflow.yaml</critical>
 <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication based on context and user needs</critical>
 <critical>The goal is COLLABORATIVE IMPROVEMENT - work WITH the user, not FOR them</critical>
 <critical>Communicate all responses in {communication_language}</critical>
@@ -24,7 +24,7 @@
 
 - Workflow creation guide: {workflow_creation_guide}
 - Workflow execution engine: {workflow_execution_engine}
-- Study example workflows from: {project-root}/bmad/bmm/workflows/
+- Study example workflows from: {project-root}/{bmad_folder}/bmm/workflows/
   </action>
 
 <action>Analyze the workflow deeply:
@@ -205,7 +205,7 @@ Let the conversation flow naturally. Build a shared vision of what "better" look
 
 - Identify all files the workflow depends on
 - Check for invoked workflows (must be included)
-- Verify paths are bmad/-relative
+- Verify paths are {bmad_folder}/-relative
 - Remove config_source dependencies
 - Build complete file list
 

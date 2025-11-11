@@ -1,0 +1,127 @@
+# BMad Enterprise Method - Brownfield
+# Extended enterprise planning for complex brownfield with security/devops/test (30+ stories typically)
+
+method_name: "BMad Enterprise Method"
+track: "enterprise"
+field_type: "brownfield"
+description: "Enterprise-grade planning for complex brownfield additions with extended requirements"
+
+phases:
+  - prerequisite: true
+    name: "Documentation"
+    conditional: "if_undocumented"
+    note: "NOT a phase - prerequisite for brownfield without docs (nearly mandatory for enterprise)"
+    workflows:
+      - id: "document-project"
+        required: true
+        agent: "analyst"
+        command: "document-project"
+        output: "Comprehensive project documentation"
+        purpose: "Understand existing codebase - critical for enterprise brownfield"
+
+  - phase: 0
+    name: "Discovery (Required)"
+    required: true
+    note: "Analysis phase required for enterprise projects"
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+        included_by: "user_choice"
+
+      - id: "research"
+        recommended: true
+        agent: "analyst"
+        command: "research"
+        included_by: "user_choice"
+        note: "Highly recommended - compliance, integration, risk research"
+
+      - id: "product-brief"
+        optional: true
+        agent: "analyst"
+        command: "product-brief"
+        included_by: "user_choice"
+        note: "Optional for brownfield enterprise"
+
+  - phase: 1
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        required: true
+        agent: "pm"
+        command: "prd"
+        output: "Enterprise PRD with compliance requirements"
+        note: "Must address existing system constraints and migration strategy"
+
+      - id: "validate-prd"
+        recommended: true
+        agent: "pm"
+        command: "validate-prd"
+
+      - id: "create-design"
+        recommended: true
+        agent: "ux-designer"
+        command: "create-design"
+        note: "Recommended - must integrate with existing UX patterns"
+
+      - id: "framework"
+        optional: true
+        agent: "tea"
+        command: "framework"
+        output: "Test framework scaffold (Playwright/Cypress)"
+        note: "Initialize or modernize test framework - critical if brownfield lacks proper test infrastructure"
+
+      - id: "ci"
+        optional: true
+        agent: "tea"
+        command: "ci"
+        output: "CI/CD test pipeline configuration"
+        note: "Establish or enhance CI pipeline with regression testing strategy"
+
+  - phase: 2
+    name: "Solutioning"
+    required: true
+    workflows:
+      - id: "create-architecture"
+        required: true
+        agent: "architect"
+        command: "create-architecture"
+        output: "Integration architecture with enterprise considerations"
+        note: "Distills brownfield context + adds security/scalability/compliance design"
+
+      - id: "create-security-architecture"
+        optional: true
+        agent: "architect"
+        command: "create-security-architecture"
+        output: "Security architecture for brownfield integration"
+        note: "Future workflow - optional extended enterprise workflow for threat model, auth integration, audit requirements"
+
+      - id: "create-devops-strategy"
+        optional: true
+        agent: "architect"
+        command: "create-devops-strategy"
+        output: "DevOps strategy for brownfield deployment"
+        note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
+
+      - id: "validate-architecture"
+        optional: true
+        agent: "architect"
+        command: "validate-architecture"
+
+      - id: "solutioning-gate-check"
+        required: true
+        agent: "architect"
+        command: "solutioning-gate-check"
+        note: "Critical gate - validates all planning before touching production system"
+
+  - phase: 3
+    name: "Implementation"
+    required: true
+    workflows:
+      - id: "sprint-planning"
+        required: true
+        agent: "sm"
+        command: "sprint-planning"
+        note: "Enterprise brownfield requires careful phasing and feature flags"

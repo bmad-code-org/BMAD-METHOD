@@ -4,7 +4,7 @@ description: "Interactive workflow to build complete BMAD modules with agents, w
 author: "BMad"
 
 # Critical variables load from config_source
-config_source: "{project-root}/bmad/bmb/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"
 custom_module_location: "{config_source}:custom_module_location"
 communication_language: "{config_source}:communication_language"
 user_name: "{config_source}:user_name"
@@ -14,22 +14,22 @@ module_structure_guide: "{installed_path}/module-structure.md"
 installer_templates: "{installed_path}/installer-templates/"
 
 # Use existing build workflows
-agent_builder: "{project-root}/bmad/bmb/workflows/create-agent/workflow.yaml"
-workflow_builder: "{project-root}/bmad/bmb/workflows/create-workflow/workflow.yaml"
-brainstorming_workflow: "{project-root}/bmad/core/workflows/brainstorming/workflow.yaml"
+agent_builder: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/workflow.yaml"
+workflow_builder: "{project-root}/{bmad_folder}/bmb/workflows/create-workflow/workflow.yaml"
+brainstorming_workflow: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
 brainstorming_context: "{installed_path}/brainstorm-context.md"
 
 # Optional docs that help understand module patterns
 recommended_inputs:
   - module_brief: "{output_folder}/module-brief-*.md"
   - brainstorming_results: "{output_folder}/brainstorming-*.md"
-  - bmm_module: "{project-root}/bmad/bmm/"
-  - cis_module: "{project-root}/bmad/cis/"
-  - existing_agents: "{project-root}/bmad/*/agents/"
-  - existing_workflows: "{project-root}/bmad/*/workflows/"
+  - bmm_module: "{project-root}/{bmad_folder}/bmm/"
+  - cis_module: "{project-root}/{bmad_folder}/cis/"
+  - existing_agents: "{project-root}/{bmad_folder}/*/agents/"
+  - existing_workflows: "{project-root}/{bmad_folder}/*/workflows/"
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmb/workflows/create-module"
+installed_path: "{project-root}/{bmad_folder}/bmb/workflows/create-module"
 template: false # This is an interactive scaffolding workflow
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"

@@ -1,12 +1,12 @@
 <!-- BMAD BMM Story Context Assembly Instructions (v6) -->
 
 ```xml
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>This workflow assembles a Story Context file for a single drafted story by extracting acceptance criteria, tasks, relevant docs/code, interfaces, constraints, and testing guidance.</critical>
-<critical>If story_path is provided, use it. Otherwise, find the first story with status "drafted" in sprint-status.yaml. If none found, HALT.</critical>
+<critical>If {story_path} is provided, use it. Otherwise, find the first story with status "drafted" in sprint-status.yaml. If none found, HALT.</critical>
 <critical>Check if context file already exists. If it does, ask user if they want to replace it, verify it, or cancel.</critical>
 
 <critical>DOCUMENT OUTPUT: Technical context file (.context.xml). Concise, structured, project-relative paths only.</critical>
@@ -63,18 +63,17 @@
 
       <check if="no story with status 'drafted' found">
         <output>📋 No drafted stories found in sprint-status.yaml
+          All stories are either still in backlog or already marked ready/in-progress/done.
 
-All stories are either still in backlog or already marked ready/in-progress/done.
-
-**Next Steps:**
-1. Run `create-story` to draft more stories
-2. Run `sprint-planning` to refresh story tracking
+          **Next Steps:**
+          1. Run `create-story` to draft more stories
+          2. Run `sprint-planning` to refresh story tracking
         </output>
         <action>HALT</action>
       </check>
 
       <action>Use the first drafted story found</action>
-      <action>Find matching story file in {{story_dir}} using story_key pattern</action>
+      <action>Find matching story file in {{story_path}} using story_key pattern</action>
       <action>Read the COMPLETE story file</action>
     </check>
 
@@ -181,7 +180,7 @@ All stories are either still in backlog or already marked ready/in-progress/done
   <step n="6" goal="Validate and save">
     <anchor id="validation_step" />
     <action>Validate output context file structure and content</action>
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {bmad_folder}/core/tasks/validate-workflow.xml</invoke-task>
   </step>
 
   <step n="7" goal="Update story file and mark ready for dev" tag="sprint-status">

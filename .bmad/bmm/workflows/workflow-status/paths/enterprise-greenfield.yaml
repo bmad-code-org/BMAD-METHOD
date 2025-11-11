@@ -1,0 +1,115 @@
+# BMad Enterprise Method - Greenfield
+# Extended enterprise planning with security/devops/test for greenfield (30+ stories typically)
+
+method_name: "BMad Enterprise Method"
+track: "enterprise"
+field_type: "greenfield"
+description: "Complete enterprise-grade planning with security, devops, and test strategy"
+
+phases:
+  - phase: 0
+    name: "Discovery (Required)"
+    required: true
+    note: "Analysis phase required for enterprise projects"
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+        included_by: "user_choice"
+
+      - id: "research"
+        recommended: true
+        agent: "analyst"
+        command: "research"
+        included_by: "user_choice"
+        note: "Highly recommended for enterprise - domain and compliance research"
+
+      - id: "product-brief"
+        recommended: true
+        agent: "analyst"
+        command: "product-brief"
+        included_by: "user_choice"
+        note: "Recommended for strategic alignment"
+
+  - phase: 1
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "prd"
+        required: true
+        agent: "pm"
+        command: "prd"
+        output: "Comprehensive Product Requirements Document"
+        note: "Enterprise-level requirements with compliance considerations"
+
+      - id: "validate-prd"
+        recommended: true
+        agent: "pm"
+        command: "validate-prd"
+
+      - id: "create-design"
+        recommended: true
+        agent: "ux-designer"
+        command: "create-design"
+        note: "Highly recommended for enterprise - design system and patterns"
+
+      - id: "framework"
+        optional: true
+        agent: "tea"
+        command: "framework"
+        output: "Test framework scaffold (Playwright/Cypress)"
+        note: "Initialize production-ready test framework - run once per project"
+
+      - id: "ci"
+        optional: true
+        agent: "tea"
+        command: "ci"
+        output: "CI/CD test pipeline configuration"
+        note: "Scaffold CI workflow with selective testing, burn-in, caching"
+
+  - phase: 2
+    name: "Solutioning"
+    required: true
+    workflows:
+      - id: "create-architecture"
+        required: true
+        agent: "architect"
+        command: "create-architecture"
+        output: "Enterprise-grade system architecture"
+        note: "Includes scalability, multi-tenancy, integration architecture"
+
+      - id: "create-security-architecture"
+        optional: true
+        agent: "architect"
+        command: "create-security-architecture"
+        output: "Security architecture and threat model"
+        note: "Future workflow - optional extended enterprise workflow for security design, auth, compliance"
+
+      - id: "create-devops-strategy"
+        optional: true
+        agent: "architect"
+        command: "create-devops-strategy"
+        output: "DevOps pipeline and infrastructure plan"
+        note: "Future workflow - optional extended enterprise workflow for CI/CD, deployment, monitoring"
+
+      - id: "validate-architecture"
+        optional: true
+        agent: "architect"
+        command: "validate-architecture"
+
+      - id: "solutioning-gate-check"
+        required: true
+        agent: "architect"
+        command: "solutioning-gate-check"
+        note: "Validates all planning artifacts align before implementation"
+
+  - phase: 3
+    name: "Implementation"
+    required: true
+    workflows:
+      - id: "sprint-planning"
+        required: true
+        agent: "sm"
+        command: "sprint-planning"
+        note: "Creates sprint plan - enterprise projects may require phased rollout"

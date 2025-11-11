@@ -4,7 +4,7 @@ description: "Facilitate game brainstorming sessions by orchestrating the CIS br
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmgd/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -13,7 +13,7 @@ game_dev_experience: "{config_source}:game_dev_experience"
 date: system-generated
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmgd/workflows/1-preproduction/brainstorm-game"
+installed_path: "{project-root}/{bmad_folder}/bmgd/workflows/1-preproduction/brainstorm-game"
 template: false
 instructions: "{installed_path}/instructions.md"
 
@@ -22,7 +22,7 @@ game_context: "{installed_path}/game-context.md"
 game_brain_methods: "{installed_path}/game-brain-methods.csv"
 
 # CORE brainstorming workflow to invoke
-core_brainstorming: "{project-root}/bmad/core/workflows/brainstorming/workflow.yaml"
+core_brainstorming: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
 
 standalone: true
 
@@ -30,12 +30,12 @@ web_bundle:
   name: "brainstorm-game"
   description: "Facilitate game brainstorming sessions by orchestrating the CIS brainstorming workflow with game-specific context, guidance, and additional game design techniques."
   author: "BMad"
-  instructions: "bmad/bmgd/workflows/1-preproduction/brainstorm-game/instructions.md"
+  instructions: "{bmad_folder}/bmgd/workflows/1-preproduction/brainstorm-game/instructions.md"
   template: false
   web_bundle_files:
-    - "bmad/bmgd/workflows/1-preproduction/brainstorm-game/instructions.md"
-    - "bmad/bmgd/workflows/1-preproduction/brainstorm-game/game-context.md"
-    - "bmad/bmgd/workflows/1-preproduction/brainstorm-game/game-brain-methods.csv"
-    - "bmad/core/workflows/brainstorming/workflow.yaml"
+    - "{bmad_folder}/bmgd/workflows/1-preproduction/brainstorm-game/instructions.md"
+    - "{bmad_folder}/bmgd/workflows/1-preproduction/brainstorm-game/game-context.md"
+    - "{bmad_folder}/bmgd/workflows/1-preproduction/brainstorm-game/game-brain-methods.csv"
+    - "{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
   existing_workflows:
-    - core_brainstorming: "bmad/core/workflows/brainstorming/workflow.yaml"
+    - core_brainstorming: "{bmad_folder}/core/workflows/brainstorming/workflow.yaml"

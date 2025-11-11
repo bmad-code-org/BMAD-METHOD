@@ -4,7 +4,7 @@ description: "Interactive game brief creation workflow that guides users through
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmgd/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -21,7 +21,7 @@ recommended_inputs:
   - reference_games: "List of inspiration games (optional)"
 
 # Module path and component files
-installed_path: "{project-root}/bmad/bmgd/workflows/1-preproduction/game-brief"
+installed_path: "{project-root}/{bmad_folder}/bmgd/workflows/1-preproduction/game-brief"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
@@ -35,10 +35,10 @@ web_bundle:
   name: "game-brief"
   description: "Interactive game brief creation workflow that guides users through defining their game vision with multiple input sources and conversational collaboration"
   author: "BMad"
-  instructions: "bmad/bmgd/workflows/1-preproduction/game-brief/instructions.md"
-  validation: "bmad/bmgd/workflows/1-preproduction/game-brief/checklist.md"
-  template: "bmad/bmgd/workflows/1-preproduction/game-brief/template.md"
+  instructions: "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/instructions.md"
+  validation: "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/checklist.md"
+  template: "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/template.md"
   web_bundle_files:
-    - "bmad/bmgd/workflows/1-preproduction/game-brief/instructions.md"
-    - "bmad/bmgd/workflows/1-preproduction/game-brief/checklist.md"
-    - "bmad/bmgd/workflows/1-preproduction/game-brief/template.md"
+    - "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/instructions.md"
+    - "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/checklist.md"
+    - "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/template.md"

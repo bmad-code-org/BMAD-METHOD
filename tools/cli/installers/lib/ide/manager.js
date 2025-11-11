@@ -10,6 +10,21 @@ class IdeManager {
   constructor() {
     this.handlers = new Map();
     this.loadHandlers();
+    this.bmadFolderName = 'bmad'; // Default, can be overridden
+  }
+
+  /**
+   * Set the bmad folder name for all IDE handlers
+   * @param {string} bmadFolderName - The bmad folder name
+   */
+  setBmadFolderName(bmadFolderName) {
+    this.bmadFolderName = bmadFolderName;
+    // Update all loaded handlers
+    for (const handler of this.handlers.values()) {
+      if (typeof handler.setBmadFolderName === 'function') {
+        handler.setBmadFolderName(bmadFolderName);
+      }
+    }
   }
 
   /**

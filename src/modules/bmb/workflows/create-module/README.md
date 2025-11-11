@@ -71,7 +71,7 @@ workflow create-module --input module-brief-{name}-{date}.md
 ### Generated Directory
 
 ```
-bmad/{module-code}/
+{bmad_folder}/{module-code}/
 ├── agents/              # Agent definitions
 ├── workflows/           # Workflow processes
 ├── tasks/              # Reusable tasks

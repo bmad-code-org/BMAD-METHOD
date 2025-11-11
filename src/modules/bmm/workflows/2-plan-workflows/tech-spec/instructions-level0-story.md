@@ -11,7 +11,7 @@
 
 <action>Read the completed tech-spec.md file from {output_folder}/tech-spec.md</action>
 <action>Load bmm-workflow-status.yaml from {output_folder}/bmm-workflow-status.yaml (if exists)</action>
-<action>Extract dev_story_location from config (where stories are stored)</action>
+<action>Extract dev_ephemeral_location from config (where stories are stored)</action>
 
 <action>Extract from the ENHANCED tech-spec structure:
 
@@ -42,7 +42,7 @@
 </example>
 
 <action>Set story_filename = "story-{slug}.md"</action>
-<action>Set story_path = "{dev_story_location}/story-{slug}.md"</action>
+<action>Set story_path = "{dev_ephemeral_location}/story-{slug}.md"</action>
 
 </step>
 
@@ -122,7 +122,7 @@ Since tech-spec is now context-rich, populate all new template fields:
 
 <step n="4" goal="Update status - Level 0 single story">
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+<invoke-workflow path="{project-root}/{bmad_folder}/bmm/workflows/workflow-status">
   <param>mode: update</param>
   <param>action: complete_workflow</param>
   <param>workflow_name: tech-spec</param>
@@ -170,7 +170,7 @@ Since the tech-spec is now CONTEXT-RICH with:
 
 **You can skip story-context and go straight to dev!**
 
-1. Load DEV agent: `{project-root}/bmad/bmm/agents/dev.md`
+1. Load DEV agent: `{project-root}/{bmad_folder}/bmm/agents/dev.md`
 2. Run `dev-story` workflow
 3. Begin implementation immediately
 
@@ -178,7 +178,7 @@ Since the tech-spec is now CONTEXT-RICH with:
 
 Only needed for extremely complex scenarios:
 
-1. Load SM agent: `{project-root}/bmad/bmm/agents/sm.md`
+1. Load SM agent: `{project-root}/{bmad_folder}/bmm/agents/sm.md`
 2. Run `story-context` workflow (generates additional XML context)
 3. Then load DEV agent and run `dev-story` workflow
 

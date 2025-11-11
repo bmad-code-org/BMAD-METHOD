@@ -1,0 +1,92 @@
+# {{MODULE_NAME}} Module Configuration
+# This file defines installation questions and module configuration values
+
+code: "{{MODULE_CODE}}"
+name: "{{MODULE_NAME}}"
+default_selected: "{{DEFAULT_SELECTED}}" # true if this should be selected by default
+
+# Welcome message shown during installation
+prompt:
+  - "{{WELCOME_MESSAGE_LINE_1}}"
+  - "{{WELCOME_MESSAGE_LINE_2}}"
+# Core config values are automatically inherited:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
+
+# ============================================================================
+# CONFIGURATION FIELDS
+# ============================================================================
+#
+# Each field can be:
+# 1. INTERACTIVE (has 'prompt' - asks user during installation)
+# 2. STATIC (no 'prompt' - just uses 'result' value)
+#
+# Field structure:
+#   field_name:
+#     prompt: "Question to ask user" (optional - omit for static values)
+#     default: "default_value" (optional)
+#     result: "{value}" or "static-value"
+#     single-select: [...] (optional - for dropdown)
+#     multi-select: [...] (optional - for checkboxes)
+#
+# Special placeholders in result:
+#   {value} - replaced with user's answer
+#   {project-root} - replaced with project root path
+#   {directory_name} - replaced with project directory name
+#   {module_code} - replaced with this module's code
+# ============================================================================
+
+# EXAMPLE: Interactive text input
+# example_project_name:
+#   prompt: "What is your project name?"
+#   default: "{directory_name}"
+#   result: "{value}"
+
+# EXAMPLE: Interactive single-select dropdown
+# example_skill_level:
+#   prompt: "What is your experience level?"
+#   default: "intermediate"
+#   result: "{value}"
+#   single-select:
+#     - value: "beginner"
+#       label: "Beginner - New to this domain"
+#     - value: "intermediate"
+#       label: "Intermediate - Familiar with basics"
+#     - value: "expert"
+#       label: "Expert - Deep knowledge"
+
+# EXAMPLE: Interactive multi-select checkboxes
+# example_features:
+#   prompt:
+#     - "Which features do you want to enable?"
+#     - "(Select all that apply)"
+#   result: "{value}"
+#   multi-select:
+#     - "Feature A"
+#     - "Feature B"
+#     - "Feature C"
+
+# EXAMPLE: Interactive path input
+# example_output_path:
+#   prompt: "Where should outputs be saved?"
+#   default: "output/{{MODULE_CODE}}"
+#   result: "{project-root}/{value}"
+
+# EXAMPLE: Static value (no user prompt)
+# example_static_setting:
+#   result: "hardcoded-value"
+
+# EXAMPLE: Static path
+# module_data_path:
+#   result: "{project-root}/.bmad/{{MODULE_CODE}}/data"
+
+# ============================================================================
+# YOUR MODULE CONFIGURATION FIELDS
+# ============================================================================
+# Replace examples above with your module's actual configuration needs.
+# Delete this comment block and the examples when implementing.
+# ============================================================================
+
+# TODO: INSERT {MODULE_CONFIG_FIELDS} HERE

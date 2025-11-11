@@ -1,0 +1,26 @@
+# Brainstorm Project Workflow Configuration
+name: "brainstorm-project"
+description: "Facilitate project brainstorming sessions by orchestrating the CIS brainstorming workflow with project-specific context and guidance."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+
+# Module path and component files
+installed_path: "{project-root}/.bmad/bmm/workflows/1-analysis/brainstorm-project"
+template: false
+instructions: "{installed_path}/instructions.md"
+
+# Context document for project brainstorming
+project_context: "{installed_path}/project-context.md"
+
+# CORE brainstorming workflow to invoke
+core_brainstorming: "{project-root}/.bmad/core/workflows/brainstorming/workflow.yaml"
+
+standalone: true

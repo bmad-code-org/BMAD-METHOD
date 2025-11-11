@@ -1,7 +1,7 @@
 # Create Story - Workflow Instructions (Spec-compliant, non-interactive by default)
 
 ````xml
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>This workflow creates or updates the next user story from epics/PRD and architecture context, saving to the configured stories directory and optionally invoking Story Context.</critical>
@@ -39,7 +39,7 @@
 <workflow>
 
   <step n="1" goal="Load config and initialize">
-    <action>Resolve variables from config_source: story_dir (dev_story_location), output_folder, user_name, communication_language. If story_dir missing and {{non_interactive}} == false → ASK user to provide a stories directory and update variable. If {{non_interactive}} == true and missing, HALT with a clear message.</action>
+    <action>Resolve variables from config_source: story_dir (dev_ephemeral_location), output_folder, user_name, communication_language. If story_dir missing and {{non_interactive}} == false → ASK user to provide a stories directory and update variable. If {{non_interactive}} == true and missing, HALT with a clear message.</action>
     <action>Create {{story_dir}} if it does not exist</action>
     <action>Resolve installed component paths from workflow.yaml: template, instructions, validation</action>
     <action>Resolve recommended inputs if present: epics_file, prd_file, architecture_file</action>
@@ -240,7 +240,7 @@ Will update existing story file rather than creating new one.
   </step>
 
   <step n="8" goal="Validate, save, and mark story drafted" tag="sprint-status">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {bmad_folder}/core/tasks/validate-workflow.xml</invoke-task>
     <action>Save document unconditionally (non-interactive default). In interactive mode, allow user confirmation.</action>
 
     <!-- Mark story as drafted in sprint status -->

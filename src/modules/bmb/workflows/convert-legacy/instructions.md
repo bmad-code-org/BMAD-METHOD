@@ -1,7 +1,7 @@
 # Convert Legacy - v4 to v6 Conversion Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<parameter name="You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/convert-legacy/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<parameter name="You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/convert-legacy/workflow.yaml</critical>
 <critical>Communicate in {communication_language} throughout the conversion process</critical>
 
 <workflow>
@@ -70,8 +70,8 @@ For Modules:
 <action if="custom module"><ask>Enter custom module code (kebab-case):</ask></action>
 <action>Determine installation path based on type and module</action>
 <critical>IMPORTANT: All paths must use final BMAD installation locations, not src paths!</critical>
-<action>Show user the target location: {project-root}/bmad/{{target_module}}/{{item_type}}/{{item_name}}</action>
-<action>Note: Files will be created in bmad/ but all internal paths will reference {project-root}/bmad/ locations</action>
+<action>Show user the target location: {project-root}/{bmad_folder}/{{target_module}}/{{item_type}}/{{item_name}}</action>
+<action>Note: Files will be created in {bmad_folder}/ but all internal paths will reference {project-root}/{bmad_folder}/ locations</action>
 <ask>Proceed with this location? (y/n)</ask>
 </step>
 
@@ -150,16 +150,16 @@ For Modules:
    - Convert task dependencies to workflow references
    - Map template dependencies to v6 workflows
    - Preserve checklist and data file references
-   - CRITICAL: All paths must use {project-root}/bmad/{{module}}/ NOT src/
+   - CRITICAL: All paths must use {project-root}/{bmad_folder}/{{module}}/ NOT src/
 
 <action>Generate the converted v6 agent YAML file (.agent.yaml)</action>
 <action>Example path conversions:
 
-- exec="{project-root}/bmad/{{target_module}}/tasks/task-name.md"
-- run-workflow="{project-root}/bmad/{{target_module}}/workflows/workflow-name/workflow.yaml"
-- data="{project-root}/bmad/{{target_module}}/data/data-file.yaml"
+- exec="{project-root}/{bmad_folder}/{{target_module}}/tasks/task-name.md"
+- run-workflow="{project-root}/{bmad_folder}/{{target_module}}/workflows/workflow-name/workflow.yaml"
+- data="{project-root}/{bmad_folder}/{{target_module}}/data/data-file.yaml"
   </action>
-  <action>Save to: bmad/{{target_module}}/agents/{{agent_name}}.agent.yaml (physical location)</action>
+  <action>Save to: {bmad_folder}/{{target_module}}/agents/{{agent_name}}.agent.yaml (physical location)</action>
   <action>Note: The build process will later compile this to .md with XML format</action>
   <goto step="6">Continue to Validation</goto>
   </step>
@@ -172,7 +172,7 @@ For Modules:
 - Any special behaviors
 
 <invoke-workflow>
-  workflow: {project-root}/bmad/bmb/workflows/create-agent/workflow.yaml
+  workflow: {project-root}/{bmad_folder}/bmb/workflows/create-agent/workflow.yaml
   inputs:
     - agent_name: {{extracted_name}}
     - agent_purpose: {{extracted_purpose}}
@@ -193,7 +193,7 @@ For Modules:
 
 2. Convert template sections to instructions.md:
    - Each YAML section → workflow step
-   - `elicit: true` → `<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>` tag
+   - `elicit: true` → `<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>` tag
    - Conditional sections → `if="condition"` attribute
    - Repeatable sections → `repeat="for-each"` attribute
    - Section instructions → step content
@@ -212,7 +212,7 @@ For Modules:
 
 ```yaml
 # Critical variables from config
-config_source: '{project-root}/bmad/{{target_module}}/config.yaml'
+config_source: '{project-root}/{bmad_folder}/{{target_module}}/config.yaml'
 output_folder: '{config_source}:output_folder'
 user_name: '{config_source}:user_name'
 communication_language: '{config_source}:communication_language'
@@ -220,7 +220,7 @@ date: system-generated
 ```
 
 <invoke-workflow>
-  workflow: {project-root}/bmad/bmb/workflows/create-workflow/workflow.yaml
+  workflow: {project-root}/{bmad_folder}/bmb/workflows/create-workflow/workflow.yaml
   inputs:
     - workflow_name: {{template_name}}
     - workflow_type: document
@@ -239,7 +239,7 @@ date: system-generated
 <action>Create module blueprint with all components</action>
 
 <invoke-workflow>
-  workflow: {project-root}/bmad/bmb/workflows/create-module/workflow.yaml
+  workflow: {project-root}/{bmad_folder}/bmb/workflows/create-module/workflow.yaml
   inputs:
     - module_name: {{module_name}}
     - components: {{component_list}}
@@ -277,7 +277,7 @@ date: system-generated
    </check>
 
 4. Handle special v4 patterns:
-   - 1-9 elicitation menus → v6 <invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
+   - 1-9 elicitation menus → v6 <invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
    - Agent permissions → note in instructions
    - YOLO mode → autonomous flag or optional steps
    - Critical notices → workflow.yaml comments
@@ -286,7 +286,7 @@ date: system-generated
 
 ```yaml
 # Critical variables from config
-config_source: '{project-root}/bmad/{{target_module}}/config.yaml'
+config_source: '{project-root}/{bmad_folder}/{{target_module}}/config.yaml'
 output_folder: '{config_source}:output_folder'
 user_name: '{config_source}:user_name'
 communication_language: '{config_source}:communication_language'
@@ -294,7 +294,7 @@ date: system-generated
 ```
 
 <invoke-workflow>
-  workflow: {project-root}/bmad/bmb/workflows/create-workflow/workflow.yaml
+  workflow: {project-root}/{bmad_folder}/bmb/workflows/create-workflow/workflow.yaml
   inputs:
     - workflow_name: {{task_name}}
     - workflow_type: {{confirmed_workflow_type}}

@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Windsurf IDE setup handler
@@ -31,8 +32,14 @@ class WindsurfSetup extends BaseIdeSetup {
     // Clean up any existing BMAD workflows before reinstalling
     await this.cleanup(projectDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only)
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Convert artifacts to agent format for module organization
+    const agents = agentArtifacts.map((a) => ({ module: a.module, name: a.name }));
+
+    // Get tasks, tools, and workflows (standalone only)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
@@ -49,14 +56,13 @@ class WindsurfSetup extends BaseIdeSetup {
       await this.ensureDir(path.join(bmadWorkflowsDir, module, 'workflows'));
     }
 
-    // Process agents as workflows with organized structure
+    // Process agent launchers as workflows with organized structure
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readFile(agent.path);
-      const processedContent = this.createWorkflowContent(agent, content);
+    for (const artifact of agentArtifacts) {
+      const processedContent = this.createWorkflowContent({ module: artifact.module, name: artifact.name }, artifact.content);
 
       // Organized path: bmad/module/agents/agent-name.md
-      const targetPath = path.join(bmadWorkflowsDir, agent.module, 'agents', `${agent.name}.md`);
+      const targetPath = path.join(bmadWorkflowsDir, artifact.module, 'agents', `${artifact.name}.md`);
       await this.writeFile(targetPath, processedContent);
       agentCount++;
     }
@@ -127,13 +133,17 @@ class WindsurfSetup extends BaseIdeSetup {
    * Create workflow content for an agent
    */
   createWorkflowContent(agent, content) {
+    // Strip existing frontmatter from launcher
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = content.replace(frontmatterRegex, '');
+
     // Create simple Windsurf frontmatter matching original format
     let workflowContent = `---
 description: ${agent.name}
 auto_execution_mode: 3
 ---
 
-${content}`;
+${contentWithoutFrontmatter}`;
 
     return workflowContent;
   }

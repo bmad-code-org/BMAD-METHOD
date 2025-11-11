@@ -1,0 +1,47 @@
+# BMad Quick Flow - Greenfield
+# Fast implementation path with tech-spec planning (1-15 stories typically)
+
+method_name: "BMad Quick Flow"
+track: "quick-flow"
+field_type: "greenfield"
+description: "Fast tech-spec based implementation for greenfield projects"
+
+phases:
+  - phase: 0
+    name: "Discovery (Optional)"
+    optional: true
+    note: "User-selected during workflow-init"
+    workflows:
+      - id: "brainstorm-project"
+        optional: true
+        agent: "analyst"
+        command: "brainstorm-project"
+        included_by: "user_choice"
+
+      - id: "research"
+        optional: true
+        agent: "analyst"
+        command: "research"
+        included_by: "user_choice"
+        note: "Can have multiple research workflows"
+
+  - phase: 1
+    name: "Planning"
+    required: true
+    workflows:
+      - id: "tech-spec"
+        required: true
+        agent: "pm"
+        command: "tech-spec"
+        output: "Technical Specification with stories (auto-detects epic if 2+ stories)"
+        note: "Quick Spec Flow - implementation-focused planning"
+
+  - phase: 2
+    name: "Implementation"
+    required: true
+    workflows:
+      - id: "sprint-planning"
+        required: true
+        agent: "sm"
+        command: "sprint-planning"
+        note: "Creates sprint plan with all stories - subsequent work tracked in sprint plan output, not workflow-status"

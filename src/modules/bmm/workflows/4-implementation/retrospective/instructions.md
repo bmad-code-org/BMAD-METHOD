@@ -1,7 +1,7 @@
 # Retrospective - Epic Completion Review Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/4-implementation/retrospective/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 
@@ -32,7 +32,7 @@ PARTY MODE PROTOCOL:
 
 **Epic Discovery (SELECTIVE LOAD):**
 
-1. Determine completed epic number (from sprint-status or user)
+1. Determine completed epic number (from {sprint_status_file} or user)
 2. If sharded: Load ONLY `epic-{epic_num}.md`
 3. If whole: Load complete epics file and extract relevant epic
 
@@ -59,7 +59,7 @@ PARTY MODE PROTOCOL:
 Bob (Scrum Master): "Welcome to the retrospective, {user_name}. Let me help you identify which epic we just completed. I'll check sprint-status first, but you're the ultimate authority on what we're reviewing today."
 </output>
 
-<action>PRIORITY 1: Check sprint-status.yaml first</action>
+<action>PRIORITY 1: Check {sprint_status_file} first</action>
 
 <action>Load the FULL file: {sprint_status_file}</action>
 <action>Read ALL development_status entries</action>
@@ -71,7 +71,7 @@ Bob (Scrum Master): "Welcome to the retrospective, {user_name}. Let me help you 
   <action>Present finding to user with context</action>
 
   <output>
-Bob (Scrum Master): "Based on sprint-status.yaml, it looks like Epic {{detected_epic}} was recently completed. Is that the epic you want to review today, {user_name}?"
+Bob (Scrum Master): "Based on {sprint_status_file}, it looks like Epic {{detected_epic}} was recently completed. Is that the epic you want to review today, {user_name}?"
   </output>
 
 <action>WAIT for {user_name} to confirm or correct</action>
@@ -92,7 +92,7 @@ Bob (Scrum Master): "Got it, we're reviewing Epic {{epic_number}}. Let me gather
   <action>PRIORITY 2: Ask user directly</action>
 
   <output>
-Bob (Scrum Master): "I'm having trouble detecting the completed epic from sprint-status.yaml. {user_name}, which epic number did you just complete?"
+Bob (Scrum Master): "I'm having trouble detecting the completed epic from {sprint_status_file}. {user_name}, which epic number did you just complete?"
   </output>
 
 <action>WAIT for {user_name} to provide epic number</action>
@@ -116,7 +116,7 @@ Bob (Scrum Master): "I found stories for Epic {{detected_epic}} in the stories f
 
 <action>Once {{epic_number}} is determined, verify epic completion status</action>
 
-<action>Find all stories for epic {{epic_number}} in sprint-status.yaml:
+<action>Find all stories for epic {{epic_number}} in {sprint_status_file}:
 
 - Look for keys starting with "{{epic_number}}-" (e.g., "1-1-", "1-2-", etc.)
 - Exclude epic key itself ("epic-{{epic_number}}")
@@ -1346,7 +1346,7 @@ Bob (Scrum Master): "See you all when prep work is done. Meeting adjourned!"
 ✅ Retrospective document saved: {retrospectives_folder}/epic-{{epic_number}}-retro-{date}.md
 </output>
 
-<action>Update sprint-status.yaml to mark retrospective as completed</action>
+<action>Update {sprint_status_file} to mark retrospective as completed</action>
 
 <action>Load the FULL file: {sprint_status_file}</action>
 <action>Find development_status key "epic-{{epic_number}}-retrospective"</action>
@@ -1356,7 +1356,7 @@ Bob (Scrum Master): "See you all when prep work is done. Meeting adjourned!"
 
 <check if="update successful">
   <output>
-✅ Retrospective marked as completed in sprint-status.yaml
+✅ Retrospective marked as completed in {sprint_status_file}
 
 Retrospective key: epic-{{epic_number}}-retrospective
 Status: {{previous_status}} → done
@@ -1365,9 +1365,9 @@ Status: {{previous_status}} → done
 
 <check if="retrospective key not found">
   <output>
-⚠️ Could not update retrospective status: epic-{{epic_number}}-retrospective not found in sprint-status.yaml
+⚠️ Could not update retrospective status: epic-{{epic_number}}-retrospective not found in {sprint_status_file}
 
-Retrospective document was saved successfully, but sprint-status.yaml may need manual update.
+Retrospective document was saved successfully, but {sprint_status_file} may need manual update.
 </output>
 </check>
 

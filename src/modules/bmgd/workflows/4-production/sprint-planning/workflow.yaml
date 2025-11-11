@@ -3,14 +3,14 @@ description: "Generate and manage the sprint status tracking file for Phase 4 im
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmgd/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/sprint-planning"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/sprint-planning"
 instructions: "{installed_path}/instructions.md"
 template: "{installed_path}/sprint-status-template.yaml"
 validation: "{installed_path}/checklist.md"
@@ -24,7 +24,7 @@ variables:
   # Tracking system configuration
   tracking_system: "file-system" # Options: file-system, Future will support other options from config of mcp such as jira, linear, trello
   story_location: "{project-root}/docs/stories" # Relative path for file-system, Future will support URL for Jira/Linear/Trello
-  story_location_absolute: "{config_source}:dev_story_location" # Absolute path for file operations
+  story_location_absolute: "{config_source}:dev_ephemeral_location" # Absolute path for file operations
 
   # Source files (file-system only)
   epics_location: "{output_folder}" # Directory containing epic*.md files

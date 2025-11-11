@@ -12,7 +12,7 @@
 
 <action>Read the completed tech-spec.md file from {output_folder}/tech-spec.md</action>
 <action>Load bmm-workflow-status.yaml from {output_folder}/bmm-workflow-status.yaml (if exists)</action>
-<action>Extract dev_story_location from config (where stories are stored)</action>
+<action>Extract dev_ephemeral_location from config (where stories are stored)</action>
 
 <action>Extract from the ENHANCED tech-spec structure:
 
@@ -178,7 +178,7 @@ Since tech-spec is context-rich, populate ALL template fields:
   </guidelines>
 
 <for-each story="1 to story_count">
-  <action>Set story_path_{n} = "{dev_story_location}/story-{epic_slug}-{n}.md"</action>
+  <action>Set story_path_{n} = "{dev_ephemeral_location}/story-{epic_slug}-{n}.md"</action>
   <action>Create story file from user_story_template with the following content:</action>
 
   <template-output file="{story_path_{n}}">
@@ -271,7 +271,7 @@ Epic: Icon Reliability
 
 <step n="6" goal="Update status and populate story backlog">
 
-<invoke-workflow path="{project-root}/bmad/bmm/workflows/workflow-status">
+<invoke-workflow path="{project-root}/{bmad_folder}/bmm/workflows/workflow-status">
   <param>mode: update</param>
   <param>action: complete_workflow</param>
   <param>workflow_name: tech-spec</param>
@@ -391,7 +391,7 @@ Stories are implementation-ready!</output>
 - `story-{epic_slug}-3.md` → Third story
   {{/if}}
 
-**Story Location:** `{dev_story_location}/`
+**Story Location:** `{dev_ephemeral_location}/`
 
 **Next Steps - Iterative Implementation:**
 
@@ -408,7 +408,7 @@ Since the tech-spec is now CONTEXT-RICH with:
 **You can skip story-context for most Level 1 stories!**
 
 **1. Start with Story 1:**
-a. Load DEV agent: `{project-root}/bmad/bmm/agents/dev.md`
+a. Load DEV agent: `{project-root}/{bmad_folder}/bmm/agents/dev.md`
 b. Run `dev-story` workflow (select story-{epic_slug}-1.md)
 c. Tech-spec provides all context needed
 d. Implement story 1
@@ -429,7 +429,7 @@ d. Implement story 1
 
 Only needed for extremely complex multi-story dependencies:
 
-1. Load SM agent: `{project-root}/bmad/bmm/agents/sm.md`
+1. Load SM agent: `{project-root}/{bmad_folder}/bmm/agents/sm.md`
 2. Run `story-context` workflow for complex stories
 3. Then load DEV agent and run `dev-story`
 

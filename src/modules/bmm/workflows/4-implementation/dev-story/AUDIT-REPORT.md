@@ -26,7 +26,7 @@ The dev-story workflow is well-structured and follows most BMAD v6 standards. Th
 
 The workflow.yaml contains all required standard config variables:
 
-- ✓ `config_source: "{project-root}/bmad/bmm/config.yaml"` - Correctly defined
+- ✓ `config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"` - Correctly defined
 - ✓ `output_folder: "{config_source}:output_folder"` - Pulls from config_source
 - ✓ `user_name: "{config_source}:user_name"` - Pulls from config_source
 - ✓ `communication_language: "{config_source}:communication_language"` - Pulls from config_source
@@ -67,7 +67,7 @@ These variables appear to be pulling from config.yaml but are not explicitly def
 
 ### Unused Variables (Bloat)
 
-1. **context_path** - Defined as `"{config_source}:dev_story_location"` but never used. This duplicates `story_dir` functionality.
+1. **context_path** - Defined as `"{config_source}:dev_ephemeral_location"` but never used. This duplicates `story_dir` functionality.
 
 ---
 
@@ -140,7 +140,7 @@ The workflow correctly sets `web_bundle: false`. This is the expected configurat
 ### Unused YAML Fields
 
 1. **context_path** (line 11 in workflow.yaml)
-   - Defined as: `"{config_source}:dev_story_location"`
+   - Defined as: `"{config_source}:dev_ephemeral_location"`
    - Never referenced in instructions.md
    - Duplicates functionality of `story_dir` variable
    - **Recommendation:** Remove this variable as `story_dir` serves the same purpose

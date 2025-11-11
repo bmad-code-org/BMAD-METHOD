@@ -20,7 +20,7 @@ recommended_inputs: # optional, can be omitted
   - example_input: "{project-root}/{path/to/file.md}"
 
 # Module path and component files
-installed_path: "{project-root}/bmad/{module-code}/workflows/{workflow-code}"
+installed_path: "{project-root}/{bmad_folder}/{module-code}/workflows/{workflow-code}"
 template: "{installed_path}/template.md" # optional, can be omitted
 instructions: "{installed_path}/instructions.md" # optional, can be omitted
 validation: "{installed_path}/checklist.md" # optional, can be omitted
@@ -43,23 +43,23 @@ web_bundle: #optional, can be omitted
   description: "{WORKFLOW_DESCRIPTION}"
   author: "BMad"
 
-  # Core workflow files (paths relative to bmad/ root)
-  instructions: "bmad/{module-code}/workflows/{workflow-code}/instructions.md"
-  validation: "bmad/{module-code}/workflows/{workflow-code}/checklist.md"
-  template: "bmad/{module-code}/workflows/{workflow-code}/template.md" # if document workflow
+  # Core workflow files (paths relative to {bmad_folder}/ root)
+  instructions: "{bmad_folder}/{module-code}/workflows/{workflow-code}/instructions.md"
+  validation: "{bmad_folder}/{module-code}/workflows/{workflow-code}/checklist.md"
+  template: "{bmad_folder}/{module-code}/workflows/{workflow-code}/template.md" # if document workflow
 
   # Reference any data files or additional workflows (no config_source allowed)
-  # brain_techniques: "bmad/{module-code}/workflows/{workflow-code}/data-file.csv"
-  # sub_workflow: "bmad/{module-code}/workflows/other-workflow/workflow.yaml"
+  # brain_techniques: "{bmad_folder}/{module-code}/workflows/{workflow-code}/data-file.csv"
+  # sub_workflow: "{bmad_folder}/{module-code}/workflows/other-workflow/workflow.yaml"
 
   # CRITICAL: List ALL files used by this workflow
   # This includes instructions, validation, templates, data files,
   # and any files referenced within those files
   web_bundle_files:
-    - "bmad/{module-code}/workflows/{workflow-code}/instructions.md"
-    - "bmad/{module-code}/workflows/{workflow-code}/checklist.md"
-    - "bmad/{module-code}/workflows/{workflow-code}/template.md"
+    - "{bmad_folder}/{module-code}/workflows/{workflow-code}/instructions.md"
+    - "{bmad_folder}/{module-code}/workflows/{workflow-code}/checklist.md"
+    - "{bmad_folder}/{module-code}/workflows/{workflow-code}/template.md"
     # Add ALL referenced files here - examine instructions.md and template.md
     # for any file paths and include them all
-    # - "bmad/{module-code}/workflows/{workflow-code}/data/example.csv"
-    # - "bmad/{module-code}/templates/shared-template.md"
+    # - "{bmad_folder}/{module-code}/workflows/{workflow-code}/data/example.csv"
+    # - "{bmad_folder}/{module-code}/templates/shared-template.md"

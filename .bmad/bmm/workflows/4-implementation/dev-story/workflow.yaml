@@ -1,0 +1,26 @@
+name: dev-story
+description: "Execute a story by implementing tasks/subtasks, writing tests, validating, and updating the story file per acceptance criteria"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+story_dir: "{config_source}:dev_ephemeral_location"
+run_until_complete: "{config_source}:run_until_complete"
+run_tests_command: "{config_source}:run_tests_command"
+date: system-generated
+
+story_file: "" # Explicit story path; auto-discovered if empty
+# Context file uses same story_key as story file (e.g., "1-2-user-authentication.context.xml")
+context_file: "{story_dir}/{{story_key}}.context.xml"
+
+# Workflow components
+installed_path: "{project-root}/.bmad/bmm/workflows/4-implementation/dev-story"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+standalone: true

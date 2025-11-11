@@ -1,7 +1,7 @@
 # Tech Spec Validation Checklist
 
 ```xml
-<checklist id="bmad/bmm/workflows/4-implementation/epic-tech-context/checklist">
+<checklist id="{bmad_folder}/bmm/workflows/4-implementation/epic-tech-context/checklist">
   <item>Overview clearly ties to PRD goals</item>
   <item>Scope explicitly lists in-scope and out-of-scope</item>
   <item>Design lists all services/modules with responsibilities</item>

@@ -88,6 +88,7 @@ function buildAgentSchema(expectedModule) {
       critical_actions: z.array(createNonEmptyString('agent.critical_actions[]')).optional(),
       menu: z.array(buildMenuItemSchema()).min(1, { message: 'agent.menu must include at least one entry' }),
       prompts: z.array(buildPromptSchema()).optional(),
+      webskip: z.boolean().optional(),
     })
     .strict();
 }
@@ -142,9 +143,12 @@ function buildPersonaSchema() {
       role: createNonEmptyString('agent.persona.role'),
       identity: createNonEmptyString('agent.persona.identity'),
       communication_style: createNonEmptyString('agent.persona.communication_style'),
-      principles: z
-        .array(createNonEmptyString('agent.persona.principles[]'))
-        .min(1, { message: 'agent.persona.principles must include at least one entry' }),
+      principles: z.union([
+        createNonEmptyString('agent.persona.principles'),
+        z
+          .array(createNonEmptyString('agent.persona.principles[]'))
+          .min(1, { message: 'agent.persona.principles must include at least one entry' }),
+      ]),
     })
     .strict();
 }
