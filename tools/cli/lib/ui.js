@@ -127,7 +127,7 @@ class UI {
     // Check for existing configured IDEs
     const { Detector } = require('../installers/lib/core/detector');
     const detector = new Detector();
-    const bmadDir = path.join(projectDir || process.cwd(), 'bmad');
+    const bmadDir = path.join(projectDir || process.env.INIT_CWD || process.cwd(), 'bmad');
     const existingInstall = await detector.detect(bmadDir);
     const configuredIdes = existingInstall.ides || [];
 
@@ -404,12 +404,12 @@ class UI {
         type: 'input',
         name: 'directory',
         message: `Installation directory:`,
-        default: process.cwd(),
+        default: process.env.INIT_CWD || process.cwd(),
         validate: async (input) => this.validateDirectory(input),
         filter: (input) => {
           // If empty, use the default
           if (!input || input.trim() === '') {
-            return process.cwd();
+            return process.env.INIT_CWD || process.cwd();
           }
           return this.expandUserPath(input);
         },
