@@ -64,6 +64,53 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Generate web bundles
+        run: npm run bundle
+
+      - name: Package bundles for release
+        run: |
+          mkdir -p dist/release-bundles
+
+          # Create staging directory for each platform
+          mkdir -p dist/staging/{claude-code,chatgpt,gemini}
+
+          # Collect all modules per platform
+          cp -r src/modules/bmm/sub-modules/claude-code/* dist/staging/claude-code/ 2>/dev/null || true
+          cp -r src/modules/bmb/sub-modules/claude-code/* dist/staging/claude-code/ 2>/dev/null || true
+          cp -r src/modules/cis/sub-modules/claude-code/* dist/staging/claude-code/ 2>/dev/null || true
+
+          cp -r src/modules/bmm/sub-modules/chatgpt/* dist/staging/chatgpt/ 2>/dev/null || true
+          cp -r src/modules/bmb/sub-modules/chatgpt/* dist/staging/chatgpt/ 2>/dev/null || true
+          cp -r src/modules/cis/sub-modules/chatgpt/* dist/staging/chatgpt/ 2>/dev/null || true
+
+          cp -r src/modules/bmm/sub-modules/gemini/* dist/staging/gemini/ 2>/dev/null || true
+          cp -r src/modules/bmb/sub-modules/gemini/* dist/staging/gemini/ 2>/dev/null || true
+          cp -r src/modules/cis/sub-modules/gemini/* dist/staging/gemini/ 2>/dev/null || true
+
+          # Verify bundles were copied (fail if completely empty)
+          for platform in claude-code chatgpt gemini; do
+            if [ ! "$(ls -A dist/staging/$platform)" ]; then
+              echo "❌ ERROR: No bundles found for $platform"
+              echo "This likely means 'npm run bundle' failed or bundles weren't generated"
+              exit 1
+            fi
+            echo "✅ $platform: $(find dist/staging/$platform -name '*.md' | wc -l) bundles"
+          done
+
+          # Create platform-specific archives
+          tar -czf dist/release-bundles/bmad-bundles-claude-code-v${{ steps.version.outputs.new_version }}.tar.gz \
+            -C dist/staging/claude-code .
+
+          tar -czf dist/release-bundles/bmad-bundles-chatgpt-v${{ steps.version.outputs.new_version }}.tar.gz \
+            -C dist/staging/chatgpt .
+
+          tar -czf dist/release-bundles/bmad-bundles-gemini-v${{ steps.version.outputs.new_version }}.tar.gz \
+            -C dist/staging/gemini .
+
+          # Create all-platforms archive
+          tar -czf dist/release-bundles/bmad-bundles-all-v${{ steps.version.outputs.new_version }}.tar.gz \
+            -C dist/staging .
+
       - name: Commit version bump
         run: |
           git add .
@@ -151,23 +198,39 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish
 
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release with Bundles
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.new_version }}
-          release_name: "BMad Method v${{ steps.version.outputs.new_version }}"
-          body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+          name: "BMad Method v${{ steps.version.outputs.new_version }}"
+          body: |
+            ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+
+            ## 📦 Web Bundles
+
+            Download platform-specific bundles for use in AI platforms:
+
+            - `bmad-bundles-claude-code-v${{ steps.version.outputs.new_version }}.tar.gz` - Claude Code / Claude Projects
+            - `bmad-bundles-chatgpt-v${{ steps.version.outputs.new_version }}.tar.gz` - ChatGPT Custom Instructions
+            - `bmad-bundles-gemini-v${{ steps.version.outputs.new_version }}.tar.gz` - Gemini Gems
+            - `bmad-bundles-all-v${{ steps.version.outputs.new_version }}.tar.gz` - All platforms
+
+            **Latest bundles** (bleeding edge): https://bmad-code-org.github.io/bmad-bundles/
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(steps.version.outputs.new_version, 'alpha') || contains(steps.version.outputs.new_version, 'beta') }}
+          files: |
+            dist/release-bundles/*.tar.gz
 
       - name: Summary
         run: |
-          echo "🎉 Successfully released v${{ steps.version.outputs.new_version }}!"
-          echo "📦 Published to NPM with @latest tag"
-          echo "🏷️ Git tag: v${{ steps.version.outputs.new_version }}"
-          echo "✅ Users running 'npx bmad-method install' will now get version ${{ steps.version.outputs.new_version }}"
-          echo ""
-          echo "📝 Release notes preview:"
-          cat release_notes.md
+          echo "## 🎉 Successfully released v${{ steps.version.outputs.new_version }}!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Distribution" >> $GITHUB_STEP_SUMMARY
+          echo "- **NPM**: Published with @latest tag" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitHub Release**: https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v${{ steps.version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Web Bundles**: Attached to GitHub Release (4 archives)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Installation" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "npx bmad-method@${{ steps.version.outputs.new_version }} install" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

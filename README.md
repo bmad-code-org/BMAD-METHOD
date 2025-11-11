@@ -233,6 +233,8 @@ your-project/
 2. Run `*workflow-init` to set up your project workflow path
 3. Follow the [Quick Start](#-quick-start) guide above to choose your planning track
 
+**Alternative:** [**Web Bundles**](./docs/USING_WEB_BUNDLES.md) - Use BMAD agents in Claude Projects, ChatGPT, or Gemini without installation
+
 ---
 
 ## 🎯 Working with Agents & Commands

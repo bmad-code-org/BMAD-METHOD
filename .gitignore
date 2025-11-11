@@ -54,8 +54,14 @@ flattened-codebase.xml
 #UAT template testing output files
 tools/template-test-generator/test-scenarios/
 
-# Bundler temporary files
+# Bundler temporary files and generated bundles
 .bundler-temp/
+
+# Generated web bundles (built by CI, not committed)
+src/modules/bmm/sub-modules/
+src/modules/bmb/sub-modules/
+src/modules/cis/sub-modules/
+src/modules/bmgd/sub-modules/
 
 # Test Install Output
 
