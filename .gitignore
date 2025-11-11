@@ -41,6 +41,7 @@ cursor
 .mcp.json
 CLAUDE.local.md
 .serena/
+.claude/settings.local.json
 
 # Project-specific
 .bmad-core
@@ -58,4 +59,4 @@ tools/template-test-generator/test-scenarios/
 
 # Test Install Output
 
-z*/
+z*/.claude/settings.local.json

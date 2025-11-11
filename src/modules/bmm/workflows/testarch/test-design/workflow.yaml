@@ -1,6 +1,6 @@
 # Test Architect workflow: test-design
 name: testarch-test-design
-description: "Two-phase workflow: (1) System-level testability review in Phase 3, or (2) Epic-level test planning in Phase 4. Auto-detects mode based on project phase."
+description: "Dual-mode workflow: (1) System-level testability review in Solutioning phase, or (2) Epic-level test planning in Implementation phase. Auto-detects mode based on project phase."
 author: "BMad"
 
 # Critical variables from config

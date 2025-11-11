@@ -167,7 +167,7 @@ Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
 | **Phase 4 Per-Story** | *atdd, *automate, \*test-review, \*trace | Per story        | Test implementation and quality validation     |
 | **Release Gate**      | *nfr-assess, *trace (Phase 2: gate)      | Per epic/release | Go/no-go decision                              |
 
-**Note**: Like `*trace`, `*test-design` is now a two-phase workflow: Phase 1 (system-level testability review in Phase 3) + Phase 2 (epic-level test planning in Phase 4). Auto-detects mode based on project phase.
+**Note**: Like `*trace`, `*test-design` is now a dual-mode workflow: system-level mode (testability review in Phase 3) and epic-level mode (test planning in Phase 4). Auto-detects mode based on project phase.
 
 ### Unique Directory Architecture
 
