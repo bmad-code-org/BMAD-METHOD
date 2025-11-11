@@ -22,7 +22,7 @@ web_bundle:
   description: "Orchestrates group discussions between all installed BMAD agents, enabling natural multi-agent conversations"
   author: "BMad"
   instructions: "{bmad_folder}/core/workflows/party-mode/instructions.md"
-  agent_manifest: "{bmad_folder/_cfg/agent-manifest.csv"
+  agent_manifest: "{bmad_folder}/_cfg/agent-manifest.csv"
   web_bundle_files:
     - "{bmad_folder}/core/workflows/party-mode/instructions.md"
     - "{bmad_folder}/_cfg/agent-manifest.csv"
