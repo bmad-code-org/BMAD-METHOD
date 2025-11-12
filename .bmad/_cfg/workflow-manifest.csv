@@ -42,3 +42,7 @@ name,description,module,path,standalone
 "testarch-trace","Generate requirements-to-tests traceability matrix, analyze coverage, and make quality gate decision (PASS/CONCERNS/FAIL/WAIVED)","bmm","bmad/bmm/workflows/testarch/trace/workflow.yaml","false"
 "workflow-init","Initialize a new BMM project by determining level, type, and creating workflow path","bmm","bmad/bmm/workflows/workflow-status/init/workflow.yaml","true"
 "workflow-status","Lightweight status checker - answers ""what should I do now?"" for any agent. Reads YAML status file for workflow tracking. Use workflow-init for new projects.","bmm","bmad/bmm/workflows/workflow-status/workflow.yaml","true"
+"create-flowchart","Create a flowchart visualization in Excalidraw format for processes, pipelines, or logic flows","bmm","bmad/bmm/workflows/frame-expert/create-flowchart/workflow.yaml","true"
+"create-diagram","Create system architecture diagrams, ERDs, UML diagrams, or general technical diagrams in Excalidraw format","bmm","bmad/bmm/workflows/frame-expert/create-diagram/workflow.yaml","true"
+"create-dataflow","Create data flow diagrams (DFD) in Excalidraw format","bmm","bmad/bmm/workflows/frame-expert/create-dataflow/workflow.yaml","true"
+"create-wireframe","Create website or app wireframes in Excalidraw format","bmm","bmad/bmm/workflows/frame-expert/create-wireframe/workflow.yaml","true"
