@@ -1638,12 +1638,22 @@ class Installer {
         spinner.start('Updating IDE configurations...');
 
         for (const ide of toolConfig.ides) {
-          spinner.text = `Updating ${ide}...`;
+          // Stop spinner before setup() since it may prompt for configuration
+          // (setup() doesn't have preCollectedConfig in compile flow)
+          if (spinner.isSpinning) {
+            spinner.stop();
+          }
+
           await this.ideManager.setup(ide, projectDir, bmadDir, {
             selectedModules: installedModules,
             skipModuleInstall: true, // Skip module installation, just update IDE files
             verbose: config.verbose,
           });
+
+          // Restart spinner after setup() completes (prompts are done)
+          if (!spinner.isSpinning) {
+            spinner.start('Updating IDE configurations...');
+          }
         }
 
         spinner.succeed('IDE configurations updated');

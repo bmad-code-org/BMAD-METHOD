@@ -108,7 +108,14 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Clean up old BMAD installation first
+    // Collect configuration BEFORE cleanup to avoid deleting files before user answers
+    let preCollectedConfig = options.preCollectedConfig;
+    if (!preCollectedConfig || !preCollectedConfig._alreadyConfigured) {
+      // Collect configuration interactively if not already provided
+      preCollectedConfig = await this.collectConfiguration(options);
+    }
+
+    // Clean up old BMAD installation AFTER collecting configuration
     await this.cleanup(projectDir);
 
     // Create .claude/commands directory structure
@@ -139,12 +146,12 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
     // Process Claude Code specific injections for installed modules
     // Use pre-collected configuration if available, or skip if already configured
-    if (options.preCollectedConfig && options.preCollectedConfig._alreadyConfigured) {
+    if (preCollectedConfig?._alreadyConfigured) {
       // IDE is already configured from previous installation, skip prompting
       // Just process with default/existing configuration
       await this.processModuleInjectionsWithConfig(projectDir, bmadDir, options, {});
-    } else if (options.preCollectedConfig) {
-      await this.processModuleInjectionsWithConfig(projectDir, bmadDir, options, options.preCollectedConfig);
+    } else if (preCollectedConfig) {
+      await this.processModuleInjectionsWithConfig(projectDir, bmadDir, options, preCollectedConfig);
     } else {
       await this.processModuleInjections(projectDir, bmadDir, options);
     }
@@ -291,6 +298,37 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     let choices = subagentChoices;
     let location = installLocation;
 
+    // Collect configuration ONCE before processing modules if interactive and not already collected
+    if (interactive && !choices) {
+      // Check if any module has subagents before prompting
+      for (const moduleName of modules) {
+        const configData = await loadModuleInjectionConfig(handler, moduleName);
+        if (configData?.config?.subagents) {
+          // Use the first module's config for prompting (they should all be similar)
+          choices = await this.promptSubagentInstallation(configData.config.subagents);
+
+          if (choices.install !== 'none') {
+            const inquirer = require('inquirer');
+            const locationAnswer = await inquirer.prompt([
+              {
+                type: 'list',
+                name: 'location',
+                message: 'Where would you like to install Claude Code subagents?',
+                choices: [
+                  { name: 'Project level (.claude/agents/)', value: 'project' },
+                  { name: 'User level (~/.claude/agents/)', value: 'user' },
+                ],
+                default: 'project',
+              },
+            ]);
+            location = locationAnswer.location;
+          }
+          break; // Only prompt once
+        }
+      }
+    }
+
+    // Now process each module with the collected configuration
     for (const moduleName of modules) {
       const configData = await loadModuleInjectionConfig(handler, moduleName);
 
@@ -302,27 +340,6 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
       if (interactive) {
         console.log(chalk.cyan(`\nConfiguring ${moduleName} ${handler.replace('-', ' ')} features...`));
-      }
-
-      if (interactive && config.subagents && !choices) {
-        choices = await this.promptSubagentInstallation(config.subagents);
-
-        if (choices.install !== 'none') {
-          const inquirer = require('inquirer');
-          const locationAnswer = await inquirer.prompt([
-            {
-              type: 'list',
-              name: 'location',
-              message: 'Where would you like to install Claude Code subagents?',
-              choices: [
-                { name: 'Project level (.claude/agents/)', value: 'project' },
-                { name: 'User level (~/.claude/agents/)', value: 'user' },
-              ],
-              default: 'project',
-            },
-          ]);
-          location = locationAnswer.location;
-        }
       }
 
       if (config.injections && choices && choices.install !== 'none') {
