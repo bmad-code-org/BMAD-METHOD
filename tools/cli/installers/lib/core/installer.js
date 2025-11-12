@@ -1560,6 +1560,13 @@ class Installer {
         throw new Error(`BMAD not installed at ${bmadDir}`);
       }
 
+      // Extract bmad folder name from the directory path and set it on managers
+      // This ensures generated IDE commands use the correct folder name (e.g., .bmad vs bmad)
+      const bmadFolderName = path.basename(bmadDir);
+      this.bmadFolderName = bmadFolderName; // Store for use in other methods
+      this.moduleManager.setBmadFolderName(bmadFolderName);
+      this.ideManager.setBmadFolderName(bmadFolderName);
+
       let agentCount = 0;
       let taskCount = 0;
 
