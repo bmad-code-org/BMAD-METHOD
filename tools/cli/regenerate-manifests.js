@@ -4,7 +4,7 @@ const { ManifestGenerator } = require('./installers/lib/core/manifest-generator'
 async function regenerateManifests() {
   const generator = new ManifestGenerator();
   const targetDir = process.argv[2] || 'z1';
-  const bmadDir = path.join(process.cwd(), targetDir, 'bmad');
+  const bmadDir = path.join(process.env.INIT_CWD || process.cwd(), targetDir, 'bmad');
 
   // List of modules to include in manifests
   const selectedModules = ['bmb', 'bmm', 'cis'];

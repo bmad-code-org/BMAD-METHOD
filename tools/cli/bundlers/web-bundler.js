@@ -28,7 +28,7 @@ class WebBundler {
     this.discoveredTeams = [];
 
     // Temporary directory for generated manifests
-    this.tempDir = path.join(process.cwd(), '.bundler-temp');
+    this.tempDir = path.join(process.env.INIT_CWD || process.cwd(), '.bundler-temp');
     this.tempManifestDir = path.join(this.tempDir, 'bmad', '_cfg');
 
     // Bundle statistics

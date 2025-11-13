@@ -27,7 +27,7 @@ if (isNpxExecution) {
     // Execute CLI from user's working directory (process.cwd()), not npm cache
     execSync(`node "${bmadCliPath}" ${args.join(' ')}`, {
       stdio: 'inherit',
-      cwd: process.cwd(), // This preserves the user's working directory
+      cwd: process.env.INIT_CWD || process.cwd(), // This preserves the user's working directory
     });
   } catch (error) {
     process.exit(error.status || 1);

@@ -27,7 +27,7 @@ program
   .action(async (options) => {
     try {
       // Clean output directory first
-      const outputDir = path.isAbsolute(options.output) ? options.output : path.join(process.cwd(), options.output);
+      const outputDir = path.isAbsolute(options.output) ? options.output : path.join(process.env.INIT_CWD || process.cwd(), options.output);
 
       if (await fs.pathExists(outputDir)) {
         console.log(chalk.cyan(`🧹 Cleaning ${options.output}...`));
@@ -156,7 +156,7 @@ program
   .action(async () => {
     try {
       const fs = require('fs-extra');
-      const outputDir = path.join(process.cwd(), 'web-bundles');
+      const outputDir = path.join(process.env.INIT_CWD || process.cwd(), 'web-bundles');
 
       if (await fs.pathExists(outputDir)) {
         await fs.remove(outputDir);
