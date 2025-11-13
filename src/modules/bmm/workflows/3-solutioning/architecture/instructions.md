@@ -75,19 +75,23 @@ Please talk to the PM Agent to run the Create PRD workflow first to define your 
 
 </step>
 
-<step n="1" goal="Load and understand project context">
-  <action>Load the PRD using fuzzy matching: {prd_file}, if the PRD is multiple files in a folder, load the index file and all files associated with the PRD</action>
-  <action>Load epics file using fuzzy matching: {epics_file}</action>
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
+<note>After discovery, these content variables are available: {prd_content}, {epics_content}, {ux_design_content}, {document_project_content}</note>
+</step>
 
-<action>Check for UX specification using fuzzy matching:
-<action>Attempt to locate: {ux_spec_file}</action>
-<check if="ux_spec_found">
-<action>Load UX spec and extract architectural implications: - Component complexity (simple forms vs rich interactions) - Animation/transition requirements - Real-time update needs (live data, collaborative features) - Platform-specific UI requirements - Accessibility standards (WCAG compliance level) - Responsive design breakpoints - Offline capability requirements - Performance expectations (load times, interaction responsiveness)
+<step n="1" goal="Load and understand project context">
+  <action>Review loaded PRD: {prd_content} (auto-loaded in Step 0.5 - handles both whole and sharded documents)</action>
+  <action>Review loaded epics: {epics_content}</action>
+
+<action>Check for UX specification:
+<check if="{ux_design_content} is not empty">
+<action>Extract architectural implications from {ux_design_content}: - Component complexity (simple forms vs rich interactions) - Animation/transition requirements - Real-time update needs (live data, collaborative features) - Platform-specific UI requirements - Accessibility standards (WCAG compliance level) - Responsive design breakpoints - Offline capability requirements - Performance expectations (load times, interaction responsiveness)
 </action>
 </check>
 </action>
 
-<action>Extract and understand from PRD: - Functional Requirements (what it must do) - Non-Functional Requirements (performance, security, compliance, etc.) - Epic structure and user stories - Acceptance criteria - Any technical constraints mentioned
+<action>Extract and understand from {prd_content}: - Functional Requirements (what it must do) - Non-Functional Requirements (performance, security, compliance, etc.) - Epic structure and user stories - Acceptance criteria - Any technical constraints mentioned
 </action>
 
 <action>Count and assess project scale: - Number of epics: {{epic_count}} - Number of stories: {{story_count}} - Complexity indicators (real-time, multi-tenant, regulated, etc.) - UX complexity level (if UX spec exists) - Novel features
@@ -355,7 +359,6 @@ Provided by Starter: {{yes_if_from_starter}}
 </action>
 
 <template-output>decision_record</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="5" goal="Address cross-cutting concerns">
@@ -385,7 +388,6 @@ Provided by Starter: {{yes_if_from_starter}}
 </action>
 
 <template-output>project_structure</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="7" goal="Design novel architectural patterns" optional="true">
@@ -459,7 +461,6 @@ Provided by Starter: {{yes_if_from_starter}}
   </check>
 
 <template-output>novel_pattern_designs</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="8" goal="Define implementation patterns to prevent agent conflicts">
@@ -552,7 +553,6 @@ Enforcement: "All agents MUST follow this pattern"
 </action>
 
 <template-output>implementation_patterns</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="9" goal="Validate architectural coherence">
@@ -606,7 +606,6 @@ Enforcement: "All agents MUST follow this pattern"
   </action>
 
 <template-output>architecture_document</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="11" goal="Validate document completeness">

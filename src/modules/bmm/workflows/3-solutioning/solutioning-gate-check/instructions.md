@@ -55,31 +55,36 @@
 <template-output>project_context</template-output>
 </step>
 
-<step n="1" goal="Discover and inventory project artifacts">
-<action>Search the {output_folder} for relevant planning and solutioning documents</action>
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
+<note>After discovery, these content variables are available: {prd_content}, {epics_content}, {architecture_content}, {ux_design_content}, {tech_spec_content}, {document_project_content}</note>
+</step>
 
-<action>Locate:
+<step n="1" goal="Inventory loaded project artifacts">
+<action>Review the content loaded by Step 0.5 and create an inventory</action>
 
-- Product Requirements Document (PRD)
-- Architecture
-- Epic and story breakdowns
-- UX Design artifacts if the active path includes UX workflow
-- Any supplementary planning documents
+<action>Inventory of available documents:
+
+- PRD: {prd_content} (loaded if available)
+- Architecture: {architecture_content} (loaded if available)
+- Epics: {epics_content} (loaded if available)
+- UX Design: {ux_design_content} (loaded if available)
+- Tech Spec: {tech_spec_content} (loaded if available, Quick Flow track)
+- Brownfield docs: {document_project_content} (loaded via INDEX_GUIDED if available)
   </action>
 
-<action>Create an inventory of found documents with:
+<action>For each loaded document, extract:
 
 - Document type and purpose
-- File path and last modified date
-- Brief description of what each contains
-- Any missing expected documents flagged as potential issues
+- Brief description of what it contains
+- Flag any expected documents that are missing as potential issues
   </action>
 
 <template-output>document_inventory</template-output>
 </step>
 
 <step n="2" goal="Deep analysis of core planning documents">
-<action>Load and thoroughly analyze each discovered document to extract:
+<action>Thoroughly analyze each loaded document to extract:
   - Core requirements and success criteria
   - Architectural decisions and constraints
   - Technical implementation approaches

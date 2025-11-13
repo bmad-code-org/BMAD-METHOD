@@ -338,18 +338,13 @@ prompt:
   // {{module_name}} Module Installer
   // Custom installation logic
 
-/\*\*
-
-- Module installation hook
-- Called after files are copied but before IDE configuration
--
 - @param {Object} options - Installation options
 - @param {string} options.projectRoot - Project root directory
 - @param {Object} options.config - Module configuration from install-config.yaml
 - @param {Array} options.installedIDEs - List of IDE codes being configured
 - @param {Object} options.logger - Logger instance (log, warn, error methods)
 - @returns {boolean} - true if successful, false to abort installation
-  \*/
+
   async function install(options) {
   const { projectRoot, config, installedIDEs, logger } = options;
 

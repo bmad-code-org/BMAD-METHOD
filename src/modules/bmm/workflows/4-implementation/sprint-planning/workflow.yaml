@@ -39,7 +39,8 @@ variables:
 input_file_patterns:
   epics:
     whole: "{output_folder}/*epic*.md"
-    sharded: "{output_folder}/*epic*/index.md"
+    sharded: "{output_folder}/*epic*/*.md"
+    load_strategy: "FULL_LOAD"
 
 # Output configuration
 default_output_file: "{status_file}"

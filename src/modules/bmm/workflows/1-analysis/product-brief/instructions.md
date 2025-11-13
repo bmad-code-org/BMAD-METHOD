@@ -12,19 +12,13 @@
 
 This workflow may reference: market research, brainstorming documents, user specified other inputs, or brownfield project documentation.
 
-**Discovery Process** (execute for each referenced document):
+**All input files are discovered and loaded automatically via the `discover_inputs` protocol in Step 0.5**
 
-1. **Search for whole document first** - Use fuzzy file matching to find the complete document
-2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand the document structure
-   - Read ALL section files listed in the index
-   - Treat the combined content as if it were a single document
-4. **Brownfield projects**: The `document-project` workflow always creates `{output_folder}/docs/index.md`
+After discovery completes, the following content variables will be available:
 
-**Priority**: If both whole and sharded versions exist, use the whole document.
-
-**Fuzzy matching**: Be flexible with document names - users may use variations in naming conventions.
+- `{research_content}` - Market research or domain research documents
+- `{brainstorming_content}` - Brainstorming session outputs
+- `{document_project_content}` - Brownfield project documentation (intelligently loaded via INDEX_GUIDED strategy)
 
 <workflow>
 
@@ -66,6 +60,10 @@ Product Brief is most valuable for Level 2+ projects, but can help clarify visio
 
 <action>Set standalone_mode = false</action>
 </check>
+</step>
+
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
 </step>
 
 <step n="1" goal="Begin the journey and understand context">

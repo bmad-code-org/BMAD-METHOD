@@ -51,10 +51,15 @@
 </check>
 </step>
 
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
+<note>After discovery, these content variables are available: {prd_content}, {product_brief_content}, {epics_content}, {brainstorming_content}, {document_project_content}</note>
+</step>
+
 <step n="1a" goal="Confirm project understanding or gather basic context">
   <critical>A UX designer must understand the WHY before designing the HOW</critical>
 
-<action>Attempt to load context documents using fuzzy matching: - PRD: {prd_file} - Product Brief: {brief_file} - Brainstorming: {brainstorm_file}
+<action>Review loaded context from Step 0.5: {prd_content}, {product_brief_content}, {epics_content}, {brainstorming_content}
 </action>
 
   <check if="documents_found">

@@ -225,15 +225,11 @@
 
 ### Critical Issues Found
 
-- [ ] Issue 1:
-- [ ] Issue 2:
-- [ ] Issue 3:
+{ list issues }
 
 ### Recommended Actions Before Implementation
 
-1. ***
-2. ***
-3. ***
+{ list actions }
 
 ---
 

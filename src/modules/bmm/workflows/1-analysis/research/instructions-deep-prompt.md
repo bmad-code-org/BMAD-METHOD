@@ -211,8 +211,6 @@ Examples:
 
 <template-output>special_requirements</template-output>
 
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
-
 </step>
 
 <step n="6" goal="Define Validation and Follow-up Strategy">

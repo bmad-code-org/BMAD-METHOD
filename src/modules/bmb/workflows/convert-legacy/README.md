@@ -126,7 +126,7 @@ convert-legacy/
 **Template-to-Workflow Conversion (5c)**
 
 - Converts YAML template sections to workflow steps
-- Maps `elicit: true` flags to `<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>` tags
+- Maps `elicit: true` flags to `<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml</invoke-task>` tags
 - Transforms conditional sections to flow control
 - Creates proper template.md from content structure
 - Integrates v4 create-doc.md task patterns

@@ -114,8 +114,6 @@ Work with the user to establish:
 
 <action if="user_has_questions">Explore surprising data points together</action>
 
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
-
 <template-output>sources_market_size</template-output>
 </step>
 
@@ -239,7 +237,6 @@ For each major segment, research and define:
 - Purchasing frequency
 - Budget allocation
 
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 <template-output>segment*profile*{{segment_number}}</template-output>
 </step>
 
@@ -313,8 +310,7 @@ Use {{current_year}} in all searches.
 
 <action if="user has follow-up questions">Dig deeper based on their interests</action>
 
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
-<template-output>competitor*analysis*{{competitor_name}}</template-output>
+<template-output>competitor-analysis-{{competitor_name}}</template-output>
 </step>
 
 <step n="6c" title="Competitive Positioning Map">
@@ -437,7 +433,6 @@ For each opportunity:
 - Risk assessment
 - Success criteria
 
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 <template-output>market_opportunities</template-output>
 </step>
 

@@ -77,7 +77,7 @@ You must fully embody this agent's persona and follow all activation instruction
     <item cmd="*validate-tech-spec" validate-workflow="{project-root}/.bmad/bmm/workflows/2-plan-workflows/tech-spec/workflow.yaml">Validate Technical Specification Document</item>
     <item cmd="*correct-course" workflow="{project-root}/.bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml">Course Correction Analysis</item>
     <item cmd="*party-mode" workflow="{project-root}/.bmad/core/workflows/party-mode/workflow.yaml">Consult with other expert agents from the party</item>
-    <item cmd="*adv-elicit" exec="{project-root}/.bmad/core/tasks/adv-elicit.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
+    <item cmd="*advanced-elicitation" exec="{project-root}/.bmad/core/tasks/advanced-elicitation.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
     <item cmd="*exit">Exit with confirmation</item>
   </menu>
 </agent>

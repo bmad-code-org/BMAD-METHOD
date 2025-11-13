@@ -1,0 +1,52 @@
+# Correct Course - Sprint Change Management Workflow
+name: "correct-course"
+description: "Navigate significant changes during sprint execution by analyzing impact, proposing solutions, and routing for implementation"
+author: "BMad Method"
+
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+sprint_artifacts: "{config_source}:sprint_artifacts"
+sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+
+# Smart input file references - handles both whole docs and sharded docs
+# Priority: Whole document first, then sharded version
+# Strategy: Load project context for impact analysis
+input_file_patterns:
+  prd:
+    whole: "{output_folder}/*prd*.md"
+    sharded: "{output_folder}/*prd*/*.md"
+    load_strategy: "FULL_LOAD"
+  epics:
+    whole: "{output_folder}/*epic*.md"
+    sharded: "{output_folder}/*epic*/*.md"
+    load_strategy: "FULL_LOAD"
+  architecture:
+    whole: "{output_folder}/*architecture*.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  ux_design:
+    whole: "{output_folder}/*ux*.md"
+    sharded: "{output_folder}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
+  tech_spec:
+    whole: "{output_folder}/tech-spec*.md"
+    load_strategy: "FULL_LOAD"
+  document_project:
+    sharded: "{output_folder}/docs/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course"
+template: false
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+checklist: "{installed_path}/checklist.md"
+default_output_file: "{output_folder}/sprint-change-proposal-{date}.md"
+
+standalone: true
+
+web_bundle: false

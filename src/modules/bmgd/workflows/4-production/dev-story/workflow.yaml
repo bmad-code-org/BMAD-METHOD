@@ -1,0 +1,53 @@
+name: dev-story
+description: "Execute a story by implementing tasks/subtasks, writing tests, validating, and updating the story file per acceptance criteria"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+story_dir: "{config_source}:sprint_artifacts"
+date: system-generated
+
+story_file: "" # Explicit story path; auto-discovered if empty
+# Context file uses same story_key as story file (e.g., "1-2-user-authentication.context.xml")
+context_file: "{story_dir}/{{story_key}}.context.xml"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+
+# Smart input file references - handles both whole docs and sharded docs
+# Priority: Whole document first, then sharded version
+# Strategy: Load necessary context for story implementation
+input_file_patterns:
+  architecture:
+    whole: "{output_folder}/*architecture*.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  tech_spec:
+    whole: "{output_folder}/tech-spec*.md"
+    sharded: "{sprint_artifacts}/tech-spec-epic-*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  ux_design:
+    whole: "{output_folder}/*ux*.md"
+    sharded: "{output_folder}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
+  epics:
+    whole: "{output_folder}/*epic*.md"
+    sharded_index: "{output_folder}/*epic*/index.md"
+    sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
+  document_project:
+    sharded: "{output_folder}/docs/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+# Workflow components
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/dev-story"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+standalone: true
+
+web_bundle: false

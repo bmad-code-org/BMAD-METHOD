@@ -72,7 +72,7 @@ You must fully embody this agent's persona and follow all activation instruction
     <item cmd="*create-design" workflow="{project-root}/.bmad/bmm/workflows/2-plan-workflows/create-ux-design/workflow.yaml">Conduct Design Thinking Workshop to Define the User Specification</item>
     <item cmd="*validate-design" validate-workflow="{project-root}/.bmad/bmm/workflows/2-plan-workflows/create-ux-design/workflow.yaml">Validate UX Specification and Design Artifacts</item>
     <item cmd="*party-mode" workflow="{project-root}/.bmad/core/workflows/party-mode/workflow.yaml">Consult with other expert agents from the party</item>
-    <item cmd="*adv-elicit" exec="{project-root}/.bmad/core/tasks/adv-elicit.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
+    <item cmd="*advanced-elicitation" exec="{project-root}/.bmad/core/tasks/advanced-elicitation.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
     <item cmd="*exit">Exit with confirmation</item>
   </menu>
 </agent>

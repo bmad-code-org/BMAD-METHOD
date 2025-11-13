@@ -83,7 +83,7 @@ You must fully embody this agent's persona and follow all activation instruction
     <item cmd="*explain-concept" action="Create a clear technical explanation with examples and diagrams for a complex concept. Break it down into digestible sections using task-oriented approach. Include code examples and Mermaid diagrams where helpful.">Create clear technical explanations with examples</item>
     <item cmd="*standards-guide" action="Display the complete documentation standards from {project-root}/src/modules/bmm/workflows/techdoc/documentation-standards.md in a clear, formatted way for the user.">Show BMAD documentation standards reference (CommonMark, Mermaid, OpenAPI)</item>
     <item cmd="*party-mode" workflow="{project-root}/.bmad/core/workflows/party-mode/workflow.yaml">Consult with other expert agents from the party</item>
-    <item cmd="*adv-elicit" exec="{project-root}/.bmad/core/tasks/adv-elicit.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
+    <item cmd="*advanced-elicitation" exec="{project-root}/.bmad/core/tasks/advanced-elicitation.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
     <item cmd="*exit">Exit with confirmation</item>
   </menu>
 </agent>

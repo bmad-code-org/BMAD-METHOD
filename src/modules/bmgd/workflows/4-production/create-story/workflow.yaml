@@ -1,0 +1,68 @@
+name: create-story
+description: "Create the next user story markdown from epics/PRD and architecture, using a standard template and saving to the stories folder"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+sprint_artifacts: "{config_source}:sprint_artifacts"
+story_dir: "{sprint_artifacts}"
+
+# Workflow components
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Variables and inputs
+variables:
+  sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml" # Primary source for story tracking
+  epics_file: "{output_folder}/epics.md" # Preferred source for epic/story breakdown
+  prd_file: "{output_folder}/PRD.md" # Fallback for requirements
+  architecture_file: "{output_folder}/architecture.md" # Optional architecture context
+  tech_spec_file: "" # Will be auto-discovered from docs as tech-spec-epic-{{epic_num}}-*.md
+  tech_spec_search_dir: "{project-root}/docs"
+  tech_spec_glob_template: "tech-spec-epic-{{epic_num}}*.md"
+  arch_docs_search_dirs: |
+    - "{project-root}/docs"
+    - "{output_folder}"
+  arch_docs_file_names: |
+    - *architecture*.md
+  story_title: "" # Will be elicited if not derivable
+
+default_output_file: "{story_dir}/{{story_key}}.md"
+
+# Smart input file references - handles both whole docs and sharded docs
+# Priority: Whole document first, then sharded version
+# Strategy: SELECTIVE LOAD - only load the specific epic needed for this story
+input_file_patterns:
+  prd:
+    whole: "{output_folder}/*prd*.md"
+    sharded: "{output_folder}/*prd*/*.md"
+    load_strategy: "FULL_LOAD"
+  tech_spec:
+    whole: "{output_folder}/tech-spec.md"
+    load_strategy: "FULL_LOAD"
+  architecture:
+    whole: "{output_folder}/*architecture*.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  ux_design:
+    whole: "{output_folder}/*ux*.md"
+    sharded: "{output_folder}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
+  epics:
+    whole: "{output_folder}/*epic*.md"
+    sharded_index: "{output_folder}/*epic*/index.md"
+    sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
+  document_project:
+    sharded: "{output_folder}/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+standalone: true
+
+web_bundle: false

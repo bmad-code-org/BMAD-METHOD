@@ -14,19 +14,19 @@
 
 **Check for BMM planning artifacts:**
 
-- PRD files: {output-folder}/_prd_.md or {output-folder}/_prd_/index.md
-- Tech-spec files: {output-folder}/_tech-spec_.md or {output-folder}/_spec_.md
-- Epic files: {output-folder}/_epic_.md or {output-folder}/_epic_/index.md
-- Architecture: {output-folder}/_architecture_.md or {output-folder}/_arch_.md
-- UX Design: {output-folder}/_ux_.md or {output-folder}/_design_.md
-- Product Brief: {output-folder}/\*brief\*.md
-- Research docs: {output-folder}/\*research\*.md
-- Brainstorm docs: {output-folder}/\*brainstorm\*.md
+- PRD files: {output*folder}/\_prd*.md or {output*folder}/\_prd*/index.md
+- Tech-spec files: {output*folder}/\_tech-spec*.md or {output*folder}/\_spec*.md
+- Epic files: {output*folder}/\_epic*.md or {output*folder}/\_epic*/index.md
+- Architecture: {output*folder}/\_architecture*.md or {output*folder}/\_arch*.md
+- UX Design: {output*folder}/\_ux*.md or {output*folder}/\_design*.md
+- Product Brief: {output_folder}/\*brief\*.md
+- Research docs: {output_folder}/\*research\*.md
+- Brainstorm docs: {output_folder}/\*brainstorm\*.md
 
 **Check for implementation artifacts:**
 
 - The following could be in or nested under {output_folder} OR {sprint_artifacts} - CHECK BOTH LOCATIONS
-  - Story files: {output-folder}/stories/*.md or \*\*/stories/*story\*.md
+  - Story files: {output_folder}/stories/*.md or \*\*/stories/*story\*.md
   - Sprint status: {output_folder}/sprint-status.yaml or {sprint_artifacts}/sprint-status.yaml
   - Existing workflow status: {default_output_file} or {sprint_artifacts}/bmm-workflow-status.yaml
 
@@ -660,13 +660,13 @@ For each phase in path file:
 
 - Brainstorm: {output_folder}/brainstorm\*.md
 - Research: {output_folder}/research\*.md
-- Product Brief: {output-folder}/\*brief\*.md
-- PRD: {output-folder}/_prd_.md or {output-folder}/_prd_/index.md
-- Tech-spec: {output-folder}/_tech-spec_.md or {output-folder}/_spec_.md
-- Epics: {output-folder}/_epic_.md or {output-folder}/_epic_/index.md
-- UX Design: {output-folder}/_ux_.md or {output-folder}/_design_.md
-- Architecture: {output-folder}/_architecture_.md or {output-folder}/_arch_.md
-- Sprint Planning: {output-folder}/\*sprint\*.yaml
+- Product Brief: {output_folder}/\*brief\*.md
+- PRD: {output*folder}/\_prd*.md or {output*folder}/\_prd*/index.md
+- Tech-spec: {output*folder}/\_tech-spec*.md or {output*folder}/\_spec*.md
+- Epics: {output*folder}/\_epic*.md or {output*folder}/\_epic*/index.md
+- UX Design: {output*folder}/\_ux*.md or {output*folder}/\_design*.md
+- Architecture: {output*folder}/\_architecture*.md or {output*folder}/\_arch*.md
+- Sprint Planning: {output_folder}/\*sprint\*.yaml
 
 **CRITICAL:** If file exists, replace workflow status with ONLY the file path, preserving agent comment.
 Example: `prd: docs/prd.md  # agent: pm` (NOT "completed - docs/prd.md")

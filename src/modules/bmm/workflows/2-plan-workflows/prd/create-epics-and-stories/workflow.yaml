@@ -1,6 +1,6 @@
 # Epic and Story Decomposition Workflow
 name: create-epics-and-stories
-description: "Transform PRD requirements into bite-sized stories organized in epics for 200k context dev agents"
+description: "Transform PRD requirements into bite-sized stories organized into deliverable functional epics. This workflow takes a Product Requirements Document (PRD) and breaks it down into epics and user stories that can be easily assigned to development teams. It ensures that all functional requirements are captured in a structured format, making it easier for teams to understand and implement the necessary features."
 author: "BMad"
 
 # Critical variables from config
@@ -25,11 +25,9 @@ input_file_patterns:
   prd:
     whole: "{output_folder}/*prd*.md"
     sharded: "{output_folder}/*prd*/index.md"
-
   product_brief:
     whole: "{output_folder}/*product*brief*.md"
     sharded: "{output_folder}/*product*brief*/index.md"
-
   domain_brief:
     whole: "{output_folder}/*domain*brief*.md"
     sharded: "{output_folder}/*domain*brief*/index.md"

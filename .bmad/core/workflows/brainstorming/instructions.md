@@ -254,7 +254,7 @@ Analyze the session to identify deeper patterns:
 2. **Surface key insights** - What realizations emerged during the process? -> insights_learnings
 3. **Note surprising connections** - What unexpected relationships were discovered? -> insights_learnings
 
-<invoke-task halt="true">{project-root}/.bmad/core/tasks/adv-elicit.xml</invoke-task>
+<invoke-task halt="true">{project-root}/.bmad/core/tasks/advanced-elicitation.xml</invoke-task>
 
 <template-output>key_themes, insights_learnings</template-output>
 

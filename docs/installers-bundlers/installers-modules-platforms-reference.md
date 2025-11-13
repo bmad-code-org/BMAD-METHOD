@@ -270,14 +270,14 @@ Generated in: `bmad/_cfg/agents/{module}-{agent}.md`
 
 ### Common Issues
 
-| Issue                     | Solution                            |
-| ------------------------- | ----------------------------------- |
-| Existing installation     | Use `bmad update` or remove `bmad/` |
-| Module not found          | Check `src/modules/` exists         |
-| Config not applied        | Verify `bmad/{module}/config.yaml`  |
-| Missing config.yaml       | Fixed: All modules now get configs  |
-| Agent unavailable         | Check for `localskip="true"`        |
-| \_module-installer copied | Fixed: Now excluded from copy       |
+| Issue                   | Solution                            |
+| ----------------------- | ----------------------------------- |
+| Existing installation   | Use `bmad update` or remove `bmad/` |
+| Module not found        | Check `src/modules/` exists         |
+| Config not applied      | Verify `bmad/{module}/config.yaml`  |
+| Missing config.yaml     | Fixed: All modules now get configs  |
+| Agent unavailable       | Check for `localskip="true"`        |
+| module-installer copied | Fixed: Now excluded from copy       |
 
 ### Debug Commands
 
