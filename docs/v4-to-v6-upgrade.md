@@ -93,7 +93,7 @@ After running the v6 installer:
    - This tells v6 you've already completed planning and solutioning phases
 3. **Document paths**: Keep your existing paths during installation
    - Default PRD/Architecture location: `docs/`
-   - Default stories location: `docs/stories/`
+   - Default stories location: `docs/sprint-artifacts/`
    - **Accept these defaults** if you're already using them in v4
 
 > **Important**: v6 workflows can handle both sharded and unsharded documents. You don't need to restructure your existing PRD or architecture files.
@@ -188,7 +188,7 @@ The installer will:
 If you're using:
 
 - `docs/` for PRD and architecture
-- `docs/stories/` for story files
+- `docs/sprint-artifacts/` for story files
 
 **Accept these defaults** during installation.
 
