@@ -143,8 +143,6 @@ Each of these is popular for different reasons. Let me know if you want me to ex
 </check>
 </action>
 
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
-
 <template-output>technology_options</template-output>
 
 </step>
@@ -221,7 +219,6 @@ Each of these is popular for different reasons. Let me know if you want me to ex
 - Training costs
 - Total cost of ownership estimate
 
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 <template-output>tech*profile*{{option_number}}</template-output>
 
 </step>
@@ -391,8 +388,6 @@ Research and document:
 - Identified risks and mitigation plans
 - Contingency options if primary choice doesn't work
 - Exit strategy considerations
-
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 <template-output>recommendations</template-output>
 

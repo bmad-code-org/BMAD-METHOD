@@ -221,7 +221,6 @@ Get core game concept and vision.
 <action>Guide user to define the primary game mechanics that players will interact with throughout the game</action>
 
 <template-output>primary_mechanics</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 <action>Guide user to describe their control scheme and input method (keyboard/mouse, gamepad, touchscreen, etc.), including key bindings or button layouts if known</action>
 
@@ -238,8 +237,6 @@ Get core game concept and vision.
 For each {{placeholder}} in the fragment, elicit and capture that information.
 
 <template-output file="GDD.md">GAME_TYPE_SPECIFIC_SECTIONS</template-output>
-
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -304,7 +301,6 @@ For each {{placeholder}} in the fragment, elicit and capture that information.
 <action>Work with user to translate game features into development epics, following level-appropriate guidelines (Level 1: 1 epic/1-10 stories, Level 2: 1-2 epics/5-15 stories, Level 3: 2-5 epics/12-40 stories, Level 4: 5+ epics/40+ stories)</action>
 
 <template-output>epics</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -325,7 +321,6 @@ For each {{placeholder}} in the fragment, elicit and capture that information.
 <for-each epic="epic_list">
 
 <template-output file="epics.md">epic*{{epic_number}}*details</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 </for-each>
 

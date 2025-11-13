@@ -11,7 +11,21 @@
 
 This document provides the complete epic and story breakdown for {{project_name}}, decomposing the requirements from the [PRD](./PRD.md) into implementable stories.
 
+**Living Document Notice:** This is the initial version. It will be updated after UX Design and Architecture workflows add interaction and technical details to stories.
+
 {{epics_summary}}
+
+---
+
+## Functional Requirements Inventory
+
+{{fr_inventory}}
+
+---
+
+## FR Coverage Map
+
+{{fr_coverage_map}}
 
 ---
 
@@ -49,4 +63,18 @@ So that {{value_benefit}}.
 
 ---
 
+## FR Coverage Matrix
+
+{{fr_coverage_matrix}}
+
+---
+
+## Summary
+
+{{epic_breakdown_summary}}
+
+---
+
 _For implementation: Use the `create-story` workflow to generate individual story implementation plans from this epic breakdown._
+
+_This document will be updated after UX Design and Architecture workflows to incorporate interaction details and technical decisions._

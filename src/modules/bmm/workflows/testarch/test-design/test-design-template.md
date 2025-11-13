@@ -250,9 +250,9 @@
 
 **Test Design Approved By:**
 
-- [ ] Product Manager: **\*\***\_\_\_**\*\*** Date: **\*\***\_\_\_**\*\***
-- [ ] Tech Lead: **\*\***\_\_\_**\*\*** Date: **\*\***\_\_\_**\*\***
-- [ ] QA Lead: **\*\***\_\_\_**\*\*** Date: **\*\***\_\_\_**\*\***
+- [ ] Product Manager: {name} Date: {date}
+- [ ] Tech Lead: {name} Date: {date}
+- [ ] QA Lead: {name} Date: {date}
 
 **Comments:**
 

@@ -1108,7 +1108,7 @@ class WebBundler {
    * Include advanced elicitation files
    */
   async includeAdvancedElicitationFiles(dependencies, processed, moduleName, warnings = []) {
-    const elicitationFiles = ['bmad/core/tasks/adv-elicit.xml', 'bmad/core/tasks/adv-elicit-methods.csv'];
+    const elicitationFiles = ['bmad/core/tasks/advanced-elicitation.xml', 'bmad/core/tasks/advanced-elicitation-methods.csv'];
 
     for (const filePath of elicitationFiles) {
       if (processed.has(filePath)) {

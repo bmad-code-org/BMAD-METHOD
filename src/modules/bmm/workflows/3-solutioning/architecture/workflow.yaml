@@ -14,18 +14,23 @@ date: system-generated
 
 # Smart input file references - handles both whole docs and sharded docs
 # Priority: Whole document first, then sharded version
+# Strategy: How to load sharded documents (FULL_LOAD, SELECTIVE_LOAD, INDEX_GUIDED)
 input_file_patterns:
   prd:
     whole: "{output_folder}/*prd*.md"
     sharded: "{output_folder}/*prd*/index.md"
+    load_strategy: "FULL_LOAD"
   epics:
     whole: "{output_folder}/*epic*.md"
     sharded: "{output_folder}/*epic*/index.md"
+    load_strategy: "FULL_LOAD"
   ux_design:
     whole: "{output_folder}/*ux*.md"
     sharded: "{output_folder}/*ux*/index.md"
+    load_strategy: "FULL_LOAD"
   document_project:
     sharded: "{output_folder}/index.md"
+    load_strategy: "INDEX_GUIDED"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture"
@@ -60,7 +65,7 @@ web_bundle:
   pattern_categories: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/pattern-categories.csv"
 
   # Task dependencies
-  adv_elicit_task: "{bmad_folder}/core/tasks/adv-elicit.xml"
+  adv_elicit_task: "{bmad_folder}/core/tasks/advanced-elicitation.xml"
 
   # Default configuration values (can be overridden during bundle setup)
   defaults:
@@ -87,5 +92,5 @@ web_bundle:
 
     # Task dependencies (referenced in instructions.md)
     - "{bmad_folder}/core/tasks/workflow.xml"
-    - "{bmad_folder}/core/tasks/adv-elicit.xml"
-    - "{bmad_folder}/core/tasks/adv-elicit-methods.csv"
+    - "{bmad_folder}/core/tasks/advanced-elicitation.xml"
+    - "{bmad_folder}/core/tasks/advanced-elicitation-methods.csv"

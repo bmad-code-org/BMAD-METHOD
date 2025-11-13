@@ -38,16 +38,20 @@ variables:
 input_file_patterns:
   architecture:
     whole: "{output_folder}/*architecture*.md"
-    sharded: "{output_folder}/*architecture*/index.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
   ux_design:
     whole: "{output_folder}/*ux*.md"
-    sharded: "{output_folder}/*ux*/index.md"
+    sharded: "{output_folder}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
   epics:
     whole: "{output_folder}/*epic*.md"
     sharded_index: "{output_folder}/*epic*/index.md"
     sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
   document_project:
     sharded: "{output_folder}/docs/index.md"
+    load_strategy: "INDEX_GUIDED"
 
 standalone: true
 web_bundle: false

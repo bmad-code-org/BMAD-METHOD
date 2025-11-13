@@ -17,7 +17,7 @@
 ### Core Sections Present
 
 - [ ] Executive Summary with vision alignment
-- [ ] Product magic essence clearly articulated
+- [ ] Product differentiator clearly articulated
 - [ ] Project classification (type, domain, complexity)
 - [ ] Success criteria defined
 - [ ] Product scope (MVP, Growth, Vision) clearly delineated
@@ -38,7 +38,7 @@
 
 - [ ] No unfilled template variables ({{variable}})
 - [ ] All variables properly populated with meaningful content
-- [ ] Product magic woven throughout (not just stated once)
+- [ ] Product differentiator reflected throughout (not just stated once)
 - [ ] Language is clear, specific, and measurable
 - [ ] Project type correctly identified and sections match
 - [ ] Domain complexity appropriately addressed
@@ -210,7 +210,7 @@
 ### Alignment Checks
 
 - [ ] Success metrics in PRD align with story outcomes
-- [ ] Product magic articulated in PRD reflected in epic goals
+- [ ] Product differentiator articulated in PRD reflected in epic goals
 - [ ] Technical preferences in PRD align with story implementation hints
 - [ ] Scope boundaries consistent across all documents
 

@@ -17,22 +17,28 @@ sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-
 input_file_patterns:
   prd:
     whole: "{output_folder}/*prd*.md"
-    sharded: "{output_folder}/*prd*/index.md"
+    sharded: "{output_folder}/*prd*/*.md"
+    load_strategy: "FULL_LOAD"
   gdd:
     whole: "{output_folder}/*gdd*.md"
-    sharded: "{output_folder}/*gdd*/index.md"
+    sharded: "{output_folder}/*gdd*/*.md"
+    load_strategy: "FULL_LOAD"
   architecture:
     whole: "{output_folder}/*architecture*.md"
-    sharded: "{output_folder}/*architecture*/index.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
   ux_design:
     whole: "{output_folder}/*ux*.md"
-    sharded: "{output_folder}/*ux*/index.md"
+    sharded: "{output_folder}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
   epics:
     whole: "{output_folder}/*epic*.md"
     sharded_index: "{output_folder}/*epic*/index.md"
     sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
   document_project:
     sharded: "{output_folder}/index.md"
+    load_strategy: "INDEX_GUIDED"
 
 # Workflow components
 installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/epic-tech-context"

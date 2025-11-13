@@ -143,7 +143,6 @@ For 3-Act:
 Describe each act/section for your game:</ask>
 
 <template-output>act_breakdown</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -162,7 +161,6 @@ Format:
 Your story beats:</ask>
 
 <template-output>story_beats</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 <ask>Describe the pacing and flow of your narrative.
 
@@ -195,7 +193,6 @@ For each protagonist include:
 Your protagonist(s):</ask>
 
 <template-output>protagonists</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -233,7 +230,6 @@ For each character include:
 Your supporting characters:</ask>
 
 <template-output>supporting_characters</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 
@@ -281,7 +277,6 @@ Your world:</ask>
 Your history:</ask>
 
 <template-output>history_backstory</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 

@@ -855,7 +855,7 @@ _Generated on {{date}}_
 **Output:**
 
 - `<template-output>` - Save checkpoint
-- `<invoke-task halt="true">{project-root}/.bmad/core/tasks/adv-elicit.xml</invoke-task>` - Trigger AI enhancement
+- `<invoke-task halt="true">{project-root}/.bmad/core/tasks/advanced-elicitation.xml</invoke-task>` - Trigger AI enhancement
 - `<critical>` - Important info
 - `<example>` - Show example
 
@@ -904,7 +904,7 @@ _Generated on {{date}}_
   <step n="2" goal="Define requirements">
     Create functional and non-functional requirements.
     <template-output>requirements</template-output>
-    <invoke-task halt="true">{project-root}/.bmad/core/tasks/adv-elicit.xml</invoke-task>
+    <invoke-task halt="true">{project-root}/.bmad/core/tasks/advanced-elicitation.xml</invoke-task>
   </step>
 
   <step n="3" goal="Validate">

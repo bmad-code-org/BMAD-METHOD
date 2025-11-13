@@ -27,16 +27,21 @@ input_file_patterns:
     whole: "{output_folder}/*epic*.md"
     sharded_index: "{output_folder}/*epic*/index.md"
     sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
   previous_retrospective:
     pattern: "{sprint_artifacts}/**/epic-{{prev_epic_num}}-retro-*.md"
+    load_strategy: "SELECTIVE_LOAD"
   architecture:
     whole: "{output_folder}/*architecture*.md"
     sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
   prd:
     whole: "{output_folder}/*prd*.md"
     sharded: "{output_folder}/*prd*/*.md"
+    load_strategy: "FULL_LOAD"
   document_project:
     sharded: "{output_folder}/*.md"
+    load_strategy: "INDEX_GUIDED"
 
 # Required files
 sprint_status_file: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"

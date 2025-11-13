@@ -180,7 +180,7 @@
 └── data/                     # User data directory
 ```
 
-**SOURCE MODULE** (\_module-installer is for installation only, not copied to target):
+**SOURCE MODULE** (module-installer is for installation only, not copied to target):
 
 ```
 {{module_code}}/
@@ -268,7 +268,7 @@
 <critical>IMPORTANT: Create install-config.yaml NOT install-config.yaml</critical>
 <critical>This is the STANDARD format that BMAD installer uses</critical>
 
-Create \_module-installer/install-config.yaml:
+Create module-installer/install-config.yaml:
 
 ```yaml
 # {{module_name}} Module Configuration
@@ -338,18 +338,14 @@ prompt:
   // {{module_name}} Module Installer
   // Custom installation logic
 
-/\*\*
-
-- Module installation hook
-- Called after files are copied but before IDE configuration
--
+- // Module installation hook
+- // Called after files are copied but before IDE configuration
 - @param {Object} options - Installation options
 - @param {string} options.projectRoot - Project root directory
 - @param {Object} options.config - Module configuration from install-config.yaml
 - @param {Array} options.installedIDEs - List of IDE codes being configured
 - @param {Object} options.logger - Logger instance (log, warn, error methods)
 - @returns {boolean} - true if successful, false to abort installation
-  \*/
   async function install(options) {
   const { projectRoot, config, installedIDEs, logger } = options;
 

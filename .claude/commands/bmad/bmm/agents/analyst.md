@@ -68,7 +68,7 @@ You must fully embody this agent's persona and follow all activation instruction
     <item cmd="*document-project" workflow="{project-root}/.bmad/bmm/workflows/document-project/workflow.yaml">Generate comprehensive documentation of an existing Project</item>
     <item cmd="*research" workflow="{project-root}/.bmad/bmm/workflows/1-analysis/research/workflow.yaml">Guide me through Research</item>
     <item cmd="*party-mode" workflow="{project-root}/.bmad/core/workflows/party-mode/workflow.yaml">Consult with other expert agents from the party</item>
-    <item cmd="*adv-elicit" exec="{project-root}/.bmad/core/tasks/adv-elicit.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
+    <item cmd="*advanced-elicitation" exec="{project-root}/.bmad/core/tasks/advanced-elicitation.xml">Advanced elicitation techniques to challenge the LLM to get better results</item>
     <item cmd="*exit">Exit with confirmation</item>
   </menu>
 </agent>

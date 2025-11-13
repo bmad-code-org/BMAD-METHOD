@@ -363,7 +363,6 @@ Provided by Starter: {{yes_if_from_starter}}
 </action>
 
 <template-output>decision_record</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="5" goal="Address cross-cutting concerns">
@@ -393,7 +392,6 @@ Provided by Starter: {{yes_if_from_starter}}
 </action>
 
 <template-output>project_structure</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="7" goal="Design novel architectural patterns" optional="true">
@@ -467,7 +465,6 @@ Provided by Starter: {{yes_if_from_starter}}
   </check>
 
 <template-output>novel_pattern_designs</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="8" goal="Define implementation patterns to prevent agent conflicts">
@@ -560,7 +557,6 @@ Enforcement: "All agents MUST follow this pattern"
 </action>
 
 <template-output>implementation_patterns</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="9" goal="Validate architectural coherence">
@@ -614,7 +610,6 @@ Enforcement: "All agents MUST follow this pattern"
   </action>
 
 <template-output>architecture_document</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="11" goal="Validate document completeness">

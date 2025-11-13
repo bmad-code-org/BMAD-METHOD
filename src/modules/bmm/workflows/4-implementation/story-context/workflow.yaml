@@ -12,7 +12,7 @@ document_output_language: "{config_source}:document_output_language"
 story_path: "{config_source}:sprint_artifacts/stories"
 date: system-generated
 sprint_artifacts: "{config_source}:sprint_artifacts"
-sprint_status: "{context_dir}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
 
 # Workflow components
 installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/story-context"
@@ -26,21 +26,27 @@ validation: "{installed_path}/checklist.md"
 input_file_patterns:
   prd:
     whole: "{output_folder}/*prd*.md"
-    sharded: "{output_folder}/*prd*/index.md"
+    sharded: "{output_folder}/*prd*/*.md"
+    load_strategy: "FULL_LOAD"
   tech_spec:
     whole: "{output_folder}/tech-spec.md"
+    load_strategy: "FULL_LOAD"
   architecture:
     whole: "{output_folder}/*architecture*.md"
-    sharded: "{output_folder}/*architecture*/index.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
   ux_design:
     whole: "{output_folder}/*ux*.md"
-    sharded: "{output_folder}/*ux*/index.md"
+    sharded: "{output_folder}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
   epics:
     whole: "{output_folder}/*epic*.md"
     sharded_index: "{output_folder}/*epic*/index.md"
     sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
   document_project:
     sharded: "{output_folder}/docs/index.md"
+    load_strategy: "INDEX_GUIDED"
 
 # Output configuration
 # Uses story_key from sprint-status.yaml (e.g., "1-2-user-authentication")

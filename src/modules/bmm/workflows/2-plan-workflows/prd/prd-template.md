@@ -12,7 +12,7 @@
 
 ### What Makes This Special
 
-{{product_magic_essence}}
+{{product_differentiator}}
 
 ---
 
@@ -232,6 +232,6 @@ Requirements must be decomposed into epics and bite-sized stories (200k context 
 
 ---
 
-_This PRD captures the essence of {{project_name}} - {{product_magic_summary}}_
+_This PRD captures the essence of {{project_name}} - {{product_value_summary}}_
 
 _Created through collaborative discovery between {{user_name}} and AI facilitator._

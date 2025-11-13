@@ -31,17 +31,21 @@ recommended_inputs:
 
 # Smart input file references - handles both whole docs and sharded docs
 # Priority: Whole document first, then sharded version
+# Strategy: How to load sharded documents (FULL_LOAD, SELECTIVE_LOAD, INDEX_GUIDED)
 input_file_patterns:
   product_brief:
     whole: "{output_folder}/*brief*.md"
     sharded: "{output_folder}/*brief*/index.md"
+    load_strategy: "FULL_LOAD"
 
   research:
     whole: "{output_folder}/*research*.md"
     sharded: "{output_folder}/*research*/index.md"
+    load_strategy: "FULL_LOAD"
 
   document_project:
     sharded: "{output_folder}/docs/index.md"
+    load_strategy: "INDEX_GUIDED"
 
 standalone: true
 
@@ -66,7 +70,7 @@ web_bundle:
 
     # Task dependencies (referenced in instructions.md)
     - "{bmad_folder}/core/tasks/workflow.xml"
-    - "{bmad_folder}/core/tasks/adv-elicit.xml"
-    - "{bmad_folder}/core/tasks/adv-elicit-methods.csv"
+    - "{bmad_folder}/core/tasks/advanced-elicitation.xml"
+    - "{bmad_folder}/core/tasks/advanced-elicitation-methods.csv"
   child_workflows:
     - create-epics-and-stories: "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/create-epics-and-stories/workflow.yaml"

@@ -172,7 +172,7 @@ menu:
 
 ## Installation Infrastructure
 
-### Required: \_module-installer/install-config.yaml
+### Required: module-installer/install-config.yaml
 
 This file defines both installation questions AND static configuration values:
 
@@ -226,7 +226,7 @@ data_path:
 - `result` field uses placeholders: `{value}`, `{project-root}`, `{directory_name}`
 - Installer generates final `config.yaml` from this template
 
-### Optional: \_module-installer/installer.js
+### Optional: module-installer/installer.js
 
 For complex installations requiring custom logic:
 
@@ -252,7 +252,7 @@ async function install(options) {
 module.exports = { install };
 ```
 
-### Optional: \_module-installer/assets/
+### Optional: module-installer/assets/
 
 Files to copy during installation:
 
