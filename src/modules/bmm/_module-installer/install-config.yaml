@@ -37,7 +37,7 @@ user_skill_level:
 
 sprint_artifacts:
   prompt: "Where should Sprint Artifacts be stored (sprint status, stories, story context, temp context, etc...)?"
-  default: "{output_folder}/stories"
+  default: "{output_folder}/sprint-artifacts"
   result: "{project-root}/{value}"
 
 # TEA Agent Configuration

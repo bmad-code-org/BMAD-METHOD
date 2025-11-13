@@ -124,10 +124,12 @@ class UI {
    * @returns {Object} Tool configuration
    */
   async promptToolSelection(projectDir, selectedModules) {
-    // Check for existing configured IDEs
+    // Check for existing configured IDEs - use findBmadDir to detect custom folder names
     const { Detector } = require('../installers/lib/core/detector');
+    const { Installer } = require('../installers/lib/core/installer');
     const detector = new Detector();
-    const bmadDir = path.join(projectDir || process.cwd(), 'bmad');
+    const installer = new Installer();
+    const bmadDir = await installer.findBmadDir(projectDir || process.cwd());
     const existingInstall = await detector.detect(bmadDir);
     const configuredIdes = existingInstall.ides || [];
 
@@ -332,8 +334,10 @@ class UI {
    */
   async getExistingInstallation(directory) {
     const { Detector } = require('../installers/lib/core/detector');
+    const { Installer } = require('../installers/lib/core/installer');
     const detector = new Detector();
-    const bmadDir = path.join(directory, 'bmad');
+    const installer = new Installer();
+    const bmadDir = await installer.findBmadDir(directory);
     const existingInstall = await detector.detect(bmadDir);
     const installedModuleIds = new Set(existingInstall.modules.map((mod) => mod.id));
 
@@ -431,9 +435,15 @@ class UI {
       if (stats.isDirectory()) {
         const files = await fs.readdir(directory);
         if (files.length > 0) {
+          // Check for any bmad installation (any folder with _cfg/manifest.yaml)
+          const { Installer } = require('../installers/lib/core/installer');
+          const installer = new Installer();
+          const bmadDir = await installer.findBmadDir(directory);
+          const hasBmadInstall = (await fs.pathExists(bmadDir)) && (await fs.pathExists(path.join(bmadDir, '_cfg', 'manifest.yaml')));
+
           console.log(
             chalk.gray(`Directory exists and contains ${files.length} item(s)`) +
-              (files.includes('bmad') ? chalk.yellow(' including existing bmad installation') : ''),
+              (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadDir)})`) : ''),
           );
         } else {
           console.log(chalk.gray('Directory exists and is empty'));

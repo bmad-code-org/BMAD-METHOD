@@ -7,7 +7,7 @@ BMAD agents are installed as commands in `.iflow/commands/bmad/`.
 ### How to Use
 
 1. **Access Commands**: Use iFlow command interface
-2. **Navigate**: Browse to `bmad/agents/` or `bmad/tasks/`
+2. **Navigate**: Browse to `{bmad_folder}/agents/` or `{bmad_folder}/tasks/`
 3. **Select**: Choose the agent or task command
 4. **Execute**: Run to activate
 
@@ -22,8 +22,8 @@ BMAD agents are installed as commands in `.iflow/commands/bmad/`.
 ### Examples
 
 ```
-/bmad/agents/core-dev - Activate dev agent
-/bmad/tasks/core-setup - Execute setup task
+/{bmad_folder}/agents/core-dev - Activate dev agent
+/{bmad_folder}/tasks/core-setup - Execute setup task
 ```
 
 ### Notes

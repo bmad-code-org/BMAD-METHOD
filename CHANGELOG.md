@@ -2,6 +2,167 @@
 
 ## [Unreleased]
 
+## [6.0.0-alpha.9]
+
+**Release: November 12, 2025**
+
+This alpha release introduces major workflow engine enhancements, comprehensive documentation, and significant simplification of project structure and configuration.
+
+### 🚀 Workflow Engine Revolution
+
+**Intelligent File Discovery Protocol:**
+
+- New reusable `discover_inputs` protocol for automatic file loading across all workflows
+- Three intelligent loading strategies:
+  - FULL_LOAD: Loads all sharded documents for comprehensive context
+  - SELECTIVE_LOAD: Targets specific shards via template variables
+  - INDEX_GUIDED: Analyzes table of contents and intelligently loads relevant sections
+- Auto-discovers whole vs sharded documents with automatic fallback
+- Transparent reporting of loaded content with file counts
+- Implemented across all BMM Phase 1-4 workflows and new BMGD Phase 4 workflows
+
+**Track-Based Project System:**
+
+- Replaced confusing "Level 0-4" terminology with intuitive track names:
+  - **quick-flow**: Bug fixes and small features (replaces Level 0-1)
+  - **bmad-method**: Full planning track (replaces Level 2-3)
+  - **enterprise-bmad-method**: Extended planning (replaces Level 4)
+- Updated all workflows to be track-aware rather than level-dependent
+
+### 📚 Comprehensive Documentation
+
+**New Guides Added:**
+
+- **Agent Customization Guide:** Complete instructions for customizing agent names, personas, memories, and behaviors
+- **Web Bundles & Platform Guide:** Comprehensive guide for using BMad agents in Gemini Gems and Custom GPTs
+  - Critical setup rules with exact configuration requirements
+  - Cost-saving strategies (60-80% savings via web planning → local implementation)
+  - Platform comparison and recommendations
+
+### 🏗️ Configuration & Structure Improvements
+
+**Unified Output Folder Structure:**
+
+- Single `output_folder` for ALL AI-generated artifacts (default: "docs")
+- **REMOVED: `.ephemeral/` and `.bmad-ephemeral/` folders are completely eliminated**
+- Phase 4 ephemeral content now organized within output folder as `sprint_artifacts`:
+  - Default path: `docs/sprint-artifacts/` (configurable during install)
+  - Contains: stories, epic context, story context, sprint plans, code reviews
+  - Can be set to `docs/stories/` for backward compatibility
+- Eliminated confusing separate folder proliferation
+- Clearer prompts during installation
+
+**Dynamic Path Configuration:**
+
+- Replaced hardcoded `.bmad` paths with `{bmad_folder}` placeholder throughout
+- Users can now fully customize installation folder names
+- Improved flexibility and reduced coupling to specific directory structures
+
+### 🎯 Tech-Spec Workflow Revolution
+
+**Intent-Based Intelligence:**
+
+- Removed 150+ lines of hardcoded stack detection examples
+- Replaced prescriptive instructions with adaptive intelligent guidance
+- Stack detection now automatically adapts to ANY project type
+- Consolidated story generation into single unified workflow
+- 50% fewer workflow files while maintaining full functionality
+
+### 🎮 BMGD Phase 4 Implementation
+
+**Complete Game Development Workflows:**
+
+- Added 10 Phase 4 production workflows for game development
+- Includes: code-review, sprint-planning, story creation, retrospectives
+- All workflows follow BMM patterns with game-specific adaptations
+- Unified with BMM workflows to eliminate duplication
+
+### 🌐 Web Bundle Enhancements
+
+**GitHub Pages Support:**
+
+- Web bundles can now be hosted directly on GitHub Pages
+- Automatic directory browsing and zip download functionality
+- Improved distribution setup documentation
+
+**Testing Architecture:**
+
+- New test design workflow for Phase 3 architecture level
+- Comprehensive testing strategy generation
+
+### 🔧 Code Quality & Maintenance
+
+**Major Cleanup:**
+
+- Removed 200+ files that shouldn't be version controlled
+- Cleaned up 21 pre-generated XML bundles (users generate fresh)
+- Fixed corrupted variable patterns throughout workflows
+- Standardized variable naming conventions
+- Removed duplicate BMGD workflows (now shares BMM Phase 4)
+
+**Bug Fixes:**
+
+- Fixed story status handling (accepts both "review" and "ready-for-review")
+- Corrected sprint artifact paths and undefined variables
+- Fixed installer quick install mode
+- Removed injected bad formatting characters
+- Enhanced shard document tool to prevent confusion with whole/sharded versions
+
+### 💡 Developer Experience
+
+**Enhanced Workflow Management:**
+
+- Better error handling and user guidance
+- Exit/continue options when prerequisites missing
+- Improved validation checklists with modern formatting
+- Clearer instructions and adaptive conversation goals
+
+**Variable Standardization:**
+
+- Consistent hyphenated format: `{output-folder}`
+- Renamed unclear variables: `{dev_ephemeral_location}` → `{sprint_artifacts}`
+- Fixed 40+ workflows with standardized variable patterns
+
+### 📈 Impact Summary
+
+- **98 source files modified** (299 insertions, 6,567 deletions)
+- **40+ workflows updated** with track system and standardization
+- **12 duplicate workflows eliminated** through consolidation
+- **3 installer configs simplified** with major folder improvements
+- **2 comprehensive guides added** for customization and platform usage
+
+### ⚠️ Breaking Changes
+
+- Level-based terminology (Level 0-4) replaced with track names
+- Folder structure changes may require reconfiguration for existing projects
+- Variable name changes in workflows (backward compatibility maintained where possible)
+
+### 🔄 Migration Notes
+
+**Important Folder Structure Changes:**
+
+- **The `.ephemeral/` folder is completely gone** - Phase 4 ephemeral content no longer uses a separate folder
+- Phase 4 artifacts (epic context, stories, story context, sprint plans, code reviews) now live in `{output_folder}/{sprint_artifacts}`
+- New default location: `docs/sprint-artifacts/` (was previously `.bmad-ephemeral/` or similar)
+
+**Migration Options:**
+
+1. **If you have existing `docs/stories/` content:**
+   - Move all content from `docs/stories/` to `docs/sprint-artifacts/`
+   - Update any references or scripts pointing to the old location
+
+2. **To keep using `docs/stories/` location:**
+   - During the new version install, set sprint_artifacts to "stories" when prompted
+   - This maintains backward compatibility with your existing structure
+
+3. **Clean migration checklist:**
+   - Delete old `.ephemeral/` folder if it exists
+   - Delete old `.bmad-ephemeral/` folder if it exists
+   - Move Phase 4 artifacts to new location or configure installer to use existing path
+   - Update to new track terminology in configurations (quick-flow, bmad-method, enterprise-bmad-method)
+   - Regenerate web bundles using `npm run bundle` for latest changes
+   - Update any custom workflows to use new `discover_inputs` protocol
+
 ## [6.0.0-alpha.8]
 
 **Release: November 9, 2025**

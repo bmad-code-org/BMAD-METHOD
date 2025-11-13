@@ -23,7 +23,7 @@
       <action>Use {{story_path}} directly</action>
       <action>Read COMPLETE story file and parse sections</action>
       <action>Extract story_key from filename or story metadata</action>
-      <action>Verify Status is "review" - if not, HALT with message: "Story status must be 'review' to proceed"</action>
+      <action>Verify Status is "review" or "ready-for-review" - if not, HALT with message: "Story status must be 'review' or 'ready-for-review' to proceed"</action>
     </check>
 
     <check if="{{story_path}} is NOT provided">
@@ -35,11 +35,11 @@
       <action>Find FIRST story (reading in order from top to bottom) where:
         - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
         - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
-        - Status value equals "review"
+        - Status value equals "review" OR "ready-for-review"
       </action>
 
-      <check if="no story with status 'review' found">
-        <output>📋 No stories with status "review" found
+      <check if="no story with status 'review' or 'ready-for-review' found">
+        <output>📋 No stories with status "review" or "ready-for-review" found
 
 **What would you like to do?**
 1. Run `dev-story` to implement and mark a story ready for review

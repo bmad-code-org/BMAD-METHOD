@@ -1627,36 +1627,33 @@ class Installer {
       });
       spinner.succeed('Manifests regenerated');
 
-      // Ask for IDE to update
-      spinner.stop();
-      // Note: UI lives in tools/cli/lib/ui.js; from installers/lib/core use '../../../lib/ui'
-      const { UI } = require('../../../lib/ui');
-      const ui = new UI();
-      const toolConfig = await ui.promptToolSelection(projectDir, []);
-
-      if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
+      // Update IDE configurations using the existing IDE list from manifest
+      if (existingIdes && existingIdes.length > 0) {
         spinner.start('Updating IDE configurations...');
 
-        for (const ide of toolConfig.ides) {
-          // Stop spinner before setup() since it may prompt for configuration
-          // (setup() doesn't have preCollectedConfig in compile flow)
-          if (spinner.isSpinning) {
-            spinner.stop();
-          }
+        for (const ide of existingIdes) {
+          spinner.text = `Updating ${ide}...`;
+
+          // Stop spinner before IDE setup to prevent blocking any potential prompts
+          // However, we pass _alreadyConfigured to skip all prompts during compile
+          spinner.stop();
 
           await this.ideManager.setup(ide, projectDir, bmadDir, {
             selectedModules: installedModules,
             skipModuleInstall: true, // Skip module installation, just update IDE files
             verbose: config.verbose,
+            preCollectedConfig: { _alreadyConfigured: true }, // Skip all interactive prompts during compile
           });
 
-          // Restart spinner after setup() completes (prompts are done)
-          if (!spinner.isSpinning) {
+          // Restart spinner for next IDE
+          if (existingIdes.indexOf(ide) < existingIdes.length - 1) {
             spinner.start('Updating IDE configurations...');
           }
         }
 
-        spinner.succeed('IDE configurations updated');
+        console.log(chalk.green('✓ IDE configurations updated'));
+      } else {
+        console.log(chalk.yellow('⚠️  No IDEs configured. Skipping IDE update.'));
       }
 
       return { agentCount, taskCount };

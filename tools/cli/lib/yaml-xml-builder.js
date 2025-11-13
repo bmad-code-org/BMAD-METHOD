@@ -270,13 +270,31 @@ class YamlXmlBuilder {
 
   /**
    * Build prompts XML section
+   * Handles both array format and object/dictionary format
    */
   buildPromptsXml(prompts) {
-    if (!prompts || prompts.length === 0) return '';
+    if (!prompts) return '';
+
+    // Handle object/dictionary format: { promptId: 'content', ... }
+    // Convert to array format for processing
+    let promptsArray = prompts;
+    if (!Array.isArray(prompts)) {
+      // Check if it's an object with no length property (dictionary format)
+      if (typeof prompts === 'object' && prompts.length === undefined) {
+        promptsArray = Object.entries(prompts).map(([id, content]) => ({
+          id: id,
+          content: content,
+        }));
+      } else {
+        return ''; // Not a valid prompts format
+      }
+    }
+
+    if (promptsArray.length === 0) return '';
 
     let xml = '  <prompts>\n';
 
-    for (const prompt of prompts) {
+    for (const prompt of promptsArray) {
       xml += `    <prompt id="${prompt.id || ''}">\n`;
       xml += `      <![CDATA[\n`;
       xml += `      ${prompt.content || ''}\n`;
