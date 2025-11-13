@@ -9,7 +9,7 @@ Customize BMad agents without modifying core files. All customizations persist t
 After installation, find agent customization files in:
 
 ```
-bmad/_cfg/agents/
+{bmad_folder}/_cfg/agents/
 ├── core-bmad-master.customize.yaml
 ├── bmm-dev.customize.yaml
 ├── bmm-pm.customize.yaml
@@ -119,7 +119,7 @@ prompts:
 **Example 1: Customize Developer Agent for TDD**
 
 ```yaml
-# bmad/_cfg/agents/bmm-dev.customize.yaml
+# {bmad_folder}/_cfg/agents/bmm-dev.customize.yaml
 agent:
   metadata:
     name: 'TDD Developer'
@@ -135,7 +135,7 @@ critical_actions:
 **Example 2: Add Custom Deployment Workflow**
 
 ```yaml
-# bmad/_cfg/agents/bmm-dev.customize.yaml
+# {bmad_folder}/_cfg/agents/bmm-dev.customize.yaml
 menu:
   - trigger: deploy-staging
     workflow: '{project-root}/.bmad-custom/deploy-staging.yaml'
@@ -148,7 +148,7 @@ menu:
 **Example 3: Multilingual Product Manager**
 
 ```yaml
-# bmad/_cfg/agents/bmm-pm.customize.yaml
+# {bmad_folder}/_cfg/agents/bmm-pm.customize.yaml
 persona:
   role: 'Bilingual Product Manager'
   identity: 'Expert in US and LATAM markets'
@@ -174,7 +174,7 @@ memories:
 
 **Module-Level (Recommended):**
 
-- Customize agents per-project in `bmad/_cfg/agents/`
+- Customize agents per-project in `{bmad_folder}/_cfg/agents/`
 - Different projects can have different agent behaviors
 
 **Global Config (Coming Soon):**

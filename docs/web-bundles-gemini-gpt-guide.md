@@ -336,7 +336,7 @@ Agents adapt their menus based on project phase and available workflows.
 
 Customize agents using the [Agent Customization Guide](./agent-customization-guide.md):
 
-1. Edit `bmad/_cfg/agents/<agent>.customize.yaml`
+1. Edit `{bmad_folder}/_cfg/agents/<agent>.customize.yaml`
 2. Rebuild: `npx bmad-method build <agent-name>`
 3. Generate bundles: `npm run bundle`
 
