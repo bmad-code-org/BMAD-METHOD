@@ -36,11 +36,11 @@ Web bundles are standalone XML files containing:
 
 **Option A: Download Pre-Bundled Files (Quickest)**
 
-Download ready-to-use bundles directly from GitHub:
+Download ready-to-use bundles that are automatically updated whenever commits are merged to main:
 
-**[→ Browse Web Bundles on GitHub](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/web-bundles)**
+**[→ Download Web Bundles](https://bmad-code-org.github.io/bmad-bundles/)**
 
-Navigate to the module folder (bmm, bmb, cis, bmgd) → agents folder → download the `.xml` file you need.
+Navigate to the module folder (bmm, bmb, cis, bmgd) → agents folder → download the `.xml` file you need. These bundles are automatically regenerated and deployed with every commit to the main branch, ensuring you always have the latest version.
 
 **Option B: Generate from Local Installation**
 

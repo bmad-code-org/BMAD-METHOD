@@ -562,7 +562,12 @@ class Installer {
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
 
-      spinner.start('Continuing installation...');
+      // Check if spinner is already running (e.g., from folder name change scenario)
+      if (spinner.isSpinning) {
+        spinner.text = 'Continuing installation...';
+      } else {
+        spinner.start('Continuing installation...');
+      }
 
       // Create bmad directory structure
       spinner.text = 'Creating directory structure...';
@@ -1753,8 +1758,19 @@ class Installer {
         lastModified: new Date().toISOString(),
       };
 
-      // Now run the full installation with the collected configs
-      spinner.start('Updating BMAD installation...');
+      // Check if bmad_folder has changed
+      const existingBmadFolderName = path.basename(bmadDir);
+      const newBmadFolderName = this.configCollector.collectedConfig.core?.bmad_folder || existingBmadFolderName;
+
+      if (existingBmadFolderName === newBmadFolderName) {
+        // Normal quick update - start the spinner
+        spinner.start('Updating BMAD installation...');
+      } else {
+        // Folder name has changed - stop spinner and let install() handle it
+        spinner.stop();
+        console.log(chalk.yellow(`\n⚠️  Folder name will change: ${existingBmadFolderName} → ${newBmadFolderName}`));
+        console.log(chalk.yellow('The installer will handle the folder migration.\n'));
+      }
 
       // Build the config object for the installer
       const installConfig = {
@@ -1773,7 +1789,11 @@ class Installer {
       // Call the standard install method
       const result = await this.install(installConfig);
 
-      spinner.succeed('Quick update complete!');
+      // Only succeed the spinner if it's still spinning
+      // (install method might have stopped it if folder name changed)
+      if (spinner.isSpinning) {
+        spinner.succeed('Quick update complete!');
+      }
 
       return {
         success: true,

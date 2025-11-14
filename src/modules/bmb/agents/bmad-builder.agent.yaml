@@ -19,8 +19,6 @@ agent:
       - Load resources at runtime never pre-load
       - Always present numbered lists for choices
 
-  # Menu items - triggers will be prefixed with * at build time
-  # help and exit are auto-injected, don't define them here
   menu:
     - trigger: audit-workflow
       workflow: "{project-root}/{bmad_folder}/bmb/workflows/audit-workflow/workflow.yaml"

@@ -8,12 +8,12 @@
 
 > **🚨 Alpha Version Notice**
 >
-> v6-alpha is near-beta quality—stable and vastly improved over v4, but documentation is still being refined. New videos coming soon to the [BMadCode YouTube channel](https://www.youtube.com/@BMadCode)—subscribe for updates!
+> v6-alpha is near-beta quality—stable and vastly improved over v4, but documentation is still being refined. New videos coming soon to the [BMadCode YouTube channel](https://www.youtube.com/@BMadCode)—subscribe for updates! (There is no v5).
 >
 > **Getting Started:**
 >
-> - **Install v6 Alpha:** `npx bmad-method@alpha install`
-> - **Install stable v4:** `npx bmad-method install`
+> - **Install v6 Alpha:** `npx bmad-method install`
+> - **Install stable v4:** `npx bmad-method@latest install`
 > - **Not sure what to do?** Load any agent and run `*workflow-init` for guided setup
 > - **v4 Users:** [View v4 documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V4) or [upgrade guide](./docs/v4-to-v6-upgrade.md)
 
@@ -234,7 +234,7 @@ your-project/
 2. Run `*workflow-init` to set up your project workflow path
 3. Follow the [Quick Start](#-quick-start) guide above to choose your planning track
 
-**Alternative:** [**Web Bundles**](./docs/USING_WEB_BUNDLES.md) - Use BMAD agents in Claude Projects, ChatGPT, or Gemini without installation
+**Alternative:** [**Web Bundles**](https://bmad-code-org.github.io/bmad-bundles/) - Download pre-built agent bundles for use in Claude Projects, ChatGPT, or Gemini without installation (automatically updated on every commit to main)
 
 ---
 

@@ -159,6 +159,16 @@ class WebBundler {
 
     // Handle YAML agents - build in-memory to XML
     if (agentFile.endsWith('.agent.yaml')) {
+      // Check for webskip flag in YAML before building
+      const yamlContent = await fs.readFile(agentPath, 'utf8');
+      const agentYaml = yaml.load(yamlContent);
+
+      if (agentYaml?.agent?.webskip === true) {
+        this.stats.skippedAgents++;
+        console.log(chalk.gray(`    ⊘ Skipped (webskip="true")`));
+        return;
+      }
+
       // Build agent from YAML (no customize file for web bundles)
       const xmlContent = await this.yamlBuilder.buildFromYaml(agentPath, null, {
         includeMetadata: false, // Don't include build metadata in web bundles
@@ -232,10 +242,13 @@ class WebBundler {
       console.log(chalk.red(`    ⚠ Invalid XML generated!`));
     }
 
+    // Format XML for readability
+    const formattedBundle = this.formatXml(bundle);
+
     // Write bundle to output
     const outputPath = path.join(this.outputDir, moduleName, 'agents', `${agentName}.xml`);
     await fs.ensureDir(path.dirname(outputPath));
-    await fs.writeFile(outputPath, bundle, 'utf8');
+    await fs.writeFile(outputPath, formattedBundle, 'utf8');
 
     this.stats.bundledAgents++;
     const statusIcon = isValid ? chalk.green('✓') : chalk.yellow('⚠');
@@ -357,6 +370,15 @@ class WebBundler {
       let agentXml;
 
       if (isYaml) {
+        // Check for webskip flag in YAML
+        const yamlContent = await fs.readFile(agentPath, 'utf8');
+        const agentYaml = yaml.load(yamlContent);
+
+        if (agentYaml?.agent?.webskip === true) {
+          console.log(chalk.gray(`    ⊘ Skipped agent (webskip="true"): ${agentName}`));
+          continue;
+        }
+
         // Build YAML agent in-memory - skip activation for team agents (orchestrator handles it)
         const xmlContent = await this.yamlBuilder.buildFromYaml(agentPath, null, {
           includeMetadata: false,
@@ -421,10 +443,13 @@ class WebBundler {
       console.log(chalk.red(`    ⚠ Invalid XML generated for team!`));
     }
 
+    // Format XML for readability
+    const formattedBundle = this.formatXml(bundle);
+
     // 6. Write bundle to output
     const outputPath = path.join(this.outputDir, moduleName, 'teams', `${teamName}.xml`);
     await fs.ensureDir(path.dirname(outputPath));
-    await fs.writeFile(outputPath, bundle, 'utf8');
+    await fs.writeFile(outputPath, formattedBundle, 'utf8');
 
     const statusIcon = isValid ? chalk.green('✓') : chalk.yellow('⚠');
     console.log(`    ${statusIcon} Bundled team: ${teamName}.xml${isValid ? '' : chalk.yellow(' (invalid XML)')}`);
@@ -586,6 +611,14 @@ class WebBundler {
           let content;
 
           if (file.endsWith('.agent.yaml')) {
+            // Check for webskip flag in YAML
+            const yamlContent = await fs.readFile(agentPath, 'utf8');
+            const agentYaml = yaml.load(yamlContent);
+
+            if (agentYaml?.agent?.webskip === true) {
+              continue; // Skip this agent
+            }
+
             // Build YAML agent in-memory
             content = await this.yamlBuilder.buildFromYaml(agentPath, null, {
               includeMetadata: false,
@@ -673,6 +706,12 @@ class WebBundler {
     const refs = new Set();
     const workflowRefs = new Set();
 
+    // Remove agent id attribute to prevent it from being treated as a dependency
+    // The id attribute is just a metadata identifier, not a file reference
+    const xmlWithoutAgentId = xml.replace(/<agent[^>]*id="[^"]*"[^>]*>/, (match) => {
+      return match.replace(/\sid="[^"]*"/, '');
+    });
+
     // Match various file reference patterns
     const patterns = [
       /exec="([^"]+)"/g, // Command exec paths
@@ -689,7 +728,8 @@ class WebBundler {
 
     for (const pattern of patterns) {
       let match;
-      while ((match = pattern.exec(xml)) !== null) {
+      // Use the XML with agent id removed for pattern matching
+      while ((match = pattern.exec(xmlWithoutAgentId)) !== null) {
         let filePath = match[1];
         // Remove {project-root} prefix if present
         filePath = filePath.replace(/^{project-root}\//, '');
@@ -717,6 +757,7 @@ class WebBundler {
 
     for (const pattern of workflowPatterns) {
       let match;
+      // Use original xml for workflow patterns (they don't conflict with agent id)
       while ((match = pattern.exec(xml)) !== null) {
         let workflowPath = match[1];
         workflowPath = workflowPath.replace(/^{project-root}\//, '');
@@ -794,6 +835,13 @@ class WebBundler {
 
     if (!actualPath || !(await fs.pathExists(actualPath))) {
       warnings.push(filePath);
+      return;
+    }
+
+    // Skip if it's a directory
+    const stats = await fs.stat(actualPath);
+    if (stats.isDirectory()) {
+      // Silently skip directories - they're not file dependencies
       return;
     }
 
@@ -1050,7 +1098,8 @@ class WebBundler {
         const bundleActualPath = this.resolveFilePath(bundleFilePath, moduleName);
 
         if (!bundleActualPath || !(await fs.pathExists(bundleActualPath))) {
-          warnings.push(bundleFilePath);
+          // Use the cleaned path in warnings (with {bmad_folder} replaced)
+          warnings.push(cleanFilePath);
           continue;
         }
 
@@ -1609,6 +1658,63 @@ class WebBundler {
   }
 
   /**
+   * Format XML content for readability
+   */
+  formatXml(xml) {
+    const TAB = '  '; // 2 spaces
+    let result = '';
+    let depth = 0;
+
+    // Split by tags while preserving them
+    const parts = xml.split(/(<[^>]+>)/g);
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      if (!part) continue;
+
+      if (part.startsWith('<?xml')) {
+        // XML declaration - no indent
+        result += part + '\n';
+      } else if (part.startsWith('<!--')) {
+        // Comment
+        result += TAB.repeat(depth) + part + '\n';
+      } else if (part.startsWith('</')) {
+        // Closing tag - unindent first
+        depth = Math.max(0, depth - 1);
+        result += TAB.repeat(depth) + part + '\n';
+      } else if (part.startsWith('<')) {
+        // Opening or self-closing tag
+        const isSelfClosing = part.endsWith('/>');
+        const tagName = part.match(/<(\w+)/)?.[1];
+
+        // Check if next part is simple text content
+        const nextPart = parts[i + 1];
+        const hasSimpleContent = nextPart && !nextPart.startsWith('<') && nextPart.trim().length > 0 && nextPart.trim().length <= 100;
+
+        if (hasSimpleContent && parts[i + 2] && parts[i + 2] === `</${tagName}>`) {
+          // Simple tag with inline content: <tag>content</tag>
+          result += TAB.repeat(depth) + part + nextPart.trim() + parts[i + 2] + '\n';
+          i += 2; // Skip content and closing tag
+        } else {
+          // Multi-line tag
+          result += TAB.repeat(depth) + part + '\n';
+          if (!isSelfClosing) {
+            depth++;
+          }
+        }
+      } else {
+        // Text content between tags
+        const trimmed = part.trim();
+        if (trimmed) {
+          result += TAB.repeat(depth) + trimmed + '\n';
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * Display summary statistics
    */
   displaySummary() {
@@ -1619,7 +1725,9 @@ class WebBundler {
     console.log(chalk.bold('Bundle Statistics:'));
     console.log(`  Total agents found:    ${this.stats.totalAgents}`);
     console.log(`  Successfully bundled:  ${chalk.green(this.stats.bundledAgents)}`);
-    console.log(`  Skipped (bundle=false): ${chalk.gray(this.stats.skippedAgents)}`);
+    if (this.stats.skippedAgents > 0) {
+      console.log(`  Skipped (webskip/bundle): ${chalk.gray(this.stats.skippedAgents)}`);
+    }
 
     if (this.stats.failedAgents > 0) {
       console.log(`  Failed to bundle:      ${chalk.red(this.stats.failedAgents)}`);
