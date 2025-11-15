@@ -1763,10 +1763,11 @@ class Installer {
       const newBmadFolderName = this.configCollector.collectedConfig.core?.bmad_folder || existingBmadFolderName;
 
       if (existingBmadFolderName === newBmadFolderName) {
-        // Normal quick update - start the spinner
-        spinner.start('Updating BMAD installation...');
+        // Normal quick update - stop spinner before calling install()
+        // install() will manage its own spinner
+        spinner.stop();
       } else {
-        // Folder name has changed - stop spinner and let install() handle it
+        // Folder name has changed - notify user that install() will handle migration
         spinner.stop();
         console.log(chalk.yellow(`\n⚠️  Folder name will change: ${existingBmadFolderName} → ${newBmadFolderName}`));
         console.log(chalk.yellow('The installer will handle the folder migration.\n'));
@@ -1786,14 +1787,12 @@ class Installer {
         _savedIdeConfigs: savedIdeConfigs, // Pass saved IDE configs to installer
       };
 
-      // Call the standard install method
+      // Call the standard install method (it will manage its own spinner)
       const result = await this.install(installConfig);
 
-      // Only succeed the spinner if it's still spinning
-      // (install method might have stopped it if folder name changed)
-      if (spinner.isSpinning) {
-        spinner.succeed('Quick update complete!');
-      }
+      // install() handles its own spinner, so no need to check if our spinner is spinning
+      // Just show completion message
+      console.log(chalk.green('✓ Quick update complete!'));
 
       return {
         success: true,
@@ -1804,7 +1803,12 @@ class Installer {
         ides: configuredIdes,
       };
     } catch (error) {
-      spinner.fail('Quick update failed');
+      // Spinner is already stopped, just show error
+      if (spinner.isSpinning) {
+        spinner.fail('Quick update failed');
+      } else {
+        console.error(chalk.red('✗ Quick update failed'));
+      }
       throw error;
     }
   }
