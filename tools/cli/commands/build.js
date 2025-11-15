@@ -235,7 +235,7 @@ async function buildAllAgents(projectDir, force = false) {
           continue;
         }
 
-        const agentName = file.replace('.agent.yaml', '');
+        const agentName = path.basename(file, '.agent.yaml');
         const agentYamlPath = path.join(agentsDir, file);
         const outputPath = path.join(agentsDir, `${agentName}.md`);
 
@@ -330,7 +330,7 @@ async function checkBuildStatus(projectDir) {
           continue;
         }
 
-        const agentName = file.replace('.agent.yaml', '');
+        const agentName = path.basename(file, '.agent.yaml');
         const agentYamlPath = path.join(agentsDir, file);
         const outputPath = path.join(agentsDir, `${agentName}.md`);
 
@@ -449,7 +449,7 @@ async function listAvailableAgents(projectDir) {
 
       for (const file of files) {
         if (file.endsWith('.agent.yaml')) {
-          const agentName = file.replace('.agent.yaml', '');
+          const agentName = path.basename(file, '.agent.yaml');
           console.log(chalk.dim(`       - ${agentName} (${module})`));
         }
       }
