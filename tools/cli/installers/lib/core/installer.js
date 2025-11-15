@@ -1800,10 +1800,12 @@ class Installer {
         ides: configuredIdes,
       };
     } catch (error) {
-      // Ensure spinner is stopped, then let caller handle error message
+      // Ensure spinner is stopped
       if (spinner.isSpinning) {
         spinner.stop();
       }
+      // Provide operation context before detailed error from caller
+      console.error(chalk.red('✗ Quick update failed'));
       throw error;
     }
   }
