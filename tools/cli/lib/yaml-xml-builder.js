@@ -119,6 +119,16 @@ class YamlXmlBuilder {
         if (customizeYaml.critical_actions) {
           merged.agent.critical_actions = [...(merged.agent.critical_actions || []), ...customizeYaml.critical_actions];
         }
+
+        // Append prompts
+        if (customizeYaml.prompts) {
+          merged.agent.prompts = [...(merged.agent.prompts || []), ...customizeYaml.prompts];
+        }
+
+        // Append memories
+        if (customizeYaml.memories) {
+          merged.agent.memories = [...(merged.agent.memories || []), ...customizeYaml.memories];
+        }
       }
     }
 
@@ -202,6 +212,11 @@ class YamlXmlBuilder {
     // Persona section
     xml += this.buildPersonaXml(agent.persona);
 
+    // Memories section (if exists)
+    if (agent.memories) {
+      xml += this.buildMemoriesXml(agent.memories);
+    }
+
     // Prompts section (if exists)
     if (agent.prompts) {
       xml += this.buildPromptsXml(agent.prompts);
@@ -269,6 +284,23 @@ class YamlXmlBuilder {
   }
 
   /**
+   * Build memories XML section
+   */
+  buildMemoriesXml(memories) {
+    if (!memories || memories.length === 0) return '';
+
+    let xml = '  <memories>\n';
+
+    for (const memory of memories) {
+      xml += `    <memory>${this.escapeXml(memory)}</memory>\n`;
+    }
+
+    xml += '  </memories>\n';
+
+    return xml;
+  }
+
+  /**
    * Build prompts XML section
    * Handles both array format and object/dictionary format
    */
@@ -296,9 +328,9 @@ class YamlXmlBuilder {
 
     for (const prompt of promptsArray) {
       xml += `    <prompt id="${prompt.id || ''}">\n`;
-      xml += `      <![CDATA[\n`;
-      xml += `      ${prompt.content || ''}\n`;
-      xml += `      ]]>\n`;
+      xml += `      <content>\n`;
+      xml += `${this.escapeXml(prompt.content || '')}\n`;
+      xml += `      </content>\n`;
       xml += `    </prompt>\n`;
     }
 
