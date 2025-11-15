@@ -36,7 +36,7 @@
 
     <step n="3" title="Execute Sharding">
       <action>Inform user that sharding is beginning</action>
-      <action>Execute command: `npx @kayvan/markdown-tree-parser [source-document] [destination-folder]`</action>
+      <action>Execute command: `npx @kayvan/markdown-tree-parser explode [source-document] [destination-folder]`</action>
       <action>Capture command output and any errors</action>
       <action if="command fails">HALT and display error to user</action>
     </step>
@@ -56,6 +56,50 @@
       <i>- Confirmation that index.md was created</i>
       <i>- Any tool output or warnings</i>
       <action>Inform user that sharding completed successfully</action>
+    </step>
+
+    <step n="6" title="Handle Original Document">
+      <critical>Keeping both the original and sharded versions defeats the purpose of sharding and can cause confusion</critical>
+      <action>Present user with options for the original document:</action>
+
+      <ask>What would you like to do with the original document `[source-document-name]`?
+
+Options:
+[d] Delete - Remove the original (recommended - shards can always be recombined)
+[m] Move to archive - Move original to a backup/archive location
+[k] Keep - Leave original in place (NOT recommended - defeats sharding purpose)
+
+Your choice (d/m/k):</ask>
+
+      <check if="user selects 'd' (delete)">
+        <action>Delete the original source document file</action>
+        <action>Confirm deletion to user: "✓ Original document deleted: [source-document-path]"</action>
+        <note>The document can be reconstructed from shards by concatenating all section files in order</note>
+      </check>
+
+      <check if="user selects 'm' (move)">
+        <action>Determine default archive location: same directory as source, in an "archive" subfolder</action>
+        <action>Example: /path/to/architecture.md → /path/to/archive/architecture.md</action>
+        <ask>Archive location ([y] to use default: [default-archive-path], or provide custom path):</ask>
+        <action if="user accepts default">Use default archive path</action>
+        <action if="user provides custom path">Use custom archive path</action>
+        <action>Create archive directory if it doesn't exist</action>
+        <action>Move original document to archive location</action>
+        <action>Confirm move to user: "✓ Original document moved to: [archive-path]"</action>
+      </check>
+
+      <check if="user selects 'k' (keep)">
+        <action>Display warning to user:</action>
+        <output>⚠️ WARNING: Keeping both original and sharded versions is NOT recommended.
+
+This creates confusion because:
+- The discover_inputs protocol may load the wrong version
+- Updates to one won't reflect in the other
+- You'll have duplicate content taking up space
+
+Consider deleting or archiving the original document.</output>
+        <action>Confirm user choice: "Original document kept at: [source-document-path]"</action>
+      </check>
     </step>
   </flow>
 

@@ -2,6 +2,444 @@
 
 ## [Unreleased]
 
+## [6.0.0-alpha.9]
+
+**Release: November 12, 2025**
+
+This alpha release introduces major workflow engine enhancements, comprehensive documentation, and significant simplification of project structure and configuration.
+
+### 🚀 Workflow Engine Revolution
+
+**Intelligent File Discovery Protocol:**
+
+- New reusable `discover_inputs` protocol for automatic file loading across all workflows
+- Three intelligent loading strategies:
+  - FULL_LOAD: Loads all sharded documents for comprehensive context
+  - SELECTIVE_LOAD: Targets specific shards via template variables
+  - INDEX_GUIDED: Analyzes table of contents and intelligently loads relevant sections
+- Auto-discovers whole vs sharded documents with automatic fallback
+- Transparent reporting of loaded content with file counts
+- Implemented across all BMM Phase 1-4 workflows and new BMGD Phase 4 workflows
+
+**Track-Based Project System:**
+
+- Replaced confusing "Level 0-4" terminology with intuitive track names:
+  - **quick-flow**: Bug fixes and small features (replaces Level 0-1)
+  - **bmad-method**: Full planning track (replaces Level 2-3)
+  - **enterprise-bmad-method**: Extended planning (replaces Level 4)
+- Updated all workflows to be track-aware rather than level-dependent
+
+### 📚 Comprehensive Documentation
+
+**New Guides Added:**
+
+- **Agent Customization Guide:** Complete instructions for customizing agent names, personas, memories, and behaviors
+- **Web Bundles & Platform Guide:** Comprehensive guide for using BMad agents in Gemini Gems and Custom GPTs
+  - Critical setup rules with exact configuration requirements
+  - Cost-saving strategies (60-80% savings via web planning → local implementation)
+  - Platform comparison and recommendations
+
+### 🏗️ Configuration & Structure Improvements
+
+**Unified Output Folder Structure:**
+
+- Single `output_folder` for ALL AI-generated artifacts (default: "docs")
+- **REMOVED: `.ephemeral/` and `.bmad-ephemeral/` folders are completely eliminated**
+- Phase 4 ephemeral content now organized within output folder as `sprint_artifacts`:
+  - Default path: `docs/sprint-artifacts/` (configurable during install)
+  - Contains: stories, epic context, story context, sprint plans, code reviews
+  - Can be set to `docs/stories/` for backward compatibility
+- Eliminated confusing separate folder proliferation
+- Clearer prompts during installation
+
+**Dynamic Path Configuration:**
+
+- Replaced hardcoded `.bmad` paths with `{bmad_folder}` placeholder throughout
+- Users can now fully customize installation folder names
+- Improved flexibility and reduced coupling to specific directory structures
+
+### 🎯 Tech-Spec Workflow Revolution
+
+**Intent-Based Intelligence:**
+
+- Removed 150+ lines of hardcoded stack detection examples
+- Replaced prescriptive instructions with adaptive intelligent guidance
+- Stack detection now automatically adapts to ANY project type
+- Consolidated story generation into single unified workflow
+- 50% fewer workflow files while maintaining full functionality
+
+### 🎮 BMGD Phase 4 Implementation
+
+**Complete Game Development Workflows:**
+
+- Added 10 Phase 4 production workflows for game development
+- Includes: code-review, sprint-planning, story creation, retrospectives
+- All workflows follow BMM patterns with game-specific adaptations
+- Unified with BMM workflows to eliminate duplication
+
+### 🌐 Web Bundle Enhancements
+
+**GitHub Pages Support:**
+
+- Web bundles can now be hosted directly on GitHub Pages
+- Automatic directory browsing and zip download functionality
+- Improved distribution setup documentation
+
+**Testing Architecture:**
+
+- New test design workflow for Phase 3 architecture level
+- Comprehensive testing strategy generation
+
+### 🔧 Code Quality & Maintenance
+
+**Major Cleanup:**
+
+- Removed 200+ files that shouldn't be version controlled
+- Cleaned up 21 pre-generated XML bundles (users generate fresh)
+- Fixed corrupted variable patterns throughout workflows
+- Standardized variable naming conventions
+- Removed duplicate BMGD workflows (now shares BMM Phase 4)
+
+**Bug Fixes:**
+
+- Fixed story status handling (accepts both "review" and "ready-for-review")
+- Corrected sprint artifact paths and undefined variables
+- Fixed installer quick install mode
+- Removed injected bad formatting characters
+- Enhanced shard document tool to prevent confusion with whole/sharded versions
+
+### 💡 Developer Experience
+
+**Enhanced Workflow Management:**
+
+- Better error handling and user guidance
+- Exit/continue options when prerequisites missing
+- Improved validation checklists with modern formatting
+- Clearer instructions and adaptive conversation goals
+
+**Variable Standardization:**
+
+- Consistent hyphenated format: `{output-folder}`
+- Renamed unclear variables: `{dev_ephemeral_location}` → `{sprint_artifacts}`
+- Fixed 40+ workflows with standardized variable patterns
+
+### 📈 Impact Summary
+
+- **98 source files modified** (299 insertions, 6,567 deletions)
+- **40+ workflows updated** with track system and standardization
+- **12 duplicate workflows eliminated** through consolidation
+- **3 installer configs simplified** with major folder improvements
+- **2 comprehensive guides added** for customization and platform usage
+
+### ⚠️ Breaking Changes
+
+- Level-based terminology (Level 0-4) replaced with track names
+- Folder structure changes may require reconfiguration for existing projects
+- Variable name changes in workflows (backward compatibility maintained where possible)
+
+### 🔄 Migration Notes
+
+**Important Folder Structure Changes:**
+
+- **The `.ephemeral/` folder is completely gone** - Phase 4 ephemeral content no longer uses a separate folder
+- Phase 4 artifacts (epic context, stories, story context, sprint plans, code reviews) now live in `{output_folder}/{sprint_artifacts}`
+- New default location: `docs/sprint-artifacts/` (was previously `.bmad-ephemeral/` or similar)
+
+**Migration Options:**
+
+1. **If you have existing `docs/stories/` content:**
+   - Move all content from `docs/stories/` to `docs/sprint-artifacts/`
+   - Update any references or scripts pointing to the old location
+
+2. **To keep using `docs/stories/` location:**
+   - During the new version install, set sprint_artifacts to "stories" when prompted
+   - This maintains backward compatibility with your existing structure
+
+3. **Clean migration checklist:**
+   - Delete old `.ephemeral/` folder if it exists
+   - Delete old `.bmad-ephemeral/` folder if it exists
+   - Move Phase 4 artifacts to new location or configure installer to use existing path
+   - Update to new track terminology in configurations (quick-flow, bmad-method, enterprise-bmad-method)
+   - Regenerate web bundles using `npm run bundle` for latest changes
+   - Update any custom workflows to use new `discover_inputs` protocol
+
+## [6.0.0-alpha.8]
+
+**Release: November 9, 2025**
+
+This alpha release focuses on installation flexibility, artifact organization, and comprehensive web bundle enhancements for better multi-agent collaboration.
+
+### 🎯 Installation Path Enhancements
+
+**Configurable Installation Directory:**
+
+- Users can now specify custom installation directories during setup
+- Changed default installation to `.bmad` (hidden directory) for cleaner project organization
+- Reduces visual clutter in project root by hiding BMAD infrastructure files
+- VS Code settings updated to work with new `.bmad` directory structure
+
+**Ephemeral File Handling:**
+
+- Updated phase 4 implementation workflows to use ephemeral file locations
+- Better separation between documentation and implementation artifacts
+- Phase 4 items (stories, code review, sprint plan, context files) can now be stored outside docs folder
+- Installer includes questions for artifact path selection
+
+### 🚀 CLI & Agent Loading Improvements
+
+**Optimized Agent Loading:**
+
+- CLI commands now load from installed agent files instead of maintaining duplicates
+- Eliminates duplication between source and installed agent definitions
+- Reduces maintenance burden and ensures consistency
+
+**Installer UX Enhancements:**
+
+- Enhanced installer interface with version display
+- Better visual feedback during installation process
+
+### 🌐 Web Bundle Enhancements
+
+**Party Mode Support:**
+
+- All web bundles (single agent and team) now include party mode for multi-agent collaboration
+- Users can invoke multi-agent discussions from any bundled agent
+- Added default-party.csv files to bmm, bmgd, and cis modules with customizable party configurations
+
+**Advanced Elicitation Integration:**
+
+- Integrated advanced elicitation capabilities into standalone agents
+- All 39 elicitation methods now available in web bundles
+
+**Expanded Agent Bundles:**
+
+- New web bundle outputs for all agents: analyst, architect, dev, pm, sm, tea, tech-writer, ux-designer
+- Game development agents: game-designer, game-dev, game-architect, game-scrum-master
+- Creative Intelligence Suite agents fully bundled
+
+**Team Customization:**
+
+- Customizable party configurations per module
+- Users can define which agents participate in party mode discussions
+
+### 🔧 Phase 4 Workflow Updates
+
+**Artifact Separation (In Progress):**
+
+- Initiated separation of phase 4 implementation artifacts from documentation
+- Dedicated artifact path for stories, code review, sprint plan, context files
+- Updated workflow.yaml files for:
+  - code-review workflow
+  - sprint-planning workflow
+  - story-context workflow
+  - epic-tech-context workflow
+  - retrospective workflow
+- Configuration support added for artifact path selection during installation
+
+### 🛠️ IDE Integration
+
+**Gemini TOML:**
+
+- Improved with clear loading instructions using @ commands
+- Better documentation for Gemini CLI users
+
+**Agent Launcher Templates:**
+
+- Agent launcher markdown files now use centralized critical indication templates
+- Improved consistency across IDE configurations
+
+**GitHub Copilot:**
+
+- Updated tool names to match official VS Code documentation (November 2025)
+- Better integration with latest Copilot features
+
+### 🐛 Bug Fixes
+
+- Fixed duplicate manifest entries by deduplicating module lists using Set
+- Cleaned up legacy `bmad/`, `bmd/`, and `web-bundles/` directories on installation
+- Various improvements to phase 4 workflow artifact handling
+- Better error handling in web bundler
+
+### 📦 Infrastructure Changes
+
+- New agent and action command header models for standardization
+- Enhanced web-bundle-activation-steps fragment
+- Updated web-bundler.js to support new structure
+- Improved party mode instructions and workflow orchestration
+
+### 📊 Impact Summary
+
+This release brings significant improvements to installation flexibility and multi-agent collaboration:
+
+- **Flexibility:** Configurable installation paths for different project preferences
+- **Organization:** Cleaner project structure with hidden `.bmad` directory
+- **Collaboration:** Comprehensive party mode support in all web bundles
+- **Consistency:** Optimized agent loading eliminates duplication
+- **Artifact Management:** Better separation of documentation vs implementation artifacts
+
+---
+
+## [6.0.0-alpha.7]
+
+**Release: November 7, 2025**
+
+This alpha release focuses on web bundle improvements, module extraction, and enhanced workflow vendoring capabilities.
+
+### 🌐 Web Bundler Improvements
+
+**Workflow Vendoring:**
+
+- Web bundler now performs workflow vendoring before bundling agents
+- Workflows referenced via `workflow-install` attributes are automatically copied from source to destination
+- Similar to module installer behavior, ensuring consistency
+- Config_source is updated in vendored workflows to reference target module
+- Fixes missing dependency warnings for cross-module workflow references
+
+**Enhanced Dependency Resolution:**
+
+- Improved workflow dependency detection and bundling
+- Better handling of workflows with `web_bundle: false` flag
+- Menu items for non-web workflows are now properly excluded from bundles
+- Shows positive "✓ No missing dependencies" message when all dependencies resolved
+
+**Advanced Elicitation Fix:**
+
+- Added missing `adv-elicit-methods.csv` to workflow bundles
+- Includes CSV in all workflows using `adv-elicit.xml`:
+  - architecture workflow
+  - prd workflow
+  - tech-spec workflow
+- Fixes runtime failures when advanced elicitation is invoked in bundled workflows
+
+### 🎮 BMGD Module Extraction
+
+**Game Development Module:**
+
+- Extracted game development functionality from BMM into standalone BMGD module
+- Moved agents: game-designer, game-dev, game-architect from BMM to BMGD
+- Moved team config: team-gamedev
+- Created new Game Dev Scrum Master agent using workflow vendoring pattern
+
+**Reorganized Game Dev Workflows:**
+
+Industry-standard game development phases:
+
+- **Phase 1 (Preproduction):** brainstorm-game, game-brief
+- **Phase 2 (Design):** gdd (Game Design Document), narrative
+- **Phase 3 (Technical):** game-architecture
+- **Phase 4 (Production):** Vendors BMM workflows (dev-story, code-review, sprint-planning, etc.)
+
+**Workflow Vendoring Implementation:**
+
+- Game Dev SM agent uses `workflow-install` to vendor BMM phase 4 workflows
+- Enables module independence while sharing proven workflows
+- Sets pattern for future module extractions and specializations
+
+### 🔧 IDE Installation Improvements
+
+**Claude Code Fix:**
+
+- Fixed regression preventing README file slash commands from installing
+- Cleaned up bmad folders in tools directory on installation
+- Better handling of IDE-specific configuration files
+
+### 📚 Documentation Updates
+
+**TEA Agent Documentation:**
+
+- Updated Test Architect documentation to align with BMad 4-phase methodology
+- Better integration with overall workflow structure
+- Clearer role definitions and responsibilities
+
+**Diagram Improvements:**
+
+- More visual documentation updates
+- Enhanced Mermaid diagram drafts
+- Better workflow visualization
+
+### 🐛 Bug Fixes
+
+- Fixed missing `adv-elicit-methods.csv` in workflow bundles
+- Removed menu items for workflows with `web_bundle: false`
+- Fixed IDE installation regression for Claude Code README commands
+- Improved workflow vendoring dependency resolution
+
+### 🔄 Breaking Changes
+
+**Module Structure:**
+
+- Game development functionality moved from BMM to BMGD module
+- Existing projects using game dev agents should reinstall to get new module structure
+- No functional changes - agents work the same way in new location
+
+### 📊 Impact Summary
+
+This release establishes better module organization and cross-module workflow sharing:
+
+- **Modularity:** BMGD extraction demonstrates clean module separation pattern
+- **Reusability:** Workflow vendoring enables sharing proven workflows across modules
+- **Reliability:** Advanced elicitation now works correctly in all web bundles
+- **Flexibility:** Modules can be specialized while leveraging core workflows
+
+---
+
+## [6.0.0-alpha.6]
+
+**Release: November 4, 2025**
+
+This alpha release focuses on installation flexibility, improved UX, and bug fixes for the installer system.
+
+### 🐛 Bug Fixes
+
+**Installer Fixes:**
+
+- Fixed manifestPath error in ide-config-manager causing installation failures
+- Fixed installer option display to show full labels instead of just values for single/multi-select
+- Better error handling during installation process
+
+**Documentation Installation:**
+
+- Add conditional documentation installation feature
+- Users can now opt out of installing docs to reduce installation footprint
+- New `install_user_docs` configuration option (defaults to true)
+- Useful for production environments or users who prefer online documentation
+
+### 🎨 User Experience Improvements
+
+**Installer UX:**
+
+- Improved config question display with descriptive labels
+- Better formatting for single and multi-select options
+- Clearer feedback during installation process
+- More intuitive option selection
+
+### 📖 Documentation Updates
+
+**Contributing Guidelines:**
+
+- Updated CONTRIBUTING.md to remove references to non-existent 'next' branch
+- Clearer contribution workflow instructions
+- Better alignment with actual repository structure
+
+### 🧹 Maintenance
+
+**Issue Tracker Cleanup:**
+
+- Closed 54 legacy v4 issues (older than 1 month)
+- Maintains clean issue tracker focused on v6 development
+- Improved issue management and prioritization
+
+### 📊 Impact Summary
+
+This release improves installation reliability and user experience:
+
+- **Reliability:** Fixed critical installer bugs preventing successful installations
+- **Flexibility:** Optional documentation installation for different use cases
+- **Clarity:** Better UX with descriptive labels and clearer feedback
+- **Maintenance:** Clean issue tracker focused on current development
+
+---
+
 ## [6.0.0-alpha.5]
 
 **Release: November 4, 2025**
@@ -43,7 +481,7 @@ Users now choose development approach based on **project needs and team preferen
 **1. Elicitation System Modernization:**
 
 - Removed legacy `<elicit-required />` XML tag from core workflow.xml
-- Replaced with explicit `<invoke-task halt="true">adv-elicit.xml</invoke-task>` pattern
+- Replaced with explicit `<invoke-task halt="true">advanced-elicitation.xml</invoke-task>` pattern
 - More self-documenting and eliminates confusing indirection layer
 - Added strategic elicitation points across all planning workflows:
   - **PRD:** After success criteria, scope, functional requirements, and final review

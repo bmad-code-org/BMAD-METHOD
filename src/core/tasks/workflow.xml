@@ -62,17 +62,33 @@
           <tag>ask xml tag → Prompt user and WAIT for response</tag>
           <tag>invoke-workflow xml tag → Execute another workflow with given inputs</tag>
           <tag>invoke-task xml tag → Execute specified task</tag>
+          <tag>invoke-protocol name="protocol_name" xml tag → Execute reusable protocol from protocols section</tag>
           <tag>goto step="x" → Jump to specified step</tag>
         </execute-tags>
       </substep>
 
-      <substep n="2c" title="Handle Special Output Tags">
+      <substep n="2c" title="Handle template-output Tags">
         <if tag="template-output">
           <mandate>Generate content for this section</mandate>
           <mandate>Save to file (Write first time, Edit subsequent)</mandate>
           <action>Show checkpoint separator: ━━━━━━━━━━━━━━━━━━━━━━━</action>
           <action>Display generated content</action>
-          <ask>Continue [c] or Edit [e]? WAIT for response</ask>
+          <ask> [a] Advanced Elicitation, [c] Continue, [p] Party-Mode, [y] YOLO the rest of this document only. WAIT for response. <if
+              response="a">
+              <action>Start the advanced elicitation workflow {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml</action>
+            </if>
+            <if
+              response="c">
+              <action>Continue to next step</action>
+            </if>
+            <if response="p">
+              <action>Start the party-mode workflow {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml</action>
+            </if>
+            <if
+              response="y">
+              <action>Enter #yolo mode for the rest of the workflow</action>
+            </if>
+          </ask>
         </if>
       </substep>
 
@@ -92,7 +108,8 @@
 
   <execution-modes>
     <mode name="normal">Full user interaction at all decision points</mode>
-    <mode name="#yolo">Skip optional sections, skip all elicitation, minimize prompts</mode>
+    <mode name="#yolo">Skip all confirmations and elicitation, minimize prompts and try to produce all of the workflow automatically by
+      simulating the remaining discussions with an simulated expert user</mode>
   </execution-modes>
 
   <supported-tags desc="Instructions can use these tags">
@@ -111,6 +128,7 @@
       <tag>goto - Jump to another step</tag>
       <tag>invoke-workflow - Call another workflow</tag>
       <tag>invoke-task - Call a task</tag>
+      <tag>invoke-protocol - Execute a reusable protocol (e.g., discover_inputs)</tag>
     </execution>
     <output>
       <tag>template-output - Save content checkpoint</tag>
@@ -130,23 +148,119 @@
     <pattern type="multi-action-block">
       <use-case>Multiple actions/tags under same condition</use-case>
       <syntax>&lt;check if="condition"&gt;
-  &lt;action&gt;First action&lt;/action&gt;
-  &lt;action&gt;Second action&lt;/action&gt;
-&lt;/check&gt;</syntax>
+        &lt;action&gt;First action&lt;/action&gt;
+        &lt;action&gt;Second action&lt;/action&gt;
+        &lt;/check&gt;</syntax>
       <example>&lt;check if="validation fails"&gt;
-  &lt;action&gt;Log error&lt;/action&gt;
-  &lt;goto step="1"&gt;Retry&lt;/goto&gt;
-&lt;/check&gt;</example>
+        &lt;action&gt;Log error&lt;/action&gt;
+        &lt;goto step="1"&gt;Retry&lt;/goto&gt;
+        &lt;/check&gt;</example>
       <rationale>Explicit scope boundaries prevent ambiguity</rationale>
     </pattern>
 
     <pattern type="nested-conditions">
       <use-case>Else/alternative branches</use-case>
       <syntax>&lt;check if="condition A"&gt;...&lt;/check&gt;
-&lt;check if="else"&gt;...&lt;/check&gt;</syntax>
+        &lt;check if="else"&gt;...&lt;/check&gt;</syntax>
       <rationale>Clear branching logic with explicit blocks</rationale>
     </pattern>
   </conditional-execution-patterns>
+
+  <protocols desc="Reusable workflow protocols that can be invoked via invoke-protocol tag">
+    <protocol name="discover_inputs" desc="Smart file discovery and loading based on input_file_patterns">
+      <objective>Intelligently load project files (whole or sharded) based on workflow's input_file_patterns configuration</objective>
+
+      <critical>Only execute if workflow.yaml contains input_file_patterns section</critical>
+
+      <flow>
+        <step n="1" title="Parse Input File Patterns">
+          <action>Read input_file_patterns from loaded workflow.yaml</action>
+          <action>For each pattern group (prd, architecture, epics, etc.), note the load_strategy if present</action>
+        </step>
+
+        <step n="2" title="Load Files Using Smart Strategies">
+          <iterate>For each pattern in input_file_patterns:</iterate>
+
+          <substep n="2a" title="Try Whole Document First">
+            <action>Attempt glob match on 'whole' pattern (e.g., "{output_folder}/*prd*.md")</action>
+            <check if="matches found">
+              <action>Load ALL matching files completely (no offset/limit)</action>
+              <action>Store content in variable: {pattern_name_content} (e.g., {prd_content})</action>
+              <action>Mark pattern as RESOLVED, skip to next pattern</action>
+            </check>
+          </substep>
+
+          <substep n="2b" title="Try Sharded Document if Whole Not Found">
+            <check if="no whole matches AND sharded pattern exists">
+              <action>Determine load_strategy from pattern config (defaults to FULL_LOAD if not specified)</action>
+
+              <strategy name="FULL_LOAD">
+                <desc>Load ALL files in sharded directory - used for PRD, Architecture, UX, brownfield docs</desc>
+                <action>Use glob pattern to find ALL .md files (e.g., "{output_folder}/*architecture*/*.md")</action>
+                <action>Load EVERY matching file completely</action>
+                <action>Concatenate content in logical order (index.md first if exists, then alphabetical)</action>
+                <action>Store in variable: {pattern_name_content}</action>
+              </strategy>
+
+              <strategy name="SELECTIVE_LOAD">
+                <desc>Load specific shard using template variable - example: used for epics with {{epic_num}}</desc>
+                <action>Check for template variables in sharded_single pattern (e.g., {{epic_num}})</action>
+                <action>If variable undefined, ask user for value OR infer from context</action>
+                <action>Resolve template to specific file path</action>
+                <action>Load that specific file</action>
+                <action>Store in variable: {pattern_name_content}</action>
+              </strategy>
+
+              <strategy name="INDEX_GUIDED">
+                <desc>Load index.md, analyze structure and description of each doc in the index, then intelligently load relevant docs</desc>
+                <mandate>DO NOT BE LAZY - use best judgment to load documents that might have relevant information, even if only a 5% chance</mandate>
+                <action>Load index.md from sharded directory</action>
+                <action>Parse table of contents, links, section headers</action>
+                <action>Analyze workflow's purpose and objective</action>
+                <action>Identify which linked/referenced documents are likely relevant</action>
+                <example>If workflow is about authentication and index shows "Auth Overview", "Payment Setup", "Deployment" → Load auth
+                  docs, consider deployment docs, skip payment</example>
+                <action>Load all identified relevant documents</action>
+                <action>Store combined content in variable: {pattern_name_content}</action>
+                <note>When in doubt, LOAD IT - context is valuable, being thorough is better than missing critical info</note>
+              </strategy>
+            </check>
+          </substep>
+
+          <substep n="2c" title="Handle Not Found">
+            <check if="no matches for whole OR sharded">
+              <action>Set {pattern_name_content} to empty string</action>
+              <action>Note in session: "No {pattern_name} files found" (not an error, just unavailable, offer use change to provide)</action>
+            </check>
+          </substep>
+        </step>
+
+        <step n="3" title="Report Discovery Results">
+          <action>List all loaded content variables with file counts</action>
+          <example>
+            ✓ Loaded {prd_content} from 1 file: PRD.md
+            ✓ Loaded {architecture_content} from 5 sharded files: architecture/index.md, architecture/system-design.md, ...
+            ✓ Loaded {epics_content} from selective load: epics/epic-3.md
+            ○ No ux_design files found
+          </example>
+          <note>This gives workflow transparency into what context is available</note>
+        </step>
+      </flow>
+
+      <usage-in-instructions>
+        <example desc="Typical usage in workflow instructions.md">
+          &lt;step n="0" goal="Discover and load project context"&gt;
+          &lt;invoke-protocol name="discover_inputs" /&gt;
+          &lt;/step&gt;
+
+          &lt;step n="1" goal="Analyze requirements"&gt;
+          &lt;action&gt;Review {prd_content} for functional requirements&lt;/action&gt;
+          &lt;action&gt;Cross-reference with {architecture_content} for technical constraints&lt;/action&gt;
+          &lt;/step&gt;
+        </example>
+      </usage-in-instructions>
+    </protocol>
+  </protocols>
 
   <llm final="true">
     <mandate>This is the complete workflow execution engine</mandate>

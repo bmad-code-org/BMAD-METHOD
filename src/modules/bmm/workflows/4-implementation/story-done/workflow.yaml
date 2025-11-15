@@ -9,7 +9,8 @@ output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
-sprint_status: "{context_dir}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
 
 # Workflow components
 installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/story-done"
@@ -17,7 +18,7 @@ instructions: "{installed_path}/instructions.md"
 
 # Variables and inputs
 variables:
-  story_dir: "{config_source}:sprint_artifacts/stories" # Directory where stories are stored
+  story_dir: "{config_source}:sprint_artifacts" # Directory where stories are stored
 
 # Output configuration - no output file, just status updates
 default_output_file: ""

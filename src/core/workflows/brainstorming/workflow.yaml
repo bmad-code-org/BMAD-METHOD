@@ -9,11 +9,6 @@ output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 date: system-generated
 
-# Optional inputs for guided brainstorming
-recommended_inputs:
-  - session_context: "Context document passed via data attribute"
-  - previous_results: "{output_folder}/brainstorming-*.md"
-
 # Context can be provided via data attribute when invoking
 # Example: data="{path}/context.md" provides domain-specific guidance
 

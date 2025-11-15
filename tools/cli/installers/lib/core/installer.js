@@ -562,7 +562,12 @@ class Installer {
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
 
-      spinner.start('Continuing installation...');
+      // Check if spinner is already running (e.g., from folder name change scenario)
+      if (spinner.isSpinning) {
+        spinner.text = 'Continuing installation...';
+      } else {
+        spinner.start('Continuing installation...');
+      }
 
       // Create bmad directory structure
       spinner.text = 'Creating directory structure...';
@@ -1627,26 +1632,33 @@ class Installer {
       });
       spinner.succeed('Manifests regenerated');
 
-      // Ask for IDE to update
-      spinner.stop();
-      // Note: UI lives in tools/cli/lib/ui.js; from installers/lib/core use '../../../lib/ui'
-      const { UI } = require('../../../lib/ui');
-      const ui = new UI();
-      const toolConfig = await ui.promptToolSelection(projectDir, []);
-
-      if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
+      // Update IDE configurations using the existing IDE list from manifest
+      if (existingIdes && existingIdes.length > 0) {
         spinner.start('Updating IDE configurations...');
 
-        for (const ide of toolConfig.ides) {
+        for (const ide of existingIdes) {
           spinner.text = `Updating ${ide}...`;
+
+          // Stop spinner before IDE setup to prevent blocking any potential prompts
+          // However, we pass _alreadyConfigured to skip all prompts during compile
+          spinner.stop();
+
           await this.ideManager.setup(ide, projectDir, bmadDir, {
             selectedModules: installedModules,
             skipModuleInstall: true, // Skip module installation, just update IDE files
             verbose: config.verbose,
+            preCollectedConfig: { _alreadyConfigured: true }, // Skip all interactive prompts during compile
           });
+
+          // Restart spinner for next IDE
+          if (existingIdes.indexOf(ide) < existingIdes.length - 1) {
+            spinner.start('Updating IDE configurations...');
+          }
         }
 
-        spinner.succeed('IDE configurations updated');
+        console.log(chalk.green('✓ IDE configurations updated'));
+      } else {
+        console.log(chalk.yellow('⚠️  No IDEs configured. Skipping IDE update.'));
       }
 
       return { agentCount, taskCount };
@@ -1746,8 +1758,19 @@ class Installer {
         lastModified: new Date().toISOString(),
       };
 
-      // Now run the full installation with the collected configs
-      spinner.start('Updating BMAD installation...');
+      // Check if bmad_folder has changed
+      const existingBmadFolderName = path.basename(bmadDir);
+      const newBmadFolderName = this.configCollector.collectedConfig.core?.bmad_folder || existingBmadFolderName;
+
+      if (existingBmadFolderName === newBmadFolderName) {
+        // Normal quick update - start the spinner
+        spinner.start('Updating BMAD installation...');
+      } else {
+        // Folder name has changed - stop spinner and let install() handle it
+        spinner.stop();
+        console.log(chalk.yellow(`\n⚠️  Folder name will change: ${existingBmadFolderName} → ${newBmadFolderName}`));
+        console.log(chalk.yellow('The installer will handle the folder migration.\n'));
+      }
 
       // Build the config object for the installer
       const installConfig = {
@@ -1766,7 +1789,11 @@ class Installer {
       // Call the standard install method
       const result = await this.install(installConfig);
 
-      spinner.succeed('Quick update complete!');
+      // Only succeed the spinner if it's still spinning
+      // (install method might have stopped it if folder name changed)
+      if (spinner.isSpinning) {
+        spinner.succeed('Quick update complete!');
+      }
 
       return {
         success: true,

@@ -49,6 +49,36 @@ class ConfigCollector {
   }
 
   /**
+   * Detect the existing BMAD folder name in a project
+   * @param {string} projectDir - Project directory
+   * @returns {Promise<string|null>} Folder name (just the name, not full path) or null if not found
+   */
+  async detectExistingBmadFolder(projectDir) {
+    // Check if project directory exists
+    if (!(await fs.pathExists(projectDir))) {
+      return null;
+    }
+
+    // Look for ANY directory with _cfg/manifest.yaml
+    try {
+      const entries = await fs.readdir(projectDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          const manifestPath = path.join(projectDir, entry.name, '_cfg', 'manifest.yaml');
+          if (await fs.pathExists(manifestPath)) {
+            // Found a V6+ installation, return just the folder name
+            return entry.name;
+          }
+        }
+      }
+    } catch {
+      // Ignore errors
+    }
+
+    return null;
+  }
+
+  /**
    * Load existing config if it exists from module config files
    * @param {string} projectDir - Target project directory
    */
@@ -562,6 +592,15 @@ class ConfigCollector {
       // This prevents duplication when the result template adds it back
       if (typeof existingValue === 'string' && existingValue.startsWith('{project-root}/')) {
         existingValue = existingValue.replace('{project-root}/', '');
+      }
+    }
+
+    // Special handling for bmad_folder: detect existing folder name
+    if (moduleName === 'core' && key === 'bmad_folder' && !existingValue && this.currentProjectDir) {
+      // Try to detect the existing BMAD folder name
+      const detectedFolder = await this.detectExistingBmadFolder(this.currentProjectDir);
+      if (detectedFolder) {
+        existingValue = detectedFolder;
       }
     }
 

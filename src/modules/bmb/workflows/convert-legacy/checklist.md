@@ -48,7 +48,7 @@
 - [ ] All sections converted to workflow steps
 - [ ] Section hierarchy maintained in instructions
 - [ ] Variables ({{var}}) preserved in template.md
-- [ ] Elicitation points (elicit: true) converted to <invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
+- [ ] Elicitation points (elicit: true) converted to <invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml</invoke-task>
 - [ ] Conditional sections preserved with if="" attributes
 - [ ] Repeatable sections converted to repeat="" attributes
 

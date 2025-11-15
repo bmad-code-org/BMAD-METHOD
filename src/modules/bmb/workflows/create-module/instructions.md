@@ -4,6 +4,7 @@
 <critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/create-module/workflow.yaml</critical>
 <critical>Study existing modules in: {project-root}/{bmad_folder}/ for patterns</critical>
 <critical>Communicate in {communication_language} throughout the module creation process</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
 
 <workflow>
 
@@ -338,18 +339,13 @@ prompt:
   // {{module_name}} Module Installer
   // Custom installation logic
 
-/\*\*
-
-- Module installation hook
-- Called after files are copied but before IDE configuration
--
 - @param {Object} options - Installation options
 - @param {string} options.projectRoot - Project root directory
 - @param {Object} options.config - Module configuration from install-config.yaml
 - @param {Array} options.installedIDEs - List of IDE codes being configured
 - @param {Object} options.logger - Logger instance (log, warn, error methods)
 - @returns {boolean} - true if successful, false to abort installation
-  \*/
+
   async function install(options) {
   const { projectRoot, config, installedIDEs, logger } = options;
 

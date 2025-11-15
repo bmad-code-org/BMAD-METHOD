@@ -175,7 +175,15 @@ jobs:
       - name: Publish to NPM
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish
+        run: |
+          VERSION="${{ steps.version.outputs.new_version }}"
+          if [[ "$VERSION" == *"alpha"* ]] || [[ "$VERSION" == *"beta"* ]]; then
+            echo "Publishing prerelease version with --tag alpha"
+            npm publish --tag alpha
+          else
+            echo "Publishing stable version with --tag latest"
+            npm publish --tag latest
+          fi
 
       - name: Create GitHub Release with Bundles
         uses: softprops/action-gh-release@v2

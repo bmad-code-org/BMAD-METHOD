@@ -36,11 +36,11 @@ Web bundles are standalone XML files containing:
 
 **Option A: Download Pre-Bundled Files (Quickest)**
 
-Download ready-to-use bundles directly from GitHub:
+Download ready-to-use bundles that are automatically updated whenever commits are merged to main:
 
-**[→ Browse Web Bundles on GitHub](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/web-bundles)**
+**[→ Download Web Bundles](https://bmad-code-org.github.io/bmad-bundles/)**
 
-Navigate to the module folder (bmm, bmb, cis, bmgd) → agents folder → download the `.xml` file you need.
+Navigate to the module folder (bmm, bmb, cis, bmgd) → agents folder → download the `.xml` file you need. These bundles are automatically regenerated and deployed with every commit to the main branch, ensuring you always have the latest version.
 
 **Option B: Generate from Local Installation**
 
@@ -336,7 +336,7 @@ Agents adapt their menus based on project phase and available workflows.
 
 Customize agents using the [Agent Customization Guide](./agent-customization-guide.md):
 
-1. Edit `bmad/_cfg/agents/<agent>.customize.yaml`
+1. Edit `{bmad_folder}/_cfg/agents/<agent>.customize.yaml`
 2. Rebuild: `npx bmad-method build <agent-name>`
 3. Generate bundles: `npm run bundle`
 

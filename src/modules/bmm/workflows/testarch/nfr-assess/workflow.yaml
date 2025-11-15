@@ -33,15 +33,6 @@ required_tools:
   - search_repo # Find NFR-related tests and evidence
   - glob # Find result files matching patterns
 
-# Recommended inputs
-recommended_inputs:
-  - story: "Story markdown with NFR requirements (optional)"
-  - tech_spec: "Technical specification with NFR targets (recommended)"
-  - test_results: "Test execution results (performance, security, etc.)"
-  - metrics: "Application metrics (response times, error rates, etc.)"
-  - logs: "Application logs for reliability analysis"
-  - ci_results: "CI/CD pipeline results for burn-in validation"
-
 tags:
   - qa
   - nfr

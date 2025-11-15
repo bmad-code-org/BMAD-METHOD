@@ -11,6 +11,7 @@
 <critical>This workflow replaces architecture with a conversation-driven approach</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
 <critical>ELICITATION POINTS: After completing each major architectural decision area (identified by template-output tags for decision_record, project_structure, novel_pattern_designs, implementation_patterns, and architecture_document), invoke advanced elicitation to refine decisions before proceeding</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
 
 <step n="0" goal="Validate workflow readiness" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -363,7 +364,6 @@ Provided by Starter: {{yes_if_from_starter}}
 </action>
 
 <template-output>decision_record</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="5" goal="Address cross-cutting concerns">
@@ -393,7 +393,6 @@ Provided by Starter: {{yes_if_from_starter}}
 </action>
 
 <template-output>project_structure</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="7" goal="Design novel architectural patterns" optional="true">
@@ -467,7 +466,6 @@ Provided by Starter: {{yes_if_from_starter}}
   </check>
 
 <template-output>novel_pattern_designs</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="8" goal="Define implementation patterns to prevent agent conflicts">
@@ -560,7 +558,6 @@ Enforcement: "All agents MUST follow this pattern"
 </action>
 
 <template-output>implementation_patterns</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="9" goal="Validate architectural coherence">
@@ -614,7 +611,6 @@ Enforcement: "All agents MUST follow this pattern"
   </action>
 
 <template-output>architecture_document</template-output>
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="11" goal="Validate document completeness">

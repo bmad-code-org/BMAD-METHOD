@@ -10,11 +10,6 @@ user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
-# Optional inputs for context
-recommended_inputs:
-  - market_context: "Context document passed via data attribute"
-  - competitive_intel: "{output_folder}/market-*.md"
-
 # Context can be provided via data attribute when invoking
 # Example: data="{path}/industry-analysis.md" provides market context
 

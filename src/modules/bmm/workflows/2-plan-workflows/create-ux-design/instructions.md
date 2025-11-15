@@ -11,6 +11,7 @@
 <critical>SAVE PROGRESS after each major step - use <template-output> tags throughout</critical>
 <critical>DOCUMENT OUTPUT: Professional, specific, actionable UX design decisions WITH RATIONALE. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
 
 <step n="0" goal="Validate workflow readiness" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -51,10 +52,15 @@
 </check>
 </step>
 
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
+<note>After discovery, these content variables are available: {prd_content}, {product_brief_content}, {epics_content}, {brainstorming_content}, {document_project_content}</note>
+</step>
+
 <step n="1a" goal="Confirm project understanding or gather basic context">
   <critical>A UX designer must understand the WHY before designing the HOW</critical>
 
-<action>Attempt to load context documents using fuzzy matching: - PRD: {prd_file} - Product Brief: {brief_file} - Brainstorming: {brainstorm_file}
+<action>Review loaded context from Step 0.5: {prd_content}, {product_brief_content}, {epics_content}, {brainstorming_content}
 </action>
 
   <check if="documents_found">

@@ -4,6 +4,7 @@
 <critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml</critical>
 <critical>This workflow operates in multiple modes: interactive (default), validate, data, init-check, update</critical>
 <critical>Other workflows can call this as a service to avoid duplicating status logic</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
 
 <workflow>
 

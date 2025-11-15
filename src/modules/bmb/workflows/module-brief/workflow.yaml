@@ -10,11 +10,16 @@ user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
-# Optional input docs that enhance module planning
-recommended_inputs:
-  - brainstorming_results: "{output_folder}/brainstorming-*.md"
-  - existing_modules: "{project-root}/{bmad_folder}/"
-  - module_examples: "{project-root}/{bmad_folder}/bmb/workflows/create-module/module-structure.md"
+# Reference examples and documentation
+existing_modules_dir: "{project-root}/{bmad_folder}/"
+module_structure_guide: "{project-root}/{bmad_folder}/bmb/workflows/create-module/module-structure.md"
+
+# Optional user inputs - discovered if they exist
+input_file_patterns:
+  brainstorming:
+    description: "Brainstorming session outputs (optional)"
+    whole: "{output_folder}/brainstorming-*.md"
+    load_strategy: "FULL_LOAD"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/module-brief"

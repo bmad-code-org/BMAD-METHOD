@@ -23,7 +23,7 @@ variables:
 
   # Tracking system configuration
   tracking_system: "file-system" # Options: file-system, Future will support other options from config of mcp such as jira, linear, trello
-  story_location: "{project-root}/docs/stories" # Relative path for file-system, Future will support URL for Jira/Linear/Trello
+  story_location: "{config_source}:sprint_artifacts" # Relative path for file-system, Future will support URL for Jira/Linear/Trello
   story_location_absolute: "{config_source}:sprint_artifacts" # Absolute path for file operations
 
   # Source files (file-system only)
@@ -38,8 +38,10 @@ variables:
 # Strategy: FULL LOAD - sprint planning needs ALL epics to build complete status
 input_file_patterns:
   epics:
+    description: "All epics with user stories"
     whole: "{output_folder}/*epic*.md"
-    sharded: "{output_folder}/*epic*/index.md"
+    sharded: "{output_folder}/*epic*/*.md"
+    load_strategy: "FULL_LOAD"
 
 # Output configuration
 default_output_file: "{status_file}"

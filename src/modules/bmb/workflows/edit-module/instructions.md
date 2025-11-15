@@ -123,7 +123,9 @@ Let the conversation flow naturally. Build a shared vision of what "better" look
 2. **Propose improvements with rationale**
    - Suggest specific changes that align with best practices
    - Explain WHY each change helps
-   - Provide examples from reference modules when helpful
+   - Provide examples from reference modules: {bmm_module_dir}, {bmb_module_dir}, {cis_module_dir}
+   - Reference agents from: {existing_agents_dir}
+   - Reference workflows from: {existing_workflows_dir}
    - Reference the structure guide's patterns naturally
 
 3. **Collaborate on the approach**

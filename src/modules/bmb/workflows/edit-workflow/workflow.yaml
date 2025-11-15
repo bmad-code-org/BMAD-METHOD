@@ -12,10 +12,8 @@ user_name: "{config_source}:user_name"
 workflow_creation_guide: "{project-root}/{bmad_folder}/bmb/workflows/create-workflow/workflow-creation-guide.md"
 workflow_execution_engine: "{project-root}/{bmad_folder}/core/tasks/workflow.xml"
 
-# Optional docs that can be used to understand the target workflow
-recommended_inputs:
-  - target_workflow: "Path to the workflow.yaml file to edit"
-  - workflow_examples: "{project-root}/{bmad_folder}/bmm/workflows/"
+# Reference examples
+workflow_examples_dir: "{project-root}/{bmad_folder}/bmm/workflows/"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/edit-workflow"

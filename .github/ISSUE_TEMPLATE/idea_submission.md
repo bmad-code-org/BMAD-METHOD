@@ -92,7 +92,7 @@ Fix issues and add features.
 
 _Why this is poor: Too vague, no specific problem identified, no measurable success criteria, unclear scope_
 
-</details>****
+</details>
 
 ---
 

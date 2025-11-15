@@ -12,6 +12,7 @@
 <critical>CONTEXT IS KING: Gather ALL available context before generating specs</critical>
 <critical>DOCUMENT OUTPUT: Technical, precise, definitive. Specific versions only. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
 
 <step n="0" goal="Validate workflow readiness and detect project level" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -100,14 +101,19 @@ Let's build your tech-spec!</output>
 </check>
 </step>
 
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
+<note>After discovery, these content variables are available: {product_brief_content}, {research_content}, {document_project_content}</note>
+</step>
+
 <step n="1" goal="Comprehensive context discovery - gather everything available">
 
 <action>Welcome {user_name} warmly and explain what we're about to do:
 
-"I'm going to gather all available context about your project before we dive into the technical spec. This includes:
+"I'm going to gather all available context about your project before we dive into the technical spec. The following content has been auto-loaded:
 
-- Any existing documentation (product briefs, research)
-- Brownfield codebase analysis (if applicable)
+- Product briefs and research: {product_brief_content}, {research_content}
+- Brownfield codebase documentation: {document_project_content} (loaded via INDEX_GUIDED strategy)
 - Your project's tech stack and dependencies
 - Existing code patterns and structure
 
@@ -119,13 +125,13 @@ This ensures the tech-spec is grounded in reality and gives developers everythin
 Search for and load (using dual-strategy: whole first, then sharded):
 
 1. **Product Brief:**
-   - Search pattern: {output-folder}/_brief_.md
-   - Sharded: {output-folder}/_brief_/index.md
+   - Search pattern: {output*folder}/\_brief*.md
+   - Sharded: {output*folder}/\_brief*/index.md
    - If found: Load completely and extract key context
 
 2. **Research Documents:**
-   - Search pattern: {output-folder}/_research_.md
-   - Sharded: {output-folder}/_research_/index.md
+   - Search pattern: {output*folder}/\_research*.md
+   - Sharded: {output*folder}/\_research*/index.md
    - If found: Load completely and extract insights
 
 3. **Document-Project Output (CRITICAL for brownfield):**
@@ -201,7 +207,7 @@ Analyze the existing project structure:
 
 4. **Testing Patterns & Standards (CRITICAL):**
    - Identify test framework in use (from package.json/requirements.txt)
-   - Note test file naming patterns (.test.js, \_test.py, .spec.ts, Test.java)
+   - Note test file naming patterns (.test.js, test.py, .spec.ts, Test.java)
    - Document test organization (tests/, **tests**, spec/, test/)
    - Look for test configuration files (jest.config.js, pytest.ini, .rspec)
    - Check for coverage requirements (in CI config, test scripts)
@@ -800,8 +806,6 @@ What to watch after deployment:
 <template-output file="tech-spec.md">deployment_steps</template-output>
 <template-output file="tech-spec.md">rollback_plan</template-output>
 <template-output file="tech-spec.md">monitoring_approach</template-output>
-
-<invoke-task halt="true">{project-root}/{bmad_folder}/core/tasks/adv-elicit.xml</invoke-task>
 
 </step>
 

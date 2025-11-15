@@ -24,7 +24,7 @@
 
 - Workflow creation guide: {workflow_creation_guide}
 - Workflow execution engine: {workflow_execution_engine}
-- Study example workflows from: {project-root}/{bmad_folder}/bmm/workflows/
+- Study example workflows from: {workflow_examples_dir}
   </action>
 
 <action>Analyze the workflow deeply:
