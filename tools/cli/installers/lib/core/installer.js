@@ -1762,13 +1762,11 @@ class Installer {
       const existingBmadFolderName = path.basename(bmadDir);
       const newBmadFolderName = this.configCollector.collectedConfig.core?.bmad_folder || existingBmadFolderName;
 
-      if (existingBmadFolderName === newBmadFolderName) {
-        // Normal quick update - stop spinner before calling install()
-        // install() will manage its own spinner
-        spinner.stop();
-      } else {
-        // Folder name has changed - notify user that install() will handle migration
-        spinner.stop();
+      // Stop spinner before calling install() since install() manages its own spinner
+      spinner.stop();
+
+      // Notify user if folder name will change
+      if (existingBmadFolderName !== newBmadFolderName) {
         console.log(chalk.yellow(`\n⚠️  Folder name will change: ${existingBmadFolderName} → ${newBmadFolderName}`));
         console.log(chalk.yellow('The installer will handle the folder migration.\n'));
       }
@@ -1790,9 +1788,8 @@ class Installer {
       // Call the standard install method (it will manage its own spinner)
       const result = await this.install(installConfig);
 
-      // install() handles its own spinner, so no need to check if our spinner is spinning
-      // Just show completion message
-      console.log(chalk.green('✓ Quick update complete!'));
+      // Note: Completion message is shown by the caller in commands/install.js
+      // to avoid duplication and provide more detailed success information
 
       return {
         success: true,
@@ -1803,11 +1800,9 @@ class Installer {
         ides: configuredIdes,
       };
     } catch (error) {
-      // Spinner is already stopped, just show error
+      // Ensure spinner is stopped, then let caller handle error message
       if (spinner.isSpinning) {
-        spinner.fail('Quick update failed');
-      } else {
-        console.error(chalk.red('✗ Quick update failed'));
+        spinner.stop();
       }
       throw error;
     }
