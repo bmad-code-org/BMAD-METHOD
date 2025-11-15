@@ -226,26 +226,17 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     // Reference: https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features#_chat-tools
     const tools = [
       'changes', // List of source control changes
-      'codebase', // Perform code search in workspace
-      'createDirectory', // Create new directory in workspace
-      'createFile', // Create new file in workspace
-      'editFiles', // Apply edits to files in workspace
+      'edit', // Edit files in your workspace including: createFile, createDirectory, editNotebook, newJupyterNotebook and editFiles
       'fetch', // Fetch content from web page
-      'fileSearch', // Search files using glob patterns
       'githubRepo', // Perform code search in GitHub repo
-      'listDirectory', // List files in a directory
       'problems', // Add workspace issues from Problems panel
-      'readFile', // Read content of a file in workspace
-      'runInTerminal', // Run shell command in integrated terminal
-      'runTask', // Run existing task in workspace
+      'runCommands', // Runs commands in the terminal including: getTerminalOutput, terminalSelection, terminalLastCommand and runInTerminal
+      'runTasks', // Runs tasks and gets their output for your workspace
       'runTests', // Run unit tests in workspace
-      'runVscodeCommand', // Run VS Code command
-      'search', // Enable file searching in workspace
-      'searchResults', // Get search results from Search view
-      'terminalLastCommand', // Get last terminal command and output
-      'terminalSelection', // Get current terminal selection
+      'search', // Search and read files in your workspace, including:fileSearch, textSearch, listDirectory, readFile, codebase and searchResults
+      'runSubagent', // Runs a task within an isolated subagent context. Enables efficient organization of tasks and context window management.
       'testFailure', // Get unit test failure information
-      'textSearch', // Find text in files
+      'todos', // Tool for managing and tracking todo items for task planning
       'usages', // Find references and navigate definitions
     ];
 
