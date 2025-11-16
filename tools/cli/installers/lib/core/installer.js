@@ -1565,6 +1565,16 @@ class Installer {
         throw new Error(`BMAD not installed at ${bmadDir}`);
       }
 
+      // Load existing config to get bmad_folder (consistent with install() and quickUpdate() flows)
+      await this.configCollector.loadExistingConfig(projectDir);
+
+      // Extract bmad folder name from config (consistent with other installer flows)
+      // Fallback to path basename if config not available, then to 'bmad' as last resort
+      this.bmadFolderName =
+        this.configCollector.existingConfig?.core?.bmad_folder || this.configCollector.collectedConfig?.core?.bmad_folder || 'bmad';
+      this.moduleManager.setBmadFolderName(bmadFolderName);
+      this.ideManager.setBmadFolderName(bmadFolderName);
+
       let agentCount = 0;
       let taskCount = 0;
 
