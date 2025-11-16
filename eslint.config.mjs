@@ -16,6 +16,8 @@ export default [
       'test/template-test-generator/**/*.md',
       'test/fixtures/**',
       'test/fixtures/**/*.yaml',
+      '.bmad/**',
+      '.bmad*/**',
     ],
   },
 

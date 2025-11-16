@@ -176,10 +176,11 @@ Workflows load entire sharded documents:
 - `product-brief` - Research, brainstorming docs
 - `prd` - Product brief, research
 - `gdd` - Game brief, research
-- `create-ux-design` - PRD, brief, epics
+- `create-ux-design` - PRD, brief, architecture (if available)
 - `tech-spec` - Brief, research
-- `architecture` - PRD, epics, UX design
-- `solutioning-gate-check` - All planning docs
+- `architecture` - PRD, UX design (if available)
+- `create-epics-and-stories` - PRD, architecture
+- `implementation-readiness` - All planning docs
 
 #### Phase 4 (Selective Load)
 
@@ -284,8 +285,8 @@ input_file_patterns:
 
 ```
 Every workflow loads entire 45k token PRD
-Epic-tech-context for Epic 3: 45k tokens
-Create-story for Epic 3: 45k tokens
+Architecture workflow: 45k tokens
+UX design workflow: 45k tokens
 ```
 
 **After Sharding:**
@@ -298,17 +299,18 @@ Destination: docs/prd/
 Created:
   prd/index.md
   prd/overview.md (3k tokens)
-  prd/epic-1-auth.md (3k tokens)
-  prd/epic-2-dashboard.md (3k tokens)
-  prd/epic-3-reports.md (3k tokens)
-  ...15 epic files
+  prd/functional-requirements.md (8k tokens)
+  prd/non-functional-requirements.md (6k tokens)
+  prd/user-personas.md (4k tokens)
+  ...additional FR/NFR sections
 ```
 
 **Result:**
 
 ```
-Epic-tech-context for Epic 3: 3k tokens (93% reduction!)
-Create-story for Epic 3: 3k tokens (93% reduction!)
+Architecture workflow: Can load specific sections needed
+UX design workflow: Can load specific sections needed
+Significant token reduction for large requirement docs!
 ```
 
 ### Example 2: Sharding Epics File

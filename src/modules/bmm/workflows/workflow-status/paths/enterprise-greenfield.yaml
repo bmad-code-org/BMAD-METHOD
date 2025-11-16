@@ -48,11 +48,23 @@ phases:
         agent: "pm"
         command: "validate-prd"
 
+      - id: "create-epics-and-stories"
+        optional: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Optional: Create epic breakdown early (basic structure only)"
+
       - id: "create-design"
         recommended: true
         agent: "ux-designer"
         command: "create-design"
         note: "Highly recommended for enterprise - design system and patterns"
+
+      - id: "create-epics-and-stories-after-ux"
+        optional: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Optional: Create epic breakdown with UX context"
 
   - phase: 2
     name: "Solutioning"
@@ -72,30 +84,36 @@ phases:
         output: "System-level testability review"
         note: "Enterprise requires testability validation - auto-detects system-level mode"
 
-      - id: "create-security-architecture"
-        optional: true
-        agent: "architect"
-        command: "create-security-architecture"
-        output: "Security architecture and threat model"
-        note: "Future workflow - optional extended enterprise workflow for security design, auth, compliance"
+      # - id: "create-security-architecture"
+      #   optional: true
+      #   agent: "architect"
+      #   command: "create-security-architecture"
+      #   output: "Security architecture and threat model"
+      #   note: "Future workflow - optional extended enterprise workflow for security design, auth, compliance"
 
-      - id: "create-devops-strategy"
-        optional: true
-        agent: "architect"
-        command: "create-devops-strategy"
-        output: "DevOps pipeline and infrastructure plan"
-        note: "Future workflow - optional extended enterprise workflow for CI/CD, deployment, monitoring"
+      # - id: "create-devops-strategy"
+      #   optional: true
+      #   agent: "architect"
+      #   command: "create-devops-strategy"
+      #   output: "DevOps pipeline and infrastructure plan"
+      #   note: "Future workflow - optional extended enterprise workflow for CI/CD, deployment, monitoring"
 
       - id: "validate-architecture"
         recommended: true
         agent: "architect"
         command: "validate-architecture"
 
-      - id: "solutioning-gate-check"
+      - id: "create-epics-and-stories-final"
+        required: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Required: Create final epic breakdown with full context (PRD + UX + Architecture)"
+
+      - id: "implementation-readiness"
         required: true
         agent: "architect"
-        command: "solutioning-gate-check"
-        note: "Validates all planning artifacts + testability align before implementation"
+        command: "implementation-readiness"
+        note: "Validates all planning artifacts + Epics + testability align before implementation"
 
   - phase: 3
     name: "Implementation"

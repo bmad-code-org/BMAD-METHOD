@@ -40,21 +40,26 @@ default_output_file: "{story_dir}/{{story_key}}.md"
 # Strategy: SELECTIVE LOAD - only load the specific epic needed for this story
 input_file_patterns:
   prd:
+    description: "Product requirements (optional)"
     whole: "{output_folder}/*prd*.md"
     sharded: "{output_folder}/*prd*/*.md"
     load_strategy: "FULL_LOAD"
   tech_spec:
+    description: "Technical specification (Quick Flow track)"
     whole: "{output_folder}/tech-spec.md"
     load_strategy: "FULL_LOAD"
   architecture:
+    description: "System architecture and decisions"
     whole: "{output_folder}/*architecture*.md"
     sharded: "{output_folder}/*architecture*/*.md"
     load_strategy: "FULL_LOAD"
   ux_design:
+    description: "UX design specification (if UI)"
     whole: "{output_folder}/*ux*.md"
     sharded: "{output_folder}/*ux*/*.md"
     load_strategy: "FULL_LOAD"
   epics:
+    description: "Epic containing this story"
     whole: "{output_folder}/*epic*.md"
     sharded_index: "{output_folder}/*epic*/index.md"
     sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"

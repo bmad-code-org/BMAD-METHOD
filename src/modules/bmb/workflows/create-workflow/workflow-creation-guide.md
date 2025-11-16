@@ -974,6 +974,27 @@ _Generated on {{date}}_
 3. **Set limits** - "3-5 items maximum"
 4. **Explain why** - Context helps AI make better decisions
 
+### Time Estimate Prohibition
+
+**CRITICAL:** For all planning, analysis, and estimation workflows, include this prohibition:
+
+```xml
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+```
+
+**When to include this:**
+
+- Planning workflows (PRDs, tech specs, architecture)
+- Analysis workflows (research, brainstorming, product briefs)
+- Retrospective workflows (reviews, post-mortems)
+- Any workflow discussing project scope or complexity
+
+**When NOT needed:**
+
+- Pure implementation workflows (code generation, refactoring)
+- Simple action workflows (file operations, status updates)
+- Workflows that only process existing data
+
 ### Conditional Execution Best Practices
 
 **✅ DO:**
@@ -1067,7 +1088,7 @@ input_file_patterns:
     sharded: '{output_folder}/*architecture*/index.md'
 
   document_project:
-    sharded: '{output_folder}/docs/index.md' # Brownfield always uses index
+    sharded: '{output_folder}/index.md' # Brownfield always uses index
 ```
 
 #### 2. Add Discovery Instructions to instructions.md
@@ -1087,7 +1108,7 @@ This workflow requires: [list required documents]
    - Read `index.md` to understand the document structure
    - Read ALL section files listed in the index (or specific sections for selective load)
    - Treat the combined content as if it were a single document
-4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
+4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/index.md`
 
 **Priority**: If both whole and sharded versions exist, use the whole document.
 

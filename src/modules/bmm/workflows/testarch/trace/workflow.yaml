@@ -39,17 +39,6 @@ required_tools:
   - search_repo # Find tests by test ID, describe blocks
   - glob # Find test files matching patterns
 
-# Recommended inputs
-recommended_inputs:
-  - story: "Story markdown with acceptance criteria (required for BMad mode)"
-  - test_files: "Test suite for the feature (auto-discovered if not provided)"
-  - test_design: "Test design with risk/priority assessment (required for Phase 2 gate)"
-  - tech_spec: "Technical specification (optional)"
-  - existing_tests: "Current test suite for analysis"
-  - test_results: "CI/CD test execution results (required for Phase 2 gate)"
-  - nfr_assess: "Non-functional requirements validation (recommended for release gates)"
-  - code_coverage: "Code coverage report (optional)"
-
 tags:
   - qa
   - traceability

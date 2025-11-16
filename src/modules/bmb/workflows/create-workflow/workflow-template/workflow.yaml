@@ -15,10 +15,6 @@ date: system-generated
 # optional, can be omitted
 brain_techniques: "{installed_path}/{critical-data-file.csv}" # example, can be other formats or URLs
 
-# Optional docs that if loaded on start to kickstart this workflow or used at some point, these are meant to be suggested inputs for the user
-recommended_inputs: # optional, can be omitted
-  - example_input: "{project-root}/{path/to/file.md}"
-
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/{module-code}/workflows/{workflow-code}"
 template: "{installed_path}/template.md" # optional, can be omitted

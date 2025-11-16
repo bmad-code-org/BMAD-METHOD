@@ -24,22 +24,27 @@ required_inputs:
 # Strategy: SELECTIVE LOAD - only load the completed epic and relevant retrospectives
 input_file_patterns:
   epics:
+    description: "The completed epic for retrospective"
     whole: "{output_folder}/*epic*.md"
     sharded_index: "{output_folder}/*epic*/index.md"
     sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
     load_strategy: "SELECTIVE_LOAD"
   previous_retrospective:
+    description: "Previous epic's retrospective (optional)"
     pattern: "{sprint_artifacts}/**/epic-{{prev_epic_num}}-retro-*.md"
     load_strategy: "SELECTIVE_LOAD"
   architecture:
+    description: "System architecture for context"
     whole: "{output_folder}/*architecture*.md"
     sharded: "{output_folder}/*architecture*/*.md"
     load_strategy: "FULL_LOAD"
   prd:
+    description: "Product requirements for context"
     whole: "{output_folder}/*prd*.md"
     sharded: "{output_folder}/*prd*/*.md"
     load_strategy: "FULL_LOAD"
   document_project:
+    description: "Brownfield project documentation (optional)"
     sharded: "{output_folder}/*.md"
     load_strategy: "INDEX_GUIDED"
 

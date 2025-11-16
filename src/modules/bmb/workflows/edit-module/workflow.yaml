@@ -15,14 +15,12 @@ module_structure_guide: "{project-root}/{bmad_folder}/bmb/workflows/create-modul
 agent_editor: "{project-root}/{bmad_folder}/bmb/workflows/edit-agent/workflow.yaml"
 workflow_editor: "{project-root}/{bmad_folder}/bmb/workflows/edit-workflow/workflow.yaml"
 
-# Optional docs that can be used to understand the target module
-recommended_inputs:
-  - target_module: "Path to the module directory to edit"
-  - bmm_module: "{project-root}/{bmad_folder}/bmm/"
-  - bmb_module: "{project-root}/{bmad_folder}/bmb/"
-  - cis_module: "{project-root}/{bmad_folder}/cis/"
-  - existing_agents: "{project-root}/{bmad_folder}/*/agents/"
-  - existing_workflows: "{project-root}/{bmad_folder}/*/workflows/"
+# Reference examples - for learning patterns
+bmm_module_dir: "{project-root}/{bmad_folder}/bmm/"
+bmb_module_dir: "{project-root}/{bmad_folder}/bmb/"
+cis_module_dir: "{project-root}/{bmad_folder}/cis/"
+existing_agents_dir: "{project-root}/{bmad_folder}/*/agents/"
+existing_workflows_dir: "{project-root}/{bmad_folder}/*/workflows/"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/edit-module"

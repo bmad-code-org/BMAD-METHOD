@@ -15,10 +15,9 @@ agent_architecture: "{installed_path}/agent-architecture.md"
 agent_commands: "{installed_path}/agent-command-patterns.md"
 communication_styles: "{installed_path}/communication-styles.md"
 
-# Optional docs that help understand agent patterns
-recommended_inputs:
-  - example_agents: "{project-root}/{bmad_folder}/bmm/agents/"
-  - agent_activation_rules: "{project-root}/src/utility/models/agent-activation-ide.xml"
+# Reference examples and conventions
+example_agents_dir: "{project-root}/{bmad_folder}/bmm/agents/"
+agent_activation_rules: "{project-root}/src/utility/models/agent-activation-ide.xml"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/create-agent"

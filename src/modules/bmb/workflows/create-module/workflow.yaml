@@ -19,14 +19,22 @@ workflow_builder: "{project-root}/{bmad_folder}/bmb/workflows/create-workflow/wo
 brainstorming_workflow: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
 brainstorming_context: "{installed_path}/brainstorm-context.md"
 
-# Optional docs that help understand module patterns
-recommended_inputs:
-  - module_brief: "{output_folder}/module-brief-*.md"
-  - brainstorming_results: "{output_folder}/brainstorming-*.md"
-  - bmm_module: "{project-root}/{bmad_folder}/bmm/"
-  - cis_module: "{project-root}/{bmad_folder}/cis/"
-  - existing_agents: "{project-root}/{bmad_folder}/*/agents/"
-  - existing_workflows: "{project-root}/{bmad_folder}/*/workflows/"
+# Reference examples - for learning patterns
+bmm_module_dir: "{project-root}/{bmad_folder}/bmm/"
+cis_module_dir: "{project-root}/{bmad_folder}/cis/"
+existing_agents_dir: "{project-root}/{bmad_folder}/*/agents/"
+existing_workflows_dir: "{project-root}/{bmad_folder}/*/workflows/"
+
+# Optional user inputs - discovered if they exist
+input_file_patterns:
+  module_brief:
+    description: "Module brief with vision and requirements (optional)"
+    whole: "{output_folder}/module-brief-*.md"
+    load_strategy: "FULL_LOAD"
+  brainstorming:
+    description: "Brainstorming session outputs (optional)"
+    whole: "{output_folder}/brainstorming-*.md"
+    load_strategy: "FULL_LOAD"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/create-module"

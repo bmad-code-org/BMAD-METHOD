@@ -77,7 +77,7 @@ The methodology path (Quick Flow, BMad Method, or Enterprise Method) chosen for 
 
 ### PRD (Product Requirements Document)
 
-**BMad Method/Enterprise tracks.** Product-level planning document containing vision, goals, feature requirements, epic breakdown, success criteria, and UX considerations. Replaces tech-spec for larger projects that need product planning.
+**BMad Method/Enterprise tracks.** Product-level planning document containing vision, goals, Functional Requirements (FRs), Non-Functional Requirements (NFRs), success criteria, and UX considerations. Replaces tech-spec for larger projects that need product planning. **V6 Note:** PRD focuses on WHAT to build (requirements). Epic+Stories are created separately AFTER architecture via create-epics-and-stories workflow.
 
 ### Architecture Document
 
@@ -263,7 +263,7 @@ Workflow that initializes Phase 4 implementation by creating sprint-status.yaml,
 
 ### Gate Check
 
-Validation workflow (solutioning-gate-check) run before Phase 4 to ensure PRD, architecture, and UX documents are cohesive with no gaps or contradictions. Required for BMad Method and Enterprise Method tracks.
+Validation workflow (implementation-readiness) run before Phase 4 to ensure PRD, architecture, and UX documents are cohesive with no gaps or contradictions. Required for BMad Method and Enterprise Method tracks.
 
 ### DoD (Definition of Done)
 

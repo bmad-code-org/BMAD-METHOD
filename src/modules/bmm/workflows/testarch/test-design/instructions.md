@@ -30,7 +30,7 @@ The workflow auto-detects which mode to use based on project phase.
 
 2. **Check workflow-status.yaml**
    - Read `{output_folder}/bmm-workflow-status.yaml`
-   - If `solutioning-gate-check: required` or `solutioning-gate-check: recommended` → **System-Level Mode** (Phase 3)
+   - If `implementation-readiness: required` or `implementation-readiness: recommended` → **System-Level Mode** (Phase 3)
    - Otherwise → **Epic-Level Mode** (Phase 4 without sprint status yet)
 
 3. **Mode-Specific Requirements**

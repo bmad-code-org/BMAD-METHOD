@@ -16,27 +16,33 @@ sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-
 # Strategy: SELECTIVE LOAD - only load the specific epic needed (epic_num from context)
 input_file_patterns:
   prd:
+    description: "Product requirements (optional)"
     whole: "{output_folder}/*prd*.md"
     sharded: "{output_folder}/*prd*/*.md"
     load_strategy: "FULL_LOAD"
   gdd:
+    description: "Game Design Document (for game projects)"
     whole: "{output_folder}/*gdd*.md"
     sharded: "{output_folder}/*gdd*/*.md"
     load_strategy: "FULL_LOAD"
   architecture:
+    description: "System architecture and decisions"
     whole: "{output_folder}/*architecture*.md"
     sharded: "{output_folder}/*architecture*/*.md"
     load_strategy: "FULL_LOAD"
   ux_design:
+    description: "UX design specification (if UI)"
     whole: "{output_folder}/*ux*.md"
     sharded: "{output_folder}/*ux*/*.md"
     load_strategy: "FULL_LOAD"
   epics:
+    description: "Specific epic for tech spec generation"
     whole: "{output_folder}/*epic*.md"
     sharded_index: "{output_folder}/*epic*/index.md"
     sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
     load_strategy: "SELECTIVE_LOAD"
   document_project:
+    description: "Brownfield project documentation (optional)"
     sharded: "{output_folder}/index.md"
     load_strategy: "INDEX_GUIDED"
 

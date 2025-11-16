@@ -8,6 +8,8 @@
 <critical>LIVING DOCUMENT: Write to PRD.md continuously as you discover - never wait until the end</critical>
 <critical>GUIDING PRINCIPLE: Identify what makes this product special and ensure it's reflected throughout the PRD</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <workflow>
 
@@ -53,37 +55,90 @@ PRD is for BMad Method and Enterprise Method tracks that need comprehensive requ
 <action>Welcome {user_name} and begin comprehensive discovery, and then start to GATHER ALL CONTEXT:
 1. Check workflow-status.yaml for project_context (if exists)
 2. Review loaded content: {product_brief_content}, {research_content}, {document_project_content} (auto-loaded in Step 0.5)
-3. Detect project type AND domain complexity
+3. Detect project type AND domain complexity using data-driven classification
+</action>
 
-Load references:
-{installed_path}/project-types.csv
-{installed_path}/domain-complexity.csv
+<action>Load classification data files COMPLETELY:
 
-Through natural conversation:
+- Load {project_types_data} - contains project type definitions, detection signals, and requirements
+- Load {domain_complexity_data} - contains domain classifications, complexity levels, and special requirements
+
+Parse CSV structure:
+
+- project_types_data has columns: project_type, detection_signals, key_questions, required_sections, skip_sections, web_search_triggers, innovation_signals
+- domain_complexity_data has columns: domain, signals, complexity, key_concerns, required_knowledge, suggested_workflow, web_searches, special_sections
+
+Store these in memory for use throughout the workflow.
+</action>
+
+<action>Begin natural discovery conversation:
 "Tell me about what you want to build - what problem does it solve and for whom?"
 
-DUAL DETECTION:
-Project type signals: API, mobile, web, CLI, SDK, SaaS
-Domain complexity signals: medical, finance, government, education, aerospace
+As the user describes their product, listen for signals to classify:
 
-SPECIAL ROUTING:
-If game detected → Inform user that game development requires the BMGD module (BMad Game Development)
-If complex domain detected → Offer domain research options:
-A) Run domain-research workflow (thorough)
-B) Quick web search (basic)
-C) User provides context
+1. PROJECT TYPE classification
+2. DOMAIN classification
+   </action>
+
+<action>DUAL DETECTION - Use CSV data to match:
+
+**Project Type Detection:**
+
+- Compare user's description against detection_signals from each row in project_types_data
+- Look for keyword matches (semicolon-separated in CSV)
+- Identify best matching project_type (api_backend, mobile_app, saas_b2b, developer_tool, cli_tool, web_app, game, desktop_app, iot_embedded, blockchain_web3)
+- If multiple matches, ask clarifying question
+- Store matched project_type value
+
+**Domain Detection:**
+
+- Compare user's description against signals from each row in domain_complexity_data
+- Match domain keywords (semicolon-separated in CSV)
+- Identify domain (healthcare, fintech, govtech, edtech, aerospace, automotive, scientific, legaltech, insuretech, energy, gaming, general)
+- Get complexity level from matched row (high/medium/low/redirect)
+- Store matched domain and complexity_level values
+
+**Special Cases from CSV:**
+
+- If project_type = "game" → Use project_types_data row to get redirect message
+- If domain = "gaming" → Use domain_complexity_data redirect action
+- If complexity = "high" → Note suggested_workflow and web_searches from domain row
+  </action>
+
+<action>SPECIAL ROUTING based on detected values:
+
+**If game detected (from project_types_data):**
+"Game development requires the BMGD module (BMad Game Development) which has specialized workflows for game design."
+Exit workflow and redirect to BMGD.
+
+**If complex domain detected (complexity = "high" from domain_complexity_data):**
+Extract suggested_workflow and web_searches from the matched domain row.
+Offer domain research options:
+A) Run {suggested_workflow} workflow (thorough) - from CSV
+B) Quick web search using {web_searches} queries - from CSV
+C) User provides their own domain context
 D) Continue with general knowledge
 
-IDENTIFY WHAT MAKES IT SPECIAL early with questions such as: "What excites you most about this product?", "What would make users love this?", "What's the unique value or compelling moment?"
+Present the options and WAIT for user choice.
+</action>
 
-This becomes a thread that connects throughout the PRD.</action>
+<action>IDENTIFY WHAT MAKES IT SPECIAL early in conversation:
+Ask questions like:
+
+- "What excites you most about this product?"
+- "What would make users love this?"
+- "What's the unique value or compelling moment?"
+- "What makes this different from alternatives?"
+
+Capture this differentiator - it becomes a thread connecting throughout the PRD.
+</action>
 
 <template-output>vision_alignment</template-output>
 <template-output>project_classification</template-output>
 <template-output>project_type</template-output>
 <template-output>domain_type</template-output>
 <template-output>complexity_level</template-output>
-<check if="complex domain">
+<check if="complexity_level == 'high'">
 <template-output>domain_context_summary</template-output>
 </check>
 <template-output>product_differentiator</template-output>
@@ -147,46 +202,122 @@ For complex domains:
 </step>
 
 <step n="4" goal="Domain-Specific Exploration" optional="true">
-<action>Only if complex domain detected or domain-brief exists
+<critical>This step is DATA-DRIVEN using domain_complexity_data CSV loaded in Step 1</critical>
+<action>Execute only if complexity_level = "high" OR domain-brief exists</action>
+
+<action>Retrieve domain-specific configuration from CSV:
+
+1. Find the row in {domain_complexity_data} where domain column matches the detected {domain} from Step 1
+2. Extract these columns from the matched row:
+   - key_concerns (semicolon-separated list)
+   - required_knowledge (describes what expertise is needed)
+   - web_searches (suggested search queries if research needed)
+   - special_sections (semicolon-separated list of domain-specific sections to document)
+3. Parse the semicolon-separated values into lists
+4. Store for use in this step
+   </action>
+
+<action>Explore domain-specific requirements using key_concerns from CSV:
+
+Parse key_concerns into individual concern areas.
+For each concern:
+
+- Ask the user about their approach to this concern
+- Discuss implications for the product
+- Document requirements, constraints, and compliance needs
+
+Example for healthcare domain:
+If key_concerns = "FDA approval;Clinical validation;HIPAA compliance;Patient safety;Medical device classification;Liability"
+Then explore:
+
+- "Will this product require FDA approval? What classification?"
+- "How will you validate clinical accuracy and safety?"
+- "What HIPAA compliance measures are needed?"
+- "What patient safety protocols must be in place?"
+- "What liability considerations affect the design?"
 
 Synthesize domain requirements that will shape everything:
 
-- Regulatory requirements
-- Compliance needs
-- Industry standards
-- Safety/risk factors
-- Required validations
-- Special expertise needed
+- Regulatory requirements (from key_concerns)
+- Compliance needs (from key_concerns)
+- Industry standards (from required_knowledge)
+- Safety/risk factors (from key_concerns)
+- Required validations (from key_concerns)
+- Special expertise needed (from required_knowledge)
 
 These inform:
 
 - What features are mandatory
 - What NFRs are critical
 - How to sequence development
-- What validation is required</action>
+- What validation is required
+  </action>
 
-<check if="complex domain">
+<check if="complexity_level == 'high'">
   <template-output>domain_considerations</template-output>
-</check>
-</step>
+
+<action>Generate domain-specific special sections if defined:
+Parse special_sections list from the matched CSV row.
+For each section name, generate corresponding template-output.
+
+Example mappings from CSV:
+
+- "clinical_requirements" → <template-output>clinical_requirements</template-output>
+- "regulatory_pathway" → <template-output>regulatory_pathway</template-output>
+- "safety_measures" → <template-output>safety_measures</template-output>
+- "compliance_matrix" → <template-output>compliance_matrix</template-output>
+  </action>
+  </check>
+  </step>
 
 <step n="5" goal="Innovation Discovery" optional="true">
-<action>Identify truly novel patterns if applicable
+<critical>This step uses innovation_signals from project_types_data CSV loaded in Step 1</critical>
 
-Listen for innovation signals:
+<action>Check for innovation in this product:
+
+1. Retrieve innovation_signals from the project_type row in {project_types_data}
+2. Parse the semicolon-separated innovation signals specific to this project type
+3. Listen for these signals in user's description and throughout conversation
+
+Example for api_backend:
+innovation_signals = "API composition;New protocol"
+
+Example for mobile_app:
+innovation_signals = "Gesture innovation;AR/VR features"
+
+Example for saas_b2b:
+innovation_signals = "Workflow automation;AI agents"
+</action>
+
+<action>Listen for general innovation signals in conversation:
+
+User language indicators:
 
 - "Nothing like this exists"
 - "We're rethinking how [X] works"
 - "Combining [A] with [B] for the first time"
+- "Novel approach to [problem]"
+- "No one has done [concept] before"
+
+Project-type-specific signals (from CSV innovation_signals column):
+
+- Match user's descriptions against the innovation_signals for their project_type
+- If matches found, flag as innovation opportunity
+  </action>
+
+<action>If innovation detected (general OR project-type-specific):
 
 Explore deeply:
 
 - What makes it unique?
 - What assumption are you challenging?
-- How do we validate it?
-- What's the fallback?
+- How do we validate it works?
+- What's the fallback if it doesn't?
+- Has anyone tried this before?
 
-<WebSearch if="novel">{concept} innovations {date}</WebSearch></action>
+Use web_search_triggers from project_types_data CSV if relevant:
+<WebSearch if="novel">{web_search_triggers} {concept} innovations {date}</WebSearch>
+</action>
 
 <check if="innovation detected">
   <template-output>innovation_patterns</template-output>
@@ -195,53 +326,101 @@ Explore deeply:
 </step>
 
 <step n="6" goal="Project-Specific Deep Dive">
-<action>Based on detected project type, dive deep into specific needs
+<critical>This step is DATA-DRIVEN using project_types_data CSV loaded in Step 1</critical>
 
-Load project type requirements from CSV and expand naturally.
+<action>Retrieve project-specific configuration from CSV:
 
-FOR API/BACKEND:
+1. Find the row in {project_types_data} where project_type column matches the detected {project_type} from Step 1
+2. Extract these columns from the matched row:
+   - key_questions (semicolon-separated list)
+   - required_sections (semicolon-separated list)
+   - skip_sections (semicolon-separated list)
+   - innovation_signals (semicolon-separated list)
+3. Parse the semicolon-separated values into lists
+4. Store for use in this step
+   </action>
 
-- Map out endpoints, methods, parameters
-- Define authentication and authorization
-- Specify error codes and rate limits
-- Document data schemas
+<action>Conduct guided discovery using key_questions from CSV:
 
-FOR MOBILE:
+Parse key_questions into individual questions.
+For each question:
 
-- Platform requirements (iOS/Android/both)
-- Device features needed
-- Offline capabilities
-- Store compliance
+- Ask the user naturally in conversational style
+- Listen for their response
+- Ask clarifying follow-ups as needed
+- Connect answers to product value proposition
 
-FOR SAAS B2B:
+Example flow:
+If key_questions = "Endpoints needed?;Authentication method?;Data formats?"
+Then ask:
 
-- Multi-tenant architecture
-- Permission models
-- Subscription tiers
-- Critical integrations
+- "What are the main endpoints your API needs to expose?"
+- "How will you handle authentication and authorization?"
+- "What data formats will you support for requests and responses?"
 
-[Continue for other types...]
+Adapt questions to the user's context and skill level.
+</action>
+
+<action>Document project-type-specific requirements:
+
+Based on the user's answers to key_questions, synthesize comprehensive requirements for this project type.
+
+Cover the areas indicated by required_sections from CSV (semicolon-separated list).
+Skip areas indicated by skip_sections from CSV.
+
+For each required section:
+
+- Summarize what was discovered
+- Document specific requirements, constraints, and decisions
+- Connect to product differentiator when relevant
 
 Always connect requirements to product value:
-"How does [requirement] support the product's core value proposition?"</action>
+"How does [requirement] support the product's core value proposition?"
+</action>
 
 <template-output>project_type_requirements</template-output>
 
-<!-- Dynamic sections based on project type -->
-<check if="API/Backend project">
-  <template-output>endpoint_specification</template-output>
-  <template-output>authentication_model</template-output>
-</check>
+<!-- Dynamic template outputs based on required_sections from CSV -->
 
-<check if="Mobile project">
-  <template-output>platform_requirements</template-output>
-  <template-output>device_features</template-output>
-</check>
+<action>Generate dynamic template outputs based on required_sections:
 
-<check if="SaaS B2B project">
-  <template-output>tenant_model</template-output>
-  <template-output>permission_matrix</template-output>
-</check>
+Parse required_sections list from the matched CSV row.
+For each section name in the list, generate a corresponding template-output.
+
+Common mappings (adapt based on actual CSV values):
+
+- "endpoint_specs" or "endpoint_specification" → <template-output>endpoint_specification</template-output>
+- "auth_model" or "authentication_model" → <template-output>authentication_model</template-output>
+- "platform_reqs" or "platform_requirements" → <template-output>platform_requirements</template-output>
+- "device_permissions" or "device_features" → <template-output>device_features</template-output>
+- "tenant_model" → <template-output>tenant_model</template-output>
+- "rbac_matrix" or "permission_matrix" → <template-output>permission_matrix</template-output>
+
+Generate all outputs dynamically - do not hardcode specific project types.
+</action>
+
+<note>Example CSV row for api_backend:
+key_questions = "Endpoints needed?;Authentication method?;Data formats?;Rate limits?;Versioning?;SDK needed?"
+required_sections = "endpoint_specs;auth_model;data_schemas;error_codes;rate_limits;api_docs"
+skip_sections = "ux_ui;visual_design;user_journeys"
+
+The LLM should parse these and generate corresponding template outputs dynamically.
+
+**Template Variable Strategy:**
+The prd-template.md has common template variables defined (endpoint_specification, authentication_model, platform_requirements, device_features, tenant_model, permission_matrix).
+
+For required_sections that match these common variables:
+
+- Generate the specific template-output (e.g., endpoint_specs → endpoint_specification)
+- These will render in their own subsections in the template
+
+For required_sections that DON'T have matching template variables:
+
+- Include the content in the main project_type_requirements variable
+- This ensures all requirements are captured even if template doesn't have dedicated sections
+
+This hybrid approach balances template structure with CSV-driven flexibility.
+</note>
 </step>
 
 <step n="7" goal="UX Principles" if="project has UI or UX">
@@ -403,8 +582,7 @@ Number sequentially across all groups (FR1, FR2... FR47).
 2. "Is each FR independent (not dependent on reading other FRs to understand)?"
 3. "Did I avoid vague terms like 'good', 'fast', 'easy'?" (Use NFRs for quality attributes)
 
-COMPLETENESS GATE: Review your FR list against the entire PRD written so far.
-Did you miss anything? Add it now before proceeding.
+COMPLETENESS GATE: Review your FR list against the entire PRD written so far and think hard - did you miss anything? Add it now before proceeding.
 </action>
 
 <template-output>functional_requirements_complete</template-output>
@@ -445,80 +623,80 @@ Skip categories that don't apply!</action>
 </check>
 </step>
 
-<step n="10" goal="Review PRD and transition to epics">
-<action>Review the PRD we've built together
+<step n="10" goal="Complete PRD and determine next steps">
+<action>Quick review of captured requirements:
 
-"Let's review what we've captured:
+"We've captured:
 
-- Vision: [summary]
-- Success: [key metrics]
-- Scope: [MVP highlights]
-- Requirements: [count] functional, [count] non-functional
-- Special considerations: [domain/innovation]
+- {{fr_count}} functional requirements
+- {{nfr_count}} non-functional requirements
+- MVP scope defined
+  {{if domain_complexity == 'high'}}
+- Domain-specific requirements addressed
+  {{/if}}
+  {{if innovation_detected}}
+- Innovation patterns documented
+  {{/if}}
 
-Does this capture your product vision?"</action>
+Your PRD is complete!"
+</action>
 
 <template-output>prd_summary</template-output>
-
-<action>After PRD review and refinement complete:
-
-"Excellent! Now we need to break these requirements into implementable epics and stories.
-
-For the epic breakdown, you have two options:
-
-1. Start a new session focused on epics (recommended for complex projects)
-2. Continue here (I'll transform requirements into epics now)
-
-Which would you prefer?"
-
-If new session:
-"To start epic planning in a new session:
-
-1. Save your work here
-2. Start fresh and run: workflow epics-stories
-3. It will load your PRD and create the epic breakdown
-
-This keeps each session focused and manageable."
-
-If continue:
-"Let's continue with epic breakdown here..."
-[Proceed with epics-stories subworkflow]
-Set project_track based on workflow status (BMad Method or Enterprise Method)
-Generate epic_details for the epics breakdown document</action>
-
-<template-output>project_track</template-output>
-<template-output>epic_details</template-output>
-</step>
-
-<step n="11" goal="Complete PRD and suggest next steps">
 <template-output>product_value_summary</template-output>
 
 <check if="standalone_mode != true">
   <action>Load the FULL file: {status_file}</action>
   <action>Update workflow_status["prd"] = "{default_output_file}"</action>
   <action>Save file, preserving ALL comments and structure</action>
-</check>
+
+<action>Check workflow path to determine next expected workflows:
+
+- Look for "create-epics-and-stories" as optional after PRD
+- Look for "create-design" as conditional (if_has_ui)
+- Look for "create-epics-and-stories-after-ux" as optional
+- Identify the required next phase workflow
+  </action>
+  </check>
 
 <output>**✅ PRD Complete, {user_name}!**
 
-Your product requirements are documented and ready for implementation.
-
-**Created:**
-
-- **PRD.md** - Complete requirements adapted to {project_type} and {domain}
+**Created:** PRD.md with {{fr_count}} FRs and NFRs
 
 **Next Steps:**
 
-1. **Epic Breakdown** (Required)
-   Run: `workflow create-epics-and-stories` to decompose requirements into implementable stories
+<check if="standalone_mode != true">
+Based on your {{project_track}} workflow path, you can:
 
-2. **UX Design** (If UI exists)
-   Run: `workflow ux-design` for detailed user experience design
+**Option A: Create Epic Breakdown Now** (Optional)
+`workflow create-epics-and-stories`
 
-3. **Architecture** (Recommended)
-   Run: `workflow create-architecture` for technical architecture decisions
+- Creates basic epic structure from PRD
+- Can be enhanced later with UX/Architecture context
 
-What makes your product special - {product_value_summary} - is captured throughout the PRD and will guide all subsequent work.
+<check if="UI_exists">
+**Option B: UX Design First** (Recommended if UI)
+   `workflow create-design`
+   - Design user experience and interactions
+   - Epic breakdown can incorporate UX details later
+</check>
+
+**Option C: Skip to Architecture**
+`workflow create-architecture`
+
+- Define technical decisions
+- Epic breakdown created after with full context
+
+**Recommendation:** {{if UI_exists}}Do UX Design first, then Architecture, then create epics with full context{{else}}Go straight to Architecture, then create epics{{/if}}
+</check>
+
+<check if="standalone_mode == true">
+**Typical next workflows:**
+1. `workflow create-design` - UX Design (if UI exists)
+2. `workflow create-architecture` - Technical architecture
+3. `workflow create-epics-and-stories` - Epic breakdown
+
+**Note:** Epics can be created at any point but have richer detail when created after UX/Architecture.
+</check>
 </output>
 </step>
 

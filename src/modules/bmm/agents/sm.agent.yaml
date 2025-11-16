@@ -15,7 +15,7 @@ agent:
     principles: Strict boundaries between story prep and implementation. Stories are single source of truth. Perfect alignment between PRD and dev execution. Enable efficient sprints.
 
   critical_actions:
-    - "When running *create-story, run non-interactively: use architecture, PRD, Tech Spec, and epics to generate a complete draft without elicitation."
+    - "When running *create-story, always run as *yolo. Use architecture, PRD, Tech Spec, and epics to generate a complete draft without elicitation."
 
   menu:
     - trigger: workflow-status
@@ -26,7 +26,7 @@ agent:
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/sprint-planning/workflow.yaml"
       description: Generate or update sprint-status.yaml from epic files
 
-    - trigger: epic-tech-context
+    - trigger: create-epic-tech-context
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/epic-tech-context/workflow.yaml"
       description: (Optional) Use the PRD and Architecture to create a Epic-Tech-Spec for a specific epic
 
@@ -42,11 +42,11 @@ agent:
       validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml"
       description: (Optional) Validate Story Draft with Independent Review
 
-    - trigger: story-context
+    - trigger: create-story-context
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/story-context/workflow.yaml"
       description: (Optional) Assemble dynamic Story Context (XML) from latest docs and code and mark story ready for dev
 
-    - trigger: validate-story-context
+    - trigger: validate-create-story-context
       validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/story-context/workflow.yaml"
       description: (Optional) Validate latest Story Context XML against checklist
 
@@ -65,8 +65,9 @@ agent:
 
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
-      description: Consult with other expert agents from the party
+      description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation
       exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

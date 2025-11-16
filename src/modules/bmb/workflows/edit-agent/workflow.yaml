@@ -17,11 +17,9 @@ communication_styles: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/c
 # Workflow execution engine reference
 workflow_execution_engine: "{project-root}/{bmad_folder}/core/tasks/workflow.xml"
 
-# Optional docs that can be used to understand the target agent
-recommended_inputs:
-  - target_agent: "Path to the agent.yaml or agent.md file to edit"
-  - example_agents: "{project-root}/{bmad_folder}/bmm/agents/"
-  - agent_activation_rules: "{project-root}/src/utility/models/agent-activation-ide.xml"
+# Reference examples and conventions
+example_agents_dir: "{project-root}/{bmad_folder}/bmm/agents/"
+agent_activation_rules: "{project-root}/src/utility/models/agent-activation-ide.xml"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/edit-agent"

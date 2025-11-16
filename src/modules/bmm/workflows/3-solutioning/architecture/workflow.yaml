@@ -17,18 +17,22 @@ date: system-generated
 # Strategy: How to load sharded documents (FULL_LOAD, SELECTIVE_LOAD, INDEX_GUIDED)
 input_file_patterns:
   prd:
+    description: "Product requirements and features"
     whole: "{output_folder}/*prd*.md"
     sharded: "{output_folder}/*prd*/index.md"
     load_strategy: "FULL_LOAD"
   epics:
+    description: "Epic and story breakdown (optional - uses PRD FRs if not present)"
     whole: "{output_folder}/*epic*.md"
     sharded: "{output_folder}/*epic*/index.md"
     load_strategy: "FULL_LOAD"
   ux_design:
+    description: "UX design specification (optional)"
     whole: "{output_folder}/*ux*.md"
     sharded: "{output_folder}/*ux*/index.md"
     load_strategy: "FULL_LOAD"
   document_project:
+    description: "Brownfield project documentation (optional)"
     sharded: "{output_folder}/index.md"
     load_strategy: "INDEX_GUIDED"
 

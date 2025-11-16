@@ -40,7 +40,7 @@ phases:
         required: true
         agent: "pm"
         command: "prd"
-        output: "Product Requirements Document with epics and stories"
+        output: "Product Requirements Document with FRs and NFRs"
 
       - id: "validate-prd"
         optional: true
@@ -48,11 +48,23 @@ phases:
         command: "validate-prd"
         note: "Quality check for PRD completeness"
 
+      - id: "create-epics-and-stories"
+        optional: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Optional: Create epic breakdown early (basic structure only)"
+
       - id: "create-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
         command: "create-design"
         note: "Determined after PRD - user/agent decides if needed"
+
+      - id: "create-epics-and-stories-after-ux"
+        optional: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Optional: Create epic breakdown with UX context"
 
   - phase: 2
     name: "Solutioning"
@@ -64,6 +76,12 @@ phases:
         command: "create-architecture"
         output: "System architecture document"
         note: "Complete system design for greenfield projects"
+
+      - id: "create-epics-and-stories-final"
+        required: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Required: Create final epic breakdown with full context (PRD + UX + Architecture)"
 
       - id: "test-design"
         recommended: true
@@ -78,11 +96,11 @@ phases:
         command: "validate-architecture"
         note: "Quality check for architecture completeness"
 
-      - id: "solutioning-gate-check"
+      - id: "implementation-readiness"
         required: true
         agent: "architect"
-        command: "solutioning-gate-check"
-        note: "Validates PRD + UX + Architecture + Testability cohesion before implementation"
+        command: "implementation-readiness"
+        note: "Validates PRD + UX + Architecture + Epics + Testability cohesion before implementation"
 
   - phase: 3
     name: "Implementation"

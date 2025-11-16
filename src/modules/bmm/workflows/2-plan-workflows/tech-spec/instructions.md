@@ -12,6 +12,8 @@
 <critical>CONTEXT IS KING: Gather ALL available context before generating specs</critical>
 <critical>DOCUMENT OUTPUT: Technical, precise, definitive. Specific versions only. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <step n="0" goal="Validate workflow readiness and detect project level" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -134,7 +136,7 @@ Search for and load (using dual-strategy: whole first, then sharded):
    - If found: Load completely and extract insights
 
 3. **Document-Project Output (CRITICAL for brownfield):**
-   - Always check: {output_folder}/docs/index.md
+   - Always check: {output_folder}/index.md
    - If found: This is the brownfield codebase map - load ALL shards!
    - Extract: File structure, key modules, existing patterns, naming conventions
 

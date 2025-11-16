@@ -34,12 +34,6 @@ required_tools:
   - list_files # Check for existing framework
   - search_repo # Find architecture docs
 
-# Recommended inputs
-recommended_inputs:
-  - package_json: "package.json with project dependencies and scripts"
-  - architecture_docs: "Architecture or tech stack documentation (optional)"
-  - existing_tests: "Existing test files to detect current framework (optional)"
-
 tags:
   - qa
   - setup
