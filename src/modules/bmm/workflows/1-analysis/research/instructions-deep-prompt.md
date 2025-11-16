@@ -14,6 +14,7 @@
 <critical>Add explicit instructions: "If you cannot find reliable data, state 'No verified data found for [X]'"</critical>
 <critical>Require confidence indicators in prompts: "Mark each claim with confidence level and source quality"</critical>
 <critical>Include fact-checking instructions: "Distinguish between verified facts, analysis, and speculation"</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <workflow>
 

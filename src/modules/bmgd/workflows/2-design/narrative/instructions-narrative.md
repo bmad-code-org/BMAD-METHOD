@@ -9,6 +9,7 @@
 <critical>Uses narrative_template for output</critical>
 <critical>If users mention gameplay mechanics, note them but keep focus on narrative</critical>
 <critical>Facilitate good brainstorming techniques throughout with the user, pushing them to come up with much of the narrative you will help weave together. The goal is for the user to feel that they crafted the narrative and story arc unless they push you to do it all or indicate YOLO</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <step n="0" goal="Check for workflow status" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>

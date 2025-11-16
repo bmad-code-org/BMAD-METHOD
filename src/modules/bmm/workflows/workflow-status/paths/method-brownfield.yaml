@@ -105,11 +105,11 @@ phases:
         agent: "architect"
         command: "validate-architecture"
 
-      - id: "solutioning-gate-check"
+      - id: "implementation-readiness"
         required: true
         agent: "architect"
-        command: "solutioning-gate-check"
-        note: "Validates PRD + UX + Architecture + Epics (if created) cohesion"
+        command: "implementation-readiness"
+        note: "Validates PRD + UX + Architecture + Epics cohesion before implementation"
 
   - phase: 3
     name: "Implementation"

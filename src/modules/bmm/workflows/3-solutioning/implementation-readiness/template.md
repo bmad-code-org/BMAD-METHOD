@@ -143,4 +143,4 @@ _Minor items for consideration_
 
 ---
 
-_This readiness assessment was generated using the BMad Method Implementation Ready Check workflow (v6-alpha)_
+_This readiness assessment was generated using the BMad Method Implementation Readiness workflow (v6-alpha)_

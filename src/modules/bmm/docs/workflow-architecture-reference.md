@@ -72,7 +72,7 @@ The Decision Architecture workflow is a complete reimagining of how architectura
 ```
 Step 0: Validate workflow and extract project configuration
 Step 0.5: Validate workflow sequencing
-Step 1: Load PRD and understand project context
+Step 1: Load PRD (with FRs/NFRs) and understand project context
 Step 2: Discover and evaluate starter templates ⭐ NEW
 Step 3: Adapt facilitation style and identify remaining decisions
 Step 4: Facilitate collaborative decision making (with version verification)
@@ -121,11 +121,6 @@ Step 12: Final review and update workflow status
   - Functional Requirements
   - Non-Functional Requirements
   - Performance and compliance needs
-
-- **Epics** file with:
-  - User stories
-  - Acceptance criteria
-  - Dependencies
 
 - **UX Spec** (Optional but valuable) with:
   - Interface designs and interaction patterns
@@ -280,7 +275,7 @@ workflow architecture
 
 The AI agent will:
 
-1. Load your PRD and epics
+1. Load your PRD (with FRs/NFRs)
 2. Identify critical decisions needed
 3. Facilitate discussion on each decision
 4. Generate a comprehensive architecture document

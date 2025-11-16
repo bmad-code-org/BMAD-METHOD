@@ -1,7 +1,7 @@
-# Implementation Ready Check - Workflow Configuration
-name: solutioning-gate-check
-description: "Systematically validate that all planning and solutioning phases are complete and properly aligned before transitioning to Phase 4 implementation. Ensures PRD, architecture, and stories are cohesive with no gaps or contradictions."
-author: "BMad Builder"
+# Implementation Readiness - Workflow Configuration
+name: implementation-readiness
+description: "Validate that PRD, UX Design, Architecture, Epics and Stories are complete and aligned before Phase 4 implementation. Ensures all artifacts cover the MVP requirements with no gaps or contradictions."
+author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
@@ -17,7 +17,7 @@ workflow_paths_dir: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/
 workflow_status_file: "{output_folder}/bmm-workflow-status.yaml"
 
 # Module path and component files
-installed_path: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/solutioning-gate-check"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
@@ -56,7 +56,7 @@ input_file_patterns:
     load_strategy: "FULL_LOAD"
   document_project:
     description: "Brownfield project documentation (optional)"
-    sharded: "{output_folder}/docs/index.md"
+    sharded: "{output_folder}/index.md"
     load_strategy: "INDEX_GUIDED"
 
 standalone: true

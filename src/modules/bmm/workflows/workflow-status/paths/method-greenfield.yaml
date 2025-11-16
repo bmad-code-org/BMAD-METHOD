@@ -96,10 +96,10 @@ phases:
         command: "validate-architecture"
         note: "Quality check for architecture completeness"
 
-      - id: "solutioning-gate-check"
+      - id: "implementation-readiness"
         required: true
         agent: "architect"
-        command: "solutioning-gate-check"
+        command: "implementation-readiness"
         note: "Validates PRD + UX + Architecture + Epics + Testability cohesion before implementation"
 
   - phase: 3

@@ -18,6 +18,7 @@
 <critical>Distinguish: FACT (from official docs/sources), OPINION (from community/reviews), SPECULATION (your analysis)</critical>
 <critical>If you cannot find current information about a technology, state: "I could not find recent {{current_year}} data on [X]"</critical>
 <critical>Extract and include source URLs in all technology profiles and comparisons</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <workflow>
 

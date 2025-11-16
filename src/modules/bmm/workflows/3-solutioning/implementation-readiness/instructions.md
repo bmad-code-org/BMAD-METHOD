@@ -1,10 +1,11 @@
-# Implementation Ready Check - Workflow Instructions
+# Implementation Readiness - Workflow Instructions
 
 <critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/3-solutioning/solutioning-gate-check/workflow.yaml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness/workflow.yaml</critical>
 <critical>Communicate all findings and analysis in {communication_language} throughout the assessment</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
 <critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <workflow>
 
@@ -12,7 +13,7 @@
 <action>Check if {workflow_status_file} exists</action>
 
 <check if="status file not found">
-  <output>No workflow status file found. Implementation Ready Check can run standalone or as part of BMM workflow path.</output>
+  <output>No workflow status file found. Implementation Readiness check can run standalone or as part of BMM workflow path.</output>
   <output>**Recommended:** Run `workflow-init` first for project context tracking and workflow sequencing.</output>
   <ask>Continue in standalone mode or exit to run workflow-init? (continue/exit)</ask>
   <check if="continue">
@@ -26,14 +27,14 @@
 <check if="status file found">
   <action>Load the FULL file:  {workflow_status_file}</action>
   <action>Parse workflow_status section</action>
-  <action>Check status of "solutioning-gate-check" workflow</action>
+  <action>Check status of "implementation-readiness" workflow</action>
   <action>Get {selected_track} (quick-flow, bmad-method, or enterprise-bmad-method)</action>
   <action>Find first non-completed workflow (next expected workflow)</action>
 
-<action>Based on the selected_track, understand what artifacts should exist: - quick-flow: Tech spec and simple stories in an epic only (no PRD, minimal solutioning) - bmad-method and enterprise-bmad-method: PRD, tech spec, epics/stories, architecture, possible UX artifacts</action>
+<action>Based on the selected_track, understand what artifacts should exist: - quick-flow: Tech spec and simple stories in an epic only (no PRD, minimal solutioning) - bmad-method and enterprise-bmad-method: PRD, UX design, epics/stories, architecture</action>
 
-  <check if="solutioning-gate-check status is file path (already completed)">
-    <output>⚠️ Gate check already completed: {{solutioning-gate-check status}}</output>
+  <check if="implementation-readiness status is file path (already completed)">
+    <output>⚠️ Implementation readiness check already completed: {{implementation-readiness status}}</output>
     <ask>Re-running will create a new validation report. Continue? (y/n)</ask>
     <check if="n">
       <output>Exiting. Use workflow-status to see your next step.</output>
@@ -41,9 +42,9 @@
     </check>
   </check>
 
-  <check if="solutioning-gate-check is not the next expected workflow">
-    <output>⚠️ Next expected workflow: {{next_workflow}}. Gate check is out of sequence.</output>
-    <ask>Continue with gate check anyway? (y/n)</ask>
+  <check if="implementation-readiness is not the next expected workflow">
+    <output>⚠️ Next expected workflow: {{next_workflow}}. Implementation readiness check is out of sequence.</output>
+    <ask>Continue with readiness check anyway? (y/n)</ask>
     <check if="n">
       <output>Exiting. Run {{next_workflow}} instead.</output>
       <action>Exit workflow</action>
@@ -257,25 +258,27 @@
 <step n="7" goal="Update status and complete" tag="workflow-status">
 <check if="standalone_mode != true">
   <action>Load the FULL file: {workflow_status_file}</action>
-  <action>Find workflow_status key "solutioning-gate-check"</action>
+  <action>Find workflow_status key "implementation-readiness"</action>
   <critical>ONLY write the file path as the status value - no other text, notes, or metadata</critical>
-  <action>Update workflow_status["solutioning-gate-check"] = "{output_folder}/bmm-readiness-assessment-{{date}}.md"</action>
+  <action>Update workflow_status["implementation-readiness"] = "{output_folder}/implementation-readiness-report-{{date}}.md"</action>
   <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
 <action>Find first non-completed workflow in workflow_status (next workflow to do)</action>
 <action>Determine next agent from path file based on next workflow</action>
 </check>
 
-<output>**✅ Implementation Ready Check Complete!**
+<action>Determine overall readiness status from the readiness_assessment (Ready, Ready with Conditions, or Not Ready)</action>
+
+<output>**✅ Implementation Readiness Check Complete!**
 
 **Assessment Report:**
 
-- Readiness assessment saved to: {output_folder}/bmm-readiness-assessment-{{date}}.md
+- Readiness assessment saved to: {output_folder}/implementation-readiness-report-{{date}}.md
 
 {{#if standalone_mode != true}}
 **Status Updated:**
 
-- Progress tracking updated: solutioning-gate-check marked complete
+- Progress tracking updated: implementation-readiness marked complete
 - Next workflow: {{next_workflow}}
   {{else}}
   **Note:** Running in standalone mode (no progress tracking)
@@ -296,6 +299,32 @@ Since no workflow is in progress:
 - Or run `workflow-init` to create a workflow path and get guided next steps
   {{/if}}
   </output>
+
+<check if="overall readiness status is Ready OR Ready with Conditions">
+  <output>**🚀 Ready for Implementation!**
+
+Your project artifacts are aligned and complete. You can now proceed to Phase 4: Implementation.
+</output>
+
+<ask>Would you like to run the **sprint-planning** workflow to initialize your sprint tracking and prepare for development? (yes/no)</ask>
+
+  <check if="yes">
+    <action>Inform user that sprint-planning workflow will be invoked</action>
+    <invoke-workflow path="{project-root}/{bmad_folder}/bmm/workflows/4-implementation/sprint-planning/workflow.yaml" />
+  </check>
+  <check if="no">
+    <output>You can run sprint-planning later when ready: `sprint-planning`</output>
+  </check>
+</check>
+
+<check if="overall readiness status is Not Ready">
+  <output>**⚠️ Not Ready for Implementation**
+
+Critical issues must be resolved before proceeding. Review the assessment report and address the identified gaps.
+
+Once issues are resolved, re-run implementation-readiness to validate again.
+</output>
+</check>
 
 <template-output>status_update_result</template-output>
 </step>

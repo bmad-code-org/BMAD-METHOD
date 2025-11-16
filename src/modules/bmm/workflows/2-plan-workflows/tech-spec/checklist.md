@@ -28,7 +28,7 @@
 ### Document Discovery
 
 - [ ] **Existing documents loaded**: Product brief, research docs found and incorporated (if they exist)
-- [ ] **Document-project output**: Checked for {output_folder}/docs/index.md (brownfield codebase map)
+- [ ] **Document-project output**: Checked for {output_folder}/index.md (brownfield codebase map)
 - [ ] **Sharded documents**: If sharded versions found, ALL sections loaded and synthesized
 - [ ] **Context summary**: loaded_documents_summary lists all sources used
 
