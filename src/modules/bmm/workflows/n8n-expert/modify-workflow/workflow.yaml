@@ -1,0 +1,30 @@
+name: modify-workflow
+description: "Edit or update existing n8n workflow"
+author: "Saif"
+
+# Workflow components
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/n8n-expert/modify-workflow"
+shared_path: "{project-root}/{bmad_folder}/bmm/workflows/n8n-expert/_shared"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Shared resources
+helpers: "{shared_path}/n8n-helpers.md"
+templates: "{shared_path}/n8n-templates.yaml"
+platform_mappings: "{shared_path}/platform-mappings.yaml"
+
+# Variables
+variables:
+  workflow_file: "" # Will be elicited
+  modification_type: "" # Will be elicited
+  changes_description: "" # Will be elicited
+  nodes_to_add: [] # Will be elicited
+  nodes_to_modify: [] # Will be elicited
+  nodes_to_remove: [] # Will be elicited
+  backup_created: false # Will be set
+  context7_available: false # Will be checked
+
+default_output_file: "" # Will use existing file location
+
+standalone: true
+web_bundle: false
