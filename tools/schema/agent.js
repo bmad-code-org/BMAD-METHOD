@@ -183,6 +183,8 @@ function buildMenuItemSchema() {
       'run-workflow': createNonEmptyString('agent.menu[].run-workflow').optional(),
       checklist: createNonEmptyString('agent.menu[].checklist').optional(),
       document: createNonEmptyString('agent.menu[].document').optional(),
+      'ide-only': z.boolean().optional(),
+      'web-only': z.boolean().optional(),
     })
     .strict()
     .superRefine((value, ctx) => {

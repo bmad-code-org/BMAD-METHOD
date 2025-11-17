@@ -19,7 +19,7 @@ Phase 3 (Solutioning) workflows translate **what** to build (from Planning) into
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#fff','primaryTextColor':'#000','primaryBorderColor':'#000','lineColor':'#000','fontSize':'16px','fontFamily':'arial'}}}%%
 graph TB
-    FromPlanning["<b>FROM Phase 2 Planning</b><br/>PRD/GDD/Tech-Spec complete"]
+    FromPlanning["<b>FROM Phase 2 Planning</b><br/>PRD (FRs/NFRs) complete"]
 
     subgraph QuickFlow["<b>QUICK FLOW PATH</b>"]
         direction TB
@@ -28,6 +28,7 @@ graph TB
 
     subgraph BMadEnterprise["<b>BMAD METHOD + ENTERPRISE (Same Start)</b>"]
         direction TB
+        OptionalUX["<b>UX Designer: create-ux-design</b><br/>(Optional)"]
         Architecture["<b>Architect: architecture</b><br/>System design + ADRs"]
 
         subgraph Optional["<b>ENTERPRISE ADDITIONS (Optional)</b>"]
@@ -36,11 +37,14 @@ graph TB
             DevOps["<b>Architect: devops-strategy</b><br/>(Future)"]
         end
 
-        GateCheck["<b>Architect: solutioning-gate-check</b><br/>Validation before Phase 4"]
+        EpicsStories["<b>PM: create-epics-and-stories</b><br/>Break down FRs/NFRs into epics"]
+        GateCheck["<b>Architect: implementation-readiness</b><br/>Validation before Phase 4"]
 
+        OptionalUX -.-> Architecture
         Architecture -.->|Enterprise only| Optional
-        Architecture --> GateCheck
-        Optional -.-> GateCheck
+        Architecture --> EpicsStories
+        Optional -.-> EpicsStories
+        EpicsStories --> GateCheck
     end
 
     subgraph Result["<b>GATE CHECK RESULTS</b>"]
@@ -51,7 +55,7 @@ graph TB
     end
 
     FromPlanning -->|Quick Flow| QuickFlow
-    FromPlanning -->|BMad Method<br/>or Enterprise| Architecture
+    FromPlanning -->|BMad Method<br/>or Enterprise| OptionalUX
 
     QuickFlow --> Phase4["<b>Phase 4: Implementation</b>"]
     GateCheck --> Result
@@ -67,9 +71,11 @@ graph TB
     style Phase4 fill:#ffcc80,stroke:#e65100,stroke-width:2px,color:#000
 
     style SkipArch fill:#aed581,stroke:#1b5e20,stroke-width:2px,color:#000
+    style OptionalUX fill:#64b5f6,stroke:#0d47a1,stroke-width:2px,color:#000
     style Architecture fill:#42a5f5,stroke:#0d47a1,stroke-width:2px,color:#000
     style SecArch fill:#ef9a9a,stroke:#c62828,stroke-width:2px,color:#000
     style DevOps fill:#ef9a9a,stroke:#c62828,stroke-width:2px,color:#000
+    style EpicsStories fill:#42a5f5,stroke:#0d47a1,stroke-width:2px,color:#000
     style GateCheck fill:#42a5f5,stroke:#0d47a1,stroke-width:2px,color:#000
     style Pass fill:#81c784,stroke:#388e3c,stroke-width:2px,color:#000
     style Concerns fill:#ffb74d,stroke:#f57f17,stroke-width:2px,color:#000
@@ -80,10 +86,12 @@ graph TB
 
 ## Quick Reference
 
-| Workflow                   | Agent     | Track                    | Purpose                                     |
-| -------------------------- | --------- | ------------------------ | ------------------------------------------- |
-| **architecture**           | Architect | BMad Method, Enterprise  | Technical architecture and design decisions |
-| **solutioning-gate-check** | Architect | BMad Complex, Enterprise | Validate planning/solutioning completeness  |
+| Workflow                     | Agent       | Track                    | Purpose                                      |
+| ---------------------------- | ----------- | ------------------------ | -------------------------------------------- |
+| **create-ux-design**         | UX Designer | BMad Method, Enterprise  | Optional UX design (after PRD, before arch)  |
+| **architecture**             | Architect   | BMad Method, Enterprise  | Technical architecture and design decisions  |
+| **create-epics-and-stories** | PM          | BMad Method, Enterprise  | Break FRs/NFRs into epics after architecture |
+| **implementation-readiness** | Architect   | BMad Complex, Enterprise | Validate planning/solutioning completeness   |
 
 **When to Skip Solutioning:**
 
@@ -116,14 +124,14 @@ Result: Consistent implementation, no conflicts
 
 ### Solutioning vs Planning
 
-| Aspect   | Planning (Phase 2) | Solutioning (Phase 3)    |
-| -------- | ------------------ | ------------------------ |
-| Question | What and Why?      | How?                     |
-| Output   | Requirements       | Technical Design         |
-| Agent    | PM                 | Architect                |
-| Audience | Stakeholders       | Developers               |
-| Document | PRD/GDD            | Architecture + Tech Spec |
-| Level    | Business logic     | Implementation detail    |
+| Aspect   | Planning (Phase 2)      | Solutioning (Phase 3)             |
+| -------- | ----------------------- | --------------------------------- |
+| Question | What and Why?           | How? Then What units of work?     |
+| Output   | FRs/NFRs (Requirements) | Architecture + Epics/Stories      |
+| Agent    | PM                      | Architect → PM                    |
+| Audience | Stakeholders            | Developers                        |
+| Document | PRD (FRs/NFRs)          | Architecture + Epic Files         |
+| Level    | Business logic          | Technical design + Work breakdown |
 
 ---
 
@@ -171,7 +179,7 @@ This is NOT a template filler. The architecture workflow:
 7. **Security Architecture** - Auth/authorization, data protection, security boundaries
 8. **Deployment Architecture** - Deployment model, CI/CD, environment strategy, monitoring
 9. **Architecture Decision Records (ADRs)** - Key decisions with context, options, trade-offs, rationale
-10. **Epic-Specific Guidance** - Technical notes per epic, implementation priorities, dependencies
+10. **FR/NFR-Specific Guidance** - Technical approach per functional requirement, implementation priorities, dependencies
 11. **Standards and Conventions** - Directory structure, naming conventions, code organization, testing
 
 **ADR Format (Brief):**
@@ -203,28 +211,69 @@ This is NOT a template filler. The architecture workflow:
 - Negative: Caching complexity, N+1 query risk
 - Mitigation: Use DataLoader for batching
 
-**Implications for Epics:**
+**Implications for FRs:**
 
-- Epic 1: User Management → GraphQL mutations
-- Epic 2: Mobile App → Optimized queries
+- FR-001: User Management → GraphQL mutations
+- FR-002: Mobile App → Optimized queries
 ```
 
-**Example:** E-commerce platform → Monolith + PostgreSQL + Redis + Next.js + GraphQL, with ADRs explaining each choice and epic-specific guidance.
+**Example:** E-commerce platform → Monolith + PostgreSQL + Redis + Next.js + GraphQL, with ADRs explaining each choice and FR/NFR-specific guidance.
 
-**Integration:** Feeds into Phase 4 (Implementation). All dev agents reference architecture during implementation.
+**Integration:** Feeds into create-epics-and-stories workflow. Architecture provides the technical context needed for breaking FRs/NFRs into implementable epics and stories. All dev agents reference architecture during Phase 4 implementation.
 
 ---
 
-### solutioning-gate-check
+### create-epics-and-stories
 
-**Purpose:** Systematically validate that planning and solutioning are complete and aligned before Phase 4 implementation. Ensures PRD, architecture, and stories are cohesive with no gaps.
+**Purpose:** Transform PRD's functional and non-functional requirements into bite-sized stories organized into deliverable functional epics. This workflow runs AFTER architecture so epics/stories are informed by technical decisions.
+
+**Agent:** PM (Product Manager)
+
+**When to Use:**
+
+- After architecture workflow completes
+- When PRD contains FRs/NFRs ready for implementation breakdown
+- Before implementation-readiness gate check
+
+**Key Inputs:**
+
+- PRD (FRs/NFRs) from Phase 2 Planning
+- architecture.md with ADRs and technical decisions
+- Optional: UX design artifacts
+
+**Why After Architecture:**
+
+The create-epics-and-stories workflow runs AFTER architecture because:
+
+1. **Informed Story Sizing:** Architecture decisions (database choice, API style, etc.) affect story complexity
+2. **Dependency Awareness:** Architecture reveals technical dependencies between stories
+3. **Technical Feasibility:** Stories can be properly scoped knowing the tech stack
+4. **Consistency:** All stories align with documented architectural patterns
+
+**Key Outputs:**
+
+Epic files (one per epic) containing:
+
+1. Epic objective and scope
+2. User stories with acceptance criteria
+3. Story priorities (P0/P1/P2/P3)
+4. Dependencies between stories
+5. Technical notes referencing architecture decisions
+
+**Example:** E-commerce PRD with FR-001 (User Registration), FR-002 (Product Catalog) → Epic 1: User Management (3 stories), Epic 2: Product Display (4 stories), each story referencing relevant ADRs.
+
+---
+
+### implementation-readiness
+
+**Purpose:** Systematically validate that planning and solutioning are complete and aligned before Phase 4 implementation. Ensures PRD, architecture, and epics are cohesive with no gaps.
 
 **Agent:** Architect
 
 **When to Use:**
 
 - **Always** before Phase 4 for BMad Complex and Enterprise projects
-- After architecture workflow completes
+- After create-epics-and-stories workflow completes
 - Before sprint-planning workflow
 - When stakeholders request readiness check
 
@@ -237,14 +286,14 @@ This is NOT a template filler. The architecture workflow:
 
 **Prevents:**
 
-- ❌ Architecture doesn't address all epics
-- ❌ Stories conflict with architecture decisions
+- ❌ Architecture doesn't address all FRs/NFRs
+- ❌ Epics conflict with architecture decisions
 - ❌ Requirements ambiguous or contradictory
 - ❌ Missing critical dependencies
 
 **Ensures:**
 
-- ✅ PRD → Architecture → Stories alignment
+- ✅ PRD → Architecture → Epics alignment
 - ✅ All epics have clear technical approach
 - ✅ No contradictions or gaps
 - ✅ Team ready to implement
@@ -256,8 +305,7 @@ This is NOT a template filler. The architecture workflow:
 - Problem statement clear and evidence-based
 - Success metrics defined
 - User personas identified
-- Feature requirements complete
-- All epics defined with objectives
+- Functional requirements (FRs) complete
 - Non-functional requirements (NFRs) specified
 - Risks and assumptions documented
 
@@ -268,7 +316,7 @@ This is NOT a template filler. The architecture workflow:
 - API architecture decided
 - Key ADRs documented
 - Security architecture addressed
-- Epic-specific guidance provided
+- FR/NFR-specific guidance provided
 - Standards and conventions defined
 
 **Epic/Story Completeness:**
@@ -281,8 +329,8 @@ This is NOT a template filler. The architecture workflow:
 
 **Alignment Checks:**
 
-- Architecture addresses all PRD requirements
-- Stories align with architecture decisions
+- Architecture addresses all PRD FRs/NFRs
+- Epics align with architecture decisions
 - No contradictions between epics
 - NFRs have technical approach
 - Integration points clear
@@ -305,16 +353,16 @@ This is NOT a template filler. The architecture workflow:
 
 - Critical gaps or contradictions
 - Architecture missing key decisions
-- Stories conflict with PRD/architecture
+- Epics conflict with PRD/architecture
 - **Action:** BLOCK Phase 4, resolve issues first
 
 **Key Outputs:**
 
-**solutioning-gate-check.md** containing:
+**implementation-readiness.md** containing:
 
 1. Executive Summary (PASS/CONCERNS/FAIL)
 2. Completeness Assessment (scores for PRD, Architecture, Epics)
-3. Alignment Assessment (PRD↔Architecture, Architecture↔Epics, cross-epic consistency)
+3. Alignment Assessment (PRD↔Architecture, Architecture↔Epics/Stories, cross-epic consistency)
 4. Quality Assessment (story quality, dependencies, risks)
 5. Gaps and Recommendations (critical/minor gaps, remediation)
 6. Gate Decision with rationale
@@ -339,26 +387,30 @@ Planning (tech-spec by PM)
 **BMad Method:**
 
 ```
-Planning (prd by PM)
+Planning (prd by PM - FRs/NFRs only)
+  → Optional: create-ux-design (UX Designer)
   → architecture (Architect)
-  → solutioning-gate-check (Architect)
+  → create-epics-and-stories (PM)
+  → implementation-readiness (Architect)
   → Phase 4 (Implementation)
 ```
 
 **Enterprise:**
 
 ```
-Planning (prd by PM - same as BMad Method)
+Planning (prd by PM - FRs/NFRs only)
+  → Optional: create-ux-design (UX Designer)
   → architecture (Architect)
   → Optional: security-architecture (Architect, future)
   → Optional: devops-strategy (Architect, future)
-  → solutioning-gate-check (Architect)
+  → create-epics-and-stories (PM)
+  → implementation-readiness (Architect)
   → Phase 4 (Implementation)
 ```
 
 **Note on TEA (Test Architect):** TEA is fully operational with 8 workflows across all phases. TEA validates architecture testability during Phase 3 reviews but does not have a dedicated solutioning workflow. TEA's primary setup occurs in Phase 2 (`*framework`, `*ci`, `*test-design`) and testing execution in Phase 4 (`*atdd`, `*automate`, `*test-review`, `*trace`, `*nfr-assess`).
 
-**Note:** Enterprise uses the same planning and architecture as BMad Method. The only difference is optional extended workflows added AFTER architecture but BEFORE gate check.
+**Note:** Enterprise uses the same planning and architecture as BMad Method. The only difference is optional extended workflows added AFTER architecture but BEFORE create-epics-and-stories.
 
 ### Solutioning → Implementation Handoff
 
@@ -366,11 +418,12 @@ Planning (prd by PM - same as BMad Method)
 
 1. **architecture.md** → Guides all dev agents during implementation
 2. **ADRs** (in architecture) → Referenced by agents for technical decisions
-3. **solutioning-gate-check.md** → Confirms readiness for Phase 4
+3. **Epic files** (from create-epics-and-stories) → Work breakdown into implementable units
+4. **implementation-readiness.md** → Confirms readiness for Phase 4
 
 **How Implementation Uses Solutioning:**
 
-- **sprint-planning** - Loads architecture for epic sequencing
+- **sprint-planning** - Loads architecture and epic files for sprint organization
 - **dev-story** - References architecture decisions and ADRs
 - **code-review** - Validates code follows architectural standards
 
@@ -414,17 +467,17 @@ Architecture documents are living. Update them as you learn during implementatio
 
 ### BMad Method
 
-- **Planning:** prd (PM)
-- **Solutioning:** architecture (Architect) → solutioning-gate-check (Architect)
+- **Planning:** prd (PM) - creates FRs/NFRs only, NOT epics
+- **Solutioning:** Optional UX → architecture (Architect) → create-epics-and-stories (PM) → implementation-readiness (Architect)
 - **Implementation:** sprint-planning → epic-tech-context → dev-story
 
 ### Enterprise
 
-- **Planning:** prd (PM) - same as BMad Method
-- **Solutioning:** architecture (Architect) → Optional extended workflows (security-architecture, devops-strategy) → solutioning-gate-check (Architect)
+- **Planning:** prd (PM) - creates FRs/NFRs only (same as BMad Method)
+- **Solutioning:** Optional UX → architecture (Architect) → Optional extended workflows (security-architecture, devops-strategy) → create-epics-and-stories (PM) → implementation-readiness (Architect)
 - **Implementation:** sprint-planning → epic-tech-context → dev-story
 
-**Key Difference:** Enterprise adds optional extended workflows AFTER architecture but BEFORE gate check. Everything else is identical to BMad Method.
+**Key Difference:** Enterprise adds optional extended workflows AFTER architecture but BEFORE create-epics-and-stories. Everything else is identical to BMad Method.
 
 **Note:** TEA (Test Architect) operates across all phases and validates architecture testability but is not a Phase 3-specific workflow. See [Test Architecture Guide](./test-architecture.md) for TEA's full lifecycle integration.
 

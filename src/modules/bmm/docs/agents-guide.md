@@ -63,7 +63,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 
 - Creating Product Requirements Documents (PRD) for Level 2-4 projects
 - Creating technical specifications for small projects (Level 0-1)
-- Breaking down requirements into epics and stories
+- Breaking down requirements into epics and stories (after architecture)
 - Validating planning documents
 - Course correction during implementation
 
@@ -72,10 +72,10 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 **Workflows:**
 
 - `workflow-status` - Check what to do next
-- `create-prd` - Create PRD for Level 2-4 projects
+- `create-prd` - Create PRD for Level 2-4 projects (creates FRs/NFRs only)
 - `tech-spec` - Quick spec for Level 0-1 projects
-- `create-epics-and-stories` - Break PRD into implementable pieces
-- `validate-prd` - Validate PRD + Epics completeness
+- `create-epics-and-stories` - Break PRD into implementable pieces (runs AFTER architecture)
+- `validate-prd` - Validate PRD completeness
 - `validate-tech-spec` - Validate Technical Specification
 - `correct-course` - Handle mid-project changes
 - `workflow-init` - Initialize workflow tracking
@@ -136,7 +136,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 - Creating system architecture for Level 2-4 projects
 - Making technical design decisions
 - Validating architecture documents
-- Solutioning gate checks (Phase 3→4 transition)
+- Validating readiness for implementation phase (Phase 3→4 transition)
 - Course correction during implementation
 
 **Primary Phase:** Phase 3 (Solutioning)
@@ -146,7 +146,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 - `workflow-status` - Check what to do next
 - `create-architecture` - Produce a Scale Adaptive Architecture
 - `validate-architecture` - Validate architecture document
-- `solutioning-gate-check` - Validate readiness for Phase 4
+- `implementation-readiness` - Validate readiness for Phase 4
 
 **Communication Style:** Comprehensive yet pragmatic. Uses architectural metaphors. Balances technical depth with accessibility. Connects decisions to business value.
 
@@ -482,7 +482,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 
 - Game system architecture
 - Technical foundation design for games
-- Solutioning gate checks for game projects
+- Validating readiness for implementation phase (game projects)
 - Course correction during game development
 
 **Primary Phase:** Phase 3 (Solutioning - Games)
@@ -491,7 +491,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 
 - `workflow-status` - Check what to do next
 - `create-architecture` - Game systems architecture
-- `solutioning-gate-check` - Validate Phase 3→4 transition
+- `implementation-readiness` - Validate Phase 3→4 transition
 - `correct-course` - Handle technical changes
 
 **Communication Style:** Calm and measured. Systematic thinking about complex systems. Uses chess metaphors and military strategy. Emphasizes balance and elegance.
@@ -604,15 +604,15 @@ Some workflows are available to multiple agents:
 
 Many workflows have optional validation workflows that perform independent review:
 
-| Validation                   | Agent       | Validates                          |
-| ---------------------------- | ----------- | ---------------------------------- |
-| `validate-prd`               | PM          | PRD + Epics + Stories completeness |
-| `validate-tech-spec`         | PM          | Technical specification quality    |
-| `validate-architecture`      | Architect   | Architecture document              |
-| `validate-design`            | UX Designer | UX specification and artifacts     |
-| `validate-epic-tech-context` | SM          | Epic technical context             |
-| `validate-create-story`      | SM          | Story draft                        |
-| `validate-story-context`     | SM          | Story context XML                  |
+| Validation                   | Agent       | Validates                        |
+| ---------------------------- | ----------- | -------------------------------- |
+| `validate-prd`               | PM          | PRD completeness (FRs/NFRs only) |
+| `validate-tech-spec`         | PM          | Technical specification quality  |
+| `validate-architecture`      | Architect   | Architecture document            |
+| `validate-design`            | UX Designer | UX specification and artifacts   |
+| `validate-epic-tech-context` | SM          | Epic technical context           |
+| `validate-create-story`      | SM          | Story draft                      |
+| `validate-story-context`     | SM          | Story context XML                |
 
 **When to use validation:**
 
@@ -849,7 +849,8 @@ Load the customized agent and verify the changes are reflected in its behavior a
 2. Analyst: *brainstorm-project or *product-brief (optional)
 3. PM: *create-prd (Level 2-4) or *tech-spec (Level 0-1)
 4. Architect: *create-architecture (Level 3-4 only)
-5. SM: *sprint-planning
+5. PM: *create-epics-and-stories (after architecture)
+6. SM: *sprint-planning
 ```
 
 **Starting with Existing Code (Brownfield):**
@@ -859,7 +860,8 @@ Load the customized agent and verify the changes are reflected in its behavior a
 2. PM or Analyst: *workflow-init
 3. PM: *create-prd or *tech-spec
 4. Architect: *create-architecture (if needed)
-5. SM: *sprint-planning
+5. PM: *create-epics-and-stories (after architecture)
+6. SM: *sprint-planning
 ```
 
 **Story Development Cycle:**
@@ -911,7 +913,7 @@ Agent analyzes project state → recommends next workflow
 ```
 Each phase has validation gates:
 - Phase 2→3: validate-prd, validate-tech-spec
-- Phase 3→4: solutioning-gate-check
+- Phase 3→4: implementation-readiness
 Run validation before advancing
 ```
 
@@ -943,14 +945,14 @@ Quick reference for agent selection:
 | **Analyst**             | 📊   | 1 (Analysis)       | brainstorm, brief, research, document-project | Discovery, requirements, brownfield   |
 | **PM**                  | 📋   | 2 (Planning)       | prd, tech-spec, epics-stories                 | Planning, requirements docs           |
 | **UX Designer**         | 🎨   | 2 (Planning)       | create-design, validate-design                | UX-heavy projects, design             |
-| **Architect**           | 🏗️   | 3 (Solutioning)    | architecture, gate-check                      | Technical design, architecture        |
+| **Architect**           | 🏗️   | 3 (Solutioning)    | architecture, implementation-readiness        | Technical design, architecture        |
 | **SM**                  | 🏃   | 4 (Implementation) | sprint-planning, create-story, story-context  | Story management, sprint coordination |
 | **DEV**                 | 💻   | 4 (Implementation) | develop-story, code-review, story-done        | Implementation, coding                |
 | **TEA**                 | 🧪   | All Phases         | framework, atdd, automate, trace, ci          | Testing, quality assurance            |
 | **Paige (Tech Writer)** | 📚   | All Phases         | document-project, diagrams, validation        | Documentation, diagrams               |
 | **Game Designer**       | 🎲   | 1-2 (Games)        | brainstorm-game, gdd, narrative               | Game design, creative vision          |
 | **Game Developer**      | 🕹️   | 4 (Games)          | develop-story, story-done, code-review        | Game implementation                   |
-| **Game Architect**      | 🏛️   | 3 (Games)          | architecture, gate-check                      | Game systems architecture             |
+| **Game Architect**      | 🏛️   | 3 (Games)          | architecture, implementation-readiness        | Game systems architecture             |
 | **BMad Master**         | 🧙   | Meta               | party-mode, list tasks/workflows              | Orchestration, multi-agent            |
 
 ### Agent Capabilities Summary

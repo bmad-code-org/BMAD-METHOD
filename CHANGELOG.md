@@ -2,6 +2,227 @@
 
 ## [Unreleased]
 
+## [6.0.0-alpha.10]
+
+**Release: November 16, 2025**
+
+This alpha release introduces a new specialized agent for visual diagramming, major epic creation workflow improvements, platform-specific filtering capabilities, and critical time estimate prohibition guidance across all workflows.
+
+### 🎯 MAJOR MILESTONE: Epics & Stories Now Generated AFTER Architecture
+
+**A Key v6 Goal Realized!**
+
+One of the most important goals for BMad Method v6 has been achieved: **epic and story generation now occurs AFTER architecture completion** in the full BMad Method flow.
+
+**Why This Matters:**
+
+- Stories are now **technically informed** - they reference actual architectural decisions, patterns, and constraints
+- No more architectural surprises mid-implementation - stories already account for the chosen tech stack
+- Better story estimation (complexity-based, not time-based) because technical approach is known
+- Acceptance criteria can reference specific architectural patterns and integration points
+- Reduces story rewrites that previously occurred when architecture revealed new complexity
+
+**Workflow Sequence (Full BMad Method):**
+
+```
+PRD → UX Design → Architecture → Epics & Stories
+                                      ↑
+                               NOW HERE (informed by all prior context)
+```
+
+**Flexibility Preserved:**
+
+You can still generate epics at earlier stages if your project requires it:
+
+- After PRD (basic structure, feature-focused)
+- After UX Design (with interaction context)
+- After Architecture (RECOMMENDED - fully informed)
+
+The workflow now supports progressive enhancement, allowing you to create basic epics early and enrich them as more context becomes available. However, for most projects, **waiting until after architecture completion** produces the highest quality, most actionable stories.
+
+This represents a fundamental shift from "plan everything upfront" to "plan informed by technical reality."
+
+### 🎨 New Agent Saif the Frame Expert (Excalidraw Specialist)
+
+Thank you Saif for the new initial addition of this new agent, that will soon be further integrated into other workflows for the BMad Method and the CIS. This works great also if you install the excalidraw VSCode plugin to view the files easily.
+
+**Visual Diagramming Specialist:**
+
+- New frame-expert agent specialized in Excalidraw visual representations - use this agent or the workflows at any point to produce architcure visualizations, mock ups, visual ideas to share with the other agents and so much more. Many udpates will come to further integrate this powerful tool.
+- **Four specialized workflows:**
+  - `create-flowchart` - Process flow visualization
+  - `create-diagram` - General architectural diagrams
+  - `create-dataflow` - Data flow and pipeline visualization
+  - `create-wireframe` - UI/UX wireframe creation
+- Includes shared Excalidraw helpers, templates, and validation
+- Integrated into default-party.csv and team-fullstack configurations
+- Icon: 📐 with webskip flag for IDE-only functionality
+
+### 🚀 Epic Creation Workflow Revolution
+
+**User-Value Focused Epic Structure:**
+
+- Added comprehensive principles for user-value focused epic breakdown
+- Explicit anti-pattern examples showing wrong vs right epic structure
+- **NO technical layer breakdown** - epics must deliver user value
+- Multi-mode detection: CONTINUE, REPLACE, or UPDATE existing epics
+- Epics now created AFTER architecture for technically-informed story breakdown
+- Added checkpoint protocol for interactive workflow progression
+
+**Progressive Enhancement Pattern:**
+
+- Intelligent UPDATE vs CREATE mode detection
+- Detects available context (UX, Architecture, Domain brief, Product brief)
+- Living document approach with continuous updates
+- Creates basic epics, then enriches with UX/Architecture context
+
+### ⏰ Time Estimate Prohibition (Critical Update)
+
+**AI-Age Development Reality:**
+
+- Added **critical warnings** against providing ANY time estimates (hours/days/weeks/months)
+- Applied across **33 workflow instruction files** in BMB, BMGD, BMM, and CIS modules
+- Acknowledges AI has fundamentally changed development speed
+- Updated workflow creation guide with prohibition guidelines
+- Recognizes traditional estimation methods are obsolete in AI-augmented development
+
+**Rationale:** Time estimates based on pre-AI development patterns are actively harmful and misleading. AI-driven development exhibits non-linear productivity patterns that make traditional estimation unreliable.
+
+### 🎯 Platform-Specific Command Filtering
+
+**IDE-Only and Web-Only Support:**
+
+- New `ide-only` and `web-only` boolean fields in agent menu schema
+- Menu items filtered based on build target (web bundle vs local IDE)
+- Examples:
+  - `workflow-init` and `correct-course` marked as IDE-only
+  - `advanced-elicitation` marked as web-only
+- Enables platform-appropriate functionality across different environments
+
+**Agent Updates:**
+
+- PM: workflow-init and correct-course as ide-only
+- UX Designer: Renamed trigger to create-ux-design
+- SM: Renamed triggers for consistency (story-context → create-story-context)
+- Analyst: Added research workflow after brainstorm
+- Architect: Removed document field from validate-architecture
+- Dev: Updated persona and critical actions for clarity
+- Tech-writer: Added party-mode workflow
+- All agents: Standardized party-mode descriptions
+
+### 🔧 Agent Customization Enhancement
+
+**Prompts and Memories Merging:**
+
+- Added merging logic for `customizeYaml.prompts` and `customizeYaml.memories` in agent loading
+- New `buildMemoriesXml()` method for XML output
+- Updated `buildPromptsXml()` to use `<content>` wrapper for better compatibility
+- Memories output integrated between persona and prompts sections
+- Users can now customize agents via `bmad/_cfg/agents/*.customize.yaml` with:
+  - `prompts`: Array of {id, content} objects for action handlers
+  - `memories`: Array of strings for persistent agent memories
+
+### 📋 Workflow Configuration Standardization
+
+**Input File Patterns Cleanup:**
+
+- Removed 32 `recommended_inputs:` sections (redundant with input_file_patterns)
+- Added `description:` fields to all input_file_patterns (25 workflows)
+- Added missing `load_strategy` fields (5 workflows)
+- Fixed BMB workflows with proper reference doc variables
+- Updated BMB instructions to use new variables
+
+**Workflow Path Enhancements:**
+
+- Updated all 4 workflow paths (enterprise/method × brownfield/greenfield)
+- Added multiple optional epic creation steps at different phases:
+  - After PRD (basic structure)
+  - After UX Design (with interaction context)
+  - After Architecture (final with full context)
+- Changed PRD output description from "with epics and stories" to "with FRs and NFRs"
+
+### 🗂️ Documentation & Architecture Updates
+
+**Solutioning Gate Check Removal:**
+
+- Deleted entire solutioning-gate-check workflow (682 lines)
+- Replaced by new implementation-readiness pattern
+- Cleaner separation of concerns in solutioning phase
+
+**PRD Template Simplification:**
+
+- Removed hardcoded "Implementation Planning", "References", and "Next Steps" sections
+- PRD now focuses purely on requirements, not workflow orchestration
+- Epics/stories created as separate step after architecture
+
+**Documentation Overhaul:**
+
+- 15+ documentation files updated across modules
+- Updated quick-start guide with v6 workflow sequence
+- Clarified that epics are created AFTER architecture, not during PRD
+- Updated solutioning docs to reflect implementation-readiness pattern
+- Improved agents-guide, brownfield-guide, enterprise docs
+- Enhanced glossary, FAQ, and workflow reference documentation
+
+### 🐛 Bug Fixes & Installer Improvements
+
+**Critical Fixes:**
+
+- Fixed installer blocking issues when folder name is changed during install
+- Updated file paths in agent and workflow configurations to use `{bmad_folder}` variable (#917)
+- Fixed shard-doc to use proper command for markdown-tree-parser (#911)
+- PRD workflow now properly uses project-types CSV
+- Web bundler fixes and bundle link updates in documentation
+
+**Architecture Workflow:**
+
+- Made epics input optional (falls back to PRD FRs)
+- Updated innovation strategy phases to remove time-based language
+- Phases now: Immediate Impact → Foundation Building → Scale & Optimization
+
+### 📊 Impact Summary
+
+- **65+ files modified** across all modules
+- **682 lines removed** from deprecated solutioning-gate-check workflow
+- **33 instruction files** updated with time estimate prohibition
+- **4 new workflows** added for frame-expert agent
+- **32 recommended_inputs sections** cleaned up for standardization
+- **Net reduction of ~500+ lines** through consolidation and cleanup
+
+### ⚠️ Breaking Changes
+
+**Workflow Changes:**
+
+- Solutioning-gate-check workflow removed (replaced by implementation-readiness)
+- PRD no longer includes epic/story generation (separate workflow step)
+- Some workflow triggers renamed for consistency
+
+**Variable Updates:**
+
+- Agent and workflow configurations now require `{bmad_folder}` variable support
+- PRD output format changed (FRs and NFRs focus, not epics/stories)
+
+### 🔄 Migration Notes
+
+**For Existing Projects:**
+
+1. **Epic Creation:** Epics are now created as a separate workflow step AFTER architecture
+   - Update any automation scripts that expected epics in PRD output
+   - Use `create-epics-and-stories` workflow explicitly
+
+2. **Time Estimates:** Focus on value delivery, not time predictions
+
+3. **Agent Customization:** New customization options available
+   - Add memories via `*.customize.yaml` files
+   - Custom prompts can extend agent capabilities
+
+4. **Platform-Specific Commands:** Some commands now platform-restricted
+   - workflow-init only available in IDE environments
+
+5. **Frame Expert:** New agent available for visual diagramming
+   - Install/reinstall to get new workflows
+   - Four specialized Excalidraw workflows available
+
 ## [6.0.0-alpha.9]
 
 **Release: November 12, 2025**

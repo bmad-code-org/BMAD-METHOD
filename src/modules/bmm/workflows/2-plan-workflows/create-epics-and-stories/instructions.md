@@ -4,16 +4,16 @@
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow transforms requirements into BITE-SIZED STORIES for development agents</critical>
 <critical>EVERY story must be completable by a single dev agent in one focused session</critical>
-<critical>BMAD METHOD WORKFLOW POSITION: This is the FIRST PASS at epic breakdown</critical>
-<critical>After this workflow: UX Design will add interaction details → UPDATE epics.md</critical>
-<critical>After UX: Architecture will add technical decisions → UPDATE epics.md AGAIN</critical>
-<critical>Phase 4 Implementation pulls context from: PRD + epics.md + UX + Architecture</critical>
+<critical>⚠️ EPIC STRUCTURE PRINCIPLE: Each epic MUST deliver USER VALUE, not just technical capability. Epics are NOT organized by technical layers (database, API, frontend). Each epic should result in something USERS can actually use or benefit from. Exception: Foundation/setup stories at the start of first epic are acceptable. Another valid exception: API-first epic ONLY when the API itself has standalone value (e.g., will be consumed by third parties or multiple frontends).</critical>
+<critical>BMAD METHOD WORKFLOW POSITION: This workflow can be invoked at multiple points - after PRD only, after PRD+UX, after PRD+UX+Architecture, or to update existing epics. If epics.md already exists, ASK the user: (1) CONTINUING - previous run was incomplete, (2) REPLACING - starting fresh/discarding old, (3) UPDATING - new planning document created since last epic generation</critical>
 <critical>This is a LIVING DOCUMENT that evolves through the BMad Method workflow chain</critical>
+<critical>Phase 4 Implementation pulls context from: PRD + epics.md + UX + Architecture</critical>
 <critical>Communicate all responses in {communication_language} and adapt to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>LIVING DOCUMENT: Write to epics.md continuously as you work - never wait until the end</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
 <critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <workflow>
 
@@ -26,7 +26,6 @@
 <action>Check if {default_output_file} exists (epics.md)</action>
 
 <check if="epics.md exists">
-  <action>Set mode = "UPDATE"</action>
   <action>Load existing epics.md completely</action>
   <action>Extract existing:
   - Epic structure and titles
@@ -35,15 +34,28 @@
   - Existing acceptance criteria
   </action>
 
-<output>📝 **UPDATE MODE DETECTED**
+<output>📝 **Existing epics.md found!**
 
-Found existing epics.md - I'll enhance it with newly available context.
-
-Existing structure:
+Current structure:
 
 - {{epic_count}} epics defined
 - {{story_count}} total stories
   </output>
+
+<ask>What would you like to do?
+
+1. **CONTINUING** - Previous run was incomplete, continue where we left off
+2. **REPLACING** - Start fresh, discard existing epic structure
+3. **UPDATING** - New planning document created (UX/Architecture), enhance existing epics
+
+Enter your choice (1-3):</ask>
+
+<action>Set mode based on user choice:
+
+- Choice 1: mode = "CONTINUE" (resume incomplete work)
+- Choice 2: mode = "CREATE" (start fresh, ignore existing)
+- Choice 3: mode = "UPDATE" (enhance with new context)
+  </action>
   </check>
 
 <check if="epics.md does not exist">
@@ -210,6 +222,31 @@ Name epics based on VALUE, not technical layers:
 
 - Good: "User Onboarding", "Content Discovery", "Compliance Framework"
 - Avoid: "Database Layer", "API Endpoints", "Frontend"
+
+**⚠️ ANTI-PATTERN EXAMPLES (DO NOT DO THIS):**
+
+❌ **WRONG - Technical Layer Breakdown:**
+
+- Epic 1: Database Schema & Models
+- Epic 2: API Layer / Backend Services
+- Epic 3: Frontend UI Components
+- Epic 4: Integration & Testing
+
+WHY IT'S WRONG: User gets ZERO value until ALL epics complete. No incremental delivery.
+
+✅ **CORRECT - User Value Breakdown:**
+
+- Epic 1: Foundation (project setup - necessary exception)
+- Epic 2: User Authentication (user can register/login - VALUE DELIVERED)
+- Epic 3: Content Management (user can create/edit content - VALUE DELIVERED)
+- Epic 4: Social Features (user can share/interact - VALUE DELIVERED)
+
+WHY IT'S RIGHT: Each epic delivers something users can USE. Incremental value.
+
+**Valid Exceptions:**
+
+1. **Foundation Epic**: First epic CAN be setup/infrastructure (greenfield projects need this)
+2. **API-First Epic**: ONLY valid if the API has standalone value (third-party consumers, multiple frontends, API-as-product). If it's just "backend for our frontend", that's the WRONG pattern.
 
 Each epic should:
 
@@ -391,6 +428,34 @@ For each story in epic {{N}}, output variables following this pattern:
 <template-output>story-title-{{N}}-{{M}}</template-output>
 </check>
 
+<action>**EPIC {{N}} REVIEW - Present for Checkpoint:**
+
+Summarize the COMPLETE epic breakdown:
+
+**Epic {{N}}: {{epic_title}}**
+Goal: {{epic_goal}}
+
+Stories ({{count}} total):
+{{for each story, show:}}
+
+- Story {{N}}.{{M}}: {{story_title}}
+  - User Story: As a... I want... So that...
+  - Acceptance Criteria: (BDD format summary)
+  - Prerequisites: {{list}}
+
+**Review Questions to Consider:**
+
+- Is the story sequence logical?
+- Are acceptance criteria clear and testable?
+- Are there any missing stories for the FRs this epic covers?
+- Are the stories sized appropriately (single dev agent session)?
+- FRs covered by this epic: {{FR_list}}
+
+**NOTE:** At the checkpoint prompt, select [a] for Advanced Elicitation if you want to refine stories, add missing ones, or reorder. Select [c] to approve this epic and continue to the next one.
+</action>
+
+<template-output>epic\_{{N}}\_complete_breakdown</template-output>
+
 </step>
 
 <step n="4" goal="Review epic breakdown and completion">
@@ -444,6 +509,23 @@ The epic breakdown now includes all available context for Phase 4 implementation
 
 <check if="mode == 'CREATE'">
 <action>Review the complete epic breakdown for quality and completeness
+
+**Validate Epic Structure (USER VALUE CHECK):**
+
+For each epic, answer: "What can USERS do after this epic is complete that they couldn't do before?"
+
+- Epic 1: [Must have clear user value OR be Foundation exception]
+- Epic 2: [Must deliver user-facing capability]
+- Epic N: [Must deliver user-facing capability]
+
+⚠️ RED FLAG: If an epic only delivers technical infrastructure (database layer, API without users, component library without features), RESTRUCTURE IT. Each epic should enable users to accomplish something.
+
+Exception validation:
+
+- Foundation epic: Acceptable as first epic for greenfield projects
+- API-first epic: Acceptable ONLY if API has standalone consumers (third-party integrations, multiple frontends, API-as-product)
+
+If any epic fails this check, restructure before proceeding.
 
 **Validate FR Coverage:**
 

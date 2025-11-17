@@ -18,7 +18,8 @@ agent:
   menu:
     - trigger: workflow-init
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/init/workflow.yaml"
-      description: Start a new sequenced workflow path (START HERE!)
+      description: Start a new sequenced workflow path
+      ide-only: true
 
     - trigger: workflow-status
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"
@@ -26,7 +27,7 @@ agent:
 
     - trigger: create-prd
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.yaml"
-      description: Create Product Requirements Document (PRD) for Level 2-4 projects
+      description: Create Product Requirements Document (PRD)
 
     - trigger: create-epics-and-stories
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/create-epics-and-stories/workflow.yaml"
@@ -40,7 +41,7 @@ agent:
 
     - trigger: tech-spec
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/tech-spec/workflow.yaml"
-      description: Create Tech Spec for Level 0-1 (sometimes Level 2) projects
+      description: Create Tech Spec (Simple work efforts, no PRD or Architecture docs)
 
     - trigger: validate-tech-spec
       validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/tech-spec/workflow.yaml"
@@ -51,11 +52,13 @@ agent:
     - trigger: correct-course
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: Course Correction Analysis
+      ide-only: true
 
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
-      description: Consult with other expert agents from the party
+      description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation
       exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

@@ -140,34 +140,15 @@ bmad pm *create-prd
 **BMad produces:**
 
 - Structured, machine-readable requirements
-- Testable acceptance criteria per requirement
-- Clear epic/story decomposition
+- Functional Requirements (FRs) with testable acceptance criteria
+- Non-Functional Requirements (NFRs) with measurable targets
 - Technical context for AI agents
 
-**Why it matters:** Traditional PRDs are human-readable prose. BMad PRDs are **AI-executable work packages**.
+**Why it matters:** Traditional PRDs are human-readable prose. BMad PRDs are **AI-executable requirement specifications**.
 
-**PM Value:** Write once, automatically translated into agent-ready stories. No engineering bottleneck for translation.
+**PM Value:** Clear requirements that feed into architecture decisions, then into story breakdown. No ambiguity.
 
-### 2. Automated Epic/Story Breakdown
-
-**PM Workflow:**
-
-```bash
-bmad pm *create-epics-and-stories
-```
-
-**BMad produces:**
-
-- Epic files with clear objectives
-- Story files with acceptance criteria, context, technical guidance
-- Priority assignments (P0-P3)
-- Dependency mapping
-
-**Why it matters:** Stories become **work packages for cloud AI agents**. Each story is self-contained with full context.
-
-**PM Value:** No more "story refinement sessions" with engineering. AI agents execute directly from BMad stories.
-
-### 3. Human-in-the-Loop Architecture
+### 2. Human-in-the-Loop Architecture
 
 **Architect/PM Workflow:**
 
@@ -177,23 +158,46 @@ bmad architect *create-architecture
 
 **BMad produces:**
 
-- System architecture aligned with PRD
+- System architecture aligned with PRD's FRs/NFRs
 - Architecture Decision Records (ADRs)
-- Epic-specific technical guidance
+- FR/NFR-specific technical guidance
 - Integration patterns and standards
 
 **Why it matters:** PMs can **understand and validate** technical decisions. Architecture is conversational, not template-driven.
 
 **PM Value:** Technical fluency built through guided architecture process. PMs learn while creating.
 
+### 3. Automated Epic/Story Breakdown (AFTER Architecture)
+
+**PM Workflow:**
+
+```bash
+bmad pm *create-epics-and-stories
+```
+
+**V6 Improvement:** Epics and stories are now created AFTER architecture for better quality. The workflow uses both PRD (FRs/NFRs) and Architecture to create technically-informed stories.
+
+**BMad produces:**
+
+- Epic files with clear objectives
+- Story files with acceptance criteria, context, technical guidance
+- Priority assignments (P0-P3)
+- Dependency mapping informed by architectural decisions
+
+**Why it matters:** Stories become **work packages for cloud AI agents**. Each story is self-contained with full context AND aligned with architecture.
+
+**PM Value:** No more "story refinement sessions" with engineering. Stories are technically grounded from the start.
+
 ### 4. Cloud Agentic Pipeline (Emerging Pattern)
 
 **Current State (2025):**
 
 ```
-PM writes BMad PRD
+PM writes BMad PRD (FRs/NFRs)
    ↓
-create-epics-and-stories generates story queue
+Architect creates architecture (technical decisions)
+   ↓
+create-epics-and-stories generates story queue (informed by architecture)
    ↓
 Stories loaded by human developers + BMad agents
    ↓
@@ -207,9 +211,11 @@ Merge and deploy
 **Near Future (2026):**
 
 ```
-PM writes BMad PRD
+PM writes BMad PRD (FRs/NFRs)
    ↓
-create-epics-and-stories generates story queue
+Architecture auto-generated with PM approval
+   ↓
+create-epics-and-stories generates story queue (informed by architecture)
    ↓
 Stories automatically fed to cloud AI agent pool
    ↓

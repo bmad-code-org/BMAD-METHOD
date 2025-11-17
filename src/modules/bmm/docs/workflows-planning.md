@@ -26,13 +26,17 @@ graph TB
 
     subgraph BMadMethod["<b>BMAD METHOD (Recommended)</b>"]
         direction TB
-        PRD["<b>PM: prd</b><br/>Strategic PRD"]
+        PRD["<b>PM: prd</b><br/>Strategic PRD with FRs/NFRs"]
         GDD["<b>Game Designer: gdd</b><br/>Game design doc"]
         Narrative["<b>Game Designer: narrative</b><br/>Story-driven design"]
 
-        Epics["<b>PM: create-epics-and-stories</b><br/>Epic+Stories breakdown<br/>10-50+ stories typically"]
+        UXDesign["<b>UX Designer: create-ux-design</b><br/>Optional UX specification"]
+    end
 
-        UXDesign["<b>UX Designer: ux</b><br/>Optional UX specification"]
+    subgraph Solutioning["<b>PHASE 3: SOLUTIONING</b>"]
+        direction TB
+        Architecture["<b>Architect: architecture</b><br/>System design + decisions"]
+        Epics["<b>PM: create-epics-and-stories</b><br/>Epic+Stories breakdown<br/>(10-50+ stories typically)"]
     end
 
     subgraph Enterprise["<b>ENTERPRISE METHOD</b>"]
@@ -51,17 +55,20 @@ graph TB
     Start -->|Story-driven| Narrative
     Start -->|Enterprise needs| Enterprise
 
-    PRD --> Epics
-    GDD --> Epics
-    Narrative --> Epics
-    Epics -.->|Optional| UXDesign
-    UXDesign -.->|May update| Epics
+    PRD -.->|Optional| UXDesign
+    GDD -.->|Optional| UXDesign
+    Narrative -.->|Optional| UXDesign
+    PRD --> Architecture
+    GDD --> Architecture
+    Narrative --> Architecture
+    UXDesign --> Architecture
+    Architecture --> Epics
 
     QuickFlow --> Phase4["<b>Phase 4: Implementation</b>"]
-    Epics --> Phase3["<b>Phase 3: Architecture</b>"]
-    Enterprise -.->|Uses BMad planning| Epics
+    Epics --> ReadinessCheck["<b>Architect: implementation-readiness</b><br/>Gate check"]
+    Enterprise -.->|Uses BMad planning| Architecture
     Enterprise --> Phase3Ext["<b>Phase 3: Extended</b><br/>(Arch + Sec + DevOps)"]
-    Phase3 --> Phase4
+    ReadinessCheck --> Phase4
     Phase3Ext --> Phase4
 
     Phase4 -.->|Significant changes| CorrectCourse
@@ -90,18 +97,18 @@ graph TB
 
 ## Quick Reference
 
-| Workflow                     | Agent         | Track       | Purpose                                    | Typical Stories |
-| ---------------------------- | ------------- | ----------- | ------------------------------------------ | --------------- |
-| **workflow-init**            | PM/Analyst    | All         | Entry point: discovery + routing           | N/A             |
-| **tech-spec**                | PM            | Quick Flow  | Technical document → Story or Epic+Stories | 1-15            |
-| **prd**                      | PM            | BMad Method | Strategic PRD                              | 10-50+          |
-| **gdd**                      | Game Designer | BMad Method | Game Design Document                       | 10-50+          |
-| **narrative**                | Game Designer | BMad Method | Story-driven game/experience design        | 10-50+          |
-| **create-epics-and-stories** | PM            | BMad Method | Break PRD/GDD into Epic+Stories            | N/A             |
-| **ux**                       | UX Designer   | BMad Method | Optional UX specification                  | N/A             |
-| **correct-course**           | PM/SM         | All         | Mid-stream requirement changes             | N/A             |
+| Workflow                     | Agent         | Track       | Purpose                                                   | Typical Stories |
+| ---------------------------- | ------------- | ----------- | --------------------------------------------------------- | --------------- |
+| **workflow-init**            | PM/Analyst    | All         | Entry point: discovery + routing                          | N/A             |
+| **tech-spec**                | PM            | Quick Flow  | Technical document → Story or Epic+Stories                | 1-15            |
+| **prd**                      | PM            | BMad Method | Strategic PRD with FRs/NFRs (no epic breakdown)           | 10-50+          |
+| **gdd**                      | Game Designer | BMad Method | Game Design Document with requirements                    | 10-50+          |
+| **narrative**                | Game Designer | BMad Method | Story-driven game/experience design                       | 10-50+          |
+| **create-ux-design**         | UX Designer   | BMad Method | Optional UX specification (after PRD)                     | N/A             |
+| **create-epics-and-stories** | PM            | BMad Method | Break requirements into Epic+Stories (AFTER architecture) | N/A             |
+| **correct-course**           | PM/SM         | All         | Mid-stream requirement changes                            | N/A             |
 
-**Note:** Story counts are guidance based on typical usage, not strict definitions.
+**Note:** Story counts are guidance. V6 improvement: Epic+Stories are created AFTER architecture for better quality.
 
 ---
 
@@ -135,11 +142,11 @@ BMM uses three distinct planning tracks that adapt to project complexity:
 
 **Story Count:** Typically 10-50+ (guidance)
 
-**Documents:** PRD.md (or GDD.md) + architecture.md + epic files + story files
+**Documents:** PRD.md (FRs/NFRs) + architecture.md + epics.md + epic files
 
-**Greenfield:** Product Brief (optional) → PRD → UX (optional) → Architecture → Implementation
+**Greenfield:** Product Brief (optional) → PRD (FRs/NFRs) → UX (optional) → Architecture → Epics+Stories → Implementation
 
-**Brownfield:** document-project → PRD → Architecture (recommended) → Implementation
+**Brownfield:** document-project → PRD (FRs/NFRs) → Architecture (recommended) → Epics+Stories → Implementation
 
 **Example:** "Customer dashboard", "E-commerce platform", "Add search to existing app"
 
@@ -151,17 +158,17 @@ BMM uses three distinct planning tracks that adapt to project complexity:
 
 **Best For:** Enterprise requirements, multi-tenant, compliance, security-sensitive
 
-**Planning (Phase 2):** Uses BMad Method planning (PRD + Epic+Stories)
+**Planning (Phase 2):** Uses BMad Method planning (PRD with FRs/NFRs)
 
-**Solutioning (Phase 3):** Extended workflows (Architecture + Security + DevOps + SecOps as optional additions)
+**Solutioning (Phase 3):** Extended workflows (Architecture + Security + DevOps + SecOps as optional additions) → Epics+Stories
 
 **Time:** 3-7 days total (1-3 days planning + 2-4 days extended solutioning)
 
 **Story Count:** Typically 30+ (but defined by enterprise needs)
 
-**Documents Phase 2:** PRD.md + epics + epic files + story files
+**Documents Phase 2:** PRD.md (FRs/NFRs)
 
-**Documents Phase 3:** architecture.md + security-architecture.md (optional) + devops-strategy.md (optional) + secops-strategy.md (optional)
+**Documents Phase 3:** architecture.md + epics.md + epic files + security-architecture.md (optional) + devops-strategy.md (optional) + secops-strategy.md (optional)
 
 **Example:** "Multi-tenant SaaS", "HIPAA-compliant portal", "Add SOC2 audit logging"
 
@@ -231,7 +238,7 @@ The system guides but never forces. You can override recommendations.
 
 ### prd (Product Requirements Document)
 
-**Purpose:** Strategic PRD with epic breakdown for software products (BMad Method track).
+**Purpose:** Strategic PRD with Functional Requirements (FRs) and Non-Functional Requirements (NFRs) for software products (BMad Method track).
 
 **Agent:** PM (with Architect and Analyst support)
 
@@ -245,19 +252,19 @@ The system guides but never forces. You can override recommendations.
 
 **Scale-Adaptive Structure:**
 
-- **Light:** Single epic, 5-10 stories, simplified analysis (10-15 pages)
-- **Standard:** 2-4 epics, 15-30 stories, comprehensive analysis (20-30 pages)
-- **Comprehensive:** 5+ epics, 30-50+ stories, multi-phase, extensive stakeholder analysis (30-50+ pages)
+- **Light:** Focused FRs/NFRs, simplified analysis (10-15 pages)
+- **Standard:** Comprehensive FRs/NFRs, thorough analysis (20-30 pages)
+- **Comprehensive:** Extensive FRs/NFRs, multi-phase, stakeholder analysis (30-50+ pages)
 
 **Key Outputs:**
 
-- PRD.md (complete requirements)
-- epics.md (epic breakdown)
-- Epic files (epic-1-_.md, epic-2-_.md, etc.)
+- PRD.md (complete requirements with FRs and NFRs)
+
+**Note:** V6 improvement - PRD focuses on WHAT to build (requirements). Epic+Stories are created AFTER architecture via `create-epics-and-stories` workflow for better quality.
 
 **Integration:** Feeds into Architecture (Phase 3)
 
-**Example:** E-commerce checkout → 3 epics (Guest Checkout, Payment Processing, Order Management), 21 stories, 4-6 week delivery.
+**Example:** E-commerce checkout → PRD with 15 FRs (user account, cart management, payment flow) and 8 NFRs (performance, security, scalability).
 
 ---
 
@@ -362,22 +369,26 @@ The system guides but never forces. You can override recommendations.
 
 ### create-epics-and-stories
 
-**Purpose:** Break PRD/GDD requirements into bite-sized stories organized in epics (BMad Method track).
+**Purpose:** Break requirements into bite-sized stories organized in epics (BMad Method track).
 
 **Agent:** PM
 
 **When to Use:**
 
-- After PRD/GDD complete (often run automatically)
-- Can also run standalone later to re-generate epics/stories
-- When planning story breakdown outside main PRD workflow
+- **REQUIRED:** After Architecture workflow is complete (Phase 3)
+- After PRD defines FRs/NFRs and Architecture defines HOW to build
+- Optional: Can also run earlier (after PRD, after UX) for basic structure, then refined after Architecture
 
 **Key Outputs:**
 
 - epics.md (all epics with story breakdown)
 - Epic files (epic-1-\*.md, etc.)
 
-**Note:** PRD workflow often creates epics automatically. This workflow can be run standalone if needed later.
+**V6 Improvement:** Epics+Stories are now created AFTER architecture for better quality:
+
+- Architecture decisions inform story breakdown (tech choices affect implementation)
+- Stories have full context (PRD + UX + Architecture)
+- Better sequencing with technical dependencies considered
 
 ---
 

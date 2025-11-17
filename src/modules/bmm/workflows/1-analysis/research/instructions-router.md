@@ -13,6 +13,7 @@
 <critical>Flag any data you are uncertain about with confidence levels: [High Confidence], [Medium Confidence], [Low Confidence - verify]</critical>
 <critical>Distinguish clearly between: FACTS (from sources), ANALYSIS (your interpretation), and SPECULATION (educated guesses)</critical>
 <critical>When using WebSearch results, ALWAYS extract and include the source URL for every claim</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <!-- IDE-INJECT-POINT: research-subagents -->
 

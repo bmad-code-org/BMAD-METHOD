@@ -121,10 +121,10 @@ phases:
         command: "create-epics-and-stories"
         note: "Required: Create final epic breakdown with full context (PRD + UX + Architecture)"
 
-      - id: "solutioning-gate-check"
+      - id: "implementation-readiness"
         required: true
         agent: "architect"
-        command: "solutioning-gate-check"
+        command: "implementation-readiness"
         note: "Critical gate - validates all planning + Epics before touching production system"
 
   - phase: 3

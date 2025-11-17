@@ -13,6 +13,7 @@
 <critical>If users mention technical details, append to technical_preferences with timestamp</critical>
 
 <critical>DOCUMENT OUTPUT: Concise, clear, actionable game design specs. Use tables/lists over prose. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 ## Input Document Discovery
 
@@ -26,7 +27,7 @@ This workflow requires: game brief, and may reference market research or brownfi
    - Read `index.md` to understand the document structure
    - Read ALL section files listed in the index
    - Treat the combined content as if it were a single document
-4. **Brownfield projects**: The `document-project` workflow always creates `{output_folder}/docs/index.md`
+4. **Brownfield projects**: The `document-project` workflow always creates `{output_folder}/index.md`
 
 **Priority**: If both whole and sharded versions exist, use the whole document.
 

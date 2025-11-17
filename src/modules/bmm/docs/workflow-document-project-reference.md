@@ -202,7 +202,9 @@ PRD Workflow: Loads docs/index.md
 → Understands existing architecture
 → Identifies reusable components
 → Plans integration with existing APIs
-→ Creates contextual PRD with epics and stories
+→ Creates contextual PRD with FRs and NFRs
+Architecture Workflow: Creates architecture design
+Create-Epics-and-Stories Workflow: Breaks down into epics and stories
 ```
 
 ### Other Use Cases

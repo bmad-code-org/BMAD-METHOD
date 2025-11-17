@@ -117,7 +117,8 @@ Comprehensive documentation for all BMM workflows organized by phase:
   - Which planning workflow to use
 
 - **[Phase 3: Solutioning Workflows](./workflows-solutioning.md)** - Architecture and validation (638 lines)
-  - architecture, solutioning-gate-check
+  - architecture, create-epics-and-stories, implementation-readiness
+  - V6: Epics created AFTER architecture for better quality
   - Required for BMad Method and Enterprise Method tracks
   - Preventing agent conflicts
 

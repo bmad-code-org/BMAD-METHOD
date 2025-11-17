@@ -26,17 +26,17 @@ agent:
     - trigger: validate-architecture
       validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.yaml"
       checklist: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/checklist.md"
-      document: "{output_folder}/architecture.md"
       description: Validate Architecture Document
 
-    - trigger: solutioning-gate-check
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/solutioning-gate-check/workflow.yaml"
-      description: Validate solutioning complete, ready for Phase 4 (Level 2-4 only)
+    - trigger: implementation-readiness
+      workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness/workflow.yaml"
+      description: Validate implementation readiness - PRD, UX, Architecture, Epics aligned
 
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
-      description: Consult with other expert agents from the party
+      description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation
       exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

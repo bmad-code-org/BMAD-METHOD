@@ -1088,7 +1088,7 @@ input_file_patterns:
     sharded: '{output_folder}/*architecture*/index.md'
 
   document_project:
-    sharded: '{output_folder}/docs/index.md' # Brownfield always uses index
+    sharded: '{output_folder}/index.md' # Brownfield always uses index
 ```
 
 #### 2. Add Discovery Instructions to instructions.md
@@ -1108,7 +1108,7 @@ This workflow requires: [list required documents]
    - Read `index.md` to understand the document structure
    - Read ALL section files listed in the index (or specific sections for selective load)
    - Treat the combined content as if it were a single document
-4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
+4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/index.md`
 
 **Priority**: If both whole and sharded versions exist, use the whole document.
 

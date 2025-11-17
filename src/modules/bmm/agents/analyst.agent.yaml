@@ -25,24 +25,25 @@ agent:
 
     - trigger: brainstorm-project
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/workflow.yaml"
-      description: Guide me through Brainstorming
+      description: Guided Brainstorming
+
+    - trigger: research
+      workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/research/workflow.yaml"
+      description: Guided Research
 
     - trigger: product-brief
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief/workflow.yaml"
-      description: Produce Project Brief
+      description: Create a Project Brief
 
     - trigger: document-project
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/document-project/workflow.yaml"
       description: Generate comprehensive documentation of an existing Project
 
-    - trigger: research
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/research/workflow.yaml"
-      description: Guide me through Research
-
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
-      description: Consult with other expert agents from the party
+      description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation
       exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

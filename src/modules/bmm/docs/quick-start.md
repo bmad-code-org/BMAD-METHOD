@@ -122,7 +122,7 @@ For v4 users or those who prefer to skip workflow-status guidance:
 
 - **Analyst** → Brainstorming, Product Brief
 - **PM** → PRD (BMad Method/Enterprise tracks) OR tech-spec (Quick Flow track)
-- **UX-Designer** → UX Design Document (if UI-heavy)
+- **UX-Designer** → UX Design Document (if UI part of the project)
 - **Architect** → Architecture (BMad Method/Enterprise tracks)
 
 #### Phase 2: Planning - Creating the PRD
@@ -133,7 +133,6 @@ For v4 users or those who prefer to skip workflow-status guidance:
 2. Tell it to run the PRD workflow
 3. Once complete, you'll have:
    - **PRD.md** - Your Product Requirements Document
-   - Epic breakdown
 
 **For Quick Flow track:**
 
@@ -145,7 +144,7 @@ If your project has a user interface:
 
 1. Load the **UX-Designer agent** in a new chat
 2. Tell it to run the UX design workflow
-3. After completion, run validations to ensure the Epics file stays updated
+3. After completion, you'll have your UX specification document
 
 #### Phase 3: Architecture
 
@@ -153,14 +152,25 @@ If your project has a user interface:
 
 1. Load the **Architect agent** in a new chat
 2. Tell it to run the create-architecture workflow
-3. After completion, run validations to ensure the Epics file stays updated
+3. After completion, you'll have your architecture document with technical decisions
 
-#### Phase 3: Solutioning Gate Check (Highly Recommended)
+#### Phase 3: Create Epics and Stories (REQUIRED after Architecture)
 
-Once architecture is complete:
+**V6 Improvement:** Epics and stories are now created AFTER architecture for better quality!
+
+1. Load the **PM agent** in a new chat
+2. Tell it to run "create-epics-and-stories"
+3. This breaks down your PRD's FRs/NFRs into implementable epics and stories
+4. The workflow uses both PRD and Architecture to create technically-informed stories
+
+**Why after architecture?** Architecture decisions (database, API patterns, tech stack) directly affect how stories should be broken down and sequenced.
+
+#### Phase 3: Implementation Readiness Check (Highly Recommended)
+
+Once epics and stories are created:
 
 1. Load the **Architect agent** in a new chat
-2. Tell it to run "solutioning-gate-check"
+2. Tell it to run "implementation-readiness"
 3. This validates cohesion across all your planning documents (PRD, UX, Architecture, Epics)
 4. This was called the "PO Master Checklist" in v4
 

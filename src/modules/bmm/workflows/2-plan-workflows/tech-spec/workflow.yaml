@@ -52,7 +52,7 @@ input_file_patterns:
     load_strategy: "FULL_LOAD"
   document_project:
     description: "Brownfield project documentation (optional)"
-    sharded: "{output_folder}/docs/index.md"
+    sharded: "{output_folder}/index.md"
     load_strategy: "INDEX_GUIDED"
 
 standalone: true
