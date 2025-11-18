@@ -54,10 +54,10 @@ phases:
         command: "create-epics-and-stories"
         note: "Optional: Create epic breakdown early (basic structure only)"
 
-      - id: "create-design"
+      - id: "create-ux-design"
         recommended: true
         agent: "ux-designer"
-        command: "create-design"
+        command: "create-ux-design"
         note: "Highly recommended for enterprise - design system and patterns"
 
       - id: "create-epics-and-stories-after-ux"

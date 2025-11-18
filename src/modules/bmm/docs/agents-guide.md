@@ -321,7 +321,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 **Workflows:**
 
 - `workflow-status` - Check what to do next
-- `create-design` - Conduct design thinking workshop to define UX specification with:
+- `create-ux-design` - Conduct design thinking workshop to define UX specification with:
   - Visual exploration and generation
   - Collaborative decision-making
   - AI-assisted design tools (v0, Lovable)
@@ -944,7 +944,7 @@ Quick reference for agent selection:
 | ----------------------- | ---- | ------------------ | --------------------------------------------- | ------------------------------------- |
 | **Analyst**             | 📊   | 1 (Analysis)       | brainstorm, brief, research, document-project | Discovery, requirements, brownfield   |
 | **PM**                  | 📋   | 2 (Planning)       | prd, tech-spec, epics-stories                 | Planning, requirements docs           |
-| **UX Designer**         | 🎨   | 2 (Planning)       | create-design, validate-design                | UX-heavy projects, design             |
+| **UX Designer**         | 🎨   | 2 (Planning)       | create-ux-design, validate-design             | UX-heavy projects, design             |
 | **Architect**           | 🏗️   | 3 (Solutioning)    | architecture, implementation-readiness        | Technical design, architecture        |
 | **SM**                  | 🏃   | 4 (Implementation) | sprint-planning, create-story, story-context  | Story management, sprint coordination |
 | **DEV**                 | 💻   | 4 (Implementation) | develop-story, code-review, story-done        | Implementation, coding                |

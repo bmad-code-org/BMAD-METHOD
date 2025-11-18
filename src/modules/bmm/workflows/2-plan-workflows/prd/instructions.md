@@ -652,7 +652,7 @@ Your PRD is complete!"
 <action>Check workflow path to determine next expected workflows:
 
 - Look for "create-epics-and-stories" as optional after PRD
-- Look for "create-design" as conditional (if_has_ui)
+- Look for "create-ux-design" as conditional (if_has_ui)
 - Look for "create-epics-and-stories-after-ux" as optional
 - Identify the required next phase workflow
   </action>
@@ -675,7 +675,7 @@ Based on your {{project_track}} workflow path, you can:
 
 <check if="UI_exists">
 **Option B: UX Design First** (Recommended if UI)
-   `workflow create-design`
+   `workflow create-ux-design`
    - Design user experience and interactions
    - Epic breakdown can incorporate UX details later
 </check>
@@ -691,7 +691,7 @@ Based on your {{project_track}} workflow path, you can:
 
 <check if="standalone_mode == true">
 **Typical next workflows:**
-1. `workflow create-design` - UX Design (if UI exists)
+1. `workflow create-ux-design` - UX Design (if UI exists)
 2. `workflow create-architecture` - Technical architecture
 3. `workflow create-epics-and-stories` - Epic breakdown
 
