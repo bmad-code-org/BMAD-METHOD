@@ -12,7 +12,7 @@
 >
 > **Getting Started:**
 >
-> - **Install v6 Alpha:** `npx bmad-method install`
+> - **Install v6 Alpha:** `npx bmad-method@alpha install`
 > - **Install stable v4:** `npx bmad-method@latest install`
 > - **Not sure what to do?** Load any agent and run `*workflow-init` for guided setup
 > - **v4 Users:** [View v4 documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V4) or [upgrade guide](./docs/v4-to-v6-upgrade.md)
