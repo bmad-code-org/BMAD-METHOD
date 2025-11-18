@@ -32,7 +32,7 @@
 
     Participating agents:
     [For each agent in roster:]
-    - [Agent Name] ([Title]): [Role from merged data]
+    - [Icon Emoji]  [Agent Name] ([Title]): [Role from merged data]
 
     [Total count] agents ready to collaborate!
 
@@ -94,13 +94,20 @@
   </substep>
 
   <substep n="3d" goal="Format and Present Responses">
-    <action>Present each agent's contribution clearly:</action>
+    <action>For each agent response, output text THEN trigger their voice:</action>
+
+    <procedure>
+      1. Output the agent's text in format: [Icon Emoji]  [Agent Name]: [dialogue]
+      2. <!-- TTS_INJECTION:party-mode -->
+      3. Repeat for each agent in the response
+    </procedure>
+
     <format>
-      [Agent Name]: [Their response in their voice/style]
+      [Icon Emoji]  [Agent Name]: [Their response in their voice/style]
 
-      [Another Agent]: [Their response, potentially referencing the first]
+      [Icon Emoji]  [Another Agent]: [Their response, potentially referencing the first]
 
-      [Third Agent if selected]: [Their contribution]
+      [Icon Emoji]  [Third Agent if selected]: [Their contribution]
     </format>
 
     <action>Maintain spacing between agents for readability</action>

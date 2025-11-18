@@ -59,6 +59,18 @@ module.exports = {
         console.log(chalk.cyan('BMAD Core and Selected Modules have been installed to:'), chalk.bold(result.path));
         console.log(chalk.yellow('\nThank you for helping test the early release version of the new BMad Core and BMad Method!'));
         console.log(chalk.cyan('Stable Beta coming soon - please read the full readme.md and linked documentation to get started!'));
+
+        // Display post-installation steps if needed
+        if (result.needsAgentVibes) {
+          console.log(chalk.magenta('\n📋 Post-Installation Steps'));
+          console.log(chalk.cyan('To complete AgentVibes TTS setup, run:'));
+          console.log(chalk.green(`\n  cd ${result.projectDir}`));
+          console.log(chalk.green('  npx agentvibes install\n'));
+          console.log(chalk.dim('This will set up TTS with your choice of:'));
+          console.log(chalk.dim('  • ElevenLabs AI (150+ premium voices)'));
+          console.log(chalk.dim('  • Piper TTS (50+ free voices)\n'));
+        }
+
         process.exit(0);
       }
     } catch (error) {
