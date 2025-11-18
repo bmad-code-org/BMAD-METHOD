@@ -1,7 +1,8 @@
 # Party Mode - Multi-Agent Discussion Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/.bmad/core/tasks/workflow.xml</critical>
 <critical>This workflow orchestrates group discussions between all installed BMAD agents</critical>
+<critical>IMPORTANT: Always use PROJECT hooks (.claude/hooks/), NEVER global hooks (~/.claude/hooks/)</critical>
 
 <workflow>
 
@@ -25,6 +26,7 @@
 
 <step n="2" goal="Initialize Party Mode">
   <action>Announce party mode activation with enthusiasm</action>
+  <note>If using TTS for announcement, use PROJECT hook: .claude/hooks/play-tts.sh (NOT ~/.claude/hooks/)</note>
   <action>List all participating agents with their merged information:</action>
   <format>
     🎉 PARTY MODE ACTIVATED! 🎉
@@ -32,7 +34,7 @@
 
     Participating agents:
     [For each agent in roster:]
-    - [Icon Emoji]  [Agent Name] ([Title]): [Role from merged data]
+    - [Agent Name] ([Title]): [Role from merged data]
 
     [Total count] agents ready to collaborate!
 
@@ -97,21 +99,33 @@
     <action>For each agent response, output text THEN trigger their voice:</action>
 
     <procedure>
-      1. Output the agent's text in format: [Icon Emoji]  [Agent Name]: [dialogue]
-      2. <!-- TTS_INJECTION:party-mode -->
+      1. Output the agent's text in format: [Icon Emoji] [Agent Name]: [dialogue]
+      2. If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
+         - Use Bash tool: `.claude/hooks/bmad-speak.sh "[Agent Name]" "[dialogue]"`
+         - This speaks the dialogue with the agent's unique voice
+         - Run in background (&) to not block next agent
       3. Repeat for each agent in the response
     </procedure>
 
     <format>
-      [Icon Emoji]  [Agent Name]: [Their response in their voice/style]
+      [Icon Emoji] [Agent Name]: [Their response in their voice/style]
 
-      [Icon Emoji]  [Another Agent]: [Their response, potentially referencing the first]
+      [Icon Emoji] [Another Agent]: [Their response, potentially referencing the first]
 
-      [Icon Emoji]  [Third Agent if selected]: [Their contribution]
+      [Icon Emoji] [Third Agent if selected]: [Their contribution]
     </format>
+    <example>
+      🏗️ [Winston]: I recommend using microservices for better scalability.
+      [Bash: .claude/hooks/bmad-speak.sh "Winston" "I recommend using microservices for better scalability."]
+
+      📋 [John]: But a monolith would get us to market faster for MVP.
+      [Bash: .claude/hooks/bmad-speak.sh "John" "But a monolith would get us to market faster for MVP."]
+    </example>
 
     <action>Maintain spacing between agents for readability</action>
     <action>Preserve each agent's unique voice throughout</action>
+    <action>Always include the agent's icon emoji from the manifest before their name</action>
+    <action>Trigger TTS for each agent immediately after outputting their text</action>
 
   </substep>
 
