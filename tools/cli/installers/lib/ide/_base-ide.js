@@ -74,6 +74,19 @@ class BaseIdeSetup {
   }
 
   /**
+   * Install a custom agent launcher - subclasses should override
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created command, or null if not supported
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    // Default implementation - subclasses can override
+    return null;
+  }
+
+  /**
    * Detect whether this IDE already has configuration in the project
    * Subclasses can override for custom logic
    * @param {string} projectDir - Project directory
@@ -599,6 +612,18 @@ class BaseIdeSetup {
       .split('-')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  /**
+   * Flatten a relative path to a single filename for flat slash command naming
+   * Example: 'module/agents/name.md' -> 'bmad-module-agents-name.md'
+   * Used by IDEs that ignore directory structure for slash commands (e.g., Antigravity, Codex)
+   * @param {string} relativePath - Relative path to flatten
+   * @returns {string} Flattened filename with 'bmad-' prefix
+   */
+  flattenFilename(relativePath) {
+    const sanitized = relativePath.replaceAll(/[/\\]/g, '-');
+    return `bmad-${sanitized}`;
   }
 
   /**

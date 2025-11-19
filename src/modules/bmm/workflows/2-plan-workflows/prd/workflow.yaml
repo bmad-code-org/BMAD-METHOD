@@ -66,13 +66,13 @@ web_bundle:
     - "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/checklist.md"
 
     # Child workflow and its files
-    - "{bmad_folder}/bmm/workflows/2-plan-workflows/create-epics-and-stories/workflow.yaml"
-    - "{bmad_folder}/bmm/workflows/2-plan-workflows/create-epics-and-stories/instructions.md"
-    - "{bmad_folder}/bmm/workflows/2-plan-workflows/create-epics-and-stories/epics-template.md"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.yaml"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/instructions.md"
+    - "{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/epics-template.md"
 
     # Task dependencies (referenced in instructions.md)
     - "{bmad_folder}/core/tasks/workflow.xml"
     - "{bmad_folder}/core/tasks/advanced-elicitation.xml"
     - "{bmad_folder}/core/tasks/advanced-elicitation-methods.csv"
   child_workflows:
-    - create-epics-and-stories: "{bmad_folder}/bmm/workflows/2-plan-workflows/create-epics-and-stories/workflow.yaml"
+    - create-epics-and-stories: "{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.yaml"

@@ -48,23 +48,11 @@ phases:
         agent: "pm"
         command: "validate-prd"
 
-      - id: "create-epics-and-stories"
-        optional: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Optional: Create epic breakdown early (basic structure only)"
-
       - id: "create-design"
         recommended: true
         agent: "ux-designer"
         command: "create-design"
         note: "Highly recommended for enterprise - design system and patterns"
-
-      - id: "create-epics-and-stories-after-ux"
-        optional: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Optional: Create epic breakdown with UX context"
 
   - phase: 2
     name: "Solutioning"
@@ -103,11 +91,11 @@ phases:
         agent: "architect"
         command: "validate-architecture"
 
-      - id: "create-epics-and-stories-final"
+      - id: "create-epics-and-stories"
         required: true
         agent: "pm"
         command: "create-epics-and-stories"
-        note: "Required: Create final epic breakdown with full context (PRD + UX + Architecture)"
+        note: "Required: Break down PRD into implementable epics and stories with full context (PRD + UX + Architecture)"
 
       - id: "implementation-readiness"
         required: true

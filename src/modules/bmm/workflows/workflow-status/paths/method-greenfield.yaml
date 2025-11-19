@@ -48,23 +48,11 @@ phases:
         command: "validate-prd"
         note: "Quality check for PRD completeness"
 
-      - id: "create-epics-and-stories"
-        optional: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Optional: Create epic breakdown early (basic structure only)"
-
       - id: "create-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
         command: "create-design"
         note: "Determined after PRD - user/agent decides if needed"
-
-      - id: "create-epics-and-stories-after-ux"
-        optional: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Optional: Create epic breakdown with UX context"
 
   - phase: 2
     name: "Solutioning"
@@ -77,11 +65,11 @@ phases:
         output: "System architecture document"
         note: "Complete system design for greenfield projects"
 
-      - id: "create-epics-and-stories-final"
+      - id: "create-epics-and-stories"
         required: true
         agent: "pm"
         command: "create-epics-and-stories"
-        note: "Required: Create final epic breakdown with full context (PRD + UX + Architecture)"
+        note: "Required: Break down PRD into implementable epics and stories with full context (PRD + UX + Architecture)"
 
       - id: "test-design"
         recommended: true

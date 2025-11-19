@@ -59,22 +59,10 @@ phases:
         agent: "pm"
         command: "validate-prd"
 
-      - id: "create-epics-and-stories"
-        optional: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Optional: Create epic breakdown early (basic structure only)"
-
       - id: "create-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
         command: "create-design"
-
-      - id: "create-epics-and-stories-after-ux"
-        optional: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Optional: Create epic breakdown with UX context"
 
   - phase: 2
     name: "Solutioning"
@@ -87,11 +75,11 @@ phases:
         output: "Integration architecture - solution design for THIS project"
         note: "HIGHLY RECOMMENDED: Distills massive brownfield context into focused solution design. Prevents agent confusion."
 
-      - id: "create-epics-and-stories-final"
+      - id: "create-epics-and-stories"
         required: true
         agent: "pm"
         command: "create-epics-and-stories"
-        note: "Required: Create final epic breakdown with full context (PRD + UX + Architecture)"
+        note: "Required: Break down PRD into implementable epics and stories with full context (PRD + UX + Architecture)"
 
       - id: "test-design"
         recommended: true

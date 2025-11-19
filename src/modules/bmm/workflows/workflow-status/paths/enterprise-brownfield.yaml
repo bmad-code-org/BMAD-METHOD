@@ -60,23 +60,11 @@ phases:
         agent: "pm"
         command: "validate-prd"
 
-      - id: "create-epics-and-stories"
-        optional: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Optional: Create epic breakdown early (basic structure only)"
-
       - id: "create-design"
         recommended: true
         agent: "ux-designer"
         command: "create-design"
         note: "Recommended - must integrate with existing UX patterns"
-
-      - id: "create-epics-and-stories-after-ux"
-        optional: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Optional: Create epic breakdown with UX context"
 
   - phase: 2
     name: "Solutioning"
@@ -89,6 +77,12 @@ phases:
         output: "Integration architecture with enterprise considerations"
         note: "Distills brownfield context + adds security/scalability/compliance design"
 
+      - id: "create-epics-and-stories"
+        required: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Required: Break down PRD into implementable epics and stories with full context (PRD + UX + Architecture)"
+
       - id: "test-design"
         required: true
         agent: "tea"
@@ -96,30 +90,24 @@ phases:
         output: "System-level testability review"
         note: "Enterprise requires testability validation - auto-detects system-level mode"
 
-      - id: "create-security-architecture"
-        optional: true
-        agent: "architect"
-        command: "create-security-architecture"
-        output: "Security architecture for brownfield integration"
-        note: "Future workflow - optional extended enterprise workflow for threat model, auth integration, audit requirements"
+      # - id: "create-security-architecture"
+      #   optional: true
+      #   agent: "architect"
+      #   command: "create-security-architecture"
+      #   output: "Security architecture for brownfield integration"
+      #   note: "Future workflow - optional extended enterprise workflow for threat model, auth integration, audit requirements"
 
-      - id: "create-devops-strategy"
-        optional: true
-        agent: "architect"
-        command: "create-devops-strategy"
-        output: "DevOps strategy for brownfield deployment"
-        note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
+      # - id: "create-devops-strategy"
+      #   optional: true
+      #   agent: "architect"
+      #   command: "create-devops-strategy"
+      #   output: "DevOps strategy for brownfield deployment"
+      #   note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
 
       - id: "validate-architecture"
         recommended: true
         agent: "architect"
         command: "validate-architecture"
-
-      - id: "create-epics-and-stories-final"
-        required: true
-        agent: "pm"
-        command: "create-epics-and-stories"
-        note: "Required: Create final epic breakdown with full context (PRD + UX + Architecture)"
 
       - id: "implementation-readiness"
         required: true

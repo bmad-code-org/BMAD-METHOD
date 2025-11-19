@@ -16,6 +16,10 @@ Complete guides for the BMad Method Module (BMM) - AI-powered agile development 
 
 **Quick Path:** Install → workflow-init → Follow agent guidance
 
+### 📊 Visual Overview
+
+**[Complete Workflow Diagram](./images/workflow-method-greenfield.svg)** - Visual flowchart showing all phases, agents (color-coded), and decision points for the BMad Method standard greenfield track.
+
 ---
 
 ## 📖 Core Concepts
