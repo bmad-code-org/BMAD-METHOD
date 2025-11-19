@@ -602,6 +602,18 @@ class BaseIdeSetup {
   }
 
   /**
+   * Flatten a relative path to a single filename for flat slash command naming
+   * Example: 'module/agents/name.md' -> 'bmad-module-agents-name.md'
+   * Used by IDEs that ignore directory structure for slash commands (e.g., Antigravity, Codex)
+   * @param {string} relativePath - Relative path to flatten
+   * @returns {string} Flattened filename with 'bmad-' prefix
+   */
+  flattenFilename(relativePath) {
+    const sanitized = relativePath.replaceAll(/[/\\]/g, '-');
+    return `bmad-${sanitized}`;
+  }
+
+  /**
    * Create agent configuration file
    * @param {string} bmadDir - BMAD installation directory
    * @param {Object} agent - Agent information
