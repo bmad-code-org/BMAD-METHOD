@@ -212,11 +212,6 @@ class CodexSetup extends BaseIdeSetup {
     return path.join(os.homedir(), '.codex', 'prompts');
   }
 
-  flattenFilename(relativePath) {
-    const sanitized = relativePath.replaceAll(/[\\/]/g, '-');
-    return `bmad-${sanitized}`;
-  }
-
   async flattenAndWriteArtifacts(artifacts, destDir) {
     let written = 0;
 
