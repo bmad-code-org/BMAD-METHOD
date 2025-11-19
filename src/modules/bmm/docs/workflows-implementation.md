@@ -10,6 +10,16 @@ Phase 4 (Implementation) workflows manage the iterative sprint-based development
 
 ---
 
+## Complete Workflow Context
+
+Phase 4 is the final phase of the BMad Method workflow. To see how implementation fits into the complete methodology:
+
+![BMad Method Workflow - Standard Greenfield](./images/workflow-method-greenfield.svg)
+
+_Complete workflow showing Phases 1-4. Phase 4 (Implementation) is the rightmost column, showing the iterative epic and story cycles detailed below._
+
+---
+
 ## Phase 4 Workflow Lifecycle
 
 ```mermaid

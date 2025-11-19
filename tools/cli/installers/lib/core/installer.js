@@ -840,6 +840,15 @@ class Installer {
         console.log(chalk.dim('Review the .bak files to see your changes and merge if needed.\n'));
       }
 
+      // Reinstall custom agents from _cfg/custom/agents/ sources
+      const customAgentResults = await this.reinstallCustomAgents(projectDir, bmadDir);
+      if (customAgentResults.count > 0) {
+        console.log(chalk.green(`\n✓ Reinstalled ${customAgentResults.count} custom agent${customAgentResults.count > 1 ? 's' : ''}`));
+        for (const agent of customAgentResults.agents) {
+          console.log(chalk.dim(`  - ${agent}`));
+        }
+      }
+
       // Display completion message
       const { UI } = require('../../../lib/ui');
       const ui = new UI();
@@ -2243,6 +2252,116 @@ class Installer {
     }
 
     return nodes;
+  }
+
+  /**
+   * Reinstall custom agents from _cfg/custom/agents/ sources
+   * This preserves custom agents across quick updates/reinstalls
+   * @param {string} projectDir - Project directory
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Object} Result with count and agent names
+   */
+  async reinstallCustomAgents(projectDir, bmadDir) {
+    const customAgentsCfgDir = path.join(bmadDir, '_cfg', 'custom', 'agents');
+    const results = { count: 0, agents: [] };
+
+    if (!(await fs.pathExists(customAgentsCfgDir))) {
+      return results;
+    }
+
+    try {
+      const {
+        discoverAgents,
+        loadAgentConfig,
+        extractManifestData,
+        addToManifest,
+        createIdeSlashCommands,
+        updateManifestYaml,
+      } = require('../../../lib/agent/installer');
+      const { compileAgent } = require('../../../lib/agent/compiler');
+
+      // Discover custom agents in _cfg/custom/agents/
+      const agents = discoverAgents(customAgentsCfgDir);
+
+      if (agents.length === 0) {
+        return results;
+      }
+
+      const customAgentsDir = path.join(bmadDir, 'custom', 'agents');
+      await fs.ensureDir(customAgentsDir);
+
+      const manifestFile = path.join(bmadDir, '_cfg', 'agent-manifest.csv');
+      const manifestYamlFile = path.join(bmadDir, '_cfg', 'manifest.yaml');
+
+      for (const agent of agents) {
+        try {
+          const agentConfig = loadAgentConfig(agent.yamlFile);
+          const finalAgentName = agent.name; // Already named correctly from save
+
+          // Determine agent type from the name (e.g., "fred-commit-poet" → "commit-poet")
+          let agentType = finalAgentName;
+          const parts = finalAgentName.split('-');
+          if (parts.length >= 2) {
+            // Try to extract type (last part or last two parts)
+            // For "fred-commit-poet", we want "commit-poet"
+            // This is heuristic - could be improved with metadata storage
+            agentType = parts.slice(-2).join('-'); // Take last 2 parts as type
+          }
+
+          // Create target directory
+          const agentTargetDir = path.join(customAgentsDir, finalAgentName);
+          await fs.ensureDir(agentTargetDir);
+
+          // Calculate paths
+          const compiledFileName = `${finalAgentName}.md`;
+          const compiledPath = path.join(agentTargetDir, compiledFileName);
+          const relativePath = path.relative(projectDir, compiledPath);
+
+          // Compile with embedded defaults (answers are already in defaults section)
+          const { xml, metadata } = compileAgent(
+            await fs.readFile(agent.yamlFile, 'utf8'),
+            agentConfig.defaults || {},
+            finalAgentName,
+            relativePath,
+          );
+
+          // Write compiled agent
+          await fs.writeFile(compiledPath, xml, 'utf8');
+
+          // Copy sidecar files if expert agent
+          if (agent.hasSidecar && agent.type === 'expert') {
+            const { copySidecarFiles } = require('../../../lib/agent/installer');
+            copySidecarFiles(agent.path, agentTargetDir, agent.yamlFile);
+          }
+
+          // Update manifest CSV
+          if (await fs.pathExists(manifestFile)) {
+            const manifestData = extractManifestData(xml, { ...metadata, name: finalAgentName }, relativePath, 'custom');
+            manifestData.name = finalAgentName;
+            manifestData.displayName = metadata.name || finalAgentName;
+            manifestData.path = relativePath;
+            addToManifest(manifestFile, manifestData);
+          }
+
+          // Create IDE slash commands (async function)
+          await createIdeSlashCommands(projectDir, finalAgentName, relativePath, metadata);
+
+          // Update manifest.yaml
+          if (await fs.pathExists(manifestYamlFile)) {
+            updateManifestYaml(manifestYamlFile, finalAgentName, agentType);
+          }
+
+          results.count++;
+          results.agents.push(finalAgentName);
+        } catch (agentError) {
+          console.log(chalk.yellow(`  ⚠️  Failed to reinstall ${agent.name}: ${agentError.message}`));
+        }
+      }
+    } catch (error) {
+      console.log(chalk.yellow(`  ⚠️  Error reinstalling custom agents: ${error.message}`));
+    }
+
+    return results;
   }
 
   /**
