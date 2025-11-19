@@ -22,6 +22,12 @@ BMad Method (BMM) helps you build software through guided workflows with special
 3. **Phase 3: Solutioning** (Track-dependent) - Design the architecture for BMad Method and Enterprise tracks
 4. **Phase 4: Implementation** (Required) - Build your software Epic by Epic, Story by Story
 
+### Complete Workflow Visualization
+
+![BMad Method Workflow - Standard Greenfield](./images/workflow-method-greenfield.svg)
+
+_Complete visual flowchart showing all phases, workflows, agents (color-coded), and decision points for the BMad Method standard greenfield track. Each box is color-coded by the agent responsible for that workflow._
+
 ## Installation
 
 ```bash

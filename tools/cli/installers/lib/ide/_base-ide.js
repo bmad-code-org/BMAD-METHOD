@@ -74,6 +74,19 @@ class BaseIdeSetup {
   }
 
   /**
+   * Install a custom agent launcher - subclasses should override
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created command, or null if not supported
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    // Default implementation - subclasses can override
+    return null;
+  }
+
+  /**
    * Detect whether this IDE already has configuration in the project
    * Subclasses can override for custom logic
    * @param {string} projectDir - Project directory
