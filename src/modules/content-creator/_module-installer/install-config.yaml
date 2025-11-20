@@ -20,6 +20,9 @@ content_output_folder:
   prompt: "Where should content be saved? (articles, drafts, published content)"
   default: "{output_folder}/content"
   result: "{project-root}/{value}"
+  validate:
+    pattern: "^(?!/|.*\\.\\.|.*//)[a-zA-Z0-9_\\-/]+$"
+    error: "Please enter a safe, relative folder path (no absolute paths, no '..', and only letters, numbers, dashes, underscores, and slashes)."
 
 default_writing_style:
   prompt: "What is your default writing style?"
