@@ -59,10 +59,10 @@ phases:
         agent: "pm"
         command: "validate-prd"
 
-      - id: "create-design"
+      - id: "create-ux-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
-        command: "create-design"
+        command: "create-ux-design"
 
   - phase: 2
     name: "Solutioning"

@@ -48,10 +48,10 @@ phases:
         agent: "pm"
         command: "validate-prd"
 
-      - id: "create-design"
+      - id: "create-ux-design"
         recommended: true
         agent: "ux-designer"
-        command: "create-design"
+        command: "create-ux-design"
         note: "Highly recommended for enterprise - design system and patterns"
 
   - phase: 2
