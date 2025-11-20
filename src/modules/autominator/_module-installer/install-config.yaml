@@ -1,0 +1,67 @@
+# Autominator Module Installation Configuration
+
+code: autominator
+name: "Autominator: n8n Workflow Automation"
+default_selected: false
+
+header: "Autominator - n8n Workflow Automation Module"
+subheader: "Configure the settings for the Autominator module"
+
+# Core config values automatically inherited:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
+## bmad_folder
+## install_user_docs
+## kb_install
+
+n8n_instance_url:
+  prompt: "What is your n8n instance URL? (optional, for reference)"
+  default: "https://n8n.example.com"
+  result: "{value}"
+
+workflow_output_folder:
+  prompt: "Where should generated workflows be stored?"
+  default: "{output_folder}/n8n-workflows"
+  result: "{project-root}/{value}"
+
+automation_experience:
+  prompt: "What is your n8n/automation experience level?"
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - New to n8n, provide detailed guidance"
+    - value: "intermediate"
+      label: "Intermediate - Familiar with n8n concepts, balanced approach"
+    - value: "expert"
+      label: "Expert - Experienced n8n developer, be direct and technical"
+
+primary_integrations:
+  prompt: "Which integrations do you primarily use? (select all that apply)"
+  default: ["http", "database"]
+  result: "{value}"
+  multi-select:
+    - value: "http"
+      label: "HTTP/REST APIs"
+    - value: "database"
+      label: "Databases (PostgreSQL, MySQL, MongoDB)"
+    - value: "cloud"
+      label: "Cloud Services (Google Sheets, Slack, Notion, Airtable)"
+    - value: "crm"
+      label: "CRM Systems (HubSpot, Salesforce)"
+    - value: "email"
+      label: "Email"
+    - value: "custom"
+      label: "Custom/Other"
+
+enable_context7:
+  prompt: "Enable Context7 MCP for up-to-date n8n documentation?"
+  default: true
+  result: "{value}"
+  single-select:
+    - value: true
+      label: "Yes - Use Context7 for latest docs"
+    - value: false
+      label: "No - Use built-in knowledge"
