@@ -88,6 +88,7 @@ module.exports = {
             execSync('npx agentvibes@latest install', {
               cwd: result.projectDir,
               stdio: 'inherit',
+              shell: true,
             });
             console.log(chalk.green('\n✓ AgentVibes installation complete'));
           } catch {
