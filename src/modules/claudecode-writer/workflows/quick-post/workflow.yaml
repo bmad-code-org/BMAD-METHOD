@@ -1,0 +1,17 @@
+name: "quick-post"
+description: "Fast content creation for social media, quick posts, and short-form content"
+author: "ClaudeCode Writer Module"
+
+config_source: "{project-root}/{bmad_folder}/claudecode-writer/config.yaml"
+content_output_folder: "{config_source}:content_output_folder"
+user_name: "{config_source}:user_name"
+writing_style: "{config_source}:default_writing_style"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/claudecode-writer/workflows/quick-post"
+instructions: "{installed_path}/instructions.md"
+
+writing_examples: "{project-root}/{bmad_folder}/claudecode-writer/data/writing-examples.md"
+default_output_file: "{content_output_folder}/drafts/quick-post-{{date}}.md"
+
+standalone: true

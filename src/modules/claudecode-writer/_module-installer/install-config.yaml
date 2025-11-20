@@ -1,0 +1,105 @@
+# ClaudeCode Writer Module Configuration
+
+code: claudecode-writer
+name: "ClaudeCode Writer - Content Creation Suite"
+default_selected: false
+
+header: "ClaudeCode Writer Module Configuration"
+subheader: "Transform your writing workflow with AI-powered content creation across all platforms"
+
+# Core values automatically inherited from installer:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+## install_user_docs
+
+# Module-specific configuration
+
+content_output_folder:
+  prompt: "Where should content be saved? (articles, drafts, published content)"
+  default: "{output_folder}/content"
+  result: "{project-root}/{value}"
+
+default_writing_style:
+  prompt: "What is your default writing style?"
+  default: "professional"
+  single-select:
+    - value: "casual"
+      label: "Casual - Conversational and friendly"
+    - value: "professional"
+      label: "Professional - Business-appropriate tone"
+    - value: "technical"
+      label: "Technical - Detailed and precise"
+    - value: "creative"
+      label: "Creative - Expressive and engaging"
+
+content_platforms:
+  prompt: "Which platforms do you publish to? (Select all that apply)"
+  multi-select:
+    - value: "blog"
+      label: "Blog/Website"
+    - value: "linkedin"
+      label: "LinkedIn"
+    - value: "twitter"
+      label: "Twitter/X"
+    - value: "newsletter"
+      label: "Email Newsletter"
+    - value: "medium"
+      label: "Medium"
+    - value: "substack"
+      label: "Substack"
+
+enable_seo_optimization:
+  prompt: "Enable SEO optimization features?"
+  default: "yes"
+  single-select:
+    - value: "yes"
+      label: "Yes - Include SEO analysis and optimization"
+    - value: "no"
+      label: "No - Skip SEO features"
+
+readability_target_grade:
+  prompt: "Target reading level (grade level)?"
+  default: "8"
+  single-select:
+    - value: "6"
+      label: "6th Grade - Very accessible"
+    - value: "8"
+      label: "8th Grade - General audience (recommended)"
+    - value: "10"
+      label: "10th Grade - More sophisticated"
+    - value: "12"
+      label: "12th Grade - Advanced readers"
+
+strict_quality_mode:
+  prompt: "Enable strict quality mode? (Blocks saves if quality < 60)"
+  default: "no"
+  single-select:
+    - value: "yes"
+      label: "Yes - Strict mode (block low quality)"
+    - value: "no"
+      label: "No - Warning mode (warn but allow)"
+
+# Static configuration values
+
+module_version:
+  result: "2.0.0"
+
+content_data_path:
+  result: "{project-root}/{bmad_folder}/claudecode-writer/data"
+
+drafts_folder:
+  result: "{project-root}/{content_output_folder}/drafts"
+
+published_folder:
+  result: "{project-root}/{content_output_folder}/published"
+
+research_folder:
+  result: "{project-root}/{content_output_folder}/research"
+
+rawnotes_folder:
+  result: "{project-root}/{content_output_folder}/rawnotes"
+
+archive_folder:
+  result: "{project-root}/{content_output_folder}/archive"
