@@ -8,7 +8,7 @@
 
 ## AI-Driven Agile Development That Scales From Bug Fixes to Enterprise
 
-**Build More, Architect Dreams** (BMAD) with **31+ specialized AI agents** and **73+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms to content creation and marketing operations.
+**Build More, Architect Dreams** (BMAD) with **38+ specialized AI agents** and **76+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms to content creation, marketing operations, career development, and UX writing.
 
 > **🚀 v6 is a MASSIVE upgrade from v4!** Complete architectural overhaul, scale-adaptive intelligence, visual workflows, and the powerful BMad Core framework. v4 users: this changes everything. [See what's new →](#whats-new-in-v6)
 
@@ -22,7 +22,7 @@ Unlike generic AI coding assistants, BMad Method provides **structured, battle-t
 
 - **Scale-Adaptive Intelligence** - Automatically adjusts planning depth from bug fixes to enterprise systems
 - **Complete Development Lifecycle** - Analysis → Planning → Architecture → Implementation
-- **Specialized Expertise** - 27+ agents with specific roles (PM, Architect, Developer, UX Designer, Content Creator, etc.)
+- **Specialized Expertise** - 38+ agents with specific roles (PM, Architect, Developer, UX Designer, Content Creator, UX Writer, Career Coach, etc.)
 - **Proven Methodologies** - Built on agile best practices with AI amplification
 - **Advanced Voice & Style System** - AI content that authentically matches your unique writing style
 - **IDE Integration** - Works with Claude Code, Cursor, Windsurf, VS Code
@@ -139,6 +139,25 @@ Each agent brings deep expertise and can be customized to match your team's styl
   - Professional-grade marketing deliverables with AI assistance
   - [→ Marketing Operations Suite](./src/modules/marketing-ops/README.md)
 
+- **Career Coach** - Professional career development suite
+  - 3 specialized agents (Career Coach, Resume Writer, Interview Coach)
+  - 3 comprehensive workflows (Resume Creation, Career Planning, Interview Preparation)
+  - 19 reusable tasks for all career development activities
+  - 17 professional templates for resumes, CVs, cover letters, and career documents
+  - ATS-optimized resume creation (90%+ compatibility target)
+  - STAR method interview preparation with mock sessions
+  - [→ Career Development Suite](./src/modules/career-coach/README.md)
+
+- **UX Writer** - Interface copy & microcopy specialist
+  - 1 expert agent (UX Writer) with 11 specialized commands
+  - Four Quality Standards framework (Purposeful, Concise, Conversational, Clear)
+  - 3 core tasks for analyzing, creating, and improving interface copy
+  - 5 professional templates and 6 comprehensive data resources
+  - Research-backed benchmarks for all UI patterns
+  - Objective quality scoring (0-10 scale per standard)
+  - WCAG AA accessibility compliance built-in
+  - [→ UX Writing Suite](./src/modules/ux-writer/README.md)
+
 ### Key Features
 
 - **🎨 Customizable Agents** - Modify personalities, expertise, and communication styles
@@ -194,8 +213,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full development guidelines.
 - **Scale-Adaptive Intelligence** - Automatic adjustment from bug fixes to enterprise
 - **Visual Workflows** - Beautiful SVG diagrams showing complete methodology
 - **BMad Builder Module** - Create and share your own AI agent teams
-- **50+ Workflows** - Up from 20 in v4, covering every development scenario
-- **19 Specialized Agents** - Enhanced with customizable personalities and expertise
+- **76+ Workflows** - Up from 20 in v4, covering every development scenario
+- **38+ Specialized Agents** - Enhanced with customizable personalities and expertise
+- **Professional Development Suite** - Career Coach and UX Writer modules for career growth and interface design
 - **Update-Safe Customization** - Your configs persist through all updates
 - **Web Bundles** - Use agents in ChatGPT, Claude, and Gemini
 - **Multi-Language Support** - Separate settings for communication and code
