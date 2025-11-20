@@ -100,8 +100,53 @@ jobs:
             fi
           done
 
-          # Create index.html for GitHub Pages
-          cat > dist/bundles/index.html << 'EOF'
+          # Generate index.html dynamically based on actual bundles
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+
+          # Function to generate agent links for a module
+          generate_agent_links() {
+            local module=$1
+            local agent_dir="dist/bundles/$module/agents"
+
+            if [ ! -d "$agent_dir" ]; then
+              echo ""
+              return
+            fi
+
+            local links=""
+            local count=0
+
+            # Find all XML files and generate links
+            for xml_file in "$agent_dir"/*.xml; do
+              if [ -f "$xml_file" ]; then
+                local agent_name=$(basename "$xml_file" .xml)
+                # Convert filename to display name (pm -> PM, tech-writer -> Tech Writer)
+                local display_name=$(echo "$agent_name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++) {if(length($i)==2) $i=toupper($i); else $i=toupper(substr($i,1,1)) tolower(substr($i,2));}}1')
+
+                if [ $count -gt 0 ]; then
+                  links="$links | "
+                fi
+                links="$links<a href=\"./$module/agents/$agent_name.xml\">$display_name</a>"
+                count=$((count + 1))
+              fi
+            done
+
+            echo "$links"
+          }
+
+          # Generate agent links for each module
+          BMM_LINKS=$(generate_agent_links "bmm")
+          CIS_LINKS=$(generate_agent_links "cis")
+          BMGD_LINKS=$(generate_agent_links "bmgd")
+
+          # Count agents for bulk downloads
+          BMM_COUNT=$(find dist/bundles/bmm/agents -name '*.xml' 2>/dev/null | wc -l | tr -d ' ')
+          CIS_COUNT=$(find dist/bundles/cis/agents -name '*.xml' 2>/dev/null | wc -l | tr -d ' ')
+          BMGD_COUNT=$(find dist/bundles/bmgd/agents -name '*.xml' 2>/dev/null | wc -l | tr -d ' ')
+
+          # Create index.html
+          cat > dist/bundles/index.html << EOF
           <!DOCTYPE html>
           <html>
           <head>
@@ -132,50 +177,63 @@ jobs:
 
             <h2>Available Modules</h2>
 
+          EOF
+
+          # Add BMM section if agents exist
+          if [ -n "$BMM_LINKS" ]; then
+            cat >> dist/bundles/index.html << EOF
             <div class="platform">
               <h3>BMM (BMad Method)</h3>
               <div class="module">
-                <a href="./bmm/agents/pm.xml">PM</a> |
-                <a href="./bmm/agents/architect.xml">Architect</a> |
-                <a href="./bmm/agents/tea.xml">TEA</a> |
-                <a href="./bmm/agents/dev.xml">Developer</a> |
-                <a href="./bmm/agents/analyst.xml">Analyst</a> |
-                <a href="./bmm/agents/sm.xml">Scrum Master</a> |
-                <a href="./bmm/agents/ux-designer.xml">UX Designer</a> |
-                <a href="./bmm/agents/tech-writer.xml">Tech Writer</a><br>
+                $BMM_LINKS<br>
                 📁 <a href="./bmm/agents/">Browse All</a> | 📦 <a href="./downloads/bmm-agents.zip">Download Zip</a>
               </div>
             </div>
 
-            <div class="platform">
-              <h3>BMB (BMad Builder)</h3>
-              <div class="module">
-                <a href="./bmb/agents/bmad-builder.xml">Builder Agent</a><br>
-                📁 <a href="./bmb/agents/">Browse All</a> | 📦 <a href="./downloads/bmb-agents.zip">Download Zip</a>
-              </div>
-            </div>
+          EOF
+          fi
 
+          # Add CIS section if agents exist
+          if [ -n "$CIS_LINKS" ]; then
+            cat >> dist/bundles/index.html << EOF
             <div class="platform">
               <h3>CIS (Creative Intelligence Suite)</h3>
               <div class="module">
+                $CIS_LINKS<br>
                 📁 <a href="./cis/agents/">Browse Agents</a> | 📦 <a href="./downloads/cis-agents.zip">Download Zip</a>
               </div>
             </div>
 
+          EOF
+          fi
+
+          # Add BMGD section if agents exist
+          if [ -n "$BMGD_LINKS" ]; then
+            cat >> dist/bundles/index.html << EOF
             <div class="platform">
               <h3>BMGD (Game Development)</h3>
               <div class="module">
+                $BMGD_LINKS<br>
                 📁 <a href="./bmgd/agents/">Browse Agents</a> | 📦 <a href="./downloads/bmgd-agents.zip">Download Zip</a>
               </div>
             </div>
 
+          EOF
+          fi
+
+          # Add bulk downloads section
+          cat >> dist/bundles/index.html << EOF
             <h2>Bulk Downloads</h2>
             <p>Download all agents for a module as a zip archive:</p>
             <ul>
-              <li><a href="./downloads/bmm-agents.zip">📦 BMM Agents (all 8)</a></li>
-              <li><a href="./downloads/bmb-agents.zip">📦 BMB Agents (all 1)</a></li>
-              <li><a href="./downloads/cis-agents.zip">📦 CIS Agents (all 5)</a></li>
-              <li><a href="./downloads/bmgd-agents.zip">📦 BMGD Agents (all 4)</a></li>
+          EOF
+
+          [ "$BMM_COUNT" -gt 0 ] && echo "              <li><a href=\"./downloads/bmm-agents.zip\">📦 BMM Agents (all $BMM_COUNT)</a></li>" >> dist/bundles/index.html
+          [ "$CIS_COUNT" -gt 0 ] && echo "              <li><a href=\"./downloads/cis-agents.zip\">📦 CIS Agents (all $CIS_COUNT)</a></li>" >> dist/bundles/index.html
+          [ "$BMGD_COUNT" -gt 0 ] && echo "              <li><a href=\"./downloads/bmgd-agents.zip\">📦 BMGD Agents (all $BMGD_COUNT)</a></li>" >> dist/bundles/index.html
+
+          # Close HTML
+          cat >> dist/bundles/index.html << 'EOF'
             </ul>
 
             <h2>Usage</h2>
@@ -192,12 +250,6 @@ jobs:
           </body>
           </html>
           EOF
-
-          # Replace placeholders
-          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
-          COMMIT_SHA=$(git rev-parse --short HEAD)
-          sed -i "s/\$TIMESTAMP/$TIMESTAMP/" dist/bundles/index.html
-          sed -i "s/\$COMMIT_SHA/$COMMIT_SHA/" dist/bundles/index.html
 
       - name: Checkout bmad-bundles repo
         uses: actions/checkout@v4
