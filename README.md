@@ -8,7 +8,7 @@
 
 ## AI-Driven Agile Development That Scales From Bug Fixes to Enterprise
 
-**Build More, Architect Dreams** (BMAD) with **19 specialized AI agents** and **50+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms.
+**Build More, Architect Dreams** (BMAD) with **27+ specialized AI agents** and **60+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms to content creation.
 
 > **🚀 v6 is a MASSIVE upgrade from v4!** Complete architectural overhaul, scale-adaptive intelligence, visual workflows, and the powerful BMad Core framework. v4 users: this changes everything. [See what's new →](#whats-new-in-v6)
 
@@ -22,8 +22,9 @@ Unlike generic AI coding assistants, BMad Method provides **structured, battle-t
 
 - **Scale-Adaptive Intelligence** - Automatically adjusts planning depth from bug fixes to enterprise systems
 - **Complete Development Lifecycle** - Analysis → Planning → Architecture → Implementation
-- **Specialized Expertise** - 19 agents with specific roles (PM, Architect, Developer, UX Designer, etc.)
+- **Specialized Expertise** - 27+ agents with specific roles (PM, Architect, Developer, UX Designer, Content Creator, etc.)
 - **Proven Methodologies** - Built on agile best practices with AI amplification
+- **Advanced Voice & Style System** - AI content that authentically matches your unique writing style
 - **IDE Integration** - Works with Claude Code, Cursor, Windsurf, VS Code
 
 ## 🏗️ The Power of BMad Core
@@ -123,6 +124,13 @@ Each agent brings deep expertise and can be customized to match your team's styl
   - Brainstorming, design thinking, storytelling
   - 5 creative facilitation workflows
   - [→ Creative Workflows](./src/modules/cis/README.md)
+
+- **Content Creator** - Advanced content creation with voice matching
+  - 8 specialized content creation agents
+  - 8 workflows including advanced voice profiling system
+  - Multi-platform content creation (Blog, LinkedIn, Newsletter, Twitter)
+  - Custom voice profiles and style guides
+  - [→ Content Creation Suite](./src/modules/content-creator/README.md)
 
 ### Key Features
 

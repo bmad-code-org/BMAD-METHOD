@@ -2,6 +2,63 @@
 
 ## [Unreleased]
 
+### ✨ New Module: Content Creator
+
+**Advanced Content Creation with Voice & Style Profiling**
+
+A comprehensive content creation suite that transforms how you create content across multiple platforms while maintaining your authentic voice.
+
+**8 Specialized Agents:**
+- Casey (Content Writer) - Main content orchestrator
+- Alex (Content Analyzer) - Quality and SEO expert
+- Riley (Research Aggregator) - Research and trends specialist
+- Vicki (Voice Matcher) - Voice consistency guardian
+- Lauren (LinkedIn Repurposer) - Professional content expert
+- Nina (Newsletter Repurposer) - Email content specialist
+- Charlie (Conversational Repurposer) - Social media expert
+- Sam (SEO Optimizer) - Search optimization specialist
+
+**Advanced Voice & Style System:**
+- **Build Voice Profile** - Comprehensive voice analysis with 5-dimension profiling
+  - Sentence structure, vocabulary, tone, perspective, rhetorical devices
+  - Creates detailed voice profiles with style guidelines
+  - Platform-specific adaptations
+  - Similarity scoring for validation (target: 75+/100)
+- **Train Voice** - Continuous voice refinement and evolution tracking
+  - Add new writing samples anytime
+  - Voice evolution analysis and version management
+  - Context variations for different platforms
+- **Create Style Guide** - Complete custom style guide generation
+  - Combines voice profile, brand guidelines, and platform rules
+  - Grammar, vocabulary, and structure standards
+  - Platform-specific formatting requirements
+  - Quality standards and templates
+- **Style Analyzer** - Deep quantitative and qualitative analysis
+  - Sentence/word metrics and readability scores
+  - Voice, tone, and pattern analysis
+  - Signature identification and style fingerprinting
+
+**Content Creation Workflows:**
+- Article Pipeline - Complete article creation with multi-platform repurposing
+- Research Topic - Deep research with trend analysis
+- Extract Themes - Pattern recognition from raw notes
+- Quick Post - Fast social media content creation
+- Optimize Content - SEO and engagement improvements
+
+**Key Features:**
+- Multi-platform content creation (Blog, LinkedIn, Newsletter, Twitter, Medium, Substack)
+- Voice profiling that captures your unique writing patterns
+- Automatic content repurposing for each platform
+- Built-in quality checks (readability, SEO, engagement, voice consistency)
+- Research integration with priority source checking
+- Voice similarity scoring to ensure AI matches your authentic style
+
+**Documentation:**
+- [Module README](./src/modules/content-creator/README.md)
+- Voice profile creation and training guides
+- Style guide generation documentation
+- Platform-specific optimization tips
+
 ## [6.0.0-alpha.12]
 
 **Release: November 19, 2025**
