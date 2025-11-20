@@ -29,7 +29,14 @@
   </step>
 
   <step n="1" goal="Gather Migration Requirements" elicit="true">
-    <action>Ask Question 1: "Which platform are you migrating from?"</action>
+    <critical>Understand the BUSINESS PURPOSE of the workflow being migrated, not just technical details</critical>
+
+    <action>Ask Question 1: "What does this workflow do? What problem does it solve?"</action>
+    <action>Encourage business context: "Describe the business process, not just the technical steps"</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{business_purpose}}</action>
+
+    <action>Ask Question 2: "Which platform are you migrating from?"</action>
     <action>Present numbered options:
       1. Zapier - Migrate Zapier Zaps to n8n
       2. Make (Integromat) - Migrate Make scenarios to n8n
@@ -47,66 +54,59 @@
       <action>Store in {{source_platform}}</action>
     </check>
 
-    <action>Ask Question 2: "How will you provide the workflow to migrate?"</action>
+    <action>Ask Question 3: "Why are you migrating to n8n?"</action>
+    <action>Examples: "Cost savings", "More flexibility", "Self-hosting", "Better integrations"</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{migration_reason}}</action>
+
+    <action>Ask Question 4: "How will you provide the workflow details?"</action>
     <action>Present numbered options:
-      1. Describe it - Explain what the workflow does
+      1. Describe the process - Explain what happens step by step
       2. Provide export file - Upload/paste workflow export file
       3. Provide screenshots - Share workflow screenshots
-      4. Provide documentation - Share workflow documentation
+      4. Combination - Multiple sources
     </action>
     <action>WAIT for user selection (1-4)</action>
 
-    <check if="selection is 1">
-      <action>Ask: "Please describe what the workflow does (trigger, actions, logic)"</action>
+    <check if="selection is 1 or 4">
+      <action>Ask: "Describe the workflow step by step:"</action>
+      <action>- What triggers it?</action>
+      <action>- What data does it process?</action>
+      <action>- What actions does it take?</action>
+      <action>- What's the final outcome?</action>
       <action>WAIT for user input</action>
       <action>Store in {{workflow_description}}</action>
     </check>
 
-    <check if="selection is 2">
+    <check if="selection is 2 or 4">
       <action>Ask: "Please provide the workflow export file path or paste the content"</action>
       <action>WAIT for user input</action>
       <action>Store in {{workflow_file}} or {{workflow_content}}</action>
     </check>
 
-    <check if="selection is 3">
-      <action>Ask: "Please share the workflow screenshots and describe the flow"</action>
+    <check if="selection is 3 or 4">
+      <action>Ask: "Please share the workflow screenshots and describe what each part does"</action>
       <action>WAIT for user input</action>
-      <action>Store in {{workflow_description}}</action>
+      <action>Store in {{workflow_screenshots}}</action>
     </check>
 
-    <check if="selection is 4">
-      <action>Ask: "Please provide the workflow documentation"</action>
-      <action>WAIT for user input</action>
-      <action>Store in {{workflow_description}}</action>
-    </check>
-
-    <action>Ask Question 3: "What is the trigger for this workflow?"</action>
-    <action>Present numbered options:
-      1. Webhook/HTTP Request - Triggered by incoming HTTP requests
-      2. Schedule/Cron - Runs on a schedule
-      3. Form Submission - Triggered by form submissions
-      4. Database Change - Triggered by database events
-      5. Email - Triggered by incoming emails
-      6. Service Event - Triggered by external service (Slack, Google Sheets, etc.)
-      7. Not sure - Will determine from workflow details
-    </action>
-    <action>WAIT for user selection (1-7)</action>
-    <action>Store selection in {{trigger_type}}</action>
-
-    <action>Ask Question 4: "What integrations/services does this workflow use?"</action>
-    <action>Ask: "Please list all services (e.g., Slack, Google Sheets, HubSpot, etc.)"</action>
+    <action>Ask Question 5: "What services/integrations does this workflow connect to?"</action>
+    <action>Ask: "List all services (e.g., Slack, Google Sheets, HubSpot, custom APIs, etc.)"</action>
     <action>WAIT for user input</action>
     <action>Store in {{integrations_used}}</action>
 
-    <action>Ask Question 5: "How complex is the workflow?"</action>
+    <action>Ask Question 6: "Are there any pain points or issues with the current workflow?"</action>
+    <action>Examples: "Slow execution", "Unreliable", "Missing features", "Hard to maintain"</action>
     <action>Present numbered options:
-      1. Simple - Linear flow with 3-5 steps
-      2. Medium - Some conditional logic, 6-10 steps
-      3. Complex - Multiple branches, loops, 11-20 steps
-      4. Very Complex - Advanced logic, 20+ steps
+      1. No - Works fine, just migrating platform
+      2. Yes - Describe the issues
     </action>
-    <action>WAIT for user selection (1-4)</action>
-    <action>Store selection in {{complexity}}</action>
+    <action>WAIT for user selection (1-2)</action>
+    <check if="selection is 2">
+      <action>Ask: "What issues should we fix during migration?"</action>
+      <action>WAIT for user input</action>
+      <action>Store in {{issues_to_fix}}</action>
+    </check>
 
     <action>Ask Question 6: "What should the migrated workflow be named?"</action>
     <action>WAIT for user input</action>

@@ -29,92 +29,107 @@
   </step>
 
   <step n="1" goal="Gather Requirements" elicit="true">
-    <action>Ask Question 1: "What type of automation workflow do you need?"</action>
+    <critical>Start by understanding the ACTUAL PROBLEM the user wants to solve, not just technical requirements</critical>
+
+    <action>Ask Question 1: "What problem are you trying to solve with this automation?"</action>
+    <action>Encourage detailed explanation: "Describe the current manual process, pain points, and desired outcome."</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{problem_description}}</action>
+
+    <action>Ask Question 2: "What triggers this process? When should the automation run?"</action>
     <action>Present numbered options:
-      1. Webhook-based - Receive HTTP requests and process data
-      2. Scheduled - Run on a schedule (cron/interval)
-      3. Event-driven - Trigger from external service events
-      4. Manual - Execute on demand
-      5. Database-driven - Trigger from database changes
-      6. Other - Describe your specific trigger needs
+      1. When data arrives - Webhook, form submission, API call
+      2. On a schedule - Every hour, daily, weekly, custom cron
+      3. When something changes - Database update, file change, service event
+      4. Manually - On-demand execution
+      5. Multiple triggers - Combination of above
+      6. Not sure - Help me decide based on my problem
     </action>
     <action>WAIT for user selection (1-6)</action>
-    <action>Store selection in {{workflow_type}}</action>
+    <action>Store selection in {{trigger_type}}</action>
 
-    <check if="selection is 6 (Other)">
-      <action>Ask: "Please describe your trigger requirements"</action>
-      <action>WAIT for user input</action>
-      <action>Store in {{workflow_type}}</action>
+    <check if="selection is 6 (Not sure)">
+      <action>Analyze {{problem_description}} and suggest appropriate trigger</action>
+      <action>Ask: "Based on your problem, I recommend [trigger type]. Does this make sense?"</action>
+      <action>WAIT for confirmation or adjustment</action>
+      <action>Store final trigger in {{trigger_type}}</action>
     </check>
 
-    <action>Ask Question 2: "What integrations or services will this workflow use?"</action>
-    <action>Present numbered options:
-      1. HTTP/REST APIs - Generic API calls
-      2. Databases - PostgreSQL, MySQL, MongoDB, etc.
-      3. Cloud Services - Google Sheets, Slack, Notion, Airtable
-      4. Email - Send/receive emails
-      5. CRM - HubSpot, Salesforce, etc.
-      6. Custom Code - JavaScript/Python logic
-      7. Multiple - Combination of above
-      8. Other - Specify integrations
-    </action>
-    <action>WAIT for user selection (1-8)</action>
-    <action>Store selection in {{integrations}}</action>
+    <action>Ask Question 3: "What data or information does this workflow need to work with?"</action>
+    <action>Examples: "Customer data, order details, form responses, API data, etc."</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{data_requirements}}</action>
 
-    <check if="selection is 7 or 8">
-      <action>Ask: "Please list all integrations needed (comma-separated)"</action>
+    <action>Ask Question 4: "What should happen with this data? What's the desired outcome?"</action>
+    <action>Examples: "Send to Slack, update database, create invoice, notify team, etc."</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{desired_outcome}}</action>
+
+    <action>Ask Question 5: "What services or systems are involved?"</action>
+    <action>Examples: "Slack, Google Sheets, PostgreSQL, HubSpot, custom API, etc."</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{integrations}}</action>
+
+    <action>Ask Question 6: "Are there any conditions or decision points in this process?"</action>
+    <action>Examples: "If amount > $1000, notify manager; If status = 'urgent', send immediately"</action>
+    <action>Present numbered options:
+      1. No - Straight-through processing
+      2. Yes - Describe the conditions
+    </action>
+    <action>WAIT for user selection (1-2)</action>
+    <check if="selection is 2">
+      <action>Ask: "Describe the conditions and what should happen in each case"</action>
       <action>WAIT for user input</action>
-      <action>Store in {{integrations}}</action>
+      <action>Store in {{conditional_logic}}</action>
     </check>
 
-    <action>Ask Question 3: "How complex is your workflow logic?"</action>
+    <action>Ask Question 7: "How critical is this workflow? What happens if it fails?"</action>
     <action>Present numbered options:
-      1. Simple (3-5 nodes) - Linear flow with minimal logic
-      2. Medium (6-10 nodes) - Some conditional logic or branching
-      3. Complex (11-20 nodes) - Multiple branches, loops, or error handling
-      4. Very Complex (20+ nodes) - Advanced logic with parallel processing
+      1. Low - Can retry manually if needed
+      2. Medium - Should retry automatically, notify on failure
+      3. High - Must succeed, need alerts and logging
+      4. Critical - Business-critical, need comprehensive error handling
     </action>
     <action>WAIT for user selection (1-4)</action>
-    <action>Store selection in {{complexity}}</action>
+    <action>Store selection in {{criticality}}</action>
 
-    <action>Ask Question 4: "Do you need error handling and retry logic?"</action>
-    <action>Present numbered options:
-      1. No - Simple workflow without error handling
-      2. Basic - Retry failed operations automatically
-      3. Advanced - Custom error handling with notifications
-      4. Comprehensive - Full error workflow with logging and alerts
-    </action>
-    <action>WAIT for user selection (1-4)</action>
-    <action>Store selection in {{error_handling}}</action>
-
-    <action>Ask Question 5: "What should the workflow be named?"</action>
+    <action>Ask Question 8: "What should the workflow be named?"</action>
+    <action>Suggest name based on {{problem_description}}</action>
     <action>WAIT for user input</action>
     <action>Store in {{workflow_name}}</action>
 
-    <action>Ask Question 6: "Where should the workflow file be saved?"</action>
+    <action>Ask Question 9: "Where should the workflow file be saved?"</action>
     <action>Present numbered options:
       1. Default location - workflows/[workflow-name].json
       2. Custom path - Specify your own file path
-      3. Project root - Save in main project directory
-      4. Specific folder - Choose from existing folders
     </action>
-    <action>WAIT for user selection (1-4)</action>
-    <check if="selection is 2 or 4">
+    <action>WAIT for user selection (1-2)</action>
+    <check if="selection is 2">
       <action>Ask for specific path</action>
       <action>WAIT for user input</action>
     </check>
     <action>Store final path in {{save_location}}</action>
 
-    <action>Ask Question 7: "Any additional requirements or specific logic needed?"</action>
+    <action>Summarize understanding:</action>
+    <action>- Problem: {{problem_description}}</action>
+    <action>- Trigger: {{trigger_type}}</action>
+    <action>- Data: {{data_requirements}}</action>
+    <action>- Outcome: {{desired_outcome}}</action>
+    <action>- Services: {{integrations}}</action>
+    <action>- Conditions: {{conditional_logic}}</action>
+    <action>- Criticality: {{criticality}}</action>
+
+    <action>Ask: "Does this capture your requirements correctly?"</action>
     <action>Present numbered options:
-      1. No - Proceed with current requirements
-      2. Yes - Describe additional requirements
+      1. Yes - Proceed with workflow creation
+      2. No - Let me clarify or add details
     </action>
     <action>WAIT for user selection (1-2)</action>
     <check if="selection is 2">
-      <action>Ask: "Please describe additional requirements"</action>
+      <action>Ask: "What needs to be clarified or added?"</action>
       <action>WAIT for user input</action>
-      <action>Store in {{additional_requirements}}</action>
+      <action>Update relevant variables</action>
+      <action>Repeat summary and confirmation</action>
     </check>
   </step>
 
@@ -153,32 +168,70 @@
   </step>
 
   <step n="4" goal="Plan Workflow Structure">
-    <action>Based on gathered requirements, plan the workflow structure:</action>
-    <action>1. Identify trigger node type</action>
-    <action>2. List all action nodes needed</action>
-    <action>3. Identify conditional logic (IF nodes)</action>
-    <action>4. Plan data transformations (Set/Code nodes)</action>
-    <action>5. Design error handling strategy</action>
-    <action>6. Map node connections</action>
+    <critical>Design workflow based on the ACTUAL PROBLEM, not just technical specs</critical>
 
-    <action>Present the planned structure to user in clear format:</action>
-    <action>- Trigger: [trigger type]</action>
-    <action>- Nodes: [list of nodes with descriptions]</action>
-    <action>- Logic: [conditional branches, loops]</action>
-    <action>- Error Handling: [strategy]</action>
+    <action>Analyze the problem and requirements:</action>
+    <action>- Problem to solve: {{problem_description}}</action>
+    <action>- Trigger: {{trigger_type}}</action>
+    <action>- Data needed: {{data_requirements}}</action>
+    <action>- Desired outcome: {{desired_outcome}}</action>
+    <action>- Services: {{integrations}}</action>
+    <action>- Conditions: {{conditional_logic}}</action>
+    <action>- Criticality: {{criticality}}</action>
 
-    <action>Ask: "Does this structure meet your needs?"</action>
+    <action>Design workflow structure that solves the problem:</action>
+    <action>1. Map trigger to appropriate n8n trigger node</action>
+    <action>2. Design data acquisition steps (API calls, database queries)</action>
+    <action>3. Plan data transformations needed for the outcome</action>
+    <action>4. Implement conditional logic from {{conditional_logic}}</action>
+    <action>5. Design actions to achieve {{desired_outcome}}</action>
+    <action>6. Add error handling based on {{criticality}}</action>
+    <action>7. Plan node connections and data flow</action>
+
+    <action>Present the solution-focused workflow plan:</action>
+    <action>## Workflow Solution for: {{problem_description}}</action>
+    <action></action>
+    <action>**How it works:**</action>
+    <action>[Explain in plain language how the workflow solves the problem]</action>
+    <action></action>
+    <action>**Workflow Steps:**</action>
+    <action>1. Trigger: [When/how it starts] - [n8n node type]</action>
+    <action>2. Get Data: [What data is retrieved] - [n8n nodes]</action>
+    <action>3. Process: [How data is transformed] - [n8n nodes]</action>
+    <action>4. Decide: [Conditional logic if any] - [IF/Switch nodes]</action>
+    <action>5. Act: [Final actions to achieve outcome] - [n8n nodes]</action>
+    <action>6. Handle Errors: [Error strategy] - [Error handling config]</action>
+    <action></action>
+    <action>**Expected Result:**</action>
+    <action>[Describe what happens when workflow runs successfully]</action>
+
+    <action>Ask: "Does this workflow solve your problem?"</action>
     <action>Present numbered options:
-      1. Yes - Proceed with this structure
-      2. No - Adjust the structure
-      3. Add more details - Provide additional requirements
+      1. Yes - This solves my problem, proceed
+      2. No - Missing something important
+      3. Partially - Needs adjustments
+      4. Explain more - I need clarification
     </action>
-    <action>WAIT for user selection (1-3)</action>
+    <action>WAIT for user selection (1-4)</action>
 
-    <check if="selection is 2 or 3">
-      <action>Ask: "What changes or additions are needed?"</action>
+    <check if="selection is 2">
+      <action>Ask: "What's missing? What else needs to happen?"</action>
       <action>WAIT for user input</action>
-      <action>Adjust structure based on feedback</action>
+      <action>Adjust workflow design to include missing elements</action>
+      <action>Repeat this step</action>
+    </check>
+
+    <check if="selection is 3">
+      <action>Ask: "What needs to be adjusted?"</action>
+      <action>WAIT for user input</action>
+      <action>Modify workflow design based on feedback</action>
+      <action>Repeat this step</action>
+    </check>
+
+    <check if="selection is 4">
+      <action>Ask: "Which part needs clarification?"</action>
+      <action>WAIT for user input</action>
+      <action>Provide detailed explanation of that part</action>
       <action>Repeat this step</action>
     </check>
   </step>

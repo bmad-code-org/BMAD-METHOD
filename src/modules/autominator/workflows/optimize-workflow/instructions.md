@@ -29,6 +29,8 @@
   </step>
 
   <step n="1" goal="Gather Optimization Requirements" elicit="true">
+    <critical>Understand the REAL PROBLEMS the user is experiencing, not just generic optimization goals</critical>
+
     <action>Ask Question 1: "Which workflow do you want to optimize?"</action>
     <action>Present numbered options:
       1. Provide file path - Specify exact path to workflow JSON
@@ -57,30 +59,50 @@
       <action>Store temp file path in {{workflow_file}}</action>
     </check>
 
-    <action>Ask Question 2: "What aspects do you want to optimize?"</action>
+    <action>Ask Question 2: "What problems are you experiencing with this workflow?"</action>
+    <action>Examples: "Takes too long to run", "Fails frequently", "Hard to understand", "Doesn't handle errors well"</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{problems_experienced}}</action>
+
+    <action>Ask Question 3: "What's the business impact of these problems?"</action>
+    <action>Examples: "Delays customer responses", "Wastes team time", "Causes data issues", "Costs money"</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{business_impact}}</action>
+
+    <action>Ask Question 4: "What would 'better' look like for this workflow?"</action>
+    <action>Focus on desired outcomes: "Faster execution", "More reliable", "Easier to maintain", "Better error recovery"</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{desired_improvements}}</action>
+
+    <action>Ask Question 5: "Are there specific areas you want me to focus on?"</action>
     <action>Present numbered options (can select multiple):
-      1. Performance - Improve execution speed and efficiency
-      2. Error Handling - Add or improve error handling and retries
-      3. Code Quality - Improve node configuration and data transformations
-      4. Structure - Improve workflow organization and readability
-      5. Best Practices - Apply n8n best practices and patterns
-      6. Security - Improve credential handling and data security
-      7. All - Comprehensive optimization review
+      1. Performance - Speed and efficiency
+      2. Reliability - Error handling and retries
+      3. Maintainability - Code quality and structure
+      4. Security - Credential and data handling
+      5. All - Comprehensive review
+      6. Let you decide - Analyze and recommend
     </action>
-    <action>WAIT for user selection (1-7 or multiple)</action>
+    <action>WAIT for user selection (1-6 or multiple)</action>
     <action>Store selections in {{optimization_focus}}</action>
 
-    <action>Ask Question 3: "Are there specific issues or pain points?"</action>
+    <action>Summarize understanding:</action>
+    <action>- Problems: {{problems_experienced}}</action>
+    <action>- Business Impact: {{business_impact}}</action>
+    <action>- Desired Improvements: {{desired_improvements}}</action>
+    <action>- Focus Areas: {{optimization_focus}}</action>
+
+    <action>Ask: "Does this capture your optimization needs?"</action>
     <action>Present numbered options:
-      1. No - Just general optimization
-      2. Yes - Describe specific issues
+      1. Yes - Proceed with analysis
+      2. No - Let me clarify
     </action>
     <action>WAIT for user selection (1-2)</action>
-
     <check if="selection is 2">
-      <action>Ask: "Please describe the issues (slow execution, errors, etc.)"</action>
+      <action>Ask: "What needs clarification?"</action>
       <action>WAIT for user input</action>
-      <action>Store in {{specific_issues}}</action>
+      <action>Update relevant variables</action>
+      <action>Repeat summary and confirmation</action>
     </check>
   </step>
 

@@ -29,6 +29,8 @@
   </step>
 
   <step n="1" goal="Gather Requirements" elicit="true">
+    <critical>Understand WHY the user wants to modify the workflow, not just WHAT to change</critical>
+
     <action>Ask Question 1: "Which workflow file do you want to modify?"</action>
     <action>Present numbered options:
       1. Provide file path - Specify exact path to workflow JSON
@@ -57,39 +59,43 @@
       <action>Store temp file path in {{workflow_file}}</action>
     </check>
 
-    <action>Ask Question 2: "What type of modification do you need?"</action>
-    <action>Present numbered options:
-      1. Add new nodes - Add functionality to existing workflow
-      2. Modify existing nodes - Change node parameters or configuration
-      3. Remove nodes - Delete nodes from workflow
-      4. Change connections - Modify how nodes are connected
-      5. Update error handling - Add or modify retry/error logic
-      6. Optimize workflow - Improve performance or structure
-      7. Multiple changes - Combination of above
-    </action>
-    <action>WAIT for user selection (1-7)</action>
-    <action>Store selection in {{modification_type}}</action>
-
-    <action>Ask Question 3: "Please describe the changes you want to make"</action>
+    <action>Ask Question 2: "What problem are you trying to solve by modifying this workflow?"</action>
+    <action>Examples: "It's not handling errors properly", "Need to add Slack notifications", "Missing data validation"</action>
     <action>WAIT for user input</action>
-    <action>Store in {{changes_description}}</action>
+    <action>Store in {{problem_to_solve}}</action>
 
-    <check if="{{modification_type}} includes adding nodes">
-      <action>Ask: "What nodes do you want to add? (describe functionality)"</action>
-      <action>WAIT for user input</action>
-      <action>Store in {{nodes_to_add}}</action>
-    </check>
+    <action>Ask Question 3: "What's currently not working or missing?"</action>
+    <action>Encourage specific details about the issue or gap</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{current_issue}}</action>
 
-    <check if="{{modification_type}} includes modifying nodes">
-      <action>Ask: "Which nodes do you want to modify? (provide node names or descriptions)"</action>
-      <action>WAIT for user input</action>
-      <action>Store in {{nodes_to_modify}}</action>
-    </check>
+    <action>Ask Question 4: "What should the workflow do after these changes?"</action>
+    <action>Focus on the desired behavior and outcome</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{desired_behavior}}</action>
 
-    <check if="{{modification_type}} includes removing nodes">
-      <action>Ask: "Which nodes do you want to remove? (provide node names)"</action>
+    <action>Ask Question 5: "Are there any specific nodes, integrations, or logic you want to change?"</action>
+    <action>Examples: "Add a Slack node after approval", "Change the IF condition to check status", "Remove the delay node"</action>
+    <action>WAIT for user input</action>
+    <action>Store in {{specific_changes}}</action>
+
+    <action>Summarize understanding:</action>
+    <action>- Problem: {{problem_to_solve}}</action>
+    <action>- Current Issue: {{current_issue}}</action>
+    <action>- Desired Behavior: {{desired_behavior}}</action>
+    <action>- Specific Changes: {{specific_changes}}</action>
+
+    <action>Ask: "Does this capture what you need?"</action>
+    <action>Present numbered options:
+      1. Yes - Proceed with modifications
+      2. No - Let me clarify
+    </action>
+    <action>WAIT for user selection (1-2)</action>
+    <check if="selection is 2">
+      <action>Ask: "What needs clarification?"</action>
       <action>WAIT for user input</action>
-      <action>Store in {{nodes_to_remove}}</action>
+      <action>Update relevant variables</action>
+      <action>Repeat summary and confirmation</action>
     </check>
   </step>
 
