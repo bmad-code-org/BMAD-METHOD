@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/customer-segmentation.xml</id>
+    <name>Customer Segmentation Analysis</name>
+    <description>Segment customers by behavior, value, and characteristics</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Customer Segmentation Analysis
+Segment customers to personalize marketing and maximize LTV.
+## Segmentation Approaches
+- RFM (Recency, Frequency, Monetary)
+- Behavioral (engagement, usage patterns)
+- Demographic/firmographic
+- Psychographic (values, motivations)
+- Lifecycle stage (new, active, at-risk, churned)
+## Process
+1. Define segmentation criteria
+2. Analyze customer data
+3. Create segments with distinct profiles
+4. Size and value each segment
+5. Develop segment-specific strategies
+    ]]>
+  </instructions>
+</task>

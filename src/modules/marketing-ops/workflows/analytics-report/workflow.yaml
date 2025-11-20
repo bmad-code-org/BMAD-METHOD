@@ -1,0 +1,30 @@
+name: "analytics-report"
+description: "Generate comprehensive marketing analytics report with insights, trends, and actionable recommendations"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/analytics-report-{{report-period}}-{{date}}.md"
+
+steps:
+  - id: gather-data-requirements
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    instructions: "{project-root}/{bmad_folder}/marketing-ops/workflows/analytics-report/instructions.md"
+    template: "{project-root}/{bmad_folder}/marketing-ops/workflows/analytics-report/template.md"
+
+  - id: data-analysis
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/data-analysis.xml"
+
+  - id: funnel-analysis
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/funnel-analysis.xml"
+
+  - id: roi-analysis
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/roi-analysis.xml"
+
+  - id: generate-report
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    template: "{project-root}/{bmad_folder}/marketing-ops/templates/analytics-report-tmpl.md"
+    output_file: "{default_output_file}"

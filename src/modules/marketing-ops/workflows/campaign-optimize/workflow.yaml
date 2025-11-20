@@ -1,0 +1,24 @@
+name: "campaign-optimize"
+description: "Analyze and optimize existing campaign performance for improved ROAS and efficiency"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/campaign-optimization-{{campaign-name}}-{{date}}.md"
+
+steps:
+  - id: performance-analysis
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/data-analysis.xml"
+
+  - id: bid-optimization
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/bid-optimization.xml"
+
+  - id: creative-testing
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/creative-testing.xml"
+
+  - id: optimization-recommendations
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    output_file: "{default_output_file}"

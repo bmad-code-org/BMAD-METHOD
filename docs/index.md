@@ -208,7 +208,15 @@ src/modules/
 3. Create content with `*write` using your authentic voice
 4. Train and refine your voice over time with `*train-voice`
 
-### Path 7: Contributing to BMad
+### Path 7: Marketing Operations
+
+1. [Marketing Ops Module README](../src/modules/marketing-ops/README.md) - Understand capabilities
+2. Develop brand strategy with `*brand-strategy` (Sofia - Brand Marketer)
+3. Plan campaigns with `*campaign-plan` (Marcus - Media Buyer)
+4. Analyze performance with `*analytics-report` (Elena - Marketing Analyst)
+5. Create design briefs with `*design-brief` (Maya - Marketing Designer)
+
+### Path 8: Contributing to BMad
 
 1. [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
 2. Relevant module README - Understand the area you're contributing to
@@ -224,6 +232,7 @@ src/modules/
 - **BMB** - Create custom agents and workflows
 - **CIS** - Creative thinking and brainstorming
 - **Content Creator** - Multi-platform content creation with voice profiling
+- **Marketing Ops** - Complete marketing operations suite (strategy, campaigns, analytics, creative)
 
 **How do I load an agent?**
 → See [ide-info](./ide-info/) folder for your IDE

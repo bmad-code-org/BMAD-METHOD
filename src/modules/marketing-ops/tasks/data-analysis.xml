@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/data-analysis.xml</id>
+    <name>Marketing Data Analysis</name>
+    <description>Deep dive data analysis to answer business questions with statistical rigor</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>analytics</tag>
+      <tag>data-analysis</tag>
+      <tag>insights</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Marketing Data Analysis Task
+
+## Objective
+Conduct systematic data analysis to answer specific business questions and generate actionable insights.
+
+## Analysis Process
+
+### 1. Define the Question
+
+**Clarify the Business Question**
+- What specific question needs answering?
+- Why does this matter to the business?
+- What decision will this analysis inform?
+- What time period is relevant?
+
+**Examples**:
+- "Why did conversion rate drop 20% last month?"
+- "Which marketing channels drive the highest LTV customers?"
+- "What is the optimal budget allocation across channels?"
+
+### 2. Identify Required Data
+
+**Data Sources Needed**
+- Website analytics (GA4, Adobe Analytics)
+- Advertising platforms (Google Ads, Facebook, LinkedIn)
+- CRM and sales data
+- Email marketing metrics
+- Attribution data
+- Customer surveys or feedback
+
+**Data Quality Check**
+- Is data complete for the analysis period?
+- Are there any known data quality issues?
+- Are metrics defined consistently across sources?
+- What data gaps exist and how will they be handled?
+
+### 3. Collect & Prepare Data
+
+**Data Extraction**
+- Pull data from all required sources
+- Export with consistent date ranges and granularity
+- Include all necessary dimensions (channel, campaign, segment, etc.)
+
+**Data Cleaning**
+- Remove duplicates and outliers
+- Handle missing values
+- Standardize naming conventions
+- Validate data accuracy (spot checks)
+
+**Data Transformation**
+- Calculate derived metrics (ROAS, LTV, CAC, etc.)
+- Create segments and cohorts
+- Aggregate to appropriate level of analysis
+- Join data from multiple sources
+
+### 4. Conduct Exploratory Analysis
+
+**Descriptive Statistics**
+- Calculate mean, median, mode for key metrics
+- Identify distribution and variance
+- Spot trends over time
+- Find correlations between variables
+
+**Visualize Patterns**
+- Time series charts for trends
+- Bar/column charts for comparisons
+- Scatter plots for correlations
+- Heatmaps for multi-dimensional patterns
+
+**Identify Anomalies**
+- Unusual spikes or drops
+- Seasonal patterns
+- Day-of-week effects
+- Event-driven changes
+
+### 5. Perform Statistical Analysis
+
+**Hypothesis Testing**
+- State null and alternative hypotheses
+- Choose appropriate statistical test
+- Calculate p-values and confidence intervals
+- Determine statistical significance (p < 0.05)
+
+**Regression Analysis** (when appropriate)
+- Identify dependent and independent variables
+- Test for multicollinearity
+- Interpret coefficients and R-squared
+- Validate model assumptions
+
+**Segmentation Analysis**
+- Group customers/campaigns by characteristics
+- Compare performance across segments
+- Identify high-performing segments
+- Find commonalities in top performers
+
+### 6. Synthesize Insights
+
+**Answer the Original Question**
+- Provide clear, data-backed answer
+- Quantify the impact where possible
+- Explain confidence level in findings
+
+**Uncover Additional Insights**
+- What unexpected patterns emerged?
+- What other questions does this raise?
+- What hypotheses should be tested next?
+
+**Provide Context**
+- How do results compare to benchmarks?
+- What external factors may have influenced results?
+- What limitations exist in the analysis?
+
+### 7. Develop Recommendations
+
+**Translate Insights to Action**
+- Specific actions to take based on findings
+- Prioritize recommendations by impact and effort
+- Estimate expected outcomes where possible
+- Define success metrics for recommendations
+
+**Implementation Guidance**
+- Who should own each action?
+- What resources are required?
+- What timeline is realistic?
+- How will success be measured?
+
+## Analysis Framework
+
+### Root Cause Analysis
+When investigating performance changes:
+1. **What changed?** - Quantify the change
+2. **When did it change?** - Pinpoint timing
+3. **Where did it change?** - Isolate segment/channel
+4. **Why did it change?** - Test hypotheses
+5. **What should we do?** - Recommend actions
+
+### Performance Driver Analysis
+When optimizing performance:
+1. **Top Performers** - What's working well and why?
+2. **Bottom Performers** - What's underperforming and why?
+3. **Growth Opportunities** - Where's the biggest upside?
+4. **Quick Wins** - What can improve immediately?
+5. **Strategic Bets** - What longer-term changes are needed?
+
+## Deliverables
+
+1. **Analysis Report** - Findings, insights, and recommendations
+2. **Data Visualizations** - Charts and graphs supporting insights
+3. **Statistical Results** - Test results and confidence levels
+4. **Action Plan** - Prioritized recommendations with expected impact
+
+## Quality Standards
+
+- All findings must be data-backed with sources cited
+- Statistical significance required for key claims
+- Visualizations must be clear and properly labeled
+- Recommendations must be specific and actionable
+- Assumptions and limitations clearly stated
+    ]]>
+  </instructions>
+</task>

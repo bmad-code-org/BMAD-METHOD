@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/brand-system.xml</id>
+    <name>Brand Design System</name>
+    <description>Create comprehensive design system and brand guidelines</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Brand Design System
+Develop complete brand design system to ensure consistency across all touchpoints.
+## System Components
+1. **Visual Identity**: Logo, colors, typography, imagery style
+2. **Design Principles**: Core design philosophy and rules
+3. **Component Library**: Buttons, forms, cards, navigation, etc.
+4. **Patterns**: Common layouts and compositions
+5. **Guidelines**: Usage rules, do's and don'ts
+6. **Templates**: Pre-built templates for common assets
+## Deliverables
+- Brand guidelines document
+- Design system documentation
+- Component library (Figma/Sketch)
+- Template files
+- Implementation guidelines
+    ]]>
+  </instructions>
+</task>

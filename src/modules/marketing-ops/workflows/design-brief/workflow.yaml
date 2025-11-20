@@ -1,0 +1,22 @@
+name: "design-brief"
+description: "Create comprehensive design brief for marketing creative projects with requirements, objectives, and success criteria"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/design-brief-{{project-name}}-{{date}}.md"
+
+steps:
+  - id: gather-project-requirements
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-designer.md"
+    instructions: "{project-root}/{bmad_folder}/marketing-ops/workflows/design-brief/instructions.md"
+    template: "{project-root}/{bmad_folder}/marketing-ops/workflows/design-brief/template.md"
+
+  - id: brand-alignment-check
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-designer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/brand-system.xml"
+
+  - id: create-brief
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-designer.md"
+    template: "{project-root}/{bmad_folder}/marketing-ops/templates/design-brief-tmpl.md"
+    output_file: "{default_output_file}"

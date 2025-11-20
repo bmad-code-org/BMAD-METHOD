@@ -8,7 +8,7 @@
 
 ## AI-Driven Agile Development That Scales From Bug Fixes to Enterprise
 
-**Build More, Architect Dreams** (BMAD) with **27+ specialized AI agents** and **60+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms to content creation.
+**Build More, Architect Dreams** (BMAD) with **31+ specialized AI agents** and **73+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms to content creation and marketing operations.
 
 > **🚀 v6 is a MASSIVE upgrade from v4!** Complete architectural overhaul, scale-adaptive intelligence, visual workflows, and the powerful BMad Core framework. v4 users: this changes everything. [See what's new →](#whats-new-in-v6)
 
@@ -131,6 +131,13 @@ Each agent brings deep expertise and can be customized to match your team's styl
   - Multi-platform content creation (Blog, LinkedIn, Newsletter, Twitter)
   - Custom voice profiles and style guides
   - [→ Content Creation Suite](./src/modules/content-creator/README.md)
+
+- **Marketing Ops** - Complete marketing operations suite
+  - 4 specialized marketing agents (Brand Marketer, Media Buyer, Marketing Analyst, Creative Designer)
+  - 13 comprehensive workflows for strategy, campaigns, analytics, and creative
+  - 20 specialized tasks for research, optimization, and analysis
+  - Professional-grade marketing deliverables with AI assistance
+  - [→ Marketing Operations Suite](./src/modules/marketing-ops/README.md)
 
 ### Key Features
 

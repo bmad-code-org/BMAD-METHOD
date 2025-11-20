@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/bid-optimization.xml</id>
+    <name>Bid Strategy Optimization</name>
+    <description>Optimize bidding strategies across platforms for maximum ROAS</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>bidding</tag>
+      <tag>optimization</tag>
+      <tag>ppc</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Bid Strategy Optimization
+
+## Objective
+Optimize bidding strategies to maximize ROAS while maintaining volume targets.
+
+## Bid Strategy Evaluation
+
+### Manual vs. Automated Bidding
+
+**Manual Bidding**
+- Pros: Full control, granular optimization
+- Cons: Time-intensive, slower to react
+- Best for: Small budgets, niche targeting, testing
+
+**Automated Bidding**
+- Pros: Machine learning, real-time optimization
+- Cons: Less control, requires conversion data
+- Best for: Scale, proven campaigns, efficiency goals
+
+### Bid Strategy Types
+
+**Target ROAS**
+- Optimize for return on ad spend target
+- Best for: E-commerce, clear revenue tracking
+- Requirements: 15+ conversions/month minimum
+
+**Target CPA**
+- Optimize for cost per acquisition target
+- Best for: Lead generation, consistent conversion value
+- Requirements: 15+ conversions/month minimum
+
+**Maximize Conversions**
+- Get most conversions within budget
+- Best for: Volume goals, early testing
+- Requirements: Some conversion history
+
+**Maximize Conversion Value**
+- Maximize total conversion value
+- Best for: Variable order values
+- Requirements: Revenue tracking, sufficient volume
+
+### Platform-Specific Strategies
+
+**Google Ads**
+- Smart Bidding (Target ROAS/CPA recommended)
+- Portfolio bid strategies for shared targets
+- Bid adjustments for device, location, time
+
+**Facebook/Meta**
+- Lowest cost vs. cost cap vs. bid cap
+- Campaign budget optimization
+- Learning phase considerations
+
+**LinkedIn**
+- Maximum delivery vs. target cost
+- Higher bids needed for competitive targeting
+- Bid testing for optimal efficiency
+
+## Optimization Process
+
+1. **Baseline Performance**: Establish current metrics
+2. **Strategy Selection**: Choose appropriate bid type
+3. **Target Setting**: Set realistic ROAS/CPA targets
+4. **Testing**: Run 2-4 week test with sufficient budget
+5. **Monitoring**: Track performance daily during learning
+6. **Iteration**: Adjust targets based on results
+7. **Scaling**: Increase budget on winning strategies
+
+## Optimization Tactics
+
+- Bid higher on high-converting audiences/times
+- Lower bids on low-performing segments
+- Test different bid strategies in parallel
+- Adjust bids based on attribution insights
+- Account for seasonality and trends
+
+## Deliverables
+
+1. **Strategy Recommendation** - Optimal bid approach per campaign
+2. **Target Setting** - ROAS/CPA targets with rationale
+3. **Implementation Plan** - Steps to execute changes
+4. **Monitoring Plan** - Metrics to track and optimization triggers
+    ]]>
+  </instructions>
+</task>

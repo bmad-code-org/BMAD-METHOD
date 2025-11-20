@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/audience-analysis.xml</id>
+    <name>Audience Segmentation & Targeting Analysis</name>
+    <description>Deep audience analysis to create detailed segments with targeting strategies</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>audience</tag>
+      <tag>targeting</tag>
+      <tag>segmentation</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Audience Segmentation & Targeting Analysis
+
+## Objective
+Develop detailed audience segments with targeting criteria and channel strategies to maximize campaign performance.
+
+## Analysis Process
+
+### 1. Define Segmentation Criteria
+
+**Demographic Segmentation**
+- Age, gender, location
+- Income, education, occupation
+- Household composition, life stage
+
+**Psychographic Segmentation**
+- Values and beliefs
+- Interests and hobbies
+- Lifestyle and personality traits
+- Motivations and pain points
+
+**Behavioral Segmentation**
+- Purchase behavior and patterns
+- Product usage and engagement
+- Brand loyalty and advocacy
+- Online behavior and content consumption
+
+**Firmographic Segmentation** (B2B)
+- Company size and revenue
+- Industry and sector
+- Job title and seniority
+- Decision-making authority
+
+### 2. Identify Audience Segments
+
+Create 2-4 primary audience segments based on:
+- Commonalities in characteristics
+- Distinct needs and motivations
+- Accessibility through marketing channels
+- Business value and potential
+
+For each segment, define:
+- **Segment Name**: Descriptive, memorable name
+- **Size**: Estimated audience size
+- **Characteristics**: Detailed profile
+- **Needs & Pain Points**: What problems they're solving
+- **Purchase Drivers**: What motivates them to buy
+- **Media Consumption**: Where they spend time online/offline
+
+### 3. Prioritize Segments
+
+Evaluate each segment on:
+- **Market Size**: Total addressable audience
+- **Accessibility**: Ease of reaching through marketing
+- **Value**: Expected LTV and profitability
+- **Competitive Intensity**: How contested is this segment
+- **Strategic Fit**: Alignment with business goals
+
+Prioritize segments using scoring framework:
+- High Priority: Large size, high value, low competition
+- Medium Priority: One dimension is limiting
+- Low Priority: Small, low value, or highly competitive
+
+### 4. Develop Targeting Strategies
+
+For each priority segment:
+
+**Platform-Specific Targeting**
+
+**Google Ads**
+- Search keywords and intent signals
+- Custom intent audiences
+- In-market audiences
+- Similar audiences
+- Demographic targeting
+
+**Facebook/Instagram**
+- Core audience targeting (demographics, interests, behaviors)
+- Lookalike audiences
+- Custom audiences (pixel, email list, engagement)
+- Interest stacking strategies
+
+**LinkedIn**
+- Job title and function
+- Company size and industry
+- Seniority and skills
+- LinkedIn Groups and interests
+
+**TikTok**
+- Age and gender
+- Interests and behaviors
+- Lookalike audiences
+- Custom audiences
+
+### 5. Create Messaging by Segment
+
+For each segment, define:
+- **Primary Message**: Core value proposition
+- **Supporting Messages**: Secondary benefits
+- **Tone & Voice**: Communication style
+- **Proof Points**: Credibility and social proof
+- **Call-to-Action**: Desired action
+
+Ensure messaging addresses:
+- Segment-specific pain points
+- Unique motivations and values
+- Appropriate level of sophistication
+- Platform and context
+
+### 6. Estimate Performance
+
+For each segment, project:
+- **Reach**: Total addressable audience on each platform
+- **Expected CTR**: Based on benchmarks and historical data
+- **Expected Conversion Rate**: Based on segment quality
+- **Expected CAC**: Cost to acquire customer
+- **Expected LTV**: Lifetime value
+- **LTV:CAC Ratio**: Segment profitability
+
+### 7. Develop Testing Plan
+
+Create systematic testing approach:
+- **Phase 1**: Test all segments with small budget
+- **Phase 2**: Scale top performers, optimize underperformers
+- **Phase 3**: Expand winning segments, pause losers
+
+For each test:
+- Test duration and budget
+- Success criteria (ROAS, CAC, conversion rate)
+- Decision rules (when to scale, optimize, or pause)
+
+## Deliverables
+
+1. **Audience Segments** - Detailed profiles for each segment
+2. **Targeting Strategies** - Platform-specific targeting parameters
+3. **Messaging Framework** - Segment-specific messaging
+4. **Performance Projections** - Expected metrics per segment
+5. **Testing Plan** - Phased approach to validation
+
+## Success Criteria
+
+- Segments are distinct with clear differentiation
+- Targeting criteria are specific and actionable
+- Messaging resonates with segment needs
+- Performance projections are data-backed
+- Testing plan enables rapid learning
+    ]]>
+  </instructions>
+</task>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/channel-strategy.xml</id>
+    <name>Multi-Channel Marketing Strategy</name>
+    <description>Develop strategic channel mix with budget allocation and platform-specific tactics</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>channels</tag>
+      <tag>strategy</tag>
+      <tag>budget-allocation</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Multi-Channel Marketing Strategy
+
+## Objective
+Develop optimal marketing channel mix with strategic budget allocation and platform-specific tactics.
+
+## Channel Evaluation Process
+
+### 1. Assess Available Channels
+
+For each potential channel, evaluate:
+
+**Channel Fit**
+- Audience alignment: Is our target audience active here?
+- Objective alignment: Does it support our goals (awareness, consideration, conversion)?
+- Budget fit: Can we achieve meaningful scale within budget?
+
+**Channel Characteristics**
+
+**Google Search**
+- Strengths: High intent, conversion-focused, precise targeting
+- Best for: Bottom-funnel, product search, high-consideration purchases
+- Typical ROAS: 3-8x
+- Minimum viable budget: $2-5K/month
+
+**Facebook/Instagram**
+- Strengths: Massive reach, detailed targeting, visual storytelling
+- Best for: Awareness, consideration, retargeting, ecommerce
+- Typical ROAS: 2-5x
+- Minimum viable budget: $3-10K/month
+
+**LinkedIn**
+- Strengths: B2B targeting, professional context, decision-maker access
+- Best for: B2B, high-value products, thought leadership
+- Typical ROAS: 1.5-4x (longer sales cycles)
+- Minimum viable budget: $5-10K/month
+
+**TikTok**
+- Strengths: Younger demographics, viral potential, authentic content
+- Best for: Brand awareness, Gen Z/Millennial targeting, creative-driven
+- Typical ROAS: 1.5-4x
+- Minimum viable budget: $2-5K/month
+
+**YouTube**
+- Strengths: Video storytelling, consideration stage, broad reach
+- Best for: Brand building, product demos, educational content
+- Typical ROAS: 2-4x
+- Minimum viable budget: $3-7K/month
+
+**Display/Programmatic**
+- Strengths: Scale, retargeting, brand awareness
+- Best for: Retargeting, awareness campaigns, omnipresence
+- Typical ROAS: 1-3x
+- Minimum viable budget: $5-10K/month
+
+### 2. Analyze Historical Performance
+
+If historical data exists:
+- What has each channel delivered historically?
+- How has performance trended over time?
+- What is the efficiency curve (diminishing returns point)?
+- Which channels work synergistically?
+
+### 3. Benchmark Against Goals
+
+Compare channel capabilities to objectives:
+- **Primary Goal**: Which channels best support this?
+- **ROAS Target**: Which channels can achieve this?
+- **Volume Requirements**: Which channels have sufficient scale?
+- **Speed to Results**: Which channels ramp quickly vs. slowly?
+
+### 4. Develop Channel Mix Strategy
+
+**Budget Allocation Framework**
+
+**70-20-10 Rule** (for mature programs):
+- 70% to proven channels with historical performance
+- 20% to optimization and scaling of working channels
+- 10% to testing new channels and experiments
+
+**Balanced Funnel Approach**:
+- 40% to top-of-funnel (awareness) channels
+- 30% to mid-funnel (consideration) channels
+- 30% to bottom-funnel (conversion) channels
+
+**ROI-Driven Allocation**:
+- Weight budget toward highest ROAS channels
+- Maintain minimum viability budgets on others
+- Reserve 15-20% for testing and optimization
+
+**Recommended Approach**:
+Choose allocation model based on:
+- Business stage (startup vs. mature)
+- Goals (growth vs. efficiency)
+- Channel maturity (new vs. established)
+
+### 5. Define Platform-Specific Tactics
+
+For each selected channel:
+
+**Campaign Structure**
+- How will campaigns be organized?
+- What targeting layers will be used?
+- How will budget be distributed?
+
+**Creative Approach**
+- What ad formats will be used?
+- What creative themes resonate?
+- How will creative be tested and refreshed?
+
+**Bidding Strategy**
+- Manual vs. automated bidding
+- Target ROAS vs. target CPA
+- Budget pacing strategy
+
+**Optimization Approach**
+- What metrics will trigger optimization?
+- How frequently will campaigns be reviewed?
+- What are the optimization levers?
+
+### 6. Plan Channel Synergies
+
+Identify how channels work together:
+- **Sequential**: Use awareness channels to feed retargeting
+- **Complementary**: Combine search (intent) with social (discovery)
+- **Reinforcing**: Multi-touch attribution across channels
+
+**Example Multi-Channel Journey**:
+1. User discovers brand via Facebook ad (awareness)
+2. Visits site, doesn't convert (consideration)
+3. Retargeted on Display/YouTube (nurture)
+4. Searches brand term on Google (intent)
+5. Converts via Google Search ad (conversion)
+
+### 7. Set Success Metrics by Channel
+
+For each channel, define:
+- **Primary KPI**: Main success metric (ROAS, CAC, conversions)
+- **Secondary KPIs**: Supporting metrics (CTR, CPC, engagement)
+- **Target Values**: What success looks like
+- **Minimum Acceptable**: When to pause/pivot
+- **Optimization Triggers**: When to adjust budget
+
+## Deliverables
+
+1. **Channel Recommendations** - Which channels to use and why
+2. **Budget Allocation** - How to distribute budget with rationale
+3. **Platform Tactics** - Specific strategies per channel
+4. **Success Metrics** - KPIs and targets per channel
+5. **Synergy Plan** - How channels work together
+
+## Success Criteria
+
+- Channel mix aligns with business objectives
+- Budget allocation is data-informed and defensible
+- Each channel has clear tactics and success criteria
+- Channels complement rather than cannibalize each other
+- Plan includes testing budget for learning
+    ]]>
+  </instructions>
+</task>

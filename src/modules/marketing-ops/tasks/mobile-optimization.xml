@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/mobile-optimization.xml</id>
+    <name>Mobile Design Optimization</name>
+    <description>Optimize designs for mobile devices and small screens</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Mobile Design Optimization
+Ensure optimal mobile experience with responsive design and mobile-first approach.
+## Optimization Areas
+1. **Responsive Design**: Breakpoints for all device sizes
+2. **Touch Targets**: Minimum 44x44px tap targets
+3. **Load Performance**: Optimize images, minimize requests
+4. **Navigation**: Mobile-friendly menus and navigation
+5. **Forms**: Simplified, mobile-optimized input
+6. **Content**: Scannable, concise mobile content
+## Testing
+- Test on real devices (iOS and Android)
+- Check all breakpoints
+- Validate touch interactions
+- Test page load speed (target <3 seconds)
+- Verify accessibility on mobile
+    ]]>
+  </instructions>
+</task>

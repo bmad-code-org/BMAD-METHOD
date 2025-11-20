@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/voice-tone-guide.xml</id>
+    <name>Brand Voice & Tone Guide</name>
+    <description>Define brand voice characteristics and tone variations for different contexts</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>brand</tag>
+      <tag>voice</tag>
+      <tag>tone</tag>
+      <tag>messaging</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Brand Voice & Tone Guide
+
+## Objective
+Create clear guidelines for brand voice and tone to ensure consistent communication.
+
+## Voice vs. Tone
+
+**Voice** = Your brand's personality (constant)
+**Tone** = Emotional inflection based on context (variable)
+
+## Voice Definition
+
+Define 3-5 voice characteristics:
+
+Example: "Professional, Approachable, Expert"
+- **Professional**: We're knowledgeable and trustworthy
+- **Approachable**: We're friendly and easy to work with
+- **Expert**: We provide authoritative guidance
+
+For each characteristic:
+- Definition and description
+- How it sounds in practice
+- What it is and what it isn't
+- Example phrases
+
+## Tone Variations
+
+Define tone for different contexts:
+- Marketing campaigns (inspirational, enthusiastic)
+- Product descriptions (informative, benefit-focused)
+- Customer support (empathetic, solution-oriented)
+- Error messages (apologetic, helpful)
+- Social media (casual, engaging)
+- Thought leadership (authoritative, insightful)
+
+## Do's and Don'ts
+
+| Do | Don't |
+|----|-------|
+| Use active voice | Use passive voice |
+| Be specific | Be vague |
+| Show personality | Sound corporate |
+
+## Deliverables
+
+1. **Voice Definition** - Core characteristics
+2. **Tone Matrix** - Variations by context
+3. **Examples** - Good and bad samples
+4. **Guidelines** - Practical writing rules
+    ]]>
+  </instructions>
+</task>

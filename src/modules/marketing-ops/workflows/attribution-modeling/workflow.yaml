@@ -1,0 +1,20 @@
+name: "attribution-modeling"
+description: "Build multi-touch attribution model to understand customer journey and channel contribution"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/attribution-model-{{date}}.md"
+
+steps:
+  - id: funnel-analysis
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/funnel-analysis.xml"
+
+  - id: customer-segmentation
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/customer-segmentation.xml"
+
+  - id: attribution-model
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    output_file: "{default_output_file}"

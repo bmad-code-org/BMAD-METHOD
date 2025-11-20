@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/content-strategy.xml</id>
+    <name>Content Strategy Development</name>
+    <description>Develop strategic content framework with themes, channels, and distribution plan</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>content</tag>
+      <tag>strategy</tag>
+      <tag>planning</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Content Strategy Development
+
+## Objective
+Create strategic content framework aligned with business goals and audience needs.
+
+## Strategy Components
+
+### 1. Content Pillars
+Define 3-5 core content themes that:
+- Support brand positioning
+- Address audience pain points
+- Drive business objectives
+- Create thought leadership
+
+### 2. Content Types & Formats
+- Blog posts and articles
+- Videos and webinars
+- Infographics and visual content
+- Case studies and whitepapers
+- Social media content
+- Email newsletters
+- Podcasts
+
+### 3. Channel Strategy
+- Which content on which channels
+- Publishing frequency per channel
+- Cross-promotion approach
+- Content repurposing strategy
+
+### 4. Content Calendar
+- Monthly/quarterly themes
+- Key dates and campaigns
+- Production timeline
+- Distribution schedule
+
+### 5. Measurement Framework
+- Content KPIs by type
+- Engagement metrics
+- Conversion attribution
+- ROI tracking
+
+## Deliverables
+
+1. **Content Pillars** - Core themes with rationale
+2. **Content Matrix** - Types, formats, channels
+3. **Editorial Calendar** - 90-day content plan
+4. **Success Metrics** - KPIs and targets
+    ]]>
+  </instructions>
+</task>

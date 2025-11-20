@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/competitive-research.xml</id>
+    <name>Competitive Research & Analysis</name>
+    <description>Analyze competitors and market positioning to identify opportunities and threats</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>brand</tag>
+      <tag>research</tag>
+      <tag>competitive-analysis</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Competitive Research & Analysis Task
+
+## Objective
+Conduct comprehensive competitive analysis to identify market positioning opportunities, competitive advantages, and strategic gaps.
+
+## Research Process
+
+### 1. Identify Competitors
+- List 3-5 direct competitors (same product, same audience)
+- List 2-3 indirect competitors (solving same problem differently)
+- List 1-2 aspirational competitors (where brand wants to be)
+
+### 2. Analyze Each Competitor
+
+For each competitor, analyze:
+
+**Brand Positioning**
+- Mission and value proposition
+- Target audience and positioning statement
+- Key differentiators and unique selling points
+- Brand personality and voice
+
+**Product/Service Offering**
+- Product features and benefits
+- Pricing strategy and tiers
+- Service model and delivery
+- Innovation and differentiation
+
+**Marketing Strategy**
+- Primary marketing channels
+- Content strategy and themes
+- Advertising approach and spend (estimated)
+- Social media presence and engagement
+
+**Strengths**
+- What are they doing well?
+- What gives them competitive advantage?
+- Why do customers choose them?
+
+**Weaknesses**
+- Where are they vulnerable?
+- What gaps exist in their offering?
+- What complaints do customers have?
+
+**Market Position**
+- Estimated market share
+- Growth trajectory
+- Customer base size and quality
+- Brand recognition and reputation
+
+### 3. Competitive Positioning Map
+
+Create a 2x2 positioning map plotting competitors on key dimensions:
+- Price (low to high) vs. Quality (basic to premium)
+- Features (simple to complex) vs. Ease of Use (difficult to easy)
+- Other relevant dimensions for your market
+
+Identify unoccupied positions that represent opportunity.
+
+### 4. SWOT Analysis
+
+Compare your brand to competitors across:
+- **Strengths**: Advantages over competitors
+- **Weaknesses**: Areas where competitors are stronger
+- **Opportunities**: Market gaps and unmet needs
+- **Threats**: Competitive threats and market risks
+
+### 5. Key Insights & Recommendations
+
+Synthesize findings into actionable insights:
+- Which positioning is ownable and defensible?
+- What messaging gaps can we exploit?
+- What product/service improvements are needed?
+- Which channels should we prioritize?
+- What are the quick wins vs. long-term plays?
+
+## Deliverables
+
+1. **Competitor Profiles** - Detailed analysis of each competitor
+2. **Positioning Map** - Visual representation of competitive landscape
+3. **SWOT Analysis** - Comparative strengths and weaknesses
+4. **Strategic Recommendations** - Actionable insights for positioning
+
+## Success Criteria
+
+- Identified clear positioning opportunities
+- Understood competitive threats and mitigation strategies
+- Uncovered market gaps and unmet customer needs
+- Developed actionable recommendations for differentiation
+    ]]>
+  </instructions>
+</task>

@@ -1,0 +1,30 @@
+name: "campaign-plan"
+description: "Create comprehensive paid marketing campaign plan with channel strategy, budget allocation, and success metrics"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/campaign-plan-{{campaign-name}}-{{date}}.md"
+
+steps:
+  - id: gather-campaign-context
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    instructions: "{project-root}/{bmad_folder}/marketing-ops/workflows/campaign-plan/instructions.md"
+    template: "{project-root}/{bmad_folder}/marketing-ops/workflows/campaign-plan/template.md"
+
+  - id: audience-analysis
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/audience-analysis.xml"
+
+  - id: channel-strategy
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/channel-strategy.xml"
+
+  - id: create-plan
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    template: "{project-root}/{bmad_folder}/marketing-ops/templates/campaign-plan-tmpl.md"
+    output_file: "{default_output_file}"
+
+  - id: validate-plan
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/roi-analysis.xml"
