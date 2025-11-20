@@ -1,0 +1,139 @@
+<task>
+  <metadata>
+    <id>{bmad_folder}/content-creator/tasks/quality-check.xml</id>
+    <name>Quality Check</name>
+    <description>Comprehensive quality check on content before saving or publishing</description>
+    <module>content-creator</module>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Quality Check Task
+
+You are performing a comprehensive quality check on content.
+
+## Configuration
+
+**Readability Target:** Grade {readability_target}
+**Strict Mode:** {strict_quality_mode}
+**Minimum Pass Score:** 70
+
+## Quality Check Process
+
+### 1. Readability Analysis
+
+Calculate and assess:
+- **Flesch Reading Ease Score** (0-100, target: 60-70)
+- **Grade Level** (target: {readability_target})
+- **Average Sentence Length** (target: <25 words)
+- **Paragraph Length** (target: 3-5 sentences)
+
+**Scoring:** 0-100 based on targets
+
+### 2. Grammar & Spelling
+
+Check for:
+- Spelling errors
+- Grammar mistakes
+- Punctuation issues
+- Word choice problems
+
+**Scoring:** Deduct 5 points per error, minimum 0
+
+### 3. Structure Validation
+
+Verify:
+- Title present and compelling
+- Clear introduction
+- Logical section flow
+- Proper heading hierarchy (H1 > H2 > H3)
+- Strong conclusion
+
+**Scoring:** 0-100 based on completeness
+
+### 4. Voice Consistency (if voice examples available)
+
+Analyze:
+- Tone matches voice profile
+- Vocabulary level consistent
+- Sentence structure patterns match
+- Personality comes through
+
+**Scoring:** 0-100 based on similarity
+
+## Platform-Specific Requirements
+
+### Articles (Blog/Main Content)
+- Minimum 800 words
+- 3+ main sections with headers
+- Clear introduction and conclusion
+- Supporting examples or data
+
+### LinkedIn Posts
+- 900-1300 characters
+- Engagement hook in opening
+- Professional yet personal tone
+- Clear value proposition
+
+### Newsletter
+- Compelling subject line (30-50 chars)
+- Personal greeting
+- Scannable sections
+- Personal sign-off
+
+### Social Media
+- Platform-appropriate length
+- Strong hook in first line
+- Call-to-action or engagement question
+
+## Scoring & Decision Matrix
+
+Calculate overall score (0-100):
+- Readability: 30%
+- Grammar/Technical: 25%
+- Structure: 25%
+- Voice: 20%
+
+**Decision:**
+- **80-100 (PASS)** → ✅ Save/publish normally with success confirmation
+- **60-79 (WARN)** → ⚠️ Save with warnings, show issues and suggestions
+- **<60 (BLOCK)** → ❌ If strict_mode=true, prevent save; otherwise save with prominent warnings
+
+## Output Format
+
+Provide:
+
+```
+QUALITY CHECK RESULTS
+====================
+
+Overall Score: X/100 [PASS/WARN/BLOCK]
+
+Breakdown:
+- Readability: X/100
+- Grammar & Technical: X/100
+- Structure: X/100
+- Voice Consistency: X/100
+
+Issues Found:
+[If any]
+- [Issue 1 with severity]
+- [Issue 2 with severity]
+
+Recommendations:
+[Prioritized by urgency]
+1. [Critical fix]
+2. [Important improvement]
+3. [Optimization suggestion]
+
+Status: [APPROVED/APPROVED WITH WARNINGS/BLOCKED]
+```
+
+## Performance
+
+- Target execution time: <2 seconds
+- Cache results for 5 minutes
+- Can be bypassed with --skip-quality-check flag
+    ]]>
+  </instructions>
+</task>

@@ -1,0 +1,18 @@
+name: "create-style-guide"
+description: "Create a comprehensive custom style guide for consistent content creation across all platforms"
+author: "Content Creator Module"
+
+config_source: "{project-root}/{bmad_folder}/content-creator/config.yaml"
+content_data_path: "{config_source}:content_data_path"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/content-creator/workflows/create-style-guide"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.md"
+
+voice_profiles_folder: "{content_data_path}/voice-profiles"
+brand_guidelines: "{content_data_path}/brand-guidelines.md"
+default_output_file: "{content_data_path}/style-guides/style-guide-{{style-name}}-{{date}}.md"
+
+standalone: true

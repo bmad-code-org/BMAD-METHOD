@@ -1,0 +1,19 @@
+name: "build-voice-profile"
+description: "Build a comprehensive voice profile by analyzing your writing samples and creating a detailed style guide"
+author: "Content Creator Module"
+
+config_source: "{project-root}/{bmad_folder}/content-creator/config.yaml"
+content_output_folder: "{config_source}:content_output_folder"
+content_data_path: "{config_source}:content_data_path"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/content-creator/workflows/build-voice-profile"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+
+writing_examples: "{content_data_path}/writing-examples.md"
+voice_profiles_folder: "{content_data_path}/voice-profiles"
+default_output_file: "{voice_profiles_folder}/voice-profile-{{profile-name}}-{{date}}.md"
+
+standalone: true

@@ -1,0 +1,17 @@
+name: "extract-themes"
+description: "Extract recurring themes, patterns, and unique angles from raw notes and ideas"
+author: "Content Creator Module"
+
+config_source: "{project-root}/{bmad_folder}/content-creator/config.yaml"
+content_output_folder: "{config_source}:content_output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/content-creator/workflows/extract-themes"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.md"
+
+rawnotes_folder: "{content_output_folder}/rawnotes"
+default_output_file: "{content_output_folder}/research/themes-analysis-{{date}}.md"
+
+standalone: true

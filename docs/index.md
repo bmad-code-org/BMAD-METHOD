@@ -62,6 +62,23 @@ AI-powered creative thinking and brainstorming.
 
 - **[CIS Module README](../src/modules/cis/README.md)** - Module overview and workflows
 
+### Content Creator - Advanced Content Creation with Voice Profiling
+
+Multi-platform content creation with authentic voice matching and style customization.
+
+- **[Content Creator Module README](../src/modules/content-creator/README.md)** - Module overview, agents, and workflows
+- **Voice & Style System:**
+  - Build Voice Profile - Create comprehensive voice profiles from writing samples
+  - Train Voice - Continuously refine and evolve your voice profile
+  - Create Style Guide - Generate complete custom style guides
+  - Style Analyzer - Deep analysis of writing patterns and characteristics
+- **Content Workflows:**
+  - Article Pipeline - Complete article creation with multi-platform repurposing
+  - Research Topic - Deep research with trend analysis
+  - Extract Themes - Pattern recognition from raw notes
+  - Quick Post - Fast social media content creation
+  - Optimize Content - SEO and engagement improvements
+
 ---
 
 ## 🖥️ IDE-Specific Guides
@@ -133,8 +150,17 @@ src/modules/
 ├── bmb/                           # BMad Builder module
 │   ├── README.md
 │   └── workflows/create-agent/README.md
-└── cis/                           # Creative Intelligence Suite
-    └── README.md
+├── cis/                           # Creative Intelligence Suite
+│   └── README.md
+└── content-creator/               # Content Creator module
+    ├── README.md                  # Module overview & documentation
+    ├── data/
+    │   ├── voice-profiles/        # Voice profile storage
+    │   └── style-guides/          # Style guide storage
+    └── workflows/
+        ├── build-voice-profile/   # Voice profiling system
+        ├── train-voice/           # Voice training
+        └── create-style-guide/    # Style guide generation
 ```
 
 ---
@@ -175,7 +201,14 @@ src/modules/
 2. [Agent Creation Guide](../src/modules/bmb/workflows/create-agent/README.md) - Create agents
 3. [BMM Workflows Guide](../src/modules/bmm/workflows/README.md) - Understand workflow structure
 
-### Path 6: Contributing to BMad
+### Path 6: Content Creation with Voice Profiling
+
+1. [Content Creator Module README](../src/modules/content-creator/README.md) - Understand capabilities
+2. Build your voice profile with `*build-voice-profile`
+3. Create content with `*write` using your authentic voice
+4. Train and refine your voice over time with `*train-voice`
+
+### Path 7: Contributing to BMad
 
 1. [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
 2. Relevant module README - Understand the area you're contributing to
@@ -190,6 +223,7 @@ src/modules/
 - **BMM** - AI-driven software and game development
 - **BMB** - Create custom agents and workflows
 - **CIS** - Creative thinking and brainstorming
+- **Content Creator** - Multi-platform content creation with voice profiling
 
 **How do I load an agent?**
 → See [ide-info](./ide-info/) folder for your IDE

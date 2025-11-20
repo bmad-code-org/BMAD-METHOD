@@ -1,0 +1,16 @@
+name: "train-voice"
+description: "Train and refine your voice profile by adding new writing samples and updating style patterns"
+author: "Content Creator Module"
+
+config_source: "{project-root}/{bmad_folder}/content-creator/config.yaml"
+content_data_path: "{config_source}:content_data_path"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/content-creator/workflows/train-voice"
+instructions: "{installed_path}/instructions.md"
+
+voice_profiles_folder: "{content_data_path}/voice-profiles"
+writing_examples: "{content_data_path}/writing-examples.md"
+
+standalone: true
