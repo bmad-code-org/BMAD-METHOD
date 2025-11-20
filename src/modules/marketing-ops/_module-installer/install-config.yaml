@@ -3,13 +3,27 @@ name: "Marketing Ops - Comprehensive Marketing Operations Suite"
 description: "Complete marketing operations module with brand strategy, performance marketing, analytics, and creative design capabilities"
 default_selected: false
 
-prompts:
-  marketing_output_path:
+header: "Marketing Ops Module Configuration"
+subheader: "Configure your comprehensive marketing operations suite with brand strategy, performance marketing, analytics, and creative capabilities"
+
+# Core values automatically inherited from installer:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+## install_user_docs
+
+# Module-specific configuration prompts
+
+marketing_output_path:
     prompt: "Where should marketing deliverables be saved? (strategies, reports, plans)"
     default: "{output_folder}/marketing"
     result: "{project-root}/{value}"
+    validate:
+      pattern: "^(?!/|.*\\.\\.|.*//)[a-zA-Z0-9_\\-/]+$"
+      error: "Please enter a safe, relative folder path (no absolute paths, no '..', and only letters, numbers, dashes, underscores, and slashes)."
 
-  analytics_platform:
+analytics_platform:
     prompt: "What analytics platform do you primarily use?"
     default: "ga4"
     single-select:
@@ -22,7 +36,7 @@ prompts:
       - value: "other"
         label: "Other/Multiple"
 
-  advertising_platforms:
+advertising_platforms:
     prompt: "Which advertising platforms do you use? (Select all that apply)"
     multi-select:
       - value: "google-ads"
@@ -40,7 +54,7 @@ prompts:
       - value: "programmatic"
         label: "Display/Programmatic"
 
-  business_type:
+business_type:
     prompt: "What type of business are you?"
     default: "b2c"
     single-select:
@@ -57,7 +71,7 @@ prompts:
       - value: "marketplace"
         label: "Marketplace/Platform"
 
-  marketing_team_size:
+marketing_team_size:
     prompt: "What is your marketing team size?"
     default: "small"
     single-select:
@@ -72,7 +86,7 @@ prompts:
       - value: "agency"
         label: "Agency/Multiple clients"
 
-  marketing_budget_range:
+marketing_budget_range:
     prompt: "What is your monthly marketing budget range?"
     default: "10k-50k"
     single-select:
@@ -85,7 +99,7 @@ prompts:
       - value: "200k-plus"
         label: "$200K+/month"
 
-  primary_marketing_goals:
+primary_marketing_goals:
     prompt: "What are your primary marketing goals? (Select all that apply)"
     multi-select:
       - value: "brand-awareness"
@@ -100,6 +114,31 @@ prompts:
         label: "Customer Retention"
       - value: "market-expansion"
         label: "Market Expansion"
+
+# Static configuration values
+
+module_version:
+  result: "1.0.0"
+
+marketing_data_path:
+  result: "{project-root}/{bmad_folder}/marketing-ops/data"
+
+brand_output_folder:
+  result: "{project-root}/{marketing_output_path}/brand"
+
+campaigns_output_folder:
+  result: "{project-root}/{marketing_output_path}/campaigns"
+
+analytics_output_folder:
+  result: "{project-root}/{marketing_output_path}/analytics"
+
+creative_output_folder:
+  result: "{project-root}/{marketing_output_path}/creative"
+
+templates_path:
+  result: "{project-root}/{bmad_folder}/marketing-ops/templates"
+
+# Module installation configuration
 
 configuration:
   bmad_folder: ".bmad"

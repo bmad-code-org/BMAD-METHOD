@@ -1,0 +1,76 @@
+# Marketing Ops Module Configuration
+
+# Module Information
+module_code: marketing-ops
+module_name: "Marketing Ops - Comprehensive Marketing Operations Suite"
+version: "1.0.0"
+description: "Complete marketing operations module with brand strategy, performance marketing, analytics, and creative design capabilities"
+
+# User Configuration (inherited from core config)
+user_name: "{{user_name}}"
+communication_language: "{{communication_language}}"
+
+# Output Configuration
+marketing_output_path: "{{marketing_output_path}}"
+
+# Marketing Platform Configuration
+analytics_platform: "{{analytics_platform}}"
+advertising_platforms: "{{advertising_platforms}}"
+
+# Business Configuration
+business_type: "{{business_type}}"
+marketing_team_size: "{{marketing_team_size}}"
+marketing_budget_range: "{{marketing_budget_range}}"
+primary_marketing_goals: "{{primary_marketing_goals}}"
+
+# Module Settings
+bmad_folder: "{{bmad_folder}}"
+
+# Marketing Benchmarks by Business Type
+benchmarks:
+  b2c:
+    avg_cac: "$50-150"
+    target_roas: "4:1"
+    conversion_rate: "2-4%"
+  b2b:
+    avg_cac: "$200-500"
+    target_roas: "5:1"
+    conversion_rate: "2-5%"
+  saas:
+    avg_cac: "$100-400"
+    target_ltv_cac_ratio: "3:1"
+    churn_rate: "<5%"
+  ecommerce:
+    avg_cac: "$30-100"
+    target_roas: "4:1"
+    conversion_rate: "1-3%"
+
+# Analytics Settings
+default_reporting_period: "30_days"
+attribution_window: "7_days"
+conversion_tracking: true
+
+# Campaign Settings
+default_campaign_duration: "30_days"
+ab_test_duration: "14_days"
+min_sample_size: 1000
+
+# Creative Settings
+brand_consistency_check: true
+mobile_first_design: true
+wcag_compliance: "AA"
+
+# Agent Capabilities
+agents:
+  brand_marketer:
+    name: "Sofia"
+    specialties: ["brand_strategy", "content_planning", "competitive_research"]
+  media_buyer:
+    name: "Marcus"
+    specialties: ["campaign_planning", "budget_optimization", "audience_targeting"]
+  marketing_analyst:
+    name: "Elena"
+    specialties: ["data_analysis", "attribution_modeling", "predictive_analytics"]
+  marketing_designer:
+    name: "Maya"
+    specialties: ["design_briefs", "landing_pages", "creative_production"]
