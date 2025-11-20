@@ -360,6 +360,25 @@ class ConfigCollector {
   }
 
   /**
+   * Get the default username from the system
+   * @returns {string} Capitalized username\
+   */
+  getDefaultUsername() {
+    let result = 'BMad';
+    try {
+      const os = require('node:os');
+      const userInfo = os.userInfo();
+      if (userInfo && userInfo.username) {
+        const username = userInfo.username;
+        result = username.charAt(0).toUpperCase() + username.slice(1);
+      }
+    } catch {
+      // Do nothing, just return 'BMad'
+    }
+    return result;
+  }
+
+  /**
    * Collect configuration for a single module
    * @param {string} moduleName - Module name
    * @param {string} projectDir - Target project directory
@@ -602,6 +621,11 @@ class ConfigCollector {
       if (detectedFolder) {
         existingValue = detectedFolder;
       }
+    }
+
+    // Special handling for user_name: default to system user
+    if (moduleName === 'core' && key === 'user_name' && !existingValue) {
+      item.default = this.getDefaultUsername();
     }
 
     // Determine question type and default value

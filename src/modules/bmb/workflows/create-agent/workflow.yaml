@@ -10,20 +10,24 @@ user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 
 # Technical documentation for agent building
-agent_types: "{installed_path}/agent-types.md"
-agent_architecture: "{installed_path}/agent-architecture.md"
-agent_commands: "{installed_path}/agent-command-patterns.md"
-communication_styles: "{installed_path}/communication-styles.md"
+agent_compilation: "{project-root}/{bmad_folder}/bmb/docs/agent-compilation.md"
+understanding_agent_types: "{project-root}/{bmad_folder}/bmb/docs/understanding-agent-types.md"
+simple_agent_architecture: "{project-root}/{bmad_folder}/bmb/docs/simple-agent-architecture.md"
+expert_agent_architecture: "{project-root}/{bmad_folder}/bmb/docs/expert-agent-architecture.md"
+module_agent_architecture: "{project-root}/{bmad_folder}/bmb/docs/module-agent-architecture.md"
+agent_menu_patterns: "{project-root}/{bmad_folder}/bmb/docs/agent-menu-patterns.md"
+communication_presets: "{installed_path}/communication-presets.csv"
 
-# Reference examples and conventions
-example_agents_dir: "{project-root}/{bmad_folder}/bmm/agents/"
-agent_activation_rules: "{project-root}/src/utility/models/agent-activation-ide.xml"
+# Reference examples
+simple_agent_examples: "{project-root}/src/modules/bmb/reference/agents/simple-examples/"
+expert_agent_examples: "{project-root}/src/modules/bmb/reference/agents/expert-examples/"
+module_agent_examples: "{project-root}/src/modules/bmb/reference/agents/module-examples/"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/create-agent"
 template: false # This is an interactive workflow - no template needed
 instructions: "{installed_path}/instructions.md"
-validation: "{installed_path}/checklist.md"
+validation: "{installed_path}/agent-validation-checklist.md"
 
 # Output configuration - YAML agents compiled to .md at install time
 # Module agents: Save to {bmad_folder}/{{target_module}}/agents/
@@ -42,7 +46,10 @@ web_bundle:
   web_bundle_files:
     - "{bmad_folder}/bmb/workflows/create-agent/instructions.md"
     - "{bmad_folder}/bmb/workflows/create-agent/checklist.md"
-    - "{bmad_folder}/bmb/workflows/create-agent/agent-types.md"
-    - "{bmad_folder}/bmb/workflows/create-agent/agent-architecture.md"
-    - "{bmad_folder}/bmb/workflows/create-agent/agent-command-patterns.md"
-    - "{bmad_folder}/bmb/workflows/create-agent/communication-styles.md"
+    - "{bmad_folder}/bmb/docs/agent-compilation.md"
+    - "{bmad_folder}/bmb/docs/understanding-agent-types.md"
+    - "{bmad_folder}/bmb/docs/simple-agent-architecture.md"
+    - "{bmad_folder}/bmb/docs/expert-agent-architecture.md"
+    - "{bmad_folder}/bmb/docs/module-agent-architecture.md"
+    - "{bmad_folder}/bmb/docs/agent-menu-patterns.md"
+    - "{bmad_folder}/bmb/workflows/create-agent/communication-presets.csv"
