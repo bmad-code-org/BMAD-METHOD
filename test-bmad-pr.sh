@@ -35,9 +35,8 @@ echo "  1. Clone the BMAD repository"
 echo "  2. Checkout the PR branch with party mode features"
 echo "  3. Install BMAD CLI tools locally"
 echo "  4. Create a test BMAD project"
-echo "  5. Install AgentVibes TTS system"
-echo "  6. Configure unique voices for each agent"
-echo "  7. Verify the installation"
+echo "  5. Run BMAD installer (automatically installs AgentVibes)"
+echo "  6. Verify the installation"
 echo ""
 echo -e "${YELLOW}Prerequisites:${NC}"
 echo "  • Node.js and npm installed"
@@ -216,7 +215,7 @@ echo ""
 
 # Step 1: Clone repository
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📥 Step 1/7: Cloning repository"
+echo "📥 Step 1/6: Cloning repository"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 mkdir -p "$TEST_DIR"
@@ -229,7 +228,7 @@ echo ""
 
 # Step 2: Checkout branch (different logic for PR vs fork)
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🔀 Step 2/7: Checking out branch"
+echo "🔀 Step 2/6: Checking out branch"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -251,7 +250,7 @@ echo ""
 
 # Step 3: Install BMAD CLI
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📦 Step 3/7: Installing BMAD CLI"
+echo "📦 Step 3/6: Installing BMAD CLI"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 cd tools/cli
@@ -263,7 +262,7 @@ echo ""
 
 # Step 4: Create test project
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📁 Step 4/7: Creating test project"
+echo "📁 Step 4/6: Creating test project"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 cd "$TEST_DIR"
@@ -273,41 +272,30 @@ echo -e "${GREEN}✓ Test project directory created${NC}"
 echo "  Location: $TEST_DIR/bmad-project"
 echo ""
 
-# Step 5: Run BMAD installer
+# Step 5: Run BMAD installer (includes AgentVibes setup)
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "⚙️  Step 5/7: Running BMAD installer"
+echo "⚙️  Step 5/6: Running BMAD installer with AgentVibes"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo -e "${YELLOW}Important: When prompted during installation:${NC}"
 echo -e "  • Enable TTS for agents? → ${GREEN}Yes${NC}"
 echo -e "  • Assign unique voices for party mode? → ${GREEN}Yes${NC}"
 echo ""
+echo -e "${YELLOW}AgentVibes will start automatically after BMAD installation.${NC}"
+echo -e "${YELLOW}Recommended TTS settings:${NC}"
+echo -e "  • Provider: ${GREEN}Piper${NC} (free, local TTS)"
+echo -e "  • Download voices: ${GREEN}Yes${NC}"
+echo ""
 read -p "Press Enter to start BMAD installer..."
 bmad install
 
 echo ""
-echo -e "${GREEN}✓ BMAD installation complete${NC}"
+echo -e "${GREEN}✓ BMAD and AgentVibes installation complete${NC}"
 echo ""
 
-# Step 6: Install AgentVibes
+# Step 6: Verification
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "🎙️  Step 6/7: Installing AgentVibes"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo -e "${YELLOW}Recommended: Choose Piper (free) for testing${NC}"
-echo -e "  • Provider: ${GREEN}Piper${NC} (free, local TTS)"
-echo -e "  • Download voices: ${GREEN}Yes${NC}"
-echo ""
-read -p "Press Enter to start AgentVibes installer..."
-npx agentvibes@latest install
-
-echo ""
-echo -e "${GREEN}✓ AgentVibes installation complete${NC}"
-echo ""
-
-# Step 7: Verification
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ Step 7/7: Verifying installation"
+echo "✅ Step 6/6: Verifying installation"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
