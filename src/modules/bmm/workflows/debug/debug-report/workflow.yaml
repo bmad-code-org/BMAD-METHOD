@@ -1,0 +1,27 @@
+# Debug Workflow: Debug Report Generation
+name: debug-report
+description: "Generate comprehensive debug report consolidating all findings, analyses, and recommendations from debugging session."
+author: "BMad"
+
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/debug/debug-report"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.yaml"
+
+# Output configuration
+default_output_file: "{output_folder}/debug/debug-summary-{{date}}.md"
+
+tags:
+  - debug
+  - documentation
+  - reporting
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: false

@@ -1,0 +1,33 @@
+# Debug Workflow: Root Cause Analysis
+name: debug-root-cause
+description: "Focused root cause analysis using fishbone (Ishikawa) methodology and 5-Whys technique to identify underlying defect causes."
+author: "BMad"
+
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/debug/root-cause"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/template.yaml"
+
+# Output configuration
+default_output_file: "{output_folder}/debug/rca-{{date}}.md"
+
+# Knowledge fragments to load
+knowledge_fragments:
+  - "{project-root}/{bmad_folder}/bmm/debug/knowledge/root-cause-checklist.md"
+  - "{project-root}/{bmad_folder}/bmm/debug/knowledge/common-defects.md"
+
+tags:
+  - debug
+  - root-cause
+  - analysis
+  - fishbone
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: true

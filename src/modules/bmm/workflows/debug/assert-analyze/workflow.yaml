@@ -1,0 +1,25 @@
+# Debug Workflow: Assertion Analysis
+name: debug-assert-analyze
+description: "Analyze code for missing assertions and invariants. Suggests defensive programming improvements."
+author: "BMad"
+
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/debug/assert-analyze"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+tags:
+  - debug
+  - assertions
+  - defensive-programming
+  - prevention
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: false

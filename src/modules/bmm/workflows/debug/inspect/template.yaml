@@ -1,0 +1,234 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: debug-report-template-v1
+  name: Debug Analysis Report
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/debug/debug-report-{{timestamp}}.md
+    title: "Debug Analysis Report - {{problem_title}}"
+
+workflow:
+  mode: rapid
+  elicitation: false
+
+sections:
+  - id: header
+    title: Report Header
+    instruction: Generate report header with metadata
+    sections:
+      - id: metadata
+        title: Report Metadata
+        type: key-value
+        instruction: |
+          Report ID: DBG-{{timestamp}}
+          Date: {{current_date}}
+          Analyst: Debug Agent (Diana)
+          Severity: {{severity_level}}
+          Status: {{status}}
+
+  - id: executive-summary
+    title: Executive Summary
+    instruction: Provide concise summary under 200 words
+    sections:
+      - id: problem
+        title: Problem
+        type: text
+        instruction: 1-2 sentence problem statement
+      - id: impact
+        title: Impact
+        type: text
+        instruction: Quantified impact on users/system
+      - id: root-cause
+        title: Root Cause
+        type: text
+        instruction: Brief root cause description
+      - id: solution
+        title: Solution
+        type: text
+        instruction: High-level fix description
+      - id: metrics
+        title: Key Metrics
+        type: key-value
+        instruction: |
+          Effort Required: {{effort_estimate}}
+          Risk Level: {{risk_level}}
+
+  - id: problem-description
+    title: Problem Description
+    instruction: Detailed problem analysis
+    sections:
+      - id: symptoms
+        title: Symptoms
+        type: paragraphs
+        instruction: Detailed symptoms observed
+      - id: reproduction
+        title: Reproduction
+        type: numbered-list
+        instruction: Step-by-step reproduction steps with expected vs actual
+      - id: environment
+        title: Environment
+        type: bullet-list
+        instruction: |
+          - System: {{system_info}}
+          - Application: {{application_version}}
+          - Dependencies: {{dependencies_list}}
+          - Configuration: {{configuration_details}}
+      - id: timeline
+        title: Timeline
+        type: bullet-list
+        instruction: |
+          - First Observed: {{first_observed}}
+          - Frequency: {{occurrence_frequency}}
+          - Last Occurrence: {{last_occurrence}}
+
+  - id: technical-analysis
+    title: Technical Analysis
+    instruction: Deep technical investigation results
+    sections:
+      - id: root-cause-analysis
+        title: Root Cause Analysis
+        type: paragraphs
+        instruction: Detailed root cause with evidence
+      - id: code-analysis
+        title: Code Analysis
+        type: code-block
+        instruction: |
+          [[LLM: Include problematic code snippet with language specified]]
+          Issue: {{code_issue_description}}
+      - id: pattern-analysis
+        title: Pattern Analysis
+        type: paragraphs
+        instruction: Any patterns detected in the defect
+      - id: test-coverage
+        title: Test Coverage
+        type: bullet-list
+        instruction: |
+          - Current Coverage: {{coverage_percentage}}
+          - Gap Identified: {{coverage_gaps}}
+          - Risk Areas: {{untested_areas}}
+
+  - id: impact-assessment
+    title: Impact Assessment
+    instruction: Comprehensive impact analysis
+    sections:
+      - id: severity-matrix
+        title: Severity Matrix
+        type: table
+        columns: [Aspect, Impact, Severity]
+        instruction: |
+          [[LLM: Create table with Users Affected, Data Integrity, Performance, Security aspects]]
+      - id: business-impact
+        title: Business Impact
+        type: paragraphs
+        instruction: Business consequences of the issue
+
+  - id: solution-recommendations
+    title: Solution & Recommendations
+    instruction: Fix proposals and prevention strategies
+    sections:
+      - id: immediate-fix
+        title: Immediate Fix
+        type: code-block
+        instruction: |
+          [[LLM: Include corrected code with validation steps]]
+      - id: short-term
+        title: Short-term Improvements
+        type: bullet-list
+        instruction: Improvements for this sprint
+      - id: long-term
+        title: Long-term Prevention
+        type: bullet-list
+        instruction: Strategic prevention measures
+      - id: process
+        title: Process Enhancements
+        type: bullet-list
+        instruction: Process improvements to prevent recurrence
+
+  - id: implementation-plan
+    title: Implementation Plan
+    instruction: Phased approach to resolution
+    sections:
+      - id: phase1
+        title: "Phase 1: Immediate (0-2 days)"
+        type: checkbox-list
+        instruction: Critical fixes to apply immediately
+      - id: phase2
+        title: "Phase 2: Short-term (1 week)"
+        type: checkbox-list
+        instruction: Short-term improvements
+      - id: phase3
+        title: "Phase 3: Long-term (1 month)"
+        type: checkbox-list
+        instruction: Long-term strategic changes
+
+  - id: verification-testing
+    title: Verification & Testing
+    instruction: Validation strategy
+    sections:
+      - id: test-cases
+        title: Test Cases
+        type: numbered-list
+        instruction: Specific test cases to validate the fix
+      - id: regression
+        title: Regression Testing
+        type: paragraphs
+        instruction: Areas requiring regression testing
+      - id: monitoring
+        title: Monitoring
+        type: bullet-list
+        instruction: Metrics to monitor post-fix
+
+  - id: lessons-learned
+    title: Lessons Learned
+    instruction: Knowledge capture for prevention
+    sections:
+      - id: what-went-wrong
+        title: What Went Wrong
+        type: paragraphs
+        instruction: Root causes beyond the code
+      - id: improvements
+        title: What Could Improve
+        type: bullet-list
+        instruction: Process and tool improvements
+      - id: knowledge-sharing
+        title: Knowledge Sharing
+        type: bullet-list
+        instruction: Information to share with team
+
+  - id: appendices
+    title: Appendices
+    instruction: Supporting documentation
+    optional: true
+    sections:
+      - id: stack-traces
+        title: "Appendix A: Full Stack Traces"
+        type: code-block
+        instruction: Complete error traces if available
+      - id: logs
+        title: "Appendix B: Log Excerpts"
+        type: code-block
+        instruction: Relevant log entries
+      - id: metrics
+        title: "Appendix C: Performance Metrics"
+        type: paragraphs
+        instruction: Before/after performance data
+      - id: related
+        title: "Appendix D: Related Issues"
+        type: bullet-list
+        instruction: Links to similar problems
+      - id: references
+        title: "Appendix E: References"
+        type: bullet-list
+        instruction: Documentation, articles, tools used
+
+  - id: footer
+    title: Report Footer
+    instruction: Closing metadata
+    sections:
+      - id: timestamps
+        title: Report Timestamps
+        type: key-value
+        instruction: |
+          Report Generated: {{generation_timestamp}}
+          Next Review: {{follow_up_date}}

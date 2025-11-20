@@ -1,0 +1,25 @@
+# Debug Workflow: Instrumentation Design
+name: debug-instrument
+description: "Design strategic logging and monitoring points. Creates instrumentation plan for production debugging."
+author: "BMad"
+
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/debug/instrument"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+tags:
+  - debug
+  - instrumentation
+  - observability
+  - production
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: false
