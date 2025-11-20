@@ -148,14 +148,6 @@ jobs:
             </div>
 
             <div class="platform">
-              <h3>BMB (BMad Builder)</h3>
-              <div class="module">
-                <a href="./bmb/agents/bmad-builder.xml">Builder Agent</a><br>
-                📁 <a href="./bmb/agents/">Browse All</a> | 📦 <a href="./downloads/bmb-agents.zip">Download Zip</a>
-              </div>
-            </div>
-
-            <div class="platform">
               <h3>CIS (Creative Intelligence Suite)</h3>
               <div class="module">
                 📁 <a href="./cis/agents/">Browse Agents</a> | 📦 <a href="./downloads/cis-agents.zip">Download Zip</a>
@@ -173,7 +165,6 @@ jobs:
             <p>Download all agents for a module as a zip archive:</p>
             <ul>
               <li><a href="./downloads/bmm-agents.zip">📦 BMM Agents (all 8)</a></li>
-              <li><a href="./downloads/bmb-agents.zip">📦 BMB Agents (all 1)</a></li>
               <li><a href="./downloads/cis-agents.zip">📦 CIS Agents (all 5)</a></li>
               <li><a href="./downloads/bmgd-agents.zip">📦 BMGD Agents (all 4)</a></li>
             </ul>
