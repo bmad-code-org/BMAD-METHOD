@@ -1,0 +1,7 @@
+# <!-- Powered by BMAD-CORE™ -->
+bundle:
+  name: Complete Marketing Team
+  icon: 🚀
+  description: Full-service marketing team with brand strategy, performance marketing, analytics, and creative design capabilities
+agents: "*"
+party: "./default-party.csv"

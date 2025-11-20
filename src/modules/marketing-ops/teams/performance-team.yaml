@@ -1,0 +1,9 @@
+# <!-- Powered by BMAD-CORE™ -->
+bundle:
+  name: Performance Marketing Team
+  icon: 📈
+  description: Data-driven performance marketing team focused on campaign optimization, analytics, and ROI maximization
+agents:
+  - media-buyer
+  - marketing-analyst
+party: "./default-party.csv"

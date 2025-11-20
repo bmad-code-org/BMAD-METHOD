@@ -1,0 +1,10 @@
+# <!-- Powered by BMAD-CORE™ -->
+bundle:
+  name: Campaign Execution Team
+  icon: 🎯
+  description: End-to-end campaign team with media buying, creative production, and analytics for executing and optimizing marketing campaigns
+agents:
+  - media-buyer
+  - marketing-designer
+  - marketing-analyst
+party: "./default-party.csv"

@@ -1,0 +1,9 @@
+# <!-- Powered by BMAD-CORE™ -->
+bundle:
+  name: Marketing Strategy Team
+  icon: 🧠
+  description: Strategic marketing team for brand positioning, competitive analysis, and data-driven strategic planning
+agents:
+  - brand-marketer
+  - marketing-analyst
+party: "./default-party.csv"

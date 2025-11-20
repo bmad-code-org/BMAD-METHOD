@@ -1,0 +1,9 @@
+# <!-- Powered by BMAD-CORE™ -->
+bundle:
+  name: Brand & Creative Team
+  icon: 🎨
+  description: Brand strategy and creative design team for building compelling brand narratives and high-converting marketing assets
+agents:
+  - brand-marketer
+  - marketing-designer
+party: "./default-party.csv"

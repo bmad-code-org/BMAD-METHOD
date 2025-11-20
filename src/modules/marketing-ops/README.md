@@ -208,6 +208,59 @@ npx bmad-method@alpha install
 - `*brand-system` - Create design system and guidelines
 - `*party-mode` - Collaborate with other agents
 
+## 👥 Team Configurations
+
+The Marketing Ops module includes pre-configured team bundles for different marketing scenarios:
+
+### Complete Marketing Team (marketing-team.yaml)
+**All 4 agents working together** for comprehensive marketing operations
+- Sofia (Brand Marketer)
+- Marcus (Media Buyer)
+- Elena (Marketing Analyst)
+- Maya (Marketing Designer)
+
+**Best for:** End-to-end marketing programs, brand launches, major campaigns
+
+### Brand & Creative Team (brand-creative-team.yaml)
+**Sofia + Maya** for brand building and creative excellence
+- Brand strategy and positioning
+- Content planning and creative execution
+- Design system development
+
+**Best for:** Brand development, content creation, visual identity projects
+
+### Performance Marketing Team (performance-team.yaml)
+**Marcus + Elena** for data-driven performance optimization
+- Campaign planning and execution
+- Analytics and attribution modeling
+- ROI optimization and forecasting
+
+**Best for:** Paid media campaigns, conversion optimization, growth initiatives
+
+### Campaign Execution Team (campaign-team.yaml)
+**Marcus + Maya + Elena** for full campaign lifecycle
+- Media buying and channel strategy
+- Creative production and testing
+- Performance tracking and optimization
+
+**Best for:** Multi-channel campaigns, product launches, seasonal promotions
+
+### Marketing Strategy Team (strategy-team.yaml)
+**Sofia + Elena** for strategic planning and insights
+- Brand positioning and competitive analysis
+- Market research and customer insights
+- Data-driven strategic recommendations
+
+**Best for:** Strategic planning, market entry, competitive positioning
+
+### How to Use Teams
+
+Teams enable multi-agent collaboration through party mode. Each agent can still be used individually, or you can leverage team configurations for coordinated work:
+
+1. **Load any agent** from the team
+2. **Trigger `*party-mode`** to bring in the full team
+3. **Collaborate on complex projects** with multiple perspectives
+
 ## 🎯 Use Cases
 
 ### For Marketing Teams
@@ -298,6 +351,13 @@ src/modules/marketing-ops/
 │   ├── data-analysis.xml
 │   ├── audience-analysis.xml
 │   └── ... (17 more)
+├── teams/                      (5 team configurations)
+│   ├── marketing-team.yaml
+│   ├── brand-creative-team.yaml
+│   ├── performance-team.yaml
+│   ├── campaign-team.yaml
+│   ├── strategy-team.yaml
+│   └── default-party.csv
 ├── templates/
 │   ├── brand-strategy-tmpl.md
 │   ├── campaign-plan-tmpl.md
