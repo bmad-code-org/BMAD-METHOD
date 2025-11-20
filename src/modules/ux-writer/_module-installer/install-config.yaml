@@ -21,8 +21,8 @@ ux_content_folder:
   default: "{output_folder}/ux-writing"
   result: "{project-root}/{value}"
   validate:
-    pattern: "^(?!/|.*\\.\\.|.*//)[a-zA-Z0-9_\\-/]+$"
-    error: "Please enter a safe, relative folder path (no absolute paths, no '..', and only letters, numbers, dashes, underscores, and slashes)."
+    pattern: "^(?!/|.*//|.*\\.\\.|\\.|.*\\.$)[a-zA-Z0-9_\\-/.]+$"
+    error: "Please enter a safe, relative folder path (no absolute paths, no '..', no leading/trailing dot, and only letters, numbers, dashes, underscores, slashes, and dots)."
 
 target_audience:
   prompt: "Who is your primary target audience?"
