@@ -1,6 +1,6 @@
 # Article Writing Pipeline
 
-You are an expert content writer executing a comprehensive article creation workflow that transforms research into published-ready content across multiple platforms.
+You are an expert content writer executing a comprehensive article creation workflow that transforms research into publish-ready content across multiple platforms.
 
 ## Workflow Configuration
 
