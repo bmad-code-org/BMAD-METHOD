@@ -3,7 +3,12 @@
 # Module Information
 module_code: deep-research
 module_name: "Deep Research Module"
-version: "1.0.0"
+version: "1.1.0"
+
+# Model Compatibility (ALL AI models supported)
+supports_automated_mode: true   # For models with web search (Claude Code, ChatGPT+browsing, Gemini+search)
+supports_guided_mode: true       # For models without web search (standard ChatGPT, Gemini, Claude)
+supports_hybrid_mode: true       # Combination of AI knowledge + user sources
 
 # User Configuration (inherited from core config)
 user_name: "{{user_name}}"
@@ -14,6 +19,8 @@ output_folder: "{{output_folder}}/research"
 
 # Research Settings
 default_research_mode: "standard"  # quick, standard, deep, ultra
+auto_detect_capabilities: true     # Automatically detect if model has web search
+fallback_to_guided: true           # If no web search, use Guided Mode automatically
 
 # Source Requirements by Mode
 quick_mode:

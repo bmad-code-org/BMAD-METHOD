@@ -1,32 +1,56 @@
 # Deep Research Workflow
 
+**Universal AI Research - Works with ANY model (ChatGPT, Claude, Gemini, etc.)**
+
 ## Overview
 
-The Deep Research workflow implements an enterprise-grade research system that replicates and extends Claude Desktop's Advanced Research capabilities. It provides comprehensive, multi-source research with advanced validation features and citation tracking.
+The Deep Research workflow implements a model-agnostic enterprise-grade research system. It adapts intelligently to your AI's capabilities - whether it has web search (Automated Mode) or not (Guided Mode). Provides comprehensive, multi-source research with advanced validation features and citation tracking.
 
 ## Features
 
-- **8-Phase Research Pipeline**: Scope → Plan → Retrieve → Triangulate → Synthesize → Critique → Refine → Package
+- **Model-Agnostic**: Works with ALL AI models (Claude, ChatGPT, Gemini, etc.)
+- **3 Operational Modes**: Automated (with web search), Guided (without), Hybrid
+- **8-Phase Research Pipeline**: Scope → Plan → Gather → Triangulate → Synthesize → Critique → Refine → Package
 - **4 Research Modes**: Quick, Standard, Deep, and UltraDeep for different needs
 - **Citation Validation**: CiteGuard system prevents hallucinated sources
 - **Source Credibility Assessment**: Evaluate authority, recency, methodology, and bias
-- **Parallel Retrieval**: 3-5x faster information gathering
-- **Dynamic Outlining**: Structure adapts based on discovered evidence
+- **Intelligent Adaptation**: Automatically adjusts to available capabilities
 - **Progressive Assembly**: Handle unlimited report length
 
 ## Usage
 
-### Via Agent
+### Automated Mode (With Web Search)
 
-Load the Research Specialist agent and trigger the workflow:
+For Claude Code, ChatGPT Plus, Gemini with search:
 
 ```
 agent deep-research/research-specialist
 
-*research             # Standard mode (default)
-*quick-research       # Quick mode (2-5 min)
-*deep-research        # Deep mode (10-20 min)
-*ultra-research       # Ultra-deep mode (20-45+ min)
+*research             # Standard mode (auto web research)
+*quick-research       # Quick mode (fast auto research)
+*deep-research        # Deep mode (extensive verification)
+*ultra-research       # Ultra-deep mode (maximum rigor)
+```
+
+### Guided Mode (Without Web Search)
+
+For standard ChatGPT, Claude, Gemini:
+
+1. Load the agent and workflow instructions
+2. Request research - AI will guide you to find sources
+3. Provide sources as requested
+4. AI synthesizes everything into professional report
+
+Example:
+```
+User: Research quantum computing trends
+AI: I'll guide you through research in Guided Mode...
+    Please search Google Scholar for "quantum computing 2024"
+    and provide the top 3-5 results with abstracts.
+User: [Provides sources]
+AI: Perfect! Now let's check industry reports...
+    [Continues guiding until sufficient sources]
+AI: [Produces comprehensive research report with citations]
 ```
 
 ### Direct Workflow

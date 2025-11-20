@@ -1,9 +1,12 @@
 # Deep Research Module
 
-Enterprise-grade research automation that replicates and extends Claude Desktop's Advanced Research capabilities with multi-source verification, citation validation, and credibility assessment.
+**Universal AI Research System** - Works with ANY AI model (ChatGPT, Claude, Gemini, etc.)
+
+Enterprise-grade research automation with multi-source verification, citation validation, and credibility assessment. **Adapts intelligently** to your AI model's capabilities - whether it has web search or not.
 
 ## Table of Contents
 
+- [Model Compatibility](#model-compatibility)
 - [Core Capabilities](#core-capabilities)
 - [Specialized Agents](#specialized-agents)
 - [Research Workflows](#research-workflows)
@@ -13,13 +16,45 @@ Enterprise-grade research automation that replicates and extends Claude Desktop'
 - [Quality Standards](#quality-standards)
 - [Configuration](#configuration)
 
+## Model Compatibility
+
+✅ **Works with ALL AI models:**
+
+| AI Model | Mode | Capability |
+|----------|------|------------|
+| **Claude Code** | Automated | Full web search + real-time research |
+| **ChatGPT Plus** (with browsing) | Automated | Full web search + real-time research |
+| **Gemini** (with search) | Automated | Full web search + real-time research |
+| **ChatGPT** (standard) | Guided | User-assisted research with AI synthesis |
+| **Claude** (standard) | Guided | User-assisted research with AI synthesis |
+| **Gemini** (standard) | Guided | User-assisted research with AI synthesis |
+| **Any AI** | Hybrid | Training knowledge + user sources |
+
+### Three Operational Modes
+
+1. **Automated Mode** ⚡
+   - AI has web search capabilities
+   - Automatic source gathering and analysis
+   - Fast, autonomous research
+
+2. **Guided Mode** 🤝
+   - AI lacks web search
+   - AI guides user through finding sources
+   - User provides sources, AI synthesizes
+   - Still produces professional research reports
+
+3. **Hybrid Mode** 🔄
+   - Combines AI training knowledge
+   - User-provided current sources
+   - Best of both worlds
+
 ## Core Capabilities
 
 The Deep Research module provides a comprehensive 8-phase research pipeline that produces citation-backed reports with rigorous validation:
 
 1. **Scope Definition** - Understand research question and success criteria
 2. **Research Planning** - Design search strategy and source priorities
-3. **Parallel Retrieval** - Execute concurrent searches (3-5x faster)
+3. **Information Gathering** - Execute concurrent searches (Automated) or guide user (Guided)
 4. **Triangulation & Validation** - Cross-verify facts with CiteGuard
 5. **Outline Evolution** - Dynamic structure adapting to evidence
 6. **Synthesis** - Narrative-driven composition with embedded citations
@@ -30,11 +65,13 @@ The Deep Research module provides a comprehensive 8-phase research pipeline that
 
 [View detailed agent descriptions →](./agents/README.md)
 
-### Dr. Morgan - Elite Research Specialist
+### Dr. Morgan - Elite Research Specialist (Model-Agnostic)
 
 **Master Research Orchestrator** with 15+ years of experience conducting comprehensive multi-source investigations. Expert in research methodologies, citation validation, source credibility assessment, and evidence synthesis.
 
-**Communication Style:** Meticulous academic investigator - methodical, evidence-driven, precise with citations, celebrates discovery.
+**Adapts to any AI model** - Whether with web search (Automated Mode), without (Guided Mode), or hybrid approaches. Seamlessly works in ChatGPT, Claude, Gemini, and all other AI models.
+
+**Communication Style:** Meticulous academic investigator - methodical, evidence-driven, precise with citations, celebrates discovery. Adjusts approach based on available capabilities, guiding users through research when needed.
 
 ## Research Workflows
 
@@ -52,29 +89,73 @@ The flagship workflow implementing enterprise-grade research:
 
 ## Quick Start
 
-### 1. Load Research Specialist
+### For Models WITH Web Search (Claude Code, ChatGPT Plus, etc.)
+
+#### 1. Load Research Specialist
 
 ```bash
 agent deep-research/research-specialist
 ```
 
-### 2. Choose Research Mode
+#### 2. Choose Research Mode
 
 ```bash
-*research              # Standard mode (5-10 min, 15-30 sources)
-*quick-research        # Quick mode (2-5 min, 2-5 sources)
-*deep-research         # Deep mode (10-20 min, 30+ sources)
-*ultra-research        # Ultra-deep mode (20-45+ min, 50+ sources)
+*research              # Standard mode (automatic web research)
+*quick-research        # Quick mode (fast automatic research)
+*deep-research         # Deep mode (extensive verification)
+*ultra-research        # Ultra-deep mode (maximum rigor)
 ```
 
-### 3. Provide Research Question
+#### 3. Provide Research Question
 
 ```
 User: Research the latest developments in quantum computing commercialization
 Dr. Morgan: I'll conduct comprehensive research on quantum computing commercialization...
+[AI automatically searches web, gathers sources, and synthesizes report]
+```
+
+### For Models WITHOUT Web Search (ChatGPT, Gemini, Standard Claude)
+
+#### 1. Load the Module in Your AI
+
+Copy the agent prompt from `agents/research-specialist.md` and the workflow from `workflows/research/` into your AI chat.
+
+#### 2. Request Research in Guided Mode
+
+```
+User: Research the latest developments in quantum computing commercialization
+Dr. Morgan: I'll conduct research in Guided Mode since I don't have web search.
+
+I'll guide you through gathering sources, then synthesize them into a comprehensive report.
+
+**Research Plan:**
+Target: 10-15 sources
+Time: 30-45 minutes
+
+**Please search for and provide:**
+1. Search Google Scholar for "quantum computing commercialization 2024"
+2. Search news sites for "quantum computing companies funding 2024"
+3. Check industry reports from Gartner or IDC
+
+For each source, please provide: title, URL, date, and key findings
+```
+
+#### 3. Provide Sources
+
+```
+User: [Pastes source information]
+
+Dr. Morgan: Great! I notice we need more data on market size.
+Could you also search for "quantum computing market forecast"?
+
+[After sufficient sources gathered]
+Dr. Morgan: Perfect! I have enough information. Let me synthesize this into a comprehensive report...
+[Produces professional research report with all citations]
 ```
 
 ## Research Modes
+
+### Automated Mode (With Web Search)
 
 | Mode | Duration | Sources | Verification | Best For |
 |------|----------|---------|--------------|----------|
@@ -82,6 +163,15 @@ Dr. Morgan: I'll conduct comprehensive research on quantum computing commerciali
 | **Standard** | 5-10 min | 15-30 | Multi-source comparison | Most general research needs |
 | **Deep** | 10-20 min | 30+ | 3+ sources per claim | Important decisions, comprehensive understanding |
 | **UltraDeep** | 20-45+ min | 50+ | Maximum rigor | Enterprise decisions, critical analysis |
+
+### Guided Mode (Without Web Search)
+
+| Mode | Duration | Target Sources | Verification | Best For |
+|------|----------|----------------|--------------|----------|
+| **Quick** | 15-20 min | 2-5 | Basic fact-checking | Initial exploration |
+| **Standard** | 30-45 min | 10-15 | Multi-source synthesis | Most research needs |
+| **Deep** | 1-2 hours | 20+ | Comprehensive verification | Important decisions |
+| **UltraDeep** | 2-4 hours | 30+ | Multi-session deep dive | Enterprise critical analysis |
 
 ## Key Features
 
