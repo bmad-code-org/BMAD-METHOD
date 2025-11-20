@@ -1,0 +1,75 @@
+# Deep Research Module Configuration
+
+# Module Information
+module_code: deep-research
+module_name: "Deep Research Module"
+version: "1.0.0"
+
+# User Configuration (inherited from core config)
+user_name: "{{user_name}}"
+communication_language: "{{communication_language}}"
+
+# Output Configuration
+output_folder: "{{output_folder}}/research"
+
+# Research Settings
+default_research_mode: "standard"  # quick, standard, deep, ultra
+
+# Source Requirements by Mode
+quick_mode:
+  min_sources: 2
+  max_sources: 5
+  duration: "2-5 minutes"
+
+standard_mode:
+  min_sources: 15
+  max_sources: 30
+  duration: "5-10 minutes"
+
+deep_mode:
+  min_sources: 30
+  max_sources: 50
+  duration: "10-20 minutes"
+  verification_threshold: 3  # Require 3+ sources for major claims
+
+ultra_mode:
+  min_sources: 50
+  max_sources: 100
+  duration: "20-45+ minutes"
+  verification_threshold: 3
+  max_rigor: true
+
+# Citation Settings
+citation_format: "inline"  # Format: [1], [2], etc.
+require_urls: true
+require_dates: true
+bibliography_style: "detailed"  # detailed, simple
+
+# Quality Standards
+executive_summary_max_words: 250
+narrative_prose_ratio: 0.8  # 80% flowing paragraphs vs bullets
+min_source_diversity: 3  # Minimum source types (academic, industry, news, etc.)
+
+# Anti-Hallucination Settings
+strict_citation_validation: true
+require_explicit_attribution: true
+flag_unsourced_claims: true
+confidence_markers: true
+
+# Output Formats
+generate_markdown: true
+generate_html: false
+generate_pdf: false
+
+# Progressive Assembly
+enable_incremental_writing: true
+max_tokens_per_section: 4000
+
+# Source Credibility Assessment
+assess_source_credibility: true
+assess_bias: true
+credibility_ratings:
+  - "A: Highly credible, authoritative"
+  - "B: Credible with minor limitations"
+  - "C: Useful but requires corroboration"
+  - "D: Limited credibility, use with caution"
