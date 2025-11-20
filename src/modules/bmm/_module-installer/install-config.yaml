@@ -47,7 +47,7 @@ tea_use_mcp_enhancements:
   result: "{value}"
 
 tea_use_playwright_utils:
-  prompt: "Are you using @seontechnologies/playwright-utils in your project?"
+  prompt: "Are you using playwright-utils (@seontechnologies/playwright-utils) in your project? (Adds fixture-based utilities for auth, API requests, network recording, polling, intercept, recurse, logging, file download handling, burn-in)"
   default: false
   result: "{value}"
 # desired_mcp_tools:
