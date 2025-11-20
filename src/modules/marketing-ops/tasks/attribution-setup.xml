@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/attribution-setup.xml</id>
+    <name>Attribution Tracking Setup</name>
+    <description>Configure multi-touch attribution tracking and models</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Attribution Tracking Setup
+Implement attribution tracking to understand customer journey and channel contribution.
+## Setup Components
+1. **Conversion Tracking**: Pixels, events, server-side tracking
+2. **UTM Parameters**: Consistent naming conventions
+3. **Cross-Domain Tracking**: Link domains for full journey
+4. **Attribution Models**: Configure last-click, first-click, linear, position-based, data-driven
+5. **Reporting**: Dashboards showing multi-touch attribution
+## Implementation
+- Install tracking pixels on all platforms
+- Set up conversion events with values
+- Implement UTM tagging standards
+- Configure attribution windows
+- Validate data accuracy
+- Train team on attribution insights
+    ]]>
+  </instructions>
+</task>

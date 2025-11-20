@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/funnel-analysis.xml</id>
+    <name>Conversion Funnel Analysis</name>
+    <description>Analyze conversion funnel to identify drop-off points and optimization opportunities</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>conversion</tag>
+      <tag>funnel</tag>
+      <tag>optimization</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Conversion Funnel Analysis
+
+## Objective
+Analyze the customer journey funnel to identify drop-off points, bottlenecks, and opportunities for conversion optimization.
+
+## Funnel Analysis Process
+
+### 1. Define Funnel Stages
+
+Map the customer journey with specific stages:
+
+**Example E-commerce Funnel**:
+1. Awareness: Ad impression/click
+2. Visit: Landing page view
+3. Engagement: Product page view
+4. Consideration: Add to cart
+5. Intent: Begin checkout
+6. Conversion: Purchase complete
+7. Retention: Repeat purchase
+
+**Example B2B SaaS Funnel**:
+1. Awareness: Content view/ad click
+2. Interest: Multiple page visits
+3. Consideration: Free trial signup
+4. Evaluation: Feature usage
+5. Decision: Sales conversation
+6. Conversion: Purchase/subscription
+7. Expansion: Upsell/upgrade
+
+Customize funnel stages to your business model.
+
+### 2. Collect Funnel Data
+
+For each funnel stage, gather:
+- **Volume**: Number of users at this stage
+- **Conversion Rate**: % who move to next stage
+- **Drop-off Rate**: % who leave at this stage
+- **Time to Convert**: How long to move to next stage
+- **Channel Attribution**: Which channels bring users to this stage
+
+Data sources:
+- Google Analytics (GA4) funnel reports
+- CRM conversion data
+- Product analytics
+- Marketing platform data
+
+### 3. Calculate Funnel Metrics
+
+**Overall Funnel Performance**:
+- Total funnel conversion rate (end-to-end)
+- Average time to conversion
+- Conversion rate by channel/source
+- Conversion rate by device (mobile vs. desktop)
+
+**Stage-by-Stage Metrics**:
+For each stage:
+- Users at stage / Users at previous stage = Conversion rate
+- Users who left / Users at stage = Drop-off rate
+- Expected vs. Actual performance
+
+### 4. Identify Drop-Off Points
+
+**Biggest Leaks**:
+- Which stage has the highest drop-off rate?
+- Which stage has the most absolute drop-off (volume)?
+- Where are the biggest gaps vs. benchmarks?
+
+**Segment Analysis**:
+Compare funnel performance across:
+- Traffic source/channel
+- Device type
+- Audience segment
+- Time period
+- Landing page
+- Campaign
+
+### 5. Diagnose Root Causes
+
+For each major drop-off point, investigate:
+
+**Possible Causes**:
+- **UX Issues**: Confusing navigation, technical errors, slow load times
+- **Messaging Mismatch**: Ad promise doesn't match landing page
+- **Trust/Credibility**: Lack of social proof, security concerns
+- **Friction**: Too many steps, required information, payment options
+- **Value Clarity**: Benefits not clear, price not justified
+- **Timing**: Not ready to commit, need more information
+
+**Investigation Methods**:
+- Session recordings to watch user behavior
+- Heatmaps to see where users click/scroll
+- User surveys to ask why they didn't convert
+- A/B test results showing what worked
+- Technical monitoring for errors or performance issues
+
+### 6. Benchmark Performance
+
+Compare to:
+- **Industry Benchmarks**: Standard conversion rates for your industry
+- **Historical Performance**: Your own past performance
+- **Competitor Analysis**: What conversion rates are achievable
+- **Best-in-Class**: Top performers in your category
+
+Typical Benchmarks:
+- E-commerce checkout completion: 50-70%
+- Email signup from landing page: 5-15%
+- Free trial to paid conversion: 15-30%
+- Add-to-cart to purchase: 60-80%
+
+### 7. Prioritize Optimization Opportunities
+
+Use impact framework:
+- **High Impact, Low Effort**: Quick wins, implement immediately
+- **High Impact, High Effort**: Strategic projects, plan carefully
+- **Low Impact, Low Effort**: Nice-to-haves, fill time if available
+- **Low Impact, High Effort**: Avoid, not worth resources
+
+Calculate potential impact:
+- Current conversion rate: 2%
+- Target conversion rate: 3% (+50% improvement)
+- Weekly traffic: 10,000 users
+- Impact: 100 additional conversions/week
+- Value at $50 AOV: $5,000/week = $260K/year
+
+### 8. Develop Optimization Recommendations
+
+For each drop-off point, recommend:
+
+**Quick Wins** (implement this week):
+- Remove unnecessary form fields
+- Add trust badges and security seals
+- Improve error messaging
+- Simplify navigation
+- Add progress indicators
+
+**Tests to Run** (A/B test next 2-4 weeks):
+- Headline and copy variations
+- CTA button color, size, text
+- Social proof placement
+- Pricing presentation
+- Checkout flow variations
+
+**Strategic Improvements** (longer-term projects):
+- Redesign landing page/checkout
+- Implement live chat
+- Build email nurture sequence
+- Develop retargeting campaigns
+- Create educational content
+
+## Deliverables
+
+1. **Funnel Visualization** - Clear diagram showing stages, volumes, conversion rates
+2. **Drop-off Analysis** - Identification of biggest leaks with root causes
+3. **Benchmark Comparison** - Performance vs. industry standards and goals
+4. **Optimization Roadmap** - Prioritized list of improvements with expected impact
+
+## Success Criteria
+
+- All major funnel stages are measured and analyzed
+- Root causes identified for top 3 drop-off points
+- Recommendations are prioritized by impact and effort
+- Expected impact is quantified for key optimizations
+- Quick wins are identified for immediate implementation
+    ]]>
+  </instructions>
+</task>

@@ -1,0 +1,24 @@
+name: "brand-launch"
+description: "Plan and execute comprehensive brand launch campaign with multi-channel coordination"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/brand-launch-plan-{{brand-name}}-{{date}}.md"
+
+steps:
+  - id: brand-strategy
+    agent: "{bmad_folder}/marketing-ops/agents/brand-marketer.md"
+    workflow: "{project-root}/{bmad_folder}/marketing-ops/workflows/brand-strategy/workflow.yaml"
+
+  - id: campaign-plan
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    workflow: "{project-root}/{bmad_folder}/marketing-ops/workflows/campaign-plan/workflow.yaml"
+
+  - id: creative-assets
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-designer.md"
+    workflow: "{project-root}/{bmad_folder}/marketing-ops/workflows/design-brief/workflow.yaml"
+
+  - id: launch-plan
+    agent: "{bmad_folder}/marketing-ops/agents/brand-marketer.md"
+    output_file: "{default_output_file}"

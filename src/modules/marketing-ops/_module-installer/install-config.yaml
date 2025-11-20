@@ -1,0 +1,191 @@
+code: marketing-ops
+name: "Marketing Ops - Comprehensive Marketing Operations Suite"
+description: "Complete marketing operations module with brand strategy, performance marketing, analytics, and creative design capabilities"
+default_selected: false
+
+prompts:
+  marketing_output_path:
+    prompt: "Where should marketing deliverables be saved? (strategies, reports, plans)"
+    default: "{output_folder}/marketing"
+    result: "{project-root}/{value}"
+
+  analytics_platform:
+    prompt: "What analytics platform do you primarily use?"
+    default: "ga4"
+    single-select:
+      - value: "ga4"
+        label: "Google Analytics 4"
+      - value: "adobe"
+        label: "Adobe Analytics"
+      - value: "mixpanel"
+        label: "Mixpanel"
+      - value: "other"
+        label: "Other/Multiple"
+
+  advertising_platforms:
+    prompt: "Which advertising platforms do you use? (Select all that apply)"
+    multi-select:
+      - value: "google-ads"
+        label: "Google Ads"
+      - value: "facebook"
+        label: "Facebook/Instagram Ads"
+      - value: "linkedin"
+        label: "LinkedIn Ads"
+      - value: "tiktok"
+        label: "TikTok Ads"
+      - value: "youtube"
+        label: "YouTube Ads"
+      - value: "twitter"
+        label: "Twitter/X Ads"
+      - value: "programmatic"
+        label: "Display/Programmatic"
+
+  business_type:
+    prompt: "What type of business are you?"
+    default: "b2c"
+    single-select:
+      - value: "b2c"
+        label: "B2C (Business to Consumer)"
+      - value: "b2b"
+        label: "B2B (Business to Business)"
+      - value: "d2c"
+        label: "D2C (Direct to Consumer)"
+      - value: "saas"
+        label: "SaaS (Software as a Service)"
+      - value: "ecommerce"
+        label: "E-commerce"
+      - value: "marketplace"
+        label: "Marketplace/Platform"
+
+  marketing_team_size:
+    prompt: "What is your marketing team size?"
+    default: "small"
+    single-select:
+      - value: "solo"
+        label: "Solo marketer"
+      - value: "small"
+        label: "Small team (2-5)"
+      - value: "medium"
+        label: "Medium team (6-15)"
+      - value: "large"
+        label: "Large team (15+)"
+      - value: "agency"
+        label: "Agency/Multiple clients"
+
+  marketing_budget_range:
+    prompt: "What is your monthly marketing budget range?"
+    default: "10k-50k"
+    single-select:
+      - value: "under-10k"
+        label: "Under $10K/month"
+      - value: "10k-50k"
+        label: "$10K-$50K/month"
+      - value: "50k-200k"
+        label: "$50K-$200K/month"
+      - value: "200k-plus"
+        label: "$200K+/month"
+
+  primary_marketing_goals:
+    prompt: "What are your primary marketing goals? (Select all that apply)"
+    multi-select:
+      - value: "brand-awareness"
+        label: "Brand Awareness"
+      - value: "lead-generation"
+        label: "Lead Generation"
+      - value: "customer-acquisition"
+        label: "Customer Acquisition"
+      - value: "revenue-growth"
+        label: "Revenue Growth"
+      - value: "retention"
+        label: "Customer Retention"
+      - value: "market-expansion"
+        label: "Market Expansion"
+
+configuration:
+  bmad_folder: ".bmad"
+
+  agents:
+    - file: "agents/brand-marketer.agent.yaml"
+      enabled: true
+    - file: "agents/media-buyer.agent.yaml"
+      enabled: true
+    - file: "agents/marketing-analyst.agent.yaml"
+      enabled: true
+    - file: "agents/marketing-designer.agent.yaml"
+      enabled: true
+
+  workflows:
+    - folder: "workflows/brand-strategy"
+      enabled: true
+    - folder: "workflows/campaign-plan"
+      enabled: true
+    - folder: "workflows/analytics-report"
+      enabled: true
+    - folder: "workflows/design-brief"
+      enabled: true
+    - folder: "workflows/brand-analysis"
+      enabled: true
+    - folder: "workflows/campaign-optimize"
+      enabled: true
+    - folder: "workflows/budget-planning"
+      enabled: true
+    - folder: "workflows/attribution-modeling"
+      enabled: true
+    - folder: "workflows/dashboard-setup"
+      enabled: true
+    - folder: "workflows/content-calendar"
+      enabled: true
+    - folder: "workflows/brand-launch"
+      enabled: true
+    - folder: "workflows/landing-page-design"
+      enabled: true
+    - folder: "workflows/email-design"
+      enabled: true
+
+  tasks:
+    - file: "tasks/competitive-research.xml"
+    - file: "tasks/data-analysis.xml"
+    - file: "tasks/audience-analysis.xml"
+    - file: "tasks/channel-strategy.xml"
+    - file: "tasks/funnel-analysis.xml"
+    - file: "tasks/roi-analysis.xml"
+    - file: "tasks/brand-audit.xml"
+    - file: "tasks/content-strategy.xml"
+    - file: "tasks/voice-tone-guide.xml"
+    - file: "tasks/bid-optimization.xml"
+    - file: "tasks/creative-testing.xml"
+    - file: "tasks/customer-segmentation.xml"
+    - file: "tasks/cohort-analysis.xml"
+    - file: "tasks/ab-test-analysis.xml"
+    - file: "tasks/predictive-analysis.xml"
+    - file: "tasks/attribution-setup.xml"
+    - file: "tasks/brand-system.xml"
+    - file: "tasks/mobile-optimization.xml"
+    - file: "tasks/social-media-design.xml"
+    - file: "tasks/ad-creative.xml"
+
+post_install_message: |
+
+  🎯 Marketing Ops Module Installed Successfully!
+
+  You now have access to 4 specialized marketing agents:
+
+  📊 Sofia (Brand Marketer) - Brand strategy and content planning
+  📱 Marcus (Media Buyer) - Performance marketing and campaigns
+  📈 Elena (Marketing Analyst) - Data analysis and insights
+  🎨 Maya (Marketing Designer) - Creative design and UX
+
+  Key workflows available:
+  • Brand Strategy Development
+  • Campaign Planning & Optimization
+  • Analytics Reporting
+  • Design Briefs & Creative Production
+
+  💡 Quick Start:
+  1. Load an agent (e.g., Sofia for brand strategy)
+  2. Run a workflow (e.g., *brand-strategy)
+  3. Marketing deliverables will be saved to: {{marketing_output_path}}
+
+  📚 Full documentation: src/modules/marketing-ops/README.md
+
+  Happy marketing! 🚀

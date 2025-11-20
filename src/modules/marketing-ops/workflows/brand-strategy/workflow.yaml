@@ -1,0 +1,26 @@
+name: "brand-strategy"
+description: "Develop comprehensive brand strategy including positioning, messaging, and implementation plan"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/brand-strategy-{{brand-name}}-{{date}}.md"
+
+steps:
+  - id: gather-context
+    agent: "{bmad_folder}/marketing-ops/agents/brand-marketer.md"
+    instructions: "{project-root}/{bmad_folder}/marketing-ops/workflows/brand-strategy/instructions.md"
+    template: "{project-root}/{bmad_folder}/marketing-ops/workflows/brand-strategy/template.md"
+
+  - id: competitive-analysis
+    agent: "{bmad_folder}/marketing-ops/agents/brand-marketer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/competitive-research.xml"
+
+  - id: create-strategy
+    agent: "{bmad_folder}/marketing-ops/agents/brand-marketer.md"
+    template: "{project-root}/{bmad_folder}/marketing-ops/templates/brand-strategy-tmpl.md"
+    output_file: "{default_output_file}"
+
+  - id: validate-strategy
+    agent: "{bmad_folder}/marketing-ops/agents/brand-marketer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/brand-audit.xml"

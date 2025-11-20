@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/creative-testing.xml</id>
+    <name>Creative A/B Testing</name>
+    <description>Design and analyze creative A/B tests to improve performance</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>creative</tag>
+      <tag>testing</tag>
+      <tag>ab-test</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Creative A/B Testing
+
+## Objective
+Systematically test creative variations to identify high-performing assets and improve ROAS.
+
+## Test Design Process
+
+### 1. Identify Test Variables
+
+**Primary Creative Elements**:
+- Headlines and copy
+- Images and visuals
+- Call-to-action (CTA)
+- Video hooks (first 3 seconds)
+- Color schemes
+- Layout and composition
+
+**Test One Variable at a Time**
+For clean results, isolate variables:
+- Test A: Headline variation only
+- Test B: Image variation only
+- Not: Headline + image + CTA all at once
+
+### 2. Develop Hypotheses
+
+Structure tests around clear hypotheses:
+- "Benefit-focused headlines will outperform feature-focused by 20%"
+- "Video creative will achieve 30% higher CTR than static images"
+- "Red CTA buttons will drive 15% more conversions than blue"
+
+### 3. Create Test Variations
+
+**Variation Guidelines**:
+- Create 2-4 variations per test
+- Ensure variations are meaningfully different
+- Maintain brand guidelines across all
+- Test bold differences, not minor tweaks
+
+**Example Test**:
+- Control: "Save time with automated reporting"
+- Variant A: "Stop wasting hours on manual reports"
+- Variant B: "Get reports in 5 minutes, not 5 hours"
+
+### 4. Determine Sample Size
+
+Calculate required sample size for statistical significance:
+- Baseline conversion rate: 2%
+- Minimum detectable effect: 20% improvement
+- Confidence level: 95%
+- Statistical power: 80%
+
+Use sample size calculator or rule of thumb:
+- Need ~100 conversions per variation for significance
+
+### 5. Set Test Duration
+
+Run test until:
+- Sufficient sample size achieved
+- Covers full week (account for day-of-week effects)
+- At least 7-14 days minimum
+- Budget consumed proportionally
+
+### 6. Monitor Test Performance
+
+**Daily Checks**:
+- Spend pacing evenly across variations
+- No technical delivery issues
+- Performance trends emerging
+
+**Mid-Test Analysis** (if large sample):
+- Early signals of winner
+- Decision to stop underperformers
+- Reallocate budget to winners
+
+### 7. Analyze Results
+
+**Statistical Significance**:
+- P-value < 0.05 (95% confidence)
+- Confidence intervals don't overlap
+- Sufficient sample size achieved
+
+**Performance Metrics**:
+- Click-through rate (CTR)
+- Conversion rate (CVR)
+- Cost per acquisition (CPA)
+- Return on ad spend (ROAS)
+
+**Declare Winner**:
+- Winner is statistically significant
+- Winner is practically meaningful (>10% improvement)
+- Winner is sustainable (not a fluke)
+
+### 8. Scale Winners & Iterate
+
+**Implementation**:
+- Pause losing variations
+- Allocate full budget to winner
+- Scale winning creative across campaigns
+
+**Document Learnings**:
+- What worked and why
+- What didn't work
+- Hypotheses validated/invalidated
+- New test ideas generated
+
+**Continuous Testing**:
+- Test new elements on winning creative
+- Refresh creative regularly (every 4-6 weeks)
+- Build creative testing roadmap
+
+## Testing Best Practices
+
+- Always have a control (current best performer)
+- Test regularly, not just at launch
+- Document all tests and learnings
+- Share insights across teams
+- Refresh creatives before fatigue sets in
+- Consider platform-specific best practices
+- Account for seasonal effects
+
+## Common Test Types
+
+**Headline Tests**:
+- Benefit vs. feature-focused
+- Question vs. statement
+- Short vs. long
+- Emotional vs. rational
+
+**Visual Tests**:
+- Product-focused vs. lifestyle
+- People vs. no people
+- Bright vs. muted colors
+- Simple vs. busy composition
+
+**CTA Tests**:
+- "Buy Now" vs. "Shop Now" vs. "Get Started"
+- Button color and size
+- Placement and prominence
+
+**Video Tests**:
+- First 3 seconds hook
+- Length (6s vs. 15s vs. 30s)
+- Sound on vs. sound off optimization
+- Product demo vs. testimonial
+
+## Deliverables
+
+1. **Test Plan** - Hypothesis, variations, success metrics
+2. **Creative Assets** - All test variations
+3. **Results Analysis** - Statistical significance, performance data
+4. **Recommendations** - Winning creative and next tests
+
+## Success Criteria
+
+- Test reaches statistical significance
+- Winner identified with >10% improvement
+- Learnings documented for future tests
+- Winning creative scaled across campaigns
+    ]]>
+  </instructions>
+</task>

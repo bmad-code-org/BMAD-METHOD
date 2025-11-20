@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/predictive-analysis.xml</id>
+    <name>Predictive Analytics & Forecasting</name>
+    <description>Build predictive models for forecasting and optimization</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Predictive Analytics & Forecasting
+Use historical data to predict future performance and optimize strategies.
+## Forecasting Applications
+- Revenue and conversion forecasting
+- Customer churn prediction
+- LTV prediction by segment
+- Channel performance projection
+- Budget allocation optimization
+## Methodology
+1. Gather historical data (min 6-12 months)
+2. Identify trends, seasonality, and patterns
+3. Build predictive model (regression, time series, ML)
+4. Validate model accuracy
+5. Generate forecasts with confidence intervals
+6. Create scenario planning (optimistic, expected, conservative)
+    ]]>
+  </instructions>
+</task>

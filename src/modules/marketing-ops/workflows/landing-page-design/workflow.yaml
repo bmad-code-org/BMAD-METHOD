@@ -1,0 +1,20 @@
+name: "landing-page-design"
+description: "Design conversion-optimized landing page with UX best practices and A/B testing plan"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/landing-page-design-{{page-name}}-{{date}}.md"
+
+steps:
+  - id: design-brief
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-designer.md"
+    workflow: "{project-root}/{bmad_folder}/marketing-ops/workflows/design-brief/workflow.yaml"
+
+  - id: mobile-optimization
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-designer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/mobile-optimization.xml"
+
+  - id: page-design
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-designer.md"
+    output_file: "{default_output_file}"

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/roi-analysis.xml</id>
+    <name>Marketing ROI & ROAS Analysis</name>
+    <description>Calculate and analyze marketing ROI, ROAS, and customer economics</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>roi</tag>
+      <tag>roas</tag>
+      <tag>economics</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Marketing ROI & ROAS Analysis
+
+## Objective
+Calculate marketing return on investment (ROI) and return on ad spend (ROAS) to understand profitability and optimize budget allocation.
+
+## Key Metrics Definitions
+
+**ROAS (Return on Ad Spend)**
+```
+ROAS = Revenue / Ad Spend
+```
+Example: $10,000 revenue / $2,000 ad spend = 5x ROAS
+
+**ROI (Return on Investment)**
+```
+ROI % = (Revenue - Total Costs) / Total Costs × 100
+```
+Example: ($10,000 - $3,000) / $3,000 = 233% ROI
+
+**Customer Acquisition Cost (CAC)**
+```
+CAC = Total Marketing Spend / New Customers Acquired
+```
+Example: $10,000 / 100 customers = $100 CAC
+
+**Lifetime Value (LTV)**
+```
+LTV = Average Order Value × Purchase Frequency × Customer Lifespan
+```
+Example: $50 × 4 purchases/year × 3 years = $600 LTV
+
+**LTV:CAC Ratio**
+```
+LTV:CAC = Lifetime Value / Customer Acquisition Cost
+```
+Target: Minimum 3:1 (ideally 5:1)
+
+## Analysis Process
+
+### 1. Calculate Overall Performance
+
+**Total Marketing Investment**
+Include all costs:
+- Media spend (ads, sponsorships)
+- Creative production
+- Agency/freelance fees
+- Marketing tools and software
+- Team salaries (allocated %)
+
+**Total Revenue Generated**
+- Direct attributed revenue (first-click, last-click)
+- Multi-touch attributed revenue
+- Include or exclude organic depending on analysis goal
+
+**Calculate Blended Metrics**
+- Overall ROAS = Total Revenue / Total Media Spend
+- Overall ROI = (Revenue - Total Costs) / Total Costs
+- Overall CAC = Total Spend / Total New Customers
+
+### 2. Calculate by Channel
+
+For each marketing channel:
+
+| Channel | Spend | Revenue | ROAS | Conversions | CAC |
+|---------|-------|---------|------|-------------|-----|
+| Google Search | $10K | $40K | 4.0x | 200 | $50 |
+| Facebook | $15K | $45K | 3.0x | 300 | $50 |
+| LinkedIn | $8K | $16K | 2.0x | 40 | $200 |
+| Email | $2K | $20K | 10.0x | 100 | $20 |
+| Organic | $0 | $30K | ∞ | 150 | $0 |
+
+Insights:
+- Which channels are most efficient (highest ROAS)?
+- Which drive highest volume?
+- Where should we allocate more/less budget?
+
+### 3. Calculate by Campaign
+
+For each major campaign:
+- Campaign ROAS and ROI
+- Performance vs. targets
+- Trend over campaign duration
+- Efficiency improvements over time
+
+### 4. Analyze Customer Economics
+
+**Calculate LTV**
+Method 1: Historical average
+- Average order value: $X
+- Average purchases per customer: Y
+- Average customer lifespan: Z years
+- LTV = X × Y × Z
+
+Method 2: Cohort analysis
+- Track cohorts by acquisition month
+- Calculate actual revenue per cohort over time
+- Project future revenue based on retention curves
+
+**LTV:CAC Ratio by Channel**
+| Channel | CAC | LTV | LTV:CAC | Payback Period |
+|---------|-----|-----|---------|----------------|
+| Google | $50 | $300 | 6.0x | 2 months |
+| Facebook | $75 | $200 | 2.7x | 4 months |
+| LinkedIn | $200 | $800 | 4.0x | 3 months |
+
+Interpretation:
+- **LTV:CAC < 1**: Losing money on each customer
+- **LTV:CAC 1-3**: Marginal, may not cover overhead
+- **LTV:CAC 3-5**: Healthy, sustainable
+- **LTV:CAC > 5**: Excellent, room to invest more
+
+**Payback Period**
+```
+Payback Period = CAC / (Monthly Revenue per Customer)
+```
+Target: < 12 months (ideally < 6 months)
+
+### 5. Attribution Analysis
+
+**Compare Attribution Models**
+- **Last Click**: Full credit to final touchpoint
+- **First Click**: Full credit to initial touchpoint
+- **Linear**: Equal credit across all touchpoints
+- **Time Decay**: More credit to recent touchpoints
+- **Position-Based**: Credit to first and last (40/40/20)
+- **Data-Driven**: Algorithmic based on conversion paths
+
+Analyze:
+- How does ROAS change across models?
+- Which channels benefit from multi-touch attribution?
+- What does customer journey reveal about channel roles?
+
+### 6. Incremental Lift Analysis
+
+**Test Incrementality**
+Not all attributed revenue is incremental:
+- Would they have converted anyway?
+- Are we cannibalizing organic traffic?
+- What is true incremental lift from marketing?
+
+**Methods**:
+- Geographic holdout tests
+- Conversion lift studies (platform-provided)
+- Media mix modeling
+- Before/after analysis
+
+### 7. Optimize Budget Allocation
+
+**Marginal ROAS Analysis**
+- What is ROAS at current spend level?
+- What happens if we increase budget 20%?
+- What happens if we decrease budget 20%?
+- Where is the efficiency curve flattening?
+
+**Reallocation Scenarios**
+Model what-if scenarios:
+- Scenario 1: Shift $5K from LinkedIn to Google
+- Scenario 2: Increase top-performing campaigns by 30%
+- Scenario 3: Cut bottom 20% of spend, reallocate to top 20%
+
+Calculate expected impact on:
+- Total revenue
+- Total ROAS
+- Total conversions
+
+**Optimal Allocation Formula**
+Allocate budget where:
+```
+Marginal ROAS Channel A = Marginal ROAS Channel B = ... = Target ROAS
+```
+
+## Deliverables
+
+1. **ROI Dashboard** - Summary metrics and trends
+2. **Channel Performance** - ROAS, ROI, CAC by channel
+3. **Customer Economics** - LTV, CAC, payback period analysis
+4. **Attribution Comparison** - Multi-model attribution results
+5. **Optimization Recommendations** - Budget reallocation scenarios
+
+## Success Criteria
+
+- All revenue properly attributed to marketing sources
+- Customer economics (LTV, CAC, payback) clearly understood
+- Channel efficiency benchmarked and compared
+- Budget optimization opportunities identified and quantified
+- Recommendations are data-backed with projected impact
+    ]]>
+  </instructions>
+</task>

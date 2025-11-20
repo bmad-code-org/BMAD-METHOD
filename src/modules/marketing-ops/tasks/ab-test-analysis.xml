@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/ab-test-analysis.xml</id>
+    <name>Statistical A/B Test Analysis</name>
+    <description>Analyze A/B test results with statistical rigor</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Statistical A/B Test Analysis
+Analyze A/B tests to determine statistical significance and business impact.
+## Analysis Process
+1. Verify test setup and data quality
+2. Calculate conversion rates by variation
+3. Perform statistical significance test (chi-square or t-test)
+4. Calculate confidence intervals
+5. Assess practical significance (effect size)
+6. Make recommendation (scale winner, iterate, or inconclusive)
+## Success Criteria
+- P-value < 0.05 (95% confidence)
+- Minimum 100 conversions per variation
+- Test ran for full business cycle (typically 1-2 weeks)
+- Result is both statistically and practically significant
+    ]]>
+  </instructions>
+</task>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/cohort-analysis.xml</id>
+    <name>Cohort Analysis & Retention</name>
+    <description>Analyze customer cohorts to understand retention and lifetime value</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Cohort Analysis & Retention
+Track customer cohorts to understand retention patterns and predict LTV.
+## Cohort Types
+- Acquisition cohorts (grouped by signup month)
+- Behavior cohorts (grouped by first action)
+- Channel cohorts (grouped by acquisition source)
+## Analysis
+1. Define cohort groups
+2. Track retention by cohort over time
+3. Calculate LTV by cohort
+4. Compare cohort quality over time
+5. Identify retention improvement opportunities
+## Key Metrics
+- Month 1, 3, 6, 12 retention rates
+- Cohort LTV curves
+- Time to payback by cohort
+    ]]>
+  </instructions>
+</task>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/ad-creative.xml</id>
+    <name>Paid Ad Creative Development</name>
+    <description>Develop platform-specific ad creatives optimized for performance</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Paid Ad Creative Development
+Create high-performing ad creatives optimized for each platform.
+## Platform Best Practices
+**Google Search**: Compelling headlines, clear value prop, strong CTA
+**Google Display/YouTube**: Eye-catching visuals, brand recognition, clear message
+**Facebook/Instagram**: Stop-the-scroll creative, benefit-focused, mobile-optimized
+**LinkedIn**: Professional, value-focused, B2B appropriate
+**TikTok**: Authentic, native-feeling, hook in first 3 seconds
+## Creative Elements
+- Multiple headline variations
+- Image/video variations
+- CTA variations
+- Ad copy variations
+- Landing page alignment
+## Testing Strategy
+- A/B test creative elements
+- Refresh creative every 4-6 weeks
+- Scale winners, iterate losers
+    ]]>
+  </instructions>
+</task>

@@ -1,0 +1,20 @@
+name: "budget-planning"
+description: "Strategic marketing budget allocation across channels with ROI projections"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/budget-plan-{{period}}-{{date}}.md"
+
+steps:
+  - id: channel-strategy
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/channel-strategy.xml"
+
+  - id: roi-analysis
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/roi-analysis.xml"
+
+  - id: budget-allocation
+    agent: "{bmad_folder}/marketing-ops/agents/media-buyer.md"
+    output_file: "{default_output_file}"

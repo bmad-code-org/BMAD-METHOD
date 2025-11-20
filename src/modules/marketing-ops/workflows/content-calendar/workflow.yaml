@@ -1,0 +1,16 @@
+name: "content-calendar"
+description: "Create strategic content calendar with themes, topics, and distribution plan"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/content-calendar-{{period}}-{{date}}.md"
+
+steps:
+  - id: content-strategy
+    agent: "{bmad_folder}/marketing-ops/agents/brand-marketer.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/content-strategy.xml"
+
+  - id: calendar-creation
+    agent: "{bmad_folder}/marketing-ops/agents/brand-marketer.md"
+    output_file: "{default_output_file}"

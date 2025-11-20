@@ -1,0 +1,16 @@
+name: "dashboard-setup"
+description: "Create performance dashboards with key metrics, visualizations, and monitoring"
+author: "Marketing Ops Module"
+
+config_source: "{project-root}/{bmad_folder}/marketing-ops/config.yaml"
+marketing_output_folder: "{marketing_output_path}"
+default_output_file: "{marketing_output_folder}/dashboard-spec-{{dashboard-name}}-{{date}}.md"
+
+steps:
+  - id: define-metrics
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    task: "{project-root}/{bmad_folder}/marketing-ops/tasks/data-analysis.xml"
+
+  - id: dashboard-design
+    agent: "{bmad_folder}/marketing-ops/agents/marketing-analyst.md"
+    output_file: "{default_output_file}"

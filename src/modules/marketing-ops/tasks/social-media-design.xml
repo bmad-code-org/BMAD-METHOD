@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/social-media-design.xml</id>
+    <name>Social Media Creative Design</name>
+    <description>Design social media campaign assets across platforms</description>
+    <module>marketing-ops</module>
+  </metadata>
+  <instructions>
+    <![CDATA[
+# Social Media Creative Design
+Create platform-optimized social media creative assets.
+## Platform Specifications
+**Instagram**: Feed (1:1), Stories (9:16), Reels (9:16), Carousel
+**Facebook**: Feed (1:1), Stories (9:16), Video (16:9, 1:1, 9:16)
+**LinkedIn**: Feed (1:1), Document posts, Carousel
+**Twitter/X**: Feed (16:9, 1:1), Headers
+**TikTok**: Vertical video (9:16)
+## Design Principles
+- Mobile-first design (80% of social is mobile)
+- Eye-catching visuals (stop the scroll)
+- Clear messaging (readable without sound)
+- Brand consistency with platform adaptation
+- Strong CTA
+- Test multiple variations
+    ]]>
+  </instructions>
+</task>

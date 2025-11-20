@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task>
+  <metadata>
+    <id>{bmad_folder}/marketing-ops/tasks/brand-audit.xml</id>
+    <name>Brand Audit & Assessment</name>
+    <description>Comprehensive brand audit to assess consistency, effectiveness, and opportunities</description>
+    <module>marketing-ops</module>
+    <tags>
+      <tag>brand</tag>
+      <tag>audit</tag>
+      <tag>assessment</tag>
+    </tags>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Brand Audit & Assessment
+
+## Objective
+Conduct comprehensive brand audit to assess brand health, consistency, and identify improvement opportunities.
+
+## Audit Areas
+
+### 1. Brand Identity Audit
+- Logo usage consistency across touchpoints
+- Color palette adherence
+- Typography consistency
+- Visual style and imagery alignment
+- Design system completeness
+
+### 2. Messaging Audit
+- Value proposition clarity and consistency
+- Messaging alignment across channels
+- Tone and voice consistency
+- Claim substantiation and proof points
+
+### 3. Brand Presence Audit
+- Website brand experience
+- Social media profiles and content
+- Advertising creative
+- Sales materials and presentations
+- Physical presence (if applicable)
+
+### 4. Brand Perception Audit
+- Customer reviews and sentiment
+- Social media mentions
+- Brand awareness metrics
+- Net Promoter Score (NPS)
+- Brand associations and attributes
+
+### 5. Competitive Positioning Audit
+- How brand is positioned vs. competitors
+- Unique differentiators
+- Market perception
+- Share of voice
+
+## Audit Deliverables
+
+1. **Brand Scorecard** - Assessment across all dimensions
+2. **Inconsistencies Report** - Gaps and misalignments
+3. **Improvement Opportunities** - Prioritized recommendations
+4. **Action Plan** - Steps to strengthen brand
+    ]]>
+  </instructions>
+</task>
