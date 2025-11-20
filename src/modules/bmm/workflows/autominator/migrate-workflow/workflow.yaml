@@ -3,8 +3,8 @@ description: "Migrate workflows from other platforms (Zapier, Make, HubSpot, etc
 author: "Saif"
 
 # Workflow components
-installed_path: "{project-root}/{bmad_folder}/bmm/workflows/n8n-expert/migrate-workflow"
-shared_path: "{project-root}/{bmad_folder}/bmm/workflows/n8n-expert/_shared"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/autominator/migrate-workflow"
+shared_path: "{project-root}/{bmad_folder}/bmm/workflows/autominator/_shared"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 

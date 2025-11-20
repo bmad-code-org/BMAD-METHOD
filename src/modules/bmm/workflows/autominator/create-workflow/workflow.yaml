@@ -3,8 +3,8 @@ description: "Create new n8n workflow from scratch based on requirements"
 author: "Saif"
 
 # Workflow components
-installed_path: "{project-root}/{bmad_folder}/bmm/workflows/n8n-expert/create-workflow"
-shared_path: "{project-root}/{bmad_folder}/bmm/workflows/n8n-expert/_shared"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/autominator/create-workflow"
+shared_path: "{project-root}/{bmad_folder}/bmm/workflows/autominator/_shared"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
