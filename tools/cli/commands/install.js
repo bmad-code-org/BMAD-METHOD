@@ -60,15 +60,42 @@ module.exports = {
         console.log(chalk.yellow('\nThank you for helping test the early release version of the new BMad Core and BMad Method!'));
         console.log(chalk.cyan('Stable Beta coming soon - please read the full readme.md and linked documentation to get started!'));
 
-        // Display post-installation steps if needed
+        // Run AgentVibes installer if needed
         if (result.needsAgentVibes) {
-          console.log(chalk.magenta('\n📋 Post-Installation Steps'));
-          console.log(chalk.cyan('To complete AgentVibes TTS setup, run:'));
-          console.log(chalk.green(`\n  cd ${result.projectDir}`));
-          console.log(chalk.green('  npx agentvibes install\n'));
-          console.log(chalk.dim('This will set up TTS with your choice of:'));
+          console.log(chalk.magenta('\n🎙️  AgentVibes TTS Setup'));
+          console.log(chalk.cyan('AgentVibes provides voice synthesis for BMAD agents with:'));
           console.log(chalk.dim('  • ElevenLabs AI (150+ premium voices)'));
           console.log(chalk.dim('  • Piper TTS (50+ free voices)\n'));
+
+          const readline = require('node:readline');
+          const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+          });
+
+          await new Promise((resolve) => {
+            rl.question(chalk.green('Press Enter to start AgentVibes installer...'), () => {
+              rl.close();
+              resolve();
+            });
+          });
+
+          console.log('');
+
+          // Run AgentVibes installer
+          const { execSync } = require('node:child_process');
+          try {
+            execSync('npx agentvibes@latest install', {
+              cwd: result.projectDir,
+              stdio: 'inherit',
+            });
+            console.log(chalk.green('\n✓ AgentVibes installation complete'));
+          } catch {
+            console.log(chalk.yellow('\n⚠ AgentVibes installation was interrupted or failed'));
+            console.log(chalk.cyan('You can run it manually later with:'));
+            console.log(chalk.green(`  cd ${result.projectDir}`));
+            console.log(chalk.green('  npx agentvibes install\n'));
+          }
         }
 
         process.exit(0);
