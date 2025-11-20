@@ -130,41 +130,9 @@
     <check if="Context7 MCP is NOT available">
       <action>Store false in {{context7_available}}</action>
       <action>Inform user: "Context7 MCP server is not configured. This provides up-to-date n8n documentation."</action>
-      <action>Ask: "Would you like help setting up Context7 MCP? (yes/no)"</action>
-      <action>WAIT for user response</action>
-
-      <check if="user says yes">
-        <action>Guide user through Context7 MCP setup:</action>
-        <action>1. Inform user: "Context7 MCP requires the 'uvx' command (part of uv Python package manager)"</action>
-        <action>2. Ask: "Do you have 'uv' installed? (yes/no/not sure)"</action>
-        <action>WAIT for response</action>
-
-        <check if="user says no or not sure">
-          <action>Provide installation guidance:</action>
-          <action>- macOS/Linux: curl -LsSf https://astral.sh/uv/install.sh | sh</action>
-          <action>- Windows: powershell -c "irm https://astral.sh/uv/install.ps1 | iex"</action>
-          <action>- Or via pip: pip install uv</action>
-          <action>Ask user to install and confirm when ready</action>
-          <action>WAIT for confirmation</action>
-        </check>
-
-        <action>3. Inform user: "Please configure Context7 MCP in your IDE's MCP settings with:"</action>
-        <action>
-          Server name: context7
-          Command: uvx
-          Args: ["context7"]
-          Auto-approve tools: ["resolve-library-id", "get-library-docs"]
-        </action>
-        <action>4. Ask user to reconnect/restart MCP servers in their IDE</action>
-        <action>5. Wait for user confirmation that MCP is reconnected</action>
-        <action>6. Verify Context7 is now available</action>
-        <action>Store result in {{context7_available}}</action>
-      </check>
-
-      <check if="user says no">
-        <action>Inform: "Proceeding without Context7. Using built-in n8n knowledge."</action>
-        <action>Proceed to Step 4</action>
-      </check>
+      <action>Recommend: "For best results, install Context7 MCP server in your IDE. See: https://github.com/context7/context7"</action>
+      <action>Inform: "Proceeding with built-in n8n knowledge."</action>
+      <action>Proceed to Step 4</action>
     </check>
   </step>
 
