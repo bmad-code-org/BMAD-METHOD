@@ -1,0 +1,396 @@
+# Behavioral Questions Template
+
+## Template Information
+- **Template Type:** Behavioral Interview Questions and Responses
+- **Agent:** interview-coach
+- **Task:** develop-behavioral-responses.md
+- **Version:** 1.0
+
+## Template Structure
+behavioral_questions_framework:
+  star_method_structure:
+    situation:
+      description: "[Describe the specific situation or context]"
+      timeframe: "[When this occurred]"
+      location: "[Where this occurred]"
+      key_players: "[Who was involved]"
+      background: "[Relevant background information]"
+    
+    task:
+      objective: "[What needed to be accomplished]"
+      challenges: "[Specific challenges or obstacles]"
+      constraints: "[Limitations or constraints]"
+      expectations: "[What was expected of you]"
+      urgency: "[How urgent or important this was]"
+    
+    action:
+      approach: "[How you approached the situation]"
+      steps_taken: "[Specific steps you took]"
+      decisions_made: "[Key decisions you made]"
+      leadership_demonstrated: "[Leadership actions taken]"
+      collaboration: "[How you worked with others]"
+      problem_solving: "[How you solved problems]"
+    
+    result:
+      outcomes: "[What was accomplished]"
+      measurable_results: "[Quantifiable results]"
+      impact: "[Impact on organization/team/project]"
+      lessons_learned: "[What you learned]"
+      recognition: "[Any recognition received]"
+      long_term_effects: "[Long-term impact]"
+  
+  common_behavioral_questions:
+    leadership_questions:
+      - question: "Tell me about a time you led a team through a challenging project"
+        category: "Leadership"
+        difficulty: "High"
+        key_elements:
+          - "Team size and composition"
+          - "Nature of the challenge"
+          - "Leadership approach used"
+          - "How you motivated the team"
+          - "Results achieved"
+        star_framework:
+          situation: "[Describe the project and team]"
+          task: "[What was the challenge and objective]"
+          action: "[How you led and managed the team]"
+          result: "[Outcomes and team success]"
+      
+      - question: "Describe a situation where you had to motivate an unmotivated team member"
+        category: "Leadership"
+        difficulty: "Medium"
+        key_elements:
+          - "Why the person was unmotivated"
+          - "Your approach to motivation"
+          - "Communication strategies used"
+          - "Results achieved"
+        star_framework:
+          situation: "[Describe the team member and situation]"
+          task: "[What needed to be accomplished]"
+          action: "[How you motivated and supported them]"
+          result: "[Outcome and team member's improvement]"
+      
+      - question: "Tell me about a time you had to make a difficult decision as a leader"
+        category: "Leadership"
+        difficulty: "High"
+        key_elements:
+          - "Nature of the decision"
+          - "Factors considered"
+          - "Decision-making process"
+          - "Impact of the decision"
+        star_framework:
+          situation: "[Describe the decision context]"
+          task: "[What decision needed to be made]"
+          action: "[How you made the decision]"
+          result: "[Outcome and lessons learned]"
+    
+    teamwork_questions:
+      - question: "Describe a time you worked with a difficult team member"
+        category: "Teamwork"
+        difficulty: "Medium"
+        key_elements:
+          - "Nature of the difficulty"
+          - "Your approach to the situation"
+          - "Communication strategies"
+          - "Resolution achieved"
+        star_framework:
+          situation: "[Describe the team member and issue]"
+          task: "[What needed to be resolved]"
+          action: "[How you handled the situation]"
+          result: "[Outcome and relationship improvement]"
+      
+      - question: "Tell me about a time you had to resolve a conflict within your team"
+        category: "Teamwork"
+        difficulty: "High"
+        key_elements:
+          - "Nature of the conflict"
+          - "Parties involved"
+          - "Your role in resolution"
+          - "Resolution approach"
+        star_framework:
+          situation: "[Describe the conflict and parties involved]"
+          task: "[What needed to be resolved]"
+          action: "[How you facilitated resolution]"
+          result: "[Outcome and team dynamics]"
+      
+      - question: "Describe a situation where you had to collaborate with people from different departments"
+        category: "Teamwork"
+        difficulty: "Medium"
+        key_elements:
+          - "Departments involved"
+          - "Collaboration challenges"
+          - "Communication strategies"
+          - "Project success"
+        star_framework:
+          situation: "[Describe the project and departments]"
+          task: "[What needed to be accomplished]"
+          action: "[How you collaborated across departments]"
+          result: "[Outcome and cross-functional success]"
+    
+    problem_solving_questions:
+      - question: "Tell me about a time you had to solve a complex problem"
+        category: "Problem Solving"
+        difficulty: "High"
+        key_elements:
+          - "Nature of the problem"
+          - "Problem-solving approach"
+          - "Analysis conducted"
+          - "Solution implemented"
+        star_framework:
+          situation: "[Describe the complex problem]"
+          task: "[What needed to be solved]"
+          action: "[How you analyzed and solved the problem]"
+          result: "[Outcome and solution effectiveness]"
+      
+      - question: "Describe a situation where you had to think outside the box"
+        category: "Problem Solving"
+        difficulty: "Medium"
+        key_elements:
+          - "Traditional approaches that didn't work"
+          - "Creative solution developed"
+          - "Innovation demonstrated"
+          - "Results achieved"
+        star_framework:
+          situation: "[Describe the situation requiring creativity]"
+          task: "[What needed to be accomplished]"
+          action: "[How you developed a creative solution]"
+          result: "[Outcome and innovation success]"
+      
+      - question: "Tell me about a time you had to make a decision with incomplete information"
+        category: "Problem Solving"
+        difficulty: "High"
+        key_elements:
+          - "Information gaps"
+          - "Decision-making process"
+          - "Risk assessment"
+          - "Outcome and learning"
+        star_framework:
+          situation: "[Describe the decision context]"
+          task: "[What decision needed to be made]"
+          action: "[How you made the decision with limited information]"
+          result: "[Outcome and lessons learned]"
+    
+    achievement_questions:
+      - question: "What's your greatest professional achievement and why?"
+        category: "Achievement"
+        difficulty: "Medium"
+        key_elements:
+          - "Specific achievement"
+          - "Why it's significant"
+          - "Your role and contribution"
+          - "Impact and results"
+        star_framework:
+          situation: "[Describe the context of the achievement]"
+          task: "[What needed to be accomplished]"
+          action: "[How you achieved this success]"
+          result: "[Impact and significance of the achievement]"
+      
+      - question: "Tell me about a time you exceeded expectations"
+        category: "Achievement"
+        difficulty: "Medium"
+        key_elements:
+          - "What was expected"
+          - "How you exceeded expectations"
+          - "Results achieved"
+          - "Recognition received"
+        star_framework:
+          situation: "[Describe the project or task]"
+          task: "[What was expected]"
+          action: "[How you exceeded expectations]"
+          result: "[Results and recognition]"
+      
+      - question: "Describe a time you took initiative to improve something"
+        category: "Achievement"
+        difficulty: "Medium"
+        key_elements:
+          - "What you identified"
+          - "Initiative taken"
+          - "Improvement implemented"
+          - "Impact achieved"
+        star_framework:
+          situation: "[Describe the area needing improvement]"
+          task: "[What improvement was needed]"
+          action: "[How you took initiative]"
+          result: "[Impact and improvement achieved]"
+    
+    failure_questions:
+      - question: "Tell me about a time you failed and what you learned from it"
+        category: "Failure/Learning"
+        difficulty: "High"
+        key_elements:
+          - "Nature of the failure"
+          - "What went wrong"
+          - "Lessons learned"
+          - "How you applied learning"
+        star_framework:
+          situation: "[Describe the situation]"
+          task: "[What you were trying to accomplish]"
+          action: "[What went wrong and why]"
+          result: "[Lessons learned and application]"
+      
+      - question: "Describe a time you made a mistake and how you handled it"
+        category: "Failure/Learning"
+        difficulty: "Medium"
+        key_elements:
+          - "Nature of the mistake"
+          - "How you discovered it"
+          - "How you handled it"
+          - "Prevention measures"
+        star_framework:
+          situation: "[Describe the mistake and context]"
+          task: "[What should have happened]"
+          action: "[How you handled the mistake]"
+          result: "[Outcome and prevention measures]"
+      
+      - question: "Tell me about a time you had to admit you were wrong"
+        category: "Failure/Learning"
+        difficulty: "Medium"
+        key_elements:
+          - "What you were wrong about"
+          - "How you realized you were wrong"
+          - "How you admitted it"
+          - "Impact on relationships"
+        star_framework:
+          situation: "[Describe the situation]"
+          task: "[What you initially believed]"
+          action: "[How you admitted you were wrong]"
+          result: "[Impact and relationship outcome]"
+    
+    pressure_questions:
+      - question: "How do you handle working under pressure or tight deadlines?"
+        category: "Pressure/Stress"
+        difficulty: "Medium"
+        key_elements:
+          - "Specific pressure situation"
+          - "Your approach to pressure"
+          - "Stress management techniques"
+          - "Results under pressure"
+        star_framework:
+          situation: "[Describe the high-pressure situation]"
+          task: "[What needed to be accomplished under pressure]"
+          action: "[How you handled the pressure]"
+          result: "[Outcome and performance under pressure]"
+      
+      - question: "Tell me about a time you had to juggle multiple priorities"
+        category: "Pressure/Stress"
+        difficulty: "Medium"
+        key_elements:
+          - "Multiple priorities involved"
+          - "Prioritization approach"
+          - "Time management strategies"
+          - "Results achieved"
+        star_framework:
+          situation: "[Describe the multiple priorities]"
+          task: "[What needed to be accomplished]"
+          action: "[How you managed multiple priorities]"
+          result: "[Outcome and priority management success]"
+      
+      - question: "Describe a time you had to work with limited resources"
+        category: "Pressure/Stress"
+        difficulty: "Medium"
+        key_elements:
+          - "Resource limitations"
+          - "Creative solutions"
+          - "Resource optimization"
+          - "Results achieved"
+        star_framework:
+          situation: "[Describe the resource limitations]"
+          task: "[What needed to be accomplished]"
+          action: "[How you worked with limited resources]"
+          result: "[Outcome and resource optimization]"
+  
+  response_guidelines:
+    preparation_tips:
+      - "Choose recent examples (within 2-3 years)"
+      - "Select examples relevant to the target role"
+      - "Prepare 2-3 examples for each category"
+      - "Practice timing (2-3 minutes per response)"
+      - "Focus on your specific role and actions"
+      - "Include quantifiable results when possible"
+    
+    delivery_tips:
+      - "Start with a brief situation overview"
+      - "Use clear, concise language"
+      - "Maintain good eye contact and body language"
+      - "Show enthusiasm and confidence"
+      - "End with positive results and learning"
+      - "Be honest and authentic"
+    
+    common_mistakes:
+      - "Rambling or going off-topic"
+      - "Focusing too much on the situation"
+      - "Not providing specific examples"
+      - "Taking credit for team accomplishments"
+      - "Being too negative about failures"
+      - "Not connecting to the target role"
+  
+  industry_specific_questions:
+    technology_roles:
+      - question: "Tell me about a time you had to learn a new technology quickly"
+      - question: "Describe a situation where you had to debug a complex issue"
+      - question: "Tell me about a time you had to work with a difficult stakeholder"
+    
+    management_roles:
+      - question: "Describe a time you had to manage a difficult employee"
+      - question: "Tell me about a time you had to implement organizational change"
+      - question: "Describe a situation where you had to manage competing priorities from different stakeholders"
+    
+    sales_roles:
+      - question: "Tell me about a time you had to handle a difficult customer"
+      - question: "Describe a situation where you had to overcome a major objection"
+      - question: "Tell me about a time you had to close a challenging deal"
+    
+    project_management_roles:
+      - question: "Describe a time you had to manage a project that was behind schedule"
+      - question: "Tell me about a time you had to manage scope creep"
+      - question: "Describe a situation where you had to manage a project with limited budget"
+  
+  follow_up_questions:
+    interviewer_follow_ups:
+      - "What would you do differently if you could do it over?"
+      - "How did this experience change your approach?"
+      - "What feedback did you receive?"
+      - "How did you measure success?"
+      - "What was the biggest challenge you faced?"
+    
+    candidate_questions:
+      - "What specific examples would be most relevant for this role?"
+      - "How do you evaluate behavioral responses?"
+      - "What are the most important qualities you're looking for?"
+      - "Can you share an example of a successful candidate's response?"
+  
+  practice_scenarios:
+    mock_interview_setup:
+      - scenario: "Software Engineer Interview"
+        focus_areas: ["Technical problem-solving", "Team collaboration", "Learning ability"]
+        key_questions: ["Complex problem solving", "Working with difficult team members", "Learning new technologies"]
+      
+      - scenario: "Product Manager Interview"
+        focus_areas: ["Leadership", "Stakeholder management", "Product strategy"]
+        key_questions: ["Leading cross-functional teams", "Managing competing priorities", "Product decisions"]
+      
+      - scenario: "Sales Manager Interview"
+        focus_areas: ["Team leadership", "Customer relationships", "Performance management"]
+        key_questions: ["Managing difficult customers", "Leading sales teams", "Performance improvement"]
+  
+  evaluation_criteria:
+    response_quality:
+      - "Clarity and structure"
+      - "Relevance to question"
+      - "Specific examples provided"
+      - "STAR method usage"
+      - "Results and impact"
+    
+    communication_skills:
+      - "Verbal clarity"
+      - "Confidence level"
+      - "Body language"
+      - "Engagement"
+      - "Time management"
+    
+    content_effectiveness:
+      - "Example relevance"
+      - "Role alignment"
+      - "Learning demonstrated"
+      - "Growth mindset"
+      - "Authenticity"

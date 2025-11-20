@@ -1,0 +1,348 @@
+# Career Summary Template
+
+## Template Information
+- **Template Type:** Professional Career Summary
+- **Agent:** resume-writer
+- **Task:** create-doc.md
+- **Version:** 1.0
+
+## Template Structure
+career_summary_document:
+  executive_summary:
+    professional_identity:
+      current_role: "[Current professional role]"
+      years_experience: "[Total years of experience]"
+      industry_focus: "[Primary industry focus]"
+      expertise_areas: "[Key areas of expertise]"
+      professional_title: "[Professional title/designation]"
+    
+    value_proposition:
+      primary_strength: "[Primary professional strength]"
+      unique_differentiator: "[What makes you unique]"
+      value_add: "[Value you bring to organizations]"
+      impact_statement: "[Statement of professional impact]"
+    
+    career_highlights:
+      - highlight: "[Career highlight 1]"
+        impact: "[Impact of this highlight]"
+        significance: "[Significance in career progression]"
+      
+      - highlight: "[Career highlight 2]"
+        impact: "[Impact of this highlight]"
+        significance: "[Significance in career progression]"
+      
+      - highlight: "[Career highlight 3]"
+        impact: "[Impact of this highlight]"
+        significance: "[Significance in career progression]"
+  
+  professional_background:
+    career_progression:
+      career_path: "[Overall career path and progression]"
+      industry_evolution: "[Evolution within industry]"
+      role_advancement: "[Role advancement pattern]"
+      skill_development: "[Skill development journey]"
+    
+    key_positions:
+      - position: "[Key position 1]"
+        company: "[Company name]"
+        duration: "[Duration in role]"
+        scope: "[Scope of responsibility]"
+        achievements: "[Key achievements]"
+        impact: "[Impact on organization]"
+      
+      - position: "[Key position 2]"
+        company: "[Company name]"
+        duration: "[Duration in role]"
+        scope: "[Scope of responsibility]"
+        achievements: "[Key achievements]"
+        impact: "[Impact on organization]"
+      
+      - position: "[Key position 3]"
+        company: "[Company name]"
+        duration: "[Duration in role]"
+        scope: "[Scope of responsibility]"
+        achievements: "[Key achievements]"
+        impact: "[Impact on organization]"
+    
+    industry_experience:
+      industries_served: "[Industries you've worked in]"
+      sector_expertise: "[Sector-specific expertise]"
+      market_knowledge: "[Market knowledge and insights]"
+      industry_trends: "[Understanding of industry trends]"
+  
+  core_competencies:
+    technical_skills:
+      primary_technologies: "[Primary technical skills]"
+      proficiency_levels: "[Proficiency levels in key areas]"
+      emerging_skills: "[Emerging and developing skills]"
+      technical_certifications: "[Technical certifications]"
+    
+    leadership_skills:
+      management_style: "[Management and leadership style]"
+      team_leadership: "[Team leadership experience]"
+      strategic_thinking: "[Strategic thinking capabilities]"
+      decision_making: "[Decision-making approach]"
+    
+    business_skills:
+      business_acumen: "[Business acumen and understanding]"
+      financial_management: "[Financial management skills]"
+      project_management: "[Project management expertise]"
+      stakeholder_management: "[Stakeholder management skills]"
+    
+    soft_skills:
+      communication: "[Communication strengths]"
+      collaboration: "[Collaboration and teamwork]"
+      problem_solving: "[Problem-solving approach]"
+      adaptability: "[Adaptability and flexibility]"
+  
+  major_achievements:
+    quantifiable_results:
+      - achievement: "[Quantifiable achievement 1]"
+        metrics: "[Specific metrics and numbers]"
+        impact: "[Business impact]"
+        scope: "[Scope of impact]"
+        timeframe: "[Timeframe for achievement]"
+      
+      - achievement: "[Quantifiable achievement 2]"
+        metrics: "[Specific metrics and numbers]"
+        impact: "[Business impact]"
+        scope: "[Scope of impact]"
+        timeframe: "[Timeframe for achievement]"
+      
+      - achievement: "[Quantifiable achievement 3]"
+        metrics: "[Specific metrics and numbers]"
+        impact: "[Business impact]"
+        scope: "[Scope of impact]"
+        timeframe: "[Timeframe for achievement]"
+    
+    strategic_contributions:
+      - contribution: "[Strategic contribution 1]"
+        context: "[Business context]"
+        strategy: "[Strategic approach]"
+        outcome: "[Strategic outcome]"
+        long_term_impact: "[Long-term impact]"
+      
+      - contribution: "[Strategic contribution 2]"
+        context: "[Business context]"
+        strategy: "[Strategic approach]"
+        outcome: "[Strategic outcome]"
+        long_term_impact: "[Long-term impact]"
+    
+    innovation_leadership:
+      - innovation: "[Innovation initiative 1]"
+        description: "[Description of innovation]"
+        implementation: "[Implementation approach]"
+        results: "[Results and outcomes]"
+        recognition: "[Recognition received]"
+      
+      - innovation: "[Innovation initiative 2]"
+        description: "[Description of innovation]"
+        implementation: "[Implementation approach]"
+        results: "[Results and outcomes]"
+        recognition: "[Recognition received]"
+  
+  professional_philosophy:
+    leadership_approach:
+      leadership_style: "[Personal leadership style]"
+      management_philosophy: "[Management philosophy]"
+      team_building: "[Team building approach]"
+      mentoring: "[Mentoring and development philosophy]"
+    
+    work_values:
+      core_values: "[Core professional values]"
+      work_ethic: "[Work ethic and approach]"
+      quality_standards: "[Quality standards and expectations]"
+      integrity: "[Professional integrity and ethics]"
+    
+    career_motivation:
+      professional_drivers: "[What drives you professionally]"
+      career_goals: "[Career goals and aspirations]"
+      impact_focus: "[Focus on making impact]"
+      continuous_learning: "[Commitment to continuous learning]"
+  
+  industry_expertise:
+    domain_knowledge:
+      primary_domains: "[Primary domain expertise]"
+      specialized_areas: "[Specialized areas of knowledge]"
+      industry_insights: "[Key industry insights]"
+      market_understanding: "[Market understanding and analysis]"
+    
+    thought_leadership:
+      publications: "[Publications and thought leadership]"
+      speaking_engagements: "[Speaking engagements and presentations]"
+      industry_participation: "[Industry participation and leadership]"
+      knowledge_sharing: "[Knowledge sharing and mentoring]"
+    
+    professional_network:
+      industry_connections: "[Industry connections and network]"
+      professional_associations: "[Professional associations and memberships]"
+      collaborative_partnerships: "[Collaborative partnerships]"
+      influence_network: "[Network of influence and relationships]"
+  
+  technical_expertise:
+    technology_stack:
+      primary_technologies: "[Primary technology stack]"
+      emerging_technologies: "[Emerging technology expertise]"
+      technology_trends: "[Understanding of technology trends]"
+      technical_architecture: "[Technical architecture knowledge]"
+    
+    technical_achievements:
+      - achievement: "[Technical achievement 1]"
+        technology: "[Technology involved]"
+        complexity: "[Technical complexity]"
+        impact: "[Technical impact]"
+        innovation: "[Innovation aspect]"
+      
+      - achievement: "[Technical achievement 2]"
+        technology: "[Technology involved]"
+        complexity: "[Technical complexity]"
+        impact: "[Technical impact]"
+        innovation: "[Innovation aspect]"
+    
+    technical_leadership:
+      technical_strategy: "[Technical strategy development]"
+      architecture_leadership: "[Architecture and design leadership]"
+      technology_roadmap: "[Technology roadmap development]"
+      technical_team_leadership: "[Technical team leadership]"
+  
+  business_impact:
+    revenue_impact:
+      - impact: "[Revenue impact 1]"
+        amount: "[Revenue amount]"
+        timeframe: "[Timeframe]"
+        role: "[Your role in achieving this]"
+        sustainability: "[Sustainability of impact]"
+      
+      - impact: "[Revenue impact 2]"
+        amount: "[Revenue amount]"
+        timeframe: "[Timeframe]"
+        role: "[Your role in achieving this]"
+        sustainability: "[Sustainability of impact]"
+    
+    cost_savings:
+      - savings: "[Cost savings initiative 1]"
+        amount: "[Amount saved]"
+        timeframe: "[Timeframe]"
+        methodology: "[Methodology used]"
+        ongoing_benefits: "[Ongoing benefits]"
+      
+      - savings: "[Cost savings initiative 2]"
+        amount: "[Amount saved]"
+        timeframe: "[Timeframe]"
+        methodology: "[Methodology used]"
+        ongoing_benefits: "[Ongoing benefits]"
+    
+    operational_improvements:
+      - improvement: "[Operational improvement 1]"
+        area: "[Area of improvement]"
+        metrics: "[Improvement metrics]"
+        impact: "[Operational impact]"
+        sustainability: "[Sustainability of improvement]"
+      
+      - improvement: "[Operational improvement 2]"
+        area: "[Area of improvement]"
+        metrics: "[Improvement metrics]"
+        impact: "[Operational impact]"
+        sustainability: "[Sustainability of improvement]"
+  
+  leadership_experience:
+    team_leadership:
+      team_sizes: "[Team sizes managed]"
+      leadership_roles: "[Leadership roles and responsibilities]"
+      team_development: "[Team development and mentoring]"
+      performance_management: "[Performance management approach]"
+    
+    organizational_leadership:
+      organizational_impact: "[Impact on organizational success]"
+      change_management: "[Change management experience]"
+      strategic_planning: "[Strategic planning involvement]"
+      executive_collaboration: "[Executive collaboration and influence]"
+    
+    cross_functional_leadership:
+      cross_functional_projects: "[Cross-functional project leadership]"
+      stakeholder_management: "[Stakeholder management experience]"
+      collaboration_skills: "[Collaboration and partnership skills]"
+      influence_leadership: "[Influence without authority]"
+  
+  professional_development:
+    continuous_learning:
+      learning_approach: "[Approach to continuous learning]"
+      skill_development: "[Skill development focus areas]"
+      professional_growth: "[Professional growth strategy]"
+      knowledge_acquisition: "[Knowledge acquisition methods]"
+    
+    certifications_credentials:
+      - certification: "[Certification 1]"
+        issuing_organization: "[Issuing organization]"
+        year_earned: "[Year earned]"
+        relevance: "[Relevance to career]"
+        impact: "[Impact on career]"
+      
+      - certification: "[Certification 2]"
+        issuing_organization: "[Issuing organization]"
+        year_earned: "[Year earned]"
+        relevance: "[Relevance to career]"
+        impact: "[Impact on career]"
+    
+    professional_education:
+      formal_education: "[Formal education background]"
+      continuing_education: "[Continuing education activities]"
+      professional_training: "[Professional training programs]"
+      industry_workshops: "[Industry workshops and seminars]"
+  
+  future_aspirations:
+    career_goals:
+      short_term_goals: "[Short-term career goals (1-2 years)]"
+      medium_term_goals: "[Medium-term career goals (3-5 years)]"
+      long_term_goals: "[Long-term career goals (5+ years)]"
+      career_vision: "[Overall career vision]"
+    
+    professional_development_plans:
+      skill_development: "[Planned skill development]"
+      leadership_development: "[Leadership development plans]"
+      industry_expertise: "[Industry expertise expansion]"
+      thought_leadership: "[Thought leadership development]"
+    
+    impact_objectives:
+      organizational_impact: "[Desired organizational impact]"
+      industry_impact: "[Desired industry impact]"
+      community_impact: "[Desired community impact]"
+      legacy_goals: "[Legacy and long-term impact goals]"
+  
+  personal_brand:
+    professional_identity:
+      brand_statement: "[Personal brand statement]"
+      unique_value: "[Unique value proposition]"
+      professional_reputation: "[Professional reputation and recognition]"
+      industry_positioning: "[Industry positioning and recognition]"
+    
+    thought_leadership:
+      content_creation: "[Content creation and thought leadership]"
+      industry_participation: "[Industry participation and influence]"
+      knowledge_sharing: "[Knowledge sharing and mentoring]"
+      professional_voice: "[Professional voice and perspective]"
+    
+    networking_impact:
+      professional_network: "[Professional network and relationships]"
+      influence_network: "[Network of influence]"
+      collaborative_partnerships: "[Collaborative partnerships]"
+      industry_connections: "[Industry connections and relationships]"
+  
+  summary_statement:
+    professional_summary:
+      career_essence: "[Essence of your career]"
+      key_differentiators: "[Key differentiators]"
+      value_proposition: "[Value proposition]"
+      future_focus: "[Future focus and direction]"
+    
+    impact_statement:
+      overall_impact: "[Overall professional impact]"
+      legacy_contribution: "[Legacy and contribution]"
+      professional_influence: "[Professional influence and reach]"
+      success_definition: "[Definition of professional success]"
+    
+    closing_thoughts:
+      career_reflection: "[Reflection on career journey]"
+      lessons_learned: "[Key lessons learned]"
+      gratitude_expression: "[Expression of gratitude]"
+      future_outlook: "[Future outlook and optimism]"

@@ -1,0 +1,301 @@
+# Job Search Plan Template
+
+## Template Information
+- **Template Type:** Job Search Strategy
+- **Agent:** career-coach
+- **Task:** job-search-strategy.md
+- **Version:** 1.0
+
+## Template Structure
+
+### 1. Executive Summary
+```yaml
+job_search_summary:
+  target_role: "[Primary target job title]"
+  target_industry: "[Target industry]"
+  timeline: "[Target timeline for job search]"
+  urgency_level: "[Very urgent/Moderately urgent/Not urgent]"
+  geographic_preference: "[Local/Remote/Specific cities/Willing to relocate]"
+  salary_range: "[Target salary range]"
+  company_size_preference: "[Startup/Small/Medium/Large/No preference]"
+```
+
+### 2. Current Situation Assessment
+```yaml
+current_situation:
+  employment_status: "[Employed full-time/Part-time/Freelance/Unemployed/Student]"
+  years_experience: "[Number of years in field]"
+  current_skills: "[List of current skills]"
+  skill_gaps: "[Skills needed for target role]"
+  network_strength: "[Very strong/Moderate/Weak/Building from scratch]"
+  financial_situation: "[Stable/Need job soon/Flexible timeline]"
+```
+
+### 3. Target Role Definition
+```yaml
+target_roles:
+  primary_role:
+    title: "[Primary target job title]"
+    industry: "[Target industry]"
+    level: "[Entry-level/Mid-career/Senior/Executive]"
+    responsibilities: "[Key responsibilities]"
+    requirements: "[Required skills and qualifications]"
+  
+  alternative_roles:
+    - title: "[Alternative role 1]"
+      industry: "[Industry]"
+      fit_score: "[1-10]"
+    - title: "[Alternative role 2]"
+      industry: "[Industry]"
+      fit_score: "[1-10]"
+```
+
+### 4. Market Research Strategy
+```yaml
+market_research:
+  target_companies:
+    dream_companies:
+      - name: "[Company name]"
+        industry: "[Industry]"
+        size: "[Company size]"
+        location: "[Location]"
+        research_status: "[Not started/In progress/Complete]"
+    target_companies:
+      - name: "[Company name]"
+        industry: "[Industry]"
+        size: "[Company size]"
+        location: "[Location]"
+        research_status: "[Not started/In progress/Complete]"
+  
+  job_boards:
+    primary_sources:
+      - name: "[Job board name]"
+        frequency: "[Daily/Weekly/Monthly]"
+        effectiveness_rating: "[1-10]"
+    secondary_sources:
+      - name: "[Job board name]"
+        frequency: "[Daily/Weekly/Monthly]"
+        effectiveness_rating: "[1-10]"
+  
+  industry_research:
+    trends: "[Current industry trends]"
+    in_demand_skills: "[Skills currently in demand]"
+    salary_ranges: "[Salary information]"
+    growth_areas: "[Growing areas in industry]"
+```
+
+### 5. Application Strategy
+```yaml
+application_strategy:
+  weekly_goals:
+    applications_per_week: "[Number]"
+    quality_goal: "[Focus on quality vs quantity]"
+    follow_up_goal: "[Follow up strategy]"
+  
+  application_tracking:
+    method: "[Spreadsheet/App/Notebook]"
+    fields_to_track:
+      - company_name
+      - position_title
+      - application_date
+      - contact_person
+      - follow_up_date
+      - status
+      - notes
+  
+  customization_approach:
+    resume_customization: "[Tailor for each role/Use templates/Standard version]"
+    cover_letter_approach: "[Custom for each/Use templates/Standard version]"
+    research_depth: "[Basic/Moderate/Comprehensive]"
+```
+
+### 6. Networking Strategy
+```yaml
+networking_strategy:
+  current_network:
+    strength_assessment: "[Very strong/Moderate/Weak]"
+    key_contacts: "[List of important contacts]"
+    industry_connections: "[Industry-specific contacts]"
+  
+  networking_activities:
+    linkedin_strategy:
+      - activity: "[Connect with industry professionals]"
+        frequency: "[Daily/Weekly/Monthly]"
+        target_audience: "[Target audience]"
+      - activity: "[Share relevant content]"
+        frequency: "[Daily/Weekly/Monthly]"
+        content_type: "[Type of content]"
+    
+    in_person_networking:
+      - activity: "[Industry events]"
+        frequency: "[Monthly/Quarterly]"
+        preparation: "[Preparation needed]"
+      - activity: "[Professional associations]"
+        frequency: "[Monthly/Quarterly]"
+        involvement_level: "[Level of involvement]"
+    
+    informational_interviews:
+      target_contacts: "[List of people to approach]"
+      questions_prepared: "[List of questions]"
+      follow_up_strategy: "[Follow up approach]"
+```
+
+### 7. Interview Preparation Plan
+```yaml
+interview_preparation:
+  confidence_level: "[Very confident/Somewhat confident/Nervous/Need practice]"
+  preparation_needs:
+    behavioral_questions: "[Need practice/Comfortable/Expert]"
+    technical_questions: "[Need practice/Comfortable/Expert]"
+    company_research: "[Need practice/Comfortable/Expert]"
+    salary_negotiation: "[Need practice/Comfortable/Expert]"
+  
+  practice_schedule:
+    mock_interviews: "[Frequency and type]"
+    question_practice: "[Daily/Weekly schedule]"
+    company_research: "[Time allocation]"
+  
+  resources_needed:
+    practice_partners: "[Friends/Family/Professional coach]"
+    online_resources: "[Websites/Platforms]"
+    books_materials: "[Books/Courses]"
+```
+
+### 8. Weekly Action Plan
+```yaml
+weekly_action_plan:
+  week_1:
+    goals:
+      - "[Specific goal 1]"
+      - "[Specific goal 2]"
+      - "[Specific goal 3]"
+    tasks:
+      - task: "[Task description]"
+        priority: "[High/Medium/Low]"
+        deadline: "[Date]"
+        status: "[Not started/In progress/Complete]"
+  
+  week_2:
+    goals:
+      - "[Specific goal 1]"
+      - "[Specific goal 2]"
+      - "[Specific goal 3]"
+    tasks:
+      - task: "[Task description]"
+        priority: "[High/Medium/Low]"
+        deadline: "[Date]"
+        status: "[Not started/In progress/Complete]"
+  
+  ongoing_tasks:
+    daily:
+      - "[Daily task 1]"
+      - "[Daily task 2]"
+    weekly:
+      - "[Weekly task 1]"
+      - "[Weekly task 2]"
+    monthly:
+      - "[Monthly task 1]"
+      - "[Monthly task 2]"
+```
+
+### 9. Success Metrics
+```yaml
+success_metrics:
+  quantitative_goals:
+    applications_submitted: "[Target number]"
+    interviews_secured: "[Target number]"
+    networking_contacts: "[Target number]"
+    informational_interviews: "[Target number]"
+  
+  qualitative_goals:
+    confidence_level: "[Target confidence level]"
+    skill_improvement: "[Specific skills to improve]"
+    network_expansion: "[Network growth goals]"
+  
+  timeline_goals:
+    first_interview: "[Target date]"
+    job_offer: "[Target date]"
+    career_transition: "[Target date]"
+```
+
+### 10. Contingency Plans
+```yaml
+contingency_plans:
+  if_no_interviews:
+    - "[Alternative strategy 1]"
+    - "[Alternative strategy 2]"
+    - "[Alternative strategy 3]"
+  
+  if_no_offers:
+    - "[Alternative strategy 1]"
+    - "[Alternative strategy 2]"
+    - "[Alternative strategy 3]"
+  
+  if_timeline_extended:
+    - "[Strategy adjustment 1]"
+    - "[Strategy adjustment 2]"
+    - "[Strategy adjustment 3]"
+  
+  skill_development_plan:
+    immediate_skills: "[Skills to develop immediately]"
+    long_term_skills: "[Skills for long-term development]"
+    learning_resources: "[Resources for skill development]"
+```
+
+### 11. Resource Allocation
+```yaml
+resource_allocation:
+  time_commitment:
+    daily_hours: "[Number of hours per day]"
+    weekly_hours: "[Number of hours per week]"
+    priority_activities: "[Most important activities]"
+  
+  financial_resources:
+    budget_for_tools: "[Budget for job search tools]"
+    budget_for_networking: "[Budget for networking events]"
+    budget_for_education: "[Budget for skill development]"
+  
+  support_system:
+    family_support: "[Level of family support]"
+    professional_support: "[Professional support available]"
+    mentor_availability: "[Mentor support]"
+```
+
+### 12. Review and Adjustment Schedule
+```yaml
+review_schedule:
+  weekly_review:
+    day: "[Day of week]"
+    focus_areas:
+      - "[Focus area 1]"
+      - "[Focus area 2]"
+      - "[Focus area 3]"
+    adjustment_needed: "[Yes/No]"
+  
+  monthly_review:
+    day: "[Day of month]"
+    comprehensive_assessment: "[Full strategy review]"
+    major_adjustments: "[Any major changes needed]"
+  
+  quarterly_review:
+    strategy_evaluation: "[Overall strategy effectiveness]"
+    goal_achievement: "[Progress toward goals]"
+    new_opportunities: "[New opportunities identified]"
+```
+
+## Usage Instructions
+
+1. **Complete each section** with specific, actionable information
+2. **Set realistic goals** based on your situation and timeline
+3. **Review and update regularly** as circumstances change
+4. **Track progress** against the success metrics
+5. **Adjust strategies** based on what's working and what isn't
+
+## Success Criteria
+
+- Clear, specific goals and timelines
+- Comprehensive market research completed
+- Systematic application and networking approach
+- Regular progress tracking and adjustment
+- Realistic resource allocation
+- Contingency plans for various scenarios

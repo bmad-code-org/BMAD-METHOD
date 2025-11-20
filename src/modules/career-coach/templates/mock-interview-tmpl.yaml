@@ -1,0 +1,278 @@
+# Mock Interview Template
+
+## Template Information
+- **Template Type:** Mock Interview Session
+- **Agent:** interview-coach
+- **Task:** conduct-mock-interview.md
+- **Version:** 1.0
+
+## Template Structure
+mock_interview_session:
+  session_info:
+    candidate_name: "[Candidate Name]"
+    target_role: "[Target Job Title]"
+    target_company: "[Target Company]"
+    interview_type: "[Behavioral/Technical/Hybrid/Full Mock]"
+    session_date: "[Session Date]"
+    session_duration: "[Duration in Minutes]"
+    interviewer_name: "[Interviewer Name]"
+    session_focus: "[Primary Focus Areas]"
+  
+  pre_interview_assessment:
+    candidate_preparation:
+      resume_review: "[Resume Review Notes]"
+      company_research: "[Company Research Level]"
+      technical_preparation: "[Technical Preparation Level]"
+      behavioral_preparation: "[Behavioral Preparation Level]"
+      confidence_level: "[1-10 Scale]"
+      areas_of_concern: "[Areas of Concern]"
+    
+    interview_goals:
+      primary_objective: "[Primary Session Objective]"
+      specific_focus_areas: "[Specific Areas to Focus On]"
+      improvement_targets: "[Specific Improvement Targets]"
+      success_criteria: "[Success Criteria for Session]"
+  
+  interview_questions:
+    opening_questions:
+      - question: "Tell me about yourself"
+        expected_focus: "[Professional background, relevant experience]"
+        time_limit: "[2-3 minutes]"
+        evaluation_criteria: "[Clarity, relevance, confidence]"
+      
+      - question: "Why are you interested in this role/company?"
+        expected_focus: "[Motivation, research, alignment]"
+        time_limit: "[1-2 minutes]"
+        evaluation_criteria: "[Research depth, genuine interest, alignment]"
+    
+    behavioral_questions:
+      - question: "Tell me about a time you led a team through a challenging project"
+        expected_focus: "[Leadership, problem-solving, results]"
+        time_limit: "[3-4 minutes]"
+        evaluation_criteria: "[STAR method, specific examples, outcomes]"
+      
+      - question: "Describe a situation where you had to resolve a conflict with a colleague"
+        expected_focus: "[Conflict resolution, communication, teamwork]"
+        time_limit: "[3-4 minutes]"
+        evaluation_criteria: "[Problem-solving approach, communication skills, resolution]"
+      
+      - question: "What's your greatest professional achievement and why?"
+        expected_focus: "[Achievement, impact, personal growth]"
+        time_limit: "[2-3 minutes]"
+        evaluation_criteria: "[Significance, impact measurement, personal growth]"
+      
+      - question: "Tell me about a time you failed and what you learned from it"
+        expected_focus: "[Failure, learning, growth mindset]"
+        time_limit: "[2-3 minutes]"
+        evaluation_criteria: "[Honesty, learning, growth mindset, resilience]"
+      
+      - question: "How do you handle working under pressure or tight deadlines?"
+        expected_focus: "[Stress management, prioritization, results]"
+        time_limit: "[2-3 minutes]"
+        evaluation_criteria: "[Stress management, prioritization, results under pressure]"
+    
+    technical_questions:
+      - question: "[Technical Question 1]"
+        expected_focus: "[Technical knowledge, problem-solving approach]"
+        time_limit: "[5-10 minutes]"
+        evaluation_criteria: "[Technical accuracy, problem-solving approach, communication]"
+      
+      - question: "[Technical Question 2]"
+        expected_focus: "[Technical knowledge, problem-solving approach]"
+        time_limit: "[5-10 minutes]"
+        evaluation_criteria: "[Technical accuracy, problem-solving approach, communication]"
+      
+      - question: "[System Design Question (if applicable)]"
+        expected_focus: "[System design, architecture, scalability]"
+        time_limit: "[15-20 minutes]"
+        evaluation_criteria: "[Design approach, technical depth, communication]"
+    
+    company_specific_questions:
+      - question: "What do you know about our company and why do you want to work here?"
+        expected_focus: "[Company research, alignment, motivation]"
+        time_limit: "[2-3 minutes]"
+        evaluation_criteria: "[Research depth, genuine interest, alignment]"
+      
+      - question: "How do you think you can contribute to our team?"
+        expected_focus: "[Skills alignment, team contribution, value proposition]"
+        time_limit: "[2-3 minutes]"
+        evaluation_criteria: "[Skills alignment, team contribution, value proposition]"
+      
+      - question: "What challenges do you expect in this role?"
+        expected_focus: "[Role understanding, realistic expectations, preparation]"
+        time_limit: "[1-2 minutes]"
+        evaluation_criteria: "[Role understanding, realistic expectations, preparation]"
+    
+    closing_questions:
+      - question: "Do you have any questions for me?"
+        expected_focus: "[Thoughtful questions, engagement, research]"
+        time_limit: "[3-5 minutes]"
+        evaluation_criteria: "[Question quality, engagement, research depth]"
+  
+  evaluation_criteria:
+    communication_skills:
+      clarity: "[1-5 Scale]"
+      conciseness: "[1-5 Scale]"
+      confidence: "[1-5 Scale]"
+      body_language: "[1-5 Scale]"
+      overall_communication: "[1-5 Scale]"
+    
+    technical_skills:
+      technical_knowledge: "[1-5 Scale]"
+      problem_solving: "[1-5 Scale]"
+      analytical_thinking: "[1-5 Scale]"
+      technical_communication: "[1-5 Scale]"
+      overall_technical: "[1-5 Scale]"
+    
+    behavioral_skills:
+      star_method_usage: "[1-5 Scale]"
+      example_quality: "[1-5 Scale]"
+      self_awareness: "[1-5 Scale]"
+      learning_ability: "[1-5 Scale]"
+      overall_behavioral: "[1-5 Scale]"
+    
+    company_fit:
+      research_depth: "[1-5 Scale]"
+      motivation: "[1-5 Scale]"
+      cultural_alignment: "[1-5 Scale]"
+      role_understanding: "[1-5 Scale]"
+      overall_fit: "[1-5 Scale]"
+    
+    overall_assessment:
+      interview_readiness: "[1-5 Scale]"
+      improvement_potential: "[1-5 Scale]"
+      recommendation: "[Strongly Recommend/Recommend/Neutral/Do Not Recommend]"
+      confidence_level: "[1-5 Scale]"
+  
+  feedback_areas:
+    strengths:
+      - strength: "[Specific Strength 1]"
+        evidence: "[Evidence from Interview]"
+        impact: "[Impact on Interview Performance]"
+      
+      - strength: "[Specific Strength 2]"
+        evidence: "[Evidence from Interview]"
+        impact: "[Impact on Interview Performance]"
+      
+      - strength: "[Specific Strength 3]"
+        evidence: "[Evidence from Interview]"
+        impact: "[Impact on Interview Performance]"
+    
+    improvement_areas:
+      - area: "[Specific Improvement Area 1]"
+        current_level: "[Current Performance Level]"
+        target_level: "[Target Performance Level]"
+        specific_feedback: "[Specific Feedback]"
+        improvement_strategy: "[Strategy for Improvement]"
+      
+      - area: "[Specific Improvement Area 2]"
+        current_level: "[Current Performance Level]"
+        target_level: "[Target Performance Level]"
+        specific_feedback: "[Specific Feedback]"
+        improvement_strategy: "[Strategy for Improvement]"
+      
+      - area: "[Specific Improvement Area 3]"
+        current_level: "[Current Performance Level]"
+        target_level: "[Target Performance Level]"
+        specific_feedback: "[Specific Feedback]"
+        improvement_strategy: "[Strategy for Improvement]"
+    
+    critical_feedback:
+      - issue: "[Critical Issue 1]"
+        impact: "[Impact on Interview Success]"
+        urgency: "[High/Medium/Low]"
+        action_required: "[Immediate Action Required]"
+      
+      - issue: "[Critical Issue 2]"
+        impact: "[Impact on Interview Success]"
+        urgency: "[High/Medium/Low]"
+        action_required: "[Immediate Action Required]"
+  
+  response_analysis:
+    question_by_question_feedback:
+      - question: "[Question Asked]"
+        response_quality: "[1-5 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Improvement Suggestions]"
+        star_method_usage: "[Yes/No/Partial]"
+        time_management: "[Appropriate/Too Long/Too Short]"
+      
+      - question: "[Question Asked]"
+        response_quality: "[1-5 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Improvement Suggestions]"
+        star_method_usage: "[Yes/No/Partial]"
+        time_management: "[Appropriate/Too Long/Too Short]"
+    
+    pattern_analysis:
+      consistent_strengths: "[Strengths Demonstrated Throughout]"
+      consistent_weaknesses: "[Weaknesses Demonstrated Throughout]"
+      improvement_trends: "[Improvements During Session]"
+      regression_areas: "[Areas That Got Worse]"
+  
+  action_plan:
+    immediate_actions:
+      - action: "[Specific Action 1]"
+        timeline: "[When to Complete]"
+        priority: "[High/Medium/Low]"
+        expected_outcome: "[Expected Result]"
+      
+      - action: "[Specific Action 2]"
+        timeline: "[When to Complete]"
+        priority: "[High/Medium/Low]"
+        expected_outcome: "[Expected Result]"
+    
+    practice_recommendations:
+      - practice_area: "[Specific Practice Area]"
+        practice_method: "[How to Practice]"
+        frequency: "[How Often]"
+        duration: "[How Long]"
+        success_metrics: "[How to Measure Success]"
+      
+      - practice_area: "[Specific Practice Area]"
+        practice_method: "[How to Practice]"
+        frequency: "[How Often]"
+        duration: "[How Long]"
+        success_metrics: "[How to Measure Success]"
+    
+    resource_recommendations:
+      - resource_type: "[Book/Course/Website/Practice Tool]"
+        resource_name: "[Specific Resource]"
+        purpose: "[Why This Resource]"
+        expected_benefit: "[Expected Benefit]"
+        time_investment: "[Time Required]"
+      
+      - resource_type: "[Book/Course/Website/Practice Tool]"
+        resource_name: "[Specific Resource]"
+        purpose: "[Why This Resource]"
+        expected_benefit: "[Expected Benefit]"
+        time_investment: "[Time Required]"
+  
+  follow_up_plan:
+    next_session:
+      recommended_timing: "[When to Schedule Next Session]"
+      focus_areas: "[Areas to Focus on Next Time]"
+      preparation_required: "[Preparation Required for Next Session]"
+      success_criteria: "[Success Criteria for Next Session]"
+    
+    independent_practice:
+      daily_practice: "[Daily Practice Recommendations]"
+      weekly_goals: "[Weekly Practice Goals]"
+      progress_tracking: "[How to Track Progress]"
+      self_assessment: "[Self-Assessment Methods]"
+    
+    interview_preparation:
+      final_preparation: "[Final Preparation Steps]"
+      confidence_building: "[Confidence Building Activities]"
+      mental_preparation: "[Mental Preparation Techniques]"
+      logistics_preparation: "[Logistics Preparation]"
+  
+  session_summary:
+    overall_performance: "[Overall Performance Assessment]"
+    key_achievements: "[Key Achievements During Session]"
+    critical_learnings: "[Critical Learnings from Session]"
+    confidence_level: "[Final Confidence Level]"
+    readiness_assessment: "[Readiness for Actual Interview]"
+    next_steps: "[Immediate Next Steps]"

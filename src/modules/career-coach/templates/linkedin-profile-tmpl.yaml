@@ -1,0 +1,481 @@
+# LinkedIn Profile Template
+
+## Template Information
+- **Template Type:** LinkedIn Profile Optimization
+- **Agent:** resume-writer
+- **Task:** create-doc.md
+- **Version:** 1.0
+
+## Template Structure
+linkedin_profile:
+  profile_basics:
+    profile_photo:
+      photo_requirements: "[Professional headshot requirements]"
+      photo_style: "[Professional style guidelines]"
+      background: "[Background recommendations]"
+      attire: "[Professional attire guidelines]"
+      expression: "[Facial expression recommendations]"
+    
+    background_image:
+      image_type: "[Professional background image type]"
+      color_scheme: "[Color scheme recommendations]"
+      branding_elements: "[Branding elements to include]"
+      resolution: "[Resolution requirements]"
+    
+    name_display:
+      full_name: "[Full Name as it appears]"
+      pronunciation: "[Name pronunciation if needed]"
+      credentials: "[Professional credentials to display]"
+      name_format: "[Name format recommendations]"
+  
+  headline:
+    current_headline:
+      primary_title: "[Current job title]"
+      company: "[Current company]"
+      key_skills: "[2-3 key skills]"
+      value_proposition: "[Value proposition]"
+      character_limit: "[Character limit considerations]"
+    
+    headline_alternatives:
+      - headline: "[Alternative headline 1]"
+        focus: "[Focus of this headline]"
+        target_audience: "[Target audience]"
+        keywords: "[Keywords included]"
+      
+      - headline: "[Alternative headline 2]"
+        focus: "[Focus of this headline]"
+        target_audience: "[Target audience]"
+        keywords: "[Keywords included]"
+      
+      - headline: "[Alternative headline 3]"
+        focus: "[Focus of this headline]"
+        target_audience: "[Target audience]"
+        keywords: "[Keywords included]"
+    
+    headline_optimization:
+      keyword_integration: "[How to integrate keywords]"
+      industry_terms: "[Industry-specific terms]"
+      action_words: "[Action words to use]"
+      length_optimization: "[Optimal length considerations]"
+  
+  about_section:
+    summary_structure:
+      opening_hook: "[Compelling opening statement]"
+      professional_introduction: "[Professional background introduction]"
+      key_achievements: "[2-3 key achievements]"
+      value_proposition: "[Value proposition statement]"
+      call_to_action: "[Call to action for connections]"
+    
+    content_elements:
+      professional_story: "[Professional story/narrative]"
+      expertise_areas: "[Areas of expertise]"
+      career_highlights: "[Career highlights and milestones]"
+      personal_brand: "[Personal brand elements]"
+      industry_focus: "[Industry focus and specialization]"
+    
+    writing_guidelines:
+      tone: "[Professional tone guidelines]"
+      length: "[Optimal length recommendations]"
+      paragraph_structure: "[Paragraph structure guidelines]"
+      keyword_placement: "[Keyword placement strategy]"
+      readability: "[Readability considerations]"
+  
+  experience_section:
+    current_position:
+      job_title: "[Current job title]"
+      company: "[Current company]"
+      dates: "[Start date - Present]"
+      location: "[Location]"
+      company_description: "[Brief company description]"
+      
+      responsibilities:
+        - responsibility: "[Key responsibility 1]"
+          impact: "[Impact of this responsibility]"
+          metrics: "[Quantifiable metrics]"
+        
+        - responsibility: "[Key responsibility 2]"
+          impact: "[Impact of this responsibility]"
+          metrics: "[Quantifiable metrics]"
+        
+        - responsibility: "[Key responsibility 3]"
+          impact: "[Impact of this responsibility]"
+          metrics: "[Quantifiable metrics]"
+      
+      achievements:
+        - achievement: "[Key achievement 1]"
+          quantifiable_result: "[Quantifiable result]"
+          business_impact: "[Business impact]"
+        
+        - achievement: "[Key achievement 2]"
+          quantifiable_result: "[Quantifiable result]"
+          business_impact: "[Business impact]"
+        
+        - achievement: "[Key achievement 3]"
+          quantifiable_result: "[Quantifiable result]"
+          business_impact: "[Business impact]"
+    
+    previous_positions:
+      - position: "[Previous job title]"
+        company: "[Previous company]"
+        dates: "[Start date - End date]"
+        location: "[Location]"
+        company_description: "[Brief company description]"
+        
+        key_responsibilities:
+          - "[Key responsibility 1]"
+          - "[Key responsibility 2]"
+          - "[Key responsibility 3]"
+        
+        key_achievements:
+          - "[Key achievement 1]"
+          - "[Key achievement 2]"
+          - "[Key achievement 3]"
+        
+        technologies_skills: "[Technologies and skills used]"
+      
+      - position: "[Previous job title]"
+        company: "[Previous company]"
+        dates: "[Start date - End date]"
+        location: "[Location]"
+        company_description: "[Brief company description]"
+        
+        key_responsibilities:
+          - "[Key responsibility 1]"
+          - "[Key responsibility 2]"
+          - "[Key responsibility 3]"
+        
+        key_achievements:
+          - "[Key achievement 1]"
+          - "[Key achievement 2]"
+          - "[Key achievement 3]"
+        
+        technologies_skills: "[Technologies and skills used]"
+  
+  education_section:
+    degrees:
+      - degree: "[Degree name]"
+        institution: "[Institution name]"
+        graduation_year: "[Graduation year]"
+        gpa: "[GPA if 3.5+]"
+        honors: "[Honors or distinctions]"
+        relevant_coursework: "[Relevant coursework]"
+        activities: "[Activities and organizations]"
+      
+      - degree: "[Degree name]"
+        institution: "[Institution name]"
+        graduation_year: "[Graduation year]"
+        gpa: "[GPA if 3.5+]"
+        honors: "[Honors or distinctions]"
+        relevant_coursework: "[Relevant coursework]"
+        activities: "[Activities and organizations]"
+    
+    certifications:
+      - certification: "[Certification name]"
+        issuing_organization: "[Issuing organization]"
+        date_earned: "[Date earned]"
+        expiration_date: "[Expiration date if applicable]"
+        credential_id: "[Credential ID]"
+      
+      - certification: "[Certification name]"
+        issuing_organization: "[Issuing organization]"
+        date_earned: "[Date earned]"
+        expiration_date: "[Expiration date if applicable]"
+        credential_id: "[Credential ID]"
+  
+  skills_section:
+    technical_skills:
+      - skill: "[Technical skill 1]"
+        proficiency_level: "[Proficiency level]"
+        endorsements: "[Number of endorsements]"
+        relevance: "[Relevance to target roles]"
+      
+      - skill: "[Technical skill 2]"
+        proficiency_level: "[Proficiency level]"
+        endorsements: "[Number of endorsements]"
+        relevance: "[Relevance to target roles]"
+      
+      - skill: "[Technical skill 3]"
+        proficiency_level: "[Proficiency level]"
+        endorsements: "[Number of endorsements]"
+        relevance: "[Relevance to target roles]"
+    
+    soft_skills:
+      - skill: "[Soft skill 1]"
+        proficiency_level: "[Proficiency level]"
+        endorsements: "[Number of endorsements]"
+        relevance: "[Relevance to target roles]"
+      
+      - skill: "[Soft skill 2]"
+        proficiency_level: "[Proficiency level]"
+        endorsements: "[Number of endorsements]"
+        relevance: "[Relevance to target roles]"
+      
+      - skill: "[Soft skill 3]"
+        proficiency_level: "[Proficiency level]"
+        endorsements: "[Number of endorsements]"
+        relevance: "[Relevance to target roles]"
+    
+    industry_specific_skills:
+      - skill: "[Industry-specific skill 1]"
+        proficiency_level: "[Proficiency level]"
+        endorsements: "[Number of endorsements]"
+        relevance: "[Relevance to target roles]"
+      
+      - skill: "[Industry-specific skill 2]"
+        proficiency_level: "[Proficiency level]"
+        endorsements: "[Number of endorsements]"
+        relevance: "[Relevance to target roles]"
+  
+  accomplishments_section:
+    publications:
+      - title: "[Publication title]"
+        authors: "[Author list]"
+        journal: "[Journal or publication name]"
+        year: "[Publication year]"
+        doi: "[DOI if available]"
+        impact: "[Impact or significance]"
+      
+      - title: "[Publication title]"
+        authors: "[Author list]"
+        journal: "[Journal or publication name]"
+        year: "[Publication year]"
+        doi: "[DOI if available]"
+        impact: "[Impact or significance]"
+    
+    patents:
+      - title: "[Patent title]"
+        patent_number: "[Patent number]"
+        inventors: "[Inventor list]"
+        year: "[Year issued]"
+        status: "[Status]"
+        description: "[Brief description]"
+      
+      - title: "[Patent title]"
+        patent_number: "[Patent number]"
+        inventors: "[Inventor list]"
+        year: "[Year issued]"
+        status: "[Status]"
+        description: "[Brief description]"
+    
+    certifications:
+      - certification: "[Certification name]"
+        issuing_organization: "[Issuing organization]"
+        date_earned: "[Date earned]"
+        credential_id: "[Credential ID]"
+        relevance: "[Relevance to career]"
+      
+      - certification: "[Certification name]"
+        issuing_organization: "[Issuing organization]"
+        date_earned: "[Date earned]"
+        credential_id: "[Credential ID]"
+        relevance: "[Relevance to career]"
+    
+    courses:
+      - course: "[Course name]"
+        platform: "[Platform or institution]"
+        date_completed: "[Date completed]"
+        certificate: "[Certificate received]"
+        relevance: "[Relevance to career]"
+      
+      - course: "[Course name]"
+        platform: "[Platform or institution]"
+        date_completed: "[Date completed]"
+        certificate: "[Certificate received]"
+        relevance: "[Relevance to career]"
+    
+    projects:
+      - project: "[Project name]"
+        description: "[Brief description]"
+        technologies: "[Technologies used]"
+        outcomes: "[Project outcomes]"
+        link: "[Link to project if available]"
+      
+      - project: "[Project name]"
+        description: "[Brief description]"
+        technologies: "[Technologies used]"
+        outcomes: "[Project outcomes]"
+        link: "[Link to project if available]"
+    
+    honors_awards:
+      - award: "[Award name]"
+        organization: "[Awarding organization]"
+        year: "[Year received]"
+        description: "[Brief description]"
+        significance: "[Significance or impact]"
+      
+      - award: "[Award name]"
+        organization: "[Awarding organization]"
+        year: "[Year received]"
+        description: "[Brief description]"
+        significance: "[Significance or impact]"
+    
+    languages:
+      - language: "[Language name]"
+        proficiency: "[Proficiency level]"
+        certification: "[Language certification if any]"
+        relevance: "[Relevance to career]"
+      
+      - language: "[Language name]"
+        proficiency: "[Proficiency level]"
+        certification: "[Language certification if any]"
+        relevance: "[Relevance to career]"
+  
+  recommendations:
+    received_recommendations:
+      - recommender: "[Recommender name]"
+        title: "[Recommender title]"
+        company: "[Recommender company]"
+        relationship: "[Relationship to you]"
+        recommendation_strength: "[Strength of recommendation]"
+        key_points: "[Key points in recommendation]"
+      
+      - recommender: "[Recommender name]"
+        title: "[Recommender title]"
+        company: "[Recommender company]"
+        relationship: "[Relationship to you]"
+        recommendation_strength: "[Strength of recommendation]"
+        key_points: "[Key points in recommendation]"
+    
+    given_recommendations:
+      - recipient: "[Recipient name]"
+        title: "[Recipient title]"
+        company: "[Recipient company]"
+        relationship: "[Relationship to recipient]"
+        recommendation_focus: "[Focus of recommendation]"
+      
+      - recipient: "[Recipient name]"
+        title: "[Recipient title]"
+        company: "[Recipient company]"
+        relationship: "[Relationship to recipient]"
+        recommendation_focus: "[Focus of recommendation]"
+  
+  interests_section:
+    companies_following:
+      - company: "[Company name]"
+        industry: "[Company industry]"
+        reason_following: "[Reason for following]"
+        engagement_level: "[Level of engagement]"
+      
+      - company: "[Company name]"
+        industry: "[Company industry]"
+        reason_following: "[Reason for following]"
+        engagement_level: "[Level of engagement]"
+    
+    influencers_following:
+      - influencer: "[Influencer name]"
+        expertise: "[Influencer expertise]"
+        reason_following: "[Reason for following]"
+        engagement_level: "[Level of engagement]"
+      
+      - influencer: "[Influencer name]"
+        expertise: "[Influencer expertise]"
+        reason_following: "[Reason for following]"
+        engagement_level: "[Level of engagement]"
+    
+    groups_joined:
+      - group: "[Group name]"
+        focus: "[Group focus]"
+        membership_duration: "[Length of membership]"
+        participation_level: "[Level of participation]"
+        value_received: "[Value received from group]"
+      
+      - group: "[Group name]"
+        focus: "[Group focus]"
+        membership_duration: "[Length of membership]"
+        participation_level: "[Level of participation]"
+        value_received: "[Value received from group]"
+  
+  content_strategy:
+    posts_articles:
+      content_types:
+        - type: "[Content type 1]"
+          frequency: "[Posting frequency]"
+          topics: "[Topics to cover]"
+          engagement_goals: "[Engagement goals]"
+        
+        - type: "[Content type 2]"
+          frequency: "[Posting frequency]"
+          topics: "[Topics to cover]"
+          engagement_goals: "[Engagement goals]"
+      
+      content_calendar:
+        weekly_themes: "[Weekly content themes]"
+        posting_schedule: "[Optimal posting schedule]"
+        content_mix: "[Mix of content types]"
+        engagement_strategy: "[Engagement strategy]"
+    
+    engagement_activities:
+      commenting_strategy: "[Strategy for commenting on others' posts]"
+      sharing_strategy: "[Strategy for sharing relevant content]"
+      networking_approach: "[Approach to networking on LinkedIn]"
+      relationship_building: "[Relationship building activities]"
+  
+  optimization_guidelines:
+    seo_optimization:
+      keyword_strategy: "[Keyword optimization strategy]"
+      profile_completeness: "[Profile completeness requirements]"
+      search_visibility: "[Search visibility optimization]"
+      industry_keywords: "[Industry-specific keywords]"
+    
+    networking_strategy:
+      connection_approach: "[Approach to making connections]"
+      target_audience: "[Target audience for connections]"
+      relationship_nurturing: "[Relationship nurturing strategy]"
+      networking_goals: "[Networking goals and objectives]"
+    
+    content_optimization:
+      post_optimization: "[Post optimization guidelines]"
+      article_optimization: "[Article optimization guidelines]"
+      engagement_optimization: "[Engagement optimization]"
+      visibility_optimization: "[Visibility optimization]"
+  
+  privacy_settings:
+    profile_visibility:
+      public_profile: "[Public profile settings]"
+      connection_visibility: "[Connection visibility settings]"
+      activity_visibility: "[Activity visibility settings]"
+      search_visibility: "[Search visibility settings]"
+    
+    communication_preferences:
+      message_settings: "[Message settings]"
+      invitation_settings: "[Invitation settings]"
+      notification_settings: "[Notification settings]"
+      email_preferences: "[Email preferences]"
+  
+  analytics_tracking:
+    profile_views:
+      view_tracking: "[Profile view tracking]"
+      viewer_insights: "[Viewer insights and analytics]"
+      view_trends: "[View trends and patterns]"
+      optimization_opportunities: "[Optimization opportunities]"
+    
+    engagement_metrics:
+      post_engagement: "[Post engagement metrics]"
+      article_engagement: "[Article engagement metrics]"
+      connection_growth: "[Connection growth metrics]"
+      reach_metrics: "[Reach and visibility metrics]"
+    
+    search_appearance:
+      search_rankings: "[Search ranking analytics]"
+      keyword_performance: "[Keyword performance tracking]"
+      search_visibility: "[Search visibility metrics]"
+      optimization_impact: "[Optimization impact measurement]"
+  
+  maintenance_schedule:
+    regular_updates:
+      profile_reviews: "[Frequency of profile reviews]"
+      content_updates: "[Frequency of content updates]"
+      skill_endorsements: "[Skill endorsement management]"
+      connection_management: "[Connection management schedule]"
+    
+    quarterly_optimization:
+      content_audit: "[Quarterly content audit]"
+      engagement_review: "[Quarterly engagement review]"
+      network_analysis: "[Quarterly network analysis]"
+      goal_assessment: "[Quarterly goal assessment]"
+    
+    annual_refresh:
+      major_updates: "[Annual major updates]"
+      strategy_review: "[Annual strategy review]"
+      goal_setting: "[Annual goal setting]"
+      performance_assessment: "[Annual performance assessment]"

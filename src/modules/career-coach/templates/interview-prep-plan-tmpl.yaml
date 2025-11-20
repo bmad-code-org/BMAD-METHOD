@@ -1,0 +1,234 @@
+# Interview Preparation Plan Template
+
+## Template Information
+- **Template Type:** Interview Preparation Plan
+- **Agent:** interview-coach
+- **Task:** interview-preparation.md
+- **Version:** 1.0
+
+## Template Structure
+interview_preparation_plan:
+  candidate_info:
+    name: "[Candidate Name]"
+    target_role: "[Target Job Title]"
+    target_company: "[Target Company]"
+    interview_date: "[Interview Date]"
+    interview_type: "[Phone/Screen/On-site/Virtual]"
+    interview_round: "[1st/2nd/Final Round]"
+    interviewer_role: "[Interviewer Title/Department]"
+  
+  company_research:
+    company_overview:
+      industry: "[Company Industry]"
+      size: "[Company Size]"
+      founded: "[Year Founded]"
+      headquarters: "[Location]"
+      mission: "[Company Mission]"
+      values: "[Company Values]"
+      culture: "[Company Culture]"
+    
+    recent_developments:
+      news: "[Recent Company News]"
+      financial_performance: "[Financial Performance]"
+      strategic_initiatives: "[Strategic Initiatives]"
+      challenges: "[Company Challenges]"
+      opportunities: "[Company Opportunities]"
+    
+    products_services:
+      primary_products: "[Primary Products/Services]"
+      target_market: "[Target Market]"
+      competitive_advantage: "[Competitive Advantages]"
+      technology_stack: "[Technology Stack (if applicable)]"
+    
+    leadership:
+      ceo: "[CEO Name and Background]"
+      key_executives: "[Key Executives]"
+      organizational_structure: "[Organizational Structure]"
+    
+    competitors:
+      direct_competitors: "[Direct Competitors]"
+      competitive_landscape: "[Competitive Landscape]"
+      market_position: "[Market Position]"
+  
+  role_analysis:
+    job_description:
+      key_responsibilities: "[Key Responsibilities]"
+      required_skills: "[Required Skills]"
+      preferred_skills: "[Preferred Skills]"
+      qualifications: "[Required Qualifications]"
+      experience_level: "[Experience Level]"
+    
+    role_requirements:
+      technical_skills: "[Technical Skills Required]"
+      soft_skills: "[Soft Skills Required]"
+      certifications: "[Required Certifications]"
+      education: "[Education Requirements]"
+    
+    success_metrics:
+      performance_indicators: "[Key Performance Indicators]"
+      goals_objectives: "[Role Goals and Objectives]"
+      team_structure: "[Team Structure and Reporting]"
+  
+  interview_preparation:
+    behavioral_preparation:
+      leadership_examples: "[Leadership Experience Examples]"
+      problem_solving_examples: "[Problem-Solving Examples]"
+      teamwork_examples: "[Teamwork Examples]"
+      conflict_resolution_examples: "[Conflict Resolution Examples]"
+      achievement_examples: "[Key Achievements Examples]"
+      failure_examples: "[Failure and Learning Examples]"
+    
+    technical_preparation:
+      technical_skills_assessment: "[Technical Skills Self-Assessment]"
+      technical_questions_preparation: "[Technical Questions Preparation]"
+      coding_practice: "[Coding Practice (if applicable)]"
+      system_design_preparation: "[System Design Preparation (if applicable)]"
+      technical_projects: "[Technical Projects to Discuss]"
+    
+    company_specific_preparation:
+      company_questions: "[Questions About the Company]"
+      role_questions: "[Questions About the Role]"
+      team_questions: "[Questions About the Team]"
+      culture_questions: "[Questions About Company Culture]"
+      growth_questions: "[Questions About Growth Opportunities]"
+    
+    salary_negotiation:
+      salary_research: "[Salary Research for Role/Location]"
+      target_salary: "[Target Salary Range]"
+      benefits_priorities: "[Benefits Priorities]"
+      negotiation_strategy: "[Salary Negotiation Strategy]"
+  
+  mock_interview_schedule:
+    practice_sessions:
+      - session_number: 1
+        focus_area: "[Behavioral Questions]"
+        date: "[Practice Date]"
+        duration: "[Duration]"
+        feedback_areas: "[Areas for Feedback]"
+      
+      - session_number: 2
+        focus_area: "[Technical Questions]"
+        date: "[Practice Date]"
+        duration: "[Duration]"
+        feedback_areas: "[Areas for Feedback]"
+      
+      - session_number: 3
+        focus_area: "[Company-Specific Questions]"
+        date: "[Practice Date]"
+        duration: "[Duration]"
+        feedback_areas: "[Areas for Feedback]"
+      
+      - session_number: 4
+        focus_area: "[Full Mock Interview]"
+        date: "[Practice Date]"
+        duration: "[Duration]"
+        feedback_areas: "[Areas for Feedback]"
+  
+  interview_logistics:
+    interview_details:
+      format: "[In-person/Virtual/Phone]"
+      location: "[Interview Location]"
+      duration: "[Expected Duration]"
+      participants: "[Interview Participants]"
+      technology_requirements: "[Technology Requirements]"
+    
+    preparation_checklist:
+      - item: "Resume and portfolio prepared"
+        status: "[Complete/Pending]"
+      
+      - item: "Professional attire selected"
+        status: "[Complete/Pending]"
+      
+      - item: "Technology tested (if virtual)"
+        status: "[Complete/Pending]"
+      
+      - item: "Interview location scouted (if in-person)"
+        status: "[Complete/Pending]"
+      
+      - item: "Questions prepared for interviewers"
+        status: "[Complete/Pending]"
+      
+      - item: "Company research completed"
+        status: "[Complete/Pending]"
+      
+      - item: "Mock interviews completed"
+        status: "[Complete/Pending]"
+      
+      - item: "References prepared"
+        status: "[Complete/Pending]"
+    
+    day_of_interview:
+      arrival_time: "[Arrival Time]"
+      pre_interview_routine: "[Pre-Interview Routine]"
+      materials_to_bring: "[Materials to Bring]"
+      backup_plans: "[Backup Plans]"
+  
+  response_framework:
+    star_method:
+      situation: "[Describe the specific situation]"
+      task: "[Explain the task or challenge]"
+      action: "[Detail the actions you took]"
+      result: "[Share the results and outcomes]"
+    
+    behavioral_questions:
+      leadership_question: "[Tell me about a time you led a team]"
+      challenge_question: "[Describe a difficult challenge you faced]"
+      achievement_question: "[What's your greatest professional achievement]"
+      failure_question: "[Tell me about a time you failed]"
+      teamwork_question: "[Describe a time you worked with a difficult team member]"
+    
+    technical_questions:
+      problem_solving: "[How would you approach this technical problem]"
+      system_design: "[Design a system for this requirement]"
+      code_review: "[Review this code and suggest improvements]"
+      debugging: "[How would you debug this issue]"
+      optimization: "[How would you optimize this solution]"
+    
+    company_questions:
+      motivation: "[Why do you want to work here]"
+      fit: "[Why are you a good fit for this role]"
+      goals: "[What are your career goals]"
+      challenges: "[What challenges do you expect in this role]"
+      contributions: "[How can you contribute to our team]"
+  
+  follow_up_plan:
+    thank_you_notes:
+      primary_interviewer: "[Thank You Note for Primary Interviewer]"
+      additional_interviewers: "[Thank You Notes for Additional Interviewers]"
+      timing: "[When to Send Thank You Notes]"
+      content_focus: "[Key Points to Include]"
+    
+    follow_up_timeline:
+      immediate_follow_up: "[Within 24 hours]"
+      one_week_follow_up: "[If no response within a week]"
+      two_week_follow_up: "[If no response within two weeks]"
+      final_follow_up: "[Final follow-up if needed]"
+    
+    next_steps:
+      expected_timeline: "[Expected Response Timeline]"
+      next_interview_preparation: "[Preparation for Next Round]"
+      alternative_opportunities: "[Alternative Opportunities to Pursue]"
+  
+  success_metrics:
+    interview_goals:
+      primary_goal: "[Primary Interview Goal]"
+      secondary_goals: "[Secondary Goals]"
+      success_criteria: "[Criteria for Success]"
+    
+    self_assessment:
+      confidence_level: "[1-10 Scale]"
+      preparation_level: "[1-10 Scale]"
+      areas_of_concern: "[Areas of Concern]"
+      strengths_to_highlight: "[Strengths to Highlight]"
+  
+  contingency_planning:
+    backup_preparation:
+      alternative_companies: "[Alternative Companies to Target]"
+      skill_development: "[Skills to Develop Further]"
+      networking_opportunities: "[Networking Opportunities]"
+    
+    interview_outcomes:
+      offer_received: "[Plan if Offer is Received]"
+      no_offer: "[Plan if No Offer]"
+      counter_offer: "[Plan for Counter Offer]"
+      rejection: "[Plan for Rejection]"

@@ -1,0 +1,10 @@
+name: Career Coach Team
+description: Complete career development team for comprehensive career planning, resume building, interview preparation, and professional development
+agents:
+  - resume-writer
+  - career-coach
+  - interview-coach
+workflows:
+  - resume-creation-workflow
+  - career-planning-workflow
+  - interview-preparation-workflow

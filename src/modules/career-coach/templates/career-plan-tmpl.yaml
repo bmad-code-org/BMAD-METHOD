@@ -1,0 +1,249 @@
+template:
+  id: career-plan-tmpl
+  name: Career Development Plan Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: {{candidate_name}}-career-plan.md
+    title: "{{candidate_name}} - Career Development Plan"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: executive-summary
+    title: Executive Summary
+    instruction: |
+      Create a concise overview of the career development plan, highlighting key goals, timeline, and expected outcomes.
+      Focus on the most important aspects of the career strategy and development approach.
+    type: paragraphs
+    template: |
+      # Career Development Plan - {{candidate_name}}
+      
+      **Date:** {{plan_date}}
+      **Career Goal:** {{primary_career_goal}}
+      **Timeline:** {{timeline}}
+      **Key Focus Areas:** {{focus_areas}}
+
+  - id: current-situation
+    title: Current Career Situation
+    instruction: |
+      Document the current career position, including role, responsibilities, achievements, and market position.
+      Be honest and objective about current strengths and areas for improvement.
+    type: structured-content
+    sections:
+      - id: current-role
+        title: Current Role and Responsibilities
+        instruction: |
+          Describe current job title, company, and key responsibilities.
+          Include scope of work, team size, and reporting structure.
+        type: paragraphs
+      
+      - id: current-achievements
+        title: Recent Achievements
+        instruction: |
+          List 3-5 key achievements in the current role.
+          Quantify results where possible and highlight impact.
+        type: bullet-list
+        repeatable: true
+      
+      - id: current-skills
+        title: Current Skills Assessment
+        instruction: |
+          Evaluate current skill levels across technical, soft, and industry-specific areas.
+          Use a scale (Beginner, Intermediate, Advanced, Expert) for each skill.
+        type: structured-list
+        repeatable: true
+
+  - id: career-vision
+    title: Career Vision and Goals
+    instruction: |
+      Define long-term career aspirations and specific goals for the next 3-5 years.
+      Be specific about desired roles, industries, and achievements.
+    type: structured-content
+    sections:
+      - id: long-term-vision
+        title: Long-term Career Vision (5-10 years)
+        instruction: |
+          Describe where you want to be in your career in 5-10 years.
+          Include desired role, industry, level of responsibility, and impact.
+        type: paragraphs
+      
+      - id: medium-term-goals
+        title: Medium-term Goals (1-3 years)
+        instruction: |
+          Define specific goals for the next 1-3 years.
+          Include target roles, skills to develop, and milestones to achieve.
+        type: bullet-list
+        repeatable: true
+      
+      - id: short-term-objectives
+        title: Short-term Objectives (6-12 months)
+        instruction: |
+          List specific, measurable objectives for the next 6-12 months.
+          Focus on actionable steps that will move you toward your goals.
+        type: bullet-list
+        repeatable: true
+
+  - id: skill-gap-analysis
+    title: Skill Gap Analysis
+    instruction: |
+      Identify the gap between current skills and skills needed for target roles.
+      Prioritize skills by importance and development difficulty.
+    type: structured-content
+    sections:
+      - id: required-skills
+        title: Skills Required for Target Roles
+        instruction: |
+          List skills needed for your target roles and career goals.
+          Include technical, soft, and industry-specific skills.
+        type: bullet-list
+        repeatable: true
+      
+      - id: skill-gaps
+        title: Identified Skill Gaps
+        instruction: |
+          Compare current skills with required skills to identify gaps.
+          Rate each gap by importance (High, Medium, Low) and development time.
+        type: structured-list
+        repeatable: true
+      
+      - id: development-priorities
+        title: Skill Development Priorities
+        instruction: |
+          Prioritize skills for development based on importance and timeline.
+          Focus on skills that will have the greatest impact on career advancement.
+        type: bullet-list
+        repeatable: true
+
+  - id: action-plan
+    title: Action Plan
+    instruction: |
+      Create a detailed action plan with specific steps, timelines, and success metrics.
+      Break down goals into manageable, actionable tasks.
+    type: structured-content
+    sections:
+      - id: learning-plan
+        title: Learning and Development Plan
+        instruction: |
+          Detail how you will develop required skills.
+          Include courses, certifications, projects, and practice opportunities.
+        type: structured-list
+        repeatable: true
+      
+      - id: networking-strategy
+        title: Networking Strategy
+        instruction: |
+          Outline networking activities and relationship building efforts.
+          Include target connections, events, and engagement strategies.
+        type: bullet-list
+        repeatable: true
+      
+      - id: career-moves
+        title: Career Advancement Strategy
+        instruction: |
+          Plan specific career moves and advancement opportunities.
+          Include internal promotions, lateral moves, and external opportunities.
+        type: bullet-list
+        repeatable: true
+
+  - id: timeline
+    title: Implementation Timeline
+    instruction: |
+      Create a detailed timeline for implementing the career development plan.
+      Include milestones, deadlines, and checkpoints for progress review.
+    type: structured-content
+    sections:
+      - id: quarterly-milestones
+        title: Quarterly Milestones
+        instruction: |
+          Define major milestones for each quarter of the next year.
+          Include skill development, networking, and career advancement goals.
+        type: structured-list
+        repeatable: true
+      
+      - id: monthly-activities
+        title: Monthly Activities
+        instruction: |
+          Break down quarterly goals into monthly activities.
+          Include specific tasks, learning activities, and networking events.
+        type: bullet-list
+        repeatable: true
+
+  - id: resources
+    title: Resources and Support
+    instruction: |
+      Identify resources, tools, and support needed to achieve career goals.
+      Include learning resources, mentors, and professional development opportunities.
+    type: structured-content
+    sections:
+      - id: learning-resources
+        title: Learning Resources
+        instruction: |
+          List specific courses, books, websites, and other learning resources.
+          Include costs, time commitments, and expected outcomes.
+        type: bullet-list
+        repeatable: true
+      
+      - id: mentors-advisors
+        title: Mentors and Advisors
+        instruction: |
+          Identify potential mentors, advisors, and career coaches.
+          Include how you will approach and engage with them.
+        type: bullet-list
+        repeatable: true
+      
+      - id: professional-development
+        title: Professional Development Opportunities
+        instruction: |
+          List conferences, workshops, certifications, and other development opportunities.
+          Include timing, costs, and expected benefits.
+        type: bullet-list
+        repeatable: true
+
+  - id: success-metrics
+    title: Success Metrics and Evaluation
+    instruction: |
+      Define how you will measure progress and success in your career development.
+      Include both quantitative and qualitative metrics.
+    type: structured-content
+    sections:
+      - id: progress-indicators
+        title: Progress Indicators
+        instruction: |
+          Define specific indicators that show progress toward career goals.
+          Include skill assessments, feedback, and achievement milestones.
+        type: bullet-list
+        repeatable: true
+      
+      - id: evaluation-schedule
+        title: Evaluation Schedule
+        instruction: |
+          Schedule regular reviews of career development progress.
+          Include monthly, quarterly, and annual evaluation points.
+        type: structured-list
+        repeatable: true
+
+  - id: risk-mitigation
+    title: Risk Assessment and Mitigation
+    instruction: |
+      Identify potential obstacles and risks to career development success.
+      Develop strategies to mitigate these risks and overcome challenges.
+    type: structured-content
+    sections:
+      - id: potential-obstacles
+        title: Potential Obstacles
+        instruction: |
+          Identify potential challenges and obstacles to achieving career goals.
+          Include market conditions, skill development challenges, and personal constraints.
+        type: bullet-list
+        repeatable: true
+      
+      - id: mitigation-strategies
+        title: Mitigation Strategies
+        instruction: |
+          Develop strategies to overcome identified obstacles.
+          Include backup plans and alternative approaches.
+        type: bullet-list
+        repeatable: true
