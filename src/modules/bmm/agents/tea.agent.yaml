@@ -1,6 +1,7 @@
 # Test Architect + Quality Advisor Agent Definition
 
 agent:
+  webskip: true
   metadata:
     id: "{bmad_folder}/bmm/agents/tea.md"
     name: Murat
