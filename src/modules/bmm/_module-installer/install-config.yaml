@@ -45,6 +45,11 @@ tea_use_mcp_enhancements:
   prompt: "Enable Test Architect Playwright MCP capabilities (healing, exploratory, verification)?"
   default: false
   result: "{value}"
+
+tea_use_playwright_utils:
+  prompt: "Are you using @seontechnologies/playwright-utils in your project?"
+  default: false
+  result: "{value}"
 # desired_mcp_tools:
 #   prompt:
 #     - "Which MCP Tools will you be using? (Select all that apply)"

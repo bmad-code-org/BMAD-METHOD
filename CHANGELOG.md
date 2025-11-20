@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### Added
+
+- **Playwright Utils Integration**: Test Architect now supports `@seontechnologies/playwright-utils` integration
+  - Installation prompt with `use_playwright_utils` configuration flag (mirrors tea_use_mcp_enhancements pattern)
+  - 11 comprehensive knowledge fragments covering ALL utilities: overview, api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
+  - Adaptive workflow recommendations in 6 workflows: automate (CRITICAL), framework, test-review, ci, atdd, test-design (light mention)
+  - 32 total knowledge fragments (21 core patterns + 11 playwright-utils)
+  - Context-aware fragment loading preserves existing behavior when flag is false
+  - Production-ready utilities from SEON Technologies now integrated with TEA's proven testing patterns
+
 ## [6.0.0-alpha.12]
 
 **Release: November 19, 2025**

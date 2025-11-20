@@ -167,12 +167,34 @@ src/modules/bmm/
 
 TEA uniquely requires:
 
-- **Extensive domain knowledge**: 21 fragments, 12,821 lines covering test patterns, CI/CD, fixtures, quality practices, healing strategies
+- **Extensive domain knowledge**: 32 fragments covering test patterns, CI/CD, fixtures, quality practices, healing strategies, and optional playwright-utils integration
 - **Centralized reference system**: `tea-index.csv` for on-demand fragment loading during workflow execution
 - **Cross-cutting concerns**: Domain-specific testing patterns (vs project-specific artifacts like PRDs/stories)
-- **Optional MCP integration**: Healing, exploratory, and verification modes for enhanced testing capabilities
+- **Optional integrations**: MCP capabilities (healing, exploratory, verification) and playwright-utils support
 
 This architecture enables TEA to maintain consistent, production-ready testing patterns across all BMad projects while operating across multiple development phases.
+
+### Playwright Utils Integration
+
+TEA optionally integrates with `@seontechnologies/playwright-utils`, an open-source library providing fixture-based utilities for Playwright tests.
+
+**Installation:**
+
+```bash
+npm install -D @seontechnologies/playwright-utils
+```
+
+**Enable during BMAD installation** by answering "Yes" when prompted.
+
+**Supported utilities (11 total):**
+
+- api-request, network-recorder, auth-session, intercept-network-call, recurse
+- log, file-utils, burn-in, network-error-monitor
+- fixtures-composition (integration patterns)
+
+**Workflows adapt:** automate, framework, test-review, ci, atdd (+ light mention in test-design).
+
+**Knowledge base:** 32 total fragments (21 core patterns + 11 playwright-utils)
 
 </details>
 
