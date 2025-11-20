@@ -16,6 +16,18 @@ Complete map of all BMad Method v6 documentation with recommended reading paths.
 
 ---
 
+## 🌐 Documentation en Français
+
+Complete French language documentation for BMAD-METHOD:
+
+- **[README Français](../README.fr.md)** - Vue d'ensemble complète en français
+- **[Guide d'Installation](./fr/installation.md)** - Installation et configuration multi-langue
+- **[Intégration IDE](./fr/integration-ide.md)** - Configuration pour Claude Code, Cursor, Windsurf, etc.
+- **[Bundles Web](./fr/bundles-web.md)** - Utiliser avec Gemini Gems et Custom GPTs
+- **[Guide de Démarrage Rapide](./fr/demarrage-rapide.md)** - Introduction de 15 minutes
+
+---
+
 ## 📋 Core Documentation
 
 ### Project-Level Docs (Root)

@@ -6,9 +6,11 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
+> **🇫🇷 [Documentation en Français](./README.fr.md)** | **🇬🇧 English** (current)
+
 ## AI-Driven Agile Development That Scales From Bug Fixes to Enterprise
 
-**Build More, Architect Dreams** (BMAD) with **38+ specialized AI agents** and **76+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms to content creation, marketing operations, career development, and UX writing.
+**Build More, Architect Dreams** (BMAD) with **31 specialized AI agents** and **50+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms to game development, content creation, marketing operations, career development, and UX writing.
 
 > **🚀 v6 is a MASSIVE upgrade from v4!** Complete architectural overhaul, scale-adaptive intelligence, visual workflows, and the powerful BMad Core framework. v4 users: this changes everything. [See what's new →](#whats-new-in-v6)
 
@@ -22,7 +24,7 @@ Unlike generic AI coding assistants, BMad Method provides **structured, battle-t
 
 - **Scale-Adaptive Intelligence** - Automatically adjusts planning depth from bug fixes to enterprise systems
 - **Complete Development Lifecycle** - Analysis → Planning → Architecture → Implementation
-- **Specialized Expertise** - 38+ agents with specific roles (PM, Architect, Developer, UX Designer, Content Creator, UX Writer, Career Coach, etc.)
+- **Specialized Expertise** - 31 agents with specific roles (PM, Architect, Developer, UX Designer, Game Designer, Content Creator, Marketer, UX Writer, Career Coach, etc.)
 - **Proven Methodologies** - Built on agile best practices with AI amplification
 - **Advanced Voice & Style System** - AI content that authentically matches your unique writing style
 - **IDE Integration** - Works with Claude Code, Cursor, Windsurf, VS Code
@@ -213,8 +215,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full development guidelines.
 - **Scale-Adaptive Intelligence** - Automatic adjustment from bug fixes to enterprise
 - **Visual Workflows** - Beautiful SVG diagrams showing complete methodology
 - **BMad Builder Module** - Create and share your own AI agent teams
-- **76+ Workflows** - Up from 20 in v4, covering every development scenario
-- **38+ Specialized Agents** - Enhanced with customizable personalities and expertise
+- **8 Specialized Modules** - BMM, BMB, BMGD, CIS, Content Creator, Marketing Ops, Career Coach, UX Writer
+- **50+ Workflows** - Up from 20 in v4, covering every development scenario
+- **31 Specialized Agents** - Enhanced with customizable personalities and expertise
+- **Game Development Module** - BMGD for game creation with Unity/Unreal support
 - **Professional Development Suite** - Career Coach and UX Writer modules for career growth and interface design
 - **Update-Safe Customization** - Your configs persist through all updates
 - **Web Bundles** - Use agents in ChatGPT, Claude, and Gemini
