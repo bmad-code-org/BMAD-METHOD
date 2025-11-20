@@ -1,0 +1,67 @@
+<task>
+  <metadata>
+    <id>{bmad_folder}/content-creator/tasks/seo-optimize.xml</id>
+    <name>SEO Optimization</name>
+    <description>Comprehensive SEO optimization for content discoverability</description>
+    <module>content-creator</module>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# SEO Optimization Task
+
+Optimize content for search engines while maintaining readability and authentic voice.
+
+## Optimization Process
+
+### 1. Keyword Analysis
+- Identify primary keyword (from user or infer from content)
+- Find related keywords and semantic variations
+- Calculate current keyword density
+- Target: 0.5-2.5% for primary keyword
+
+### 2. Title Optimization
+- Length: 50-60 characters
+- Include primary keyword (preferably near start)
+- Make compelling and click-worthy
+- Match search intent
+
+### 3. Meta Description
+- Length: 150-160 characters
+- Include primary keyword naturally
+- Summarize value proposition
+- Include call-to-action
+
+### 4. Heading Structure
+- H1: Article title (only one, with primary keyword)
+- H2: Main sections (3-5, include keywords naturally)
+- H3: Subsections as needed
+- Logical hierarchy maintained
+
+### 5. Content Optimization
+- Integrate keywords naturally (never force)
+- Use semantic variations throughout
+- First 100 words should include primary keyword
+- Maintain natural reading flow
+
+### 6. Internal/External Links
+- 2-3 relevant external authority links
+- 1-2 internal links (if applicable)
+- Descriptive anchor text (not "click here")
+- Open external links in new tab
+
+### 7. Image Optimization (if applicable)
+- Descriptive alt text with keywords
+- Descriptive file names
+- Appropriate image sizes
+
+## Output
+
+Provide optimized content with:
+- SEO score improvement (before/after)
+- Keyword density report
+- Meta elements (title, description)
+- Recommended changes summary
+    ]]>
+  </instructions>
+</task>

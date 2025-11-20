@@ -1,0 +1,17 @@
+name: "optimize-content"
+description: "Optimize existing content for SEO, readability, engagement, and platform performance"
+author: "Content Creator Module"
+
+config_source: "{project-root}/{bmad_folder}/content-creator/config.yaml"
+content_output_folder: "{config_source}:content_output_folder"
+readability_target: "{config_source}:readability_target_grade"
+enable_seo: "{config_source}:enable_seo_optimization"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/content-creator/workflows/optimize-content"
+instructions: "{installed_path}/instructions.md"
+
+seo_keywords: "{project-root}/{bmad_folder}/content-creator/data/seo-keywords.md"
+writing_examples: "{project-root}/{bmad_folder}/content-creator/data/writing-examples.md"
+
+standalone: true

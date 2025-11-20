@@ -1,0 +1,199 @@
+<task>
+  <metadata>
+    <id>{bmad_folder}/content-creator/tasks/content-analysis.xml</id>
+    <name>Content Analysis</name>
+    <description>Comprehensive content analysis across 5 dimensions: readability, SEO, structure, engagement, and technical quality</description>
+    <module>content-creator</module>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Content Analysis Task
+
+You are analyzing written content across five key dimensions.
+
+## Analysis Dimensions
+
+### 1. Readability Assessment (0-100)
+
+**Metrics:**
+- Flesch Reading Ease Score (0-100, target: 60-70)
+- Grade Level (target: 8th grade)
+- Average words per sentence (target: 15-20)
+- Sentence variety (mix of short and long)
+- Paragraph size (target: 3-5 sentences)
+
+**Analysis:**
+- Calculate metrics
+- Compare to targets
+- Identify complex sections
+- Suggest simplification opportunities
+
+### 2. SEO Evaluation (0-100)
+
+**Metrics:**
+- Keyword density (target: 0.5-2.5%)
+- Title optimization (50-60 chars with primary keyword)
+- Meta description (150-160 chars)
+- Header hierarchy (H1, H2, H3 structure)
+- Internal/external links (quality and relevance)
+
+**Analysis:**
+- Identify primary and secondary keywords
+- Check keyword distribution
+- Evaluate meta elements
+- Assess link structure
+
+### 3. Structural Analysis (0-100)
+
+**Elements:**
+- Introduction strength and hook
+- Logical section organization
+- Transition quality between sections
+- Conclusion impact
+- Overall flow and coherence
+
+**Analysis:**
+- Rate each structural element
+- Identify weak transitions
+- Check logical progression
+- Verify conclusion effectiveness
+
+### 4. Engagement Metrics (0-100)
+
+**Factors:**
+- Hook effectiveness (grabs attention)
+- Emotional resonance
+- Value density per paragraph
+- Scannability (bullets, headers, formatting)
+- Call-to-action clarity
+
+**Analysis:**
+- Assess opening impact
+- Evaluate emotional connection
+- Check value delivery
+- Verify scannable format
+
+### 5. Technical Quality (0-100)
+
+**Checks:**
+- Grammar and spelling errors
+- Sentence variety and complexity
+- Word choice strength
+- Formatting consistency
+- Punctuation accuracy
+
+**Analysis:**
+- Count and categorize errors
+- Assess sentence construction
+- Evaluate vocabulary
+- Check formatting
+
+## Analysis Process
+
+1. **Initial Scan:** Quick review for obvious issues
+2. **Detailed Analysis:** Deep dive on each dimension
+3. **Scoring:** 0-100 for each category
+4. **Recommendations:** Prioritized by urgency
+
+## Recommendation Priorities
+
+**Critical** (Must fix):
+- Major grammar/spelling errors
+- Broken structure
+- Missing essential elements
+
+**Important** (Should fix):
+- Readability issues
+- Weak hook
+- Poor transitions
+
+**Optimization** (Nice to have):
+- SEO enhancements
+- Engagement improvements
+- Style refinements
+
+**Excellence** (Beyond basics):
+- Advanced SEO
+- Deep engagement optimization
+- Voice refinement
+
+## Output Format
+
+```
+CONTENT ANALYSIS REPORT
+======================
+
+Overall Score: X/100
+
+Dimension Scores:
+- Readability: X/100
+- SEO: X/100
+- Structure: X/100
+- Engagement: X/100
+- Technical Quality: X/100
+
+Detailed Breakdown:
+
+[READABILITY]
+- Flesch Score: X (Target: 60-70)
+- Grade Level: Xth grade (Target: 8th)
+- Avg Sentence Length: X words (Target: 15-20)
+- Issues: [List]
+
+[SEO]
+- Keyword Density: X% (Target: 0.5-2.5%)
+- Title: [Analysis]
+- Headers: [Analysis]
+- Issues: [List]
+
+[STRUCTURE]
+- Hook: [Rating and feedback]
+- Flow: [Rating and feedback]
+- Conclusion: [Rating and feedback]
+- Issues: [List]
+
+[ENGAGEMENT]
+- Hook Effectiveness: [Rating]
+- Value Density: [Rating]
+- Scannability: [Rating]
+- Issues: [List]
+
+[TECHNICAL]
+- Errors Found: X
+- Sentence Variety: [Rating]
+- Word Choice: [Rating]
+- Issues: [List]
+
+RECOMMENDATIONS:
+
+Critical:
+1. [Action item]
+
+Important:
+1. [Action item]
+
+Optimization:
+1. [Action item]
+
+Excellence:
+1. [Action item]
+
+Strengths:
+- [Strength 1]
+- [Strength 2]
+
+Next Steps:
+1. [Priority action]
+2. [Priority action]
+```
+
+## Integration
+
+This analysis feeds into:
+- Quality check processes
+- Optimization workflows
+- Performance tracking
+    ]]>
+  </instructions>
+</task>

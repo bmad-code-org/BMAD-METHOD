@@ -1,0 +1,44 @@
+name: "article-pipeline"
+description: "Complete article writing pipeline from research to multi-platform publication with SEO optimization and automated repurposing. Transforms a research topic into published-ready content across blog, LinkedIn, newsletter, and social media in 10-15 minutes."
+author: "Content Creator Module"
+
+# Configuration variables
+config_source: "{project-root}/{bmad_folder}/content-creator/config.yaml"
+content_output_folder: "{config_source}:content_output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+writing_style: "{config_source}:default_writing_style"
+enable_seo: "{config_source}:enable_seo_optimization"
+content_platforms: "{config_source}:content_platforms"
+readability_target: "{config_source}:readability_target_grade"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/{bmad_folder}/content-creator/workflows/article-pipeline"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+checklist: "{installed_path}/checklist.md"
+
+# Data files
+writing_examples: "{project-root}/{bmad_folder}/content-creator/data/writing-examples.md"
+research_sources: "{project-root}/{bmad_folder}/content-creator/data/research-sources.md"
+seo_keywords: "{project-root}/{bmad_folder}/content-creator/data/seo-keywords.md"
+brand_guidelines: "{project-root}/{bmad_folder}/content-creator/data/brand-guidelines.md"
+
+# Output configuration
+drafts_folder: "{content_output_folder}/drafts"
+published_folder: "{content_output_folder}/published"
+default_output_file: "{drafts_folder}/article-{{topic-slug}}-{{date}}.md"
+
+standalone: true
+
+web_bundle:
+  name: "article-pipeline"
+  description: "Complete article writing pipeline with research, writing, SEO optimization, and multi-platform repurposing"
+  author: "Content Creator"
+  web_bundle_files:
+    - "{bmad_folder}/content-creator/workflows/article-pipeline/instructions.md"
+    - "{bmad_folder}/content-creator/workflows/article-pipeline/template.md"
+    - "{bmad_folder}/content-creator/workflows/article-pipeline/checklist.md"
+    - "{bmad_folder}/content-creator/data/writing-examples.md"
+    - "{bmad_folder}/content-creator/data/research-sources.md"

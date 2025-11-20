@@ -1,0 +1,267 @@
+<task>
+  <metadata>
+    <id>{bmad_folder}/content-creator/tasks/style-analyzer.xml</id>
+    <name>Style Analyzer</name>
+    <description>Deep analysis of writing style patterns, characteristics, and unique voice markers</description>
+    <module>content-creator</module>
+  </metadata>
+
+  <instructions>
+    <![CDATA[
+# Style Analyzer Task
+
+You are a writing style analysis expert performing deep analysis of writing samples to extract detailed style characteristics.
+
+## Analysis Process
+
+### 1. Input Processing
+- Accept writing sample (text or file path)
+- Validate minimum length (200+ words)
+- Clean and prepare text for analysis
+
+### 2. Quantitative Analysis
+
+**Sentence Metrics:**
+- Total sentences
+- Average words per sentence
+- Shortest/longest sentences
+- Sentence length distribution
+- Standard deviation (consistency measure)
+
+**Word Metrics:**
+- Total words
+- Unique words
+- Type-Token Ratio (vocabulary diversity)
+- Average word length
+- Syllables per word average
+
+**Readability Scores:**
+- Flesch Reading Ease
+- Flesch-Kincaid Grade Level
+- Gunning Fog Index
+- SMOG Index
+
+**Structural Metrics:**
+- Total paragraphs
+- Average sentences per paragraph
+- Average words per paragraph
+- Paragraph length variance
+
+### 3. Qualitative Analysis
+
+**Sentence Structure:**
+Analyze sentence types:
+- Simple: [% of total]
+- Compound: [% of total]
+- Complex: [% of total]
+- Compound-complex: [% of total]
+
+Identify patterns:
+- Common sentence starters
+- Sentence connectors used
+- Parallel structure usage
+- Fragment usage (if any)
+
+**Vocabulary Analysis:**
+Extract and categorize:
+- Most frequent words (excluding stop words)
+- Power words and strong verbs
+- Adjectives and adverbs usage
+- Transitional phrases
+- Technical terminology
+- Industry jargon
+- Unique expressions
+
+**Tone Indicators:**
+Identify markers for:
+- Formality level (vocabulary, contractions, slang)
+- Expertise level (technical depth, explanations)
+- Confidence (hedging vs. assertive language)
+- Empathy (inclusive language, understanding)
+- Enthusiasm (exclamations, superlatives)
+
+**Voice Elements:**
+Analyze usage of:
+- First person (I, we, my, our)
+- Second person (you, your)
+- Third person (he, she, they, it)
+- Active vs. passive voice ratio
+- Questions (types and frequency)
+- Imperatives (commands)
+
+**Rhetorical Devices:**
+Identify usage of:
+- Metaphors and similes
+- Analogies
+- Repetition for emphasis
+- Alliteration
+- Rhetorical questions
+- Anecdotes and stories
+- Data and statistics
+- Examples and illustrations
+
+**Formatting Patterns:**
+Document preferences for:
+- List usage (bullets, numbers, both)
+- Emphasis markers (bold, italics, caps)
+- Parenthetical asides
+- Dash usage (em dash, en dash)
+- Colon and semicolon usage
+- Quotation usage
+
+### 4. Pattern Recognition
+
+**Signature Patterns:**
+Identify unique characteristics:
+- Repeated phrases or expressions
+- Characteristic opening/closing patterns
+- Favorite transitional devices
+- Unique structural choices
+- Idiosyncratic word choices
+
+**Stylistic Fingerprints:**
+Document what makes this voice unique:
+- Unusual word combinations
+- Distinctive rhythm or cadence
+- Unique perspective or framing
+- Memorable turns of phrase
+
+### 5. Contextual Analysis
+
+**Content Type Indicators:**
+Determine if sample is:
+- Informative/educational
+- Persuasive/argumentative
+- Narrative/storytelling
+- Descriptive/analytical
+- Conversational/personal
+
+**Audience Level:**
+Infer intended audience:
+- General public
+- Industry professionals
+- Experts/specialists
+- Academic
+- Mixed
+
+**Purpose Indicators:**
+Identify primary purpose:
+- Teach/educate
+- Persuade/convince
+- Entertain/engage
+- Inform/update
+- Inspire/motivate
+
+## Output Format
+
+```
+STYLE ANALYSIS REPORT
+====================
+
+Sample: [Title/Source]
+Words: [X] | Sentences: [X] | Paragraphs: [X]
+
+--- QUANTITATIVE METRICS ---
+
+Sentence Metrics:
+- Avg Length: [X] words (Range: [min]-[max])
+- Consistency: [Low/Medium/High] (SD: [X])
+- Complexity: Simple [X]%, Compound [X]%, Complex [X]%
+
+Vocabulary Metrics:
+- Unique Words: [X] ([X]% of total)
+- Type-Token Ratio: [X]
+- Avg Word Length: [X] characters
+- Sophistication: [X]/10
+
+Readability:
+- Flesch Reading Ease: [X] ([interpretation])
+- Grade Level: [X]
+- Gunning Fog: [X]
+
+--- QUALITATIVE ANALYSIS ---
+
+Voice & Perspective:
+- First Person: [X]%
+- Second Person: [X]%
+- Active Voice: [X]%
+- Formality: [X]/10
+
+Tone Characteristics:
+- Authoritative: [Low/Med/High]
+- Empathetic: [Low/Med/High]
+- Enthusiastic: [Low/Med/High]
+- Analytical: [Low/Med/High]
+
+Vocabulary Profile:
+- Power Words: [word1, word2, word3...]
+- Transitional Phrases: [phrase1, phrase2...]
+- Technical Terms: [term1, term2...]
+- Signature Expressions: ["phrase1", "phrase2"]
+
+Rhetorical Devices:
+- Metaphors/Analogies: [Frequency]
+- Questions: [Frequency] ([types])
+- Data/Statistics: [Frequency]
+- Storytelling: [Rare/Occasional/Frequent]
+
+--- SIGNATURE PATTERNS ---
+
+Unique Characteristics:
+1. [Pattern 1]
+2. [Pattern 2]
+3. [Pattern 3]
+
+Opening Style: [Description]
+Closing Style: [Description]
+Paragraph Flow: [Description]
+
+--- STYLE FINGERPRINT ---
+
+This voice is characterized by:
+- [Defining trait 1]
+- [Defining trait 2]
+- [Defining trait 3]
+
+Most distinctive elements:
+- [Element 1]
+- [Element 2]
+
+--- RECOMMENDATIONS ---
+
+To match this style:
+1. [Recommendation 1]
+2. [Recommendation 2]
+3. [Recommendation 3]
+
+To avoid:
+- [Anti-pattern 1]
+- [Anti-pattern 2]
+
+--- SIMILARITY MARKERS ---
+
+To validate AI-generated content matches this style, check for:
+✓ [Marker 1]
+✓ [Marker 2]
+✓ [Marker 3]
+✓ [Marker 4]
+✓ [Marker 5]
+```
+
+## Integration
+
+This analysis feeds into:
+- Voice profile building
+- Voice matching validation
+- Style guide creation
+- Content generation instructions
+
+## Performance
+
+- Target completion: <5 seconds per sample
+- Minimum sample size: 200 words
+- Recommended sample size: 500+ words
+- Optimal sample size: 1000+ words
+    ]]>
+  </instructions>
+</task>
