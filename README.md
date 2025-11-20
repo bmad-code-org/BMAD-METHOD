@@ -164,7 +164,7 @@ For contributors working on the BMad codebase:
 npm test
 
 # Development commands
-npm run lint:fix      # Check code style
+npm run lint:fix      # Fix code style
 npm run format:fix    # Auto-format code
 npm run bundle        # Build web bundles
 ```
