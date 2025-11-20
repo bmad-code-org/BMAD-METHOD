@@ -1,0 +1,38 @@
+# Deep Research Workflow Configuration
+name: "deep-research"
+description: "Conduct comprehensive, multi-source research with advanced validation and citation tracking. Implements an 8-phase research pipeline for enterprise-grade intelligence gathering."
+author: "BMad"
+
+# Critical variables load from config_source
+config_source: "{project-root}/{bmad_folder}/deep-research/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Context can be provided via data attribute when invoking
+# Example: data="{path}/research-context.md" provides research parameters
+
+# Module path and component files
+installed_path: "{project-root}/{bmad_folder}/deep-research/workflows/research"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+
+# Required Data Files
+research_modes: "{installed_path}/research-modes.csv"
+
+# Output configuration
+default_output_file: "{output_folder}/research-{{topic}}-{{date}}.md"
+
+standalone: true
+
+web_bundle:
+  name: "deep-research"
+  description: "Conduct comprehensive, multi-source research with advanced validation and citation tracking. Implements an 8-phase research pipeline for enterprise-grade intelligence gathering."
+  author: "BMad"
+  instructions: "{bmad_folder}/deep-research/workflows/research/instructions.md"
+  template: "{bmad_folder}/deep-research/workflows/research/template.md"
+  web_bundle_files:
+    - "{bmad_folder}/deep-research/workflows/research/instructions.md"
+    - "{bmad_folder}/deep-research/workflows/research/template.md"
+    - "{bmad_folder}/deep-research/workflows/research/research-modes.csv"

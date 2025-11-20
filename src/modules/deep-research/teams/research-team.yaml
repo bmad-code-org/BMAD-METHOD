@@ -1,0 +1,37 @@
+# Deep Research Team Configuration
+
+team:
+  name: "Research Intelligence Team"
+  description: "Specialized team for conducting comprehensive research and intelligence gathering"
+
+  members:
+    - agent: "{bmad_folder}/deep-research/agents/research-specialist.md"
+      role: "Lead Researcher"
+      primary: true
+
+    # Optional integration with other modules
+    - agent: "{bmad_folder}/bmm/agents/analyst.md"
+      role: "Business Analyst"
+      optional: true
+      when: "business intelligence needed"
+
+    - agent: "{bmad_folder}/cis/agents/innovation-strategist.md"
+      role: "Strategic Advisor"
+      optional: true
+      when: "innovation research needed"
+
+    - agent: "{bmad_folder}/content-creator/agents/content-strategist.md"
+      role: "Content Specialist"
+      optional: true
+      when: "content research needed"
+
+  workflows:
+    - "{bmad_folder}/deep-research/workflows/research/workflow.yaml"
+
+  use_cases:
+    - "Market research and competitive analysis"
+    - "Technology trend investigation"
+    - "Academic literature review"
+    - "Industry intelligence gathering"
+    - "Due diligence research"
+    - "Content research and fact-checking"
