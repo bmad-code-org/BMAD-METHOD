@@ -20,7 +20,7 @@ const { getAgentsFromBmad, getAgentsFromDir } = require('./shared/bmad-artifacts
  */
 class AntigravitySetup extends BaseIdeSetup {
   constructor() {
-    super('antigravity', 'Google Antigravity', false);
+    super('antigravity', 'Google Antigravity', true);
     this.configDir = '.agent';
     this.workflowsDir = 'workflows';
   }

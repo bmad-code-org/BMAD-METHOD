@@ -26,12 +26,12 @@
 <check if="status file found">
   <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
   <action>Parse workflow_status section</action>
-  <action>Check status of "create-design" workflow</action>
+  <action>Check status of "create-ux-design" workflow</action>
   <action>Get project_level from YAML metadata</action>
   <action>Find first non-completed workflow (next expected workflow)</action>
 
-  <check if="create-design status is file path (already completed)">
-    <output>⚠️ UX Design already completed: {{create-design status}}</output>
+  <check if="create-ux-design status is file path (already completed)">
+    <output>⚠️ UX Design already completed: {{create-ux-design status}}</output>
     <ask>Re-running will overwrite the existing UX design. Continue? (y/n)</ask>
     <check if="n">
       <output>Exiting. Use workflow-status to see your next step.</output>
@@ -39,7 +39,7 @@
     </check>
   </check>
 
-  <check if="create-design is not the next expected workflow">
+  <check if="create-ux-design is not the next expected workflow">
     <output>⚠️ Next expected workflow: {{next_workflow}}. UX Design is out of sequence.</output>
     <ask>Continue with UX Design anyway? (y/n)</ask>
     <check if="n">
@@ -1139,9 +1139,9 @@ Based on your deployment intent: {{recommendation}}
 
   <check if="standalone_mode != true">
     <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
-    <action>Find workflow_status key "create-design"</action>
+    <action>Find workflow_status key "create-ux-design"</action>
     <critical>ONLY write the file path as the status value - no other text, notes, or metadata</critical>
-    <action>Update workflow_status["create-design"] = "{default_output_file}"</action>
+    <action>Update workflow_status["create-ux-design"] = "{default_output_file}"</action>
     <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
     <action>Find first non-completed workflow in workflow_status (next workflow to do)</action>

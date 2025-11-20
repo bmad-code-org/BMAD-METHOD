@@ -48,10 +48,10 @@ phases:
         command: "validate-prd"
         note: "Quality check for PRD completeness"
 
-      - id: "create-design"
+      - id: "create-ux-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
-        command: "create-design"
+        command: "create-ux-design"
         note: "Determined after PRD - user/agent decides if needed"
 
   - phase: 2

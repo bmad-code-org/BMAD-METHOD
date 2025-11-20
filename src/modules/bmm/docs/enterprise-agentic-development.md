@@ -240,7 +240,7 @@ Continuous deployment to production
 **UX Designer Workflow:**
 
 ```bash
-bmad ux *create-design
+bmad ux *create-ux-design
 ```
 
 **BMad produces:**
