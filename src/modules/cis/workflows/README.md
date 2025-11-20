@@ -98,7 +98,7 @@ agent cis/brainstorming-coach
 
 ## Configuration
 
-Edit `/bmad/cis/config.yaml`:
+Edit `/{bmad_folder}/cis/config.yaml`:
 
 | Setting                | Purpose                 | Default            |
 | ---------------------- | ----------------------- | ------------------ |

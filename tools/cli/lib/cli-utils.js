@@ -2,13 +2,31 @@ const chalk = require('chalk');
 const boxen = require('boxen');
 const wrapAnsi = require('wrap-ansi');
 const figlet = require('figlet');
+const path = require('node:path');
 
 const CLIUtils = {
   /**
-   * Display BMAD logo
+   * Get version from package.json
    */
-  displayLogo() {
-    console.clear();
+  getVersion() {
+    try {
+      const packageJson = require(path.join(__dirname, '..', '..', '..', 'package.json'));
+      return packageJson.version || 'Unknown';
+    } catch {
+      return 'Unknown';
+    }
+  },
+
+  /**
+   * Display BMAD logo
+   * @param {boolean} clearScreen - Whether to clear the screen first (default: true for initial display only)
+   */
+  displayLogo(clearScreen = true) {
+    if (clearScreen) {
+      console.clear();
+    }
+
+    const version = this.getVersion();
 
     // ASCII art logo
     const logo = `
@@ -20,7 +38,7 @@ const CLIUtils = {
     ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═════╝`;
 
     console.log(chalk.cyan(logo));
-    console.log(chalk.dim('    Build More, Architect Dreams\n'));
+    console.log(chalk.dim(`    Build More, Architect Dreams`) + chalk.cyan.bold(` v${version}`) + '\n');
   },
 
   /**
@@ -64,18 +82,35 @@ const CLIUtils = {
   },
 
   /**
-   * Display prompt section
-   * @param {string|Array} prompts - Prompts to display
+   * Display module configuration header
+   * @param {string} moduleName - Module name (fallback if no custom header)
+   * @param {string} header - Custom header from install-config.yaml
+   * @param {string} subheader - Custom subheader from install-config.yaml
    */
-  displayPromptSection(prompts) {
-    const promptArray = Array.isArray(prompts) ? prompts : [prompts];
+  displayModuleConfigHeader(moduleName, header = null, subheader = null) {
+    // Simple blue banner with custom header/subheader if provided
+    console.log('\n' + chalk.cyan('─'.repeat(80)));
+    console.log(chalk.cyan(header || `Configuring ${moduleName.toUpperCase()} Module`));
+    if (subheader) {
+      console.log(chalk.dim(`${subheader}`));
+    }
+    console.log(chalk.cyan('─'.repeat(80)) + '\n');
+  },
 
-    const formattedPrompts = promptArray.map((p) => wrapAnsi(p, 76, { hard: true, wordWrap: true }));
-
-    this.displayBox(formattedPrompts, {
-      borderColor: 'yellow',
-      borderStyle: 'double',
-    });
+  /**
+   * Display module with no custom configuration
+   * @param {string} moduleName - Module name (fallback if no custom header)
+   * @param {string} header - Custom header from install-config.yaml
+   * @param {string} subheader - Custom subheader from install-config.yaml
+   */
+  displayModuleNoConfig(moduleName, header = null, subheader = null) {
+    // Show full banner with header/subheader, just like modules with config
+    console.log('\n' + chalk.cyan('─'.repeat(80)));
+    console.log(chalk.cyan(header || `${moduleName.toUpperCase()} Module - No Custom Configuration`));
+    if (subheader) {
+      console.log(chalk.dim(`${subheader}`));
+    }
+    console.log(chalk.cyan('─'.repeat(80)) + '\n');
   },
 
   /**
@@ -164,44 +199,11 @@ const CLIUtils = {
   /**
    * Display module completion message
    * @param {string} moduleName - Name of the completed module
-   * @param {boolean} clearScreen - Whether to clear the screen first
+   * @param {boolean} clearScreen - Whether to clear the screen first (deprecated, always false now)
    */
-  displayModuleComplete(moduleName, clearScreen = true) {
-    if (clearScreen) {
-      console.clear();
-      this.displayLogo();
-    }
-
-    let message;
-
-    // Special messages for specific modules
-    if (moduleName.toLowerCase() === 'bmm') {
-      message = `Thank you for configuring the BMAD™ Method Module (BMM)!
-
-Your responses have been saved and will be used to configure your installation.`;
-    } else if (moduleName.toLowerCase() === 'cis') {
-      message = `Thank you for choosing the BMAD™ Creative Innovation Suite, an early beta
-release with much more planned!
-
-With this BMAD™ Creative Innovation Suite Configuration, remember that all
-paths are relative to project root, with no leading slash.`;
-    } else if (moduleName.toLowerCase() === 'core') {
-      message = `Thank you for choosing the BMAD™ Method, your gateway to dreaming, planning
-and building with real world proven techniques.
-
-All paths are relative to project root, with no leading slash.`;
-    } else {
-      message = `Thank you for configuring the BMAD™ ${moduleName.toUpperCase()} module!
-
-Your responses have been saved and will be used to configure your installation.`;
-    }
-
-    this.displayBox(message, {
-      borderColor: 'yellow',
-      borderStyle: 'double',
-      padding: 1,
-      margin: 1,
-    });
+  displayModuleComplete(moduleName, clearScreen = false) {
+    // No longer clear screen or show boxes - just a simple completion message
+    // This is deprecated but kept for backwards compatibility
   },
 };
 

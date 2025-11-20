@@ -2,7 +2,8 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
-const { WorkflowCommandGenerator } = require('./workflow-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { getAgentsFromBmad, getTasksFromBmad } = require('./shared/bmad-artifacts');
 
 /**
@@ -11,7 +12,7 @@ const { getAgentsFromBmad, getTasksFromBmad } = require('./shared/bmad-artifacts
  */
 class ClineSetup extends BaseIdeSetup {
   constructor() {
-    super('cline', 'Cline', true); // preferred IDE
+    super('cline', 'Cline', false);
     this.configDir = '.clinerules';
     this.workflowsDir = 'workflows';
   }
@@ -88,23 +89,19 @@ class ClineSetup extends BaseIdeSetup {
     const selectedModules = options.selectedModules || [];
     const artifacts = [];
 
-    // Get agents
-    const agents = await getAgentsFromBmad(bmadDir, selectedModules);
-    for (const agent of agents) {
-      const content = await this.readAndProcessWithProject(
-        agent.path,
-        {
-          module: agent.module,
-          name: agent.name,
-        },
-        projectDir,
-      );
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
+
+    // Process agent launchers with project-specific paths
+    for (const agentArtifact of agentArtifacts) {
+      const content = agentArtifact.content;
 
       artifacts.push({
         type: 'agent',
-        module: agent.module,
-        sourcePath: agent.path,
-        relativePath: path.join(agent.module, 'agents', `${agent.name}.md`),
+        module: agentArtifact.module,
+        sourcePath: agentArtifact.sourcePath,
+        relativePath: agentArtifact.relativePath,
         content,
       });
     }
@@ -131,14 +128,14 @@ class ClineSetup extends BaseIdeSetup {
     }
 
     // Get workflows
-    const workflowGenerator = new WorkflowCommandGenerator();
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
     artifacts.push(...workflowArtifacts);
 
     return {
       artifacts,
       counts: {
-        agents: agents.length,
+        agents: agentArtifacts.length,
         tasks: tasks.length,
         workflows: workflowCounts.commands,
         workflowLaunchers: workflowCounts.launchers,

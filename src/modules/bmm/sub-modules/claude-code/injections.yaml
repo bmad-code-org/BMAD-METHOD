@@ -4,16 +4,16 @@
 #
 # The installer will:
 # 1. Ask users if they want to install subagents (all/selective/none)
-# 2. Ask where to install (project-level .claude/agents/bmad/ or user-level ~/.claude/agents/bmad/)
+# 2. Ask where to install (project-level .claude/agents/{bmad_folder}/ or user-level ~/.claude/agents/{bmad_folder}/)
 # 3. Only inject content related to selected subagents
-# 4. Templates stay in bmad/ directory and are referenced from there
+# 4. Templates stay in {bmad_folder}/ directory and are referenced from there
 # 5. Injections are placed at specific sections where each subagent is most valuable
 
 injections:
   # ===== PRD WORKFLOW INJECTIONS =====
 
   # PRD Subagent Instructions
-  - file: "bmad/bmm/workflows/prd/instructions.md"
+  - file: "{bmad_folder}/bmm/workflows/prd/instructions.md"
     point: "prd-subagent-instructions"
     requires: "all-prd-subagents"
     content: |
@@ -25,7 +25,7 @@ injections:
       - <CRITICAL>Use `bmm-technical-decisions-curator` to capture all technical mentions</CRITICAL>
 
   # PRD Requirements Analysis
-  - file: "bmad/bmm/workflows/prd/instructions.md"
+  - file: "{bmad_folder}/bmm/workflows/prd/instructions.md"
     point: "prd-requirements-analysis"
     requires: "requirements-analyst"
     content: |
@@ -33,7 +33,7 @@ injections:
       **Subagent Hint**: Use `bmm-requirements-analyst` to validate requirements are testable and complete.
 
   # PRD User Journey Mapping
-  - file: "bmad/bmm/workflows/prd/instructions.md"
+  - file: "{bmad_folder}/bmm/workflows/prd/instructions.md"
     point: "prd-user-journey"
     requires: "user-journey-mapper"
     content: |
@@ -41,7 +41,7 @@ injections:
       **Subagent Hint**: Use `bmm-user-journey-mapper` to map all user types and their value paths.
 
   # PRD Epic Optimization
-  - file: "bmad/bmm/workflows/prd/instructions.md"
+  - file: "{bmad_folder}/bmm/workflows/prd/instructions.md"
     point: "prd-epic-optimization"
     requires: "epic-optimizer"
     content: |
@@ -49,7 +49,7 @@ injections:
       **Subagent Hint**: Use `bmm-epic-optimizer` to validate epic boundaries deliver coherent value.
 
   # PRD Document Review
-  - file: "bmad/bmm/workflows/prd/instructions.md"
+  - file: "{bmad_folder}/bmm/workflows/prd/instructions.md"
     point: "prd-checklist-review"
     requires: "document-reviewer"
     content: |
@@ -57,7 +57,7 @@ injections:
       **Subagent Hint**: Use `bmm-document-reviewer` to validate PRD completeness before finalizing.
 
   # Technical Decisions Curator
-  - file: "bmad/bmm/workflows/prd/instructions.md"
+  - file: "{bmad_folder}/bmm/workflows/prd/instructions.md"
     point: "technical-decisions-curator"
     requires: "technical-decisions-curator"
     content: |
@@ -71,7 +71,7 @@ injections:
   # ===== MARKET RESEARCH TEMPLATE INJECTIONS =====
 
   # Market TAM/SAM/SOM Calculations
-  - file: "bmad/bmm/templates/market.md"
+  - file: "{bmad_folder}/bmm/templates/market.md"
     point: "market-tam-calculations"
     requires: "data-analyst"
     content: |
@@ -82,7 +82,7 @@ injections:
       </llm>
 
   # Market Trends Analysis
-  - file: "bmad/bmm/templates/market.md"
+  - file: "{bmad_folder}/bmm/templates/market.md"
     point: "market-trends-analysis"
     requires: "trend-spotter"
     content: |
@@ -93,7 +93,7 @@ injections:
       </llm>
 
   # Market Customer Personas
-  - file: "bmad/bmm/templates/market.md"
+  - file: "{bmad_folder}/bmm/templates/market.md"
     point: "market-customer-segments"
     requires: "user-researcher"
     content: |
@@ -104,7 +104,7 @@ injections:
       </llm>
 
   # Market Research Review
-  - file: "bmad/bmm/templates/market.md"
+  - file: "{bmad_folder}/bmm/templates/market.md"
     point: "market-executive-summary"
     requires: "document-reviewer"
     content: |
@@ -116,7 +116,7 @@ injections:
   # ===== COMPETITOR ANALYSIS TEMPLATE INJECTIONS =====
 
   # Competitor Intelligence Gathering
-  - file: "bmad/bmm/templates/competitor.md"
+  - file: "{bmad_folder}/bmm/templates/competitor.md"
     point: "competitor-intelligence"
     requires: "market-researcher"
     content: |
@@ -127,7 +127,7 @@ injections:
       </llm>
 
   # Competitor Technical Analysis
-  - file: "bmad/bmm/templates/competitor.md"
+  - file: "{bmad_folder}/bmm/templates/competitor.md"
     point: "competitor-tech-stack"
     requires: "technical-evaluator"
     content: |
@@ -138,7 +138,7 @@ injections:
       </llm>
 
   # Competitor Metrics Analysis
-  - file: "bmad/bmm/templates/competitor.md"
+  - file: "{bmad_folder}/bmm/templates/competitor.md"
     point: "competitor-metrics"
     requires: "data-analyst"
     content: |
@@ -148,7 +148,7 @@ injections:
       </llm>
 
   # Competitor Analysis Review
-  - file: "bmad/bmm/templates/competitor.md"
+  - file: "{bmad_folder}/bmm/templates/competitor.md"
     point: "competitor-executive-summary"
     requires: "document-reviewer"
     content: |
@@ -160,7 +160,7 @@ injections:
   # ===== PROJECT BRIEF TEMPLATE INJECTIONS =====
 
   # Brief Problem Validation
-  - file: "bmad/bmm/templates/brief.md"
+  - file: "{bmad_folder}/bmm/templates/brief.md"
     point: "brief-problem-validation"
     requires: "market-researcher"
     content: |
@@ -170,7 +170,7 @@ injections:
       </llm>
 
   # Brief Target User Analysis
-  - file: "bmad/bmm/templates/brief.md"
+  - file: "{bmad_folder}/bmm/templates/brief.md"
     point: "brief-user-analysis"
     requires: "user-researcher"
     content: |
@@ -180,7 +180,7 @@ injections:
       </llm>
 
   # Brief Success Metrics
-  - file: "bmad/bmm/templates/brief.md"
+  - file: "{bmad_folder}/bmm/templates/brief.md"
     point: "brief-success-metrics"
     requires: "data-analyst"
     content: |
@@ -190,7 +190,7 @@ injections:
       </llm>
 
   # Brief Technical Feasibility
-  - file: "bmad/bmm/templates/brief.md"
+  - file: "{bmad_folder}/bmm/templates/brief.md"
     point: "brief-technical-feasibility"
     requires: "technical-evaluator"
     content: |
@@ -200,7 +200,7 @@ injections:
       </llm>
 
   # Brief Requirements Extraction
-  - file: "bmad/bmm/templates/brief.md"
+  - file: "{bmad_folder}/bmm/templates/brief.md"
     point: "brief-requirements"
     requires: "requirements-analyst"
     content: |
@@ -210,7 +210,7 @@ injections:
       </llm>
 
   # Brief Document Review
-  - file: "bmad/bmm/templates/brief.md"
+  - file: "{bmad_folder}/bmm/templates/brief.md"
     point: "brief-final-review"
     requires: "document-reviewer"
     content: |

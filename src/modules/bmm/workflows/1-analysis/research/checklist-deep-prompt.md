@@ -140,5 +140,5 @@ _List minor improvements that would enhance the prompt:_
 
 **Validation Complete:** ☐ Yes ☐ No
 **Ready to Execute:** ☐ Yes ☐ No
-**Reviewer:** \***\*\_\*\***
-**Date:** \***\*\_\*\***
+**Reviewer:** {agent}
+**Date:** {date}

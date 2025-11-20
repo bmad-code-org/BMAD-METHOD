@@ -1,30 +1,26 @@
 # Product Brief - Context-Adaptive Discovery Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow uses INTENT-DRIVEN FACILITATION - adapt organically to what emerges</critical>
 <critical>The goal is DISCOVERING WHAT MATTERS through natural conversation, not filling a template</critical>
 <critical>Communicate all responses in {communication_language} and adapt deeply to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>LIVING DOCUMENT: Write to the document continuously as you discover - never wait until the end</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 ## Input Document Discovery
 
 This workflow may reference: market research, brainstorming documents, user specified other inputs, or brownfield project documentation.
 
-**Discovery Process** (execute for each referenced document):
+**All input files are discovered and loaded automatically via the `discover_inputs` protocol in Step 0.5**
 
-1. **Search for whole document first** - Use fuzzy file matching to find the complete document
-2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand the document structure
-   - Read ALL section files listed in the index
-   - Treat the combined content as if it were a single document
-4. **Brownfield projects**: The `document-project` workflow always creates `{output_folder}/docs/index.md`
+After discovery completes, the following content variables will be available:
 
-**Priority**: If both whole and sharded versions exist, use the whole document.
-
-**Fuzzy matching**: Be flexible with document names - users may use variations in naming conventions.
+- `{research_content}` - Market research or domain research documents
+- `{brainstorming_content}` - Brainstorming session outputs
+- `{document_project_content}` - Brownfield project documentation (intelligently loaded via INDEX_GUIDED strategy)
 
 <workflow>
 
@@ -66,6 +62,10 @@ Product Brief is most valuable for Level 2+ projects, but can help clarify visio
 
 <action>Set standalone_mode = false</action>
 </check>
+</step>
+
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
 </step>
 
 <step n="1" goal="Begin the journey and understand context">

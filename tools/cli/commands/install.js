@@ -56,10 +56,7 @@ module.exports = {
       // Check if installation succeeded
       if (result && result.success) {
         console.log(chalk.green('\n✨ Installation complete!'));
-        console.log(
-          chalk.cyan('BMAD Core and Selected Modules have been installed to:'),
-          chalk.bold(result.path || path.resolve(config.directory, 'bmad')),
-        );
+        console.log(chalk.cyan('BMAD Core and Selected Modules have been installed to:'), chalk.bold(result.path));
         console.log(chalk.yellow('\nThank you for helping test the early release version of the new BMad Core and BMad Method!'));
         console.log(chalk.cyan('Stable Beta coming soon - please read the full readme.md and linked documentation to get started!'));
         process.exit(0);

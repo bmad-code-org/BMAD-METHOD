@@ -1,6 +1,6 @@
 # Market Research Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication style based on {user_skill_level}</critical>
 <critical>This is a HIGHLY INTERACTIVE workflow - collaborate with user throughout, don't just gather info and disappear</critical>
@@ -17,6 +17,7 @@
 <critical>Clearly label: FACT (sourced data), ANALYSIS (your interpretation), PROJECTION (forecast/speculation)</critical>
 <critical>After each WebSearch, extract and store source URLs - include them in the report</critical>
 <critical>If a claim seems suspicious or too convenient, STOP and cross-verify with additional searches</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <!-- IDE-INJECT-POINT: market-research-subagents -->
 
@@ -113,8 +114,6 @@ Work with the user to establish:
   </action>
 
 <action if="user_has_questions">Explore surprising data points together</action>
-
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 
 <template-output>sources_market_size</template-output>
 </step>
@@ -239,7 +238,6 @@ For each major segment, research and define:
 - Purchasing frequency
 - Budget allocation
 
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 <template-output>segment*profile*{{segment_number}}</template-output>
 </step>
 
@@ -313,8 +311,7 @@ Use {{current_year}} in all searches.
 
 <action if="user has follow-up questions">Dig deeper based on their interests</action>
 
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
-<template-output>competitor*analysis*{{competitor_name}}</template-output>
+<template-output>competitor-analysis-{{competitor_name}}</template-output>
 </step>
 
 <step n="6c" title="Competitive Positioning Map">
@@ -437,7 +434,6 @@ For each opportunity:
 - Risk assessment
 - Success criteria
 
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 <template-output>market_opportunities</template-output>
 </step>
 

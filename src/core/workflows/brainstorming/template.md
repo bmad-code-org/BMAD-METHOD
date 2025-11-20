@@ -4,6 +4,10 @@
 **Facilitator:** {{agent_role}} {{agent_name}}
 **Participant:** {{user_name}}
 
+## Session Start
+
+{{session_start_plan}}
+
 ## Executive Summary
 
 **Topic:** {{session_topic}}

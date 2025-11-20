@@ -64,7 +64,7 @@ This phase focuses on mapping requirements to tests, analyzing coverage, and ide
 
 **Actions:**
 
-1. Load relevant knowledge fragments from `{project-root}/bmad/bmm/testarch/tea-index.csv`:
+1. Load relevant knowledge fragments from `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv`:
    - `test-priorities-matrix.md` - P0/P1/P2/P3 risk framework with automated priority calculation, risk-based mapping, tagging strategy (389 lines, 2 examples)
    - `risk-governance.md` - Risk-based testing approach: 6 categories (TECH, SEC, PERF, DATA, BUS, OPS), automated scoring, gate decision engine, coverage traceability (625 lines, 4 examples)
    - `probability-impact.md` - Risk scoring methodology: probability × impact matrix, automated classification, dynamic re-assessment, gate integration (604 lines, 4 examples)
@@ -126,9 +126,9 @@ This phase focuses on mapping requirements to tests, analyzing coverage, and ide
 2. Build traceability matrix:
 
    ```
-   | Criterion ID | Description | Test ID | Test File | Test Level | Coverage Status |
-   |--------------|-------------|---------|-----------|------------|-----------------|
-   | AC-1         | User can... | 1.3-E2E-001 | e2e/auth.spec.ts | E2E | FULL |
+   | Criterion ID | Description | Test ID     | Test File        | Test Level | Coverage Status |
+   | ------------ | ----------- | ----------- | ---------------- | ---------- | --------------- |
+   | AC-1         | User can... | 1.3-E2E-001 | e2e/auth.spec.ts | E2E        | FULL            |
    ```
 
 3. Classify coverage status for each criterion:
@@ -476,10 +476,10 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
 
 ## References
 
-- Traceability Matrix: `bmad/output/traceability-matrix.md`
-- Test Design: `bmad/output/test-design-epic-2.md`
+- Traceability Matrix: `{bmad_folder}/output/traceability-matrix.md`
+- Test Design: `{bmad_folder}/output/test-design-epic-2.md`
 - Test Results: `ci-artifacts/test-report-2025-01-15.xml`
-- NFR Assessment: `bmad/output/nfr-assessment-release-1.2.md`
+- NFR Assessment: `{bmad_folder}/output/nfr-assessment-release-1.2.md`
 ```
 
 3. **Include evidence links** (if `require_evidence: true`):
@@ -515,7 +515,7 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
 
      - **Decision**: CONCERNS
      - **Reason**: P1 coverage 88% (below 90%)
-     - **Document**: [gate-decision-story-1.3.md](bmad/output/gate-decision-story-1.3.md)
+     - **Document**: [gate-decision-story-1.3.md]({bmad_folder}/output/gate-decision-story-1.3.md)
      - **Action**: Deploy with follow-up story for AC-5
      ```
 
@@ -536,7 +536,7 @@ This phase uses traceability results to make a quality gate decision (PASS/CONCE
    - Create follow-up story for AC-5 E2E test
    - Deploy to staging for validation
 
-   Full Report: bmad/output/gate-decision-story-1.3.md
+   Full Report: {bmad_folder}/output/gate-decision-story-1.3.md
    ```
 
 3. **Request sign-off** (if `require_sign_off: true`):

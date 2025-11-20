@@ -2,7 +2,7 @@
 
 <workflow name="architecture">
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication style based on {user_skill_level}</critical>
 <critical>The goal is ARCHITECTURAL DECISIONS that prevent AI agent conflicts, not detailed implementation specs</critical>
@@ -11,6 +11,8 @@
 <critical>This workflow replaces architecture with a conversation-driven approach</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
 <critical>ELICITATION POINTS: After completing each major architectural decision area (identified by template-output tags for decision_record, project_structure, novel_pattern_designs, implementation_patterns, and architecture_document), invoke advanced elicitation to refine decisions before proceeding</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <step n="0" goal="Validate workflow readiness" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -72,7 +74,7 @@ For Level {{project_level}}, we'll keep the architecture appropriately scoped.
 
 Decision Architecture works from your Product Requirements Document (PRD).
 
-Looking for: _PRD_, PRD.md, or prd/index.md + files in {output_folder}
+Looking for: _prd_.md, or prd/index.md + files in {output_folder}
 
 Please run the PRD workflow first to define your requirements.
 
@@ -363,7 +365,6 @@ Provided by Starter: {{yes_if_from_starter}}
 </action>
 
 <template-output>decision_record</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="5" goal="Address cross-cutting concerns">
@@ -393,7 +394,6 @@ Provided by Starter: {{yes_if_from_starter}}
 </action>
 
 <template-output>project_structure</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="7" goal="Design novel architectural patterns" optional="true">
@@ -467,7 +467,6 @@ Provided by Starter: {{yes_if_from_starter}}
   </check>
 
 <template-output>novel_pattern_designs</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="8" goal="Define implementation patterns to prevent agent conflicts">
@@ -560,7 +559,6 @@ Enforcement: "All agents MUST follow this pattern"
 </action>
 
 <template-output>implementation_patterns</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="9" goal="Validate architectural coherence">
@@ -614,7 +612,6 @@ Enforcement: "All agents MUST follow this pattern"
   </action>
 
 <template-output>architecture_document</template-output>
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
 </step>
 
 <step n="11" goal="Validate document completeness">

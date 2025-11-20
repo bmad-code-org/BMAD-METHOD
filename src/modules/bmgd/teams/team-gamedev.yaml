@@ -14,3 +14,5 @@ workflows:
   - game-brief
   - gdd
   - narrative
+
+party: "./default-party.csv"

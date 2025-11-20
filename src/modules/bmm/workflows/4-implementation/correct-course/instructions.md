@@ -1,7 +1,7 @@
 # Correct Course - Sprint Change Management Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 
@@ -25,6 +25,11 @@
 <action if="change trigger is unclear">HALT: "Cannot navigate change without clear understanding of the triggering issue. Please provide specific details about what needs to change and why."</action>
 
 <action if="core documents are unavailable">HALT: "Need access to project documents (PRD, Epics, Architecture, UI/UX) to assess change impact. Please ensure these documents are accessible."</action>
+</step>
+
+<step n="0.5" goal="Discover and load project documents">
+  <invoke-protocol name="discover_inputs" />
+  <note>After discovery, these content variables are available: {prd_content}, {epics_content}, {architecture_content}, {ux_design_content}, {tech_spec_content}, {document_project_content}</note>
 </step>
 
 <step n="2" goal="Execute Change Analysis Checklist">

@@ -1,6 +1,0 @@
-name,displayName,description,module,path,standalone
-"adv-elicit","Advanced Elicitation","When called from workflow","core","bmad/core/tasks/adv-elicit.xml","false"
-"index-docs","Index Docs","Generates or updates an index.md of all documents in the specified directory","core","bmad/core/tasks/index-docs.xml","true"
-"validate-workflow","Validate Workflow Output","Run a checklist against a document with thorough analysis and produce a validation report","core","bmad/core/tasks/validate-workflow.xml","false"
-"workflow","Execute Workflow","Execute given workflow by loading its configuration, following instructions, and producing output","core","bmad/core/tasks/workflow.xml","false"
-"daily-standup","Daily Standup","","bmm","bmad/bmm/tasks/daily-standup.xml","false"

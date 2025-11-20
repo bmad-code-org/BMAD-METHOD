@@ -24,7 +24,7 @@ src/modules/{module-code}/
 └── README.md                      # Module documentation
 
 # INSTALLED MODULE (in target project)
-{project-root}/bmad/{module-code}/
+{project-root}/{bmad_folder}/{module-code}/
 ├── agents/                        # Compiled agent files (.md)
 ├── workflows/                     # Workflow instances
 ├── tasks/                         # Task files
@@ -145,8 +145,8 @@ For modules that need workflows from other modules but want to remain standalone
 ```yaml
 menu:
   - trigger: command-name
-    workflow: '{project-root}/bmad/SOURCE_MODULE/workflows/path/workflow.yaml'
-    workflow-install: '{project-root}/bmad/THIS_MODULE/workflows/vendored/workflow.yaml'
+    workflow: '{project-root}/{bmad_folder}/SOURCE_MODULE/workflows/path/workflow.yaml'
+    workflow-install: '{project-root}/{bmad_folder}/THIS_MODULE/workflows/vendored/workflow.yaml'
     description: 'Command description'
 ```
 
@@ -172,7 +172,7 @@ menu:
 
 ## Installation Infrastructure
 
-### Required: \_module-installer/install-config.yaml
+### Required: module-installer/install-config.yaml
 
 This file defines both installation questions AND static configuration values:
 
@@ -216,7 +216,7 @@ module_version:
   result: '1.0.0'
 
 data_path:
-  result: '{project-root}/bmad/module-code/data'
+  result: '{project-root}/{bmad_folder}/module-code/data'
 ```
 
 **Key Points:**
@@ -226,7 +226,7 @@ data_path:
 - `result` field uses placeholders: `{value}`, `{project-root}`, `{directory_name}`
 - Installer generates final `config.yaml` from this template
 
-### Optional: \_module-installer/installer.js
+### Optional: module-installer/installer.js
 
 For complex installations requiring custom logic:
 
@@ -252,7 +252,7 @@ async function install(options) {
 module.exports = { install };
 ```
 
-### Optional: \_module-installer/assets/
+### Optional: module-installer/assets/
 
 Files to copy during installation:
 

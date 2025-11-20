@@ -1,7 +1,7 @@
 # Story Context Assembly Checklist
 
 ```xml
-<checklist id="bmad/bmm/workflows/4-implementation/story-context/checklist">
+<checklist id="{bmad_folder}/bmm/workflows/4-implementation/story-context/checklist">
   <item>Story fields (asA/iWant/soThat) captured</item>
   <item>Acceptance criteria list matches story draft exactly (no invention)</item>
   <item>Tasks/subtasks captured as task list</item>

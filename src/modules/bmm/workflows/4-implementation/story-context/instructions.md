@@ -1,44 +1,15 @@
 <!-- BMAD BMM Story Context Assembly Instructions (v6) -->
 
 ```xml
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>This workflow assembles a Story Context file for a single drafted story by extracting acceptance criteria, tasks, relevant docs/code, interfaces, constraints, and testing guidance.</critical>
-<critical>If story_path is provided, use it. Otherwise, find the first story with status "drafted" in sprint-status.yaml. If none found, HALT.</critical>
+<critical>If {story_path} is provided, use it. Otherwise, find the first story with status "drafted" in sprint-status.yaml. If none found, HALT.</critical>
 <critical>Check if context file already exists. If it does, ask user if they want to replace it, verify it, or cancel.</critical>
 
 <critical>DOCUMENT OUTPUT: Technical context file (.context.xml). Concise, structured, project-relative paths only.</critical>
-
-## 📚 Document Discovery - Selective Epic Loading
-
-**Strategy**: This workflow needs only ONE specific epic and its stories, not all epics. This provides huge efficiency gains when epics are sharded.
-
-**Epic Discovery Process (SELECTIVE OPTIMIZATION):**
-
-1. **Determine which epic** you need (epic_num from story key - e.g., story "3-2-feature-name" needs Epic 3)
-2. **Check for sharded version**: Look for `epics/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand structure
-   - **Load ONLY `epic-{epic_num}.md`** (e.g., `epics/epic-3.md` for Epic 3)
-   - DO NOT load all epic files - only the one needed!
-   - This is the key efficiency optimization for large multi-epic projects
-4. **If whole document found**: Load the complete `epics.md` file and extract the relevant epic
-
-**Other Documents (prd, architecture, ux-design) - Full Load:**
-
-1. **Search for whole document first** - Use fuzzy file matching
-2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand structure
-   - Read ALL section files listed in the index
-   - Treat combined content as single document
-4. **Brownfield projects**: The `document-project` workflow creates `{output_folder}/docs/index.md`
-
-**Priority**: If both whole and sharded versions exist, use the whole document.
-
-**UX-Heavy Projects**: Always check for ux-design documentation as it provides critical context for UI-focused stories.
 
 <workflow>
   <step n="1" goal="Find drafted story and check for existing context" tag="sprint-status">
@@ -63,18 +34,17 @@
 
       <check if="no story with status 'drafted' found">
         <output>📋 No drafted stories found in sprint-status.yaml
+          All stories are either still in backlog or already marked ready/in-progress/done.
 
-All stories are either still in backlog or already marked ready/in-progress/done.
-
-**Next Steps:**
-1. Run `create-story` to draft more stories
-2. Run `sprint-planning` to refresh story tracking
+          **Next Steps:**
+          1. Run `create-story` to draft more stories
+          2. Run `sprint-planning` to refresh story tracking
         </output>
         <action>HALT</action>
       </check>
 
       <action>Use the first drafted story found</action>
-      <action>Find matching story file in {{story_dir}} using story_key pattern</action>
+      <action>Find matching story file in {{story_path}} using story_key pattern</action>
       <action>Read the COMPLETE story file</action>
     </check>
 
@@ -90,10 +60,10 @@ All stories are either still in backlog or already marked ready/in-progress/done
     <check if="context file already exists">
       <output>⚠️ Context file already exists: {default_output_file}
 
-**What would you like to do?**
-1. **Replace** - Generate new context file (overwrites existing)
-2. **Verify** - Validate existing context file
-3. **Cancel** - Exit without changes
+        **What would you like to do?**
+        1. **Replace** - Generate new context file (overwrites existing)
+        2. **Verify** - Validate existing context file
+        3. **Cancel** - Exit without changes
       </output>
       <ask>Choose action (replace/verify/cancel):</ask>
 
@@ -118,10 +88,15 @@ All stories are either still in backlog or already marked ready/in-progress/done
     <template-output file="{default_output_file}">so_that</template-output>
   </step>
 
+  <step n="1.5" goal="Discover and load project documents">
+    <invoke-protocol name="discover_inputs" />
+    <note>After discovery, these content variables are available: {prd_content}, {tech_spec_content}, {architecture_content}, {ux_design_content}, {epics_content} (loads only epic for this story if sharded), {document_project_content}</note>
+  </step>
+
   <step n="2" goal="Collect relevant documentation">
-    <action>Scan docs and src module docs for items relevant to this story's domain: search keywords from story title, ACs, and tasks.</action>
-    <action>Prefer authoritative sources: PRD, Tech-Spec, Architecture, Front-end Spec, Testing standards, module-specific docs.</action>
-    <action>Note: Tech-Spec is used for Level 0-1 projects (instead of PRD). It contains comprehensive technical context, brownfield analysis, framework details, existing patterns, and implementation guidance.</action>
+    <action>Review loaded content from Step 1.5 for items relevant to this story's domain (use keywords from story title, ACs, and tasks).</action>
+    <action>Extract relevant sections from: {prd_content}, {tech_spec_content}, {architecture_content}, {ux_design_content}, {document_project_content}</action>
+    <action>Note: Tech-Spec ({tech_spec_content}) is used for Level 0-1 projects (instead of PRD). It contains comprehensive technical context, brownfield analysis, framework details, existing patterns, and implementation guidance.</action>
     <action>For each discovered document: convert absolute paths to project-relative format by removing {project-root} prefix. Store only relative paths (e.g., "docs/prd.md" not "/Users/.../docs/prd.md").</action>
     <template-output file="{default_output_file}">
       Add artifacts.docs entries with {path, title, section, snippet}:
@@ -181,7 +156,7 @@ All stories are either still in backlog or already marked ready/in-progress/done
   <step n="6" goal="Validate and save">
     <anchor id="validation_step" />
     <action>Validate output context file structure and content</action>
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using bmad/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {bmad_folder}/core/tasks/validate-workflow.xml</invoke-task>
   </step>
 
   <step n="7" goal="Update story file and mark ready for dev" tag="sprint-status">

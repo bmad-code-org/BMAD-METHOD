@@ -96,7 +96,7 @@ Every CIS agent includes:
 
 ## Configuration
 
-All agents load configuration from `/bmad/cis/config.yaml`:
+All agents load configuration from `/{bmad_folder}/cis/config.yaml`:
 
 - `project_name` - Project identification
 - `output_folder` - Where workflow results are saved

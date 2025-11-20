@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Windsurf IDE setup handler
@@ -31,8 +32,14 @@ class WindsurfSetup extends BaseIdeSetup {
     // Clean up any existing BMAD workflows before reinstalling
     await this.cleanup(projectDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only)
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Convert artifacts to agent format for module organization
+    const agents = agentArtifacts.map((a) => ({ module: a.module, name: a.name }));
+
+    // Get tasks, tools, and workflows (standalone only)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
@@ -49,14 +56,13 @@ class WindsurfSetup extends BaseIdeSetup {
       await this.ensureDir(path.join(bmadWorkflowsDir, module, 'workflows'));
     }
 
-    // Process agents as workflows with organized structure
+    // Process agent launchers as workflows with organized structure
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readFile(agent.path);
-      const processedContent = this.createWorkflowContent(agent, content);
+    for (const artifact of agentArtifacts) {
+      const processedContent = this.createWorkflowContent({ module: artifact.module, name: artifact.name }, artifact.content);
 
       // Organized path: bmad/module/agents/agent-name.md
-      const targetPath = path.join(bmadWorkflowsDir, agent.module, 'agents', `${agent.name}.md`);
+      const targetPath = path.join(bmadWorkflowsDir, artifact.module, 'agents', `${artifact.name}.md`);
       await this.writeFile(targetPath, processedContent);
       agentCount++;
     }
@@ -127,13 +133,17 @@ class WindsurfSetup extends BaseIdeSetup {
    * Create workflow content for an agent
    */
   createWorkflowContent(agent, content) {
+    // Strip existing frontmatter from launcher
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = content.replace(frontmatterRegex, '');
+
     // Create simple Windsurf frontmatter matching original format
     let workflowContent = `---
 description: ${agent.name}
 auto_execution_mode: 3
 ---
 
-${content}`;
+${contentWithoutFrontmatter}`;
 
     return workflowContent;
   }
@@ -195,6 +205,53 @@ ${content}`;
       await fs.remove(bmadPath);
       console.log(chalk.dim(`  Cleaned up existing BMAD workflows`));
     }
+  }
+
+  /**
+   * Install a custom agent launcher for Windsurf
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created command
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const fs = require('fs-extra');
+    const customAgentsDir = path.join(projectDir, this.configDir, this.workflowsDir, 'bmad', 'custom', 'agents');
+
+    if (!(await this.exists(path.join(projectDir, this.configDir)))) {
+      return null; // IDE not configured for this project
+    }
+
+    await this.ensureDir(customAgentsDir);
+
+    const launcherContent = `You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
+
+<agent-activation CRITICAL="TRUE">
+1. LOAD the FULL agent file from @${agentPath}
+2. READ its entire contents - this contains the complete agent persona, menu, and instructions
+3. FOLLOW every step in the <activation> section precisely
+4. DISPLAY the welcome/greeting as instructed
+5. PRESENT the numbered menu
+6. WAIT for user input before proceeding
+</agent-activation>
+`;
+
+    // Windsurf uses workflow format with frontmatter
+    const workflowContent = `---
+description: ${metadata.title || agentName}
+auto_execution_mode: 3
+---
+
+${launcherContent}`;
+
+    const launcherPath = path.join(customAgentsDir, `${agentName}.md`);
+    await fs.writeFile(launcherPath, workflowContent);
+
+    return {
+      path: launcherPath,
+      command: `bmad/custom/agents/${agentName}`,
+    };
   }
 }
 

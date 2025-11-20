@@ -19,7 +19,7 @@ BMad Core is a modular AI agent framework with intelligent installation, platfor
 
 - **Modular Design**: Core + optional modules (BMB, BMM, CIS)
 - **Smart Installation**: Interactive configuration with dependency resolution
-- **Clean Architecture**: Centralized `bmad/` directory add to project, no source pollution with multiple folders added
+- **Clean Architecture**: Centralized `{bmad_folder}` directory add to project, no source pollution with multiple folders added
 
 ## Architecture
 
@@ -27,7 +27,7 @@ BMad Core is a modular AI agent framework with intelligent installation, platfor
 
 ```
 project-root/
-├── bmad/                      # Centralized installation
+├── {bmad_folder}/             # Centralized installation
 │   ├── _cfg/                  # Configuration
 │   │   ├── agents/            # Agent configs
 │   │   └── agent-manifest.csv # Agent manifest
@@ -184,7 +184,7 @@ Cline, Roo, Auggie, GitHub Copilot, Codex, Gemini, Qwen, Trae, Kilo, Crush, iFlo
 
    ```yaml
    injections:
-     - file: 'bmad/bmm/agents/pm.md'
+     - file: '{bmad_folder}/bmm/agents/pm.md'
        point: 'pm-agent-instructions'
        content: |
          <i>Platform-specific instruction</i>
@@ -270,14 +270,14 @@ Generated in: `bmad/_cfg/agents/{module}-{agent}.md`
 
 ### Common Issues
 
-| Issue                     | Solution                            |
-| ------------------------- | ----------------------------------- |
-| Existing installation     | Use `bmad update` or remove `bmad/` |
-| Module not found          | Check `src/modules/` exists         |
-| Config not applied        | Verify `bmad/{module}/config.yaml`  |
-| Missing config.yaml       | Fixed: All modules now get configs  |
-| Agent unavailable         | Check for `localskip="true"`        |
-| \_module-installer copied | Fixed: Now excluded from copy       |
+| Issue                   | Solution                                     |
+| ----------------------- | -------------------------------------------- |
+| Existing installation   | Use `bmad update` or remove `{bmad_folder}/` |
+| Module not found        | Check `src/modules/` exists                  |
+| Config not applied      | Verify `{bmad_folder}/{module}/config.yaml`  |
+| Missing config.yaml     | Fixed: All modules now get configs           |
+| Agent unavailable       | Check for `localskip="true"`                 |
+| module-installer copied | Fixed: Now excluded from copy                |
 
 ### Debug Commands
 
@@ -289,19 +289,19 @@ bmad status -v      # Detailed status
 ### Best Practices
 
 1. Run from project root
-2. Backup `bmad/_cfg/` before updates
+2. Backup `{bmad_folder}/_cfg/` before updates
 3. Use interactive mode for guidance
 4. Review generated configs post-install
 
 ## Migration from v4
 
-| v4                  | v6                  |
-| ------------------- | ------------------- |
-| Scattered files     | Centralized `bmad/` |
-| Monolithic          | Modular             |
-| Manual config       | Interactive setup   |
-| Limited IDE support | 15+ platforms       |
-| Source modification | Clean injection     |
+| v4                  | v6                           |
+| ------------------- | ---------------------------- |
+| Scattered files     | Centralized `{bmad_folder}/` |
+| Monolithic          | Modular                      |
+| Manual config       | Interactive setup            |
+| Limited IDE support | 15+ platforms                |
+| Source modification | Clean injection              |
 
 ## Technical Notes
 
@@ -326,8 +326,8 @@ Agents can specify both `workflow` (source location) and `workflow-install` (des
 ```yaml
 menu:
   - trigger: create-story
-    workflow: '{project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml'
-    workflow-install: '{project-root}/bmad/bmgd/workflows/4-production/create-story/workflow.yaml'
+    workflow: '{project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml'
+    workflow-install: '{project-root}/{bmad_folder}/bmgd/workflows/4-production/create-story/workflow.yaml'
     description: 'Create a game feature story'
 ```
 
@@ -347,10 +347,10 @@ menu:
 
    ```yaml
    # Source workflow (in bmm):
-   config_source: "{project-root}/bmad/bmm/config.yaml"
+   config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 
    # Vendored workflow (in bmgd):
-   config_source: "{project-root}/bmad/bmgd/config.yaml"
+   config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
    ```
 
 **Result**: Modules become completely standalone with their own copies of needed workflows, configured for their specific use case.

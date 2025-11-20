@@ -29,6 +29,8 @@ Complete map of all BMad Method v6 documentation with recommended reading paths.
 
 - **[v4 to v6 Upgrade Guide](./v4-to-v6-upgrade.md)** - Migration path for v4 users
 - **[Document Sharding Guide](./document-sharding-guide.md)** - Split large documents for 90%+ token savings
+- **[Web Bundles](./USING_WEB_BUNDLES.md)** - Use BMAD agents in Claude Projects, ChatGPT, or Gemini without installation
+- **[Bundle Distribution Setup](./BUNDLE_DISTRIBUTION_SETUP.md)** - Maintainer guide for bundle auto-publishing
 
 ---
 
@@ -212,7 +214,7 @@ BMM adapts to project complexity (Levels 0-4). Documentation is scale-adaptive -
 
 ### Update-Safe Customization
 
-All agent customizations go in `bmad/_cfg/agents/` and survive updates. See your IDE guide and module README for details.
+All agent customizations go in `{bmad_folder}/_cfg/agents/` and survive updates. See your IDE guide and module README for details.
 
 ---
 

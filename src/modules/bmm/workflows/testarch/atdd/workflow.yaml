@@ -4,7 +4,7 @@ description: "Generate failing acceptance tests before implementation using TDD 
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -12,7 +12,7 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/testarch/atdd"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/testarch/atdd"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 template: "{installed_path}/atdd-checklist-template.md"
@@ -31,13 +31,6 @@ required_tools:
   - create_directory # Create test directories
   - list_files # Find existing fixtures and helpers
   - search_repo # Search for similar test patterns
-
-# Recommended inputs
-recommended_inputs:
-  - story: "Story markdown with acceptance criteria (required)"
-  - framework_config: "Test framework configuration (playwright.config.ts, cypress.config.ts)"
-  - existing_fixtures: "Current fixture patterns for consistency"
-  - test_design: "Test design document (optional, for risk/priority context)"
 
 tags:
   - qa

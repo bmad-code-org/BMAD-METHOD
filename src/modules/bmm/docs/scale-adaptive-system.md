@@ -154,10 +154,10 @@ Tech-Spec → Implement
 
 **Planning Docs**:
 
-- PRD.md (product requirements)
+- PRD.md (functional and non-functional requirements)
 - Architecture.md (system design)
 - UX Design (if UI components)
-- Epic breakdown with stories
+- Epics and Stories (created after architecture)
 
 **Workflow Path**:
 
@@ -166,8 +166,14 @@ Tech-Spec → Implement
 ↓
 (Optional: Analysis phase - brainstorm, research, product brief)
 ↓
-PRD → (Optional UX) → Architecture → Gate Check → Implement
+PRD → (Optional UX) → Architecture → Create Epics and Stories → Implementation Readiness Check → Implement
 ```
+
+**Complete Workflow Visualization**:
+
+![BMad Method Workflow - Standard Greenfield](./images/workflow-method-greenfield.svg)
+
+_Detailed flowchart showing all phases, workflows, agents (color-coded), and decision points for the BMad Method track. Each colored box represents a different agent role._
 
 **Use For**:
 
@@ -228,9 +234,11 @@ Your brownfield documentation might be huge. Architecture workflow distills mass
 ↓
 Analysis (recommended/required) → PRD → UX → Architecture
 ↓
+Create Epics and Stories
+↓
 Security Architecture → DevOps Strategy → Test Strategy
 ↓
-Gate Check → Implement
+Implementation Readiness Check → Implement
 ```
 
 **Use For**:
@@ -287,11 +295,13 @@ Gate Check → Implement
 **PRD (Product Requirements Document)**:
 
 - Product vision and goals
-- Feature requirements
-- Epic breakdown with stories
+- Functional requirements (FRs)
+- Non-functional requirements (NFRs)
 - Success criteria
 - User experience considerations
 - Business context
+
+**Note**: Epics and stories are created AFTER architecture in the create-epics-and-stories workflow
 
 **Architecture Document**:
 
@@ -444,11 +454,12 @@ flowchart TD
 **Workflow**:
 
 1. (Recommended) Product Brief
-2. PRD with epics
+2. PRD (FRs/NFRs)
 3. (If UI) UX Design
 4. Architecture (system design)
-5. Gate Check
-6. Implement with sprint planning
+5. Create Epics and Stories
+6. Implementation Readiness Check
+7. Implement with sprint planning
 
 **Time**: 1-2 weeks
 
@@ -465,11 +476,12 @@ flowchart TD
 **Workflow**:
 
 1. Research + Product Brief
-2. Comprehensive PRD
+2. Comprehensive PRD (FRs/NFRs)
 3. UX Design (recommended)
 4. System Architecture (required)
-5. Gate check
-6. Implement with phased approach
+5. Create Epics and Stories
+6. Implementation Readiness Check
+7. Implement with phased approach
 
 **Time**: 3-6 weeks
 
@@ -487,7 +499,13 @@ flowchart TD
 
 1. **Run document-project** to analyze existing codebase
 
-**Then Workflow**: 2. PRD for search feature 3. Architecture (integration design - highly recommended) 4. Implement following existing patterns
+**Then Workflow**:
+
+2. PRD for search feature (FRs/NFRs)
+3. Architecture (integration design - highly recommended)
+4. Create Epics and Stories
+5. Implementation Readiness Check
+6. Implement following existing patterns
 
 **Time**: 1-2 weeks
 
@@ -507,13 +525,14 @@ flowchart TD
 
 1. Document-project (mandatory)
 2. Research (compliance, security)
-3. PRD (multi-tenancy requirements)
+3. PRD (multi-tenancy requirements - FRs/NFRs)
 4. Architecture (tenant isolation design)
-5. Security Architecture (data isolation, auth)
-6. DevOps Strategy (tenant provisioning, monitoring)
-7. Test Strategy (tenant isolation testing)
-8. Gate check
-9. Phased implementation
+5. Create Epics and Stories
+6. Security Architecture (data isolation, auth)
+7. DevOps Strategy (tenant provisioning, monitoring)
+8. Test Strategy (tenant isolation testing)
+9. Implementation Readiness Check
+10. Phased implementation
 
 **Time**: 3-6 months
 
@@ -533,9 +552,9 @@ If `workflow-init` suggests BMad Method, there's probably complexity you haven't
 
 Uncertain between Quick Flow and Method? Start with Quick Flow. You can create PRD later if needed.
 
-### 4. Don't Skip Gate Checks
+### 4. Don't Skip Implementation Readiness Check
 
-For BMad Method and Enterprise, gate checks prevent costly mistakes. Invest the time.
+For BMad Method and Enterprise, implementation readiness checks prevent costly mistakes. Invest the time.
 
 ### 5. Architecture is Optional but Recommended for Brownfield
 

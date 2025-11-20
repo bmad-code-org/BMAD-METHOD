@@ -61,8 +61,34 @@ jobs:
         run: |
           sed -i 's/"version": ".*"/"version": "${{ steps.version.outputs.new_version }}"/' tools/installer/package.json
 
-      - name: Build project
-        run: npm run build
+      - name: Generate web bundles
+        run: npm run bundle
+
+      - name: Package bundles for release
+        run: |
+          mkdir -p dist/release-bundles
+
+          # Copy web bundles
+          cp -r web-bundles dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }}
+
+          # Verify bundles exist
+          if [ ! "$(ls -A dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }})" ]; then
+            echo "❌ ERROR: No bundles found"
+            echo "This likely means 'npm run bundle' failed"
+            exit 1
+          fi
+
+          # Count and display bundles per module
+          for module in bmm bmb cis bmgd; do
+            if [ -d "dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }}/$module/agents" ]; then
+              COUNT=$(find dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }}/$module/agents -name '*.xml' 2>/dev/null | wc -l)
+              echo "✅ $module: $COUNT agents"
+            fi
+          done
+
+          # Create archive
+          tar -czf dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }}.tar.gz \
+            -C dist/release-bundles/bmad-bundles-v${{ steps.version.outputs.new_version }} .
 
       - name: Commit version bump
         run: |
@@ -149,25 +175,46 @@ jobs:
       - name: Publish to NPM
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish
+        run: |
+          VERSION="${{ steps.version.outputs.new_version }}"
+          if [[ "$VERSION" == *"alpha"* ]] || [[ "$VERSION" == *"beta"* ]]; then
+            echo "Publishing prerelease version with --tag alpha"
+            npm publish --tag alpha
+          else
+            echo "Publishing stable version with --tag latest"
+            npm publish --tag latest
+          fi
 
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release with Bundles
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.new_version }}
-          release_name: "BMad Method v${{ steps.version.outputs.new_version }}"
-          body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+          name: "BMad Method v${{ steps.version.outputs.new_version }}"
+          body: |
+            ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+
+            ## 📦 Web Bundles
+
+            Download XML bundles for use in AI platforms (Claude Projects, ChatGPT, Gemini):
+
+            - `bmad-bundles-v${{ steps.version.outputs.new_version }}.tar.gz` - All modules (BMM, BMB, CIS, BMGD)
+
+            **Browse online** (bleeding edge): https://bmad-code-org.github.io/bmad-bundles/
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(steps.version.outputs.new_version, 'alpha') || contains(steps.version.outputs.new_version, 'beta') }}
+          files: |
+            dist/release-bundles/*.tar.gz
 
       - name: Summary
         run: |
-          echo "🎉 Successfully released v${{ steps.version.outputs.new_version }}!"
-          echo "📦 Published to NPM with @latest tag"
-          echo "🏷️ Git tag: v${{ steps.version.outputs.new_version }}"
-          echo "✅ Users running 'npx bmad-method install' will now get version ${{ steps.version.outputs.new_version }}"
-          echo ""
-          echo "📝 Release notes preview:"
-          cat release_notes.md
+          echo "## 🎉 Successfully released v${{ steps.version.outputs.new_version }}!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Distribution" >> $GITHUB_STEP_SUMMARY
+          echo "- **NPM**: Published with @latest tag" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitHub Release**: https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v${{ steps.version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Web Bundles**: Attached to GitHub Release (4 archives)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Installation" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "npx bmad-method@${{ steps.version.outputs.new_version }} install" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

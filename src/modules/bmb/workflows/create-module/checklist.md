@@ -19,7 +19,7 @@
 
 ## Directory Structure
 
-### Source Directories (bmad/{module-code}/)
+### Source Directories ({bmad_folder}/{module-code}/)
 
 - [ ] `/agents` directory created (even if empty)
 - [ ] `/workflows` directory created (even if empty)
@@ -233,12 +233,3 @@
 - [ ] Alpha (Core functionality works)
 - [ ] Beta (Most features complete, needs testing)
 - [ ] Release (Full functionality, documented)
-
-## Sign-off
-
-**Module Name:** \***\*\*\*\*\***\_\_\***\*\*\*\*\***
-**Module Code:** \***\*\*\*\*\***\_\_\***\*\*\*\*\***
-**Version:** \***\*\*\*\*\***\_\_\***\*\*\*\*\***
-**Validated By:** \***\*\*\*\*\***\_\_\***\*\*\*\*\***
-**Date:** \***\*\*\*\*\***\_\_\***\*\*\*\*\***
-**Status:** ⬜ Pass / ⬜ Pass with Issues / ⬜ Fail

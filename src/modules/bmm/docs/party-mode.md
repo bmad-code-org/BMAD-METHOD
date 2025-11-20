@@ -27,7 +27,7 @@ Type `/bmad:core:workflows:party-mode` (or `*party-mode` from any agent), and su
 
 **The basics:**
 
-1. Party mode reads `bmad/_cfg/agent-manifest.csv`
+1. Party mode reads `{bmad_folder}/_cfg/agent-manifest.csv`
 2. Loads ALL installed agents (already includes your customizations from install)
 3. BMad Master orchestrates - picks 2-3 relevant agents per message based on topic
 4. Agents respond in character, can agree/disagree/build on each other's ideas
@@ -126,11 +126,11 @@ _(Multiple perspectives reveal the right answer)_
 
 ## Agent Customization
 
-Party mode uses agents from `bmad/[module]/agents/*.md` - these already include any customizations you applied during install.
+Party mode uses agents from `{bmad_folder}/[module]/agents/*.md` - these already include any customizations you applied during install.
 
 **To customize agents for party mode:**
 
-1. Create customization file: `bmad/_cfg/agents/bmm-pm.customize.yaml`
+1. Create customization file: `{bmad_folder}/_cfg/agents/bmm-pm.customize.yaml`
 2. Run `npx bmad-method install` to rebuild agents
 3. Customizations now active in party mode
 

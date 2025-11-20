@@ -12,7 +12,7 @@
 
 ### What Makes This Special
 
-{{product_magic_essence}}
+{{product_differentiator}}
 
 ---
 
@@ -199,39 +199,6 @@ _No specific non-functional requirements identified for this project type._
 
 ---
 
-## Implementation Planning
-
-### Epic Breakdown Required
-
-Requirements must be decomposed into epics and bite-sized stories (200k context limit).
-
-**Next Step:** Run `workflow epics-stories` to create the implementation breakdown.
-
----
-
-## References
-
-{{#if product_brief_path}}
-
-- Product Brief: {{product_brief_path}}
-  {{/if}}
-  {{#if domain_brief_path}}
-- Domain Brief: {{domain_brief_path}}
-  {{/if}}
-  {{#if research_documents}}
-- Research: {{research_documents}}
-  {{/if}}
-
----
-
-## Next Steps
-
-1. **Epic & Story Breakdown** - Run: `workflow epics-stories`
-2. **UX Design** (if UI) - Run: `workflow ux-design`
-3. **Architecture** - Run: `workflow create-architecture`
-
----
-
-_This PRD captures the essence of {{project_name}} - {{product_magic_summary}}_
+_This PRD captures the essence of {{project_name}} - {{product_value_summary}}_
 
 _Created through collaborative discovery between {{user_name}} and AI facilitator._

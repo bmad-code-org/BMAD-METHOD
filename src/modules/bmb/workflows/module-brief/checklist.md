@@ -112,5 +112,5 @@
 
 **Validation Complete:** ⬜ Yes / ⬜ With Issues / ⬜ Needs Revision
 
-**Validated By:** **\*\*\*\***\_**\*\*\*\***
-**Date:** **\*\*\*\***\_**\*\*\*\***
+**Validated By:** {name}
+**Date:** {date}

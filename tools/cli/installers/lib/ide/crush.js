@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Crush IDE setup handler
@@ -28,14 +29,17 @@ class CrushSetup extends BaseIdeSetup {
 
     await this.ensureDir(commandsDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only)
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Get tasks, tools, and workflows (standalone only)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
 
     // Organize by module
-    const agentCount = await this.organizeByModule(commandsDir, agents, tasks, tools, workflows, projectDir);
+    const agentCount = await this.organizeByModule(commandsDir, agentArtifacts, tasks, tools, workflows, projectDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount.agents} agent commands created`));
@@ -54,10 +58,10 @@ class CrushSetup extends BaseIdeSetup {
   /**
    * Organize commands by module
    */
-  async organizeByModule(commandsDir, agents, tasks, tools, workflows, projectDir) {
+  async organizeByModule(commandsDir, agentArtifacts, tasks, tools, workflows, projectDir) {
     // Get unique modules
     const modules = new Set();
-    for (const agent of agents) modules.add(agent.module);
+    for (const artifact of agentArtifacts) modules.add(artifact.module);
     for (const task of tasks) modules.add(task.module);
     for (const tool of tools) modules.add(tool.module);
     for (const workflow of workflows) modules.add(workflow.module);
@@ -80,13 +84,11 @@ class CrushSetup extends BaseIdeSetup {
       await this.ensureDir(moduleToolsDir);
       await this.ensureDir(moduleWorkflowsDir);
 
-      // Copy module-specific agents
-      const moduleAgents = agents.filter((a) => a.module === module);
-      for (const agent of moduleAgents) {
-        const content = await this.readFile(agent.path);
-        const commandContent = this.createAgentCommand(agent, content, projectDir);
-        const targetPath = path.join(moduleAgentsDir, `${agent.name}.md`);
-        await this.writeFile(targetPath, commandContent);
+      // Write module-specific agent launchers
+      const moduleAgents = agentArtifacts.filter((a) => a.module === module);
+      for (const artifact of moduleAgents) {
+        const targetPath = path.join(moduleAgentsDir, `${artifact.name}.md`);
+        await this.writeFile(targetPath, artifact.content);
         agentCount++;
       }
 
@@ -127,44 +129,6 @@ class CrushSetup extends BaseIdeSetup {
       tools: toolCount,
       workflows: workflowCount,
     };
-  }
-
-  /**
-   * Create agent command content
-   */
-  createAgentCommand(agent, content, projectDir) {
-    // Extract metadata
-    const titleMatch = content.match(/title="([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
-
-    const iconMatch = content.match(/icon="([^"]+)"/);
-    const icon = iconMatch ? iconMatch[1] : '🤖';
-
-    // Get relative path
-    const relativePath = path.relative(projectDir, agent.path).replaceAll('\\', '/');
-
-    let commandContent = `# /${agent.name} Command
-
-When this command is used, adopt the following agent persona:
-
-## ${icon} ${title} Agent
-
-${content}
-
-## Command Usage
-
-This command activates the ${title} agent from the BMAD ${agent.module.toUpperCase()} module.
-
-## File Reference
-
-Complete agent definition: [${relativePath}](${relativePath})
-
-## Module
-
-Part of the BMAD ${agent.module.toUpperCase()} module.
-`;
-
-    return commandContent;
   }
 
   /**

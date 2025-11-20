@@ -4,7 +4,7 @@ description: "Initialize production-ready test framework architecture (Playwrigh
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -12,7 +12,7 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/testarch/framework"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/testarch/framework"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
@@ -33,12 +33,6 @@ required_tools:
   - create_directory # Create test directory structure
   - list_files # Check for existing framework
   - search_repo # Find architecture docs
-
-# Recommended inputs
-recommended_inputs:
-  - package_json: "package.json with project dependencies and scripts"
-  - architecture_docs: "Architecture or tech stack documentation (optional)"
-  - existing_tests: "Existing test files to detect current framework (optional)"
 
 tags:
   - qa

@@ -49,14 +49,6 @@ async function configureForIDE(ide) {
       // Claude Code specific Core configurations
       break;
     }
-    case 'cursor': {
-      // Cursor specific Core configurations
-      break;
-    }
-    case 'windsurf': {
-      // Windsurf specific Core configurations
-      break;
-    }
     // Add more IDEs as needed
     default: {
       // No specific configuration needed

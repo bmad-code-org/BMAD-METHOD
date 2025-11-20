@@ -1,8 +1,8 @@
 # BMad Enterprise Method - Greenfield
 # Extended enterprise planning with security/devops/test for greenfield (30+ stories typically)
 
-method_name: "BMad Enterprise Method"
-track: "enterprise"
+method_name: "Enterprise BMad Method"
+track: "enterprise-bmad-method"
 field_type: "greenfield"
 description: "Complete enterprise-grade planning with security, devops, and test strategy"
 
@@ -48,25 +48,11 @@ phases:
         agent: "pm"
         command: "validate-prd"
 
-      - id: "create-design"
+      - id: "create-ux-design"
         recommended: true
         agent: "ux-designer"
-        command: "create-design"
+        command: "create-ux-design"
         note: "Highly recommended for enterprise - design system and patterns"
-
-      - id: "framework"
-        optional: true
-        agent: "tea"
-        command: "framework"
-        output: "Test framework scaffold (Playwright/Cypress)"
-        note: "Initialize production-ready test framework - run once per project"
-
-      - id: "ci"
-        optional: true
-        agent: "tea"
-        command: "ci"
-        output: "CI/CD test pipeline configuration"
-        note: "Scaffold CI workflow with selective testing, burn-in, caching"
 
   - phase: 2
     name: "Solutioning"
@@ -79,30 +65,43 @@ phases:
         output: "Enterprise-grade system architecture"
         note: "Includes scalability, multi-tenancy, integration architecture"
 
-      - id: "create-security-architecture"
-        optional: true
-        agent: "architect"
-        command: "create-security-architecture"
-        output: "Security architecture and threat model"
-        note: "Future workflow - optional extended enterprise workflow for security design, auth, compliance"
+      - id: "test-design"
+        required: true
+        agent: "tea"
+        command: "test-design"
+        output: "System-level testability review"
+        note: "Enterprise requires testability validation - auto-detects system-level mode"
 
-      - id: "create-devops-strategy"
-        optional: true
-        agent: "architect"
-        command: "create-devops-strategy"
-        output: "DevOps pipeline and infrastructure plan"
-        note: "Future workflow - optional extended enterprise workflow for CI/CD, deployment, monitoring"
+      # - id: "create-security-architecture"
+      #   optional: true
+      #   agent: "architect"
+      #   command: "create-security-architecture"
+      #   output: "Security architecture and threat model"
+      #   note: "Future workflow - optional extended enterprise workflow for security design, auth, compliance"
+
+      # - id: "create-devops-strategy"
+      #   optional: true
+      #   agent: "architect"
+      #   command: "create-devops-strategy"
+      #   output: "DevOps pipeline and infrastructure plan"
+      #   note: "Future workflow - optional extended enterprise workflow for CI/CD, deployment, monitoring"
 
       - id: "validate-architecture"
-        optional: true
+        recommended: true
         agent: "architect"
         command: "validate-architecture"
 
-      - id: "solutioning-gate-check"
+      - id: "create-epics-and-stories"
+        required: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Required: Break down PRD into implementable epics and stories with full context (PRD + UX + Architecture)"
+
+      - id: "implementation-readiness"
         required: true
         agent: "architect"
-        command: "solutioning-gate-check"
-        note: "Validates all planning artifacts align before implementation"
+        command: "implementation-readiness"
+        note: "Validates all planning artifacts + Epics + testability align before implementation"
 
   - phase: 3
     name: "Implementation"

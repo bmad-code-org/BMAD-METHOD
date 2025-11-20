@@ -1,6 +1,6 @@
 # Story Ready Workflow Instructions (SM Agent)
 
-<critical>The workflow execution engine is governed by: {project_root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
@@ -14,12 +14,12 @@
 
 <action>If {{story_path}} is provided → use it directly; extract story_key from filename or metadata; GOTO mark_ready</action>
 
-<critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
-<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<critical>MUST read COMPLETE {sprint_status} file from start to end to preserve order</critical>
+<action>Load the FULL file: {sprint_status}</action>
 <action>Read ALL lines from beginning to end - do not skip any content</action>
 <action>Parse the development_status section completely</action>
 
-<action>Find ALL stories (reading in order from top to bottom) where:
+<action>Find ALL stories (reading in order from start to end) where:
 
 - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
 - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
@@ -30,7 +30,7 @@
 <action>Count total drafted stories found</action>
 
 <check if="no drafted stories found">
-  <output>📋 No drafted stories found in sprint-status.yaml
+  <output>📋 No drafted stories found in {sprint_status}
 
 All stories are either still in backlog or already marked ready/in-progress/done.
 
@@ -67,7 +67,7 @@ All stories are either still in backlog or already marked ready/in-progress/done
 </step>
 
 <step n="2" goal="Update sprint status to ready-for-dev" tag="sprint-status">
-<action>Load the FULL file: {{output_folder}}/sprint-status.yaml</action>
+<action>Load the FULL file: {sprint_status}</action>
 <action>Find development_status key matching {{story_key}}</action>
 <action>Verify current status is "drafted" (expected previous state)</action>
 <action>Update development_status[{{story_key}}] = "ready-for-dev"</action>

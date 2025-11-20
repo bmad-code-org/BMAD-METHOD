@@ -1,6 +1,9 @@
 const path = require('node:path');
+const fs = require('fs-extra');
+const yaml = require('js-yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Gemini CLI setup handler
@@ -8,9 +11,39 @@ const chalk = require('chalk');
  */
 class GeminiSetup extends BaseIdeSetup {
   constructor() {
-    super('gemini', 'Gemini CLI', true); // preferred IDE
+    super('gemini', 'Gemini CLI', false);
     this.configDir = '.gemini';
     this.commandsDir = 'commands';
+    this.agentTemplatePath = path.join(__dirname, 'templates', 'gemini-agent-command.toml');
+    this.taskTemplatePath = path.join(__dirname, 'templates', 'gemini-task-command.toml');
+  }
+
+  /**
+   * Load config values from bmad installation
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Object} Config values
+   */
+  async loadConfigValues(bmadDir) {
+    const configValues = {
+      user_name: 'User', // Default fallback
+    };
+
+    // Try to load core config.yaml
+    const coreConfigPath = path.join(bmadDir, 'core', 'config.yaml');
+    if (await fs.pathExists(coreConfigPath)) {
+      try {
+        const configContent = await fs.readFile(coreConfigPath, 'utf8');
+        const config = yaml.load(configContent);
+
+        if (config.user_name) {
+          configValues.user_name = config.user_name;
+        }
+      } catch (error) {
+        console.warn(chalk.yellow(`  Warning: Could not load config values: ${error.message}`));
+      }
+    }
+
+    return configValues;
   }
 
   /**
@@ -31,29 +64,31 @@ class GeminiSetup extends BaseIdeSetup {
     // Clean up any existing BMAD files before reinstalling
     await this.cleanup(projectDir);
 
-    // Get agents and tasks
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Get tasks
     const tasks = await this.getTasks(bmadDir);
 
     // Install agents as TOML files with bmad- prefix (flat structure)
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readFile(agent.path);
-      const tomlContent = this.createAgentToml(agent, content, bmadDir);
+    for (const artifact of agentArtifacts) {
+      const tomlContent = await this.createAgentLauncherToml(artifact);
 
       // Flat structure: bmad-agent-{module}-{name}.toml
-      const tomlPath = path.join(commandsDir, `bmad-agent-${agent.module}-${agent.name}.toml`);
+      const tomlPath = path.join(commandsDir, `bmad-agent-${artifact.module}-${artifact.name}.toml`);
       await this.writeFile(tomlPath, tomlContent);
       agentCount++;
 
-      console.log(chalk.green(`  ✓ Added agent: /bmad:agents:${agent.module}:${agent.name}`));
+      console.log(chalk.green(`  ✓ Added agent: /bmad:agents:${artifact.module}:${artifact.name}`));
     }
 
     // Install tasks as TOML files with bmad- prefix (flat structure)
     let taskCount = 0;
     for (const task of tasks) {
       const content = await this.readFile(task.path);
-      const tomlContent = this.createTaskToml(task, content, bmadDir);
+      const tomlContent = await this.createTaskToml(task, content);
 
       // Flat structure: bmad-task-{module}-{name}.toml
       const tomlPath = path.join(commandsDir, `bmad-task-${task.module}-${task.name}.toml`);
@@ -78,51 +113,66 @@ class GeminiSetup extends BaseIdeSetup {
   }
 
   /**
-   * Create agent TOML content
+   * Create agent launcher TOML content from artifact
    */
-  createAgentToml(agent, content, bmadDir) {
+  async createAgentLauncherToml(artifact) {
+    // Strip frontmatter from launcher content
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = artifact.content.replace(frontmatterRegex, '').trim();
+
+    // Extract title from launcher frontmatter
+    const titleMatch = artifact.content.match(/description:\s*"([^"]+)"/);
+    const title = titleMatch ? titleMatch[1] : this.formatTitle(artifact.name);
+
+    // Create TOML wrapper around launcher content (without frontmatter)
+    const description = `BMAD ${artifact.module.toUpperCase()} Agent: ${title}`;
+
+    return `description = "${description}"
+prompt = """
+${contentWithoutFrontmatter}
+"""
+`;
+  }
+
+  /**
+   * Create agent TOML content using template
+   */
+  async createAgentToml(agent, content) {
     // Extract metadata
     const titleMatch = content.match(/title="([^"]+)"/);
     const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
 
-    // Get relative path from project root to agent file
-    const relativePath = path.relative(process.cwd(), agent.path).replaceAll('\\', '/');
+    // Load template
+    const template = await fs.readFile(this.agentTemplatePath, 'utf8');
 
-    // Create TOML content
-    const tomlContent = `description = "Activates the ${title} agent from the BMad Method."
-prompt = """
-CRITICAL: You are now the BMad '${title}' agent. Adopt its persona and capabilities as defined in the following configuration.
-
-Read and internalize the full agent definition, following all instructions and maintaining this persona until explicitly told to switch or exit.
-
-@${relativePath}
-"""
-`;
+    // Replace template variables
+    // Note: {user_name} and other {config_values} are left as-is for runtime substitution by Gemini
+    const tomlContent = template
+      .replaceAll('{{title}}', title)
+      .replaceAll('{{bmad_folder}}', this.bmadFolderName)
+      .replaceAll('{{module}}', agent.module)
+      .replaceAll('{{name}}', agent.name);
 
     return tomlContent;
   }
 
   /**
-   * Create task TOML content
+   * Create task TOML content using template
    */
-  createTaskToml(task, content, bmadDir) {
+  async createTaskToml(task, content) {
     // Extract task name from XML if available
     const nameMatch = content.match(/<name>([^<]+)<\/name>/);
     const taskName = nameMatch ? nameMatch[1] : this.formatTitle(task.name);
 
-    // Get relative path from project root to task file
-    const relativePath = path.relative(process.cwd(), task.path).replaceAll('\\', '/');
+    // Load template
+    const template = await fs.readFile(this.taskTemplatePath, 'utf8');
 
-    // Create TOML content
-    const tomlContent = `description = "Executes the ${taskName} task from the BMad Method."
-prompt = """
-Execute the following BMad Method task workflow:
-
-@${relativePath}
-
-Follow all instructions and complete the task as defined.
-"""
-`;
+    // Replace template variables
+    const tomlContent = template
+      .replaceAll('{{taskName}}', taskName)
+      .replaceAll('{{bmad_folder}}', this.bmadFolderName)
+      .replaceAll('{{module}}', task.module)
+      .replaceAll('{{filename}}', task.filename);
 
     return tomlContent;
   }

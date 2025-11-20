@@ -2,7 +2,7 @@
 # Extended enterprise planning for complex brownfield with security/devops/test (30+ stories typically)
 
 method_name: "BMad Enterprise Method"
-track: "enterprise"
+track: "enterprise-bmad-method"
 field_type: "brownfield"
 description: "Enterprise-grade planning for complex brownfield additions with extended requirements"
 
@@ -60,25 +60,11 @@ phases:
         agent: "pm"
         command: "validate-prd"
 
-      - id: "create-design"
+      - id: "create-ux-design"
         recommended: true
         agent: "ux-designer"
-        command: "create-design"
+        command: "create-ux-design"
         note: "Recommended - must integrate with existing UX patterns"
-
-      - id: "framework"
-        optional: true
-        agent: "tea"
-        command: "framework"
-        output: "Test framework scaffold (Playwright/Cypress)"
-        note: "Initialize or modernize test framework - critical if brownfield lacks proper test infrastructure"
-
-      - id: "ci"
-        optional: true
-        agent: "tea"
-        command: "ci"
-        output: "CI/CD test pipeline configuration"
-        note: "Establish or enhance CI pipeline with regression testing strategy"
 
   - phase: 2
     name: "Solutioning"
@@ -91,30 +77,43 @@ phases:
         output: "Integration architecture with enterprise considerations"
         note: "Distills brownfield context + adds security/scalability/compliance design"
 
-      - id: "create-security-architecture"
-        optional: true
-        agent: "architect"
-        command: "create-security-architecture"
-        output: "Security architecture for brownfield integration"
-        note: "Future workflow - optional extended enterprise workflow for threat model, auth integration, audit requirements"
+      - id: "create-epics-and-stories"
+        required: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Required: Break down PRD into implementable epics and stories with full context (PRD + UX + Architecture)"
 
-      - id: "create-devops-strategy"
-        optional: true
-        agent: "architect"
-        command: "create-devops-strategy"
-        output: "DevOps strategy for brownfield deployment"
-        note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
+      - id: "test-design"
+        required: true
+        agent: "tea"
+        command: "test-design"
+        output: "System-level testability review"
+        note: "Enterprise requires testability validation - auto-detects system-level mode"
+
+      # - id: "create-security-architecture"
+      #   optional: true
+      #   agent: "architect"
+      #   command: "create-security-architecture"
+      #   output: "Security architecture for brownfield integration"
+      #   note: "Future workflow - optional extended enterprise workflow for threat model, auth integration, audit requirements"
+
+      # - id: "create-devops-strategy"
+      #   optional: true
+      #   agent: "architect"
+      #   command: "create-devops-strategy"
+      #   output: "DevOps strategy for brownfield deployment"
+      #   note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
 
       - id: "validate-architecture"
-        optional: true
+        recommended: true
         agent: "architect"
         command: "validate-architecture"
 
-      - id: "solutioning-gate-check"
+      - id: "implementation-readiness"
         required: true
         agent: "architect"
-        command: "solutioning-gate-check"
-        note: "Critical gate - validates all planning before touching production system"
+        command: "implementation-readiness"
+        note: "Critical gate - validates all planning + Epics before touching production system"
 
   - phase: 3
     name: "Implementation"

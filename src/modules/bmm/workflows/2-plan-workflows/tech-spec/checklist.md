@@ -2,20 +2,22 @@
 
 **Purpose**: Validate tech-spec workflow outputs are context-rich, definitive, complete, and implementation-ready.
 
-**Scope**: Levels 0-1 software projects
+**Scope**: Quick-flow software projects (1-5 stories)
 
-**Expected Outputs**: tech-spec.md + story files (1 for Level 0, 2-3 for Level 1)
+**Expected Outputs**: tech-spec.md + epics.md + story files (1-5 stories)
 
-**New Standard**: Tech-spec should be comprehensive enough to replace story-context for Level 0-1 projects
+**New Standard**: Tech-spec should be comprehensive enough to replace story-context for most quick-flow projects
 
 ---
 
 ## 1. Output Files Exist
 
 - [ ] tech-spec.md created in output folder
-- [ ] Story file(s) created in dev_story_location
-  - Level 0: 1 story file (story-{slug}.md)
-  - Level 1: epics.md + 2-3 story files (story-{epic-slug}-N.md)
+- [ ] epics.md created (minimal for 1 story, detailed for multiple)
+- [ ] Story file(s) created in sprint_artifacts
+  - Naming convention: story-{epic-slug}-N.md (where N = 1 to story_count)
+  - 1 story: story-{epic-slug}-1.md
+  - Multiple stories: story-{epic-slug}-1.md through story-{epic-slug}-N.md
 - [ ] bmm-workflow-status.yaml updated (if not standalone mode)
 - [ ] No unfilled {{template_variables}} in any files
 
@@ -26,7 +28,7 @@
 ### Document Discovery
 
 - [ ] **Existing documents loaded**: Product brief, research docs found and incorporated (if they exist)
-- [ ] **Document-project output**: Checked for {output_folder}/docs/index.md (brownfield codebase map)
+- [ ] **Document-project output**: Checked for {output_folder}/index.md (brownfield codebase map)
 - [ ] **Sharded documents**: If sharded versions found, ALL sections loaded and synthesized
 - [ ] **Context summary**: loaded_documents_summary lists all sources used
 
@@ -134,16 +136,17 @@
 
 ---
 
-## 6. Epic Quality (Level 1 Only)
+## 6. Epic Quality (All Projects)
 
 - [ ] **Epic title**: User-focused outcome (not implementation detail)
 - [ ] **Epic slug**: Clean kebab-case slug (2-3 words)
 - [ ] **Epic goal**: Clear purpose and value statement
 - [ ] **Epic scope**: Boundaries clearly defined
 - [ ] **Success criteria**: Measurable outcomes
-- [ ] **Story map**: Visual representation of epic → stories
-- [ ] **Implementation sequence**: Logical story ordering with dependencies
+- [ ] **Story map** (if multiple stories): Visual representation of epic → stories
+- [ ] **Implementation sequence** (if multiple stories): Logical story ordering with dependencies
 - [ ] **Tech-spec reference**: Links back to tech-spec.md
+- [ ] **Detail level appropriate**: Minimal for 1 story, detailed for multiple
 
 ---
 

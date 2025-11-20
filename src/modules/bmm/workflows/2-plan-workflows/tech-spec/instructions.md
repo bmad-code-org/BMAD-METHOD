@@ -1,17 +1,19 @@
-# Tech-Spec Workflow - Context-Aware Technical Planning (Level 0-1)
+# Tech-Spec Workflow - Context-Aware Technical Planning (quick-flow)
 
 <workflow>
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
-<critical>This is for Level 0-1 projects - tech-spec with context-rich story generation</critical>
-<critical>Level 0: tech-spec + single user story | Level 1: tech-spec + epic/stories</critical>
+<critical>This is quick-flow efforts - tech-spec with context-rich story generation</critical>
+<critical>Quick Flow: tech-spec + epic with 1-5 stories (always generates epic structure)</critical>
 <critical>LIVING DOCUMENT: Write to tech-spec.md continuously as you discover - never wait until the end</critical>
 <critical>CONTEXT IS KING: Gather ALL available context before generating specs</critical>
 <critical>DOCUMENT OUTPUT: Technical, precise, definitive. Specific versions only. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <step n="0" goal="Validate workflow readiness and detect project level" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -26,34 +28,34 @@
 
     <output>Great! Let's quickly configure your project...</output>
 
-    <ask>What level is this project?
+    <ask>How many user stories do you think this work requires?
 
-**Level 0** - Single atomic change (bug fix, small isolated feature, single file change)
-→ Generates: 1 tech-spec + 1 story
+**Single Story** - Simple change (bug fix, small isolated feature, single file change)
+→ Generates: tech-spec + epic (minimal) + 1 story
 → Example: "Fix login validation bug" or "Add email field to user form"
 
-**Level 1** - Coherent feature (multiple related changes, small feature set)
-→ Generates: 1 tech-spec + 1 epic + 2-3 stories
+**Multiple Stories (2-5)** - Coherent feature (multiple related changes, small feature set)
+→ Generates: tech-spec + epic (detailed) + 2-5 stories
 → Example: "Add OAuth integration" or "Build user profile page"
 
-Enter **0** or **1**:</ask>
+Enter **1** for single story, or **2-5** for number of stories you estimate</ask>
 
-    <action>Capture user response as project_level (0 or 1)</action>
-    <action>Validate: If not 0 or 1, ask again</action>
+    <action>Capture user response as story_count (1-5)</action>
+    <action>Validate: If not 1-5, ask for clarification. If > 5, suggest using full BMad Method instead</action>
 
-    <ask>Is this a **greenfield** (new/empty codebase) or **brownfield** (existing codebase) project?
+    <ask if="not already known greenfield vs brownfield">Is this a **greenfield** (new/empty codebase) or **brownfield** (existing codebase) project?
 
-**Greenfield** - Starting fresh, no existing code
-**Brownfield** - Adding to or modifying existing code
+    **Greenfield** - Starting fresh, no existing code aside from starter templates
+    **Brownfield** - Adding to or modifying existing functional code or project
 
-Enter **greenfield** or **brownfield**:</ask>
+    Enter **greenfield** or **brownfield**:</ask>
 
     <action>Capture user response as field_type (greenfield or brownfield)</action>
     <action>Validate: If not greenfield or brownfield, ask again</action>
 
     <output>Perfect! Running as:
 
-- **Project Level:** {{project_level}}
+- **Story Count:** {{story_count}} {{#if story_count == 1}}story (minimal epic){{else}}stories (detailed epic){{/if}}
 - **Field Type:** {{field_type}}
 - **Mode:** Standalone (no status file tracking)
 
@@ -65,21 +67,17 @@ Let's build your tech-spec!</output>
 </check>
 
 <check if="status file found">
-  <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
+  <action>Load the FULL file: {workflow-status}</action>
   <action>Parse workflow_status section</action>
   <action>Check status of "tech-spec" workflow</action>
-  <action>Get project_level from YAML metadata</action>
+  <action>Get selected_track from YAML metadata indicating this is quick-flow-greenfield or quick-flow-brownfield</action>
   <action>Get field_type from YAML metadata (greenfield or brownfield)</action>
   <action>Find first non-completed workflow (next expected workflow)</action>
 
-  <check if="project_level >= 2">
-    <output>**Incorrect Workflow for Level {{project_level}}**
-
-Tech-spec is for Level 0-1 projects. Level 2-4 should use PRD workflow.
-
-**Correct workflow:** `create-prd` (PM agent)
+  <check if="selected_track is NOT quick-flow-greenfield AND NOT quick-flow-brownfield">
+    <output>**Incorrect Workflow for Level {{selected_track}}**
+    Tech-spec is for Simple projects. **Correct workflow:** `create-prd` (PM agent). You should Exit at this point, unless you want to force run this workflow.
 </output>
-<action>Exit and redirect to prd</action>
 </check>
 
   <check if="tech-spec status is file path (already completed)">
@@ -104,14 +102,19 @@ Tech-spec is for Level 0-1 projects. Level 2-4 should use PRD workflow.
 </check>
 </step>
 
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
+<note>After discovery, these content variables are available: {product_brief_content}, {research_content}, {document_project_content}</note>
+</step>
+
 <step n="1" goal="Comprehensive context discovery - gather everything available">
 
 <action>Welcome {user_name} warmly and explain what we're about to do:
 
-"I'm going to gather all available context about your project before we dive into the technical spec. This includes:
+"I'm going to gather all available context about your project before we dive into the technical spec. The following content has been auto-loaded:
 
-- Any existing documentation (product briefs, research)
-- Brownfield codebase analysis (if applicable)
+- Product briefs and research: {product_brief_content}, {research_content}
+- Brownfield codebase documentation: {document_project_content} (loaded via INDEX_GUIDED strategy)
 - Your project's tech stack and dependencies
 - Existing code patterns and structure
 
@@ -133,113 +136,53 @@ Search for and load (using dual-strategy: whole first, then sharded):
    - If found: Load completely and extract insights
 
 3. **Document-Project Output (CRITICAL for brownfield):**
-   - Always check: {output_folder}/docs/index.md
+   - Always check: {output_folder}/index.md
    - If found: This is the brownfield codebase map - load ALL shards!
    - Extract: File structure, key modules, existing patterns, naming conventions
 
-Create a summary of what was found:
+Create a summary of what was found and ask user if there are other documents or information to consider before proceeding:
 
 - List of loaded documents
 - Key insights from each
 - Brownfield vs greenfield determination
   </action>
 
-<action>**PHASE 2: Detect Project Type from Setup Files**
+<action>**PHASE 2: Intelligently Detect Project Stack**
 
-Search for project setup files in {project-root}:
+Use your comprehensive knowledge as a coding-capable LLM to analyze the project:
 
-**Node.js/JavaScript:**
+**Discover Setup Files:**
 
-- package.json → Parse for framework, dependencies, scripts
+- Search {project-root} for dependency manifests (package.json, requirements.txt, Gemfile, go.mod, Cargo.toml, composer.json, pom.xml, build.gradle, pyproject.toml, etc.)
+- Adapt to ANY project type - you know the ecosystem conventions
 
-**Python:**
-
-- requirements.txt → Parse for packages
-- pyproject.toml → Parse for modern Python projects
-- Pipfile → Parse for pipenv projects
-
-**Ruby:**
-
-- Gemfile → Parse for gems and versions
-
-**Java:**
-
-- pom.xml → Parse for Maven dependencies
-- build.gradle → Parse for Gradle dependencies
-
-**Go:**
-
-- go.mod → Parse for modules
-
-**Rust:**
-
-- Cargo.toml → Parse for crates
-
-**PHP:**
-
-- composer.json → Parse for packages
-
-If setup file found, extract:
+**Extract Critical Information:**
 
 1. Framework name and EXACT version (e.g., "React 18.2.0", "Django 4.2.1")
-2. All production dependencies with versions
-3. Dev dependencies and tools (TypeScript, Jest, ESLint, pytest, etc.)
-4. Available scripts (npm run test, npm run build, etc.)
-5. Project type indicators (is it an API? Web app? CLI tool?)
-6. **Test framework** (Jest, pytest, RSpec, JUnit, Mocha, etc.)
+2. All production dependencies with specific versions
+3. Dev tools and testing frameworks (Jest, pytest, ESLint, etc.)
+4. Available build/test scripts
+5. Project type (web app, API, CLI, library, etc.)
 
-**Check for Outdated Dependencies:**
-<check if="major framework version > 2 years old">
-<action>Use WebSearch to find current recommended version</action>
-<example>
-If package.json shows "react": "16.14.0" (from 2020):
-<WebSearch query="React latest stable version 2025 migration guide" />
-Note both current version AND migration complexity in stack summary
-</example>
-</check>
+**Assess Currency:**
+
+- Identify if major dependencies are outdated (>2 years old)
+- Use WebSearch to find current recommended versions if needed
+- Note migration complexity in your summary
 
 **For Greenfield Projects:**
 <check if="field_type == greenfield">
-<action>Use WebSearch for current best practices AND starter templates</action>
-<example>
-<WebSearch query="{detected_framework} best practices {current_year}" />
-<WebSearch query="{detected_framework} recommended packages {current_year}" />
-<WebSearch query="{detected_framework} official starter template {current_year}" />
-<WebSearch query="{project_type} {detected_framework} boilerplate {current_year}" />
-</example>
-
-**RECOMMEND STARTER TEMPLATES:**
-Look for official or well-maintained starter templates:
-
-- React: Create React App, Vite, Next.js starter
-- Vue: create-vue, Nuxt starter
-- Python: cookiecutter templates, FastAPI template
-- Node.js: express-generator, NestJS CLI
-- Ruby: Rails new, Sinatra template
-- Go: go-blueprint, standard project layout
-
-Benefits of starters:
-
-- ✅ Modern best practices baked in
-- ✅ Proper project structure
-- ✅ Build tooling configured
-- ✅ Testing framework set up
-- ✅ Linting/formatting included
-- ✅ Faster time to first feature
-
-**Present recommendations to user:**
-"I found these starter templates for {{framework}}:
-
-1. {{official_template}} - Official, well-maintained
-2. {{community_template}} - Popular community template
-
-These provide {{benefits}}. Would you like to use one? (yes/no/show-me-more)"
-
-<action>Capture user preference on starter template</action>
-<action>If yes, include starter setup in implementation stack</action>
+<action>Use WebSearch to discover current best practices and official starter templates</action>
+<action>Recommend appropriate starters based on detected framework (or user's intended stack)</action>
+<action>Present benefits conversationally: setup time saved, modern patterns, testing included</action>
+<ask>Would you like to use a starter template? (yes/no/show-me-options)</ask>
+<action>Capture preference and include in implementation stack if accepted</action>
 </check>
 
-Store this as {{project_stack_summary}}
+**Trust Your Intelligence:**
+You understand project ecosystems deeply. Adapt your analysis to any stack - don't be constrained by examples. Extract what matters for developers.
+
+Store comprehensive findings as {{project_stack_summary}}
 </action>
 
 <action>**PHASE 3: Brownfield Codebase Reconnaissance** (if applicable)
@@ -265,7 +208,7 @@ Analyze the existing project structure:
 
 4. **Testing Patterns & Standards (CRITICAL):**
    - Identify test framework in use (from package.json/requirements.txt)
-   - Note test file naming patterns (.test.js, \_test.py, .spec.ts, Test.java)
+   - Note test file naming patterns (.test.js, test.py, .spec.ts, Test.java)
    - Document test organization (tests/, **tests**, spec/, test/)
    - Look for test configuration files (jest.config.js, pytest.ini, .rspec)
    - Check for coverage requirements (in CI config, test scripts)
@@ -357,105 +300,56 @@ This gives me a solid foundation for creating a context-rich tech spec!"
 
 <step n="2" goal="Conversational discovery of the change/feature">
 
-<action>Now engage in natural conversation to understand what needs to be built.
+<action>Engage {user_name} in natural, adaptive conversation to deeply understand what needs to be built.
 
-Adapt questioning based on project_level:
+**Discovery Approach:**
+Adapt your questioning style to the complexity:
+
+- For single-story changes: Focus on the specific problem, location, and approach
+- For multi-story features: Explore user value, integration strategy, and scope boundaries
+
+**Core Discovery Goals (accomplish through natural dialogue):**
+
+1. **The Problem/Need**
+   - What user or technical problem are we solving?
+   - Why does this matter now?
+   - What's the impact if we don't do this?
+
+2. **The Solution Approach**
+   - What's the proposed solution?
+   - How should this work from a user/system perspective?
+   - What alternatives were considered?
+
+3. **Integration & Location**
+   - <check if="brownfield">Where does this fit in the existing codebase?</check>
+   - What existing code/patterns should we reference or follow?
+   - What are the integration points?
+
+4. **Scope Clarity**
+   - What's IN scope for this work?
+   - What's explicitly OUT of scope (future work, not needed)?
+   - If multiple stories: What's MVP vs enhancement?
+
+5. **Constraints & Dependencies**
+   - Technical limitations or requirements?
+   - Dependencies on other systems, APIs, or services?
+   - Performance, security, or compliance considerations?
+
+6. **Success Criteria**
+   - How will we know this is done correctly?
+   - What does "working" look like?
+   - What edge cases matter?
+
+**Conversation Style:**
+
+- Be warm and collaborative, not interrogative
+- Ask follow-up questions based on their responses
+- Help them think through implications
+- Reference context from Phase 1 (existing code, stack, patterns)
+- Adapt depth to {{story_count}} complexity
+
+Synthesize discoveries into clear, comprehensive specifications.
 </action>
-
-<check if="project_level == 0">
-  <action>**Level 0: Atomic Change Discovery**
-
-Engage warmly and get specific details:
-
-"Let's talk about this change. I need to understand it deeply so the tech-spec gives developers everything they need."
-
-**Core Questions (adapt naturally, don't interrogate):**
-
-1. "What problem are you solving?"
-   - Listen for: Bug fix, missing feature, technical debt, improvement
-   - Capture as {{change_type}}
-
-2. "Where in the codebase should this live?"
-   - If brownfield: "I see you have [existing modules]. Does this fit in any of those?"
-   - If greenfield: "Let's figure out the right structure for this."
-   - Capture affected areas
-
-3. <check if="brownfield">
-   "Are there existing patterns or similar code I should follow?"
-   - Look for consistency requirements
-   - Identify reference implementations
-   </check>
-
-4. "What's the expected behavior after this change?"
-   - Get specific success criteria
-   - Understand edge cases
-
-5. "Any constraints or gotchas I should know about?"
-   - Technical limitations
-   - Dependencies on other systems
-   - Performance requirements
-
-**Discovery Goals:**
-
-- Understand the WHY (problem)
-- Understand the WHAT (solution)
-- Understand the WHERE (location in code)
-- Understand the HOW (approach and patterns)
-
-Synthesize into clear problem statement and solution overview.
-</action>
-</check>
-
-<check if="project_level == 1">
-  <action>**Level 1: Feature Discovery**
-
-Engage in deeper feature exploration:
-
-"This is a Level 1 feature - coherent but focused. Let's explore what you're building."
-
-**Core Questions (natural conversation):**
-
-1. "What user need are you addressing?"
-   - Get to the core value
-   - Understand the user's pain point
-
-2. "How should this integrate with existing code?"
-   - If brownfield: "I saw [existing features]. How does this relate?"
-   - Identify integration points
-   - Note dependencies
-
-3. <check if="brownfield AND similar features exist">
-   "Can you point me to similar features I can reference for patterns?"
-   - Get example implementations
-   - Understand established patterns
-   </check>
-
-4. "What's IN scope vs OUT of scope for this feature?"
-   - Define clear boundaries
-   - Identify MVP vs future enhancements
-   - Keep it focused (remind: Level 1 = 2-3 stories max)
-
-5. "Are there dependencies on other systems or services?"
-   - External APIs
-   - Databases
-   - Third-party libraries
-
-6. "What does success look like?"
-   - Measurable outcomes
-   - User-facing impact
-   - Technical validation
-
-**Discovery Goals:**
-
-- Feature purpose and value
-- Integration strategy
-- Scope boundaries
-- Success criteria
-- Dependencies
-
-Synthesize into comprehensive feature description.
-</action>
-</check>
 
 <template-output>problem_statement</template-output>
 <template-output>solution_overview</template-output>
@@ -730,14 +624,14 @@ Pre-implementation checklist:
 **Implementation Steps:**
 Step-by-step breakdown:
 
-For Level 0:
+For single-story changes:
 
 1. [Step 1 with specific file and action]
 2. [Step 2 with specific file and action]
 3. [Write tests]
 4. [Verify acceptance criteria]
 
-For Level 1:
+For multi-story features:
 Organize by story/phase:
 
 1. Phase 1: [Foundation work]
@@ -914,8 +808,6 @@ What to watch after deployment:
 <template-output file="tech-spec.md">rollback_plan</template-output>
 <template-output file="tech-spec.md">monitoring_approach</template-output>
 
-<invoke-task halt="true">{project-root}/bmad/core/tasks/adv-elicit.xml</invoke-task>
-
 </step>
 
 <step n="4" goal="Auto-validate cohesion, completeness, and quality">
@@ -1004,21 +896,17 @@ Tech-spec is high quality and ready for story generation!</output>
 
 </step>
 
-<step n="5" goal="Generate context-rich user stories">
+<step n="5" goal="Generate epic and context-rich stories">
 
-<action>Now generate stories that reference the rich tech-spec context</action>
+<action>Invoke unified story generation workflow: {instructions_generate_stories}</action>
 
-<check if="project_level == 0">
-  <action>Invoke {installed_path}/instructions-level0-story.md to generate single user story</action>
-  <action>Story will leverage tech-spec.md as primary context</action>
-  <action>Developers can skip story-context workflow since tech-spec is comprehensive</action>
-</check>
+<action>This will generate:
 
-<check if="project_level == 1">
-  <action>Invoke {installed_path}/instructions-level1-stories.md to generate epic and stories</action>
-  <action>Stories will reference tech-spec.md for all technical details</action>
-  <action>Epic provides organization, tech-spec provides implementation context</action>
-</check>
+- **epics.md** - Epic structure (minimal for 1 story, detailed for multiple)
+- **story-{epic-slug}-N.md** - Story files (where N = 1 to {{story_count}})
+
+All stories reference tech-spec.md as primary context - comprehensive enough that developers can often skip story-context workflow.
+</action>
 
 </step>
 
@@ -1028,22 +916,13 @@ Tech-spec is high quality and ready for story generation!</output>
 
 **Deliverables Created:**
 
-<check if="project_level == 0">
 - ✅ **tech-spec.md** - Context-rich technical specification
   - Includes: brownfield analysis, framework details, existing patterns
-- ✅ **story-{slug}.md** - Implementation-ready user story
-  - References tech-spec as primary context
-</check>
-
-<check if="project_level == 1">
-- ✅ **tech-spec.md** - Context-rich technical specification
-- ✅ **epics.md** - Epic and story organization
-- ✅ **story-{epic-slug}-1.md** - First story
-- ✅ **story-{epic-slug}-2.md** - Second story
-{{#if story_3}}
-- ✅ **story-{epic-slug}-3.md** - Third story
-{{/if}}
-</check>
+- ✅ **epics.md** - Epic structure{{#if story_count == 1}} (minimal for single story){{else}} with {{story_count}} stories{{/if}}
+- ✅ **story-{epic-slug}-1.md** - First story{{#if story_count > 1}}
+- ✅ **story-{epic-slug}-2.md** - Second story{{/if}}{{#if story_count > 2}}
+- ✅ **story-{epic-slug}-3.md** - Third story{{/if}}{{#if story_count > 3}}
+- ✅ **Additional stories** through story-{epic-slug}-{{story_count}}.md{{/if}}
 
 **What Makes This Tech-Spec Special:**
 
@@ -1057,55 +936,41 @@ The tech-spec is comprehensive enough to serve as the primary context document:
 
 **Next Steps:**
 
-<check if="project_level == 0">
-**For Single Story (Level 0):**
+**🎯 Recommended Path - Direct to Development:**
 
-**Option A - With Story Context (for complex changes):**
+Since the tech-spec is CONTEXT-RICH, you can often skip story-context generation!
 
-1. Ask SM agent to run `create-story-context` for the story
-   - This generates additional XML context if needed
-2. Then ask DEV agent to run `dev-story` to implement
+{{#if story_count == 1}}
+**For Your Single Story:**
 
-**Option B - Direct to Dev (most Level 0):**
-
-1. Ask DEV agent to run `dev-story` directly
+1. Ask DEV agent to run `dev-story`
+   - Select story-{epic-slug}-1.md
    - Tech-spec provides all the context needed!
-   - Story is ready to implement
 
-💡 **Tip:** Most Level 0 changes don't need separate story context since tech-spec is comprehensive!
-</check>
+💡 **Optional:** Only run `story-context` (SM agent) if this is unusually complex
+{{else}}
+**For Your {{story_count}} Stories - Iterative Approach:**
 
-<check if="project_level == 1">
-**For Multiple Stories (Level 1):**
+1. **Start with Story 1:**
+   - Ask DEV agent to run `dev-story`
+   - Select story-{epic-slug}-1.md
+   - Tech-spec provides context
 
-**Recommended: Story-by-Story Approach**
+2. **After Story 1 Complete:**
+   - Repeat for story-{epic-slug}-2.md
+   - Continue through story {{story_count}}
 
-For the **first story** ({{first_story_name}}):
+💡 **Alternative:** Use `sprint-planning` (SM agent) to organize all stories as a coordinated sprint
 
-**Option A - With Story Context (recommended for first story):**
-
-1. Ask SM agent to run `create-story-context` for story 1
-   - Generates focused context for this specific story
-2. Then ask DEV agent to run `dev-story` to implement story 1
-
-**Option B - Direct to Dev:**
-
-1. Ask DEV agent to run `dev-story` for story 1
-   - Tech-spec has most context needed
-
-After completing story 1, repeat for stories 2 and 3.
-
-**Alternative: Sprint Planning Approach**
-
-- If managing multiple stories as a sprint, ask SM agent to run `sprint-planning`
-- This organizes all stories for coordinated implementation
-  </check>
+💡 **Optional:** Run `story-context` (SM agent) for complex stories needing additional context
+{{/if}}
 
 **Your Tech-Spec:**
 
 - 📄 Saved to: `{output_folder}/tech-spec.md`
+- Epic & Stories: `{output_folder}/epics.md` + `{sprint_artifacts}/`
 - Contains: All context, decisions, patterns, and implementation guidance
-- Ready for: Direct development or story context generation
+- Ready for: Direct development!
 
 The tech-spec is your single source of truth! 🚀
 </output>

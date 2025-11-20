@@ -2,8 +2,9 @@ const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
-const { WorkflowCommandGenerator } = require('./workflow-command-generator');
-const { TaskToolCommandGenerator } = require('./task-tool-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const {
   loadModuleInjectionConfig,
   shouldApplyInjection,
@@ -82,6 +83,20 @@ class ClaudeCodeSetup extends BaseIdeSetup {
   }
 
   /**
+   * Cleanup old BMAD installation before reinstalling
+   * @param {string} projectDir - Project directory
+   */
+  async cleanup(projectDir) {
+    const fs = require('fs-extra');
+    const bmadCommandsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad');
+
+    if (await fs.pathExists(bmadCommandsDir)) {
+      await fs.remove(bmadCommandsDir);
+      console.log(chalk.dim(`  Removed old BMAD commands from ${this.name}`));
+    }
+  }
+
+  /**
    * Setup Claude Code IDE configuration
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
@@ -93,6 +108,9 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
+    // Clean up old BMAD installation first
+    await this.cleanup(projectDir);
+
     // Create .claude/commands directory structure
     const claudeDir = path.join(projectDir, this.configDir);
     const commandsDir = path.join(claudeDir, this.commandsDir);
@@ -100,33 +118,24 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
     await this.ensureDir(bmadCommandsDir);
 
-    // Get agents from INSTALLED bmad/ directory
-    // Base installer has already built .md files from .agent.yaml sources
-    const agents = await getAgentsFromBmad(bmadDir, options.selectedModules || []);
+    // Generate agent launchers using AgentCommandGenerator
+    // This creates small launcher files that reference the actual agents in .bmad/
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts, counts: agentCounts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Create directories for each module (including standalone)
+    // Create directories for each module
     const modules = new Set();
-    for (const item of agents) modules.add(item.module);
+    for (const artifact of agentArtifacts) {
+      modules.add(artifact.module);
+    }
 
     for (const module of modules) {
       await this.ensureDir(path.join(bmadCommandsDir, module));
       await this.ensureDir(path.join(bmadCommandsDir, module, 'agents'));
     }
 
-    // Copy agents from bmad/ to .claude/commands/
-    let agentCount = 0;
-    for (const agent of agents) {
-      const sourcePath = agent.path;
-      const targetPath = path.join(bmadCommandsDir, agent.module, 'agents', `${agent.name}.md`);
-
-      const content = await this.readAndProcess(sourcePath, {
-        module: agent.module,
-        name: agent.name,
-      });
-
-      await this.writeFile(targetPath, content);
-      agentCount++;
-    }
+    // Write agent launcher files
+    const agentCount = await agentGen.writeAgentLaunchers(bmadCommandsDir, agentArtifacts);
 
     // Process Claude Code specific injections for installed modules
     // Use pre-collected configuration if available, or skip if already configured
@@ -144,8 +153,21 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     // await this.createClaudeConfig(projectDir, modules);
 
     // Generate workflow commands from manifest (if it exists)
-    const workflowGen = new WorkflowCommandGenerator();
-    const workflowResult = await workflowGen.generateWorkflowCommands(projectDir, bmadDir);
+    const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
+
+    // Write only workflow-command artifacts, skip workflow-launcher READMEs
+    let workflowCommandCount = 0;
+    for (const artifact of workflowArtifacts) {
+      if (artifact.type === 'workflow-command') {
+        const moduleWorkflowsDir = path.join(bmadCommandsDir, artifact.module, 'workflows');
+        await this.ensureDir(moduleWorkflowsDir);
+        const commandPath = path.join(moduleWorkflowsDir, path.basename(artifact.relativePath));
+        await this.writeFile(commandPath, artifact.content);
+        workflowCommandCount++;
+      }
+      // Skip workflow-launcher READMEs as they would be treated as slash commands
+    }
 
     // Generate task and tool commands from manifests (if they exist)
     const taskToolGen = new TaskToolCommandGenerator();
@@ -153,8 +175,8 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents installed`));
-    if (workflowResult.generated > 0) {
-      console.log(chalk.dim(`  - ${workflowResult.generated} workflow commands generated`));
+    if (workflowCommandCount > 0) {
+      console.log(chalk.dim(`  - ${workflowCommandCount} workflow commands generated`));
     }
     if (taskToolResult.generated > 0) {
       console.log(
@@ -443,6 +465,49 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     if (copiedCount > 0) {
       console.log(chalk.dim(`  Total subagents installed: ${copiedCount}`));
     }
+  }
+
+  /**
+   * Install a custom agent launcher for Claude Code
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created command
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const customAgentsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad', 'custom', 'agents');
+
+    if (!(await this.exists(path.join(projectDir, this.configDir)))) {
+      return null; // IDE not configured for this project
+    }
+
+    await this.ensureDir(customAgentsDir);
+
+    const launcherContent = `---
+name: '${agentName}'
+description: '${agentName} agent'
+---
+
+You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
+
+<agent-activation CRITICAL="TRUE">
+1. LOAD the FULL agent file from @${agentPath}
+2. READ its entire contents - this contains the complete agent persona, menu, and instructions
+3. FOLLOW every step in the <activation> section precisely
+4. DISPLAY the welcome/greeting as instructed
+5. PRESENT the numbered menu
+6. WAIT for user input before proceeding
+</agent-activation>
+`;
+
+    const launcherPath = path.join(customAgentsDir, `${agentName}.md`);
+    await this.writeFile(launcherPath, launcherContent);
+
+    return {
+      path: launcherPath,
+      command: `/bmad:custom:agents:${agentName}`,
+    };
   }
 }
 

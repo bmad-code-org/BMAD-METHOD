@@ -1,68 +1,16 @@
 const path = require('node:path');
-const os = require('node:os');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
-const inquirer = require('inquirer');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Auggie CLI setup handler
- * Allows flexible installation of agents to multiple locations
+ * Installs to project directory (.augment/commands)
  */
 class AuggieSetup extends BaseIdeSetup {
   constructor() {
     super('auggie', 'Auggie CLI');
-    this.defaultLocations = [
-      { name: 'Project Directory (.augment/commands)', value: '.augment/commands', checked: true },
-      { name: 'User Home (~/.augment/commands)', value: path.join(os.homedir(), '.augment', 'commands') },
-      { name: 'Custom Location', value: 'custom' },
-    ];
     this.detectionPaths = ['.augment'];
-  }
-
-  /**
-   * Collect configuration choices before installation
-   * @param {Object} options - Configuration options
-   * @returns {Object} Collected configuration
-   */
-  async collectConfiguration(options = {}) {
-    const response = await inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'locations',
-        message: 'Select Auggie CLI installation locations:',
-        choices: this.defaultLocations,
-        validate: (answers) => {
-          if (answers.length === 0) {
-            return 'Please select at least one location';
-          }
-          return true;
-        },
-      },
-    ]);
-
-    const locations = [];
-    for (const loc of response.locations) {
-      if (loc === 'custom') {
-        const custom = await inquirer.prompt([
-          {
-            type: 'input',
-            name: 'path',
-            message: 'Enter custom path for Auggie commands:',
-            validate: (input) => {
-              if (!input.trim()) {
-                return 'Path cannot be empty';
-              }
-              return true;
-            },
-          },
-        ]);
-        locations.push(custom.path);
-      } else {
-        locations.push(loc);
-      }
-    }
-
-    return { auggieLocations: locations };
   }
 
   /**
@@ -74,172 +22,82 @@ class AuggieSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Use pre-collected configuration if available
-    const config = options.preCollectedConfig || {};
-    const locations = await this.getInstallLocations(projectDir, { ...options, auggieLocations: config.auggieLocations });
+    // Always use project directory
+    const location = path.join(projectDir, '.augment', 'commands');
 
-    if (locations.length === 0) {
-      console.log(chalk.yellow('No locations selected. Skipping Auggie CLI setup.'));
-      return { success: false, reason: 'no-locations' };
-    }
+    // Clean up old BMAD installation first
+    await this.cleanup(projectDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only)
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Get tasks, tools, and workflows (standalone only)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
 
-    let totalInstalled = 0;
+    const bmadCommandsDir = path.join(location, 'bmad');
+    const agentsDir = path.join(bmadCommandsDir, 'agents');
+    const tasksDir = path.join(bmadCommandsDir, 'tasks');
+    const toolsDir = path.join(bmadCommandsDir, 'tools');
+    const workflowsDir = path.join(bmadCommandsDir, 'workflows');
 
-    // Install to each selected location
-    for (const location of locations) {
-      console.log(chalk.dim(`\n  Installing to: ${location}`));
+    await this.ensureDir(agentsDir);
+    await this.ensureDir(tasksDir);
+    await this.ensureDir(toolsDir);
+    await this.ensureDir(workflowsDir);
 
-      const bmadCommandsDir = path.join(location, 'bmad');
-      const agentsDir = path.join(bmadCommandsDir, 'agents');
-      const tasksDir = path.join(bmadCommandsDir, 'tasks');
-      const toolsDir = path.join(bmadCommandsDir, 'tools');
-      const workflowsDir = path.join(bmadCommandsDir, 'workflows');
-
-      await this.ensureDir(agentsDir);
-      await this.ensureDir(tasksDir);
-      await this.ensureDir(toolsDir);
-      await this.ensureDir(workflowsDir);
-
-      // Install agents
-      for (const agent of agents) {
-        const content = await this.readFile(agent.path);
-        const commandContent = this.createAgentCommand(agent, content);
-
-        const targetPath = path.join(agentsDir, `${agent.module}-${agent.name}.md`);
-        await this.writeFile(targetPath, commandContent);
-        totalInstalled++;
-      }
-
-      // Install tasks
-      for (const task of tasks) {
-        const content = await this.readFile(task.path);
-        const commandContent = this.createTaskCommand(task, content);
-
-        const targetPath = path.join(tasksDir, `${task.module}-${task.name}.md`);
-        await this.writeFile(targetPath, commandContent);
-        totalInstalled++;
-      }
-
-      // Install tools
-      for (const tool of tools) {
-        const content = await this.readFile(tool.path);
-        const commandContent = this.createToolCommand(tool, content);
-
-        const targetPath = path.join(toolsDir, `${tool.module}-${tool.name}.md`);
-        await this.writeFile(targetPath, commandContent);
-        totalInstalled++;
-      }
-
-      // Install workflows
-      for (const workflow of workflows) {
-        const content = await this.readFile(workflow.path);
-        const commandContent = this.createWorkflowCommand(workflow, content);
-
-        const targetPath = path.join(workflowsDir, `${workflow.module}-${workflow.name}.md`);
-        await this.writeFile(targetPath, commandContent);
-        totalInstalled++;
-      }
-
-      console.log(
-        chalk.green(`  ✓ Installed ${agents.length} agents, ${tasks.length} tasks, ${tools.length} tools, ${workflows.length} workflows`),
-      );
+    // Install agent launchers
+    for (const artifact of agentArtifacts) {
+      const targetPath = path.join(agentsDir, `${artifact.module}-${artifact.name}.md`);
+      await this.writeFile(targetPath, artifact.content);
     }
 
-    console.log(chalk.green(`\n✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${totalInstalled} total commands installed`));
-    console.log(chalk.dim(`  - ${locations.length} location(s) configured`));
+    // Install tasks
+    for (const task of tasks) {
+      const content = await this.readFile(task.path);
+      const commandContent = this.createTaskCommand(task, content);
+
+      const targetPath = path.join(tasksDir, `${task.module}-${task.name}.md`);
+      await this.writeFile(targetPath, commandContent);
+    }
+
+    // Install tools
+    for (const tool of tools) {
+      const content = await this.readFile(tool.path);
+      const commandContent = this.createToolCommand(tool, content);
+
+      const targetPath = path.join(toolsDir, `${tool.module}-${tool.name}.md`);
+      await this.writeFile(targetPath, commandContent);
+    }
+
+    // Install workflows
+    for (const workflow of workflows) {
+      const content = await this.readFile(workflow.path);
+      const commandContent = this.createWorkflowCommand(workflow, content);
+
+      const targetPath = path.join(workflowsDir, `${workflow.module}-${workflow.name}.md`);
+      await this.writeFile(targetPath, commandContent);
+    }
+
+    const totalInstalled = agentArtifacts.length + tasks.length + tools.length + workflows.length;
+
+    console.log(chalk.green(`✓ ${this.name} configured:`));
+    console.log(chalk.dim(`  - ${agentArtifacts.length} agents installed`));
+    console.log(chalk.dim(`  - ${tasks.length} tasks installed`));
+    console.log(chalk.dim(`  - ${tools.length} tools installed`));
+    console.log(chalk.dim(`  - ${workflows.length} workflows installed`));
+    console.log(chalk.dim(`  - Location: ${path.relative(projectDir, location)}`));
+    console.log(chalk.yellow(`\n  💡 Tip: Add 'model: gpt-4o' to command frontmatter to specify AI model`));
 
     return {
       success: true,
-      commands: totalInstalled,
-      locations: locations.length,
+      agents: agentArtifacts.length,
+      tasks: tasks.length,
+      tools: tools.length,
+      workflows: workflows.length,
     };
-  }
-
-  /**
-   * Get installation locations from user
-   */
-  async getInstallLocations(projectDir, options) {
-    if (options.auggieLocations) {
-      // Process the pre-collected locations to resolve relative paths
-      const processedLocations = [];
-      for (const loc of options.auggieLocations) {
-        if (loc === '.augment/commands') {
-          // Relative to project directory
-          processedLocations.push(path.join(projectDir, loc));
-        } else {
-          processedLocations.push(loc);
-        }
-      }
-      return processedLocations;
-    }
-
-    const response = await inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'locations',
-        message: 'Select Auggie CLI installation locations:',
-        choices: this.defaultLocations,
-        validate: (answers) => {
-          if (answers.length === 0) {
-            return 'Please select at least one location';
-          }
-          return true;
-        },
-      },
-    ]);
-
-    const locations = [];
-    for (const loc of response.locations) {
-      if (loc === 'custom') {
-        const custom = await inquirer.prompt([
-          {
-            type: 'input',
-            name: 'path',
-            message: 'Enter custom path for Auggie commands:',
-            validate: (input) => {
-              if (!input.trim()) {
-                return 'Path cannot be empty';
-              }
-              return true;
-            },
-          },
-        ]);
-        locations.push(custom.path);
-      } else if (loc.startsWith('.augment')) {
-        // Relative to project directory
-        locations.push(path.join(projectDir, loc));
-      } else {
-        locations.push(loc);
-      }
-    }
-
-    return locations;
-  }
-
-  /**
-   * Create agent command content
-   */
-  createAgentCommand(agent, content) {
-    const titleMatch = content.match(/title="([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
-
-    return `# ${title} Agent
-
-## Activation
-Type \`@${agent.name}\` to activate this agent.
-
-${content}
-
-## Module
-BMAD ${agent.module.toUpperCase()} module
-`;
   }
 
   /**
@@ -249,10 +107,11 @@ BMAD ${agent.module.toUpperCase()} module
     const nameMatch = content.match(/name="([^"]+)"/);
     const taskName = nameMatch ? nameMatch[1] : this.formatTitle(task.name);
 
-    return `# ${taskName} Task
+    return `---
+description: "Execute the ${taskName} task"
+---
 
-## Activation
-Type \`@task-${task.name}\` to execute this task.
+# ${taskName} Task
 
 ${content}
 
@@ -268,10 +127,11 @@ BMAD ${task.module.toUpperCase()} module
     const nameMatch = content.match(/name="([^"]+)"/);
     const toolName = nameMatch ? nameMatch[1] : this.formatTitle(tool.name);
 
-    return `# ${toolName} Tool
+    return `---
+description: "Use the ${toolName} tool"
+---
 
-## Activation
-Type \`@tool-${tool.name}\` to execute this tool.
+# ${toolName} Tool
 
 ${content}
 
@@ -284,13 +144,13 @@ BMAD ${tool.module.toUpperCase()} module
    * Create workflow command content
    */
   createWorkflowCommand(workflow, content) {
-    return `# ${workflow.name} Workflow
+    const description = workflow.description || `Execute the ${workflow.name} workflow`;
 
-## Description
-${workflow.description || 'No description provided'}
+    return `---
+description: "${description}"
+---
 
-## Activation
-Type \`@workflow-${workflow.name}\` to execute this workflow.
+# ${workflow.name} Workflow
 
 ${content}
 
@@ -305,31 +165,14 @@ BMAD ${workflow.module.toUpperCase()} module
   async cleanup(projectDir) {
     const fs = require('fs-extra');
 
-    // Check common locations
-    const locations = [path.join(os.homedir(), '.augment', 'commands'), path.join(projectDir, '.augment', 'commands')];
+    // Only clean up project directory
+    const location = path.join(projectDir, '.augment', 'commands');
+    const bmadDir = path.join(location, 'bmad');
 
-    for (const location of locations) {
-      const agentsDir = path.join(location, 'agents');
-      const tasksDir = path.join(location, 'tasks');
-      const toolsDir = path.join(location, 'tools');
-      const workflowsDir = path.join(location, 'workflows');
-
-      const dirs = [agentsDir, tasksDir, toolsDir, workflowsDir];
-
-      for (const dir of dirs) {
-        if (await fs.pathExists(dir)) {
-          // Remove only BMAD files (those with module prefix)
-          const files = await fs.readdir(dir);
-          for (const file of files) {
-            if (file.includes('-') && file.endsWith('.md')) {
-              await fs.remove(path.join(dir, file));
-            }
-          }
-        }
-      }
+    if (await fs.pathExists(bmadDir)) {
+      await fs.remove(bmadDir);
+      console.log(chalk.dim(`  Removed old BMAD commands`));
     }
-
-    console.log(chalk.dim('Cleaned up Auggie CLI configurations'));
   }
 }
 

@@ -16,6 +16,10 @@ Complete guides for the BMad Method Module (BMM) - AI-powered agile development 
 
 **Quick Path:** Install → workflow-init → Follow agent guidance
 
+### 📊 Visual Overview
+
+**[Complete Workflow Diagram](./images/workflow-method-greenfield.svg)** - Visual flowchart showing all phases, agents (color-coded), and decision points for the BMad Method standard greenfield track.
+
 ---
 
 ## 📖 Core Concepts
@@ -117,7 +121,8 @@ Comprehensive documentation for all BMM workflows organized by phase:
   - Which planning workflow to use
 
 - **[Phase 3: Solutioning Workflows](./workflows-solutioning.md)** - Architecture and validation (638 lines)
-  - architecture, solutioning-gate-check
+  - architecture, create-epics-and-stories, implementation-readiness
+  - V6: Epics created AFTER architecture for better quality
   - Required for BMad Method and Enterprise Method tracks
   - Preventing agent conflicts
 

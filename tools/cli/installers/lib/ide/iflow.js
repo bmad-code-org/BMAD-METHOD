@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * iFlow CLI setup handler
@@ -31,20 +32,22 @@ class IFlowSetup extends BaseIdeSetup {
     await this.ensureDir(agentsDir);
     await this.ensureDir(tasksDir);
 
-    // Get agents and tasks
-    const agents = await this.getAgents(bmadDir);
-    const tasks = await this.getTasks(bmadDir);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
     // Setup agents as commands
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readFile(agent.path);
-      const commandContent = this.createAgentCommand(agent, content);
+    for (const artifact of agentArtifacts) {
+      const commandContent = await this.createAgentCommand(artifact);
 
-      const targetPath = path.join(agentsDir, `${agent.module}-${agent.name}.md`);
+      const targetPath = path.join(agentsDir, `${artifact.module}-${artifact.name}.md`);
       await this.writeFile(targetPath, commandContent);
       agentCount++;
     }
+
+    // Get tasks
+    const tasks = await this.getTasks(bmadDir);
 
     // Setup tasks as commands
     let taskCount = 0;
@@ -72,29 +75,9 @@ class IFlowSetup extends BaseIdeSetup {
   /**
    * Create agent command content
    */
-  createAgentCommand(agent, content) {
-    // Extract metadata
-    const titleMatch = content.match(/title="([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
-
-    let commandContent = `# /${agent.name} Command
-
-When this command is used, adopt the following agent persona:
-
-## ${title} Agent
-
-${content}
-
-## Usage
-
-This command activates the ${title} agent from the BMAD ${agent.module.toUpperCase()} module.
-
-## Module
-
-Part of the BMAD ${agent.module.toUpperCase()} module.
-`;
-
-    return commandContent;
+  async createAgentCommand(artifact) {
+    // The launcher content is already complete - just return it as-is
+    return artifact.content;
   }
 
   /**

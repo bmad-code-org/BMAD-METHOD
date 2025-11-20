@@ -315,7 +315,7 @@ If workflow fails and needs to be rolled back:
 
 **Checklist Complete**: Sign off when all items checked and validated.
 
-**Completed by:** **\*\***\_\_\_**\*\***
-**Date:** **\*\***\_\_\_**\*\***
-**Framework:** **\*\***\_\_\_**\*\*** (Playwright / Cypress)
-**Notes:** \***\*\*\*\*\***\*\*\***\*\*\*\*\***\_\_\_\***\*\*\*\*\***\*\*\***\*\*\*\*\***
+**Completed by:** {name}
+**Date:** {date}
+**Framework:** { Playwright / Cypress or something else}
+**Notes:** {notes}

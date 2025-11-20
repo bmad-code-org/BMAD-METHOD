@@ -4,55 +4,59 @@ description: "Assemble a dynamic Story Context XML by pulling latest documentati
 author: "BMad"
 
 # Critical variables
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 document_output_language: "{config_source}:document_output_language"
-story_path: "{config_source}:dev_story_location"
+story_path: "{config_source}:sprint_artifacts"
 date: system-generated
+sprint_artifacts: "{config_source}:sprint_artifacts"
+sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/4-implementation/story-context"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/story-context"
 template: "{installed_path}/context-template.xml"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
-
-# Variables and inputs
-variables:
-  story_path: "" # Optional: Explicit story path. If not provided, finds first story with status "drafted"
-  story_dir: "{config_source}:dev_story_location"
 
 # Smart input file references - handles both whole docs and sharded docs
 # Priority: Whole document first, then sharded version
 # Strategy: SELECTIVE LOAD - only load the specific epic needed for this story
 input_file_patterns:
   prd:
+    description: "Product requirements (optional)"
     whole: "{output_folder}/*prd*.md"
-    sharded: "{output_folder}/*prd*/index.md"
-
+    sharded: "{output_folder}/*prd*/*.md"
+    load_strategy: "FULL_LOAD"
   tech_spec:
+    description: "Technical specification (Quick Flow track)"
     whole: "{output_folder}/tech-spec.md"
-
+    load_strategy: "FULL_LOAD"
   architecture:
+    description: "System architecture and decisions"
     whole: "{output_folder}/*architecture*.md"
-    sharded: "{output_folder}/*architecture*/index.md"
-
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
   ux_design:
+    description: "UX design specification (if UI)"
     whole: "{output_folder}/*ux*.md"
-    sharded: "{output_folder}/*ux*/index.md"
-
+    sharded: "{output_folder}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
   epics:
+    description: "Epic containing this story"
     whole: "{output_folder}/*epic*.md"
     sharded_index: "{output_folder}/*epic*/index.md"
     sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
-
+    load_strategy: "SELECTIVE_LOAD"
   document_project:
-    sharded: "{output_folder}/docs/index.md"
+    description: "Brownfield project documentation (optional)"
+    sharded: "{output_folder}/index.md"
+    load_strategy: "INDEX_GUIDED"
 
 # Output configuration
 # Uses story_key from sprint-status.yaml (e.g., "1-2-user-authentication")
-default_output_file: "{story_dir}/{{story_key}}.context.xml"
+default_output_file: "{story_path}/{{story_key}}.context.xml"
 
 standalone: true
 

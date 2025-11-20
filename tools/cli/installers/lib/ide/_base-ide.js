@@ -18,6 +18,31 @@ class BaseIdeSetup {
     this.configFile = null; // Override in subclasses when detection is file-based
     this.detectionPaths = []; // Additional paths that indicate the IDE is configured
     this.xmlHandler = new XmlHandler();
+    this.bmadFolderName = 'bmad'; // Default, can be overridden
+  }
+
+  /**
+   * Set the bmad folder name for placeholder replacement
+   * @param {string} bmadFolderName - The bmad folder name
+   */
+  setBmadFolderName(bmadFolderName) {
+    this.bmadFolderName = bmadFolderName;
+  }
+
+  /**
+   * Get the agent command activation header from the central template
+   * @returns {string} The activation header text (without XML tags)
+   */
+  async getAgentCommandHeader() {
+    const headerPath = path.join(getSourcePath(), 'src', 'utility', 'models', 'agent-command-header.md');
+    try {
+      const content = await fs.readFile(headerPath, 'utf8');
+      // Strip the <critical> tags to get plain text
+      return content.replaceAll(/<critical>|<\/critical>/g, '').trim();
+    } catch {
+      // Fallback if file doesn't exist
+      return "You must fully embody this agent's persona and follow all activation instructions, steps and rules exactly as specified. NEVER break character until given an exit command.";
+    }
   }
 
   /**
@@ -46,6 +71,19 @@ class BaseIdeSetup {
         }
       }
     }
+  }
+
+  /**
+   * Install a custom agent launcher - subclasses should override
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created command, or null if not supported
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    // Default implementation - subclasses can override
+    return null;
   }
 
   /**
@@ -489,23 +527,52 @@ class BaseIdeSetup {
   }
 
   /**
-   * Write file with content
+   * Write file with content (replaces {bmad_folder} placeholder)
    * @param {string} filePath - File path
    * @param {string} content - File content
    */
   async writeFile(filePath, content) {
+    // Replace {bmad_folder} placeholder if present
+    if (typeof content === 'string' && content.includes('{bmad_folder}')) {
+      content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
+    }
     await this.ensureDir(path.dirname(filePath));
     await fs.writeFile(filePath, content, 'utf8');
   }
 
   /**
-   * Copy file from source to destination
+   * Copy file from source to destination (replaces {bmad_folder} placeholder in text files)
    * @param {string} source - Source file path
    * @param {string} dest - Destination file path
    */
   async copyFile(source, dest) {
+    // List of text file extensions that should have placeholder replacement
+    const textExtensions = ['.md', '.yaml', '.yml', '.txt', '.json', '.js', '.ts', '.html', '.css', '.sh', '.bat', '.csv'];
+    const ext = path.extname(source).toLowerCase();
+
     await this.ensureDir(path.dirname(dest));
-    await fs.copy(source, dest, { overwrite: true });
+
+    // Check if this is a text file that might contain placeholders
+    if (textExtensions.includes(ext)) {
+      try {
+        // Read the file content
+        let content = await fs.readFile(source, 'utf8');
+
+        // Replace {bmad_folder} placeholder with actual folder name
+        if (content.includes('{bmad_folder}')) {
+          content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
+        }
+
+        // Write to dest with replaced content
+        await fs.writeFile(dest, content, 'utf8');
+      } catch {
+        // If reading as text fails, fall back to regular copy
+        await fs.copy(source, dest, { overwrite: true });
+      }
+    } else {
+      // Binary file or other file type - just copy directly
+      await fs.copy(source, dest, { overwrite: true });
+    }
   }
 
   /**
@@ -545,6 +612,18 @@ class BaseIdeSetup {
       .split('-')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
+  }
+
+  /**
+   * Flatten a relative path to a single filename for flat slash command naming
+   * Example: 'module/agents/name.md' -> 'bmad-module-agents-name.md'
+   * Used by IDEs that ignore directory structure for slash commands (e.g., Antigravity, Codex)
+   * @param {string} relativePath - Relative path to flatten
+   * @returns {string} Flattened filename with 'bmad-' prefix
+   */
+  flattenFilename(relativePath) {
+    const sanitized = relativePath.replaceAll(/[/\\]/g, '-');
+    return `bmad-${sanitized}`;
   }
 
   /**

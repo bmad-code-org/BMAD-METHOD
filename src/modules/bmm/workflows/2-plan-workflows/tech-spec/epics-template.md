@@ -72,9 +72,3 @@ So that {{value_benefit}}.
 ---
 
 <!-- End epic repeat -->
-
----
-
-## Tech-Spec Reference
-
-See [tech-spec.md](../tech-spec.md) for complete technical implementation details.

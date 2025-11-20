@@ -1,7 +1,7 @@
 # Develop Story - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
@@ -39,7 +39,7 @@
 1. Run `story-context` to generate context file and mark drafted stories as ready
 2. Run `story-ready` to quickly mark drafted stories as ready without generating context
 3. Run `create-story` if no incomplete stories are drafted yet
-4. Check {output-folder}/sprint-status.yaml to see current sprint status
+4. Check {output_folder}/sprint-status.yaml to see current sprint status
       </output>
       <action>HALT</action>
     </check>
@@ -70,6 +70,11 @@ Proceeding with story file only. For better context, consider running `story-con
     <action if="no incomplete tasks"><goto step="6">Completion sequence</goto></action>
     <action if="story file inaccessible">HALT: "Cannot develop story without access to story file"</action>
     <action if="incomplete task or subtask requirements ambiguous">ASK user to clarify or HALT</action>
+  </step>
+
+  <step n="0.5" goal="Discover and load project documents">
+    <invoke-protocol name="discover_inputs" />
+    <note>After discovery, these content variables are available: {architecture_content}, {tech_spec_content}, {ux_design_content}, {epics_content} (selective load), {document_project_content}</note>
   </step>
 
   <step n="1.5" goal="Detect review continuation and extract review context">
@@ -227,7 +232,7 @@ Story is marked Ready for Review in file, but sprint-status.yaml may be out of s
   </step>
 
   <step n="7" goal="Completion communication and user support">
-    <action>Optionally run the workflow validation task against the story using {project-root}/bmad/core/tasks/validate-workflow.xml</action>
+    <action>Optionally run the workflow validation task against the story using {project-root}/{bmad_folder}/core/tasks/validate-workflow.xml</action>
     <action>Prepare a concise summary in Dev Agent Record → Completion Notes</action>
 
     <action>Communicate to {user_name} that story implementation is complete and ready for review</action>

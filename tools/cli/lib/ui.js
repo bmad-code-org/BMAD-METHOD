@@ -17,14 +17,26 @@ class UI {
    */
   async promptInstall() {
     CLIUtils.displayLogo();
-    CLIUtils.displaySection('BMAD™ Setup', 'Build More, Architect Dreams');
+    const version = CLIUtils.getVersion();
+    CLIUtils.displaySection('BMAD™ Setup', `Build More, Architect Dreams v${version}`);
 
     const confirmedDirectory = await this.getConfirmedDirectory();
+
+    // Preflight: Check for legacy BMAD v4 footprints immediately after getting directory
+    const { Detector } = require('../installers/lib/core/detector');
+    const { Installer } = require('../installers/lib/core/installer');
+    const detector = new Detector();
+    const installer = new Installer();
+    const legacyV4 = await detector.detectLegacyV4(confirmedDirectory);
+    if (legacyV4.hasLegacyV4) {
+      await installer.handleLegacyV4Migration(confirmedDirectory, legacyV4);
+    }
 
     // Check if there's an existing BMAD installation
     const fs = require('fs-extra');
     const path = require('node:path');
-    const bmadDir = path.join(confirmedDirectory, 'bmad');
+    // Use findBmadDir to detect any custom folder names (V6+)
+    const bmadDir = await installer.findBmadDir(confirmedDirectory);
     const hasExistingInstall = await fs.pathExists(bmadDir);
 
     // Track action type (only set if there's an existing installation)
@@ -91,9 +103,7 @@ class UI {
     // This allows text-based prompts to complete before the checkbox prompt
     const toolSelection = await this.promptToolSelection(confirmedDirectory, selectedModules);
 
-    console.clear();
-    CLIUtils.displayLogo();
-    CLIUtils.displayModuleComplete('core', false); // false = don't clear the screen again
+    // No more screen clearing - keep output flowing
 
     return {
       actionType: actionType || 'update', // Preserve reinstall or update action
@@ -114,10 +124,12 @@ class UI {
    * @returns {Object} Tool configuration
    */
   async promptToolSelection(projectDir, selectedModules) {
-    // Check for existing configured IDEs
+    // Check for existing configured IDEs - use findBmadDir to detect custom folder names
     const { Detector } = require('../installers/lib/core/detector');
+    const { Installer } = require('../installers/lib/core/installer');
     const detector = new Detector();
-    const bmadDir = path.join(projectDir || process.cwd(), 'bmad');
+    const installer = new Installer();
+    const bmadDir = await installer.findBmadDir(projectDir || process.cwd());
     const existingInstall = await detector.detect(bmadDir);
     const configuredIdes = existingInstall.ides || [];
 
@@ -322,8 +334,10 @@ class UI {
    */
   async getExistingInstallation(directory) {
     const { Detector } = require('../installers/lib/core/detector');
+    const { Installer } = require('../installers/lib/core/installer');
     const detector = new Detector();
-    const bmadDir = path.join(directory, 'bmad');
+    const installer = new Installer();
+    const bmadDir = await installer.findBmadDir(directory);
     const existingInstall = await detector.detect(bmadDir);
     const installedModuleIds = new Set(existingInstall.modules.map((mod) => mod.id));
 
@@ -421,17 +435,20 @@ class UI {
       if (stats.isDirectory()) {
         const files = await fs.readdir(directory);
         if (files.length > 0) {
+          // Check for any bmad installation (any folder with _cfg/manifest.yaml)
+          const { Installer } = require('../installers/lib/core/installer');
+          const installer = new Installer();
+          const bmadDir = await installer.findBmadDir(directory);
+          const hasBmadInstall = (await fs.pathExists(bmadDir)) && (await fs.pathExists(path.join(bmadDir, '_cfg', 'manifest.yaml')));
+
           console.log(
             chalk.gray(`Directory exists and contains ${files.length} item(s)`) +
-              (files.includes('bmad') ? chalk.yellow(' including existing bmad installation') : ''),
+              (hasBmadInstall ? chalk.yellow(` including existing BMAD installation (${path.basename(bmadDir)})`) : ''),
           );
         } else {
           console.log(chalk.gray('Directory exists and is empty'));
         }
       }
-    } else {
-      const existingParent = await this.findExistingParent(directory);
-      console.log(chalk.gray(`Will create in: ${existingParent}`));
     }
   }
 
