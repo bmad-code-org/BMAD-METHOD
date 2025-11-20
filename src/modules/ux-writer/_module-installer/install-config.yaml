@@ -1,0 +1,151 @@
+# UX Writer Module Configuration
+
+code: ux-writer
+name: "UX Writer - Interface Copy & Microcopy Specialist"
+default_selected: false
+
+header: "UX Writer Module Configuration"
+subheader: "Create clear, user-centered interface copy using the Four Quality Standards framework"
+
+# Core values automatically inherited from installer:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+## install_user_docs
+
+# Module-specific configuration
+
+ux_content_folder:
+  prompt: "Where should UX writing work be saved? (analyses, improvements, voice charts)"
+  default: "{output_folder}/ux-writing"
+  result: "{project-root}/{value}"
+  validate:
+    pattern: "^(?!/|.*//|.*\\.\\.|\\.|.*\\.$)[a-zA-Z0-9_\\-/.]+$"
+    error: "Please enter a safe, relative folder path (no absolute paths, no '..', no leading/trailing dot, and only letters, numbers, dashes, underscores, slashes, and dots)."
+
+target_audience:
+  prompt: "Who is your primary target audience?"
+  default: "general"
+  single-select:
+    - value: "general"
+      label: "General Public - Consumer apps, websites"
+    - value: "professional"
+      label: "Professional - B2B tools, SaaS products"
+    - value: "technical"
+      label: "Technical - Developer tools, APIs"
+    - value: "specialized"
+      label: "Specialized - Healthcare, finance, legal"
+
+reading_level_target:
+  prompt: "Target reading level?"
+  default: "8th-grade"
+  single-select:
+    - value: "7th-grade"
+      label: "7th Grade - Maximum accessibility"
+    - value: "8th-grade"
+      label: "8th Grade - General audience (recommended)"
+    - value: "10th-grade"
+      label: "10th Grade - Professional audience"
+    - value: "12th-grade"
+      label: "12th Grade - Technical/specialized"
+
+quality_threshold:
+  prompt: "Minimum quality score threshold?"
+  default: "8"
+  single-select:
+    - value: "9"
+      label: "9/10 - Excellent (strict standards)"
+    - value: "8"
+      label: "8/10 - Very Good (recommended)"
+    - value: "7"
+      label: "7/10 - Good (more lenient)"
+
+voice_adaptation:
+  prompt: "How should tone adapt to user state?"
+  default: "automatic"
+  single-select:
+    - value: "automatic"
+      label: "Automatic - Adapt based on context (recommended)"
+    - value: "consistent"
+      label: "Consistent - Maintain same tone throughout"
+    - value: "manual"
+      label: "Manual - I'll specify tone for each piece"
+
+accessibility_focus:
+  prompt: "Prioritize accessibility compliance?"
+  default: "yes"
+  single-select:
+    - value: "yes"
+      label: "Yes - WCAG AA compliance (recommended)"
+    - value: "strict"
+      label: "Strict - WCAG AAA compliance"
+    - value: "standard"
+      label: "Standard - Basic accessibility"
+
+content_types:
+  prompt: "Which interface elements do you work with most? (Select all)"
+  multi-select:
+    - value: "buttons"
+      label: "Buttons and CTAs"
+    - value: "errors"
+      label: "Error messages"
+    - value: "forms"
+      label: "Form fields and labels"
+    - value: "empty-states"
+      label: "Empty states"
+    - value: "notifications"
+      label: "Notifications and alerts"
+    - value: "onboarding"
+      label: "Onboarding flows"
+    - value: "help-text"
+      label: "Help text and tooltips"
+
+# Static configuration values
+
+module_version:
+  result: "1.0.0"
+
+ux_data_path:
+  result: "{project-root}/{bmad_folder}/ux-writer/data"
+
+analyses_folder:
+  result: "{project-root}/{ux_content_folder}/analyses"
+
+improvements_folder:
+  result: "{project-root}/{ux_content_folder}/improvements"
+
+voice_charts_folder:
+  result: "{project-root}/{ux_content_folder}/voice-charts"
+
+audits_folder:
+  result: "{project-root}/{ux_content_folder}/audits"
+
+templates_path:
+  result: "{project-root}/{bmad_folder}/ux-writer/templates"
+
+# Quality scoring defaults
+purposeful_weight:
+  result: "1.0"
+
+concise_weight:
+  result: "1.0"
+
+conversational_weight:
+  result: "1.0"
+
+clear_weight:
+  result: "1.0"
+
+# Benchmark defaults based on target audience
+default_button_max_words:
+  result: "6"
+
+default_error_max_words:
+  result: "18"
+
+default_title_max_chars:
+  result: "40"
+
+active_voice_target:
+  result: "85"
