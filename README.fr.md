@@ -8,7 +8,7 @@
 
 ## Développement Agile Piloté par l'IA qui Évolue des Correctifs de Bugs aux Entreprises
 
-**Construisez Plus, Architecturez vos Rêves** (BMAD) avec **38+ agents IA spécialisés** et **76+ workflows guidés** qui s'adaptent à la complexité de votre projet—des correctifs de bugs rapides aux plateformes d'entreprise en passant par la création de contenu, les opérations marketing, le développement de carrière et la rédaction UX.
+**Construisez Plus, Architecturez vos Rêves** (BMAD) avec **31 agents IA spécialisés** et **50+ workflows guidés** qui s'adaptent à la complexité de votre projet—des correctifs de bugs rapides aux plateformes d'entreprise en passant par le développement de jeux, la création de contenu, les opérations marketing, le développement de carrière et la rédaction UX.
 
 > **🚀 v6 est une ÉNORME mise à jour par rapport à v4 !** Refonte architecturale complète, intelligence adaptative à l'échelle, workflows visuels et le puissant framework BMad Core. Utilisateurs v4 : cela change tout. [Voir les nouveautés →](#quoi-de-neuf-dans-v6)
 
@@ -22,7 +22,7 @@ Contrairement aux assistants de codage IA génériques, BMad Method fournit des 
 
 - **Intelligence Adaptative à l'Échelle** - Ajuste automatiquement la profondeur de planification des correctifs de bugs aux systèmes d'entreprise
 - **Cycle de Vie Complet du Développement** - Analyse → Planification → Architecture → Implémentation
-- **Expertise Spécialisée** - 38+ agents avec des rôles spécifiques (PM, Architecte, Développeur, Designer UX, Créateur de Contenu, Rédacteur UX, Coach Carrière, etc.)
+- **Expertise Spécialisée** - 31 agents avec des rôles spécifiques (PM, Architecte, Développeur, Designer UX, Designer de Jeux, Créateur de Contenu, Marketeur, Rédacteur UX, Coach Carrière, etc.)
 - **Méthodologies Éprouvées** - Basé sur les meilleures pratiques agiles avec amplification IA
 - **Système Avancé de Voix et de Style** - Contenu IA qui correspond authentiquement à votre style d'écriture unique
 - **Intégration IDE** - Fonctionne avec Claude Code, Cursor, Windsurf, VS Code
@@ -94,13 +94,54 @@ Chaque phase dispose de workflows et d'agents spécialisés travaillant ensemble
 
 ## 🤖 Rencontrez Votre Équipe
 
-**12 Agents Spécialisés** travaillant de concert :
+**31 Agents Spécialisés** organisés par domaine d'expertise :
 
-| Développement | Architecture   | Produit       | Leadership     |
-| ------------- | -------------- | ------------- | -------------- |
-| Développeur   | Architecte     | PM            | Scrum Master   |
-| Designer UX   | Architecte Test| Analyste      | BMad Master    |
-| Rédacteur Technique | Architecte Jeu | Designer Jeu | Développeur Jeu |
+### 🔧 Développement Logiciel (BMad Method - 8 agents)
+- **PM** - Chef de Produit
+- **Analyst** - Analyste Business
+- **Architect** - Architecte Système
+- **SM** - Scrum Master
+- **Developer** - Développeur Full-Stack
+- **Test Architect** - Architecte Test & QA
+- **Tech Writer** - Rédacteur Technique
+- **UX Designer** - Designer Expérience Utilisateur
+
+### 🎮 Développement de Jeux (BMGD - 4 agents)
+- **Game Designer** - Designer de Jeu & GDD
+- **Game Developer** - Développeur de Jeu (Unity/Unreal)
+- **Game Architect** - Architecte Technique Jeux
+- **Game Scrum Master** - Scrum Master Jeux
+
+### 💡 Intelligence Créative (CIS - 5 agents)
+- **Carson** - Coach Brainstorming
+- **Maya** - Coach Design Thinking
+- **Dr. Quinn** - Résolveur de Problèmes
+- **Victor** - Stratège Innovation
+- **Sophia** - Maître Conteur
+
+### 📝 Création de Contenu (8 agents)
+- **Casey** - Rédacteur de Contenu
+- **Alex** - Analyseur de Contenu & SEO
+- **Riley** - Agrégateur de Recherche
+- **Vicki** - Correspondance de Voix
+- **Lauren** - Repurposeur LinkedIn
+- **Nina** - Repurposeur Newsletter
+- **Charlie** - Repurposeur Conversationnel
+- **Sam** - Optimiseur SEO
+
+### 📊 Marketing Operations (4 agents)
+- **Sofia** - Stratège Marketing de Marque
+- **Marcus** - Spécialiste Marketing de Performance
+- **Elena** - Analyste de Données Marketing
+- **Maya** - Designer Marketing Créatif
+
+### 💼 Coach Carrière (3 agents)
+- **Michael** - Coach Carrière Stratégique
+- **Will** - Rédacteur de CV Professionnel
+- **Jennifer** - Coach Entretien d'Embauche
+
+### ✍️ Rédaction UX (1 agent)
+- **Alex** - Spécialiste Rédaction UX & Microcopy
 
 Chaque agent apporte une expertise approfondie et peut être personnalisé pour correspondre au style de votre équipe.
 
@@ -109,20 +150,29 @@ Chaque agent apporte une expertise approfondie et peut être personnalisé pour 
 ### Modules Principaux
 
 - **BMad Method (BMM)** - Framework complet de développement agile
-  - 12 agents spécialisés
-  - 34 workflows à travers 4 phases
-  - Planification adaptative à l'échelle
+  - 8 agents spécialisés (PM, Analyste, Architecte, SM, Développeur, Test Architect, Tech Writer, UX Designer)
+  - 40+ workflows à travers 4 phases (Analyse, Planification, Solution, Implémentation)
+  - Planification adaptative à l'échelle (Quick Flow, BMad Method, Enterprise)
   - [→ Hub de Documentation](./src/modules/bmm/docs/README.md)
 
 - **BMad Builder (BMB)** - Créez des agents et workflows personnalisés
-  - Créez n'importe quoi, des agents simples aux modules complexes
+  - 1 agent master builder orchestrant tous les workflows de création
+  - 9 workflows (créer/éditer agents, workflows, modules, audit, conversion)
   - Créez des solutions spécifiques à un domaine (juridique, médical, finance, éducation)
   - Partagez vos créations dans la marketplace communautaire à venir
   - [→ Guide du Builder](./src/modules/bmb/README.md)
 
+- **BMad Game Development (BMGD)** - Toolkit complet de développement de jeux
+  - 4 agents spécialisés (Game Designer, Game Developer, Game Architect, Game Scrum Master)
+  - Workflows pour pré-production, design (GDD, narrative), architecture technique
+  - Support Unity et Unreal Engine
+  - Intégration avec les workflows de production BMM
+  - [→ Documentation Game Dev](./src/modules/bmgd/README.md)
+
 - **Creative Intelligence Suite (CIS)** - Innovation & résolution de problèmes
-  - Brainstorming, design thinking, narration
-  - 5 workflows de facilitation créative
+  - 5 agents créatifs avec personas uniques
+  - 5 workflows de facilitation avec 150+ techniques créatives
+  - Brainstorming, design thinking, résolution de problèmes, innovation, storytelling
   - [→ Workflows Créatifs](./src/modules/cis/README.md)
 
 - **Content Creator** - Création de contenu avancée avec correspondance vocale
@@ -216,8 +266,10 @@ Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les directives complètes de dével
 - **Intelligence Adaptative à l'Échelle** - Ajustement automatique des correctifs de bugs à l'entreprise
 - **Workflows Visuels** - Beaux diagrammes SVG montrant la méthodologie complète
 - **Module BMad Builder** - Créez et partagez vos propres équipes d'agents IA
-- **76+ Workflows** - En hausse par rapport à 20 dans v4, couvrant chaque scénario de développement
-- **38+ Agents Spécialisés** - Améliorés avec des personnalités et une expertise personnalisables
+- **8 Modules Spécialisés** - BMM, BMB, BMGD, CIS, Content Creator, Marketing Ops, Career Coach, UX Writer
+- **50+ Workflows** - En hausse par rapport à 20 dans v4, couvrant chaque scénario de développement
+- **31 Agents Spécialisés** - Améliorés avec des personnalités et une expertise personnalisables
+- **Module Game Development** - BMGD pour la création de jeux avec Unity/Unreal
 - **Suite de Développement Professionnel** - Modules Career Coach et UX Writer pour la croissance de carrière et la conception d'interface
 - **Personnalisation Sûre pour les Mises à Jour** - Vos configurations persistent à travers toutes les mises à jour
 - **Bundles Web** - Utilisez les agents dans ChatGPT, Claude et Gemini

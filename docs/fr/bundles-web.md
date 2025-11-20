@@ -139,31 +139,63 @@ VALEURS CONFIG.YAML :
 
 Après avoir exécuté `npm run bundle`, vous aurez accès à :
 
-### Agents BMad Method (BMM)
+### Agents BMad Method (BMM) - 8 Agents
 
 - **analyst.xml** - Analyse commerciale et collecte d'exigences
 - **architect.xml** - Architecture système et conception technique
 - **dev.xml** - Développement full-stack et implémentation
-- **pm.xml** - Gestion de produit et planification
+- **pm.xml** - Chef de produit et planification
 - **sm.xml** - Scrum master et facilitation agile
 - **tea.xml** - Architecture de test et assurance qualité
 - **tech-writer.xml** - Documentation technique
 - **ux-designer.xml** - Conception d'expérience utilisateur
-- **game-designer.xml** - Conception de jeu et mécaniques
-- **game-dev.xml** - Développement de jeu
-- **game-architect.xml** - Architecture de jeu
 
-### Agent BMad Builder (BMB)
+### Agent BMad Builder (BMB) - 1 Agent
 
 - **bmad-builder.xml** - Créez des agents, workflows et modules personnalisés
 
-### Agents Creative Intelligence Suite (CIS)
+### Agents BMad Game Development (BMGD) - 4 Agents
 
-- **brainstorming-coach.xml** - Facilitation de brainstorming créatif
-- **design-thinking-coach.xml** - Résolution de problèmes centrée sur l'humain
-- **innovation-strategist.xml** - Innovation et stratégie
-- **creative-problem-solver.xml** - Résolution de problèmes révolutionnaire
-- **storyteller.xml** - Narration et storytelling
+- **game-designer.xml** - Conception de jeu et GDD (Game Design Document)
+- **game-dev.xml** - Développement de jeu (Unity, Unreal Engine)
+- **game-architect.xml** - Architecture technique de jeu
+- **game-scrum-master.xml** - Scrum master spécialisé jeux
+
+### Agents Creative Intelligence Suite (CIS) - 5 Agents
+
+- **brainstorming-coach.xml** - Facilitation de brainstorming créatif (Carson)
+- **design-thinking-coach.xml** - Résolution de problèmes centrée sur l'humain (Maya)
+- **innovation-strategist.xml** - Innovation et stratégie (Victor)
+- **creative-problem-solver.xml** - Résolution de problèmes révolutionnaire (Dr. Quinn)
+- **storyteller.xml** - Narration et storytelling (Sophia)
+
+### Agents Content Creator - 8 Agents
+
+- **content-writer.xml** - Rédaction de contenu principal (Casey)
+- **content-analyzer.xml** - Analyse de qualité et SEO (Alex)
+- **research-aggregator.xml** - Recherche et tendances (Riley)
+- **voice-matcher.xml** - Correspondance de voix et style (Vicki)
+- **linkedin-repurposer.xml** - Repurposing pour LinkedIn (Lauren)
+- **newsletter-repurposer.xml** - Repurposing pour newsletter (Nina)
+- **conversational-repurposer.xml** - Repurposing social media (Charlie)
+- **seo-optimizer.xml** - Optimisation SEO (Sam)
+
+### Agents Marketing Operations - 4 Agents
+
+- **brand-marketer.xml** - Stratège marketing de marque (Sofia)
+- **media-buyer.xml** - Spécialiste marketing de performance (Marcus)
+- **marketing-analyst.xml** - Analyste de données marketing (Elena)
+- **marketing-designer.xml** - Designer marketing créatif (Maya)
+
+### Agents Career Coach - 3 Agents
+
+- **career-coach.xml** - Coach carrière stratégique (Michael)
+- **resume-writer.xml** - Rédacteur de CV professionnel (Will)
+- **interview-coach.xml** - Coach entretien d'embauche (Jennifer)
+
+### Agent UX Writer - 1 Agent
+
+- **ux-writer.xml** - Spécialiste rédaction UX et microcopy (Alex)
 
 ### Bundles d'Équipe (Collaboration Multi-Agents)
 

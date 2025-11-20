@@ -77,6 +77,7 @@ L'installateur vous demandera quels modules installer :
 
 - **✅ BMad Method (BMM)** - Module de développement agile principal (recommandé)
 - **BMad Builder (BMB)** - Créez des agents et workflows personnalisés
+- **BMad Game Development (BMGD)** - Développement de jeux avec Unity/Unreal
 - **Creative Intelligence Suite (CIS)** - Workflows de brainstorming et innovation
 - **Content Creator** - Création de contenu avec correspondance vocale
 - **Marketing Ops** - Suite complète d'opérations marketing
@@ -98,6 +99,7 @@ docs/fr/
     │   ├── agents/
     │   └── workflows/
     ├── bmb/                  # BMad Builder (si installé)
+    ├── bmgd/                 # BMad Game Development (si installé)
     ├── cis/                  # Creative Intelligence (si installé)
     ├── content-creator/      # Content Creator (si installé)
     ├── marketing-ops/        # Marketing Ops (si installé)
