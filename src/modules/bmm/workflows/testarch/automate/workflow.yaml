@@ -39,15 +39,6 @@ required_tools:
   - search_repo # Find coverage gaps and patterns
   - glob # Find test files and source files
 
-# Recommended inputs (optional - depends on mode)
-recommended_inputs:
-  - story: "Story markdown with acceptance criteria (optional - BMad mode only)"
-  - tech_spec: "Technical specification (optional - BMad mode only)"
-  - test_design: "Test design document with risk/priority (optional - BMad mode only)"
-  - source_code: "Feature implementation to analyze (required for standalone mode)"
-  - existing_tests: "Current test suite for gap analysis (always helpful)"
-  - framework_config: "Test framework configuration (playwright.config.ts, cypress.config.ts)"
-
 tags:
   - qa
   - automation

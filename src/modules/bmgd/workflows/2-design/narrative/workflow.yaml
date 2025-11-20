@@ -20,12 +20,6 @@ template: "{installed_path}/narrative-template.md"
 # Output configuration
 default_output_file: "{output_folder}/narrative-design.md"
 
-# Recommended input documents
-recommended_inputs:
-  - game_brief: "{output_folder}/game-brief.md"
-  - gdd: "{output_folder}/GDD.md"
-  - product_brief: "{output_folder}/product-brief.md"
-
 standalone: true
 
 web_bundle:

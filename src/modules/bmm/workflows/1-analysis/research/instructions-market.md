@@ -17,6 +17,7 @@
 <critical>Clearly label: FACT (sourced data), ANALYSIS (your interpretation), PROJECTION (forecast/speculation)</critical>
 <critical>After each WebSearch, extract and store source URLs - include them in the report</critical>
 <critical>If a claim seems suspicious or too convenient, STOP and cross-verify with additional searches</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <!-- IDE-INJECT-POINT: market-research-subagents -->
 

@@ -35,14 +35,6 @@ required_tools:
   - list_files # Find related documentation
   - search_repo # Search for existing tests and patterns
 
-# Recommended inputs
-recommended_inputs:
-  - prd: "Product Requirements Document for context"
-  - epics: "Epic documentation (epics.md or specific epic)"
-  - story: "Story markdown with acceptance criteria"
-  - architecture: "Architecture documents (architecture.md, tech-spec)"
-  - existing_tests: "Current test coverage for gap analysis"
-
 tags:
   - qa
   - planning

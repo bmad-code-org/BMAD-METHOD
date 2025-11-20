@@ -11,6 +11,8 @@
 <critical>This workflow replaces architecture with a conversation-driven approach</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
 <critical>ELICITATION POINTS: After completing each major architectural decision area (identified by template-output tags for decision_record, project_structure, novel_pattern_designs, implementation_patterns, and architecture_document), invoke advanced elicitation to refine decisions before proceeding</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <step n="0" goal="Validate workflow readiness" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -55,7 +57,7 @@
 
 <action>Set standalone_mode = false</action>
 
-<action>Check for existing PRD and epics files using fuzzy matching</action>
+<action>Check for existing PRD file using fuzzy matching</action>
 
 <action>Fuzzy match PRD file: {prd_file}</action>
 <check if="PRD_not_found">
@@ -82,7 +84,10 @@ Please talk to the PM Agent to run the Create PRD workflow first to define your 
 
 <step n="1" goal="Load and understand project context">
   <action>Review loaded PRD: {prd_content} (auto-loaded in Step 0.5 - handles both whole and sharded documents)</action>
-  <action>Review loaded epics: {epics_content}</action>
+
+  <check if="{epics_content} is not empty">
+    <action>Review loaded epics: {epics_content}</action>
+  </check>
 
 <action>Check for UX specification:
 <check if="{ux_design_content} is not empty">
@@ -91,15 +96,43 @@ Please talk to the PM Agent to run the Create PRD workflow first to define your 
 </check>
 </action>
 
-<action>Extract and understand from {prd_content}: - Functional Requirements (what it must do) - Non-Functional Requirements (performance, security, compliance, etc.) - Epic structure and user stories - Acceptance criteria - Any technical constraints mentioned
-</action>
+<action>Extract and understand from {prd_content}:
 
-<action>Count and assess project scale: - Number of epics: {{epic_count}} - Number of stories: {{story_count}} - Complexity indicators (real-time, multi-tenant, regulated, etc.) - UX complexity level (if UX spec exists) - Novel features
-</action>
+- Functional Requirements (FRs) - the complete list of capabilities
+- Non-Functional Requirements (performance, security, compliance, etc.)
+- Any technical constraints mentioned
+  </action>
+
+<check if="{epics_content} is not empty">
+  <action>Extract from {epics_content}:
+  - Epic structure and user stories
+  - Acceptance criteria
+  </action>
+</check>
+
+<action>Count and assess project scale:
+<check if="{epics_content} is not empty">
+
+- Number of epics: {{epic_count}}
+- Number of stories: {{story_count}}
+  </check>
+  <check if="{epics_content} is empty">
+- Number of functional requirements: {{fr_count}} (from PRD)
+- FR categories: {{fr_category_list}} (capability groups from PRD)
+  </check>
+- Complexity indicators (real-time, multi-tenant, regulated, etc.)
+- UX complexity level (if UX spec exists)
+- Novel features
+  </action>
 
 <action>Reflect understanding back to {user_name}:
 "I'm reviewing your project documentation for {{project_name}}.
+<check if="{epics_content} is not empty">
 I see {{epic_count}} epics with {{story_count}} total stories.
+</check>
+<check if="{epics_content} is empty">
+I found {{fr_count}} functional requirements organized into {{fr_category_list}}.
+</check>
 {{if_ux_spec}}I also found your UX specification which defines the user experience requirements.{{/if_ux_spec}}
 
      Key aspects I notice:
@@ -349,7 +382,12 @@ Let's work through the remaining {{remaining_count}} decisions."
 Category: {{category}}
 Decision: {{user_choice}}
 Version: {{verified_version_if_applicable}}
+<check if="{epics_content} is not empty">
 Affects Epics: {{list_of_affected_epics}}
+</check>
+<check if="{epics_content} is empty">
+Affects FR Categories: {{list_of_affected_fr_categories}}
+</check>
 Rationale: {{user_reasoning_or_default}}
 Provided by Starter: {{yes_if_from_starter}}
 </action>
@@ -380,9 +418,16 @@ Provided by Starter: {{yes_if_from_starter}}
 <action>Create comprehensive source tree: - Root configuration files - Source code organization - Test file locations - Build/dist directories - Documentation structure
 </action>
 
-<action>Map epics to architectural boundaries:
-"Epic: {{epic_name}} → Lives in {{module/directory/service}}"
-</action>
+<check if="{epics_content} is not empty">
+  <action>Map epics to architectural boundaries:
+  "Epic: {{epic_name}} → Lives in {{module/directory/service}}"
+  </action>
+</check>
+<check if="{epics_content} is empty">
+  <action>Map FR categories to architectural boundaries:
+  "FR Category: {{fr_category_name}} → Lives in {{module/directory/service}}"
+  </action>
+</check>
 
 <action>Define integration points: - Where do components communicate? - What are the API boundaries? - How do services interact?
 </action>
@@ -393,15 +438,22 @@ Provided by Starter: {{yes_if_from_starter}}
 <step n="7" goal="Design novel architectural patterns" optional="true">
   <critical>Some projects require INVENTING new patterns, not just choosing existing ones</critical>
 
-<action>Scan PRD for concepts that don't have standard solutions: - Novel interaction patterns (e.g., "swipe to match" before Tinder existed) - Unique multi-component workflows (e.g., "viral invitation system") - New data relationships (e.g., "social graph" before Facebook) - Unprecedented user experiences (e.g., "ephemeral messages" before Snapchat) - Complex state machines crossing multiple epics
-</action>
+<action>Scan PRD for concepts that don't have standard solutions: - Novel interaction patterns (e.g., "swipe to match" before Tinder existed) - Unique multi-component workflows (e.g., "viral invitation system") - New data relationships (e.g., "social graph" before Facebook) - Unprecedented user experiences (e.g., "ephemeral messages" before Snapchat)
+<check if="{epics_content} is not empty">
+
+- Complex state machines crossing multiple epics
+  </check>
+  <check if="{epics_content} is empty">
+- Complex state machines crossing multiple FR categories
+  </check>
+  </action>
 
   <check if="novel_patterns_detected">
     <action>For each novel pattern identified:</action>
 
-    <action>Engage user in design collaboration:
-      <check if="{user_skill_level} == 'expert'">
-        "The {{pattern_name}} concept requires architectural innovation.
+  <action>Engage user in design collaboration:
+  <check if="{user_skill_level} == 'expert'">
+  "The {{pattern_name}} concept requires architectural innovation.
 
          Core challenge: {{challenge_description}}
 
@@ -415,39 +467,44 @@ Provided by Starter: {{yes_if_from_starter}}
 
          Let me help you think through how this should work:"
       </check>
+
     </action>
 
-    <action>Facilitate pattern design:
-      1. Identify core components involved
-      2. Map data flow between components
-      3. Design state management approach
-      4. Create sequence diagrams for complex flows
-      5. Define API contracts for the pattern
-      6. Consider edge cases and failure modes
-    </action>
+  <action>Facilitate pattern design: 1. Identify core components involved 2. Map data flow between components 3. Design state management approach 4. Create sequence diagrams for complex flows 5. Define API contracts for the pattern 6. Consider edge cases and failure modes
+  </action>
 
-    <action>Use advanced elicitation for innovation:
-      "What if we approached this differently?
-       - What would the ideal user experience look like?
-       - Are there analogies from other domains we could apply?
-       - What constraints can we challenge?"
-    </action>
+  <action>Use advanced elicitation for innovation:
+  "What if we approached this differently? - What would the ideal user experience look like? - Are there analogies from other domains we could apply? - What constraints can we challenge?"
+  </action>
 
-    <action>Document the novel pattern:
-      Pattern Name: {{pattern_name}}
-      Purpose: {{what_problem_it_solves}}
-      Components:
-        {{component_list_with_responsibilities}}
-      Data Flow:
-        {{sequence_description_or_diagram}}
-      Implementation Guide:
-        {{how_agents_should_build_this}}
+  <action>Document the novel pattern:
+  Pattern Name: {{pattern_name}}
+  Purpose: {{what_problem_it_solves}}
+  Components:
+  {{component_list_with_responsibilities}}
+  Data Flow:
+  {{sequence_description_or_diagram}}
+  Implementation Guide:
+  {{how_agents_should_build_this}}
+
+<check if="{epics_content} is not empty">
       Affects Epics:
         {{epics_that_use_this_pattern}}
+</check>
+<check if="{epics_content} is empty">
+      Affects FR Categories:
+        {{fr_categories_that_use_this_pattern}}
+</check>
     </action>
 
     <action>Validate pattern completeness:
+
+<check if="{epics_content} is not empty">
       "Does this {{pattern_name}} design cover all the use cases in your epics?
+</check>
+<check if="{epics_content} is empty">
+      "Does this {{pattern_name}} design cover all the use cases in your requirements?
+</check>
        - {{use_case_1}}: ✓ Handled by {{component}}
        - {{use_case_2}}: ✓ Handled by {{component}}
        ..."
@@ -561,8 +618,14 @@ Enforcement: "All agents MUST follow this pattern"
 <action>Check decision compatibility: - Do all decisions work together? - Are there any conflicting choices? - Do the versions align properly?
 </action>
 
-<action>Verify epic coverage: - Does every epic have architectural support? - Are all user stories implementable with these decisions? - Are there any gaps?
-</action>
+<check if="{epics_content} is not empty">
+  <action>Verify epic coverage: - Does every epic have architectural support? - Are all user stories implementable with these decisions? - Are there any gaps?
+  </action>
+</check>
+<check if="{epics_content} is empty">
+  <action>Verify FR coverage: - Does every functional requirement have architectural support? - Are all capabilities implementable with these decisions? - Are there any gaps?
+  </action>
+</check>
 
 <action>Validate pattern completeness: - Are there any patterns we missed that agents would need? - Do novel patterns integrate with standard architecture? - Are implementation patterns comprehensive enough?
 </action>
@@ -585,7 +648,11 @@ Enforcement: "All agents MUST follow this pattern"
 
 <action>Load template: {architecture_template}</action>
 
-<action>Generate sections: 1. Executive Summary (2-3 sentences about the architecture approach) 2. Project Initialization (starter command if applicable) 3. Decision Summary Table (with verified versions and epic mapping) 4. Complete Project Structure (full tree, no placeholders) 5. Epic to Architecture Mapping (every epic placed) 6. Technology Stack Details (versions, configurations) 7. Integration Points (how components connect) 8. Novel Pattern Designs (if any were created) 9. Implementation Patterns (all consistency rules) 10. Consistency Rules (naming, organization, formats) 11. Data Architecture (models and relationships) 12. API Contracts (request/response formats) 13. Security Architecture (auth, authorization, data protection) 14. Performance Considerations (from NFRs) 15. Deployment Architecture (where and how) 16. Development Environment (setup and prerequisites) 17. Architecture Decision Records (key decisions with rationale)
+<action>Generate sections: 1. Executive Summary (2-3 sentences about the architecture approach) 2. Project Initialization (starter command if applicable) 3. Decision Summary Table (with verified versions and coverage mapping) 4. Complete Project Structure (full tree, no placeholders)
+<check if="{epics_content} is not empty"> 5. Epic to Architecture Mapping (every epic placed)
+</check>
+<check if="{epics_content} is empty"> 5. FR Category to Architecture Mapping (every FR category placed)
+</check> 6. Technology Stack Details (versions, configurations) 7. Integration Points (how components connect) 8. Novel Pattern Designs (if any were created) 9. Implementation Patterns (all consistency rules) 10. Consistency Rules (naming, organization, formats) 11. Data Architecture (models and relationships) 12. API Contracts (request/response formats) 13. Security Architecture (auth, authorization, data protection) 14. Performance Considerations (from NFRs) 15. Deployment Architecture (where and how) 16. Development Environment (setup and prerequisites) 17. Architecture Decision Records (key decisions with rationale)
 </action>
 
 <action>Fill template with all collected decisions and patterns</action>
@@ -616,7 +683,12 @@ Enforcement: "All agents MUST follow this pattern"
 <action>Verify MANDATORY items:
 
 - [] Decision table has Version column with specific versions
+  <check if="{epics_content} is not empty">
 - [] Every epic is mapped to architecture components
+  </check>
+  <check if="{epics_content} is empty">
+- [] Every FR category is mapped to architecture components
+  </check>
 - [] Source tree is complete, not generic
 - [] No placeholder text remains
 - [] All FRs from PRD have architectural support

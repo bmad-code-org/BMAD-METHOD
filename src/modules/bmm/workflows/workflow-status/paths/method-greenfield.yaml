@@ -40,7 +40,7 @@ phases:
         required: true
         agent: "pm"
         command: "prd"
-        output: "Product Requirements Document with epics and stories"
+        output: "Product Requirements Document with FRs and NFRs"
 
       - id: "validate-prd"
         optional: true
@@ -48,10 +48,10 @@ phases:
         command: "validate-prd"
         note: "Quality check for PRD completeness"
 
-      - id: "create-design"
+      - id: "create-ux-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
-        command: "create-design"
+        command: "create-ux-design"
         note: "Determined after PRD - user/agent decides if needed"
 
   - phase: 2
@@ -64,6 +64,12 @@ phases:
         command: "create-architecture"
         output: "System architecture document"
         note: "Complete system design for greenfield projects"
+
+      - id: "create-epics-and-stories"
+        required: true
+        agent: "pm"
+        command: "create-epics-and-stories"
+        note: "Required: Break down PRD into implementable epics and stories with full context (PRD + UX + Architecture)"
 
       - id: "test-design"
         recommended: true
@@ -78,11 +84,11 @@ phases:
         command: "validate-architecture"
         note: "Quality check for architecture completeness"
 
-      - id: "solutioning-gate-check"
+      - id: "implementation-readiness"
         required: true
         agent: "architect"
-        command: "solutioning-gate-check"
-        note: "Validates PRD + UX + Architecture + Testability cohesion before implementation"
+        command: "implementation-readiness"
+        note: "Validates PRD + UX + Architecture + Epics + Testability cohesion before implementation"
 
   - phase: 3
     name: "Implementation"

@@ -201,15 +201,51 @@ class UI {
 
     CLIUtils.displaySection('Tool Integration', 'Select AI coding assistants and IDEs to configure');
 
-    const answers = await inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'ides',
-        message: 'Select tools to configure:',
-        choices: ideChoices,
-        pageSize: 15,
-      },
-    ]);
+    let answers;
+    let userConfirmedNoTools = false;
+
+    // Loop until user selects at least one tool OR explicitly confirms no tools
+    while (!userConfirmedNoTools) {
+      answers = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'ides',
+          message: 'Select tools to configure:',
+          choices: ideChoices,
+          pageSize: 15,
+        },
+      ]);
+
+      // If tools were selected, we're done
+      if (answers.ides && answers.ides.length > 0) {
+        break;
+      }
+
+      // Warn that no tools were selected - users often miss the spacebar requirement
+      console.log();
+      console.log(chalk.red.bold('⚠️  WARNING: No tools were selected!'));
+      console.log(chalk.red('   You must press SPACEBAR to select items, then ENTER to confirm.'));
+      console.log(chalk.red('   Simply highlighting an item does NOT select it.'));
+      console.log();
+
+      const { goBack } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'goBack',
+          message: chalk.yellow('Would you like to go back and select at least one tool?'),
+          default: true,
+        },
+      ]);
+
+      if (goBack) {
+        // Re-display the section header before looping back
+        console.log();
+        CLIUtils.displaySection('Tool Integration', 'Select AI coding assistants and IDEs to configure');
+      } else {
+        // User explicitly chose to proceed without tools
+        userConfirmedNoTools = true;
+      }
+    }
 
     return {
       ides: answers.ides || [],

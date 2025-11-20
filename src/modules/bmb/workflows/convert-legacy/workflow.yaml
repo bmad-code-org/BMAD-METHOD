@@ -10,10 +10,6 @@ user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 date: system-generated
 
-# Optional docs that can be provided as input
-recommended_inputs:
-  - legacy_file: "Path to v4 agent, workflow, or module to convert"
-
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/convert-legacy"
 template: false # This is an action/meta workflow - no template needed

@@ -33,13 +33,6 @@ required_tools:
   - search_repo # Find tests by patterns
   - glob # Find test files matching patterns
 
-# Recommended inputs
-recommended_inputs:
-  - test_file: "Test file to review (single file mode)"
-  - test_dir: "Directory of tests to review (directory mode)"
-  - story: "Related story for acceptance criteria context (optional)"
-  - test_design: "Test design for priority context (optional)"
-
 tags:
   - qa
   - test-architect

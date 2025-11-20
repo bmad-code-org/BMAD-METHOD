@@ -9,4 +9,5 @@ agents:
   - pm
   - sm
   - ux-designer
+  - frame-expert
 party: "./default-party.csv"

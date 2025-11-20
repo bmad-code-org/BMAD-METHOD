@@ -32,14 +32,6 @@ required_tools:
   - list_files # Detect existing CI configuration
   - search_repo # Find test files for selective testing
 
-# Recommended inputs
-recommended_inputs:
-  - framework_config: "Framework configuration (playwright.config.ts, cypress.config.ts)"
-  - package_json: "Project dependencies and scripts"
-  - nvmrc: ".nvmrc for Node version (optional, defaults to LTS)"
-  - existing_ci: "Existing CI configuration to update (optional)"
-  - git_info: "Git repository information for platform detection"
-
 tags:
   - qa
   - ci-cd

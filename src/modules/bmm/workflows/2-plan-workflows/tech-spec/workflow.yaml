@@ -41,15 +41,18 @@ sprint_artifacts: "{output_folder}/sprint_artifacts"
 # Strategy: How to load sharded documents (FULL_LOAD, SELECTIVE_LOAD, INDEX_GUIDED)
 input_file_patterns:
   product_brief:
+    description: "Product vision and goals (optional)"
     whole: "{output_folder}/*brief*.md"
     sharded: "{output_folder}/*brief*/index.md"
     load_strategy: "FULL_LOAD"
   research:
+    description: "Market or domain research (optional)"
     whole: "{output_folder}/*research*.md"
     sharded: "{output_folder}/*research*/index.md"
     load_strategy: "FULL_LOAD"
   document_project:
-    sharded: "{output_folder}/docs/index.md"
+    description: "Brownfield project documentation (optional)"
+    sharded: "{output_folder}/index.md"
     load_strategy: "INDEX_GUIDED"
 
 standalone: true

@@ -147,7 +147,7 @@ If status file exists, use workflow-status. If not, use workflow-init.
 
 ### Q: How do I know when Phase 3 is complete and I can start Phase 4?
 
-**A:** For Level 3-4, run the solutioning-gate-check workflow. It validates that PRD, architecture, and UX (if applicable) are cohesive before implementation. Pass the gate check = ready for Phase 4.
+**A:** For Level 3-4, run the implementation-readiness workflow. It validates that PRD (FRs/NFRs), architecture, epics+stories, and UX (if applicable) are cohesive before implementation. Pass the gate check = ready for Phase 4.
 
 ### Q: Can I run workflows in parallel or do they have to be sequential?
 
@@ -155,7 +155,7 @@ If status file exists, use workflow-status. If not, use workflow-init.
 
 - Phase 1: brainstorm → research → product-brief (optional order)
 - Phase 2: PRD must complete before moving forward
-- Phase 3: architecture → validate → gate-check (sequential)
+- Phase 3: architecture → epics+stories → implementation-readiness (sequential)
 - Phase 4: Stories within an epic should generally be sequential, but stories in different epics can be parallel if you have capacity
 
 ---
@@ -175,8 +175,9 @@ Think of it as: tech-spec is for small projects (replaces PRD and architecture),
 
 **A:** Level 2+ projects need product-level planning (PRD) and system-level design (Architecture), which tech-spec doesn't provide. Tech-spec is too narrow for coordinating multiple features. Instead, Level 2-4 uses:
 
-- PRD (product vision, requirements, epics)
+- PRD (product vision, functional requirements, non-functional requirements)
 - Architecture (system design)
+- Epics+Stories (created AFTER architecture is complete)
 - Epic-tech-context (detailed implementation per epic, created just-in-time)
 
 ### Q: When do I create epic-tech-context?
