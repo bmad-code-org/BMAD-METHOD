@@ -6,6 +6,8 @@
 [![Version Node.js](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![Discord](https://img.shields.io/badge/Discord-Rejoindre%20la%20Communaut%C3%A9-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
+> **🇫🇷 Français** (actuel) | **🇬🇧 [English Documentation](./README.md)**
+
 ## Développement Agile Piloté par l'IA qui Évolue des Correctifs de Bugs aux Entreprises
 
 **Construisez Plus, Architecturez vos Rêves** (BMAD) avec **31 agents IA spécialisés** et **50+ workflows guidés** qui s'adaptent à la complexité de votre projet—des correctifs de bugs rapides aux plateformes d'entreprise en passant par le développement de jeux, la création de contenu, les opérations marketing, le développement de carrière et la rédaction UX.
