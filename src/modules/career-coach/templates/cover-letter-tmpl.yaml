@@ -1,0 +1,324 @@
+# Cover Letter Template
+
+## Template Information
+- **Template Type:** Cover Letter
+- **Agent:** resume-writer
+- **Task:** create-doc.md
+- **Version:** 1.0
+
+## Template Structure
+cover_letter_document:
+  header_information:
+    sender_details:
+      name: "[Your Full Name]"
+      address: "[Your Address]"
+      city_state_zip: "[City, State ZIP Code]"
+      phone: "[Your Phone Number]"
+      email: "[Your Professional Email]"
+      linkedin: "[Your LinkedIn Profile URL]"
+      website: "[Your Personal Website (if applicable)]"
+    
+    recipient_details:
+      name: "[Recipient Name (if known)]"
+      title: "[Recipient Title]"
+      company: "[Company Name]"
+      address: "[Company Address]"
+      city_state_zip: "[Company City, State ZIP]"
+      email: "[Recipient Email (if known)]"
+    
+    date: "[Current Date]"
+    subject_line: "[Subject: Application for [Position Title] Position]"
+  
+  opening_paragraph:
+    attention_grabber:
+      hook: "[Compelling opening statement or hook]"
+      position_reference: "[Reference to the specific position]"
+      company_mention: "[Mention of the company]"
+      source_reference: "[How you learned about the position]"
+    
+    introduction:
+      your_name: "[Your name]"
+      current_role: "[Your current role/background]"
+      years_experience: "[Years of relevant experience]"
+      key_qualification: "[One key qualification]"
+      interest_expression: "[Expression of interest in the position]"
+  
+  body_paragraphs:
+    first_paragraph:
+      company_research:
+        company_achievement: "[Specific company achievement or news]"
+        company_values: "[Company values or mission that resonate]"
+        industry_position: "[Company's position in the industry]"
+        personal_connection: "[Personal connection to company/industry]"
+      
+      role_understanding:
+        position_requirements: "[Understanding of key position requirements]"
+        company_needs: "[Company's current needs or challenges]"
+        alignment_statement: "[Statement of alignment with role]"
+    
+    second_paragraph:
+      key_achievements:
+        - achievement: "[Quantifiable achievement 1]"
+          impact: "[Impact of achievement]"
+          relevance: "[Relevance to target role]"
+          metrics: "[Specific metrics/numbers]"
+        
+        - achievement: "[Quantifiable achievement 2]"
+          impact: "[Impact of achievement]"
+          relevance: "[Relevance to target role]"
+          metrics: "[Specific metrics/numbers]"
+        
+        - achievement: "[Quantifiable achievement 3]"
+          impact: "[Impact of achievement]"
+          relevance: "[Relevance to target role]"
+          metrics: "[Specific metrics/numbers]"
+      
+      skills_demonstration:
+        technical_skills: "[Technical skills relevant to role]"
+        soft_skills: "[Soft skills relevant to role]"
+        experience_applicability: "[How experience applies to role]"
+    
+    third_paragraph:
+      company_contribution:
+        immediate_impact: "[How you can contribute immediately]"
+        long_term_value: "[Long-term value you can provide]"
+        specific_contributions: "[Specific contributions you can make]"
+        team_collaboration: "[How you can collaborate with the team]"
+      
+      cultural_fit:
+        values_alignment: "[Alignment with company values]"
+        work_style: "[Work style compatibility]"
+        passion_expression: "[Expression of passion for the work]"
+        growth_interest: "[Interest in growing with the company]"
+  
+  closing_paragraph:
+    call_to_action:
+      interview_request: "[Request for interview]"
+      availability: "[Your availability for interview]"
+      contact_preference: "[Preferred contact method]"
+      follow_up_plan: "[Plan to follow up]"
+    
+    appreciation:
+      consideration_thanks: "[Thank you for consideration]"
+      time_appreciation: "[Appreciation for their time]"
+      enthusiasm_expression: "[Expression of enthusiasm]"
+    
+    contact_information:
+      phone_reiteration: "[Phone number]"
+      email_reiteration: "[Email address]"
+      linkedin_reiteration: "[LinkedIn profile]"
+      availability_statement: "[Availability statement]"
+  
+  signature:
+    closing_phrase: "[Sincerely/Best regards/Warm regards]"
+    name: "[Your full name]"
+    title: "[Your current title (if applicable)]"
+    additional_contact: "[Additional contact information if needed]"
+  
+  post_script:
+    optional_ps:
+      additional_info: "[Additional relevant information]"
+      portfolio_reference: "[Reference to portfolio or work samples]"
+      unique_qualification: "[Unique qualification not mentioned above]"
+      personal_connection: "[Personal connection to company/industry]"
+  
+  customization_elements:
+    company_specific:
+      company_research_points:
+        - point: "[Company research point 1]"
+          source: "[Source of information]"
+          relevance: "[Relevance to application]"
+        
+        - point: "[Company research point 2]"
+          source: "[Source of information]"
+          relevance: "[Relevance to application]"
+      
+      industry_knowledge:
+        - knowledge: "[Industry knowledge point 1]"
+          application: "[How it applies to role]"
+        
+        - knowledge: "[Industry knowledge point 2]"
+          application: "[How it applies to role]"
+    
+    role_specific:
+      key_requirements:
+        - requirement: "[Key requirement 1]"
+          experience: "[Your relevant experience]"
+          example: "[Specific example]"
+        
+        - requirement: "[Key requirement 2]"
+          experience: "[Your relevant experience]"
+          example: "[Specific example]"
+      
+      technical_skills:
+        - skill: "[Technical skill 1]"
+          proficiency: "[Your proficiency level]"
+          application: "[How it applies to role]"
+        
+        - skill: "[Technical skill 2]"
+          proficiency: "[Your proficiency level]"
+          application: "[How it applies to role]"
+    
+    personal_branding:
+      unique_value_proposition:
+        primary_strength: "[Your primary strength]"
+        differentiator: "[What makes you unique]"
+        value_add: "[Value you add to the company]"
+      
+      career_narrative:
+        career_progression: "[Your career progression]"
+        motivation: "[What motivates you]"
+        career_goals: "[Your career goals]"
+        company_alignment: "[How company aligns with goals]"
+  
+  writing_guidelines:
+    tone_style:
+      professional_tone: "[Professional but conversational tone]"
+      confidence_level: "[Confident but not arrogant]"
+      enthusiasm_balance: "[Balanced enthusiasm]"
+      authenticity: "[Authentic voice]"
+    
+    structure_guidelines:
+      paragraph_length: "[Optimal paragraph length]"
+      sentence_variety: "[Sentence variety and flow]"
+      transition_words: "[Effective transition words]"
+      readability: "[Readability considerations]"
+    
+    content_guidelines:
+      specificity: "[Be specific and concrete]"
+      quantification: "[Quantify achievements when possible]"
+      relevance: "[Ensure all content is relevant]"
+      conciseness: "[Be concise and focused]"
+  
+  common_mistakes_avoidance:
+    content_mistakes:
+      - mistake: "[Common mistake 1]"
+        avoidance: "[How to avoid it]"
+        alternative: "[Better alternative]"
+      
+      - mistake: "[Common mistake 2]"
+        avoidance: "[How to avoid it]"
+        alternative: "[Better alternative]"
+      
+      - mistake: "[Common mistake 3]"
+        avoidance: "[How to avoid it]"
+        alternative: "[Better alternative]"
+    
+    formatting_mistakes:
+      - mistake: "[Formatting mistake 1]"
+        correction: "[How to correct it]"
+        best_practice: "[Best practice]"
+      
+      - mistake: "[Formatting mistake 2]"
+        correction: "[How to correct it]"
+        best_practice: "[Best practice]"
+  
+  industry_specific_elements:
+    technology_roles:
+      technical_projects:
+        - project: "[Technical project 1]"
+          technologies: "[Technologies used]"
+          impact: "[Impact and results]"
+          relevance: "[Relevance to target role]"
+        
+        - project: "[Technical project 2]"
+          technologies: "[Technologies used]"
+          impact: "[Impact and results]"
+          relevance: "[Relevance to target role]"
+      
+      technical_achievements:
+        - achievement: "[Technical achievement 1]"
+          metrics: "[Quantifiable metrics]"
+          complexity: "[Technical complexity]"
+          business_impact: "[Business impact]"
+        
+        - achievement: "[Technical achievement 2]"
+          metrics: "[Quantifiable metrics]"
+          complexity: "[Technical complexity]"
+          business_impact: "[Business impact]"
+    
+    business_roles:
+      business_impact:
+        - impact: "[Business impact 1]"
+          metrics: "[Quantifiable metrics]"
+          scope: "[Scope of impact]"
+          leadership: "[Leadership demonstrated]"
+        
+        - impact: "[Business impact 2]"
+          metrics: "[Quantifiable metrics]"
+          scope: "[Scope of impact]"
+          leadership: "[Leadership demonstrated]"
+      
+      strategic_contributions:
+        - contribution: "[Strategic contribution 1]"
+          context: "[Business context]"
+          outcome: "[Strategic outcome]"
+          value: "[Value delivered]"
+        
+        - contribution: "[Strategic contribution 2]"
+          context: "[Business context]"
+          outcome: "[Strategic outcome]"
+          value: "[Value delivered]"
+    
+    creative_roles:
+      portfolio_highlights:
+        - project: "[Portfolio project 1]"
+          description: "[Brief description]"
+          impact: "[Impact and results]"
+          creativity: "[Creative elements]"
+        
+        - project: "[Portfolio project 2]"
+          description: "[Brief description]"
+          impact: "[Impact and results]"
+          creativity: "[Creative elements]"
+      
+      creative_process:
+        - process: "[Creative process element 1]"
+          description: "[Description]"
+          application: "[How it applies to role]"
+        
+        - process: "[Creative process element 2]"
+          description: "[Description]"
+          application: "[How it applies to role]"
+  
+  follow_up_strategy:
+    timing:
+      initial_follow_up: "[When to follow up initially]"
+      subsequent_follow_ups: "[Subsequent follow-up timing]"
+      final_follow_up: "[Final follow-up timing]"
+    
+    method:
+      preferred_method: "[Preferred follow-up method]"
+      alternative_methods: "[Alternative methods]"
+      content_approach: "[Approach to follow-up content]"
+    
+    content:
+      follow_up_points:
+        - point: "[Follow-up point 1]"
+          purpose: "[Purpose of mentioning this]"
+          timing: "[When to mention this]"
+        
+        - point: "[Follow-up point 2]"
+          purpose: "[Purpose of mentioning this]"
+          timing: "[When to mention this]"
+  
+  success_metrics:
+    effectiveness_indicators:
+      response_rate: "[Expected response rate]"
+      interview_rate: "[Expected interview rate]"
+      engagement_level: "[Expected engagement level]"
+    
+    quality_indicators:
+      clarity: "[Clarity indicators]"
+      relevance: "[Relevance indicators]"
+      impact: "[Impact indicators]"
+      professionalism: "[Professionalism indicators]"
+    
+    improvement_areas:
+      - area: "[Improvement area 1]"
+        measurement: "[How to measure improvement]"
+        target: "[Target improvement]"
+      
+      - area: "[Improvement area 2]"
+        measurement: "[How to measure improvement]"
+        target: "[Target improvement]"

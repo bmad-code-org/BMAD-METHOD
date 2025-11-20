@@ -1,0 +1,516 @@
+# Interview Feedback Template
+
+## Template Information
+- **Template Type:** Interview Performance Feedback
+- **Agent:** interview-coach
+- **Task:** interview-feedback.md
+- **Version:** 1.0
+
+## Template Structure
+interview_feedback_analysis:
+  interview_details:
+    candidate_name: "[Candidate Name]"
+    target_role: "[Target Job Title]"
+    target_company: "[Target Company]"
+    interview_date: "[Interview Date]"
+    interview_type: "[Phone/Screen/On-site/Virtual]"
+    interview_round: "[1st/2nd/Final Round]"
+    interview_duration: "[Duration]"
+    interviewers: "[Interviewer Names and Titles]"
+    interview_format: "[One-on-one/Panel/Group]"
+  
+  overall_assessment:
+    performance_summary:
+      overall_rating: "[1-10 Scale]"
+      recommendation: "[Strongly Recommend/Recommend/Neutral/Do Not Recommend]"
+      confidence_level: "[1-10 Scale]"
+      key_impression: "[Key Impression Made]"
+      interview_outcome: "[Expected Outcome]"
+    
+    strengths_demonstrated:
+      - strength: "[Key Strength]"
+        evidence: "[Specific Evidence]"
+        impact: "[Impact on Interview]"
+        frequency: "[How Often Demonstrated]"
+      
+      - strength: "[Key Strength]"
+        evidence: "[Specific Evidence]"
+        impact: "[Impact on Interview]"
+        frequency: "[How Often Demonstrated]"
+      
+      - strength: "[Key Strength]"
+        evidence: "[Specific Evidence]"
+        impact: "[Impact on Interview]"
+        frequency: "[How Often Demonstrated]"
+    
+    areas_for_improvement:
+      - area: "[Improvement Area]"
+        current_level: "[Current Performance Level]"
+        target_level: "[Target Performance Level]"
+        specific_feedback: "[Specific Feedback]"
+        impact: "[Impact on Interview Success]"
+        improvement_strategy: "[Strategy for Improvement]"
+      
+      - area: "[Improvement Area]"
+        current_level: "[Current Performance Level]"
+        target_level: "[Target Performance Level]"
+        specific_feedback: "[Specific Feedback]"
+        impact: "[Impact on Interview Success]"
+        improvement_strategy: "[Strategy for Improvement]"
+      
+      - area: "[Improvement Area]"
+        current_level: "[Current Performance Level]"
+        target_level: "[Target Performance Level]"
+        specific_feedback: "[Specific Feedback]"
+        impact: "[Impact on Interview Success]"
+        improvement_strategy: "[Strategy for Improvement]"
+  
+  detailed_evaluation:
+    communication_skills:
+      verbal_communication:
+        clarity: "[1-10 Scale]"
+        conciseness: "[1-10 Scale]"
+        confidence: "[1-10 Scale]"
+        articulation: "[1-10 Scale]"
+        overall_verbal: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+      
+      non_verbal_communication:
+        eye_contact: "[1-10 Scale]"
+        body_language: "[1-10 Scale]"
+        posture: "[1-10 Scale]"
+        gestures: "[1-10 Scale]"
+        overall_non_verbal: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+      
+      listening_skills:
+        active_listening: "[1-10 Scale]"
+        response_relevance: "[1-10 Scale]"
+        question_understanding: "[1-10 Scale]"
+        overall_listening: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+    
+    technical_skills:
+      technical_knowledge:
+        depth: "[1-10 Scale]"
+        breadth: "[1-10 Scale]"
+        accuracy: "[1-10 Scale]"
+        currency: "[1-10 Scale]"
+        overall_knowledge: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+      
+      problem_solving:
+        approach: "[1-10 Scale]"
+        logic: "[1-10 Scale]"
+        creativity: "[1-10 Scale]"
+        efficiency: "[1-10 Scale]"
+        overall_problem_solving: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+      
+      technical_communication:
+        explanation_clarity: "[1-10 Scale]"
+        technical_depth: "[1-10 Scale]"
+        audience_adaptation: "[1-10 Scale]"
+        overall_technical_comm: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+    
+    behavioral_skills:
+      star_method_usage:
+        situation: "[1-10 Scale]"
+        task: "[1-10 Scale]"
+        action: "[1-10 Scale]"
+        result: "[1-10 Scale]"
+        overall_star: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+      
+      example_quality:
+        relevance: "[1-10 Scale]"
+        specificity: "[1-10 Scale]"
+        impact: "[1-10 Scale]"
+        recency: "[1-10 Scale]"
+        overall_examples: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+      
+      self_awareness:
+        reflection: "[1-10 Scale]"
+        learning: "[1-10 Scale]"
+        growth_mindset: "[1-10 Scale]"
+        humility: "[1-10 Scale]"
+        overall_self_awareness: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+    
+    company_fit:
+      research_depth:
+        company_knowledge: "[1-10 Scale]"
+        industry_understanding: "[1-10 Scale]"
+        role_understanding: "[1-10 Scale]"
+        overall_research: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+      
+      motivation:
+        genuine_interest: "[1-10 Scale]"
+        alignment: "[1-10 Scale]"
+        enthusiasm: "[1-10 Scale]"
+        overall_motivation: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+      
+      cultural_fit:
+        values_alignment: "[1-10 Scale]"
+        work_style: "[1-10 Scale]"
+        team_collaboration: "[1-10 Scale]"
+        overall_cultural_fit: "[1-10 Scale]"
+        feedback: "[Specific Feedback]"
+  
+  question_by_question_analysis:
+    opening_questions:
+      - question: "[Question Asked]"
+        response_quality: "[1-10 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Suggestions]"
+        time_management: "[Appropriate/Too Long/Too Short]"
+        star_method_usage: "[Yes/No/Partial]"
+      
+      - question: "[Question Asked]"
+        response_quality: "[1-10 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Suggestions]"
+        time_management: "[Appropriate/Too Long/Too Short]"
+        star_method_usage: "[Yes/No/Partial]"
+    
+    behavioral_questions:
+      - question: "[Question Asked]"
+        response_quality: "[1-10 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Suggestions]"
+        time_management: "[Appropriate/Too Long/Too Short]"
+        star_method_usage: "[Yes/No/Partial]"
+        example_quality: "[High/Medium/Low]"
+      
+      - question: "[Question Asked]"
+        response_quality: "[1-10 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Suggestions]"
+        time_management: "[Appropriate/Too Long/Too Short]"
+        star_method_usage: "[Yes/No/Partial]"
+        example_quality: "[High/Medium/Low]"
+    
+    technical_questions:
+      - question: "[Question Asked]"
+        response_quality: "[1-10 Scale]"
+        technical_accuracy: "[1-10 Scale]"
+        problem_solving_approach: "[1-10 Scale]"
+        communication_clarity: "[1-10 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Suggestions]"
+      
+      - question: "[Question Asked]"
+        response_quality: "[1-10 Scale]"
+        technical_accuracy: "[1-10 Scale]"
+        problem_solving_approach: "[1-10 Scale]"
+        communication_clarity: "[1-10 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Suggestions]"
+    
+    closing_questions:
+      - question: "[Question Asked]"
+        response_quality: "[1-10 Scale]"
+        question_quality: "[1-10 Scale]"
+        engagement_level: "[1-10 Scale]"
+        research_depth: "[1-10 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Suggestions]"
+      
+      - question: "[Question Asked]"
+        response_quality: "[1-10 Scale]"
+        question_quality: "[1-10 Scale]"
+        engagement_level: "[1-10 Scale]"
+        research_depth: "[1-10 Scale]"
+        strengths: "[Response Strengths]"
+        weaknesses: "[Response Weaknesses]"
+        improvement_suggestions: "[Specific Suggestions]"
+  
+  pattern_analysis:
+    consistent_strengths:
+      - strength: "[Consistent Strength]"
+        frequency: "[How Often Demonstrated]"
+        impact: "[Impact on Overall Performance]"
+        evidence: "[Specific Evidence]"
+      
+      - strength: "[Consistent Strength]"
+        frequency: "[How Often Demonstrated]"
+        impact: "[Impact on Overall Performance]"
+        evidence: "[Specific Evidence]"
+    
+    consistent_weaknesses:
+      - weakness: "[Consistent Weakness]"
+        frequency: "[How Often Observed]"
+        impact: "[Impact on Overall Performance]"
+        root_cause: "[Potential Root Cause]"
+        improvement_priority: "[High/Medium/Low]"
+      
+      - weakness: "[Consistent Weakness]"
+        frequency: "[How Often Observed]"
+        impact: "[Impact on Overall Performance]"
+        root_cause: "[Potential Root Cause]"
+        improvement_priority: "[High/Medium/Low]"
+    
+    improvement_trends:
+      - trend: "[Improvement Trend]"
+        evidence: "[Evidence of Improvement]"
+        sustainability: "[Sustainability Assessment]"
+        next_steps: "[Next Steps for Continued Improvement]"
+      
+      - trend: "[Improvement Trend]"
+        evidence: "[Evidence of Improvement]"
+        sustainability: "[Sustainability Assessment]"
+        next_steps: "[Next Steps for Continued Improvement]"
+    
+    regression_areas:
+      - area: "[Area of Regression]"
+        evidence: "[Evidence of Regression]"
+        potential_causes: "[Potential Causes]"
+        intervention_needed: "[Intervention Required]"
+      
+      - area: "[Area of Regression]"
+        evidence: "[Evidence of Regression]"
+        potential_causes: "[Potential Causes]"
+        intervention_needed: "[Intervention Required]"
+  
+  critical_issues:
+    major_concerns:
+      - concern: "[Major Concern]"
+        severity: "[High/Medium/Low]"
+        impact: "[Impact on Interview Success]"
+        urgency: "[Urgency Level]"
+        action_required: "[Immediate Action Required]"
+        timeline: "[Timeline for Resolution]"
+      
+      - concern: "[Major Concern]"
+        severity: "[High/Medium/Low]"
+        impact: "[Impact on Interview Success]"
+        urgency: "[Urgency Level]"
+        action_required: "[Immediate Action Required]"
+        timeline: "[Timeline for Resolution]"
+    
+    deal_breakers:
+      - issue: "[Deal Breaker Issue]"
+        description: "[Issue Description]"
+        impact: "[Impact on Hiring Decision]"
+        mitigation_possible: "[Yes/No]"
+        mitigation_strategy: "[Mitigation Strategy if Possible]"
+      
+      - issue: "[Deal Breaker Issue]"
+        description: "[Issue Description]"
+        impact: "[Impact on Hiring Decision]"
+        mitigation_possible: "[Yes/No]"
+        mitigation_strategy: "[Mitigation Strategy if Possible]"
+    
+    red_flags:
+      - flag: "[Red Flag]"
+        description: "[Red Flag Description]"
+        severity: "[Severity Level]"
+        potential_impact: "[Potential Impact]"
+        monitoring_needed: "[Monitoring Required]"
+      
+      - flag: "[Red Flag]"
+        description: "[Red Flag Description]"
+        severity: "[Severity Level]"
+        potential_impact: "[Potential Impact]"
+        monitoring_needed: "[Monitoring Required]"
+  
+  improvement_recommendations:
+    immediate_actions:
+      - action: "[Immediate Action]"
+        priority: "[High/Medium/Low]"
+        timeline: "[Timeline for Completion]"
+        expected_outcome: "[Expected Outcome]"
+        resources_needed: "[Resources Required]"
+      
+      - action: "[Immediate Action]"
+        priority: "[High/Medium/Low]"
+        timeline: "[Timeline for Completion]"
+        expected_outcome: "[Expected Outcome]"
+        resources_needed: "[Resources Required]"
+    
+    practice_recommendations:
+      - practice_area: "[Practice Area]"
+        practice_method: "[Specific Practice Method]"
+        frequency: "[Practice Frequency]"
+        duration: "[Practice Duration]"
+        success_metrics: "[Success Metrics]"
+        resources: "[Practice Resources]"
+      
+      - practice_area: "[Practice Area]"
+        practice_method: "[Specific Practice Method]"
+        frequency: "[Practice Frequency]"
+        duration: "[Practice Duration]"
+        success_metrics: "[Success Metrics]"
+        resources: "[Practice Resources]"
+    
+    skill_development:
+      - skill: "[Skill to Develop]"
+        current_level: "[Current Level]"
+        target_level: "[Target Level]"
+        development_method: "[Development Method]"
+        timeline: "[Development Timeline]"
+        success_criteria: "[Success Criteria]"
+      
+      - skill: "[Skill to Develop]"
+        current_level: "[Current Level]"
+        target_level: "[Target Level]"
+        development_method: "[Development Method]"
+        timeline: "[Development Timeline]"
+        success_criteria: "[Success Criteria]"
+    
+    resource_recommendations:
+      - resource: "[Resource Recommendation]"
+        type: "[Book/Course/Website/Tool]"
+        purpose: "[Purpose of Resource]"
+        expected_benefit: "[Expected Benefit]"
+        time_investment: "[Time Investment Required]"
+        cost: "[Cost if Applicable]"
+      
+      - resource: "[Resource Recommendation]"
+        type: "[Book/Course/Website/Tool]"
+        purpose: "[Purpose of Resource]"
+        expected_benefit: "[Expected Benefit]"
+        time_investment: "[Time Investment Required]"
+        cost: "[Cost if Applicable]"
+  
+  follow_up_plan:
+    next_session:
+      recommended_timing: "[Recommended Timing for Next Session]"
+      focus_areas: "[Areas to Focus on Next Time]"
+      preparation_required: "[Preparation Required]"
+      success_criteria: "[Success Criteria for Next Session]"
+      session_format: "[Recommended Session Format]"
+    
+    independent_practice:
+      daily_practice: "[Daily Practice Recommendations]"
+      weekly_goals: "[Weekly Practice Goals]"
+      progress_tracking: "[Progress Tracking Methods]"
+      self_assessment: "[Self-Assessment Methods]"
+      accountability: "[Accountability Measures]"
+    
+    interview_preparation:
+      final_preparation: "[Final Preparation Steps]"
+      confidence_building: "[Confidence Building Activities]"
+      mental_preparation: "[Mental Preparation Techniques]"
+      logistics_preparation: "[Logistics Preparation]"
+      backup_plans: "[Backup Plans]"
+  
+  success_metrics:
+    performance_indicators:
+      communication_improvement: "[Communication Improvement Metrics]"
+      technical_skill_development: "[Technical Skill Development Metrics]"
+      behavioral_response_quality: "[Behavioral Response Quality Metrics]"
+      confidence_level: "[Confidence Level Metrics]"
+      overall_readiness: "[Overall Readiness Metrics]"
+    
+    progress_tracking:
+      weekly_assessments: "[Weekly Assessment Methods]"
+      skill_development_tracking: "[Skill Development Tracking]"
+      practice_consistency: "[Practice Consistency Metrics]"
+      mock_interview_performance: "[Mock Interview Performance Tracking]"
+      self_evaluation: "[Self-Evaluation Methods]"
+    
+    success_criteria:
+      interview_readiness: "[Interview Readiness Criteria]"
+      skill_mastery: "[Skill Mastery Criteria]"
+      confidence_threshold: "[Confidence Threshold]"
+      performance_benchmarks: "[Performance Benchmarks]"
+      improvement_targets: "[Improvement Targets]"
+  
+  action_plan:
+    short_term_goals:
+      - goal: "[Short-term Goal]"
+        timeline: "[Timeline]"
+        measurable_target: "[Measurable Target]"
+        success_criteria: "[Success Criteria]"
+        action_steps: "[Action Steps]"
+      
+      - goal: "[Short-term Goal]"
+        timeline: "[Timeline]"
+        measurable_target: "[Measurable Target]"
+        success_criteria: "[Success Criteria]"
+        action_steps: "[Action Steps]"
+    
+    medium_term_goals:
+      - goal: "[Medium-term Goal]"
+        timeline: "[Timeline]"
+        measurable_target: "[Measurable Target]"
+        success_criteria: "[Success Criteria]"
+        action_steps: "[Action Steps]"
+      
+      - goal: "[Medium-term Goal]"
+        timeline: "[Timeline]"
+        measurable_target: "[Measurable Target]"
+        success_criteria: "[Success Criteria]"
+        action_steps: "[Action Steps]"
+    
+    long_term_goals:
+      - goal: "[Long-term Goal]"
+        timeline: "[Timeline]"
+        measurable_target: "[Measurable Target]"
+        success_criteria: "[Success Criteria]"
+        action_steps: "[Action Steps]"
+      
+      - goal: "[Long-term Goal]"
+        timeline: "[Timeline]"
+        measurable_target: "[Measurable Target]"
+        success_criteria: "[Success Criteria]"
+        action_steps: "[Action Steps]"
+  
+  summary_and_next_steps:
+    key_takeaways:
+      - takeaway: "[Key Takeaway]"
+        importance: "[Importance Level]"
+        application: "[How to Apply]"
+        impact: "[Expected Impact]"
+      
+      - takeaway: "[Key Takeaway]"
+        importance: "[Importance Level]"
+        application: "[How to Apply]"
+        impact: "[Expected Impact]"
+    
+    immediate_next_steps:
+      - step: "[Immediate Next Step]"
+        priority: "[Priority Level]"
+        timeline: "[Timeline]"
+        expected_outcome: "[Expected Outcome]"
+        resources_needed: "[Resources Needed]"
+      
+      - step: "[Immediate Next Step]"
+        priority: "[Priority Level]"
+        timeline: "[Timeline]"
+        expected_outcome: "[Expected Outcome]"
+        resources_needed: "[Resources Needed]"
+    
+    long_term_development:
+      - development_area: "[Long-term Development Area]"
+        current_state: "[Current State]"
+        target_state: "[Target State]"
+        development_path: "[Development Path]"
+        timeline: "[Development Timeline]"
+        success_metrics: "[Success Metrics]"
+      
+      - development_area: "[Long-term Development Area]"
+        current_state: "[Current State]"
+        target_state: "[Target State]"
+        development_path: "[Development Path]"
+        timeline: "[Development Timeline]"
+        success_metrics: "[Success Metrics]"
+    
+    final_recommendations:
+      overall_assessment: "[Overall Assessment]"
+      readiness_level: "[Readiness Level]"
+      confidence_rating: "[Confidence Rating]"
+      recommendation: "[Final Recommendation]"
+      next_interview_timing: "[Recommended Next Interview Timing]"

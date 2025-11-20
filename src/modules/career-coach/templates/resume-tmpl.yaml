@@ -1,0 +1,175 @@
+template:
+  id: resume-tmpl
+  name: Professional Resume Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: {{candidate_name}}-resume.md
+    title: "{{candidate_name}} - Professional Resume"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: header
+    title: "{{candidate_name}}"
+    instruction: |
+      Create a professional header with the candidate's name prominently displayed.
+      Include contact information: email, phone, location (city, state), and LinkedIn profile if available.
+      Format should be clean and professional, suitable for ATS systems.
+    type: template-text
+    template: |
+      # {{candidate_name}}
+      
+      **Email:** {{email}} | **Phone:** {{phone}} | **Location:** {{location}}
+      {% if linkedin %}**LinkedIn:** {{linkedin}}{% endif %}
+      {% if portfolio %}**Portfolio:** {{portfolio}}{% endif %}
+
+  - id: professional-summary
+    title: Professional Summary
+    instruction: |
+      Write a compelling 2-3 sentence professional summary that highlights the candidate's key value proposition.
+      Focus on years of experience, key skills, and career achievements.
+      Use strong action verbs and industry-specific keywords.
+      Tailor to the target role and industry.
+    elicit: true
+    examples:
+      - "Results-driven software engineer with 8+ years of experience developing scalable web applications using React, Node.js, and cloud technologies. Led cross-functional teams of 12+ developers to deliver projects worth $2M+ while improving system performance by 40%."
+      - "Strategic marketing professional with 5+ years of experience in digital marketing and brand management. Increased customer acquisition by 150% through data-driven campaigns and managed $500K+ marketing budgets across multiple channels."
+
+  - id: core-competencies
+    title: Core Competencies
+    instruction: |
+      List 6-8 key skills and competencies relevant to the target role.
+      Include technical skills, soft skills, and industry-specific expertise.
+      Use keywords that align with job requirements and ATS systems.
+      Format as a clean list with skills separated by commas or bullet points.
+    type: bullet-list
+    repeatable: true
+    examples:
+      - "JavaScript, React, Node.js, Python, AWS, Docker, Git, Agile Methodologies"
+      - "Strategic Planning, Team Leadership, Project Management, Data Analysis, Client Relations"
+
+  - id: professional-experience
+    title: Professional Experience
+    instruction: |
+      List work experience in reverse chronological order (most recent first).
+      For each position, include company name, job title, dates, and location.
+      Use strong action verbs and quantify achievements with specific metrics.
+      Focus on accomplishments rather than just job duties.
+      Ensure ATS compatibility with clear formatting.
+    repeatable: true
+    sections:
+      - id: job-header
+        title: "{{job_title}} | {{company_name}} | {{start_date}} - {{end_date}}"
+        instruction: |
+          Format job header with title, company, and dates.
+          Use consistent formatting throughout the resume.
+        type: template-text
+        template: "**{{job_title}}** | {{company_name}} | {{start_date}} - {{end_date}}"
+      
+      - id: job-achievements
+        title: Key Achievements
+        instruction: |
+          List 3-5 key achievements for this role using the STAR method (Situation, Task, Action, Result).
+          Quantify results with specific numbers, percentages, and metrics.
+          Use strong action verbs and industry-specific terminology.
+          Focus on impact and value delivered to the organization.
+        type: bullet-list
+        repeatable: true
+        examples:
+          - "Led development of customer portal that improved user engagement by 35% and reduced support tickets by 40%"
+          - "Managed team of 8 developers to deliver $500K project on time and under budget"
+          - "Implemented automated testing framework that reduced bug reports by 60% and deployment time by 50%"
+
+  - id: education
+    title: Education
+    instruction: |
+      List educational background including degrees, institutions, and graduation dates.
+      Include relevant certifications, training programs, or continuing education.
+      Format consistently with the rest of the resume.
+    repeatable: true
+    sections:
+      - id: degree
+        title: "{{degree_name}} | {{institution_name}} | {{graduation_date}}"
+        instruction: |
+          Format education entry with degree, institution, and graduation date.
+          Include GPA if 3.5 or higher.
+        type: template-text
+        template: "**{{degree_name}}** | {{institution_name}} | {{graduation_date}}{% if gpa %} | GPA: {{gpa}}{% endif %}"
+
+  - id: certifications
+    title: Certifications
+    condition: Has relevant certifications
+    instruction: |
+      List professional certifications relevant to the target role.
+      Include certification name, issuing organization, and date obtained.
+      Only include certifications that add value to the candidate's profile.
+    type: bullet-list
+    repeatable: true
+    examples:
+      - "AWS Certified Solutions Architect - Associate | Amazon Web Services | 2023"
+      - "Project Management Professional (PMP) | Project Management Institute | 2022"
+
+  - id: technical-skills
+    title: Technical Skills
+    condition: Has technical background
+    instruction: |
+      Organize technical skills by category (e.g., Programming Languages, Frameworks, Tools, Databases).
+      Include proficiency levels if appropriate (e.g., Expert, Advanced, Intermediate).
+      Focus on skills relevant to the target role and industry.
+    type: bullet-list
+    repeatable: true
+    examples:
+      - "**Programming Languages:** JavaScript, Python, Java, SQL, TypeScript"
+      - "**Frameworks & Libraries:** React, Node.js, Express, Django, Spring Boot"
+      - "**Tools & Platforms:** Git, Docker, AWS, Jenkins, Jira"
+
+  - id: projects
+    title: Key Projects
+    condition: Has notable projects to showcase
+    instruction: |
+      Highlight 2-3 significant projects that demonstrate relevant skills and achievements.
+      Include project scope, technologies used, and measurable outcomes.
+      Focus on projects that align with the target role requirements.
+    repeatable: true
+    sections:
+      - id: project-header
+        title: "{{project_name}} | {{technologies_used}}"
+        instruction: |
+          Format project header with name and key technologies used.
+        type: template-text
+        template: "**{{project_name}}** | {{technologies_used}}"
+      
+      - id: project-description
+        title: Project Description
+        instruction: |
+          Provide a brief description of the project, your role, and key achievements.
+          Quantify results and impact where possible.
+        type: paragraphs
+
+  - id: awards-recognition
+    title: Awards & Recognition
+    condition: Has relevant awards or recognition
+    instruction: |
+      List professional awards, honors, or recognition received.
+      Include the awarding organization and date.
+      Focus on achievements that demonstrate excellence and leadership.
+    type: bullet-list
+    repeatable: true
+    examples:
+      - "Employee of the Year | Company Name | 2023"
+      - "Best Technical Innovation Award | Industry Conference | 2022"
+
+  - id: professional-development
+    title: Professional Development
+    condition: Has ongoing learning activities
+    instruction: |
+      Include relevant professional development activities such as conferences attended, workshops, or training programs.
+      Focus on activities that enhance skills relevant to the target role.
+    type: bullet-list
+    repeatable: true
+    examples:
+      - "Attended AWS re:Invent Conference | Las Vegas, NV | 2023"
+      - "Completed Advanced React Patterns Course | Frontend Masters | 2023"

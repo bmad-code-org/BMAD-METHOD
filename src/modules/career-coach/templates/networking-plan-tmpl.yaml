@@ -1,0 +1,421 @@
+template:
+  id: networking-plan-tmpl
+  name: Professional Networking Strategy Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: {{candidate_name}}-networking-plan.md
+    title: "{{candidate_name}} - Professional Networking Strategy"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: networking-overview
+    title: Networking Strategy Overview
+    instruction: |
+      Create a comprehensive overview of the networking strategy, including goals, target audience, and key objectives.
+      Explain the importance of networking for career development and success.
+    type: paragraphs
+    template: |
+      # Professional Networking Strategy - {{candidate_name}}
+      
+      **Date:** {{plan_date}}
+      **Primary Goal:** {{networking_goal}}
+      **Timeline:** {{timeline}}
+      **Focus Areas:** {{focus_areas}}
+
+  - id: current-network-assessment
+    title: Current Network Assessment
+    instruction: |
+      Evaluate the current professional network, including existing connections, relationship strength, and network gaps.
+      Be honest about the current state and identify areas for improvement.
+    type: structured-content
+    sections:
+      - id: existing-connections
+        title: Existing Professional Connections
+        instruction: |
+          Document current professional connections and relationships.
+          Include colleagues, mentors, industry contacts, and other professional relationships.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{connection_name}}** - {{relationship_type}}
+          - **Company/Role:** {{company_role}}
+          - **Connection Strength:** {{connection_strength}}
+          - **Last Contact:** {{last_contact_date}}
+          - **Value Provided:** {{value_provided}}
+          - **Follow-up Needed:** {{follow_up_needed}}
+      
+      - id: network-gaps
+        title: Identified Network Gaps
+        instruction: |
+          Identify gaps in the current professional network.
+          Consider industry, role level, geographic, and functional gaps.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{gap_category}}:** {{gap_description}}
+          - **Impact:** {{gap_impact}}
+          - **Priority:** {{gap_priority}}
+          - **Action Needed:** {{action_needed}}
+
+  - id: networking-goals
+    title: Networking Goals and Objectives
+    instruction: |
+      Define specific networking goals and objectives that align with career development needs.
+      Make goals specific, measurable, and achievable within the stated timeline.
+    type: structured-content
+    sections:
+      - id: primary-goals
+        title: Primary Networking Goals
+        instruction: |
+          Define the main networking goals that will support career advancement.
+          Focus on goals that will have the greatest impact on career success.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{goal_name}}**
+          - **Description:** {{goal_description}}
+          - **Timeline:** {{goal_timeline}}
+          - **Success Metrics:** {{success_metrics}}
+          - **Priority Level:** {{priority_level}}
+      
+      - id: specific-objectives
+        title: Specific Networking Objectives
+        instruction: |
+          Break down networking goals into specific, actionable objectives.
+          Include measurable targets and deadlines for each objective.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{objective_name}}**
+          - **Target:** {{objective_target}}
+          - **Deadline:** {{objective_deadline}}
+          - **Action Steps:** {{action_steps}}
+          - **Resources Needed:** {{resources_needed}}
+
+  - id: target-connections
+    title: Target Connections and Relationships
+    instruction: |
+      Identify specific individuals and types of connections to pursue.
+      Include industry leaders, potential mentors, peers, and other valuable contacts.
+    type: structured-content
+    sections:
+      - id: industry-leaders
+        title: Industry Leaders and Influencers
+        instruction: |
+          Identify key industry leaders and influencers to connect with.
+          Focus on individuals who can provide insights, opportunities, and mentorship.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{leader_name}}** - {{company_role}}
+          - **Industry:** {{industry}}
+          - **Expertise:** {{expertise_areas}}
+          - **Connection Strategy:** {{connection_strategy}}
+          - **Value Proposition:** {{value_proposition}}
+          - **Timeline:** {{connection_timeline}}
+      
+      - id: potential-mentors
+        title: Potential Mentors and Advisors
+        instruction: |
+          Identify potential mentors who can provide guidance and support.
+          Consider both formal and informal mentoring relationships.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{mentor_name}}** - {{mentor_role}}
+          - **Mentoring Focus:** {{mentoring_focus}}
+          - **Experience Level:** {{experience_level}}
+          - **Approach Strategy:** {{approach_strategy}}
+          - **Relationship Goals:** {{relationship_goals}}
+      
+      - id: peer-connections
+        title: Peer and Colleague Connections
+        instruction: |
+          Identify peers and colleagues who can provide support and collaboration opportunities.
+          Focus on building mutually beneficial relationships.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{peer_name}}** - {{peer_role}}
+          - **Common Interests:** {{common_interests}}
+          - **Collaboration Opportunities:** {{collaboration_opportunities}}
+          - **Support Areas:** {{support_areas}}
+
+  - id: networking-activities
+    title: Networking Activities and Events
+    instruction: |
+      Plan specific networking activities and events to build relationships and expand the network.
+      Include both online and offline networking opportunities.
+    type: structured-content
+    sections:
+      - id: industry-events
+        title: Industry Events and Conferences
+        instruction: |
+          Identify industry events, conferences, and professional gatherings to attend.
+          Plan how to maximize networking opportunities at each event.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{event_name}}** - {{event_date}}
+          - **Location:** {{event_location}}
+          - **Networking Goals:** {{networking_goals}}
+          - **Target Connections:** {{target_connections}}
+          - **Preparation Required:** {{preparation_required}}
+          - **Follow-up Plan:** {{follow_up_plan}}
+      
+      - id: online-networking
+        title: Online Networking Activities
+        instruction: |
+          Plan online networking activities including social media engagement, virtual events, and digital communities.
+          Focus on building meaningful online relationships.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{online_activity}}**
+          - **Platform:** {{platform}}
+          - **Frequency:** {{frequency}}
+          - **Content Strategy:** {{content_strategy}}
+          - **Engagement Goals:** {{engagement_goals}}
+          - **Success Metrics:** {{success_metrics}}
+      
+      - id: local-networking
+        title: Local Networking Opportunities
+        instruction: |
+          Identify local networking opportunities including meetups, professional associations, and community events.
+          Focus on building local professional relationships.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{local_opportunity}}**
+          - **Organization:** {{organization}}
+          - **Meeting Schedule:** {{meeting_schedule}}
+          - **Participation Level:** {{participation_level}}
+          - **Relationship Building:** {{relationship_building}}
+
+  - id: outreach-strategy
+    title: Outreach and Connection Strategy
+    instruction: |
+      Develop a systematic approach to reaching out to new connections and building relationships.
+      Include initial contact methods, follow-up strategies, and relationship maintenance.
+    type: structured-content
+    sections:
+      - id: initial-contact
+        title: Initial Contact Methods
+        instruction: |
+          Plan how to make initial contact with target connections.
+          Include personalized approaches and value propositions.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{contact_method}}**
+          - **Target Audience:** {{target_audience}}
+          - **Approach:** {{approach_description}}
+          - **Value Proposition:** {{value_proposition}}
+          - **Success Rate:** {{expected_success_rate}}
+          - **Follow-up Required:** {{follow_up_required}}
+      
+      - id: follow-up-strategy
+        title: Follow-up and Relationship Building
+        instruction: |
+          Develop strategies for following up with new connections and building ongoing relationships.
+          Include communication frequency and content strategies.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{follow_up_type}}**
+          - **Timing:** {{follow_up_timing}}
+          - **Content:** {{follow_up_content}}
+          - **Frequency:** {{communication_frequency}}
+          - **Relationship Goals:** {{relationship_goals}}
+      
+      - id: value-exchange
+        title: Value Exchange Strategy
+        instruction: |
+          Plan how to provide value to network connections and build mutually beneficial relationships.
+          Focus on ways to help others while building your own network.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{value_type}}**
+          - **Description:** {{value_description}}
+          - **Target Recipients:** {{target_recipients}}
+          - **Delivery Method:** {{delivery_method}}
+          - **Frequency:** {{value_frequency}}
+
+  - id: relationship-maintenance
+    title: Relationship Maintenance and Growth
+    instruction: |
+      Develop strategies for maintaining and growing existing professional relationships.
+      Include regular communication, value provision, and relationship deepening activities.
+    type: structured-content
+    sections:
+      - id: communication-schedule
+        title: Communication Schedule
+        instruction: |
+          Create a schedule for regular communication with key network connections.
+          Include different communication methods and frequencies for different relationship types.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{connection_category}}**
+          - **Communication Frequency:** {{communication_frequency}}
+          - **Methods:** {{communication_methods}}
+          - **Content Focus:** {{content_focus}}
+          - **Relationship Goals:** {{relationship_goals}}
+      
+      - id: relationship-deepening
+        title: Relationship Deepening Activities
+        instruction: |
+          Plan activities to deepen existing professional relationships.
+          Include collaboration opportunities, mentorship, and mutual support.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{deepening_activity}}**
+          - **Purpose:** {{activity_purpose}}
+          - **Target Relationships:** {{target_relationships}}
+          - **Implementation:** {{implementation_plan}}
+          - **Expected Outcomes:** {{expected_outcomes}}
+
+  - id: networking-tools
+    title: Networking Tools and Resources
+    instruction: |
+      Identify tools, platforms, and resources to support networking activities.
+      Include both digital tools and traditional networking resources.
+    type: structured-content
+    sections:
+      - id: digital-tools
+        title: Digital Networking Tools
+        instruction: |
+          Identify digital tools and platforms for networking activities.
+          Include social media, professional networks, and communication tools.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{digital_tool}}**
+          - **Purpose:** {{tool_purpose}}
+          - **Usage Strategy:** {{usage_strategy}}
+          - **Time Investment:** {{time_investment}}
+          - **Expected ROI:** {{expected_roi}}
+      
+      - id: networking-resources
+        title: Networking Resources and Support
+        instruction: |
+          Identify resources and support systems for networking activities.
+          Include professional associations, networking groups, and educational resources.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{resource_name}}**
+          - **Type:** {{resource_type}}
+          - **Access Method:** {{access_method}}
+          - **Value Provided:** {{value_provided}}
+          - **Utilization Plan:** {{utilization_plan}}
+
+  - id: success-metrics
+    title: Success Metrics and Evaluation
+    instruction: |
+      Define how to measure the success of networking activities and relationship building.
+      Include both quantitative and qualitative metrics for evaluation.
+    type: structured-content
+    sections:
+      - id: quantitative-metrics
+        title: Quantitative Success Metrics
+        instruction: |
+          Define measurable metrics to track networking success.
+          Include connection numbers, engagement rates, and relationship outcomes.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{metric_name}}**
+          - **Measurement Method:** {{measurement_method}}
+          - **Target Value:** {{target_value}}
+          - **Current Value:** {{current_value}}
+          - **Timeline:** {{measurement_timeline}}
+      
+      - id: qualitative-metrics
+        title: Qualitative Success Indicators
+        instruction: |
+          Identify qualitative indicators of networking success.
+          Include relationship quality, professional reputation, and career opportunities.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{indicator_name}}**
+          - **Description:** {{indicator_description}}
+          - **Assessment Method:** {{assessment_method}}
+          - **Success Criteria:** {{success_criteria}}
+
+  - id: implementation-timeline
+    title: Implementation Timeline
+    instruction: |
+      Create a detailed timeline for implementing the networking strategy.
+      Include milestones, deadlines, and regular review points.
+    type: structured-content
+    sections:
+      - id: quarterly-milestones
+        title: Quarterly Networking Milestones
+        instruction: |
+          Define major networking milestones for each quarter.
+          Include relationship building goals and network expansion targets.
+        type: structured-list
+        repeatable: true
+        template: |
+          **Q{{quarter_number}} - {{quarter_year}}**
+          - **Primary Goals:** {{primary_goals}}
+          - **Key Activities:** {{key_activities}}
+          - **Target Connections:** {{target_connections}}
+          - **Success Metrics:** {{success_metrics}}
+      
+      - id: monthly-activities
+        title: Monthly Networking Activities
+        instruction: |
+          Break down quarterly goals into monthly activities.
+          Include specific networking events, outreach activities, and relationship building tasks.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{month_name}}**
+          - **Focus Areas:** {{focus_areas}}
+          - **Key Activities:** {{key_activities}}
+          - **Target Outcomes:** {{target_outcomes}}
+          - **Review Points:** {{review_points}}
+
+  - id: risk-mitigation
+    title: Risk Assessment and Mitigation
+    instruction: |
+      Identify potential risks and challenges in networking activities.
+      Develop strategies to mitigate risks and overcome obstacles.
+    type: structured-content
+    sections:
+      - id: potential-risks
+        title: Potential Networking Risks
+        instruction: |
+          Identify potential risks and challenges in networking activities.
+          Include time constraints, rejection, and relationship management challenges.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{risk_name}}**
+          - **Risk Description:** {{risk_description}}
+          - **Impact Level:** {{impact_level}}
+          - **Probability:** {{probability}}
+          - **Mitigation Strategy:** {{mitigation_strategy}}
+      
+      - id: contingency-plans
+        title: Contingency Plans
+        instruction: |
+          Develop contingency plans for addressing networking challenges and obstacles.
+          Include alternative approaches and backup strategies.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{contingency_plan}}**
+          - **Trigger:** {{trigger_condition}}
+          - **Alternative Approach:** {{alternative_approach}}
+          - **Implementation:** {{implementation_plan}}
+          - **Success Criteria:** {{success_criteria}}

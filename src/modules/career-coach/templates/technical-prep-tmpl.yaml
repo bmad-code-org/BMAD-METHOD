@@ -1,0 +1,426 @@
+# Technical Interview Preparation Template
+
+## Template Information
+- **Template Type:** Technical Interview Preparation
+- **Agent:** interview-coach
+- **Task:** technical-interview-prep.md
+- **Version:** 1.0
+
+## Template Structure
+technical_interview_preparation:
+  candidate_profile:
+    name: "[Candidate Name]"
+    target_role: "[Target Job Title]"
+    target_company: "[Target Company]"
+    experience_level: "[Junior/Mid/Senior]"
+    primary_technologies: "[Primary Technology Stack]"
+    interview_type: "[Coding/System Design/Architecture/Behavioral]"
+    interview_duration: "[Expected Duration]"
+  
+  technical_assessment:
+    current_skills:
+      programming_languages:
+        - language: "[Programming Language]"
+          proficiency: "[Beginner/Intermediate/Advanced/Expert]"
+          years_experience: "[Number of Years]"
+          projects_completed: "[Number of Projects]"
+          assessment_method: "[Self-assessment/Portfolio/Previous interviews]"
+      
+      frameworks_libraries:
+        - framework: "[Framework/Library Name]"
+          proficiency: "[Beginner/Intermediate/Advanced/Expert]"
+          use_cases: "[Specific Use Cases]"
+          project_examples: "[Project Examples]"
+      
+      databases:
+        - database: "[Database Type/Name]"
+          proficiency: "[Beginner/Intermediate/Advanced/Expert]"
+          use_cases: "[Specific Use Cases]"
+          optimization_experience: "[Optimization Experience]"
+      
+      cloud_platforms:
+        - platform: "[Cloud Platform]"
+          proficiency: "[Beginner/Intermediate/Advanced/Expert]"
+          services_used: "[Services Used]"
+          deployment_experience: "[Deployment Experience]"
+    
+    skill_gaps:
+      identified_gaps:
+        - skill: "[Missing Skill]"
+          importance: "[High/Medium/Low]"
+          learning_priority: "[High/Medium/Low]"
+          learning_timeline: "[Timeline for Learning]"
+          resources_needed: "[Learning Resources]"
+      
+      improvement_areas:
+        - area: "[Area for Improvement]"
+          current_level: "[Current Level]"
+          target_level: "[Target Level]"
+          improvement_strategy: "[Strategy for Improvement]"
+  
+  coding_preparation:
+    algorithm_practice:
+      data_structures:
+        - structure: "Arrays and Strings"
+          practice_problems: "[Number of Problems]"
+          confidence_level: "[1-10 Scale]"
+          common_patterns: "[Common Patterns to Practice]"
+        
+        - structure: "Linked Lists"
+          practice_problems: "[Number of Problems]"
+          confidence_level: "[1-10 Scale]"
+          common_patterns: "[Common Patterns to Practice]"
+        
+        - structure: "Trees and Graphs"
+          practice_problems: "[Number of Problems]"
+          confidence_level: "[1-10 Scale]"
+          common_patterns: "[Common Patterns to Practice]"
+        
+        - structure: "Dynamic Programming"
+          practice_problems: "[Number of Problems]"
+          confidence_level: "[1-10 Scale]"
+          common_patterns: "[Common Patterns to Practice]"
+      
+      algorithm_categories:
+        - category: "Sorting and Searching"
+          key_algorithms: "[Key Algorithms]"
+          practice_problems: "[Number of Problems]"
+          time_complexity: "[Understanding Level]"
+        
+        - category: "Graph Algorithms"
+          key_algorithms: "[Key Algorithms]"
+          practice_problems: "[Number of Problems]"
+          time_complexity: "[Understanding Level]"
+        
+        - category: "Dynamic Programming"
+          key_algorithms: "[Key Algorithms]"
+          practice_problems: "[Number of Problems]"
+          time_complexity: "[Understanding Level]"
+    
+    coding_platforms:
+      practice_platforms:
+        - platform: "LeetCode"
+          problems_solved: "[Number of Problems]"
+          difficulty_distribution: "[Easy/Medium/Hard Distribution]"
+          focus_areas: "[Areas of Focus]"
+        
+        - platform: "HackerRank"
+          problems_solved: "[Number of Problems]"
+          difficulty_distribution: "[Easy/Medium/Hard Distribution]"
+          focus_areas: "[Areas of Focus]"
+        
+        - platform: "CodeSignal"
+          problems_solved: "[Number of Problems]"
+          difficulty_distribution: "[Easy/Medium/Hard Distribution]"
+          focus_areas: "[Areas of Focus]"
+    
+    coding_standards:
+      code_quality:
+        - standard: "Code Readability"
+          current_level: "[1-10 Scale]"
+          improvement_focus: "[Areas for Improvement]"
+          practice_methods: "[Practice Methods]"
+        
+        - standard: "Code Efficiency"
+          current_level: "[1-10 Scale]"
+          improvement_focus: "[Areas for Improvement]"
+          practice_methods: "[Practice Methods]"
+        
+        - standard: "Error Handling"
+          current_level: "[1-10 Scale]"
+          improvement_focus: "[Areas for Improvement]"
+          practice_methods: "[Practice Methods]"
+      
+      coding_practices:
+        - practice: "Test-Driven Development"
+          familiarity: "[1-10 Scale]"
+          implementation_ability: "[1-10 Scale]"
+          practice_needed: "[Yes/No]"
+        
+        - practice: "Code Review"
+          experience_level: "[1-10 Scale]"
+          review_skills: "[Areas of Strength]"
+          improvement_areas: "[Areas for Improvement]"
+        
+        - practice: "Version Control"
+          git_proficiency: "[1-10 Scale]"
+          branching_strategies: "[Understanding Level]"
+          collaboration_experience: "[Experience Level]"
+  
+  system_design_preparation:
+    design_principles:
+      scalability:
+        understanding: "[1-10 Scale]"
+        key_concepts: "[Key Concepts Understood]"
+        practice_scenarios: "[Practice Scenarios]"
+        common_patterns: "[Common Patterns]"
+      
+      availability:
+        understanding: "[1-10 Scale]"
+        key_concepts: "[Key Concepts Understood]"
+        practice_scenarios: "[Practice Scenarios]"
+        common_patterns: "[Common Patterns]"
+      
+      consistency:
+        understanding: "[1-10 Scale]"
+        key_concepts: "[Key Concepts Understood]"
+        practice_scenarios: "[Practice Scenarios]"
+        common_patterns: "[Common Patterns]"
+    
+    system_components:
+      load_balancing:
+        understanding: "[1-10 Scale]"
+        types_known: "[Types of Load Balancers]"
+        implementation_experience: "[Experience Level]"
+        trade_offs: "[Understanding of Trade-offs]"
+      
+      caching:
+        understanding: "[1-10 Scale]"
+        cache_types: "[Types of Caching]"
+        implementation_experience: "[Experience Level]"
+        cache_strategies: "[Cache Strategies]"
+      
+      databases:
+        relational:
+          understanding: "[1-10 Scale]"
+          optimization_skills: "[Optimization Skills]"
+          scaling_experience: "[Scaling Experience]"
+        
+        nosql:
+          understanding: "[1-10 Scale]"
+          types_known: "[Types of NoSQL Databases]"
+          use_cases: "[Use Cases Understanding]"
+      
+      message_queues:
+        understanding: "[1-10 Scale]"
+        queue_types: "[Types of Message Queues]"
+        implementation_experience: "[Experience Level]"
+        use_cases: "[Use Cases Understanding]"
+    
+    design_patterns:
+      microservices:
+        understanding: "[1-10 Scale]"
+        design_principles: "[Design Principles]"
+        implementation_experience: "[Experience Level]"
+        challenges: "[Understanding of Challenges]"
+      
+      event_driven_architecture:
+        understanding: "[1-10 Scale]"
+        patterns_known: "[Known Patterns]"
+        implementation_experience: "[Experience Level]"
+        use_cases: "[Use Cases Understanding]"
+      
+      api_design:
+        rest_apis:
+          understanding: "[1-10 Scale]"
+          design_principles: "[Design Principles]"
+          best_practices: "[Best Practices Knowledge]"
+        
+        graphql:
+          understanding: "[1-10 Scale]"
+          design_principles: "[Design Principles]"
+          implementation_experience: "[Experience Level]"
+  
+  technical_communication:
+    problem_solving_approach:
+      structured_thinking:
+        current_approach: "[Current Approach]"
+        improvement_areas: "[Areas for Improvement]"
+        practice_methods: "[Practice Methods]"
+      
+      communication_skills:
+        explaining_solutions: "[1-10 Scale]"
+        asking_clarifying_questions: "[1-10 Scale]"
+        handling_feedback: "[1-10 Scale]"
+        collaboration_skills: "[1-10 Scale]"
+    
+    technical_discussion:
+      architecture_discussions:
+        participation_level: "[1-10 Scale]"
+        contribution_quality: "[1-10 Scale]"
+        learning_ability: "[1-10 Scale]"
+      
+      code_review_skills:
+        giving_feedback: "[1-10 Scale]"
+        receiving_feedback: "[1-10 Scale]"
+        constructive_criticism: "[1-10 Scale]"
+  
+  practice_schedule:
+    daily_practice:
+      coding_problems:
+        problems_per_day: "[Number of Problems]"
+        difficulty_distribution: "[Easy/Medium/Hard]"
+        focus_areas: "[Areas of Focus]"
+        time_allocation: "[Time Allocation]"
+      
+      system_design:
+        scenarios_per_week: "[Number of Scenarios]"
+        complexity_levels: "[Complexity Levels]"
+        practice_methods: "[Practice Methods]"
+        time_allocation: "[Time Allocation]"
+    
+    weekly_goals:
+      - goal: "[Specific Weekly Goal]"
+        measurable_target: "[Measurable Target]"
+        success_criteria: "[Success Criteria]"
+        timeline: "[Timeline]"
+      
+      - goal: "[Specific Weekly Goal]"
+        measurable_target: "[Measurable Target]"
+        success_criteria: "[Success Criteria]"
+        timeline: "[Timeline]"
+    
+    mock_interviews:
+      scheduled_sessions:
+        - session_number: 1
+          focus_area: "[Coding/System Design/Behavioral]"
+          date: "[Session Date]"
+          duration: "[Duration]"
+          interviewer: "[Interviewer]"
+          preparation_required: "[Preparation Required]"
+        
+        - session_number: 2
+          focus_area: "[Coding/System Design/Behavioral]"
+          date: "[Session Date]"
+          duration: "[Duration]"
+          interviewer: "[Interviewer]"
+          preparation_required: "[Preparation Required]"
+  
+  resource_recommendations:
+    learning_materials:
+      books:
+        - title: "[Book Title]"
+          author: "[Author]"
+          focus_area: "[Focus Area]"
+          relevance: "[Relevance to Target Role]"
+          reading_priority: "[High/Medium/Low]"
+        
+        - title: "[Book Title]"
+          author: "[Author]"
+          focus_area: "[Focus Area]"
+          relevance: "[Relevance to Target Role]"
+          reading_priority: "[High/Medium/Low]"
+      
+      online_courses:
+        - course: "[Course Title]"
+          platform: "[Platform]"
+          focus_area: "[Focus Area]"
+          duration: "[Duration]"
+          completion_status: "[Not Started/In Progress/Completed]"
+        
+        - course: "[Course Title]"
+          platform: "[Platform]"
+          focus_area: "[Focus Area]"
+          duration: "[Duration]"
+          completion_status: "[Not Started/In Progress/Completed]"
+      
+      practice_resources:
+        - resource: "[Resource Name]"
+          type: "[Website/App/Tool]"
+          focus_area: "[Focus Area]"
+          difficulty_level: "[Difficulty Level]"
+          usage_frequency: "[Usage Frequency]"
+        
+        - resource: "[Resource Name]"
+          type: "[Website/App/Tool]"
+          focus_area: "[Focus Area]"
+          difficulty_level: "[Difficulty Level]"
+          usage_frequency: "[Usage Frequency]"
+    
+    company_specific_preparation:
+      target_company_research:
+        technology_stack: "[Company's Technology Stack]"
+        engineering_practices: "[Engineering Practices]"
+        interview_process: "[Interview Process]"
+        common_questions: "[Common Interview Questions]"
+      
+      industry_trends:
+        relevant_technologies: "[Relevant Technologies]"
+        emerging_trends: "[Emerging Trends]"
+        market_demands: "[Market Demands]"
+        skill_priorities: "[Skill Priorities]"
+  
+  interview_strategy:
+    technical_questions:
+      approach_strategy:
+        problem_understanding: "[Approach to Understanding Problems]"
+        solution_planning: "[Solution Planning Strategy]"
+        implementation_approach: "[Implementation Approach]"
+        testing_strategy: "[Testing Strategy]"
+      
+      common_mistakes:
+        - mistake: "[Common Mistake]"
+          prevention_strategy: "[Prevention Strategy]"
+          practice_focus: "[Practice Focus]"
+        
+        - mistake: "[Common Mistake]"
+          prevention_strategy: "[Prevention Strategy]"
+          practice_focus: "[Practice Focus]"
+    
+    system_design_questions:
+      framework_approach:
+        requirements_gathering: "[Requirements Gathering Approach]"
+        high_level_design: "[High-Level Design Approach]"
+        detailed_design: "[Detailed Design Approach]"
+        trade_off_analysis: "[Trade-off Analysis Approach]"
+      
+      communication_strategy:
+        explaining_choices: "[Strategy for Explaining Choices]"
+        handling_questions: "[Strategy for Handling Questions]"
+        collaboration_approach: "[Collaboration Approach]"
+    
+    behavioral_technical:
+      technical_achievements:
+        - achievement: "[Technical Achievement]"
+          impact: "[Impact]"
+          technologies_used: "[Technologies Used]"
+          challenges_overcome: "[Challenges Overcome]"
+        
+        - achievement: "[Technical Achievement]"
+          impact: "[Impact]"
+          technologies_used: "[Technologies Used]"
+          challenges_overcome: "[Challenges Overcome]"
+      
+      technical_challenges:
+        - challenge: "[Technical Challenge]"
+          solution_approach: "[Solution Approach]"
+          learning_outcome: "[Learning Outcome]"
+          skill_development: "[Skill Development]"
+        
+        - challenge: "[Technical Challenge]"
+          solution_approach: "[Solution Approach]"
+          learning_outcome: "[Learning Outcome]"
+          skill_development: "[Skill Development]"
+  
+  success_metrics:
+    technical_readiness:
+      coding_skills: "[1-10 Scale]"
+      system_design_skills: "[1-10 Scale]"
+      problem_solving_ability: "[1-10 Scale]"
+      technical_communication: "[1-10 Scale]"
+      overall_readiness: "[1-10 Scale]"
+    
+    confidence_levels:
+      algorithm_problems: "[1-10 Scale]"
+      system_design: "[1-10 Scale]"
+      coding_implementation: "[1-10 Scale]"
+      technical_discussion: "[1-10 Scale]"
+      interview_performance: "[1-10 Scale]"
+    
+    improvement_tracking:
+      weekly_progress: "[Progress Tracking Method]"
+      skill_development: "[Skill Development Tracking]"
+      practice_consistency: "[Practice Consistency]"
+      mock_interview_performance: "[Mock Interview Performance]"
+  
+  contingency_planning:
+    backup_preparation:
+      alternative_roles: "[Alternative Roles to Consider]"
+      skill_development_plan: "[Skill Development Plan]"
+      networking_opportunities: "[Networking Opportunities]"
+    
+    interview_outcomes:
+      success_strategy: "[Strategy if Successful]"
+      improvement_plan: "[Plan if Not Successful]"
+      learning_focus: "[Learning Focus Areas]"
+      next_steps: "[Next Steps]"

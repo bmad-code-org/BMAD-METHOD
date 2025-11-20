@@ -1,0 +1,301 @@
+template:
+  id: skills-assessment-tmpl
+  name: Skills Assessment Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: {{candidate_name}}-skills-assessment.md
+    title: "{{candidate_name}} - Skills Assessment"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: assessment-overview
+    title: Skills Assessment Overview
+    instruction: |
+      Create an overview of the skills assessment, including the purpose, scope, and assessment methodology.
+      Explain how the assessment will be used for career development planning.
+    type: paragraphs
+    template: |
+      # Skills Assessment - {{candidate_name}}
+      
+      **Assessment Date:** {{assessment_date}}
+      **Purpose:** {{assessment_purpose}}
+      **Scope:** {{assessment_scope}}
+      **Methodology:** {{assessment_methodology}}
+
+  - id: technical-skills
+    title: Technical Skills Assessment
+    instruction: |
+      Evaluate technical skills across various categories including programming languages, tools, platforms, and methodologies.
+      Use a consistent rating scale and provide specific examples of proficiency.
+    type: structured-content
+    sections:
+      - id: programming-languages
+        title: Programming Languages
+        instruction: |
+          Assess proficiency in programming languages relevant to your field.
+          Include languages you use regularly and those you're learning.
+        type: skill-rating
+        rating-scale: [Beginner, Intermediate, Advanced, Expert]
+        repeatable: true
+        template: |
+          **{{language_name}}:** {{proficiency_level}}
+          - **Experience:** {{years_experience}} years
+          - **Projects:** {{project_examples}}
+          - **Certifications:** {{certifications}}
+          - **Notes:** {{additional_notes}}
+      
+      - id: tools-technologies
+        title: Tools and Technologies
+        instruction: |
+          Evaluate proficiency with development tools, frameworks, and platforms.
+          Include both current tools and emerging technologies.
+        type: skill-rating
+        rating-scale: [Beginner, Intermediate, Advanced, Expert]
+        repeatable: true
+        template: |
+          **{{tool_name}}:** {{proficiency_level}}
+          - **Use Case:** {{primary_use_case}}
+          - **Experience:** {{experience_details}}
+          - **Projects:** {{project_examples}}
+          - **Notes:** {{additional_notes}}
+      
+      - id: methodologies
+        title: Development Methodologies
+        instruction: |
+          Assess knowledge and experience with development methodologies and frameworks.
+          Include Agile, DevOps, and other relevant approaches.
+        type: skill-rating
+        rating-scale: [Beginner, Intermediate, Advanced, Expert]
+        repeatable: true
+        template: |
+          **{{methodology_name}}:** {{proficiency_level}}
+          - **Experience:** {{experience_details}}
+          - **Certifications:** {{certifications}}
+          - **Projects:** {{project_examples}}
+          - **Notes:** {{additional_notes}}
+
+  - id: soft-skills
+    title: Soft Skills Assessment
+    instruction: |
+      Evaluate interpersonal and communication skills that are critical for career success.
+      Include self-assessment and feedback from others where available.
+    type: structured-content
+    sections:
+      - id: communication
+        title: Communication Skills
+        instruction: |
+          Assess verbal, written, and presentation communication skills.
+          Include both formal and informal communication abilities.
+        type: skill-rating
+        rating-scale: [Needs Development, Developing, Proficient, Advanced]
+        repeatable: true
+        template: |
+          **{{communication_type}}:** {{proficiency_level}}
+          - **Strengths:** {{strengths}}
+          - **Areas for Improvement:** {{improvement_areas}}
+          - **Examples:** {{examples}}
+          - **Development Plan:** {{development_plan}}
+      
+      - id: leadership
+        title: Leadership Skills
+        instruction: |
+          Evaluate leadership abilities including team management, decision-making, and influence.
+          Include both formal leadership roles and informal leadership opportunities.
+        type: skill-rating
+        rating-scale: [Needs Development, Developing, Proficient, Advanced]
+        repeatable: true
+        template: |
+          **{{leadership_skill}}:** {{proficiency_level}}
+          - **Experience:** {{experience_details}}
+          - **Strengths:** {{strengths}}
+          - **Challenges:** {{challenges}}
+          - **Development Goals:** {{development_goals}}
+      
+      - id: problem-solving
+        title: Problem Solving and Critical Thinking
+        instruction: |
+          Assess analytical thinking, problem-solving approaches, and decision-making abilities.
+          Include both technical and business problem-solving skills.
+        type: skill-rating
+        rating-scale: [Needs Development, Developing, Proficient, Advanced]
+        repeatable: true
+        template: |
+          **{{problem_solving_area}}:** {{proficiency_level}}
+          - **Approach:** {{problem_solving_approach}}
+          - **Examples:** {{examples}}
+          - **Tools Used:** {{tools_methods}}
+          - **Outcomes:** {{outcomes}}
+
+  - id: industry-skills
+    title: Industry-Specific Skills
+    instruction: |
+      Evaluate knowledge and skills specific to your industry or domain.
+      Include regulatory knowledge, best practices, and industry trends.
+    type: structured-content
+    sections:
+      - id: domain-knowledge
+        title: Domain Knowledge
+        instruction: |
+          Assess understanding of industry-specific concepts, regulations, and practices.
+          Include both theoretical knowledge and practical application.
+        type: skill-rating
+        rating-scale: [Beginner, Intermediate, Advanced, Expert]
+        repeatable: true
+        template: |
+          **{{domain_area}}:** {{proficiency_level}}
+          - **Knowledge Areas:** {{knowledge_areas}}
+          - **Experience:** {{experience_details}}
+          - **Certifications:** {{certifications}}
+          - **Industry Involvement:** {{industry_involvement}}
+      
+      - id: business-acumen
+        title: Business Acumen
+        instruction: |
+          Evaluate understanding of business concepts, financial literacy, and strategic thinking.
+          Include both general business knowledge and industry-specific business understanding.
+        type: skill-rating
+        rating-scale: [Needs Development, Developing, Proficient, Advanced]
+        repeatable: true
+        template: |
+          **{{business_area}}:** {{proficiency_level}}
+          - **Understanding:** {{understanding_level}}
+          - **Experience:** {{experience_details}}
+          - **Applications:** {{practical_applications}}
+          - **Development Needs:** {{development_needs}}
+
+  - id: transferable-skills
+    title: Transferable Skills
+    instruction: |
+      Assess skills that can be applied across different roles and industries.
+      Include project management, data analysis, and other versatile competencies.
+    type: structured-content
+    sections:
+      - id: project-management
+        title: Project Management
+        instruction: |
+          Evaluate project management skills including planning, execution, and monitoring.
+          Include both formal project management methodologies and informal project leadership.
+        type: skill-rating
+        rating-scale: [Beginner, Intermediate, Advanced, Expert]
+        repeatable: true
+        template: |
+          **{{project_management_skill}}:** {{proficiency_level}}
+          - **Methodologies:** {{methodologies_used}}
+          - **Project Examples:** {{project_examples}}
+          - **Team Size:** {{team_size}}
+          - **Outcomes:** {{project_outcomes}}
+      
+      - id: data-analysis
+        title: Data Analysis
+        instruction: |
+          Assess ability to collect, analyze, and interpret data for decision-making.
+          Include both technical data analysis and business intelligence skills.
+        type: skill-rating
+        rating-scale: [Beginner, Intermediate, Advanced, Expert]
+        repeatable: true
+        template: |
+          **{{data_analysis_skill}}:** {{proficiency_level}}
+          - **Tools Used:** {{analysis_tools}}
+          - **Data Types:** {{data_types}}
+          - **Applications:** {{practical_applications}}
+          - **Outcomes:** {{analysis_outcomes}}
+
+  - id: skill-gaps
+    title: Skill Gap Analysis
+    instruction: |
+      Identify gaps between current skills and skills needed for career goals.
+      Prioritize skills for development based on importance and timeline.
+    type: structured-content
+    sections:
+      - id: gap-identification
+        title: Identified Skill Gaps
+        instruction: |
+          Compare current skills with required skills for target roles.
+          Identify specific gaps and their impact on career advancement.
+        type: structured-list
+        repeatable: true
+        template: |
+          **Skill:** {{skill_name}}
+          - **Current Level:** {{current_level}}
+          - **Required Level:** {{required_level}}
+          - **Gap:** {{gap_description}}
+          - **Importance:** {{importance_rating}}
+          - **Development Time:** {{development_timeframe}}
+      
+      - id: development-priorities
+        title: Development Priorities
+        instruction: |
+          Prioritize skills for development based on career goals and market demands.
+          Consider both short-term and long-term development needs.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{priority_level}} Priority:** {{skill_name}}
+          - **Rationale:** {{development_rationale}}
+          - **Timeline:** {{development_timeline}}
+          - **Resources Needed:** {{development_resources}}
+          - **Success Metrics:** {{success_metrics}}
+
+  - id: development-plan
+    title: Skills Development Plan
+    instruction: |
+      Create a detailed plan for developing identified skill gaps.
+      Include specific learning activities, timelines, and success metrics.
+    type: structured-content
+    sections:
+      - id: learning-activities
+        title: Learning Activities
+        instruction: |
+          Plan specific activities for developing each prioritized skill.
+          Include courses, projects, practice opportunities, and certifications.
+        type: structured-list
+        repeatable: true
+        template: |
+          **Skill:** {{skill_name}}
+          - **Learning Activity:** {{activity_description}}
+          - **Timeline:** {{activity_timeline}}
+          - **Resources:** {{required_resources}}
+          - **Success Criteria:** {{success_criteria}}
+          - **Progress Tracking:** {{progress_tracking_method}}
+      
+      - id: practice-opportunities
+        title: Practice Opportunities
+        instruction: |
+          Identify opportunities to practice and apply developing skills.
+          Include work projects, volunteer activities, and personal projects.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **Skill:** {{skill_name}}
+          - **Practice Opportunity:** {{opportunity_description}}
+          - **Timeline:** {{opportunity_timeline}}
+          - **Expected Outcomes:** {{expected_outcomes}}
+          - **Feedback Sources:** {{feedback_sources}}
+
+  - id: assessment-summary
+    title: Assessment Summary
+    instruction: |
+      Provide a summary of the skills assessment including key findings, priorities, and next steps.
+      Include overall strengths and areas for development.
+    type: paragraphs
+    template: |
+      ## Assessment Summary
+      
+      **Overall Strengths:**
+      {{overall_strengths}}
+      
+      **Key Development Areas:**
+      {{key_development_areas}}
+      
+      **Immediate Priorities:**
+      {{immediate_priorities}}
+      
+      **Long-term Development Goals:**
+      {{long_term_goals}}
+      
+      **Next Steps:**
+      {{next_steps}}

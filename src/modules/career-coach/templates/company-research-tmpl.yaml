@@ -1,0 +1,643 @@
+# Company Research Template
+
+## Template Information
+- **Template Type:** Company Research and Analysis
+- **Agent:** interview-coach
+- **Task:** company-research.md
+- **Version:** 1.0
+
+## Template Structure
+company_research_analysis:
+  company_overview:
+    basic_information:
+      company_name: "[Company Name]"
+      industry: "[Primary Industry]"
+      sector: "[Business Sector]"
+      founded: "[Year Founded]"
+      headquarters: "[Headquarters Location]"
+      company_size: "[Number of Employees]"
+      revenue: "[Annual Revenue]"
+      market_cap: "[Market Capitalization (if public)]"
+      ownership: "[Public/Private/Startup]"
+    
+    mission_vision:
+      mission_statement: "[Company Mission Statement]"
+      vision_statement: "[Company Vision Statement]"
+      core_values: "[Core Company Values]"
+      purpose: "[Company Purpose]"
+      brand_identity: "[Brand Identity and Positioning]"
+    
+    leadership:
+      ceo:
+        name: "[CEO Name]"
+        background: "[CEO Background and Experience]"
+        leadership_style: "[Leadership Style]"
+        vision: "[CEO's Vision for Company]"
+        tenure: "[Length of Tenure]"
+      
+      key_executives:
+        - name: "[Executive Name]"
+          title: "[Executive Title]"
+          background: "[Background and Experience]"
+          responsibilities: "[Key Responsibilities]"
+          influence: "[Influence on Company Direction]"
+        
+        - name: "[Executive Name]"
+          title: "[Executive Title]"
+          background: "[Background and Experience]"
+          responsibilities: "[Key Responsibilities]"
+          influence: "[Influence on Company Direction]"
+      
+      board_of_directors:
+        - name: "[Director Name]"
+          title: "[Board Title]"
+          background: "[Background and Experience]"
+          expertise: "[Areas of Expertise]"
+          other_positions: "[Other Board Positions]"
+        
+        - name: "[Director Name]"
+          title: "[Board Title]"
+          background: "[Background and Experience]"
+          expertise: "[Areas of Expertise]"
+          other_positions: "[Other Board Positions]"
+  
+  business_model:
+    products_services:
+      primary_products:
+        - product: "[Product/Service Name]"
+          description: "[Product/Service Description]"
+          target_market: "[Target Market]"
+          competitive_advantage: "[Competitive Advantages]"
+          revenue_model: "[Revenue Model]"
+        
+        - product: "[Product/Service Name]"
+          description: "[Product/Service Description]"
+          target_market: "[Target Market]"
+          competitive_advantage: "[Competitive Advantages]"
+          revenue_model: "[Revenue Model]"
+      
+      technology_stack:
+        - technology: "[Technology Name]"
+          purpose: "[Purpose in Company]"
+          expertise_level: "[Company's Expertise Level]"
+          strategic_importance: "[Strategic Importance]"
+        
+        - technology: "[Technology Name]"
+          purpose: "[Purpose in Company]"
+          expertise_level: "[Company's Expertise Level]"
+          strategic_importance: "[Strategic Importance]"
+    
+    revenue_streams:
+      - stream: "[Revenue Stream]"
+        percentage: "[Percentage of Total Revenue]"
+        growth_rate: "[Growth Rate]"
+        sustainability: "[Sustainability Assessment]"
+      
+      - stream: "[Revenue Stream]"
+        percentage: "[Percentage of Total Revenue]"
+        growth_rate: "[Growth Rate]"
+        sustainability: "[Sustainability Assessment]"
+    
+    customer_base:
+      target_customers: "[Target Customer Segments]"
+      customer_size: "[Customer Size Range]"
+      geographic_focus: "[Geographic Focus]"
+      customer_loyalty: "[Customer Loyalty Indicators]"
+      customer_satisfaction: "[Customer Satisfaction Metrics]"
+  
+  market_position:
+    competitive_landscape:
+      direct_competitors:
+        - competitor: "[Competitor Name]"
+          market_share: "[Market Share]"
+          strengths: "[Competitor Strengths]"
+          weaknesses: "[Competitor Weaknesses]"
+          competitive_advantage: "[Company's Advantage]"
+        
+        - competitor: "[Competitor Name]"
+          market_share: "[Market Share]"
+          strengths: "[Competitor Strengths]"
+          weaknesses: "[Competitor Weaknesses]"
+          competitive_advantage: "[Company's Advantage]"
+      
+      indirect_competitors:
+        - competitor: "[Competitor Name]"
+          threat_level: "[Threat Level]"
+          competitive_dynamics: "[Competitive Dynamics]"
+          market_impact: "[Market Impact]"
+        
+        - competitor: "[Competitor Name]"
+          threat_level: "[Threat Level]"
+          competitive_dynamics: "[Competitive Dynamics]"
+          market_impact: "[Market Impact]"
+    
+    market_share:
+      current_market_share: "[Current Market Share]"
+      market_share_trend: "[Market Share Trend]"
+      market_rank: "[Market Ranking]"
+      growth_potential: "[Growth Potential]"
+    
+    industry_trends:
+      relevant_trends:
+        - trend: "[Industry Trend]"
+          impact: "[Impact on Company]"
+          company_response: "[Company's Response]"
+          opportunity_threat: "[Opportunity or Threat]"
+        
+        - trend: "[Industry Trend]"
+          impact: "[Impact on Company]"
+          company_response: "[Company's Response]"
+          opportunity_threat: "[Opportunity or Threat]"
+      
+      disruptive_factors:
+        - factor: "[Disruptive Factor]"
+          potential_impact: "[Potential Impact]"
+          company_preparedness: "[Company's Preparedness]"
+          mitigation_strategies: "[Mitigation Strategies]"
+        
+        - factor: "[Disruptive Factor]"
+          potential_impact: "[Potential Impact]"
+          company_preparedness: "[Company's Preparedness]"
+          mitigation_strategies: "[Mitigation Strategies]"
+  
+  financial_analysis:
+    financial_performance:
+      revenue_growth: "[Revenue Growth Rate]"
+      profitability: "[Profitability Metrics]"
+      cash_flow: "[Cash Flow Analysis]"
+      debt_levels: "[Debt Levels]"
+      financial_strength: "[Financial Strength Assessment]"
+    
+    investment_analysis:
+      funding_history:
+        - round: "[Funding Round]"
+          amount: "[Funding Amount]"
+          date: "[Funding Date]"
+          investors: "[Key Investors]"
+          use_of_funds: "[Use of Funds]"
+        
+        - round: "[Funding Round]"
+          amount: "[Funding Amount]"
+          date: "[Funding Date]"
+          investors: "[Key Investors]"
+          use_of_funds: "[Use of Funds]"
+      
+      valuation:
+        current_valuation: "[Current Valuation]"
+        valuation_trend: "[Valuation Trend]"
+        valuation_factors: "[Key Valuation Factors]"
+        future_projection: "[Future Valuation Projection]"
+    
+    financial_metrics:
+      key_ratios:
+        - ratio: "[Financial Ratio]"
+          value: "[Ratio Value]"
+          industry_average: "[Industry Average]"
+          interpretation: "[Interpretation]"
+        
+        - ratio: "[Financial Ratio]"
+          value: "[Ratio Value]"
+          industry_average: "[Industry Average]"
+          interpretation: "[Interpretation]"
+  
+  recent_developments:
+    news_events:
+      recent_news:
+        - headline: "[News Headline]"
+          date: "[News Date]"
+          source: "[News Source]"
+          impact: "[Impact on Company]"
+          relevance: "[Relevance to Role]"
+        
+        - headline: "[News Headline]"
+          date: "[News Date]"
+          source: "[News Source]"
+          impact: "[Impact on Company]"
+          relevance: "[Relevance to Role]"
+      
+      major_announcements:
+        - announcement: "[Major Announcement]"
+          date: "[Announcement Date]"
+          significance: "[Significance]"
+          strategic_implications: "[Strategic Implications]"
+          impact_on_role: "[Impact on Target Role]"
+        
+        - announcement: "[Major Announcement]"
+          date: "[Announcement Date]"
+          significance: "[Significance]"
+          strategic_implications: "[Strategic Implications]"
+          impact_on_role: "[Impact on Target Role]"
+    
+    strategic_initiatives:
+      current_initiatives:
+        - initiative: "[Strategic Initiative]"
+          description: "[Initiative Description]"
+          timeline: "[Timeline]"
+          resources: "[Resources Allocated]"
+          success_metrics: "[Success Metrics]"
+          relevance: "[Relevance to Role]"
+        
+        - initiative: "[Strategic Initiative]"
+          description: "[Initiative Description]"
+          timeline: "[Timeline]"
+          resources: "[Resources Allocated]"
+          success_metrics: "[Success Metrics]"
+          relevance: "[Relevance to Role]"
+      
+      future_plans:
+        - plan: "[Future Plan]"
+          description: "[Plan Description]"
+          timeline: "[Timeline]"
+          strategic_importance: "[Strategic Importance]"
+          resource_requirements: "[Resource Requirements]"
+        
+        - plan: "[Future Plan]"
+          description: "[Plan Description]"
+          timeline: "[Timeline]"
+          strategic_importance: "[Strategic Importance]"
+          resource_requirements: "[Resource Requirements]"
+    
+    challenges_opportunities:
+      current_challenges:
+        - challenge: "[Current Challenge]"
+          description: "[Challenge Description]"
+          impact: "[Impact on Company]"
+          mitigation_efforts: "[Mitigation Efforts]"
+          timeline: "[Expected Resolution Timeline]"
+        
+        - challenge: "[Current Challenge]"
+          description: "[Challenge Description]"
+          impact: "[Impact on Company]"
+          mitigation_efforts: "[Mitigation Efforts]"
+          timeline: "[Expected Resolution Timeline]"
+      
+      growth_opportunities:
+        - opportunity: "[Growth Opportunity]"
+          description: "[Opportunity Description]"
+          potential_impact: "[Potential Impact]"
+          company_positioning: "[Company's Positioning]"
+          resource_requirements: "[Resource Requirements]"
+        
+        - opportunity: "[Growth Opportunity]"
+          description: "[Opportunity Description]"
+          potential_impact: "[Potential Impact]"
+          company_positioning: "[Company's Positioning]"
+          resource_requirements: "[Resource Requirements]"
+  
+  company_culture:
+    culture_assessment:
+      work_environment:
+        work_style: "[Work Style - Remote/Hybrid/On-site]"
+        flexibility: "[Work Flexibility]"
+        collaboration: "[Collaboration Style]"
+        innovation: "[Innovation Culture]"
+        risk_tolerance: "[Risk Tolerance]"
+      
+      values_priorities:
+        - value: "[Company Value]"
+          manifestation: "[How Value is Manifested]"
+          importance: "[Importance to Company]"
+          alignment: "[Alignment with Personal Values]"
+        
+        - value: "[Company Value]"
+          manifestation: "[How Value is Manifested]"
+          importance: "[Importance to Company]"
+          alignment: "[Alignment with Personal Values]"
+      
+      employee_experience:
+        employee_satisfaction: "[Employee Satisfaction Metrics]"
+        retention_rate: "[Employee Retention Rate]"
+        career_development: "[Career Development Opportunities]"
+        benefits_culture: "[Benefits and Perks]"
+        work_life_balance: "[Work-Life Balance]"
+    
+    leadership_culture:
+      management_style: "[Management Style]"
+      decision_making: "[Decision-Making Process]"
+      communication: "[Communication Style]"
+      transparency: "[Transparency Level]"
+      empowerment: "[Employee Empowerment]"
+    
+    diversity_inclusion:
+      diversity_metrics: "[Diversity Metrics]"
+      inclusion_efforts: "[Inclusion Efforts]"
+      representation: "[Representation at Different Levels]"
+      initiatives: "[Diversity and Inclusion Initiatives]"
+      commitment: "[Company Commitment to DEI]"
+  
+  organizational_structure:
+    company_structure:
+      organizational_chart: "[High-Level Organizational Structure]"
+      reporting_hierarchy: "[Reporting Hierarchy]"
+      decision_making_flow: "[Decision-Making Flow]"
+      cross_functional_collaboration: "[Cross-Functional Collaboration]"
+    
+    departments_teams:
+      key_departments:
+        - department: "[Department Name]"
+          function: "[Department Function]"
+          size: "[Department Size]"
+          leadership: "[Department Leadership]"
+          key_projects: "[Key Projects]"
+        
+        - department: "[Department Name]"
+          function: "[Department Function]"
+          size: "[Department Size]"
+          leadership: "[Department Leadership]"
+          key_projects: "[Key Projects]"
+      
+      target_department:
+        department_name: "[Target Department Name]"
+        function: "[Department Function]"
+        size: "[Department Size]"
+        leadership: "[Department Leadership]"
+        key_projects: "[Key Projects]"
+        team_structure: "[Team Structure]"
+        collaboration_patterns: "[Collaboration Patterns]"
+    
+    growth_plans:
+      hiring_plans: "[Hiring Plans and Growth]"
+      expansion_plans: "[Expansion Plans]"
+      organizational_changes: "[Planned Organizational Changes]"
+      new_teams_departments: "[New Teams or Departments]"
+  
+  technology_innovation:
+    technology_focus:
+      primary_technologies:
+        - technology: "[Technology Name]"
+          purpose: "[Purpose in Company]"
+          expertise_level: "[Company's Expertise Level]"
+          strategic_importance: "[Strategic Importance]"
+          investment_level: "[Investment Level]"
+        
+        - technology: "[Technology Name]"
+          purpose: "[Purpose in Company]"
+          expertise_level: "[Company's Expertise Level]"
+          strategic_importance: "[Strategic Importance]"
+          investment_level: "[Investment Level]"
+      
+      innovation_efforts:
+        - innovation: "[Innovation Area]"
+          description: "[Innovation Description]"
+          investment: "[Investment Level]"
+          progress: "[Progress Status]"
+          strategic_importance: "[Strategic Importance]"
+        
+        - innovation: "[Innovation Area]"
+          description: "[Innovation Description]"
+          investment: "[Investment Level]"
+          progress: "[Progress Status]"
+          strategic_importance: "[Strategic Importance]"
+    
+    digital_transformation:
+      transformation_efforts: "[Digital Transformation Efforts]"
+      technology_adoption: "[Technology Adoption Strategy]"
+      change_management: "[Change Management Approach]"
+      success_metrics: "[Success Metrics]"
+    
+    research_development:
+      r_d_focus: "[R&D Focus Areas]"
+      investment_level: "[R&D Investment Level]"
+      partnerships: "[R&D Partnerships]"
+      innovation_pipeline: "[Innovation Pipeline]"
+  
+  interview_preparation:
+    company_specific_questions:
+      questions_about_company:
+        - question: "[Question About Company]"
+          purpose: "[Purpose of Question]"
+          research_needed: "[Research Needed]"
+          potential_response: "[Potential Response]"
+        
+        - question: "[Question About Company]"
+          purpose: "[Purpose of Question]"
+          research_needed: "[Research Needed]"
+          potential_response: "[Potential Response]"
+      
+      questions_about_role:
+        - question: "[Question About Role]"
+          purpose: "[Purpose of Question]"
+          research_needed: "[Research Needed]"
+          potential_response: "[Potential Response]"
+        
+        - question: "[Question About Role]"
+          purpose: "[Purpose of Question]"
+          research_needed: "[Research Needed]"
+          potential_response: "[Potential Response]"
+      
+      questions_about_team:
+        - question: "[Question About Team]"
+          purpose: "[Purpose of Question]"
+          research_needed: "[Research Needed]"
+          potential_response: "[Potential Response]"
+        
+        - question: "[Question About Team]"
+          purpose: "[Purpose of Question]"
+          research_needed: "[Research Needed]"
+          potential_response: "[Potential Response]"
+    
+    talking_points:
+      company_strengths:
+        - strength: "[Company Strength]"
+          evidence: "[Supporting Evidence]"
+          relevance: "[Relevance to Role]"
+          talking_point: "[Talking Point]"
+        
+        - strength: "[Company Strength]"
+          evidence: "[Supporting Evidence]"
+          relevance: "[Relevance to Role]"
+          talking_point: "[Talking Point]"
+      
+      company_challenges:
+        - challenge: "[Company Challenge]"
+          understanding: "[Understanding of Challenge]"
+          company_response: "[Company's Response]"
+          opportunity: "[Opportunity for Contribution]"
+          talking_point: "[Talking Point]"
+        
+        - challenge: "[Company Challenge]"
+          understanding: "[Understanding of Challenge]"
+          company_response: "[Company's Response]"
+          opportunity: "[Opportunity for Contribution]"
+          talking_point: "[Talking Point]"
+      
+      alignment_points:
+        - alignment: "[Alignment Point]"
+          personal_value: "[Personal Value]"
+          company_value: "[Company Value]"
+          evidence: "[Supporting Evidence]"
+          talking_point: "[Talking Point]"
+        
+        - alignment: "[Alignment Point]"
+          personal_value: "[Personal Value]"
+          company_value: "[Company Value]"
+          evidence: "[Supporting Evidence]"
+          talking_point: "[Talking Point]"
+    
+    red_flags_concerns:
+      potential_concerns:
+        - concern: "[Potential Concern]"
+          evidence: "[Supporting Evidence]"
+          severity: "[Severity Level]"
+          mitigation: "[Potential Mitigation]"
+          questions_to_ask: "[Questions to Ask]"
+        
+        - concern: "[Potential Concern]"
+          evidence: "[Supporting Evidence]"
+          severity: "[Severity Level]"
+          mitigation: "[Potential Mitigation]"
+          questions_to_ask: "[Questions to Ask]"
+      
+      deal_breakers:
+        - deal_breaker: "[Potential Deal Breaker]"
+          evidence: "[Supporting Evidence]"
+          personal_impact: "[Personal Impact]"
+          alternatives: "[Alternative Considerations]"
+        
+        - deal_breaker: "[Potential Deal Breaker]"
+          evidence: "[Supporting Evidence]"
+          personal_impact: "[Personal Impact]"
+          alternatives: "[Alternative Considerations]"
+  
+  research_sources:
+    primary_sources:
+      company_materials:
+        - source: "[Company Website]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+        
+        - source: "[Annual Report]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+        
+        - source: "[Press Releases]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+      
+      financial_sources:
+        - source: "[Financial Database]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+        
+        - source: "[SEC Filings]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+    
+    secondary_sources:
+      news_media:
+        - source: "[News Source]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+          bias_assessment: "[Bias Assessment]"
+        
+        - source: "[News Source]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+          bias_assessment: "[Bias Assessment]"
+      
+      industry_reports:
+        - source: "[Industry Report]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+          relevance: "[Relevance to Company]"
+        
+        - source: "[Industry Report]"
+          url: "[URL]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+          relevance: "[Relevance to Company]"
+      
+      social_media:
+        - platform: "[Social Media Platform]"
+          company_handles: "[Company Handles]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+        
+        - platform: "[Social Media Platform]"
+          company_handles: "[Company Handles]"
+          key_information: "[Key Information Found]"
+          reliability: "[Reliability Assessment]"
+    
+    networking_sources:
+      employee_insights:
+        - source: "[Employee Network]"
+          insights: "[Key Insights]"
+          reliability: "[Reliability Assessment]"
+          context: "[Context of Information]"
+        
+        - source: "[Employee Network]"
+          insights: "[Key Insights]"
+          reliability: "[Reliability Assessment]"
+          context: "[Context of Information]"
+      
+      industry_contacts:
+        - contact: "[Industry Contact]"
+          insights: "[Key Insights]"
+          reliability: "[Reliability Assessment]"
+          relationship: "[Relationship to Company]"
+        
+        - contact: "[Industry Contact]"
+          insights: "[Key Insights]"
+          reliability: "[Reliability Assessment]"
+          relationship: "[Relationship to Company]"
+  
+  summary_assessment:
+    company_strengths:
+      - strength: "[Key Strength]"
+        evidence: "[Supporting Evidence]"
+        impact: "[Impact on Company Success]"
+        relevance: "[Relevance to Target Role]"
+      
+      - strength: "[Key Strength]"
+        evidence: "[Supporting Evidence]"
+        impact: "[Impact on Company Success]"
+        relevance: "[Relevance to Target Role]"
+    
+    company_weaknesses:
+      - weakness: "[Key Weakness]"
+        evidence: "[Supporting Evidence]"
+        impact: "[Impact on Company]"
+        mitigation: "[Company's Mitigation Efforts]"
+      
+      - weakness: "[Key Weakness]"
+        evidence: "[Supporting Evidence]"
+        impact: "[Impact on Company]"
+        mitigation: "[Company's Mitigation Efforts]"
+    
+    opportunities:
+      - opportunity: "[Key Opportunity]"
+        description: "[Opportunity Description]"
+        potential_impact: "[Potential Impact]"
+        company_positioning: "[Company's Positioning]"
+      
+      - opportunity: "[Key Opportunity]"
+        description: "[Opportunity Description]"
+        potential_impact: "[Potential Impact]"
+        company_positioning: "[Company's Positioning]"
+    
+    threats:
+      - threat: "[Key Threat]"
+        description: "[Threat Description]"
+        potential_impact: "[Potential Impact]"
+        company_preparedness: "[Company's Preparedness]"
+      
+      - threat: "[Key Threat]"
+        description: "[Threat Description]"
+        potential_impact: "[Potential Impact]"
+        company_preparedness: "[Company's Preparedness]"
+    
+    overall_assessment:
+      company_health: "[Overall Company Health Assessment]"
+      growth_potential: "[Growth Potential Assessment]"
+      stability: "[Stability Assessment]"
+      risk_level: "[Risk Level Assessment]"
+      fit_assessment: "[Fit with Personal Goals]"
+      recommendation: "[Overall Recommendation]"

@@ -1,0 +1,430 @@
+template:
+  id: personal-brand-tmpl
+  name: Personal Brand Development Template
+  version: 1.0
+  output:
+    format: markdown
+    filename: {{candidate_name}}-personal-brand.md
+    title: "{{candidate_name}} - Personal Brand Strategy"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: brand-overview
+    title: Personal Brand Overview
+    instruction: |
+      Create a comprehensive overview of the personal brand strategy, including brand identity, target audience, and key objectives.
+      Explain the importance of personal branding for career success and professional reputation.
+    type: paragraphs
+    template: |
+      # Personal Brand Strategy - {{candidate_name}}
+      
+      **Date:** {{plan_date}}
+      **Brand Identity:** {{brand_identity}}
+      **Target Audience:** {{target_audience}}
+      **Key Objectives:** {{key_objectives}}
+
+  - id: brand-identity
+    title: Brand Identity and Positioning
+    instruction: |
+      Define the core brand identity, values, and positioning in the professional market.
+      Establish what makes the personal brand unique and valuable.
+    type: structured-content
+    sections:
+      - id: core-values
+        title: Core Brand Values
+        instruction: |
+          Define the core values that drive the personal brand.
+          These should align with professional goals and personal principles.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{value_name}}**
+          - **Description:** {{value_description}}
+          - **Professional Application:** {{professional_application}}
+          - **Brand Expression:** {{brand_expression}}
+      
+      - id: unique-value-proposition
+        title: Unique Value Proposition
+        instruction: |
+          Define what makes the personal brand unique and valuable to the target audience.
+          Focus on specific strengths, expertise, and differentiators.
+        type: paragraphs
+        template: |
+          **Primary Value Proposition:** {{primary_value_proposition}}
+          
+          **Supporting Elements:**
+          {{supporting_elements}}
+          
+          **Differentiators:**
+          {{differentiators}}
+      
+      - id: brand-personality
+        title: Brand Personality and Voice
+        instruction: |
+          Define the personality traits and communication style that will characterize the personal brand.
+          Ensure consistency across all brand touchpoints.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{personality_trait}}**
+          - **Description:** {{trait_description}}
+          - **Expression:** {{expression_methods}}
+          - **Consistency:** {{consistency_approach}}
+
+  - id: target-audience
+    title: Target Audience and Stakeholders
+    instruction: |
+      Identify and analyze the target audience for the personal brand.
+      Understand their needs, preferences, and how the brand can provide value.
+    type: structured-content
+    sections:
+      - id: primary-audience
+        title: Primary Target Audience
+        instruction: |
+          Define the primary audience for the personal brand.
+          Include industry, role level, and specific characteristics.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{audience_segment}}**
+          - **Demographics:** {{demographics}}
+          - **Professional Level:** {{professional_level}}
+          - **Needs and Pain Points:** {{needs_pain_points}}
+          - **How Brand Helps:** {{brand_help}}
+      
+      - id: secondary-audience
+        title: Secondary and Influencer Audiences
+        instruction: |
+          Identify secondary audiences and influencers who can amplify the personal brand.
+          Include industry leaders, peers, and potential collaborators.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{secondary_audience}}**
+          - **Role:** {{audience_role}}
+          - **Influence Level:** {{influence_level}}
+          - **Engagement Strategy:** {{engagement_strategy}}
+
+  - id: online-presence
+    title: Online Presence Strategy
+    instruction: |
+      Develop a comprehensive strategy for building and maintaining an effective online presence.
+      Include social media, professional networks, and content platforms.
+    type: structured-content
+    sections:
+      - id: linkedin-strategy
+        title: LinkedIn Profile and Strategy
+        instruction: |
+          Develop a comprehensive LinkedIn strategy including profile optimization, content strategy, and networking approach.
+          Focus on professional networking and thought leadership.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{linkedin_element}}**
+          - **Current State:** {{current_state}}
+          - **Optimization Plan:** {{optimization_plan}}
+          - **Content Strategy:** {{content_strategy}}
+          - **Engagement Goals:** {{engagement_goals}}
+      
+      - id: other-social-platforms
+        title: Other Social Media Platforms
+        instruction: |
+          Plan presence on other relevant social media platforms.
+          Consider Twitter, Instagram, YouTube, and industry-specific platforms.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{platform_name}}**
+          - **Relevance:** {{platform_relevance}}
+          - **Content Focus:** {{content_focus}}
+          - **Posting Frequency:** {{posting_frequency}}
+          - **Engagement Strategy:** {{engagement_strategy}}
+      
+      - id: content-strategy
+        title: Content Strategy and Creation
+        instruction: |
+          Develop a content strategy that supports the personal brand.
+          Include content types, themes, and distribution channels.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{content_type}}**
+          - **Purpose:** {{content_purpose}}
+          - **Target Audience:** {{content_audience}}
+          - **Creation Process:** {{creation_process}}
+          - **Distribution:** {{distribution_channels}}
+
+  - id: thought-leadership
+    title: Thought Leadership and Expertise
+    instruction: |
+      Develop strategies for establishing thought leadership and demonstrating expertise in the field.
+      Include speaking, writing, and industry participation opportunities.
+    type: structured-content
+    sections:
+      - id: speaking-opportunities
+        title: Speaking and Presentation Opportunities
+        instruction: |
+          Identify and plan for speaking opportunities that can enhance the personal brand.
+          Include conferences, webinars, and industry events.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{speaking_opportunity}}**
+          - **Event Type:** {{event_type}}
+          - **Target Audience:** {{target_audience}}
+          - **Topic Focus:** {{topic_focus}}
+          - **Preparation Required:** {{preparation_required}}
+      
+      - id: writing-opportunities
+        title: Writing and Publication Opportunities
+        instruction: |
+          Plan writing opportunities to demonstrate expertise and build credibility.
+          Include articles, blog posts, and industry publications.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{writing_opportunity}}**
+          - **Publication:** {{publication}}
+          - **Content Type:** {{content_type}}
+          - **Topic Areas:** {{topic_areas}}
+          - **Submission Process:** {{submission_process}}
+      
+      - id: industry-participation
+        title: Industry Participation and Leadership
+        instruction: |
+          Plan participation in industry organizations, committees, and leadership roles.
+          Focus on opportunities that align with brand values and goals.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{participation_opportunity}}**
+          - **Organization:** {{organization}}
+          - **Role:** {{participation_role}}
+          - **Time Commitment:** {{time_commitment}}
+          - **Brand Benefits:** {{brand_benefits}}
+
+  - id: networking-strategy
+    title: Networking and Relationship Building
+    instruction: |
+      Develop networking strategies that support the personal brand.
+      Include both online and offline networking approaches.
+    type: structured-content
+    sections:
+      - id: online-networking
+        title: Online Networking Strategy
+        instruction: |
+          Plan online networking activities that support brand building.
+          Include social media engagement, virtual events, and digital communities.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{online_activity}}**
+          - **Platform:** {{platform}}
+          - **Activity Type:** {{activity_type}}
+          - **Frequency:** {{frequency}}
+          - **Goals:** {{activity_goals}}
+      
+      - id: offline-networking
+        title: Offline Networking and Events
+        instruction: |
+          Plan offline networking activities and event participation.
+          Include conferences, meetups, and professional associations.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{offline_activity}}**
+          - **Event Type:** {{event_type}}
+          - **Networking Goals:** {{networking_goals}}
+          - **Preparation Required:** {{preparation_required}}
+          - **Follow-up Strategy:** {{follow_up_strategy}}
+
+  - id: content-creation
+    title: Content Creation and Distribution
+    instruction: |
+      Develop a comprehensive content creation and distribution strategy.
+      Include content planning, creation processes, and distribution channels.
+    type: structured-content
+    sections:
+      - id: content-calendar
+        title: Content Calendar and Planning
+        instruction: |
+          Create a content calendar that supports brand objectives.
+          Include regular content themes, posting schedules, and seasonal considerations.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{content_period}}**
+          - **Theme:** {{content_theme}}
+          - **Content Types:** {{content_types}}
+          - **Posting Schedule:** {{posting_schedule}}
+          - **Key Messages:** {{key_messages}}
+      
+      - id: content-creation-process
+        title: Content Creation Process
+        instruction: |
+          Define the process for creating high-quality content that supports the brand.
+          Include research, creation, review, and publication workflows.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{content_stage}}**
+          - **Activities:** {{stage_activities}}
+          - **Timeline:** {{stage_timeline}}
+          - **Quality Standards:** {{quality_standards}}
+          - **Review Process:** {{review_process}}
+      
+      - id: content-distribution
+        title: Content Distribution Strategy
+        instruction: |
+          Plan how to distribute content effectively across multiple channels.
+          Include cross-platform promotion and audience engagement strategies.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{distribution_channel}}**
+          - **Channel Type:** {{channel_type}}
+          - **Content Format:** {{content_format}}
+          - **Audience Reach:** {{audience_reach}}
+          - **Engagement Strategy:** {{engagement_strategy}}
+
+  - id: brand-monitoring
+    title: Brand Monitoring and Management
+    instruction: |
+      Develop strategies for monitoring and managing the personal brand reputation.
+      Include online reputation management and brand protection measures.
+    type: structured-content
+    sections:
+      - id: online-monitoring
+        title: Online Brand Monitoring
+        instruction: |
+          Plan how to monitor online mentions and discussions about the personal brand.
+          Include tools, metrics, and response strategies.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{monitoring_area}}**
+          - **Monitoring Tools:** {{monitoring_tools}}
+          - **Key Metrics:** {{key_metrics}}
+          - **Alert Thresholds:** {{alert_thresholds}}
+          - **Response Strategy:** {{response_strategy}}
+      
+      - id: reputation-management
+        title: Reputation Management Strategy
+        instruction: |
+          Develop strategies for managing and protecting the personal brand reputation.
+          Include crisis management and positive reputation building.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{reputation_aspect}}**
+          - **Current State:** {{current_state}}
+          - **Management Strategy:** {{management_strategy}}
+          - **Protection Measures:** {{protection_measures}}
+          - **Improvement Actions:** {{improvement_actions}}
+
+  - id: measurement-metrics
+    title: Success Metrics and Measurement
+    instruction: |
+      Define how to measure the success of personal brand building efforts.
+      Include both quantitative and qualitative metrics for evaluation.
+    type: structured-content
+    sections:
+      - id: quantitative-metrics
+        title: Quantitative Success Metrics
+        instruction: |
+          Define measurable metrics to track personal brand success.
+          Include follower growth, engagement rates, and reach metrics.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{metric_name}}**
+          - **Measurement Method:** {{measurement_method}}
+          - **Current Value:** {{current_value}}
+          - **Target Value:** {{target_value}}
+          - **Timeline:** {{measurement_timeline}}
+      
+      - id: qualitative-metrics
+        title: Qualitative Success Indicators
+        instruction: |
+          Identify qualitative indicators of personal brand success.
+          Include reputation quality, influence level, and professional recognition.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{indicator_name}}**
+          - **Description:** {{indicator_description}}
+          - **Assessment Method:** {{assessment_method}}
+          - **Success Criteria:** {{success_criteria}}
+
+  - id: implementation-timeline
+    title: Implementation Timeline
+    instruction: |
+      Create a detailed timeline for implementing the personal brand strategy.
+      Include milestones, deadlines, and regular review points.
+    type: structured-content
+    sections:
+      - id: quarterly-milestones
+        title: Quarterly Brand Building Milestones
+        instruction: |
+          Define major brand building milestones for each quarter.
+          Include content creation, networking, and thought leadership goals.
+        type: structured-list
+        repeatable: true
+        template: |
+          **Q{{quarter_number}} - {{quarter_year}}**
+          - **Primary Goals:** {{primary_goals}}
+          - **Key Activities:** {{key_activities}}
+          - **Content Focus:** {{content_focus}}
+          - **Success Metrics:** {{success_metrics}}
+      
+      - id: monthly-activities
+        title: Monthly Brand Building Activities
+        instruction: |
+          Break down quarterly goals into monthly activities.
+          Include specific content creation, networking, and brand building tasks.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{month_name}}**
+          - **Focus Areas:** {{focus_areas}}
+          - **Key Activities:** {{key_activities}}
+          - **Content Themes:** {{content_themes}}
+          - **Review Points:** {{review_points}}
+
+  - id: brand-evolution
+    title: Brand Evolution and Growth
+    instruction: |
+      Plan for the evolution and growth of the personal brand over time.
+      Include adaptation strategies and long-term brand development.
+    type: structured-content
+    sections:
+      - id: growth-strategy
+        title: Brand Growth Strategy
+        instruction: |
+          Develop strategies for growing and expanding the personal brand.
+          Include new audiences, platforms, and content areas.
+        type: structured-list
+        repeatable: true
+        template: |
+          **{{growth_area}}**
+          - **Growth Opportunity:** {{growth_opportunity}}
+          - **Implementation Strategy:** {{implementation_strategy}}
+          - **Timeline:** {{growth_timeline}}
+          - **Success Indicators:** {{success_indicators}}
+      
+      - id: adaptation-planning
+        title: Brand Adaptation Planning
+        instruction: |
+          Plan how the personal brand will adapt to changing circumstances and opportunities.
+          Include flexibility and evolution strategies.
+        type: bullet-list
+        repeatable: true
+        template: |
+          **{{adaptation_scenario}}**
+          - **Trigger:** {{adaptation_trigger}}
+          - **Adaptation Strategy:** {{adaptation_strategy}}
+          - **Implementation:** {{implementation_plan}}
+          - **Success Criteria:** {{success_criteria}}

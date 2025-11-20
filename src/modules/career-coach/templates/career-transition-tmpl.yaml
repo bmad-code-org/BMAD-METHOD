@@ -1,0 +1,389 @@
+# Career Transition Template
+
+## Template Information
+- **Template Type:** Career Transition Strategy
+- **Agent:** career-coach
+- **Task:** career-strategy-planning.md
+- **Version:** 1.0
+
+## Template Structure
+
+### 1. Transition Overview
+```yaml
+transition_overview:
+  current_career:
+    field: "[Current field/industry]"
+    role: "[Current job title]"
+    years_experience: "[Number of years]"
+    satisfaction_level: "[1-10 scale]"
+  
+  target_career:
+    field: "[Target field/industry]"
+    role: "[Target job title]"
+    motivation: "[Why this transition]"
+    timeline: "[Target timeline for transition]"
+  
+  transition_type:
+    type: "[Lateral move/Industry change/Function change/Complete career change]"
+    complexity: "[Low/Medium/High]"
+    risk_level: "[Low/Medium/High]"
+```
+
+### 2. Skills Gap Analysis
+```yaml
+skills_analysis:
+  transferable_skills:
+    technical_skills:
+      - skill: "[Skill name]"
+        relevance: "[High/Medium/Low]"
+        transfer_method: "[How to transfer]"
+    soft_skills:
+      - skill: "[Skill name]"
+        relevance: "[High/Medium/Low]"
+        transfer_method: "[How to transfer]"
+  
+  missing_skills:
+    critical_skills:
+      - skill: "[Skill name]"
+        importance: "[Critical/Important/Nice to have]"
+        acquisition_method: "[How to acquire]"
+        timeline: "[Time to acquire]"
+    nice_to_have_skills:
+      - skill: "[Skill name]"
+        importance: "[Critical/Important/Nice to have]"
+        acquisition_method: "[How to acquire]"
+        timeline: "[Time to acquire]"
+  
+  skill_development_plan:
+    immediate_priorities:
+      - skill: "[Skill name]"
+        learning_method: "[Course/Certification/On-the-job]"
+        timeline: "[Timeline]"
+        cost: "[Estimated cost]"
+    long_term_development:
+      - skill: "[Skill name]"
+        learning_method: "[Course/Certification/On-the-job]"
+        timeline: "[Timeline]"
+        cost: "[Estimated cost]"
+```
+
+### 3. Market Research
+```yaml
+market_research:
+  target_industry:
+    growth_potential: "[High/Medium/Low]"
+    entry_barriers: "[Low/Medium/High]"
+    salary_ranges: "[Salary information]"
+    job_availability: "[High/Medium/Low]"
+  
+  target_companies:
+    dream_companies:
+      - name: "[Company name]"
+        industry: "[Industry]"
+        entry_requirements: "[Requirements]"
+        application_process: "[Process details]"
+    realistic_targets:
+      - name: "[Company name]"
+        industry: "[Industry]"
+        entry_requirements: "[Requirements]"
+        application_process: "[Process details]"
+  
+  networking_opportunities:
+    industry_events: "[List of events]"
+    professional_associations: "[List of associations]"
+    online_communities: "[List of communities]"
+    alumni_networks: "[Alumni connections]"
+```
+
+### 4. Financial Planning
+```yaml
+financial_planning:
+  current_financial_situation:
+    savings: "[Amount available]"
+    monthly_expenses: "[Monthly expenses]"
+    emergency_fund: "[Emergency fund status]"
+    debt_obligations: "[Any debt to consider]"
+  
+  transition_costs:
+    education_training: "[Estimated cost]"
+    certification_fees: "[Estimated cost]"
+    networking_events: "[Estimated cost]"
+    potential_salary_reduction: "[Estimated reduction]"
+    total_estimated_cost: "[Total cost]"
+  
+  financial_strategy:
+    funding_sources:
+      - source: "[Source name]"
+        amount: "[Amount available]"
+        terms: "[Terms if applicable]"
+    timeline_funding: "[How long can fund transition]"
+    backup_plans: "[Backup funding options]"
+```
+
+### 5. Transition Strategy
+```yaml
+transition_strategy:
+  approach:
+    method: "[Gradual transition/Immediate change/Part-time transition]"
+    rationale: "[Why this approach]"
+    risks: "[Risks involved]"
+    mitigation: "[Risk mitigation strategies]"
+  
+  phases:
+    phase_1_preparation:
+      duration: "[Timeline]"
+      goals:
+        - "[Goal 1]"
+        - "[Goal 2]"
+        - "[Goal 3]"
+      activities:
+        - activity: "[Activity description]"
+          timeline: "[Timeline]"
+          resources_needed: "[Resources required]"
+    
+    phase_2_skill_development:
+      duration: "[Timeline]"
+      goals:
+        - "[Goal 1]"
+        - "[Goal 2]"
+        - "[Goal 3]"
+      activities:
+        - activity: "[Activity description]"
+          timeline: "[Timeline]"
+          resources_needed: "[Resources required]"
+    
+    phase_3_networking_building:
+      duration: "[Timeline]"
+      goals:
+        - "[Goal 1]"
+        - "[Goal 2]"
+        - "[Goal 3]"
+      activities:
+        - activity: "[Activity description]"
+          timeline: "[Timeline]"
+          resources_needed: "[Resources required]"
+    
+    phase_4_job_search:
+      duration: "[Timeline]"
+      goals:
+        - "[Goal 1]"
+        - "[Goal 2]"
+        - "[Goal 3]"
+      activities:
+        - activity: "[Activity description]"
+          timeline: "[Timeline]"
+          resources_needed: "[Resources required]"
+```
+
+### 6. Support System
+```yaml
+support_system:
+  personal_support:
+    family_support: "[Level of family support]"
+    friend_support: "[Level of friend support]"
+    mentor_availability: "[Mentor support available]"
+  
+  professional_support:
+    career_coach: "[Career coach availability]"
+    industry_mentors: "[Industry mentor connections]"
+    professional_network: "[Professional network strength]"
+  
+  emotional_support:
+    stress_management: "[Stress management strategies]"
+    motivation_maintenance: "[How to stay motivated]"
+    work_life_balance: "[Work-life balance strategies]"
+```
+
+### 7. Risk Assessment and Mitigation
+```yaml
+risk_assessment:
+  high_risks:
+    - risk: "[Risk description]"
+      probability: "[High/Medium/Low]"
+      impact: "[High/Medium/Low]"
+      mitigation: "[Mitigation strategy]"
+  
+  medium_risks:
+    - risk: "[Risk description]"
+      probability: "[High/Medium/Low]"
+      impact: "[High/Medium/Low]"
+      mitigation: "[Mitigation strategy]"
+  
+  low_risks:
+    - risk: "[Risk description]"
+      probability: "[High/Medium/Low]"
+      impact: "[High/Medium/Low]"
+      mitigation: "[Mitigation strategy]"
+  
+  contingency_plans:
+    if_transition_fails:
+      - "[Contingency plan 1]"
+      - "[Contingency plan 2]"
+      - "[Contingency plan 3]"
+    if_timeline_extended:
+      - "[Contingency plan 1]"
+      - "[Contingency plan 2]"
+      - "[Contingency plan 3]"
+    if_financial_issues:
+      - "[Contingency plan 1]"
+      - "[Contingency plan 2]"
+      - "[Contingency plan 3]"
+```
+
+### 8. Success Metrics
+```yaml
+success_metrics:
+  short_term_goals:
+    skill_development: "[Specific skill goals]"
+    networking_contacts: "[Number of new contacts]"
+    industry_knowledge: "[Knowledge acquisition goals]"
+  
+  medium_term_goals:
+    job_interviews: "[Number of interviews]"
+    industry_credibility: "[Credibility building goals]"
+    financial_stability: "[Financial goals]"
+  
+  long_term_goals:
+    career_establishment: "[Career establishment goals]"
+    salary_targets: "[Salary goals]"
+    job_satisfaction: "[Satisfaction goals]"
+  
+  milestone_tracking:
+    monthly_reviews: "[Monthly progress reviews]"
+    quarterly_assessments: "[Quarterly assessments]"
+    annual_evaluation: "[Annual evaluation]"
+```
+
+### 9. Timeline and Deadlines
+```yaml
+timeline:
+  overall_timeline:
+    start_date: "[Start date]"
+    target_completion: "[Target completion date]"
+    flexibility: "[Timeline flexibility]"
+  
+  key_milestones:
+    milestone_1:
+      description: "[Milestone description]"
+      target_date: "[Target date]"
+      status: "[Not started/In progress/Complete]"
+    milestone_2:
+      description: "[Milestone description]"
+      target_date: "[Target date]"
+      status: "[Not started/In progress/Complete]"
+    milestone_3:
+      description: "[Milestone description]"
+      target_date: "[Target date]"
+      status: "[Not started/In progress/Complete]"
+  
+  weekly_schedule:
+    monday: "[Monday activities]"
+    tuesday: "[Tuesday activities]"
+    wednesday: "[Wednesday activities]"
+    thursday: "[Thursday activities]"
+    friday: "[Friday activities]"
+    weekend: "[Weekend activities]"
+```
+
+### 10. Resource Requirements
+```yaml
+resources:
+  time_requirements:
+    daily_commitment: "[Hours per day]"
+    weekly_commitment: "[Hours per week]"
+    weekend_commitment: "[Weekend hours]"
+  
+  financial_requirements:
+    education_costs: "[Education costs]"
+    networking_costs: "[Networking costs]"
+    living_expenses: "[Living expenses during transition]"
+    total_budget: "[Total budget required]"
+  
+  learning_resources:
+    courses_certifications: "[List of courses/certifications]"
+    books_materials: "[List of books/materials]"
+    online_resources: "[List of online resources]"
+    mentors_coaches: "[List of mentors/coaches]"
+  
+  technology_requirements:
+    software_tools: "[Required software/tools]"
+    equipment: "[Required equipment]"
+    subscriptions: "[Required subscriptions]"
+```
+
+### 11. Action Plan
+```yaml
+action_plan:
+  immediate_actions:
+    - action: "[Action description]"
+      priority: "[High/Medium/Low]"
+      deadline: "[Deadline]"
+      responsible_party: "[Who is responsible]"
+  
+  first_month:
+    - action: "[Action description]"
+      priority: "[High/Medium/Low]"
+      deadline: "[Deadline]"
+      responsible_party: "[Who is responsible]"
+  
+  first_quarter:
+    - action: "[Action description]"
+      priority: "[High/Medium/Low]"
+      deadline: "[Deadline]"
+      responsible_party: "[Who is responsible]"
+  
+  ongoing_activities:
+    daily:
+      - "[Daily activity 1]"
+      - "[Daily activity 2]"
+    weekly:
+      - "[Weekly activity 1]"
+      - "[Weekly activity 2]"
+    monthly:
+      - "[Monthly activity 1]"
+      - "[Monthly activity 2]"
+```
+
+### 12. Progress Tracking
+```yaml
+progress_tracking:
+  tracking_method:
+    tool: "[Tracking tool/method]"
+    frequency: "[Tracking frequency]"
+    metrics: "[Metrics to track]"
+  
+  review_schedule:
+    weekly_review:
+      day: "[Day of week]"
+      focus: "[Review focus areas]"
+    monthly_review:
+      day: "[Day of month]"
+      focus: "[Review focus areas]"
+    quarterly_review:
+      month: "[Month]"
+      focus: "[Review focus areas]"
+  
+  adjustment_criteria:
+    when_to_adjust: "[When to make adjustments]"
+    adjustment_process: "[How to make adjustments]"
+    decision_factors: "[Factors to consider]"
+```
+
+## Usage Instructions
+
+1. **Complete each section** with specific, actionable information
+2. **Be realistic** about timelines and resource requirements
+3. **Consider risks** and develop mitigation strategies
+4. **Build support systems** before starting the transition
+5. **Track progress** regularly and adjust as needed
+6. **Maintain flexibility** in your approach
+
+## Success Criteria
+
+- Clear understanding of skills gaps and development needs
+- Realistic timeline and resource planning
+- Comprehensive risk assessment and mitigation strategies
+- Strong support system in place
+- Regular progress tracking and adjustment
+- Financial planning for transition costs
+- Contingency plans for various scenarios

@@ -1,0 +1,603 @@
+# CV Template
+
+## Template Information
+- **Template Type:** Curriculum Vitae
+- **Agent:** resume-writer
+- **Task:** create-doc.md
+- **Version:** 1.0
+
+## Template Structure
+cv_document:
+  personal_information:
+    name: "[Full Name]"
+    title: "[Professional Title]"
+    email: "[Professional Email]"
+    phone: "[Phone Number]"
+    location: "[City, State/Country]"
+    linkedin: "[LinkedIn Profile URL]"
+    website: "[Personal Website URL (if applicable)]"
+    summary: "[Professional Summary - 2-3 sentences]"
+  
+  education:
+    degrees:
+      - degree: "[Degree Name]"
+        institution: "[Institution Name]"
+        location: "[Institution Location]"
+        graduation_date: "[Graduation Date]"
+        gpa: "[GPA if 3.5+]"
+        honors: "[Honors/Distinctions]"
+        relevant_coursework: "[Relevant Coursework]"
+        thesis: "[Thesis/Dissertation Title (if applicable)]"
+      
+      - degree: "[Degree Name]"
+        institution: "[Institution Name]"
+        location: "[Institution Location]"
+        graduation_date: "[Graduation Date]"
+        gpa: "[GPA if 3.5+]"
+        honors: "[Honors/Distinctions]"
+        relevant_coursework: "[Relevant Coursework]"
+        thesis: "[Thesis/Dissertation Title (if applicable)]"
+    
+    certifications:
+      - certification: "[Certification Name]"
+        issuing_organization: "[Issuing Organization]"
+        date_earned: "[Date Earned]"
+        expiration_date: "[Expiration Date (if applicable)]"
+        credential_id: "[Credential ID]"
+      
+      - certification: "[Certification Name]"
+        issuing_organization: "[Issuing Organization]"
+        date_earned: "[Date Earned]"
+        expiration_date: "[Expiration Date (if applicable)]"
+        credential_id: "[Credential ID]"
+    
+    training_programs:
+      - program: "[Training Program Name]"
+        organization: "[Organization]"
+        date_completed: "[Date Completed]"
+        duration: "[Duration]"
+        description: "[Brief Description]"
+      
+      - program: "[Training Program Name]"
+        organization: "[Organization]"
+        date_completed: "[Date Completed]"
+        duration: "[Duration]"
+        description: "[Brief Description]"
+  
+  professional_experience:
+    work_history:
+      - position: "[Job Title]"
+        company: "[Company Name]"
+        location: "[Location]"
+        dates: "[Start Date - End Date/Present]"
+        company_description: "[Brief Company Description]"
+        key_responsibilities:
+          - "[Key Responsibility 1]"
+          - "[Key Responsibility 2]"
+          - "[Key Responsibility 3]"
+        achievements:
+          - "[Quantifiable Achievement 1]"
+          - "[Quantifiable Achievement 2]"
+          - "[Quantifiable Achievement 3]"
+        technologies_used: "[Technologies/Skills Used]"
+        team_size: "[Team Size Managed]"
+        budget_managed: "[Budget Managed (if applicable)]"
+      
+      - position: "[Job Title]"
+        company: "[Company Name]"
+        location: "[Location]"
+        dates: "[Start Date - End Date]"
+        company_description: "[Brief Company Description]"
+        key_responsibilities:
+          - "[Key Responsibility 1]"
+          - "[Key Responsibility 2]"
+          - "[Key Responsibility 3]"
+        achievements:
+          - "[Quantifiable Achievement 1]"
+          - "[Quantifiable Achievement 2]"
+          - "[Quantifiable Achievement 3]"
+        technologies_used: "[Technologies/Skills Used]"
+        team_size: "[Team Size Managed]"
+        budget_managed: "[Budget Managed (if applicable)]"
+    
+    research_experience:
+      - project: "[Research Project Title]"
+        institution: "[Institution/Organization]"
+        dates: "[Start Date - End Date]"
+        role: "[Your Role]"
+        supervisor: "[Supervisor/Principal Investigator]"
+        description: "[Project Description]"
+        methodology: "[Research Methodology]"
+        findings: "[Key Findings]"
+        publications: "[Publications Resulting from Research]"
+        funding: "[Funding Source (if applicable)]"
+      
+      - project: "[Research Project Title]"
+        institution: "[Institution/Organization]"
+        dates: "[Start Date - End Date]"
+        role: "[Your Role]"
+        supervisor: "[Supervisor/Principal Investigator]"
+        description: "[Project Description]"
+        methodology: "[Research Methodology]"
+        findings: "[Key Findings]"
+        publications: "[Publications Resulting from Research]"
+        funding: "[Funding Source (if applicable)]"
+  
+  publications:
+    peer_reviewed_journals:
+      - title: "[Publication Title]"
+        authors: "[Author List]"
+        journal: "[Journal Name]"
+        year: "[Publication Year]"
+        volume_issue: "[Volume(Issue)]"
+        pages: "[Page Numbers]"
+        doi: "[DOI (if available)]"
+        impact_factor: "[Impact Factor (if known)]"
+        citation_count: "[Citation Count (if known)]"
+      
+      - title: "[Publication Title]"
+        authors: "[Author List]"
+        journal: "[Journal Name]"
+        year: "[Publication Year]"
+        volume_issue: "[Volume(Issue)]"
+        pages: "[Page Numbers]"
+        doi: "[DOI (if available)]"
+        impact_factor: "[Impact Factor (if known)]"
+        citation_count: "[Citation Count (if known)]"
+    
+    conference_papers:
+      - title: "[Paper Title]"
+        authors: "[Author List]"
+        conference: "[Conference Name]"
+        location: "[Conference Location]"
+        date: "[Conference Date]"
+        proceedings: "[Proceedings Information]"
+        presentation_type: "[Oral/Poster/Workshop]"
+      
+      - title: "[Paper Title]"
+        authors: "[Author List]"
+        conference: "[Conference Name]"
+        location: "[Conference Location]"
+        date: "[Conference Date]"
+        proceedings: "[Proceedings Information]"
+        presentation_type: "[Oral/Poster/Workshop]"
+    
+    book_chapters:
+      - title: "[Chapter Title]"
+        authors: "[Author List]"
+        book: "[Book Title]"
+        editors: "[Editor Names]"
+        publisher: "[Publisher]"
+        year: "[Publication Year]"
+        pages: "[Page Numbers]"
+        isbn: "[ISBN]"
+      
+      - title: "[Chapter Title]"
+        authors: "[Author List]"
+        book: "[Book Title]"
+        editors: "[Editor Names]"
+        publisher: "[Publisher]"
+        year: "[Publication Year]"
+        pages: "[Page Numbers]"
+        isbn: "[ISBN]"
+    
+    technical_reports:
+      - title: "[Report Title]"
+        authors: "[Author List]"
+        organization: "[Organization]"
+        report_number: "[Report Number]"
+        date: "[Publication Date]"
+        url: "[URL (if available)]"
+        description: "[Brief Description]"
+      
+      - title: "[Report Title]"
+        authors: "[Author List]"
+        organization: "[Organization]"
+        report_number: "[Report Number]"
+        date: "[Publication Date]"
+        url: "[URL (if available)]"
+        description: "[Brief Description]"
+  
+  presentations:
+    invited_talks:
+      - title: "[Presentation Title]"
+        event: "[Event/Conference Name]"
+        location: "[Location]"
+        date: "[Date]"
+        audience: "[Audience Type/Size]"
+        description: "[Brief Description]"
+        slides_url: "[Slides URL (if available)]"
+      
+      - title: "[Presentation Title]"
+        event: "[Event/Conference Name]"
+        location: "[Location]"
+        date: "[Date]"
+        audience: "[Audience Type/Size]"
+        description: "[Brief Description]"
+        slides_url: "[Slides URL (if available)]"
+    
+    conference_presentations:
+      - title: "[Presentation Title]"
+        conference: "[Conference Name]"
+        location: "[Location]"
+        date: "[Date]"
+        presentation_type: "[Oral/Poster/Workshop]"
+        co_presenters: "[Co-presenters (if any)]"
+        abstract: "[Brief Abstract]"
+      
+      - title: "[Presentation Title]"
+        conference: "[Conference Name]"
+        location: "[Location]"
+        date: "[Date]"
+        presentation_type: "[Oral/Poster/Workshop]"
+        co_presenters: "[Co-presenters (if any)]"
+        abstract: "[Brief Abstract]"
+    
+    workshops_seminars:
+      - title: "[Workshop/Seminar Title]"
+        organization: "[Organization]"
+        location: "[Location]"
+        date: "[Date]"
+        role: "[Organizer/Presenter/Participant]"
+        description: "[Brief Description]"
+        participants: "[Number of Participants]"
+      
+      - title: "[Workshop/Seminar Title]"
+        organization: "[Organization]"
+        location: "[Location]"
+        date: "[Date]"
+        role: "[Organizer/Presenter/Participant]"
+        description: "[Brief Description]"
+        participants: "[Number of Participants]"
+  
+  grants_funding:
+    grants_received:
+      - title: "[Grant Title]"
+        funding_agency: "[Funding Agency]"
+        amount: "[Grant Amount]"
+        dates: "[Start Date - End Date]"
+        role: "[Principal Investigator/Co-PI/Team Member]"
+        description: "[Brief Description]"
+        status: "[Active/Completed/Proposed]"
+      
+      - title: "[Grant Title]"
+        funding_agency: "[Funding Agency]"
+        amount: "[Grant Amount]"
+        dates: "[Start Date - End Date]"
+        role: "[Principal Investigator/Co-PI/Team Member]"
+        description: "[Brief Description]"
+        status: "[Active/Completed/Proposed]"
+    
+    proposals_submitted:
+      - title: "[Proposal Title]"
+        funding_agency: "[Funding Agency]"
+        amount_requested: "[Amount Requested]"
+        submission_date: "[Submission Date]"
+        status: "[Under Review/Awarded/Declined]"
+        description: "[Brief Description]"
+      
+      - title: "[Proposal Title]"
+        funding_agency: "[Funding Agency]"
+        amount_requested: "[Amount Requested]"
+        submission_date: "[Submission Date]"
+        status: "[Under Review/Awarded/Declined]"
+        description: "[Brief Description]"
+  
+  technical_skills:
+    programming_languages:
+      - language: "[Programming Language]"
+        proficiency: "[Beginner/Intermediate/Advanced/Expert]"
+        years_experience: "[Years of Experience]"
+        projects: "[Number of Projects]"
+      
+      - language: "[Programming Language]"
+        proficiency: "[Beginner/Intermediate/Advanced/Expert]"
+        years_experience: "[Years of Experience]"
+        projects: "[Number of Projects]"
+    
+    software_tools:
+      - tool: "[Software/Tool Name]"
+        category: "[Category - e.g., Statistical Analysis, Design, etc.]"
+        proficiency: "[Beginner/Intermediate/Advanced/Expert]"
+        use_cases: "[Specific Use Cases]"
+      
+      - tool: "[Software/Tool Name]"
+        category: "[Category - e.g., Statistical Analysis, Design, etc.]"
+        proficiency: "[Beginner/Intermediate/Advanced/Expert]"
+        use_cases: "[Specific Use Cases]"
+    
+    methodologies:
+      - methodology: "[Methodology Name]"
+        description: "[Brief Description]"
+        experience_level: "[Experience Level]"
+        applications: "[Applications/Use Cases]"
+      
+      - methodology: "[Methodology Name]"
+        description: "[Brief Description]"
+        experience_level: "[Experience Level]"
+        applications: "[Applications/Use Cases]"
+  
+  languages:
+    spoken_languages:
+      - language: "[Language Name]"
+        proficiency: "[Native/Fluent/Advanced/Intermediate/Basic]"
+        speaking: "[Speaking Level]"
+        reading: "[Reading Level]"
+        writing: "[Writing Level]"
+        certification: "[Language Certification (if any)]"
+      
+      - language: "[Language Name]"
+        proficiency: "[Native/Fluent/Advanced/Intermediate/Basic]"
+        speaking: "[Speaking Level]"
+        reading: "[Reading Level]"
+        writing: "[Writing Level]"
+        certification: "[Language Certification (if any)]"
+  
+  professional_affiliations:
+    memberships:
+      - organization: "[Professional Organization]"
+        membership_type: "[Member/Fellow/Senior Member]"
+        dates: "[Start Date - End Date/Present]"
+        roles: "[Committee Roles/Leadership Positions]"
+        contributions: "[Contributions to Organization]"
+      
+      - organization: "[Professional Organization]"
+        membership_type: "[Member/Fellow/Senior Member]"
+        dates: "[Start Date - End Date/Present]"
+        roles: "[Committee Roles/Leadership Positions]"
+        contributions: "[Contributions to Organization]"
+    
+    editorial_roles:
+      - journal: "[Journal Name]"
+        role: "[Editor/Associate Editor/Reviewer]"
+        dates: "[Start Date - End Date/Present]"
+        responsibilities: "[Specific Responsibilities]"
+        impact_factor: "[Impact Factor (if applicable)]"
+      
+      - journal: "[Journal Name]"
+        role: "[Editor/Associate Editor/Reviewer]"
+        dates: "[Start Date - End Date/Present]"
+        responsibilities: "[Specific Responsibilities]"
+        impact_factor: "[Impact Factor (if applicable)]"
+  
+  awards_honors:
+    academic_awards:
+      - award: "[Award Name]"
+        institution: "[Institution]"
+        year: "[Year]"
+        description: "[Brief Description]"
+        significance: "[Significance/Impact]"
+      
+      - award: "[Award Name]"
+        institution: "[Institution]"
+        year: "[Year]"
+        description: "[Brief Description]"
+        significance: "[Significance/Impact]"
+    
+    professional_awards:
+      - award: "[Award Name]"
+        organization: "[Organization]"
+        year: "[Year]"
+        description: "[Brief Description]"
+        criteria: "[Award Criteria]"
+        impact: "[Impact on Career]"
+      
+      - award: "[Award Name]"
+        organization: "[Organization]"
+        year: "[Year]"
+        description: "[Brief Description]"
+        criteria: "[Award Criteria]"
+        impact: "[Impact on Career]"
+    
+    fellowships:
+      - fellowship: "[Fellowship Name]"
+        organization: "[Organization]"
+        year: "[Year]"
+        duration: "[Duration]"
+        description: "[Brief Description]"
+        benefits: "[Benefits Received]"
+      
+      - fellowship: "[Fellowship Name]"
+        organization: "[Organization]"
+        year: "[Year]"
+        duration: "[Duration]"
+        description: "[Brief Description]"
+        benefits: "[Benefits Received]"
+  
+  service_leadership:
+    committee_service:
+      - committee: "[Committee Name]"
+        organization: "[Organization]"
+        role: "[Role/Position]"
+        dates: "[Start Date - End Date/Present]"
+        responsibilities: "[Key Responsibilities]"
+        achievements: "[Achievements/Impact]"
+      
+      - committee: "[Committee Name]"
+        organization: "[Organization]"
+        role: "[Role/Position]"
+        dates: "[Start Date - End Date/Present]"
+        responsibilities: "[Key Responsibilities]"
+        achievements: "[Achievements/Impact]"
+    
+    conference_organization:
+      - conference: "[Conference Name]"
+        role: "[Organizing Committee/Program Chair/Track Chair]"
+        year: "[Year]"
+        responsibilities: "[Key Responsibilities]"
+        impact: "[Impact/Outcomes]"
+      
+      - conference: "[Conference Name]"
+        role: "[Organizing Committee/Program Chair/Track Chair]"
+        year: "[Year]"
+        responsibilities: "[Key Responsibilities]"
+        impact: "[Impact/Outcomes]"
+    
+    community_service:
+      - organization: "[Organization]"
+        role: "[Role/Position]"
+        dates: "[Start Date - End Date/Present]"
+        description: "[Brief Description]"
+        impact: "[Impact on Community]"
+        hours_contributed: "[Hours Contributed]"
+      
+      - organization: "[Organization]"
+        role: "[Role/Position]"
+        dates: "[Start Date - End Date/Present]"
+        description: "[Brief Description]"
+        impact: "[Impact on Community]"
+        hours_contributed: "[Hours Contributed]"
+  
+  patents:
+    patents:
+      - title: "[Patent Title]"
+        patent_number: "[Patent Number]"
+        inventors: "[Inventor List]"
+        filing_date: "[Filing Date]"
+        issue_date: "[Issue Date]"
+        status: "[Pending/Issued/Expired]"
+        description: "[Brief Description]"
+        commercial_applications: "[Commercial Applications]"
+      
+      - title: "[Patent Title]"
+        patent_number: "[Patent Number]"
+        inventors: "[Inventor List]"
+        filing_date: "[Filing Date]"
+        issue_date: "[Issue Date]"
+        status: "[Pending/Issued/Expired]"
+        description: "[Brief Description]"
+        commercial_applications: "[Commercial Applications]"
+    
+    patent_applications:
+      - title: "[Patent Application Title]"
+        application_number: "[Application Number]"
+        inventors: "[Inventor List]"
+        filing_date: "[Filing Date]"
+        status: "[Under Review/Published/Allowed]"
+        description: "[Brief Description]"
+      
+      - title: "[Patent Application Title]"
+        application_number: "[Application Number]"
+        inventors: "[Inventor List]"
+        filing_date: "[Filing Date]"
+        status: "[Under Review/Published/Allowed]"
+        description: "[Brief Description]"
+  
+  media_appearances:
+    interviews:
+      - media_outlet: "[Media Outlet]"
+        title: "[Interview/Article Title]"
+        date: "[Date]"
+        type: "[Print/Online/Radio/TV/Podcast]"
+        topic: "[Topic Discussed]"
+        url: "[URL (if available)]"
+      
+      - media_outlet: "[Media Outlet]"
+        title: "[Interview/Article Title]"
+        date: "[Date]"
+        type: "[Print/Online/Radio/TV/Podcast]"
+        topic: "[Topic Discussed]"
+        url: "[URL (if available)]"
+    
+    expert_commentary:
+      - outlet: "[Media Outlet]"
+        topic: "[Topic]"
+        date: "[Date]"
+        type: "[Commentary/Expert Opinion/Quote]"
+        impact: "[Impact/Reach]"
+      
+      - outlet: "[Media Outlet]"
+        topic: "[Topic]"
+        date: "[Date]"
+        type: "[Commentary/Expert Opinion/Quote]"
+        impact: "[Impact/Reach]"
+  
+  references:
+    academic_references:
+      - name: "[Reference Name]"
+        title: "[Title/Position]"
+        institution: "[Institution]"
+        department: "[Department]"
+        email: "[Email]"
+        phone: "[Phone]"
+        relationship: "[Relationship to You]"
+        years_known: "[Years Known]"
+      
+      - name: "[Reference Name]"
+        title: "[Title/Position]"
+        institution: "[Institution]"
+        department: "[Department]"
+        email: "[Email]"
+        phone: "[Phone]"
+        relationship: "[Relationship to You]"
+        years_known: "[Years Known]"
+    
+    professional_references:
+      - name: "[Reference Name]"
+        title: "[Title/Position]"
+        company: "[Company]"
+        email: "[Email]"
+        phone: "[Phone]"
+        relationship: "[Relationship to You]"
+        years_known: "[Years Known]"
+      
+      - name: "[Reference Name]"
+        title: "[Title/Position]"
+        company: "[Company]"
+        email: "[Email]"
+        phone: "[Phone]"
+        relationship: "[Relationship to You]"
+        years_known: "[Years Known]"
+  
+  additional_sections:
+    ongoing_projects:
+      - project: "[Project Title]"
+        description: "[Brief Description]"
+        timeline: "[Timeline]"
+        collaborators: "[Collaborators]"
+        expected_outcomes: "[Expected Outcomes]"
+      
+      - project: "[Project Title]"
+        description: "[Brief Description]"
+        timeline: "[Timeline]"
+        collaborators: "[Collaborators]"
+        expected_outcomes: "[Expected Outcomes]"
+    
+    future_goals:
+      - goal: "[Professional Goal]"
+        timeline: "[Timeline]"
+        strategy: "[Strategy to Achieve]"
+        impact: "[Expected Impact]"
+      
+      - goal: "[Professional Goal]"
+        timeline: "[Timeline]"
+        strategy: "[Strategy to Achieve]"
+        impact: "[Expected Impact]"
+    
+    personal_interests:
+      - interest: "[Personal Interest]"
+        description: "[Brief Description]"
+        relevance: "[Relevance to Professional Work]"
+      
+      - interest: "[Personal Interest]"
+        description: "[Brief Description]"
+        relevance: "[Relevance to Professional Work]"
+  
+  formatting_guidelines:
+    document_structure:
+      page_limit: "[Recommended Page Limit]"
+      font: "[Recommended Font]"
+      font_size: "[Recommended Font Size]"
+      margins: "[Recommended Margins]"
+      spacing: "[Recommended Line Spacing]"
+    
+    section_prioritization:
+      primary_sections: "[Most Important Sections for Target Role]"
+      secondary_sections: "[Secondary Importance Sections]"
+      optional_sections: "[Optional Sections Based on Experience]"
+    
+    content_guidelines:
+      action_verbs: "[Recommended Action Verbs]"
+      quantifiable_results: "[Guidelines for Quantifying Results]"
+      technical_depth: "[Recommended Technical Depth]"
+      audience_adaptation: "[Guidelines for Audience Adaptation]"
