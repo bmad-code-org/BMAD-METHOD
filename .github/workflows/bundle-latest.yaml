@@ -122,7 +122,7 @@ jobs:
               if [ -f "$xml_file" ]; then
                 local agent_name=$(basename "$xml_file" .xml)
                 # Convert filename to display name (pm -> PM, tech-writer -> Tech Writer)
-                local display_name=$(echo "$agent_name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2));}1')
+                local display_name=$(echo "$agent_name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++) {if(length($i)==2) $i=toupper($i); else $i=toupper(substr($i,1,1)) tolower(substr($i,2));}}1')
 
                 if [ $count -gt 0 ]; then
                   links="$links | "
