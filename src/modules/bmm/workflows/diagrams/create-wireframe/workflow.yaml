@@ -1,6 +1,5 @@
 name: create-excalidraw-wireframe
 description: "Create website or app wireframes in Excalidraw format"
-author: "BMad"
 
 # Config values
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

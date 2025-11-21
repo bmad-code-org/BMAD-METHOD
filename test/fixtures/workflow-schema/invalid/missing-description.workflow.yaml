@@ -1,0 +1,8 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: description
+# Error message: expected string, received undefined
+
+name: test-workflow
+author: Test Author
+instructions: "{project-root}/path/to/instructions.md"

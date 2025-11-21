@@ -1,6 +1,5 @@
 name: create-story
 description: "Create the next user story markdown from epics/PRD and architecture, using a standard template and saving to the stories folder"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

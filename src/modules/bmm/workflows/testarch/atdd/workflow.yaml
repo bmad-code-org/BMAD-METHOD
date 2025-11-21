@@ -1,7 +1,6 @@
 # Test Architect workflow: atdd
 name: testarch-atdd
 description: "Generate failing acceptance tests before implementation using TDD red-green-refactor cycle"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

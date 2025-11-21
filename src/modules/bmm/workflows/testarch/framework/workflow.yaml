@@ -1,7 +1,6 @@
 # Test Architect workflow: framework
 name: testarch-framework
 description: "Initialize production-ready test framework architecture (Playwright or Cypress) with fixtures, helpers, and configuration"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

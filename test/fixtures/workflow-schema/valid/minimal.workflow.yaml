@@ -1,0 +1,7 @@
+# Expected: PASS
+# Valid minimal workflow with only required fields
+
+name: minimal-workflow
+description: A minimal valid workflow
+author: Test Author
+instructions: "{project-root}/path/to/instructions.md"

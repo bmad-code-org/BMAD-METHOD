@@ -1,7 +1,6 @@
 # Correct Course - Sprint Change Management Workflow
 name: "correct-course"
 description: "Navigate significant changes during sprint execution by analyzing impact, proposing solutions, and routing for implementation"
-author: "BMad Method"
 
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"

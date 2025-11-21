@@ -1,0 +1,41 @@
+# Expected: PASS
+# Valid complex workflow with all optional fields
+
+name: complex-workflow
+description: A complex workflow with all features
+standalone: true
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+installed_path: "{project-root}/.bmad/bmm/workflows/complex-workflow"
+default_output_file: "{output_folder}/output.md"
+autonomous: false
+
+input_file_patterns:
+  architecture:
+    description: "System architecture"
+    whole: "{output_folder}/*architecture*.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "FULL_LOAD"
+  epics:
+    description: "Epic files"
+    sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
+    load_strategy: "SELECTIVE_LOAD"
+
+exit_triggers:
+  - "*exit"
+  - "*quit"
+
+web_bundle:
+  name: "complex-workflow"
+  description: "Web bundle for complex workflow"
+  instructions: "{bmad_folder}/workflows/complex/instructions.md"
+  web_bundle_files:
+    - "{bmad_folder}/workflows/complex/instructions.md"
+    - "{bmad_folder}/workflows/complex/template.md"
+
+# Custom workflow variables
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated

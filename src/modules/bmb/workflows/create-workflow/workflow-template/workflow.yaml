@@ -1,7 +1,6 @@
 # {TITLE} Workflow Template Configuration
 name: "{WORKFLOW_CODE}"
 description: "{WORKFLOW_DESCRIPTION}"
-author: "BMad"
 
 # Critical variables load from config_source
 # Add Additional Config Pulled Variables Here
@@ -37,7 +36,6 @@ required_tools: #optional, can be omitted
 web_bundle: #optional, can be omitted
   name: "{WORKFLOW_CODE}"
   description: "{WORKFLOW_DESCRIPTION}"
-  author: "BMad"
 
   # Core workflow files (paths relative to {bmad_folder}/ root)
   instructions: "{bmad_folder}/{module-code}/workflows/{workflow-code}/instructions.md"

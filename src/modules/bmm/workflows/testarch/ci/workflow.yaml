@@ -1,7 +1,6 @@
 # Test Architect workflow: ci
 name: testarch-ci
 description: "Scaffold CI/CD quality pipeline with test execution, burn-in loops, and artifact collection"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

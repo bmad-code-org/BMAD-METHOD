@@ -1,7 +1,6 @@
 # Game Design Document (GDD) Workflow
 name: gdd
 description: "Game Design Document workflow for all game project levels - from small prototypes to full AAA games. Generates comprehensive GDD with game mechanics, systems, progression, and implementation guidance."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
@@ -49,7 +48,6 @@ standalone: true
 web_bundle:
   name: "gdd"
   description: "Game Design Document workflow for all game project levels - from small prototypes to full AAA games. Generates comprehensive GDD with game mechanics, systems, progression, and implementation guidance."
-  author: "BMad"
   instructions: "{bmad_folder}/bmgd/workflows/2-design/gdd/instructions-gdd.md"
   web_bundle_files:
     - "{bmad_folder}/bmgd/workflows/2-design/gdd/instructions-gdd.md"

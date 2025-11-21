@@ -1,0 +1,8 @@
+# Expected: FAIL
+# Error code: custom
+# Error message: Unknown path placeholder
+
+name: test-workflow
+description: Test workflow with typo in placeholder
+author: Test Author
+instructions: "{project-rot}/path/instructions.md"

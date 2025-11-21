@@ -1,7 +1,6 @@
 # Story Ready Workflow (SM Agent)
 name: story-ready
 description: "Marks a drafted story as ready for development and moves it from TODO → IN PROGRESS in the status file. Simple status-update workflow with no searching required."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

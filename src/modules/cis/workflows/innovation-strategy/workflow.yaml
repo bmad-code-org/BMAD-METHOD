@@ -1,7 +1,6 @@
 # Innovation Strategy Workflow Configuration
 name: "innovation-strategy"
 description: "Identify disruption opportunities and architect business model innovation. This workflow guides strategic analysis of markets, competitive dynamics, and business model innovation to uncover sustainable competitive advantages and breakthrough opportunities."
-author: "BMad"
 
 # Critical variables load from config_source
 config_source: "{project-root}/{bmad_folder}/cis/config.yaml"
@@ -29,7 +28,6 @@ standalone: true
 web_bundle:
   name: "innovation-strategy"
   description: "Identify disruption opportunities and architect business model innovation. This workflow guides strategic analysis of markets, competitive dynamics, and business model innovation to uncover sustainable competitive advantages and breakthrough opportunities."
-  author: "BMad"
   instructions: "{bmad_folder}/cis/workflows/innovation-strategy/instructions.md"
   template: "{bmad_folder}/cis/workflows/innovation-strategy/template.md"
   web_bundle_files:

@@ -1,7 +1,6 @@
 # Architecture Workflow Configuration
 name: architecture
 description: "Collaborative architectural decision facilitation for AI-agent consistency. Replaces template-driven architecture with intelligent, adaptive conversation that produces a decision-focused architecture document optimized for preventing agent conflicts."
-author: "BMad"
 
 # Critical variables
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
@@ -56,7 +55,6 @@ standalone: true
 web_bundle:
   name: "architecture"
   description: "Collaborative architectural decision facilitation for AI-agent consistency. Replaces template-driven architecture with intelligent, adaptive conversation that produces a decision-focused architecture document optimized for preventing agent conflicts."
-  author: "BMad"
 
   # Core workflow files ({bmad_folder}/-relative paths)
   instructions: "{bmad_folder}/bmm/workflows/3-solutioning/architecture/instructions.md"

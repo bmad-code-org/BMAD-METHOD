@@ -1,7 +1,6 @@
 # Edit Agent - Agent Editor Configuration
 name: "edit-agent"
 description: "Edit existing BMAD agents while following all best practices and conventions"
-author: "BMad"
 
 # Critical variables load from config_source
 config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"

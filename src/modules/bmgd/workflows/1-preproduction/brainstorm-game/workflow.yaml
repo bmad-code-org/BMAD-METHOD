@@ -1,7 +1,6 @@
 # Brainstorm Game Workflow Configuration
 name: "brainstorm-game"
 description: "Facilitate game brainstorming sessions by orchestrating the CIS brainstorming workflow with game-specific context, guidance, and additional game design techniques."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
@@ -29,7 +28,6 @@ standalone: true
 web_bundle:
   name: "brainstorm-game"
   description: "Facilitate game brainstorming sessions by orchestrating the CIS brainstorming workflow with game-specific context, guidance, and additional game design techniques."
-  author: "BMad"
   instructions: "{bmad_folder}/bmgd/workflows/1-preproduction/brainstorm-game/instructions.md"
   template: false
   web_bundle_files:

@@ -1,7 +1,6 @@
 # Domain Research Workflow Configuration
 name: domain-research
 description: "Collaborative exploration of domain-specific requirements, regulations, and patterns for complex projects"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
@@ -29,7 +28,6 @@ standalone: true
 web_bundle:
   name: "domain-research"
   description: "Collaborative exploration of domain-specific requirements, regulations, and patterns for complex projects"
-  author: "BMad"
 
   # Core workflow files ({bmad_folder}/-relative paths)
   instructions: "{bmad_folder}/bmm/workflows/1-analysis/domain-research/instructions.md"

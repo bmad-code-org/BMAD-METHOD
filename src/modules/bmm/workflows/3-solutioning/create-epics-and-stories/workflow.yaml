@@ -1,7 +1,6 @@
 # Epic and Story Decomposition Workflow
 name: create-epics-and-stories
 description: "Transform PRD requirements into bite-sized stories organized into deliverable functional epics. This workflow takes a Product Requirements Document (PRD) and breaks it down into epics and user stories that can be easily assigned to development teams. It ensures that all functional requirements are captured in a structured format, making it easier for teams to understand and implement the necessary features."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
@@ -55,7 +54,6 @@ standalone: true
 web_bundle:
   name: "create-epics-and-stories"
   description: "Transform PRD requirements into bite-sized stories organized in epics for 200k context dev agents"
-  author: "BMad"
   instructions: "{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/instructions.md"
   template: "{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/epics-template.md"
   web_bundle_files:

@@ -1,7 +1,6 @@
 # Product Requirements Document (PRD) Workflow
 name: prd
 description: "Unified PRD workflow for BMad Method and Enterprise Method tracks. Produces strategic PRD and tactical epic breakdown. Hands off to architecture workflow for technical design. Note: Quick Flow track uses tech-spec workflow."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
@@ -54,7 +53,6 @@ standalone: true
 web_bundle:
   name: "prd"
   description: "Unified PRD workflow for BMad Method and Enterprise Method tracks. Produces strategic PRD and tactical epic breakdown. Hands off to architecture workflow for technical design. Note: Quick Flow track uses tech-spec workflow."
-  author: "BMad"
   instructions: "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/instructions.md"
   validation: "{bmad_folder}/bmm/workflows/2-plan-workflows/prd/checklist.md"
   web_bundle_files:

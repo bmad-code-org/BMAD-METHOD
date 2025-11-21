@@ -1,0 +1,10 @@
+# Expected: FAIL
+# Error code: custom
+# Error message: Malformed config reference
+
+name: test-workflow
+description: Test workflow with malformed config reference
+author: Test Author
+instructions: "{project-root}/path/instructions.md"
+config_source: "{project-root}/.bmad/config.yaml"
+output_folder: "{config_source}output_folder"
