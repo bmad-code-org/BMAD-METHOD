@@ -49,31 +49,51 @@ This workflow performs comprehensive test quality reviews using TEA's knowledge 
 
 **Actions:**
 
-1. Load relevant knowledge fragments from `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv`:
+1. Check playwright-utils flag:
+   - Read `{config_source}` and check `config.tea_use_playwright_utils`
+
+2. Load relevant knowledge fragments from `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv`:
+
+   **Core Patterns (Always load):**
    - `test-quality.md` - Definition of Done (deterministic tests, isolated with cleanup, explicit assertions, <300 lines, <1.5 min, 658 lines, 5 examples)
-   - `fixture-architecture.md` - Pure function → Fixture → mergeTests composition with auto-cleanup (406 lines, 5 examples)
-   - `network-first.md` - Route intercept before navigate to prevent race conditions (intercept before navigate, HAR capture, deterministic waiting, 489 lines, 5 examples)
    - `data-factories.md` - Factory functions with faker: overrides, nested factories, API-first setup (498 lines, 5 examples)
    - `test-levels-framework.md` - E2E vs API vs Component vs Unit appropriateness with decision matrix (467 lines, 4 examples)
-   - `playwright-config.md` - Environment-based configuration with fail-fast validation (722 lines, 5 examples)
-   - `component-tdd.md` - Red-Green-Refactor patterns with provider isolation, accessibility, visual regression (480 lines, 4 examples)
    - `selective-testing.md` - Duplicate coverage detection with tag-based, spec filter, diff-based selection (727 lines, 4 examples)
    - `test-healing-patterns.md` - Common failure patterns: stale selectors, race conditions, dynamic data, network errors, hard waits (648 lines, 5 examples)
    - `selector-resilience.md` - Selector best practices (data-testid > ARIA > text > CSS hierarchy, anti-patterns, 541 lines, 4 examples)
    - `timing-debugging.md` - Race condition prevention and async debugging techniques (370 lines, 3 examples)
+
+   **If `config.tea_use_playwright_utils: true` (All Utilities):**
+   - `overview.md` - Playwright utils best practices
+   - `api-request.md` - Validate apiRequest usage patterns
+   - `network-recorder.md` - Review HAR record/playback implementation
+   - `auth-session.md` - Check auth token management
+   - `intercept-network-call.md` - Validate network interception
+   - `recurse.md` - Review polling patterns
+   - `log.md` - Check logging best practices
+   - `file-utils.md` - Validate file operation patterns
+   - `burn-in.md` - Review burn-in configuration
+   - `network-error-monitor.md` - Check error monitoring setup
+   - `fixtures-composition.md` - Validate mergeTests usage
+
+   **If `config.tea_use_playwright_utils: false`:**
+   - `fixture-architecture.md` - Pure function → Fixture → mergeTests composition with auto-cleanup (406 lines, 5 examples)
+   - `network-first.md` - Route intercept before navigate to prevent race conditions (489 lines, 5 examples)
+   - `playwright-config.md` - Environment-based configuration with fail-fast validation (722 lines, 5 examples)
+   - `component-tdd.md` - Red-Green-Refactor patterns with provider isolation (480 lines, 4 examples)
    - `ci-burn-in.md` - Flaky test detection with 10-iteration burn-in loop (678 lines, 4 examples)
 
-2. Determine review scope:
+3. Determine review scope:
    - **single**: Review one test file (`test_file_path` provided)
    - **directory**: Review all tests in directory (`test_dir` provided)
    - **suite**: Review entire test suite (discover all test files)
 
-3. Auto-discover related artifacts (if `auto_discover_story: true`):
+4. Auto-discover related artifacts (if `auto_discover_story: true`):
    - Extract test ID from filename (e.g., `1.3-E2E-001.spec.ts` → story 1.3)
    - Search for story file (`story-1.3.md`)
    - Search for test design (`test-design-story-1.3.md` or `test-design-epic-1.md`)
 
-4. Read story file for context (if available):
+5. Read story file for context (if available):
    - Extract acceptance criteria
    - Extract priority classification
    - Extract expected test IDs

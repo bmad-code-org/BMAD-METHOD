@@ -347,6 +347,54 @@ alwaysApply: false
     // Return MDC header + launcher content (without its original frontmatter)
     return mdcHeader + contentWithoutFrontmatter;
   }
+
+  /**
+   * Install a custom agent launcher for Cursor
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created command
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const customAgentsDir = path.join(projectDir, this.configDir, this.rulesDir, 'bmad', 'custom', 'agents');
+
+    if (!(await this.exists(path.join(projectDir, this.configDir)))) {
+      return null; // IDE not configured for this project
+    }
+
+    await this.ensureDir(customAgentsDir);
+
+    const launcherContent = `You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
+
+<agent-activation CRITICAL="TRUE">
+1. LOAD the FULL agent file from @${agentPath}
+2. READ its entire contents - this contains the complete agent persona, menu, and instructions
+3. FOLLOW every step in the <activation> section precisely
+4. DISPLAY the welcome/greeting as instructed
+5. PRESENT the numbered menu
+6. WAIT for user input before proceeding
+</agent-activation>
+`;
+
+    // Cursor uses MDC format with metadata header
+    const mdcContent = `---
+description: "${agentName} agent"
+globs:
+alwaysApply: false
+---
+
+${launcherContent}
+`;
+
+    const launcherPath = path.join(customAgentsDir, `${agentName}.mdc`);
+    await this.writeFile(launcherPath, mdcContent);
+
+    return {
+      path: launcherPath,
+      command: `@${agentName}`,
+    };
+  }
 }
 
 module.exports = { CursorSetup };

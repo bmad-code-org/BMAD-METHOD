@@ -169,6 +169,12 @@ Tech-Spec → Implement
 PRD → (Optional UX) → Architecture → Create Epics and Stories → Implementation Readiness Check → Implement
 ```
 
+**Complete Workflow Visualization**:
+
+![BMad Method Workflow - Standard Greenfield](./images/workflow-method-greenfield.svg)
+
+_Detailed flowchart showing all phases, workflows, agents (color-coded), and decision points for the BMad Method track. Each colored box represents a different agent role._
+
 **Use For**:
 
 **Greenfield**:

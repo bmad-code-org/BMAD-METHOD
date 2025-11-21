@@ -204,6 +204,41 @@ class IdeManager {
 
     return detected;
   }
+
+  /**
+   * Install custom agent launchers for specified IDEs
+   * @param {Array} ides - List of IDE names to install for
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object} Results for each IDE
+   */
+  async installCustomAgentLaunchers(ides, projectDir, agentName, agentPath, metadata) {
+    const results = {};
+
+    for (const ideName of ides) {
+      const handler = this.handlers.get(ideName.toLowerCase());
+
+      if (!handler) {
+        console.warn(chalk.yellow(`⚠️  IDE '${ideName}' is not yet supported for custom agent installation`));
+        continue;
+      }
+
+      try {
+        if (typeof handler.installCustomAgentLauncher === 'function') {
+          const result = await handler.installCustomAgentLauncher(projectDir, agentName, agentPath, metadata);
+          if (result) {
+            results[ideName] = result;
+          }
+        }
+      } catch (error) {
+        console.warn(chalk.yellow(`⚠️  Failed to install ${ideName} launcher: ${error.message}`));
+      }
+    }
+
+    return results;
+  }
 }
 
 module.exports = { IdeManager };

@@ -353,13 +353,30 @@ Scaffolds a production-ready CI/CD quality pipeline with test execution, burn-in
 
 ### Knowledge Base Integration
 
-**Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to identify and load relevant knowledge fragments:
+**Critical:** Check configuration and load appropriate fragments.
+
+Read `{config_source}` and check `config.tea_use_playwright_utils`.
+
+**Core CI Patterns (Always load):**
 
 - `ci-burn-in.md` - Burn-in loop patterns: 10-iteration detection, GitHub Actions workflow, shard orchestration, selective execution (678 lines, 4 examples)
 - `selective-testing.md` - Changed test detection strategies: tag-based, spec filters, diff-based selection, promotion rules (727 lines, 4 examples)
 - `visual-debugging.md` - Artifact collection best practices: trace viewer, HAR recording, custom artifacts, accessibility integration (522 lines, 5 examples)
 - `test-quality.md` - CI-specific test quality criteria: deterministic tests, isolated with cleanup, explicit assertions, length/time optimization (658 lines, 5 examples)
 - `playwright-config.md` - CI-optimized configuration: parallelization, artifact output, project dependencies, sharding (722 lines, 5 examples)
+
+**If `config.tea_use_playwright_utils: true`:**
+
+Load playwright-utils CI-relevant fragments:
+
+- `burn-in.md` - Smart test selection with git diff analysis (very important for CI optimization)
+- `network-error-monitor.md` - Automatic HTTP 4xx/5xx detection (recommend in CI pipelines)
+
+Recommend:
+
+- Add burn-in script for pull request validation
+- Enable network-error-monitor in merged fixtures for catching silent failures
+- Reference full docs in `*framework` and `*automate` workflows
 
 ### CI Platform-Specific Guidance
 

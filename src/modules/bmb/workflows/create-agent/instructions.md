@@ -2,14 +2,13 @@
 
 <critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/create-agent/workflow.yaml</critical>
-<critical>Study YAML agent examples in: {example_agents_dir} for patterns</critical>
-<critical>Reference activation conventions from: {agent_activation_rules}</critical>
+<critical>Reference examples by type: Simple: {simple_agent_examples} | Expert: {expert_agent_examples} | Module: {module_agent_examples}</critical>
 <critical>Communicate in {communication_language} throughout the agent creation process</critical>
 <critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
 
 <workflow>
 
-<step n="-1" goal="Optional brainstorming for agent ideas" optional="true">
+<step n="1" goal="Optional brainstorming for agent ideas">
   <ask>Do you want to brainstorm agent ideas first? [y/n]</ask>
 
   <check if="user answered yes">
@@ -20,60 +19,110 @@
   </check>
 
   <check if="user answered no">
-    <action>Proceed directly to Step 0</action>
+    <action>Proceed directly to Step 2</action>
   </check>
 </step>
 
-<step n="0" goal="Load technical documentation">
+<step n="2" goal="Load technical documentation">
 <critical>Load and understand the agent building documentation</critical>
-<action>Load agent architecture reference: {agent_architecture}</action>
-<action>Load agent types guide: {agent_types}</action>
-<action>Load command patterns: {agent_commands}</action>
-<action>Understand the YAML agent schema and how it compiles to final .md via the installer</action>
-<action>Understand the differences between Simple, Expert, and Module agents</action>
+<action>CRITICAL: Load compilation guide FIRST: {agent_compilation} - this shows what the compiler AUTO-INJECTS so you don't duplicate it</action>
+<action>Load menu patterns guide: {agent_menu_patterns}</action>
+<action>Understand: You provide persona, prompts, menu. Compiler adds activation, handlers, rules, help/exit.</action>
 </step>
 
-<step n="1" goal="Discover the agent's purpose and type through natural conversation">
-<action>If brainstorming was completed in Step -1, reference those results to guide the conversation</action>
+<step n="3" goal="Discover the agent's purpose and type through natural conversation">
+<action>If brainstorming was completed in Step 1, reference those results to guide the conversation</action>
 
 <action>Guide user to articulate their agent's core purpose, exploring the problems it will solve, tasks it will handle, target users, and what makes it special</action>
 
-<action>As the purpose becomes clear, analyze the conversation to determine the appropriate agent type:</action>
+<action>As the purpose becomes clear, analyze the conversation to determine the appropriate agent type</action>
 
-**Agent Type Decision Criteria:**
+**CRITICAL:** Agent types differ in **architecture and integration**, NOT capabilities. ALL types can write files, execute commands, and use system resources.
 
-- Simple Agent: Single-purpose, straightforward, self-contained
-- Expert Agent: Domain-specific with knowledge base needs
-- Module Agent: Complex with multiple workflows and system integration
+**Agent Type Decision Framework:**
 
-<action>Present your recommendation naturally, explaining why the agent type fits their described purpose and requirements</action>
+- **Simple Agent** - Self-contained (all in YAML), stateless, no persistent memory
+  - Choose when: Single-purpose utility, each run independent, logic fits in YAML
+  - CAN write to {output_folder}, update files, execute commands
+
+- **Expert Agent** - Personal sidecar files, persistent memory, domain-restricted
+  - Choose when: Needs to remember across sessions, personal knowledge base, learning over time
+  - CAN have personal workflows in sidecar if critical_actions loads workflow engine
+
+- **Module Agent** - Workflow orchestration, team integration, shared infrastructure
+  - Choose when: Coordinates workflows, works with other agents, professional operations
+  - CAN invoke module workflows and coordinate with team agents
+
+**Reference:** See {project-root}/{bmad_folder}/bmb/docs/understanding-agent-types.md for "The Same Agent, Three Ways" example.
+
+<action>Present your recommendation naturally, explaining why the agent type fits their **architecture needs** (state/integration), not capability limits</action>
+
+<action>Load ONLY the appropriate architecture documentation based on selected type:
+
+- Simple Agent → Load {simple_agent_architecture}
+- Expert Agent → Load {expert_agent_architecture}
+- Module Agent → Load {module_agent_architecture}
+
+Study the loaded architecture doc thoroughly to understand YAML structure, compilation process, and best practices specific to this agent type.
+</action>
 
 **Path Determination:**
 
   <check if="module agent selected">
-    <action>Discover which module system fits best (bmm, bmb, cis, or custom)</action>
+    <ask>CRITICAL: Find out from the user what module and the path to the module this agent will be added to!</ask>
     <action>Store as {{target_module}} for path determination</action>
-    <note>Agent will be saved to: {bmad_folder}/{{target_module}}/agents/</note>
+    <note>Agent will be saved to: {module_output_file}</note>
   </check>
 
   <check if="standalone agent selected">
     <action>Explain this will be their personal agent, not tied to a module</action>
-    <note>Agent will be saved to: {bmad_folder}/agents/{{agent-name}}/</note>
-    <note>All sidecar files will be in the same folder</note>
+    <note>Agent will be saved to: {standalone_output_file}</note>
+    <note>All sidecar files will be in the same folder as the agent</note>
   </check>
 
-<critical>Determine agent location:</critical>
+<critical>Determine agent location using workflow variables:</critical>
 
-- Module Agent → {bmad_folder}/{{module}}/agents/{{agent-name}}.agent.yaml
-- Standalone Agent → {bmad_folder}/agents/{{agent-name}}/{{agent-name}}.agent.yaml
+- Module Agent → {module_output_file}
+- Standalone Agent → {standalone_output_file}
 
 <note>Keep agent naming/identity details for later - let them emerge naturally through the creation process</note>
 
 <template-output>agent_purpose_and_type</template-output>
 </step>
 
-<step n="2" goal="Shape the agent's personality through discovery">
+<step n="4" goal="Shape the agent's personality through discovery">
 <action>If brainstorming was completed, weave personality insights naturally into the conversation</action>
+
+<critical>Understanding the Four Persona Fields - How the Compiled Agent LLM Interprets Them</critical>
+
+When the agent is compiled and activated, the LLM reads these fields to understand its persona. Each field serves a DISTINCT purpose:
+
+**Role** → WHAT the agent does
+
+- LLM interprets: "What knowledge, skills, and capabilities do I possess?"
+- Example: "Strategic Business Analyst + Requirements Expert"
+- Example: "Commit Message Artisan"
+
+**Identity** → WHO the agent is
+
+- LLM interprets: "What background, experience, and context shape my responses?"
+- Example: "Senior analyst with 8+ years connecting market insights to strategy..."
+- Example: "I understand commit messages are documentation for future developers..."
+
+**Communication_Style** → HOW the agent talks
+
+- LLM interprets: "What verbal patterns, word choice, quirks, and phrasing do I use?"
+- Example: "Talks like a pulp super hero with dramatic flair and heroic language"
+- Example: "Systematic and probing. Structures findings hierarchically."
+- Example: "Poetic drama and flair with every turn of a phrase."
+
+**Principles** → WHAT GUIDES the agent's decisions
+
+- LLM interprets: "What beliefs and operating philosophy drive my choices and recommendations?"
+- Example: "Every business challenge has root causes. Ground findings in evidence."
+- Example: "Every commit tells a story - capture the why, not just the what."
+
+<critical>DO NOT MIX THESE FIELDS! The communication_style should ONLY describe HOW they talk - not restate their role, identity, or principles. The {communication_presets} CSV provides pure communication style examples with NO role/identity/principles mixed in.</critical>
 
 <action>Guide user to envision the agent's personality by exploring how analytical vs creative, formal vs casual, and mentor vs peer vs assistant traits would make it excel at its job</action>
 
@@ -86,51 +135,63 @@
 <example>Example emerged identity: "Senior analyst with deep expertise in market research..."</example>
 
 **Communication Style Selection:**
-<action>Load the communication styles guide: {communication_styles}</action>
+<action>Present the 13 available categories to user:
 
-<action>Based on the emerging personality, suggest 2-3 communication styles that would fit naturally, offering to show all options if they want to explore more</action>
+- adventurous (pulp-superhero, film-noir, pirate-captain, etc.)
+- analytical (data-scientist, forensic-investigator, strategic-planner)
+- creative (mad-scientist, artist-visionary, jazz-improviser)
+- devoted (overprotective-guardian, adoring-superfan, loyal-companion)
+- dramatic (shakespearean, soap-opera, opera-singer)
+- educational (patient-teacher, socratic-guide, sports-coach)
+- entertaining (game-show-host, stand-up-comedian, improv-performer)
+- inspirational (life-coach, mountain-guide, phoenix-rising)
+- mystical (zen-master, tarot-reader, yoda-sage, oracle)
+- professional (executive-consultant, supportive-mentor, direct-consultant)
+- quirky (cooking-chef, nature-documentary, conspiracy-theorist)
+- retro (80s-action-hero, 1950s-announcer, disco-era)
+- warm (southern-hospitality, italian-grandmother, camp-counselor)
+  </action>
 
-**Style Categories Available:**
+<action>Once user picks category interest, load ONLY that category from {communication_presets}</action>
 
-**Fun Presets:**
+<action>Present the presets in that category with name, style_text, and sample from CSV. The style_text is the actual concise communication_style value to use in the YAML field</action>
 
-1. Pulp Superhero - Dramatic flair, heroic, epic adventures
-2. Film Noir Detective - Mysterious, noir dialogue, hunches
-3. Wild West Sheriff - Western drawl, partner talk, frontier justice
-4. Shakespearean Scholar - Elizabethan language, theatrical
-5. 80s Action Hero - One-liners, macho, bubblegum
-6. Pirate Captain - Ahoy, treasure hunting, nautical terms
-7. Wise Sage/Yoda - Cryptic wisdom, inverted syntax
-8. Game Show Host - Enthusiastic, game show tropes
+<action>When user selects a preset, use the style_text directly as their communication_style (e.g., "Talks like a pulp super hero with dramatic flair")</action>
 
-**Professional Presets:**
+<critical>KEEP COMMUNICATION_STYLE CONCISE - 1-2 sentences MAX describing ONLY how they talk.
 
-9. Analytical Expert - Systematic, data-driven, hierarchical
-10. Supportive Mentor - Patient guidance, celebrates wins
-11. Direct Consultant - Straight to the point, efficient
-12. Collaborative Partner - Team-oriented, inclusive
+The {communication_presets} CSV shows PURE communication styles - notice they contain NO role, identity, or principles:
 
-**Quirky Presets:**
+- "Talks like a pulp super hero with dramatic flair and heroic language" ← Pure verbal style
+- "Evidence-based systematic approach. Patterns and correlations." ← Pure verbal style
+- "Poetic drama and flair with every turn of a phrase." ← Pure verbal style
+- "Straight-to-the-point efficient delivery. No fluff." ← Pure verbal style
 
-13. Cooking Show Chef - Recipe metaphors, culinary terms
-14. Sports Commentator - Play-by-play, excitement
-15. Nature Documentarian - Wildlife documentary style
-16. Time Traveler - Temporal references, timeline talk
-17. Conspiracy Theorist - Everything is connected
-18. Zen Master - Philosophical, paradoxical
-19. Star Trek Captain - Space exploration protocols
-20. Soap Opera Drama - Dramatic reveals, gasps
-21. Reality TV Contestant - Confessionals, drama
+NEVER write: "Experienced analyst who uses systematic approaches..." ← That's mixing identity + style!
+DO write: "Systematic and probing. Structures findings hierarchically." ← Pure style!</critical>
 
-<action>If user wants to see more examples or create custom styles, show relevant sections from {communication_styles} guide and help them craft their unique style</action>
+<action>For custom styles, mix traits from different presets: "Combine 'dramatic_pauses' from pulp-superhero with 'evidence_based' from data-scientist"</action>
 
 **Principles Development:**
 <action>Guide user to articulate 5-8 core principles that should guide the agent's decisions, shaping their thoughts into "I believe..." or "I operate..." statements that reveal themselves through the conversation</action>
 
-<template-output>agent_persona</template-output>
+**Interaction Approach:**
+<ask>How should this agent guide users - with adaptive conversation (intent-based) or structured steps (prescriptive)?</ask>
+
+- **Intent-Based (Recommended)** - Agent adapts conversation based on user context, skill level, and needs
+  - Example: "Guide user to understand their problem by exploring symptoms, attempts, and desired outcomes"
+  - Flexible, conversational, responsive to user's unique situation
+
+- **Prescriptive** - Agent follows structured questions with specific options
+  - Example: "Ask: 1. What is the issue? [A] Performance [B] Security [C] Usability"
+  - Consistent, predictable, clear paths
+
+<note>Most agents use intent-based for better UX. This shapes how all prompts and commands will be written.</note>
+
+<template-output>agent_persona, interaction_approach</template-output>
 </step>
 
-<step n="3" goal="Build capabilities through natural progression">
+<step n="5" goal="Build capabilities through natural progression">
 <action>Guide user to define what capabilities the agent should have, starting with core commands they've mentioned and then exploring additional possibilities that would complement the agent's purpose</action>
 
 <action>As capabilities emerge, subtly guide toward technical implementation without breaking the conversational flow</action>
@@ -138,7 +199,7 @@
 <template-output>initial_capabilities</template-output>
 </step>
 
-<step n="4" goal="Refine commands and discover advanced features">
+<step n="6" goal="Refine commands and discover advanced features">
 <critical>Help and Exit are auto-injected; do NOT add them. Triggers are auto-prefixed with * during build.</critical>
 
 <action>Transform their natural language capabilities into technical YAML command structure, explaining the implementation approach as you structure each capability into workflows, actions, or prompts</action>
@@ -212,7 +273,7 @@ This is typically used when creating specialized modules that reuse common workf
 <template-output>agent_commands</template-output>
 </step>
 
-<step n="5" goal="Name the agent at the perfect moment">
+<step n="7" goal="Name the agent at the perfect moment">
 <action>Guide user to name the agent based on everything discovered so far - its purpose, personality, and capabilities, helping them see how the naming naturally emerges from who this agent is</action>
 
 <action>Explore naming options by connecting personality traits, specializations, and communication style to potential names that feel meaningful and appropriate</action>
@@ -229,7 +290,7 @@ This is typically used when creating specialized modules that reuse common workf
 <template-output>agent_identity</template-output>
 </step>
 
-<step n="6" goal="Bring it all together">
+<step n="8" goal="Bring it all together">
 <action>Share the journey of what you've created together, summarizing how the agent started with a purpose, discovered its personality traits, gained capabilities, and received its name</action>
 
 <action>Generate the complete YAML incorporating all discovered elements:</action>
@@ -270,7 +331,7 @@ menu: {{The capabilities built}}
 <template-output>complete_agent</template-output>
 </step>
 
-<step n="7" goal="Optional personalization" optional="true">
+<step n="9" goal="Optional personalization" optional="true">
 <ask>Would you like to create a customization file? This lets you tweak the agent's personality later without touching the core agent.</ask>
 
   <check if="user interested">
@@ -302,7 +363,7 @@ menu: {{The capabilities built}}
 <template-output>agent_config</template-output>
 </step>
 
-<step n="8" goal="Set up the agent's workspace" if="agent_type == 'expert'">
+<step n="10" goal="Set up the agent's workspace" if="agent_type == 'expert'">
 <action>Guide user through setting up the Expert agent's personal workspace, making it feel like preparing an office with notes, research areas, and data folders</action>
 
 <action>Determine sidecar location based on whether build tools are available (next to agent YAML) or not (in output folder with clear structure)</action>
@@ -370,7 +431,7 @@ Add domain-specific resources here.
 <template-output>sidecar_resources</template-output>
 </step>
 
-<step n="8b" goal="Handle build tools availability">
+<step n="11" goal="Handle build tools availability">
   <action>Check if BMAD build tools are available in this project</action>
 
   <check if="BMAD-METHOD project with build tools">
@@ -396,7 +457,7 @@ Add domain-specific resources here.
 <template-output>build_handling</template-output>
 </step>
 
-<step n="9" goal="Quality check with personality">
+<step n="12" goal="Quality check with personality">
 <action>Run validation conversationally, presenting checks as friendly confirmations while running technical validation behind the scenes</action>
 
 **Conversational Checks:**
@@ -423,7 +484,7 @@ Add domain-specific resources here.
 <template-output>validation_results</template-output>
 </step>
 
-<step n="10" goal="Celebrate and guide next steps">
+<step n="13" goal="Celebrate and guide next steps">
 <action>Celebrate the accomplishment, sharing what type of agent was created with its key characteristics and top capabilities</action>
 
 <action>Guide user through how to activate the agent:</action>
