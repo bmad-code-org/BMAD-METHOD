@@ -1,0 +1,25 @@
+# Debug Workflow: Delta Minimization
+name: debug-delta-minimize
+description: "Automatically reduce failing test case to minimal reproduction. Essential for complex input-dependent failures."
+author: "BMad"
+
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/debug/delta-minimize"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+tags:
+  - debug
+  - minimization
+  - test-reduction
+  - advanced
+
+execution_hints:
+  interactive: true
+  autonomous: false
+  iterative: true

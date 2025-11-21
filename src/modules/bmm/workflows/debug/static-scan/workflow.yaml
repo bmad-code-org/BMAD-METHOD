@@ -1,0 +1,28 @@
+# Debug Workflow: Static Analysis Scan
+name: debug-static-scan
+description: "Perform comprehensive static analysis for common defects. Identifies anti-patterns, security issues, and code smells."
+author: "BMad"
+
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/debug/static-scan"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+knowledge_fragments:
+  - "{project-root}/{bmad_folder}/bmm/debug/knowledge/common-defects.md"
+
+tags:
+  - debug
+  - static-analysis
+  - code-quality
+  - prevention
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: false
