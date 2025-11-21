@@ -43,9 +43,9 @@
     "test": "npm run test:schemas && npm run test:install && npm run validate:bundles && npm run validate:schemas && npm run lint && npm run format:check",
     "test:coverage": "c8 --reporter=text --reporter=html npm run test:schemas",
     "test:install": "node test/test-installation-components.js",
-    "test:schemas": "node test/test-agent-schema.js",
+    "test:schemas": "node test/test-agent-schema.js && node test/test-workflow-schema.js",
     "validate:bundles": "node tools/validate-bundles.js",
-    "validate:schemas": "node tools/validate-agent-schema.js"
+    "validate:schemas": "node tools/validate-agent-schema.js && node tools/validate-workflow-schema.js"
   },
   "lint-staged": {
     "*.{js,cjs,mjs}": [

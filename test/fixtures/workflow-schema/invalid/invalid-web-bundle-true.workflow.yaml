@@ -1,0 +1,8 @@
+# Expected: FAIL
+# Error code: invalid_union
+# Error message: Invalid input
+
+name: test-workflow
+description: Test workflow
+instructions: "{project-root}/path/instructions.md"
+web_bundle: true

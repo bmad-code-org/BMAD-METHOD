@@ -1,7 +1,6 @@
 # Build Workflow - Workflow Builder Configuration
 name: create-workflow
 description: "Interactive workflow builder that guides creation of new BMAD workflows with proper structure and validation for optimal human-AI collaboration. Includes optional brainstorming phase for workflow ideas and design."
-author: "BMad Builder"
 
 # Critical variables
 config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"

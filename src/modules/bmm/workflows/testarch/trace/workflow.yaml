@@ -1,7 +1,6 @@
 # Test Architect workflow: trace (enhanced with gate decision)
 name: testarch-trace
 description: "Generate requirements-to-tests traceability matrix, analyze coverage, and make quality gate decision (PASS/CONCERNS/FAIL/WAIVED)"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

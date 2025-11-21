@@ -1,7 +1,6 @@
 # Storytelling Workflow Configuration
 name: "storytelling"
 description: "Craft compelling narratives using proven story frameworks and techniques. This workflow guides users through structured narrative development, applying appropriate story frameworks to create emotionally resonant and engaging stories for any purpose."
-author: "BMad"
 
 # Critical variables load from config_source
 config_source: "{project-root}/{bmad_folder}/cis/config.yaml"
@@ -29,7 +28,6 @@ standalone: true
 web_bundle:
   name: "storytelling"
   description: "Craft compelling narratives using proven story frameworks and techniques. This workflow guides users through structured narrative development, applying appropriate story frameworks to create emotionally resonant and engaging stories for any purpose."
-  author: "BMad"
   instructions: "{bmad_folder}/cis/workflows/storytelling/instructions.md"
   template: "{bmad_folder}/cis/workflows/storytelling/template.md"
   web_bundle_files:

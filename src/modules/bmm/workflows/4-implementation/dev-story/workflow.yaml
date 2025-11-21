@@ -1,6 +1,5 @@
 name: dev-story
 description: "Execute a story by implementing tasks/subtasks, writing tests, validating, and updating the story file per acceptance criteria"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

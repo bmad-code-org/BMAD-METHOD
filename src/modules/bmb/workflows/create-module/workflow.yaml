@@ -1,7 +1,6 @@
 # Build Module Workflow Configuration
 name: create-module
 description: "Interactive workflow to build complete BMAD modules with agents, workflows, tasks, and installation infrastructure"
-author: "BMad"
 
 # Critical variables load from config_source
 config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"

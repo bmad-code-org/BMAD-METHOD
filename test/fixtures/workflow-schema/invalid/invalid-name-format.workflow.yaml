@@ -1,0 +1,9 @@
+# Expected: FAIL
+# Error code: custom
+# Error path: name
+# Error message: kebab-case
+
+name: InvalidWorkflow_Name
+description: Workflow with invalid name format
+author: Test Author
+instructions: "{project-root}/path/to/instructions.md"

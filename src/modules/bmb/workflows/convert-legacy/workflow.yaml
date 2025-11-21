@@ -1,7 +1,6 @@
 # Convert Legacy - BMAD v4 to v6 Converter Configuration
 name: "convert-legacy"
 description: "Converts legacy BMAD v4 or similar items (agents, workflows, modules) to BMad Core compliant format with proper structure and conventions"
-author: "BMad"
 
 # Critical variables load from config_source
 config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"

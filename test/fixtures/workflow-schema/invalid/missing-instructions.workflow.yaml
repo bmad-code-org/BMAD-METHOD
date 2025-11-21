@@ -1,0 +1,8 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: instructions
+# Error message: expected string, received undefined
+
+name: test-workflow
+description: Test workflow
+author: Test Author

@@ -1,7 +1,6 @@
 # Research Workflow - Multi-Type Research System
 name: research
 description: "Adaptive research workflow supporting multiple research types: market research, deep research prompt generation, technical/architecture evaluation, competitive intelligence, user research, and domain analysis"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
@@ -46,7 +45,6 @@ standalone: true
 web_bundle:
   name: "research"
   description: "Adaptive research workflow supporting multiple research types: market research, deep research prompt generation, technical/architecture evaluation, competitive intelligence, user research, and domain analysis"
-  author: "BMad"
   instructions: "{bmad_folder}/bmm/workflows/1-analysis/research/instructions-router.md" # Router loads specific instruction sets
   validation: "{bmad_folder}/bmm/workflows/1-analysis/research/checklist.md"
   web_bundle_files:

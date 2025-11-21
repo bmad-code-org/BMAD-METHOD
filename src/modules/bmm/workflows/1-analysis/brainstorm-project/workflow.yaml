@@ -1,7 +1,6 @@
 # Brainstorm Project Workflow Configuration
 name: "brainstorm-project"
 description: "Facilitate project brainstorming sessions by orchestrating the CIS brainstorming workflow with project-specific context and guidance."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
@@ -28,7 +27,6 @@ standalone: true
 web_bundle:
   name: "brainstorm-project"
   description: "Facilitate project brainstorming sessions by orchestrating the CIS brainstorming workflow with project-specific context and guidance."
-  author: "BMad"
   instructions: "{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/instructions.md"
   template: false
   web_bundle_files:

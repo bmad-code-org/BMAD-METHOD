@@ -1,7 +1,6 @@
 # Test Architect workflow: nfr-assess
 name: testarch-nfr
 description: "Assess non-functional requirements (performance, security, reliability, maintainability) before release with evidence-based validation"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

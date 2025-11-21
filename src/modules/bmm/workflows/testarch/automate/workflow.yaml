@@ -1,7 +1,6 @@
 # Test Architect workflow: automate
 name: testarch-automate
 description: "Expand test automation coverage after implementation or analyze existing codebase to generate comprehensive test suite"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

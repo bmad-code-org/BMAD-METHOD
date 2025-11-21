@@ -1,6 +1,5 @@
 name: create-excalidraw-flowchart
 description: "Create a flowchart visualization in Excalidraw format for processes, pipelines, or logic flows"
-author: "BMad"
 
 # Config values
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

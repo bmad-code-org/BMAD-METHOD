@@ -1,7 +1,6 @@
 # Technical Specification
 name: tech-spec
 description: "Technical specification workflow for quick-flow projects. Creates focused tech spec and generates epic + stories (1 story for simple changes, 2-5 stories for features). Tech-spec only - no PRD needed."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

@@ -1,7 +1,6 @@
 # Build Agent Workflow Configuration
 name: create-agent
 description: "Interactive workflow to build BMAD Core compliant agents (YAML source compiled to .md during install) with optional brainstorming, persona development, and command structure"
-author: "BMad"
 
 # Critical variables load from config_source
 config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"
@@ -42,7 +41,6 @@ standalone: true
 web_bundle:
   name: "create-agent"
   description: "Interactive workflow to build BMAD Core compliant agents (simple, expert, or module types) with optional brainstorming for agent ideas, proper persona development, activation rules, and command structure"
-  author: "BMad"
   web_bundle_files:
     - "{bmad_folder}/bmb/workflows/create-agent/instructions.md"
     - "{bmad_folder}/bmb/workflows/create-agent/checklist.md"

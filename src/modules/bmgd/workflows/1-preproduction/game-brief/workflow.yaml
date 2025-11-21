@@ -1,7 +1,6 @@
 # Game Brief - Interactive Workflow Configuration
 name: game-brief
 description: "Interactive game brief creation workflow that guides users through defining their game vision with multiple input sources and conversational collaboration"
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
@@ -26,7 +25,6 @@ standalone: true
 web_bundle:
   name: "game-brief"
   description: "Interactive game brief creation workflow that guides users through defining their game vision with multiple input sources and conversational collaboration"
-  author: "BMad"
   instructions: "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/instructions.md"
   validation: "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/checklist.md"
   template: "{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/template.md"

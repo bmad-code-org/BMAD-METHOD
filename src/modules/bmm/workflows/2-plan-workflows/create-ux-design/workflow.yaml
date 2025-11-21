@@ -1,7 +1,6 @@
 # Create UX Design Workflow Configuration
 name: create-ux-design
 description: "Collaborative UX design facilitation workflow that creates exceptional user experiences through visual exploration and informed decision-making. Unlike template-driven approaches, this workflow facilitates discovery, generates visual options, and collaboratively designs the UX with the user at every step."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
@@ -62,7 +61,6 @@ standalone: true
 web_bundle:
   name: "create-ux-design"
   description: "Collaborative UX design facilitation workflow that creates exceptional user experiences through visual exploration and informed decision-making. Unlike template-driven approaches, this workflow facilitates discovery, generates visual options, and collaboratively designs the UX with the user at every step."
-  author: "BMad"
 
   # Core workflow files ({bmad_folder}/-relative paths)
   instructions: "{bmad_folder}/bmm/workflows/2-plan-workflows/create-ux-design/instructions.md"

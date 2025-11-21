@@ -1,7 +1,6 @@
 # Game Architecture Workflow Configuration
 name: game-architecture
 description: "Collaborative game architecture workflow for AI-agent consistency. Intelligent, adaptive conversation that produces a decision-focused game architecture document covering engine, systems, networking, and technical design optimized for game development."
-author: "BMad"
 
 # Critical variables
 config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
@@ -53,7 +52,6 @@ pattern_categories: "{installed_path}/pattern-categories.csv"
 default_output_file: "{output_folder}/game-architecture.md"
 
 # Workflow metadata
-version: "1.3.2"
 replaces: "architecture"
 paradigm: "facilitation-driven"
 execution_time: "30-90 minutes depending on user skill level"

@@ -1,7 +1,6 @@
 # Module Brief Workflow Configuration
 name: module-brief
 description: "Create a comprehensive Module Brief that serves as the blueprint for building new BMAD modules using strategic analysis and creative vision"
-author: "BMad Builder"
 
 # Critical variables
 config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"

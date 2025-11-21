@@ -1,7 +1,6 @@
 # Implementation Readiness - Workflow Configuration
 name: implementation-readiness
 description: "Validate that PRD, UX Design, Architecture, Epics and Stories are complete and aligned before Phase 4 implementation. Ensures all artifacts cover the MVP requirements with no gaps or contradictions."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

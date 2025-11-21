@@ -1,7 +1,6 @@
 # Edit Module - Module Editor Configuration
 name: "edit-module"
 description: "Edit existing BMAD modules (structure, agents, workflows, documentation) while following all best practices"
-author: "BMad"
 
 # Critical variables load from config_source
 config_source: "{project-root}/{bmad_folder}/bmb/config.yaml"

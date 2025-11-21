@@ -1,7 +1,6 @@
 # Story Context Creation Workflow
 name: story-context
 description: "Assemble a dynamic Story Context XML by pulling latest documentation and existing code/library artifacts relevant to a drafted story"
-author: "BMad"
 
 # Critical variables
 config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"

@@ -1,0 +1,10 @@
+# Expected: FAIL
+# Error code: invalid_type
+# Error path: standalone
+# Error message: boolean
+
+name: test-workflow
+description: Test workflow
+author: Test Author
+instructions: "{project-root}/path/to/instructions.md"
+standalone: "yes"

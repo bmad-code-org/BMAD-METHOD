@@ -1,7 +1,6 @@
 # Narrative Design Workflow
 name: narrative
 description: "Narrative design workflow for story-driven games and applications. Creates comprehensive narrative documentation including story structure, character arcs, dialogue systems, and narrative implementation guidance."
-author: "BMad"
 
 # Critical variables from config
 config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
@@ -25,7 +24,6 @@ standalone: true
 web_bundle:
   name: "narrative"
   description: "Narrative design workflow for story-driven games and applications. Creates comprehensive narrative documentation including story structure, character arcs, dialogue systems, and narrative implementation guidance."
-  author: "BMad"
   instructions: "{bmad_folder}/bmgd/workflows/2-design/narrative/instructions-narrative.md"
   web_bundle_files:
     - "{bmad_folder}/bmgd/workflows/2-design/narrative/instructions-narrative.md"

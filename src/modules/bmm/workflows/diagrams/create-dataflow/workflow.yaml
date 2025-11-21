@@ -1,6 +1,5 @@
 name: create-excalidraw-dataflow
 description: "Create data flow diagrams (DFD) in Excalidraw format"
-author: "BMad"
 
 # Config values
 config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"

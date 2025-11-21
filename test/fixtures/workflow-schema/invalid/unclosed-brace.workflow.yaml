@@ -1,0 +1,9 @@
+# Expected: FAIL
+# Error code: custom
+# Error message: unclosed braces
+
+name: test-workflow
+description: Test workflow with unclosed brace
+author: Test Author
+instructions: "{project-root}/path/instructions.md"
+output_folder: "{project-root/docs"
