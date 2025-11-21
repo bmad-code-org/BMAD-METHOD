@@ -101,6 +101,8 @@ Each phase has specialized workflows and agents working together to deliver exce
 | UX Designer | Test Architect | Analyst       | BMad Master    |
 | Tech Writer | Game Architect | Game Designer | Game Developer |
 
+**Test Architect** integrates with `@seontechnologies/playwright-utils` for production-ready fixture-based utilities.
+
 Each agent brings deep expertise and can be customized to match your team's style.
 
 ## 📦 What's Included
@@ -162,7 +164,7 @@ For contributors working on the BMad codebase:
 npm test
 
 # Development commands
-npm run lint          # Check code style
+npm run lint:fix      # Fix code style
 npm run format:fix    # Auto-format code
 npm run bundle        # Build web bundles
 ```

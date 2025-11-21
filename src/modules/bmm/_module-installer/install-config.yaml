@@ -42,7 +42,15 @@ sprint_artifacts:
 
 # TEA Agent Configuration
 tea_use_mcp_enhancements:
-  prompt: "Enable Test Architect Playwright MCP capabilities (healing, exploratory, verification)?"
+  prompt: "Enable Test Architect Playwright MCP capabilities (healing, exploratory, verification)? You have to setup your MCPs yourself; refer to test-architecture.md for hints."
+  default: false
+  result: "{value}"
+
+tea_use_playwright_utils:
+  prompt:
+    - "Are you using playwright-utils (@seontechnologies/playwright-utils) in your project?"
+    - "This adds fixture-based utilities for auth, API requests, network recording, polling, intercept, recurse, logging, file download handling, and burn-in."
+    - "You must install packages yourself, or use test architect's *framework command."
   default: false
   result: "{value}"
 # desired_mcp_tools:
