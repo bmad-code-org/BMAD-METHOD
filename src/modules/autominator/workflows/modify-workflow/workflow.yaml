@@ -22,7 +22,6 @@ variables:
   nodes_to_modify: [] # Will be elicited
   nodes_to_remove: [] # Will be elicited
   backup_created: false # Will be set
-  context7_available: false # Will be checked
 
 default_output_file: "" # Will use existing file location
 

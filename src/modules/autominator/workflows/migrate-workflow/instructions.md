@@ -15,7 +15,7 @@
 
     <check if="ALL requirements are clear from context">
       <action>Summarize your understanding</action>
-      <action>Skip directly to Step 2 (Check Context7 MCP)</action>
+      <action>Skip directly to Step 2 (Research n8n Documentation for Migration)</action>
     </check>
 
     <check if="SOME requirements are clear">
@@ -126,31 +126,35 @@
     <action>Store final path in {{save_location}}</action>
   </step>
 
-  <step n="2" goal="Check Context7 MCP Availability">
-    <action>Check if Context7 MCP server is configured</action>
-    <action>Try to list available MCP tools</action>
+  <step n="2" goal="Research n8n Documentation for Migration">
+    <critical>Search for n8n documentation relevant to migration requirements</critical>
 
-    <check if="Context7 MCP is available">
-      <action>Store true in {{context7_available}}</action>
-      <action>Proceed to Step 3</action>
-    </check>
+    <action>Inform user: "Researching n8n documentation for migration from {{source_platform}}..."</action>
 
-    <check if="Context7 MCP is NOT available">
-      <action>Store false in {{context7_available}}</action>
-      <action>Inform user: "Context7 MCP not configured. Proceeding with built-in n8n knowledge."</action>
-      <action>Proceed to Step 4</action>
-    </check>
+    <action>Perform web search for:</action>
+    <action>1. n8n equivalents for {{source_platform}} features</action>
+    <action>2. Integration nodes: {{integrations_used}}</action>
+    <action>3. Migration best practices</action>
+    <action>4. Platform-specific considerations</action>
+
+    <action>Search queries to use:</action>
+    <action>- "n8n migrate from [source_platform]"</action>
+    <action>- "n8n [integration] node documentation"</action>
+    <action>- "n8n vs [source_platform] comparison"</action>
+    <action>- "n8n workflow migration guide"</action>
+
+    <action>Focus on official n8n documentation at docs.n8n.io</action>
+    <action>Store relevant migration patterns and node configurations</action>
   </step>
 
-  <step n="3" goal="Query Context7 for n8n Documentation">
-    <check if="{{context7_available}} is true">
-      <action>Resolve n8n library ID using Context7</action>
-      <action>Query Context7 for relevant n8n documentation based on:</action>
-      <action>- Integrations used: {{integrations_used}}</action>
-      <action>- Trigger type: {{trigger_type}}</action>
-      <action>- Source platform: {{source_platform}}</action>
-      <action>Store relevant documentation snippets for reference</action>
-    </check>
+  <step n="3" goal="Verify Migration Approach">
+    <action>Summarize migration strategy based on documentation:</action>
+    <action>- n8n equivalents for {{source_platform}} features</action>
+    <action>- Required node types and configurations</action>
+    <action>- Data transformation needs</action>
+    <action>- Any migration challenges or limitations</action>
+
+    <action>Inform user: "Based on n8n documentation, I've identified the migration path from {{source_platform}}."</action>
   </step>
 
   <step n="4" goal="Load Platform Mappings">

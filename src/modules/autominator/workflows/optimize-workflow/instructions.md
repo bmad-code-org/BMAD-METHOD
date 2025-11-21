@@ -144,30 +144,37 @@
     <action>- Integrations: [list of services]</action>
   </step>
 
-  <step n="3" goal="Check Context7 MCP Availability">
-    <action>Check if Context7 MCP server is configured</action>
-    <action>Try to list available MCP tools</action>
+  <step n="3" goal="Research n8n Best Practices and Optimization">
+    <critical>Search for n8n documentation on optimization and best practices</critical>
 
-    <check if="Context7 MCP is available">
-      <action>Store true in {{context7_available}}</action>
-      <action>Proceed to Step 4</action>
-    </check>
+    <action>Inform user: "Researching n8n best practices and optimization techniques..."</action>
 
-    <check if="Context7 MCP is NOT available">
-      <action>Store false in {{context7_available}}</action>
-      <action>Inform user: "Context7 MCP not configured. Using built-in n8n best practices."</action>
-      <action>Proceed to Step 5</action>
-    </check>
+    <action>Perform web search for:</action>
+    <action>1. n8n performance optimization</action>
+    <action>2. n8n error handling best practices</action>
+    <action>3. n8n workflow structure patterns</action>
+    <action>4. n8n security best practices</action>
+    <action>5. Solutions for: {{problems_experienced}}</action>
+
+    <action>Search queries to use:</action>
+    <action>- "n8n workflow optimization best practices"</action>
+    <action>- "n8n performance tuning"</action>
+    <action>- "n8n error handling patterns"</action>
+    <action>- "n8n workflow security"</action>
+    <action>- "n8n [specific problem] solution"</action>
+
+    <action>Focus on official n8n documentation at docs.n8n.io</action>
+    <action>Store relevant optimization techniques and best practices</action>
   </step>
 
-  <step n="4" goal="Query Context7 for n8n Best Practices">
-    <check if="{{context7_available}} is true">
-      <action>Resolve n8n library ID using Context7</action>
-      <action>Query Context7 for n8n best practices documentation</action>
-      <action>Query for optimization techniques</action>
-      <action>Query for performance tips</action>
-      <action>Store relevant documentation for reference</action>
-    </check>
+  <step n="4" goal="Verify Optimization Strategy">
+    <action>Summarize optimization approach based on documentation:</action>
+    <action>- Solutions for {{problems_experienced}}</action>
+    <action>- Best practices to apply</action>
+    <action>- Performance improvements available</action>
+    <action>- Expected impact on {{business_impact}}</action>
+
+    <action>Inform user: "Based on n8n best practices, I've identified optimization opportunities."</action>
   </step>
 
   <step n="5" goal="Analyze Workflow">

@@ -14,7 +14,7 @@ Autominator is an independent BMAD module that specializes in n8n workflow autom
 
 - Expert in n8n workflow creation, modification, and optimization
 - Specializes in platform migration (Zapier, Make, HubSpot, Power Automate)
-- Uses Context7 MCP for up-to-date n8n documentation
+- Uses web search to access up-to-date n8n documentation
 - Smart elicitation for accurate requirement gathering
 - Comprehensive workflow validation and testing
 
@@ -35,7 +35,7 @@ Build new n8n workflows from scratch based on your requirements.
 - Integration selection and configuration
 - Complexity assessment
 - Error handling strategy planning
-- Context7 MCP integration for latest n8n docs
+- Web search integration for latest n8n docs
 - Automatic JSON validation
 
 ### 2. Modify Workflow
@@ -158,12 +158,12 @@ agent autominator/autominator
 
 ## Features
 
-### Context7 MCP Integration
+### Web Search Integration
 
-- Automatic Context7 availability check
-- Fallback to built-in knowledge if unavailable
-- IDE-agnostic setup guidance
-- Up-to-date n8n documentation access
+- Automatic web search for n8n documentation
+- Accesses official docs.n8n.io resources
+- Up-to-date node configurations and best practices
+- Problem-specific solution research
 
 ### Smart Elicitation
 
@@ -230,7 +230,6 @@ autominator/
 ## Requirements
 
 - n8n instance or account
-- Context7 MCP server (optional, for latest docs)
 - IDE with BMAD support
 
 ## Installation
@@ -265,12 +264,6 @@ Autominator is independent but can be used alongside:
 7. **Review Optimizations** - Understand changes before applying
 
 ## Troubleshooting
-
-### Context7 MCP Not Available
-
-- Install uv: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- Configure Context7 in your IDE's MCP settings
-- Restart MCP servers
 
 ### Workflow JSON Validation Fails
 

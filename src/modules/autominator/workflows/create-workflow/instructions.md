@@ -15,7 +15,7 @@
 
     <check if="ALL requirements are clear from context">
       <action>Summarize your understanding</action>
-      <action>Skip directly to Step 2 (Check Context7 MCP)</action>
+      <action>Skip directly to Step 2 (Research n8n Documentation)</action>
     </check>
 
     <check if="SOME requirements are clear">
@@ -133,38 +133,36 @@
     </check>
   </step>
 
-  <step n="2" goal="Check Context7 MCP Availability">
-    <action>Check if Context7 MCP server is configured</action>
-    <action>Try to list available MCP tools</action>
+  <step n="2" goal="Research n8n Documentation">
+    <critical>Search for up-to-date n8n documentation based on user requirements</critical>
 
-    <check if="Context7 MCP is available">
-      <action>Store true in {{context7_available}}</action>
-      <action>Proceed to Step 3</action>
-    </check>
+    <action>Inform user: "Researching n8n documentation for your workflow requirements..."</action>
 
-    <check if="Context7 MCP is NOT available">
-      <action>Store false in {{context7_available}}</action>
-      <action>Inform user: "Context7 MCP server is not configured. This provides up-to-date n8n documentation."</action>
-      <action>Recommend: "For best results, install Context7 MCP server in your IDE. See: https://github.com/context7/context7"</action>
-      <action>Inform: "Proceeding with built-in n8n knowledge."</action>
-      <action>Proceed to Step 4</action>
-    </check>
+    <action>Perform web search for n8n documentation on:</action>
+    <action>1. Trigger type: {{trigger_type}}</action>
+    <action>2. Integrations: {{integrations}}</action>
+    <action>3. Conditional logic: {{conditional_logic}}</action>
+    <action>4. Error handling: {{criticality}}</action>
+
+    <action>Search queries to use:</action>
+    <action>- "n8n [trigger_type] node documentation"</action>
+    <action>- "n8n [integration] node setup"</action>
+    <action>- "n8n workflow best practices"</action>
+    <action>- "n8n error handling retry logic"</action>
+
+    <action>Focus on official n8n documentation at docs.n8n.io</action>
+    <action>Store relevant documentation snippets for reference</action>
+    <action>Note any specific node configurations or parameters needed</action>
   </step>
 
-  <step n="3" goal="Query Context7 for n8n Documentation">
-    <check if="{{context7_available}} is true">
-      <action>Resolve n8n library ID using Context7</action>
-      <action>Query Context7 for relevant n8n documentation based on:</action>
-      <action>- Workflow type: {{workflow_type}}</action>
-      <action>- Integrations: {{integrations}}</action>
-      <action>- Complexity: {{complexity}}</action>
-      <action>Store relevant documentation snippets for reference</action>
-    </check>
+  <step n="3" goal="Verify Documentation Understanding">
+    <action>Summarize key findings from documentation:</action>
+    <action>- Available node types for requirements</action>
+    <action>- Required parameters and configurations</action>
+    <action>- Best practices for this use case</action>
+    <action>- Any limitations or considerations</action>
 
-    <check if="{{context7_available}} is false">
-      <action>Skip Context7 query</action>
-      <action>Use built-in knowledge and templates</action>
-    </check>
+    <action>Inform user: "Based on n8n documentation, I found the necessary nodes and configurations for your workflow."</action>
   </step>
 
   <step n="4" goal="Plan Workflow Structure">

@@ -23,7 +23,6 @@ variables:
   save_location: "" # Will be elicited
   workflow_name: "" # Will be elicited
   additional_requirements: "" # Will be elicited
-  context7_available: false # Will be checked
 
 default_output_file: "{project-root}/workflows/workflow-{timestamp}.json"
 

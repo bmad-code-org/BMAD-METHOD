@@ -55,13 +55,3 @@ primary_integrations:
       label: "Email"
     - value: "custom"
       label: "Custom/Other"
-
-enable_context7:
-  prompt: "Enable Context7 MCP for up-to-date n8n documentation?"
-  default: true
-  result: "{value}"
-  single-select:
-    - value: true
-      label: "Yes - Use Context7 for latest docs"
-    - value: false
-      label: "No - Use built-in knowledge"

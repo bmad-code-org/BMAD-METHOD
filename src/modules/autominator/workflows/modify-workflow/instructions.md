@@ -143,31 +143,34 @@
     <action>Inform user: "Backup created at {{workflow_file}}.backup-{timestamp}"</action>
   </step>
 
-  <step n="4" goal="Check Context7 MCP Availability">
-    <action>Check if Context7 MCP server is configured</action>
-    <action>Try to list available MCP tools</action>
+  <step n="4" goal="Research n8n Documentation for Modifications">
+    <critical>Search for n8n documentation relevant to the modifications needed</critical>
 
-    <check if="Context7 MCP is available">
-      <action>Store true in {{context7_available}}</action>
-      <action>Proceed to Step 5</action>
-    </check>
+    <action>Inform user: "Researching n8n documentation for your modifications..."</action>
 
-    <check if="Context7 MCP is NOT available">
-      <action>Store false in {{context7_available}}</action>
-      <action>Inform user: "Context7 MCP not configured. Proceeding with built-in knowledge."</action>
-      <action>Proceed to Step 6</action>
-    </check>
+    <action>Perform web search based on modification needs:</action>
+    <action>- Problem to solve: {{problem_to_solve}}</action>
+    <action>- Specific changes: {{specific_changes}}</action>
+    <action>- Desired behavior: {{desired_behavior}}</action>
+
+    <action>Search queries to use:</action>
+    <action>- "n8n [specific feature] documentation"</action>
+    <action>- "n8n [node type] configuration"</action>
+    <action>- "n8n workflow modification best practices"</action>
+    <action>- "n8n [integration] setup"</action>
+
+    <action>Focus on official n8n documentation at docs.n8n.io</action>
+    <action>Store relevant node configurations and modification patterns</action>
   </step>
 
-  <step n="5" goal="Query Context7 for n8n Documentation">
-    <check if="{{context7_available}} is true">
-      <action>Resolve n8n library ID using Context7</action>
-      <action>Query Context7 for relevant n8n documentation based on:</action>
-      <action>- Modification type: {{modification_type}}</action>
-      <action>- Nodes to add: {{nodes_to_add}}</action>
-      <action>- Changes description: {{changes_description}}</action>
-      <action>Store relevant documentation snippets for reference</action>
-    </check>
+  <step n="5" goal="Verify Modification Approach">
+    <action>Summarize modification strategy based on documentation:</action>
+    <action>- How to implement {{desired_behavior}}</action>
+    <action>- Required node changes or additions</action>
+    <action>- Configuration updates needed</action>
+    <action>- Best practices for these modifications</action>
+
+    <action>Inform user: "Based on n8n documentation, I've identified how to implement your changes."</action>
   </step>
 
   <step n="6" goal="Plan Modifications">

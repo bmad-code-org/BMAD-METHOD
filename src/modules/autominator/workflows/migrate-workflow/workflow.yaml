@@ -24,7 +24,6 @@ variables:
   complexity: "" # Will be elicited
   save_location: "" # Will be elicited
   workflow_name: "" # Will be elicited
-  context7_available: false # Will be checked
 
 default_output_file: "{project-root}/workflows/migrated-workflow-{timestamp}.json"
 
