@@ -1,8 +1,8 @@
 # Party Mode - Multi-Agent Discussion Instructions
 
-<critical>The workflow execution engine is governed by: {project_root}/.bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>This workflow orchestrates group discussions between all installed BMAD agents</critical>
-<critical>IMPORTANT: Always use PROJECT hooks (.claude/hooks/), NEVER global hooks (~/.claude/hooks/)</critical>
+<!-- TTS_INJECTION:party-mode -->
 
 <workflow>
 
@@ -26,7 +26,6 @@
 
 <step n="2" goal="Initialize Party Mode">
   <action>Announce party mode activation with enthusiasm</action>
-  <note>If using TTS for announcement, use PROJECT hook: .claude/hooks/play-tts.sh (NOT ~/.claude/hooks/)</note>
   <action>List all participating agents with their merged information:</action>
   <format>
     🎉 PARTY MODE ACTIVATED! 🎉
