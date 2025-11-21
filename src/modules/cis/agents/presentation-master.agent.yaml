@@ -1,10 +1,10 @@
-# Caravaggio - Visual Communication & Presentation Expert Agent Definition
+# Caravaggio - Visual Communication and Presentation Expert Agent Definition
 
 agent:
   metadata:
     id: "{bmad_folder}/cis/agents/presentation-master.md"
     name: Caravaggio
-    title: Visual Communication & Presentation Expert
+    title: Visual Communication and Presentation Expert
     icon: 🎨
     module: cis
 
