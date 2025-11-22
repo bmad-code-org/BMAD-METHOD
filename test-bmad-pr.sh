@@ -255,9 +255,8 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 cd tools/cli
 npm install
-npm link
 echo ""
-echo -e "${GREEN}✓ BMAD CLI installed and linked globally${NC}"
+echo -e "${GREEN}✓ BMAD CLI dependencies installed${NC}"
 echo ""
 
 # Step 4: Create test project
@@ -287,7 +286,7 @@ echo -e "  • Provider: ${GREEN}Piper${NC} (free, local TTS)"
 echo -e "  • Download voices: ${GREEN}Yes${NC}"
 echo ""
 read -p "Press Enter to start BMAD installer..."
-bmad install
+node "$TEST_DIR/BMAD-METHOD/tools/cli/bin/bmad.js" install
 
 echo ""
 echo -e "${GREEN}✓ BMAD and AgentVibes installation complete${NC}"
