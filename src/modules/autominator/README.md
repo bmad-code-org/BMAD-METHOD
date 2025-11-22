@@ -20,9 +20,25 @@ Autominator is an independent BMAD module that specializes in n8n workflow autom
 
 ## Workflows
 
-### 1. Create Workflow
+### 1. Gather Requirements
 
-Build new n8n workflows from scratch based on your requirements.
+Gather and document workflow requirements before creating n8n workflows.
+
+**Triggers:**
+
+- `*gather-requirements`
+
+**Features:**
+
+- Interactive requirement gathering
+- Documents problem statement, triggers, integrations
+- Creates requirement file for workflow creation
+- Saves to `docs/workflow-requirements/`
+- Required before creating workflows
+
+### 2. Create Workflow
+
+Build new n8n workflows from scratch based on requirements.
 
 **Triggers:**
 
@@ -38,7 +54,7 @@ Build new n8n workflows from scratch based on your requirements.
 - Web search integration for latest n8n docs
 - Automatic JSON validation
 
-### 2. Modify Workflow
+### 3. Modify Workflow
 
 Edit or update existing n8n workflows with backup and safety checks.
 
@@ -55,7 +71,7 @@ Edit or update existing n8n workflows with backup and safety checks.
 - Change validation
 - Rollback capability
 
-### 3. Migrate Workflow
+### 4. Migrate Workflow
 
 Migrate automation workflows from other platforms to n8n.
 
@@ -81,7 +97,7 @@ Migrate automation workflows from other platforms to n8n.
 - Migration notes and documentation
 - Post-migration testing guidance
 
-### 4. Optimize Workflow
+### 5. Optimize Workflow
 
 Analyze and improve existing n8n workflows for performance and best practices.
 
@@ -113,18 +129,38 @@ agent autominator/autominator
 *autominator
 ```
 
+### Gather Requirements (Recommended First Step)
+
+```bash
+# Start the requirements gathering process
+*gather-requirements
+
+# Follow the interactive prompts to:
+# 1. Describe the problem you're solving
+# 2. Define trigger type
+# 3. Specify data requirements
+# 4. Define desired outcome
+# 5. List integrations
+# 6. Define conditional logic
+# 7. Set criticality level
+# 8. Name the workflow
+
+# Requirements are saved to: docs/workflow-requirements/req-{name}.md
+```
+
 ### Create a Workflow
 
 ```bash
 # Start the create workflow process
 *create-workflow
 
-# Follow the interactive prompts to:
-# 1. Describe your workflow type
-# 2. Select integrations
-# 3. Define complexity level
-# 4. Configure error handling
-# 5. Review and confirm
+# Arnold will:
+# 1. Check for requirements file (or prompt to create one)
+# 2. Load requirements automatically
+# 3. Research n8n documentation
+# 4. Design workflow structure
+# 5. Build and validate workflow JSON
+# 6. Save to docs/workflows/{name}.json
 ```
 
 ### Migrate from Another Platform

@@ -23,6 +23,10 @@ agent:
       - Structured Approach - Follow task-specific workflows for different automation scenarios.
 
   menu:
+    - trigger: gather-requirements
+      workflow: "{project-root}/{bmad_folder}/autominator/workflows/gather-requirements/workflow.yaml"
+      description: Gather and document workflow requirements (run this first before creating workflows)
+
     - trigger: create-workflow
       workflow: "{project-root}/{bmad_folder}/autominator/workflows/create-workflow/workflow.yaml"
       description: Create new n8n workflow from scratch based on requirements

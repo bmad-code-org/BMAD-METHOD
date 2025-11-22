@@ -2,6 +2,15 @@ name: create-workflow
 description: "Create new n8n workflow from scratch based on requirements"
 author: "Saif"
 
+# Critical variables from config
+config_source: "{project-root}/{bmad_folder}/autominator/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+workflows_folder: "{config_source}:workflows_folder"
+requirements_folder: "{config_source}:requirements_folder"
+date: system-generated
+
 # Workflow components
 installed_path: "{project-root}/{bmad_folder}/autominator/workflows/create-workflow"
 shared_path: "{project-root}/{bmad_folder}/autominator/workflows/_shared"
@@ -15,16 +24,20 @@ platform_mappings: "{shared_path}/platform-mappings.yaml"
 
 # Variables
 variables:
-  workflow_type: "" # Will be elicited
-  trigger_type: "" # Will be elicited
-  integrations: [] # Will be elicited
+  requirements_file: "" # Will be discovered or elicited
+  workflow_type: "" # Will be loaded from requirements or elicited
+  trigger_type: "" # Will be loaded from requirements or elicited
+  integrations: [] # Will be loaded from requirements or elicited
   complexity: "" # Will be elicited
   error_handling: "" # Will be elicited
-  save_location: "" # Will be elicited
-  workflow_name: "" # Will be elicited
-  additional_requirements: "" # Will be elicited
+  workflow_name: "" # Will be loaded from requirements or elicited
+  problem_description: "" # Will be loaded from requirements
+  data_requirements: "" # Will be loaded from requirements
+  desired_outcome: "" # Will be loaded from requirements
+  conditional_logic: "" # Will be loaded from requirements
+  criticality: "" # Will be loaded from requirements
 
-default_output_file: "{project-root}/workflows/workflow-{timestamp}.json"
+default_output_file: "{workflows_folder}/{workflow_name}.json"
 
 standalone: true
 web_bundle: false
