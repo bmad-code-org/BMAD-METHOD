@@ -7,24 +7,74 @@
 
 <workflow>
 
-  <step n="0" goal="Contextual Analysis (Smart Elicitation)">
-    <critical>Before asking any questions, analyze what the user has already told you</critical>
+  <step n="0" goal="Load Config and Check Prerequisites">
+    <critical>Load configuration and check for requirements file before proceeding</critical>
 
-    <action>Review the user's initial request and conversation history</action>
-    <action>Extract any mentioned: workflow type, trigger, integrations, complexity, requirements</action>
+    <action>Resolve variables from config_source: workflows_folder, requirements_folder, output_folder, user_name, communication_language</action>
+    <action>Create {{workflows_folder}} directory if it does not exist</action>
+    <action>Create {{requirements_folder}} directory if it does not exist</action>
 
-    <check if="ALL requirements are clear from context">
-      <action>Summarize your understanding</action>
-      <action>Skip directly to Step 2 (Research n8n Documentation)</action>
+    <action>Search for requirements files in {{requirements_folder}}</action>
+    <action>List all files matching pattern: req-*.md</action>
+
+    <check if="no requirements files found">
+      <output>⚠️ No Requirements File Found
+
+Before creating a workflow, you need to gather requirements.
+
+**Options:**
+1. Run `*gather-requirements` to create a requirements file
+2. Provide requirements manually in this session
+
+Would you like to:
+a) Run gather-requirements workflow now
+b) Continue without requirements file (manual elicitation)
+
+Enter your choice (a/b):</output>
+      <action>WAIT for user input</action>
+
+      <check if="user chooses 'a'">
+        <action>Invoke workflow: {project-root}/{bmad_folder}/autominator/workflows/gather-requirements/workflow.yaml</action>
+        <action>After gather-requirements completes, reload this step to find the new requirements file</action>
+      </check>
+
+      <check if="user chooses 'b'">
+        <action>Set {{requirements_file}} = empty</action>
+        <action>Proceed to Step 1 for manual elicitation</action>
+      </check>
     </check>
 
-    <check if="SOME requirements are clear">
-      <action>Note what you already know</action>
-      <action>Only ask about missing information in Step 1</action>
+    <check if="one requirements file found">
+      <action>Set {{requirements_file}} to the found file path</action>
+      <action>Load and parse requirements file COMPLETELY</action>
+      <action>Extract requirements: workflow_name, problem_description, trigger_type, data_requirements, desired_outcome, integrations, conditional_logic, criticality</action>
+      <action>Extract research findings: use_case_research, node_research, parameter_structures, workflow_pattern_research</action>
+      <action>Display loaded requirements summary to user</action>
+      <action>Skip to Step 4 (Plan Workflow Structure) - research already done</action>
     </check>
 
-    <check if="requirements are unclear or minimal">
-      <action>Proceed with full elicitation in Step 1</action>
+    <check if="multiple requirements files found">
+      <output>📋 Multiple Requirements Files Found:
+
+[Display numbered list of files with workflow names]
+
+Which requirements file would you like to use?
+Enter the number (1-N) or 'new' to create a new one:</output>
+      <action>WAIT for user input</action>
+
+      <check if="user enters number">
+        <action>Set {{requirements_file}} to selected file path</action>
+        <action>Load and parse requirements file COMPLETELY</action>
+        <action>Extract requirements: workflow_name, problem_description, trigger_type, data_requirements, desired_outcome, integrations, conditional_logic, criticality</action>
+        <action>Extract research findings: use_case_research, node_research, parameter_structures, workflow_pattern_research</action>
+        <action>Display loaded requirements summary to user</action>
+        <action>Skip to Step 4 (Plan Workflow Structure) - research already done</action>
+      </check>
+
+      <check if="user enters 'new'">
+        <action>Invoke workflow: {project-root}/{bmad_folder}/autominator/workflows/gather-requirements/workflow.yaml</action>
+        <action>After gather-requirements completes, reload this step to find the new requirements file</action>
+      </check>
     </check>
   </step>
 
@@ -242,59 +292,80 @@
   </step>
 
   <step n="6" goal="Build Workflow JSON">
-    <critical>Follow guidelines from {{helpers}} for proper node creation</critical>
+    <critical>Use EXACT node types and parameter structures from {{node_research}} and {{parameter_structures}}</critical>
+    <critical>Follow modern n8n format from {{helpers}}</critical>
 
-    <action>Initialize workflow structure:</action>
+    <action>Initialize workflow structure with modern n8n format:</action>
     <substep>
       {
         "name": "{{workflow_name}}",
         "nodes": [],
+        "pinData": {},
         "connections": {},
         "active": false,
         "settings": {
           "executionOrder": "v1"
         },
+        "versionId": "[generate UUID]",
+        "meta": {
+          "templateCredsSetupCompleted": true,
+          "instanceId": "[generate UUID]"
+        },
+        "id": "[generate short ID]",
         "tags": []
       }
     </substep>
 
     <action>Build nodes ONE at a time following these rules:</action>
 
-    <substep>For Each Node:
-      1. Generate unique node ID
+    <substep>For Each Node (Use EXACT structures from research):
+      1. Generate UUID for node ID (format: "f8b7ff4f-6375-4c79-9b2c-9814bfdd0c92")
       2. Set node name (unique, descriptive)
-      3. Set node type (e.g., n8n-nodes-base.webhook)
-      4. Set typeVersion (usually 1)
-      5. Calculate position:
-         - First node (trigger): [250, 300]
+      3. Use EXACT node type from {{node_research}}:
+         - MUST be format: "n8n-nodes-base.nodeName"
+         - NEVER use: "@n8n/n8n-nodes-*" format
+         - Example: "n8n-nodes-base.gmail" NOT "@n8n/n8n-nodes-gmail.gmail"
+      4. Use EXACT typeVersion from {{node_research}}:
+         - MUST be INTEGER (2, 3, 4)
+         - NEVER use float (2.1, 3.4)
+      5. Calculate position as INTEGER array:
+         - Format: [x, y] where x and y are integers
+         - First node (trigger): [240, 300]
          - Subsequent nodes: add 220 to x for each step
          - Branches: adjust y by ±100
-      6. Configure parameters based on node type
-      7. Add credentials if needed
-      8. Set error handling options if required:
-         - continueOnFail: true/false
-         - retryOnFail: true/false
-         - maxTries: number
-         - waitBetweenTries: milliseconds
+      6. Use EXACT parameter structure from {{parameter_structures}}:
+         - For Set node (v3+): use assignments.assignments structure
+         - For Gmail node (v2+): use "message" parameter (NOT "text")
+         - For IF node (v2+): use conditions.conditions structure (NO "name" field in conditions)
+         - For Slack channel: use __rl flag with mode and cachedResultName
+         - Copy structure EXACTLY from research, don't modify
+      7. Add webhookId (UUID) if node type is webhook
+      8. Add credentials if needed
+      9. Field order: parameters, id, name, type, typeVersion, position, webhookId, credentials
+      10. Store node name in list for validation
     </substep>
 
-    <substep>For Each Connection:
-      1. Identify source node name
-      2. Identify target node name
-      3. Create connection entry in connections object:
-         "Source Node Name": [
-           [
-             {
-               "node": "Target Node Name",
-               "type": "main",
-               "index": 0
-             }
+    <substep>For Each Connection (CRITICAL FORMAT):
+      1. Identify source node name (must match node "name" field exactly)
+      2. Identify target node name (must match node "name" field exactly)
+      3. Create connection entry with CORRECT format:
+         "Source Node Name": {
+           "main": [
+             [
+               {
+                 "node": "Target Node Name",
+                 "type": "main",
+                 "index": 0
+               }
+             ]
            ]
-         ]
-      4. For IF nodes:
+         }
+      4. CRITICAL: The "main" wrapper object is REQUIRED
+      5. NEVER use format: "Source": [[{...}]] (missing "main" wrapper)
+      6. For IF nodes:
          - index 0 = true branch
          - index 1 = false branch
-      5. Validate all referenced nodes exist
+      7. Validate all referenced nodes exist in node names list
     </substep>
 
     <substep>Node Building Order:
@@ -320,6 +391,15 @@
     <action>- Ensure proper spacing and alignment</action>
     <action>- Validate all required parameters are set</action>
 
+    <action>Resolve final save path:</action>
+    <check if="{{save_location}} was provided by user">
+      <action>Use {{save_location}} as-is</action>
+    </check>
+    <check if="{{save_location}} is empty or default">
+      <action>Use {{workflows_folder}}/{{workflow_name}}.json</action>
+      <action>Ensure {{workflows_folder}} directory exists</action>
+      <action>Store resolved path in {{save_location}}</action>
+    </check>
     <action>Save workflow to {{save_location}}</action>
   </step>
 
