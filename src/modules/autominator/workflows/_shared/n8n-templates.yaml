@@ -1,0 +1,299 @@
+# n8n Workflow Templates
+
+# Basic webhook workflow template
+webhook_workflow:
+  name: "Webhook Workflow"
+  nodes:
+    - id: "webhook_trigger"
+      name: "Webhook"
+      type: "n8n-nodes-base.webhook"
+      typeVersion: 1
+      position: [250, 300]
+      parameters:
+        httpMethod: "POST"
+        path: "webhook-path"
+        responseMode: "onReceived"
+    - id: "process_data"
+      name: "Process Data"
+      type: "n8n-nodes-base.set"
+      typeVersion: 1
+      position: [470, 300]
+      parameters:
+        mode: "manual"
+        values: {}
+  connections:
+    Webhook:
+      - - node: "Process Data"
+          type: "main"
+          index: 0
+
+# Scheduled workflow template
+scheduled_workflow:
+  name: "Scheduled Workflow"
+  nodes:
+    - id: "schedule_trigger"
+      name: "Schedule Trigger"
+      type: "n8n-nodes-base.scheduleTrigger"
+      typeVersion: 1
+      position: [250, 300]
+      parameters:
+        rule:
+          interval:
+            - field: "hours"
+              hoursInterval: 1
+    - id: "execute_action"
+      name: "Execute Action"
+      type: "n8n-nodes-base.httpRequest"
+      typeVersion: 1
+      position: [470, 300]
+      parameters:
+        method: "GET"
+        url: ""
+  connections:
+    Schedule Trigger:
+      - - node: "Execute Action"
+          type: "main"
+          index: 0
+
+# Conditional workflow template
+conditional_workflow:
+  name: "Conditional Workflow"
+  nodes:
+    - id: "manual_trigger"
+      name: "Manual Trigger"
+      type: "n8n-nodes-base.manualTrigger"
+      typeVersion: 1
+      position: [250, 300]
+      parameters: {}
+    - id: "if_condition"
+      name: "IF"
+      type: "n8n-nodes-base.if"
+      typeVersion: 1
+      position: [470, 300]
+      parameters:
+        conditions:
+          boolean: []
+          number: []
+          string: []
+    - id: "true_branch"
+      name: "True Branch"
+      type: "n8n-nodes-base.noOp"
+      typeVersion: 1
+      position: [690, 200]
+      parameters: {}
+    - id: "false_branch"
+      name: "False Branch"
+      type: "n8n-nodes-base.noOp"
+      typeVersion: 1
+      position: [690, 400]
+      parameters: {}
+  connections:
+    Manual Trigger:
+      - - node: "IF"
+          type: "main"
+          index: 0
+    IF:
+      - - node: "True Branch"
+          type: "main"
+          index: 0
+      - - node: "False Branch"
+          type: "main"
+          index: 0
+
+# API integration workflow template
+api_integration_workflow:
+  name: "API Integration Workflow"
+  nodes:
+    - id: "webhook_trigger"
+      name: "Webhook"
+      type: "n8n-nodes-base.webhook"
+      typeVersion: 1
+      position: [250, 300]
+      parameters:
+        httpMethod: "POST"
+        path: "api-webhook"
+        responseMode: "onReceived"
+    - id: "http_request"
+      name: "HTTP Request"
+      type: "n8n-nodes-base.httpRequest"
+      typeVersion: 1
+      position: [470, 300]
+      parameters:
+        method: "POST"
+        url: ""
+        jsonParameters: true
+        options: {}
+    - id: "transform_response"
+      name: "Transform Response"
+      type: "n8n-nodes-base.set"
+      typeVersion: 1
+      position: [690, 300]
+      parameters:
+        mode: "manual"
+        values: {}
+  connections:
+    Webhook:
+      - - node: "HTTP Request"
+          type: "main"
+          index: 0
+    HTTP Request:
+      - - node: "Transform Response"
+          type: "main"
+          index: 0
+
+# Database workflow template
+database_workflow:
+  name: "Database Workflow"
+  nodes:
+    - id: "schedule_trigger"
+      name: "Schedule Trigger"
+      type: "n8n-nodes-base.scheduleTrigger"
+      typeVersion: 1
+      position: [250, 300]
+      parameters:
+        rule:
+          interval:
+            - field: "minutes"
+              minutesInterval: 15
+    - id: "postgres_query"
+      name: "Postgres"
+      type: "n8n-nodes-base.postgres"
+      typeVersion: 1
+      position: [470, 300]
+      parameters:
+        operation: "executeQuery"
+        query: ""
+    - id: "process_results"
+      name: "Process Results"
+      type: "n8n-nodes-base.code"
+      typeVersion: 1
+      position: [690, 300]
+      parameters:
+        language: "javaScript"
+        jsCode: "return items;"
+  connections:
+    Schedule Trigger:
+      - - node: "Postgres"
+          type: "main"
+          index: 0
+    Postgres:
+      - - node: "Process Results"
+          type: "main"
+          index: 0
+
+# Error handling workflow template
+error_handling_workflow:
+  name: "Error Handling Workflow"
+  nodes:
+    - id: "manual_trigger"
+      name: "Manual Trigger"
+      type: "n8n-nodes-base.manualTrigger"
+      typeVersion: 1
+      position: [250, 300]
+      parameters: {}
+    - id: "risky_operation"
+      name: "Risky Operation"
+      type: "n8n-nodes-base.httpRequest"
+      typeVersion: 1
+      position: [470, 300]
+      parameters:
+        method: "GET"
+        url: ""
+      continueOnFail: true
+      retryOnFail: true
+      maxTries: 3
+      waitBetweenTries: 1000
+    - id: "check_error"
+      name: "Check for Error"
+      type: "n8n-nodes-base.if"
+      typeVersion: 1
+      position: [690, 300]
+      parameters:
+        conditions:
+          boolean:
+            - value1: "={{ $json.error !== undefined }}"
+              value2: true
+    - id: "handle_error"
+      name: "Handle Error"
+      type: "n8n-nodes-base.set"
+      typeVersion: 1
+      position: [910, 200]
+      parameters:
+        mode: "manual"
+        values:
+          string:
+            - name: "status"
+              value: "error"
+    - id: "success_path"
+      name: "Success Path"
+      type: "n8n-nodes-base.noOp"
+      typeVersion: 1
+      position: [910, 400]
+      parameters: {}
+  connections:
+    Manual Trigger:
+      - - node: "Risky Operation"
+          type: "main"
+          index: 0
+    Risky Operation:
+      - - node: "Check for Error"
+          type: "main"
+          index: 0
+    Check for Error:
+      - - node: "Handle Error"
+          type: "main"
+          index: 0
+      - - node: "Success Path"
+          type: "main"
+          index: 0
+
+# Batch processing workflow template
+batch_processing_workflow:
+  name: "Batch Processing Workflow"
+  nodes:
+    - id: "manual_trigger"
+      name: "Manual Trigger"
+      type: "n8n-nodes-base.manualTrigger"
+      typeVersion: 1
+      position: [250, 300]
+      parameters: {}
+    - id: "get_data"
+      name: "Get Data"
+      type: "n8n-nodes-base.httpRequest"
+      typeVersion: 1
+      position: [470, 300]
+      parameters:
+        method: "GET"
+        url: ""
+    - id: "split_batches"
+      name: "Split In Batches"
+      type: "n8n-nodes-base.splitInBatches"
+      typeVersion: 1
+      position: [690, 300]
+      parameters:
+        batchSize: 10
+    - id: "process_batch"
+      name: "Process Batch"
+      type: "n8n-nodes-base.code"
+      typeVersion: 1
+      position: [910, 300]
+      parameters:
+        language: "javaScript"
+        jsCode: "return items;"
+  connections:
+    Manual Trigger:
+      - - node: "Get Data"
+          type: "main"
+          index: 0
+    Get Data:
+      - - node: "Split In Batches"
+          type: "main"
+          index: 0
+    Split In Batches:
+      - - node: "Process Batch"
+          type: "main"
+          index: 0
+    Process Batch:
+      - - node: "Split In Batches"
+          type: "main"
+          index: 0
