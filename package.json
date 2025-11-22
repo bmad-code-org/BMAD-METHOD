@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.0.0-alpha.10",
+  "version": "6.0.0-alpha.12",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
@@ -24,6 +24,7 @@
     "bmad-method": "tools/bmad-npx-wrapper.js"
   },
   "scripts": {
+    "bmad:agent-install": "node tools/cli/bmad-cli.js agent-install",
     "bmad:install": "node tools/cli/bmad-cli.js install",
     "bmad:status": "node tools/cli/bmad-cli.js status",
     "bundle": "node tools/cli/bundlers/bundle-web.js all",
@@ -75,7 +76,8 @@
     "ora": "^5.4.1",
     "semver": "^7.6.3",
     "wrap-ansi": "^7.0.0",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

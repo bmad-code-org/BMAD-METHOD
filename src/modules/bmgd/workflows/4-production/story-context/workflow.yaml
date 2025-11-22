@@ -9,7 +9,7 @@ output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 document_output_language: "{config_source}:document_output_language"
-story_path: "{config_source}:sprint_artifacts/stories"
+story_path: "{config_source}:sprint_artifacts"
 date: system-generated
 sprint_artifacts: "{config_source}:sprint_artifacts"
 sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"

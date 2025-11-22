@@ -9,23 +9,39 @@ communication_language: "{config_source}:communication_language"
 user_name: "{config_source}:user_name"
 
 # Required Data Files - Critical for understanding agent conventions
-agent_types: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/agent-types.md"
-agent_architecture: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/agent-architecture.md"
-agent_commands: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/agent-command-patterns.md"
-communication_styles: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/communication-styles.md"
+
+# Core Concepts
+understanding_agent_types: "{project-root}/{bmad_folder}/bmb/docs/understanding-agent-types.md"
+agent_compilation: "{project-root}/{bmad_folder}/bmb/docs/agent-compilation.md"
+
+# Architecture Guides (Simple, Expert, Module)
+simple_architecture: "{project-root}/{bmad_folder}/bmb/docs/simple-agent-architecture.md"
+expert_architecture: "{project-root}/{bmad_folder}/bmb/docs/expert-agent-architecture.md"
+module_architecture: "{project-root}/{bmad_folder}/bmb/docs/module-agent-architecture.md"
+
+# Design Patterns
+menu_patterns: "{project-root}/{bmad_folder}/bmb/docs/agent-menu-patterns.md"
+communication_presets: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/communication-presets.csv"
+brainstorm_context: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/brainstorm-context.md"
 
 # Workflow execution engine reference
 workflow_execution_engine: "{project-root}/{bmad_folder}/core/tasks/workflow.xml"
 
-# Reference examples and conventions
-example_agents_dir: "{project-root}/{bmad_folder}/bmm/agents/"
-agent_activation_rules: "{project-root}/src/utility/models/agent-activation-ide.xml"
+# Reference Agents - Clean implementations showing best practices
+reference_agents: "{project-root}/{bmad_folder}/bmb/reference/agents/"
+reference_simple_agent: "{reference_agents}/simple-examples/commit-poet.agent.yaml"
+reference_expert_agent: "{reference_agents}/expert-examples/journal-keeper/journal-keeper.agent.yaml"
+reference_module_agents: "{reference_agents}/module-examples/"
+
+# BMM Agents - Examples of distinct communication voices
+bmm_agents: "{project-root}/{bmad_folder}/bmm/agents/"
 
 # Module path and component files
 installed_path: "{project-root}/{bmad_folder}/bmb/workflows/edit-agent"
 template: false # This is an action workflow - no template needed
 instructions: "{installed_path}/instructions.md"
-validation: "{installed_path}/checklist.md"
+# Shared validation checklist (canonical location in create-agent folder)
+validation: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/agent-validation-checklist.md"
 
 standalone: true
 

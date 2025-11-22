@@ -167,12 +167,34 @@ src/modules/bmm/
 
 TEA uniquely requires:
 
-- **Extensive domain knowledge**: 21 fragments, 12,821 lines covering test patterns, CI/CD, fixtures, quality practices, healing strategies
+- **Extensive domain knowledge**: 32 fragments covering test patterns, CI/CD, fixtures, quality practices, healing strategies, and optional playwright-utils integration
 - **Centralized reference system**: `tea-index.csv` for on-demand fragment loading during workflow execution
 - **Cross-cutting concerns**: Domain-specific testing patterns (vs project-specific artifacts like PRDs/stories)
-- **Optional MCP integration**: Healing, exploratory, and verification modes for enhanced testing capabilities
+- **Optional integrations**: MCP capabilities (healing, exploratory, verification) and playwright-utils support
 
 This architecture enables TEA to maintain consistent, production-ready testing patterns across all BMad projects while operating across multiple development phases.
+
+### Playwright Utils Integration
+
+TEA optionally integrates with `@seontechnologies/playwright-utils`, an open-source library providing fixture-based utilities for Playwright tests.
+
+**Installation:**
+
+```bash
+npm install -D @seontechnologies/playwright-utils
+```
+
+**Enable during BMAD installation** by answering "Yes" when prompted.
+
+**Supported utilities (11 total):**
+
+- api-request, network-recorder, auth-session, intercept-network-call, recurse
+- log, file-utils, burn-in, network-error-monitor
+- fixtures-composition (integration patterns)
+
+**Workflows adapt:** automate, framework, test-review, ci, atdd (+ light mention in test-design).
+
+**Knowledge base:** 32 total fragments (21 core patterns + 11 playwright-utils)
 
 </details>
 
@@ -295,7 +317,7 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 | Workflow Stage             | Test Architect                                                           | Dev / Team                                                                          | Outputs                                                            |
 | -------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | **Phase 1**: Discovery     | -                                                                        | Analyst ➕ `*research`, `*product-brief`                                            | Domain research, compliance analysis, product brief                |
-| **Phase 2**: Planning      | Run ➕ `*nfr-assess`                                                     | PM `*prd` (creates PRD with FRs/NFRs), UX `*create-design`                          | Enterprise PRD with FRs/NFRs, UX design, ➕ NFR documentation      |
+| **Phase 2**: Planning      | Run ➕ `*nfr-assess`                                                     | PM `*prd` (creates PRD with FRs/NFRs), UX `*create-ux-design`                       | Enterprise PRD with FRs/NFRs, UX design, ➕ NFR documentation      |
 | **Phase 3**: Solutioning   | Run `*framework`, `*ci` AFTER architecture and epic creation             | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline           |
 | **Phase 4**: Sprint Start  | -                                                                        | SM `*sprint-planning`                                                               | Sprint plan with all epics                                         |
 | **Phase 4**: Epic Planning | Run `*test-design` for THIS epic 🔄 (compliance focus)                   | Review epic scope and compliance requirements                                       | `test-design-epic-N.md` with security/performance/compliance focus |
@@ -377,6 +399,50 @@ MCP provides additional capabilities on top of TEA's default AI-based approach:
 ```
 
 **To disable**: Set `tea_use_mcp_enhancements: false` in `{bmad_folder}/bmm/config.yaml` OR remove MCPs from IDE config.
+
+</details>
+
+<details>
+<summary><strong>Optional Playwright Utils Integration</strong></summary>
+
+**Open-source Playwright utilities** from SEON Technologies (production-tested, npm published):
+
+- **Package**: `@seontechnologies/playwright-utils` ([npm](https://www.npmjs.com/package/@seontechnologies/playwright-utils) | [GitHub](https://github.com/seontechnologies/playwright-utils))
+- **Install**: `npm install -D @seontechnologies/playwright-utils`
+
+**How Playwright Utils Enhances TEA Workflows**:
+
+Provides fixture-based utilities that integrate into TEA's test generation and review workflows:
+
+1. `*framework`:
+   - Default: Basic Playwright scaffold
+   - **+ playwright-utils**: Scaffold with api-request, network-recorder, auth-session, burn-in, network-error-monitor fixtures pre-configured
+
+   Benefit: Production-ready patterns from day one
+
+2. `*automate`, `*atdd`:
+   - Default: Standard test patterns
+   - **+ playwright-utils**: Tests using api-request (schema validation), intercept-network-call (mocking), recurse (polling), log (structured logging), file-utils (CSV/PDF)
+
+   Benefit: Advanced patterns without boilerplate
+
+3. `*test-review`:
+   - Default: Reviews against core knowledge base (21 fragments)
+   - **+ playwright-utils**: Reviews against expanded knowledge base (32 fragments: 21 core + 11 playwright-utils)
+
+   Benefit: Reviews include fixture composition, auth patterns, network recording best practices
+
+4. `*ci`:
+   - Default: Standard CI workflow
+   - **+ playwright-utils**: CI workflow with burn-in script (smart test selection) and network-error-monitor integration
+
+   Benefit: Faster CI feedback, HTTP error detection
+
+**Utilities available** (11 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
+
+**Enable during BMAD installation** by answering "Yes" when prompted, or manually set `tea_use_playwright_utils: true` in `{bmad_folder}/bmm/config.yaml`.
+
+**To disable**: Set `tea_use_playwright_utils: false` in `{bmad_folder}/bmm/config.yaml`.
 
 </details>
 

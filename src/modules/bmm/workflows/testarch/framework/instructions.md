@@ -349,7 +349,33 @@ The generated `tests/README.md` should include:
 
 ### Knowledge Base Integration
 
-**Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to identify and load relevant knowledge fragments:
+**Critical:** Check configuration and load appropriate fragments.
+
+Read `{config_source}` and check `config.tea_use_playwright_utils`.
+
+**If `config.tea_use_playwright_utils: true` (Playwright Utils Integration):**
+
+Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` and load:
+
+- `overview.md` - Playwright utils installation and design principles
+- `fixtures-composition.md` - mergeTests composition with playwright-utils
+- `auth-session.md` - Token persistence setup (if auth needed)
+- `api-request.md` - API testing utilities (if API tests planned)
+- `burn-in.md` - Smart test selection for CI (recommend during framework setup)
+- `network-error-monitor.md` - Automatic HTTP error detection (recommend in merged fixtures)
+- `data-factories.md` - Factory patterns with faker (498 lines, 5 examples)
+
+Recommend installing playwright-utils:
+
+```bash
+npm install -D @seontechnologies/playwright-utils
+```
+
+Recommend adding burn-in and network-error-monitor to merged fixtures for enhanced reliability.
+
+**If `config.tea_use_playwright_utils: false` (Traditional Patterns):**
+
+Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` and load:
 
 - `fixture-architecture.md` - Pure function → fixture → `mergeTests` composition with auto-cleanup (406 lines, 5 examples)
 - `data-factories.md` - Faker-based factories with overrides, nested factories, API seeding, auto-cleanup (498 lines, 5 examples)

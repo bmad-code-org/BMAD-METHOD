@@ -1,174 +1,153 @@
-# Agent Brainstorming Context
+# Agent Creation Brainstorming Context
 
-_Context provided to brainstorming workflow when creating a new BMAD agent_
+_Dream the soul. Discover the purpose. The build follows._
 
 ## Session Focus
 
-You are brainstorming ideas for a **BMAD agent** - an AI persona with specific expertise, personality, and capabilities that helps users accomplish tasks through commands and workflows.
+You're brainstorming the **essence** of a BMAD agent - the living personality AND the utility it provides. Think character creation meets problem-solving: WHO are they, and WHAT do they DO?
 
-## What is a BMAD Agent?
+**Your mission**: Discover an agent so vivid and so useful that users seek them out by name.
 
-An agent is an AI persona that embodies:
+## The Four Discovery Pillars
 
-- **Personality**: Unique identity, communication style, and character
-- **Expertise**: Specialized knowledge and domain mastery
-- **Commands**: Actions users can invoke (*help, *analyze, \*create, etc.)
-- **Workflows**: Guided processes the agent orchestrates
-- **Type**: Simple (standalone), Expert (domain + sidecar), or Module (integrated team member)
+### 1. WHO ARE THEY? (Identity)
 
-## Brainstorming Goals
+- **Name** - Does it roll off the tongue? Would users remember it?
+- **Background** - What shaped their expertise? Why do they care?
+- **Personality** - What makes their eyes light up? What frustrates them?
+- **Signature** - Catchphrase? Verbal tic? Recognizable trait?
 
-Explore and define:
+### 2. HOW DO THEY COMMUNICATE? (Voice)
 
-### 1. Agent Identity and Personality
+**13 Style Categories:**
 
-- **Who are they?** (name, backstory, motivation)
-- **How do they talk?** (formal, casual, quirky, enthusiastic, wise)
-- **What's their vibe?** (superhero, mentor, sidekick, wizard, captain, rebel)
-- **What makes them memorable?** (catchphrases, quirks, style)
+- **Adventurous** - Pulp heroes, noir detectives, pirates, dungeon masters
+- **Analytical** - Data scientists, forensic investigators, systems thinkers
+- **Creative** - Mad scientists, artist visionaries, jazz improvisers
+- **Devoted** - Overprotective guardians, loyal champions, fierce protectors
+- **Dramatic** - Shakespearean actors, opera singers, theater directors
+- **Educational** - Patient teachers, Socratic guides, sports coaches
+- **Entertaining** - Game show hosts, comedians, improv performers
+- **Inspirational** - Life coaches, mountain guides, Olympic trainers
+- **Mystical** - Zen masters, oracles, cryptic sages
+- **Professional** - Executive consultants, direct advisors, formal butlers
+- **Quirky** - Cooking metaphors, nature documentaries, conspiracy vibes
+- **Retro** - 80s action heroes, 1950s announcers, disco groovers
+- **Warm** - Southern hospitality, nurturing grandmothers, camp counselors
 
-### 2. Expertise and Capabilities
+**Voice Test**: Imagine them saying "Let's tackle this challenge." How would THEY phrase it?
 
-- **What do they know deeply?** (domain expertise)
-- **What can they do?** (analyze, create, review, research, deploy)
-- **What problems do they solve?** (specific user pain points)
-- **What makes them unique?** (special skills or approaches)
+### 3. WHAT DO THEY DO? (Purpose & Functions)
 
-### 3. Commands and Actions
+**The Core Problem**
 
-- **What commands?** (5-10 main actions users invoke)
-- **What workflows do they run?** (document creation, analysis, automation)
-- **What tasks do they perform?** (quick operations without full workflows)
-- **What's their killer command?** (the one thing they're known for)
+- What pain point do they eliminate?
+- What task transforms from grueling to effortless?
+- What impossible becomes inevitable with them?
 
-### 4. Agent Type and Context
+**The Killer Feature**
+Every legendary agent has ONE thing they're known for. What's theirs?
 
-- **Simple Agent?** Self-contained, no dependencies, quick utility
-- **Expert Agent?** Domain-specific with sidecar data/memory files
-- **Module Agent?** Part of a team, integrates with other agents
+**The Command Menu**
+User types `*` and sees their options. Brainstorm 5-10 actions:
 
-## Creative Constraints
+- What makes users sigh with relief?
+- What capabilities complement each other?
+- What's the "I didn't know I needed this" command?
 
-A great BMAD agent should be:
+**Function Categories to Consider:**
 
-- **Distinct**: Clear personality that stands out
-- **Useful**: Solves real problems effectively
-- **Focused**: Expertise in specific domain (not generic assistant)
-- **Memorable**: Users remember and want to use them
-- **Composable**: Works well alone or with other agents
+- **Creation** - Generate, write, produce, build
+- **Analysis** - Research, evaluate, diagnose, insights
+- **Review** - Validate, check, quality assurance, critique
+- **Orchestration** - Coordinate workflows, manage processes
+- **Query** - Find, search, retrieve, discover
+- **Transform** - Convert, refactor, optimize, clean
 
-## Agent Personality Dimensions
+### 4. WHAT TYPE? (Architecture)
 
-### Communication Styles
+**Simple Agent** - The Specialist
 
-- **Professional**: Clear, direct, business-focused (e.g., "Data Analyst")
-- **Enthusiastic**: Energetic, exclamation points, emojis (e.g., "Hype Coach")
-- **Wise Mentor**: Patient, insightful, asks good questions (e.g., "Strategy Sage")
-- **Quirky Genius**: Eccentric, clever, unusual metaphors (e.g., "Mad Scientist")
-- **Action Hero**: Bold, confident, gets things done (e.g., "Deploy Captain")
-- **Creative Spirit**: Artistic, imaginative, playful (e.g., "Story Weaver")
+> "I do ONE thing extraordinarily well."
 
-### Expertise Archetypes
+- Self-contained, lightning fast, pure utility with personality
 
-- **Analyst**: Researches, evaluates, provides insights
-- **Creator**: Generates documents, code, designs
-- **Reviewer**: Critiques, validates, improves quality
-- **Orchestrator**: Coordinates processes, manages workflows
-- **Specialist**: Deep expertise in narrow domain
-- **Generalist**: Broad knowledge, connects dots
+**Expert Agent** - The Domain Master
 
-## Agent Command Patterns
+> "I live in this world. I remember everything."
 
-Every agent needs:
+- Deep domain knowledge, personal memory, specialized expertise
 
-- `*help` - Show available commands
-- `*exit` - Clean exit with confirmation
+**Module Agent** - The Team Player
 
-Common command types:
+> "I orchestrate workflows. I coordinate the mission."
 
-- **Creation**: `*create-X`, `*generate-X`, `*write-X`
-- **Analysis**: `*analyze-X`, `*research-X`, `*evaluate-X`
-- **Review**: `*review-X`, `*validate-X`, `*check-X`
-- **Action**: `*deploy-X`, `*run-X`, `*execute-X`
-- **Query**: `*find-X`, `*search-X`, `*show-X`
+- Workflow integration, cross-agent collaboration, professional operations
 
-## Agent Type Decision Tree
+## Creative Prompts
 
-**Choose Simple Agent if:**
+**Identity Sparks**
 
-- Standalone utility (calculator, formatter, picker)
-- No persistent data needed
-- Self-contained logic
-- Quick, focused task
+1. How do they introduce themselves?
+2. How do they celebrate user success?
+3. What do they say when things get tough?
 
-**Choose Expert Agent if:**
+**Purpose Probes**
 
-- Domain-specific expertise
-- Needs memory/context files
-- Sidecar data folder
-- Personal/private domain (diary, journal)
+1. What 3 user problems do they obliterate?
+2. What workflow would users dread WITHOUT this agent?
+3. What's the first command users would try?
+4. What's the command they'd use daily?
+5. What's the "hidden gem" command they'd discover later?
 
-**Choose Module Agent if:**
+**Personality Dimensions**
 
-- Part of larger system
-- Coordinates with other agents
-- Invokes module workflows
-- Team member role
+- Analytical ← → Creative
+- Formal ← → Casual
+- Mentor ← → Peer ← → Assistant
+- Reserved ← → Expressive
 
-## Example Agent Concepts
+## Example Agent Sparks
 
-### Professional Agents
+**Sentinel** (Devoted Guardian)
 
-- **Sarah the Data Analyst**: Crunches numbers, creates visualizations, finds insights
-- **Max the DevOps Captain**: Deploys apps, monitors systems, troubleshoots issues
-- **Luna the Researcher**: Dives deep into topics, synthesizes findings, creates reports
+- Voice: "Your success is my sacred duty."
+- Does: Protective oversight, catches issues before they catch you
+- Commands: `*audit`, `*validate`, `*secure`, `*watch`
 
-### Creative Agents
+**Sparks** (Quirky Genius)
 
-- **Zephyr the Story Weaver**: Crafts narratives, develops characters, builds worlds
-- **Nova the Music Muse**: Composes melodies, suggests arrangements, provides feedback
-- **Atlas the World Builder**: Creates game worlds, designs systems, generates content
+- Voice: "What if we tried it COMPLETELY backwards?!"
+- Does: Unconventional solutions, pattern breaking
+- Commands: `*flip`, `*remix`, `*wildcard`, `*chaos`
 
-### Personal Agents
+**Haven** (Warm Sage)
 
-- **Coach Riley**: Tracks goals, provides motivation, celebrates wins
-- **Mentor Morgan**: Guides learning, asks questions, challenges thinking
-- **Keeper Quinn**: Maintains diary, preserves memories, reflects on growth
+- Voice: "Come, let's work through this together."
+- Does: Patient guidance, sustainable progress
+- Commands: `*reflect`, `*pace`, `*celebrate`, `*restore`
 
-## Suggested Brainstorming Techniques
+## Brainstorming Success Checklist
 
-Particularly effective for agent creation:
+You've found your agent when:
 
-1. **Character Building**: Develop full backstory and motivation
-2. **Theatrical Improv**: Act out agent personality
-3. **Day in the Life**: Imagine typical interactions
-4. **Catchphrase Generation**: Find their unique voice
-5. **Role Play Scenarios**: Test personality in different situations
+- [ ] **Voice is clear** - You know exactly how they'd phrase anything
+- [ ] **Purpose is sharp** - Crystal clear what problems they solve
+- [ ] **Functions are defined** - 5-10 concrete capabilities identified
+- [ ] **Energy is distinct** - Their presence is palpable and memorable
+- [ ] **Utility is obvious** - You can't wait to actually use them
 
-## Key Questions to Answer
+## The Golden Rule
 
-1. What is the agent's name and basic identity?
-2. What's their communication style and personality?
-3. What domain expertise do they embody?
-4. What are their 5-10 core commands?
-5. What workflows do they orchestrate?
-6. What makes them memorable and fun to use?
-7. Simple, Expert, or Module agent type?
-8. If Expert: What sidecar resources?
-9. If Module: Which module and what's their team role?
+**Dream big on personality. Get concrete on functions.**
 
-## Output Goals
+Your brainstorming should produce:
 
-Generate:
-
-- **Agent name**: Memorable, fitting the role
-- **Personality sketch**: Communication style, quirks, vibe
-- **Expertise summary**: What they know deeply
-- **Command list**: 5-10 actions with brief descriptions
-- **Unique angle**: What makes this agent special
-- **Use cases**: 3-5 scenarios where this agent shines
-- **Agent type**: Simple/Expert/Module with rationale
+- A name that sticks
+- A voice that echoes
+- A purpose that burns
+- A function list that solves real problems
 
 ---
 
-_This focused context helps create distinctive, useful BMAD agents_
+_Discover the agent. Define what they do. The build follows._
