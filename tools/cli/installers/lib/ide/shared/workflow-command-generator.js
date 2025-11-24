@@ -120,12 +120,15 @@ class WorkflowCommandGenerator {
       }
     }
 
+    const coreWorkflowPath = `${this.bmadFolderName}/core/tasks/workflow.xml`;
+
     // Replace template variables
     return template
       .replaceAll('{{name}}', workflow.name)
       .replaceAll('{{module}}', workflow.module)
       .replaceAll('{{description}}', workflow.description)
       .replaceAll('{{workflow_path}}', workflowPath)
+      .replaceAll('{{core_workflow_path}}', coreWorkflowPath)
       .replaceAll('{bmad_folder}', this.bmadFolderName)
       .replaceAll('{*bmad_folder*}', '{bmad_folder}')
       .replaceAll('{{interactive}}', workflow.interactive)
