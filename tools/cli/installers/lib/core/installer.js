@@ -1466,12 +1466,24 @@ class Installer {
    * @param {string} moduleName - Module name
    */
   async rebuildAgentFiles(modulePath, moduleName) {
-    // Get source agents directory from installer
-    const sourceAgentsPath =
-      moduleName === 'core' ? path.join(getModulePath('core'), 'agents') : path.join(getSourcePath(`modules/${moduleName}`), 'agents');
+    // First try module's own agents directory (for custom modules)
+    let sourceAgentsPath = path.join(modulePath, 'agents');
 
-    if (!(await fs.pathExists(sourceAgentsPath))) {
-      return; // No source agents to rebuild
+    // Check if module has its own .agent.yaml files
+    let hasOwnAgents = false;
+    if (await fs.pathExists(sourceAgentsPath)) {
+      const files = await fs.readdir(sourceAgentsPath);
+      hasOwnAgents = files.some(f => f.endsWith('.agent.yaml'));
+    }
+
+    // If no agents in module directory, try installer source (for built-in modules)
+    if (!hasOwnAgents) {
+      sourceAgentsPath =
+        moduleName === 'core' ? path.join(getModulePath('core'), 'agents') : path.join(getSourcePath(`modules/${moduleName}`), 'agents');
+
+      if (!(await fs.pathExists(sourceAgentsPath))) {
+        return; // No source agents to rebuild
+      }
     }
 
     // Determine project directory (parent of bmad/ directory)
