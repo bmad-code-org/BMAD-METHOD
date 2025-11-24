@@ -6,6 +6,7 @@
 <critical>Communicate all responses in {communication_language}</critical>
 <critical>This workflow generates a comprehensive Technical Specification from PRD and Architecture, including detailed design, NFRs, acceptance criteria, and traceability mapping.</critical>
 <critical>If required inputs cannot be auto-discovered HALT with a clear message listing missing documents, allow user to provide them to proceed.</critical>
+<critical>ALWAYS reload {{sprint_status}} (docs/sprint-artifacts/sprint-status.yaml by default) from disk immediately before reading or updating statuses. Multiple workflows change this file between runs; never rely on a previously loaded copy or cached memory.</critical>
 
 <workflow>
   <step n="1" goal="Collect inputs and discover next epic" tag="sprint-status">

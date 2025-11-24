@@ -11,6 +11,7 @@
 <critical>Do NOT schedule a "next session" or request review pauses unless a HALT condition applies. Only Step 6 decides completion.</critical>
 
 <critical>User skill level ({user_skill_level}) affects conversation style ONLY, not code updates.</critical>
+<critical>ALWAYS reload {{sprint_status}} (docs/sprint-artifacts/sprint-status.yaml by default) from disk immediately before reading or updating statuses. Multiple workflows change this file between runs; never rely on a previously loaded copy or cached memory.</critical>
 
 <workflow>
 

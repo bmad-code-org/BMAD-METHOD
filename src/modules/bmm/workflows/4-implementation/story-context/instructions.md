@@ -10,6 +10,7 @@
 <critical>Check if context file already exists. If it does, ask user if they want to replace it, verify it, or cancel.</critical>
 
 <critical>DOCUMENT OUTPUT: Technical context file (.context.xml). Concise, structured, project-relative paths only.</critical>
+<critical>ALWAYS reload {{sprint_status}} (docs/sprint-artifacts/sprint-status.yaml by default) from disk immediately before reading or updating statuses. Multiple workflows change this file between runs; never rely on a previously loaded copy or cached memory.</critical>
 
 <workflow>
   <step n="1" goal="Find drafted story and check for existing context" tag="sprint-status">

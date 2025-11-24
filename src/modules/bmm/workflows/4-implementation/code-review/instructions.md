@@ -15,6 +15,7 @@
 <critical>Execute ALL steps in exact order; do NOT skip steps</critical>
 
 <critical>DOCUMENT OUTPUT: Technical review reports. Structured findings with severity levels and action items. User skill level ({user_skill_level}) affects conversation style ONLY, not review content.</critical>
+<critical>ALWAYS reload {{sprint_status}} (docs/sprint-artifacts/sprint-status.yaml by default) from disk immediately before reading or updating statuses. Multiple workflows change this file between runs; never rely on a previously loaded copy or cached memory.</critical>
 
 <workflow>
 
