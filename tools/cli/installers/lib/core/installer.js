@@ -166,7 +166,9 @@ class Installer {
 
         for (const ide of newlySelectedIdes) {
           // List of IDEs that have interactive prompts
-          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini'].includes(ide);
+          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini', 'rovo-dev'].includes(
+            ide,
+          );
 
           if (needsPrompts) {
             // Get IDE handler and collect configuration

@@ -87,6 +87,7 @@ Instructions for loading agents and running workflows in your development enviro
 - [OpenCode](./ide-info/opencode.md)
 - [Qwen](./ide-info/qwen.md)
 - [Roo](./ide-info/roo.md)
+- [Rovo Dev](./ide-info/rovo-dev.md)
 - [Trae](./ide-info/trae.md)
 
 **Key concept:** Every reference to "load an agent" or "activate an agent" in the main docs links to the [ide-info](./ide-info/) directory for IDE-specific instructions.
