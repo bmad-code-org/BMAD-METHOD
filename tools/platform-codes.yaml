@@ -97,6 +97,12 @@ platforms:
     category: ide
     description: "AI development assistant"
 
+  antigravity:
+    name: "Google Antigravity"
+    preferred: false
+    category: ide
+    description: "Google's AI development environment"
+
   trae:
     name: "Trae"
     preferred: false

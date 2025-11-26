@@ -156,7 +156,7 @@ For Modules:
 <action>Example path conversions:
 
 - exec="{project-root}/{bmad_folder}/{{target_module}}/tasks/task-name.md"
-- run-workflow="{project-root}/{bmad_folder}/{{target_module}}/workflows/workflow-name/workflow.yaml"
+- workflow="{project-root}/{bmad_folder}/{{target_module}}/workflows/workflow-name/workflow.yaml"
 - data="{project-root}/{bmad_folder}/{{target_module}}/data/data-file.yaml"
   </action>
   <action>Save to: {bmad_folder}/{{target_module}}/agents/{{agent_name}}.agent.yaml (physical location)</action>

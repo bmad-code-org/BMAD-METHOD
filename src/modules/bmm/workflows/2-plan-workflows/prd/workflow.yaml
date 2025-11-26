@@ -24,6 +24,10 @@ prd_template: "{installed_path}/prd-template.md"
 project_types_data: "{installed_path}/project-types.csv"
 domain_complexity_data: "{installed_path}/domain-complexity.csv"
 
+# External workflows for checkpoints
+advanced_elicitation: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.md"
+party_mode: "{project-root}/{bmad_folder}/core/workflows/party-mode.md"
+
 # Output files
 status_file: "{output_folder}/bmm-workflow-status.yaml"
 default_output_file: "{output_folder}/prd.md"
@@ -37,13 +41,11 @@ input_file_patterns:
     whole: "{output_folder}/*brief*.md"
     sharded: "{output_folder}/*brief*/index.md"
     load_strategy: "FULL_LOAD"
-
   research:
     description: "Market or domain research (optional)"
     whole: "{output_folder}/*research*.md"
     sharded: "{output_folder}/*research*/index.md"
     load_strategy: "FULL_LOAD"
-
   document_project:
     description: "Brownfield project documentation (optional)"
     sharded: "{output_folder}/index.md"

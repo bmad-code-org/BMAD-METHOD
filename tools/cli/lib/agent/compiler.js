@@ -49,9 +49,10 @@ You must fully embody this agent's persona and follow all activation instruction
  * Build simple activation block for custom agents
  * @param {Array} criticalActions - Agent-specific critical actions
  * @param {Array} menuItems - Menu items to determine which handlers to include
+ * @param {string} deploymentType - 'ide' or 'web' - filters commands based on ide-only/web-only flags
  * @returns {string} Activation XML
  */
-function buildSimpleActivation(criticalActions = [], menuItems = []) {
+function buildSimpleActivation(criticalActions = [], menuItems = [], deploymentType = 'ide') {
   let activation = '<activation critical="MANDATORY">\n';
 
   let stepNum = 1;
@@ -75,13 +76,28 @@ function buildSimpleActivation(criticalActions = [], menuItems = []) {
   activation += `  <step n="${stepNum++}">On user input: Number → execute menu item[n] | Text → case-insensitive substring match | Multiple matches → ask user
       to clarify | No match → show "Not recognized"</step>\n`;
 
-  // Detect which handlers are actually used
+  // Filter menu items based on deployment type
+  const filteredMenuItems = menuItems.filter((item) => {
+    // Skip web-only commands for IDE deployment
+    if (deploymentType === 'ide' && item['web-only'] === true) {
+      return false;
+    }
+    // Skip ide-only commands for web deployment
+    if (deploymentType === 'web' && item['ide-only'] === true) {
+      return false;
+    }
+    return true;
+  });
+
+  // Detect which handlers are actually used in the filtered menu
   const usedHandlers = new Set();
-  for (const item of menuItems) {
+  for (const item of filteredMenuItems) {
     if (item.action) usedHandlers.add('action');
     if (item.workflow) usedHandlers.add('workflow');
     if (item.exec) usedHandlers.add('exec');
     if (item.tmpl) usedHandlers.add('tmpl');
+    if (item.data) usedHandlers.add('data');
+    if (item['validate-workflow']) usedHandlers.add('validate-workflow');
   }
 
   // Only include menu-handlers section if handlers are used
@@ -121,6 +137,25 @@ function buildSimpleActivation(criticalActions = [], menuItems = []) {
     if (usedHandlers.has('tmpl')) {
       activation += `      <handler type="tmpl">
         When menu item has: tmpl="template-path" → Load and apply the template
+      </handler>\n`;
+    }
+
+    if (usedHandlers.has('data')) {
+      activation += `      <handler type="data">
+        When menu item has: data="path/to/x.json|yaml|yml"
+        Load the file, parse as JSON/YAML, make available as {data} to subsequent operations
+      </handler>\n`;
+    }
+
+    if (usedHandlers.has('validate-workflow')) {
+      activation += `      <handler type="validate-workflow">
+        When menu item has: validate-workflow="path/to/workflow.yaml"
+        1. CRITICAL: Always LOAD {project-root}/{bmad_folder}/core/tasks/validate-workflow.xml
+        2. Read the complete file - this is the CORE OS for validating BMAD workflows
+        3. Pass the workflow.yaml path as 'workflow' parameter to those instructions
+        4. Pass any checklist.md from the workflow location as 'checklist' parameter if available
+        5. Execute validate-workflow.xml instructions precisely following all steps
+        6. Generate validation report with thorough analysis
       </handler>\n`;
     }
 
@@ -275,8 +310,8 @@ function compileToXml(agentYaml, agentName = '', targetPath = '') {
 
   xml += `<agent ${agentAttrs.join(' ')}>\n`;
 
-  // Activation block - pass menu items to determine which handlers to include
-  xml += buildSimpleActivation(agent.critical_actions || [], agent.menu || []);
+  // Activation block - pass menu items and deployment type to determine which handlers to include
+  xml += buildSimpleActivation(agent.critical_actions || [], agent.menu || [], 'ide');
 
   // Persona section
   xml += buildPersonaXml(agent.persona);

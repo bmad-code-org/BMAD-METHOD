@@ -748,10 +748,9 @@ class WebBundler {
       }
     }
 
-    // Extract workflow references - both 'workflow' and 'run-workflow' attributes
+    // Extract workflow references from agent files
     const workflowPatterns = [
       /workflow="([^"]+)"/g, // Menu items with workflow attribute
-      /run-workflow="([^"]+)"/g, // Commands with run-workflow attribute
       /validate-workflow="([^"]+)"/g, // Validation workflow references
     ];
 
@@ -789,16 +788,6 @@ class WebBundler {
       // Match: <item cmd="..." workflow="workflowPath">...</item>
       const itemWorkflowPattern = new RegExp(`\\s*<item\\s+[^>]*workflow="[^"]*${escapedPath}"[^>]*>.*?</item>\\s*`, 'gs');
       modifiedXml = modifiedXml.replace(itemWorkflowPattern, '');
-
-      // Pattern 2: Remove <item> tags with run-workflow attribute
-      // Match: <item cmd="..." run-workflow="workflowPath">...</item>
-      const itemRunWorkflowPattern = new RegExp(`\\s*<item\\s+[^>]*run-workflow="[^"]*${escapedPath}"[^>]*>.*?</item>\\s*`, 'gs');
-      modifiedXml = modifiedXml.replace(itemRunWorkflowPattern, '');
-
-      // Pattern 3: Remove <c> tags with run-workflow attribute (legacy)
-      // Match: <c cmd="..." run-workflow="workflowPath">...</c>
-      const cPattern = new RegExp(`\\s*<c\\s+[^>]*run-workflow="[^"]*${escapedPath}"[^>]*>.*?</c>\\s*`, 'gs');
-      modifiedXml = modifiedXml.replace(cPattern, '');
     }
 
     return modifiedXml;
