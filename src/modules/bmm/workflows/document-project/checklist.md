@@ -181,7 +181,7 @@
 
 ### Missing Information (to note for user)
 
-- ***
+-
 
 ## Deep-Dive Mode Validation (if deep-dive was performed)
 

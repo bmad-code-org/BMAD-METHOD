@@ -245,5 +245,5 @@ _List areas requiring further investigation:_
 
 **Validation Complete:** ☐ Yes ☐ No
 **Ready for Decision:** ☐ Yes ☐ No
-**Reviewer:** \***\*\_\*\***
-**Date:** \***\*\_\*\***
+**Reviewer:** {agent}
+**Date:** {date}

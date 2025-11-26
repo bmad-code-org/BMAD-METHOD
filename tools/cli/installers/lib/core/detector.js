@@ -199,6 +199,8 @@ class Detector {
 
   /**
    * Detect legacy BMAD v4 footprints (case-sensitive path checks)
+   * V4 used .bmad-method as default folder name
+   * V6+ uses configurable folder names and ALWAYS has _cfg/manifest.yaml with installation.version
    * @param {string} projectDir - Project directory to check
    * @returns {{ hasLegacyV4: boolean, offenders: string[] }}
    */
@@ -223,18 +225,62 @@ class Detector {
       return true;
     };
 
+    // Helper: check if a directory is a V6+ installation
+    const isV6Installation = async (dirPath) => {
+      const manifestPath = path.join(dirPath, '_cfg', 'manifest.yaml');
+      if (!(await fs.pathExists(manifestPath))) {
+        return false;
+      }
+      try {
+        const yaml = require('js-yaml');
+        const manifestContent = await fs.readFile(manifestPath, 'utf8');
+        const manifest = yaml.load(manifestContent);
+        // V6+ manifest has installation.version
+        return manifest && manifest.installation && manifest.installation.version;
+      } catch {
+        return false;
+      }
+    };
+
     const offenders = [];
 
-    // Find all directories starting with .bmad, bmad, or Bmad
+    // Strategy:
+    // 1. First scan for ANY V6+ installation (_cfg/manifest.yaml)
+    // 2. If V6+ found → don't flag anything (user is already on V6+)
+    // 3. If NO V6+ found → flag folders with "bmad" in name as potential V4 legacy
+
+    let hasV6Installation = false;
+    const potentialV4Folders = [];
+
     try {
       const entries = await fs.readdir(projectDir, { withFileTypes: true });
+
       for (const entry of entries) {
         if (entry.isDirectory()) {
           const name = entry.name;
-          // Match .bmad*, bmad* (lowercase), or Bmad* (capital B)
-          // BUT exclude 'bmad' exactly (that's the new v6 installation directory)
-          if ((name.startsWith('.bmad') || name.startsWith('bmad') || name.startsWith('Bmad')) && name !== 'bmad') {
-            offenders.push(path.join(projectDir, entry.name));
+          const fullPath = path.join(projectDir, entry.name);
+
+          // Check if directory is empty (skip empty leftover folders)
+          const dirContents = await fs.readdir(fullPath);
+          if (dirContents.length === 0) {
+            continue; // Skip empty folders
+          }
+
+          // Check if it's a V6+ installation by looking for _cfg/manifest.yaml
+          // This works for ANY folder name (not just bmad-prefixed)
+          const isV6 = await isV6Installation(fullPath);
+
+          if (isV6) {
+            // Found a V6+ installation - user is already on V6+
+            hasV6Installation = true;
+            // Don't break - continue scanning to be thorough
+          } else {
+            // Not V6+, check if folder name contains "bmad" (case insensitive)
+            const nameLower = name.toLowerCase();
+            if (nameLower.includes('bmad')) {
+              // Potential V4 legacy folder
+              potentialV4Folders.push(fullPath);
+            }
           }
         }
       }
@@ -242,8 +288,15 @@ class Detector {
       // Ignore errors reading directory
     }
 
+    // Only flag V4 folders if NO V6+ installation was found
+    if (!hasV6Installation && potentialV4Folders.length > 0) {
+      offenders.push(...potentialV4Folders);
+    }
+
     // Check inside various IDE command folders for legacy bmad folders
-    // List of IDE config folders that might have commands directories
+    // V4 used folders like 'bmad-method' or custom names in IDE commands
+    // V6+ uses 'bmad' in IDE commands (hardcoded in IDE handlers)
+    // Legacy V4 IDE command folders won't have a corresponding V6+ installation
     const ideConfigFolders = ['.opencode', '.claude', '.crush', '.continue', '.cursor', '.windsurf', '.cline', '.roo-cline'];
 
     for (const ideFolder of ideConfigFolders) {
@@ -255,7 +308,9 @@ class Detector {
           for (const entry of commandEntries) {
             if (entry.isDirectory()) {
               const name = entry.name;
-              // Find bmad-related folders (excluding exact 'bmad' if it exists)
+              // V4 used 'bmad-method' or similar in IDE commands folders
+              // V6+ uses 'bmad' (hardcoded)
+              // So anything that's NOT 'bmad' but starts with bmad/Bmad is likely V4
               if ((name.startsWith('bmad') || name.startsWith('Bmad') || name === 'BMad') && name !== 'bmad') {
                 offenders.push(path.join(commandsPath, entry.name));
               }

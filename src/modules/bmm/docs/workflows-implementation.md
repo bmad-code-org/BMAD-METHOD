@@ -10,6 +10,16 @@ Phase 4 (Implementation) workflows manage the iterative sprint-based development
 
 ---
 
+## Complete Workflow Context
+
+Phase 4 is the final phase of the BMad Method workflow. To see how implementation fits into the complete methodology:
+
+![BMad Method Workflow - Standard Greenfield](./images/workflow-method-greenfield.svg)
+
+_Complete workflow showing Phases 1-4. Phase 4 (Implementation) is the rightmost column, showing the iterative epic and story cycles detailed below._
+
+---
+
 ## Phase 4 Workflow Lifecycle
 
 ```mermaid
@@ -162,7 +172,8 @@ Stories move through these states in the sprint status file:
 ### Sprint 0 (Planning Phase)
 
 - Complete Phases 1-3 (Analysis, Planning, Solutioning)
-- PRD/GDD + Architecture + Epics ready
+- PRD/GDD + Architecture complete
+- **V6: Epics+Stories created via create-epics-and-stories workflow (runs AFTER architecture)**
 
 ### Sprint 1+ (Implementation Phase)
 
@@ -235,8 +246,9 @@ tech-spec (PM)
 ### Level 2-4 (BMad Method / Enterprise)
 
 ```
-PRD + Architecture (PM/Architect)
-  → solutioning-gate-check (Architect)
+PRD (PM) → Architecture (Architect)
+  → create-epics-and-stories (PM)  ← V6: After architecture!
+  → implementation-readiness (Architect)
   → sprint-planning (SM, once)
   → [Per Epic]:
       epic-tech-context (SM)

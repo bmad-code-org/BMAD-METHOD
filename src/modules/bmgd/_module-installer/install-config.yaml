@@ -4,36 +4,26 @@ code: bmgd
 name: "BMGD: BMad Game Development"
 default_selected: false
 
-prompt:
-  - "Welcome to the BMad Game Development Module!"
-  - "This module provides specialized agents and workflows for game creation,"
-  - "from initial concept through production, covering all major game dev phases."
-  - "All paths are relative to project root, with no leading slash."
+header: "BMad Game Development Module"
+subheader: "Configure the settings for the BMad Game Development module"
 
 # Core config values automatically inherited:
 ## user_name
 ## communication_language
 ## document_output_language
 ## output_folder
+## bmad_folder
+## install_user_docs
+## kb_install
 
 game_project_name:
   prompt: "What is the name of your game project?"
   default: "{directory_name}"
   result: "{value}"
 
-game_design_docs:
-  prompt: "Where should game design documents (GDD, narrative, etc.) be stored?"
-  default: "docs/design"
-  result: "{project-root}/{value}"
-
-game_tech_docs:
-  prompt: "Where should game technical documentation be stored?"
-  default: "docs/technical"
-  result: "{project-root}/{value}"
-
-game_story_location:
-  prompt: "Where should game development stories be stored?"
-  default: "docs/stories"
+sprint_artifacts:
+  prompt: "Where should Sprint Artifacts be stored (stories, epics, temp context, etc...)?"
+  default: "{output_folder}/sprint-artifacts"
   result: "{project-root}/{value}"
 
 game_dev_experience:
@@ -48,9 +38,10 @@ game_dev_experience:
     - value: "expert"
       label: "Expert - Experienced game developer, be direct and technical"
 
-specified_framework:
+primary_platform:
   prompt: "Which game development framework or engine do you want to install support for?"
-  default: "unity"
+  default: ["unity", "unreal", "godot", "other"]
+  required: true
   result: "{value}"
   multi-select:
     - value: "unity"
@@ -59,8 +50,5 @@ specified_framework:
       label: "Unreal Engine"
     - value: "godot"
       label: "Godot"
-    - value: "custom"
+    - value: "other"
       label: "Custom / Other"
-
-data_path:
-  result: "{project-root}/bmad/bmgd/data"

@@ -17,7 +17,7 @@
 ### Core Sections Present
 
 - [ ] Executive Summary with vision alignment
-- [ ] Product magic essence clearly articulated
+- [ ] Product differentiator clearly articulated
 - [ ] Project classification (type, domain, complexity)
 - [ ] Success criteria defined
 - [ ] Product scope (MVP, Growth, Vision) clearly delineated
@@ -38,7 +38,7 @@
 
 - [ ] No unfilled template variables ({{variable}})
 - [ ] All variables properly populated with meaningful content
-- [ ] Product magic woven throughout (not just stated once)
+- [ ] Product differentiator reflected throughout (not just stated once)
 - [ ] Language is clear, specific, and measurable
 - [ ] Project type correctly identified and sections match
 - [ ] Domain complexity appropriately addressed
@@ -210,7 +210,7 @@
 ### Alignment Checks
 
 - [ ] Success metrics in PRD align with story outcomes
-- [ ] Product magic articulated in PRD reflected in epic goals
+- [ ] Product differentiator articulated in PRD reflected in epic goals
 - [ ] Technical preferences in PRD align with story implementation hints
 - [ ] Scope boundaries consistent across all documents
 
@@ -296,14 +296,10 @@ If ANY of these are true, validation FAILS:
 
 ## Validation Summary
 
-**Total Validation Points:** ~85
-
-### Scoring Guide
-
-- **Pass Rate ≥ 95% (81+/85):** ✅ EXCELLENT - Ready for architecture phase
-- **Pass Rate 85-94% (72-80/85):** ⚠️ GOOD - Minor fixes needed
-- **Pass Rate 70-84% (60-71/85):** ⚠️ FAIR - Important issues to address
-- **Pass Rate < 70% (<60/85):** ❌ POOR - Significant rework required
+- **Pass Rate ≥ 95%:** ✅ EXCELLENT - Ready for architecture phase
+- **Pass Rate 85-94%:** ⚠️ GOOD - Minor fixes needed
+- **Pass Rate 70-84%:** ⚠️ FAIR - Important issues to address
+- **Pass Rate < 70%:** ❌ POOR - Significant rework required
 
 ### Critical Issue Threshold
 
@@ -316,7 +312,7 @@ If ANY of these are true, validation FAILS:
 
 **When validating:**
 
-1. **Load ALL documents:**
+1. **Load ALL documents - whole or sharded (but not both of each) for example epics.md vs epics/\*.md:**
    - PRD.md (required)
    - epics.md (required)
    - product-brief.md (if exists)

@@ -4,7 +4,7 @@ description: "Review test quality using comprehensive knowledge base and best pr
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/bmad/bmm/config.yaml"
+config_source: "{project-root}/{bmad_folder}/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -12,7 +12,7 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/bmad/bmm/workflows/testarch/test-review"
+installed_path: "{project-root}/{bmad_folder}/bmm/workflows/testarch/test-review"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 template: "{installed_path}/test-review-template.md"
@@ -32,13 +32,6 @@ required_tools:
   - list_files # Discover test files in directory
   - search_repo # Find tests by patterns
   - glob # Find test files matching patterns
-
-# Recommended inputs
-recommended_inputs:
-  - test_file: "Test file to review (single file mode)"
-  - test_dir: "Directory of tests to review (directory mode)"
-  - story: "Related story for acceptance criteria context (optional)"
-  - test_design: "Test design for priority context (optional)"
 
 tags:
   - qa

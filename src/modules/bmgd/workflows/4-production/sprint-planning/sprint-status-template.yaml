@@ -38,7 +38,7 @@ generated: 05-06-2-2025 21:30
 project: My Awesome Project
 project_key: jira-1234
 tracking_system: file-system
-story_location: "{project-root}/docs/stories"
+story_location: "{story_location}"
 
 development_status:
   epic-1: contexted

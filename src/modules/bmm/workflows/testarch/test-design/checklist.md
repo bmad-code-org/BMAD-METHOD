@@ -228,7 +228,7 @@ If workflow fails:
 
 **Checklist Complete**: Sign off when all items validated.
 
-**Completed by:** **\*\***\_\_\_**\*\***
-**Date:** **\*\***\_\_\_**\*\***
-**Epic:** **\*\***\_\_\_**\*\***
-**Notes:** \***\*\*\*\*\***\*\*\***\*\*\*\*\***\_\_\_\***\*\*\*\*\***\*\*\***\*\*\*\*\***
+**Completed by:** {name}
+**Date:** {date}
+**Epic:** {epic title}
+**Notes:** {additional notes}

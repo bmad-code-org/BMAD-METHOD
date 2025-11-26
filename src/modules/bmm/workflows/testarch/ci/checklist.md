@@ -240,7 +240,7 @@ If workflow fails:
 
 **Checklist Complete**: Sign off when all items validated.
 
-**Completed by:** **\*\***\_\_\_**\*\***
-**Date:** **\*\***\_\_\_**\*\***
-**Platform:** **\*\***\_\_\_**\*\*** (GitHub Actions / GitLab CI)
-**Notes:** \***\*\*\*\*\***\*\*\***\*\*\*\*\***\_\_\_\***\*\*\*\*\***\*\*\***\*\*\*\*\***
+**Completed by:** {name}
+**Date:** {date}
+**Platform:** {GitHub Actions, GitLab CI, Other}
+**Notes:** {notes}

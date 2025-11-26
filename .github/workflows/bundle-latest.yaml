@@ -1,0 +1,329 @@
+name: Publish Latest Bundles
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  bundle-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout BMAD-METHOD
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate bundles
+        run: npm run bundle
+
+      - name: Create bundle distribution structure
+        run: |
+          mkdir -p dist/bundles
+
+          # Copy web bundles (XML files from npm run bundle output)
+          cp -r web-bundles/* dist/bundles/ 2>/dev/null || true
+
+          # Verify bundles were copied (fail if completely empty)
+          if [ ! "$(ls -A dist/bundles)" ]; then
+            echo "❌ ERROR: No bundles found in dist/bundles/"
+            echo "This likely means 'npm run bundle' failed or bundles weren't generated"
+            exit 1
+          fi
+
+          # Count bundles per module
+          for module in bmm bmb cis bmgd; do
+            if [ -d "dist/bundles/$module/agents" ]; then
+              COUNT=$(find dist/bundles/$module/agents -name '*.xml' 2>/dev/null | wc -l)
+              echo "✅ $module: $COUNT agent bundles"
+            fi
+          done
+
+          # Generate index.html for each agents directory (fixes directory browsing)
+          for module in bmm bmb cis bmgd; do
+            if [ -d "dist/bundles/$module/agents" ]; then
+              cat > "dist/bundles/$module/agents/index.html" << 'DIREOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>MODULE_NAME Agents</title>
+            <style>
+              body { font-family: system-ui; max-width: 800px; margin: 50px auto; padding: 20px; }
+              li { margin: 10px 0; }
+              a { color: #0066cc; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <h1>MODULE_NAME Agents</h1>
+            <ul>
+          AGENT_LINKS
+            </ul>
+            <p><a href="../../">← Back to all modules</a></p>
+          </body>
+          </html>
+          DIREOF
+
+              # Replace MODULE_NAME
+              sed -i "s/MODULE_NAME/${module^^}/g" "dist/bundles/$module/agents/index.html"
+
+              # Generate agent links
+              LINKS=""
+              for file in dist/bundles/$module/agents/*.xml; do
+                if [ -f "$file" ]; then
+                  name=$(basename "$file" .xml)
+                  LINKS="$LINKS      <li><a href=\"./$name.xml\">$name</a></li>\n"
+                fi
+              done
+              sed -i "s|AGENT_LINKS|$LINKS|" "dist/bundles/$module/agents/index.html"
+            fi
+          done
+
+          # Create zip archives per module
+          mkdir -p dist/bundles/downloads
+          for module in bmm bmb cis bmgd; do
+            if [ -d "dist/bundles/$module" ]; then
+              (cd dist/bundles && zip -r downloads/$module-agents.zip $module/)
+              echo "✅ Created $module-agents.zip"
+            fi
+          done
+
+          # Generate index.html dynamically based on actual bundles
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+
+          # Function to generate agent links for a module
+          generate_agent_links() {
+            local module=$1
+            local agent_dir="dist/bundles/$module/agents"
+
+            if [ ! -d "$agent_dir" ]; then
+              echo ""
+              return
+            fi
+
+            local links=""
+            local count=0
+
+            # Find all XML files and generate links
+            for xml_file in "$agent_dir"/*.xml; do
+              if [ -f "$xml_file" ]; then
+                local agent_name=$(basename "$xml_file" .xml)
+                # Convert filename to display name (pm -> PM, tech-writer -> Tech Writer)
+                local display_name=$(echo "$agent_name" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++) {if(length($i)==2) $i=toupper($i); else $i=toupper(substr($i,1,1)) tolower(substr($i,2));}}1')
+
+                if [ $count -gt 0 ]; then
+                  links="$links | "
+                fi
+                links="$links<a href=\"./$module/agents/$agent_name.xml\">$display_name</a>"
+                count=$((count + 1))
+              fi
+            done
+
+            echo "$links"
+          }
+
+          # Generate agent links for each module
+          BMM_LINKS=$(generate_agent_links "bmm")
+          CIS_LINKS=$(generate_agent_links "cis")
+          BMGD_LINKS=$(generate_agent_links "bmgd")
+
+          # Count agents for bulk downloads
+          BMM_COUNT=$(find dist/bundles/bmm/agents -name '*.xml' 2>/dev/null | wc -l | tr -d ' ')
+          CIS_COUNT=$(find dist/bundles/cis/agents -name '*.xml' 2>/dev/null | wc -l | tr -d ' ')
+          BMGD_COUNT=$(find dist/bundles/bmgd/agents -name '*.xml' 2>/dev/null | wc -l | tr -d ' ')
+
+          # Create index.html
+          cat > dist/bundles/index.html << EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>BMAD Bundles - Latest</title>
+            <meta charset="utf-8">
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+              h1 { color: #333; }
+              .platform { margin: 30px 0; padding: 20px; background: #f5f5f5; border-radius: 8px; }
+              .module { margin: 15px 0; }
+              a { color: #0066cc; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+              code { background: #e0e0e0; padding: 2px 6px; border-radius: 3px; }
+              .warning { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <h1>BMAD Web Bundles - Latest (Main Branch)</h1>
+
+            <div class="warning">
+              <strong>⚠️ Latest Build (Unstable)</strong><br>
+              These bundles are built from the latest main branch commit. For stable releases, visit
+              <a href="https://github.com/bmad-code-org/BMAD-METHOD/releases/latest">GitHub Releases</a>.
+            </div>
+
+            <p><strong>Last Updated:</strong> <code>$TIMESTAMP</code></p>
+            <p><strong>Commit:</strong> <code>$COMMIT_SHA</code></p>
+
+            <h2>Available Modules</h2>
+
+          EOF
+
+          # Add BMM section if agents exist
+          if [ -n "$BMM_LINKS" ]; then
+            cat >> dist/bundles/index.html << EOF
+            <div class="platform">
+              <h3>BMM (BMad Method)</h3>
+              <div class="module">
+                $BMM_LINKS<br>
+                📁 <a href="./bmm/agents/">Browse All</a> | 📦 <a href="./downloads/bmm-agents.zip">Download Zip</a>
+              </div>
+            </div>
+
+          EOF
+          fi
+
+          # Add CIS section if agents exist
+          if [ -n "$CIS_LINKS" ]; then
+            cat >> dist/bundles/index.html << EOF
+            <div class="platform">
+              <h3>CIS (Creative Intelligence Suite)</h3>
+              <div class="module">
+                $CIS_LINKS<br>
+                📁 <a href="./cis/agents/">Browse Agents</a> | 📦 <a href="./downloads/cis-agents.zip">Download Zip</a>
+              </div>
+            </div>
+
+          EOF
+          fi
+
+          # Add BMGD section if agents exist
+          if [ -n "$BMGD_LINKS" ]; then
+            cat >> dist/bundles/index.html << EOF
+            <div class="platform">
+              <h3>BMGD (Game Development)</h3>
+              <div class="module">
+                $BMGD_LINKS<br>
+                📁 <a href="./bmgd/agents/">Browse Agents</a> | 📦 <a href="./downloads/bmgd-agents.zip">Download Zip</a>
+              </div>
+            </div>
+
+          EOF
+          fi
+
+          # Add bulk downloads section
+          cat >> dist/bundles/index.html << EOF
+            <h2>Bulk Downloads</h2>
+            <p>Download all agents for a module as a zip archive:</p>
+            <ul>
+          EOF
+
+          [ "$BMM_COUNT" -gt 0 ] && echo "              <li><a href=\"./downloads/bmm-agents.zip\">📦 BMM Agents (all $BMM_COUNT)</a></li>" >> dist/bundles/index.html
+          [ "$CIS_COUNT" -gt 0 ] && echo "              <li><a href=\"./downloads/cis-agents.zip\">📦 CIS Agents (all $CIS_COUNT)</a></li>" >> dist/bundles/index.html
+          [ "$BMGD_COUNT" -gt 0 ] && echo "              <li><a href=\"./downloads/bmgd-agents.zip\">📦 BMGD Agents (all $BMGD_COUNT)</a></li>" >> dist/bundles/index.html
+
+          # Close HTML
+          cat >> dist/bundles/index.html << 'EOF'
+            </ul>
+
+            <h2>Usage</h2>
+            <p>Copy the raw XML URL and paste into your AI platform's custom instructions or project knowledge.</p>
+            <p>Example: <code>https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/bmm/agents/pm.xml</code></p>
+
+            <h2>Installation (Recommended)</h2>
+            <p>For full IDE integration with slash commands, use the installer:</p>
+            <pre>npx bmad-method@alpha install</pre>
+
+            <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #ccc; color: #666;">
+              <p>Built from <a href="https://github.com/bmad-code-org/BMAD-METHOD">BMAD-METHOD</a> repository.</p>
+            </footer>
+          </body>
+          </html>
+          EOF
+
+      - name: Checkout bmad-bundles repo
+        uses: actions/checkout@v4
+        with:
+          repository: bmad-code-org/bmad-bundles
+          path: bmad-bundles
+          token: ${{ secrets.BUNDLES_PAT }}
+
+      - name: Update bundles
+        run: |
+          # Clear old bundles
+          rm -rf bmad-bundles/*
+
+          # Copy new bundles
+          cp -r dist/bundles/* bmad-bundles/
+
+          # Create .nojekyll for GitHub Pages
+          touch bmad-bundles/.nojekyll
+
+          # Create README
+          cat > bmad-bundles/README.md << 'EOF'
+          # BMAD Web Bundles (Latest)
+
+          **⚠️ Unstable Build**: These bundles are auto-generated from the latest `main` branch.
+
+          For stable releases, visit [GitHub Releases](https://github.com/bmad-code-org/BMAD-METHOD/releases/latest).
+
+          ## Usage
+
+          Copy raw markdown URLs for use in AI platforms:
+
+          - Claude Code: `https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/claude-code/sub-agents/{agent}.md`
+          - ChatGPT: `https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/chatgpt/sub-agents/{agent}.md`
+          - Gemini: `https://raw.githubusercontent.com/bmad-code-org/bmad-bundles/main/gemini/sub-agents/{agent}.md`
+
+          ## Browse
+
+          Visit [https://bmad-code-org.github.io/bmad-bundles/](https://bmad-code-org.github.io/bmad-bundles/) to browse bundles.
+
+          ## Installation (Recommended)
+
+          For full IDE integration:
+          ```bash
+          npx bmad-method@alpha install
+          ```
+
+          ---
+
+          Auto-updated by [BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) on every main branch merge.
+          EOF
+
+      - name: Commit and push to bmad-bundles
+        run: |
+          cd bmad-bundles
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          if git diff --staged --quiet; then
+            echo "No changes to bundles, skipping commit"
+          else
+            COMMIT_SHA=$(cd .. && git rev-parse --short HEAD)
+            git commit -m "Update bundles from BMAD-METHOD@${COMMIT_SHA}"
+            git push
+            echo "✅ Bundles published to GitHub Pages"
+          fi
+
+      - name: Summary
+        run: |
+          echo "## 🎉 Bundles Published!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Latest bundles** available at:" >> $GITHUB_STEP_SUMMARY
+          echo "- 🌐 Browse: https://bmad-code-org.github.io/bmad-bundles/" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 Raw files: https://github.com/bmad-code-org/bmad-bundles" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

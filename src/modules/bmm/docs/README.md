@@ -16,6 +16,10 @@ Complete guides for the BMad Method Module (BMM) - AI-powered agile development 
 
 **Quick Path:** Install → workflow-init → Follow agent guidance
 
+### 📊 Visual Overview
+
+**[Complete Workflow Diagram](./images/workflow-method-greenfield.svg)** - Visual flowchart showing all phases, agents (color-coded), and decision points for the BMad Method standard greenfield track.
+
 ---
 
 ## 📖 Core Concepts
@@ -28,11 +32,18 @@ Understanding how BMM adapts to your needs:
   - Documentation requirements per track
   - Planning workflow routing
 
-- **[Quick Spec Flow](./quick-spec-flow.md)** - Fast-track workflow for Quick Flow track (26 min read)
-  - Bug fixes and small features
-  - Rapid prototyping approach
-  - Auto-detection of stack and patterns
-  - Minutes to implementation
+- **[BMAD Quick Flow](./bmad-quick-flow.md)** - Fast-track development workflow (32 min read)
+  - 3-step process: spec → dev → optional review
+  - Perfect for bug fixes and small features
+  - Rapid prototyping with production quality
+  - Hours to implementation, not days
+  - Barry (Quick Flow Solo Dev) agent owned
+
+- **[Quick Flow Solo Dev Agent](./quick-flow-solo-dev.md)** - Elite solo developer for rapid development (18 min read)
+  - Barry is an elite developer who thrives on autonomous execution
+  - Lives and breathes the BMAD Quick Flow workflow
+  - Takes projects from concept to deployment with ruthless efficiency
+  - No handoffs, no delays - just pure focused development
 
 ---
 
@@ -88,7 +99,8 @@ Essential reference materials:
 → Then review [Scale Adaptive System](./scale-adaptive-system.md) to understand tracks
 
 **Fix a bug or add small feature**
-→ Go directly to [Quick Spec Flow](./quick-spec-flow.md)
+→ Go to [BMAD Quick Flow](./bmad-quick-flow.md) for rapid development
+→ Or use [Quick Flow Solo Dev](./quick-flow-solo-dev.md) directly
 
 **Work with existing codebase (brownfield)**
 → Read [Brownfield Development Guide](./brownfield-guide.md)
@@ -117,7 +129,8 @@ Comprehensive documentation for all BMM workflows organized by phase:
   - Which planning workflow to use
 
 - **[Phase 3: Solutioning Workflows](./workflows-solutioning.md)** - Architecture and validation (638 lines)
-  - architecture, solutioning-gate-check
+  - architecture, create-epics-and-stories, implementation-readiness
+  - V6: Epics created AFTER architecture for better quality
   - Required for BMad Method and Enterprise Method tracks
   - Preventing agent conflicts
 
@@ -204,11 +217,13 @@ flowchart TD
 
     QS --> DECIDE{What are you building?}
 
-    DECIDE -->|Bug fix or<br/>small feature| QSF[Quick Spec Flow]
+    DECIDE -->|Bug fix or<br/>small feature| QF[BMAD Quick Flow]
+    DECIDE -->|Need rapid<br/>development| PE[Principal Engineer]
     DECIDE -->|New project| SAS[Scale Adaptive System]
     DECIDE -->|Existing codebase| BF[Brownfield Guide]
 
-    QSF --> IMPL[Implementation]
+    QF --> IMPL[Implementation]
+    PE --> IMPL
     SAS --> IMPL
     BF --> IMPL
 
@@ -217,6 +232,8 @@ flowchart TD
     style START fill:#bfb,stroke:#333,stroke-width:2px,color:#000
     style QS fill:#bbf,stroke:#333,stroke-width:2px,color:#000
     style DECIDE fill:#ffb,stroke:#333,stroke-width:2px,color:#000
+    style QF fill:#e1f5fe,stroke:#333,stroke-width:2px,color:#000
+    style PE fill:#fff3e0,stroke:#333,stroke-width:2px,color:#000
     style IMPL fill:#f9f,stroke:#333,stroke-width:2px,color:#000
 ```
 

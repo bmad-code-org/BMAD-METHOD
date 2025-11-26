@@ -2,7 +2,7 @@
 const assert = require('node:assert');
 const { z } = require('zod');
 
-const COMMAND_TARGET_KEYS = ['workflow', 'validate-workflow', 'exec', 'action', 'tmpl', 'data', 'run-workflow'];
+const COMMAND_TARGET_KEYS = ['workflow', 'validate-workflow', 'exec', 'action', 'tmpl', 'data'];
 const TRIGGER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 // Public API ---------------------------------------------------------------
@@ -88,6 +88,7 @@ function buildAgentSchema(expectedModule) {
       critical_actions: z.array(createNonEmptyString('agent.critical_actions[]')).optional(),
       menu: z.array(buildMenuItemSchema()).min(1, { message: 'agent.menu must include at least one entry' }),
       prompts: z.array(buildPromptSchema()).optional(),
+      webskip: z.boolean().optional(),
     })
     .strict();
 }
@@ -142,9 +143,12 @@ function buildPersonaSchema() {
       role: createNonEmptyString('agent.persona.role'),
       identity: createNonEmptyString('agent.persona.identity'),
       communication_style: createNonEmptyString('agent.persona.communication_style'),
-      principles: z
-        .array(createNonEmptyString('agent.persona.principles[]'))
-        .min(1, { message: 'agent.persona.principles must include at least one entry' }),
+      principles: z.union([
+        createNonEmptyString('agent.persona.principles'),
+        z
+          .array(createNonEmptyString('agent.persona.principles[]'))
+          .min(1, { message: 'agent.persona.principles must include at least one entry' }),
+      ]),
     })
     .strict();
 }
@@ -176,9 +180,10 @@ function buildMenuItemSchema() {
       action: createNonEmptyString('agent.menu[].action').optional(),
       tmpl: createNonEmptyString('agent.menu[].tmpl').optional(),
       data: createNonEmptyString('agent.menu[].data').optional(),
-      'run-workflow': createNonEmptyString('agent.menu[].run-workflow').optional(),
       checklist: createNonEmptyString('agent.menu[].checklist').optional(),
       document: createNonEmptyString('agent.menu[].document').optional(),
+      'ide-only': z.boolean().optional(),
+      'web-only': z.boolean().optional(),
     })
     .strict()
     .superRefine((value, ctx) => {

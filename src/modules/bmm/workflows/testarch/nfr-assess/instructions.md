@@ -50,7 +50,7 @@ This workflow performs a comprehensive assessment of non-functional requirements
 
 **Actions:**
 
-1. Load relevant knowledge fragments from `{project-root}/bmad/bmm/testarch/tea-index.csv`:
+1. Load relevant knowledge fragments from `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv`:
    - `nfr-criteria.md` - Non-functional requirements criteria and thresholds (security, performance, reliability, maintainability with code examples, 658 lines, 4 examples)
    - `ci-burn-in.md` - CI/CD burn-in patterns for reliability validation (10-iteration detection, sharding, selective execution, 678 lines, 4 examples)
    - `test-quality.md` - Test quality expectations for maintainability (deterministic, isolated, explicit assertions, length/time limits, 658 lines, 5 examples)

@@ -61,7 +61,7 @@
 
 - [ ] web_bundle section present if needed
 - [ ] Name, description, author copied from main config
-- [ ] All file paths converted to bmad/-relative format
+- [ ] All file paths converted to {bmad_folder}/-relative format
 - [ ] NO {config_source} variables in web bundle
 - [ ] NO {project-root} prefixes in paths
 - [ ] Instructions path listed correctly

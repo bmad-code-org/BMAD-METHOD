@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Cursor IDE setup handler
@@ -13,6 +14,20 @@ class CursorSetup extends BaseIdeSetup {
   }
 
   /**
+   * Cleanup old BMAD installation before reinstalling
+   * @param {string} projectDir - Project directory
+   */
+  async cleanup(projectDir) {
+    const fs = require('fs-extra');
+    const bmadRulesDir = path.join(projectDir, this.configDir, this.rulesDir, 'bmad');
+
+    if (await fs.pathExists(bmadRulesDir)) {
+      await fs.remove(bmadRulesDir);
+      console.log(chalk.dim(`  Removed old BMAD rules from ${this.name}`));
+    }
+  }
+
+  /**
    * Setup Cursor IDE configuration
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
@@ -21,6 +36,9 @@ class CursorSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
+    // Clean up old BMAD installation first
+    await this.cleanup(projectDir);
+
     // Create .cursor/rules directory structure
     const cursorDir = path.join(projectDir, this.configDir);
     const rulesDir = path.join(cursorDir, this.rulesDir);
@@ -28,8 +46,14 @@ class CursorSetup extends BaseIdeSetup {
 
     await this.ensureDir(bmadRulesDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only)
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers first
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Convert artifacts to agent format for index creation
+    const agents = agentArtifacts.map((a) => ({ module: a.module, name: a.name }));
+
+    // Get tasks, tools, and workflows (standalone only)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
@@ -46,15 +70,16 @@ class CursorSetup extends BaseIdeSetup {
       await this.ensureDir(path.join(bmadRulesDir, module, 'workflows'));
     }
 
-    // Process and copy agents
+    // Process and write agent launchers with MDC format
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readAndProcess(agent.path, {
-        module: agent.module,
-        name: agent.name,
+    for (const artifact of agentArtifacts) {
+      // Add MDC metadata header to launcher (but don't call processContent which adds activation headers)
+      const content = this.wrapLauncherWithMDC(artifact.content, {
+        module: artifact.module,
+        name: artifact.name,
       });
 
-      const targetPath = path.join(bmadRulesDir, agent.module, 'agents', `${agent.name}.mdc`);
+      const targetPath = path.join(bmadRulesDir, artifact.module, 'agents', `${artifact.name}.mdc`);
 
       await this.writeFile(targetPath, content);
       agentCount++;
@@ -239,6 +264,13 @@ specific agent expertise, task workflows, tools, or guided workflows.
     // First apply base processing (includes activation injection for agents)
     let processed = super.processContent(content, metadata);
 
+    // Strip any existing frontmatter from the processed content
+    // This prevents duplicate frontmatter blocks
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    if (frontmatterRegex.test(processed)) {
+      processed = processed.replace(frontmatterRegex, '');
+    }
+
     // Determine the type and description based on content
     const isAgent = content.includes('<agent');
     const isTask = content.includes('<task');
@@ -286,6 +318,82 @@ alwaysApply: false
 
     // Add the MDC header to the processed content
     return mdcHeader + processed;
+  }
+
+  /**
+   * Wrap launcher content with MDC metadata (without base processing)
+   * Launchers are already complete and should not have activation headers injected
+   */
+  wrapLauncherWithMDC(launcherContent, metadata = {}) {
+    // Strip the launcher's frontmatter - we'll replace it with MDC frontmatter
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = launcherContent.replace(frontmatterRegex, '');
+
+    // Extract metadata from launcher frontmatter for MDC description
+    const nameMatch = launcherContent.match(/name:\s*"([^"]+)"/);
+    const name = nameMatch ? nameMatch[1] : metadata.name;
+
+    const description = `BMAD ${metadata.module.toUpperCase()} Agent: ${name}`;
+
+    // Create MDC metadata header
+    const mdcHeader = `---
+description: ${description}
+globs:
+alwaysApply: false
+---
+
+`;
+
+    // Return MDC header + launcher content (without its original frontmatter)
+    return mdcHeader + contentWithoutFrontmatter;
+  }
+
+  /**
+   * Install a custom agent launcher for Cursor
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created command
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const customAgentsDir = path.join(projectDir, this.configDir, this.rulesDir, 'bmad', 'custom', 'agents');
+
+    if (!(await this.exists(path.join(projectDir, this.configDir)))) {
+      return null; // IDE not configured for this project
+    }
+
+    await this.ensureDir(customAgentsDir);
+
+    const launcherContent = `You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
+
+<agent-activation CRITICAL="TRUE">
+1. LOAD the FULL agent file from @${agentPath}
+2. READ its entire contents - this contains the complete agent persona, menu, and instructions
+3. FOLLOW every step in the <activation> section precisely
+4. DISPLAY the welcome/greeting as instructed
+5. PRESENT the numbered menu
+6. WAIT for user input before proceeding
+</agent-activation>
+`;
+
+    // Cursor uses MDC format with metadata header
+    const mdcContent = `---
+description: "${agentName} agent"
+globs:
+alwaysApply: false
+---
+
+${launcherContent}
+`;
+
+    const launcherPath = path.join(customAgentsDir, `${agentName}.mdc`);
+    await this.writeFile(launcherPath, mdcContent);
+
+    return {
+      path: launcherPath,
+      command: `@${agentName}`,
+    };
   }
 }
 

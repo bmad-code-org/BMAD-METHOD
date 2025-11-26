@@ -1,6 +1,8 @@
 const path = require('node:path');
+const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Trae IDE setup handler
@@ -30,20 +32,22 @@ class TraeSetup extends BaseIdeSetup {
     // Clean up any existing BMAD files before reinstalling
     await this.cleanup(projectDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only)
-    const agents = await this.getAgents(bmadDir);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Get tasks, tools, and workflows (standalone only)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
 
     // Process agents as rules with bmad- prefix
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readFile(agent.path);
-      const processedContent = this.createAgentRule(agent, content, bmadDir, projectDir);
+    for (const artifact of agentArtifacts) {
+      const processedContent = await this.createAgentRule(artifact, bmadDir, projectDir);
 
       // Use bmad- prefix: bmad-agent-{module}-{name}.md
-      const targetPath = path.join(rulesDir, `bmad-agent-${agent.module}-${agent.name}.md`);
+      const targetPath = path.join(rulesDir, `bmad-agent-${artifact.module}-${artifact.name}.md`);
       await this.writeFile(targetPath, processedContent);
       agentCount++;
     }
@@ -108,44 +112,29 @@ class TraeSetup extends BaseIdeSetup {
   /**
    * Create rule content for an agent
    */
-  createAgentRule(agent, content, bmadDir, projectDir) {
-    // Extract metadata from agent content
-    const titleMatch = content.match(/title="([^"]+)"/);
-    const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
+  async createAgentRule(artifact, bmadDir, projectDir) {
+    // Strip frontmatter from launcher
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = artifact.content.replace(frontmatterRegex, '').trim();
 
-    const iconMatch = content.match(/icon="([^"]+)"/);
-    const icon = iconMatch ? iconMatch[1] : '🤖';
-
-    // Extract YAML content if available
-    const yamlMatch = content.match(/```ya?ml\r?\n([\s\S]*?)```/);
-    const yamlContent = yamlMatch ? yamlMatch[1] : content;
+    // Extract metadata from launcher content
+    const titleMatch = artifact.content.match(/description:\s*"([^"]+)"/);
+    const title = titleMatch ? titleMatch[1] : this.formatTitle(artifact.name);
 
     // Calculate relative path for reference
-    const relativePath = path.relative(projectDir, agent.path).replaceAll('\\', '/');
+    const relativePath = path.relative(projectDir, artifact.sourcePath).replaceAll('\\', '/');
 
     let ruleContent = `# ${title} Agent Rule
 
-This rule is triggered when the user types \`@${agent.name}\` and activates the ${title} agent persona.
+This rule is triggered when the user types \`@${artifact.name}\` and activates the ${title} agent persona.
 
 ## Agent Activation
 
-CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
-
-\`\`\`yaml
-${yamlContent}
-\`\`\`
+${contentWithoutFrontmatter}
 
 ## File Reference
 
-The complete agent definition is available in [${relativePath}](${relativePath}).
-
-## Usage
-
-When the user types \`@${agent.name}\`, activate this ${title} persona and follow all instructions defined in the YAML configuration above.
-
-## Module
-
-Part of the BMAD ${agent.module.toUpperCase()} module.
+The full agent definition is located at: \`${relativePath}\`
 `;
 
     return ruleContent;
@@ -272,6 +261,52 @@ Part of the BMAD ${workflow.module.toUpperCase()} module.
         console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD rules`));
       }
     }
+  }
+
+  /**
+   * Install a custom agent launcher for Trae
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object} Installation result
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const traeDir = path.join(projectDir, this.configDir);
+    const rulesDir = path.join(traeDir, this.rulesDir);
+
+    // Create .trae/rules directory if it doesn't exist
+    await fs.ensureDir(rulesDir);
+
+    // Create custom agent launcher
+    const launcherContent = `# ${agentName} Custom Agent
+
+**⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!
+
+This is a launcher for the custom BMAD agent "${agentName}".
+
+## Usage
+1. First run: \`${agentPath}\` to load the complete agent
+2. Then use this rule to activate ${agentName}
+
+The agent will follow the persona and instructions from the main agent file.
+
+---
+
+*Generated by BMAD Method*`;
+
+    const fileName = `bmad-agent-custom-${agentName.toLowerCase()}.md`;
+    const launcherPath = path.join(rulesDir, fileName);
+
+    // Write the launcher file
+    await fs.writeFile(launcherPath, launcherContent, 'utf8');
+
+    return {
+      ide: 'trae',
+      path: path.relative(projectDir, launcherPath),
+      command: agentName,
+      type: 'custom-agent-launcher',
+    };
   }
 }
 

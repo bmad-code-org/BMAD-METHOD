@@ -203,6 +203,7 @@ class XmlHandler {
         customizeHash: customizePath ? await this.yamlBuilder.calculateFileHash(customizePath) : null,
         builderVersion: '1.0.0',
         includeMetadata: metadata.includeMetadata !== false,
+        forWebBundle: metadata.forWebBundle || false, // Pass through forWebBundle flag
       };
 
       // Convert to XML

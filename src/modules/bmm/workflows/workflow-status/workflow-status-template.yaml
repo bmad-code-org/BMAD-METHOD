@@ -1,13 +1,7 @@
 # Workflow Status Template
-# This tracks progress through BMM methodology phases
-# Phase 3/4 (Implementation) is tracked separately in sprint-status.yaml
 
-# generated: {{generated}}
-# project: {{project_name}}
-# project_type: {{project_type}}
-# selected_track: {{selected_track}}
-# field_type: {{field_type}}
-# workflow_path: {{workflow_path_file}}
+# This tracks progress through BMM methodology Analysis, Planning, and Solutioning phases.
+# Implementation phase is tracked separately in sprint-status.yaml
 
 # STATUS DEFINITIONS:
 # ==================
@@ -27,5 +21,4 @@ project_type: "{{project_type}}"
 selected_track: "{{selected_track}}"
 field_type: "{{field_type}}"
 workflow_path: "{{workflow_path_file}}"
-
 workflow_status: "{{workflow_items}}"

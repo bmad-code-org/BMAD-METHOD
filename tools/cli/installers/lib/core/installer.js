@@ -1,3 +1,23 @@
+/**
+ * File: tools/cli/installers/lib/core/installer.js
+ *
+ * BMAD Method - Business Model Agile Development Method
+ * Repository: https://github.com/paulpreibisch/BMAD-METHOD
+ *
+ * Copyright (c) 2025 Paul Preibisch
+ * Licensed under the Apache License, Version 2.0
+ *
+ * ---
+ *
+ * @fileoverview Core BMAD installation orchestrator with AgentVibes injection point support
+ * @context Manages complete BMAD installation flow including core agents, modules, IDE configs, and optional TTS integration
+ * @architecture Orchestrator pattern - coordinates Detector, ModuleManager, IdeManager, and file operations to build complete BMAD installation
+ * @dependencies fs-extra, ora, chalk, detector.js, module-manager.js, ide-manager.js, config.js
+ * @entrypoints Called by install.js command via installer.install(config)
+ * @patterns Injection point processing (AgentVibes), placeholder replacement ({bmad_folder}), module dependency resolution
+ * @related GitHub AgentVibes#34 (injection points), ui.js (user prompts), copyFileWithPlaceholderReplacement()
+ */
+
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
@@ -34,6 +54,210 @@ class Installer {
   }
 
   /**
+   * Find the bmad installation directory in a project
+   * V6+ installations can use ANY folder name but ALWAYS have _cfg/manifest.yaml
+   * @param {string} projectDir - Project directory
+   * @returns {Promise<string>} Path to bmad directory
+   */
+  async findBmadDir(projectDir) {
+    // Check if project directory exists
+    if (!(await fs.pathExists(projectDir))) {
+      // Project doesn't exist yet, return default
+      return path.join(projectDir, 'bmad');
+    }
+
+    // V6+ strategy: Look for ANY directory with _cfg/manifest.yaml
+    // This is the definitive marker of a V6+ installation
+    try {
+      const entries = await fs.readdir(projectDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          const manifestPath = path.join(projectDir, entry.name, '_cfg', 'manifest.yaml');
+          if (await fs.pathExists(manifestPath)) {
+            // Found a V6+ installation
+            return path.join(projectDir, entry.name);
+          }
+        }
+      }
+    } catch {
+      // Ignore errors, fall through to default
+    }
+
+    // No V6+ installation found, return default
+    // This will be used for new installations
+    return path.join(projectDir, 'bmad');
+  }
+
+  /**
+   * @function copyFileWithPlaceholderReplacement
+   * @intent Copy files from BMAD source to installation directory with dynamic content transformation
+   * @why Enables installation-time customization: {bmad_folder} replacement + optional AgentVibes TTS injection
+   * @param {string} sourcePath - Absolute path to source file in BMAD repository
+   * @param {string} targetPath - Absolute path to destination file in user's project
+   * @param {string} bmadFolderName - User's chosen bmad folder name (default: 'bmad')
+   * @returns {Promise<void>} Resolves when file copy and transformation complete
+   * @sideeffects Writes transformed file to targetPath, creates parent directories if needed
+   * @edgecases Binary files bypass transformation, falls back to raw copy if UTF-8 read fails
+   * @calledby installCore(), installModule(), IDE installers during file vendoring
+   * @calls processTTSInjectionPoints(), fs.readFile(), fs.writeFile(), fs.copy()
+   *
+   * AI NOTE: This is the core transformation pipeline for ALL BMAD installation file copies.
+   * It performs two transformations in sequence:
+   * 1. {bmad_folder} → user's custom folder name (e.g., ".bmad" or "bmad")
+   * 2. <!-- TTS_INJECTION:* --> → TTS bash calls (if enabled) OR stripped (if disabled)
+   *
+   * The injection point processing enables loose coupling between BMAD and TTS providers:
+   * - BMAD source contains injection markers (not actual TTS code)
+   * - At install-time, markers are replaced OR removed based on user preference
+   * - Result: Clean installs for users without TTS, working TTS for users with it
+   *
+   * PATTERN: Adding New Injection Points
+   * =====================================
+   * 1. Add HTML comment marker in BMAD source file:
+   *    <!-- TTS_INJECTION:feature-name -->
+   *
+   * 2. Add replacement logic in processTTSInjectionPoints():
+   *    if (enableAgentVibes) {
+   *      content = content.replace(/<!-- TTS_INJECTION:feature-name -->/g, 'actual code');
+   *    } else {
+   *      content = content.replace(/<!-- TTS_INJECTION:feature-name -->\n?/g, '');
+   *    }
+   *
+   * 3. Document marker in instructions.md (if applicable)
+   */
+  async copyFileWithPlaceholderReplacement(sourcePath, targetPath, bmadFolderName) {
+    // List of text file extensions that should have placeholder replacement
+    const textExtensions = ['.md', '.yaml', '.yml', '.txt', '.json', '.js', '.ts', '.html', '.css', '.sh', '.bat', '.csv'];
+    const ext = path.extname(sourcePath).toLowerCase();
+
+    // Check if this is a text file that might contain placeholders
+    if (textExtensions.includes(ext)) {
+      try {
+        // Read the file content
+        let content = await fs.readFile(sourcePath, 'utf8');
+
+        // Replace {bmad_folder} placeholder with actual folder name
+        if (content.includes('{bmad_folder}')) {
+          content = content.replaceAll('{bmad_folder}', bmadFolderName);
+        }
+
+        // Process AgentVibes injection points
+        content = this.processTTSInjectionPoints(content);
+
+        // Write to target with replaced content
+        await fs.ensureDir(path.dirname(targetPath));
+        await fs.writeFile(targetPath, content, 'utf8');
+      } catch {
+        // If reading as text fails (might be binary despite extension), fall back to regular copy
+        await fs.copy(sourcePath, targetPath, { overwrite: true });
+      }
+    } else {
+      // Binary file or other file type - just copy directly
+      await fs.copy(sourcePath, targetPath, { overwrite: true });
+    }
+  }
+
+  /**
+   * @function processTTSInjectionPoints
+   * @intent Transform TTS injection markers based on user's installation choice
+   * @why Enables optional TTS integration without tight coupling between BMAD and TTS providers
+   * @param {string} content - Raw file content containing potential injection markers
+   * @returns {string} Transformed content with markers replaced (if enabled) or stripped (if disabled)
+   * @sideeffects None - pure transformation function
+   * @edgecases Returns content unchanged if no markers present, safe to call on all files
+   * @calledby copyFileWithPlaceholderReplacement() during every file copy operation
+   * @calls String.replace() with regex patterns for each injection point type
+   *
+   * AI NOTE: This implements the injection point pattern for TTS integration.
+   * Key architectural decisions:
+   *
+   * 1. **Why Injection Points vs Direct Integration?**
+   *    - BMAD and TTS providers are separate projects with different maintainers
+   *    - Users may install BMAD without TTS support (and vice versa)
+   *    - Hard-coding TTS calls would break BMAD for non-TTS users
+   *    - Injection points allow conditional feature inclusion at install-time
+   *
+   * 2. **How It Works:**
+   *    - BMAD source contains markers: <!-- TTS_INJECTION:feature-name -->
+   *    - During installation, user is prompted: "Enable AgentVibes TTS?"
+   *    - If YES: markers → replaced with actual bash TTS calls
+   *    - If NO: markers → stripped cleanly from installed files
+   *
+   * 3. **State Management:**
+   *    - this.enableAgentVibes set in install() method from config.enableAgentVibes
+   *    - config.enableAgentVibes comes from ui.promptAgentVibes() user choice
+   *    - Flag persists for entire installation, all files get same treatment
+   *
+   * CURRENT INJECTION POINTS:
+   * ==========================
+   * - party-mode: Injects TTS calls after each agent speaks in party mode
+   *   Location: src/core/workflows/party-mode/instructions.md
+   *   Marker: <!-- TTS_INJECTION:party-mode -->
+   *   Replacement: Bash call to .claude/hooks/bmad-speak.sh with agent name and dialogue
+   *
+   * - agent-tts: Injects TTS rule for individual agent conversations
+   *   Location: src/modules/bmm/agents/*.md (all agent files)
+   *   Marker: <!-- TTS_INJECTION:agent-tts -->
+   *   Replacement: Rule instructing agent to call bmad-speak.sh with agent ID and response
+   *
+   * ADDING NEW INJECTION POINTS:
+   * =============================
+   * 1. Add new case in this function:
+   *    content = content.replace(
+   *      /<!-- TTS_INJECTION:new-feature -->/g,
+   *      `code to inject when enabled`
+   *    );
+   *
+   * 2. Add marker to BMAD source file at injection location
+   *
+   * 3. Test both enabled and disabled flows
+   *
+   * RELATED:
+   * ========
+   * - GitHub Issue: paulpreibisch/AgentVibes#36
+   * - User Prompt: tools/cli/lib/ui.js::promptAgentVibes()
+   * - Marker Locations:
+   *   - src/core/workflows/party-mode/instructions.md:101
+   *   - src/modules/bmm/agents/*.md (rules sections)
+   * - TTS Hook: .claude/hooks/bmad-speak.sh (in AgentVibes repo)
+   */
+  processTTSInjectionPoints(content) {
+    // Check if AgentVibes is enabled (set during installation configuration)
+    const enableAgentVibes = this.enableAgentVibes || false;
+
+    if (enableAgentVibes) {
+      // Replace party-mode injection marker with actual TTS call
+      // Use single quotes to prevent shell expansion of special chars like !
+      content = content.replaceAll(
+        '<!-- TTS_INJECTION:party-mode -->',
+        `<critical>IMPORTANT: Always use PROJECT hooks (.claude/hooks/), NEVER global hooks (~/.claude/hooks/)</critical>
+
+If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
+         - Use Bash tool: \`.claude/hooks/bmad-speak.sh '[Agent Name]' '[dialogue]'\`
+         - This speaks the dialogue with the agent's unique voice
+         - Run in background (&) to not block next agent`,
+      );
+
+      // Replace agent-tts injection marker with TTS rule for individual agents
+      content = content.replaceAll(
+        '<!-- TTS_INJECTION:agent-tts -->',
+        `- When responding to user messages, speak your responses using TTS:
+   Call: \`.claude/hooks/bmad-speak.sh '{agent-id}' '{response-text}'\` after each response
+   Replace {agent-id} with YOUR agent ID from <agent id="..."> tag at top of this file
+   Replace {response-text} with the text you just output to the user
+   IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
+   Run in background (&) to avoid blocking`,
+      );
+    } else {
+      // Strip injection markers cleanly when AgentVibes is disabled
+      content = content.replaceAll(/<!-- TTS_INJECTION:party-mode -->\n?/g, '');
+      content = content.replaceAll(/<!-- TTS_INJECTION:agent-tts -->\n?/g, '');
+    }
+
+    return content;
+  }
+
+  /**
    * Collect Tool/IDE configurations after module configuration
    * @param {string} projectDir - Project directory
    * @param {Array} selectedModules - Selected modules from configuration
@@ -61,7 +285,7 @@ class Installer {
     // Check for already configured IDEs
     const { Detector } = require('./detector');
     const detector = new Detector();
-    const bmadDir = path.join(projectDir, 'bmad');
+    const bmadDir = path.join(projectDir, this.bmadFolderName || 'bmad');
 
     // During full reinstall, use the saved previous IDEs since bmad dir was deleted
     // Otherwise detect from existing installation
@@ -96,7 +320,9 @@ class Installer {
 
         for (const ide of newlySelectedIdes) {
           // List of IDEs that have interactive prompts
-          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini'].includes(ide);
+          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini', 'rovo-dev'].includes(
+            ide,
+          );
 
           if (needsPrompts) {
             // Get IDE handler and collect configuration
@@ -170,12 +396,10 @@ class Installer {
     // Display welcome message
     CLIUtils.displaySection('BMAD™ Installation', 'Version ' + require(path.join(getProjectRoot(), 'package.json')).version);
 
-    // Preflight: Handle legacy BMAD v4 footprints before any prompts/writes
+    // Note: Legacy V4 detection now happens earlier in UI.promptInstall()
+    // before any config collection, so we don't need to check again here
+
     const projectDir = path.resolve(config.directory);
-    const legacyV4 = await this.detector.detectLegacyV4(projectDir);
-    if (legacyV4.hasLegacyV4) {
-      await this.handleLegacyV4Migration(projectDir, legacyV4);
-    }
 
     // If core config was pre-collected (from interactive mode), use it
     if (config.coreConfig) {
@@ -197,6 +421,17 @@ class Installer {
       moduleConfigs = await this.configCollector.collectAllConfigurations(config.modules || [], path.resolve(config.directory));
     }
 
+    // Get bmad_folder from config (default to 'bmad' for backwards compatibility)
+    const bmadFolderName = moduleConfigs.core && moduleConfigs.core.bmad_folder ? moduleConfigs.core.bmad_folder : 'bmad';
+    this.bmadFolderName = bmadFolderName; // Store for use in other methods
+
+    // Store AgentVibes configuration for injection point processing
+    this.enableAgentVibes = config.enableAgentVibes || false;
+
+    // Set bmad folder name on module manager and IDE manager for placeholder replacement
+    this.moduleManager.setBmadFolderName(bmadFolderName);
+    this.ideManager.setBmadFolderName(bmadFolderName);
+
     // Tool selection will be collected after we determine if it's a reinstall/update/new install
 
     const spinner = ora('Preparing installation...').start();
@@ -204,6 +439,63 @@ class Installer {
     try {
       // Resolve target directory (path.resolve handles platform differences)
       const projectDir = path.resolve(config.directory);
+
+      // Check if bmad_folder has changed from existing installation (only if project dir exists)
+      let existingBmadDir = null;
+      let existingBmadFolderName = null;
+
+      if (await fs.pathExists(projectDir)) {
+        existingBmadDir = await this.findBmadDir(projectDir);
+        existingBmadFolderName = path.basename(existingBmadDir);
+      }
+
+      const targetBmadDir = path.join(projectDir, bmadFolderName);
+
+      // If bmad_folder changed during update/upgrade, back up old folder and do fresh install
+      if (existingBmadDir && (await fs.pathExists(existingBmadDir)) && existingBmadFolderName !== bmadFolderName) {
+        spinner.stop();
+        console.log(chalk.yellow(`\n⚠️  bmad_folder has changed: ${existingBmadFolderName} → ${bmadFolderName}`));
+        console.log(chalk.yellow('This will result in a fresh installation to the new folder.'));
+
+        const inquirer = require('inquirer');
+        const { confirmFreshInstall } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'confirmFreshInstall',
+            message: chalk.cyan('Proceed with fresh install? (Your old folder will be backed up)'),
+            default: true,
+          },
+        ]);
+
+        if (!confirmFreshInstall) {
+          console.log(chalk.yellow('Installation cancelled.'));
+          return { success: false, cancelled: true };
+        }
+
+        spinner.start('Backing up existing installation...');
+
+        // Find a unique backup name
+        let backupDir = `${existingBmadDir}-bak`;
+        let counter = 1;
+        while (await fs.pathExists(backupDir)) {
+          backupDir = `${existingBmadDir}-bak-${counter}`;
+          counter++;
+        }
+
+        // Rename the old folder to backup
+        await fs.move(existingBmadDir, backupDir);
+
+        spinner.succeed(`Backed up ${existingBmadFolderName} → ${path.basename(backupDir)}`);
+        console.log(chalk.cyan('\n📋 Important:'));
+        console.log(chalk.dim(`  - Your old installation has been backed up to: ${path.basename(backupDir)}`));
+        console.log(chalk.dim(`  - If you had custom agents or configurations, copy them from:`));
+        console.log(chalk.dim(`    ${path.basename(backupDir)}/_cfg/`));
+        console.log(chalk.dim(`  - To the new location:`));
+        console.log(chalk.dim(`    ${bmadFolderName}/_cfg/`));
+        console.log('');
+
+        spinner.start('Starting fresh installation...');
+      }
 
       // Create a project directory if it doesn't exist (user already confirmed)
       if (!(await fs.pathExists(projectDir))) {
@@ -225,7 +517,7 @@ class Installer {
         }
       }
 
-      const bmadDir = path.join(projectDir, 'bmad');
+      const bmadDir = path.join(projectDir, bmadFolderName);
 
       // Check existing installation
       spinner.text = 'Checking for existing installation...';
@@ -429,7 +721,12 @@ class Installer {
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
 
-      spinner.start('Continuing installation...');
+      // Check if spinner is already running (e.g., from folder name change scenario)
+      if (spinner.isSpinning) {
+        spinner.text = 'Continuing installation...';
+      } else {
+        spinner.start('Continuing installation...');
+      }
 
       // Create bmad directory structure
       spinner.text = 'Creating directory structure...';
@@ -702,6 +999,15 @@ class Installer {
         console.log(chalk.dim('Review the .bak files to see your changes and merge if needed.\n'));
       }
 
+      // Reinstall custom agents from _cfg/custom/agents/ sources
+      const customAgentResults = await this.reinstallCustomAgents(projectDir, bmadDir);
+      if (customAgentResults.count > 0) {
+        console.log(chalk.green(`\n✓ Reinstalled ${customAgentResults.count} custom agent${customAgentResults.count > 1 ? 's' : ''}`));
+        for (const agent of customAgentResults.agents) {
+          console.log(chalk.dim(`  - ${agent}`));
+        }
+      }
+
       // Display completion message
       const { UI } = require('../../../lib/ui');
       const ui = new UI();
@@ -712,7 +1018,14 @@ class Installer {
         customFiles: customFiles.length > 0 ? customFiles : undefined,
       });
 
-      return { success: true, path: bmadDir, modules: config.modules, ides: config.ides };
+      return {
+        success: true,
+        path: bmadDir,
+        modules: config.modules,
+        ides: config.ides,
+        needsAgentVibes: this.enableAgentVibes && !config.agentVibesInstalled,
+        projectDir: projectDir,
+      };
     } catch (error) {
       spinner.fail('Installation failed');
       throw error;
@@ -726,7 +1039,8 @@ class Installer {
     const spinner = ora('Checking installation...').start();
 
     try {
-      const bmadDir = path.join(path.resolve(config.directory), 'bmad');
+      const projectDir = path.resolve(config.directory);
+      const bmadDir = await this.findBmadDir(projectDir);
       const existingInstall = await this.detector.detect(bmadDir);
 
       if (!existingInstall.installed) {
@@ -786,7 +1100,8 @@ class Installer {
    * Get installation status
    */
   async getStatus(directory) {
-    const bmadDir = path.join(path.resolve(directory), 'bmad');
+    const projectDir = path.resolve(directory);
+    const bmadDir = await this.findBmadDir(projectDir);
     return await this.detector.detect(bmadDir);
   }
 
@@ -801,14 +1116,15 @@ class Installer {
    * Uninstall BMAD
    */
   async uninstall(directory) {
-    const bmadDir = path.join(path.resolve(directory), 'bmad');
+    const projectDir = path.resolve(directory);
+    const bmadDir = await this.findBmadDir(projectDir);
 
     if (await fs.pathExists(bmadDir)) {
       await fs.remove(bmadDir);
     }
 
     // Clean up IDE configurations
-    await this.ideManager.cleanup(path.resolve(directory));
+    await this.ideManager.cleanup(projectDir);
 
     return { success: true };
   }
@@ -986,7 +1302,7 @@ class Installer {
         const targetPath = path.join(agentsDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
-          await fs.copy(sourcePath, targetPath);
+          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath, this.bmadFolderName || 'bmad');
           this.installedFiles.push(targetPath);
         }
       }
@@ -1002,7 +1318,7 @@ class Installer {
         const targetPath = path.join(tasksDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
-          await fs.copy(sourcePath, targetPath);
+          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath, this.bmadFolderName || 'bmad');
           this.installedFiles.push(targetPath);
         }
       }
@@ -1018,7 +1334,7 @@ class Installer {
         const targetPath = path.join(toolsDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
-          await fs.copy(sourcePath, targetPath);
+          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath, this.bmadFolderName || 'bmad');
           this.installedFiles.push(targetPath);
         }
       }
@@ -1034,7 +1350,7 @@ class Installer {
         const targetPath = path.join(templatesDir, fileName);
 
         if (await fs.pathExists(sourcePath)) {
-          await fs.copy(sourcePath, targetPath);
+          await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath, this.bmadFolderName || 'bmad');
           this.installedFiles.push(targetPath);
         }
       }
@@ -1049,7 +1365,7 @@ class Installer {
         await fs.ensureDir(path.dirname(targetPath));
 
         if (await fs.pathExists(dataPath)) {
-          await fs.copy(dataPath, targetPath);
+          await this.copyFileWithPlaceholderReplacement(dataPath, targetPath, this.bmadFolderName || 'bmad');
           this.installedFiles.push(targetPath);
         }
       }
@@ -1109,9 +1425,8 @@ class Installer {
         }
       }
 
-      // Copy the file
-      await fs.ensureDir(path.dirname(targetFile));
-      await fs.copy(sourceFile, targetFile, { overwrite: true });
+      // Copy the file with placeholder replacement
+      await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile, this.bmadFolderName || 'bmad');
 
       // Track the installed file
       this.installedFiles.push(targetFile);
@@ -1182,7 +1497,7 @@ class Installer {
         if (!(await fs.pathExists(customizePath))) {
           const genericTemplatePath = getSourcePath('utility', 'templates', 'agent.customize.template.yaml');
           if (await fs.pathExists(genericTemplatePath)) {
-            await fs.copy(genericTemplatePath, customizePath);
+            await this.copyFileWithPlaceholderReplacement(genericTemplatePath, customizePath, this.bmadFolderName || 'bmad');
             console.log(chalk.dim(`  Created customize: ${moduleName}-${agentName}.customize.yaml`));
           }
         }
@@ -1417,7 +1732,7 @@ class Installer {
 
     try {
       const projectDir = path.resolve(config.directory);
-      const bmadDir = path.join(projectDir, 'bmad');
+      const bmadDir = await this.findBmadDir(projectDir);
 
       // Check if bmad directory exists
       if (!(await fs.pathExists(bmadDir))) {
@@ -1470,14 +1785,19 @@ class Installer {
         }
       }
 
-      // Regenerate manifests after compilation
-      spinner.start('Regenerating manifests...');
-      const installedModules = entries
-        .filter((e) => e.isDirectory() && e.name !== '_cfg' && e.name !== 'docs' && e.name !== 'agents' && e.name !== 'core')
-        .map((e) => e.name);
-      const manifestGen = new ManifestGenerator();
+      // Reinstall custom agents from _cfg/custom/agents/ sources
+      spinner.start('Rebuilding custom agents...');
+      const customAgentResults = await this.reinstallCustomAgents(projectDir, bmadDir);
+      if (customAgentResults.count > 0) {
+        spinner.succeed(`Rebuilt ${customAgentResults.count} custom agent${customAgentResults.count > 1 ? 's' : ''}`);
+        agentCount += customAgentResults.count;
+      } else {
+        spinner.succeed('No custom agents found to rebuild');
+      }
 
-      // Get existing IDE list from manifest
+      // Skip full manifest regeneration during compileAgents to preserve custom agents
+      // Custom agents are already added to manifests during individual installation
+      // Only regenerate YAML manifest for IDE updates if needed
       const existingManifestPath = path.join(bmadDir, '_cfg', 'manifest.yaml');
       let existingIdes = [];
       if (await fs.pathExists(existingManifestPath)) {
@@ -1487,31 +1807,33 @@ class Installer {
         existingIdes = manifest.ides || [];
       }
 
-      await manifestGen.generateManifests(bmadDir, installedModules, [], {
-        ides: existingIdes,
-      });
-      spinner.succeed('Manifests regenerated');
-
-      // Ask for IDE to update
-      spinner.stop();
-      // Note: UI lives in tools/cli/lib/ui.js; from installers/lib/core use '../../../lib/ui'
-      const { UI } = require('../../../lib/ui');
-      const ui = new UI();
-      const toolConfig = await ui.promptToolSelection(projectDir, []);
-
-      if (!toolConfig.skipIde && toolConfig.ides && toolConfig.ides.length > 0) {
+      // Update IDE configurations using the existing IDE list from manifest
+      if (existingIdes && existingIdes.length > 0) {
         spinner.start('Updating IDE configurations...');
 
-        for (const ide of toolConfig.ides) {
+        for (const ide of existingIdes) {
           spinner.text = `Updating ${ide}...`;
+
+          // Stop spinner before IDE setup to prevent blocking any potential prompts
+          // However, we pass _alreadyConfigured to skip all prompts during compile
+          spinner.stop();
+
           await this.ideManager.setup(ide, projectDir, bmadDir, {
             selectedModules: installedModules,
             skipModuleInstall: true, // Skip module installation, just update IDE files
             verbose: config.verbose,
+            preCollectedConfig: { _alreadyConfigured: true }, // Skip all interactive prompts during compile
           });
+
+          // Restart spinner for next IDE
+          if (existingIdes.indexOf(ide) < existingIdes.length - 1) {
+            spinner.start('Updating IDE configurations...');
+          }
         }
 
-        spinner.succeed('IDE configurations updated');
+        console.log(chalk.green('✓ IDE configurations updated'));
+      } else {
+        console.log(chalk.yellow('⚠️  No IDEs configured. Skipping IDE update.'));
       }
 
       return { agentCount, taskCount };
@@ -1548,7 +1870,7 @@ class Installer {
 
     try {
       const projectDir = path.resolve(config.directory);
-      const bmadDir = path.join(projectDir, 'bmad');
+      const bmadDir = await this.findBmadDir(projectDir);
 
       // Check if bmad directory exists
       if (!(await fs.pathExists(bmadDir))) {
@@ -1611,8 +1933,19 @@ class Installer {
         lastModified: new Date().toISOString(),
       };
 
-      // Now run the full installation with the collected configs
-      spinner.start('Updating BMAD installation...');
+      // Check if bmad_folder has changed
+      const existingBmadFolderName = path.basename(bmadDir);
+      const newBmadFolderName = this.configCollector.collectedConfig.core?.bmad_folder || existingBmadFolderName;
+
+      if (existingBmadFolderName === newBmadFolderName) {
+        // Normal quick update - start the spinner
+        spinner.start('Updating BMAD installation...');
+      } else {
+        // Folder name has changed - stop spinner and let install() handle it
+        spinner.stop();
+        console.log(chalk.yellow(`\n⚠️  Folder name will change: ${existingBmadFolderName} → ${newBmadFolderName}`));
+        console.log(chalk.yellow('The installer will handle the folder migration.\n'));
+      }
 
       // Build the config object for the installer
       const installConfig = {
@@ -1631,7 +1964,11 @@ class Installer {
       // Call the standard install method
       const result = await this.install(installConfig);
 
-      spinner.succeed('Quick update complete!');
+      // Only succeed the spinner if it's still spinning
+      // (install method might have stopped it if folder name changed)
+      if (spinner.isSpinning) {
+        spinner.succeed('Quick update complete!');
+      }
 
       return {
         success: true,
@@ -2084,6 +2421,146 @@ class Installer {
   }
 
   /**
+   * Reinstall custom agents from backup and source locations
+   * This preserves custom agents across quick updates/reinstalls
+   * @param {string} projectDir - Project directory
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Object} Result with count and agent names
+   */
+  async reinstallCustomAgents(projectDir, bmadDir) {
+    const {
+      discoverAgents,
+      loadAgentConfig,
+      extractManifestData,
+      addToManifest,
+      createIdeSlashCommands,
+      updateManifestYaml,
+    } = require('../../../lib/agent/installer');
+    const { compileAgent } = require('../../../lib/agent/compiler');
+
+    const results = { count: 0, agents: [] };
+
+    // Check multiple locations for custom agents
+    const sourceLocations = [
+      path.join(bmadDir, '_cfg', 'custom', 'agents'), // Backup location
+      path.join(bmadDir, 'custom', 'src', 'agents'), // BMAD folder source location
+      path.join(projectDir, 'custom', 'src', 'agents'), // Project root source location
+    ];
+
+    let foundAgents = [];
+    let processedAgents = new Set(); // Track to avoid duplicates
+
+    // Discover agents from all locations
+    for (const location of sourceLocations) {
+      if (await fs.pathExists(location)) {
+        const agents = discoverAgents(location);
+        // Only add agents we haven't processed yet
+        const newAgents = agents.filter((agent) => !processedAgents.has(agent.name));
+        foundAgents.push(...newAgents);
+        for (const agent of newAgents) processedAgents.add(agent.name);
+      }
+    }
+
+    if (foundAgents.length === 0) {
+      return results;
+    }
+
+    try {
+      const customAgentsDir = path.join(bmadDir, 'custom', 'agents');
+      await fs.ensureDir(customAgentsDir);
+
+      const manifestFile = path.join(bmadDir, '_cfg', 'agent-manifest.csv');
+      const manifestYamlFile = path.join(bmadDir, '_cfg', 'manifest.yaml');
+
+      for (const agent of foundAgents) {
+        try {
+          const agentConfig = loadAgentConfig(agent.yamlFile);
+          const finalAgentName = agent.name; // Already named correctly from save
+
+          // Determine agent type from the name (e.g., "fred-commit-poet" → "commit-poet")
+          let agentType = finalAgentName;
+          const parts = finalAgentName.split('-');
+          if (parts.length >= 2) {
+            // Try to extract type (last part or last two parts)
+            // For "fred-commit-poet", we want "commit-poet"
+            // This is heuristic - could be improved with metadata storage
+            agentType = parts.slice(-2).join('-'); // Take last 2 parts as type
+          }
+
+          // Create target directory
+          const agentTargetDir = path.join(customAgentsDir, finalAgentName);
+          await fs.ensureDir(agentTargetDir);
+
+          // Calculate paths
+          const compiledFileName = `${finalAgentName}.md`;
+          const compiledPath = path.join(agentTargetDir, compiledFileName);
+          const relativePath = path.relative(projectDir, compiledPath);
+
+          // Compile with embedded defaults (answers are already in defaults section)
+          const { xml, metadata } = compileAgent(
+            await fs.readFile(agent.yamlFile, 'utf8'),
+            agentConfig.defaults || {},
+            finalAgentName,
+            relativePath,
+          );
+
+          // Write compiled agent
+          await fs.writeFile(compiledPath, xml, 'utf8');
+
+          // Backup source YAML to _cfg/custom/agents if not already there
+          const cfgAgentsBackupDir = path.join(bmadDir, '_cfg', 'custom', 'agents');
+          await fs.ensureDir(cfgAgentsBackupDir);
+          const backupYamlPath = path.join(cfgAgentsBackupDir, `${finalAgentName}.agent.yaml`);
+
+          // Only backup if source is not already in backup location
+          if (agent.yamlFile !== backupYamlPath) {
+            await fs.copy(agent.yamlFile, backupYamlPath);
+          }
+
+          // Copy sidecar files if expert agent
+          if (agent.hasSidecar && agent.type === 'expert') {
+            const { copySidecarFiles } = require('../../../lib/agent/installer');
+            copySidecarFiles(agent.path, agentTargetDir, agent.yamlFile);
+          }
+
+          // Update manifest CSV
+          if (await fs.pathExists(manifestFile)) {
+            // Preserve YAML metadata for persona name, but override id for filename
+            const manifestMetadata = {
+              ...metadata,
+              id: relativePath, // Use the compiled agent path for id
+              name: metadata.name || finalAgentName, // Use YAML metadata.name (persona name) or fallback
+              title: metadata.title, // Use YAML title
+              icon: metadata.icon, // Use YAML icon
+            };
+            const manifestData = extractManifestData(xml, manifestMetadata, relativePath, 'custom');
+            manifestData.name = finalAgentName; // Use filename for the name field
+            manifestData.path = relativePath;
+            addToManifest(manifestFile, manifestData);
+          }
+
+          // Create IDE slash commands (async function)
+          await createIdeSlashCommands(projectDir, finalAgentName, relativePath, metadata);
+
+          // Update manifest.yaml
+          if (await fs.pathExists(manifestYamlFile)) {
+            updateManifestYaml(manifestYamlFile, finalAgentName, agentType);
+          }
+
+          results.count++;
+          results.agents.push(finalAgentName);
+        } catch (agentError) {
+          console.log(chalk.yellow(`  ⚠️  Failed to reinstall ${agent.name}: ${agentError.message}`));
+        }
+      }
+    } catch (error) {
+      console.log(chalk.yellow(`  ⚠️  Error reinstalling custom agents: ${error.message}`));
+    }
+
+    return results;
+  }
+
+  /**
    * Copy IDE-specific documentation to BMAD docs
    * @param {Array} ides - List of selected IDEs
    * @param {string} bmadDir - BMAD installation directory
@@ -2097,7 +2574,7 @@ class Installer {
       const targetDocPath = path.join(docsDir, `${ide}-instructions.md`);
 
       if (await fs.pathExists(sourceDocPath)) {
-        await fs.copy(sourceDocPath, targetDocPath, { overwrite: true });
+        await this.copyFileWithPlaceholderReplacement(sourceDocPath, targetDocPath, this.bmadFolderName || 'bmad');
       }
     }
   }

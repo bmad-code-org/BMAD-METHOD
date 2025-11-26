@@ -4,3 +4,4 @@ bundle:
   icon: 🎨
   description: Innovation and Creative Excellence Team - Comprehensive creative development from ideation through narrative execution
 agents: "*"
+party: "./default-party.csv"

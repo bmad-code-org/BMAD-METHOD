@@ -2,7 +2,7 @@
 
 <workflow name="create-ux-design">
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication style based on {user_skill_level}</critical>
 <critical>The goal is COLLABORATIVE UX DESIGN through visual exploration, not content generation</critical>
@@ -11,6 +11,8 @@
 <critical>SAVE PROGRESS after each major step - use <template-output> tags throughout</critical>
 <critical>DOCUMENT OUTPUT: Professional, specific, actionable UX design decisions WITH RATIONALE. User skill level ({user_skill_level}) affects conversation style ONLY, not document content.</critical>
 <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <step n="0" goal="Validate workflow readiness" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -24,12 +26,12 @@
 <check if="status file found">
   <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
   <action>Parse workflow_status section</action>
-  <action>Check status of "create-design" workflow</action>
+  <action>Check status of "create-ux-design" workflow</action>
   <action>Get project_level from YAML metadata</action>
   <action>Find first non-completed workflow (next expected workflow)</action>
 
-  <check if="create-design status is file path (already completed)">
-    <output>⚠️ UX Design already completed: {{create-design status}}</output>
+  <check if="create-ux-design status is file path (already completed)">
+    <output>⚠️ UX Design already completed: {{create-ux-design status}}</output>
     <ask>Re-running will overwrite the existing UX design. Continue? (y/n)</ask>
     <check if="n">
       <output>Exiting. Use workflow-status to see your next step.</output>
@@ -37,7 +39,7 @@
     </check>
   </check>
 
-  <check if="create-design is not the next expected workflow">
+  <check if="create-ux-design is not the next expected workflow">
     <output>⚠️ Next expected workflow: {{next_workflow}}. UX Design is out of sequence.</output>
     <ask>Continue with UX Design anyway? (y/n)</ask>
     <check if="n">
@@ -51,10 +53,15 @@
 </check>
 </step>
 
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
+<note>After discovery, these content variables are available: {prd_content}, {product_brief_content}, {epics_content}, {brainstorming_content}, {document_project_content}</note>
+</step>
+
 <step n="1a" goal="Confirm project understanding or gather basic context">
   <critical>A UX designer must understand the WHY before designing the HOW</critical>
 
-<action>Attempt to load context documents using fuzzy matching: - PRD: {prd_file} - Product Brief: {brief_file} - Brainstorming: {brainstorm_file}
+<action>Review loaded context from Step 0.5: {prd_content}, {product_brief_content}, {epics_content}, {brainstorming_content}
 </action>
 
   <check if="documents_found">
@@ -1132,9 +1139,9 @@ Based on your deployment intent: {{recommendation}}
 
   <check if="standalone_mode != true">
     <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
-    <action>Find workflow_status key "create-design"</action>
+    <action>Find workflow_status key "create-ux-design"</action>
     <critical>ONLY write the file path as the status value - no other text, notes, or metadata</critical>
-    <action>Update workflow_status["create-design"] = "{default_output_file}"</action>
+    <action>Update workflow_status["create-ux-design"] = "{default_output_file}"</action>
     <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
 
     <action>Find first non-completed workflow in workflow_status (next workflow to do)</action>

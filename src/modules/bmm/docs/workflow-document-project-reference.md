@@ -179,7 +179,7 @@ The workflow uses a single comprehensive CSV file:
 
 **documentation-requirements.csv** - Complete project analysis guide
 
-- Location: `/bmad/bmm/workflows/document-project/documentation-requirements.csv`
+- Location: `/{bmad_folder}/bmm/workflows/document-project/documentation-requirements.csv`
 - 12 project types (web, mobile, backend, cli, library, desktop, game, data, extension, infra, embedded)
 - 24 columns combining:
   - **Detection columns**: `project_type_id`, `key_file_patterns` (identifies project type from codebase)
@@ -202,7 +202,9 @@ PRD Workflow: Loads docs/index.md
 → Understands existing architecture
 → Identifies reusable components
 → Plans integration with existing APIs
-→ Creates contextual PRD with epics and stories
+→ Creates contextual PRD with FRs and NFRs
+Architecture Workflow: Creates architecture design
+Create-Epics-and-Stories Workflow: Breaks down into epics and stories
 ```
 
 ### Other Use Cases

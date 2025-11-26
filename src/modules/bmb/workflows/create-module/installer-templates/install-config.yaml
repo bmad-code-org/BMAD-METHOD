@@ -80,7 +80,7 @@ prompt:
 
 # EXAMPLE: Static path
 # module_data_path:
-#   result: "{project-root}/bmad/{{MODULE_CODE}}/data"
+#   result: "{project-root}/{bmad_folder}/{{MODULE_CODE}}/data"
 
 # ============================================================================
 # YOUR MODULE CONFIGURATION FIELDS

@@ -1,7 +1,9 @@
 const path = require('node:path');
+const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { getAgentsFromBmad, getTasksFromBmad } = require('./shared/bmad-artifacts');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Qwen Code setup handler
@@ -37,15 +39,18 @@ class QwenSetup extends BaseIdeSetup {
     // Clean up old configuration if exists
     await this.cleanupOldConfig(qwenDir);
 
-    // Get agents, tasks, tools, and workflows (standalone only for tools/workflows)
-    const agents = await getAgentsFromBmad(bmadDir, options.selectedModules || []);
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
+    // Get tasks, tools, and workflows (standalone only for tools/workflows)
     const tasks = await getTasksFromBmad(bmadDir, options.selectedModules || []);
     const tools = await this.getTools(bmadDir, true);
     const workflows = await this.getWorkflows(bmadDir, true);
 
     // Create directories for each module (including standalone)
     const modules = new Set();
-    for (const item of [...agents, ...tasks, ...tools, ...workflows]) modules.add(item.module);
+    for (const item of [...agentArtifacts, ...tasks, ...tools, ...workflows]) modules.add(item.module);
 
     for (const module of modules) {
       await this.ensureDir(path.join(bmadCommandsDir, module));
@@ -55,20 +60,21 @@ class QwenSetup extends BaseIdeSetup {
       await this.ensureDir(path.join(bmadCommandsDir, module, 'workflows'));
     }
 
-    // Create TOML files for each agent
+    // Create TOML files for each agent launcher
     let agentCount = 0;
-    for (const agent of agents) {
-      const content = await this.readAndProcess(agent.path, {
-        module: agent.module,
-        name: agent.name,
+    for (const artifact of agentArtifacts) {
+      // Convert markdown launcher content to TOML format
+      const tomlContent = this.processAgentLauncherContent(artifact.content, {
+        module: artifact.module,
+        name: artifact.name,
       });
 
-      const targetPath = path.join(bmadCommandsDir, agent.module, 'agents', `${agent.name}.toml`);
+      const targetPath = path.join(bmadCommandsDir, artifact.module, 'agents', `${artifact.name}.toml`);
 
-      await this.writeFile(targetPath, content);
+      await this.writeFile(targetPath, tomlContent);
 
       agentCount++;
-      console.log(chalk.green(`  ✓ Added agent: /bmad:${agent.module}:agents:${agent.name}`));
+      console.log(chalk.green(`  ✓ Added agent: /bmad:${artifact.module}:agents:${artifact.name}`));
     }
 
     // Create TOML files for each task
@@ -205,6 +211,29 @@ class QwenSetup extends BaseIdeSetup {
   }
 
   /**
+   * Process agent launcher content and convert to TOML format
+   * @param {string} launcherContent - Launcher markdown content
+   * @param {Object} metadata - File metadata
+   * @returns {string} TOML formatted content
+   */
+  processAgentLauncherContent(launcherContent, metadata = {}) {
+    // Strip frontmatter from launcher content
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = launcherContent.replace(frontmatterRegex, '');
+
+    // Extract title for TOML description
+    const titleMatch = launcherContent.match(/description:\s*"([^"]+)"/);
+    const title = titleMatch ? titleMatch[1] : metadata.name;
+
+    // Create TOML with launcher content (without frontmatter)
+    return `description = "BMAD ${metadata.module.toUpperCase()} Agent: ${title}"
+prompt = """
+${contentWithoutFrontmatter.trim()}
+"""
+`;
+  }
+
+  /**
    * Override processContent to add TOML metadata header for Qwen
    * @param {string} content - File content
    * @param {Object} metadata - File metadata
@@ -284,6 +313,59 @@ ${prompt}
       await fs.remove(oldBMadDir);
       console.log(chalk.dim(`Removed old BMAD configuration from Qwen Code`));
     }
+  }
+
+  /**
+   * Install a custom agent launcher for Qwen
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object} Installation result
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const qwenDir = path.join(projectDir, this.configDir);
+    const commandsDir = path.join(qwenDir, this.commandsDir);
+    const bmadCommandsDir = path.join(commandsDir, this.bmadDir);
+
+    // Create .qwen/commands/BMad directory if it doesn't exist
+    await fs.ensureDir(bmadCommandsDir);
+
+    // Create custom agent launcher in TOML format (same pattern as regular agents)
+    const launcherContent = `# ${agentName} Custom Agent
+
+**⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!
+
+This is a launcher for the custom BMAD agent "${agentName}".
+
+## Usage
+1. First run: \`${agentPath}\` to load the complete agent
+2. Then use this command to activate ${agentName}
+
+The agent will follow the persona and instructions from the main agent file.
+
+---
+
+*Generated by BMAD Method*`;
+
+    // Use Qwen's TOML conversion method
+    const tomlContent = this.processAgentLauncherContent(launcherContent, {
+      name: agentName,
+      module: 'custom',
+    });
+
+    const fileName = `custom-${agentName.toLowerCase()}.toml`;
+    const launcherPath = path.join(bmadCommandsDir, fileName);
+
+    // Write the launcher file
+    await fs.writeFile(launcherPath, tomlContent, 'utf8');
+
+    return {
+      ide: 'qwen',
+      path: path.relative(projectDir, launcherPath),
+      command: agentName,
+      type: 'custom-agent-launcher',
+    };
   }
 }
 

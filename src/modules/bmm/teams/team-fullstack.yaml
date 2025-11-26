@@ -9,3 +9,4 @@ agents:
   - pm
   - sm
   - ux-designer
+party: "./default-party.csv"

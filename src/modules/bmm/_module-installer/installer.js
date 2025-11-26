@@ -63,9 +63,9 @@ async function install(options) {
     }
 
     // Create dev story location if configured
-    if (config['dev_story_location']) {
+    if (config['sprint_artifacts']) {
       // Strip {project-root}/ prefix if present
-      const storyConfig = config['dev_story_location'].replace('{project-root}/', '');
+      const storyConfig = config['sprint_artifacts'].replace('{project-root}/', '');
       const storyPath = path.join(projectRoot, storyConfig);
       if (!(await fs.pathExists(storyPath))) {
         logger.log(chalk.yellow(`Creating story directory: ${storyConfig}`));

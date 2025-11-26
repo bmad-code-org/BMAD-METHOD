@@ -26,6 +26,70 @@ class ModuleManager {
     // Path to source modules directory
     this.modulesSourcePath = getSourcePath('modules');
     this.xmlHandler = new XmlHandler();
+    this.bmadFolderName = 'bmad'; // Default, can be overridden
+  }
+
+  /**
+   * Set the bmad folder name for placeholder replacement
+   * @param {string} bmadFolderName - The bmad folder name
+   */
+  setBmadFolderName(bmadFolderName) {
+    this.bmadFolderName = bmadFolderName;
+  }
+
+  /**
+   * Copy a file and replace {bmad_folder} placeholder with actual folder name
+   * @param {string} sourcePath - Source file path
+   * @param {string} targetPath - Target file path
+   */
+  async copyFileWithPlaceholderReplacement(sourcePath, targetPath) {
+    // List of text file extensions that should have placeholder replacement
+    const textExtensions = ['.md', '.yaml', '.yml', '.txt', '.json', '.js', '.ts', '.html', '.css', '.sh', '.bat', '.csv'];
+    const ext = path.extname(sourcePath).toLowerCase();
+
+    // Check if this is a text file that might contain placeholders
+    if (textExtensions.includes(ext)) {
+      try {
+        // Read the file content
+        let content = await fs.readFile(sourcePath, 'utf8');
+
+        // Replace {bmad_folder} placeholder with actual folder name
+        if (content.includes('{bmad_folder}')) {
+          content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
+        }
+
+        // Write to target with replaced content
+        await fs.ensureDir(path.dirname(targetPath));
+        await fs.writeFile(targetPath, content, 'utf8');
+      } catch {
+        // If reading as text fails (might be binary despite extension), fall back to regular copy
+        await fs.copy(sourcePath, targetPath, { overwrite: true });
+      }
+    } else {
+      // Binary file or other file type - just copy directly
+      await fs.copy(sourcePath, targetPath, { overwrite: true });
+    }
+  }
+
+  /**
+   * Copy a directory recursively with placeholder replacement
+   * @param {string} sourceDir - Source directory path
+   * @param {string} targetDir - Target directory path
+   */
+  async copyDirectoryWithPlaceholderReplacement(sourceDir, targetDir) {
+    await fs.ensureDir(targetDir);
+    const entries = await fs.readdir(sourceDir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const sourcePath = path.join(sourceDir, entry.name);
+      const targetPath = path.join(targetDir, entry.name);
+
+      if (entry.isDirectory()) {
+        await this.copyDirectoryWithPlaceholderReplacement(sourcePath, targetPath);
+      } else {
+        await this.copyFileWithPlaceholderReplacement(sourcePath, targetPath);
+      }
+    }
   }
 
   /**
@@ -311,9 +375,8 @@ class ModuleManager {
         await fs.ensureDir(path.dirname(targetFile));
         await this.copyWorkflowYamlStripped(sourceFile, targetFile);
       } else {
-        // Copy the file normally
-        await fs.ensureDir(path.dirname(targetFile));
-        await fs.copy(sourceFile, targetFile, { overwrite: true });
+        // Copy the file with placeholder replacement
+        await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
       }
 
       // Track the file if callback provided
@@ -333,12 +396,16 @@ class ModuleManager {
     // Read the source YAML file
     let yamlContent = await fs.readFile(sourceFile, 'utf8');
 
+    // IMPORTANT: Replace {bmad_folder} BEFORE parsing YAML
+    // Otherwise parsing will fail on the placeholder
+    yamlContent = yamlContent.replaceAll('{bmad_folder}', this.bmadFolderName);
+
     try {
       // First check if web_bundle exists by parsing
       const workflowConfig = yaml.load(yamlContent);
 
       if (workflowConfig.web_bundle === undefined) {
-        // No web_bundle section, just copy as-is
+        // No web_bundle section, just write (placeholders already replaced above)
         await fs.writeFile(targetFile, yamlContent, 'utf8');
         return;
       }
@@ -400,6 +467,7 @@ class ModuleManager {
       // Clean up any double blank lines that might result
       const strippedYaml = newLines.join('\n').replaceAll(/\n\n\n+/g, '\n\n');
 
+      // Placeholders already replaced at the beginning of this function
       await fs.writeFile(targetFile, strippedYaml, 'utf8');
     } catch {
       // If anything fails, just copy the file as-is
@@ -488,8 +556,10 @@ class ModuleManager {
         const installWorkflowPath = item['workflow-install']; // Where to copy TO
 
         // Parse SOURCE workflow path
-        // Example: {project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml
-        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/bmad\/([^/]+)\/workflows\/(.+)/);
+        // Handle both {bmad_folder} placeholder and hardcoded 'bmad'
+        // Example: {project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml
+        // Or: {project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml
+        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!sourceMatch) {
           console.warn(chalk.yellow(`      Could not parse workflow path: ${sourceWorkflowPath}`));
           continue;
@@ -498,8 +568,9 @@ class ModuleManager {
         const [, sourceModule, sourceWorkflowSubPath] = sourceMatch;
 
         // Parse INSTALL workflow path
-        // Example: {project-root}/bmad/bmgd/workflows/4-production/create-story/workflow.yaml
-        const installMatch = installWorkflowPath.match(/\{project-root\}\/bmad\/([^/]+)\/workflows\/(.+)/);
+        // Handle both {bmad_folder} placeholder and hardcoded 'bmad'
+        // Example: {project-root}/{bmad_folder}/bmgd/workflows/4-production/create-story/workflow.yaml
+        const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!installMatch) {
           console.warn(chalk.yellow(`      Could not parse workflow-install path: ${installWorkflowPath}`));
           continue;
@@ -527,7 +598,8 @@ class ModuleManager {
         );
 
         await fs.ensureDir(path.dirname(actualDestWorkflowPath));
-        await fs.copy(actualSourceWorkflowPath, actualDestWorkflowPath, { overwrite: true });
+        // Copy the workflow directory recursively with placeholder replacement
+        await this.copyDirectoryWithPlaceholderReplacement(actualSourceWorkflowPath, actualDestWorkflowPath);
 
         // Update the workflow.yaml config_source reference
         const workflowYamlPath = path.join(actualDestWorkflowPath, 'workflow.yaml');
@@ -550,16 +622,17 @@ class ModuleManager {
   async updateWorkflowConfigSource(workflowYamlPath, newModuleName) {
     let yamlContent = await fs.readFile(workflowYamlPath, 'utf8');
 
-    // Replace config_source: "{project-root}/bmad/OLD_MODULE/config.yaml"
-    // with config_source: "{project-root}/bmad/NEW_MODULE/config.yaml"
-    const configSourcePattern = /config_source:\s*["']?\{project-root\}\/bmad\/[^/]+\/config\.yaml["']?/g;
-    const newConfigSource = `config_source: "{project-root}/bmad/${newModuleName}/config.yaml"`;
+    // Replace config_source: "{project-root}/{bmad_folder}/OLD_MODULE/config.yaml"
+    // with config_source: "{project-root}/{bmad_folder}/NEW_MODULE/config.yaml"
+    // Note: At this point {bmad_folder} has already been replaced with actual folder name
+    const configSourcePattern = /config_source:\s*["']?\{project-root\}\/[^/]+\/[^/]+\/config\.yaml["']?/g;
+    const newConfigSource = `config_source: "{project-root}/${this.bmadFolderName}/${newModuleName}/config.yaml"`;
 
     const updatedYaml = yamlContent.replaceAll(configSourcePattern, newConfigSource);
 
     if (updatedYaml !== yamlContent) {
       await fs.writeFile(workflowYamlPath, updatedYaml, 'utf8');
-      console.log(chalk.dim(`      Updated config_source to: bmad/${newModuleName}/config.yaml`));
+      console.log(chalk.dim(`      Updated config_source to: ${this.bmadFolderName}/${newModuleName}/config.yaml`));
     }
   }
 
@@ -664,9 +737,8 @@ class ModuleManager {
         }
       }
 
-      // Copy file
-      await fs.ensureDir(path.dirname(targetFile));
-      await fs.copy(sourceFile, targetFile, { overwrite: true });
+      // Copy file with placeholder replacement
+      await this.copyFileWithPlaceholderReplacement(sourceFile, targetFile);
     }
   }
 

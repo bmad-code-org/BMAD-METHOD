@@ -34,10 +34,12 @@ class ManifestGenerator {
 
     // Store modules list (all modules including preserved ones)
     const preservedModules = options.preservedModules || [];
-    this.modules = ['core', ...selectedModules, ...preservedModules];
-    this.updatedModules = ['core', ...selectedModules]; // Only these get rescanned
+    // Deduplicate modules list to prevent duplicates
+    this.modules = [...new Set(['core', ...selectedModules, ...preservedModules])];
+    this.updatedModules = [...new Set(['core', ...selectedModules])]; // Only these get rescanned
     this.preservedModules = preservedModules; // These stay as-is in CSVs
     this.bmadDir = bmadDir;
+    this.bmadFolderName = path.basename(bmadDir); // Get the actual folder name (e.g., '.bmad' or 'bmad')
     this.allInstalledFiles = installedFiles;
 
     if (!Object.prototype.hasOwnProperty.call(options, 'ides')) {
@@ -91,15 +93,8 @@ class ManifestGenerator {
   async collectWorkflows(selectedModules) {
     this.workflows = [];
 
-    // Get core workflows from installed bmad directory
-    const corePath = path.join(this.bmadDir, 'core');
-    if (await fs.pathExists(corePath)) {
-      const coreWorkflows = await this.getWorkflowsFromPath(corePath, 'core');
-      this.workflows.push(...coreWorkflows);
-    }
-
-    // Get module workflows from installed bmad directory
-    for (const moduleName of selectedModules) {
+    // Use updatedModules which already includes deduplicated 'core' + selectedModules
+    for (const moduleName of this.updatedModules) {
       const modulePath = path.join(this.bmadDir, moduleName);
 
       if (await fs.pathExists(modulePath)) {
@@ -146,8 +141,8 @@ class ManifestGenerator {
               // Build relative path for installation
               const installPath =
                 moduleName === 'core'
-                  ? `bmad/core/workflows/${relativePath}/workflow.yaml`
-                  : `bmad/${moduleName}/workflows/${relativePath}/workflow.yaml`;
+                  ? `${this.bmadFolderName}/core/workflows/${relativePath}/workflow.yaml`
+                  : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/workflow.yaml`;
 
               // Check for standalone property (default: false)
               const standalone = workflow.standalone === true;
@@ -186,15 +181,8 @@ class ManifestGenerator {
   async collectAgents(selectedModules) {
     this.agents = [];
 
-    // Get core agents from installed bmad directory
-    const coreAgentsPath = path.join(this.bmadDir, 'core', 'agents');
-    if (await fs.pathExists(coreAgentsPath)) {
-      const coreAgents = await this.getAgentsFromDir(coreAgentsPath, 'core');
-      this.agents.push(...coreAgents);
-    }
-
-    // Get module agents from installed bmad directory
-    for (const moduleName of selectedModules) {
+    // Use updatedModules which already includes deduplicated 'core' + selectedModules
+    for (const moduleName of this.updatedModules) {
       const agentsPath = path.join(this.bmadDir, moduleName, 'agents');
 
       if (await fs.pathExists(agentsPath)) {
@@ -254,7 +242,8 @@ class ManifestGenerator {
         const principlesMatch = content.match(/<principles>([\s\S]*?)<\/principles>/);
 
         // Build relative path for installation
-        const installPath = moduleName === 'core' ? `bmad/core/agents/${file}` : `bmad/${moduleName}/agents/${file}`;
+        const installPath =
+          moduleName === 'core' ? `${this.bmadFolderName}/core/agents/${file}` : `${this.bmadFolderName}/${moduleName}/agents/${file}`;
 
         const agentName = file.replace('.md', '');
 
@@ -300,15 +289,8 @@ class ManifestGenerator {
   async collectTasks(selectedModules) {
     this.tasks = [];
 
-    // Get core tasks from installed bmad directory
-    const coreTasksPath = path.join(this.bmadDir, 'core', 'tasks');
-    if (await fs.pathExists(coreTasksPath)) {
-      const coreTasks = await this.getTasksFromDir(coreTasksPath, 'core');
-      this.tasks.push(...coreTasks);
-    }
-
-    // Get module tasks from installed bmad directory
-    for (const moduleName of selectedModules) {
+    // Use updatedModules which already includes deduplicated 'core' + selectedModules
+    for (const moduleName of this.updatedModules) {
       const tasksPath = path.join(this.bmadDir, moduleName, 'tasks');
 
       if (await fs.pathExists(tasksPath)) {
@@ -344,7 +326,8 @@ class ManifestGenerator {
         const standalone = !!standaloneMatch;
 
         // Build relative path for installation
-        const installPath = moduleName === 'core' ? `bmad/core/tasks/${file}` : `bmad/${moduleName}/tasks/${file}`;
+        const installPath =
+          moduleName === 'core' ? `${this.bmadFolderName}/core/tasks/${file}` : `${this.bmadFolderName}/${moduleName}/tasks/${file}`;
 
         const taskName = file.replace(/\.(xml|md)$/, '');
         tasks.push({
@@ -376,15 +359,8 @@ class ManifestGenerator {
   async collectTools(selectedModules) {
     this.tools = [];
 
-    // Get core tools from installed bmad directory
-    const coreToolsPath = path.join(this.bmadDir, 'core', 'tools');
-    if (await fs.pathExists(coreToolsPath)) {
-      const coreTools = await this.getToolsFromDir(coreToolsPath, 'core');
-      this.tools.push(...coreTools);
-    }
-
-    // Get module tools from installed bmad directory
-    for (const moduleName of selectedModules) {
+    // Use updatedModules which already includes deduplicated 'core' + selectedModules
+    for (const moduleName of this.updatedModules) {
       const toolsPath = path.join(this.bmadDir, moduleName, 'tools');
 
       if (await fs.pathExists(toolsPath)) {
@@ -420,7 +396,8 @@ class ManifestGenerator {
         const standalone = !!standaloneMatch;
 
         // Build relative path for installation
-        const installPath = moduleName === 'core' ? `bmad/core/tools/${file}` : `bmad/${moduleName}/tools/${file}`;
+        const installPath =
+          moduleName === 'core' ? `${this.bmadFolderName}/core/tools/${file}` : `${this.bmadFolderName}/${moduleName}/tools/${file}`;
 
         const toolName = file.replace(/\.(xml|md)$/, '');
         tools.push({
@@ -564,24 +541,12 @@ class ManifestGenerator {
   async writeWorkflowManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'workflow-manifest.csv');
 
-    // Define expected columns and defaults for schema upgrade
-    const expectedColumns = ['name', 'description', 'module', 'path', 'standalone'];
-    const defaultValues = { standalone: 'false' };
-
-    // Get preserved rows from existing CSV (module is column 2, 0-indexed)
-    const preservedRows = await this.getPreservedCsvRows(csvPath, 2, expectedColumns, defaultValues);
-
     // Create CSV header with standalone column
     let csv = 'name,description,module,path,standalone\n';
 
-    // Add new rows for updated modules
+    // Add all workflows
     for (const workflow of this.workflows) {
       csv += `"${workflow.name}","${workflow.description}","${workflow.module}","${workflow.path}","${workflow.standalone}"\n`;
-    }
-
-    // Add preserved rows for modules we didn't update
-    for (const row of preservedRows) {
-      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);
@@ -595,34 +560,12 @@ class ManifestGenerator {
   async writeAgentManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'agent-manifest.csv');
 
-    // Define expected columns (no schema changes for agents currently)
-    const expectedColumns = [
-      'name',
-      'displayName',
-      'title',
-      'icon',
-      'role',
-      'identity',
-      'communicationStyle',
-      'principles',
-      'module',
-      'path',
-    ];
-
-    // Get preserved rows from existing CSV (module is column 8, 0-indexed)
-    const preservedRows = await this.getPreservedCsvRows(csvPath, 8, expectedColumns);
-
     // Create CSV header with persona fields
     let csv = 'name,displayName,title,icon,role,identity,communicationStyle,principles,module,path\n';
 
-    // Add new rows for updated modules
+    // Add all agents
     for (const agent of this.agents) {
       csv += `"${agent.name}","${agent.displayName}","${agent.title}","${agent.icon}","${agent.role}","${agent.identity}","${agent.communicationStyle}","${agent.principles}","${agent.module}","${agent.path}"\n`;
-    }
-
-    // Add preserved rows for modules we didn't update
-    for (const row of preservedRows) {
-      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);
@@ -636,24 +579,12 @@ class ManifestGenerator {
   async writeTaskManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'task-manifest.csv');
 
-    // Define expected columns and defaults for schema upgrade
-    const expectedColumns = ['name', 'displayName', 'description', 'module', 'path', 'standalone'];
-    const defaultValues = { standalone: 'false' };
-
-    // Get preserved rows from existing CSV (module is column 3, 0-indexed)
-    const preservedRows = await this.getPreservedCsvRows(csvPath, 3, expectedColumns, defaultValues);
-
     // Create CSV header with standalone column
     let csv = 'name,displayName,description,module,path,standalone\n';
 
-    // Add new rows for updated modules
+    // Add all tasks
     for (const task of this.tasks) {
       csv += `"${task.name}","${task.displayName}","${task.description}","${task.module}","${task.path}","${task.standalone}"\n`;
-    }
-
-    // Add preserved rows for modules we didn't update
-    for (const row of preservedRows) {
-      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);
@@ -667,24 +598,12 @@ class ManifestGenerator {
   async writeToolManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'tool-manifest.csv');
 
-    // Define expected columns and defaults for schema upgrade
-    const expectedColumns = ['name', 'displayName', 'description', 'module', 'path', 'standalone'];
-    const defaultValues = { standalone: 'false' };
-
-    // Get preserved rows from existing CSV (module is column 3, 0-indexed)
-    const preservedRows = await this.getPreservedCsvRows(csvPath, 3, expectedColumns, defaultValues);
-
     // Create CSV header with standalone column
     let csv = 'name,displayName,description,module,path,standalone\n';
 
-    // Add new rows for updated modules
+    // Add all tools
     for (const tool of this.tools) {
       csv += `"${tool.name}","${tool.displayName}","${tool.description}","${tool.module}","${tool.path}","${tool.standalone}"\n`;
-    }
-
-    // Add preserved rows for modules we didn't update
-    for (const row of preservedRows) {
-      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);
@@ -713,9 +632,6 @@ class ManifestGenerator {
    */
   async writeFilesManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'files-manifest.csv');
-
-    // Get preserved rows from existing CSV (module is column 2, 0-indexed)
-    const preservedRows = await this.getPreservedCsvRows(csvPath, 2);
 
     // Create CSV header with hash column
     let csv = 'type,name,module,path,hash\n';
@@ -747,7 +663,7 @@ class ManifestGenerator {
     } else {
       // Fallback: use the collected workflows/agents/tasks
       for (const file of this.files) {
-        const filePath = path.join(this.bmadDir, file.path.replace('bmad/', ''));
+        const filePath = path.join(this.bmadDir, file.path.replace(this.bmadFolderName + '/', ''));
         const hash = await this.calculateFileHash(filePath);
         allFiles.push({
           ...file,
@@ -763,14 +679,9 @@ class ManifestGenerator {
       return a.name.localeCompare(b.name);
     });
 
-    // Add rows for updated modules
+    // Add all files
     for (const file of allFiles) {
       csv += `"${file.type}","${file.name}","${file.module}","${file.path}","${file.hash}"\n`;
-    }
-
-    // Add preserved rows for modules we didn't update
-    for (const row of preservedRows) {
-      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);

@@ -1,30 +1,26 @@
 # Product Brief - Context-Adaptive Discovery Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow uses INTENT-DRIVEN FACILITATION - adapt organically to what emerges</critical>
 <critical>The goal is DISCOVERING WHAT MATTERS through natural conversation, not filling a template</critical>
 <critical>Communicate all responses in {communication_language} and adapt deeply to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>LIVING DOCUMENT: Write to the document continuously as you discover - never wait until the end</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 ## Input Document Discovery
 
 This workflow may reference: market research, brainstorming documents, user specified other inputs, or brownfield project documentation.
 
-**Discovery Process** (execute for each referenced document):
+**All input files are discovered and loaded automatically via the `discover_inputs` protocol in Step 0.5**
 
-1. **Search for whole document first** - Use fuzzy file matching to find the complete document
-2. **Check for sharded version** - If whole document not found, look for `{doc-name}/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand the document structure
-   - Read ALL section files listed in the index
-   - Treat the combined content as if it were a single document
-4. **Brownfield projects**: The `document-project` workflow always creates `{output_folder}/docs/index.md`
+After discovery completes, the following content variables will be available:
 
-**Priority**: If both whole and sharded versions exist, use the whole document.
-
-**Fuzzy matching**: Be flexible with document names - users may use variations in naming conventions.
+- `{research_content}` - Market research or domain research documents
+- `{brainstorming_content}` - Brainstorming session outputs
+- `{document_project_content}` - Brownfield project documentation (intelligently loaded via INDEX_GUIDED strategy)
 
 <workflow>
 
@@ -39,11 +35,6 @@ This workflow may reference: market research, brainstorming documents, user spec
   <action>Check status of "product-brief" workflow</action>
   <action>Get project_level from YAML metadata</action>
   <action>Find first non-completed workflow (next expected workflow)</action>
-
-  <check if="project_level < 2">
-    <output>**Note: Level {{project_level}} Project**
-
-Product Brief is most valuable for Level 2+ projects, but can help clarify vision for any project.</output>
 </check>
 
   <check if="product-brief status is file path (already completed)">
@@ -68,20 +59,20 @@ Product Brief is most valuable for Level 2+ projects, but can help clarify visio
 </check>
 </step>
 
+<step n="0.5" goal="Discover and load input documents">
+<invoke-protocol name="discover_inputs" />
+</step>
+
 <step n="1" goal="Begin the journey and understand context">
 <action>Welcome {user_name} warmly in {communication_language}
-
-Adapt your tone to {user_skill_level}:
-
-- Expert: "Let's define your product vision. What are you building?"
-- Intermediate: "I'm here to help shape your product vision. Tell me about your idea."
-- Beginner: "Hi! I'm going to help you figure out exactly what you want to build. Let's start with your idea - what got you excited about this?"
 
 Start with open exploration:
 
 - What sparked this idea?
 - What are you hoping to build?
 - Who is this for - yourself, a business, users you know?
+
+- "I'm here to help shape your product vision. Tell me about your idea and what got you excited about this? The more detail you can give me here the better I can help you further craft the idea."
 
 CRITICAL: Listen for context clues that reveal their situation:
 
@@ -99,7 +90,7 @@ Based on their initial response, sense:
 - If they have existing materials to share
 - Their confidence level with the domain</action>
 
-<ask>What's the project name, and what got you excited about building this?</ask>
+<ask if="user has not given the project name already">What's the project name?</ask>
 
 <action>From even this first exchange, create initial document sections</action>
 <template-output>project_name</template-output>

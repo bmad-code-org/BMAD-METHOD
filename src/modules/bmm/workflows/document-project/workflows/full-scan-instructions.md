@@ -325,11 +325,11 @@ findings.batches_completed: [
   </check>
 
 <action>Build API contracts catalog</action>
-<action>IMMEDIATELY write to: {output*folder}/api-contracts-{part_id}.md</action>
+<action>IMMEDIATELY write to: {output_folder}/api-contracts-{part_id}.md</action>
 <action>Validate document has all required sections</action>
 <action>Update state file with output generated</action>
 <action>PURGE detailed API data, keep only: "{{api_count}} endpoints documented"</action>
-<template-output>api_contracts*{part_id}</template-output>
+<template-output>api_contracts\*{part_id}</template-output>
 </check>
 
 <check if="requires_data_models == true">
@@ -346,11 +346,11 @@ findings.batches_completed: [
   </check>
 
 <action>Build database schema documentation</action>
-<action>IMMEDIATELY write to: {output*folder}/data-models-{part_id}.md</action>
+<action>IMMEDIATELY write to: {output_folder}/data-models-{part_id}.md</action>
 <action>Validate document completeness</action>
 <action>Update state file with output generated</action>
 <action>PURGE detailed schema data, keep only: "{{table_count}} tables documented"</action>
-<template-output>data_models*{part_id}</template-output>
+<template-output>data_models\*{part_id}</template-output>
 </check>
 
 <check if="requires_state_management == true">
@@ -758,15 +758,15 @@ When a document SHOULD be generated but wasn't (due to quick scan, missing data,
 ### Generated Documentation
 
 - [Project Overview](./project-overview.md)
-- [Architecture](./architecture{{#if multi-part}}-{part*id}{{/if}}.md){{#unless architecture_file_exists}} *(To be generated)\_{{/unless}}
+- [Architecture](./architecture{{#if multi-part}}-{part\*id}{{/if}}.md){{#unless architecture_file_exists}} (To be generated) {{/unless}}
 - [Source Tree Analysis](./source-tree-analysis.md)
-- [Component Inventory](./component-inventory{{#if multi-part}}-{part*id}{{/if}}.md){{#unless component_inventory_exists}} *(To be generated)\_{{/unless}}
-- [Development Guide](./development-guide{{#if multi-part}}-{part*id}{{/if}}.md){{#unless dev_guide_exists}} *(To be generated)_{{/unless}}
-  {{#if deployment_found}}- [Deployment Guide](./deployment-guide.md){{#unless deployment_guide_exists}} _(To be generated)_{{/unless}}{{/if}}
+- [Component Inventory](./component-inventory{{#if multi-part}}-{part\*id}{{/if}}.md){{#unless component_inventory_exists}} (To be generated) {{/unless}}
+- [Development Guide](./development-guide{{#if multi-part}}-{part\*id}{{/if}}.md){{#unless dev_guide_exists}} (To be generated) {{/unless}}
+  {{#if deployment_found}}- [Deployment Guide](./deployment-guide.md){{#unless deployment_guide_exists}} (To be generated) {{/unless}}{{/if}}
   {{#if contribution_found}}- [Contribution Guide](./contribution-guide.md){{/if}}
-  {{#if api_documented}}- [API Contracts](./api-contracts{{#if multi-part}}-{part_id}{{/if}}.md){{#unless api_contracts_exists}} _(To be generated)_{{/unless}}{{/if}}
-  {{#if data_models_documented}}- [Data Models](./data-models{{#if multi-part}}-{part_id}{{/if}}.md){{#unless data_models_exists}} _(To be generated)_{{/unless}}{{/if}}
-  {{#if multi-part}}- [Integration Architecture](./integration-architecture.md){{#unless integration_arch_exists}} _(To be generated)\_{{/unless}}{{/if}}
+  {{#if api_documented}}- [API Contracts](./api-contracts{{#if multi-part}}-{part_id}{{/if}}.md){{#unless api_contracts_exists}} (To be generated) {{/unless}}{{/if}}
+  {{#if data_models_documented}}- [Data Models](./data-models{{#if multi-part}}-{part_id}{{/if}}.md){{#unless data_models_exists}} (To be generated) {{/unless}}{{/if}}
+  {{#if multi-part}}- [Integration Architecture](./integration-architecture.md){{#unless integration_arch_exists}} (To be generated) {{/unless}}{{/if}}
 
 ### Existing Documentation
 
@@ -850,10 +850,10 @@ Set {{incomplete_docs_list}} = {{incomplete_docs_strict}} + {{incomplete_docs_fu
 For each item store structure:
 {
 "title": "Architecture – Server",
-"file*path": "./architecture-server.md",
+"file\*path": "./architecture-server.md",
 "doc_type": "architecture",
 "part_id": "server",
-"line_text": "- [Architecture – Server](./architecture-server.md) *(To be generated)\_",
+"line_text": "- [Architecture – Server](./architecture-server.md) (To be generated)",
 "fuzzy_match": false
 }
 </action>

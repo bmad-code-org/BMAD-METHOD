@@ -4,10 +4,9 @@ const os = require('node:os');
 const chalk = require('chalk');
 const yaml = require('js-yaml');
 const { BaseIdeSetup } = require('./_base-ide');
-const { WorkflowCommandGenerator } = require('./workflow-command-generator');
-const { TaskToolCommandGenerator } = require('./task-tool-command-generator');
-
-const { getAgentsFromBmad } = require('./shared/bmad-artifacts');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
+const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * OpenCode IDE setup handler
@@ -33,26 +32,23 @@ class OpenCodeSetup extends BaseIdeSetup {
     // Clean up any existing BMAD files before reinstalling
     await this.cleanup(projectDir);
 
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+
     // Install primary agents with flat naming: bmad-agent-{module}-{name}.md
     // OpenCode agents go in the agent folder (not command folder)
-    const agents = await getAgentsFromBmad(bmadDir, options.selectedModules || []);
-
     let agentCount = 0;
-    for (const agent of agents) {
-      const processed = await this.readAndProcess(agent.path, {
-        module: agent.module,
-        name: agent.name,
-      });
-
-      const agentContent = this.createAgentContent(processed, agent);
+    for (const artifact of agentArtifacts) {
+      const agentContent = artifact.content;
       // Flat structure in agent folder: bmad-agent-{module}-{name}.md
-      const targetPath = path.join(agentsBaseDir, `bmad-agent-${agent.module}-${agent.name}.md`);
+      const targetPath = path.join(agentsBaseDir, `bmad-agent-${artifact.module}-${artifact.name}.md`);
       await this.writeFile(targetPath, agentContent);
       agentCount++;
     }
 
     // Install workflow commands with flat naming: bmad-workflow-{module}-{name}.md
-    const workflowGenerator = new WorkflowCommandGenerator();
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
 
     let workflowCommandCount = 0;
@@ -127,7 +123,7 @@ class OpenCodeSetup extends BaseIdeSetup {
     return this.processContent(content, metadata);
   }
 
-  createAgentContent(content, metadata) {
+  async createAgentContent(content, metadata) {
     const { frontmatter = {}, body } = this.parseFrontmatter(content);
 
     frontmatter.description =
@@ -140,7 +136,10 @@ class OpenCodeSetup extends BaseIdeSetup {
 
     const frontmatterString = this.stringifyFrontmatter(frontmatter);
 
-    return `${frontmatterString}\n${body}`;
+    // Get the activation header from central template
+    const activationHeader = await this.getAgentCommandHeader();
+
+    return `${frontmatterString}\n\n${activationHeader}\n\n${body}`;
   }
 
   parseFrontmatter(content) {
@@ -207,6 +206,51 @@ class OpenCodeSetup extends BaseIdeSetup {
     if (removed > 0) {
       console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD files`));
     }
+  }
+
+  /**
+   * Install a custom agent launcher for OpenCode
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object|null} Info about created command
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const agentsDir = path.join(projectDir, this.configDir, this.agentsDir);
+
+    if (!(await this.exists(path.join(projectDir, this.configDir)))) {
+      return null; // IDE not configured for this project
+    }
+
+    await this.ensureDir(agentsDir);
+
+    const launcherContent = `---
+name: '${agentName}'
+description: '${metadata.title || agentName} agent'
+mode: 'primary'
+---
+
+You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
+
+<agent-activation CRITICAL="TRUE">
+1. LOAD the FULL agent file from @${agentPath}
+2. READ its entire contents - this contains the complete agent persona, menu, and instructions
+3. FOLLOW every step in the <activation> section precisely
+4. DISPLAY the welcome/greeting as instructed
+5. PRESENT the numbered menu
+6. WAIT for user input before proceeding
+</agent-activation>
+`;
+
+    // OpenCode uses flat naming: bmad-agent-custom-{name}.md
+    const launcherPath = path.join(agentsDir, `bmad-agent-custom-${agentName}.md`);
+    await this.writeFile(launcherPath, launcherContent);
+
+    return {
+      path: launcherPath,
+      command: `bmad-agent-custom-${agentName}`,
+    };
   }
 }
 

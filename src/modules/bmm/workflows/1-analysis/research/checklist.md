@@ -295,5 +295,5 @@ _List areas requiring further investigation:_
 
 **Validation Complete:** ☐ Yes ☐ No
 **Ready for Distribution:** ☐ Yes ☐ No
-**Reviewer:** **\*\***\_\_\_\_**\*\***
-**Date:** **\*\***\_\_\_\_**\*\***
+**Reviewer:** {reviewer}
+**Date:** {date}

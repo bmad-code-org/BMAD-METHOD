@@ -1,9 +1,10 @@
 # Build Module - Interactive Module Builder Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/bmad/bmb/workflows/create-module/workflow.yaml</critical>
-<critical>Study existing modules in: {project-root}/bmad/ for patterns</critical>
+<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmb/workflows/create-module/workflow.yaml</critical>
+<critical>Study existing modules in: {project-root}/{bmad_folder}/ for patterns</critical>
 <critical>Communicate in {communication_language} throughout the module creation process</critical>
+<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
 
 <workflow>
 
@@ -28,7 +29,7 @@
 <ask>Do you have a module brief or should we create one? [have/create/skip]</ask>
 
 <check if="create">
-  <action>Invoke module-brief workflow: {project-root}/bmad/bmb/workflows/module-brief/workflow.yaml</action>
+  <action>Invoke module-brief workflow: {project-root}/{bmad_folder}/bmb/workflows/module-brief/workflow.yaml</action>
   <action>Wait for module brief completion</action>
   <action>Load the module brief to use as blueprint</action>
 </check>
@@ -64,7 +65,7 @@
 2. **Module code** - Generate kebab-case from name following patterns:
    - Multi-word descriptive names → shortened kebab-case
    - Domain-specific terms → recognizable abbreviations
-   - Present suggested code and confirm it works for paths like bmad/{{code}}/agents/
+   - Present suggested code and confirm it works for paths like {bmad_folder}/{{code}}/agents/
 3. **Module purpose** - Refine their description into 1-2 clear sentences
 4. **Target audience** - Infer from context or ask if unclear
 
@@ -180,7 +181,7 @@
 └── data/                     # User data directory
 ```
 
-**SOURCE MODULE** (\_module-installer is for installation only, not copied to target):
+**SOURCE MODULE** (module-installer is for installation only, not copied to target):
 
 ```
 {{module_code}}/
@@ -268,7 +269,7 @@
 <critical>IMPORTANT: Create install-config.yaml NOT install-config.yaml</critical>
 <critical>This is the STANDARD format that BMAD installer uses</critical>
 
-Create \_module-installer/install-config.yaml:
+Create module-installer/install-config.yaml:
 
 ```yaml
 # {{module_name}} Module Configuration
@@ -322,14 +323,14 @@ prompt:
 
 # EXAMPLE Static path:
 # data_path:
-#   result: "{project-root}/bmad/{{module_code}}/data"
+#   result: "{project-root}/{bmad_folder}/{{module_code}}/data"
 
 {{generated_config_fields_from_step_4}}
 ```
 
 <critical>Save location:</critical>
 
-- Save to {{module_path}}/\_module-installer/install-config.yaml
+- Save to {{module_path}}/module-installer/install-config.yaml
 
 <ask>Does your module need custom installation logic (database setup, API registration, etc.)?</ask>
 
@@ -338,18 +339,13 @@ prompt:
   // {{module_name}} Module Installer
   // Custom installation logic
 
-/\*\*
-
-- Module installation hook
-- Called after files are copied but before IDE configuration
--
 - @param {Object} options - Installation options
 - @param {string} options.projectRoot - Project root directory
 - @param {Object} options.config - Module configuration from install-config.yaml
 - @param {Array} options.installedIDEs - List of IDE codes being configured
 - @param {Object} options.logger - Logger instance (log, warn, error methods)
 - @returns {boolean} - true if successful, false to abort installation
-  \*/
+
   async function install(options) {
   const { projectRoot, config, installedIDEs, logger } = options;
 
@@ -374,7 +370,7 @@ module.exports = { install };
 
 <critical>Save location:</critical>
 
-- Save to {{module_path}}/\_module-installer/installer.js
+- Save to {{module_path}}/module-installer/installer.js
 </check>
 
 <check if="no">
@@ -446,7 +442,7 @@ bmad install {{module_code}}
 
 ## Configuration
 
-The module can be configured in `bmad/{{module_code}}/config.yaml`
+The module can be configured in `{bmad_folder}/{{module_code}}/config.yaml`
 
 Key settings:
 {{configuration_options}}
