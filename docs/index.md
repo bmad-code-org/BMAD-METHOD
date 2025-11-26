@@ -95,47 +95,16 @@ Instructions for loading agents and running workflows in your development enviro
 
 ## 🔧 Advanced Topics
 
+### Custom Agents
+
+- **[Custom Agent Installation](./custom-agent-installation.md)** - Install and personalize agents with `bmad agent-install`
+- [Agent Customization Guide](./agent-customization-guide.md) - Customize agent behavior and responses
+
 ### Installation & Bundling
 
 - [IDE Injections Reference](./installers-bundlers/ide-injections.md) - How agents are installed to IDEs
 - [Installers & Platforms Reference](./installers-bundlers/installers-modules-platforms-reference.md) - CLI tool and platform support
 - [Web Bundler Usage](./installers-bundlers/web-bundler-usage.md) - Creating web-compatible bundles
-
----
-
-## 📊 Documentation Map
-
-```
-docs/                              # Core/cross-module documentation
-├── index.md (this file)
-├── v4-to-v6-upgrade.md
-├── document-sharding-guide.md
-├── ide-info/                      # IDE setup guides
-│   ├── claude-code.md
-│   ├── cursor.md
-│   ├── windsurf.md
-│   └── [14+ other IDEs]
-└── installers-bundlers/           # Installation reference
-    ├── ide-injections.md
-    ├── installers-modules-platforms-reference.md
-    └── web-bundler-usage.md
-
-src/modules/
-├── bmm/                           # BMad Method module
-│   ├── README.md                  # Module overview & docs index
-│   ├── docs/                      # BMM-specific documentation
-│   │   ├── quick-start.md
-│   │   ├── quick-spec-flow.md
-│   │   ├── scale-adaptive-system.md
-│   │   └── brownfield-guide.md
-│   ├── workflows/README.md        # ESSENTIAL workflow guide
-│   └── testarch/README.md         # Testing strategy
-├── bmb/                           # BMad Builder module
-│   ├── README.md
-│   └── workflows/create-agent/README.md
-└── cis/                           # Creative Intelligence Suite
-    └── README.md
-```
 
 ---
 
@@ -180,48 +149,3 @@ src/modules/
 1. [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
 2. Relevant module README - Understand the area you're contributing to
 3. [Code Style section in CONTRIBUTING.md](../CONTRIBUTING.md#code-style) - Follow standards
-
----
-
-## 🔍 Quick Reference
-
-**What is each module for?**
-
-- **BMM** - AI-driven software and game development
-- **BMB** - Create custom agents and workflows
-- **CIS** - Creative thinking and brainstorming
-
-**How do I load an agent?**
-→ See [ide-info](./ide-info/) folder for your IDE
-
-**I'm stuck, what's next?**
-→ Check the [BMM Workflows Guide](../src/modules/bmm/workflows/README.md) or run `workflow-status`
-
-**I want to contribute**
-→ Start with [CONTRIBUTING.md](../CONTRIBUTING.md)
-
----
-
-## 📚 Important Concepts
-
-### Fresh Chats
-
-Each workflow should run in a fresh chat with the specified agent to avoid context limitations. This is emphasized throughout the docs because it's critical to successful workflows.
-
-### Scale Levels
-
-BMM adapts to project complexity (Levels 0-4). Documentation is scale-adaptive - you only need what's relevant to your project size.
-
-### Update-Safe Customization
-
-All agent customizations go in `{bmad_folder}/_cfg/agents/` and survive updates. See your IDE guide and module README for details.
-
----
-
-## 🆘 Getting Help
-
-- **Discord**: [Join the BMad Community](https://discord.gg/gk8jAdXWmj)
-  - #general-dev - Technical questions
-  - #bugs-issues - Bug reports
-- **Issues**: [GitHub Issue Tracker](https://github.com/bmad-code-org/BMAD-METHOD/issues)
-- **YouTube**: [BMad Code Channel](https://www.youtube.com/@BMadCode)

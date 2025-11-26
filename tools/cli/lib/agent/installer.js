@@ -677,6 +677,12 @@ function extractManifestData(xmlContent, metadata, agentPath, moduleName = 'cust
     return match[1].trim().replaceAll(/\n+/g, ' ').replaceAll(/\s+/g, ' ').trim();
   };
 
+  // Extract attributes from agent tag
+  const extractAgentAttribute = (attr) => {
+    const match = xmlContent.match(new RegExp(`<agent[^>]*\\s${attr}=["']([^"']+)["']`));
+    return match ? match[1] : '';
+  };
+
   const extractPrinciples = () => {
     const match = xmlContent.match(/<principles>([\s\S]*?)<\/principles>/);
     if (!match) return '';
@@ -689,11 +695,15 @@ function extractManifestData(xmlContent, metadata, agentPath, moduleName = 'cust
     return principles;
   };
 
+  // Prioritize XML extraction over metadata for agent persona info
+  const xmlTitle = extractAgentAttribute('title') || extractTag('name');
+  const xmlIcon = extractAgentAttribute('icon');
+
   return {
     name: metadata.id ? path.basename(metadata.id, '.md') : metadata.name.toLowerCase().replaceAll(/\s+/g, '-'),
-    displayName: metadata.name || '',
-    title: metadata.title || '',
-    icon: metadata.icon || '',
+    displayName: xmlTitle || metadata.name || '',
+    title: xmlTitle || metadata.title || '',
+    icon: xmlIcon || metadata.icon || '',
     role: extractTag('role'),
     identity: extractTag('identity'),
     communicationStyle: extractTag('communication_style'),

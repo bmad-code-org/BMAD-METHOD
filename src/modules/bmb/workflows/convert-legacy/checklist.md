@@ -38,7 +38,7 @@
 - [ ] Config values use {config_source}: pattern
 - [ ] Agent follows naming conventions (kebab-case for files)
 - [ ] ALL paths reference {project-root}/{bmad_folder}/{{module}}/ locations, NOT src/
-- [ ] exec, data, run-workflow commands point to final BMAD installation paths
+- [ ] exec, data, workflow commands point to final BMAD installation paths
 
 ### For Template/Workflow Conversions
 

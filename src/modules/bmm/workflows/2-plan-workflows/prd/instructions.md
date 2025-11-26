@@ -1,16 +1,17 @@
 # PRD Workflow - Intent-Driven Product Planning
 
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>This workflow uses INTENT-DRIVEN PLANNING - adapt organically to product type and context</critical>
-<critical>Communicate all responses in {communication_language} and adapt deeply to {user_skill_level}</critical>
-<critical>Generate all documents in {document_output_language}</critical>
-<critical>LIVING DOCUMENT: Write to PRD.md continuously as you discover - never wait until the end</critical>
-<critical>GUIDING PRINCIPLE: Identify what makes this product special and ensure it's reflected throughout the PRD</critical>
-<critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
-<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
-<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
-
+<critical-rules>
+- <critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+- <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+- <critical>This workflow uses INTENT-DRIVEN PLANNING - adapt organically to product type and context</critical>
+- <critical>Communicate all responses in {communication_language} and adapt deeply to {user_skill_level}</critical>
+- <critical>Generate all documents in {document_output_language}</critical>
+- <critical>LIVING DOCUMENT: Write to PRD.md continuously as you discover - never wait until the end</critical>
+- <critical>GUIDING PRINCIPLE: Identify what makes this product special and ensure it's reflected throughout the PRD</critical>
+- <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+- <critical>⚠️ CHECKPOINT PROTOCOL: After EVERY template-output tag, you MUST follow workflow.xml substep 2c. </critical>
+- <critical>YOU ARE FACILITATING A CONVERSATION With a user to produce a final document step by step. The whole process is meant to be collaborative helping the user flesh out their ideas</critical>
+</critical-rules>
 <workflow>
 
 <step n="0" goal="Validate workflow readiness" tag="workflow-status">
@@ -24,13 +25,7 @@
   <action>Check status of "prd" workflow</action>
   <action>Get project_track from YAML metadata</action>
   <action>Find first non-completed workflow (next expected workflow)</action>
-
-  <check if="project_track is Quick Flow">
-    <output>**Quick Flow Track - Redirecting**
-
-Quick Flow projects use tech-spec workflow for implementation-focused planning.
-PRD is for BMad Method and Enterprise Method tracks that need comprehensive requirements.</output>
-<action>Exit and suggest tech-spec workflow</action>
+</output>
 </check>
 
   <check if="prd status is file path (already completed)">
@@ -47,16 +42,16 @@ PRD is for BMad Method and Enterprise Method tracks that need comprehensive requ
 </step>
 
 <step n="0.5" goal="Discover and load input documents">
-<invoke-protocol name="discover_inputs" />
-<note>After discovery, these content variables are available: {product_brief_content}, {research_content}, {document_project_content}</note>
+  <invoke-protocol name="discover_inputs" />
+  <note>After discovery, these content variables are available: {product_brief_content}, {research_content}, {document_project_content}</note>
 </step>
 
 <step n="1" goal="Discovery - Project, Domain, and Vision">
-<action>Welcome {user_name} and begin comprehensive discovery, and then start to GATHER ALL CONTEXT:
-1. Check workflow-status.yaml for project_context (if exists)
-2. Review loaded content: {product_brief_content}, {research_content}, {document_project_content} (auto-loaded in Step 0.5)
-3. Detect project type AND domain complexity using data-driven classification
-</action>
+  <action>Welcome {user_name} and begin comprehensive discovery, and then start to GATHER ALL CONTEXT:
+  1. Check workflow-status.yaml for project_context (if exists)
+  2. Review loaded content: {product_brief_content}, {research_content}, {document_project_content} (auto-loaded in Step 0.5)
+  3. Detect project type AND domain complexity using data-driven classification
+  </action>
 
 <action>Load classification data files COMPLETELY:
 
@@ -145,40 +140,63 @@ Capture this differentiator - it becomes a thread connecting throughout the PRD.
 <template-output>product_brief_path</template-output>
 <template-output>domain_brief_path</template-output>
 <template-output>research_documents</template-output>
+
+<critical>You MUST display the checkpoint display and HALT for user input, unless the user enabled YOLO mode.</critical>
+
+  <checkpoint title="Discovery Complete">
+    <display>[a] Advanced Elicitation [c] Continue [p] Party Mode</display>
+    <checkpoint-handlers>
+      <on-select key="a">Load and execute {advanced_elicitation} task, then return to this checkpoint</on-select>
+      <on-select key="p">Load and execute {party_mode}, then return to this checkpoint</on-select>
+      <on-select key="c"> Ensure all content is written to {default_output_file}</on-select>
+    </checkpoint-handlers>
+  </checkpoint>
+
 </step>
 
 <step n="2" goal="Success Definition">
-<action>Define what winning looks like for THIS specific product
+  <action>Define what winning looks like for THIS specific product
 
-INTENT: Meaningful success criteria, not generic metrics
+**User Success First**
+Ask:
 
-Adapt to context:
+- "What would make a user say 'this was worth it'?"
+- "What moment makes them tell a friend about this?"
+- "After [key journey], what outcome are they walking away with?"
+
+**Business Success Second**
+Ask:
+
+- "What does success look like for your business at 3 months? 12 months?"
+- "Is this about revenue, user growth, engagement, something else?"
+- "What metric would make you say 'this is working'?"
+
+**Make It Specific**
+Challenge vague metrics:
+
+- NOT: "10,000 users" → "What kind of users? Doing what?"
+- NOT: "99.9% uptime" → "What's the real concern - data loss? Failed payments?"
+- NOT: "Fast" → "How fast, and what specifically needs to be fast?"
+
+Ask: "Can we measure this? How would you know if you hit it?"
+
+**Connect to Differentiator**
+Bring it back to the core:
+"So success means users experience [differentiator] and achieve [outcome] - does that capture it?"
+
+Adapt success criteria to context:
 
 - Consumer: User love, engagement, retention
 - B2B: ROI, efficiency, adoption
 - Developer tools: Developer experience, community
-- Regulated: Compliance, safety, validation
+- Regulated: Compliance, safety, validation</action>
 
-Make it specific:
+  <template-output>success_criteria</template-output>
+  <check if="business focus">
+  <template-output>business_metrics</template-output>
+  </check>
 
-- NOT: "10,000 users"
-- BUT: "100 power users who rely on it daily"
-
-- NOT: "99.9% uptime"
-- BUT: "Zero data loss during critical operations"
-
-Connect to what makes the product special:
-
-- "Success means users experience [key value moment] and achieve [desired outcome]"</action>
-
-<template-output>success_criteria</template-output>
-<check if="business focus">
-<template-output>business_metrics</template-output>
-</check>
-</step>
-
-<step n="3" goal="Scope Definition">
-<action>Smart scope negotiation - find the sweet spot
+  <action>Smart scope negotiation - find the sweet spot based on success:
 
 The Scoping Game:
 
@@ -196,14 +214,143 @@ For complex domains:
 - Include compliance minimums in MVP
 - Note regulatory gates between phases</action>
 
-<template-output>mvp_scope</template-output>
-<template-output>growth_features</template-output>
-<template-output>vision_features</template-output>
+  <template-output>mvp_scope</template-output>
+  <template-output>growth_features</template-output>
+  <template-output>vision_features</template-output>
+  <critical>You MUST display the checkpoint display and HALT for user input, unless the user enabled YOLO mode.</critical>
+
+    <checkpoint title="Success and Scope Complete">
+      <display>[a] Advanced Elicitation [c] Continue [p] Party Mode [u] User Interview</display>
+      <checkpoint-handlers>
+        <on-select key="a">Load and execute {advanced_elicitation} task, then return to this checkpoint</on-select>
+        <on-select key="p">Load and execute {party_mode}, then return to this checkpoint</on-select>
+        <on-select key="u">Load and execute {party_mode} but the party will include the users from the User Journeys section. The discussion can start with each user saying hello and giving their initial thoughts, then return to this checkpoint.</on-select>
+        <on-select key="c"> Ensure all content is written to {default_output_file}</on-select>
+      </checkpoint-handlers>
+    </checkpoint>
+  </step>
+
+<step n="3" goal="User Journeys">
+<critical>This step covers ALL user types - end users, admins, moderators, support, API consumers. If a human interacts with the system, there's a journey. No journey = no FRs = doesn't exist.</critical>
+
+<action>Identify all user types first:
+
+Before exploring journeys, ask the user:
+
+"Besides the primary user, who else interacts with this system?"
+
+Consider these common user types:
+
+- End users (primary)
+- Admins - manage users, settings, content
+- Moderators - review flagged content, enforce rules
+- Support staff - help users, investigate issues
+- API consumers - if dev tool or platform
+- Internal ops - analytics, monitoring, billing
+
+List all user types before proceeding.</action>
+
+<action>Create detailed narrative user journeys with personas:
+
+For each user type identified, create rich, detailed journeys following this pattern:
+
+**Journey Creation Process:**
+
+**1. Develop the Persona**
+Give them a name, context, and motivation:
+
+- **Name**: Realistic name (Maria, Marcus, Jordan, etc.)
+- **Backstory**: Who they are, what they want, why they need this
+- **Motivation**: Core problem they're trying to solve
+- **Emotional state**: How they feel about solving this problem
+
+Example: "Maria is a working parent who wants to cook healthy meals for her family but struggles with meal planning and limited evening time. She's tired of the same rotating dishes and wants inspiration that fits her schedule."
+
+**2. Map Their Complete Journey**
+Document their end-to-end experience:
+
+- **Entry point**: How they discover and access the product
+- **Key steps**: Each touchpoint in sequence (use arrows →)
+- **Critical actions**: What they do at each step
+- **Decision points**: Choices they make
+- **Success moment**: Where they achieve their goal
+- **Exit point**: How the journey concludes
+
+**3. Use This Exact Format for Each Journey:**
+
+**Journey [Number]: [Persona Name] - [Journey Theme]**
+[Persona description with backstory and motivation]
+
+- [Entry point] → [step 1] → [step 2] → [step 3] → [critical moment] → [step N] → [completion]
+
+**4. Explore Journey Details Conversationally**
+For each journey, ask:
+
+- "What happens at each step specifically?"
+- "What could go wrong here? What's the recovery path?"
+- "What information do they need to see/hear?"
+- "What's their emotional state at each point?"
+- "Where does this journey succeed or fail?"
+
+**5. Connect Journeys to Requirements**
+After each journey, explicitly state:
+"This journey reveals requirements for:"
+
+- List specific capability areas (e.g., onboarding, meal planning, admin dashboard)
+- Help user see how different journeys create different feature sets
+
+**Example Output Structure:**
+
+**Journey 1: Maria - First Recipe Discovery**
+Maria is a working parent who wants to cook healthy meals for her family but struggles with meal planning...
+
+- Discovers via search → lands on recipe page → signs up → completes preferences → browses recommendations → saves first recipe → adds to meal plan
+
+**Journey 2: [Persona] - [Theme]**
+[Persona description with context]
+
+- [Step sequence] → [critical moment] → [completion]
+
+**Journey 3: [Admin/Support Persona] - [Admin Theme]**
+[Admin persona description]
+
+- [Admin workflow] → [decision point] → [system outcome]</action>
+
+<action>Guide journey exploration to cover all key areas:
+
+**Aim for 3-4 journeys minimum:**
+
+1. Primary user - happy path (core experience)
+2. Primary user - edge case (different goal, error recovery)
+3. Secondary user (admin, moderator, support, etc.)
+4. API consumer (if applicable)
+
+**Ask after each:** "Another journey? We should cover [suggest uncovered user type]"
+
+**Use journeys to reveal requirements:**
+Each journey reveals different capabilities needed:
+
+- Admin journey → admin dashboard, user management
+- Support journey → ticket system, user lookup tools
+- API journey → documentation, rate limiting, keys
+- Error recovery → retry mechanisms, help content</action>
+
+<template-output>user_journeys</template-output>
+<critical>You MUST display the checkpoint display and HALT for user input, unless the user enabled YOLO mode.</critical>
+
+<checkpoint title="User Journeys Complete">
+  <display>[a] Advanced Elicitation [c] Continue [p] Party Mode [u] User Interview</display>
+  <checkpoint-handlers>
+    <on-select key="a">Load and execute {advanced_elicitation} task, then return to this checkpoint</on-select>
+    <on-select key="p">Load and execute {party_mode}, then return to this checkpoint</on-select>
+    <on-select key="u">Load and execute {party_mode} but the party will include the users from the User Journeys section. The discussion can start with each user saying hello and giving their initial thoughts, then return to this checkpoint.</on-select>
+    <on-select key="c"> Ensure all content is written to {default_output_file}</on-select>
+  </checkpoint-handlers>
+</checkpoint>
 </step>
 
-<step n="4" goal="Domain-Specific Exploration" optional="true">
-<critical>This step is DATA-DRIVEN using domain_complexity_data CSV loaded in Step 1</critical>
-<action>Execute only if complexity_level = "high" OR domain-brief exists</action>
+<step n="5" goal="Domain-Specific Exploration" optional="true">
+<critical>This step is DATA-DRIVEN using {domain_complexity_data} CSV loaded in Step 1</critical>
 
 <action>Retrieve domain-specific configuration from CSV:
 
@@ -253,7 +400,6 @@ These inform:
 - What validation is required
   </action>
 
-<check if="complexity_level == 'high'">
   <template-output>domain_considerations</template-output>
 
 <action>Generate domain-specific special sections if defined:
@@ -268,9 +414,20 @@ Example mappings from CSV:
 - "compliance_matrix" → <template-output>compliance_matrix</template-output>
   </action>
   </check>
+  <critical>You MUST display the checkpoint display and HALT for user input, unless the user enabled YOLO mode.</critical>
+
+<checkpoint title="Domain Exploration Complete">
+  <display>[a] Advanced Elicitation [c] Continue [p] Party Mode [u] User Interview</display>
+  <checkpoint-handlers>
+    <on-select key="a">Load and execute {advanced_elicitation} task, then return to this checkpoint</on-select>
+    <on-select key="p">Load and execute {party_mode}, then return to this checkpoint</on-select>
+    <on-select key="u">Load and execute {party_mode} but the party will include the users from the User Journeys section. The discussion can start with each user saying hello and giving their initial thoughts, then return to this checkpoint.</on-select>
+    <on-select key="c"> Ensure all content is written to {default_output_file}</on-select>
+  </checkpoint-handlers>
+</checkpoint>
   </step>
 
-<step n="5" goal="Innovation Discovery" optional="true">
+<step n="6" goal="Innovation Discovery" optional="true">
 <critical>This step uses innovation_signals from project_types_data CSV loaded in Step 1</critical>
 
 <action>Check for innovation in this product:
@@ -323,9 +480,20 @@ Use web_search_triggers from project_types_data CSV if relevant:
   <template-output>innovation_patterns</template-output>
   <template-output>validation_approach</template-output>
 </check>
+<critical>You MUST display the checkpoint display and HALT for user input, unless the user enabled YOLO mode.</critical>
+
+<checkpoint title="Innovation Discovery Complete">
+  <display>[a] Advanced Elicitation [c] Continue [p] Party Mode [u] User Interview</display>
+  <checkpoint-handlers>
+    <on-select key="a">Load and execute {advanced_elicitation} task, then return to this checkpoint</on-select>
+    <on-select key="p">Load and execute {party_mode}, then return to this checkpoint</on-select>
+    <on-select key="u">Load and execute {party_mode} but the party will include the users from the User Journeys section. The discussion can start with each user saying hello and giving their initial thoughts, then return to this checkpoint.</on-select>
+    <on-select key="c"> Ensure all content is written to {default_output_file}</on-select>
+  </checkpoint-handlers>
+</checkpoint>
 </step>
 
-<step n="6" goal="Project-Specific Deep Dive">
+<step n="7" goal="Project-Specific Deep Dive">
 <critical>This step is DATA-DRIVEN using project_types_data CSV loaded in Step 1</critical>
 
 <action>Retrieve project-specific configuration from CSV:
@@ -421,30 +589,20 @@ For required_sections that DON'T have matching template variables:
 
 This hybrid approach balances template structure with CSV-driven flexibility.
 </note>
+<critical>You MUST display the checkpoint display and HALT for user input, unless the user enabled YOLO mode.</critical>
+
+<checkpoint title="Project-Specific Deep Dive Complete">
+  <display>[a] Advanced Elicitation [c] Continue [p] Party Mode [u] User Interview</display>
+  <checkpoint-handlers>
+    <on-select key="a">Load and execute {advanced_elicitation} task, then return to this checkpoint</on-select>
+    <on-select key="p">Load and execute {party_mode}, then return to this checkpoint</on-select>
+    <on-select key="u">Load and execute {party_mode} but the party will include the users from the User Journeys section. The discussion can start with each user saying hello and giving their initial thoughts, then return to this checkpoint.</on-select>
+    <on-select key="c"> Ensure all content is written to {default_output_file}</on-select>
+  </checkpoint-handlers>
+</checkpoint>
 </step>
 
-<step n="7" goal="UX Principles" if="project has UI or UX">
-  <action>Only if product has a UI
-
-Light touch on UX - not full design:
-
-- Visual personality
-- Key interaction patterns
-- Critical user flows
-
-"How should this feel to use?"
-"What's the vibe - professional, playful, minimal?"
-
-Connect UX to product vision:
-"The UI should reinforce [core value proposition] through [design approach]"</action>
-
-  <check if="has UI">
-    <template-output>ux_principles</template-output>
-    <template-output>key_interactions</template-output>
-  </check>
-</step>
-
-<step n="8" goal="Functional Requirements Synthesis">
+<step n="9" goal="Functional Requirements Synthesis">
 <critical>This section is THE CAPABILITY CONTRACT for all downstream work</critical>
 <critical>UX designers will ONLY design what's listed here</critical>
 <critical>Architects will ONLY support what's listed here</critical>
@@ -457,12 +615,18 @@ Connect UX to product vision:
 FRs define WHAT capabilities the product must have. They are the complete inventory
 of user-facing and system capabilities that deliver the product vision.
 
+**Notice:**
+✅ Each FR is a testable capability
+✅ Each FR is implementation-agnostic (could be built many ways)
+✅ Each FR specifies WHO and WHAT, not HOW
+✅ No UI details, no performance numbers, no technology choices
+✅ Comprehensive coverage of capability areas
+
 **How They Will Be Used:**
 
 1. UX Designer reads FRs → designs interactions for each capability
 2. Architect reads FRs → designs systems to support each capability
 3. PM reads FRs → creates epics and stories to implement each capability
-4. Dev Agent reads assembled context → implements stories based on FRs
 
 **Critical Property - COMPLETENESS:**
 Every capability discussed in vision, scope, domain requirements, and project-specific
@@ -474,15 +638,6 @@ specific UI/UX details. Those come later from UX and Architecture.
 </action>
 
 <action>Transform everything discovered into comprehensive functional requirements:
-
-**Coverage - Pull from EVERYWHERE:**
-
-- Core features from MVP scope → FRs
-- Growth features → FRs (marked as post-MVP if needed)
-- Domain-mandated features → FRs
-- Project-type specific needs → FRs
-- Innovation requirements → FRs
-- Anti-patterns (explicitly NOT doing) → Note in FR section if needed
 
 **Organization - Group by CAPABILITY AREA:**
 Don't organize by technology or layer. Group by what users/system can DO:
@@ -515,45 +670,23 @@ The second example belongs in Epic Breakdown, not PRD.
 - FR1: Users can create accounts with email or social authentication
 - FR2: Users can log in securely and maintain sessions across devices
 - FR3: Users can reset passwords via email verification
-- FR4: Users can update profile information and preferences
-- FR5: Administrators can manage user roles and permissions
-
-**Content Management:**
-
-- FR6: Users can create, edit, and delete content items
-- FR7: Users can organize content with tags and categories
-- FR8: Users can search content by keyword, tag, or date range
-- FR9: Users can export content in multiple formats
+- ...
 
 **Data Ownership (local-first products):**
 
 - FR10: All user data stored locally on user's device
 - FR11: Users can export complete data at any time
-- FR12: Users can import previously exported data
-- FR13: System monitors storage usage and warns before limits
+- ...
 
 **Collaboration:**
 
 - FR14: Users can share content with specific users or teams
 - FR15: Users can comment on shared content
-- FR16: Users can track content change history
-- FR17: Users receive notifications for relevant updates
+- ...
 
-**Notice:**
-✅ Each FR is a testable capability
-✅ Each FR is implementation-agnostic (could be built many ways)
-✅ Each FR specifies WHO and WHAT, not HOW
-✅ No UI details, no performance numbers, no technology choices
-✅ Comprehensive coverage of capability areas
 </example>
 
-<action>Generate the complete FR list by systematically extracting capabilities:
-
-1. MVP scope → extract all capabilities → write as FRs
-2. Growth features → extract capabilities → write as FRs (note if post-MVP)
-3. Domain requirements → extract mandatory capabilities → write as FRs
-4. Project-type specifics → extract type-specific capabilities → write as FRs
-5. Innovation patterns → extract novel capabilities → write as FRs
+<action>Generate the complete FR list by systematically extracting capabilities from all discussed so far for all that is in scope.
 
 Organize FRs by logical capability groups (5-8 groups typically).
 Number sequentially across all groups (FR1, FR2... FR47).
@@ -586,9 +719,20 @@ COMPLETENESS GATE: Review your FR list against the entire PRD written so far and
 </action>
 
 <template-output>functional_requirements_complete</template-output>
+<critical>You MUST display the checkpoint display and HALT for user input, unless the user enabled YOLO mode.</critical>
+
+<checkpoint title="Functional Requirements Complete">
+  <display>[a] Advanced Elicitation [c] Continue [p] Party Mode [u] User Interview</display>
+  <checkpoint-handlers>
+    <on-select key="a">Load and execute {advanced_elicitation} task, then return to this checkpoint</on-select>
+    <on-select key="p">Load and execute {party_mode}, then return to this checkpoint</on-select>
+    <on-select key="u">Load and execute {party_mode} but the party will include the users from the User Journeys section. The discussion can start with each user saying hello and giving their initial thoughts, then return to this checkpoint.</on-select>
+    <on-select key="c"> Ensure all content is written to {default_output_file}</on-select>
+  </checkpoint-handlers>
+</checkpoint>
 </step>
 
-<step n="9" goal="Non-Functional Requirements Discovery">
+<step n="10" goal="Non-Functional Requirements Discovery">
 <action>Only document NFRs that matter for THIS product
 
 Performance: Only if user-facing impact
@@ -623,26 +767,26 @@ Skip categories that don't apply!</action>
 </check>
 </step>
 
-<step n="10" goal="Complete PRD and determine next steps">
-<action>Quick review of captured requirements:
+<step n="11" goal="Complete PRD and determine next steps">
+<action>Announce that the PRD is complete and the unused sections will be cleaned up from the output document!</action>
 
-"We've captured:
+<action>CRITICAL: Clean up the PRD document before validation:
 
-- {{fr_count}} functional requirements
-- {{nfr_count}} non-functional requirements
-- MVP scope defined
-  {{if domain_complexity == 'high'}}
-- Domain-specific requirements addressed
-  {{/if}}
-  {{if innovation_detected}}
-- Innovation patterns documented
-  {{/if}}
+Before running validation, you MUST remove any empty sections from the generated PRD:
 
-Your PRD is complete!"
-</action>
+1. **Scan for empty sections** - Look for sections with no meaningful content (just whitespace or placeholder text)
+2. **Remove entire empty sections** - Delete the section header and any empty content
+3. **Keep relevant sections only** - If a project type doesn't need certain sections (e.g., API specs for a mobile app), remove those sections entirely
+4. **Ensure document flows logically** - The final PRD should only contain sections with actual content
 
-<template-output>prd_summary</template-output>
-<template-output>product_value_summary</template-output>
+**This cleanup step is essential because:**
+
+- The template includes all possible sections for maximum flexibility
+- Not all sections apply to every project type
+- Empty sections make the PRD look incomplete and unprofessional
+- Validation expects meaningful content in all included sections
+
+**Example:** If building a CLI tool, you'd typically remove: API Specification, Platform Support, Device Capabilities, Multi-Tenancy Architecture, User Experience Principles sections.</action>
 
 <check if="standalone_mode != true">
   <action>Load the FULL file: {status_file}</action>
@@ -660,43 +804,16 @@ Your PRD is complete!"
 
 <output>**✅ PRD Complete, {user_name}!**
 
-**Created:** PRD.md with {{fr_count}} FRs and NFRs
-
 **Next Steps:**
 
-<check if="standalone_mode != true">
-Based on your {{project_track}} workflow path, you can:
-
-**Option A: Create Epic Breakdown Now** (Optional)
-`workflow create-epics-and-stories`
-
-- Creates basic epic structure from PRD
-- Can be enhanced later with UX/Architecture context
-
-<check if="UI_exists">
-**Option B: UX Design First** (Recommended if UI)
-   `workflow create-ux-design`
-   - Design user experience and interactions
-   - Epic breakdown can incorporate UX details later
-</check>
-
-**Option C: Skip to Architecture**
-`workflow create-architecture`
-
-- Define technical decisions
-- Epic breakdown created after with full context
-
-**Recommendation:** {{if UI_exists}}Do UX Design first, then Architecture, then create epics with full context{{else}}Go straight to Architecture, then create epics{{/if}}
-</check>
-
-<check if="standalone_mode == true">
 **Typical next workflows:**
+
 1. `workflow create-ux-design` - UX Design (if UI exists)
 2. `workflow create-architecture` - Technical architecture
 3. `workflow create-epics-and-stories` - Epic breakdown
 
 **Note:** Epics can be created at any point but have richer detail when created after UX/Architecture.
-</check>
+
 </output>
 </step>
 
