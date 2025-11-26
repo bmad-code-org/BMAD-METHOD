@@ -1,4 +1,5 @@
 const path = require('node:path');
+const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
@@ -173,6 +174,58 @@ BMAD ${workflow.module.toUpperCase()} module
       await fs.remove(bmadDir);
       console.log(chalk.dim(`  Removed old BMAD commands`));
     }
+  }
+
+  /**
+   * Install a custom agent launcher for Auggie
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object} Installation result
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    // Auggie uses .augment/commands directory
+    const location = path.join(projectDir, '.augment', 'commands');
+    const bmadCommandsDir = path.join(location, 'bmad');
+    const agentsDir = path.join(bmadCommandsDir, 'agents');
+
+    // Create .augment/commands/bmad/agents directory if it doesn't exist
+    await fs.ensureDir(agentsDir);
+
+    // Create custom agent launcher
+    const launcherContent = `---
+description: "Use the ${agentName} custom agent"
+---
+
+# ${agentName} Custom Agent
+
+**⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!
+
+This is a launcher for the custom BMAD agent "${agentName}".
+
+## Usage
+1. First run: \`${agentPath}\` to load the complete agent
+2. Then use this command to activate ${agentName}
+
+The agent will follow the persona and instructions from the main agent file.
+
+## Module
+BMAD Custom agent
+`;
+
+    const fileName = `custom-${agentName.toLowerCase()}.md`;
+    const launcherPath = path.join(agentsDir, fileName);
+
+    // Write the launcher file
+    await fs.writeFile(launcherPath, launcherContent, 'utf8');
+
+    return {
+      ide: 'auggie',
+      path: path.relative(projectDir, launcherPath),
+      command: agentName,
+      type: 'custom-agent-launcher',
+    };
   }
 }
 

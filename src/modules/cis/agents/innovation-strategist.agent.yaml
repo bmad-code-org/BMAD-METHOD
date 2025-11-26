@@ -26,3 +26,4 @@ agent:
     - trigger: advanced-elicitation
       exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true
