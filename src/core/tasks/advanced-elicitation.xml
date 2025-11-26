@@ -44,8 +44,8 @@
     <step n="2" title="Present Options and Handle Responses">
 
       <format>
-        **Advanced Elicitation Options**
-        Choose a number (1-5), r to shuffle, or x to proceed:
+        **Advanced Elicitation Options (If you launched Party Mode, they will participate randomly)**
+        Choose a number (1-5), [r] to Reshuffle, [a] List All, or [x] to Proceed:
 
         1. [Method Name]
         2. [Method Name]
@@ -53,6 +53,7 @@
         4. [Method Name]
         5. [Method Name]
         r. Reshuffle the list with 5 new options
+        a. List all methods with descriptions
         x. Proceed / No Further Actions
       </format>
 
@@ -68,13 +69,20 @@
           <i>CRITICAL: Re-present the same 1-5,r,x prompt to allow additional elicitations</i>
         </case>
         <case n="r">
-          <i>Select 5 different methods from advanced-elicitation-methods.csv, present new list with same prompt format</i>
+          <i>Select 5 random methods from advanced-elicitation-methods.csv, present new list with same prompt format</i>
+          <i>When selecting, try to think and pick a diverse set of methods covering different categories and approaches, with 1 and 2 being
+            potentially the most useful for the document or section being discovered</i>
         </case>
         <case n="x">
           <i>Complete elicitation and proceed</i>
           <i>Return the fully enhanced content back to create-doc.md</i>
           <i>The enhanced content becomes the final version for that section</i>
           <i>Signal completion back to create-doc.md to continue with next section</i>
+        </case>
+        <case n="a">
+          <i>List all methods with their descriptions from the CSV in a compact table</i>
+          <i>Allow user to select any method by name or number from the full list</i>
+          <i>After selection, execute the method as described in the n="1-5" case above</i>
         </case>
         <case n="direct-feedback">
           <i>Apply changes to current section content and re-present choices</i>
@@ -90,11 +98,13 @@
       <i>Output pattern: Use the pattern as a flexible guide (e.g., "paths → evaluation → selection")</i>
       <i>Dynamic adaptation: Adjust complexity based on content needs (simple to sophisticated)</i>
       <i>Creative application: Interpret methods flexibly based on context while maintaining pattern consistency</i>
-      <i>Be concise: Focus on actionable insights</i>
-      <i>Stay relevant: Tie elicitation to specific content being analyzed (the current section from create-doc)</i>
-      <i>Identify personas: For multi-persona methods, clearly identify viewpoints</i>
-      <i>Critical loop behavior: Always re-offer the 1-5,r,x choices after each method execution</i>
-      <i>Continue until user selects 'x' to proceed with enhanced content</i>
+      <i>Focus on actionable insights</i>
+      <i>Stay relevant: Tie elicitation to specific content being analyzed (the current section from the document being created unless user
+        indicates otherwise)</i>
+      <i>Identify personas: For single or multi-persona methods, clearly identify viewpoints, and use party members if available in memory
+        already</i>
+      <i>Critical loop behavior: Always re-offer the 1-5,r,a,x choices after each method execution</i>
+      <i>Continue until user selects 'x' to proceed with enhanced content, confirm or ask the user what should be accepted from the session</i>
       <i>Each method application builds upon previous enhancements</i>
       <i>Content preservation: Track all enhancements made during elicitation</i>
       <i>Iterative enhancement: Each selected method (1-5) should:</i>

@@ -1,13 +1,11 @@
-# Epic and Story Decomposition - Intent-Based Implementation Planning
+# Epic and Story Creation with Full Technical Context
 
 <critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>This workflow transforms requirements into BITE-SIZED STORIES for development agents</critical>
+<critical>PREREQUISITES: PRD.md AND Architecture.md MUST be completed before running this workflow</critical>
+<critical>UX Design.md is highly recommended if the product has user interfaces</critical>
 <critical>EVERY story must be completable by a single dev agent in one focused session</critical>
-<critical>⚠️ EPIC STRUCTURE PRINCIPLE: Each epic MUST deliver USER VALUE, not just technical capability. Epics are NOT organized by technical layers (database, API, frontend). Each epic should result in something USERS can actually use or benefit from. Exception: Foundation/setup stories at the start of first epic are acceptable. Another valid exception: API-first epic ONLY when the API itself has standalone value (e.g., will be consumed by third parties or multiple frontends).</critical>
-<critical>BMAD METHOD WORKFLOW POSITION: This workflow can be invoked at multiple points - after PRD only, after PRD+UX, after PRD+UX+Architecture, or to update existing epics. If epics.md already exists, ASK the user: (1) CONTINUING - previous run was incomplete, (2) REPLACING - starting fresh/discarding old, (3) UPDATING - new planning document created since last epic generation</critical>
-<critical>This is a LIVING DOCUMENT that evolves through the BMad Method workflow chain</critical>
-<critical>Phase 4 Implementation pulls context from: PRD + epics.md + UX + Architecture</critical>
+<critical>⚠️ EPIC STRUCTURE PRINCIPLE: Each epic MUST deliver USER VALUE, not just technical capability. Epics are NOT organized by technical layers (database, API, frontend). Each epic should result in something USERS can actually use or benefit from. Exception: Foundation/setup stories at the start of first epic are acceptable.</critical>
 <critical>Communicate all responses in {communication_language} and adapt to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>LIVING DOCUMENT: Write to epics.md continuously as you work - never wait until the end</critical>
@@ -17,600 +15,373 @@
 
 <workflow>
 
-<step n="0" goal="Detect workflow mode and available context">
-<action>Determine if this is initial creation or update mode
+<step n="0" goal="Validate prerequisites and load all context">
+<action>Welcome {user_name} to comprehensive epic and story creation</action>
 
-**Check for existing epics.md:**
-</action>
+<action>**CRITICAL PREREQUISITE VALIDATION:**</action>
 
-<action>Check if {default_output_file} exists (epics.md)</action>
+<action>Verify required documents exist and are complete:
 
-<check if="epics.md exists">
-  <action>Load existing epics.md completely</action>
-  <action>Extract existing:
-  - Epic structure and titles
-  - Story breakdown
-  - FR coverage mapping
-  - Existing acceptance criteria
-  </action>
+1. **PRD.md** - Contains functional requirements (FRs) and product scope
+2. **Architecture.md** - Contains technical decisions, API contracts, data models
+3. **UX Design.md** (if UI exists) - Contains interaction patterns, mockups, user flows
 
-<output>📝 **Existing epics.md found!**
+Missing any required document means this workflow cannot proceed successfully.</action>
 
-Current structure:
+<check if="!prd_content">
+<output>❌ **PREREQUISITE FAILED: PRD.md not found**
 
-- {{epic_count}} epics defined
-- {{story_count}} total stories
-  </output>
+The PRD is required to define what functionality needs to be built.
 
-<ask>What would you like to do?
+Please complete the PRD workflow first, then run this workflow again.</output>
 
-1. **CONTINUING** - Previous run was incomplete, continue where we left off
-2. **REPLACING** - Start fresh, discard existing epic structure
-3. **UPDATING** - New planning document created (UX/Architecture), enhance existing epics
-
-Enter your choice (1-3):</ask>
-
-<action>Set mode based on user choice:
-
-- Choice 1: mode = "CONTINUE" (resume incomplete work)
-- Choice 2: mode = "CREATE" (start fresh, ignore existing)
-- Choice 3: mode = "UPDATE" (enhance with new context)
-  </action>
-  </check>
-
-<check if="epics.md does not exist">
-  <action>Set mode = "CREATE"</action>
-  <output>🆕 **INITIAL CREATION MODE**
-
-No existing epics found - I'll create the initial epic breakdown.
-</output>
+<exit workflow="Missing required PRD document"/>
 </check>
 
-<action>**Detect available context documents:**</action>
+<check if="!architecture_content">
+<output>❌ **PREREQUISITE FAILED: Architecture.md not found**
 
-<action>Check which documents exist:
+The Architecture document is required to provide technical implementation context for stories.
 
-- UX Design specification ({ux_design_content})
-- Architecture document ({architecture_content})
-- Domain brief ({domain_brief_content})
-- Product brief ({product_brief_content})
-  </action>
+Please complete the Architecture workflow first, then run this workflow again.</output>
 
-<check if="mode == 'UPDATE'">
-  <action>Identify what's NEW since last epic update:
-
-- If UX exists AND not previously incorporated:
-  - Flag: "ADD_UX_DETAILS = true"
-  - Note UX sections to extract (interaction patterns, mockup references, responsive breakpoints)
-
-- If Architecture exists AND not previously incorporated:
-  - Flag: "ADD_ARCH_DETAILS = true"
-  - Note Architecture sections to extract (tech stack, API contracts, data models)
-    </action>
-
-<output>**Context Analysis:**
-{{if ADD_UX_DETAILS}}
-✅ UX Design found - will add interaction details to stories
-{{/if}}
-{{if ADD_ARCH_DETAILS}}
-✅ Architecture found - will add technical implementation notes
-{{/if}}
-{{if !ADD_UX_DETAILS && !ADD_ARCH_DETAILS}}
-⚠️ No new context documents found - reviewing for any PRD changes
-{{/if}}
-</output>
+<exit workflow="Missing required Architecture document"/>
 </check>
 
-<check if="mode == 'CREATE'">
-  <output>**Available Context:**
-  - ✅ PRD (required)
-  {{if ux_design_content}}
-  - ✅ UX Design (will incorporate interaction patterns)
-  {{/if}}
-  {{if architecture_content}}
-  - ✅ Architecture (will incorporate technical decisions)
-  {{/if}}
-  {{if !ux_design_content && !architecture_content}}
-  - ℹ️ Creating basic epic structure (can be enhanced later with UX/Architecture)
-  {{/if}}
-  </output>
-</check>
+<action>List the documents loaded</action>
 
-<template-output>workflow_mode</template-output>
-<template-output>available_context</template-output>
-</step>
+<action>**LOAD ALL CONTEXT DOCUMENTS:**</action>
 
-<step n="1" goal="Load PRD and extract requirements">
-<action>
-<check if="mode == 'CREATE'">
-Welcome {user_name} to epic and story planning
-</check>
-<check if="mode == 'UPDATE'">
-Welcome back {user_name} - let's enhance your epic breakdown with new context
-</check>
+<action>Load and analyze PRD.md:
 
-Load required documents (fuzzy match, handle both whole and sharded):
+Extract ALL functional requirements:
 
-- PRD.md (required)
-- domain-brief.md (if exists)
-- product-brief.md (if exists)
-
-**CRITICAL - PRD FRs Are Now Flat and Strategic:**
-
-The PRD contains FLAT, capability-level functional requirements (FR1, FR2, FR3...).
-These are STRATEGIC (WHAT capabilities exist), NOT tactical (HOW they're implemented).
-
-Example PRD FRs:
-
-- FR1: Users can create accounts with email or social authentication
-- FR2: Users can log in securely and maintain sessions
-- FR6: Users can create, edit, and delete content items
-
-**Your job in THIS workflow:**
-
-1. Map each FR to one or more epics
-2. Break each FR into stories with DETAILED acceptance criteria
-3. Add ALL the implementation details that were intentionally left out of PRD
-
-Extract from PRD:
-
-- ALL functional requirements (flat numbered list)
-- Non-functional requirements
-- Domain considerations and compliance needs
-- Project type and complexity
-- MVP vs growth vs vision scope boundaries
-- Product differentiator (what makes it special)
-- Technical constraints
+- Complete FR inventory (FR1, FR2, FR3...)
+- Non-functional requirements and constraints
+- Project scope boundaries (MVP vs growth vs vision)
 - User types and their goals
 - Success criteria
+- Technical constraints
+- Compliance requirements
 
-**Create FR Inventory:**
-
-List all FRs to ensure coverage:
-
-- FR1: [description]
-- FR2: [description]
-- ...
-- FRN: [description]
-
-This inventory will be used to validate complete coverage in Step 4.
+**FR Inventory Creation:**
+List every functional requirement with description for coverage tracking.
 </action>
 
+<action>Load and analyze Architecture.md:
+
+Extract ALL technical implementation context relevant to the PRD functional requirements and project needs:
+
+Scan comprehensively for any technical details needed to create complete user stories, including but not limited to:
+
+- Technology stack decisions and framework choices
+- API design, contracts, and integration patterns
+- Data models, schemas, and relationships
+- Authentication, authorization, and security patterns
+- Performance requirements and scaling approaches
+- Error handling, logging, and monitoring strategies
+- Deployment architecture and infrastructure considerations
+- Any other technical decisions, patterns, or constraints that impact implementation
+
+Focus on extracting whatever technical context exists in the Architecture document that will be needed to create comprehensive, actionable user stories for all PRD requirements.
+</action>
+
+<action if="UX Design Exists">
+Load and analyze UX Design.md:
+
+Extract ALL user experience context relevant to the PRD functional requirements and project needs:
+
+Scan comprehensively for any user experience details needed to create complete user stories, including but not limited to:
+
+- User flows, journey patterns, and interaction design
+- Screen layouts, components, and visual specifications
+- Interaction patterns, behaviors, and micro-interactions
+- Responsive design and mobile-first considerations
+- Accessibility requirements and inclusive design patterns
+- Animations, transitions, and feedback mechanisms
+- Error states, validation patterns, and user guidance
+- Any other UX/UI decisions, patterns, or specifications that impact implementation
+
+Focus on extracting whatever user experience context exists in the UX document that will be needed to create comprehensive, actionable user stories for all PRD requirements.
+</action>
+
+<template-output>context_validation</template-output>
 <template-output>fr_inventory</template-output>
 </step>
 
-<step n="2" goal="Propose epic structure from natural groupings">
+<step n="1" goal="Design epic structure with full technical context">
+<action>**STRATEGIC EPIC PLANNING WITH COMPLETE CONTEXT:**</action>
 
-<check if="mode == 'UPDATE'">
-  <action>**MAINTAIN existing epic structure:**
+<action>Now that you have ALL available context (PRD + Architecture + UX), design epics that deliver incremental user value while leveraging the technical design decisions.
 
-Use the epic structure already defined in epics.md:
+**EPIC DESIGN PRINCIPLES:**
 
-- Keep all existing epic titles and goals
-- Preserve epic sequencing
-- Maintain FR coverage mapping
+1. **User-Value First**: Each epic must enable users to accomplish something meaningful
+2. **Leverage Architecture**: Build upon the technical decisions already made
+3. **Incremental Delivery**: Each epic should be independently valuable
+4. **Logical Dependencies**: Dependencies should flow naturally, not artificially
 
-Note: We're enhancing stories within existing epics, not restructuring.
-</action>
+**USE YOUR FULL CONTEXT:**
 
-<output>**Using existing epic structure:**
-{{list_existing_epics_with_titles}}
+From PRD: Group related functional requirements that deliver user outcomes
+From Architecture: Respect technical boundaries and integration points
+From UX: Design around user journeys and interaction flows
 
-Will enhance stories within these epics using new context.
-</output>
+**VALID EPIC EXAMPLES:**
 
-<template-output>epics_summary</template-output>
-<template-output>fr_coverage_map</template-output>
+✅ **CORRECT - User Value with Technical Context:**
 
-<goto step="3">Skip to story enhancement</goto>
-</check>
-
-<check if="mode == 'CREATE'">
-<action>Analyze requirements and identify natural epic boundaries
-
-INTENT: Find organic groupings that make sense for THIS product
-
-Look for natural patterns:
-
-- Features that work together cohesively
-- User journeys that connect
-- Business capabilities that cluster
-- Domain requirements that relate (compliance, validation, security)
-- Technical systems that should be built together
-
-Name epics based on VALUE, not technical layers:
-
-- Good: "User Onboarding", "Content Discovery", "Compliance Framework"
-- Avoid: "Database Layer", "API Endpoints", "Frontend"
-
-**⚠️ ANTI-PATTERN EXAMPLES (DO NOT DO THIS):**
+- Epic 1: Foundation Setup (infrastructure, deployment, core services)
+- Epic 2: User Authentication & Profile Management (register, login, profile management)
+- Epic 3: Content Creation & Management (create, edit, publish, organize content)
+- Epic 4: Content Discovery & Interaction (browse, search, share, comment)
 
 ❌ **WRONG - Technical Layer Breakdown:**
 
 - Epic 1: Database Schema & Models
-- Epic 2: API Layer / Backend Services
-- Epic 3: Frontend UI Components
-- Epic 4: Integration & Testing
+- Epic 2: REST API Endpoints
+- Epic 3: Frontend Components
+- Epic 4: Authentication Service
 
-WHY IT'S WRONG: User gets ZERO value until ALL epics complete. No incremental delivery.
+**PRESENT YOUR EPIC STRUCTURE:**
 
-✅ **CORRECT - User Value Breakdown:**
+For each proposed epic, provide:
 
-- Epic 1: Foundation (project setup - necessary exception)
-- Epic 2: User Authentication (user can register/login - VALUE DELIVERED)
-- Epic 3: Content Management (user can create/edit content - VALUE DELIVERED)
-- Epic 4: Social Features (user can share/interact - VALUE DELIVERED)
+- **Epic Title**: Value-based, not technical
+- **User Value Statement**: What users can accomplish after this epic
+- **PRD Coverage**: Which FRs this epic addresses
+- **Technical Context**: How this leverages Architecture decisions
+- **UX Integration**: How this incorporates user experience patterns (if available)
+- **Dependencies**: What must come before (natural dependencies only)
 
-WHY IT'S RIGHT: Each epic delivers something users can USE. Incremental value.
+**FOUNDATION EPIC GUIDELINES:**
 
-**Valid Exceptions:**
+For Epic 1, include technical foundation based on Architecture:
 
-1. **Foundation Epic**: First epic CAN be setup/infrastructure (greenfield projects need this)
-2. **API-First Epic**: ONLY valid if the API has standalone value (third-party consumers, multiple frontends, API-as-product). If it's just "backend for our frontend", that's the WRONG pattern.
+- Project setup and build system
+- Core infrastructure and deployment pipeline
+- Database schema setup
+- Basic authentication foundation
+- API framework setup
 
-Each epic should:
-
-- Have clear business goal and user value
-- Be independently valuable
-- Contain 3-8 related capabilities
-- Be deliverable in cohesive phase
-
-For greenfield projects:
-
-- First epic MUST establish foundation (project setup, core infrastructure, deployment pipeline)
-- Foundation enables all subsequent work
-
-For complex domains:
-
-- Consider dedicated compliance/regulatory epics
-- Group validation and safety requirements logically
-- Note expertise requirements
-
-Present proposed epic structure showing:
-
-- Epic titles with clear value statements
-- High-level scope of each epic
-- **FR COVERAGE MAP: Which FRs does each epic address?**
-  - Example: "Epic 1 (Foundation): Covers infrastructure needs for all FRs"
-  - Example: "Epic 2 (User Management): FR1, FR2, FR3, FR4, FR5"
-  - Example: "Epic 3 (Content System): FR6, FR7, FR8, FR9"
-- Suggested sequencing
-- Why this grouping makes sense
-
-**Validate FR Coverage:**
-
-Check that EVERY FR from Step 1 inventory is mapped to at least one epic.
-If any FRs are unmapped, add them now or explain why they're deferred.
+This enables all subsequent user-facing epics.
 </action>
 
-<template-output>epics_summary</template-output>
-<template-output>fr_coverage_map</template-output>
-</check>
+<template-output>epics_structure_plan</template-output>
+<template-output>epics_technical_context</template-output>
 </step>
 
-<step n="3" goal="Decompose each epic into bite-sized stories with DETAILED AC" repeat="for-each-epic">
+<step n="2" goal="Create detailed stories with complete implementation context" repeat="for-each-epic">
+<action>**EPIC {{N}} - COMPREHENSIVE STORY CREATION:**</action>
 
-<check if="mode == 'UPDATE'">
-  <action>**ENHANCE Epic {{N}} stories with new context:**
+<action>For Epic {{N}}: {{epic_title}}, create bite-sized stories that incorporate ALL available context.
 
-For each existing story in Epic {{N}}:
+**STORY CREATION WITH FULL CONTEXT:**
 
-1. Preserve core story structure (title, user story statement)
-2. Add/enhance based on available NEW context:
+For each story, you now have the complete picture:
 
-  <check if="ADD_UX_DETAILS">
-    **Add from UX Design:**
-    - Specific mockup/wireframe references
-    - Exact interaction patterns
-    - Animation/transition specifications
-    - Responsive breakpoints
-    - Component specifications
-    - Error states and feedback patterns
-    - Accessibility requirements (WCAG compliance)
+- **WHAT to build** (from PRD FRs)
+- **HOW to build it** (from Architecture decisions)
+- **HOW users interact** (from UX patterns, if available)
 
-    Example enhancement:
-    BEFORE: "User can log in"
-    AFTER: "User can log in via modal (UX pg 12-15) with email/password fields,
-            password visibility toggle, remember me checkbox,
-            loading state during auth (spinner overlay),
-            error messages below fields (red, 14px),
-            success redirects to dashboard with fade transition"
+**TRANSFORM STRATEGIC REQUIREMENTS INTO TACTICAL IMPLEMENTATION:**
 
-  </check>
+PRD says: "Users can create accounts"
+Architecture says: "Use PostgreSQL with bcrypt hashing, JWT tokens, rate limiting"
+UX says: "Modal dialog with email/password fields, real-time validation, loading states"
 
-  <check if="ADD_ARCH_DETAILS">
-    **Add from Architecture:**
-    - Specific API endpoints and contracts
-    - Data model references
-    - Tech stack implementation details
-    - Performance requirements
-    - Security implementation notes
-    - Cache strategies
-    - Error handling patterns
+Your story becomes: Specific implementation details with exact acceptance criteria
 
-    Example enhancement:
-    BEFORE: "System authenticates user"
-    AFTER: "System authenticates user via POST /api/v1/auth/login,
-            validates against users table (see Arch section 6.2),
-            returns JWT token (expires 7d) + refresh token (30d),
-            rate limited to 5 attempts/hour/IP,
-            logs failures to security_events table"
+**STORY PATTERN FOR EACH EPIC {{N}}:**
 
-  </check>
+**Epic Goal:** {{epic_goal}}
 
-3. Update acceptance criteria with new details
-4. Preserve existing prerequisites
-5. Enhance technical notes with new context
-   </action>
-   </check>
+For each story M in Epic {{N}}:
 
-<check if="mode == 'CREATE'">
-<action>Break down Epic {{N}} into small, implementable stories
+- **User Story**: As a [user type], I want [specific capability], So that [value/benefit]
+- **Acceptance Criteria**: BDD format with COMPLETE implementation details
+- **Technical Implementation**: Specific guidance from Architecture
+- **User Experience**: Exact interaction patterns from UX (if available)
+- **Prerequisites**: Only previous stories, never forward dependencies
 
-INTENT: Create stories sized for single dev agent completion
+**DETAILED ACCEPTANCE CRITERIA GUIDELINES:**
 
-**CRITICAL - ALTITUDE SHIFT FROM PRD:**
+Include ALL implementation specifics:
 
-PRD FRs are STRATEGIC (WHAT capabilities):
+**From Architecture:**
 
-- ✅ "Users can create accounts"
+- Exact API endpoints and contracts
+- Database operations and validations
+- Authentication/authorization requirements
+- Error handling patterns
+- Performance requirements
+- Security considerations
+- Integration points with other systems
 
-Epic Stories are TACTICAL (HOW it's implemented):
+**From UX (if available):**
 
-- Email field with RFC 5322 validation
-- Password requirements: 8+ chars, 1 uppercase, 1 number, 1 special
-- Password strength meter with visual feedback
-- Email verification within 15 minutes
-- reCAPTCHA v3 integration
-- Account creation completes in < 2 seconds
-- Mobile responsive with 44x44px touch targets
-- WCAG 2.1 AA compliant
+- Specific screen/page references
+- Interaction patterns and behaviors
+- Form validation rules and error messages
+- Responsive behavior
+- Accessibility requirements
+- Loading states and transitions
+- Success/error feedback patterns
 
-**THIS IS WHERE YOU ADD ALL THE DETAILS LEFT OUT OF PRD:**
+**From PRD:**
 
-- UI specifics (exact field counts, validation rules, layout details)
-- Performance targets (< 2s, 60fps, etc.)
-- Technical implementation hints (libraries, patterns, APIs)
-- Edge cases (what happens when...)
-- Validation rules (regex patterns, constraints)
-- Error handling (specific error messages, retry logic)
-- Accessibility requirements (ARIA labels, keyboard nav, screen readers)
-- Platform specifics (mobile responsive, browser support)
+- Business rules and constraints
+- User types and permissions
+- Compliance requirements
+- Success criteria
 
-For each epic, generate:
+**STORY SIZING PRINCIPLE:**
 
-- Epic title as `epic_title_{{N}}`
-- Epic goal/value as `epic_goal_{{N}}`
-- All stories as repeated pattern `story_title_{{N}}_{{M}}` for each story M
+Each story must be completable by a single dev agent in one focused session. If a story becomes too large, break it down further while maintaining user value.
 
-CRITICAL for Epic 1 (Foundation):
+**EXAMPLE RICH STORY:**
 
-- Story 1.1 MUST be project setup/infrastructure initialization
-- Sets up: repo structure, build system, deployment pipeline basics, core dependencies
-- Creates foundation for all subsequent stories
-- Note: Architecture workflow will flesh out technical details
+**Story:** User Registration with Email Verification
 
-Each story should follow BDD-style acceptance criteria:
+As a new user, I want to create an account using my email address, So that I can access the platform's features.
 
-**Story Pattern:**
-As a [user type],
-I want [specific capability],
-So that [clear value/benefit].
+**Acceptance Criteria:**
+Given I am on the landing page
+When I click the "Sign Up" button
+Then the registration modal opens (UX Mockup 3.2)
 
-**Acceptance Criteria using BDD:**
-Given [precondition or initial state]
-When [action or trigger]
-Then [expected outcome]
+And I see email and password fields with proper labels
+And the email field validates RFC 5322 format in real-time
+And the password field shows strength meter (red→yellow→green)
+And I see "Password must be 8+ chars with 1 uppercase, 1 number, 1 special"
 
-And [additional criteria as needed]
+When I submit valid registration data
+Then POST /api/v1/auth/register is called (Architecture section 4.1)
+And the user record is created in users table with bcrypt hash (Architecture 6.2)
+And a verification email is sent via SendGrid (Architecture 7.3)
+And I see "Check your email for verification link" message
+And I cannot log in until email is verified
 
-**Prerequisites:** Only previous stories (never forward dependencies)
+**Technical Notes:**
 
-**Technical Notes:** Implementation guidance, affected components, compliance requirements
+- Use PostgreSQL users table (Architecture section 6.2)
+- Implement rate limiting: 3 attempts per hour per IP (Architecture 8.1)
+- Return JWT token on successful verification (Architecture 5.2)
+- Log registration events to audit_events table (Architecture 9.4)
+- Form validation follows UX Design patterns (UX section 4.1)
 
-Ensure stories are:
+**Prerequisites:** Epic 1.1 - Foundation Setup Complete
+</action>
 
-- Vertically sliced (deliver complete functionality, not just one layer)
-- Sequentially ordered (logical progression, no forward dependencies)
-- Independently valuable when possible
-- Small enough for single-session completion
-- Clear enough for autonomous implementation
-
-For each story in epic {{N}}, output variables following this pattern:
-
-- story*title*{{N}}_1, story_title_{{N}}\*2, etc.
-- Each containing: user story, BDD acceptance criteria, prerequisites, technical notes</action>
-
+<action>**Generate all stories for Epic {{N}}**</action>
 <template-output>epic*title*{{N}}</template-output>
 <template-output>epic*goal*{{N}}</template-output>
 
 <action>For each story M in epic {{N}}, generate story content</action>
-<template-output>story-title-{{N}}-{{M}}</template-output>
-</check>
+<template-output>story*{{N}}*{{M}}</template-output>
 
-<action>**EPIC {{N}} REVIEW - Present for Checkpoint:**
+<action>**EPIC {{N}} COMPLETION REVIEW:**</action>
 
-Summarize the COMPLETE epic breakdown:
+<output>**Epic {{N}} Complete: {{epic_title}}**
 
-**Epic {{N}}: {{epic_title}}**
-Goal: {{epic_goal}}
+Stories Created: {{count}}
 
-Stories ({{count}} total):
-{{for each story, show:}}
+**FR Coverage:** {{list of FRs covered by this epic}}
 
-- Story {{N}}.{{M}}: {{story_title}}
-  - User Story: As a... I want... So that...
-  - Acceptance Criteria: (BDD format summary)
-  - Prerequisites: {{list}}
+**Technical Context Used:** {{Architecture sections referenced}}
 
-**Review Questions to Consider:**
+{{if ux_design_content}}
+**UX Patterns Incorporated:** {{UX sections referenced}}
+{{/if}}
 
-- Is the story sequence logical?
-- Are acceptance criteria clear and testable?
-- Are there any missing stories for the FRs this epic covers?
-- Are the stories sized appropriately (single dev agent session)?
-- FRs covered by this epic: {{FR_list}}
+Ready for checkpoint validation.</output>
 
-**NOTE:** At the checkpoint prompt, select [a] for Advanced Elicitation if you want to refine stories, add missing ones, or reorder. Select [c] to approve this epic and continue to the next one.
-</action>
-
-<template-output>epic\_{{N}}\_complete_breakdown</template-output>
-
+<template-output>epic\_{{N}}\_complete</template-output>
 </step>
 
-<step n="4" goal="Review epic breakdown and completion">
+<step n="3" goal="Final validation and coverage matrix">
+<action>**COMPREHENSIVE VALIDATION WITH FULL CONTEXT:**</action>
 
-<check if="mode == 'UPDATE'">
-  <action>Review the ENHANCED epic breakdown for completeness
+<action>Review the complete epic and story breakdown for quality and completeness using ALL available context.
 
-**Validate Enhancements:**
+**FR COVERAGE VALIDATION:**
 
-- All stories now have context-appropriate details
-- UX references added where applicable
-- Architecture decisions incorporated where applicable
-- Acceptance criteria updated with new specifics
-- Technical notes enhanced with implementation details
+Create complete FR Coverage Matrix showing every PRD functional requirement mapped to specific stories:
 
-**Quality Check:**
-
-- Stories remain bite-sized for single dev agent sessions
-- No forward dependencies introduced
-- All new context properly integrated
-  </action>
-
-<template-output>epic_breakdown_summary</template-output>
-<template-output>enhancement_summary</template-output>
-
-<output>✅ **Epic Enhancement Complete!**
-
-**Updated:** epics.md with enhanced context
-
-**Enhancements Applied:**
-{{if ADD_UX_DETAILS}}
-
-- ✅ UX interaction patterns and mockup references added
-  {{/if}}
-  {{if ADD_ARCH_DETAILS}}
-- ✅ Architecture technical decisions and API contracts added
-  {{/if}}
-
-The epic breakdown now includes all available context for Phase 4 implementation.
-
-**Next Steps:**
-{{if !architecture_content}}
-
-- Run Architecture workflow for technical decisions
-  {{/if}}
-  {{if architecture_content}}
-- Ready for Phase 4: Sprint Planning
-  {{/if}}
-  </output>
-  </check>
-
-<check if="mode == 'CREATE'">
-<action>Review the complete epic breakdown for quality and completeness
-
-**Validate Epic Structure (USER VALUE CHECK):**
-
-For each epic, answer: "What can USERS do after this epic is complete that they couldn't do before?"
-
-- Epic 1: [Must have clear user value OR be Foundation exception]
-- Epic 2: [Must deliver user-facing capability]
-- Epic N: [Must deliver user-facing capability]
-
-⚠️ RED FLAG: If an epic only delivers technical infrastructure (database layer, API without users, component library without features), RESTRUCTURE IT. Each epic should enable users to accomplish something.
-
-Exception validation:
-
-- Foundation epic: Acceptable as first epic for greenfield projects
-- API-first epic: Acceptable ONLY if API has standalone consumers (third-party integrations, multiple frontends, API-as-product)
-
-If any epic fails this check, restructure before proceeding.
-
-**Validate FR Coverage:**
-
-Create FR Coverage Matrix showing each FR mapped to epic(s) and story(ies):
-
-- FR1: [description] → Epic X, Story X.Y
-- FR2: [description] → Epic X, Story X.Z
-- FR3: [description] → Epic Y, Story Y.A
+- **FR1:** [description] → Epic X, Story X.Y (with implementation details)
+- **FR2:** [description] → Epic Y, Story Y.A (with implementation details)
+- **FR3:** [description] → Epic Z, Story Z.B (with implementation details)
 - ...
-- FRN: [description] → Epic Z, Story Z.B
 
-Confirm: EVERY FR from Step 1 inventory is covered by at least one story.
-If any FRs are missing, add stories now.
+**CRITICAL VALIDATION:** Every single FR from the PRD must be covered by at least one story with complete acceptance criteria.
 
-**Validate Story Quality:**
+**ARCHITECTURE INTEGRATION VALIDATION:**
 
-- All functional requirements from PRD are covered by stories
-- Epic 1 establishes proper foundation (if greenfield)
-- All stories are vertically sliced (deliver complete functionality, not just one layer)
-- No forward dependencies exist (only backward references)
-- Story sizing is appropriate for single-session completion
-- BDD acceptance criteria are clear and testable
-- Details added (what was missing from PRD FRs: UI specifics, performance targets, etc.)
-- Domain/compliance requirements are properly distributed
-- Sequencing enables incremental value delivery
+Verify that Architecture decisions are properly implemented:
 
-Confirm with {user_name}:
+- All API endpoints from Architecture are covered in stories
+- Data models from Architecture are properly created and populated
+- Authentication/authorization patterns are consistently applied
+- Performance requirements are addressed in relevant stories
+- Security measures are implemented where required
+- Error handling follows Architecture patterns
+- Integration points between systems are properly handled
 
-- Epic structure makes sense
-- All FRs covered by stories (validated via coverage matrix)
-- Story breakdown is actionable
-  <check if="ux_design_content && architecture_content">
-- All available context has been incorporated (PRD + UX + Architecture)
-- Ready for Phase 4 Implementation
-  </check>
-  <check if="ux_design_content && !architecture_content">
-- UX context has been incorporated
-- Ready for Architecture workflow (recommended next step)
-  </check>
-  <check if="!ux_design_content && architecture_content">
-- Architecture context has been incorporated
-- Consider running UX Design workflow if UI exists
-  </check>
-  <check if="!ux_design_content && !architecture_content">
-- Basic epic structure created from PRD
-- Ready for next planning phase (UX Design or Architecture)
-  </check>
-  </action>
+**UX INTEGRATION VALIDATION** {{if ux_design_content}}:
 
-<template-output>epic_breakdown_summary</template-output>
+Verify that UX design patterns are properly implemented:
+
+- User flows follow the designed journey
+- Screen layouts and components match specifications
+- Interaction patterns work as designed
+- Responsive behavior matches breakpoints
+- Accessibility requirements are met
+- Error states and feedback patterns are implemented
+- Form validation follows UX guidelines
+- Loading states and transitions are implemented
+  {{/if}}
+
+**STORY QUALITY VALIDATION:**
+
+- All stories are sized for single dev agent completion
+- Acceptance criteria are specific and testable
+- Technical implementation guidance is clear
+- User experience details are incorporated
+- No forward dependencies exist
+- Epic sequence delivers incremental value
+- Foundation epic properly enables subsequent work
+
+**FINAL QUALITY CHECK:**
+
+Answer these critical questions:
+
+1. **User Value:** Does each epic deliver something users can actually do/use?
+2. **Completeness:** Are ALL PRD functional requirements covered?
+3. **Technical Soundness:** Do stories properly implement Architecture decisions?
+4. **User Experience:** {{if ux_design_content}} Do stories follow UX design patterns? {{/if}}
+5. **Implementation Ready:** Can dev agents implement these stories autonomously?
+   </action>
+
+<output>**✅ EPIC AND STORY CREATION COMPLETE**
+
+**Output Generated:** epics.md with comprehensive implementation details
+
+**Full Context Incorporated:**
+
+- ✅ PRD functional requirements and scope
+- ✅ Architecture technical decisions and contracts
+  {{if ux_design_content}}
+- ✅ UX Design interaction patterns and specifications
+  {{/if}}
+
+**FR Coverage:** {{count}} functional requirements mapped to {{story_count}} stories
+**Epic Structure:** {{epic_count}} epics delivering incremental user value
+
+**Ready for Phase 4:** Sprint Planning and Development Implementation
+</output>
+
+<template-output>final_validation</template-output>
 <template-output>fr_coverage_matrix</template-output>
-
-<check if="mode == 'CREATE'">
-<output>**✅ Epic Breakdown Complete**
-
-**Created:** epics.md with epic and story breakdown
-
-**FR Coverage:** All functional requirements from PRD mapped to stories
-
-**Context Incorporated:**
-{{if ux_design_content && architecture_content}}
-
-- ✅ PRD requirements
-- ✅ UX interaction patterns
-- ✅ Architecture technical decisions
-  **Status:** COMPLETE - Ready for Phase 4 Implementation!
-  {{/if}}
-  {{if ux_design_content && !architecture_content}}
-- ✅ PRD requirements
-- ✅ UX interaction patterns
-  **Next:** Run Architecture workflow for technical decisions
-  {{/if}}
-  {{if !ux_design_content && architecture_content}}
-- ✅ PRD requirements
-- ✅ Architecture technical decisions
-  **Next:** Consider UX Design workflow if UI needed
-  {{/if}}
-  {{if !ux_design_content && !architecture_content}}
-- ✅ PRD requirements (basic structure)
-  **Next:** Run UX Design (if UI) or Architecture workflow
-  **Note:** Epics will be enhanced with additional context later
-  {{/if}}
-  </output>
-  </check>
-  </check>
-  </step>
+</step>
 
 </workflow>
