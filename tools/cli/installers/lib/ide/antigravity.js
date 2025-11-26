@@ -1,4 +1,5 @@
 const path = require('node:path');
+const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
@@ -44,7 +45,6 @@ class AntigravitySetup extends BaseIdeSetup {
       const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'antigravity', 'injections.yaml');
 
       if (await this.exists(injectionConfigPath)) {
-        const fs = require('fs-extra');
         const yaml = require('js-yaml');
 
         try {
@@ -88,7 +88,6 @@ class AntigravitySetup extends BaseIdeSetup {
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir) {
-    const fs = require('fs-extra');
     const bmadWorkflowsDir = path.join(projectDir, this.configDir, this.workflowsDir, 'bmad');
 
     if (await fs.pathExists(bmadWorkflowsDir)) {
@@ -191,7 +190,6 @@ class AntigravitySetup extends BaseIdeSetup {
    * Read and process file content
    */
   async readAndProcess(filePath, metadata) {
-    const fs = require('fs-extra');
     const content = await fs.readFile(filePath, 'utf8');
     return this.processContent(content, metadata);
   }
@@ -208,7 +206,6 @@ class AntigravitySetup extends BaseIdeSetup {
    * Get agents from source modules (not installed location)
    */
   async getAgentsFromSource(sourceDir, selectedModules) {
-    const fs = require('fs-extra');
     const agents = [];
 
     // Add core agents
@@ -387,7 +384,6 @@ class AntigravitySetup extends BaseIdeSetup {
    * Inject content at specified point in file
    */
   async injectContent(projectDir, injection, subagentChoices = null) {
-    const fs = require('fs-extra');
     const targetPath = path.join(projectDir, injection.file);
 
     if (await this.exists(targetPath)) {
@@ -413,7 +409,6 @@ class AntigravitySetup extends BaseIdeSetup {
    * Copy selected subagents to appropriate Antigravity agents directory
    */
   async copySelectedSubagents(projectDir, handlerBaseDir, subagentConfig, choices, location) {
-    const fs = require('fs-extra');
     const os = require('node:os');
 
     // Determine target directory based on user choice
@@ -457,6 +452,55 @@ class AntigravitySetup extends BaseIdeSetup {
     if (copiedCount > 0) {
       console.log(chalk.dim(`  Total subagents installed: ${copiedCount}`));
     }
+  }
+
+  /**
+   * Install a custom agent launcher for Antigravity
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object} Installation result
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    // Create .agent/workflows/bmad directory structure (same as regular agents)
+    const agentDir = path.join(projectDir, this.configDir);
+    const workflowsDir = path.join(agentDir, this.workflowsDir);
+    const bmadWorkflowsDir = path.join(workflowsDir, 'bmad');
+
+    await fs.ensureDir(bmadWorkflowsDir);
+
+    // Create custom agent launcher with same pattern as regular agents
+    const launcherContent = `name: '${agentName}'
+description: '${agentName} agent'
+usage: |
+  Custom BMAD agent: ${agentName}
+
+  Launch with: /${agentName}
+
+  You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
+<agent-activation CRITICAL="TRUE">
+1. LOAD the FULL agent file from @${agentPath}
+2. READ its entire contents - this contains the complete agent persona, menu, and instructions
+3. EXECUTE as ${agentName} with full persona adoption
+</agent-activation>
+
+---
+
+⚠️ **IMPORTANT**: Run @${agentPath} to load the complete agent before using this launcher!`;
+
+    const fileName = `bmad-custom-agents-${agentName}.md`;
+    const launcherPath = path.join(bmadWorkflowsDir, fileName);
+
+    // Write the launcher file
+    await fs.writeFile(launcherPath, launcherContent, 'utf8');
+
+    return {
+      ide: 'antigravity',
+      path: path.relative(projectDir, launcherPath),
+      command: `/${agentName}`,
+      type: 'custom-agent-launcher',
+    };
   }
 }
 

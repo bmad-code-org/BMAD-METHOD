@@ -81,16 +81,37 @@ Expands test automation coverage by generating comprehensive test suites at appr
    - Map tests to source files (coverage gaps)
    - Check existing fixture and factory patterns
 
-5. **Load Knowledge Base Fragments**
+5. **Check Playwright Utils Flag**
+
+   Read `{config_source}` and check `config.tea_use_playwright_utils`.
+
+6. **Load Knowledge Base Fragments**
 
    **Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to load:
+
+   **Core Testing Patterns (Always load):**
    - `test-levels-framework.md` - Test level selection (E2E vs API vs Component vs Unit with decision matrix, 467 lines, 4 examples)
    - `test-priorities-matrix.md` - Priority classification (P0-P3 with automated scoring, risk mapping, 389 lines, 2 examples)
-   - `fixture-architecture.md` - Test fixture patterns (pure function → fixture → mergeTests, auto-cleanup, 406 lines, 5 examples)
    - `data-factories.md` - Factory patterns with faker (overrides, nested factories, API seeding, 498 lines, 5 examples)
    - `selective-testing.md` - Targeted test execution strategies (tag-based, spec filters, diff-based, promotion rules, 727 lines, 4 examples)
    - `ci-burn-in.md` - Flaky test detection patterns (10-iteration burn-in, sharding, selective execution, 678 lines, 4 examples)
    - `test-quality.md` - Test design principles (deterministic, isolated, explicit assertions, length/time limits, 658 lines, 5 examples)
+
+   **If `config.tea_use_playwright_utils: true` (Playwright Utils Integration - All Utilities):**
+   - `overview.md` - Playwright utils installation, design principles, fixture patterns
+   - `api-request.md` - Typed HTTP client with schema validation
+   - `network-recorder.md` - HAR record/playback for offline testing
+   - `auth-session.md` - Token persistence and multi-user support
+   - `intercept-network-call.md` - Network spy/stub with automatic JSON parsing
+   - `recurse.md` - Cypress-style polling for async conditions
+   - `log.md` - Playwright report-integrated logging
+   - `file-utils.md` - CSV/XLSX/PDF/ZIP reading and validation
+   - `burn-in.md` - Smart test selection (relevant for CI test generation)
+   - `network-error-monitor.md` - Automatic HTTP error detection
+   - `fixtures-composition.md` - mergeTests composition patterns
+
+   **If `config.tea_use_playwright_utils: false` (Traditional Patterns):**
+   - `fixture-architecture.md` - Test fixture patterns (pure function → fixture → mergeTests, auto-cleanup, 406 lines, 5 examples)
    - `network-first.md` - Route interception patterns (intercept before navigate, HAR capture, deterministic waiting, 489 lines, 5 examples)
 
    **Healing Knowledge (If `{auto_heal_failures}` is true):**

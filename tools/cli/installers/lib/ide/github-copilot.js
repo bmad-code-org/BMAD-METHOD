@@ -50,7 +50,8 @@ class GitHubCopilotSetup extends BaseIdeSetup {
           message: 'Maximum requests per session (1-50)?',
           default: '15',
           validate: (input) => {
-            const num = parseInt(input);
+            const num = parseInt(input, 10);
+            if (isNaN(num)) return 'Enter a valid number 1-50';
             return (num >= 1 && num <= 50) || 'Enter 1-50';
           },
         },
@@ -187,9 +188,10 @@ class GitHubCopilotSetup extends BaseIdeSetup {
       // Manual configuration - use pre-collected settings
       const manual = options.manualSettings || {};
 
+      const maxRequests = parseInt(manual.maxRequests || '15', 10);
       bmadSettings = {
         'chat.agent.enabled': true,
-        'chat.agent.maxRequests': parseInt(manual.maxRequests || 15),
+        'chat.agent.maxRequests': isNaN(maxRequests) ? 15 : maxRequests,
         'github.copilot.chat.agent.runTasks': manual.runTasks === undefined ? true : manual.runTasks,
         'chat.mcp.discovery.enabled': manual.mcpDiscovery === undefined ? true : manual.mcpDiscovery,
         'github.copilot.chat.agent.autoFix': manual.autoFix === undefined ? true : manual.autoFix,

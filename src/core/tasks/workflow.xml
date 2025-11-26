@@ -71,7 +71,6 @@
         <if tag="template-output">
           <mandate>Generate content for this section</mandate>
           <mandate>Save to file (Write first time, Edit subsequent)</mandate>
-          <action>Show checkpoint separator: ━━━━━━━━━━━━━━━━━━━━━━━</action>
           <action>Display generated content</action>
           <ask> [a] Advanced Elicitation, [c] Continue, [p] Party-Mode, [y] YOLO the rest of this document only. WAIT for response. <if
               response="a">

@@ -17,7 +17,7 @@ agent:
   menu:
     - trigger: brainstorm
       workflow: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
-      description: Guide me through Brainstorming
+      description: Guide me through Brainstorming any topic
 
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
@@ -26,3 +26,4 @@ agent:
     - trigger: advanced-elicitation
       exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true
