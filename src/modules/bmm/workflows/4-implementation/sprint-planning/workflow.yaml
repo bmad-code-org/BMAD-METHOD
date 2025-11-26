@@ -18,6 +18,8 @@ validation: "{installed_path}/checklist.md"
 
 # Variables and inputs
 variables:
+  # Project context
+  project_context: "**/project-context.md"
   # Project identification
   project_name: "{config_source}:project_name"
 

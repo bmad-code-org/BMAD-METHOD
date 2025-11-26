@@ -170,6 +170,77 @@ class KiloSetup extends BaseIdeSetup {
       console.log(chalk.dim(`Removed ${removedCount} BMAD modes from .kilocodemodes`));
     }
   }
+
+  /**
+   * Install a custom agent launcher for Kilo
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object} Installation result
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const kilocodemodesPath = path.join(projectDir, this.configFile);
+    let existingContent = '';
+
+    // Read existing .kilocodemodes file
+    if (await this.pathExists(kilocodemodesPath)) {
+      existingContent = await this.readFile(kilocodemodesPath);
+    }
+
+    // Create custom agent mode entry
+    const slug = `bmad-custom-${agentName.toLowerCase()}`;
+    const modeEntry = ` - slug: ${slug}
+   name: 'BMAD Custom: ${agentName}'
+   description: |
+    Custom BMAD agent: ${agentName}
+
+    **⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!
+
+    This is a launcher for the custom BMAD agent "${agentName}". The agent will follow the persona and instructions from the main agent file.
+   prompt: |
+    @${agentPath}
+   always: false
+   permissions: all
+`;
+
+    // Check if mode already exists
+    if (existingContent.includes(slug)) {
+      return {
+        ide: 'kilo',
+        path: this.configFile,
+        command: agentName,
+        type: 'custom-agent-launcher',
+        alreadyExists: true,
+      };
+    }
+
+    // Build final content
+    let finalContent = '';
+    if (existingContent) {
+      // Find customModes section or add it
+      if (existingContent.includes('customModes:')) {
+        // Append to existing customModes
+        finalContent = existingContent + modeEntry;
+      } else {
+        // Add customModes section
+        finalContent = existingContent.trim() + '\n\ncustomModes:\n' + modeEntry;
+      }
+    } else {
+      // Create new .kilocodemodes file with customModes
+      finalContent = 'customModes:\n' + modeEntry;
+    }
+
+    // Write .kilocodemodes file
+    await this.writeFile(kilocodemodesPath, finalContent);
+
+    return {
+      ide: 'kilo',
+      path: this.configFile,
+      command: slug,
+      type: 'custom-agent-launcher',
+    };
+  }
 }
 
 module.exports = { KiloSetup };

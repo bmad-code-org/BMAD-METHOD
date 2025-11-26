@@ -125,7 +125,7 @@ menu:
   - trigger: create-brief
     exec: '{project-root}/{bmad_folder}/core/tasks/create-doc.xml'
     tmpl: '{project-root}/{bmad_folder}/bmm/templates/brief.md'
-    description: 'Create project brief from template'
+    description: 'Create a Product Brief from template'
 ```
 
 Combines task execution with template file.

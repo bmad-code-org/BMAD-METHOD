@@ -16,6 +16,12 @@
 
 ---
 
+## User Journeys
+
+{{user_journeys}}
+
+---
+
 ## Project Classification
 
 **Technical Type:** {{project_type}}
@@ -24,25 +30,15 @@
 
 {{project_classification}}
 
-{{#if domain_context_summary}}
-
 ### Domain Context
 
 {{domain_context_summary}}
-{{/if}}
 
 ---
 
 ## Success Criteria
 
 {{success_criteria}}
-
-{{#if business_metrics}}
-
-### Business Metrics
-
-{{business_metrics}}
-{{/if}}
 
 ---
 
@@ -62,18 +58,13 @@
 
 ---
 
-{{#if domain_considerations}}
-
 ## Domain-Specific Requirements
 
 {{domain_considerations}}
 
 This section shapes all functional and non-functional requirements below.
-{{/if}}
 
 ---
-
-{{#if innovation_patterns}}
 
 ## Innovation & Novel Patterns
 
@@ -82,62 +73,38 @@ This section shapes all functional and non-functional requirements below.
 ### Validation Approach
 
 {{validation_approach}}
-{{/if}}
 
 ---
-
-{{#if project_type_requirements}}
 
 ## {{project_type}} Specific Requirements
 
 {{project_type_requirements}}
 
-{{#if endpoint_specification}}
-
 ### API Specification
 
 {{endpoint_specification}}
-{{/if}}
-
-{{#if authentication_model}}
 
 ### Authentication & Authorization
 
 {{authentication_model}}
-{{/if}}
-
-{{#if platform_requirements}}
 
 ### Platform Support
 
 {{platform_requirements}}
-{{/if}}
-
-{{#if device_features}}
 
 ### Device Capabilities
 
 {{device_features}}
-{{/if}}
-
-{{#if tenant_model}}
 
 ### Multi-Tenancy Architecture
 
 {{tenant_model}}
-{{/if}}
-
-{{#if permission_matrix}}
 
 ### Permissions & Roles
 
 {{permission_matrix}}
-{{/if}}
-{{/if}}
 
 ---
-
-{{#if ux_principles}}
 
 ## User Experience Principles
 
@@ -146,7 +113,6 @@ This section shapes all functional and non-functional requirements below.
 ### Key Interactions
 
 {{key_interactions}}
-{{/if}}
 
 ---
 
@@ -158,44 +124,25 @@ This section shapes all functional and non-functional requirements below.
 
 ## Non-Functional Requirements
 
-{{#if performance_requirements}}
-
 ### Performance
 
 {{performance_requirements}}
-{{/if}}
-
-{{#if security_requirements}}
 
 ### Security
 
 {{security_requirements}}
-{{/if}}
-
-{{#if scalability_requirements}}
 
 ### Scalability
 
 {{scalability_requirements}}
-{{/if}}
-
-{{#if accessibility_requirements}}
 
 ### Accessibility
 
 {{accessibility_requirements}}
-{{/if}}
-
-{{#if integration_requirements}}
 
 ### Integration
 
 {{integration_requirements}}
-{{/if}}
-
-{{#if no_nfrs}}
-_No specific non-functional requirements identified for this project type._
-{{/if}}
 
 ---
 

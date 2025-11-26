@@ -320,7 +320,9 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
         for (const ide of newlySelectedIdes) {
           // List of IDEs that have interactive prompts
-          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini'].includes(ide);
+          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini', 'rovo-dev'].includes(
+            ide,
+          );
 
           if (needsPrompts) {
             // Get IDE handler and collect configuration
@@ -1783,14 +1785,19 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         }
       }
 
-      // Regenerate manifests after compilation
-      spinner.start('Regenerating manifests...');
-      const installedModules = entries
-        .filter((e) => e.isDirectory() && e.name !== '_cfg' && e.name !== 'docs' && e.name !== 'agents' && e.name !== 'core')
-        .map((e) => e.name);
-      const manifestGen = new ManifestGenerator();
+      // Reinstall custom agents from _cfg/custom/agents/ sources
+      spinner.start('Rebuilding custom agents...');
+      const customAgentResults = await this.reinstallCustomAgents(projectDir, bmadDir);
+      if (customAgentResults.count > 0) {
+        spinner.succeed(`Rebuilt ${customAgentResults.count} custom agent${customAgentResults.count > 1 ? 's' : ''}`);
+        agentCount += customAgentResults.count;
+      } else {
+        spinner.succeed('No custom agents found to rebuild');
+      }
 
-      // Get existing IDE list from manifest
+      // Skip full manifest regeneration during compileAgents to preserve custom agents
+      // Custom agents are already added to manifests during individual installation
+      // Only regenerate YAML manifest for IDE updates if needed
       const existingManifestPath = path.join(bmadDir, '_cfg', 'manifest.yaml');
       let existingIdes = [];
       if (await fs.pathExists(existingManifestPath)) {
@@ -1799,11 +1806,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         const manifest = yaml.load(manifestContent);
         existingIdes = manifest.ides || [];
       }
-
-      await manifestGen.generateManifests(bmadDir, installedModules, [], {
-        ides: existingIdes,
-      });
-      spinner.succeed('Manifests regenerated');
 
       // Update IDE configurations using the existing IDE list from manifest
       if (existingIdes && existingIdes.length > 0) {
@@ -2419,45 +2421,58 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
   }
 
   /**
-   * Reinstall custom agents from _cfg/custom/agents/ sources
+   * Reinstall custom agents from backup and source locations
    * This preserves custom agents across quick updates/reinstalls
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
    * @returns {Object} Result with count and agent names
    */
   async reinstallCustomAgents(projectDir, bmadDir) {
-    const customAgentsCfgDir = path.join(bmadDir, '_cfg', 'custom', 'agents');
+    const {
+      discoverAgents,
+      loadAgentConfig,
+      extractManifestData,
+      addToManifest,
+      createIdeSlashCommands,
+      updateManifestYaml,
+    } = require('../../../lib/agent/installer');
+    const { compileAgent } = require('../../../lib/agent/compiler');
+
     const results = { count: 0, agents: [] };
 
-    if (!(await fs.pathExists(customAgentsCfgDir))) {
+    // Check multiple locations for custom agents
+    const sourceLocations = [
+      path.join(bmadDir, '_cfg', 'custom', 'agents'), // Backup location
+      path.join(bmadDir, 'custom', 'src', 'agents'), // BMAD folder source location
+      path.join(projectDir, 'custom', 'src', 'agents'), // Project root source location
+    ];
+
+    let foundAgents = [];
+    let processedAgents = new Set(); // Track to avoid duplicates
+
+    // Discover agents from all locations
+    for (const location of sourceLocations) {
+      if (await fs.pathExists(location)) {
+        const agents = discoverAgents(location);
+        // Only add agents we haven't processed yet
+        const newAgents = agents.filter((agent) => !processedAgents.has(agent.name));
+        foundAgents.push(...newAgents);
+        for (const agent of newAgents) processedAgents.add(agent.name);
+      }
+    }
+
+    if (foundAgents.length === 0) {
       return results;
     }
 
     try {
-      const {
-        discoverAgents,
-        loadAgentConfig,
-        extractManifestData,
-        addToManifest,
-        createIdeSlashCommands,
-        updateManifestYaml,
-      } = require('../../../lib/agent/installer');
-      const { compileAgent } = require('../../../lib/agent/compiler');
-
-      // Discover custom agents in _cfg/custom/agents/
-      const agents = discoverAgents(customAgentsCfgDir);
-
-      if (agents.length === 0) {
-        return results;
-      }
-
       const customAgentsDir = path.join(bmadDir, 'custom', 'agents');
       await fs.ensureDir(customAgentsDir);
 
       const manifestFile = path.join(bmadDir, '_cfg', 'agent-manifest.csv');
       const manifestYamlFile = path.join(bmadDir, '_cfg', 'manifest.yaml');
 
-      for (const agent of agents) {
+      for (const agent of foundAgents) {
         try {
           const agentConfig = loadAgentConfig(agent.yamlFile);
           const finalAgentName = agent.name; // Already named correctly from save
@@ -2492,6 +2507,16 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
           // Write compiled agent
           await fs.writeFile(compiledPath, xml, 'utf8');
 
+          // Backup source YAML to _cfg/custom/agents if not already there
+          const cfgAgentsBackupDir = path.join(bmadDir, '_cfg', 'custom', 'agents');
+          await fs.ensureDir(cfgAgentsBackupDir);
+          const backupYamlPath = path.join(cfgAgentsBackupDir, `${finalAgentName}.agent.yaml`);
+
+          // Only backup if source is not already in backup location
+          if (agent.yamlFile !== backupYamlPath) {
+            await fs.copy(agent.yamlFile, backupYamlPath);
+          }
+
           // Copy sidecar files if expert agent
           if (agent.hasSidecar && agent.type === 'expert') {
             const { copySidecarFiles } = require('../../../lib/agent/installer');
@@ -2500,9 +2525,16 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
           // Update manifest CSV
           if (await fs.pathExists(manifestFile)) {
-            const manifestData = extractManifestData(xml, { ...metadata, name: finalAgentName }, relativePath, 'custom');
-            manifestData.name = finalAgentName;
-            manifestData.displayName = metadata.name || finalAgentName;
+            // Preserve YAML metadata for persona name, but override id for filename
+            const manifestMetadata = {
+              ...metadata,
+              id: relativePath, // Use the compiled agent path for id
+              name: metadata.name || finalAgentName, // Use YAML metadata.name (persona name) or fallback
+              title: metadata.title, // Use YAML title
+              icon: metadata.icon, // Use YAML icon
+            };
+            const manifestData = extractManifestData(xml, manifestMetadata, relativePath, 'custom');
+            manifestData.name = finalAgentName; // Use filename for the name field
             manifestData.path = relativePath;
             addToManifest(manifestFile, manifestData);
           }

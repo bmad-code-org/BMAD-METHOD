@@ -171,7 +171,7 @@ communication_language: "English"
 - Windsurf
 
 **Additional**:
-Cline, Roo, Auggie, GitHub Copilot, Codex, Gemini, Qwen, Trae, Kilo, Crush, iFlow
+Cline, Roo, Rovo Dev,Auggie, GitHub Copilot, Codex, Gemini, Qwen, Trae, Kilo, Crush, iFlow
 
 ### Platform Features
 

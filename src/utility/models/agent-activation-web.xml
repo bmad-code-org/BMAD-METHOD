@@ -21,18 +21,8 @@
   </bundled-files>
   <commands critical="MANDATORY">
     <input>Number → cmd[n] | Text → fuzzy match *commands</input>
-    <extract>exec, tmpl, data, action, run-workflow, validate-workflow</extract>
+    <extract>exec, tmpl, data, action, validate-workflow</extract>
     <handlers>
-      <handler type="run-workflow">
-        When command has: run-workflow="path/to/x.yaml" You MUST:
-        1. CRITICAL: Locate &lt;file id="{bmad_folder}/core/tasks/workflow.xml"&gt; in this XML bundle
-        2. Extract and READ its CDATA content - this is the CORE OS for EXECUTING workflows
-        3. Locate &lt;file id="path/to/x.yaml"&gt; for the workflow config
-        4. Pass the yaml content as 'workflow-config' parameter to workflow.xml instructions
-        5. Follow workflow.xml instructions EXACTLY as written
-        6. When workflow references other files, locate them by id in &lt;file&gt; elements
-        7. Save outputs after EACH section (never batch)
-      </handler>
       <handler type="action">
         When command has: action="#id" → Find prompt with id="id" in current agent XML, execute its content
         When command has: action="text" → Execute the text directly as a critical action prompt

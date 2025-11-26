@@ -248,6 +248,77 @@ class RooSetup extends BaseIdeSetup {
       console.log(chalk.dim(`Removed ${removedCount} BMAD modes from .roomodes`));
     }
   }
+
+  /**
+   * Install a custom agent launcher for Roo
+   * @param {string} projectDir - Project directory
+   * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
+   * @param {string} agentPath - Path to compiled agent (relative to project root)
+   * @param {Object} metadata - Agent metadata
+   * @returns {Object} Installation result
+   */
+  async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
+    const roomodesPath = path.join(projectDir, this.configFile);
+    let existingContent = '';
+
+    // Read existing .roomodes file
+    if (await this.pathExists(roomodesPath)) {
+      existingContent = await this.readFile(roomodesPath);
+    }
+
+    // Create custom agent mode entry
+    const slug = `bmad-custom-${agentName.toLowerCase()}`;
+    const modeEntry = ` - slug: ${slug}
+   name: 'BMAD Custom: ${agentName}'
+   description: |
+    Custom BMAD agent: ${agentName}
+
+    **⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!
+
+    This is a launcher for the custom BMAD agent "${agentName}". The agent will follow the persona and instructions from the main agent file.
+   prompt: |
+    @${agentPath}
+   always: false
+   permissions: all
+`;
+
+    // Check if mode already exists
+    if (existingContent.includes(slug)) {
+      return {
+        ide: 'roo',
+        path: this.configFile,
+        command: agentName,
+        type: 'custom-agent-launcher',
+        alreadyExists: true,
+      };
+    }
+
+    // Build final content
+    let finalContent = '';
+    if (existingContent) {
+      // Find customModes section or add it
+      if (existingContent.includes('customModes:')) {
+        // Append to existing customModes
+        finalContent = existingContent + modeEntry;
+      } else {
+        // Add customModes section
+        finalContent = existingContent.trim() + '\n\ncustomModes:\n' + modeEntry;
+      }
+    } else {
+      // Create new .roomodes file with customModes
+      finalContent = 'customModes:\n' + modeEntry;
+    }
+
+    // Write .roomodes file
+    await this.writeFile(roomodesPath, finalContent);
+
+    return {
+      ide: 'roo',
+      path: this.configFile,
+      command: slug,
+      type: 'custom-agent-launcher',
+    };
+  }
 }
 
 module.exports = { RooSetup };
