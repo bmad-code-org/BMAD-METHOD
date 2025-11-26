@@ -22,9 +22,9 @@ module.exports = {
   command: 'agent-install',
   description: 'Install and compile BMAD agents with personalization',
   options: [
-    ['-p, --path <path>', 'Path to specific agent YAML file or folder'],
+    ['-s, --source <path>', 'Path to specific agent YAML file or folder'],
     ['-d, --defaults', 'Use default values without prompting'],
-    ['-t, --target <path>', 'Target installation directory (default: .bmad/agents)'],
+    ['-t, --destination <path>', 'Target installation directory (default: current project BMAD installation)'],
   ],
   action: async (options) => {
     try {
@@ -43,9 +43,9 @@ module.exports = {
 
       let selectedAgent = null;
 
-      // If path provided, use it directly
-      if (options.path) {
-        const providedPath = path.resolve(options.path);
+      // If source provided, use it directly
+      if (options.source) {
+        const providedPath = path.resolve(options.source);
 
         if (!fs.existsSync(providedPath)) {
           console.log(chalk.red(`Path not found: ${providedPath}`));
@@ -82,7 +82,7 @@ module.exports = {
         // Discover agents from custom location
         const customAgentLocation = config.custom_agent_location
           ? resolvePath(config.custom_agent_location, config)
-          : path.join(config.bmadFolder, 'custom', 'agents');
+          : path.join(config.bmadFolder, 'custom', 'src', 'agents');
 
         console.log(chalk.dim(`Searching for agents in: ${customAgentLocation}\n`));
 
@@ -192,11 +192,11 @@ module.exports = {
       }
 
       // Determine target directory
-      let targetDir = options.target ? path.resolve(options.target) : null;
+      let targetDir = options.destination ? path.resolve(options.destination) : null;
 
       // If no target specified, prompt for it
       if (targetDir) {
-        // If target provided via --target, check if it's a project root and adjust
+        // If target provided via --destination, check if it's a project root and adjust
         const otherProject = detectBmadProject(targetDir);
         if (otherProject && !targetDir.includes('agents')) {
           // User specified project root, redirect to custom agents folder
