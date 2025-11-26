@@ -42,7 +42,7 @@ cursor
 CLAUDE.local.md
 .serena/
 .claude/settings.local.json
-
+.amazonq
 # Project-specific
 .bmad-core
 .bmad-creator-tools

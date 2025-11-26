@@ -2,9 +2,11 @@ const chalk = require('chalk');
 const path = require('node:path');
 const { Installer } = require('../installers/lib/core/installer');
 const { UI } = require('../lib/ui');
+const { KiroCLIGenerator } = require('../lib/kiro-cli-generator');
 
 const installer = new Installer();
 const ui = new UI();
+const kiroGenerator = new KiroCLIGenerator();
 
 module.exports = {
   command: 'install',
@@ -57,6 +59,16 @@ module.exports = {
       if (result && result.success) {
         console.log(chalk.green('\n✨ Installation complete!'));
         console.log(chalk.cyan('BMAD Core and Selected Modules have been installed to:'), chalk.bold(result.path));
+
+        // Generate Kiro CLI agents automatically using the installation directory
+        try {
+          // Use the directory where BMAD was installed, not current working directory
+          const installDir = path.dirname(result.path); // Remove .bmad from path to get project root
+          await kiroGenerator.generateWithOutput(installDir);
+        } catch (error) {
+          console.log(chalk.yellow('⚠️  Kiro CLI agent generation failed (non-critical):'), error.message);
+        }
+
         console.log(chalk.yellow('\nThank you for helping test the early release version of the new BMad Core and BMad Method!'));
         console.log(chalk.cyan('Stable Beta coming soon - please read the full readme.md and linked documentation to get started!'));
         process.exit(0);

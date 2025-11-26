@@ -25,6 +25,7 @@
   },
   "scripts": {
     "bmad:agent-install": "node tools/cli/bmad-cli.js agent-install",
+    "bmad:generate-kiro-cli": "node tools/cli/bmad-cli.js generate-kiro-cli-agents",
     "bmad:install": "node tools/cli/bmad-cli.js install",
     "bmad:status": "node tools/cli/bmad-cli.js status",
     "bundle": "node tools/cli/bundlers/bundle-web.js all",
