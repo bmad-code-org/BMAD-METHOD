@@ -3,6 +3,8 @@
 <critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>This workflow orchestrates group discussions between all installed BMAD agents</critical>
 
+<!-- TTS_INJECTION:party-mode -->
+
 <workflow>
 
 <step n="1" goal="Load Agent Manifest and Configurations">
@@ -94,17 +96,29 @@
   </substep>
 
   <substep n="3d" goal="Format and Present Responses">
-    <action>Present each agent's contribution clearly:</action>
+    <action>For each agent response, output text THEN trigger their voice:</action>
+
+    <!-- TTS_INJECTION:party-mode -->
+
     <format>
-      [Agent Name]: [Their response in their voice/style]
+      [Icon Emoji] [Agent Name]: [Their response in their voice/style]
 
-      [Another Agent]: [Their response, potentially referencing the first]
+      [Icon Emoji] [Another Agent]: [Their response, potentially referencing the first]
 
-      [Third Agent if selected]: [Their contribution]
+      [Icon Emoji] [Third Agent if selected]: [Their contribution]
     </format>
+    <example>
+      🏗️ [Winston]: I recommend using microservices for better scalability.
+      [Bash: .claude/hooks/bmad-speak.sh "Winston" "I recommend using microservices for better scalability."]
+
+      📋 [John]: But a monolith would get us to market faster for MVP.
+      [Bash: .claude/hooks/bmad-speak.sh "John" "But a monolith would get us to market faster for MVP."]
+    </example>
 
     <action>Maintain spacing between agents for readability</action>
     <action>Preserve each agent's unique voice throughout</action>
+    <action>Always include the agent's icon emoji from the manifest before their name</action>
+    <action>Trigger TTS for each agent immediately after outputting their text</action>
 
   </substep>
 
