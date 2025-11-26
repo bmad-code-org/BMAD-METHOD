@@ -35,11 +35,6 @@ After discovery completes, the following content variables will be available:
   <action>Check status of "product-brief" workflow</action>
   <action>Get project_level from YAML metadata</action>
   <action>Find first non-completed workflow (next expected workflow)</action>
-
-  <check if="project_level < 2">
-    <output>**Note: Level {{project_level}} Project**
-
-Product Brief is most valuable for Level 2+ projects, but can help clarify vision for any project.</output>
 </check>
 
   <check if="product-brief status is file path (already completed)">
@@ -71,17 +66,13 @@ Product Brief is most valuable for Level 2+ projects, but can help clarify visio
 <step n="1" goal="Begin the journey and understand context">
 <action>Welcome {user_name} warmly in {communication_language}
 
-Adapt your tone to {user_skill_level}:
-
-- Expert: "Let's define your product vision. What are you building?"
-- Intermediate: "I'm here to help shape your product vision. Tell me about your idea."
-- Beginner: "Hi! I'm going to help you figure out exactly what you want to build. Let's start with your idea - what got you excited about this?"
-
 Start with open exploration:
 
 - What sparked this idea?
 - What are you hoping to build?
 - Who is this for - yourself, a business, users you know?
+
+- "I'm here to help shape your product vision. Tell me about your idea and what got you excited about this? The more detail you can give me here the better I can help you further craft the idea."
 
 CRITICAL: Listen for context clues that reveal their situation:
 
@@ -99,7 +90,7 @@ Based on their initial response, sense:
 - If they have existing materials to share
 - Their confidence level with the domain</action>
 
-<ask>What's the project name, and what got you excited about building this?</ask>
+<ask if="user has not given the project name already">What's the project name?</ask>
 
 <action>From even this first exchange, create initial document sections</action>
 <template-output>project_name</template-output>

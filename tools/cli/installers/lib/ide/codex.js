@@ -354,7 +354,7 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {Object|null} Info about created command
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const destDir = this.getCodexPromptDir();
+    const destDir = this.getCodexPromptDir(projectDir, 'project');
     await fs.ensureDir(destDir);
 
     const launcherContent = `---
@@ -379,7 +379,7 @@ You must fully embody this agent's persona and follow all activation instruction
     await fs.writeFile(launcherPath, launcherContent, 'utf8');
 
     return {
-      path: launcherPath,
+      path: path.relative(projectDir, launcherPath),
       command: `/${fileName.replace('.md', '')}`,
     };
   }

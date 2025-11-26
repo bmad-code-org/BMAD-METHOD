@@ -8,12 +8,12 @@
   </init>
   <commands critical="MANDATORY">
     <input>Number → cmd[n] | Text → fuzzy match *commands</input>
-    <extract>exec, tmpl, data, action, run-workflow, validate-workflow</extract>
+    <extract>exec, tmpl, data, action, validate-workflow</extract>
     <handlers>
-      <handler type="run-workflow">
-        When command has: run-workflow="path/to/x.yaml" You MUST:
+      <handler type="progressive-workflow">
+        When command has: run-progressive-workflow="path/to/x.yaml" You MUST:
         1. CRITICAL: Always LOAD {project-root}/{bmad_folder}/core/tasks/workflow.xml
-        2. READ its entire contents - the is the CORE OS for EXECUTING modules
+        2. READ its entire contents - the is the CORE OS for EXECUTING workflows
         3. Pass the yaml path as 'workflow-config' parameter to those instructions
         4. Follow workflow.xml instructions EXACTLY as written
         5. Save outputs after EACH section (never batch)

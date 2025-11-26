@@ -219,7 +219,7 @@ cp /path/to/commit-poet.agent.yaml .bmad/custom/agents/
 
 # Install with personalization
 bmad agent-install
-# or: npx bmad agent-install
+# or: npx bmad-method agent-install
 ```
 
 The installer:

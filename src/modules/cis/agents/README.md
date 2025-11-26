@@ -83,7 +83,7 @@ Master storyteller with 50+ years crafting compelling narratives across multiple
 All CIS agents are **Module Agents** with:
 
 - Integration with CIS module configuration
-- Access to workflow invocation via `run-workflow` or `exec` attributes
+- Access to workflow invocation via `workflow` or `exec` attributes
 - Standard critical actions for config loading and user context
 - Simple command structure focused on workflow facilitation
 

@@ -1,10 +1,10 @@
 # BMad Quick Flow - Greenfield
-# Fast implementation path with tech-spec planning (1-15 stories typically)
+# Fast spec-driven development path (1-10 stories typically)
 
 method_name: "BMad Quick Flow"
 track: "quick-flow"
 field_type: "greenfield"
-description: "Fast tech-spec based implementation for greenfield projects"
+description: "Spec-driven development for greenfield projects - streamlined path without sprint overhead"
 
 phases:
   - phase: 0
@@ -26,22 +26,31 @@ phases:
         note: "Can have multiple research workflows"
 
   - phase: 1
-    name: "Planning"
+    name: "Spec Engineering"
     required: true
     workflows:
-      - id: "tech-spec"
+      - id: "create-tech-spec"
         required: true
-        agent: "pm"
-        command: "tech-spec"
-        output: "Technical Specification with stories (auto-detects epic if 2+ stories)"
-        note: "Quick Spec Flow - implementation-focused planning"
+        agent: "quick-flow-solo-dev"
+        command: "create-tech-spec"
+        output: "Technical Specification with implementation-ready stories"
+        note: "Stories contain all context for execution"
 
   - phase: 2
     name: "Implementation"
     required: true
+    note: "Barry executes all stories, optional code-review after each"
     workflows:
-      - id: "sprint-planning"
+      - id: "dev-spec"
         required: true
-        agent: "sm"
-        command: "sprint-planning"
-        note: "Creates sprint plan with all stories - subsequent work tracked in sprint plan output, not workflow-status"
+        repeat: true
+        agent: "quick-flow-solo-dev"
+        command: "dev-spec"
+        note: "Execute stories from spec - Barry is the one-man powerhouse"
+
+      - id: "code-review"
+        optional: true
+        repeat: true
+        agent: "quick-flow-solo-dev"
+        command: "code-review"
+        note: "Review completed story implementation"
