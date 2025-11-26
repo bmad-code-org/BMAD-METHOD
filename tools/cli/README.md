@@ -162,6 +162,7 @@ The installer supports **15 IDE environments** through a base-derived architectu
 | `gemini`         | Google Gemini     | `.gemini/`               |
 | `qwen`           | Qwen              | `.qwen/`                 |
 | `roo`            | Roo               | `.roo/`                  |
+| `rovo-dev`       | Rovo              | `.rovodev/`              |
 | `trae`           | Trae              | `.trae/`                 |
 | `iflow`          | iFlow             | `.iflow/`                |
 | `kilo`           | Kilo              | `.kilo/`                 |

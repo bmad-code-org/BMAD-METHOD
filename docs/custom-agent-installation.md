@@ -6,7 +6,7 @@ Install and personalize BMAD agents in your project.
 
 ```bash
 # From your project directory with BMAD installed
-npx bmad agent-install
+npx bmad-method agent-install
 ```
 
 Or if you have bmad-cli installed globally:
@@ -30,10 +30,34 @@ bmad agent-install
 bmad agent-install [options]
 
 Options:
-  -p, --path <path>     Direct path to specific agent YAML file or folder
-  -d, --defaults        Use default values without prompting
-  -t, --target <path>   Target installation directory
+  -p, --path <path>     #Direct path to specific agent YAML file or folder
+  -d, --defaults        #Use default values without prompting
+  -t, --target <path>   #Target installation directory
 ```
+
+## Installing from Custom Locations
+
+Use the `-s` / `--source` option to install agents from any location:
+
+```bash
+# Install agent from a custom folder (expert agent with sidecar)
+bmad agent-install -s path/to/my-agent
+
+# Install a specific .agent.yaml file (simple agent)
+bmad agent-install -s path/to/my-agent.agent.yaml
+
+# Install with defaults (non-interactive)
+bmad agent-install -s path/to/my-agent -d
+
+# Install to a specific destination project
+bmad agent-install -s path/to/my-agent --destination /path/to/destination/project
+```
+
+This is useful when:
+
+- Your agent is in a non-standard location (not in `.bmad/custom/agents/`)
+- You're developing an agent outside the project structure
+- You want to install from an absolute path
 
 ## Example Session
 
@@ -121,8 +145,8 @@ cp -r node_modules/bmad-method/src/modules/bmb/reference/agents/agent-with-memor
 ### Step 2: Install and Personalize
 
 ```bash
-npx bmad agent-install
-# or: bmad agent-install
+npx bmad-method agent-install
+# or: bmad agent-install (if BMAD installed locally)
 ```
 
 The installer will:
@@ -156,14 +180,4 @@ src/modules/bmb/reference/agents/
 
 ## Creating Your Own
 
-Place your `.agent.yaml` files in `.bmad/custom/agents/`. Use the reference agents as templates.
-
-Key sections in an agent YAML:
-
-- `metadata`: name, title, icon, type
-- `persona`: role, identity, communication_style, principles
-- `prompts`: reusable prompt templates
-- `menu`: numbered menu items
-- `install_config`: personalization questions (optional, at end of file)
-
-See the reference agents for complete examples with install_config templates and XML-style semantic tags.
+Use the BMB agent builder to craft your agents. Once ready to use yourself, place your `.agent.yaml` files or folder in `.bmad/custom/agents/`.

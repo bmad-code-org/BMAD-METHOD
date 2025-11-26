@@ -2,7 +2,7 @@
 const assert = require('node:assert');
 const { z } = require('zod');
 
-const COMMAND_TARGET_KEYS = ['workflow', 'validate-workflow', 'exec', 'action', 'tmpl', 'data', 'run-workflow'];
+const COMMAND_TARGET_KEYS = ['workflow', 'validate-workflow', 'exec', 'action', 'tmpl', 'data'];
 const TRIGGER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 // Public API ---------------------------------------------------------------
@@ -180,7 +180,6 @@ function buildMenuItemSchema() {
       action: createNonEmptyString('agent.menu[].action').optional(),
       tmpl: createNonEmptyString('agent.menu[].tmpl').optional(),
       data: createNonEmptyString('agent.menu[].data').optional(),
-      'run-workflow': createNonEmptyString('agent.menu[].run-workflow').optional(),
       checklist: createNonEmptyString('agent.menu[].checklist').optional(),
       document: createNonEmptyString('agent.menu[].document').optional(),
       'ide-only': z.boolean().optional(),
