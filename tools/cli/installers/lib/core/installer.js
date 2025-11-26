@@ -1937,12 +1937,11 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       const existingBmadFolderName = path.basename(bmadDir);
       const newBmadFolderName = this.configCollector.collectedConfig.core?.bmad_folder || existingBmadFolderName;
 
-      if (existingBmadFolderName === newBmadFolderName) {
-        // Normal quick update - start the spinner
-        spinner.start('Updating BMAD installation...');
-      } else {
-        // Folder name has changed - stop spinner and let install() handle it
-        spinner.stop();
+      // Stop spinner before calling install() since install() manages its own spinner
+      spinner.stop();
+
+      // Notify user if folder name will change
+      if (existingBmadFolderName !== newBmadFolderName) {
         console.log(chalk.yellow(`\n⚠️  Folder name will change: ${existingBmadFolderName} → ${newBmadFolderName}`));
         console.log(chalk.yellow('The installer will handle the folder migration.\n'));
       }
@@ -1961,14 +1960,11 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         _savedIdeConfigs: savedIdeConfigs, // Pass saved IDE configs to installer
       };
 
-      // Call the standard install method
+      // Call the standard install method (it will manage its own spinner)
       const result = await this.install(installConfig);
 
-      // Only succeed the spinner if it's still spinning
-      // (install method might have stopped it if folder name changed)
-      if (spinner.isSpinning) {
-        spinner.succeed('Quick update complete!');
-      }
+      // Note: Completion message is shown by the caller in commands/install.js
+      // to avoid duplication and provide more detailed success information
 
       return {
         success: true,
@@ -1979,7 +1975,12 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         ides: configuredIdes,
       };
     } catch (error) {
-      spinner.fail('Quick update failed');
+      // Ensure spinner is stopped
+      if (spinner.isSpinning) {
+        spinner.stop();
+      }
+      // Provide operation context before detailed error from caller
+      console.error(chalk.red('✗ Quick update failed'));
       throw error;
     }
   }
