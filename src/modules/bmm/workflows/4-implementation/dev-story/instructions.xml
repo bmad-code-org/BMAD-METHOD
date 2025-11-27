@@ -395,6 +395,8 @@
       - Ensure deployment readiness if applicable
       - Run `code-review` workflow for peer review
     </action>
+
+    <output>💡 **Tip:** For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>
     <check if="{sprint_status} file exists">
       <action>Suggest checking {sprint_status} to see project progress</action>
     </check>
