@@ -119,12 +119,13 @@ class UI {
     const moduleChoices = await this.getModuleChoices(installedModuleIds);
     const selectedModules = await this.selectModules(moduleChoices);
 
-    // Prompt for AgentVibes TTS integration
-    const agentVibesConfig = await this.promptAgentVibes(confirmedDirectory);
-
     // Collect IDE tool selection AFTER configuration prompts (fixes Windows/PowerShell hang)
     // This allows text-based prompts to complete before the checkbox prompt
     const toolSelection = await this.promptToolSelection(confirmedDirectory, selectedModules);
+
+    // Prompt for AgentVibes TTS integration AFTER tool selection
+    // Default to Y if Claude Code is selected (since AgentVibes only works with Claude Code)
+    const agentVibesConfig = await this.promptAgentVibes(confirmedDirectory, toolSelection.ides);
 
     // No more screen clearing - keep output flowing
 
@@ -753,7 +754,7 @@ class UI {
    * - Markers: src/core/workflows/party-mode/instructions.md:101, src/modules/bmm/agents/*.md
    * - GitHub Issue: paulpreibisch/AgentVibes#36
    */
-  async promptAgentVibes(projectDir) {
+  async promptAgentVibes(projectDir, selectedIdes = []) {
     CLIUtils.displaySection('🎤 Voice Features', 'Enable TTS for multi-agent conversations');
 
     // Check if AgentVibes is already installed
@@ -765,20 +766,21 @@ class UI {
       console.log(chalk.dim('  AgentVibes not detected'));
     }
 
+    // Default to Y if Claude Code is selected (AgentVibes only works with Claude Code)
+    const claudeCodeSelected = selectedIdes.includes('claude-code');
+    const defaultValue = claudeCodeSelected;
+
     const answers = await inquirer.prompt([
       {
         type: 'confirm',
         name: 'enableTts',
-        message: 'Enable Agents to Speak Out loud (powered by Agent Vibes? Claude Code only currently)',
-        default: false, // Default to yes - recommended for best experience
+        message: 'Enable Agents to Speak Out loud (powered by AgentVibes, Claude Code only)',
+        default: defaultValue,
       },
     ]);
 
-    if (answers.enableTts && !agentVibesInstalled) {
-      console.log(chalk.yellow('\n  ⚠️  AgentVibes not installed'));
-      console.log(chalk.dim('  Install AgentVibes separately to enable TTS:'));
-      console.log(chalk.dim('  https://github.com/paulpreibisch/AgentVibes\n'));
-    }
+    // Note: AgentVibes installer runs at end of BMAD install if enabled and not already installed
+    // No need to show warning here - the installer will handle it
 
     return {
       enabled: answers.enableTts,
