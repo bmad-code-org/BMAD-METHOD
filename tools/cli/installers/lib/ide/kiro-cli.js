@@ -78,7 +78,6 @@ kiro-cli chat --agent market-researcher
 ## Updates
 
 These agents are automatically regenerated when you update BMAD.
-Manual regeneration: \`npm run bmad:generate-kiro-cli --force\`
 
 Generated: ${new Date().toISOString()}
 `;
