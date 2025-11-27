@@ -1960,10 +1960,11 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       }
 
       // If AgentVibes wasn't previously configured, prompt the user
+      // Use configuredIdes from line 1904 for smart default (Y if Claude Code is selected)
       if (!agentVibesPreviouslyConfigured) {
         const { UI } = require('../../../lib/ui');
         const ui = new UI();
-        const agentVibesConfig = await ui.promptAgentVibes(projectDir);
+        const agentVibesConfig = await ui.promptAgentVibes(projectDir, configuredIdes);
 
         if (agentVibesConfig.enableTts) {
           agentVibesEnabled = true;
