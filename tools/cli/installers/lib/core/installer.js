@@ -1,3 +1,23 @@
+/**
+ * File: tools/cli/installers/lib/core/installer.js
+ *
+ * BMAD Method - Business Model Agile Development Method
+ * Repository: https://github.com/paulpreibisch/BMAD-METHOD
+ *
+ * Copyright (c) 2025 Paul Preibisch
+ * Licensed under the Apache License, Version 2.0
+ *
+ * ---
+ *
+ * @fileoverview Core BMAD installation orchestrator with AgentVibes injection point support
+ * @context Manages complete BMAD installation flow including core agents, modules, IDE configs, and optional TTS integration
+ * @architecture Orchestrator pattern - coordinates Detector, ModuleManager, IdeManager, and file operations to build complete BMAD installation
+ * @dependencies fs-extra, ora, chalk, detector.js, module-manager.js, ide-manager.js, config.js
+ * @entrypoints Called by install.js command via installer.install(config)
+ * @patterns Injection point processing (AgentVibes), placeholder replacement ({bmad_folder}), module dependency resolution
+ * @related GitHub AgentVibes#34 (injection points), ui.js (user prompts), copyFileWithPlaceholderReplacement()
+ */
+
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
@@ -69,10 +89,41 @@ class Installer {
   }
 
   /**
-   * Copy a file and replace {bmad_folder} placeholder with actual folder name
-   * @param {string} sourcePath - Source file path
-   * @param {string} targetPath - Target file path
-   * @param {string} bmadFolderName - The bmad folder name to use for replacement
+   * @function copyFileWithPlaceholderReplacement
+   * @intent Copy files from BMAD source to installation directory with dynamic content transformation
+   * @why Enables installation-time customization: {bmad_folder} replacement + optional AgentVibes TTS injection
+   * @param {string} sourcePath - Absolute path to source file in BMAD repository
+   * @param {string} targetPath - Absolute path to destination file in user's project
+   * @param {string} bmadFolderName - User's chosen bmad folder name (default: 'bmad')
+   * @returns {Promise<void>} Resolves when file copy and transformation complete
+   * @sideeffects Writes transformed file to targetPath, creates parent directories if needed
+   * @edgecases Binary files bypass transformation, falls back to raw copy if UTF-8 read fails
+   * @calledby installCore(), installModule(), IDE installers during file vendoring
+   * @calls processTTSInjectionPoints(), fs.readFile(), fs.writeFile(), fs.copy()
+   *
+   * AI NOTE: This is the core transformation pipeline for ALL BMAD installation file copies.
+   * It performs two transformations in sequence:
+   * 1. {bmad_folder} → user's custom folder name (e.g., ".bmad" or "bmad")
+   * 2. <!-- TTS_INJECTION:* --> → TTS bash calls (if enabled) OR stripped (if disabled)
+   *
+   * The injection point processing enables loose coupling between BMAD and TTS providers:
+   * - BMAD source contains injection markers (not actual TTS code)
+   * - At install-time, markers are replaced OR removed based on user preference
+   * - Result: Clean installs for users without TTS, working TTS for users with it
+   *
+   * PATTERN: Adding New Injection Points
+   * =====================================
+   * 1. Add HTML comment marker in BMAD source file:
+   *    <!-- TTS_INJECTION:feature-name -->
+   *
+   * 2. Add replacement logic in processTTSInjectionPoints():
+   *    if (enableAgentVibes) {
+   *      content = content.replace(/<!-- TTS_INJECTION:feature-name -->/g, 'actual code');
+   *    } else {
+   *      content = content.replace(/<!-- TTS_INJECTION:feature-name -->\n?/g, '');
+   *    }
+   *
+   * 3. Document marker in instructions.md (if applicable)
    */
   async copyFileWithPlaceholderReplacement(sourcePath, targetPath, bmadFolderName) {
     // List of text file extensions that should have placeholder replacement
@@ -90,6 +141,9 @@ class Installer {
           content = content.replaceAll('{bmad_folder}', bmadFolderName);
         }
 
+        // Process AgentVibes injection points
+        content = this.processTTSInjectionPoints(content);
+
         // Write to target with replaced content
         await fs.ensureDir(path.dirname(targetPath));
         await fs.writeFile(targetPath, content, 'utf8');
@@ -101,6 +155,106 @@ class Installer {
       // Binary file or other file type - just copy directly
       await fs.copy(sourcePath, targetPath, { overwrite: true });
     }
+  }
+
+  /**
+   * @function processTTSInjectionPoints
+   * @intent Transform TTS injection markers based on user's installation choice
+   * @why Enables optional TTS integration without tight coupling between BMAD and TTS providers
+   * @param {string} content - Raw file content containing potential injection markers
+   * @returns {string} Transformed content with markers replaced (if enabled) or stripped (if disabled)
+   * @sideeffects None - pure transformation function
+   * @edgecases Returns content unchanged if no markers present, safe to call on all files
+   * @calledby copyFileWithPlaceholderReplacement() during every file copy operation
+   * @calls String.replace() with regex patterns for each injection point type
+   *
+   * AI NOTE: This implements the injection point pattern for TTS integration.
+   * Key architectural decisions:
+   *
+   * 1. **Why Injection Points vs Direct Integration?**
+   *    - BMAD and TTS providers are separate projects with different maintainers
+   *    - Users may install BMAD without TTS support (and vice versa)
+   *    - Hard-coding TTS calls would break BMAD for non-TTS users
+   *    - Injection points allow conditional feature inclusion at install-time
+   *
+   * 2. **How It Works:**
+   *    - BMAD source contains markers: <!-- TTS_INJECTION:feature-name -->
+   *    - During installation, user is prompted: "Enable AgentVibes TTS?"
+   *    - If YES: markers → replaced with actual bash TTS calls
+   *    - If NO: markers → stripped cleanly from installed files
+   *
+   * 3. **State Management:**
+   *    - this.enableAgentVibes set in install() method from config.enableAgentVibes
+   *    - config.enableAgentVibes comes from ui.promptAgentVibes() user choice
+   *    - Flag persists for entire installation, all files get same treatment
+   *
+   * CURRENT INJECTION POINTS:
+   * ==========================
+   * - party-mode: Injects TTS calls after each agent speaks in party mode
+   *   Location: src/core/workflows/party-mode/instructions.md
+   *   Marker: <!-- TTS_INJECTION:party-mode -->
+   *   Replacement: Bash call to .claude/hooks/bmad-speak.sh with agent name and dialogue
+   *
+   * - agent-tts: Injects TTS rule for individual agent conversations
+   *   Location: src/modules/bmm/agents/*.md (all agent files)
+   *   Marker: <!-- TTS_INJECTION:agent-tts -->
+   *   Replacement: Rule instructing agent to call bmad-speak.sh with agent ID and response
+   *
+   * ADDING NEW INJECTION POINTS:
+   * =============================
+   * 1. Add new case in this function:
+   *    content = content.replace(
+   *      /<!-- TTS_INJECTION:new-feature -->/g,
+   *      `code to inject when enabled`
+   *    );
+   *
+   * 2. Add marker to BMAD source file at injection location
+   *
+   * 3. Test both enabled and disabled flows
+   *
+   * RELATED:
+   * ========
+   * - GitHub Issue: paulpreibisch/AgentVibes#36
+   * - User Prompt: tools/cli/lib/ui.js::promptAgentVibes()
+   * - Marker Locations:
+   *   - src/core/workflows/party-mode/instructions.md:101
+   *   - src/modules/bmm/agents/*.md (rules sections)
+   * - TTS Hook: .claude/hooks/bmad-speak.sh (in AgentVibes repo)
+   */
+  processTTSInjectionPoints(content) {
+    // Check if AgentVibes is enabled (set during installation configuration)
+    const enableAgentVibes = this.enableAgentVibes || false;
+
+    if (enableAgentVibes) {
+      // Replace party-mode injection marker with actual TTS call
+      // Use single quotes to prevent shell expansion of special chars like !
+      content = content.replaceAll(
+        '<!-- TTS_INJECTION:party-mode -->',
+        `<critical>IMPORTANT: Always use PROJECT hooks (.claude/hooks/), NEVER global hooks (~/.claude/hooks/)</critical>
+
+If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
+         - Use Bash tool: \`.claude/hooks/bmad-speak.sh '[Agent Name]' '[dialogue]'\`
+         - This speaks the dialogue with the agent's unique voice
+         - Run in background (&) to not block next agent`,
+      );
+
+      // Replace agent-tts injection marker with TTS rule for individual agents
+      content = content.replaceAll(
+        '<!-- TTS_INJECTION:agent-tts -->',
+        `- When responding to user messages, speak your responses using TTS:
+   Call: \`.claude/hooks/bmad-speak.sh '{agent-id}' '{response-text}'\` after each response
+   Replace {agent-id} with YOUR agent ID from <agent id="..."> tag at top of this file
+   Replace {response-text} with the text you just output to the user
+   IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
+   Run in background (&) to avoid blocking`,
+      );
+    } else {
+      // Strip injection markers cleanly when AgentVibes is disabled
+      content = content.replaceAll(/<!-- TTS_INJECTION:party-mode -->\n?/g, '');
+      content = content.replaceAll(/<!-- TTS_INJECTION:agent-tts -->\n?/g, '');
+    }
+
+    return content;
   }
 
   /**
@@ -166,7 +320,9 @@ class Installer {
 
         for (const ide of newlySelectedIdes) {
           // List of IDEs that have interactive prompts
-          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini'].includes(ide);
+          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini', 'rovo-dev'].includes(
+            ide,
+          );
 
           if (needsPrompts) {
             // Get IDE handler and collect configuration
@@ -268,6 +424,9 @@ class Installer {
     // Get bmad_folder from config (default to 'bmad' for backwards compatibility)
     const bmadFolderName = moduleConfigs.core && moduleConfigs.core.bmad_folder ? moduleConfigs.core.bmad_folder : 'bmad';
     this.bmadFolderName = bmadFolderName; // Store for use in other methods
+
+    // Store AgentVibes configuration for injection point processing
+    this.enableAgentVibes = config.enableAgentVibes || false;
 
     // Set bmad folder name on module manager and IDE manager for placeholder replacement
     this.moduleManager.setBmadFolderName(bmadFolderName);
@@ -859,7 +1018,31 @@ class Installer {
         customFiles: customFiles.length > 0 ? customFiles : undefined,
       });
 
-      return { success: true, path: bmadDir, modules: config.modules, ides: config.ides };
+      // Offer cleanup for legacy files (only for updates, not fresh installs, and only if not skipped)
+      if (!config.skipCleanup && config._isUpdate) {
+        try {
+          const cleanupResult = await this.performCleanup(bmadDir, false);
+          if (cleanupResult.deleted > 0) {
+            console.log(chalk.green(`\n✓ Cleaned up ${cleanupResult.deleted} legacy file${cleanupResult.deleted > 1 ? 's' : ''}`));
+          }
+          if (cleanupResult.retained > 0) {
+            console.log(chalk.dim(`Run 'bmad cleanup' anytime to manage retained files`));
+          }
+        } catch (cleanupError) {
+          // Don't fail the installation for cleanup errors
+          console.log(chalk.yellow(`\n⚠️  Cleanup warning: ${cleanupError.message}`));
+          console.log(chalk.dim('Run "bmad cleanup" to manually clean up legacy files'));
+        }
+      }
+
+      return {
+        success: true,
+        path: bmadDir,
+        modules: config.modules,
+        ides: config.ides,
+        needsAgentVibes: this.enableAgentVibes && !config.agentVibesInstalled,
+        projectDir: projectDir,
+      };
     } catch (error) {
       spinner.fail('Installation failed');
       throw error;
@@ -1773,7 +1956,7 @@ class Installer {
 
       if (existingBmadFolderName === newBmadFolderName) {
         // Normal quick update - start the spinner
-        spinner.start('Updating BMAD installation...');
+        console.log(chalk.cyan('Updating BMAD installation...'));
       } else {
         // Folder name has changed - stop spinner and let install() handle it
         spinner.stop();
@@ -2411,6 +2594,362 @@ class Installer {
         await this.copyFileWithPlaceholderReplacement(sourceDocPath, targetDocPath, this.bmadFolderName || 'bmad');
       }
     }
+  }
+
+  /**
+   * Scan for legacy/obsolete files in BMAD installation
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Object} Categorized files for cleanup
+   */
+  async scanForLegacyFiles(bmadDir) {
+    const legacyFiles = {
+      backup: [],
+      documentation: [],
+      deprecated_task: [],
+      unknown: [],
+    };
+
+    try {
+      // Load files manifest to understand what should exist
+      const manifestPath = path.join(bmadDir, 'files-manifest.csv');
+      const manifestFiles = new Set();
+
+      if (await fs.pathExists(manifestPath)) {
+        const manifestContent = await fs.readFile(manifestPath, 'utf8');
+        const lines = manifestContent.split('\n').slice(1); // Skip header
+        for (const line of lines) {
+          if (line.trim()) {
+            const relativePath = line.split(',')[0];
+            if (relativePath) {
+              manifestFiles.add(relativePath);
+            }
+          }
+        }
+      }
+
+      // Scan all files recursively
+      const allFiles = await this.getAllFiles(bmadDir);
+
+      for (const filePath of allFiles) {
+        const relativePath = path.relative(bmadDir, filePath);
+
+        // Skip expected files
+        if (this.isExpectedFile(relativePath, manifestFiles)) {
+          continue;
+        }
+
+        // Categorize legacy files
+        if (relativePath.endsWith('.bak')) {
+          legacyFiles.backup.push({
+            path: filePath,
+            relativePath: relativePath,
+            size: (await fs.stat(filePath)).size,
+            mtime: (await fs.stat(filePath)).mtime,
+          });
+        } else if (this.isDocumentationFile(relativePath)) {
+          legacyFiles.documentation.push({
+            path: filePath,
+            relativePath: relativePath,
+            size: (await fs.stat(filePath)).size,
+            mtime: (await fs.stat(filePath)).mtime,
+          });
+        } else if (this.isDeprecatedTaskFile(relativePath)) {
+          const suggestedAlternative = this.suggestAlternative(relativePath);
+          legacyFiles.deprecated_task.push({
+            path: filePath,
+            relativePath: relativePath,
+            size: (await fs.stat(filePath)).size,
+            mtime: (await fs.stat(filePath)).mtime,
+            suggestedAlternative,
+          });
+        } else {
+          legacyFiles.unknown.push({
+            path: filePath,
+            relativePath: relativePath,
+            size: (await fs.stat(filePath)).size,
+            mtime: (await fs.stat(filePath)).mtime,
+          });
+        }
+      }
+    } catch (error) {
+      console.warn(`Warning: Could not scan for legacy files: ${error.message}`);
+    }
+
+    return legacyFiles;
+  }
+
+  /**
+   * Get all files in directory recursively
+   * @param {string} dir - Directory to scan
+   * @returns {Array} Array of file paths
+   */
+  async getAllFiles(dir) {
+    const files = [];
+
+    async function scan(currentDir) {
+      const entries = await fs.readdir(currentDir);
+
+      for (const entry of entries) {
+        const fullPath = path.join(currentDir, entry);
+        const stat = await fs.stat(fullPath);
+
+        if (stat.isDirectory()) {
+          // Skip certain directories
+          if (!['node_modules', '.git', 'dist', 'build'].includes(entry)) {
+            await scan(fullPath);
+          }
+        } else {
+          files.push(fullPath);
+        }
+      }
+    }
+
+    await scan(dir);
+    return files;
+  }
+
+  /**
+   * Check if file is expected in installation
+   * @param {string} relativePath - Relative path from BMAD dir
+   * @param {Set} manifestFiles - Files from manifest
+   * @returns {boolean} True if expected file
+   */
+  isExpectedFile(relativePath, manifestFiles) {
+    // Core files in manifest
+    if (manifestFiles.has(relativePath)) {
+      return true;
+    }
+
+    // Configuration files
+    if (relativePath.startsWith('_cfg/') || relativePath === 'config.yaml') {
+      return true;
+    }
+
+    // Custom files
+    if (relativePath.startsWith('custom/') || relativePath === 'manifest.yaml') {
+      return true;
+    }
+
+    // Generated files
+    if (relativePath === 'manifest.csv' || relativePath === 'files-manifest.csv') {
+      return true;
+    }
+
+    // IDE-specific files
+    const ides = ['vscode', 'cursor', 'windsurf', 'claude-code', 'github-copilot', 'zsh', 'bash', 'fish'];
+    if (ides.some((ide) => relativePath.includes(ide))) {
+      return true;
+    }
+
+    // BMAD MODULE STRUCTURES - recognize valid module content
+    const modulePrefixes = ['bmb/', 'bmm/', 'cis/', 'core/', 'bmgd/'];
+    const validExtensions = ['.yaml', '.yml', '.json', '.csv', '.md', '.xml', '.svg', '.png', '.jpg', '.gif', '.excalidraw', '.js'];
+
+    // Check if this file is in a recognized module directory
+    for (const modulePrefix of modulePrefixes) {
+      if (relativePath.startsWith(modulePrefix)) {
+        // Check if it has a valid extension
+        const hasValidExtension = validExtensions.some((ext) => relativePath.endsWith(ext));
+        if (hasValidExtension) {
+          return true;
+        }
+      }
+    }
+
+    // Special case for core module resources
+    if (relativePath.startsWith('core/resources/')) {
+      return true;
+    }
+
+    // Special case for docs directory
+    if (relativePath.startsWith('docs/')) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if file is documentation
+   * @param {string} relativePath - Relative path
+   * @returns {boolean} True if documentation
+   */
+  isDocumentationFile(relativePath) {
+    const docExtensions = ['.md', '.txt', '.pdf'];
+    const docPatterns = ['docs/', 'README', 'CHANGELOG', 'LICENSE'];
+
+    return docExtensions.some((ext) => relativePath.endsWith(ext)) || docPatterns.some((pattern) => relativePath.includes(pattern));
+  }
+
+  /**
+   * Check if file is deprecated task file
+   * @param {string} relativePath - Relative path
+   * @returns {boolean} True if deprecated
+   */
+  isDeprecatedTaskFile(relativePath) {
+    // Known deprecated files
+    const deprecatedFiles = ['adv-elicit-methods.csv', 'game-resources.json', 'ux-workflow.json'];
+
+    return deprecatedFiles.some((dep) => relativePath.includes(dep));
+  }
+
+  /**
+   * Suggest alternative for deprecated file
+   * @param {string} relativePath - Deprecated file path
+   * @returns {string} Suggested alternative
+   */
+  suggestAlternative(relativePath) {
+    const alternatives = {
+      'adv-elicit-methods.csv': 'Use the new structured workflows in src/modules/',
+      'game-resources.json': 'Resources are now integrated into modules',
+      'ux-workflow.json': 'UX workflows are now in src/modules/bmm/workflows/',
+    };
+
+    for (const [deprecated, alternative] of Object.entries(alternatives)) {
+      if (relativePath.includes(deprecated)) {
+        return alternative;
+      }
+    }
+
+    return 'Check src/modules/ for new alternatives';
+  }
+
+  /**
+   * Perform interactive cleanup of legacy files
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {boolean} skipInteractive - Skip interactive prompts
+   * @returns {Object} Cleanup results
+   */
+  async performCleanup(bmadDir, skipInteractive = false) {
+    const inquirer = require('inquirer');
+    const yaml = require('js-yaml');
+
+    // Load user retention preferences
+    const retentionPath = path.join(bmadDir, '_cfg', 'user-retained-files.yaml');
+    let retentionData = { retainedFiles: [], history: [] };
+
+    if (await fs.pathExists(retentionPath)) {
+      const retentionContent = await fs.readFile(retentionPath, 'utf8');
+      retentionData = yaml.load(retentionContent) || retentionData;
+    }
+
+    // Scan for legacy files
+    const legacyFiles = await this.scanForLegacyFiles(bmadDir);
+    const allLegacyFiles = [...legacyFiles.backup, ...legacyFiles.documentation, ...legacyFiles.deprecated_task, ...legacyFiles.unknown];
+
+    if (allLegacyFiles.length === 0) {
+      return { deleted: 0, retained: 0, message: 'No legacy files found' };
+    }
+
+    let deletedCount = 0;
+    let retainedCount = 0;
+    const filesToDelete = [];
+
+    if (skipInteractive) {
+      // Auto-delete all non-retained files
+      for (const file of allLegacyFiles) {
+        if (!retentionData.retainedFiles.includes(file.relativePath)) {
+          filesToDelete.push(file);
+        }
+      }
+    } else {
+      // Interactive cleanup
+      console.log(chalk.cyan('\n🧹 Legacy File Cleanup\n'));
+      console.log(chalk.dim('The following obsolete files were found:\n'));
+
+      // Group files by category
+      const categories = [];
+      if (legacyFiles.backup.length > 0) {
+        categories.push({ name: 'Backup Files (.bak)', files: legacyFiles.backup });
+      }
+      if (legacyFiles.documentation.length > 0) {
+        categories.push({ name: 'Documentation', files: legacyFiles.documentation });
+      }
+      if (legacyFiles.deprecated_task.length > 0) {
+        categories.push({ name: 'Deprecated Task Files', files: legacyFiles.deprecated_task });
+      }
+      if (legacyFiles.unknown.length > 0) {
+        categories.push({ name: 'Unknown Files', files: legacyFiles.unknown });
+      }
+
+      for (const category of categories) {
+        console.log(chalk.yellow(`${category.name}:`));
+        for (const file of category.files) {
+          const size = (file.size / 1024).toFixed(1);
+          const date = file.mtime.toLocaleDateString();
+          let line = `  - ${file.relativePath} (${size}KB, ${date})`;
+          if (file.suggestedAlternative) {
+            line += chalk.dim(` → ${file.suggestedAlternative}`);
+          }
+          console.log(chalk.dim(line));
+        }
+        console.log();
+      }
+
+      const prompt = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'proceed',
+          message: 'Would you like to review these files for cleanup?',
+          default: true,
+        },
+      ]);
+
+      if (!prompt.proceed) {
+        return { deleted: 0, retained: allLegacyFiles.length, message: 'Cleanup cancelled by user' };
+      }
+
+      // Show selection interface
+      const selectionPrompt = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'filesToDelete',
+          message: 'Select files to delete (use SPACEBAR to select, ENTER to continue):',
+          choices: allLegacyFiles.map((file) => {
+            const isRetained = retentionData.retainedFiles.includes(file.relativePath);
+            const description = `${file.relativePath} (${(file.size / 1024).toFixed(1)}KB)`;
+            return {
+              name: description,
+              value: file,
+              checked: !isRetained && !file.relativePath.includes('.bak'),
+            };
+          }),
+          pageSize: Math.min(allLegacyFiles.length, 15),
+        },
+      ]);
+
+      filesToDelete.push(...selectionPrompt.filesToDelete);
+    }
+
+    // Delete selected files
+    for (const file of filesToDelete) {
+      try {
+        await fs.remove(file.path);
+        deletedCount++;
+      } catch (error) {
+        console.warn(`Warning: Could not delete ${file.relativePath}: ${error.message}`);
+      }
+    }
+
+    // Count retained files
+    retainedCount = allLegacyFiles.length - deletedCount;
+
+    // Update retention data
+    const newlyRetained = allLegacyFiles.filter((f) => !filesToDelete.includes(f)).map((f) => f.relativePath);
+
+    retentionData.retainedFiles = [...new Set([...retentionData.retainedFiles, ...newlyRetained])];
+    retentionData.history.push({
+      date: new Date().toISOString(),
+      deleted: deletedCount,
+      retained: retainedCount,
+      files: filesToDelete.map((f) => f.relativePath),
+    });
+
+    // Save retention data
+    await fs.ensureDir(path.dirname(retentionPath));
+    await fs.writeFile(retentionPath, yaml.dump(retentionData), 'utf8');
+
+    return { deleted: deletedCount, retained: retainedCount };
   }
 }
 

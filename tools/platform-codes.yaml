@@ -55,6 +55,12 @@ platforms:
     category: ide
     description: "Enhanced Cline fork"
 
+  rovo:
+    name: "Rovo Dev"
+    preferred: false
+    category: ide
+    description: "Atlassian's AI coding assistant"
+
   github-copilot:
     name: "GitHub Copilot"
     preferred: false

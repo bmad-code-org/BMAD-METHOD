@@ -25,7 +25,7 @@ agent:
   menu:
     - trigger: create-ux-design
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/create-ux-design/workflow.yaml"
-      description: Conduct Design Thinking Workshop to Define the User Specification with PRD as input
+      description: Generate a UX Design and UI Plan from a PRD (Recommended before creating Architecture)
 
     - trigger: validate-design
       validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/create-ux-design/workflow.yaml"

@@ -26,24 +26,24 @@ agent:
   menu:
     - trigger: sprint-planning
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/sprint-planning/workflow.yaml"
-      description: Generate or update sprint-status.yaml from epic files
+      description: Generate or re-generate sprint-status.yaml from epic files (Required after Epics+Stories are created)
 
     - trigger: create-story
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml"
-      description: Create a Draft Story
+      description: Create a Draft Story (Required to prepare stories for development)
 
     - trigger: validate-create-story
       validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml"
-      description: (Optional) Validate Story Draft with Independent Review
+      description: Validate Story Draft (Highly Recommended, use fresh context and different LLM for best results)
 
     - trigger: epic-retrospective
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/retrospective/workflow.yaml"
       data: "{project-root}/{bmad_folder}/_cfg/agent-manifest.csv"
-      description: (Optional) Facilitate team retrospective after an epic is completed
+      description: Facilitate team retrospective after an epic is completed (Optional)
 
     - trigger: correct-course
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml"
-      description: (Optional) Execute correct-course task
+      description: Execute correct-course task (When implementation is off-track)
 
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"

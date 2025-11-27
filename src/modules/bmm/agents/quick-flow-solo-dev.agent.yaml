@@ -21,15 +21,15 @@ agent:
   menu:
     - trigger: create-tech-spec
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml"
-      description: Architect a technical spec with implementation-ready stories
+      description: Architect a technical spec with implementation-ready stories (Required first step)
 
     - trigger: quick-dev
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml"
-      description: Ship features from spec or direct instructions - no handoffs
+      description: Implement the tech spec end-to-end solo (Core of Quick Flow)
 
     - trigger: code-review
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/code-review/workflow.yaml"
-      description: Review code for quality, patterns, and acceptance criteria
+      description: Review code and improve it (Highly Recommended, use fresh context and different LLM for best results)
 
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
