@@ -87,20 +87,24 @@ class ManifestGenerator {
   }
 
   /**
-   * Collect all workflows from core and selected modules
+   * Collect all workflows from ALL directories in bmad installation
    * Scans the INSTALLED bmad directory, not the source
    */
   async collectWorkflows(selectedModules) {
     this.workflows = [];
 
-    // Use updatedModules which already includes deduplicated 'core' + selectedModules
-    for (const moduleName of this.updatedModules) {
-      const modulePath = path.join(this.bmadDir, moduleName);
+    // Scan all directories under bmad installation
+    const entries = await fs.readdir(this.bmadDir, { withFileTypes: true });
 
-      if (await fs.pathExists(modulePath)) {
-        const moduleWorkflows = await this.getWorkflowsFromPath(modulePath, moduleName);
-        this.workflows.push(...moduleWorkflows);
+    for (const entry of entries) {
+      // Skip special directories that don't contain modules
+      if (!entry.isDirectory() || entry.name === '_cfg' || entry.name === 'docs') {
+        continue;
       }
+
+      const modulePath = path.join(this.bmadDir, entry.name);
+      const moduleWorkflows = await this.getWorkflowsFromPath(modulePath, entry.name);
+      this.workflows.push(...moduleWorkflows);
     }
   }
 
@@ -175,23 +179,32 @@ class ManifestGenerator {
   }
 
   /**
-   * Collect all agents from core and selected modules
+   * Collect all agents from ALL directories in bmad installation
    * Scans the INSTALLED bmad directory, not the source
    */
   async collectAgents(selectedModules) {
     this.agents = [];
 
-    // Use updatedModules which already includes deduplicated 'core' + selectedModules
-    for (const moduleName of this.updatedModules) {
-      const agentsPath = path.join(this.bmadDir, moduleName, 'agents');
+    // Scan all directories under bmad installation
+    const entries = await fs.readdir(this.bmadDir, { withFileTypes: true });
 
+    for (const entry of entries) {
+      // Skip special directories that don't contain modules
+      if (!entry.isDirectory() || entry.name === '_cfg' || entry.name === 'docs') {
+        continue;
+      }
+
+      const modulePath = path.join(this.bmadDir, entry.name);
+
+      // Check for agents/ subdirectory in this module
+      const agentsPath = path.join(modulePath, 'agents');
       if (await fs.pathExists(agentsPath)) {
-        const moduleAgents = await this.getAgentsFromDir(agentsPath, moduleName);
+        const moduleAgents = await this.getAgentsFromDir(agentsPath, entry.name);
         this.agents.push(...moduleAgents);
       }
     }
 
-    // Get standalone agents from bmad/agents/ directory
+    // Also check for standalone agents in bmad/agents/ directory (top-level)
     const standaloneAgentsDir = path.join(this.bmadDir, 'agents');
     if (await fs.pathExists(standaloneAgentsDir)) {
       const agentDirs = await fs.readdir(standaloneAgentsDir, { withFileTypes: true });
@@ -283,18 +296,27 @@ class ManifestGenerator {
   }
 
   /**
-   * Collect all tasks from core and selected modules
+   * Collect all tasks from ALL directories in bmad installation
    * Scans the INSTALLED bmad directory, not the source
    */
   async collectTasks(selectedModules) {
     this.tasks = [];
 
-    // Use updatedModules which already includes deduplicated 'core' + selectedModules
-    for (const moduleName of this.updatedModules) {
-      const tasksPath = path.join(this.bmadDir, moduleName, 'tasks');
+    // Scan all directories under bmad installation
+    const entries = await fs.readdir(this.bmadDir, { withFileTypes: true });
 
+    for (const entry of entries) {
+      // Skip special directories that don't contain modules
+      if (!entry.isDirectory() || entry.name === '_cfg' || entry.name === 'docs') {
+        continue;
+      }
+
+      const modulePath = path.join(this.bmadDir, entry.name);
+
+      // Check for tasks/ subdirectory in this module
+      const tasksPath = path.join(modulePath, 'tasks');
       if (await fs.pathExists(tasksPath)) {
-        const moduleTasks = await this.getTasksFromDir(tasksPath, moduleName);
+        const moduleTasks = await this.getTasksFromDir(tasksPath, entry.name);
         this.tasks.push(...moduleTasks);
       }
     }

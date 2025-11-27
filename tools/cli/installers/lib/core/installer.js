@@ -1787,7 +1787,17 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
             // Rebuild module agents from installer source
             const agentsPath = path.join(modulePath, 'agents');
             if (await fs.pathExists(agentsPath)) {
-              await this.rebuildAgentFiles(modulePath, entry.name);
+              // Check if this module has source in the installer
+              const sourceAgentsPath =
+                entry.name === 'core'
+                  ? path.join(getModulePath('core'), 'agents')
+                  : path.join(getSourcePath(`modules/${entry.name}`), 'agents');
+
+              // Only rebuild if source exists in installer, otherwise skip (for custom modules)
+              if (await fs.pathExists(sourceAgentsPath)) {
+                await this.rebuildAgentFiles(modulePath, entry.name);
+              }
+
               const agentFiles = await fs.readdir(agentsPath);
               agentCount += agentFiles.filter((f) => f.endsWith('.md')).length;
             }
@@ -1812,9 +1822,16 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         spinner.succeed('No custom agents found to rebuild');
       }
 
-      // Skip full manifest regeneration during compileAgents to preserve custom agents
-      // Custom agents are already added to manifests during individual installation
-      // Only regenerate YAML manifest for IDE updates if needed
+      // Detect installed modules for manifest regeneration and IDE configuration
+      spinner.start('Regenerating manifests...');
+      const existingInstall = await this.detector.detect(bmadDir);
+      const installedModules = existingInstall.modules.map((m) => m.id);
+
+      // Regenerate manifests to include all discovered content (including custom)
+      const { ManifestGenerator } = require('./manifest-generator');
+      const manifestGen = new ManifestGenerator();
+
+      // Get existing IDE list from current manifest
       const existingManifestPath = path.join(bmadDir, '_cfg', 'manifest.yaml');
       let existingIdes = [];
       if (await fs.pathExists(existingManifestPath)) {
@@ -1823,6 +1840,12 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         const manifest = yaml.load(manifestContent);
         existingIdes = manifest.ides || [];
       }
+
+      await manifestGen.generateManifests(bmadDir, installedModules, [], {
+        ides: existingIdes,
+        preservedModules: [],
+      });
+      spinner.succeed('Manifests regenerated');
 
       // Update IDE configurations using the existing IDE list from manifest
       if (existingIdes && existingIdes.length > 0) {
