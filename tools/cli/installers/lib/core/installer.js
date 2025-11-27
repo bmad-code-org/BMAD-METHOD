@@ -1018,6 +1018,23 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         customFiles: customFiles.length > 0 ? customFiles : undefined,
       });
 
+      // Offer cleanup for legacy files (only for updates, not fresh installs, and only if not skipped)
+      if (!config.skipCleanup && config._isUpdate) {
+        try {
+          const cleanupResult = await this.performCleanup(bmadDir, false);
+          if (cleanupResult.deleted > 0) {
+            console.log(chalk.green(`\n✓ Cleaned up ${cleanupResult.deleted} legacy file${cleanupResult.deleted > 1 ? 's' : ''}`));
+          }
+          if (cleanupResult.retained > 0) {
+            console.log(chalk.dim(`Run 'bmad cleanup' anytime to manage retained files`));
+          }
+        } catch (cleanupError) {
+          // Don't fail the installation for cleanup errors
+          console.log(chalk.yellow(`\n⚠️  Cleanup warning: ${cleanupError.message}`));
+          console.log(chalk.dim('Run "bmad cleanup" to manually clean up legacy files'));
+        }
+      }
+
       return {
         success: true,
         path: bmadDir,
@@ -1939,7 +1956,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
       if (existingBmadFolderName === newBmadFolderName) {
         // Normal quick update - start the spinner
-        spinner.start('Updating BMAD installation...');
+        console.log(chalk.cyan('Updating BMAD installation...'));
       } else {
         // Folder name has changed - stop spinner and let install() handle it
         spinner.stop();
@@ -2577,6 +2594,362 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         await this.copyFileWithPlaceholderReplacement(sourceDocPath, targetDocPath, this.bmadFolderName || 'bmad');
       }
     }
+  }
+
+  /**
+   * Scan for legacy/obsolete files in BMAD installation
+   * @param {string} bmadDir - BMAD installation directory
+   * @returns {Object} Categorized files for cleanup
+   */
+  async scanForLegacyFiles(bmadDir) {
+    const legacyFiles = {
+      backup: [],
+      documentation: [],
+      deprecated_task: [],
+      unknown: [],
+    };
+
+    try {
+      // Load files manifest to understand what should exist
+      const manifestPath = path.join(bmadDir, 'files-manifest.csv');
+      const manifestFiles = new Set();
+
+      if (await fs.pathExists(manifestPath)) {
+        const manifestContent = await fs.readFile(manifestPath, 'utf8');
+        const lines = manifestContent.split('\n').slice(1); // Skip header
+        for (const line of lines) {
+          if (line.trim()) {
+            const relativePath = line.split(',')[0];
+            if (relativePath) {
+              manifestFiles.add(relativePath);
+            }
+          }
+        }
+      }
+
+      // Scan all files recursively
+      const allFiles = await this.getAllFiles(bmadDir);
+
+      for (const filePath of allFiles) {
+        const relativePath = path.relative(bmadDir, filePath);
+
+        // Skip expected files
+        if (this.isExpectedFile(relativePath, manifestFiles)) {
+          continue;
+        }
+
+        // Categorize legacy files
+        if (relativePath.endsWith('.bak')) {
+          legacyFiles.backup.push({
+            path: filePath,
+            relativePath: relativePath,
+            size: (await fs.stat(filePath)).size,
+            mtime: (await fs.stat(filePath)).mtime,
+          });
+        } else if (this.isDocumentationFile(relativePath)) {
+          legacyFiles.documentation.push({
+            path: filePath,
+            relativePath: relativePath,
+            size: (await fs.stat(filePath)).size,
+            mtime: (await fs.stat(filePath)).mtime,
+          });
+        } else if (this.isDeprecatedTaskFile(relativePath)) {
+          const suggestedAlternative = this.suggestAlternative(relativePath);
+          legacyFiles.deprecated_task.push({
+            path: filePath,
+            relativePath: relativePath,
+            size: (await fs.stat(filePath)).size,
+            mtime: (await fs.stat(filePath)).mtime,
+            suggestedAlternative,
+          });
+        } else {
+          legacyFiles.unknown.push({
+            path: filePath,
+            relativePath: relativePath,
+            size: (await fs.stat(filePath)).size,
+            mtime: (await fs.stat(filePath)).mtime,
+          });
+        }
+      }
+    } catch (error) {
+      console.warn(`Warning: Could not scan for legacy files: ${error.message}`);
+    }
+
+    return legacyFiles;
+  }
+
+  /**
+   * Get all files in directory recursively
+   * @param {string} dir - Directory to scan
+   * @returns {Array} Array of file paths
+   */
+  async getAllFiles(dir) {
+    const files = [];
+
+    async function scan(currentDir) {
+      const entries = await fs.readdir(currentDir);
+
+      for (const entry of entries) {
+        const fullPath = path.join(currentDir, entry);
+        const stat = await fs.stat(fullPath);
+
+        if (stat.isDirectory()) {
+          // Skip certain directories
+          if (!['node_modules', '.git', 'dist', 'build'].includes(entry)) {
+            await scan(fullPath);
+          }
+        } else {
+          files.push(fullPath);
+        }
+      }
+    }
+
+    await scan(dir);
+    return files;
+  }
+
+  /**
+   * Check if file is expected in installation
+   * @param {string} relativePath - Relative path from BMAD dir
+   * @param {Set} manifestFiles - Files from manifest
+   * @returns {boolean} True if expected file
+   */
+  isExpectedFile(relativePath, manifestFiles) {
+    // Core files in manifest
+    if (manifestFiles.has(relativePath)) {
+      return true;
+    }
+
+    // Configuration files
+    if (relativePath.startsWith('_cfg/') || relativePath === 'config.yaml') {
+      return true;
+    }
+
+    // Custom files
+    if (relativePath.startsWith('custom/') || relativePath === 'manifest.yaml') {
+      return true;
+    }
+
+    // Generated files
+    if (relativePath === 'manifest.csv' || relativePath === 'files-manifest.csv') {
+      return true;
+    }
+
+    // IDE-specific files
+    const ides = ['vscode', 'cursor', 'windsurf', 'claude-code', 'github-copilot', 'zsh', 'bash', 'fish'];
+    if (ides.some((ide) => relativePath.includes(ide))) {
+      return true;
+    }
+
+    // BMAD MODULE STRUCTURES - recognize valid module content
+    const modulePrefixes = ['bmb/', 'bmm/', 'cis/', 'core/', 'bmgd/'];
+    const validExtensions = ['.yaml', '.yml', '.json', '.csv', '.md', '.xml', '.svg', '.png', '.jpg', '.gif', '.excalidraw', '.js'];
+
+    // Check if this file is in a recognized module directory
+    for (const modulePrefix of modulePrefixes) {
+      if (relativePath.startsWith(modulePrefix)) {
+        // Check if it has a valid extension
+        const hasValidExtension = validExtensions.some((ext) => relativePath.endsWith(ext));
+        if (hasValidExtension) {
+          return true;
+        }
+      }
+    }
+
+    // Special case for core module resources
+    if (relativePath.startsWith('core/resources/')) {
+      return true;
+    }
+
+    // Special case for docs directory
+    if (relativePath.startsWith('docs/')) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if file is documentation
+   * @param {string} relativePath - Relative path
+   * @returns {boolean} True if documentation
+   */
+  isDocumentationFile(relativePath) {
+    const docExtensions = ['.md', '.txt', '.pdf'];
+    const docPatterns = ['docs/', 'README', 'CHANGELOG', 'LICENSE'];
+
+    return docExtensions.some((ext) => relativePath.endsWith(ext)) || docPatterns.some((pattern) => relativePath.includes(pattern));
+  }
+
+  /**
+   * Check if file is deprecated task file
+   * @param {string} relativePath - Relative path
+   * @returns {boolean} True if deprecated
+   */
+  isDeprecatedTaskFile(relativePath) {
+    // Known deprecated files
+    const deprecatedFiles = ['adv-elicit-methods.csv', 'game-resources.json', 'ux-workflow.json'];
+
+    return deprecatedFiles.some((dep) => relativePath.includes(dep));
+  }
+
+  /**
+   * Suggest alternative for deprecated file
+   * @param {string} relativePath - Deprecated file path
+   * @returns {string} Suggested alternative
+   */
+  suggestAlternative(relativePath) {
+    const alternatives = {
+      'adv-elicit-methods.csv': 'Use the new structured workflows in src/modules/',
+      'game-resources.json': 'Resources are now integrated into modules',
+      'ux-workflow.json': 'UX workflows are now in src/modules/bmm/workflows/',
+    };
+
+    for (const [deprecated, alternative] of Object.entries(alternatives)) {
+      if (relativePath.includes(deprecated)) {
+        return alternative;
+      }
+    }
+
+    return 'Check src/modules/ for new alternatives';
+  }
+
+  /**
+   * Perform interactive cleanup of legacy files
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {boolean} skipInteractive - Skip interactive prompts
+   * @returns {Object} Cleanup results
+   */
+  async performCleanup(bmadDir, skipInteractive = false) {
+    const inquirer = require('inquirer');
+    const yaml = require('js-yaml');
+
+    // Load user retention preferences
+    const retentionPath = path.join(bmadDir, '_cfg', 'user-retained-files.yaml');
+    let retentionData = { retainedFiles: [], history: [] };
+
+    if (await fs.pathExists(retentionPath)) {
+      const retentionContent = await fs.readFile(retentionPath, 'utf8');
+      retentionData = yaml.load(retentionContent) || retentionData;
+    }
+
+    // Scan for legacy files
+    const legacyFiles = await this.scanForLegacyFiles(bmadDir);
+    const allLegacyFiles = [...legacyFiles.backup, ...legacyFiles.documentation, ...legacyFiles.deprecated_task, ...legacyFiles.unknown];
+
+    if (allLegacyFiles.length === 0) {
+      return { deleted: 0, retained: 0, message: 'No legacy files found' };
+    }
+
+    let deletedCount = 0;
+    let retainedCount = 0;
+    const filesToDelete = [];
+
+    if (skipInteractive) {
+      // Auto-delete all non-retained files
+      for (const file of allLegacyFiles) {
+        if (!retentionData.retainedFiles.includes(file.relativePath)) {
+          filesToDelete.push(file);
+        }
+      }
+    } else {
+      // Interactive cleanup
+      console.log(chalk.cyan('\n🧹 Legacy File Cleanup\n'));
+      console.log(chalk.dim('The following obsolete files were found:\n'));
+
+      // Group files by category
+      const categories = [];
+      if (legacyFiles.backup.length > 0) {
+        categories.push({ name: 'Backup Files (.bak)', files: legacyFiles.backup });
+      }
+      if (legacyFiles.documentation.length > 0) {
+        categories.push({ name: 'Documentation', files: legacyFiles.documentation });
+      }
+      if (legacyFiles.deprecated_task.length > 0) {
+        categories.push({ name: 'Deprecated Task Files', files: legacyFiles.deprecated_task });
+      }
+      if (legacyFiles.unknown.length > 0) {
+        categories.push({ name: 'Unknown Files', files: legacyFiles.unknown });
+      }
+
+      for (const category of categories) {
+        console.log(chalk.yellow(`${category.name}:`));
+        for (const file of category.files) {
+          const size = (file.size / 1024).toFixed(1);
+          const date = file.mtime.toLocaleDateString();
+          let line = `  - ${file.relativePath} (${size}KB, ${date})`;
+          if (file.suggestedAlternative) {
+            line += chalk.dim(` → ${file.suggestedAlternative}`);
+          }
+          console.log(chalk.dim(line));
+        }
+        console.log();
+      }
+
+      const prompt = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'proceed',
+          message: 'Would you like to review these files for cleanup?',
+          default: true,
+        },
+      ]);
+
+      if (!prompt.proceed) {
+        return { deleted: 0, retained: allLegacyFiles.length, message: 'Cleanup cancelled by user' };
+      }
+
+      // Show selection interface
+      const selectionPrompt = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'filesToDelete',
+          message: 'Select files to delete (use SPACEBAR to select, ENTER to continue):',
+          choices: allLegacyFiles.map((file) => {
+            const isRetained = retentionData.retainedFiles.includes(file.relativePath);
+            const description = `${file.relativePath} (${(file.size / 1024).toFixed(1)}KB)`;
+            return {
+              name: description,
+              value: file,
+              checked: !isRetained && !file.relativePath.includes('.bak'),
+            };
+          }),
+          pageSize: Math.min(allLegacyFiles.length, 15),
+        },
+      ]);
+
+      filesToDelete.push(...selectionPrompt.filesToDelete);
+    }
+
+    // Delete selected files
+    for (const file of filesToDelete) {
+      try {
+        await fs.remove(file.path);
+        deletedCount++;
+      } catch (error) {
+        console.warn(`Warning: Could not delete ${file.relativePath}: ${error.message}`);
+      }
+    }
+
+    // Count retained files
+    retainedCount = allLegacyFiles.length - deletedCount;
+
+    // Update retention data
+    const newlyRetained = allLegacyFiles.filter((f) => !filesToDelete.includes(f)).map((f) => f.relativePath);
+
+    retentionData.retainedFiles = [...new Set([...retentionData.retainedFiles, ...newlyRetained])];
+    retentionData.history.push({
+      date: new Date().toISOString(),
+      deleted: deletedCount,
+      retained: retainedCount,
+      files: filesToDelete.map((f) => f.relativePath),
+    });
+
+    // Save retention data
+    await fs.ensureDir(path.dirname(retentionPath));
+    await fs.writeFile(retentionPath, yaml.dump(retentionData), 'utf8');
+
+    return { deleted: deletedCount, retained: retainedCount };
   }
 }
 

@@ -3,7 +3,7 @@
 <critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow-init/workflow.yaml</critical>
 <critical>Communicate in {communication_language} with {user_name}</critical>
-<critical>This workflow handles BOTH new projects AND legacy projects being migrated to BMad Method</critical>
+<critical>This workflow handles BOTH new projects AND legacy projects following the BMad Method</critical>
 
 <workflow>
 
@@ -12,7 +12,7 @@
 
 <action>Perform comprehensive scan for existing work:
 
-- BMM artifacts: PRD, tech-spec, epics, architecture, UX, brief, research, brainstorm
+- BMM artifacts: PRD, epics, architecture, UX, brief, research, brainstorm
 - Implementation: stories, sprint-status, workflow-status
 - Codebase: source directories, package files, git repo
 - Check both {output_folder} and {sprint_artifacts} locations
@@ -53,31 +53,31 @@ Happy building! 🚀</output>
 
 <ask>How would you like to proceed?
 
-a) **Continue** - Work with existing artifacts
-b) **Archive & Start Fresh** - Move old work to archive
-c) **Express Setup** - I know exactly what I need
-d) **Guided Setup** - Walk me through options
+1. **Continue** - Work with existing artifacts
+2. **Archive & Start Fresh** - Move old work to archive
+3. **Express Setup** - I know exactly what I need
+4. **Guided Setup** - Walk me through options
 
-Choice [a/b/c/d]:</ask>
+Choice [1-4]</ask>
 
-  <check if="choice == a">
+  <check if="choice == 1">
     <action>Set continuing_existing = true</action>
     <action>Store found artifacts</action>
     <action>Continue to step 7 (detect track from artifacts)</action>
   </check>
 
-  <check if="choice == b">
+  <check if="choice == 2">
     <ask>Archive existing work? (y/n)</ask>
     <action if="y">Move artifacts to {output_folder}/archive/</action>
     <output>Ready for fresh start!</output>
     <action>Continue to step 3</action>
   </check>
 
-  <check if="choice == c">
+  <check if="choice == 3">
     <action>Jump to step 3 (express path)</action>
   </check>
 
-  <check if="choice == d">
+  <check if="choice == 4">
     <action>Continue to step 4 (guided path)</action>
   </check>
 </check>
@@ -85,16 +85,16 @@ Choice [a/b/c/d]:</ask>
 <check if="state == CLEAN">
   <ask>Setup approach:
 
-a) **Express** - I know what I need
-b) **Guided** - Show me the options
+1. **Express** - I know what I need
+2. **Guided** - Show me the options
 
-Choice [a/b]:</ask>
+Choice [1 or 2]:</ask>
 
-  <check if="choice == a">
+  <check if="choice == 1">
     <action>Continue to step 3 (express)</action>
   </check>
 
-  <check if="choice == b">
+  <check if="choice == 2">
     <action>Continue to step 4 (guided)</action>
   </check>
 </check>
@@ -102,20 +102,22 @@ Choice [a/b]:</ask>
 
 <step n="3" goal="Express setup path">
 <ask>Is this for:
-1) **New project** (greenfield)
-2) **Existing codebase** (brownfield)
+1. **New project** (greenfield)
+2. **Existing codebase** (brownfield)
 
 Choice [1/2]:</ask>
 <action>Set field_type based on choice</action>
 
 <ask>Planning approach:
 
-1. **Quick Flow** - Minimal planning, fast to code
-2. **BMad Method** - Full planning for complex projects
-3. **Enterprise Method** - Extended planning with security/DevOps
+1. **BMad Method** - Full planning for complex projects
+2. **Enterprise Method** - Extended planning with security/DevOps
 
-Choice [1/2/3]:</ask>
-<action>Map to selected_track: quick-flow/method/enterprise</action>
+Choice [1/2]:</ask>
+<action>Map to selected_track: method/enterprise</action>
+
+<output>🚀 **For Quick Flow (minimal planning, straight to code):**
+Load the **quick-flow-solo-dev** agent instead - use Quick Flow agent for faster development</output>
 
 <template-output>field_type</template-output>
 <template-output>selected_track</template-output>
@@ -135,8 +137,8 @@ Choice [1/2/3]:</ask>
 
 <check if="field_type unclear AND codebase exists">
   <ask>I see existing code. Are you:
-1) **Modifying** existing codebase (brownfield)
-2) **Starting fresh** - code is just scaffold (greenfield)
+1. **Modifying** existing codebase (brownfield)
+2. **Starting fresh** - code is just scaffold (greenfield)
 
 Choice [1/2]:</ask>
 <action>Set field_type based on answer</action>
@@ -165,27 +167,24 @@ Continue with software workflows? (y/n)</output>
 </step>
 
 <step n="5" goal="Guided setup - select track">
-<output>Based on your project, here are your planning options:
+<output>Based on your project, here are your BMad Method planning options:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**1. Quick Flow** 🚀
-
-- Minimal planning, straight to code
-- Best for: Simple features, bug fixes
-- Risk: Potential rework if complexity emerges
-
-**2. BMad Method** 🎯 {{#if recommended}}(RECOMMENDED){{/if}}
+**1. BMad Method** 🎯 {{#if recommended}}(RECOMMENDED){{/if}}
 
 - Full planning: PRD + UX + Architecture
 - Best for: Products, platforms, complex features
 - Benefit: AI agents have complete context for better results
 
-**3. Enterprise Method** 🏢
+**2. Enterprise Method** 🏢
 
 - Extended: Method + Security + DevOps + Testing
 - Best for: Enterprise, compliance, mission-critical
 - Benefit: Comprehensive planning for complex systems
+
+**🚀 For Quick Flow (minimal planning, straight to code):**
+Load the **quick-flow-solo-dev** agent instead - use Quick Flow agent for faster development
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -193,16 +192,35 @@ Continue with software workflows? (y/n)</output>
 💡 Architecture creates focused solution design from your codebase, keeping AI agents on track.
 {{/if}}</output>
 
-<ask>Which approach fits best?
+<ask>Which BMad Method approach fits best?
 
-1. Quick Flow
-2. BMad Method {{#if recommended}}(recommended){{/if}}
-3. Enterprise Method
-4. Help me decide
+1. BMad Method {{#if recommended}}(recommended){{/if}}
+2. Enterprise Method
+3. Help me decide
+4. Switch to Quick Flow (use quick-flow-solo-dev agent)
 
 Choice [1/2/3/4]:</ask>
 
 <check if="choice == 4">
+  <output>🚀 **Switching to Quick Flow!**
+
+Load the **quick-flow-solo-dev** agent instead:
+
+- Start a new chat
+- Load the quick-flow-solo-dev agent
+- Use Quick Flow for minimal planning and faster development
+
+Quick Flow is perfect for:
+
+- Simple features and bug fixes
+- Rapid prototyping
+- When you want to get straight to code
+
+Happy coding! 🚀</output>
+<action>Exit workflow</action>
+</check>
+
+<check if="choice == 3">
   <ask>What concerns you about choosing?</ask>
   <action>Provide tailored guidance based on concerns</action>
   <action>Loop back to choice</action>
@@ -215,7 +233,7 @@ Choice [1/2/3/4]:</ask>
 <step n="6" goal="Discovery workflows selection (unified)">
 <action>Determine available discovery workflows based on:
 - field_type (greenfield gets product-brief option)
-- selected_track (quick-flow skips product-brief)
+- selected_track (method/enterprise options)
 </action>
 
 <check if="field_type == greenfield AND selected_track in [method, enterprise]">
@@ -229,7 +247,7 @@ Choice [1/2/3/4]:</ask>
 Enter numbers (e.g., "1,3" or "all" or "none"): </ask>
 </check>
 
-<check if="field_type == brownfield OR selected_track == quick-flow">
+<check if="field_type == brownfield AND selected_track in [method, enterprise]">
   <output>Optional discovery workflows:</output>
   <ask>Include any of these?
 
@@ -250,7 +268,7 @@ Enter numbers (e.g., "1,2" or "none"): </ask>
 <template-output>research_requested</template-output>
 <template-output>product_brief_requested</template-output>
 
-<check if="brownfield AND selected_track != quick-flow">
+<check if="brownfield">
   <output>💡 **Note:** For brownfield projects, run document-project workflow first to analyze your codebase.</output>
 </check>
 </step>
@@ -258,18 +276,18 @@ Enter numbers (e.g., "1,2" or "none"): </ask>
 <step n="7" goal="Detect track from artifacts" if="continuing_existing OR migrating_legacy">
 <action>Analyze artifacts to detect track:
 - Has PRD → BMad Method
-- Has tech-spec only → Quick Flow
 - Has Security/DevOps → Enterprise Method
+- Has tech-spec only → Suggest switching to quick-flow-solo-dev agent
 </action>
 
 <output>Detected: **{{detected_track}}** based on {{found_artifacts}}</output>
 <ask>Correct? (y/n)</ask>
 
-<ask if="n">Which track instead?
+<ask if="n">Which BMad Method track instead?
 
-1. Quick Flow
-2. BMad Method
-3. Enterprise Method
+1. BMad Method
+2. Enterprise Method
+3. Switch to Quick Flow (use quick-flow-solo-dev agent)
 
 Choice:</ask>
 
@@ -298,11 +316,8 @@ Choice:</ask>
 {{#if brownfield}}Prerequisites: document-project{{/if}}
 {{#if has_discovery}}Discovery: {{list_selected_discovery}}{{/if}}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 {{workflow_path_summary}}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</output>
+</output>
 
 <ask>Create workflow tracking file? (y/n)</ask>
 
@@ -326,9 +341,6 @@ To check progress: /bmad:bmm:workflows:workflow-status
 Happy building! 🚀</output>
 </check>
 
-<check if="n">
-  <output>No problem! Run workflow-init again when ready.</output>
-</check>
 </step>
 
 </workflow>

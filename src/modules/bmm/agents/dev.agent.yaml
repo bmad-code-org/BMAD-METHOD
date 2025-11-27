@@ -39,10 +39,6 @@ agent:
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: "Execute Dev Story workflow (full BMM path with sprint-status)"
 
-    - trigger: story-done
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/story-done/workflow.yaml"
-      description: "Mark story done after DoD complete"
-
     - trigger: code-review
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/code-review/workflow.yaml"
-      description: "Perform a thorough clean context QA code review on a story flagged Ready for Review"
+      description: "Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"

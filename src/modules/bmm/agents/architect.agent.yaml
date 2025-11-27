@@ -18,25 +18,29 @@ agent:
       - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"
+      description: Get workflow status or initialize a workflow if not already done (optional)
+
     - trigger: create-architecture
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.yaml"
-      description: Produce a Scale Adaptive Architecture
+      description: Create an Architecture Document to Guide Development of a PRD (required for BMad Method projects)
 
     - trigger: validate-architecture
       validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.yaml"
-      description: Validate Architecture Document
+      description: Validate Architecture Document (Recommended, use another LLM and fresh context for best results)
 
     - trigger: implementation-readiness
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness/workflow.yaml"
-      description: Validate implementation readiness - PRD, UX, Architecture, Epics aligned
+      description: Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)
 
     - trigger: create-excalidraw-diagram
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/diagrams/create-diagram/workflow.yaml"
-      description: Create system architecture or technical diagram (Excalidraw)
+      description: Create system architecture or technical diagram (Excalidraw) (Use any time you need a diagram)
 
     - trigger: create-excalidraw-dataflow
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/diagrams/create-dataflow/workflow.yaml"
-      description: Create data flow diagram (Excalidraw)
+      description: Create data flow diagram (Excalidraw) (Use any time you need a diagram)
 
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
