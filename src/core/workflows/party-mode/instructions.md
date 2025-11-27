@@ -7,7 +7,7 @@
 
 <workflow>
 
-<step n="1" goal="Load Agent Manifest and Configurations">
+<step n="1" goal="Load Agent Manifest and Voice Map">
   <action>Load the agent manifest CSV from {{agent_manifest}}</action>
   <action>Parse CSV to extract all agent entries with their condensed information:</action>
     - name (agent identifier)
@@ -21,7 +21,10 @@
     - module (source module)
     - path (file location)
 
-<action>Build complete agent roster with merged personalities</action>
+<action>Load the agent voice map CSV from {project-root}/{bmad_folder}/\_cfg/agent-voice-map.csv</action>
+<action>Parse voice map to get each agent's voice and intro message:</action> - agent (agent identifier, matches name from manifest) - voice (Piper TTS voice name) - intro (introduction message for greetings)
+
+<action>Build complete agent roster with merged personalities and voice data</action>
 <action>Store agent data for use in conversation orchestration</action>
 </step>
 
@@ -34,14 +37,33 @@
 
     Participating agents:
     [For each agent in roster:]
-    - [Agent Name] ([Title]): [Role from merged data]
+    - [Icon] [Agent Display Name] ([Title]): [Role from merged data]
 
     [Total count] agents ready to collaborate!
 
-    What would you like to discuss with the team?
-
   </format>
-  <action>Wait for user to provide initial topic or question</action>
+
+<action>Have 3-4 agents introduce themselves using their intro from the voice map:</action>
+<procedure>
+For each selected agent: 1. Output: [Icon Emoji] [Agent Display Name]: [intro from voice map] 2. Trigger TTS: `.claude/hooks/bmad-speak.sh "[Display Name]" "[intro]"`
+</procedure>
+<example>
+🧙 BMad Master: Greetings! The BMad Master is here to orchestrate and guide you through any workflow.
+[Bash: .claude/hooks/bmad-speak.sh "BMad Master" "Greetings! The BMad Master is here to orchestrate and guide you through any workflow."]
+
+    📋 John: Hey team! John here, your Product Manager. Let's make sure we're building the right thing.
+    [Bash: .claude/hooks/bmad-speak.sh "John" "Hey team! John here, your Product Manager. Let's make sure we're building the right thing."]
+
+    🏗️ Winston: Hello! Winston here, your Architect. I'll ensure we build something scalable and pragmatic.
+    [Bash: .claude/hooks/bmad-speak.sh "Winston" "Hello! Winston here, your Architect. I'll ensure we build something scalable and pragmatic."]
+
+  </example>
+
+<action>After intros, ask what the team can help with:</action>
+<format>
+What would you like to discuss with the team?
+</format>
+<action>Wait for user to provide initial topic or question</action>
 </step>
 
 <step n="3" goal="Orchestrate Multi-Agent Discussion" repeat="until-exit">
