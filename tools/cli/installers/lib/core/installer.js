@@ -824,6 +824,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       const manifestStats = await manifestGen.generateManifests(bmadDir, config.modules || [], this.installedFiles, {
         ides: config.ides || [],
         preservedModules: config._preserveModules || [], // Scan these from installed bmad/ dir
+        agentVibes: { enabled: this.enableAgentVibes || false }, // Track AgentVibes TTS configuration
       });
 
       spinner.succeed(
@@ -1966,6 +1967,37 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         }
       }
 
+      // Check for AgentVibes TTS - prompt if not previously configured
+      // Read existing manifest to check if AgentVibes was previously set
+      const manifestPath = path.join(bmadDir, '_cfg', 'manifest.yaml');
+      let agentVibesEnabled = false;
+      let agentVibesPreviouslyConfigured = false;
+
+      try {
+        const manifestContent = await fs.readFile(manifestPath, 'utf8');
+        const yaml = require('js-yaml');
+        const manifest = yaml.load(manifestContent);
+        // Check if AgentVibes was previously configured (exists in manifest)
+        if (manifest.agentVibes !== undefined) {
+          agentVibesPreviouslyConfigured = true;
+          agentVibesEnabled = manifest.agentVibes?.enabled || false;
+        }
+      } catch {
+        // Manifest doesn't exist or can't be read - treat as not configured
+      }
+
+      // If AgentVibes wasn't previously configured, prompt the user
+      if (!agentVibesPreviouslyConfigured) {
+        const { UI } = require('../../../lib/ui');
+        const ui = new UI();
+        const agentVibesConfig = await ui.promptAgentVibes(projectDir);
+
+        if (agentVibesConfig.enableTts) {
+          agentVibesEnabled = true;
+          promptedForNewFields = true;
+        }
+      }
+
       if (!promptedForNewFields) {
         console.log(chalk.green('✓ All configuration is up to date, no new options to configure'));
       }
@@ -2003,6 +2035,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         _quickUpdate: true, // Flag to skip certain prompts
         _preserveModules: skippedModules, // Preserve these in manifest even though we didn't update them
         _savedIdeConfigs: savedIdeConfigs, // Pass saved IDE configs to installer
+        enableAgentVibes: agentVibesEnabled, // AgentVibes TTS configuration
       };
 
       // Call the standard install method

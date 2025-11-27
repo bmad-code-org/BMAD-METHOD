@@ -54,6 +54,9 @@ class ManifestGenerator {
     // Filter out any undefined/null values from IDE list
     this.selectedIdes = resolvedIdes.filter((ide) => ide && typeof ide === 'string');
 
+    // Store AgentVibes configuration for manifest
+    this.agentVibes = options.agentVibes || null;
+
     // Collect workflow data
     await this.collectWorkflows(selectedModules);
 
@@ -446,6 +449,7 @@ class ManifestGenerator {
       },
       modules: this.modules,
       ides: this.selectedIdes,
+      agentVibes: this.agentVibes, // Track AgentVibes TTS configuration
     };
 
     const yamlStr = yaml.dump(manifest, {
