@@ -1059,7 +1059,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         path: bmadDir,
         modules: config.modules,
         ides: config.ides,
-        needsAgentVibes: this.enableAgentVibes && !config.agentVibesInstalled,
+        needsAgentVibes: this.enableAgentVibes, // Always run installer if enabled - handles updates too
         projectDir: projectDir,
       };
     } catch (error) {
