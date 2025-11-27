@@ -38,6 +38,7 @@ Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
 
 - `installed_path` = `{project-root}/{bmad_folder}/core/workflows/party-mode`
 - `agent_manifest_path` = `{project-root}/{bmad_folder}/_cfg/agent-manifest.csv`
+- `agent_voice_map_path` = `{project-root}/{bmad_folder}/_cfg/agent-voice-map.csv`
 - `standalone_mode` = `true` (party mode is an interactive workflow)
 
 ---
@@ -63,6 +64,16 @@ Parse CSV manifest to extract agent entries with complete information:
 
 Build complete agent roster with merged personalities for conversation orchestration.
 
+### Voice Map Loading (Optional)
+
+If `agent_voice_map_path` exists, load agent voice configuration:
+
+- **agent** (agent identifier matching manifest name)
+- **voice** (TTS voice name for the agent)
+- **intro** (introduction message the agent uses when joining party mode)
+
+Merge voice map data with agent roster for TTS integration and personalized introductions.
+
 ---
 
 ## EXECUTION
@@ -81,7 +92,14 @@ Welcome {{user_name}}! All BMAD agents are here and ready for a dynamic group di
 
 **Let me introduce our collaborating agents:**
 
-[Load agent roster and display 2-3 most diverse agents as examples]
+[Load agent roster and display all agents with their icons and titles]
+
+**Agent Introductions (if voice map with intros is available):**
+
+For each agent in the roster, if they have an intro message from the voice map:
+- Have the agent speak their intro message in-character
+- Use TTS to voice the introduction with their assigned voice
+- Format: `Bash: .claude/hooks/bmad-speak.sh "[Agent Name]" "[Their intro message]"`
 
 **What would you like to discuss with the team today?**"
 

@@ -74,6 +74,7 @@ class ManifestGenerator {
       await this.writeMainManifest(cfgDir),
       await this.writeWorkflowManifest(cfgDir),
       await this.writeAgentManifest(cfgDir),
+      await this.writeVoiceMap(cfgDir),
       await this.writeTaskManifest(cfgDir),
       await this.writeToolManifest(cfgDir),
       await this.writeFilesManifest(cfgDir),
@@ -579,6 +580,80 @@ class ManifestGenerator {
     // Add all agents
     for (const agent of this.agents) {
       csv += `"${agent.name}","${agent.displayName}","${agent.title}","${agent.icon}","${agent.role}","${agent.identity}","${agent.communicationStyle}","${agent.principles}","${agent.module}","${agent.path}"\n`;
+    }
+
+    await fs.writeFile(csvPath, csv);
+    return csvPath;
+  }
+
+  /**
+   * Write agent voice map CSV for AgentVibes TTS integration
+   * Maps agent IDs to default Piper TTS voices and intro messages
+   * AgentVibes will use this if present, otherwise falls back to its own defaults
+   * @returns {string} Path to the voice map file
+   */
+  async writeVoiceMap(cfgDir) {
+    const csvPath = path.join(cfgDir, 'agent-voice-map.csv');
+
+    // Default voice assignments and intros for BMAD agents
+    // These can be customized by editing the generated CSV
+    const agentDefaults = {
+      'bmad-master': {
+        voice: 'en_US-lessac-medium',
+        intro: 'Greetings! The BMad Master is here to orchestrate and guide you through any workflow.',
+      },
+      analyst: {
+        voice: 'en_US-kristin-medium',
+        intro: "Hi there! I'm Mary, your Business Analyst. I'll help uncover the real requirements.",
+      },
+      architect: {
+        voice: 'en_GB-alan-medium',
+        intro: "Hello! Winston here, your Architect. I'll ensure we build something scalable and pragmatic.",
+      },
+      dev: {
+        voice: 'en_US-joe-medium',
+        intro: 'Hey! Amelia here, your Developer. Ready to turn specs into working code.',
+      },
+      pm: {
+        voice: 'en_US-ryan-high',
+        intro: "Hey team! John here, your Product Manager. Let's make sure we're building the right thing.",
+      },
+      sm: {
+        voice: 'en_US-amy-medium',
+        intro: "Hi everyone! Bob here, your Scrum Master. I'll keep us focused and moving forward.",
+      },
+      tea: {
+        voice: 'en_US-kusal-medium',
+        intro: 'Hello! Murat here, your Test Architect. Quality is my obsession.',
+      },
+      'tech-writer': {
+        voice: 'jenny',
+        intro: "Hi! I'm Paige, your Technical Writer. I'll make sure everything is documented clearly.",
+      },
+      'ux-designer': {
+        voice: 'kristin',
+        intro: 'Hey! Sally here, your UX Designer. The user experience is my top priority.',
+      },
+      'frame-expert': {
+        voice: 'en_GB-alan-medium',
+        intro: "Hello! Saif here, your Visual Design Expert. I'll help visualize your ideas.",
+      },
+    };
+
+    // Fallback values for agents not in the default map
+    const fallbackVoice = 'en_US-lessac-medium';
+    const fallbackIntro = 'Hello! Ready to help with the discussion.';
+
+    let csv = 'agent,voice,intro\n';
+
+    // Add voice mapping and intro for each discovered agent
+    for (const agent of this.agents) {
+      const defaults = agentDefaults[agent.name] || {};
+      const voice = defaults.voice || fallbackVoice;
+      const intro = defaults.intro || fallbackIntro;
+      // Escape quotes in intro for CSV
+      const escapedIntro = intro.replaceAll('"', '""');
+      csv += `${agent.name},${voice},"${escapedIntro}"\n`;
     }
 
     await fs.writeFile(csvPath, csv);
