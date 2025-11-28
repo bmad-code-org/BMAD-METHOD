@@ -166,8 +166,66 @@ async function buildAllAgents(projectDir, force = false) {
   let builtCount = 0;
   let skippedCount = 0;
 
-  // First, build standalone agents in bmad/agents/
-  const standaloneAgentsDir = path.join(projectDir, 'bmad', 'agents');
+  // Detect .bmad folder name (could be .bmad or bmad)
+  const bmadFolder = (await fs.pathExists(path.join(projectDir, '.bmad'))) ? '.bmad' : 'bmad';
+  const bmadDir = path.join(projectDir, bmadFolder);
+
+  // Build agents from ALL module directories in .bmad/ (including custom, hde, etc.)
+  if (await fs.pathExists(bmadDir)) {
+    console.log(chalk.cyan('\nScanning all modules in .bmad/...'));
+    const moduleEntries = await fs.readdir(bmadDir, { withFileTypes: true });
+
+    for (const moduleEntry of moduleEntries) {
+      // Skip special directories
+      if (!moduleEntry.isDirectory() || moduleEntry.name === '_cfg' || moduleEntry.name === 'docs') {
+        continue;
+      }
+
+      const modulePath = path.join(bmadDir, moduleEntry.name);
+      const agentsPath = path.join(modulePath, 'agents');
+
+      // Check if this module has an agents/ directory
+      if (!(await fs.pathExists(agentsPath))) {
+        continue;
+      }
+
+      console.log(chalk.cyan(`\nBuilding agents in ${moduleEntry.name} module...`));
+      const agentFiles = await fs.readdir(agentsPath);
+
+      for (const file of agentFiles) {
+        if (!file.endsWith('.agent.yaml')) {
+          continue;
+        }
+
+        const agentName = file.replace('.agent.yaml', '');
+        const agentYamlPath = path.join(agentsPath, file);
+        const outputPath = path.join(agentsPath, `${agentName}.md`);
+
+        // Check if rebuild needed
+        if (!force && (await fs.pathExists(outputPath))) {
+          const needsRebuild = await checkIfNeedsRebuild(agentYamlPath, outputPath, projectDir, agentName);
+          if (!needsRebuild) {
+            console.log(chalk.dim(`  ${agentName}: up to date`));
+            skippedCount++;
+            continue;
+          }
+        }
+
+        console.log(chalk.cyan(`  Building ${agentName}...`));
+
+        const customizePath = path.join(bmadDir, '_cfg', 'agents', `${moduleEntry.name}-${agentName}.customize.yaml`);
+        const customizeExists = await fs.pathExists(customizePath);
+
+        await builder.buildAgent(agentYamlPath, customizeExists ? customizePath : null, outputPath, { includeMetadata: true });
+
+        console.log(chalk.green(`  ✓ ${agentName} (${moduleEntry.name})`));
+        builtCount++;
+      }
+    }
+  }
+
+  // Also build standalone agents in bmad/agents/ (top-level, for backward compatibility)
+  const standaloneAgentsDir = path.join(projectDir, bmadFolder, 'agents');
   if (await fs.pathExists(standaloneAgentsDir)) {
     console.log(chalk.cyan('\nBuilding standalone agents...'));
     const agentDirs = await fs.readdir(standaloneAgentsDir);
@@ -205,7 +263,7 @@ async function buildAllAgents(projectDir, force = false) {
 
       console.log(chalk.cyan(`  Building standalone agent ${agentName}...`));
 
-      const customizePath = path.join(projectDir, 'bmad', '_cfg', 'agents', `${agentName}.customize.yaml`);
+      const customizePath = path.join(projectDir, bmadFolder, '_cfg', 'agents', `${agentName}.customize.yaml`);
       const customizeExists = await fs.pathExists(customizePath);
 
       await builder.buildAgent(agentYamlPath, customizeExists ? customizePath : null, outputPath, { includeMetadata: true });
@@ -275,8 +333,52 @@ async function checkBuildStatus(projectDir) {
   const needsRebuild = [];
   const upToDate = [];
 
-  // Check standalone agents in bmad/agents/
-  const standaloneAgentsDir = path.join(projectDir, 'bmad', 'agents');
+  // Detect .bmad folder name (could be .bmad or bmad)
+  const bmadFolder = (await fs.pathExists(path.join(projectDir, '.bmad'))) ? '.bmad' : 'bmad';
+  const bmadDir = path.join(projectDir, bmadFolder);
+
+  // Check agents in ALL module directories in .bmad/
+  if (await fs.pathExists(bmadDir)) {
+    const moduleEntries = await fs.readdir(bmadDir, { withFileTypes: true });
+
+    for (const moduleEntry of moduleEntries) {
+      // Skip special directories
+      if (!moduleEntry.isDirectory() || moduleEntry.name === '_cfg' || moduleEntry.name === 'docs') {
+        continue;
+      }
+
+      const modulePath = path.join(bmadDir, moduleEntry.name);
+      const agentsPath = path.join(modulePath, 'agents');
+
+      // Check if this module has an agents/ directory
+      if (!(await fs.pathExists(agentsPath))) {
+        continue;
+      }
+
+      const agentFiles = await fs.readdir(agentsPath);
+
+      for (const file of agentFiles) {
+        if (!file.endsWith('.agent.yaml')) {
+          continue;
+        }
+
+        const agentName = file.replace('.agent.yaml', '');
+        const agentYamlPath = path.join(agentsPath, file);
+        const outputPath = path.join(agentsPath, `${agentName}.md`);
+
+        if (!(await fs.pathExists(outputPath))) {
+          needsRebuild.push(`${agentName} (${moduleEntry.name})`);
+        } else if (await checkIfNeedsRebuild(agentYamlPath, outputPath, projectDir, agentName)) {
+          needsRebuild.push(`${agentName} (${moduleEntry.name})`);
+        } else {
+          upToDate.push(`${agentName} (${moduleEntry.name})`);
+        }
+      }
+    }
+  }
+
+  // Check standalone agents in bmad/agents/ (top-level)
+  const standaloneAgentsDir = path.join(projectDir, bmadFolder, 'agents');
   if (await fs.pathExists(standaloneAgentsDir)) {
     const agentDirs = await fs.readdir(standaloneAgentsDir);
 
@@ -406,8 +508,42 @@ async function checkIfNeedsRebuild(yamlPath, outputPath, projectDir, agentName) 
  * List available agents
  */
 async function listAvailableAgents(projectDir) {
-  // List standalone agents first
-  const standaloneAgentsDir = path.join(projectDir, 'bmad', 'agents');
+  // Detect .bmad folder name (could be .bmad or bmad)
+  const bmadFolder = (await fs.pathExists(path.join(projectDir, '.bmad'))) ? '.bmad' : 'bmad';
+  const bmadDir = path.join(projectDir, bmadFolder);
+
+  // List agents from ALL module directories in .bmad/
+  if (await fs.pathExists(bmadDir)) {
+    console.log(chalk.dim('     Module agents:'));
+    const moduleEntries = await fs.readdir(bmadDir, { withFileTypes: true });
+
+    for (const moduleEntry of moduleEntries) {
+      // Skip special directories
+      if (!moduleEntry.isDirectory() || moduleEntry.name === '_cfg' || moduleEntry.name === 'docs') {
+        continue;
+      }
+
+      const modulePath = path.join(bmadDir, moduleEntry.name);
+      const agentsPath = path.join(modulePath, 'agents');
+
+      // Check if this module has an agents/ directory
+      if (!(await fs.pathExists(agentsPath))) {
+        continue;
+      }
+
+      const agentFiles = await fs.readdir(agentsPath);
+
+      for (const file of agentFiles) {
+        if (file.endsWith('.agent.yaml')) {
+          const agentName = file.replace('.agent.yaml', '');
+          console.log(chalk.dim(`       - ${agentName} (${moduleEntry.name})`));
+        }
+      }
+    }
+  }
+
+  // List standalone agents
+  const standaloneAgentsDir = path.join(projectDir, bmadFolder, 'agents');
   if (await fs.pathExists(standaloneAgentsDir)) {
     console.log(chalk.dim('     Standalone agents:'));
     const agentDirs = await fs.readdir(standaloneAgentsDir);
