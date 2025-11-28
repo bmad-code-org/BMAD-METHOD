@@ -88,9 +88,9 @@ graph TB
     style Waived fill:#9c27b0,stroke:#4a148c,stroke-width:3px,color:#000
 ```
 
-**Phase Numbering Note:** BMad uses a 4-phase methodology with optional Phase 0/1:
+**Phase Numbering Note:** BMad uses a 4-phase methodology with optional Phase 1 and documentation prerequisite:
 
-- **Phase 0** (Optional): Documentation (brownfield prerequisite - `*document-project`)
+- **Documentation** (Optional for brownfield): Prerequisite using `*document-project`
 - **Phase 1** (Optional): Discovery/Analysis (`*brainstorm`, `*research`, `*product-brief`)
 - **Phase 2** (Required): Planning (`*prd` creates PRD with FRs/NFRs)
 - **Phase 3** (Track-dependent): Solutioning (`*architecture` → `*create-epics-and-stories` → TEA: `*framework`, `*ci` → `*implementation-readiness`)
@@ -98,7 +98,7 @@ graph TB
 
 **TEA workflows:** `*framework` and `*ci` run once in Phase 3 after architecture. `*test-design` runs per-epic in Phase 4. Output: `test-design-epic-N.md`.
 
-Quick Flow track skips Phases 0, 1, and 3. BMad Method and Enterprise use all phases based on project needs.
+Quick Flow track skips Phase 1 and 3. BMad Method and Enterprise use all phases based on project needs.
 
 ### Why TEA is Different from Other BMM Agents
 
@@ -259,22 +259,22 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 
 **🔄 Brownfield Deltas from Greenfield:**
 
-- ➕ Phase 0 (Documentation) - Document existing codebase if undocumented
+- ➕ Documentation (Prerequisite) - Document existing codebase if undocumented
 - ➕ Phase 2: `*trace` - Baseline existing test coverage before planning
 - 🔄 Phase 4: `*test-design` - Focus on regression hotspots and brownfield risks
 - 🔄 Phase 4: Story Review - May include `*nfr-assess` if not done earlier
 
-| Workflow Stage                | Test Architect                                                               | Dev / Team                                                                          | Outputs                                                                |
-| ----------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **Phase 0**: Documentation ➕ | -                                                                            | Analyst `*document-project` (if undocumented)                                       | Comprehensive project documentation                                    |
-| **Phase 1**: Discovery        | -                                                                            | Analyst/PM/Architect rerun planning workflows                                       | Updated planning artifacts in `{output_folder}`                        |
-| **Phase 2**: Planning         | Run ➕ `*trace` (baseline coverage)                                          | PM `*prd` (creates PRD with FRs/NFRs)                                               | PRD with FRs/NFRs, ➕ coverage baseline                                |
-| **Phase 3**: Solutioning      | Run `*framework`, `*ci` AFTER architecture and epic creation                 | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline               |
-| **Phase 4**: Sprint Start     | -                                                                            | SM `*sprint-planning`                                                               | Sprint status file with all epics and stories                          |
-| **Phase 4**: Epic Planning    | Run `*test-design` for THIS epic 🔄 (regression hotspots)                    | Review epic scope and brownfield risks                                              | `test-design-epic-N.md` with brownfield risk assessment and mitigation |
-| **Phase 4**: Story Dev        | (Optional) `*atdd` before dev, then `*automate` after                        | SM `*create-story`, DEV implements                                                  | Tests, story implementation                                            |
-| **Phase 4**: Story Review     | Apply `*test-review` (optional), re-run `*trace`, ➕ `*nfr-assess` if needed | Resolve gaps, update docs/tests                                                     | Quality report, refreshed coverage matrix, NFR report                  |
-| **Phase 4**: Release Gate     | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)            | Capture sign-offs, share release notes                                              | Quality audit, Gate YAML + release summary                             |
+| Workflow Stage                     | Test Architect                                                               | Dev / Team                                                                          | Outputs                                                                |
+| ---------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Documentation**: Prerequisite ➕ | -                                                                            | Analyst `*document-project` (if undocumented)                                       | Comprehensive project documentation                                    |
+| **Phase 1**: Discovery             | -                                                                            | Analyst/PM/Architect rerun planning workflows                                       | Updated planning artifacts in `{output_folder}`                        |
+| **Phase 2**: Planning              | Run ➕ `*trace` (baseline coverage)                                          | PM `*prd` (creates PRD with FRs/NFRs)                                               | PRD with FRs/NFRs, ➕ coverage baseline                                |
+| **Phase 3**: Solutioning           | Run `*framework`, `*ci` AFTER architecture and epic creation                 | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline               |
+| **Phase 4**: Sprint Start          | -                                                                            | SM `*sprint-planning`                                                               | Sprint status file with all epics and stories                          |
+| **Phase 4**: Epic Planning         | Run `*test-design` for THIS epic 🔄 (regression hotspots)                    | Review epic scope and brownfield risks                                              | `test-design-epic-N.md` with brownfield risk assessment and mitigation |
+| **Phase 4**: Story Dev             | (Optional) `*atdd` before dev, then `*automate` after                        | SM `*create-story`, DEV implements                                                  | Tests, story implementation                                            |
+| **Phase 4**: Story Review          | Apply `*test-review` (optional), re-run `*trace`, ➕ `*nfr-assess` if needed | Resolve gaps, update docs/tests                                                     | Quality report, refreshed coverage matrix, NFR report                  |
+| **Phase 4**: Release Gate          | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)            | Capture sign-offs, share release notes                                              | Quality audit, Gate YAML + release summary                             |
 
 <details>
 <summary>Execution Notes</summary>

@@ -1,7 +1,5 @@
 # BMM Solutioning Workflows (Phase 3)
 
-**Reading Time:** ~8 minutes
-
 ## Overview
 
 Phase 3 (Solutioning) workflows translate **what** to build (from Planning) into **how** to build it (technical design). This phase prevents agent conflicts in multi-epic projects by documenting architectural decisions before implementation begins.
@@ -14,73 +12,30 @@ Phase 3 (Solutioning) workflows translate **what** to build (from Planning) into
 
 ---
 
-## Phase 3 Solutioning Workflow Map
+## Phase 3 Solutioning Workflow Overview
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#fff','primaryTextColor':'#000','primaryBorderColor':'#000','lineColor':'#000','fontSize':'16px','fontFamily':'arial'}}}%%
-graph TB
-    FromPlanning["<b>FROM Phase 2 Planning</b><br/>PRD (FRs/NFRs) complete"]
+Phase 3 Solutioning has different paths based on the planning track selected:
 
-    subgraph QuickFlow["<b>QUICK FLOW PATH</b>"]
-        direction TB
-        SkipArch["<b>Skip Phase 3</b><br/>Go directly to Implementation"]
-    end
+### Quick Flow Path
 
-    subgraph BMadEnterprise["<b>BMAD METHOD + ENTERPRISE (Same Start)</b>"]
-        direction TB
-        OptionalUX["<b>UX Designer: create-ux-design</b><br/>(Optional)"]
-        Architecture["<b>Architect: architecture</b><br/>System design + ADRs"]
+- From Planning: tech-spec complete
+- Action: Skip Phase 3 entirely
+- Next: Phase 4 (Implementation)
 
-        subgraph Optional["<b>ENTERPRISE ADDITIONS (Optional)</b>"]
-            direction LR
-            SecArch["<b>Architect: security-architecture</b><br/>(Future)"]
-            DevOps["<b>Architect: devops-strategy</b><br/>(Future)"]
-        end
+### BMad Method & Enterprise Path
 
-        EpicsStories["<b>PM: create-epics-and-stories</b><br/>Break down FRs/NFRs into epics"]
-        GateCheck["<b>Architect: implementation-readiness</b><br/>Validation before Phase 4"]
+- From Planning: PRD with FRs/NFRs complete
+- Optional: create-ux-design (if UX is critical)
+- Required: architecture - System design with ADRs
+- Required: create-epics-and-stories - Break requirements into implementable stories
+- Required: implementation-readiness - Gate check validation
+- Enterprise additions: Optional security-architecture and devops-strategy (future workflows)
 
-        OptionalUX -.-> Architecture
-        Architecture -.->|Enterprise only| Optional
-        Architecture --> EpicsStories
-        Optional -.-> EpicsStories
-        EpicsStories --> GateCheck
-    end
+### Gate Check Results
 
-    subgraph Result["<b>GATE CHECK RESULTS</b>"]
-        direction LR
-        Pass["✅ PASS<br/>Proceed to Phase 4"]
-        Concerns["⚠️ CONCERNS<br/>Proceed with caution"]
-        Fail["❌ FAIL<br/>Resolve issues first"]
-    end
-
-    FromPlanning -->|Quick Flow| QuickFlow
-    FromPlanning -->|BMad Method<br/>or Enterprise| OptionalUX
-
-    QuickFlow --> Phase4["<b>Phase 4: Implementation</b>"]
-    GateCheck --> Result
-    Pass --> Phase4
-    Concerns --> Phase4
-    Fail -.->|Fix issues| Architecture
-
-    style FromPlanning fill:#e1bee7,stroke:#6a1b9a,stroke-width:2px,color:#000
-    style QuickFlow fill:#c5e1a5,stroke:#33691e,stroke-width:3px,color:#000
-    style BMadEnterprise fill:#90caf9,stroke:#0d47a1,stroke-width:3px,color:#000
-    style Optional fill:#ffcdd2,stroke:#c62828,stroke-width:3px,color:#000
-    style Result fill:#fff9c4,stroke:#f57f17,stroke-width:3px,color:#000
-    style Phase4 fill:#ffcc80,stroke:#e65100,stroke-width:2px,color:#000
-
-    style SkipArch fill:#aed581,stroke:#1b5e20,stroke-width:2px,color:#000
-    style OptionalUX fill:#64b5f6,stroke:#0d47a1,stroke-width:2px,color:#000
-    style Architecture fill:#42a5f5,stroke:#0d47a1,stroke-width:2px,color:#000
-    style SecArch fill:#ef9a9a,stroke:#c62828,stroke-width:2px,color:#000
-    style DevOps fill:#ef9a9a,stroke:#c62828,stroke-width:2px,color:#000
-    style EpicsStories fill:#42a5f5,stroke:#0d47a1,stroke-width:2px,color:#000
-    style GateCheck fill:#42a5f5,stroke:#0d47a1,stroke-width:2px,color:#000
-    style Pass fill:#81c784,stroke:#388e3c,stroke-width:2px,color:#000
-    style Concerns fill:#ffb74d,stroke:#f57f17,stroke-width:2px,color:#000
-    style Fail fill:#e57373,stroke:#d32f2f,stroke-width:2px,color:#000
-```
+- **PASS** - All criteria met, proceed to Phase 4
+- **CONCERNS** - Minor gaps identified, proceed with caution
+- **FAIL** - Critical issues, must resolve before Phase 4
 
 ---
 

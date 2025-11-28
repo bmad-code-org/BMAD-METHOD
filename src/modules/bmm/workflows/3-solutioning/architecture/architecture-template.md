@@ -15,10 +15,7 @@
 
 ## Project Structure
 
-```
-{{project_root}}/
 {{source_tree}}
-```
 
 ## Epic to Architecture Mapping
 
@@ -85,12 +82,6 @@ These patterns ensure consistent implementation across all AI agents:
 ### Prerequisites
 
 {{development_prerequisites}}
-
-### Setup Commands
-
-```bash
-{{setup_commands}}
-```
 
 ## Architecture Decision Records (ADRs)
 
