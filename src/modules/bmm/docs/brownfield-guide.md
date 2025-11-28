@@ -89,7 +89,7 @@ You: "Yes"
 
 ---
 
-## Phase 0: Documentation (Critical First Step)
+## Documentation: Critical First Step
 
 🚨 **For brownfield projects: Always ensure adequate AI-usable documentation before planning**
 
@@ -159,7 +159,7 @@ If you have documentation but files are huge (>500 lines, 10+ level 2 sections):
 | **A**    | No documentation                           | `document-project`         | Only option - generate from scratch     |
 | **B**    | Docs exist but massive/outdated/incomplete | `document-project`         | Safer to regenerate than trust bad docs |
 | **C**    | Good docs but no structure                 | `shard-doc` → `index-docs` | Structure existing content for AI       |
-| **D**    | Confirmed AI-optimized docs with index.md  | Skip Phase 0               | Rare - only if you're 100% confident    |
+| **D**    | Confirmed AI-optimized docs with index.md  | Skip Documentation         | Rare - only if you're 100% confident    |
 
 ### Scenario A: No Documentation (Most Common)
 
@@ -231,7 +231,7 @@ If you have **good, current documentation** but it's in massive files:
 
 ### Scenario D: Confirmed AI-Optimized Documentation (Rare)
 
-**Action: Skip Phase 0**
+**Action: Skip Documentation**
 
 Only skip if ALL conditions met:
 
@@ -619,7 +619,7 @@ Document in tech-spec/architecture:
 ### Commands by Phase
 
 ```bash
-# Phase 0: Documentation (If Needed)
+# Documentation (If Needed)
 # Analyst agent:
 document-project        # Create comprehensive docs (10-30min)
 # OR load index-docs task for existing docs (2-5min)
@@ -637,16 +637,14 @@ prd                     # BMad Method/Enterprise tracks
 
 # Phase 3: Solutioning (BMad Method/Enterprise)
 # Architect agent:
-create-architecture          # Extend architecture
+architecture                 # Create/extend architecture
 create-epics-and-stories     # Create epics and stories (after architecture)
 implementation-readiness       # Final validation
 
 # Phase 4: Implementation (All Tracks)
 # SM agent:
 sprint-planning              # Initialize tracking
-epic-tech-context            # Epic context
-create-story                 # Draft story
-story-context                # Story context
+create-story                 # Create story
 
 # DEV agent:
 dev-story                    # Implement
@@ -659,14 +657,14 @@ correct-course               # If issues
 
 ### Key Files
 
-**Phase 0 Output:**
+**Documentation Output:**
 
 - `docs/index.md` - **Master AI entry point (REQUIRED)**
 - `docs/project-overview.md`
 - `docs/architecture.md`
 - `docs/source-tree-analysis.md`
 
-**Phase 1-3 Tracking:**
+**Phase 1-4 Tracking:**
 
 - `docs/bmm-workflow-status.yaml` - Progress tracker
 
@@ -682,6 +680,7 @@ correct-course               # If issues
 **Phase 3 Architecture:**
 
 - `docs/architecture.md` (BMad Method/Enterprise tracks)
+- `docs/epics.md` + epic folders (from create-epics-and-stories)
 
 **Phase 4 Implementation:**
 

@@ -104,7 +104,7 @@ Essential reference materials:
 
 **Work with existing codebase (brownfield)**
 → Read [Brownfield Development Guide](./brownfield-guide.md)
-→ Pay special attention to Phase 0 documentation requirements
+→ Pay special attention to documentation requirements for brownfield projects
 
 **Understand planning tracks and methodology**
 → See [Scale Adaptive System](./scale-adaptive-system.md)

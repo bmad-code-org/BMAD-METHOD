@@ -24,7 +24,7 @@ agent:
       description: Get workflow status or initialize a workflow if not already done (optional)
 
     - trigger: create-prd
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.md"
       description: Create Product Requirements Document (PRD) (Required for BMad Method flow)
 
     - trigger: validate-prd

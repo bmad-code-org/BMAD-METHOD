@@ -103,7 +103,6 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 - Creating product briefs for strategic planning
 - Conducting research (market, technical, competitive)
 - Documenting existing projects (brownfield)
-- Phase 0 documentation needs
 
 **Primary Phase:** Phase 1 (Analysis)
 
@@ -137,7 +136,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 - Creating system architecture for Level 2-4 projects
 - Making technical design decisions
 - Validating architecture documents
-- Validating readiness for implementation phase (Phase 3→4 transition)
+- Validating readiness for implementation phase (Phase 3 to Phase 4 transition)
 - Course correction during implementation
 
 **Primary Phase:** Phase 3 (Solutioning)
@@ -348,7 +347,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 
 **When to Use:**
 
-- Documenting brownfield projects (Phase 0)
+- Documenting brownfield projects (Documentation prerequisite)
 - Creating API documentation
 - Generating architecture documentation
 - Writing user guides and tutorials
@@ -492,7 +491,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 
 - `workflow-status` - Check what to do next
 - `create-architecture` - Game systems architecture
-- `implementation-readiness` - Validate Phase 3→4 transition
+- `implementation-readiness` - Validate Phase 3 to Phase 4 transition
 - `correct-course` - Handle technical changes
 
 **Communication Style:** Calm and measured. Systematic thinking about complex systems. Uses chess metaphors and military strategy. Emphasizes balance and elegance.
@@ -958,8 +957,8 @@ Agent analyzes project state → recommends next workflow
 
 ```
 Each phase has validation gates:
-- Phase 2→3: validate-prd, validate-tech-spec
-- Phase 3→4: implementation-readiness
+- Phase 2 to 3: validate-prd, validate-tech-spec
+- Phase 3 to 4: implementation-readiness
 Run validation before advancing
 ```
 

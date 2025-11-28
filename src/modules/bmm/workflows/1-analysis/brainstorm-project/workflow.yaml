@@ -18,7 +18,7 @@ template: false
 instructions: "{installed_path}/instructions.md"
 
 # Context document for project brainstorming
-project_context: "{installed_path}/project-context.md"
+project_context: "{installed_path}/brainstorming-focus.md"
 
 # CORE brainstorming workflow to invoke
 core_brainstorming: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
@@ -33,7 +33,7 @@ web_bundle:
   template: false
   web_bundle_files:
     - "{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/instructions.md"
-    - "{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/project-context.md"
+    - "{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/brainstorming-focus.md"
     - "{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
   existing_workflows:
     - core_brainstorming: "{bmad_folder}/core/workflows/brainstorming/workflow.yaml"

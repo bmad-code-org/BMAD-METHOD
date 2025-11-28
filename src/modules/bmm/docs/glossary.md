@@ -101,10 +101,6 @@ Game development equivalent of PRD, created by Game Designer agent for game proj
 
 ## Workflow and Phases
 
-### Phase 0: Documentation (Prerequisite)
-
-**Conditional phase for brownfield projects.** Creates comprehensive codebase documentation before planning. Only required if existing documentation is insufficient for AI agents.
-
 ### Phase 1: Analysis (Optional)
 
 Discovery and research phase including brainstorming, research workflows, and product brief creation. Optional for Quick Flow, recommended for BMad Method, required for Enterprise Method.
@@ -119,7 +115,11 @@ Architecture design phase. Required for BMad Method and Enterprise Method tracks
 
 ### Phase 4: Implementation (Required)
 
-Sprint-based development through story-by-story iteration. Uses sprint-planning, epic-tech-context, create-story, story-context, dev-story, code-review, and retrospective workflows.
+Sprint-based development through story-by-story iteration. Uses sprint-planning, create-story, dev-story, code-review, and retrospective workflows.
+
+### Documentation (Prerequisite for Brownfield)
+
+**Conditional prerequisite for brownfield projects.** Creates comprehensive codebase documentation before planning. Only required if existing documentation is insufficient for AI agents. Uses the `document-project` workflow.
 
 ### Quick Spec Flow
 

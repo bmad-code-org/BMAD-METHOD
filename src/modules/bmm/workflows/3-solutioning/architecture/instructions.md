@@ -1,18 +1,20 @@
 # Decision Architecture Workflow Instructions
 
-<workflow name="architecture">
+<critical-rules>
+- <critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+- <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+- <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication style based on {user_skill_level}</critical>
+- <critical>The goal is ARCHITECTURAL DECISIONS that prevent AI agent conflicts, not detailed implementation specs</critical>
+- <critical>Communicate all responses in {communication_language} and tailor to {user_skill_level}</critical>
+- <critical>Generate all documents in {document_output_language}</critical>
+- <critical>This workflow replaces architecture with a conversation-driven approach</critical>
+- <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+- <critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+  - <critical>⚠️ CHECKPOINT PROTOCOL: After writing to a template-output tag, you must stop and offer a menu to the user to run the {advanced_elicitation} or {party-mode} workflow. </critical>
+  - <critical>YOU ARE FACILITATING A CONVERSATION With a user to produce a final document step by step. The whole process is meant to be collaborative helping the user flesh out their ideas</critical>
+</critical-rules>
 
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
-<critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication style based on {user_skill_level}</critical>
-<critical>The goal is ARCHITECTURAL DECISIONS that prevent AI agent conflicts, not detailed implementation specs</critical>
-<critical>Communicate all responses in {communication_language} and tailor to {user_skill_level}</critical>
-<critical>Generate all documents in {document_output_language}</critical>
-<critical>This workflow replaces architecture with a conversation-driven approach</critical>
-<critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
-<critical>ELICITATION POINTS: After completing each major architectural decision area (identified by template-output tags for decision_record, project_structure, novel_pattern_designs, implementation_patterns, and architecture_document), invoke advanced elicitation to refine decisions before proceeding</critical>
-<critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
-<critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
+<workflow name="architecture">
 
 <step n="0" goal="Validate workflow readiness" tag="workflow-status">
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
@@ -766,3 +768,17 @@ Check status anytime with: `workflow-status`
 </step>
 
 </workflow>
+
+<critical-rules>
+- <critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+- <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+- <critical>This workflow uses ADAPTIVE FACILITATION - adjust your communication style based on {user_skill_level}</critical>
+- <critical>The goal is ARCHITECTURAL DECISIONS that prevent AI agent conflicts, not detailed implementation specs</critical>
+- <critical>Communicate all responses in {communication_language} and tailor to {user_skill_level}</critical>
+- <critical>Generate all documents in {document_output_language}</critical>
+- <critical>This workflow replaces architecture with a conversation-driven approach</critical>
+- <critical>Input documents specified in workflow.yaml input_file_patterns - workflow engine handles fuzzy matching, whole vs sharded document discovery automatically</critical>
+- <critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
+  - <critical>⚠️ CHECKPOINT PROTOCOL: After writing to a template-output tag, you must stop and offer a menu to the user to run the {advanced_elicitation} or {party-mode} workflow. </critical>
+  - <critical>YOU ARE FACILITATING A CONVERSATION With a user to produce a final document step by step. The whole process is meant to be collaborative helping the user flesh out their ideas</critical>
+</critical-rules>
