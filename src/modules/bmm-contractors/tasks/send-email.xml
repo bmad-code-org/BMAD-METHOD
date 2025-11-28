@@ -1,0 +1,203 @@
+<task id="{bmad_folder}/bmm-contractors/tasks/send-email.xml" name="Send Email">
+  <objective>Send an email to a contractor via SMTP transport</objective>
+
+  <description>
+    This task sends an email using the configured SMTP settings. It supports
+    templates, attachments, and tracks email status for delivery confirmation.
+  </description>
+
+  <usage>
+    <example title="Send story assignment">
+      <invoke-task path="{bmad_folder}/bmm-contractors/tasks/send-email.xml">
+        <param name="to">{contractor_email}</param>
+        <param name="subject">[PROJECT] [STORY-123] Implement user auth API</param>
+        <param name="template">story-assignment</param>
+        <param name="template_vars">
+          story_id: "STORY-123"
+          story_title: "Implement user auth API"
+          contractor_name: "John"
+        </param>
+        <param name="attachments">
+          - path: "docs/api-spec.md"
+          - path: "docs/auth-design.md"
+        </param>
+      </invoke-task>
+    </example>
+
+    <example title="Send plain email">
+      <invoke-task path="{bmad_folder}/bmm-contractors/tasks/send-email.xml">
+        <param name="to">{contractor_email}</param>
+        <param name="subject">Quick question</param>
+        <param name="body">Plain text or markdown body here</param>
+      </invoke-task>
+    </example>
+  </usage>
+
+  <parameters>
+    <param name="to" type="string" required="true"
+           description="Recipient email address" />
+    <param name="subject" type="string" required="true"
+           description="Email subject line" />
+    <param name="template" type="string" required="false"
+           description="Template name from templates/email/ (without extension)" />
+    <param name="template_vars" type="object" required="false"
+           description="Variables to interpolate in template" />
+    <param name="body" type="string" required="false"
+           description="Plain text/markdown body (if not using template)" />
+    <param name="cc" type="array" required="false"
+           description="CC recipients" />
+    <param name="attachments" type="array" required="false"
+           description="File paths to attach" />
+    <param name="priority" type="string" required="false" default="normal"
+           description="Email priority: low, normal, high" />
+    <param name="track_delivery" type="boolean" required="false" default="true"
+           description="Track delivery status" />
+    <param name="correlation_id" type="string" required="false"
+           description="ID to correlate with replies" />
+  </parameters>
+
+  <flow>
+    <step n="1" title="Load Configuration">
+      <action>Load SMTP config from {project-root}/.bmad/bmm-contractors/config.yaml</action>
+      <check if="smtp.host is empty">
+        <action>FAIL with "SMTP not configured"</action>
+      </check>
+    </step>
+
+    <step n="2" title="Prepare Email Content">
+      <check if="template is provided">
+        <action>Load template from {project-root}/.bmad/bmm-contractors/templates/email/{template}.md</action>
+        <action>Interpolate template_vars into template</action>
+        <action>Convert markdown to HTML (preserve plain text version)</action>
+      </check>
+      <check if="body is provided AND template is NOT provided">
+        <action>Use body as email content</action>
+        <action>Convert markdown to HTML if contains markdown syntax</action>
+      </check>
+      <check if="neither template nor body provided">
+        <action>FAIL with "Either template or body required"</action>
+      </check>
+    </step>
+
+    <step n="3" title="Prepare Attachments">
+      <check if="attachments provided">
+        <action>Verify each attachment file exists</action>
+        <action>Check total attachment size against max_attachment_size_mb</action>
+        <check if="total size exceeds limit">
+          <action>WARN and skip oversized attachments</action>
+        </check>
+        <action>Encode attachments for email</action>
+      </check>
+    </step>
+
+    <step n="4" title="Build Email Message">
+      <action>Create email with:
+        - From: {smtp.from_name} &lt;{smtp.from_address}&gt;
+        - To: {to}
+        - CC: {cc} if provided
+        - Reply-To: {smtp.reply_to}
+        - Subject: {subject}
+        - Body (text/plain): Plain text version
+        - Body (text/html): HTML version
+        - Attachments: Encoded attachments
+        - Headers:
+          - X-Correlation-ID: {correlation_id} if provided
+          - X-Priority: {priority}
+          - X-BMAD-Module: bmm-contractors
+      </action>
+    </step>
+
+    <step n="5" title="Check Rate Limits">
+      <action>Load email send history from state</action>
+      <check if="emails_sent_this_hour >= max_emails_per_hour">
+        <action>Queue email for later delivery</action>
+        <action>Return "queued" status</action>
+      </check>
+      <check if="last_email_sent within min_delay_between_emails_ms">
+        <action>Wait remaining delay time</action>
+      </check>
+    </step>
+
+    <step n="6" title="Send Email">
+      <action>Connect to SMTP server: {smtp.host}:{smtp.port}</action>
+      <check if="smtp.secure is true">
+        <action>Establish TLS connection</action>
+      </check>
+      <action>Authenticate with {smtp.auth.user}</action>
+      <action>Send email message</action>
+
+      <on_success>
+        <action>Log: "Email sent successfully to {to}"</action>
+        <action>Update send history in state</action>
+        <check if="track_delivery is true">
+          <action>Record message ID for delivery tracking</action>
+        </check>
+      </on_success>
+
+      <on_failure>
+        <action>Log error details</action>
+        <check if="retry_count < smtp.retry_attempts">
+          <action>Wait {smtp.retry_delay_ms}</action>
+          <action>Retry send</action>
+        </check>
+        <check if="retries exhausted">
+          <action>Publish event: contractor.email.failed</action>
+          <action>Return failure status with error</action>
+        </check>
+      </on_failure>
+    </step>
+
+    <step n="7" title="Record and Return">
+      <action>Update module state with email record:
+        - message_id
+        - to
+        - subject
+        - sent_at
+        - correlation_id
+        - status: "sent"
+      </action>
+      <action>Publish event: contractor.email.sent</action>
+      <action>Return success with message_id</action>
+    </step>
+  </flow>
+
+  <events>
+    <publishes>
+      <event type="contractor.email.sent">
+        <payload>
+          <message_id>{message_id}</message_id>
+          <to>{to}</to>
+          <subject>{subject}</subject>
+          <correlation_id>{correlation_id}</correlation_id>
+        </payload>
+      </event>
+      <event type="contractor.email.failed">
+        <payload>
+          <to>{to}</to>
+          <subject>{subject}</subject>
+          <error>{error_message}</error>
+          <retry_count>{retry_count}</retry_count>
+        </payload>
+      </event>
+    </publishes>
+  </events>
+
+  <error_handling>
+    <error code="SMTP_CONNECTION_FAILED">
+      <message>Could not connect to SMTP server</message>
+      <action>Check SMTP host and port configuration</action>
+    </error>
+    <error code="SMTP_AUTH_FAILED">
+      <message>SMTP authentication failed</message>
+      <action>Verify SMTP credentials</action>
+    </error>
+    <error code="RECIPIENT_REJECTED">
+      <message>Recipient address was rejected</message>
+      <action>Verify contractor email address</action>
+    </error>
+    <error code="RATE_LIMITED">
+      <message>Email rate limit exceeded</message>
+      <action>Email queued for later delivery</action>
+    </error>
+  </error_handling>
+</task>

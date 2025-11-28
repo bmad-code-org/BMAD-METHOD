@@ -1,0 +1,63 @@
+# Assign Story Workflow
+# Contractor Coordinator - Story Assignment to Contractor
+
+name: assign-story
+display_name: "Assign Story to Contractor"
+description: "Assign a story to a contractor via email with full context and instructions"
+version: "1.0.0"
+
+agent: contractor-coordinator
+module: bmm-contractors
+
+metadata:
+  estimated_duration: "5-10 minutes"
+  participants: ["contractor-coordinator"]
+  outputs:
+    - "Assignment email sent"
+    - "Git branch created"
+    - "Story status updated"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-contractors/state/module-state.yaml"
+      section: "assignments"
+
+config:
+  interactive: true
+  require_confirmation: true
+  create_branch: true
+  publish_events: true
+
+stages:
+  - id: "select-story"
+    name: "Select Story"
+    description: "Choose story to assign"
+
+  - id: "select-contractor"
+    name: "Select Contractor"
+    description: "Choose appropriate contractor"
+
+  - id: "prepare-context"
+    name: "Prepare Context"
+    description: "Gather all context for assignment"
+
+  - id: "create-branch"
+    name: "Create Branch"
+    description: "Create Git branch for work"
+
+  - id: "compose-email"
+    name: "Compose Email"
+    description: "Generate assignment email"
+
+  - id: "confirm-send"
+    name: "Confirm & Send"
+    description: "Review and send assignment"
+
+events:
+  on_complete:
+    - type: "contractor.story.assigned"
+
+triggers:
+  manual: true
+  on_event:
+    - type: "story.ready"
+      auto: false
+      suggest: true

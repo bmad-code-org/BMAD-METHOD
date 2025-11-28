@@ -82,7 +82,7 @@ The workflow includes 36 techniques organized into 7 categories:
 
 ### Theatrical Approaches
 
-- **Time Travel Talk Show**: Interview past/present/future selves
+- **Time Travel Reflection**: Consult past/present/future selves
 - **Alien Anthropologist**: Examine through completely foreign eyes
 - **Dream Fusion Laboratory**: Start with impossible solutions, work backwards
 - **Emotion Orchestra**: Let different emotions lead separate sessions
@@ -101,7 +101,7 @@ The workflow includes 36 techniques organized into 7 categories:
 - **Inner Child Conference**: Channel pure childhood curiosity
 - **Shadow Work Mining**: Explore what you're avoiding or resisting
 - **Values Archaeology**: Excavate deep personal values driving decisions
-- **Future Self Interview**: Seek wisdom from your wiser future self
+- **Future Self Reflection**: Seek wisdom from your wiser future self
 - **Body Wisdom Dialogue**: Let physical sensations guide ideation
 
 ## Workflow Process
@@ -124,7 +124,7 @@ The workflow includes 36 techniques organized into 7 categories:
 - Master facilitator approach using questions, not answers
 - "Yes, and..." building methodology
 - Energy monitoring and technique switching
-- Real-time idea capture and momentum building
+- Immediate idea capture and momentum building
 - Quantity over quality focus (aim: 100 ideas in 60 minutes)
 
 ### Phase 4: Convergent Organization (Step 4)

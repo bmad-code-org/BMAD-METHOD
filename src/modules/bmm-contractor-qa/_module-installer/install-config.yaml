@@ -1,0 +1,126 @@
+# BMM-Contractor-QA Module Installer Configuration
+# Execution Layer - QA Engineer Persona
+# Test automation via SMTP and Git
+
+code: bmm-contractor-qa
+name: "Contractor: QA Engineer (Test Automation)"
+default_selected: false
+
+header: "QA Engineer Contractor"
+subheader: |
+  QA engineer profile for test automation and quality assurance.
+  Communication via SMTP email and Git only - no meetings or real-time chat.
+
+# Dependencies
+requires:
+  - core
+  - bmm
+  - bmm-contractors
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+
+contractor_name:
+  prompt: "What is the QA engineer's name?"
+  default: ""
+  result: "{value}"
+
+contractor_email:
+  prompt: "QA engineer's email address (for SMTP communication)"
+  default: ""
+  result: "{value}"
+
+contractor_timezone:
+  prompt: "QA engineer's timezone (e.g., UTC+3, America/New_York)"
+  default: "UTC"
+  result: "{value}"
+
+contractor_availability:
+  prompt: "QA engineer's availability"
+  default: "full-time"
+  result: "{value}"
+  single-select:
+    - value: "full-time"
+      label: "Full-time - Available during business hours"
+    - value: "part-time"
+      label: "Part-time - Limited hours per week"
+    - value: "on-call"
+      label: "On-call - Available for specific tasks"
+
+testing_scope:
+  prompt:
+    - "What types of testing does this QA engineer handle?"
+    - "Select all that apply"
+  default: ["api", "e2e", "integration"]
+  result: "{value}"
+  multi-select:
+    - value: "unit"
+      label: "Unit Testing"
+    - value: "integration"
+      label: "Integration Testing"
+    - value: "api"
+      label: "API Testing"
+    - value: "e2e"
+      label: "End-to-End Testing"
+    - value: "performance"
+      label: "Performance Testing"
+    - value: "security"
+      label: "Security Testing"
+    - value: "accessibility"
+      label: "Accessibility Testing"
+    - value: "mobile"
+      label: "Mobile Testing"
+
+qa_tech_stack:
+  prompt:
+    - "Testing frameworks and tools used"
+    - "Select all that apply"
+  default: ["playwright", "jest", "postman"]
+  result: "{value}"
+  multi-select:
+    - value: "playwright"
+      label: "Playwright"
+    - value: "cypress"
+      label: "Cypress"
+    - value: "selenium"
+      label: "Selenium"
+    - value: "jest"
+      label: "Jest"
+    - value: "junit"
+      label: "JUnit"
+    - value: "testng"
+      label: "TestNG"
+    - value: "postman"
+      label: "Postman/Newman"
+    - value: "k6"
+      label: "k6 (Performance)"
+    - value: "jmeter"
+      label: "JMeter"
+    - value: "appium"
+      label: "Appium (Mobile)"
+    - value: "espresso"
+      label: "Espresso (Android)"
+
+ci_integration:
+  prompt: "CI/CD platform for test automation"
+  default: "github-actions"
+  result: "{value}"
+  single-select:
+    - value: "github-actions"
+      label: "GitHub Actions"
+    - value: "gitlab-ci"
+      label: "GitLab CI"
+    - value: "jenkins"
+      label: "Jenkins"
+    - value: "circleci"
+      label: "CircleCI"
+    - value: "none"
+      label: "Manual execution only"
+
+response_sla_hours:
+  prompt: "Expected response time from this contractor (in hours)"
+  default: "24"
+  result: "{value}"

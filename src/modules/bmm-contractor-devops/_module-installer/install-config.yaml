@@ -1,0 +1,173 @@
+# BMM-Contractor-DevOps Module Installer Configuration
+# Execution Layer - DevOps Engineer Persona
+# Infrastructure, CI/CD, and deployment via SMTP and Git
+
+code: bmm-contractor-devops
+name: "Contractor: DevOps Engineer (Infrastructure & CI/CD)"
+default_selected: false
+
+header: "DevOps Engineer Contractor"
+subheader: |
+  DevOps engineer profile for infrastructure, CI/CD pipelines, and deployment.
+  Communication via SMTP email and Git only - no meetings or real-time chat.
+
+# Dependencies
+requires:
+  - core
+  - bmm
+  - bmm-contractors
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+
+contractor_name:
+  prompt: "What is the DevOps engineer's name?"
+  default: ""
+  result: "{value}"
+
+contractor_email:
+  prompt: "DevOps engineer's email address (for SMTP communication)"
+  default: ""
+  result: "{value}"
+
+contractor_timezone:
+  prompt: "DevOps engineer's timezone (e.g., UTC+3, America/New_York)"
+  default: "UTC"
+  result: "{value}"
+
+contractor_availability:
+  prompt: "DevOps engineer's availability"
+  default: "full-time"
+  result: "{value}"
+  single-select:
+    - value: "full-time"
+      label: "Full-time - Available during business hours"
+    - value: "part-time"
+      label: "Part-time - Limited hours per week"
+    - value: "on-call"
+      label: "On-call - Available for incidents and specific tasks"
+
+cloud_provider:
+  prompt: "Primary cloud provider"
+  default: "aws"
+  result: "{value}"
+  single-select:
+    - value: "aws"
+      label: "AWS (Amazon Web Services)"
+    - value: "gcp"
+      label: "GCP (Google Cloud Platform)"
+    - value: "azure"
+      label: "Azure (Microsoft)"
+    - value: "digitalocean"
+      label: "DigitalOcean"
+    - value: "multi-cloud"
+      label: "Multi-cloud setup"
+
+infrastructure_tools:
+  prompt:
+    - "Infrastructure as Code (IaC) tools used"
+    - "Select all that apply"
+  default: ["terraform", "docker"]
+  result: "{value}"
+  multi-select:
+    - value: "terraform"
+      label: "Terraform"
+    - value: "pulumi"
+      label: "Pulumi"
+    - value: "cloudformation"
+      label: "AWS CloudFormation"
+    - value: "ansible"
+      label: "Ansible"
+    - value: "docker"
+      label: "Docker"
+    - value: "docker-compose"
+      label: "Docker Compose"
+    - value: "kubernetes"
+      label: "Kubernetes"
+    - value: "helm"
+      label: "Helm Charts"
+    - value: "argocd"
+      label: "ArgoCD"
+
+ci_cd_platform:
+  prompt: "CI/CD platform"
+  default: "github-actions"
+  result: "{value}"
+  single-select:
+    - value: "github-actions"
+      label: "GitHub Actions"
+    - value: "gitlab-ci"
+      label: "GitLab CI/CD"
+    - value: "jenkins"
+      label: "Jenkins"
+    - value: "circleci"
+      label: "CircleCI"
+    - value: "bitbucket-pipelines"
+      label: "Bitbucket Pipelines"
+    - value: "azure-devops"
+      label: "Azure DevOps"
+
+monitoring_tools:
+  prompt:
+    - "Monitoring and observability tools used"
+    - "Select all that apply"
+  default: ["prometheus", "grafana"]
+  result: "{value}"
+  multi-select:
+    - value: "prometheus"
+      label: "Prometheus"
+    - value: "grafana"
+      label: "Grafana"
+    - value: "datadog"
+      label: "Datadog"
+    - value: "newrelic"
+      label: "New Relic"
+    - value: "cloudwatch"
+      label: "AWS CloudWatch"
+    - value: "elk"
+      label: "ELK Stack (Elasticsearch, Logstash, Kibana)"
+    - value: "loki"
+      label: "Loki"
+    - value: "jaeger"
+      label: "Jaeger (Tracing)"
+    - value: "sentry"
+      label: "Sentry"
+
+devops_responsibilities:
+  prompt:
+    - "Primary DevOps responsibilities"
+    - "Select all that apply"
+  default: ["ci-cd", "infrastructure", "deployment"]
+  result: "{value}"
+  multi-select:
+    - value: "ci-cd"
+      label: "CI/CD Pipeline Management"
+    - value: "infrastructure"
+      label: "Infrastructure Provisioning"
+    - value: "deployment"
+      label: "Application Deployment"
+    - value: "monitoring"
+      label: "Monitoring & Alerting"
+    - value: "security"
+      label: "Security & Compliance (DevSecOps)"
+    - value: "database"
+      label: "Database Administration"
+    - value: "networking"
+      label: "Networking & Load Balancing"
+    - value: "backup"
+      label: "Backup & Disaster Recovery"
+    - value: "cost"
+      label: "Cost Optimization"
+
+response_sla_hours:
+  prompt: "Expected response time from this contractor (in hours)"
+  default: "24"
+  result: "{value}"
+
+incident_response_hours:
+  prompt: "Expected response time for critical incidents (in hours)"
+  default: "4"
+  result: "{value}"

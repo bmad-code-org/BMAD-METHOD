@@ -1,5 +1,5 @@
 phase,method_name,description,facilitation_prompts
-empathize,User Interviews,Conduct deep conversations to understand user needs experiences and pain points through active listening,What brings you here today?|Walk me through a recent experience|What frustrates you most?|What would make this easier?|Tell me more about that
+empathize,User Surveys,Conduct deep surveys to understand user needs experiences and pain points through structured questions,What brings you here today?|Walk me through a recent experience|What frustrates you most?|What would make this easier?|Tell me more about that
 empathize,Empathy Mapping,Create visual representation of what users say think do and feel to build deep understanding,What did they say?|What might they be thinking?|What actions did they take?|What emotions surfaced?
 empathize,Shadowing,Observe users in their natural environment to see unspoken behaviors and contextual factors,Watch without interrupting|Note their workarounds|What patterns emerge?|What do they not say?
 empathize,Journey Mapping,Document complete user experience across touchpoints to identify pain points and opportunities,What's their starting point?|What steps do they take?|Where do they struggle?|What delights them?|What's the emotional arc?

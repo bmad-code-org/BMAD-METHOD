@@ -87,4 +87,4 @@ Configure which sources to collect feedback from:
 - App store reviews
 - Social media mentions
 - NPS responses
-- Customer interviews
+- Customer feedback emails

@@ -33,7 +33,7 @@ agent:
 
     - trigger: "party-mode"
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
-      description: "Group chat with all agents"
+      description: "Group discussion with all agents"
 
   # Empty prompts section (no custom prompts for this agent)
   prompts: []

@@ -1,0 +1,104 @@
+# BMM-Contractor-Backend Module Installer Configuration
+# Execution Layer - Backend Developer Persona
+# Java/Spring API development via SMTP and Git
+
+code: bmm-contractor-backend
+name: "Contractor: Backend Developer (Java/Spring)"
+default_selected: false
+
+header: "Backend Developer Contractor"
+subheader: |
+  Backend developer profile for Java/Spring API development.
+  Communication via SMTP email and Git only - no meetings or real-time chat.
+
+# Dependencies
+requires:
+  - core
+  - bmm
+  - bmm-contractors
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+
+contractor_name:
+  prompt: "What is the backend developer's name?"
+  default: ""
+  result: "{value}"
+
+contractor_email:
+  prompt: "Backend developer's email address (for SMTP communication)"
+  default: ""
+  result: "{value}"
+
+contractor_timezone:
+  prompt: "Backend developer's timezone (e.g., UTC+3, America/New_York)"
+  default: "UTC"
+  result: "{value}"
+
+contractor_availability:
+  prompt: "Backend developer's availability"
+  default: "full-time"
+  result: "{value}"
+  single-select:
+    - value: "full-time"
+      label: "Full-time - Available during business hours"
+    - value: "part-time"
+      label: "Part-time - Limited hours per week"
+    - value: "on-call"
+      label: "On-call - Available for specific tasks"
+
+java_version:
+  prompt: "Primary Java version used"
+  default: "21"
+  result: "{value}"
+  single-select:
+    - value: "21"
+      label: "Java 21 (LTS)"
+    - value: "17"
+      label: "Java 17 (LTS)"
+    - value: "11"
+      label: "Java 11 (LTS)"
+
+spring_version:
+  prompt: "Spring Boot version"
+  default: "3.x"
+  result: "{value}"
+  single-select:
+    - value: "3.x"
+      label: "Spring Boot 3.x (latest)"
+    - value: "2.7.x"
+      label: "Spring Boot 2.7.x"
+
+backend_tech_stack:
+  prompt:
+    - "Additional backend technologies used"
+    - "Select all that apply"
+  default: ["postgresql", "redis"]
+  result: "{value}"
+  multi-select:
+    - value: "postgresql"
+      label: "PostgreSQL"
+    - value: "mysql"
+      label: "MySQL"
+    - value: "mongodb"
+      label: "MongoDB"
+    - value: "redis"
+      label: "Redis"
+    - value: "kafka"
+      label: "Apache Kafka"
+    - value: "rabbitmq"
+      label: "RabbitMQ"
+    - value: "elasticsearch"
+      label: "Elasticsearch"
+    - value: "docker"
+      label: "Docker"
+    - value: "kubernetes"
+      label: "Kubernetes"
+
+response_sla_hours:
+  prompt: "Expected response time from this contractor (in hours)"
+  default: "24"
+  result: "{value}"

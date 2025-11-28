@@ -1,0 +1,883 @@
+# BMM-Strategic Module - Event Publications
+# Events published by strategic agents
+
+schema_version: "1.0.0"
+module: bmm-strategic
+
+publications:
+
+  # =============================================================================
+  # VISION EVENTS (Founder Agent)
+  # =============================================================================
+
+  vision.defined:
+    description: "Product vision has been defined for the first time"
+    source_workflow: "define-vision"
+    payload:
+      vision_statement:
+        type: string
+        required: true
+        description: "The vision statement"
+      mission:
+        type: string
+        required: true
+      value_proposition:
+        type: string
+        required: true
+      differentiators:
+        type: array
+        items: string
+      target_customer:
+        type: string
+
+  vision.updated:
+    description: "Product vision has been updated"
+    source_workflow: "define-vision"
+    payload:
+      previous_vision:
+        type: string
+      new_vision:
+        type: string
+        required: true
+      reason_for_change:
+        type: string
+        required: true
+      updated_fields:
+        type: array
+        items: string
+
+  vision.pivot.proposed:
+    description: "A strategic pivot has been proposed"
+    source_workflow: "pivot-evaluation"
+    payload:
+      current_direction:
+        type: string
+        required: true
+      proposed_direction:
+        type: string
+        required: true
+      rationale:
+        type: string
+        required: true
+      evidence:
+        type: array
+        items: string
+      risk_assessment:
+        type: string
+      recommended_action:
+        type: string
+        enum: ["pivot", "persevere", "gather-more-data"]
+
+  # =============================================================================
+  # PRIORITY EVENTS (Founder Agent)
+  # =============================================================================
+
+  priority.set:
+    description: "Strategic priorities have been set"
+    source_workflow: "set-priorities"
+    payload:
+      priorities:
+        type: array
+        required: true
+        items:
+          type: object
+          properties:
+            rank:
+              type: integer
+            title:
+              type: string
+            owner:
+              type: string
+            success_metric:
+              type: string
+            deadline:
+              type: string
+      period:
+        type: string
+        description: "Quarter/year these priorities apply to"
+      rationale:
+        type: string
+
+  priority.changed:
+    description: "Strategic priorities have been modified"
+    source_workflow: "set-priorities"
+    payload:
+      changes:
+        type: array
+        items:
+          type: object
+          properties:
+            priority:
+              type: string
+            change_type:
+              type: string
+              enum: ["added", "removed", "reordered", "modified"]
+            reason:
+              type: string
+      effective_date:
+        type: string
+
+  priority.quarterly.planned:
+    description: "Quarterly strategic plan has been created"
+    source_workflow: "quarterly-planning"
+    payload:
+      quarter:
+        type: string
+        required: true
+      objectives:
+        type: array
+        items: string
+      key_results:
+        type: array
+        items: string
+      initiatives:
+        type: array
+        items: string
+      resource_allocation:
+        type: object
+
+  # =============================================================================
+  # DECISION EVENTS (Founder Agent)
+  # =============================================================================
+
+  decision.go:
+    description: "Go decision made on initiative/feature"
+    source_workflow: "feature-decision"
+    payload:
+      initiative:
+        type: string
+        required: true
+      rationale:
+        type: string
+        required: true
+      owner:
+        type: string
+      deadline:
+        type: string
+      success_criteria:
+        type: array
+        items: string
+      resources_allocated:
+        type: object
+
+  decision.no-go:
+    description: "No-go decision made on initiative/feature"
+    source_workflow: "feature-decision"
+    payload:
+      initiative:
+        type: string
+        required: true
+      rationale:
+        type: string
+        required: true
+      alternatives_considered:
+        type: array
+        items: string
+      revisit_conditions:
+        type: string
+
+  decision.defer:
+    description: "Decision deferred to later date"
+    source_workflow: "feature-decision"
+    payload:
+      initiative:
+        type: string
+        required: true
+      reason:
+        type: string
+        required: true
+      revisit_date:
+        type: string
+        required: true
+      information_needed:
+        type: array
+        items: string
+
+  # =============================================================================
+  # SAAS EVENTS (SaaS Specialist Agent)
+  # =============================================================================
+
+  saas.pricing.defined:
+    description: "Pricing strategy has been defined"
+    source_workflow: "pricing-strategy"
+    payload:
+      pricing_model:
+        type: string
+        required: true
+        enum: ["freemium", "free-trial", "usage-based", "seat-based", "flat-rate"]
+      tiers:
+        type: array
+        required: true
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            price:
+              type: number
+            billing_cycle:
+              type: string
+            features:
+              type: array
+            limits:
+              type: object
+      rationale:
+        type: string
+
+  saas.tenancy.designed:
+    description: "Multi-tenant architecture has been designed"
+    source_workflow: "design-tenancy"
+    payload:
+      tenancy_model:
+        type: string
+        required: true
+        enum: ["shared", "siloed", "hybrid"]
+      isolation_level:
+        type: string
+      data_residency:
+        type: array
+        items: string
+      scaling_strategy:
+        type: string
+      trade_offs:
+        type: array
+        items: string
+
+  saas.onboarding.designed:
+    description: "User onboarding flow has been designed"
+    source_workflow: "design-onboarding"
+    payload:
+      steps:
+        type: array
+        required: true
+        items:
+          type: object
+          properties:
+            step_number:
+              type: integer
+            name:
+              type: string
+            goal:
+              type: string
+            success_criteria:
+              type: string
+      target_time_to_value:
+        type: string
+      activation_criteria:
+        type: array
+        items: string
+
+  saas.integration.planned:
+    description: "Integration strategy has been planned"
+    source_workflow: "integration-strategy"
+    payload:
+      integrations:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            priority:
+              type: string
+            type:
+              type: string
+              enum: ["native", "api", "webhook", "zapier", "marketplace"]
+      api_strategy:
+        type: string
+      timeline:
+        type: string
+
+  # =============================================================================
+  # MARKET EVENTS (Market Strategist Agent)
+  # =============================================================================
+
+  market.competitor.analyzed:
+    description: "Competitor analysis has been completed"
+    source_workflow: "competitor-analysis"
+    payload:
+      competitor:
+        type: string
+        required: true
+      analysis:
+        type: object
+        properties:
+          strengths:
+            type: array
+            items: string
+          weaknesses:
+            type: array
+            items: string
+          market_share:
+            type: string
+          pricing:
+            type: string
+          recent_changes:
+            type: array
+            items: string
+      threat_level:
+        type: integer
+        min: 1
+        max: 5
+      recommended_actions:
+        type: array
+        items: string
+
+  market.positioning.defined:
+    description: "Market positioning has been defined"
+    source_workflow: "market-positioning"
+    payload:
+      positioning_statement:
+        type: string
+        required: true
+      category:
+        type: string
+      target_segment:
+        type: string
+      key_differentiators:
+        type: array
+        items: string
+      competitive_frame:
+        type: string
+      messaging:
+        type: object
+        properties:
+          tagline:
+            type: string
+          value_props:
+            type: array
+            items: string
+
+  market.icp.defined:
+    description: "Ideal customer profile has been defined"
+    source_workflow: "icp-definition"
+    payload:
+      icp:
+        type: object
+        required: true
+        properties:
+          firmographics:
+            type: object
+          pain_points:
+            type: array
+            items: string
+          buying_triggers:
+            type: array
+            items: string
+          decision_makers:
+            type: array
+            items: string
+          disqualifiers:
+            type: array
+            items: string
+
+  market.opportunity.identified:
+    description: "Market opportunity has been identified"
+    source_workflow: "market-trends"
+    payload:
+      opportunity:
+        type: string
+        required: true
+      market_size:
+        type: string
+      evidence:
+        type: array
+        items: string
+      timing:
+        type: string
+      recommended_action:
+        type: string
+
+  market.insight.found:
+    description: "Market insight discovered"
+    source_workflow: "*"
+    payload:
+      insight:
+        type: string
+        required: true
+      source:
+        type: string
+      implications:
+        type: array
+        items: string
+      confidence:
+        type: string
+        enum: ["high", "medium", "low"]
+
+  # =============================================================================
+  # COMPLIANCE EVENTS (Compliance Officer Agent)
+  # =============================================================================
+
+  compliance.assessment.completed:
+    description: "Compliance assessment has been completed"
+    source_workflow: "gdpr-assessment, soc2-preparation, security-review"
+    payload:
+      framework:
+        type: string
+        required: true
+        enum: ["gdpr", "soc2", "hipaa", "pci-dss", "iso27001", "ccpa"]
+      status:
+        type: string
+        required: true
+        enum: ["compliant", "partially-compliant", "non-compliant"]
+      gaps:
+        type: array
+        items:
+          type: object
+          properties:
+            requirement:
+              type: string
+            status:
+              type: string
+            remediation:
+              type: string
+            priority:
+              type: string
+      next_review_date:
+        type: string
+
+  compliance.flag.raised:
+    description: "Compliance concern has been identified"
+    source_workflow: "*"
+    payload:
+      issue:
+        type: string
+        required: true
+      framework:
+        type: string
+      severity:
+        type: string
+        required: true
+        enum: ["critical", "high", "medium", "low"]
+      affected_areas:
+        type: array
+        items: string
+      recommended_action:
+        type: string
+        required: true
+      deadline:
+        type: string
+
+  compliance.approved:
+    description: "Initiative has passed compliance review"
+    source_workflow: "*"
+    payload:
+      initiative:
+        type: string
+        required: true
+      frameworks_checked:
+        type: array
+        items: string
+      conditions:
+        type: array
+        items: string
+      approved_by:
+        type: string
+      valid_until:
+        type: string
+
+  compliance.blocked:
+    description: "Initiative blocked due to compliance issues"
+    source_workflow: "*"
+    payload:
+      initiative:
+        type: string
+        required: true
+      blocking_issues:
+        type: array
+        required: true
+        items:
+          type: object
+          properties:
+            issue:
+              type: string
+            framework:
+              type: string
+            remediation_required:
+              type: string
+      unblock_conditions:
+        type: array
+        items: string
+
+  compliance.policy.updated:
+    description: "Security/privacy policy has been updated"
+    source_workflow: "policy-review"
+    payload:
+      policy:
+        type: string
+        required: true
+      version:
+        type: string
+        required: true
+      changes:
+        type: array
+        items: string
+      effective_date:
+        type: string
+      requires_user_acceptance:
+        type: boolean
+
+  compliance.audit.scheduled:
+    description: "Compliance audit has been scheduled"
+    source_workflow: "audit-preparation"
+    payload:
+      audit_type:
+        type: string
+        required: true
+      framework:
+        type: string
+        required: true
+      audit_date:
+        type: string
+        required: true
+      auditor:
+        type: string
+      scope:
+        type: array
+        items: string
+
+  compliance.risk.identified:
+    description: "Security/compliance risk has been identified"
+    source_workflow: "security-review"
+    payload:
+      risk:
+        type: string
+        required: true
+      category:
+        type: string
+        enum: ["data-breach", "access-control", "availability", "integrity", "compliance"]
+      likelihood:
+        type: integer
+        min: 1
+        max: 5
+      impact:
+        type: integer
+        min: 1
+        max: 5
+      risk_score:
+        type: integer
+      mitigation:
+        type: string
+      owner:
+        type: string
+
+  # =============================================================================
+  # UX EVENTS (UX Strategist Agent)
+  # =============================================================================
+
+  ux.journey.mapped:
+    description: "User journey has been mapped"
+    source_workflow: "user-journey-mapping"
+    payload:
+      journey_name:
+        type: string
+        required: true
+      persona:
+        type: string
+        required: true
+      stages:
+        type: array
+        required: true
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            touchpoints:
+              type: array
+              items: string
+            pain_points:
+              type: array
+              items: string
+            opportunities:
+              type: array
+              items: string
+      moments_of_truth:
+        type: array
+        items: string
+
+  ux.friction.identified:
+    description: "UX friction point has been identified"
+    source_workflow: "friction-analysis"
+    payload:
+      friction_point:
+        type: string
+        required: true
+      location:
+        type: string
+        required: true
+      type:
+        type: string
+        enum: ["cognitive", "interaction", "emotional", "technical"]
+      severity:
+        type: integer
+        min: 1
+        max: 5
+      frequency:
+        type: integer
+        min: 1
+        max: 5
+      affected_users:
+        type: string
+      recommended_fix:
+        type: string
+
+  ux.test.planned:
+    description: "Usability test has been planned"
+    source_workflow: "usability-testing"
+    payload:
+      test_name:
+        type: string
+        required: true
+      test_type:
+        type: string
+        enum: ["moderated", "unmoderated", "a-b", "card-sort", "tree-test"]
+      objectives:
+        type: array
+        items: string
+      participant_criteria:
+        type: object
+      sample_size:
+        type: integer
+      timeline:
+        type: string
+
+  ux.test.completed:
+    description: "Usability test has been completed"
+    source_workflow: "usability-testing"
+    payload:
+      test_name:
+        type: string
+        required: true
+      participants:
+        type: integer
+      findings:
+        type: array
+        items:
+          type: object
+          properties:
+            finding:
+              type: string
+            severity:
+              type: string
+            frequency:
+              type: string
+      recommendations:
+        type: array
+        items: string
+      success_rate:
+        type: number
+
+  ux.improvement.proposed:
+    description: "UX improvement has been proposed"
+    source_workflow: "*"
+    payload:
+      improvement:
+        type: string
+        required: true
+      target_area:
+        type: string
+        required: true
+      expected_impact:
+        type: string
+      effort:
+        type: string
+        enum: ["low", "medium", "high"]
+      priority:
+        type: string
+        enum: ["p0", "p1", "p2", "p3"]
+      supporting_data:
+        type: array
+        items: string
+
+  ux.persona.updated:
+    description: "User persona has been created or updated"
+    source_workflow: "persona-development"
+    payload:
+      persona_name:
+        type: string
+        required: true
+      role:
+        type: string
+      goals:
+        type: array
+        items: string
+      pain_points:
+        type: array
+        items: string
+      behaviors:
+        type: array
+        items: string
+      is_primary:
+        type: boolean
+
+  # =============================================================================
+  # GROWTH EVENTS (Growth Engineer Agent)
+  # =============================================================================
+
+  growth.experiment.proposed:
+    description: "Growth experiment has been proposed"
+    source_workflow: "experiment-design"
+    payload:
+      experiment_name:
+        type: string
+        required: true
+      hypothesis:
+        type: string
+        required: true
+      metric:
+        type: string
+        required: true
+      baseline:
+        type: number
+      expected_lift:
+        type: string
+      sample_size_required:
+        type: integer
+      duration_estimate:
+        type: string
+      variants:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+
+  growth.experiment.started:
+    description: "Growth experiment has started"
+    source_workflow: "experiment-design"
+    payload:
+      experiment_id:
+        type: string
+        required: true
+      experiment_name:
+        type: string
+        required: true
+      start_date:
+        type: string
+        required: true
+      expected_end_date:
+        type: string
+      traffic_allocation:
+        type: object
+
+  growth.experiment.completed:
+    description: "Growth experiment has been completed"
+    source_workflow: "experiment-review"
+    payload:
+      experiment_id:
+        type: string
+        required: true
+      experiment_name:
+        type: string
+        required: true
+      result:
+        type: string
+        required: true
+        enum: ["winner", "loser", "inconclusive"]
+      winning_variant:
+        type: string
+      lift:
+        type: number
+      confidence:
+        type: number
+      sample_size:
+        type: integer
+      recommendation:
+        type: string
+        enum: ["ship", "iterate", "kill"]
+      learnings:
+        type: array
+        items: string
+
+  growth.insight.found:
+    description: "Growth insight has been discovered"
+    source_workflow: "*"
+    payload:
+      insight:
+        type: string
+        required: true
+      data_source:
+        type: string
+      metric_impact:
+        type: string
+      confidence:
+        type: string
+        enum: ["high", "medium", "low"]
+      recommended_action:
+        type: string
+      supporting_data:
+        type: object
+
+  growth.funnel.analyzed:
+    description: "Funnel analysis has been completed"
+    source_workflow: "funnel-analysis"
+    payload:
+      funnel_name:
+        type: string
+        required: true
+      stages:
+        type: array
+        required: true
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            conversion_rate:
+              type: number
+            drop_off_rate:
+              type: number
+            volume:
+              type: integer
+      bottleneck:
+        type: string
+      recommendations:
+        type: array
+        items: string
+
+  growth.funnel.optimized:
+    description: "Funnel optimization has been implemented"
+    source_workflow: "funnel-analysis"
+    payload:
+      funnel_name:
+        type: string
+        required: true
+      stage_optimized:
+        type: string
+        required: true
+      previous_conversion:
+        type: number
+      new_conversion:
+        type: number
+      lift:
+        type: number
+      change_description:
+        type: string
+
+  growth.model.updated:
+    description: "Growth model has been created or updated"
+    source_workflow: "growth-model"
+    payload:
+      model_version:
+        type: string
+        required: true
+      assumptions:
+        type: object
+      projections:
+        type: object
+        properties:
+          month_3:
+            type: object
+          month_6:
+            type: object
+          month_12:
+            type: object
+      key_levers:
+        type: array
+        items: string
+      sensitivity_analysis:
+        type: object

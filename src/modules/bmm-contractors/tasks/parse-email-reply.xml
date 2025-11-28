@@ -1,0 +1,235 @@
+<task id="{bmad_folder}/bmm-contractors/tasks/parse-email-reply.xml" name="Parse Email Reply">
+  <objective>Parse contractor email replies to extract status, commands, and content</objective>
+
+  <description>
+    This task parses incoming emails from contractors to identify status updates,
+    commands (SUBMITTED, BLOCKED, etc.), questions, and content. It extracts
+    structured data from unstructured email text.
+  </description>
+
+  <usage>
+    <example title="Parse reply from IMAP">
+      <invoke-task path="{bmad_folder}/bmm-contractors/tasks/parse-email-reply.xml">
+        <param name="email_content">{raw_email}</param>
+        <param name="contractor_id">{contractor_id}</param>
+      </invoke-task>
+    </example>
+  </usage>
+
+  <parameters>
+    <param name="email_content" type="string" required="true"
+           description="Raw email content (headers + body)" />
+    <param name="contractor_id" type="string" required="false"
+           description="Expected contractor ID (for validation)" />
+    <param name="expected_correlation_id" type="string" required="false"
+           description="Correlation ID we're expecting reply for" />
+  </parameters>
+
+  <commands>
+    <description>
+      Contractors can include these commands in their email replies.
+      Commands are case-insensitive and can appear anywhere in the email.
+    </description>
+
+    <command name="ACKNOWLEDGED" aliases="ACK, RECEIVED">
+      <description>Contractor acknowledges receipt of assignment</description>
+      <example>ACKNOWLEDGED - I'll start working on this tomorrow.</example>
+    </command>
+
+    <command name="SUBMITTED" aliases="DONE, COMPLETED, PR_READY">
+      <description>Work is complete and ready for review</description>
+      <example>SUBMITTED - PR #123 is ready for review.</example>
+      <extracts>
+        <field name="pr_number" pattern="PR\s*#?(\d+)" />
+        <field name="branch" pattern="branch:\s*(\S+)" />
+      </extracts>
+    </command>
+
+    <command name="BLOCKED" aliases="STUCK, WAITING">
+      <description>Contractor is blocked and needs help</description>
+      <example>BLOCKED - Need clarification on auth flow.</example>
+      <extracts>
+        <field name="blocker_description" pattern="BLOCKED\s*[-:]\s*(.+)" />
+      </extracts>
+    </command>
+
+    <command name="QUESTION" aliases="CLARIFICATION, HELP">
+      <description>Contractor has a question</description>
+      <example>QUESTION - Should the API return 404 or empty array?</example>
+      <extracts>
+        <field name="question" pattern="QUESTION\s*[-:]\s*(.+)" />
+      </extracts>
+    </command>
+
+    <command name="PROGRESS" aliases="UPDATE, STATUS">
+      <description>Progress update on work</description>
+      <example>PROGRESS - 60% complete, finishing tests.</example>
+      <extracts>
+        <field name="percentage" pattern="(\d+)%" />
+        <field name="status_text" pattern="PROGRESS\s*[-:]\s*(.+)" />
+      </extracts>
+    </command>
+
+    <command name="ESTIMATE" aliases="ETA">
+      <description>Estimated completion time</description>
+      <example>ESTIMATE - Will complete by Friday EOD.</example>
+      <extracts>
+        <field name="eta_text" pattern="ESTIMATE\s*[-:]\s*(.+)" />
+      </extracts>
+    </command>
+
+    <command name="UNAVAILABLE" aliases="OOO, AWAY">
+      <description>Contractor will be unavailable</description>
+      <example>UNAVAILABLE - Out Dec 24-26.</example>
+      <extracts>
+        <field name="dates" pattern="UNAVAILABLE\s*[-:]\s*(.+)" />
+      </extracts>
+    </command>
+  </commands>
+
+  <flow>
+    <step n="1" title="Parse Email Headers">
+      <action>Extract headers from email:
+        - From (sender address)
+        - Subject
+        - Date
+        - Message-ID
+        - In-Reply-To
+        - References
+        - X-Correlation-ID
+      </action>
+      <action>Validate sender matches expected contractor if contractor_id provided</action>
+      <action>Extract correlation_id from headers or subject</action>
+    </step>
+
+    <step n="2" title="Extract Email Body">
+      <action>Separate body from headers</action>
+      <action>Handle multipart MIME (prefer text/plain)</action>
+      <action>Strip email signature if present (detect common patterns)</action>
+      <action>Strip quoted reply content (lines starting with >)</action>
+      <action>Clean whitespace and formatting</action>
+    </step>
+
+    <step n="3" title="Detect Commands">
+      <action>Scan body for known command keywords</action>
+      <action>For each detected command:
+        - Record command type
+        - Extract associated data using patterns
+        - Note position in email
+      </action>
+      <action>Identify primary command (first/most prominent)</action>
+    </step>
+
+    <step n="4" title="Extract Additional Context">
+      <action>Identify story references (STORY-XXX, #XXX)</action>
+      <action>Identify PR references (PR #XXX, pull/XXX)</action>
+      <action>Identify branch references (branch: XXX, in XXX branch)</action>
+      <action>Extract any URLs mentioned</action>
+      <action>Identify questions (sentences ending with ?)</action>
+    </step>
+
+    <step n="5" title="Analyze Sentiment">
+      <action>Basic sentiment detection:
+        - Positive indicators: thanks, great, done, ready
+        - Negative indicators: blocked, stuck, problem, issue, can't
+        - Neutral: update, progress, question
+      </action>
+      <action>Flag urgency indicators: ASAP, urgent, critical, blocking</action>
+    </step>
+
+    <step n="6" title="Build Structured Response">
+      <action>Compile parsed data into structured format:
+        ```yaml
+        parsed:
+          message_id: "{message_id}"
+          from: "{sender_address}"
+          contractor_id: "{contractor_id}"
+          correlation_id: "{correlation_id}"
+          story_id: "{extracted_story_id}"
+          timestamp: "{date}"
+
+          command:
+            type: "{primary_command}"
+            data: {extracted_command_data}
+
+          references:
+            prs: [{pr_numbers}]
+            branches: [{branch_names}]
+            stories: [{story_ids}]
+            urls: [{urls}]
+
+          questions: [{extracted_questions}]
+
+          sentiment:
+            tone: "{positive|negative|neutral}"
+            urgency: "{high|normal}"
+
+          raw_content: "{cleaned_body}"
+        ```
+      </action>
+    </step>
+
+    <step n="7" title="Determine Action">
+      <action>Based on primary command, determine recommended action:
+        - ACKNOWLEDGED → Update story status, no action needed
+        - SUBMITTED → Trigger review workflow
+        - BLOCKED → Escalate, investigate
+        - QUESTION → Route to coordinator for response
+        - PROGRESS → Update story progress
+        - ESTIMATE → Update expected completion
+        - UNAVAILABLE → Update contractor availability
+        - None detected → Flag for manual review
+      </action>
+    </step>
+
+    <step n="8" title="Return Result">
+      <action>Return parsed data with recommended action</action>
+      <action>Publish event: contractor.reply.received</action>
+    </step>
+  </flow>
+
+  <output>
+    <schema>
+      type: object
+      properties:
+        success: boolean
+        parsed:
+          message_id: string
+          from: string
+          contractor_id: string
+          correlation_id: string
+          story_id: string
+          timestamp: string
+          command:
+            type: string
+            data: object
+          references:
+            prs: array
+            branches: array
+            stories: array
+            urls: array
+          questions: array
+          sentiment:
+            tone: string
+            urgency: string
+          raw_content: string
+        recommended_action:
+          type: string
+          workflow: string
+          params: object
+    </schema>
+  </output>
+
+  <events>
+    <publishes>
+      <event type="contractor.reply.received">
+        <payload>
+          <contractor_id>{contractor_id}</contractor_id>
+          <story_id>{story_id}</story_id>
+          <command>{command_type}</command>
+          <correlation_id>{correlation_id}</correlation_id>
+        </payload>
+      </event>
+    </publishes>
+  </events>
+</task>

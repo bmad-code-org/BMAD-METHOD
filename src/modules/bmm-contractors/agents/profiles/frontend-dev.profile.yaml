@@ -1,0 +1,153 @@
+# Frontend Developer Contractor Profile
+# Defines the role, expectations, and communication patterns for frontend contractors
+
+profile_id: frontend-dev
+display_name: "Frontend Developer"
+icon: "⚛️"
+
+role:
+  title: "Frontend Developer"
+  description: "User interface development, React components, state management, and web performance"
+
+  responsibilities:
+    - "Implement UI components per design specifications"
+    - "Build responsive, accessible interfaces"
+    - "Integrate with backend APIs"
+    - "Write unit and integration tests"
+    - "Optimize frontend performance"
+    - "Follow design system and component library patterns"
+    - "Ensure cross-browser compatibility"
+
+  deliverables:
+    - "React components matching designs"
+    - "Storybook stories for components"
+    - "Unit tests with React Testing Library"
+    - "Integration with API endpoints"
+    - "PR with visual screenshots"
+
+technical:
+  primary_stack:
+    - "React 18+"
+    - "TypeScript"
+    - "Tailwind CSS"
+    - "React Query / TanStack Query"
+    - "React Hook Form"
+
+  secondary_stack:
+    - "Next.js"
+    - "Zustand / Redux Toolkit"
+    - "Vitest / Jest"
+    - "Playwright"
+    - "Storybook"
+
+  patterns:
+    - "Component composition"
+    - "Custom hooks"
+    - "Render props / HOCs when appropriate"
+    - "Optimistic updates"
+    - "Error boundaries"
+
+  quality_requirements:
+    test_coverage: 75
+    code_style: "ESLint + Prettier"
+    accessibility: "WCAG 2.1 AA"
+    performance: "Core Web Vitals targets"
+
+assignment:
+  story_types:
+    - "frontend"
+    - "ui"
+    - "component"
+    - "design-implementation"
+    - "web"
+
+  story_labels:
+    - "frontend"
+    - "react"
+    - "ui"
+    - "component"
+
+  complexity_limit: "L"
+
+  excluded_types:
+    - "backend"
+    - "mobile"
+    - "infrastructure"
+
+communication:
+  assignment_context: |
+    ## Technical Context
+
+    ### Project Standards
+    - React 18+ with TypeScript
+    - Follow component patterns in `src/components`
+    - Use project's design system tokens
+    - All text must be internationalization-ready
+
+    ### Code Style
+    - ESLint + Prettier configured
+    - Run `npm run lint` and `npm run format` before committing
+    - TypeScript strict mode enabled
+
+    ### Component Guidelines
+    - Functional components with hooks only
+    - Props interface defined for all components
+    - Default exports for page components
+    - Named exports for shared components
+
+    ### Testing Requirements
+    - Unit tests with React Testing Library
+    - Test user interactions, not implementation
+    - Mock API calls with MSW
+    - Accessibility tests with jest-axe
+
+    ### Styling
+    - Tailwind CSS utility classes
+    - No inline styles except dynamic values
+    - Follow design system spacing/colors
+    - Mobile-first responsive design
+
+  submission_checklist: |
+    Before submitting, verify:
+    - [ ] Matches design specifications (attach screenshots)
+    - [ ] Responsive on mobile, tablet, desktop
+    - [ ] Accessibility: keyboard nav, screen reader tested
+    - [ ] Tests passing: `npm test`
+    - [ ] Lint passing: `npm run lint`
+    - [ ] TypeScript: no `any` types, strict mode
+    - [ ] Storybook story added for new components
+    - [ ] Loading and error states handled
+    - [ ] PR includes before/after screenshots
+
+  review_criteria: |
+    Code will be reviewed for:
+    1. **Visual Match** - Matches design specs
+    2. **Responsiveness** - Works on all breakpoints
+    3. **Accessibility** - WCAG 2.1 AA compliance
+    4. **Performance** - No unnecessary re-renders, proper memoization
+    5. **TypeScript** - Proper typing, no `any`
+    6. **Tests** - Meaningful coverage, user-centric tests
+    7. **Patterns** - Follows project conventions
+
+metrics:
+  tracked:
+    - "stories_completed"
+    - "story_points_delivered"
+    - "average_cycle_time"
+    - "rejection_rate"
+    - "design_match_score"
+    - "accessibility_issues"
+
+  targets:
+    average_cycle_time_days: 2
+    rejection_rate_percent: 10
+    accessibility_issues: 0
+
+escalation:
+  auto_escalate:
+    - condition: "blocked > 24 hours"
+      action: "notify_coordinator"
+    - condition: "design_clarification_needed"
+      action: "loop_in_ux_strategist"
+    - condition: "api_dependency_missing"
+      action: "notify_backend_dev"

@@ -1,0 +1,292 @@
+# BMM-Strategic Module State
+# Runtime state tracking for strategic decisions and activities
+#
+# This file is created during installation and updated during operation.
+# It tracks the current state of strategic activities across all agents.
+
+schema_version: "1.0.0"
+module: bmm-strategic
+last_updated: null
+
+# =============================================================================
+# VISION STATE (Founder Agent)
+# =============================================================================
+
+vision:
+  # Current vision statement
+  statement: null
+  statement_updated: null
+
+  # Mission statement
+  mission: null
+
+  # Current strategic priorities
+  priorities:
+    # - rank: 1
+    #   title: ""
+    #   owner: ""
+    #   status: "active"
+    #   progress: 0
+    #   deadline: null
+    []
+
+  # Recent strategic decisions
+  decisions:
+    # - id: ""
+    #   type: "go|no-go|defer"
+    #   initiative: ""
+    #   date: ""
+    #   rationale: ""
+    []
+
+  # Pivot considerations
+  pivot_evaluation:
+    last_evaluated: null
+    status: null  # "persevere" | "considering" | "pivoting"
+    notes: null
+
+# =============================================================================
+# MARKET STATE (Market Strategist Agent)
+# =============================================================================
+
+market:
+  # Competitor tracking
+  competitors:
+    # - name: ""
+    #   last_analyzed: ""
+    #   threat_level: 1-5
+    #   recent_changes: []
+    []
+
+  # Current positioning
+  positioning:
+    statement: null
+    last_updated: null
+
+  # ICP definition
+  icp:
+    defined: false
+    last_updated: null
+
+  # Market insights backlog
+  insights:
+    # - insight: ""
+    #   date: ""
+    #   status: "new|actioned|dismissed"
+    []
+
+# =============================================================================
+# SAAS STATE (SaaS Specialist Agent)
+# =============================================================================
+
+saas:
+  # Pricing configuration
+  pricing:
+    model: null
+    tiers: []
+    last_updated: null
+
+  # Tenancy design
+  tenancy:
+    model: null
+    designed: false
+    last_updated: null
+
+  # Onboarding design
+  onboarding:
+    designed: false
+    steps: []
+    target_time_to_value: null
+    last_updated: null
+
+  # Integration roadmap
+  integrations:
+    planned: []
+    live: []
+
+# =============================================================================
+# COMPLIANCE STATE (Compliance Officer Agent)
+# =============================================================================
+
+compliance:
+  # Framework compliance status
+  frameworks:
+    # gdpr:
+    #   status: "compliant|partially-compliant|non-compliant"
+    #   last_assessed: ""
+    #   gaps: []
+    #   next_review: ""
+    {}
+
+  # Pending compliance issues
+  issues:
+    # - id: ""
+    #   framework: ""
+    #   severity: ""
+    #   description: ""
+    #   status: "open|in-progress|resolved"
+    #   due_date: ""
+    []
+
+  # Upcoming audits
+  audits:
+    # - type: ""
+    #   framework: ""
+    #   date: ""
+    #   auditor: ""
+    #   status: "scheduled|in-progress|completed"
+    []
+
+  # Policy versions
+  policies:
+    # - name: ""
+    #   version: ""
+    #   effective_date: ""
+    []
+
+  # Risk register
+  risks:
+    # - id: ""
+    #   description: ""
+    #   likelihood: 1-5
+    #   impact: 1-5
+    #   score: 1-25
+    #   mitigation: ""
+    #   owner: ""
+    #   status: "open|mitigated|accepted"
+    []
+
+# =============================================================================
+# UX STATE (UX Strategist Agent)
+# =============================================================================
+
+ux:
+  # User personas
+  personas:
+    # - name: ""
+    #   is_primary: true|false
+    #   last_updated: ""
+    []
+
+  # User journeys
+  journeys:
+    # - name: ""
+    #   persona: ""
+    #   status: "draft|mapped|validated"
+    #   last_updated: ""
+    []
+
+  # Known friction points
+  friction_points:
+    # - id: ""
+    #   location: ""
+    #   severity: 1-5
+    #   status: "identified|in-progress|resolved"
+    #   assigned_to: ""
+    []
+
+  # Usability tests
+  tests:
+    # - name: ""
+    #   status: "planned|in-progress|completed"
+    #   scheduled_date: ""
+    #   findings_count: 0
+    []
+
+  # NPS tracking
+  nps:
+    current_score: null
+    last_survey_date: null
+    trend: null  # "improving" | "stable" | "declining"
+    response_count: 0
+
+# =============================================================================
+# GROWTH STATE (Growth Engineer Agent)
+# =============================================================================
+
+growth:
+  # North star metric
+  north_star:
+    metric: null
+    target: null
+    current: null
+    last_updated: null
+    trend: null  # "up" | "flat" | "down"
+
+  # Funnel metrics
+  funnel:
+    acquisition:
+      conversion_rate: null
+      last_updated: null
+    activation:
+      conversion_rate: null
+      last_updated: null
+    retention:
+      rate: null
+      last_updated: null
+    revenue:
+      conversion_rate: null
+      last_updated: null
+    referral:
+      rate: null
+      last_updated: null
+    bottleneck: null
+
+  # Running experiments
+  experiments:
+    # - id: ""
+    #   name: ""
+    #   hypothesis: ""
+    #   metric: ""
+    #   status: "proposed|running|completed"
+    #   start_date: ""
+    #   end_date: ""
+    #   result: "winner|loser|inconclusive"
+    []
+
+  # Experiment history
+  experiment_history:
+    total_run: 0
+    winners: 0
+    losers: 0
+    inconclusive: 0
+    last_30_days: 0
+
+  # Growth model
+  model:
+    version: null
+    last_updated: null
+    projections: {}
+
+  # Growth insights
+  insights:
+    # - insight: ""
+    #   date: ""
+    #   confidence: "high|medium|low"
+    #   actioned: false
+    []
+
+# =============================================================================
+# CROSS-CUTTING STATE
+# =============================================================================
+
+activity_log:
+  # Recent agent activities for audit trail
+  # - timestamp: ""
+  #   agent: ""
+  #   action: ""
+  #   details: ""
+  []
+
+pending_reviews:
+  # Items awaiting strategic review
+  # - type: ""
+  #   item: ""
+  #   requested_by: ""
+  #   due_date: ""
+  []
+
+quarterly_review:
+  last_completed: null
+  next_scheduled: null
+  status: null  # "upcoming" | "in-progress" | "overdue"

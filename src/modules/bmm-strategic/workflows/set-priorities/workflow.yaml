@@ -1,0 +1,65 @@
+# Set Priorities Workflow
+# Founder Agent - Strategic Priority Setting
+
+name: set-priorities
+display_name: "Set Strategic Priorities"
+description: "Define and communicate strategic priorities for the current quarter or period"
+version: "1.0.0"
+
+agent: founder
+module: bmm-strategic
+
+metadata:
+  estimated_duration: "30-45 minutes"
+  participants: ["founder"]
+  outputs:
+    - "Prioritized list of strategic initiatives"
+    - "Success criteria for each priority"
+    - "Owner assignments"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-strategic/config.yaml"
+      section: "vision.quarterly_priorities"
+    - path: "{project-root}/.bmad/bmm-strategic/state/module-state.yaml"
+      section: "vision.priorities"
+
+config:
+  interactive: true
+  max_priorities: 3
+  publish_events: true
+
+stages:
+  - id: "review"
+    name: "Review Current State"
+    description: "Assess progress on existing priorities and gather inputs"
+
+  - id: "candidates"
+    name: "Identify Candidates"
+    description: "List all potential priorities for consideration"
+
+  - id: "evaluate"
+    name: "Evaluate & Score"
+    description: "Score candidates against strategic criteria"
+
+  - id: "select"
+    name: "Select Top Priorities"
+    description: "Choose the final priorities (max 3)"
+
+  - id: "define"
+    name: "Define Success Criteria"
+    description: "Set measurable outcomes and owners"
+
+  - id: "commit"
+    name: "Commit & Communicate"
+    description: "Finalize and publish priorities"
+
+events:
+  on_complete:
+    - type: "priority.set"
+    - type: "priority.changed"
+      condition: "has_changes_from_previous"
+
+triggers:
+  manual: true
+  scheduled:
+    frequency: "quarterly"
+    reminder_days_before: 7

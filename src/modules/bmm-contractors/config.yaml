@@ -1,0 +1,349 @@
+# BMM-Contractors Module Configuration
+# Distributed Team Communication Settings
+#
+# This file configures SMTP, Git, and contractor profiles for
+# asynchronous team coordination.
+
+# =============================================================================
+# SMTP CONFIGURATION
+# =============================================================================
+
+smtp:
+  # SMTP server settings
+  host: "smtp.example.com"
+  port: 587
+  secure: true  # Use TLS
+
+  # Authentication
+  auth:
+    user: "{{SMTP_USER}}"      # Set via environment variable
+    pass: "{{SMTP_PASS}}"      # Set via environment variable
+
+  # Email identity
+  from_address: "project@yourcompany.com"
+  from_name: "Project Coordinator"
+  reply_to: "project-replies@yourcompany.com"
+
+  # Rate limiting
+  max_emails_per_hour: 50
+  min_delay_between_emails_ms: 1000
+
+  # Retry settings
+  retry_attempts: 3
+  retry_delay_ms: 5000
+
+# =============================================================================
+# IMAP CONFIGURATION (for receiving replies)
+# =============================================================================
+
+imap:
+  enabled: true
+  host: "imap.example.com"
+  port: 993
+  secure: true
+
+  auth:
+    user: "{{IMAP_USER}}"
+    pass: "{{IMAP_PASS}}"
+
+  # Mailbox settings
+  inbox: "INBOX"
+  processed_folder: "Processed"
+  poll_interval_seconds: 300  # Check every 5 minutes
+
+  # Reply parsing
+  parse_commands: true  # Look for SUBMITTED, BLOCKED, etc.
+  strip_signatures: true
+  max_attachment_size_mb: 25
+
+# =============================================================================
+# GIT CONFIGURATION
+# =============================================================================
+
+git:
+  # Repository settings
+  provider: "github"  # github, gitlab, bitbucket
+  organization: "your-org"
+  repository: "your-repo"
+
+  # Branch configuration
+  main_branch: "main"
+  develop_branch: "develop"
+
+  # Branch naming pattern
+  # Available variables: {story_id}, {slug}, {contractor_id}, {date}
+  branch_pattern: "story/{story_id}-{slug}"
+
+  # PR settings
+  require_pr: true
+  require_review: true
+  min_reviewers: 1
+  auto_merge_on_approval: false
+  delete_branch_on_merge: true
+
+  # Labels to apply
+  labels:
+    contractor_pr: "contractor"
+    needs_review: "needs-review"
+    approved: "approved"
+    changes_requested: "changes-requested"
+
+  # Git Polling (for monitoring PR events - no webhooks, SMTP-only)
+  polling:
+    enabled: true
+    interval_minutes: 15
+    check_events:
+      - "pull_request"
+      - "push"
+      - "issue_comment"
+    # Results sent via SMTP email notifications
+
+# =============================================================================
+# CONTRACTOR PROFILES
+# =============================================================================
+
+contractors:
+  # Backend Developer
+  - id: "backend-001"
+    name: "Backend Developer"
+    email: "backend@contractor.example"
+    role: "backend-dev"
+    tech_stack:
+      - "Java 21"
+      - "Spring Boot"
+      - "PostgreSQL"
+      - "Redis"
+      - "Docker"
+    specialties:
+      - "REST APIs"
+      - "Microservices"
+      - "Database design"
+    availability: "full-time"
+    timezone: "UTC+0"
+    working_hours: "09:00-17:00"
+    response_sla_hours: 24
+    capacity_story_points_per_sprint: 20
+    active: true
+
+  # Frontend Developer
+  - id: "frontend-001"
+    name: "Frontend Developer"
+    email: "frontend@contractor.example"
+    role: "frontend-dev"
+    tech_stack:
+      - "React"
+      - "TypeScript"
+      - "Tailwind CSS"
+      - "Next.js"
+      - "Jest"
+    specialties:
+      - "UI Components"
+      - "State management"
+      - "Responsive design"
+    availability: "full-time"
+    timezone: "UTC+5:30"
+    working_hours: "10:00-18:00"
+    response_sla_hours: 24
+    capacity_story_points_per_sprint: 18
+    active: true
+
+  # Mobile Developer
+  - id: "mobile-001"
+    name: "Mobile Developer"
+    email: "mobile@contractor.example"
+    role: "mobile-dev"
+    tech_stack:
+      - "Android"
+      - "Kotlin"
+      - "Jetpack Compose"
+      - "Room"
+      - "Retrofit"
+    specialties:
+      - "Offline-first"
+      - "Performance optimization"
+      - "Material Design"
+    availability: "full-time"
+    timezone: "UTC+7"
+    working_hours: "09:00-17:00"
+    response_sla_hours: 24
+    capacity_story_points_per_sprint: 15
+    active: true
+
+  # QA Engineer
+  - id: "qa-001"
+    name: "QA Engineer"
+    email: "qa@contractor.example"
+    role: "qa-engineer"
+    tech_stack:
+      - "Selenium"
+      - "Appium"
+      - "JUnit"
+      - "Jest"
+      - "Postman"
+      - "k6"
+    specialties:
+      - "Test automation"
+      - "API testing"
+      - "Performance testing"
+      - "Mobile testing"
+    availability: "full-time"
+    timezone: "UTC+3"
+    working_hours: "08:00-16:00"
+    response_sla_hours: 12  # Faster SLA for QA
+    capacity_reviews_per_sprint: 10
+    active: true
+
+  # Researcher/Advisor
+  - id: "researcher-001"
+    name: "Technical Researcher"
+    email: "researcher@contractor.example"
+    role: "researcher"
+    tech_stack:
+      - "Technical writing"
+      - "API documentation"
+      - "Architecture diagrams"
+      - "Market research"
+    specialties:
+      - "Documentation"
+      - "Technical research"
+      - "Competitive analysis"
+      - "Best practices"
+    availability: "part-time"
+    timezone: "UTC-5"
+    working_hours: "09:00-13:00"
+    response_sla_hours: 48
+    active: true
+
+# =============================================================================
+# COMMUNICATION SETTINGS
+# =============================================================================
+
+communication:
+  # Email subject prefix
+  subject_prefix: "[PROJECT]"
+
+  # Include story context in emails
+  include_context: true
+  max_context_lines: 500
+
+  # Attachments
+  include_attachments: true
+  max_attachment_size_mb: 10
+
+  # Follow-up settings
+  reminder_after_hours: 48
+  escalation_after_hours: 72
+  max_reminders: 2
+
+  # Auto-responses
+  auto_acknowledge: true
+  acknowledge_template: "email/auto-acknowledge.md"
+
+  # Working hours awareness
+  respect_working_hours: true
+  queue_outside_hours: true
+
+# =============================================================================
+# ASSIGNMENT RULES
+# =============================================================================
+
+assignment:
+  # Auto-assignment based on story type
+  auto_assign: false  # Manual assignment by default
+
+  # Assignment rules (if auto_assign: true)
+  rules:
+    - story_type: "backend"
+      assign_to: "backend-001"
+    - story_type: "frontend"
+      assign_to: "frontend-001"
+    - story_type: "mobile"
+      assign_to: "mobile-001"
+    - story_type: "qa"
+      assign_to: "qa-001"
+    - story_type: "documentation"
+      assign_to: "researcher-001"
+
+  # Load balancing
+  balance_by: "story_points"  # story_points, story_count, none
+  max_concurrent_stories: 3
+
+  # Dependencies
+  check_dependencies: true
+  block_on_unmet_dependencies: true
+
+# =============================================================================
+# REVIEW SETTINGS
+# =============================================================================
+
+review:
+  # Code review settings
+  require_qa_review: true
+  require_code_review: true
+
+  # Review assignment
+  qa_reviewer: "qa-001"
+  code_reviewer: "auto"  # Auto-assign based on expertise
+
+  # Review SLAs
+  review_sla_hours: 24
+
+  # Auto-merge settings
+  auto_merge_on_all_approvals: false
+  required_checks:
+    - "build"
+    - "tests"
+    - "lint"
+
+# =============================================================================
+# REPORTING
+# =============================================================================
+
+reporting:
+  # Daily standup
+  daily_standup:
+    enabled: true
+    time: "09:00"
+    timezone: "UTC"
+    recipients:
+      - "project@yourcompany.com"
+
+  # Weekly summary
+  weekly_summary:
+    enabled: true
+    day: "friday"
+    time: "17:00"
+    recipients:
+      - "project@yourcompany.com"
+
+  # Metrics to track
+  metrics:
+    - "stories_completed"
+    - "story_points_delivered"
+    - "average_cycle_time"
+    - "review_turnaround"
+    - "rejection_rate"
+
+# =============================================================================
+# ESCALATION POLICY
+# =============================================================================
+
+escalation:
+  # Blocker escalation
+  blocker:
+    notify_after_hours: 4
+    escalate_after_hours: 24
+    escalation_recipients:
+      - "lead@yourcompany.com"
+
+  # SLA breach escalation
+  sla_breach:
+    notify_immediately: true
+    escalation_recipients:
+      - "lead@yourcompany.com"
+
+  # Quality issues
+  quality_issue:
+    threshold_rejection_count: 2
+    escalation_recipients:
+      - "lead@yourcompany.com"

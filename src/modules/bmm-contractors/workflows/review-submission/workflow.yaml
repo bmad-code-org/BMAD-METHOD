@@ -1,0 +1,67 @@
+# Review Submission Workflow
+# Contractor Coordinator - Review contractor code submission
+
+name: review-submission
+display_name: "Review Contractor Submission"
+description: "Review a contractor's code submission, provide feedback, approve or request revisions"
+version: "1.0.0"
+
+agent: contractor-coordinator
+module: bmm-contractors
+
+metadata:
+  estimated_duration: "15-30 minutes"
+  participants: ["contractor-coordinator", "qa-engineer"]
+  outputs:
+    - "Review decision (approve/revise/reject)"
+    - "Feedback email sent"
+    - "PR status updated"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-contractors/state/module-state.yaml"
+      section: "pending_reviews"
+
+config:
+  interactive: true
+  require_qa_review: true
+  auto_merge_on_approval: false
+  publish_events: true
+
+stages:
+  - id: "identify"
+    name: "Identify Submission"
+    description: "Load submission details and context"
+
+  - id: "code-review"
+    name: "Code Review"
+    description: "Review code quality and patterns"
+
+  - id: "qa-review"
+    name: "QA Review"
+    description: "Verify tests and acceptance criteria"
+
+  - id: "compliance-check"
+    name: "Compliance Check"
+    description: "Check for security and compliance issues"
+
+  - id: "decision"
+    name: "Make Decision"
+    description: "Approve, request revisions, or reject"
+
+  - id: "communicate"
+    name: "Communicate Result"
+    description: "Send feedback to contractor"
+
+events:
+  on_complete:
+    - type: "contractor.submission.approved"
+      condition: "decision == 'approve'"
+    - type: "contractor.revision.requested"
+      condition: "decision == 'revise'"
+    - type: "contractor.submission.rejected"
+      condition: "decision == 'reject'"
+
+triggers:
+  manual: true
+  on_event:
+    - type: "contractor.submission.received"
+      auto: true

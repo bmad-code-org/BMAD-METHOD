@@ -1,11 +1,16 @@
 # BMAD™ Method Core Configuration
+# Tactical Layer - AI Planning Agents
+# PM, Architect, Scrum Master, Analyst, Test Architect, Dev, UX Designer
 
 code: bmm
-name: "BMM: BMad Method Agile-AI Driven-Development"
+name: "Tactical Layer: BMad Method AI Planning Agents"
 default_selected: true # This module will be selected by default for new installations
 
-header: "BMad Method™: Breakthrough Method of Agile-Ai Driven-Dev"
-subheader: "Agent and Workflow Configuration for this module"
+header: "Tactical Layer - AI Planning & Development Agents"
+subheader: |
+  Core BMAD agents for product planning and development coordination.
+  Includes PM, Architect, Scrum Master, Analyst, Test Architect, Dev, and UX Designer.
+  This layer bridges strategic vision with execution.
 
 # Variables from Core Config inserted:
 ## user_name

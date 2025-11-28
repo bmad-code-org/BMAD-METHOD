@@ -1,0 +1,148 @@
+# Backend Developer Contractor Profile
+# Defines the role, expectations, and communication patterns for backend contractors
+
+profile_id: backend-dev
+display_name: "Backend Developer"
+icon: "☕"
+
+# Role definition
+role:
+  title: "Backend Developer"
+  description: "Server-side development, APIs, database design, and system architecture"
+
+  responsibilities:
+    - "Implement REST/GraphQL APIs per specification"
+    - "Design and optimize database schemas"
+    - "Write unit and integration tests (>80% coverage)"
+    - "Follow project coding standards and patterns"
+    - "Document API endpoints and data models"
+    - "Handle security considerations (auth, validation, injection prevention)"
+    - "Optimize performance for scale"
+
+  deliverables:
+    - "Working API endpoints matching spec"
+    - "Database migrations"
+    - "Unit and integration tests"
+    - "API documentation (OpenAPI/Swagger)"
+    - "PR with clear description"
+
+# Technical expectations
+technical:
+  primary_stack:
+    - "Java 21"
+    - "Spring Boot 3.x"
+    - "Spring Security"
+    - "Spring Data JPA"
+    - "PostgreSQL"
+
+  secondary_stack:
+    - "Redis"
+    - "RabbitMQ/Kafka"
+    - "Docker"
+    - "AWS (S3, SQS)"
+
+  patterns:
+    - "RESTful API design"
+    - "Repository pattern"
+    - "Service layer architecture"
+    - "DTO pattern"
+    - "Exception handling patterns"
+
+  quality_requirements:
+    test_coverage: 80
+    code_style: "Google Java Style"
+    documentation: "JavaDoc for public APIs"
+    security: "OWASP Top 10 awareness"
+
+# Story assignment criteria
+assignment:
+  story_types:
+    - "backend"
+    - "api"
+    - "database"
+    - "integration"
+    - "performance"
+
+  story_labels:
+    - "backend"
+    - "java"
+    - "api"
+    - "database"
+
+  complexity_limit: "L"  # Can handle up to Large stories
+
+  excluded_types:
+    - "frontend"
+    - "mobile"
+    - "ui"
+
+# Communication templates
+communication:
+  assignment_context: |
+    ## Technical Context
+
+    ### Project Standards
+    - Java 21, Spring Boot 3.x
+    - Follow existing patterns in `src/main/java`
+    - Use project's exception handling pattern
+    - All endpoints require authentication unless specified
+
+    ### Code Style
+    - Google Java Style Guide
+    - Run `./gradlew spotlessApply` before committing
+    - JavaDoc for all public methods
+
+    ### Testing Requirements
+    - Unit tests in `src/test/java`
+    - Integration tests with `@SpringBootTest`
+    - Minimum 80% coverage for new code
+    - Mock external dependencies
+
+    ### Database
+    - Use Flyway migrations in `src/main/resources/db/migration`
+    - Follow naming: `V{version}__{description}.sql`
+    - No breaking schema changes without migration path
+
+  submission_checklist: |
+    Before submitting, verify:
+    - [ ] All acceptance criteria met
+    - [ ] Tests passing locally: `./gradlew test`
+    - [ ] Code style: `./gradlew spotlessCheck`
+    - [ ] No new warnings: `./gradlew build`
+    - [ ] API documented in OpenAPI spec
+    - [ ] Database migrations included if needed
+    - [ ] PR description explains changes
+
+  review_criteria: |
+    Code will be reviewed for:
+    1. **Functionality** - Meets acceptance criteria
+    2. **Tests** - Adequate coverage, meaningful tests
+    3. **Security** - Input validation, auth checks, no injection
+    4. **Performance** - Efficient queries, proper indexing hints
+    5. **Patterns** - Follows project architecture
+    6. **Documentation** - JavaDoc, API docs updated
+
+# Performance tracking
+metrics:
+  tracked:
+    - "stories_completed"
+    - "story_points_delivered"
+    - "average_cycle_time"
+    - "rejection_rate"
+    - "bug_rate"
+    - "review_iterations"
+
+  targets:
+    average_cycle_time_days: 3
+    rejection_rate_percent: 10
+    bug_rate_percent: 5
+
+# Escalation triggers
+escalation:
+  auto_escalate:
+    - condition: "blocked > 24 hours"
+      action: "notify_coordinator"
+    - condition: "rejection_count >= 2 for same story"
+      action: "schedule_clarification"
+    - condition: "no_response > 48 hours"
+      action: "send_reminder"

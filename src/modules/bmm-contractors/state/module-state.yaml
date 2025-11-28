@@ -1,0 +1,212 @@
+# BMM-Contractors Module State
+# Runtime state tracking for contractor coordination
+#
+# This file tracks assignments, communications, and contractor status.
+
+schema_version: "1.0.0"
+module: bmm-contractors
+last_updated: null
+
+# =============================================================================
+# CONTRACTOR STATUS
+# =============================================================================
+
+contractors:
+  # Populated from config, enhanced with runtime status
+  # - id: "backend-001"
+  #   status: "working"  # available, working, blocked, unavailable
+  #   current_stories: ["STORY-123"]
+  #   current_load_points: 5
+  #   last_activity: "2025-11-28T10:30:00Z"
+  #   last_email_sent: "2025-11-28T10:00:00Z"
+  #   last_response: "2025-11-28T10:30:00Z"
+  #   response_pending: false
+  #   unavailable_until: null
+  []
+
+# =============================================================================
+# ACTIVE ASSIGNMENTS
+# =============================================================================
+
+assignments:
+  # Currently active story assignments
+  # - story_id: "STORY-123"
+  #   contractor_id: "backend-001"
+  #   branch_name: "story/STORY-123-implement-auth"
+  #   assigned_at: "2025-11-28T10:00:00Z"
+  #   deadline: "2025-12-05T17:00:00Z"
+  #   acknowledged: true
+  #   acknowledged_at: "2025-11-28T10:30:00Z"
+  #   status: "in_progress"  # assigned, acknowledged, in_progress, submitted, reviewing, completed
+  #   progress_percent: 60
+  #   last_update: "2025-11-29T14:00:00Z"
+  #   pr_number: null
+  #   review_iterations: 0
+  #   correlation_id: "uuid-xxx"
+  []
+
+# =============================================================================
+# PENDING REVIEWS
+# =============================================================================
+
+pending_reviews:
+  # Submissions awaiting review
+  # - story_id: "STORY-122"
+  #   contractor_id: "frontend-001"
+  #   pr_number: 456
+  #   pr_url: "https://github.com/org/repo/pull/456"
+  #   submitted_at: "2025-11-28T15:00:00Z"
+  #   reviewer_assigned: "qa-001"
+  #   review_due: "2025-11-29T15:00:00Z"
+  #   iteration: 1
+  []
+
+# =============================================================================
+# BLOCKERS
+# =============================================================================
+
+blockers:
+  # Active blockers
+  # - id: "BLOCK-001"
+  #   story_id: "STORY-123"
+  #   contractor_id: "backend-001"
+  #   type: "clarification"
+  #   description: "Need clarification on auth token expiry"
+  #   reported_at: "2025-11-28T12:00:00Z"
+  #   escalated: false
+  #   escalated_at: null
+  #   resolved: false
+  #   resolved_at: null
+  #   resolution: null
+  []
+
+# =============================================================================
+# EMAIL TRACKING
+# =============================================================================
+
+email_log:
+  # Recent email activity (rolling 30 days)
+  sent_today: 0
+  sent_this_hour: 0
+  last_sent_at: null
+
+  pending_acknowledgments:
+    # Emails awaiting contractor response
+    # - correlation_id: "uuid-xxx"
+    #   sent_to: "backend@contractor.example"
+    #   sent_at: "2025-11-28T10:00:00Z"
+    #   type: "assignment"
+    #   story_id: "STORY-123"
+    #   reminder_count: 0
+    #   next_reminder: "2025-11-30T10:00:00Z"
+    []
+
+  recent_messages:
+    # Last 100 messages for reference
+    # - message_id: "xxx"
+    #   direction: "outbound"
+    #   to/from: "email"
+    #   subject: "xxx"
+    #   correlation_id: "xxx"
+    #   timestamp: "xxx"
+    []
+
+# =============================================================================
+# GIT TRACKING
+# =============================================================================
+
+git:
+  active_branches:
+    # Contractor branches currently in use
+    # - branch_name: "story/STORY-123-implement-auth"
+    #   story_id: "STORY-123"
+    #   contractor_id: "backend-001"
+    #   created_at: "2025-11-28T10:00:00Z"
+    #   last_push: "2025-11-29T14:00:00Z"
+    #   commits: 5
+    []
+
+  open_prs:
+    # Open contractor PRs
+    # - pr_number: 123
+    #   story_id: "STORY-123"
+    #   contractor_id: "backend-001"
+    #   branch: "story/STORY-123-implement-auth"
+    #   opened_at: "2025-11-29T15:00:00Z"
+    #   status: "review"  # draft, review, changes_requested, approved
+    #   checks_passing: true
+    #   review_comments: 3
+    []
+
+# =============================================================================
+# METRICS (Rolling)
+# =============================================================================
+
+metrics:
+  current_sprint:
+    stories_assigned: 0
+    stories_completed: 0
+    story_points_assigned: 0
+    story_points_completed: 0
+    average_cycle_time_hours: 0
+    rejection_rate: 0
+    blocker_count: 0
+
+  by_contractor:
+    # Metrics per contractor
+    # backend-001:
+    #   stories_completed: 5
+    #   points_delivered: 20
+    #   average_cycle_time_hours: 48
+    #   rejection_rate: 0.1
+    #   current_load: 2
+    {}
+
+# =============================================================================
+# UPCOMING DEADLINES
+# =============================================================================
+
+deadlines:
+  # Sorted by deadline
+  # - story_id: "STORY-123"
+  #   contractor_id: "backend-001"
+  #   deadline: "2025-12-05T17:00:00Z"
+  #   days_remaining: 7
+  #   at_risk: false
+  []
+
+# =============================================================================
+# SCHEDULED ACTIONS
+# =============================================================================
+
+scheduled:
+  reminders:
+    # Pending reminder emails
+    # - type: "acknowledgment"
+    #   contractor_id: "backend-001"
+    #   story_id: "STORY-123"
+    #   scheduled_for: "2025-11-30T10:00:00Z"
+    #   attempt: 1
+    []
+
+  escalations:
+    # Pending escalations
+    # - type: "no_response"
+    #   contractor_id: "backend-001"
+    #   story_id: "STORY-123"
+    #   scheduled_for: "2025-12-01T10:00:00Z"
+    []
+
+# =============================================================================
+# ACTIVITY LOG
+# =============================================================================
+
+activity_log:
+  # Recent activity for audit trail (last 100 entries)
+  # - timestamp: "2025-11-28T10:30:00Z"
+  #   type: "assignment"
+  #   contractor_id: "backend-001"
+  #   story_id: "STORY-123"
+  #   action: "Story assigned"
+  #   details: "Email sent, branch created"
+  []

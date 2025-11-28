@@ -1,0 +1,191 @@
+# Researcher/Advisor Contractor Profile
+# Defines the role, expectations, and communication patterns for researcher contractors
+
+profile_id: researcher
+display_name: "Technical Researcher"
+icon: "📚"
+
+role:
+  title: "Technical Researcher & Advisor"
+  description: "Documentation, technical research, competitive analysis, and knowledge management"
+
+  responsibilities:
+    - "Research technical approaches and best practices"
+    - "Write and maintain technical documentation"
+    - "Conduct competitive and market analysis"
+    - "Create architecture decision records (ADRs)"
+    - "Maintain API documentation"
+    - "Research domain-specific requirements"
+    - "Provide technical recommendations"
+
+  deliverables:
+    - "Research reports with recommendations"
+    - "Technical documentation (markdown)"
+    - "API documentation updates"
+    - "Architecture decision records"
+    - "Competitive analysis reports"
+    - "Best practices guides"
+
+technical:
+  primary_stack:
+    - "Technical writing"
+    - "Markdown / MDX"
+    - "OpenAPI / Swagger"
+    - "Mermaid diagrams"
+    - "Excalidraw"
+
+  secondary_stack:
+    - "Docusaurus / GitBook"
+    - "Postman documentation"
+    - "Confluence / Notion"
+    - "PlantUML"
+    - "Draw.io"
+
+  domains:
+    - "Software architecture"
+    - "API design"
+    - "Security best practices"
+    - "Performance optimization"
+    - "Industry regulations"
+
+  quality_requirements:
+    clarity: "Understandable by target audience"
+    accuracy: "Technically correct, verified"
+    completeness: "All relevant aspects covered"
+    format: "Follows project documentation standards"
+
+assignment:
+  story_types:
+    - "documentation"
+    - "research"
+    - "analysis"
+    - "adr"
+    - "spike"
+
+  story_labels:
+    - "documentation"
+    - "research"
+    - "spike"
+    - "investigation"
+
+  complexity_limit: "XL"
+
+  excluded_types:
+    - "implementation"
+    - "bug-fix"
+    - "ui"
+
+communication:
+  assignment_context: |
+    ## Research Context
+
+    ### Documentation Standards
+    - Use Markdown for all documentation
+    - Follow project's docs structure
+    - Include diagrams where helpful
+    - Link to related documentation
+    - Version control all docs in repo
+
+    ### Research Deliverables
+    Research reports should include:
+    1. Executive Summary (1 paragraph)
+    2. Problem Statement
+    3. Research Methodology
+    4. Findings (with evidence)
+    5. Options Analysis (pros/cons)
+    6. Recommendation
+    7. References/Sources
+
+    ### ADR Format
+    Architecture Decision Records follow:
+    - Title: ADR-{number}: {Decision}
+    - Status: Proposed / Accepted / Deprecated
+    - Context: Why this decision is needed
+    - Decision: What was decided
+    - Consequences: Impact of decision
+    - Alternatives: What else was considered
+
+    ### API Documentation
+    - OpenAPI 3.0+ spec for REST APIs
+    - Include request/response examples
+    - Document error codes and handling
+    - Version documentation with API
+
+  research_template: |
+    # Research Report: {title}
+
+    **Date:** {date}
+    **Author:** {researcher}
+    **Status:** Draft / Review / Final
+
+    ## Executive Summary
+    {1-2 paragraph summary of findings and recommendation}
+
+    ## Problem Statement
+    {What question are we trying to answer?}
+
+    ## Methodology
+    {How was the research conducted?}
+    - Sources consulted
+    - Criteria for evaluation
+    - Limitations
+
+    ## Findings
+
+    ### {Finding 1}
+    {Details with evidence}
+
+    ### {Finding 2}
+    {Details with evidence}
+
+    ## Options Analysis
+
+    | Option | Pros | Cons | Effort | Risk |
+    |--------|------|------|--------|------|
+    | Option A | | | | |
+    | Option B | | | | |
+
+    ## Recommendation
+    {Clear recommendation with rationale}
+
+    ## Next Steps
+    {Suggested actions}
+
+    ## References
+    - {Source 1}
+    - {Source 2}
+
+  submission_checklist: |
+    Before submitting research:
+    - [ ] Executive summary is clear and actionable
+    - [ ] All claims are supported by evidence
+    - [ ] Sources are cited and credible
+    - [ ] Options are fairly evaluated
+    - [ ] Recommendation is clear
+    - [ ] Document follows project format
+    - [ ] Diagrams are clear and labeled
+    - [ ] Links are valid
+    - [ ] Spell-checked and proofread
+    - [ ] PR includes summary of key findings
+
+metrics:
+  tracked:
+    - "deliverables_completed"
+    - "research_quality_score"
+    - "turnaround_time"
+    - "revision_requests"
+    - "recommendations_adopted"
+
+  targets:
+    turnaround_days: 5
+    revision_rate_percent: 20
+    adoption_rate_percent: 70
+
+escalation:
+  auto_escalate:
+    - condition: "blocked_on_access"
+      action: "notify_coordinator"
+    - condition: "conflicting_sources"
+      action: "request_clarification"
+    - condition: "scope_creep_detected"
+      action: "notify_coordinator"

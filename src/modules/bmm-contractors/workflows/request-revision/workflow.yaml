@@ -1,0 +1,63 @@
+# Request Revision Workflow
+# Contractor Coordinator - Request code revisions via SMTP
+
+name: request-revision
+display_name: "Request Revision"
+description: "Request code revisions from contractor via SMTP email with detailed feedback"
+version: "1.0.0"
+
+agent: contractor-coordinator
+module: bmm-contractors
+
+metadata:
+  estimated_duration: "10-15 minutes"
+  participants: ["contractor-coordinator"]
+  outputs:
+    - "Revision request email sent"
+    - "PR marked with changes requested"
+    - "Story status updated"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-contractors/state/module-state.yaml"
+      section: "revisions"
+
+config:
+  interactive: true
+  send_revision_email: true
+  update_pr_status: true
+  set_revision_deadline: true
+  publish_events: true
+
+stages:
+  - id: "identify-submission"
+    name: "Identify Submission"
+    description: "Load submission and review details"
+
+  - id: "categorize-issues"
+    name: "Categorize Issues"
+    description: "Classify issues by severity and type"
+
+  - id: "prepare-feedback"
+    name: "Prepare Feedback"
+    description: "Structure feedback for clarity"
+
+  - id: "set-deadline"
+    name: "Set Deadline"
+    description: "Determine revision deadline"
+
+  - id: "send-request"
+    name: "Send Request"
+    description: "Send revision request via SMTP email"
+
+  - id: "update-systems"
+    name: "Update Systems"
+    description: "Update PR, story status, and tracking"
+
+events:
+  on_complete:
+    - type: "contractor.revision.requested"
+
+triggers:
+  manual: true
+  on_event:
+    - type: "contractor.review.revisions_needed"
+      auto: true

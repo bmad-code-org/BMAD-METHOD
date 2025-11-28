@@ -1,0 +1,67 @@
+# Contractor Report Workflow
+# Contractor Coordinator - Generate performance reports via SMTP
+
+name: contractor-report
+display_name: "Contractor Report"
+description: "Generate and distribute contractor performance reports via SMTP email"
+version: "1.0.0"
+
+agent: contractor-coordinator
+module: bmm-contractors
+
+metadata:
+  estimated_duration: "15-20 minutes"
+  participants: ["contractor-coordinator"]
+  outputs:
+    - "Performance report generated"
+    - "Report email sent to stakeholders"
+    - "Metrics updated in state"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-contractors/state/module-state.yaml"
+      section: "reports"
+    - path: "{project-root}/.bmad/bmm-contractors/reports/"
+      format: "markdown"
+
+config:
+  interactive: false
+  report_types: ["individual", "team", "weekly", "monthly"]
+  send_report_email: true
+  archive_reports: true
+  publish_events: true
+
+stages:
+  - id: "collect-metrics"
+    name: "Collect Metrics"
+    description: "Gather performance data from all sources"
+
+  - id: "calculate-performance"
+    name: "Calculate Performance"
+    description: "Compute performance indicators and trends"
+
+  - id: "generate-report"
+    name: "Generate Report"
+    description: "Create formatted report document"
+
+  - id: "identify-insights"
+    name: "Identify Insights"
+    description: "Extract actionable insights and recommendations"
+
+  - id: "distribute-report"
+    name: "Distribute Report"
+    description: "Send report via SMTP email"
+
+  - id: "archive-report"
+    name: "Archive Report"
+    description: "Save report to file system and update state"
+
+events:
+  on_complete:
+    - type: "contractor.report.generated"
+
+triggers:
+  manual: true
+  scheduled:
+    - cron: "0 9 * * 1"  # Weekly: Monday 9 AM
+      report_type: "weekly"
+    - cron: "0 9 1 * *"  # Monthly: 1st of month 9 AM
+      report_type: "monthly"

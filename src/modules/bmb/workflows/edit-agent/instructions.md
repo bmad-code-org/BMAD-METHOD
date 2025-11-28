@@ -358,14 +358,14 @@ communication_style: 'Experienced analyst who uses systematic approaches and ens
   ```yaml
   # ROLE: "Strategic analyst"
   # IDENTITY: "Experienced analyst who uses systematic approaches"
-  # PURE STYLE: [need to discover - interview user about HOW they talk]
+  # PURE STYLE: [need to discover - ask user about HOW they talk]
   # PRINCIPLES:
   #   - "Ensure all stakeholder voices heard"
   #   - "Use systematic, structured approaches"
   ```
 
 **Step 3: Discover the TRUE Communication Style**
-Since style was buried under behaviors, interview the user:
+Since style was buried under behaviors, ask the user:
 
 - "How should this agent SOUND when talking?"
 - "What verbal quirks or patterns make them distinctive?"

@@ -23,7 +23,7 @@ input:
     required: false
     default: "current"
   format:
-    description: "Output format: markdown, html, slack"
+    description: "Output format: markdown, html, email"
     required: false
     default: "markdown"
 

@@ -1,0 +1,481 @@
+# BMM-Contractors Module - Event Publications
+# Events published by contractor coordination workflows
+
+schema_version: "1.0.0"
+module: bmm-contractors
+
+publications:
+
+  # =============================================================================
+  # ASSIGNMENT EVENTS
+  # =============================================================================
+
+  contractor.story.assigned:
+    description: "A story has been assigned to a contractor"
+    source_workflow: "assign-story"
+    payload:
+      story_id:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+        required: true
+      contractor_email:
+        type: string
+        required: true
+      contractor_name:
+        type: string
+      branch_name:
+        type: string
+        required: true
+      deadline:
+        type: string
+        format: ISO8601
+        required: true
+      assigned_at:
+        type: string
+        format: ISO8601
+        required: true
+      story_points:
+        type: integer
+      correlation_id:
+        type: string
+        required: true
+
+  contractor.story.reassigned:
+    description: "A story has been reassigned to a different contractor"
+    source_workflow: "assign-story"
+    payload:
+      story_id:
+        type: string
+        required: true
+      previous_contractor_id:
+        type: string
+        required: true
+      new_contractor_id:
+        type: string
+        required: true
+      reason:
+        type: string
+      reassigned_at:
+        type: string
+        format: ISO8601
+
+  contractor.story.unassigned:
+    description: "A story has been unassigned from a contractor"
+    source_workflow: "unassign-story"
+    payload:
+      story_id:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+        required: true
+      reason:
+        type: string
+      unassigned_at:
+        type: string
+        format: ISO8601
+
+  # =============================================================================
+  # EMAIL EVENTS
+  # =============================================================================
+
+  contractor.email.sent:
+    description: "An email has been sent to a contractor"
+    source_workflow: "*"
+    payload:
+      message_id:
+        type: string
+        required: true
+      to:
+        type: string
+        required: true
+      subject:
+        type: string
+        required: true
+      template:
+        type: string
+      correlation_id:
+        type: string
+      sent_at:
+        type: string
+        format: ISO8601
+
+  contractor.email.failed:
+    description: "Failed to send email to contractor"
+    source_workflow: "*"
+    payload:
+      to:
+        type: string
+        required: true
+      subject:
+        type: string
+      error:
+        type: string
+        required: true
+      retry_count:
+        type: integer
+      will_retry:
+        type: boolean
+
+  contractor.email.bounced:
+    description: "Email to contractor bounced"
+    source_workflow: "*"
+    payload:
+      message_id:
+        type: string
+        required: true
+      to:
+        type: string
+        required: true
+      bounce_type:
+        type: string
+        enum: ["hard", "soft"]
+      bounce_reason:
+        type: string
+
+  contractor.reply.received:
+    description: "Received an email reply from a contractor"
+    source_workflow: "email-processing"
+    payload:
+      message_id:
+        type: string
+        required: true
+      from:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+        required: true
+      correlation_id:
+        type: string
+      story_id:
+        type: string
+      command:
+        type: string
+        enum: ["ACKNOWLEDGED", "SUBMITTED", "BLOCKED", "QUESTION", "PROGRESS", "ESTIMATE", "UNAVAILABLE"]
+      command_data:
+        type: object
+      raw_content:
+        type: string
+      received_at:
+        type: string
+        format: ISO8601
+
+  # =============================================================================
+  # SUBMISSION EVENTS
+  # =============================================================================
+
+  contractor.submission.received:
+    description: "Contractor has submitted work for review"
+    source_workflow: "email-processing"
+    payload:
+      story_id:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+        required: true
+      pr_number:
+        type: integer
+      pr_url:
+        type: string
+      branch_name:
+        type: string
+      submitted_at:
+        type: string
+        format: ISO8601
+      message:
+        type: string
+
+  contractor.submission.approved:
+    description: "Contractor submission has been approved"
+    source_workflow: "review-submission"
+    payload:
+      story_id:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+        required: true
+      pr_number:
+        type: integer
+        required: true
+      reviewer:
+        type: string
+      feedback:
+        type: string
+      approved_at:
+        type: string
+        format: ISO8601
+      merged:
+        type: boolean
+      cycle_time_hours:
+        type: number
+
+  contractor.submission.rejected:
+    description: "Contractor submission has been rejected"
+    source_workflow: "review-submission"
+    payload:
+      story_id:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+        required: true
+      pr_number:
+        type: integer
+      reviewer:
+        type: string
+      rejection_reasons:
+        type: array
+        items:
+          type: string
+      rejected_at:
+        type: string
+        format: ISO8601
+
+  contractor.revision.requested:
+    description: "Revisions requested on contractor submission"
+    source_workflow: "review-submission"
+    payload:
+      story_id:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+        required: true
+      pr_number:
+        type: integer
+      reviewer:
+        type: string
+      required_changes:
+        type: array
+        items:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+            severity:
+              type: string
+              enum: ["blocker", "major", "minor"]
+      optional_suggestions:
+        type: array
+        items:
+          type: string
+      revision_deadline:
+        type: string
+        format: ISO8601
+      iteration_number:
+        type: integer
+
+  # =============================================================================
+  # GIT EVENTS
+  # =============================================================================
+
+  contractor.branch.created:
+    description: "Git branch created for contractor work"
+    source_workflow: "assign-story"
+    payload:
+      story_id:
+        type: string
+        required: true
+      branch_name:
+        type: string
+        required: true
+      base_branch:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+      created_at:
+        type: string
+        format: ISO8601
+
+  contractor.pr.opened:
+    description: "Contractor has opened a pull request"
+    source_workflow: "git-polling"
+    payload:
+      story_id:
+        type: string
+      pr_number:
+        type: integer
+        required: true
+      pr_url:
+        type: string
+        required: true
+      branch_name:
+        type: string
+        required: true
+      target_branch:
+        type: string
+        required: true
+      contractor_id:
+        type: string
+      title:
+        type: string
+      opened_at:
+        type: string
+        format: ISO8601
+
+  contractor.pr.merged:
+    description: "Contractor PR has been merged"
+    source_workflow: "review-submission"
+    payload:
+      story_id:
+        type: string
+        required: true
+      pr_number:
+        type: integer
+        required: true
+      branch_name:
+        type: string
+      target_branch:
+        type: string
+      contractor_id:
+        type: string
+      merged_by:
+        type: string
+      merged_at:
+        type: string
+        format: ISO8601
+      commits:
+        type: integer
+      additions:
+        type: integer
+      deletions:
+        type: integer
+
+  contractor.pr.rejected:
+    description: "Contractor PR has been closed without merging"
+    source_workflow: "review-submission"
+    payload:
+      story_id:
+        type: string
+      pr_number:
+        type: integer
+        required: true
+      contractor_id:
+        type: string
+      reason:
+        type: string
+      closed_by:
+        type: string
+      closed_at:
+        type: string
+        format: ISO8601
+
+  # =============================================================================
+  # STATUS EVENTS
+  # =============================================================================
+
+  contractor.status.updated:
+    description: "Contractor status has been updated"
+    source_workflow: "*"
+    payload:
+      contractor_id:
+        type: string
+        required: true
+      status:
+        type: string
+        enum: ["available", "working", "blocked", "unavailable"]
+        required: true
+      previous_status:
+        type: string
+      story_id:
+        type: string
+      details:
+        type: string
+      updated_at:
+        type: string
+        format: ISO8601
+
+  contractor.blocked:
+    description: "Contractor is blocked on a story"
+    source_workflow: "*"
+    payload:
+      contractor_id:
+        type: string
+        required: true
+      story_id:
+        type: string
+        required: true
+      blocker_description:
+        type: string
+        required: true
+      blocker_type:
+        type: string
+        enum: ["technical", "dependency", "clarification", "access", "external"]
+      blocked_since:
+        type: string
+        format: ISO8601
+      escalated:
+        type: boolean
+        default: false
+
+  contractor.unblocked:
+    description: "Contractor blocker has been resolved"
+    source_workflow: "*"
+    payload:
+      contractor_id:
+        type: string
+        required: true
+      story_id:
+        type: string
+        required: true
+      resolution:
+        type: string
+      blocked_duration_hours:
+        type: number
+      unblocked_at:
+        type: string
+        format: ISO8601
+
+  # =============================================================================
+  # PERFORMANCE EVENTS
+  # =============================================================================
+
+  contractor.velocity.calculated:
+    description: "Contractor velocity has been calculated"
+    source_workflow: "contractor-report"
+    payload:
+      contractor_id:
+        type: string
+        required: true
+      period:
+        type: string
+        required: true
+      stories_completed:
+        type: integer
+      story_points_delivered:
+        type: integer
+      average_cycle_time_hours:
+        type: number
+      calculated_at:
+        type: string
+        format: ISO8601
+
+  contractor.quality.scored:
+    description: "Contractor quality score has been updated"
+    source_workflow: "contractor-report"
+    payload:
+      contractor_id:
+        type: string
+        required: true
+      period:
+        type: string
+      rejection_rate:
+        type: number
+      bug_rate:
+        type: number
+      review_iterations_avg:
+        type: number
+      quality_score:
+        type: number
+        description: "0-100 quality score"
+      scored_at:
+        type: string
+        format: ISO8601

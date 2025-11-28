@@ -1,0 +1,106 @@
+# BMM-Contractor-Frontend Module Installer Configuration
+# Execution Layer - Frontend Developer Persona
+# React/TypeScript development via SMTP and Git
+
+code: bmm-contractor-frontend
+name: "Contractor: Frontend Developer (React/TypeScript)"
+default_selected: false
+
+header: "Frontend Developer Contractor"
+subheader: |
+  Frontend developer profile for React/TypeScript UI development.
+  Communication via SMTP email and Git only - no meetings or real-time chat.
+
+# Dependencies
+requires:
+  - core
+  - bmm
+  - bmm-contractors
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+
+contractor_name:
+  prompt: "What is the frontend developer's name?"
+  default: ""
+  result: "{value}"
+
+contractor_email:
+  prompt: "Frontend developer's email address (for SMTP communication)"
+  default: ""
+  result: "{value}"
+
+contractor_timezone:
+  prompt: "Frontend developer's timezone (e.g., UTC+3, America/New_York)"
+  default: "UTC"
+  result: "{value}"
+
+contractor_availability:
+  prompt: "Frontend developer's availability"
+  default: "full-time"
+  result: "{value}"
+  single-select:
+    - value: "full-time"
+      label: "Full-time - Available during business hours"
+    - value: "part-time"
+      label: "Part-time - Limited hours per week"
+    - value: "on-call"
+      label: "On-call - Available for specific tasks"
+
+react_version:
+  prompt: "React version used"
+  default: "18.x"
+  result: "{value}"
+  single-select:
+    - value: "18.x"
+      label: "React 18.x (latest)"
+    - value: "17.x"
+      label: "React 17.x"
+
+typescript_strictness:
+  prompt: "TypeScript configuration"
+  default: "strict"
+  result: "{value}"
+  single-select:
+    - value: "strict"
+      label: "Strict mode enabled"
+    - value: "standard"
+      label: "Standard configuration"
+    - value: "javascript"
+      label: "JavaScript (no TypeScript)"
+
+frontend_tech_stack:
+  prompt:
+    - "Additional frontend technologies used"
+    - "Select all that apply"
+  default: ["tailwind", "nextjs"]
+  result: "{value}"
+  multi-select:
+    - value: "nextjs"
+      label: "Next.js"
+    - value: "vite"
+      label: "Vite"
+    - value: "tailwind"
+      label: "Tailwind CSS"
+    - value: "styled-components"
+      label: "Styled Components"
+    - value: "redux"
+      label: "Redux/RTK"
+    - value: "tanstack-query"
+      label: "TanStack Query (React Query)"
+    - value: "zustand"
+      label: "Zustand"
+    - value: "storybook"
+      label: "Storybook"
+    - value: "cypress"
+      label: "Cypress"
+    - value: "playwright"
+      label: "Playwright"
+
+response_sla_hours:
+  prompt: "Expected response time from this contractor (in hours)"
+  default: "24"
+  result: "{value}"

@@ -234,9 +234,9 @@ Each KPI needs:
 
 <ask>How frequently should KPIs be reviewed?
 [d] Daily dashboard updates
-[w] Weekly review meetings
-[s] Sprint-based review
-[m] Monthly business review
+[w] Weekly review via email digest
+[s] Sprint-based review via email
+[m] Monthly business review via email report
 
 Frequency: </ask>
 

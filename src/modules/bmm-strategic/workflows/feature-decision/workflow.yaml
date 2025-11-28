@@ -1,0 +1,63 @@
+# Feature Decision Workflow
+# Founder Agent - Go/No-Go Decision Framework
+
+name: feature-decision
+display_name: "Feature Decision (Go/No-Go)"
+description: "Structured decision framework for major features or initiatives"
+version: "1.0.0"
+
+agent: founder
+module: bmm-strategic
+
+metadata:
+  estimated_duration: "15-30 minutes"
+  participants: ["founder"]
+  outputs:
+    - "Decision: GO, NO-GO, or DEFER"
+    - "Rationale documentation"
+    - "Next steps if GO"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-strategic/state/module-state.yaml"
+      section: "vision.decisions"
+
+config:
+  interactive: true
+  require_rationale: true
+  publish_events: true
+
+stages:
+  - id: "context"
+    name: "Understand the Initiative"
+    description: "Clarify what is being proposed"
+
+  - id: "strategic"
+    name: "Strategic Fit Assessment"
+    description: "Evaluate alignment with vision and priorities"
+
+  - id: "impact"
+    name: "Impact Analysis"
+    description: "Assess potential outcomes"
+
+  - id: "risk"
+    name: "Risk Assessment"
+    description: "Identify and evaluate risks"
+
+  - id: "decision"
+    name: "Make Decision"
+    description: "Decide: GO, NO-GO, or DEFER"
+
+  - id: "commit"
+    name: "Document & Communicate"
+    description: "Record decision and next steps"
+
+events:
+  on_complete:
+    - type: "decision.go"
+      condition: "decision == 'go'"
+    - type: "decision.no-go"
+      condition: "decision == 'no-go'"
+    - type: "decision.defer"
+      condition: "decision == 'defer'"
+
+triggers:
+  manual: true

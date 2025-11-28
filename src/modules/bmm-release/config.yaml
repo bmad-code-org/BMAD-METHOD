@@ -113,22 +113,19 @@ notifications:
   on_candidate_created:
     enabled: true
     channels:
-      - slack
-      
+      - email
+
   # Notify on release deployed
   on_deployed:
     enabled: true
     channels:
-      - slack
       - email
-      
+
   # Notify on release failed
   on_failed:
     enabled: true
     channels:
-      - slack
       - email
-      - pagerduty
 
 # Event subscriptions (for event bus)
 events:

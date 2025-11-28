@@ -1,0 +1,105 @@
+# BMM-Strategic Module Installer Configuration
+# Strategic Layer - Founder/Owner Persona
+# Vision, priorities, market positioning, compliance, UX strategy, growth
+
+code: bmm-strategic
+name: "Strategic Layer: Founder & Leadership Agents"
+default_selected: false
+
+header: "Strategic Layer - Founder & Leadership"
+subheader: |
+  Strategic agents for product vision, market positioning, compliance, and growth.
+  This layer is designed for founders, product owners, and strategic decision-makers.
+
+# Dependencies
+requires:
+  - core
+  - bmm
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+## install_user_docs
+## kb_install
+
+company_name:
+  prompt: "What is your company/product name?"
+  default: "{project_name}"
+  result: "{value}"
+
+company_stage:
+  prompt: "What stage is your company/product at?"
+  default: "mvp"
+  result: "{value}"
+  single-select:
+    - value: "idea"
+      label: "Idea - Validating concept, no product yet"
+    - value: "mvp"
+      label: "MVP - Building or have minimum viable product"
+    - value: "growth"
+      label: "Growth - Product-market fit, scaling users"
+    - value: "scale"
+      label: "Scale - Rapid expansion, optimizing operations"
+    - value: "mature"
+      label: "Mature - Established market position"
+
+market_segment:
+  prompt: "What is your primary market segment?"
+  default: "smb"
+  result: "{value}"
+  single-select:
+    - value: "consumer"
+      label: "Consumer (B2C)"
+    - value: "smb"
+      label: "Small/Medium Business (SMB)"
+    - value: "mid-market"
+      label: "Mid-Market"
+    - value: "enterprise"
+      label: "Enterprise"
+
+compliance_frameworks:
+  prompt:
+    - "Which compliance frameworks are relevant to your product?"
+    - "Select all that apply (or none if not applicable yet)"
+  default: []
+  result: "{value}"
+  multi-select:
+    - value: "gdpr"
+      label: "GDPR - EU Data Protection"
+    - value: "soc2"
+      label: "SOC2 - Security & Availability"
+    - value: "hipaa"
+      label: "HIPAA - Healthcare Data"
+    - value: "pci-dss"
+      label: "PCI-DSS - Payment Card Data"
+    - value: "iso27001"
+      label: "ISO 27001 - Information Security"
+    - value: "none"
+      label: "None currently required"
+
+north_star_metric:
+  prompt:
+    - "What is your primary growth metric (north star)?"
+    - "This drives strategic decisions and growth experiments"
+  default: "monthly_active_users"
+  result: "{value}"
+  single-select:
+    - value: "monthly_active_users"
+      label: "Monthly Active Users (MAU)"
+    - value: "monthly_recurring_revenue"
+      label: "Monthly Recurring Revenue (MRR)"
+    - value: "customer_lifetime_value"
+      label: "Customer Lifetime Value (LTV)"
+    - value: "net_promoter_score"
+      label: "Net Promoter Score (NPS)"
+    - value: "daily_active_users"
+      label: "Daily Active Users (DAU)"
+    - value: "custom"
+      label: "Custom metric (define later)"
+
+strategic_docs_folder:
+  prompt: "Where should strategic documents be stored (vision, roadmap, competitive analysis)?"
+  default: "{output_folder}/strategic"
+  result: "{project-root}/{value}"

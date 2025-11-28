@@ -556,17 +556,17 @@ event_types:
   # Feedback Module Events (NEW)
   # ============================================
 
-  feedback.interview.synthesized:
+  feedback.survey.synthesized:
     domain: feedback
-    action: interview.synthesized
-    description: "Customer interviews have been synthesized"
-    source_workflow: "synthesize-interviews"
+    action: survey.synthesized
+    description: "Customer feedback surveys have been synthesized"
+    source_workflow: "synthesize-feedback"
     module: bmm-feedback
     payload:
       synthesis_id:
         type: string
         required: true
-      interview_count:
+      feedback_count:
         type: integer
         required: true
       themes:

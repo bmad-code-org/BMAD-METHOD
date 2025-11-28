@@ -1,0 +1,161 @@
+# Mobile Developer Contractor Profile
+# Defines the role, expectations, and communication patterns for mobile contractors
+
+profile_id: mobile-dev
+display_name: "Mobile Developer"
+icon: "📱"
+
+role:
+  title: "Mobile Developer (Android)"
+  description: "Android application development with focus on offline-first architecture and low-cost device optimization"
+
+  responsibilities:
+    - "Implement Android features per specifications"
+    - "Build offline-first data synchronization"
+    - "Optimize for low-cost devices (memory, battery, storage)"
+    - "Integrate with backend APIs"
+    - "Write unit and instrumentation tests"
+    - "Follow Material Design guidelines"
+    - "Handle Android lifecycle properly"
+
+  deliverables:
+    - "Android feature implementation"
+    - "Unit tests with JUnit/MockK"
+    - "UI tests with Espresso (critical flows)"
+    - "APK for testing (debug build)"
+    - "PR with test instructions"
+
+technical:
+  primary_stack:
+    - "Kotlin"
+    - "Jetpack Compose"
+    - "Android Jetpack (ViewModel, Room, Navigation)"
+    - "Coroutines + Flow"
+    - "Hilt (DI)"
+
+  secondary_stack:
+    - "Retrofit + OkHttp"
+    - "WorkManager"
+    - "DataStore"
+    - "Coil (images)"
+    - "Firebase (crashlytics, analytics)"
+
+  patterns:
+    - "MVVM architecture"
+    - "Repository pattern"
+    - "Offline-first with sync"
+    - "Single Activity architecture"
+    - "Clean Architecture layers"
+
+  quality_requirements:
+    test_coverage: 70
+    code_style: "ktlint"
+    min_sdk: 24
+    target_sdk: 34
+    performance: "ANR-free, <2s cold start on mid-range device"
+
+assignment:
+  story_types:
+    - "mobile"
+    - "android"
+    - "offline"
+    - "sync"
+
+  story_labels:
+    - "mobile"
+    - "android"
+    - "kotlin"
+    - "app"
+
+  complexity_limit: "L"
+
+  excluded_types:
+    - "backend"
+    - "frontend"
+    - "web"
+    - "ios"
+
+communication:
+  assignment_context: |
+    ## Technical Context
+
+    ### Project Standards
+    - Kotlin with Jetpack Compose
+    - Follow architecture in `app/src/main/java`
+    - Use project's base classes and utilities
+    - All strings externalized for localization
+
+    ### Code Style
+    - ktlint configured
+    - Run `./gradlew ktlintFormat` before committing
+    - Follow Kotlin coding conventions
+
+    ### Architecture
+    - MVVM with ViewModels
+    - Repository pattern for data
+    - Use cases for business logic
+    - Hilt for dependency injection
+
+    ### Offline-First Requirements
+    - All data operations must work offline
+    - Use Room for local storage
+    - WorkManager for background sync
+    - Handle conflict resolution per spec
+
+    ### Performance Targets
+    - Cold start: <2 seconds on Pixel 4a
+    - Memory: <150MB typical usage
+    - Battery: No wakelocks, efficient sync
+    - APK size: <30MB
+
+    ### Testing Requirements
+    - Unit tests for ViewModels and UseCases
+    - Room tests for database operations
+    - Espresso tests for critical user flows
+    - Mock API responses for consistency
+
+  submission_checklist: |
+    Before submitting, verify:
+    - [ ] All acceptance criteria met
+    - [ ] Works offline (airplane mode test)
+    - [ ] Sync works correctly when online
+    - [ ] Tests passing: `./gradlew test`
+    - [ ] Lint passing: `./gradlew lint`
+    - [ ] ktlint: `./gradlew ktlintCheck`
+    - [ ] No memory leaks (test with LeakCanary)
+    - [ ] Tested on low-end device or emulator (2GB RAM)
+    - [ ] APK attached (debug build)
+    - [ ] PR includes testing instructions
+
+  review_criteria: |
+    Code will be reviewed for:
+    1. **Functionality** - Meets acceptance criteria
+    2. **Offline Support** - Works without network
+    3. **Performance** - No ANRs, acceptable memory usage
+    4. **Architecture** - Follows project patterns
+    5. **Tests** - Adequate coverage
+    6. **Kotlin** - Idiomatic, no Java patterns
+    7. **UX** - Follows Material Design, handles edge cases
+
+metrics:
+  tracked:
+    - "stories_completed"
+    - "story_points_delivered"
+    - "average_cycle_time"
+    - "rejection_rate"
+    - "crash_rate"
+    - "anr_rate"
+
+  targets:
+    average_cycle_time_days: 4
+    rejection_rate_percent: 15
+    crash_free_rate: 99.5
+
+escalation:
+  auto_escalate:
+    - condition: "blocked > 24 hours"
+      action: "notify_coordinator"
+    - condition: "api_mismatch"
+      action: "notify_backend_dev"
+    - condition: "offline_sync_issue"
+      action: "schedule_technical_review"

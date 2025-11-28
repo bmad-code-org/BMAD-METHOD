@@ -114,7 +114,7 @@ Period: </ask>
 
 <ask>Enter feedback details:
 
-Source (e.g., email, call, meeting): </ask>
+Source (e.g., email, support ticket, survey): </ask>
 <action>Store as {{manual_source}}</action>
 
 <ask>Customer identifier (optional): </ask>

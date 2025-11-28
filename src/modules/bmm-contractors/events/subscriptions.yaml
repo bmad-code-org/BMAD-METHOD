@@ -1,0 +1,224 @@
+# BMM-Contractors Module - Event Subscriptions
+# Events that contractor coordination listens to
+
+schema_version: "1.0.0"
+module: bmm-contractors
+
+subscriptions:
+
+  # =============================================================================
+  # FROM BMM CORE - STORY LIFECYCLE
+  # =============================================================================
+
+  story.created:
+    description: "A new story has been created"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Add to assignment candidates if meets criteria"
+        trigger: "always"
+
+  story.ready:
+    description: "A story is ready for development"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Suggest contractor assignment"
+        trigger: "always"
+        auto_action: false
+        notification: "Story ready for assignment"
+
+  story.done:
+    description: "A story has been completed"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Update contractor metrics, check for next assignment"
+        trigger: "if_contractor_assigned"
+
+  # =============================================================================
+  # FROM BMM CORE - SPRINT LIFECYCLE
+  # =============================================================================
+
+  sprint.started:
+    description: "A sprint has started"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Send sprint kickoff summary to contractors with assignments"
+        trigger: "always"
+
+  sprint.ended:
+    description: "A sprint has ended"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Generate contractor performance summary for sprint"
+        trigger: "always"
+
+  # =============================================================================
+  # FROM BMM-METRICS
+  # =============================================================================
+
+  metrics.quality.pass:
+    description: "Quality gates have passed"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Update submission status, proceed with merge if applicable"
+        trigger: "if_contractor_pr"
+
+  metrics.quality.fail:
+    description: "Quality gates have failed"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Notify contractor of quality gate failure"
+        trigger: "if_contractor_pr"
+
+  # =============================================================================
+  # FROM BMM-RELEASE
+  # =============================================================================
+
+  release.candidate.created:
+    description: "A release candidate has been created"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Notify contractors whose work is included"
+        trigger: "if_contractor_work_included"
+
+  # =============================================================================
+  # INTERNAL - EMAIL PROCESSING
+  # =============================================================================
+
+  contractor.reply.received:
+    description: "Received an email reply from a contractor"
+    handlers:
+      - action: "Route based on command type"
+        routing:
+          ACKNOWLEDGED:
+            action: "Update story status to In Progress"
+            workflow: null
+          SUBMITTED:
+            action: "Trigger review workflow"
+            workflow: "review-submission"
+          BLOCKED:
+            action: "Create blocker, potentially escalate"
+            workflow: "escalate-blocker"
+          QUESTION:
+            action: "Route to coordinator for response"
+            notification: "Contractor question requires response"
+          PROGRESS:
+            action: "Update story progress in state"
+            workflow: null
+          ESTIMATE:
+            action: "Update expected completion date"
+            workflow: null
+          UNAVAILABLE:
+            action: "Update contractor availability, check assignments"
+            workflow: "handle-unavailability"
+
+  contractor.submission.received:
+    description: "Contractor has submitted work"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Initiate review process"
+        trigger: "always"
+        workflow: "review-submission"
+
+  # =============================================================================
+  # INTERNAL - GIT POLLING EVENTS
+  # =============================================================================
+
+  contractor.pr.opened:
+    description: "Contractor opened a PR"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Link PR to story, update status"
+        trigger: "always"
+      - agent: contractor-coordinator
+        action: "Request QA review if configured"
+        trigger: "if_qa_required"
+        workflow: "request-qa-review"
+
+  contractor.pr.merged:
+    description: "Contractor PR was merged"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Mark story complete, send approval email, update metrics"
+        trigger: "always"
+      - agent: contractor-coordinator
+        action: "Check for next story to assign"
+        trigger: "if_contractor_has_capacity"
+
+  # =============================================================================
+  # INTERNAL - STATUS CHANGES
+  # =============================================================================
+
+  contractor.blocked:
+    description: "Contractor reported being blocked"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Log blocker, start escalation timer"
+        trigger: "always"
+      - agent: contractor-coordinator
+        action: "Notify coordinator immediately if critical"
+        trigger: "if_blocking_release"
+
+  contractor.status.updated:
+    description: "Contractor status changed"
+    handlers:
+      - agent: contractor-coordinator
+        action: "Update dashboard, rebalance if needed"
+        trigger: "on_availability_change"
+
+# =============================================================================
+# TRIGGER CONDITIONS
+# =============================================================================
+
+trigger_conditions:
+  if_contractor_assigned:
+    description: "Story has a contractor assigned"
+    check: "story.contractor_id is not null"
+
+  if_contractor_pr:
+    description: "Event relates to a contractor PR"
+    check: "pr.labels contains 'contractor'"
+
+  if_contractor_work_included:
+    description: "Release includes contractor work"
+    check: "release.stories intersects contractor_stories"
+
+  if_qa_required:
+    description: "Story type requires QA review"
+    check: "story.type in qa_required_types"
+
+  if_contractor_has_capacity:
+    description: "Contractor has available capacity"
+    check: "contractor.current_load < contractor.capacity"
+
+  if_blocking_release:
+    description: "Blocker affects release timeline"
+    check: "story.release_target is not null and story.release_target.at_risk"
+
+  on_availability_change:
+    description: "Contractor availability changed"
+    check: "status changed to 'unavailable' or 'available'"
+
+# =============================================================================
+# SCHEDULED HANDLERS
+# =============================================================================
+
+scheduled_handlers:
+  - name: "daily-standup"
+    schedule: "0 9 * * 1-5"  # 9am weekdays
+    action: "Generate standup request emails"
+    workflow: "contractor-standup"
+
+  - name: "reminder-check"
+    schedule: "0 */4 * * *"  # Every 4 hours
+    action: "Check for overdue acknowledgments, send reminders"
+    task: "check-reminders"
+
+  - name: "weekly-report"
+    schedule: "0 17 * * 5"  # Friday 5pm
+    action: "Generate weekly contractor report"
+    workflow: "contractor-report"
+
+  - name: "sla-check"
+    schedule: "0 * * * *"  # Every hour
+    action: "Check for SLA breaches"
+    task: "check-sla-breaches"

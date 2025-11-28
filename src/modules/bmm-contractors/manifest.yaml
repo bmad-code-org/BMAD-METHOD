@@ -1,0 +1,358 @@
+# BMM-Contractors Module Manifest
+# Distributed Team Communication via SMTP and Git
+# Version: 1.0.0
+
+name: bmm-contractors
+version: "1.0.0"
+display_name: "BMAD Contractors Module"
+description: "Coordinate distributed contractor teams through SMTP email and Git operations. Enables asynchronous work assignment, progress tracking, and code delivery without real-time communication."
+author: "BMad"
+license: "MIT"
+
+# Module category and tags
+category: "operations"
+tags:
+  - contractors
+  - distributed-team
+  - smtp
+  - git
+  - async
+  - remote-work
+  - outsourcing
+
+# Dependencies
+dependencies:
+  core:
+    version: ">=1.0.0"
+    required: true
+  bmm:
+    version: ">=1.0.0"
+    required: true
+    reason: "Story and sprint integration"
+  bmm-metrics:
+    version: ">=1.0.0"
+    required: false
+    reason: "Track contractor velocity and quality"
+
+# Event Integration
+events:
+  subscribes:
+    # From BMM core - story lifecycle
+    - story.created
+    - story.ready
+    - story.done
+    - sprint.started
+    - sprint.ended
+    # From bmm-metrics
+    - metrics.quality.pass
+    - metrics.quality.fail
+    # From bmm-release
+    - release.candidate.created
+    # Internal contractor events
+    - contractor.submission.received
+    - contractor.reply.received
+
+  publishes:
+    # Assignment events
+    - contractor.story.assigned
+    - contractor.story.reassigned
+    - contractor.story.unassigned
+    # Communication events
+    - contractor.email.sent
+    - contractor.email.failed
+    - contractor.email.bounced
+    - contractor.reply.received
+    # Submission events
+    - contractor.submission.received
+    - contractor.submission.approved
+    - contractor.submission.rejected
+    - contractor.revision.requested
+    # Git events
+    - contractor.branch.created
+    - contractor.pr.opened
+    - contractor.pr.merged
+    - contractor.pr.rejected
+    # Status events
+    - contractor.status.updated
+    - contractor.blocked
+    - contractor.unblocked
+    # Performance events
+    - contractor.velocity.calculated
+    - contractor.quality.scored
+
+# Agents provided by this module
+agents:
+  - name: contractor-coordinator
+    file: agents/contractor-coordinator.agent.yaml
+    description: "Orchestrates contractor communication, assignment, and tracking"
+    icon: "📡"
+
+# Contractor profiles (not full agents, but role definitions)
+contractor_profiles:
+  - name: backend-dev
+    file: agents/profiles/backend-dev.profile.yaml
+    description: "Backend Developer - Java/Spring APIs"
+    icon: "☕"
+
+  - name: frontend-dev
+    file: agents/profiles/frontend-dev.profile.yaml
+    description: "Frontend Developer - React/TypeScript"
+    icon: "⚛️"
+
+  - name: mobile-dev
+    file: agents/profiles/mobile-dev.profile.yaml
+    description: "Mobile Developer - Android/Kotlin"
+    icon: "📱"
+
+  - name: qa-engineer
+    file: agents/profiles/qa-engineer.profile.yaml
+    description: "QA Engineer - Test Automation"
+    icon: "🧪"
+
+  - name: researcher
+    file: agents/profiles/researcher.profile.yaml
+    description: "Researcher/Advisor - Documentation & Analysis"
+    icon: "📚"
+
+# Workflows provided
+workflows:
+  - name: assign-story
+    path: workflows/assign-story
+    description: "Assign a story to a contractor via email"
+    standalone: true
+    triggers:
+      - event: story.ready
+        auto: false
+
+  - name: review-submission
+    path: workflows/review-submission
+    description: "Review contractor code submission"
+    standalone: true
+    triggers:
+      - event: contractor.submission.received
+        auto: true
+
+  - name: contractor-standup
+    path: workflows/contractor-standup
+    description: "Generate standup summary from contractor updates"
+    standalone: true
+    triggers:
+      - scheduled: "0 9 * * 1-5"  # 9am weekdays
+
+  - name: onboard-contractor
+    path: workflows/onboard-contractor
+    description: "Onboard a new contractor to the project"
+    standalone: true
+
+  - name: request-revision
+    path: workflows/request-revision
+    description: "Request revisions on a submission"
+    standalone: true
+
+  - name: escalate-blocker
+    path: workflows/escalate-blocker
+    description: "Escalate a contractor blocker"
+    standalone: true
+
+  - name: contractor-report
+    path: workflows/contractor-report
+    description: "Generate contractor performance report"
+    standalone: true
+
+# Tasks provided
+tasks:
+  - name: send-email
+    file: tasks/send-email.xml
+    description: "Send email via SMTP transport"
+
+  - name: parse-email-reply
+    file: tasks/parse-email-reply.xml
+    description: "Parse contractor email reply for status/commands"
+
+  - name: create-branch
+    file: tasks/create-branch.xml
+    description: "Create Git branch for contractor work"
+
+  - name: check-pr-status
+    file: tasks/check-pr-status.xml
+    description: "Check status of contractor PR"
+
+  - name: merge-pr
+    file: tasks/merge-pr.xml
+    description: "Merge approved contractor PR"
+
+# Event handlers
+event_handlers:
+  - name: on-story-ready
+    file: events/handlers/on-story-ready.xml
+    event: story.ready
+    description: "Suggest contractor assignment when story is ready"
+
+  - name: on-submission-received
+    file: events/handlers/on-submission-received.xml
+    event: contractor.submission.received
+    description: "Process contractor code submission"
+
+  - name: on-email-reply
+    file: events/handlers/on-email-reply.xml
+    event: contractor.reply.received
+    description: "Process contractor email reply"
+
+# Email templates
+templates:
+  - name: story-assignment
+    file: templates/email/story-assignment.md
+    description: "Email template for assigning a story"
+
+  - name: revision-request
+    file: templates/email/revision-request.md
+    description: "Email template for requesting revisions"
+
+  - name: submission-approved
+    file: templates/email/submission-approved.md
+    description: "Email template for approving submission"
+
+  - name: submission-rejected
+    file: templates/email/submission-rejected.md
+    description: "Email template for rejecting submission"
+
+  - name: blocker-followup
+    file: templates/email/blocker-followup.md
+    description: "Email template for blocker follow-up"
+
+  - name: standup-request
+    file: templates/email/standup-request.md
+    description: "Email template for standup status request"
+
+  - name: welcome-onboarding
+    file: templates/email/welcome-onboarding.md
+    description: "Email template for new contractor onboarding"
+
+# Configuration schema
+config_schema:
+  smtp:
+    type: object
+    required: true
+    properties:
+      host:
+        type: string
+        description: "SMTP server hostname"
+      port:
+        type: integer
+        default: 587
+      secure:
+        type: boolean
+        default: true
+      auth:
+        type: object
+        properties:
+          user:
+            type: string
+          pass:
+            type: string
+            secret: true
+      from_address:
+        type: string
+        description: "From address for outgoing emails"
+      from_name:
+        type: string
+        description: "From name for outgoing emails"
+      reply_to:
+        type: string
+        description: "Reply-to address"
+
+  git:
+    type: object
+    required: true
+    properties:
+      provider:
+        type: string
+        enum: ["github", "gitlab", "bitbucket"]
+      organization:
+        type: string
+      repository:
+        type: string
+      main_branch:
+        type: string
+        default: "main"
+      develop_branch:
+        type: string
+        default: "develop"
+      branch_pattern:
+        type: string
+        default: "story/{story_id}-{slug}"
+      require_pr:
+        type: boolean
+        default: true
+      require_review:
+        type: boolean
+        default: true
+      min_reviewers:
+        type: integer
+        default: 1
+
+  contractors:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: ["backend-dev", "frontend-dev", "mobile-dev", "qa-engineer", "researcher"]
+        tech_stack:
+          type: array
+          items:
+            type: string
+        availability:
+          type: string
+          enum: ["full-time", "part-time", "on-call"]
+        timezone:
+          type: string
+        response_sla_hours:
+          type: integer
+          default: 24
+
+  communication:
+    type: object
+    properties:
+      subject_prefix:
+        type: string
+        default: "[PROJECT]"
+      include_context:
+        type: boolean
+        default: true
+      max_context_lines:
+        type: integer
+        default: 500
+      reminder_after_hours:
+        type: integer
+        default: 48
+      escalation_after_hours:
+        type: integer
+        default: 72
+
+# Installation hooks
+hooks:
+  post_install:
+    - action: "create_config"
+      template: "config.yaml"
+    - action: "create_state"
+      template: "state/module-state.yaml"
+    - action: "validate_smtp"
+      optional: true
+    - action: "validate_git"
+      optional: true
+    - action: "log"
+      message: "Contractors module installed. Configure SMTP and Git settings, then add contractor profiles."
+
+  pre_uninstall:
+    - action: "backup_state"
+      path: "state/"
+    - action: "warn"
+      message: "Uninstalling will not affect pending contractor assignments"

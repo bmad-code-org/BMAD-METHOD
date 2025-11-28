@@ -98,8 +98,8 @@ notifications:
   on_negative_spike:
     enabled: true
     channels:
-      - slack
-      
+      - email
+
   # Report generation complete
   on_report_ready:
     enabled: true

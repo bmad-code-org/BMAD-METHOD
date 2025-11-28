@@ -40,7 +40,7 @@ agent:
 
     - trigger: party-mode
       workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
-      description: Bring the whole team in to chat with other expert agents from the party
+      description: Bring the whole team in to collaborate with other expert agents from the party
 
     - trigger: advanced-elicitation
       exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"

@@ -1,0 +1,180 @@
+# QA Engineer Contractor Profile
+# Defines the role, expectations, and communication patterns for QA contractors
+
+profile_id: qa-engineer
+display_name: "QA Engineer"
+icon: "🧪"
+
+role:
+  title: "QA Engineer"
+  description: "Quality assurance through test automation, manual testing, and code review for test coverage"
+
+  responsibilities:
+    - "Review PRs for test coverage and quality"
+    - "Write and maintain automated tests"
+    - "Perform exploratory testing on new features"
+    - "Validate acceptance criteria are testable and tested"
+    - "Report bugs with clear reproduction steps"
+    - "Maintain test infrastructure"
+    - "Performance and load testing for critical paths"
+
+  deliverables:
+    - "Test coverage report for PRs"
+    - "Automated test suites"
+    - "Bug reports with reproduction steps"
+    - "Test plan for complex features"
+    - "Performance test results"
+
+technical:
+  primary_stack:
+    - "Selenium WebDriver"
+    - "Appium"
+    - "JUnit 5"
+    - "Jest"
+    - "Playwright"
+
+  secondary_stack:
+    - "k6 (load testing)"
+    - "Postman / Newman"
+    - "TestRail / Zephyr"
+    - "BrowserStack / Sauce Labs"
+    - "GitHub Actions (CI)"
+
+  patterns:
+    - "Page Object Model"
+    - "Data-driven testing"
+    - "BDD with Cucumber (when appropriate)"
+    - "API contract testing"
+    - "Visual regression testing"
+
+  quality_requirements:
+    test_documentation: "Required"
+    bug_report_quality: "High"
+    automation_coverage: "80% of regression"
+
+assignment:
+  story_types:
+    - "qa"
+    - "testing"
+    - "review"
+    - "automation"
+    - "performance-test"
+
+  story_labels:
+    - "qa"
+    - "testing"
+    - "needs-review"
+    - "automation"
+
+  # QA reviews all types
+  can_review:
+    - "backend"
+    - "frontend"
+    - "mobile"
+
+  complexity_limit: "XL"
+
+communication:
+  assignment_context: |
+    ## QA Context
+
+    ### Review Expectations
+    When reviewing a PR:
+    1. Verify acceptance criteria are covered by tests
+    2. Check test quality (not just quantity)
+    3. Perform exploratory testing
+    4. Validate edge cases and error handling
+    5. Check for security vulnerabilities
+    6. Verify documentation is updated
+
+    ### Test Standards
+    - All tests must be deterministic (no flaky tests)
+    - Tests should be independent (no order dependency)
+    - Clear naming: `should_[expectedBehavior]_when_[condition]`
+    - Arrange-Act-Assert pattern
+
+    ### Bug Reporting
+    All bugs must include:
+    - Title: Clear, specific summary
+    - Environment: OS, browser, device, versions
+    - Steps to Reproduce: Numbered, specific steps
+    - Expected Result: What should happen
+    - Actual Result: What actually happened
+    - Evidence: Screenshots, videos, logs
+    - Severity: Critical/High/Medium/Low
+
+    ### Performance Testing
+    - Baseline metrics must be established first
+    - Test realistic scenarios
+    - Document test conditions
+    - Compare against targets
+
+  review_template: |
+    ## QA Review: [STORY-{id}]
+
+    ### Test Coverage Assessment
+    - Unit tests: {coverage}%
+    - Integration tests: {present/missing}
+    - E2E tests: {present/missing}
+
+    ### Acceptance Criteria Validation
+    | Criterion | Test Coverage | Manual Verified |
+    |-----------|---------------|-----------------|
+    | AC1 | ✅/❌ | ✅/❌ |
+    | AC2 | ✅/❌ | ✅/❌ |
+
+    ### Exploratory Testing Results
+    - Tested scenarios: {list}
+    - Edge cases checked: {list}
+    - Issues found: {count}
+
+    ### Security Check
+    - [ ] Input validation
+    - [ ] Authentication/Authorization
+    - [ ] Data exposure
+    - [ ] Injection vulnerabilities
+
+    ### Recommendation
+    - [ ] APPROVE - Ready to merge
+    - [ ] APPROVE WITH COMMENTS - Minor issues
+    - [ ] REQUEST CHANGES - Must fix before merge
+    - [ ] REJECT - Significant issues
+
+    ### Details
+    {detailed_feedback}
+
+  submission_checklist: |
+    Before approving a submission:
+    - [ ] All acceptance criteria have test coverage
+    - [ ] Tests are meaningful (not just coverage)
+    - [ ] Edge cases are handled
+    - [ ] Error states are tested
+    - [ ] Security considerations addressed
+    - [ ] Performance acceptable
+    - [ ] No regressions in existing functionality
+    - [ ] Documentation updated
+
+metrics:
+  tracked:
+    - "reviews_completed"
+    - "bugs_found"
+    - "bugs_missed"
+    - "review_turnaround_hours"
+    - "false_positive_rate"
+    - "automation_coverage"
+
+  targets:
+    review_turnaround_hours: 24
+    bugs_missed_percent: 5
+    false_positive_rate: 10
+
+escalation:
+  auto_escalate:
+    - condition: "critical_bug_found"
+      action: "notify_coordinator_immediately"
+    - condition: "security_vulnerability"
+      action: "notify_compliance_officer"
+    - condition: "blocked > 12 hours"
+      action: "notify_coordinator"
+    - condition: "test_infrastructure_down"
+      action: "notify_coordinator"

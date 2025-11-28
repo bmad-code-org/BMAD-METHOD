@@ -1,0 +1,376 @@
+# BMM-Strategic Module - Event Subscriptions
+# Events that strategic agents listen to
+
+schema_version: "1.0.0"
+module: bmm-strategic
+
+subscriptions:
+
+  # =============================================================================
+  # FROM BMM-METRICS MODULE
+  # =============================================================================
+
+  metrics.kpi.updated:
+    description: "KPI values have been updated"
+    handlers:
+      - agent: founder
+        action: "Review KPI progress against strategic priorities"
+        trigger: "on_significant_change"
+      - agent: growth-engineer
+        action: "Update growth model with latest metrics"
+        trigger: "always"
+      - agent: ux-strategist
+        action: "Check if UX-related metrics changed"
+        trigger: "on_ux_metrics"
+
+  metrics.quality.fail:
+    description: "Quality gate has failed"
+    handlers:
+      - agent: compliance-officer
+        action: "Review if failure has compliance implications"
+        trigger: "always"
+      - agent: founder
+        action: "Alert if failure impacts strategic initiative"
+        trigger: "on_strategic_initiative"
+
+  metrics.velocity.calculated:
+    description: "Sprint velocity has been calculated"
+    handlers:
+      - agent: founder
+        action: "Update roadmap projections based on velocity"
+        trigger: "on_significant_change"
+      - agent: growth-engineer
+        action: "Factor velocity into growth model"
+        trigger: "always"
+
+  metrics.sla.breach:
+    description: "SLA threshold has been breached"
+    handlers:
+      - agent: compliance-officer
+        action: "Document breach and assess customer impact"
+        trigger: "always"
+      - agent: founder
+        action: "Escalate if affects key customers"
+        trigger: "on_key_customer"
+
+  # =============================================================================
+  # FROM BMM-FEEDBACK MODULE
+  # =============================================================================
+
+  feedback.insight.generated:
+    description: "Customer feedback insight has been identified"
+    handlers:
+      - agent: founder
+        action: "Review insight for strategic implications"
+        trigger: "on_high_priority"
+      - agent: ux-strategist
+        action: "Incorporate into UX research findings"
+        trigger: "always"
+      - agent: market-strategist
+        action: "Check for competitive intelligence"
+        trigger: "on_competitor_mention"
+      - agent: saas-specialist
+        action: "Review for pricing/packaging feedback"
+        trigger: "on_pricing_feedback"
+
+  feedback.priority.suggested:
+    description: "Feedback suggests priority change"
+    handlers:
+      - agent: founder
+        action: "Evaluate priority suggestion against strategy"
+        trigger: "always"
+
+  feedback.received:
+    description: "New customer feedback has been received"
+    handlers:
+      - agent: ux-strategist
+        action: "Categorize UX-related feedback"
+        trigger: "on_ux_feedback"
+      - agent: compliance-officer
+        action: "Flag privacy/security concerns"
+        trigger: "on_security_concern"
+
+  # =============================================================================
+  # FROM BMM-ROADMAP MODULE
+  # =============================================================================
+
+  roadmap.at.risk:
+    description: "Roadmap timeline is at risk"
+    handlers:
+      - agent: founder
+        action: "Evaluate strategic impact and options"
+        trigger: "always"
+      - agent: market-strategist
+        action: "Assess competitive timing implications"
+        trigger: "always"
+
+  roadmap.milestone.completed:
+    description: "Roadmap milestone has been achieved"
+    handlers:
+      - agent: founder
+        action: "Acknowledge milestone, communicate to stakeholders"
+        trigger: "always"
+      - agent: growth-engineer
+        action: "Update growth projections"
+        trigger: "on_growth_milestone"
+
+  roadmap.updated:
+    description: "Roadmap has been updated"
+    handlers:
+      - agent: founder
+        action: "Verify alignment with strategic priorities"
+        trigger: "always"
+      - agent: market-strategist
+        action: "Update competitive positioning timeline"
+        trigger: "on_significant_change"
+
+  # =============================================================================
+  # FROM BMM-RELEASE MODULE
+  # =============================================================================
+
+  release.deployed:
+    description: "Release has been deployed to production"
+    handlers:
+      - agent: growth-engineer
+        action: "Monitor growth metrics post-release"
+        trigger: "always"
+      - agent: ux-strategist
+        action: "Monitor UX metrics post-release"
+        trigger: "always"
+      - agent: compliance-officer
+        action: "Verify compliance controls in production"
+        trigger: "on_compliance_feature"
+      - agent: market-strategist
+        action: "Update competitive feature matrix"
+        trigger: "on_competitive_feature"
+
+  release.candidate.created:
+    description: "Release candidate has been created"
+    handlers:
+      - agent: compliance-officer
+        action: "Review release for compliance implications"
+        trigger: "always"
+      - agent: founder
+        action: "Review if release contains strategic features"
+        trigger: "on_strategic_feature"
+
+  release.failed:
+    description: "Release deployment has failed"
+    handlers:
+      - agent: founder
+        action: "Assess strategic impact of delay"
+        trigger: "on_strategic_feature"
+      - agent: compliance-officer
+        action: "Document incident for audit trail"
+        trigger: "always"
+
+  # =============================================================================
+  # FROM BMM CORE MODULE
+  # =============================================================================
+
+  sprint.started:
+    description: "Sprint has started"
+    handlers:
+      - agent: founder
+        action: "Verify sprint goals align with priorities"
+        trigger: "always"
+
+  sprint.ended:
+    description: "Sprint has ended"
+    handlers:
+      - agent: founder
+        action: "Review sprint outcomes against priorities"
+        trigger: "always"
+      - agent: growth-engineer
+        action: "Update velocity in growth model"
+        trigger: "always"
+
+  story.done:
+    description: "Story has been completed"
+    handlers:
+      - agent: growth-engineer
+        action: "Check if story affects growth metrics"
+        trigger: "on_growth_feature"
+      - agent: ux-strategist
+        action: "Schedule UX validation if UX story"
+        trigger: "on_ux_story"
+
+  # =============================================================================
+  # INTERNAL STRATEGIC EVENTS
+  # =============================================================================
+
+  vision.updated:
+    description: "Product vision has been updated"
+    handlers:
+      - agent: market-strategist
+        action: "Update positioning to align with vision"
+        trigger: "always"
+      - agent: saas-specialist
+        action: "Review SaaS strategy alignment"
+        trigger: "always"
+      - agent: compliance-officer
+        action: "Review compliance implications"
+        trigger: "on_scope_change"
+
+  priority.set:
+    description: "Strategic priorities have been set"
+    handlers:
+      - agent: market-strategist
+        action: "Align competitive focus with priorities"
+        trigger: "always"
+      - agent: growth-engineer
+        action: "Update growth experiments focus"
+        trigger: "always"
+      - agent: ux-strategist
+        action: "Prioritize UX research accordingly"
+        trigger: "always"
+      - agent: saas-specialist
+        action: "Align SaaS roadmap with priorities"
+        trigger: "always"
+
+  decision.go:
+    description: "Go decision made on initiative"
+    handlers:
+      - agent: compliance-officer
+        action: "Initiate compliance review for initiative"
+        trigger: "always"
+      - agent: growth-engineer
+        action: "Design measurement plan"
+        trigger: "always"
+      - agent: ux-strategist
+        action: "Plan UX research and design"
+        trigger: "always"
+
+  market.competitor.alert:
+    description: "Competitor has made significant move"
+    handlers:
+      - agent: founder
+        action: "Assess strategic response options"
+        trigger: "always"
+      - agent: saas-specialist
+        action: "Review pricing/feature implications"
+        trigger: "on_pricing_move"
+
+  compliance.flag.raised:
+    description: "Compliance concern has been raised"
+    handlers:
+      - agent: founder
+        action: "Assess strategic impact of compliance issue"
+        trigger: "on_critical"
+
+  growth.experiment.completed:
+    description: "Growth experiment has been completed"
+    handlers:
+      - agent: founder
+        action: "Review learnings for strategic implications"
+        trigger: "on_significant_learning"
+      - agent: ux-strategist
+        action: "Incorporate UX learnings"
+        trigger: "on_ux_experiment"
+
+  ux.friction.identified:
+    description: "UX friction point has been identified"
+    handlers:
+      - agent: growth-engineer
+        action: "Quantify impact on conversion/retention"
+        trigger: "always"
+      - agent: founder
+        action: "Prioritize if affects key journey"
+        trigger: "on_critical_journey"
+
+  saas.pricing.defined:
+    description: "Pricing strategy has been defined"
+    handlers:
+      - agent: market-strategist
+        action: "Update competitive positioning"
+        trigger: "always"
+      - agent: growth-engineer
+        action: "Update revenue projections"
+        trigger: "always"
+      - agent: compliance-officer
+        action: "Review pricing compliance (taxes, regulations)"
+        trigger: "always"
+
+# =============================================================================
+# TRIGGER CONDITIONS
+# =============================================================================
+
+trigger_conditions:
+  on_significant_change:
+    description: "Trigger when change exceeds threshold"
+    parameters:
+      threshold_percentage: 10
+
+  on_high_priority:
+    description: "Trigger for high-priority items only"
+    parameters:
+      priority_levels: ["critical", "high"]
+
+  on_strategic_initiative:
+    description: "Trigger when related to strategic initiative"
+    check: "initiative_id in strategic_priorities"
+
+  on_key_customer:
+    description: "Trigger when affects key customer"
+    check: "customer_id in key_customers"
+
+  on_competitor_mention:
+    description: "Trigger when competitor is mentioned"
+    check: "contains(competitors)"
+
+  on_pricing_feedback:
+    description: "Trigger when feedback relates to pricing"
+    check: "category in ['pricing', 'billing', 'value']"
+
+  on_ux_feedback:
+    description: "Trigger when feedback relates to UX"
+    check: "category in ['usability', 'design', 'navigation', 'confusion']"
+
+  on_security_concern:
+    description: "Trigger when security/privacy concern raised"
+    check: "category in ['security', 'privacy', 'data']"
+
+  on_compliance_feature:
+    description: "Trigger when feature has compliance implications"
+    check: "compliance_relevant = true"
+
+  on_competitive_feature:
+    description: "Trigger when feature affects competitive position"
+    check: "competitive_relevant = true"
+
+  on_strategic_feature:
+    description: "Trigger when feature is strategically important"
+    check: "strategic_priority = true"
+
+  on_growth_feature:
+    description: "Trigger when feature affects growth metrics"
+    check: "affects_growth_metrics = true"
+
+  on_ux_story:
+    description: "Trigger when story is UX-related"
+    check: "story_type in ['ux', 'design', 'frontend']"
+
+  on_critical:
+    description: "Trigger on critical severity only"
+    parameters:
+      severity: "critical"
+
+  on_significant_learning:
+    description: "Trigger when experiment has significant learning"
+    check: "learning_significance >= 'high'"
+
+  on_ux_experiment:
+    description: "Trigger when experiment is UX-related"
+    check: "experiment_type in ['ux', 'usability']"
+
+  on_critical_journey:
+    description: "Trigger when affects critical user journey"
+    check: "journey in critical_journeys"
+
+  on_scope_change:
+    description: "Trigger when scope significantly changes"
+    check: "change_type = 'scope'"
+
+  on_pricing_move:
+    description: "Trigger when competitor changes pricing"
+    check: "change_type = 'pricing'"

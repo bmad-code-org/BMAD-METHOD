@@ -1,0 +1,69 @@
+# Define Vision Workflow
+# Founder Agent - Product Vision Definition
+
+name: define-vision
+display_name: "Define Product Vision"
+description: "Interactive workflow to define or refine product vision, mission, and strategic direction"
+version: "1.0.0"
+
+agent: founder
+module: bmm-strategic
+
+# Workflow metadata
+metadata:
+  estimated_duration: "30-60 minutes"
+  participants: ["founder"]
+  outputs:
+    - "Vision statement"
+    - "Mission statement"
+    - "Value proposition"
+    - "Key differentiators"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-strategic/config.yaml"
+      section: "vision"
+
+# Workflow configuration
+config:
+  interactive: true
+  save_progress: true
+  publish_events: true
+
+# Workflow stages
+stages:
+  - id: "context"
+    name: "Gather Context"
+    description: "Understand current state and inputs"
+
+  - id: "customer"
+    name: "Define Customer"
+    description: "Clarify target customer and their problems"
+
+  - id: "solution"
+    name: "Define Solution"
+    description: "Articulate the product and its value"
+
+  - id: "differentiation"
+    name: "Define Differentiation"
+    description: "Identify what makes this unique"
+
+  - id: "synthesis"
+    name: "Synthesize Vision"
+    description: "Create the vision statement"
+
+  - id: "validation"
+    name: "Validate & Commit"
+    description: "Review and finalize"
+
+# Events published by this workflow
+events:
+  on_complete:
+    - type: "vision.defined"
+      condition: "is_new_vision"
+    - type: "vision.updated"
+      condition: "is_update"
+
+# Trigger conditions
+triggers:
+  manual: true
+  on_event: null
+  scheduled: null

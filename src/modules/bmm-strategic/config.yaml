@@ -1,0 +1,298 @@
+# BMM-Strategic Module Configuration
+# Strategic Leadership Settings for SaaS Product Development
+#
+# This file is created during installation and should be customized
+# for your specific company and product context.
+
+# =============================================================================
+# COMPANY PROFILE
+# =============================================================================
+
+company:
+  # Company name (used in reports and communications)
+  name: "{{company_name}}"
+
+  # Company stage affects workflow recommendations
+  # Options: idea, mvp, growth, scale, mature
+  stage: "mvp"
+
+  # Funding stage (affects investor reporting)
+  # Options: bootstrapped, pre-seed, seed, series-a, series-b+, public
+  funding_stage: "bootstrapped"
+
+  # Team size category
+  # Options: solo, small (2-5), medium (6-15), large (15+)
+  team_size: "small"
+
+# =============================================================================
+# PRODUCT VISION
+# =============================================================================
+
+vision:
+  # One-line product vision statement
+  statement: ""
+
+  # Mission - why does this product exist?
+  mission: ""
+
+  # Core value proposition (for customers)
+  value_proposition: ""
+
+  # Target outcome for users
+  user_outcome: ""
+
+  # Key differentiators (what makes you unique)
+  differentiators: []
+
+  # Strategic priorities for current quarter
+  quarterly_priorities: []
+
+  # Long-term (1-3 year) strategic goals
+  strategic_goals: []
+
+# =============================================================================
+# MARKET CONTEXT
+# =============================================================================
+
+market:
+  # Primary market segment
+  # Options: smb, mid-market, enterprise, consumer, prosumer
+  segment: "smb"
+
+  # Industry vertical(s)
+  verticals: []
+
+  # Geographic focus
+  regions:
+    - "global"
+
+  # Ideal Customer Profile (ICP)
+  icp:
+    company_size: ""
+    industry: ""
+    pain_points: []
+    buying_triggers: []
+    decision_makers: []
+
+  # Key competitors to track
+  competitors: []
+
+  # Market positioning
+  positioning:
+    category: ""
+    tagline: ""
+    against: ""  # "We are X for Y" or "Unlike X, we..."
+
+# =============================================================================
+# SAAS BUSINESS MODEL
+# =============================================================================
+
+saas:
+  # Business model type
+  # Options: self-serve, sales-led, product-led, hybrid
+  model: "product-led"
+
+  # Pricing model
+  # Options: freemium, free-trial, paid-only, usage-based, seat-based
+  pricing_model: "freemium"
+
+  # Pricing tiers
+  tiers:
+    - name: "Free"
+      price: 0
+      features: []
+      limits: {}
+    - name: "Pro"
+      price: 0
+      features: []
+      limits: {}
+    - name: "Enterprise"
+      price: "custom"
+      features: []
+      limits: {}
+
+  # Multi-tenancy model
+  # Options: shared, siloed, hybrid
+  tenancy_model: "shared"
+
+  # Key SaaS metrics targets
+  metrics_targets:
+    mrr_growth: ""      # e.g., "10% MoM"
+    churn_rate: ""      # e.g., "< 5% monthly"
+    ltv_cac_ratio: ""   # e.g., "> 3:1"
+    nps_score: ""       # e.g., "> 50"
+    activation_rate: "" # e.g., "> 40%"
+
+# =============================================================================
+# COMPLIANCE & SECURITY
+# =============================================================================
+
+compliance:
+  # Required compliance frameworks
+  # Options: gdpr, soc2, hipaa, pci-dss, iso27001, ccpa, fedramp
+  frameworks:
+    - "gdpr"
+
+  # Data classification levels used
+  data_classifications:
+    - level: "public"
+      description: "Non-sensitive, publicly available"
+    - level: "internal"
+      description: "Internal business data"
+    - level: "confidential"
+      description: "Customer data, PII"
+    - level: "restricted"
+      description: "Highly sensitive, regulated data"
+
+  # Data residency requirements
+  data_regions:
+    - region: "eu"
+      requirement: "GDPR"
+    - region: "us"
+      requirement: "SOC2"
+
+  # Security policies
+  security:
+    mfa_required: true
+    encryption_at_rest: true
+    encryption_in_transit: true
+    audit_logging: true
+    data_retention_days: 365
+
+  # Compliance contacts
+  contacts:
+    dpo_email: ""  # Data Protection Officer
+    security_email: ""
+
+# =============================================================================
+# USER EXPERIENCE
+# =============================================================================
+
+ux:
+  # Primary user personas
+  personas:
+    - name: ""
+      role: ""
+      goals: []
+      pain_points: []
+      tech_savviness: ""  # low, medium, high
+
+  # Key user journeys to optimize
+  critical_journeys:
+    - name: "Onboarding"
+      steps: []
+      target_completion_rate: ""
+    - name: "Core Action"
+      steps: []
+      target_frequency: ""
+
+  # Activation criteria (what makes a user "activated")
+  activation_events: []
+
+  # Retention signals (what indicates a retained user)
+  retention_signals: []
+
+  # NPS survey configuration
+  nps:
+    enabled: true
+    trigger: "after_activation"
+    frequency_days: 90
+
+# =============================================================================
+# GROWTH & ANALYTICS
+# =============================================================================
+
+growth:
+  # North star metric (the one metric that matters most)
+  north_star:
+    metric: ""
+    target: ""
+    current: ""
+
+  # Key performance indicators
+  kpis:
+    acquisition:
+      - metric: "signups"
+        target: ""
+      - metric: "cac"
+        target: ""
+    activation:
+      - metric: "activation_rate"
+        target: ""
+      - metric: "time_to_value"
+        target: ""
+    retention:
+      - metric: "day_7_retention"
+        target: ""
+      - metric: "monthly_churn"
+        target: ""
+    revenue:
+      - metric: "mrr"
+        target: ""
+      - metric: "arpu"
+        target: ""
+    referral:
+      - metric: "viral_coefficient"
+        target: ""
+
+  # Analytics tools in use
+  analytics_stack:
+    product_analytics: ""    # e.g., Mixpanel, Amplitude, PostHog
+    web_analytics: ""        # e.g., Google Analytics, Plausible
+    session_recording: ""    # e.g., FullStory, Hotjar
+    ab_testing: ""           # e.g., LaunchDarkly, Optimizely
+
+  # Experiment velocity target
+  experiments:
+    target_per_month: 2
+    minimum_sample_size: 100
+    significance_threshold: 0.95
+
+# =============================================================================
+# COMMUNICATION CHANNELS
+# =============================================================================
+
+communication:
+  # Contractor communication (for distributed team)
+  contractors:
+    email_domain: ""
+    smtp_server: ""
+    smtp_port: 587
+    use_tls: true
+
+  # Git repository settings
+  git:
+    provider: "github"  # github, gitlab, bitbucket
+    org: ""
+    main_branch: "main"
+    develop_branch: "develop"
+    branch_naming: "story/{id}-{slug}"
+    require_pr_reviews: true
+    min_reviewers: 1
+
+  # Notification preferences (SMTP-only)
+  notifications:
+    strategic_decisions: ["email"]
+    compliance_alerts: ["email"]
+    growth_insights: ["email"]
+
+# =============================================================================
+# MODULE BEHAVIOR
+# =============================================================================
+
+behavior:
+  # Auto-generate investor updates
+  auto_investor_updates: false
+  investor_update_frequency: "monthly"
+
+  # Auto-run compliance checks
+  auto_compliance_checks: true
+  compliance_check_frequency: "weekly"
+
+  # Growth experiment reminders
+  experiment_reminders: true
+
+  # Strategic review cadence
+  strategic_review:
+    frequency: "quarterly"
+    participants: ["founder", "pm", "architect"]

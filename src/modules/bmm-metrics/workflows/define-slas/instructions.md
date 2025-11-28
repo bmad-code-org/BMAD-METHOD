@@ -169,18 +169,16 @@ Enter values: </ask>
 
 **Warning Level (approaching threshold):**
 [a] Dashboard indicator only
-[b] Slack/Teams notification
-[c] Email notification
-[d] All of the above
+[b] Email notification
+[c] Both dashboard and email
 
 **Breach Level (threshold exceeded):**
 [a] Dashboard indicator only
-[b] Slack/Teams notification
-[c] Email notification
-[d] PagerDuty/On-call alert
-[e] All of the above
+[b] Email notification (standard)
+[c] Email notification (urgent/high-priority)
+[d] All of the above
 
-Warning notification: 
+Warning notification:
 Breach notification: </ask>
 
 <action>Store as {{alerting_config}}</action>

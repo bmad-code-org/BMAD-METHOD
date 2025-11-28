@@ -1,0 +1,351 @@
+# BMM-Strategic Module Manifest
+# Strategic Leadership Agents for SaaS Product Development
+# Version: 1.0.0
+
+name: bmm-strategic
+version: "1.0.0"
+display_name: "BMAD Strategic Module"
+description: "Strategic leadership agents for SaaS product vision, market positioning, compliance, UX strategy, and growth engineering"
+author: "BMad"
+license: "MIT"
+
+# Module category and tags
+category: "strategic"
+tags:
+  - founder
+  - vision
+  - strategy
+  - saas
+  - compliance
+  - growth
+  - ux
+  - market
+  - leadership
+
+# Dependencies
+dependencies:
+  core:
+    version: ">=1.0.0"
+    required: true
+  bmm:
+    version: ">=1.0.0"
+    required: false
+    reason: "Integration with tactical planning workflows"
+  bmm-metrics:
+    version: ">=1.0.0"
+    required: false
+    reason: "Access to KPIs and growth metrics"
+  bmm-feedback:
+    version: ">=1.0.0"
+    required: false
+    reason: "Customer feedback for strategic decisions"
+  bmm-roadmap:
+    version: ">=1.0.0"
+    required: false
+    reason: "Roadmap alignment with strategic priorities"
+
+# Event Integration
+events:
+  subscribes:
+    # From bmm-metrics
+    - metrics.kpi.updated
+    - metrics.quality.fail
+    - metrics.velocity.calculated
+    # From bmm-feedback
+    - feedback.insight.generated
+    - feedback.priority.suggested
+    # From bmm-roadmap
+    - roadmap.at.risk
+    - roadmap.milestone.completed
+    # From bmm core
+    - sprint.ended
+    - release.deployed
+    # From other strategic events
+    - market.change.detected
+    - compliance.deadline.approaching
+
+  publishes:
+    # Vision events
+    - vision.defined
+    - vision.updated
+    - vision.pivot.proposed
+    # Priority events
+    - priority.set
+    - priority.changed
+    - priority.quarterly.planned
+    # Decision events
+    - decision.go
+    - decision.no-go
+    - decision.pivot
+    - decision.defer
+    # Market events
+    - market.insight.found
+    - market.competitor.alert
+    - market.opportunity.identified
+    - market.positioning.defined
+    # Compliance events
+    - compliance.flag.raised
+    - compliance.approved
+    - compliance.blocked
+    - compliance.audit.scheduled
+    - compliance.policy.updated
+    # UX events
+    - ux.friction.identified
+    - ux.journey.mapped
+    - ux.test.planned
+    - ux.improvement.proposed
+    # Growth events
+    - growth.experiment.proposed
+    - growth.experiment.completed
+    - growth.insight.found
+    - growth.funnel.optimized
+
+# Agents provided by this module
+agents:
+  - name: founder
+    file: agents/founder.agent.yaml
+    description: "Visionary Product Leader - Vision, direction, priorities, final decisions"
+    icon: "🚀"
+
+  - name: saas-specialist
+    file: agents/saas-specialist.agent.yaml
+    description: "SaaS Domain Expert - Multi-tenancy, pricing, subscriptions, platform patterns"
+    icon: "☁️"
+
+  - name: market-strategist
+    file: agents/market-strategist.agent.yaml
+    description: "Competitive Intelligence - Market analysis, positioning, differentiation"
+    icon: "📈"
+
+  - name: compliance-officer
+    file: agents/compliance-officer.agent.yaml
+    description: "Security & Privacy Guardian - GDPR, SOC2, risk management, policies"
+    icon: "🛡️"
+
+  - name: ux-strategist
+    file: agents/ux-strategist.agent.yaml
+    description: "User Experience Specialist - User journeys, retention, usability"
+    icon: "🎯"
+
+  - name: growth-engineer
+    file: agents/growth-engineer.agent.yaml
+    description: "Growth & Analytics Expert - Experiments, funnels, activation, metrics"
+    icon: "🔬"
+
+# Workflows provided
+workflows:
+  # Founder workflows
+  - name: define-vision
+    path: workflows/define-vision
+    description: "Define or refine product vision and mission"
+    standalone: true
+    agent: founder
+
+  - name: set-priorities
+    path: workflows/set-priorities
+    description: "Set strategic priorities for quarter/year"
+    standalone: true
+    agent: founder
+
+  - name: quarterly-planning
+    path: workflows/quarterly-planning
+    description: "Comprehensive quarterly strategic planning"
+    standalone: true
+    agent: founder
+
+  - name: feature-decision
+    path: workflows/feature-decision
+    description: "Go/no-go decision framework for major features"
+    standalone: true
+    agent: founder
+
+  - name: pivot-evaluation
+    path: workflows/pivot-evaluation
+    description: "Evaluate if strategic pivot is needed"
+    standalone: true
+    agent: founder
+
+  # SaaS Specialist workflows
+  - name: design-tenancy
+    path: workflows/design-tenancy
+    description: "Design multi-tenant architecture strategy"
+    standalone: true
+    agent: saas-specialist
+
+  - name: pricing-strategy
+    path: workflows/pricing-strategy
+    description: "Define pricing tiers and packaging"
+    standalone: true
+    agent: saas-specialist
+
+  - name: design-onboarding
+    path: workflows/design-onboarding
+    description: "Design user onboarding experience"
+    standalone: true
+    agent: saas-specialist
+
+  - name: saas-metrics-setup
+    path: workflows/saas-metrics-setup
+    description: "Define SaaS-specific KPIs (MRR, churn, LTV, CAC)"
+    standalone: true
+    agent: saas-specialist
+
+  # Market Strategist workflows
+  - name: competitor-analysis
+    path: workflows/competitor-analysis
+    description: "Deep-dive competitor analysis"
+    standalone: true
+    agent: market-strategist
+
+  - name: market-positioning
+    path: workflows/market-positioning
+    description: "Define market positioning and messaging"
+    standalone: true
+    agent: market-strategist
+
+  - name: icp-definition
+    path: workflows/icp-definition
+    description: "Define ideal customer profile"
+    standalone: true
+    agent: market-strategist
+
+  # Compliance Officer workflows
+  - name: gdpr-assessment
+    path: workflows/gdpr-assessment
+    description: "GDPR compliance assessment"
+    standalone: true
+    agent: compliance-officer
+
+  - name: soc2-preparation
+    path: workflows/soc2-preparation
+    description: "SOC2 audit preparation checklist"
+    standalone: true
+    agent: compliance-officer
+
+  - name: data-flow-mapping
+    path: workflows/data-flow-mapping
+    description: "Map personal data flows for compliance"
+    standalone: true
+    agent: compliance-officer
+
+  - name: security-review
+    path: workflows/security-review
+    description: "Security risk assessment"
+    standalone: true
+    agent: compliance-officer
+
+  # UX Strategist workflows
+  - name: user-journey-mapping
+    path: workflows/user-journey-mapping
+    description: "Map end-to-end user journey"
+    standalone: true
+    agent: ux-strategist
+
+  - name: friction-analysis
+    path: workflows/friction-analysis
+    description: "Identify and prioritize UX friction points"
+    standalone: true
+    agent: ux-strategist
+
+  - name: retention-analysis
+    path: workflows/retention-analysis
+    description: "Analyze retention patterns and churn risks"
+    standalone: true
+    agent: ux-strategist
+
+  - name: usability-testing
+    path: workflows/usability-testing
+    description: "Plan and execute usability testing"
+    standalone: true
+    agent: ux-strategist
+
+  # Growth Engineer workflows
+  - name: funnel-analysis
+    path: workflows/funnel-analysis
+    description: "Analyze conversion funnel performance"
+    standalone: true
+    agent: growth-engineer
+
+  - name: experiment-design
+    path: workflows/experiment-design
+    description: "Design A/B test or growth experiment"
+    standalone: true
+    agent: growth-engineer
+
+  - name: analytics-setup
+    path: workflows/analytics-setup
+    description: "Define analytics tracking plan"
+    standalone: true
+    agent: growth-engineer
+
+  - name: activation-optimization
+    path: workflows/activation-optimization
+    description: "Optimize user activation flow"
+    standalone: true
+    agent: growth-engineer
+
+# Configuration schema
+config_schema:
+  company:
+    type: object
+    properties:
+      name:
+        type: string
+        description: "Company name"
+      stage:
+        type: string
+        enum: ["idea", "mvp", "growth", "scale", "mature"]
+        description: "Company stage"
+
+  compliance:
+    type: object
+    properties:
+      frameworks:
+        type: array
+        items:
+          type: string
+          enum: ["gdpr", "soc2", "hipaa", "pci-dss", "iso27001"]
+        description: "Required compliance frameworks"
+      data_regions:
+        type: array
+        items:
+          type: string
+        description: "Data residency regions"
+
+  market:
+    type: object
+    properties:
+      segment:
+        type: string
+        enum: ["smb", "mid-market", "enterprise", "consumer"]
+      competitors:
+        type: array
+        items:
+          type: string
+        description: "Key competitors to track"
+
+  growth:
+    type: object
+    properties:
+      north_star_metric:
+        type: string
+        description: "Primary growth metric"
+      activation_criteria:
+        type: array
+        items:
+          type: string
+        description: "User activation criteria"
+
+# Installation hooks
+hooks:
+  post_install:
+    - action: "create_config"
+      template: "config.yaml"
+    - action: "create_state"
+      template: "state/module-state.yaml"
+    - action: "log"
+      message: "Strategic module installed. Run 'define-vision' workflow to get started."
+
+  pre_uninstall:
+    - action: "backup_state"
+      path: "state/"

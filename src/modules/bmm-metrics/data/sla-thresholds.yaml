@@ -164,14 +164,13 @@ alerting:
   warning:
     channels:
       - dashboard
-      - slack
+      - email
     timing:
       remind_every: 24  # hours
-      
+
   breach:
     channels:
       - dashboard
-      - slack
       - email
     timing:
       remind_every: 4  # hours

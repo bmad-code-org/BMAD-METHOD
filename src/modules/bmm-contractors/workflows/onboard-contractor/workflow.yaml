@@ -1,0 +1,62 @@
+# Onboard Contractor Workflow
+# Contractor Coordinator - New contractor onboarding
+
+name: onboard-contractor
+display_name: "Onboard New Contractor"
+description: "Onboard a new contractor to the project with access, documentation, and first assignment"
+version: "1.0.0"
+
+agent: contractor-coordinator
+module: bmm-contractors
+
+metadata:
+  estimated_duration: "30-45 minutes"
+  participants: ["contractor-coordinator"]
+  outputs:
+    - "Contractor profile created"
+    - "Access provisioned"
+    - "Welcome email sent"
+    - "Optional first assignment"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-contractors/config.yaml"
+      section: "contractors"
+    - path: "{project-root}/.bmad/bmm-contractors/state/module-state.yaml"
+      section: "contractors"
+
+config:
+  interactive: true
+  send_welcome_email: true
+  provision_git_access: true
+  publish_events: true
+
+stages:
+  - id: "collect-info"
+    name: "Collect Information"
+    description: "Gather contractor details"
+
+  - id: "create-profile"
+    name: "Create Profile"
+    description: "Create contractor profile in config"
+
+  - id: "provision-access"
+    name: "Provision Access"
+    description: "Set up Git and communication access"
+
+  - id: "prepare-docs"
+    name: "Prepare Documentation"
+    description: "Gather onboarding materials"
+
+  - id: "send-welcome"
+    name: "Send Welcome"
+    description: "Send welcome email with instructions"
+
+  - id: "first-assignment"
+    name: "First Assignment"
+    description: "Optionally assign first story"
+
+events:
+  on_complete:
+    - type: "contractor.onboarded"
+
+triggers:
+  manual: true

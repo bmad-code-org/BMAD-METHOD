@@ -71,7 +71,7 @@ Selection: </ask>
 <ask>What format should the release notes be in?
 [m] Markdown (GitHub/GitLab compatible)
 [h] HTML (web publishing)
-[s] Slack (for announcements)
+[e] Email (for announcements)
 [a] All formats
 
 Format: </ask>
@@ -195,29 +195,31 @@ Thanks to everyone who contributed to this release:
 
 ---
 
-<step n="7" goal="Generate Slack format" condition="output_format in ['s', 'a']">
+<step n="7" goal="Generate Email format" condition="output_format in ['e', 'a']">
 
-### Generate Slack Announcement
+### Generate Email Announcement
 
-<action>Create Slack-formatted message</action>
+<action>Create email-formatted message</action>
 
-**Slack Message Preview:**
+**Email Preview:**
 ```
-:rocket: *Release {{version}}* is now available!
+Subject: Release {{version}} Now Available
 
-*Highlights:*
+Release {{version}} is now available!
+
+Highlights:
 {{custom_summary || auto_summary}}
 
-*What's New:*
+What's New:
 • {{features.length}} new features
 • {{bug_fixes.length}} bug fixes
 • {{improvements.length}} improvements
 
 {{#if breaking_changes.length}}
-:warning: This release includes breaking changes. See full notes.
+⚠️ This release includes breaking changes. See full notes.
 {{/if}}
 
-<{{release_notes_url}}|View Full Release Notes>
+View Full Release Notes: {{release_notes_url}}
 ```
 
 </step>
@@ -235,7 +237,7 @@ Thanks to everyone who contributed to this release:
 **Files Generated:**
 - Markdown: {{markdown_path}}
 {{#if html_generated}}- HTML: {{html_path}}{{/if}}
-{{#if slack_generated}}- Slack: {{slack_path}}{{/if}}
+{{#if email_generated}}- Email: {{email_path}}{{/if}}
 
 </step>
 
@@ -256,5 +258,5 @@ Release notes generated for **{{version}}**.
 **Next Steps:**
 1. Review and edit release notes if needed
 2. Publish to changelog/documentation
-3. Share Slack announcement with team
+3. Send email announcement to team
 4. Proceed with deployment: `*deploy`

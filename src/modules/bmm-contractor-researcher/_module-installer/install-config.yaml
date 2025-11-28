@@ -1,0 +1,118 @@
+# BMM-Contractor-Researcher Module Installer Configuration
+# Execution Layer - Researcher/Advisor Persona
+# Documentation and analysis via SMTP and Git
+
+code: bmm-contractor-researcher
+name: "Contractor: Researcher/Advisor (Documentation & Analysis)"
+default_selected: false
+
+header: "Researcher/Advisor Contractor"
+subheader: |
+  Researcher and advisor profile for documentation, analysis, and technical writing.
+  Communication via SMTP email and Git only - no meetings or real-time chat.
+
+# Dependencies
+requires:
+  - core
+  - bmm
+  - bmm-contractors
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+
+contractor_name:
+  prompt: "What is the researcher's name?"
+  default: ""
+  result: "{value}"
+
+contractor_email:
+  prompt: "Researcher's email address (for SMTP communication)"
+  default: ""
+  result: "{value}"
+
+contractor_timezone:
+  prompt: "Researcher's timezone (e.g., UTC+3, America/New_York)"
+  default: "UTC"
+  result: "{value}"
+
+contractor_availability:
+  prompt: "Researcher's availability"
+  default: "part-time"
+  result: "{value}"
+  single-select:
+    - value: "full-time"
+      label: "Full-time - Available during business hours"
+    - value: "part-time"
+      label: "Part-time - Limited hours per week"
+    - value: "on-call"
+      label: "On-call - Available for specific tasks"
+
+research_focus:
+  prompt:
+    - "What types of research does this contractor handle?"
+    - "Select all that apply"
+  default: ["technical", "market", "user"]
+  result: "{value}"
+  multi-select:
+    - value: "technical"
+      label: "Technical Research (libraries, frameworks, patterns)"
+    - value: "market"
+      label: "Market Research (competitors, trends)"
+    - value: "user"
+      label: "User Research (surveys, feedback analysis)"
+    - value: "domain"
+      label: "Domain Research (industry-specific knowledge)"
+    - value: "security"
+      label: "Security Research (vulnerabilities, compliance)"
+    - value: "performance"
+      label: "Performance Research (benchmarks, optimization)"
+
+documentation_types:
+  prompt:
+    - "What types of documentation does this contractor produce?"
+    - "Select all that apply"
+  default: ["technical-docs", "api-docs", "architecture"]
+  result: "{value}"
+  multi-select:
+    - value: "technical-docs"
+      label: "Technical Documentation"
+    - value: "api-docs"
+      label: "API Documentation"
+    - value: "architecture"
+      label: "Architecture Decision Records (ADRs)"
+    - value: "user-guides"
+      label: "User Guides & Tutorials"
+    - value: "runbooks"
+      label: "Runbooks & Playbooks"
+    - value: "specs"
+      label: "Technical Specifications"
+    - value: "reports"
+      label: "Research Reports & Analysis"
+
+output_formats:
+  prompt:
+    - "Preferred documentation formats"
+    - "Select all that apply"
+  default: ["markdown", "confluence"]
+  result: "{value}"
+  multi-select:
+    - value: "markdown"
+      label: "Markdown (Git-based)"
+    - value: "confluence"
+      label: "Confluence"
+    - value: "notion"
+      label: "Notion"
+    - value: "google-docs"
+      label: "Google Docs"
+    - value: "swagger"
+      label: "Swagger/OpenAPI"
+    - value: "docusaurus"
+      label: "Docusaurus"
+
+response_sla_hours:
+  prompt: "Expected response time from this contractor (in hours)"
+  default: "48"
+  result: "{value}"

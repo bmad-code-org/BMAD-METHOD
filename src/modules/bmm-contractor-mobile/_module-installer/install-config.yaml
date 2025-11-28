@@ -1,0 +1,123 @@
+# BMM-Contractor-Mobile Module Installer Configuration
+# Execution Layer - Mobile Developer Persona
+# Android/Kotlin development via SMTP and Git
+
+code: bmm-contractor-mobile
+name: "Contractor: Mobile Developer (Android/Kotlin)"
+default_selected: false
+
+header: "Mobile Developer Contractor"
+subheader: |
+  Mobile developer profile for Android/Kotlin app development.
+  Optimized for low-cost devices and offline-first architecture.
+  Communication via SMTP email and Git only - no meetings or real-time chat.
+
+# Dependencies
+requires:
+  - core
+  - bmm
+  - bmm-contractors
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## bmad_folder
+
+contractor_name:
+  prompt: "What is the mobile developer's name?"
+  default: ""
+  result: "{value}"
+
+contractor_email:
+  prompt: "Mobile developer's email address (for SMTP communication)"
+  default: ""
+  result: "{value}"
+
+contractor_timezone:
+  prompt: "Mobile developer's timezone (e.g., UTC+3, America/New_York)"
+  default: "UTC"
+  result: "{value}"
+
+contractor_availability:
+  prompt: "Mobile developer's availability"
+  default: "full-time"
+  result: "{value}"
+  single-select:
+    - value: "full-time"
+      label: "Full-time - Available during business hours"
+    - value: "part-time"
+      label: "Part-time - Limited hours per week"
+    - value: "on-call"
+      label: "On-call - Available for specific tasks"
+
+android_min_sdk:
+  prompt: "Minimum Android SDK target"
+  default: "24"
+  result: "{value}"
+  single-select:
+    - value: "21"
+      label: "API 21 (Android 5.0 Lollipop)"
+    - value: "24"
+      label: "API 24 (Android 7.0 Nougat)"
+    - value: "26"
+      label: "API 26 (Android 8.0 Oreo)"
+    - value: "28"
+      label: "API 28 (Android 9.0 Pie)"
+    - value: "30"
+      label: "API 30 (Android 11)"
+
+kotlin_version:
+  prompt: "Kotlin version"
+  default: "1.9.x"
+  result: "{value}"
+  single-select:
+    - value: "1.9.x"
+      label: "Kotlin 1.9.x (latest stable)"
+    - value: "1.8.x"
+      label: "Kotlin 1.8.x"
+    - value: "2.0.x"
+      label: "Kotlin 2.0.x (if available)"
+
+mobile_tech_stack:
+  prompt:
+    - "Additional mobile technologies used"
+    - "Select all that apply"
+  default: ["jetpack-compose", "room", "retrofit"]
+  result: "{value}"
+  multi-select:
+    - value: "jetpack-compose"
+      label: "Jetpack Compose"
+    - value: "xml-views"
+      label: "XML Views (traditional)"
+    - value: "room"
+      label: "Room Database"
+    - value: "retrofit"
+      label: "Retrofit"
+    - value: "okhttp"
+      label: "OkHttp"
+    - value: "hilt"
+      label: "Hilt (DI)"
+    - value: "koin"
+      label: "Koin (DI)"
+    - value: "coroutines"
+      label: "Kotlin Coroutines"
+    - value: "workmanager"
+      label: "WorkManager"
+    - value: "firebase"
+      label: "Firebase"
+
+offline_first:
+  prompt: "Is offline-first architecture required?"
+  default: true
+  result: "{value}"
+
+low_end_device_optimization:
+  prompt: "Optimize for low-cost/low-end devices?"
+  default: true
+  result: "{value}"
+
+response_sla_hours:
+  prompt: "Expected response time from this contractor (in hours)"
+  default: "24"
+  result: "{value}"

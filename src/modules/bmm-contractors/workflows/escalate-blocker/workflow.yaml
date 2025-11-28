@@ -1,0 +1,67 @@
+# Escalate Blocker Workflow
+# Contractor Coordinator - Escalate and resolve blockers via SMTP
+
+name: escalate-blocker
+display_name: "Escalate Blocker"
+description: "Escalate contractor blockers via SMTP email to appropriate parties for resolution"
+version: "1.0.0"
+
+agent: contractor-coordinator
+module: bmm-contractors
+
+metadata:
+  estimated_duration: "5-15 minutes"
+  participants: ["contractor-coordinator", "stakeholders"]
+  outputs:
+    - "Escalation email sent"
+    - "Blocker tracked in state"
+    - "Resolution owner assigned"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-contractors/state/module-state.yaml"
+      section: "blockers"
+
+config:
+  interactive: true
+  auto_escalate_threshold_hours: 48
+  send_escalation_email: true
+  track_resolution: true
+  publish_events: true
+
+stages:
+  - id: "identify-blocker"
+    name: "Identify Blocker"
+    description: "Load blocker details and context"
+
+  - id: "classify-blocker"
+    name: "Classify Blocker"
+    description: "Determine blocker type, severity, and owner"
+
+  - id: "determine-recipients"
+    name: "Determine Recipients"
+    description: "Identify who should receive escalation"
+
+  - id: "prepare-escalation"
+    name: "Prepare Escalation"
+    description: "Compose escalation email with context"
+
+  - id: "send-escalation"
+    name: "Send Escalation"
+    description: "Send escalation email via SMTP"
+
+  - id: "track-blocker"
+    name: "Track Blocker"
+    description: "Record blocker and set follow-up reminders"
+
+events:
+  on_complete:
+    - type: "contractor.blocker.escalated"
+
+triggers:
+  manual: true
+  on_event:
+    - type: "contractor.blocked"
+      auto: true
+      condition: "blocked_hours > 24"
+  scheduled:
+    - cron: "0 */4 * * *"  # Every 4 hours, check for unresolved blockers
+      action: "check_and_escalate"

@@ -1,0 +1,63 @@
+# Contractor Standup Workflow
+# Contractor Coordinator - Daily standup summary via SMTP
+
+name: contractor-standup
+display_name: "Contractor Standup"
+description: "Generate and distribute daily standup summary across all contractors via SMTP email"
+version: "1.0.0"
+
+agent: contractor-coordinator
+module: bmm-contractors
+
+metadata:
+  estimated_duration: "10-15 minutes"
+  participants: ["contractor-coordinator"]
+  outputs:
+    - "Standup summary email sent to all active contractors"
+    - "Blocker digest for escalation"
+    - "Progress report for stakeholders"
+  artifacts:
+    - path: "{project-root}/.bmad/bmm-contractors/state/module-state.yaml"
+      section: "standups"
+
+config:
+  interactive: false
+  send_summary_email: true
+  include_blockers: true
+  include_deadlines: true
+  publish_events: true
+
+stages:
+  - id: "collect-status"
+    name: "Collect Status"
+    description: "Gather status from all active contractors via email parsing"
+
+  - id: "aggregate-blockers"
+    name: "Aggregate Blockers"
+    description: "Compile all blockers requiring attention"
+
+  - id: "check-deadlines"
+    name: "Check Deadlines"
+    description: "Identify approaching or missed deadlines"
+
+  - id: "generate-summary"
+    name: "Generate Summary"
+    description: "Create standup summary document"
+
+  - id: "distribute-summary"
+    name: "Distribute Summary"
+    description: "Send standup summary via SMTP to all participants"
+
+  - id: "escalate-if-needed"
+    name: "Escalate If Needed"
+    description: "Trigger escalations for critical blockers"
+
+events:
+  on_complete:
+    - type: "contractor.standup.completed"
+
+triggers:
+  manual: true
+  scheduled:
+    - cron: "0 9 * * 1-5"  # 9 AM weekdays
+      timezone: "UTC"
