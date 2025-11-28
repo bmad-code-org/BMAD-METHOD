@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task
+  id="bmm-metrics/check-sla-breach"
+  name="Check SLA Breach"
+  description="Check if a metric value breaches its SLA threshold">
+
+  <objective>
+    Compare a metric value against its defined SLA thresholds and determine
+    if a warning or breach should be triggered.
+  </objective>
+
+  <input>
+    <param name="sla_name" type="string" required="true" description="Name of the SLA to check" />
+    <param name="actual_value" type="number" required="true" description="Current metric value" />
+    <param name="context" type="object" required="false" description="Additional context (story_id, sprint_id, etc.)" />
+  </input>
+
+  <flow>
+    <step n="1" title="Load SLA Definition">
+      <action>Load SLA configuration from module config</action>
+      <action>Find SLA by sla_name</action>
+      <check if="sla not found">
+        <action>Error: Unknown SLA '{sla_name}'</action>
+      </check>
+      <action>Extract target, warning_threshold, breach_threshold</action>
+      <action>Extract comparison_type (greater_than, less_than, equals)</action>
+    </step>
+
+    <step n="2" title="Determine Status">
+      <check if="comparison_type == 'less_than'">
+        <!-- Lower is better (e.g., cycle time, defect rate) -->
+        <check if="actual_value <= target">
+          <action>status = "healthy"</action>
+          <action>level = "green"</action>
+        </check>
+        <check if="actual_value > target AND actual_value <= warning_threshold">
+          <action>status = "warning"</action>
+          <action>level = "yellow"</action>
+        </check>
+        <check if="actual_value > warning_threshold AND actual_value <= breach_threshold">
+          <action>status = "at_risk"</action>
+          <action>level = "orange"</action>
+        </check>
+        <check if="actual_value > breach_threshold">
+          <action>status = "breach"</action>
+          <action>level = "red"</action>
+        </check>
+      </check>
+
+      <check if="comparison_type == 'greater_than'">
+        <!-- Higher is better (e.g., test coverage, completion rate) -->
+        <check if="actual_value >= target">
+          <action>status = "healthy"</action>
+          <action>level = "green"</action>
+        </check>
+        <check if="actual_value < target AND actual_value >= warning_threshold">
+          <action>status = "warning"</action>
+          <action>level = "yellow"</action>
+        </check>
+        <check if="actual_value < warning_threshold AND actual_value >= breach_threshold">
+          <action>status = "at_risk"</action>
+          <action>level = "orange"</action>
+        </check>
+        <check if="actual_value < breach_threshold">
+          <action>status = "breach"</action>
+          <action>level = "red"</action>
+        </check>
+      </check>
+    </step>
+
+    <step n="3" title="Calculate Deviation">
+      <action>deviation = actual_value - target</action>
+      <action>deviation_percent = (deviation / target) * 100</action>
+      <action>Store as {{deviation}} and {{deviation_percent}}</action>
+    </step>
+
+    <step n="4" title="Determine Blocking Status">
+      <action>Load blocking configuration for this SLA</action>
+      <check if="status == 'breach' AND sla.blocking == true">
+        <action>is_blocking = true</action>
+      </check>
+      <check if="else">
+        <action>is_blocking = false</action>
+      </check>
+    </step>
+
+    <step n="5" title="Generate Remediation">
+      <check if="status in ['warning', 'at_risk', 'breach']">
+        <action>Load remediation steps for this SLA</action>
+        <action>Generate remediation_message based on status</action>
+      </check>
+    </step>
+  </flow>
+
+  <output>
+    <field name="sla_name" value="{sla_name}" />
+    <field name="target" value="{target}" />
+    <field name="actual_value" value="{actual_value}" />
+    <field name="status" value="{status}" />
+    <field name="level" value="{level}" />
+    <field name="deviation" value="{deviation}" />
+    <field name="deviation_percent" value="{deviation_percent}" />
+    <field name="is_breach" value="{status == 'breach'}" />
+    <field name="is_blocking" value="{is_blocking}" />
+    <field name="remediation" value="{remediation_message}" />
+    <field name="context" value="{context}" />
+  </output>
+
+</task>

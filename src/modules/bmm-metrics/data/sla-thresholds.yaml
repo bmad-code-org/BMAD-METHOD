@@ -1,0 +1,192 @@
+# Default SLA Threshold Definitions
+# These are starting points - customize via *define-slas workflow
+
+version: "1.0.0"
+
+# Delivery SLAs
+delivery:
+  story_cycle_time:
+    name: "Story Cycle Time"
+    description: "Maximum days from story start to completion"
+    metric: "story_cycle_time"
+    comparison: "less_than"
+    target: 3
+    warning_threshold: 5
+    breach_threshold: 7
+    blocking: false
+    unit: "days"
+    
+  sprint_completion_rate:
+    name: "Sprint Completion Rate"
+    description: "Minimum percentage of committed stories completed"
+    metric: "sprint_completion_rate"
+    comparison: "greater_than"
+    target: 85
+    warning_threshold: 75
+    breach_threshold: 60
+    blocking: false
+    unit: "percent"
+    
+  pr_review_turnaround:
+    name: "PR Review Turnaround"
+    description: "Maximum hours to first review"
+    metric: "pr_review_time"
+    comparison: "less_than"
+    target: 4
+    warning_threshold: 8
+    breach_threshold: 24
+    blocking: false
+    unit: "hours"
+
+# Quality SLAs
+quality:
+  test_coverage:
+    name: "Test Coverage"
+    description: "Minimum code coverage percentage"
+    metric: "test_coverage"
+    comparison: "greater_than"
+    target: 80
+    warning_threshold: 70
+    breach_threshold: 60
+    blocking: true
+    unit: "percent"
+    
+  test_pass_rate:
+    name: "Test Pass Rate"
+    description: "Minimum test pass rate"
+    metric: "test_pass_rate"
+    comparison: "greater_than"
+    target: 100
+    warning_threshold: 98
+    breach_threshold: 95
+    blocking: true
+    unit: "percent"
+    
+  code_review_coverage:
+    name: "Code Review Coverage"
+    description: "Minimum percentage of changes reviewed"
+    metric: "code_review_coverage"
+    comparison: "greater_than"
+    target: 100
+    warning_threshold: 95
+    breach_threshold: 90
+    blocking: true
+    unit: "percent"
+    
+  defect_escape_rate:
+    name: "Defect Escape Rate"
+    description: "Maximum defects escaping to production"
+    metric: "defect_escape_rate"
+    comparison: "less_than"
+    target: 3
+    warning_threshold: 5
+    breach_threshold: 10
+    blocking: false
+    unit: "percent"
+
+# Security SLAs
+security:
+  critical_vulnerabilities:
+    name: "No Critical Vulnerabilities"
+    description: "Zero critical security vulnerabilities"
+    metric: "critical_vulnerabilities"
+    comparison: "less_than"
+    target: 0
+    warning_threshold: 0
+    breach_threshold: 1
+    blocking: true
+    unit: "count"
+    
+  high_vulnerabilities:
+    name: "High Vulnerabilities"
+    description: "Maximum high severity vulnerabilities"
+    metric: "high_vulnerabilities"
+    comparison: "less_than"
+    target: 0
+    warning_threshold: 2
+    breach_threshold: 5
+    blocking: false
+    unit: "count"
+
+# Operations SLAs (for reference, typically managed by ops)
+operations:
+  service_uptime:
+    name: "Service Uptime"
+    description: "Minimum service availability"
+    metric: "service_uptime"
+    comparison: "greater_than"
+    target: 99.9
+    warning_threshold: 99.5
+    breach_threshold: 99.0
+    blocking: false
+    unit: "percent"
+    measurement_window: "monthly"
+    
+  mttr:
+    name: "Mean Time to Recovery"
+    description: "Maximum average recovery time"
+    metric: "mttr"
+    comparison: "less_than"
+    target: 1
+    warning_threshold: 4
+    breach_threshold: 24
+    blocking: false
+    unit: "hours"
+    
+  incident_response_p1:
+    name: "P1 Incident Response"
+    description: "Maximum time to acknowledge critical incident"
+    metric: "incident_response_time"
+    comparison: "less_than"
+    target: 15
+    warning_threshold: 30
+    breach_threshold: 60
+    blocking: false
+    unit: "minutes"
+    severity: "P1"
+
+# Velocity SLAs
+velocity:
+  velocity_stability:
+    name: "Velocity Stability"
+    description: "Velocity should not drop significantly from average"
+    metric: "sprint_velocity"
+    comparison: "greater_than"
+    target_formula: "rolling_average * 0.8"
+    warning_formula: "rolling_average * 0.7"
+    breach_formula: "rolling_average * 0.6"
+    blocking: false
+    unit: "points"
+    note: "Dynamic threshold based on rolling average"
+
+# Alerting Configuration Defaults
+alerting:
+  warning:
+    channels:
+      - dashboard
+      - slack
+    timing:
+      remind_every: 24  # hours
+      
+  breach:
+    channels:
+      - dashboard
+      - slack
+      - email
+    timing:
+      remind_every: 4  # hours
+      escalate_after: 24  # hours
+
+# Escalation Defaults
+escalation:
+  level_1:
+    after_hours: 0
+    notify: "team_lead"
+    
+  level_2:
+    after_hours: 24
+    notify: "engineering_manager"
+    
+  level_3:
+    after_hours: 72
+    notify: "director"

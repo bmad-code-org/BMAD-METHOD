@@ -1,0 +1,47 @@
+# Release Planning Workflow
+name: release-planning
+description: "Create and configure a new release candidate"
+author: "BMad"
+module: bmm-release
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-release/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+release_config: "{config_source}:release"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-release/workflows/release-planning"
+instructions: "{installed_path}/instructions.md"
+
+# Input
+input:
+  version:
+    description: "Version number for the release (auto-generated if not provided)"
+    required: false
+  include_stories:
+    description: "Specific story IDs to include (default: all pending)"
+    required: false
+  release_type:
+    description: "Type of release: major, minor, patch, hotfix"
+    required: false
+    default: "minor"
+
+# Output
+default_output_file: "{output_folder}/releases/release-{version}.yaml"
+
+# Events this workflow publishes
+publishes:
+  - event_type: "release.candidate.created"
+    condition: "When release candidate is successfully created"
+
+# Triggers quality gate check
+triggers:
+  - module: "bmm-metrics"
+    workflow: "quality-gate-check"
+    event: "release.candidate.created"
+    description: "Automatically validate quality gates for new release"
+
+standalone: true

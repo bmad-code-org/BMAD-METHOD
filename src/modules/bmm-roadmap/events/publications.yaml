@@ -1,0 +1,32 @@
+# BMM-Roadmap Event Publications
+
+version: "1.0.0"
+module: "bmm-roadmap"
+
+publications:
+  - event_type: "roadmap.updated"
+    description: "Roadmap has been modified"
+    payload_schema:
+      roadmap_id: { type: string, required: true }
+      change_type: { type: string, required: true }
+      items_affected: { type: array, required: true }
+      new_timeline: { type: object, required: false }
+
+  - event_type: "roadmap.milestone.completed"
+    description: "Milestone has been achieved"
+    payload_schema:
+      milestone_id: { type: string, required: true }
+      milestone_name: { type: string, required: true }
+      completed_at: { type: datetime, required: true }
+      planned_date: { type: datetime, required: true }
+      variance_days: { type: number, required: true }
+
+  - event_type: "roadmap.at.risk"
+    description: "Timeline at risk based on velocity"
+    payload_schema:
+      milestone_id: { type: string, required: true }
+      planned_date: { type: datetime, required: true }
+      projected_date: { type: datetime, required: true }
+      variance_days: { type: number, required: true }
+      confidence: { type: number, required: true }
+      risk_factors: { type: array, required: true }

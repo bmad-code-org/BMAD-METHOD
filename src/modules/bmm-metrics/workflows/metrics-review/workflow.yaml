@@ -1,0 +1,43 @@
+# Metrics Review Workflow
+name: metrics-review
+description: "Analyze metric trends, identify patterns, and generate insights for continuous improvement"
+author: "BMad"
+module: bmm-metrics
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-metrics/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-metrics/workflows/metrics-review"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/review-template.md"
+state_file: "{project-root}/.bmad/bmm-metrics/state/module-state.yaml"
+
+# Input
+input:
+  review_type:
+    description: "Type of review (sprint, monthly, quarterly)"
+    required: false
+    default: "sprint"
+  focus_area:
+    description: "Specific area to focus analysis on"
+    required: false
+  compare_to:
+    description: "Previous period to compare against"
+    required: false
+
+# Output
+default_output_file: "{output_folder}/metrics/metrics-review-{{date}}.md"
+
+# Events this workflow publishes
+publishes:
+  - event_type: "metrics.review.completed"
+    condition: "When review analysis is complete"
+  - event_type: "metrics.anomaly.detected"
+    condition: "When significant metric anomaly is found"
+
+standalone: true

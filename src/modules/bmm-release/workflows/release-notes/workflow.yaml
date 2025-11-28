@@ -1,0 +1,33 @@
+# Release Notes Workflow
+name: release-notes
+description: "Generate comprehensive release notes from release candidate"
+author: "BMad"
+module: bmm-release
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-release/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+release_notes_config: "{config_source}:release_notes"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-release/workflows/release-notes"
+instructions: "{installed_path}/instructions.md"
+template: "{project-root}/.bmad/bmm-release/templates/release-notes-template.md"
+
+# Input
+input:
+  release_id:
+    description: "Release candidate ID to generate notes for"
+    required: false
+    default: "current"
+  format:
+    description: "Output format: markdown, html, slack"
+    required: false
+    default: "markdown"
+
+# Output
+default_output_file: "{output_folder}/releases/RELEASE-NOTES-{version}.md"
+
+standalone: true

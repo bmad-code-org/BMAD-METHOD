@@ -1,0 +1,129 @@
+# BMM-Release Event Publications
+# Events this module emits
+
+version: "1.0.0"
+module: "bmm-release"
+
+publications:
+  # Release candidate lifecycle
+  - event_type: "release.candidate.created"
+    description: "New release candidate has been created"
+    trigger: "release-planning workflow completion"
+    payload_schema:
+      release_id: { type: string, required: true }
+      version: { type: string, required: true }
+      stories: { type: array, required: true }
+      story_count: { type: number, required: true }
+      created_by: { type: string, required: true }
+      expires_at: { type: datetime, required: false }
+    consumers:
+      - module: "bmm-metrics"
+        action: "Run quality gate check"
+        
+  - event_type: "release.candidate.expired"
+    description: "Release candidate expired without deployment"
+    trigger: "Automatic expiry check"
+    payload_schema:
+      release_id: { type: string, required: true }
+      version: { type: string, required: true }
+      expired_at: { type: datetime, required: true }
+      reason: { type: string, required: true }
+
+  # Release approval
+  - event_type: "release.approved"
+    description: "Release candidate approved for deployment"
+    trigger: "Manual approval or auto-approval"
+    payload_schema:
+      release_id: { type: string, required: true }
+      version: { type: string, required: true }
+      approved_by: { type: string, required: true }
+      approved_at: { type: datetime, required: true }
+      target_environment: { type: string, required: true }
+      quality_gate_score: { type: number, required: false }
+
+  - event_type: "release.rejected"
+    description: "Release candidate rejected"
+    trigger: "Manual rejection or quality gate failure"
+    payload_schema:
+      release_id: { type: string, required: true }
+      version: { type: string, required: true }
+      rejected_by: { type: string, required: true }
+      reason: { type: string, required: true }
+      failed_gates: { type: array, required: false }
+
+  # Deployment lifecycle
+  - event_type: "release.deploying"
+    description: "Release deployment in progress"
+    trigger: "Deployment initiation"
+    payload_schema:
+      release_id: { type: string, required: true }
+      version: { type: string, required: true }
+      environment: { type: string, required: true }
+      started_at: { type: datetime, required: true }
+      
+  - event_type: "release.deployed"
+    description: "Release successfully deployed"
+    trigger: "Health check pass after deployment"
+    payload_schema:
+      release_id: { type: string, required: true }
+      version: { type: string, required: true }
+      environment: { type: string, required: true }
+      deployed_at: { type: datetime, required: true }
+      stories_released: { type: array, required: true }
+      release_notes_url: { type: string, required: false }
+    consumers:
+      - module: "bmm-feedback"
+        action: "Trigger post-release feedback collection"
+      - module: "bmm-metrics"
+        action: "Update deployment frequency metric"
+        
+  - event_type: "release.failed"
+    description: "Release deployment failed"
+    trigger: "Deployment error or health check failure"
+    payload_schema:
+      release_id: { type: string, required: true }
+      version: { type: string, required: true }
+      environment: { type: string, required: true }
+      failed_at: { type: datetime, required: true }
+      error: { type: string, required: true }
+      auto_rollback_triggered: { type: boolean, required: true }
+    consumers:
+      - module: "bmm-metrics"
+        action: "Update change failure rate metric"
+
+  # Rollback lifecycle
+  - event_type: "release.rollback.initiated"
+    description: "Rollback procedure started"
+    trigger: "Manual rollback or auto-rollback on failure"
+    payload_schema:
+      release_id: { type: string, required: true }
+      from_version: { type: string, required: true }
+      to_version: { type: string, required: true }
+      environment: { type: string, required: true }
+      initiated_by: { type: string, required: true }
+      reason: { type: string, required: true }
+      
+  - event_type: "release.rollback.completed"
+    description: "Rollback completed successfully"
+    trigger: "Health check pass after rollback"
+    payload_schema:
+      release_id: { type: string, required: true }
+      from_version: { type: string, required: true }
+      to_version: { type: string, required: true }
+      environment: { type: string, required: true }
+      completed_at: { type: datetime, required: true }
+      duration_seconds: { type: number, required: true }
+    consumers:
+      - module: "bmm-metrics"
+        action: "Update MTTR metric"
+        
+  - event_type: "release.rollback.failed"
+    description: "Rollback failed - critical alert"
+    trigger: "Rollback procedure failure"
+    payload_schema:
+      release_id: { type: string, required: true }
+      from_version: { type: string, required: true }
+      to_version: { type: string, required: true }
+      environment: { type: string, required: true }
+      error: { type: string, required: true }
+      requires_manual_intervention: { type: boolean, required: true }

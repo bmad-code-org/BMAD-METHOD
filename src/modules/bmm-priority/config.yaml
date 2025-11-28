@@ -1,0 +1,88 @@
+# BMM-Priority Module Configuration
+# Copy to {project-root}/.bmad/bmm-priority/config.yaml and customize
+
+# Project identification
+project_name: "{{project_name}}"
+user_name: "{{user_name}}"
+output_folder: "docs"
+
+# Prioritization framework
+framework:
+  # Primary framework: wsjf, rice, moscow, custom
+  primary: "wsjf"
+  
+  # WSJF configuration
+  wsjf:
+    weights:
+      business_value: 1.0
+      time_criticality: 1.0
+      risk_reduction: 1.0
+    job_size_scale: [1, 2, 3, 5, 8, 13]  # Fibonacci
+    
+  # RICE configuration
+  rice:
+    reach_scale: [10, 100, 1000, 10000]  # Users affected
+    impact_scale: [0.25, 0.5, 1, 2, 3]  # Minimal to Massive
+    confidence_scale: [0.5, 0.8, 1.0]  # Low, Medium, High
+    effort_unit: "person-weeks"
+    
+  # MoSCoW configuration
+  moscow:
+    categories:
+      - must
+      - should
+      - could
+      - wont
+
+# Priority queue settings
+queue:
+  # Maximum items in active priority queue
+  max_active: 50
+  
+  # Auto-reorder triggers
+  auto_reorder:
+    on_new_item: true
+    on_priority_change: true
+    on_feedback_suggestion: false  # Require manual review
+    
+  # Staleness threshold (days without update)
+  staleness_days: 14
+
+# Feedback integration
+feedback_integration:
+  enabled: true
+  
+  # How to handle feedback priority suggestions
+  suggestion_handling:
+    # auto, review, ignore
+    mode: "review"
+    
+    # Threshold for auto-accept (if mode is auto)
+    auto_accept_threshold: 15  # feedback count
+    
+  # Weight feedback sentiment in priority score
+  sentiment_weight: 0.2
+
+# Priority review settings
+review:
+  # Recommended review frequency
+  frequency: "weekly"
+  
+  # Auto-flag items for review
+  flag_criteria:
+    - stale_items: true
+    - low_confidence: true
+    - feedback_volume_change: true
+
+# Events
+events:
+  subscribe:
+    - "feedback.priority.suggested"
+    - "feedback.insight.generated"
+    - "metrics.velocity.calculated"
+    - "story.done"
+    
+  publish:
+    - "priority.updated"
+    - "priority.queue.reordered"
+    - "priority.review.completed"

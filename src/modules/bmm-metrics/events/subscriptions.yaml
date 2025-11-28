@@ -1,0 +1,161 @@
+# BMM-Metrics Event Subscriptions
+# Defines which events this module listens to and how to handle them
+
+module: bmm-metrics
+schema_version: "1.0"
+
+subscriptions:
+
+  # ============================================
+  # Story Lifecycle Events
+  # ============================================
+
+  - event_type: "story.done"
+    handler: "handlers/on-story-done.xml"
+    description: "Track story completion metrics and cycle time"
+    enabled: true
+    processing:
+      mode: async
+      priority: normal
+      timeout_ms: 30000
+    actions:
+      - "Calculate cycle time (ready → done)"
+      - "Update velocity tracking"
+      - "Check for SLA breaches"
+      - "Trigger quality gate if configured"
+
+  - event_type: "story.ready"
+    handler: "handlers/on-story-ready.xml"
+    description: "Track story readiness cycle time"
+    enabled: true
+    processing:
+      mode: async
+      priority: low
+      timeout_ms: 10000
+    actions:
+      - "Record ready timestamp"
+      - "Calculate prep time (created → ready)"
+      - "Update metrics state"
+
+  - event_type: "story.created"
+    handler: "handlers/on-story-created.xml"
+    description: "Initialize story tracking"
+    enabled: true
+    processing:
+      mode: async
+      priority: low
+      timeout_ms: 10000
+    actions:
+      - "Record creation timestamp"
+      - "Initialize story metrics record"
+
+  # ============================================
+  # Sprint Lifecycle Events
+  # ============================================
+
+  - event_type: "sprint.started"
+    handler: "handlers/on-sprint-started.xml"
+    description: "Initialize sprint metrics tracking"
+    enabled: true
+    processing:
+      mode: async
+      priority: normal
+      timeout_ms: 15000
+    actions:
+      - "Record sprint start"
+      - "Capture planned scope"
+      - "Initialize sprint metrics"
+
+  - event_type: "sprint.ended"
+    handler: "handlers/on-sprint-ended.xml"
+    description: "Calculate sprint velocity and metrics"
+    enabled: true
+    processing:
+      mode: async
+      priority: high
+      timeout_ms: 60000
+    actions:
+      - "Calculate sprint velocity"
+      - "Compare actual vs planned"
+      - "Update rolling velocity average"
+      - "Generate sprint metrics summary"
+      - "Publish metrics.kpi.updated event"
+
+  # ============================================
+  # Code Review Events
+  # ============================================
+
+  - event_type: "code.reviewed"
+    handler: "handlers/on-code-reviewed.xml"
+    description: "Track code review metrics and quality"
+    enabled: true
+    processing:
+      mode: async
+      priority: normal
+      timeout_ms: 20000
+    actions:
+      - "Record review completion"
+      - "Calculate review turnaround time"
+      - "Track quality score"
+      - "Check review SLA compliance"
+
+  # ============================================
+  # Epic Lifecycle Events
+  # ============================================
+
+  - event_type: "epic.completed"
+    handler: "handlers/on-epic-completed.xml"
+    description: "Calculate epic-level metrics"
+    enabled: true
+    processing:
+      mode: async
+      priority: normal
+      timeout_ms: 60000
+    actions:
+      - "Aggregate story metrics for epic"
+      - "Calculate epic delivery metrics"
+      - "Update roadmap progress metrics"
+
+  # ============================================
+  # Release Events (from bmm-release module)
+  # ============================================
+
+  - event_type: "release.deployed"
+    handler: "handlers/on-release-deployed.xml"
+    description: "Track deployment metrics"
+    enabled: true
+    processing:
+      mode: async
+      priority: high
+      timeout_ms: 30000
+    actions:
+      - "Record deployment timestamp"
+      - "Track deployment frequency"
+      - "Update lead time metrics"
+
+  - event_type: "release.rollback"
+    handler: "handlers/on-release-rollback.xml"
+    description: "Track rollback incidents"
+    enabled: true
+    processing:
+      mode: async
+      priority: high
+      timeout_ms: 15000
+    actions:
+      - "Record rollback incident"
+      - "Update change failure rate"
+      - "Calculate impact metrics"
+
+# Retry Configuration
+retry:
+  max_attempts: 3
+  backoff_ms: [1000, 5000, 15000]
+  dead_letter_enabled: true
+
+# Filtering
+filters:
+  # Only process events from these sources (empty = all)
+  source_modules: []
+
+  # Ignore events older than this
+  max_age_hours: 24

@@ -1,0 +1,332 @@
+<task id="{bmad_folder}/core/events/queue/file-queue-transport.xml" name="File Queue Event Transport">
+  <objective>Handle event publishing and subscription using file-based queue for local/development environments</objective>
+
+  <description>
+    This transport implements a zero-dependency event queue using the filesystem.
+    Each module has its own queue directory with pending/processing/completed subdirectories.
+    Events are written as YAML files and processed in order.
+  </description>
+
+  <configuration>
+    <param name="queue_base_dir" default="{project-root}/.bmad/_events" />
+    <param name="poll_interval_ms" default="1000" />
+    <param name="retention_days" default="7" />
+    <param name="max_retries" default="3" />
+  </configuration>
+
+  <directory_structure>
+    <example>
+      .bmad/_events/
+      ├── registry.yaml           # Subscription registry
+      ├── bmm-metrics/
+      │   ├── pending/            # Events waiting to be processed
+      │   │   └── 2024-01-15T10-30-00-story-done-abc123.yaml
+      │   ├── processing/         # Events currently being handled
+      │   └── completed/          # Successfully processed events
+      ├── bmm-release/
+      │   ├── pending/
+      │   ├── processing/
+      │   └── completed/
+      ├── bmm-feedback/
+      │   └── ...
+      └── dead-letter/            # Failed events after max retries
+          └── 2024-01-15T10-35-00-story-done-abc123.yaml
+    </example>
+  </directory_structure>
+
+  <operations>
+
+    <operation name="initialize">
+      <description>Set up queue directories for a module</description>
+      <input name="module_name" type="string" required="true" />
+
+      <steps>
+        <step n="1">
+          <action>Create directory: {queue_base_dir}/{module_name}/pending</action>
+        </step>
+        <step n="2">
+          <action>Create directory: {queue_base_dir}/{module_name}/processing</action>
+        </step>
+        <step n="3">
+          <action>Create directory: {queue_base_dir}/{module_name}/completed</action>
+        </step>
+        <step n="4">
+          <action>Update registry.yaml with module subscription info</action>
+        </step>
+      </steps>
+    </operation>
+
+    <operation name="publish">
+      <description>Publish an event to all subscribed modules</description>
+      <input name="event" type="object" required="true">
+        <field name="type" description="Event type (e.g., story.done)" />
+        <field name="payload" description="Event-specific data" />
+        <field name="correlation_id" required="false" />
+      </input>
+
+      <steps>
+        <step n="1" title="Generate Event Envelope">
+          <action>Generate UUID for event.id</action>
+          <action>Set event.timestamp to current ISO8601</action>
+          <action>Set event.source to current {module}/{workflow}</action>
+          <action>Inherit or generate correlation_id</action>
+        </step>
+
+        <step n="2" title="Load Subscription Registry">
+          <action>Read {queue_base_dir}/registry.yaml</action>
+          <action>Find all modules subscribed to event.type</action>
+        </step>
+
+        <step n="3" title="Write Event to Each Subscriber Queue">
+          <iterate for-each="subscriber in subscribers">
+            <action>Generate filename: {timestamp}-{event_type}-{event_id_short}.yaml</action>
+            <action>Write event YAML to {queue_base_dir}/{subscriber}/pending/{filename}</action>
+            <action>Log: "Published {event.type} to {subscriber}"</action>
+          </iterate>
+        </step>
+
+        <step n="4" title="Return Publish Result">
+          <action>Return event.id and list of subscribers notified</action>
+        </step>
+      </steps>
+
+      <event_file_format>
+        <example>
+          # File: 2024-01-15T10-30-00-story-done-abc123.yaml
+          id: "550e8400-e29b-41d4-a716-446655440000"
+          type: "story.done"
+          source: "bmm/story-done"
+          timestamp: "2024-01-15T10:30:00.000Z"
+          correlation_id: "660e8400-e29b-41d4-a716-446655440001"
+          sequence: 5
+          version: "1.0"
+          payload:
+            story_id: "STORY-123"
+            epic_id: "EPIC-001"
+            completion_time: "2024-01-15T10:30:00.000Z"
+            tests_passed: true
+            files_changed:
+              - "src/auth/login.ts"
+              - "src/auth/login.test.ts"
+          metadata:
+            user: "developer@example.com"
+            agent: "dev"
+            workflow: "story-done"
+            environment: "development"
+          _queue_metadata:
+            received_at: "2024-01-15T10:30:01.000Z"
+            attempt: 1
+            max_attempts: 3
+        </example>
+      </event_file_format>
+    </operation>
+
+    <operation name="consume">
+      <description>Process pending events for a module</description>
+      <input name="module_name" type="string" required="true" />
+      <input name="handler_path" type="string" required="true" description="Path to event handler XML" />
+
+      <steps>
+        <step n="1" title="List Pending Events">
+          <action>List files in {queue_base_dir}/{module_name}/pending/ sorted by filename (chronological)</action>
+          <check if="no files found">
+            <action>Return empty - no events to process</action>
+          </check>
+        </step>
+
+        <step n="2" title="Move to Processing">
+          <action>Move first event file to {queue_base_dir}/{module_name}/processing/</action>
+          <action>Update _queue_metadata.processing_started</action>
+        </step>
+
+        <step n="3" title="Execute Handler">
+          <action>Load event YAML content</action>
+          <action>Load handler from handler_path</action>
+          <action>Execute handler with event as input</action>
+
+          <on_success>
+            <action>Move event file to {queue_base_dir}/{module_name}/completed/</action>
+            <action>Update _queue_metadata.completed_at</action>
+            <action>Log: "Successfully processed {event.type} [{event.id}]"</action>
+          </on_success>
+
+          <on_failure>
+            <action>Increment _queue_metadata.attempt</action>
+            <check if="attempt > max_attempts">
+              <action>Move to {queue_base_dir}/dead-letter/</action>
+              <action>Log ERROR: "Event {event.id} moved to dead-letter after {max_attempts} failures"</action>
+            </check>
+            <check if="attempt <= max_attempts">
+              <action>Move back to {queue_base_dir}/{module_name}/pending/ with updated attempt count</action>
+              <action>Log WARN: "Event {event.id} failed, will retry (attempt {attempt}/{max_attempts})"</action>
+            </check>
+          </on_failure>
+        </step>
+      </steps>
+    </operation>
+
+    <operation name="subscribe">
+      <description>Register a module's interest in event types</description>
+      <input name="module_name" type="string" required="true" />
+      <input name="event_types" type="array" required="true" description="List of event types to subscribe to" />
+      <input name="handler_mapping" type="object" required="true" description="Map of event_type to handler path" />
+
+      <steps>
+        <step n="1">
+          <action>Read {queue_base_dir}/registry.yaml (create if doesn't exist)</action>
+        </step>
+        <step n="2">
+          <action>Add/update entry for module_name with subscriptions</action>
+          <example>
+            modules:
+              bmm-metrics:
+                subscriptions:
+                  - event_type: "story.done"
+                    handler: "handlers/on-story-done.xml"
+                  - event_type: "sprint.ended"
+                    handler: "handlers/on-sprint-ended.xml"
+                registered_at: "2024-01-15T10:00:00.000Z"
+          </example>
+        </step>
+        <step n="3">
+          <action>Save registry.yaml</action>
+        </step>
+        <step n="4">
+          <action>Initialize queue directories if needed (call initialize operation)</action>
+        </step>
+      </steps>
+    </operation>
+
+    <operation name="cleanup">
+      <description>Remove old completed events beyond retention period</description>
+      <input name="retention_days" type="integer" default="7" />
+
+      <steps>
+        <step n="1">
+          <action>For each module directory in {queue_base_dir}</action>
+        </step>
+        <step n="2">
+          <action>List files in completed/ older than {retention_days}</action>
+        </step>
+        <step n="3">
+          <action>Delete old files</action>
+        </step>
+        <step n="4">
+          <action>Log cleanup summary</action>
+        </step>
+      </steps>
+    </operation>
+
+    <operation name="replay">
+      <description>Replay events from completed queue (for debugging/recovery)</description>
+      <input name="module_name" type="string" required="true" />
+      <input name="event_id" type="string" required="false" description="Specific event to replay" />
+      <input name="from_timestamp" type="string" required="false" description="Replay all events after this time" />
+
+      <steps>
+        <step n="1">
+          <action>Find event(s) in {queue_base_dir}/{module_name}/completed/</action>
+        </step>
+        <step n="2">
+          <action>Copy selected event(s) to pending/ with new _queue_metadata</action>
+        </step>
+        <step n="3">
+          <action>Log replay action for audit</action>
+        </step>
+      </steps>
+    </operation>
+
+  </operations>
+
+  <registry_schema>
+    <description>Schema for registry.yaml that tracks all subscriptions</description>
+    <example>
+      # File: {queue_base_dir}/registry.yaml
+      schema_version: "1.0"
+      last_updated: "2024-01-15T10:00:00.000Z"
+
+      # Global event routing table
+      event_routes:
+        "story.done":
+          - module: "bmm-metrics"
+            handler: "handlers/on-story-done.xml"
+          - module: "bmm-release"
+            handler: "handlers/on-story-done.xml"
+        "metrics.quality.pass":
+          - module: "bmm-release"
+            handler: "handlers/on-quality-pass.xml"
+        "release.deployed":
+          - module: "bmm-feedback"
+            handler: "handlers/on-release-deployed.xml"
+
+      # Module subscription details
+      modules:
+        bmm-metrics:
+          status: active
+          registered_at: "2024-01-15T10:00:00.000Z"
+          subscriptions:
+            - event_type: "story.done"
+              handler: "handlers/on-story-done.xml"
+            - event_type: "story.ready"
+              handler: "handlers/on-story-ready.xml"
+            - event_type: "sprint.ended"
+              handler: "handlers/on-sprint-ended.xml"
+            - event_type: "code.reviewed"
+              handler: "handlers/on-code-reviewed.xml"
+
+        bmm-release:
+          status: active
+          registered_at: "2024-01-15T10:00:00.000Z"
+          subscriptions:
+            - event_type: "story.done"
+              handler: "handlers/on-story-done.xml"
+            - event_type: "metrics.quality.pass"
+              handler: "handlers/on-quality-pass.xml"
+
+        bmm-feedback:
+          status: active
+          registered_at: "2024-01-15T10:00:00.000Z"
+          subscriptions:
+            - event_type: "release.deployed"
+              handler: "handlers/on-release-deployed.xml"
+            - event_type: "release.evaluated"
+              handler: "handlers/on-release-evaluated.xml"
+    </example>
+  </registry_schema>
+
+  <error_handling>
+    <strategy name="retry_with_backoff">
+      <description>Retry failed events with exponential backoff</description>
+      <config>
+        <attempt n="1" delay_ms="1000" />
+        <attempt n="2" delay_ms="5000" />
+        <attempt n="3" delay_ms="15000" />
+      </config>
+    </strategy>
+
+    <dead_letter_policy>
+      <description>Events that fail all retries go to dead-letter queue</description>
+      <action>Write failure reason to event metadata</action>
+      <action>Alert: Log ERROR with event details</action>
+      <action>Manual intervention required to replay or discard</action>
+    </dead_letter_policy>
+  </error_handling>
+
+  <monitoring>
+    <metrics>
+      <metric name="events_published" description="Count of events published" />
+      <metric name="events_processed" description="Count of events successfully processed" />
+      <metric name="events_failed" description="Count of events that failed processing" />
+      <metric name="events_dead_lettered" description="Count of events in dead-letter queue" />
+      <metric name="queue_depth" description="Number of pending events per module" />
+      <metric name="processing_latency_ms" description="Time from publish to completion" />
+    </metrics>
+
+    <health_check>
+      <check name="queue_writable" description="Verify queue directories are writable" />
+      <check name="registry_valid" description="Verify registry.yaml is valid YAML" />
+      <check name="no_stuck_processing" description="No events stuck in processing > 5 minutes" />
+    </health_check>
+  </monitoring>
+
+</task>

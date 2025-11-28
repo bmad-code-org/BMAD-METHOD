@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task
+  id="bmm-metrics/calculate-cycle-time"
+  name="Calculate Cycle Time"
+  description="Calculate story cycle time from start to completion">
+
+  <objective>
+    Calculate the cycle time for a story from when work started to when it was
+    marked as done. Supports business days calculation and percentile reporting.
+  </objective>
+
+  <input>
+    <param name="story_id" type="string" required="true" description="Story identifier" />
+    <param name="start_time" type="datetime" required="true" description="When work started on story" />
+    <param name="end_time" type="datetime" required="true" description="When story was completed" />
+    <param name="use_business_days" type="boolean" required="false" default="true" description="Exclude weekends" />
+  </input>
+
+  <flow>
+    <step n="1" title="Validate Timestamps">
+      <action>Verify start_time is before end_time</action>
+      <action>Parse timestamps to datetime objects</action>
+      <check if="end_time <= start_time">
+        <action>Error: Invalid time range</action>
+      </check>
+    </step>
+
+    <step n="2" title="Calculate Raw Duration">
+      <action>raw_duration = end_time - start_time</action>
+      <action>raw_hours = raw_duration.total_hours()</action>
+      <action>raw_days = raw_hours / 24</action>
+    </step>
+
+    <step n="3" title="Calculate Business Days" condition="use_business_days == true">
+      <action>Initialize business_days = 0</action>
+      <action>For each day in range(start_time, end_time):</action>
+      <action>  If day.weekday() not in [Saturday, Sunday]:</action>
+      <action>    business_days += 1</action>
+      <action>Adjust for partial start/end days</action>
+      <action>Store as {{cycle_time_days}}</action>
+    </step>
+
+    <step n="3-alt" title="Use Calendar Days" condition="use_business_days == false">
+      <action>cycle_time_days = raw_days</action>
+    </step>
+
+    <step n="4" title="Categorize Duration">
+      <action>Determine cycle time category</action>
+      <check if="cycle_time_days <= 1">
+        <action>category = "excellent"</action>
+      </check>
+      <check if="cycle_time_days <= 3">
+        <action>category = "good"</action>
+      </check>
+      <check if="cycle_time_days <= 5">
+        <action>category = "acceptable"</action>
+      </check>
+      <check if="cycle_time_days > 5">
+        <action>category = "needs_attention"</action>
+      </check>
+    </step>
+
+    <step n="5" title="Update Statistics">
+      <action>Load cycle time history from state</action>
+      <action>Add current cycle_time_days to history</action>
+      <action>Calculate p50 = percentile(history, 50)</action>
+      <action>Calculate p90 = percentile(history, 90)</action>
+    </step>
+  </flow>
+
+  <output>
+    <field name="story_id" value="{story_id}" />
+    <field name="cycle_time_days" value="{cycle_time_days}" />
+    <field name="cycle_time_hours" value="{raw_hours}" />
+    <field name="category" value="{category}" />
+    <field name="business_days_used" value="{use_business_days}" />
+    <field name="p50_cycle_time" value="{p50}" />
+    <field name="p90_cycle_time" value="{p90}" />
+  </output>
+
+</task>

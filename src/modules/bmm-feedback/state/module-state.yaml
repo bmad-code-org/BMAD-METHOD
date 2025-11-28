@@ -1,0 +1,83 @@
+# BMM-Feedback Module State
+# This file is auto-managed by the bmm-feedback module
+# Manual edits may be overwritten
+
+version: "1.0.0"
+module: "bmm-feedback"
+initialized: false
+last_updated: null
+
+# Collection tracking
+collection:
+  last_collection: null
+  total_collected: 0
+  sources_used: []
+
+# Feedback items
+feedback_items: []
+# Example:
+# - id: "fb-001"
+#   source: "in_app"
+#   content: "The new dashboard is confusing to navigate"
+#   customer_id: "user-123"
+#   release_id: "v2.1.0"
+#   created_at: "2024-01-15T10:00:00Z"
+#   analyzed: true
+#   category: "usability"
+#   sentiment_score: -0.3
+#   sentiment_label: "negative"
+#   themes: ["navigation", "dashboard"]
+#   linked_stories: ["STORY-456"]
+
+# Analysis results
+analysis:
+  last_analysis: null
+  items_analyzed: 0
+  average_sentiment: null
+  
+  # Category counts
+  categories:
+    bug: 0
+    feature_request: 0
+    usability: 0
+    performance: 0
+    praise: 0
+
+# Generated insights
+insights: []
+# Example:
+# - id: "insight-001"
+#   type: "usability_issue"
+#   title: "Dashboard navigation confusion"
+#   description: "Multiple users report difficulty navigating new dashboard"
+#   feedback_count: 12
+#   feedback_ids: ["fb-001", "fb-002", ...]
+#   created_at: "2024-01-15T12:00:00Z"
+#   status: "active"  # active, addressed, dismissed
+
+# Priority suggestions
+priority_suggestions: []
+# Example:
+# - id: "ps-001"
+#   target_story: "STORY-456"
+#   suggested_change: "increase"
+#   reason: "High volume of negative feedback"
+#   feedback_count: 15
+#   created_at: "2024-01-15T12:00:00Z"
+#   status: "pending"  # pending, accepted, rejected
+
+# Sentiment history (for trends)
+sentiment_history: []
+# Example:
+# - date: "2024-01-15"
+#   average_sentiment: 0.2
+#   feedback_count: 25
+#   categories:
+#     bug: -0.5
+#     praise: 0.8
+
+# Event processing
+event_processing:
+  last_event_id: null
+  last_event_time: null
+  events_processed_count: 0

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task
+  id="bmm-metrics/generate-dashboard"
+  name="Generate Dashboard"
+  description="Generate a metrics dashboard summary from current state">
+
+  <objective>
+    Create a formatted dashboard view of current metrics, KPIs, and SLA status
+    with visual indicators and trend information.
+  </objective>
+
+  <input>
+    <param name="dashboard_type" type="string" required="false" default="summary" description="Type: summary, detailed, executive" />
+    <param name="include_trends" type="boolean" required="false" default="true" description="Include trend arrows" />
+    <param name="period" type="string" required="false" default="current_sprint" description="Time period for metrics" />
+  </input>
+
+  <flow>
+    <step n="1" title="Load Current State">
+      <action>Load module state from module-state.yaml</action>
+      <action>Load KPI definitions from config</action>
+      <action>Load SLA definitions from config</action>
+      <action>Get last update timestamp</action>
+    </step>
+
+    <step n="2" title="Calculate Summary Metrics">
+      <action>Calculate overall KPI health percentage</action>
+      <action>Calculate SLA compliance percentage</action>
+      <action>Count metrics by status (green, yellow, red)</action>
+      <action>Identify metrics needing attention</action>
+    </step>
+
+    <step n="3" title="Generate Velocity Section">
+      <action>Get current sprint velocity</action>
+      <action>Get rolling average velocity</action>
+      <action>Determine trend (up/down/stable arrow)</action>
+      <action>Calculate sprint progress percentage</action>
+
+      <format>
+        ## Velocity
+        | Metric | Value | Trend |
+        |--------|-------|-------|
+        | Current Sprint | {velocity} | {trend_arrow} |
+        | Rolling Avg | {rolling_avg} | - |
+        | Completion | {completion}% | {completion_trend} |
+      </format>
+    </step>
+
+    <step n="4" title="Generate Quality Section">
+      <action>Get test coverage percentage</action>
+      <action>Get test pass rate</action>
+      <action>Get defect counts by severity</action>
+      <action>Calculate quality score</action>
+
+      <format>
+        ## Quality
+        | Metric | Value | Status |
+        |--------|-------|--------|
+        | Test Coverage | {coverage}% | {coverage_status} |
+        | Pass Rate | {pass_rate}% | {pass_status} |
+        | Open Defects | {defect_count} | {defect_status} |
+      </format>
+    </step>
+
+    <step n="5" title="Generate Delivery Section">
+      <action>Get average cycle time</action>
+      <action>Get PR review turnaround</action>
+      <action>Get deployment frequency</action>
+
+      <format>
+        ## Delivery
+        | Metric | Value | Target | Status |
+        |--------|-------|--------|--------|
+        | Cycle Time (P50) | {cycle_p50}d | {cycle_target}d | {cycle_status} |
+        | PR Review | {pr_time}h | {pr_target}h | {pr_status} |
+        | Deploys/Week | {deploy_freq} | {deploy_target} | {deploy_status} |
+      </format>
+    </step>
+
+    <step n="6" title="Generate SLA Status Section">
+      <action>List all SLAs with current status</action>
+      <action>Highlight any breaches or warnings</action>
+
+      <format>
+        ## SLA Compliance: {sla_compliance}%
+        | SLA | Status | Value | Threshold |
+        |-----|--------|-------|-----------|
+        {#each slas}
+        | {name} | {status_emoji} | {value} | {threshold} |
+        {/each}
+      </format>
+    </step>
+
+    <step n="7" title="Generate Attention Items">
+      <action>List metrics that need attention</action>
+      <action>Sort by severity (red first, then yellow)</action>
+
+      <format>
+        ## Needs Attention
+        {#each attention_items}
+        - {status_emoji} **{metric_name}**: {issue} ({recommendation})
+        {/each}
+      </format>
+    </step>
+
+    <step n="8" title="Assemble Dashboard">
+      <action>Combine all sections based on dashboard_type</action>
+      <action>Add header with timestamp and period</action>
+      <action>Add health score summary</action>
+    </step>
+  </flow>
+
+  <output>
+    <field name="dashboard_content" value="{assembled_dashboard}" />
+    <field name="overall_health" value="{health_percentage}" />
+    <field name="sla_compliance" value="{sla_compliance_percentage}" />
+    <field name="attention_count" value="{attention_items.length}" />
+    <field name="last_updated" value="{timestamp}" />
+  </output>
+
+</task>

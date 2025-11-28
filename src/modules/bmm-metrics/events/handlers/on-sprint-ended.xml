@@ -1,0 +1,123 @@
+<event-handler
+  id="bmm-metrics/on-sprint-ended"
+  event="sprint.ended"
+  description="Calculate sprint velocity and update rolling metrics">
+
+  <objective>
+    When a sprint ends, calculate final velocity, compare to plan,
+    update rolling averages, and publish velocity metrics.
+  </objective>
+
+  <preconditions>
+    <check>Event payload contains sprint_id</check>
+    <check>Event payload contains sprint_number</check>
+    <check>Event payload contains completed_stories</check>
+    <check>Event payload contains incomplete_stories</check>
+  </preconditions>
+
+  <flow>
+    <step n="1" title="Load Sprint Data">
+      <action>Load module state from {module_path}/state/module-state.yaml</action>
+      <action>Get sprint tracking record for {event.payload.sprint_id}</action>
+      <action>Get planned stories count from sprint start event</action>
+    </step>
+
+    <step n="2" title="Calculate Velocity">
+      <action>Count completed stories: {event.payload.completed_stories.length}</action>
+      <action>Count incomplete stories: {event.payload.incomplete_stories.length}</action>
+      <action>Calculate completion rate: completed / planned * 100</action>
+
+      <check if="stories have points">
+        <action>Sum points from completed stories</action>
+        <action>velocity_points = sum of completed story points</action>
+      </check>
+      <check if="stories don't have points">
+        <action>velocity_count = completed story count</action>
+      </check>
+    </step>
+
+    <step n="3" title="Update Rolling Average">
+      <action>Load historical velocity from state (last 6 sprints)</action>
+      <action>Add current velocity to history</action>
+      <action>Calculate rolling_average = average of last 6 sprints</action>
+      <action>Determine trend: improving/stable/declining</action>
+
+      <trend_calculation>
+        <improving>Current velocity > rolling_average * 1.1</improving>
+        <declining>Current velocity less than rolling_average * 0.9</declining>
+        <stable>Otherwise</stable>
+      </trend_calculation>
+    </step>
+
+    <step n="4" title="Calculate Sprint Metrics">
+      <action>Calculate average cycle time for sprint stories</action>
+      <action>Calculate defects found during sprint</action>
+      <action>Calculate code review turnaround average</action>
+
+      <metrics>
+        <metric name="sprint_velocity" value="{velocity}" />
+        <metric name="sprint_completion_rate" value="{completion_rate}%" />
+        <metric name="sprint_avg_cycle_time" value="{avg_cycle_time}d" />
+        <metric name="sprint_stories_completed" value="{completed_count}" />
+        <metric name="sprint_stories_incomplete" value="{incomplete_count}" />
+      </metrics>
+    </step>
+
+    <step n="5" title="Check for Velocity Anomalies">
+      <check if="velocity < rolling_average * 0.7">
+        <action>Flag significant velocity drop</action>
+        <publish event="metrics.sla.breach">
+          <payload>
+            <sla_name>velocity_stability</sla_name>
+            <threshold>{rolling_average * 0.7}</threshold>
+            <actual_value>{velocity}</actual_value>
+            <breach_time>{event.timestamp}</breach_time>
+            <severity>warning</severity>
+            <affected_item>
+              <type>sprint</type>
+              <id>{event.payload.sprint_id}</id>
+            </affected_item>
+            <remediation>Review sprint retrospective for blockers</remediation>
+          </payload>
+        </publish>
+      </check>
+    </step>
+
+    <step n="6" title="Save State">
+      <action>Update sprint record with final metrics</action>
+      <action>Mark sprint as completed</action>
+      <action>Save state to module-state.yaml</action>
+    </step>
+
+    <step n="7" title="Publish Velocity Event">
+      <publish event="metrics.velocity.calculated">
+        <payload>
+          <sprint_id>{event.payload.sprint_id}</sprint_id>
+          <sprint_number>{event.payload.sprint_number}</sprint_number>
+          <velocity>{velocity}</velocity>
+          <planned>{planned_count}</planned>
+          <completed>{completed_count}</completed>
+          <rolling_average>{rolling_average}</rolling_average>
+          <trend>{trend}</trend>
+          <completion_rate>{completion_rate}</completion_rate>
+        </payload>
+      </publish>
+
+      <action>Log: "Sprint {sprint_number} velocity: {velocity} (avg: {rolling_average}, trend: {trend})"</action>
+    </step>
+  </flow>
+
+  <on-error>
+    <action>Log ERROR: "Failed to process sprint.ended: {error_message}"</action>
+    <action>Store event for manual review</action>
+  </on-error>
+
+  <output>
+    <field name="sprint_id" value="{event.payload.sprint_id}" />
+    <field name="velocity" value="{velocity}" />
+    <field name="rolling_average" value="{rolling_average}" />
+    <field name="trend" value="{trend}" />
+    <field name="completion_rate" value="{completion_rate}" />
+  </output>
+
+</event-handler>

@@ -1,0 +1,154 @@
+# BMM-Release Module Manifest
+# Release Management for BMAD
+
+name: bmm-release
+version: "1.0.0"
+display_name: "BMAD Release Module"
+description: "Release planning, deployment coordination, and rollback management with event-driven architecture"
+author: "BMad"
+license: "MIT"
+
+# Module category and tags
+category: "operations"
+tags:
+  - release
+  - deployment
+  - rollback
+  - versioning
+  - changelog
+
+# Dependencies
+dependencies:
+  core:
+    version: ">=1.0.0"
+    required: true
+  bmm-metrics:
+    version: ">=1.0.0"
+    required: false
+    reason: "Quality gate validation before release"
+
+# Event Integration
+events:
+  subscribes:
+    - metrics.quality.pass
+    - metrics.quality.fail
+    - story.done
+    - sprint.ended
+    - deploy.completed
+    - deploy.failed
+    
+  publishes:
+    - release.candidate.created
+    - release.candidate.expired
+    - release.approved
+    - release.rejected
+    - release.deploying
+    - release.deployed
+    - release.failed
+    - release.rollback.initiated
+    - release.rollback.completed
+    - release.rollback.failed
+
+# Agents provided by this module
+agents:
+  - name: release-manager
+    file: agents/release-manager.agent.yaml
+    description: "Release Coordinator + Deployment Guardian"
+    icon: "🚀"
+
+# Workflows provided
+workflows:
+  - name: release-planning
+    path: workflows/release-planning
+    description: "Create a new release candidate"
+    standalone: true
+    triggers:
+      - module: bmm-metrics
+        workflow: quality-gate-check
+        event: release.candidate.created
+        
+  - name: release-notes
+    path: workflows/release-notes
+    description: "Generate release notes"
+    standalone: true
+    
+  - name: rollback-planning
+    path: workflows/rollback-planning
+    description: "Create rollback procedure"
+    standalone: true
+
+# Event Handlers
+event_handlers:
+  - name: on-quality-pass
+    file: events/handlers/on-quality-pass.xml
+    event: metrics.quality.pass
+    description: "Proceed with release when quality gates pass"
+    
+  - name: on-quality-fail
+    file: events/handlers/on-quality-fail.xml
+    event: metrics.quality.fail
+    description: "Block release when quality gates fail"
+
+# Templates
+templates:
+  - name: release-notes-template
+    file: templates/release-notes-template.md
+    description: "Release notes markdown template"
+
+# Configuration schema
+config_schema:
+  project_name:
+    type: string
+    required: true
+    
+  user_name:
+    type: string
+    required: true
+    
+  output_folder:
+    type: string
+    required: true
+    default: "docs"
+    
+  release:
+    type: object
+    properties:
+      versioning: { type: string, enum: ["semver", "calver", "custom"], default: "semver" }
+      auto_create_on_sprint_end: { type: boolean, default: false }
+      require_quality_gates: { type: boolean, default: true }
+      require_changelog: { type: boolean, default: true }
+      
+  deployment:
+    type: object
+    properties:
+      environments: { type: array }
+      strategy: { type: string, default: "rolling" }
+      
+  rollback:
+    type: object
+    properties:
+      auto_rollback_on_failure: { type: boolean, default: true }
+      keep_releases: { type: number, default: 5 }
+
+# Installation hooks
+install:
+  pre:
+    - action: "Verify bmm-metrics module if quality gates enabled"
+  post:
+    - action: "Initialize module state file"
+    - action: "Subscribe to events"
+    - action: "Generate slash commands"
+
+# Slash commands to generate
+slash_commands:
+  - name: "release-plan"
+    workflow: "release-planning"
+    description: "Create a new release candidate"
+    
+  - name: "release-notes"
+    workflow: "release-notes"
+    description: "Generate release notes"
+    
+  - name: "release-rollback"
+    workflow: "rollback-planning"
+    description: "Create or execute rollback plan"

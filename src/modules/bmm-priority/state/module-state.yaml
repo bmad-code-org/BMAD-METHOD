@@ -1,0 +1,46 @@
+# BMM-Priority Module State
+
+version: "1.0.0"
+module: "bmm-priority"
+initialized: false
+last_updated: null
+
+# Priority queue
+queue:
+  items: []
+  # Example:
+  # - story_id: "STORY-123"
+  #   score: 85
+  #   framework: "wsjf"
+  #   score_breakdown:
+  #     business_value: 8
+  #     time_criticality: 5
+  #     risk_reduction: 3
+  #     job_size: 3
+  #   last_reviewed: "2024-01-15"
+  #   feedback_score: 12
+
+# Pending suggestions from feedback
+suggestions: []
+# Example:
+# - id: "sug-001"
+#   source_event: "feedback.priority.suggested"
+#   story_id: "STORY-123"
+#   suggested_change: "increase"
+#   reason: "High customer feedback volume"
+#   feedback_count: 15
+#   status: "pending"
+
+# Capacity tracking (from velocity events)
+capacity:
+  current_velocity: null
+  rolling_average: null
+  last_updated: null
+
+# Review history
+reviews: []
+
+# Event processing
+event_processing:
+  last_event_id: null
+  events_processed_count: 0

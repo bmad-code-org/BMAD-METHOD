@@ -1,0 +1,261 @@
+# BMM-Metrics Event Publications
+# Defines which events this module emits
+
+module: bmm-metrics
+schema_version: "1.0"
+
+publications:
+
+  # ============================================
+  # KPI Events
+  # ============================================
+
+  - event_type: "metrics.kpi.defined"
+    description: "Published when new KPIs are defined or updated"
+    source_workflow: "define-kpis"
+    schema:
+      payload:
+        kpi_set_id:
+          type: string
+          required: true
+          description: "Unique identifier for this KPI definition set"
+        kpis:
+          type: array
+          required: true
+          description: "List of KPI definitions"
+          items:
+            name: string
+            category: string
+            target: number
+            unit: string
+            frequency: string
+        defined_at:
+          type: string
+          format: ISO8601
+          required: true
+    subscribers:
+      - bmm-roadmap  # For capacity planning
+      - bmm-priority # For value tracking
+
+  - event_type: "metrics.kpi.updated"
+    description: "Published when KPI values change"
+    source_workflow: "track-metrics"
+    schema:
+      payload:
+        kpi_name:
+          type: string
+          required: true
+        previous_value:
+          type: number
+          required: false
+        current_value:
+          type: number
+          required: true
+        target:
+          type: number
+          required: true
+        status:
+          type: string
+          enum: ["on_track", "at_risk", "off_track"]
+          required: true
+        trend:
+          type: string
+          enum: ["improving", "stable", "declining"]
+          required: false
+        updated_at:
+          type: string
+          format: ISO8601
+          required: true
+    subscribers:
+      - bmm-roadmap  # For tracking progress
+      - bmm-priority # For priority adjustments
+
+  # ============================================
+  # SLA Events
+  # ============================================
+
+  - event_type: "metrics.sla.breach"
+    description: "Published when an SLA threshold is exceeded"
+    source_workflow: "track-metrics"
+    schema:
+      payload:
+        sla_name:
+          type: string
+          required: true
+        threshold:
+          type: number
+          required: true
+        actual_value:
+          type: number
+          required: true
+        breach_time:
+          type: string
+          format: ISO8601
+          required: true
+        severity:
+          type: string
+          enum: ["warning", "critical"]
+          required: true
+        affected_item:
+          type: object
+          required: false
+          description: "The item that breached (story, sprint, etc.)"
+        remediation:
+          type: string
+          required: false
+          description: "Suggested action to address breach"
+    subscribers:
+      - bmm-release  # May block releases
+      - bmm-roadmap  # For planning adjustments
+
+  # ============================================
+  # Quality Gate Events
+  # ============================================
+
+  - event_type: "metrics.quality.pass"
+    description: "Published when all quality gates pass for a release candidate"
+    source_workflow: "quality-gate-check"
+    schema:
+      payload:
+        story_id:
+          type: string
+          required: true
+        release_candidate_id:
+          type: string
+          required: false
+        gates_checked:
+          type: array
+          items: string
+          required: true
+          description: "List of gates that were validated"
+        gate_results:
+          type: array
+          required: true
+          items:
+            gate_name: string
+            passed: boolean
+            actual_value: string
+            threshold: string
+        overall_score:
+          type: number
+          minimum: 0
+          maximum: 100
+          required: true
+        timestamp:
+          type: string
+          format: ISO8601
+          required: true
+    subscribers:
+      - bmm-release  # Triggers release process
+
+  - event_type: "metrics.quality.fail"
+    description: "Published when one or more quality gates fail"
+    source_workflow: "quality-gate-check"
+    schema:
+      payload:
+        story_id:
+          type: string
+          required: true
+        release_candidate_id:
+          type: string
+          required: false
+        failed_gates:
+          type: array
+          required: true
+          items:
+            gate_name: string
+            expected: string
+            actual: string
+            reason: string
+        blocking:
+          type: boolean
+          required: true
+          description: "Whether this blocks the release"
+        remediation_steps:
+          type: array
+          items: string
+          required: false
+        timestamp:
+          type: string
+          format: ISO8601
+          required: true
+    subscribers:
+      - bmm-release  # Blocks release process
+
+  # ============================================
+  # Velocity Events
+  # ============================================
+
+  - event_type: "metrics.velocity.calculated"
+    description: "Published when sprint velocity is calculated"
+    source_workflow: "track-metrics"
+    trigger_event: "sprint.ended"
+    schema:
+      payload:
+        sprint_id:
+          type: string
+          required: true
+        sprint_number:
+          type: integer
+          required: true
+        velocity:
+          type: number
+          required: true
+          description: "Points/count completed this sprint"
+        planned:
+          type: number
+          required: true
+        rolling_average:
+          type: number
+          required: true
+          description: "Average of last N sprints"
+        trend:
+          type: string
+          enum: ["improving", "stable", "declining"]
+        calculated_at:
+          type: string
+          format: ISO8601
+          required: true
+    subscribers:
+      - bmm-roadmap  # For capacity planning
+
+  # ============================================
+  # Dashboard Events
+  # ============================================
+
+  - event_type: "metrics.dashboard.updated"
+    description: "Published when dashboard data is refreshed"
+    source_workflow: "track-metrics"
+    schema:
+      payload:
+        dashboard_id:
+          type: string
+          required: true
+        widgets_updated:
+          type: array
+          items: string
+        data_timestamp:
+          type: string
+          format: ISO8601
+        next_refresh:
+          type: string
+          format: ISO8601
+    subscribers: []  # Informational only
+
+# Publishing Configuration
+publishing:
+  # Default correlation behavior
+  correlation:
+    inherit_from_trigger: true
+    generate_if_missing: true
+
+  # Retry on publish failure
+  retry:
+    enabled: true
+    max_attempts: 3
+    backoff_ms: [500, 2000, 5000]
+
+  # Logging
+  logging:
+    log_all_publications: true
+    include_payload: false  # Don't log payload for privacy

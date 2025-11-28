@@ -1,0 +1,117 @@
+# BMM-Feedback Module Manifest
+# Customer Feedback Loop for BMAD
+
+name: bmm-feedback
+version: "1.0.0"
+display_name: "BMAD Feedback Module"
+description: "Customer feedback collection, analysis, and insight generation with event-driven architecture"
+author: "BMad"
+license: "MIT"
+
+# Module category and tags
+category: "product"
+tags:
+  - feedback
+  - customer-voice
+  - sentiment
+  - insights
+  - nps
+
+# Dependencies
+dependencies:
+  core:
+    version: ">=1.0.0"
+    required: true
+
+# Event Integration
+events:
+  subscribes:
+    - release.deployed
+    - story.done
+    
+  publishes:
+    - feedback.received
+    - feedback.analyzed
+    - feedback.insight.generated
+    - feedback.priority.suggested
+    - feedback.sentiment.alert
+
+# Agents provided by this module
+agents:
+  - name: feedback-analyst
+    file: agents/feedback-analyst.agent.yaml
+    description: "Customer Voice Champion + Insight Generator"
+    icon: "📣"
+
+# Workflows provided
+workflows:
+  - name: collect-feedback
+    path: workflows/collect-feedback
+    description: "Collect feedback from configured sources"
+    standalone: true
+    
+  - name: analyze-feedback
+    path: workflows/analyze-feedback
+    description: "Analyze feedback for sentiment and themes"
+    standalone: true
+    
+  - name: feedback-report
+    path: workflows/feedback-report
+    description: "Generate feedback insights report"
+    standalone: true
+
+# Configuration schema
+config_schema:
+  project_name:
+    type: string
+    required: true
+    
+  user_name:
+    type: string
+    required: true
+    
+  output_folder:
+    type: string
+    required: true
+    default: "docs"
+    
+  sources:
+    type: object
+    description: "Feedback source configuration"
+    
+  categories:
+    type: array
+    description: "Feedback category definitions"
+    
+  sentiment:
+    type: object
+    properties:
+      enabled: { type: boolean, default: true }
+      negative_threshold: { type: number, default: -0.5 }
+      
+  priority_influence:
+    type: object
+    properties:
+      enabled: { type: boolean, default: true }
+      min_score_for_suggestion: { type: number, default: 10 }
+
+# Installation hooks
+install:
+  post:
+    - action: "Initialize module state file"
+    - action: "Subscribe to events"
+    - action: "Generate slash commands"
+
+# Slash commands to generate
+slash_commands:
+  - name: "feedback-collect"
+    workflow: "collect-feedback"
+    description: "Collect customer feedback"
+    
+  - name: "feedback-analyze"
+    workflow: "analyze-feedback"
+    description: "Analyze feedback sentiment and themes"
+    
+  - name: "feedback-report"
+    workflow: "feedback-report"
+    description: "Generate feedback report"

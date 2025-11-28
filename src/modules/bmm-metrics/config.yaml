@@ -1,0 +1,223 @@
+# BMM-Metrics Module Configuration
+# Version: 1.0.0
+
+module_name: bmm-metrics
+module_version: "1.0.0"
+description: "KPI/SLA tracking and quality gate management for production SaaS"
+
+# Paths (resolved at runtime)
+output_folder: "{config_source}:output_folder"
+metrics_folder: "{output_folder}/metrics"
+
+# Inherit from parent module
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+project_name: "{config_source}:project_name"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+
+# Metric Collection Settings
+collection:
+  # How often to automatically collect metrics
+  frequency: daily  # daily, weekly, on_event
+
+  # How long to retain historical metric data
+  retention_days: 90
+
+  # Auto-collect on these events
+  trigger_events:
+    - story.done
+    - sprint.ended
+    - code.reviewed
+
+# KPI Categories
+kpi_categories:
+  product:
+    description: "Product health and user value metrics"
+    examples:
+      - "User Adoption Rate"
+      - "Feature Usage"
+      - "Customer Satisfaction (NPS)"
+      - "Time to Value"
+
+  engineering:
+    description: "Development team performance metrics"
+    examples:
+      - "Sprint Velocity"
+      - "Cycle Time"
+      - "Defect Rate"
+      - "Code Coverage"
+
+  quality:
+    description: "Code and release quality metrics"
+    examples:
+      - "Test Pass Rate"
+      - "Code Review Turnaround"
+      - "Production Incidents"
+      - "Mean Time to Recovery"
+
+  delivery:
+    description: "Delivery and deployment metrics"
+    examples:
+      - "Deployment Frequency"
+      - "Lead Time for Changes"
+      - "Change Failure Rate"
+      - "Mean Time to Recovery"
+
+# Quality Gate Definitions
+quality_gates:
+  # Code quality gates
+  test_coverage:
+    name: "Test Coverage"
+    description: "Minimum code test coverage percentage"
+    threshold: 80
+    unit: "%"
+    blocking: true
+
+  test_pass_rate:
+    name: "Test Pass Rate"
+    description: "All tests must pass"
+    threshold: 100
+    unit: "%"
+    blocking: true
+
+  code_review:
+    name: "Code Review Approved"
+    description: "Code must be reviewed and approved"
+    required: true
+    blocking: true
+
+  no_critical_issues:
+    name: "No Critical Issues"
+    description: "No critical or blocker issues open"
+    required: true
+    blocking: true
+
+  no_security_vulnerabilities:
+    name: "No Security Vulnerabilities"
+    description: "No high/critical security vulnerabilities"
+    required: true
+    blocking: true
+
+  documentation_complete:
+    name: "Documentation Complete"
+    description: "Required documentation is updated"
+    required: false
+    blocking: false
+
+# SLA Configuration
+sla:
+  # Default thresholds for SLA alerts
+  defaults:
+    warning_threshold_percent: 80   # Alert at 80% of limit
+    critical_threshold_percent: 95  # Critical at 95% of limit
+
+  # Standard SLA definitions
+  definitions:
+    story_cycle_time:
+      name: "Story Cycle Time"
+      description: "Time from story start to completion"
+      target: 5
+      unit: "days"
+      measurement: "business_days"
+
+    code_review_turnaround:
+      name: "Code Review Turnaround"
+      description: "Time from review request to completion"
+      target: 24
+      unit: "hours"
+      measurement: "calendar_hours"
+
+    defect_resolution:
+      name: "Defect Resolution Time"
+      description: "Time to resolve production defects"
+      target:
+        critical: 4
+        high: 24
+        medium: 72
+        low: 168
+      unit: "hours"
+
+    deployment_success_rate:
+      name: "Deployment Success Rate"
+      description: "Percentage of successful deployments"
+      target: 99
+      unit: "%"
+
+# Dashboard Configuration
+dashboard:
+  # How often to refresh dashboard data
+  refresh_interval_minutes: 15
+
+  # Default time range for charts
+  default_time_range: 30d  # 7d, 14d, 30d, 90d
+
+  # Widgets to display
+  widgets:
+    - name: "Sprint Velocity"
+      type: "line_chart"
+      metric: "velocity"
+      time_range: "6_sprints"
+
+    - name: "Cycle Time Trend"
+      type: "line_chart"
+      metric: "cycle_time"
+      time_range: "30d"
+
+    - name: "Quality Gates Status"
+      type: "status_board"
+      metric: "quality_gates"
+
+    - name: "SLA Compliance"
+      type: "gauge"
+      metric: "sla_compliance"
+
+    - name: "Defect Trend"
+      type: "bar_chart"
+      metric: "defects"
+      time_range: "30d"
+
+# Event Integration
+events:
+  # Events this module subscribes to
+  subscriptions:
+    - event_type: "story.done"
+      handler: "events/handlers/on-story-done.xml"
+    - event_type: "story.ready"
+      handler: "events/handlers/on-story-ready.xml"
+    - event_type: "sprint.ended"
+      handler: "events/handlers/on-sprint-ended.xml"
+    - event_type: "code.reviewed"
+      handler: "events/handlers/on-code-reviewed.xml"
+
+  # Events this module publishes
+  publications:
+    - event_type: "metrics.kpi.defined"
+    - event_type: "metrics.kpi.updated"
+    - event_type: "metrics.sla.breach"
+    - event_type: "metrics.quality.pass"
+    - event_type: "metrics.quality.fail"
+
+# Alerting
+alerts:
+  enabled: true
+
+  channels:
+    # Where to send alerts
+    - type: "event"  # Publish as event
+      enabled: true
+    - type: "log"    # Log to metrics log
+      enabled: true
+
+  rules:
+    sla_breach:
+      severity: "high"
+      message: "SLA breach detected: {sla_name} at {actual_value} (threshold: {threshold})"
+
+    quality_gate_fail:
+      severity: "high"
+      message: "Quality gate failed: {gate_name} - {reason}"
+
+    velocity_drop:
+      severity: "medium"
+      condition: "velocity < 0.7 * average_velocity"
+      message: "Sprint velocity dropped significantly: {current} vs {average}"

@@ -1,0 +1,29 @@
+# BMM-Feedback Event Subscriptions
+# Events this module listens to
+
+version: "1.0.0"
+module: "bmm-feedback"
+
+subscriptions:
+  # Release deployed - trigger feedback collection
+  - event_type: "release.deployed"
+    handler: "handlers/on-release-deployed.xml"
+    description: "Trigger post-release feedback collection"
+    condition: "config.auto_collect.on_release == true"
+    action: "schedule_feedback_collection"
+    
+  # Story done - optionally collect feature feedback
+  - event_type: "story.done"
+    handler: "handlers/on-story-done.xml"
+    description: "Enable feature-specific feedback"
+    condition: "config.auto_collect.on_story_done == true"
+    action: "enable_feature_feedback"
+
+# Routing configuration
+routing:
+  # Map feedback to features/stories
+  feature_mapping:
+    enabled: true
+    match_by:
+      - story_keywords
+      - feature_tags

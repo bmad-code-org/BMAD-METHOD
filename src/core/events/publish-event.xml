@@ -1,0 +1,186 @@
+<task id="{bmad_folder}/core/events/publish-event.xml" name="Publish Event">
+  <objective>Publish an event to the BMAD event bus for consumption by subscribed modules</objective>
+
+  <description>
+    This task is invoked by workflows to emit events when significant actions occur.
+    It creates a properly formatted event envelope and routes it to all subscribed modules.
+    Supports both file-based queue (development) and SMTP (production) transports.
+  </description>
+
+  <usage>
+    <example title="Inline in workflow instructions">
+      <publish event="story.done">
+        <payload>
+          <story_id>{{story_id}}</story_id>
+          <epic_id>{{epic_id}}</epic_id>
+          <completion_time>{{timestamp}}</completion_time>
+          <tests_passed>true</tests_passed>
+        </payload>
+      </publish>
+    </example>
+
+    <example title="Via invoke-task">
+      <invoke-task path="{bmad_folder}/core/events/publish-event.xml">
+        <param name="event_type">story.done</param>
+        <param name="payload">
+          story_id: "{{story_id}}"
+          epic_id: "{{epic_id}}"
+        </param>
+      </invoke-task>
+    </example>
+  </usage>
+
+  <parameters>
+    <param name="event_type" type="string" required="true"
+           description="Event type (e.g., story.done, metrics.quality.pass)" />
+    <param name="payload" type="object" required="true"
+           description="Event-specific data as YAML/JSON object" />
+    <param name="correlation_id" type="string" required="false"
+           description="Links related events; inherited from parent if in workflow context" />
+    <param name="metadata" type="object" required="false"
+           description="Additional context (user, agent, environment)" />
+  </parameters>
+
+  <flow>
+    <step n="1" title="Validate Event Type">
+      <action>Load event schema from {bmad_folder}/core/events/event-schema.yaml</action>
+      <check if="event_type not in event_types">
+        <action>Log WARNING: "Unknown event type: {event_type} - publishing anyway"</action>
+      </check>
+      <check if="event_type in event_types">
+        <action>Validate payload against schema for {event_type}</action>
+        <action if="validation fails">Log WARNING with missing/invalid fields</action>
+      </check>
+    </step>
+
+    <step n="2" title="Build Event Envelope">
+      <action>Generate event.id as UUID</action>
+      <action>Set event.type = {event_type}</action>
+      <action>Set event.source = "{current_module}/{current_workflow}"</action>
+      <action>Set event.timestamp = current ISO8601 timestamp</action>
+      <action>Set event.version = "1.0"</action>
+
+      <substep title="Handle Correlation">
+        <check if="correlation_id provided">
+          <action>Set event.correlation_id = {correlation_id}</action>
+        </check>
+        <check if="correlation_id NOT provided AND parent_event exists">
+          <action>Inherit event.correlation_id from parent_event</action>
+          <action>Set event.causation_id = parent_event.id</action>
+        </check>
+        <check if="correlation_id NOT provided AND no parent_event">
+          <action>Generate new correlation_id (this event starts a new chain)</action>
+        </check>
+      </substep>
+
+      <substep title="Add Metadata">
+        <action>Set event.metadata.user = {user_name} from config</action>
+        <action>Set event.metadata.agent = {current_agent} if loaded</action>
+        <action>Set event.metadata.workflow = {current_workflow}</action>
+        <action>Set event.metadata.environment = {environment} from config or "development"</action>
+        <action>Merge any additional metadata provided</action>
+      </substep>
+
+      <action>Set event.payload = {payload}</action>
+    </step>
+
+    <step n="3" title="Determine Transport">
+      <action>Load transport config from {bmad_folder}/core/config.yaml</action>
+      <check if="event_transport.type == 'auto'">
+        <action if="BMAD_SMTP_HOST is set">Use SMTP transport</action>
+        <action if="BMAD_SMTP_HOST not set">Use file_queue transport</action>
+      </check>
+      <check if="event_transport.type == 'file_queue'">
+        <action>Use file_queue transport</action>
+      </check>
+      <check if="event_transport.type == 'smtp'">
+        <action>Use SMTP transport</action>
+      </check>
+    </step>
+
+    <step n="4" title="Route to Subscribers">
+      <substep title="Load Subscription Registry">
+        <action>Read {queue_base_dir}/registry.yaml</action>
+        <action>Find all modules subscribed to {event_type}</action>
+        <check if="no subscribers">
+          <action>Log DEBUG: "No subscribers for {event_type} - event will be logged only"</action>
+          <action>Write event to {queue_base_dir}/_unrouted/{filename} for audit</action>
+          <goto step="5" />
+        </check>
+      </substep>
+
+      <substep title="Publish via File Queue" if="transport == file_queue">
+        <iterate for-each="subscriber in subscribers">
+          <action>Generate filename: {timestamp}-{event_type_slug}-{event_id_short}.yaml</action>
+          <action>Write event YAML to {queue_base_dir}/{subscriber.module}/pending/{filename}</action>
+        </iterate>
+      </substep>
+
+      <substep title="Publish via SMTP" if="transport == smtp">
+        <iterate for-each="subscriber in subscribers">
+          <action>Format event as email body (YAML content)</action>
+          <action>Set Subject: "[BMAD-EVENT] {event_type} - {event_id_short}"</action>
+          <action>Send to: {subscriber.inbox}</action>
+        </iterate>
+      </substep>
+    </step>
+
+    <step n="5" title="Log and Return">
+      <action>Log INFO: "Published event {event_type} [{event.id}] to {subscriber_count} subscribers"</action>
+      <action>Return event envelope for caller reference</action>
+
+      <output>
+        <field name="event_id" value="{event.id}" />
+        <field name="correlation_id" value="{event.correlation_id}" />
+        <field name="subscribers_notified" value="{subscriber_list}" />
+        <field name="timestamp" value="{event.timestamp}" />
+      </output>
+    </step>
+  </flow>
+
+  <event_envelope_example>
+    <yaml>
+      id: "550e8400-e29b-41d4-a716-446655440000"
+      type: "story.done"
+      source: "bmm/story-done"
+      timestamp: "2024-01-15T10:30:00.000Z"
+      correlation_id: "660e8400-e29b-41d4-a716-446655440001"
+      causation_id: "440e8400-e29b-41d4-a716-446655440002"
+      sequence: 5
+      version: "1.0"
+      payload:
+        story_id: "STORY-123"
+        epic_id: "EPIC-001"
+        completion_time: "2024-01-15T10:30:00.000Z"
+        tests_passed: true
+        files_changed:
+          - "src/auth/login.ts"
+          - "src/auth/login.test.ts"
+      metadata:
+        user: "developer@example.com"
+        agent: "dev"
+        workflow: "story-done"
+        environment: "development"
+    </yaml>
+  </event_envelope_example>
+
+  <error_handling>
+    <on_registry_not_found>
+      <action>Create empty registry.yaml</action>
+      <action>Log WARN: "Event registry not found, created empty registry"</action>
+      <action>Continue with no subscribers</action>
+    </on_registry_not_found>
+
+    <on_write_failure>
+      <action>Log ERROR: "Failed to write event to queue: {error}"</action>
+      <action>Retry up to 3 times with backoff</action>
+      <action if="all retries fail">Throw error to caller</action>
+    </on_write_failure>
+
+    <on_smtp_failure>
+      <action>Log ERROR: "Failed to send event via SMTP: {error}"</action>
+      <action>Fall back to file_queue if available</action>
+    </on_smtp_failure>
+  </error_handling>
+
+</task>

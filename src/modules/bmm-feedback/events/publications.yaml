@@ -1,0 +1,78 @@
+# BMM-Feedback Event Publications
+# Events this module emits
+
+version: "1.0.0"
+module: "bmm-feedback"
+
+publications:
+  # New feedback received
+  - event_type: "feedback.received"
+    description: "New feedback item submitted"
+    trigger: "Feedback collection or manual entry"
+    payload_schema:
+      feedback_id: { type: string, required: true }
+      source: { type: string, required: true }
+      content: { type: string, required: true }
+      category: { type: string, required: false }
+      customer_id: { type: string, required: false }
+      feature_id: { type: string, required: false }
+      timestamp: { type: datetime, required: true }
+
+  # Feedback analyzed
+  - event_type: "feedback.analyzed"
+    description: "Feedback item analyzed and categorized"
+    trigger: "Analysis workflow completion"
+    payload_schema:
+      feedback_id: { type: string, required: true }
+      category: { type: string, required: true }
+      sentiment_score: { type: number, required: true }
+      sentiment_label: { type: string, required: true }
+      themes: { type: array, required: true }
+      priority_score: { type: number, required: false }
+      linked_stories: { type: array, required: false }
+
+  # Actionable insight generated
+  - event_type: "feedback.insight.generated"
+    description: "Actionable insight identified from feedback patterns"
+    trigger: "Pattern threshold reached"
+    payload_schema:
+      insight_id: { type: string, required: true }
+      type: { type: string, required: true }  # bug_pattern, feature_demand, usability_issue
+      title: { type: string, required: true }
+      description: { type: string, required: true }
+      feedback_count: { type: number, required: true }
+      feedback_ids: { type: array, required: true }
+      suggested_action: { type: string, required: false }
+      priority_impact: { type: number, required: false }
+    consumers:
+      - module: "bmm-priority"
+        action: "Consider for backlog prioritization"
+
+  # Priority change suggested
+  - event_type: "feedback.priority.suggested"
+    description: "Feedback suggests a priority change"
+    trigger: "High-impact feedback pattern detected"
+    payload_schema:
+      suggestion_id: { type: string, required: true }
+      story_id: { type: string, required: false }
+      current_priority: { type: string, required: false }
+      suggested_priority: { type: string, required: true }
+      reason: { type: string, required: true }
+      feedback_count: { type: number, required: true }
+      customer_impact: { type: string, required: true }
+      sample_feedback: { type: array, required: true }
+    consumers:
+      - module: "bmm-priority"
+        action: "Evaluate priority adjustment"
+
+  # Sentiment alert
+  - event_type: "feedback.sentiment.alert"
+    description: "Significant sentiment change detected"
+    trigger: "Sentiment threshold breach"
+    payload_schema:
+      alert_type: { type: string, required: true }  # negative_spike, trend_change
+      category: { type: string, required: false }
+      current_sentiment: { type: number, required: true }
+      previous_sentiment: { type: number, required: true }
+      change_percent: { type: number, required: true }
+      sample_feedback: { type: array, required: true }

@@ -1,0 +1,37 @@
+# Define SLAs Workflow
+name: define-slas
+description: "Set Service Level Agreement thresholds and alerting rules for metrics"
+author: "BMad"
+module: bmm-metrics
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-metrics/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-metrics/workflows/define-slas"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/sla-template.yaml"
+
+# Input
+input:
+  sla_category:
+    description: "Category of SLAs to define (delivery, quality, operations)"
+    required: false
+    default: "all"
+  inherit_from:
+    description: "Existing SLA file to extend"
+    required: false
+
+# Output
+default_output_file: "{output_folder}/metrics/sla-definitions-{{date}}.yaml"
+
+# Events this workflow publishes
+publishes:
+  - event_type: "metrics.sla.defined"
+    condition: "When SLAs are successfully defined"
+
+standalone: true

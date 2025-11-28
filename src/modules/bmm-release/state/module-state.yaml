@@ -1,0 +1,76 @@
+# BMM-Release Module State
+# This file is auto-managed by the bmm-release module
+# Manual edits may be overwritten
+
+version: "1.0.0"
+module: "bmm-release"
+initialized: false
+last_updated: null
+
+# Current version tracking
+current_version:
+  version: null
+  released_at: null
+  environment: null
+
+# Release candidates
+release_candidates: []
+# Example:
+# - id: "rc-2024-001"
+#   version: "2.1.0"
+#   status: "pending"  # pending, validated, approved, deployed, rejected, expired
+#   created_at: "2024-01-15T10:00:00Z"
+#   stories:
+#     - "STORY-123"
+#     - "STORY-124"
+#   quality_gate_passed: null
+#   quality_gate_score: null
+#   approved_by: null
+#   approved_at: null
+#   deployed_at: null
+#   rollback_plan: null
+
+# Pending stories (done but not released)
+pending_stories: []
+# Example:
+# - id: "STORY-125"
+#   title: "Add user profile page"
+#   type: "feature"
+#   completed_at: "2024-01-16T14:00:00Z"
+
+# Release history
+release_history: []
+# Example:
+# - version: "2.0.0"
+#   release_id: "rc-2024-001"
+#   released_at: "2024-01-15T18:00:00Z"
+#   environment: "production"
+#   story_count: 5
+#   status: "deployed"
+#   rollback_available: true
+
+# Deployment tracking
+deployments: []
+# Example:
+# - release_id: "rc-2024-001"
+#   environment: "staging"
+#   deployed_at: "2024-01-15T16:00:00Z"
+#   status: "success"
+#   health_check_passed: true
+
+# Rollback history
+rollbacks: []
+# Example:
+# - from_version: "2.1.0"
+#   to_version: "2.0.0"
+#   initiated_at: "2024-01-15T20:00:00Z"
+#   completed_at: "2024-01-15T20:15:00Z"
+#   reason: "Critical bug in payment processing"
+#   initiated_by: "user"
+#   status: "completed"
+
+# Event processing
+event_processing:
+  last_event_id: null
+  last_event_time: null
+  events_processed_count: 0

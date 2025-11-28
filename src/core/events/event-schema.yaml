@@ -1,0 +1,858 @@
+# BMAD Event Schema Definition
+# Version: 1.0.0
+#
+# This schema defines the standard format for all events in the BMAD event-driven architecture.
+# Events enable decoupled, asynchronous communication between modules.
+
+schema_version: "1.0.0"
+
+event_envelope:
+  description: "Standard envelope for all BMAD events"
+  required_fields:
+    - id
+    - type
+    - source
+    - timestamp
+    - payload
+
+  fields:
+    id:
+      type: string
+      format: uuid
+      description: "Unique identifier for this event instance"
+      example: "550e8400-e29b-41d4-a716-446655440000"
+
+    type:
+      type: string
+      format: "{domain}.{action}"
+      description: "Event type following domain.action pattern"
+      examples:
+        - "story.created"
+        - "story.done"
+        - "metrics.quality.pass"
+        - "release.deployed"
+
+    source:
+      type: string
+      format: "{module}/{workflow}"
+      description: "Origin of the event"
+      examples:
+        - "bmm/create-story"
+        - "bmm-metrics/quality-gate-check"
+        - "bmm-release/deploy-release"
+
+    timestamp:
+      type: string
+      format: ISO8601
+      description: "When the event was created"
+      example: "2024-01-15T10:30:00.000Z"
+
+    correlation_id:
+      type: string
+      format: uuid
+      required: false
+      description: "Links related events together (e.g., all events from one story lifecycle)"
+      example: "660e8400-e29b-41d4-a716-446655440001"
+
+    causation_id:
+      type: string
+      format: uuid
+      required: false
+      description: "ID of the event that caused this event"
+      example: "550e8400-e29b-41d4-a716-446655440000"
+
+    sequence:
+      type: integer
+      required: false
+      description: "Sequence number for ordering within a correlation group"
+      example: 3
+
+    version:
+      type: string
+      required: false
+      default: "1.0"
+      description: "Schema version for this event type"
+
+    payload:
+      type: object
+      description: "Event-specific data (varies by event type)"
+
+    metadata:
+      type: object
+      required: false
+      description: "Additional context about the event"
+      fields:
+        user:
+          type: string
+          description: "User who triggered the event"
+        session_id:
+          type: string
+          description: "Session identifier"
+        agent:
+          type: string
+          description: "BMAD agent that generated the event"
+        workflow:
+          type: string
+          description: "Workflow that generated the event"
+        environment:
+          type: string
+          enum: ["development", "staging", "production"]
+          description: "Environment where event was generated"
+
+# Event Type Registry
+# Defines all known event types with their payload schemas
+
+event_types:
+
+  # ============================================
+  # Core Story Lifecycle Events (from existing BMM)
+  # ============================================
+
+  story.created:
+    domain: story
+    action: created
+    description: "A new story has been created from an epic"
+    source_workflow: "create-story"
+    payload:
+      story_id:
+        type: string
+        required: true
+      epic_id:
+        type: string
+        required: true
+      title:
+        type: string
+        required: true
+      acceptance_criteria:
+        type: array
+        items: string
+      priority:
+        type: integer
+        required: false
+      estimated_effort:
+        type: string
+        required: false
+
+  story.ready:
+    domain: story
+    action: ready
+    description: "A story is ready for development (context assembled)"
+    source_workflow: "story-ready"
+    payload:
+      story_id:
+        type: string
+        required: true
+      context_files:
+        type: array
+        items: string
+        description: "Files included in story context"
+      ready_at:
+        type: string
+        format: ISO8601
+
+  story.started:
+    domain: story
+    action: started
+    description: "Development has started on a story"
+    source_workflow: "dev-story"
+    payload:
+      story_id:
+        type: string
+        required: true
+      developer:
+        type: string
+        required: false
+
+  story.reviewed:
+    domain: story
+    action: reviewed
+    description: "A story has completed code review"
+    source_workflow: "code-review"
+    payload:
+      story_id:
+        type: string
+        required: true
+      review_status:
+        type: string
+        enum: ["approved", "changes_requested", "rejected"]
+      reviewer_notes:
+        type: string
+        required: false
+      issues_found:
+        type: array
+        items: string
+
+  story.done:
+    domain: story
+    action: done
+    description: "A story is complete (all AC met, tests pass)"
+    source_workflow: "story-done"
+    payload:
+      story_id:
+        type: string
+        required: true
+      epic_id:
+        type: string
+        required: true
+      completion_time:
+        type: string
+        format: ISO8601
+      tests_passed:
+        type: boolean
+      files_changed:
+        type: array
+        items: string
+
+  # ============================================
+  # Sprint Lifecycle Events
+  # ============================================
+
+  sprint.started:
+    domain: sprint
+    action: started
+    description: "A new sprint has begun"
+    source_workflow: "sprint-planning"
+    payload:
+      sprint_id:
+        type: string
+        required: true
+      sprint_number:
+        type: integer
+        required: true
+      start_date:
+        type: string
+        format: ISO8601
+      planned_stories:
+        type: array
+        items: string
+      capacity:
+        type: integer
+        description: "Story points or count"
+
+  sprint.ended:
+    domain: sprint
+    action: ended
+    description: "A sprint has completed"
+    source_workflow: "retrospective"
+    payload:
+      sprint_id:
+        type: string
+        required: true
+      sprint_number:
+        type: integer
+        required: true
+      end_date:
+        type: string
+        format: ISO8601
+      completed_stories:
+        type: array
+        items: string
+      incomplete_stories:
+        type: array
+        items: string
+      velocity:
+        type: integer
+        description: "Actual points/count completed"
+
+  # ============================================
+  # Epic Lifecycle Events
+  # ============================================
+
+  epic.created:
+    domain: epic
+    action: created
+    description: "A new epic has been created"
+    source_workflow: "create-epics-and-stories"
+    payload:
+      epic_id:
+        type: string
+        required: true
+      title:
+        type: string
+        required: true
+      story_count:
+        type: integer
+
+  epic.completed:
+    domain: epic
+    action: completed
+    description: "All stories in an epic are done"
+    source_workflow: "retrospective"
+    payload:
+      epic_id:
+        type: string
+        required: true
+      completion_date:
+        type: string
+        format: ISO8601
+      total_stories:
+        type: integer
+      lessons_learned:
+        type: array
+        items: string
+
+  # ============================================
+  # Code Review Events
+  # ============================================
+
+  code.reviewed:
+    domain: code
+    action: reviewed
+    description: "Code review completed for a change"
+    source_workflow: "code-review"
+    payload:
+      story_id:
+        type: string
+        required: true
+      review_result:
+        type: string
+        enum: ["approved", "needs_changes", "rejected"]
+      quality_score:
+        type: number
+        minimum: 0
+        maximum: 100
+      coverage_percent:
+        type: number
+        required: false
+      issues:
+        type: array
+        items:
+          type: object
+          properties:
+            severity: string
+            message: string
+            file: string
+            line: integer
+
+  # ============================================
+  # Metrics Module Events (NEW)
+  # ============================================
+
+  metrics.kpi.defined:
+    domain: metrics
+    action: kpi.defined
+    description: "New KPIs have been defined"
+    source_workflow: "define-kpis"
+    module: bmm-metrics
+    payload:
+      kpi_set_id:
+        type: string
+        required: true
+      kpis:
+        type: array
+        items:
+          type: object
+          properties:
+            name: string
+            target: number
+            unit: string
+            frequency: string
+
+  metrics.kpi.updated:
+    domain: metrics
+    action: kpi.updated
+    description: "KPI values have been updated"
+    source_workflow: "track-metrics"
+    module: bmm-metrics
+    payload:
+      kpi_name:
+        type: string
+        required: true
+      previous_value:
+        type: number
+      current_value:
+        type: number
+        required: true
+      target:
+        type: number
+      status:
+        type: string
+        enum: ["on_track", "at_risk", "off_track"]
+
+  metrics.sla.breach:
+    domain: metrics
+    action: sla.breach
+    description: "An SLA threshold has been exceeded"
+    source_workflow: "track-metrics"
+    module: bmm-metrics
+    payload:
+      sla_name:
+        type: string
+        required: true
+      threshold:
+        type: number
+        required: true
+      actual_value:
+        type: number
+        required: true
+      breach_time:
+        type: string
+        format: ISO8601
+      severity:
+        type: string
+        enum: ["warning", "critical"]
+
+  metrics.quality.pass:
+    domain: metrics
+    action: quality.pass
+    description: "All quality gates have passed"
+    source_workflow: "quality-gate-check"
+    module: bmm-metrics
+    payload:
+      story_id:
+        type: string
+        required: true
+      gates_checked:
+        type: array
+        items: string
+      overall_score:
+        type: number
+      timestamp:
+        type: string
+        format: ISO8601
+
+  metrics.quality.fail:
+    domain: metrics
+    action: quality.fail
+    description: "One or more quality gates failed"
+    source_workflow: "quality-gate-check"
+    module: bmm-metrics
+    payload:
+      story_id:
+        type: string
+        required: true
+      failed_gates:
+        type: array
+        items:
+          type: object
+          properties:
+            gate_name: string
+            expected: string
+            actual: string
+            reason: string
+      blocking:
+        type: boolean
+        description: "Whether this blocks release"
+
+  # ============================================
+  # Release Module Events (NEW)
+  # ============================================
+
+  release.planned:
+    domain: release
+    action: planned
+    description: "A release has been planned"
+    source_workflow: "release-planning"
+    module: bmm-release
+    payload:
+      release_id:
+        type: string
+        required: true
+      version:
+        type: string
+        required: true
+      planned_date:
+        type: string
+        format: ISO8601
+      included_stories:
+        type: array
+        items: string
+      release_type:
+        type: string
+        enum: ["major", "minor", "patch", "hotfix"]
+
+  release.qa.approved:
+    domain: release
+    action: qa.approved
+    description: "QA has signed off on a release"
+    source_workflow: "qa-signoff"
+    module: bmm-release
+    payload:
+      release_id:
+        type: string
+        required: true
+      approved_by:
+        type: string
+      approval_time:
+        type: string
+        format: ISO8601
+      test_summary:
+        type: object
+        properties:
+          passed: integer
+          failed: integer
+          skipped: integer
+
+  release.deployed:
+    domain: release
+    action: deployed
+    description: "A release has been deployed to an environment"
+    source_workflow: "deploy-release"
+    module: bmm-release
+    payload:
+      release_id:
+        type: string
+        required: true
+      version:
+        type: string
+        required: true
+      environment:
+        type: string
+        enum: ["staging", "production"]
+      deployment_time:
+        type: string
+        format: ISO8601
+      deployment_strategy:
+        type: string
+        enum: ["full", "canary", "blue_green", "rolling"]
+      rollout_percentage:
+        type: number
+        required: false
+
+  release.rollback:
+    domain: release
+    action: rollback
+    description: "A release has been rolled back"
+    source_workflow: "rollback"
+    module: bmm-release
+    payload:
+      release_id:
+        type: string
+        required: true
+      rollback_to_version:
+        type: string
+        required: true
+      reason:
+        type: string
+        required: true
+      initiated_by:
+        type: string
+      rollback_time:
+        type: string
+        format: ISO8601
+
+  release.evaluated:
+    domain: release
+    action: evaluated
+    description: "Post-release evaluation completed"
+    source_workflow: "post-release-evaluation"
+    module: bmm-release
+    payload:
+      release_id:
+        type: string
+        required: true
+      evaluation_date:
+        type: string
+        format: ISO8601
+      success_metrics:
+        type: object
+      issues_found:
+        type: array
+        items: string
+      rollback_required:
+        type: boolean
+
+  # ============================================
+  # Feedback Module Events (NEW)
+  # ============================================
+
+  feedback.interview.synthesized:
+    domain: feedback
+    action: interview.synthesized
+    description: "Customer interviews have been synthesized"
+    source_workflow: "synthesize-interviews"
+    module: bmm-feedback
+    payload:
+      synthesis_id:
+        type: string
+        required: true
+      interview_count:
+        type: integer
+        required: true
+      themes:
+        type: array
+        items:
+          type: object
+          properties:
+            name: string
+            frequency: integer
+            sentiment: string
+      key_insights:
+        type: array
+        items: string
+
+  feedback.hypothesis.created:
+    domain: feedback
+    action: hypothesis.created
+    description: "A product hypothesis has been created"
+    source_workflow: "generate-hypotheses"
+    module: bmm-feedback
+    payload:
+      hypothesis_id:
+        type: string
+        required: true
+      statement:
+        type: string
+        required: true
+      metric:
+        type: string
+        description: "How success will be measured"
+      target:
+        type: string
+        description: "Target improvement"
+      confidence:
+        type: string
+        enum: ["low", "medium", "high"]
+
+  feedback.experiment.designed:
+    domain: feedback
+    action: experiment.designed
+    description: "An experiment has been designed"
+    source_workflow: "design-experiment"
+    module: bmm-feedback
+    payload:
+      experiment_id:
+        type: string
+        required: true
+      hypothesis_id:
+        type: string
+        required: true
+      type:
+        type: string
+        enum: ["a_b_test", "feature_flag", "survey", "prototype"]
+      duration_days:
+        type: integer
+      sample_size:
+        type: integer
+        required: false
+
+  feedback.experiment.completed:
+    domain: feedback
+    action: experiment.completed
+    description: "An experiment has concluded with results"
+    source_workflow: "analyze-telemetry"
+    module: bmm-feedback
+    payload:
+      experiment_id:
+        type: string
+        required: true
+      hypothesis_id:
+        type: string
+        required: true
+      result:
+        type: string
+        enum: ["validated", "invalidated", "inconclusive"]
+      metrics:
+        type: object
+      recommendation:
+        type: string
+
+  feedback.telemetry.analyzed:
+    domain: feedback
+    action: telemetry.analyzed
+    description: "Usage telemetry has been analyzed"
+    source_workflow: "analyze-telemetry"
+    module: bmm-feedback
+    payload:
+      analysis_id:
+        type: string
+        required: true
+      period:
+        type: object
+        properties:
+          start: string
+          end: string
+      key_findings:
+        type: array
+        items: string
+      anomalies:
+        type: array
+        items: string
+
+  # ============================================
+  # Priority Module Events (NEW)
+  # ============================================
+
+  priority.backlog.scored:
+    domain: priority
+    action: backlog.scored
+    description: "Backlog items have been scored"
+    source_workflow: "score-backlog"
+    module: bmm-priority
+    payload:
+      scoring_id:
+        type: string
+        required: true
+      framework:
+        type: string
+        enum: ["rice", "wsjf", "moscow", "custom"]
+      items_scored:
+        type: integer
+        required: true
+      scores:
+        type: array
+        items:
+          type: object
+          properties:
+            item_id: string
+            score: number
+            components: object
+
+  priority.backlog.reordered:
+    domain: priority
+    action: backlog.reordered
+    description: "Backlog has been reprioritized"
+    source_workflow: "prioritize-stories"
+    module: bmm-priority
+    payload:
+      reorder_id:
+        type: string
+        required: true
+      previous_order:
+        type: array
+        items: string
+      new_order:
+        type: array
+        items: string
+      reason:
+        type: string
+
+  priority.matrix.generated:
+    domain: priority
+    action: matrix.generated
+    description: "Priority matrix has been generated"
+    source_workflow: "value-risk-matrix"
+    module: bmm-priority
+    payload:
+      matrix_id:
+        type: string
+        required: true
+      axes:
+        type: object
+        properties:
+          x: string
+          y: string
+      quadrants:
+        type: object
+        description: "Items grouped by quadrant"
+
+  # ============================================
+  # Roadmap Module Events (NEW)
+  # ============================================
+
+  roadmap.initiative.created:
+    domain: roadmap
+    action: initiative.created
+    description: "A strategic initiative has been created"
+    source_workflow: "create-initiative"
+    module: bmm-roadmap
+    payload:
+      initiative_id:
+        type: string
+        required: true
+      title:
+        type: string
+        required: true
+      description:
+        type: string
+      target_quarter:
+        type: string
+        example: "Q2 2024"
+      linked_okrs:
+        type: array
+        items: string
+      epic_ids:
+        type: array
+        items: string
+
+  roadmap.quarter.planned:
+    domain: roadmap
+    action: quarter.planned
+    description: "Quarterly planning completed"
+    source_workflow: "quarterly-planning"
+    module: bmm-roadmap
+    payload:
+      quarter:
+        type: string
+        required: true
+        example: "Q2 2024"
+      initiatives:
+        type: array
+        items: string
+      capacity_allocated:
+        type: integer
+      themes:
+        type: array
+        items: string
+
+  roadmap.okr.aligned:
+    domain: roadmap
+    action: okr.aligned
+    description: "OKRs have been aligned with initiatives"
+    source_workflow: "okr-alignment"
+    module: bmm-roadmap
+    payload:
+      alignment_id:
+        type: string
+        required: true
+      okrs:
+        type: array
+        items:
+          type: object
+          properties:
+            objective: string
+            key_results: array
+            initiatives: array
+
+  roadmap.initiative.completed:
+    domain: roadmap
+    action: initiative.completed
+    description: "An initiative has been completed"
+    source_workflow: "roadmap-review"
+    module: bmm-roadmap
+    payload:
+      initiative_id:
+        type: string
+        required: true
+      completion_date:
+        type: string
+        format: ISO8601
+      outcome:
+        type: string
+        enum: ["successful", "partial", "cancelled"]
+      metrics_achieved:
+        type: object
+
+# Transport Configuration
+transport:
+  default: file_queue
+
+  options:
+    file_queue:
+      description: "File-based queue for local/development"
+      config:
+        queue_dir: "{project-root}/.bmad/_events"
+        poll_interval_ms: 1000
+        retention_days: 7
+
+    smtp:
+      description: "SMTP-based transport for production/team"
+      config:
+        host: "${BMAD_SMTP_HOST:localhost}"
+        port: "${BMAD_SMTP_PORT:25}"
+        from: "bmad-events@local"
+
+    sqlite:
+      description: "SQLite-based queue for reliable local"
+      config:
+        db_path: "{project-root}/.bmad/_events/queue.db"
+
+# Delivery Guarantees
+delivery:
+  mode: at_least_once
+  retry:
+    max_attempts: 3
+    backoff_ms: [1000, 5000, 15000]
+  dead_letter:
+    enabled: true
+    path: "{project-root}/.bmad/_events/dead-letter"

@@ -1,0 +1,50 @@
+# Quality Gate Check Workflow
+name: quality-gate-check
+description: "Validate a release candidate against quality criteria. Publishes metrics.quality.pass or metrics.quality.fail events."
+author: "BMad"
+module: bmm-metrics
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-metrics/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+quality_gates: "{config_source}:quality_gates"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-metrics/workflows/quality-gate-check"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/gate-report-template.md"
+
+# Input - what we're validating
+input:
+  story_id:
+    description: "Story or release candidate to validate"
+    required: true
+  release_candidate_id:
+    description: "Optional release candidate ID"
+    required: false
+  gates_to_check:
+    description: "Specific gates to check (default: all)"
+    required: false
+    default: "all"
+
+# Output
+default_output_file: "{output_folder}/metrics/quality-gate-{story_id}-{{date}}.md"
+
+# Events this workflow publishes
+publishes:
+  - event_type: "metrics.quality.pass"
+    condition: "All blocking gates pass"
+  - event_type: "metrics.quality.fail"
+    condition: "Any blocking gate fails"
+
+# Cross-module integration
+triggers_workflows:
+  on_pass:
+    - module: "bmm-release"
+      workflow: "release-planning"
+      condition: "if auto_release_on_pass is true"
+
+standalone: true

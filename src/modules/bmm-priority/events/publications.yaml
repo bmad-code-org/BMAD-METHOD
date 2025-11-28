@@ -1,0 +1,38 @@
+# BMM-Priority Event Publications
+
+version: "1.0.0"
+module: "bmm-priority"
+
+publications:
+  - event_type: "priority.updated"
+    description: "Story priority has been changed"
+    payload_schema:
+      story_id: { type: string, required: true }
+      previous_priority: { type: number, required: true }
+      new_priority: { type: number, required: true }
+      reason: { type: string, required: true }
+      updated_by: { type: string, required: true }
+      framework: { type: string, required: true }
+      score_breakdown: { type: object, required: false }
+    consumers:
+      - module: "bmm-roadmap"
+        action: "Update roadmap positioning"
+
+  - event_type: "priority.queue.reordered"
+    description: "Backlog priority queue has been reordered"
+    payload_schema:
+      queue_size: { type: number, required: true }
+      items_changed: { type: number, required: true }
+      top_items: { type: array, required: true }
+      trigger: { type: string, required: true }
+    consumers:
+      - module: "bmm-roadmap"
+        action: "Refresh roadmap with new order"
+
+  - event_type: "priority.review.completed"
+    description: "Priority review session completed"
+    payload_schema:
+      items_reviewed: { type: number, required: true }
+      items_changed: { type: number, required: true }
+      suggestions_processed: { type: number, required: true }
+      stale_items_flagged: { type: number, required: true }

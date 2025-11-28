@@ -1,0 +1,53 @@
+# BMM-Roadmap Module State
+
+version: "1.0.0"
+module: "bmm-roadmap"
+initialized: false
+last_updated: null
+
+# Current roadmap
+roadmap:
+  id: null
+  name: null
+  horizon: null
+  created_at: null
+  last_modified: null
+  
+  # Items in roadmap
+  items: []
+  # Example:
+  # - story_id: "STORY-123"
+  #   epic_id: "EPIC-1"
+  #   estimated_sprint: 3
+  #   estimated_date: "2024-02-15"
+  #   dependencies: []
+
+# Milestones
+milestones: []
+# Example:
+# - id: "ms-001"
+#   name: "MVP Launch"
+#   type: "mvp"
+#   target_date: "2024-03-01"
+#   stories: ["STORY-123", "STORY-124"]
+#   progress: 40
+#   status: "on_track"
+
+# Capacity data (from velocity events)
+capacity:
+  current_velocity: null
+  rolling_average: null
+  team_size: null
+  availability_factor: null
+  effective_capacity: null
+
+# Timeline projections
+projections:
+  last_calculated: null
+  confidence: null
+  risk_level: null
+
+# Event processing
+event_processing:
+  last_event_id: null
+  events_processed_count: 0

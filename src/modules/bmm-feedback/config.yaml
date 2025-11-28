@@ -1,0 +1,119 @@
+# BMM-Feedback Module Configuration
+# Copy to {project-root}/.bmad/bmm-feedback/config.yaml and customize
+
+# Project identification
+project_name: "{{project_name}}"
+user_name: "{{user_name}}"
+output_folder: "docs"
+
+# Feedback collection sources
+sources:
+  # In-app feedback
+  in_app:
+    enabled: true
+    widget_id: null  # Configure your feedback widget
+    
+  # Support tickets (integrations)
+  support:
+    enabled: false
+    provider: null  # zendesk, freshdesk, intercom
+    api_key: null
+    
+  # User surveys
+  surveys:
+    enabled: false
+    provider: null  # typeform, surveymonkey, google_forms
+    
+  # App store reviews
+  app_store:
+    enabled: false
+    ios_app_id: null
+    android_package: null
+    
+  # NPS tracking
+  nps:
+    enabled: false
+    provider: null  # delighted, satismeter, custom
+
+# Feedback categorization
+categories:
+  - name: "bug"
+    keywords: ["broken", "error", "crash", "doesn't work", "bug"]
+    priority_weight: 1.5
+    
+  - name: "feature_request"
+    keywords: ["wish", "would be nice", "please add", "feature request"]
+    priority_weight: 1.0
+    
+  - name: "usability"
+    keywords: ["confusing", "hard to", "can't find", "unclear"]
+    priority_weight: 1.2
+    
+  - name: "performance"
+    keywords: ["slow", "takes forever", "loading", "timeout"]
+    priority_weight: 1.3
+    
+  - name: "praise"
+    keywords: ["love", "great", "amazing", "thank you", "awesome"]
+    priority_weight: 0.5
+
+# Sentiment analysis
+sentiment:
+  enabled: true
+  # Threshold for negative sentiment alert
+  negative_threshold: -0.5
+  # Threshold for positive highlight
+  positive_threshold: 0.5
+
+# Auto-collection triggers
+auto_collect:
+  # Collect feedback after release
+  on_release: true
+  # Days after release to send survey
+  release_survey_delay_days: 7
+  
+  # Collect feedback after story completion
+  on_story_done: false
+
+# Feedback analysis settings
+analysis:
+  # Minimum feedback items for trend analysis
+  min_items_for_trends: 10
+  # Rolling window for trend calculation
+  trend_window_days: 30
+  # Threshold for insight generation
+  insight_threshold: 5  # Same issue mentioned 5+ times
+
+# Priority influence settings
+priority_influence:
+  enabled: true
+  # Minimum feedback score to suggest priority change
+  min_score_for_suggestion: 10
+  # Auto-publish priority suggestions
+  auto_publish: false
+
+# Notifications
+notifications:
+  # Alert on negative sentiment spike
+  on_negative_spike:
+    enabled: true
+    channels:
+      - slack
+      
+  # Report generation complete
+  on_report_ready:
+    enabled: true
+    channels:
+      - email
+
+# Event subscriptions (for event bus)
+events:
+  subscribe:
+    - "release.deployed"
+    - "story.done"
+    
+  publish:
+    - "feedback.received"
+    - "feedback.analyzed"
+    - "feedback.insight.generated"
+    - "feedback.priority.suggested"

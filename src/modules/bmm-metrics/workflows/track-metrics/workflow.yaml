@@ -1,0 +1,50 @@
+# Track Metrics Workflow
+name: track-metrics
+description: "Collect, calculate, and report current metric values against defined KPIs and SLAs"
+author: "BMad"
+module: bmm-metrics
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-metrics/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+kpis: "{config_source}:kpis"
+slas: "{config_source}:sla"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-metrics/workflows/track-metrics"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/metrics-report-template.md"
+state_file: "{project-root}/.bmad/bmm-metrics/state/module-state.yaml"
+
+# Input
+input:
+  metric_category:
+    description: "Category of metrics to track (all, velocity, quality, delivery)"
+    required: false
+    default: "all"
+  period:
+    description: "Time period to report on (current_sprint, last_30d, custom)"
+    required: false
+    default: "current_sprint"
+
+# Output
+default_output_file: "{output_folder}/metrics/metrics-report-{{date}}.md"
+
+# Events this workflow publishes
+publishes:
+  - event_type: "metrics.kpi.updated"
+    condition: "When KPI values are recorded"
+  - event_type: "metrics.sla.breach"
+    condition: "When SLA threshold is breached"
+
+# Events this workflow subscribes to (for automatic data)
+subscribes:
+  - event_type: "story.done"
+    use_for: "Automatic cycle time calculation"
+  - event_type: "sprint.ended"
+    use_for: "Automatic velocity calculation"
+
+standalone: true

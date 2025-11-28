@@ -1,0 +1,88 @@
+# BMM-Metrics Module State
+# This file is auto-managed by the bmm-metrics module
+# Manual edits may be overwritten
+
+version: "1.0.0"
+module: "bmm-metrics"
+initialized: false
+last_updated: null
+
+# Current Sprint Tracking
+current_sprint:
+  sprint_id: null
+  sprint_number: null
+  start_date: null
+  end_date: null
+  planned_stories: 0
+  completed_stories: 0
+  velocity_points: 0
+
+# Velocity History (last 6 sprints for rolling average)
+velocity_history: []
+# Example entry:
+# - sprint_id: "sprint-1"
+#   sprint_number: 1
+#   velocity: 21
+#   completion_rate: 85
+#   date: "2024-01-15"
+
+# Cycle Time History
+cycle_time_history: []
+# Example entry:
+# - story_id: "STORY-123"
+#   cycle_time_days: 3.5
+#   completed_date: "2024-01-15"
+
+# Current KPI Values
+kpis:
+  velocity:
+    current_velocity: null
+    rolling_average: null
+    trend: null  # improving, stable, declining
+    
+  quality:
+    test_coverage: null
+    test_pass_rate: null
+    defect_escape_rate: null
+    
+  delivery:
+    cycle_time_p50: null
+    cycle_time_p90: null
+    pr_review_time_p50: null
+    deployment_frequency: null
+
+# SLA Status
+sla_status:
+  overall_compliance: null
+  breaches: []
+  # Example breach:
+  # - sla_name: "story_cycle_time"
+  #   breach_time: "2024-01-15T10:30:00Z"
+  #   actual_value: 8
+  #   threshold: 7
+  #   resolved: false
+
+# Metric Snapshots (for trend analysis)
+snapshots: []
+# Example snapshot:
+# - timestamp: "2024-01-15T00:00:00Z"
+#   period: "sprint-1"
+#   metrics:
+#     velocity: 21
+#     test_coverage: 82
+#     cycle_time_p50: 2.5
+
+# Event Processing State
+event_processing:
+  last_event_id: null
+  last_event_time: null
+  events_processed_count: 0
+  
+# Review History
+reviews: []
+# Example review:
+# - type: "sprint"
+#   date: "2024-01-15"
+#   period: "sprint-1"
+#   overall_health: 85
+#   key_findings: ["Velocity improving", "Coverage below target"]

@@ -1,0 +1,59 @@
+# BMM-Priority Module Manifest
+
+name: bmm-priority
+version: "1.0.0"
+display_name: "BMAD Priority Module"
+description: "Backlog prioritization with WSJF, RICE, and feedback integration"
+author: "BMad"
+license: "MIT"
+
+category: "planning"
+tags:
+  - prioritization
+  - backlog
+  - wsjf
+  - rice
+  - planning
+
+dependencies:
+  core:
+    version: ">=1.0.0"
+    required: true
+
+events:
+  subscribes:
+    - feedback.priority.suggested
+    - feedback.insight.generated
+    - metrics.velocity.calculated
+    - story.done
+    
+  publishes:
+    - priority.updated
+    - priority.queue.reordered
+    - priority.review.completed
+
+agents:
+  - name: priority-manager
+    file: agents/priority-manager.agent.yaml
+    description: "Backlog Strategist + Priority Guardian"
+    icon: "📊"
+
+workflows:
+  - name: prioritize-backlog
+    path: workflows/prioritize-backlog
+    description: "Score and prioritize backlog items"
+    standalone: true
+    
+  - name: priority-review
+    path: workflows/priority-review
+    description: "Review and adjust priorities"
+    standalone: true
+
+slash_commands:
+  - name: "priority-score"
+    workflow: "prioritize-backlog"
+    description: "Score and prioritize items"
+    
+  - name: "priority-review"
+    workflow: "priority-review"
+    description: "Review priorities"

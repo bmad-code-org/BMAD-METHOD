@@ -1,0 +1,67 @@
+# BMM-Roadmap Module Manifest
+
+name: bmm-roadmap
+version: "1.0.0"
+display_name: "BMAD Roadmap Module"
+description: "Capacity-aware product roadmap planning"
+author: "BMad"
+license: "MIT"
+
+category: "planning"
+tags:
+  - roadmap
+  - planning
+  - capacity
+  - timeline
+  - milestones
+
+dependencies:
+  core:
+    version: ">=1.0.0"
+    required: true
+  bmm-priority:
+    version: ">=1.0.0"
+    required: false
+    reason: "Priority data for roadmap planning"
+  bmm-metrics:
+    version: ">=1.0.0"
+    required: false
+    reason: "Velocity data for capacity planning"
+
+events:
+  subscribes:
+    - priority.queue.reordered
+    - metrics.velocity.calculated
+    - release.deployed
+    - sprint.ended
+    
+  publishes:
+    - roadmap.updated
+    - roadmap.milestone.completed
+    - roadmap.at.risk
+
+agents:
+  - name: roadmap-planner
+    file: agents/roadmap-planner.agent.yaml
+    description: "Strategic Planner + Timeline Guardian"
+    icon: "🗺️"
+
+workflows:
+  - name: roadmap-planning
+    path: workflows/roadmap-planning
+    description: "Create or update product roadmap"
+    standalone: true
+    
+  - name: capacity-planning
+    path: workflows/capacity-planning
+    description: "Run capacity planning analysis"
+    standalone: true
+
+slash_commands:
+  - name: "roadmap-plan"
+    workflow: "roadmap-planning"
+    description: "Plan product roadmap"
+    
+  - name: "roadmap-capacity"
+    workflow: "capacity-planning"
+    description: "Run capacity planning"

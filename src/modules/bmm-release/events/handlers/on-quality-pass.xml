@@ -1,0 +1,91 @@
+<event-handler
+  id="bmm-release/on-quality-pass"
+  event="metrics.quality.pass"
+  description="Handle quality gate pass - proceed with release approval">
+
+  <objective>
+    When quality gates pass for a release candidate, mark the candidate as
+    validated and proceed with release approval workflow.
+  </objective>
+
+  <preconditions>
+    <check>Event payload contains story_id or release_candidate_id</check>
+    <check>Event payload contains overall_score</check>
+    <check>Event payload contains gate_results</check>
+  </preconditions>
+
+  <flow>
+    <step n="1" title="Identify Release Candidate">
+      <action>Load module state from {module_path}/state/module-state.yaml</action>
+      <check if="event.payload.release_candidate_id exists">
+        <action>Find release candidate by ID</action>
+      </check>
+      <check if="event.payload.story_id exists">
+        <action>Find release candidate containing this story</action>
+      </check>
+      <check if="no release candidate found">
+        <action>Log: "No release candidate found for quality pass event"</action>
+        <action>Exit handler</action>
+      </check>
+    </step>
+
+    <step n="2" title="Validate Gate Results">
+      <action>Extract gate results from event payload</action>
+      <action>Verify all blocking gates passed</action>
+      <action>Store overall_score for release record</action>
+      
+      <check if="any blocking gate failed">
+        <action>Log WARNING: "Received quality.pass but blocking gate failed"</action>
+        <action>Mark as requiring manual review</action>
+      </check>
+    </step>
+
+    <step n="3" title="Update Release Candidate Status">
+      <action>Update release candidate status to "validated"</action>
+      <action>Set quality_gate_passed = true</action>
+      <action>Set quality_gate_score = {event.payload.overall_score}</action>
+      <action>Set validated_at = {event.timestamp}</action>
+      <action>Record gate_results for audit</action>
+    </step>
+
+    <step n="4" title="Check Auto-Approval">
+      <action>Load release config</action>
+      <check if="config.deployment.environments[staging].auto_deploy == true">
+        <action>Auto-approve for staging deployment</action>
+        <publish event="release.approved">
+          <payload>
+            <release_id>{release_candidate.id}</release_id>
+            <version>{release_candidate.version}</version>
+            <approved_by>auto</approved_by>
+            <approved_at>{current_timestamp}</approved_at>
+            <target_environment>staging</target_environment>
+            <quality_gate_score>{event.payload.overall_score}</quality_gate_score>
+          </payload>
+        </publish>
+      </check>
+      <check if="else">
+        <action>Queue for manual approval</action>
+        <action>Notify approvers that release is ready</action>
+      </check>
+    </step>
+
+    <step n="5" title="Save State">
+      <action>Save updated state to module-state.yaml</action>
+      <action>Log: "Release {release_candidate.version} validated - quality score: {overall_score}%"</action>
+    </step>
+  </flow>
+
+  <on-error>
+    <action>Log ERROR: "Failed to process quality.pass event: {error_message}"</action>
+    <action>Mark release candidate as requiring manual review</action>
+  </on-error>
+
+  <output>
+    <field name="release_id" value="{release_candidate.id}" />
+    <field name="version" value="{release_candidate.version}" />
+    <field name="quality_score" value="{event.payload.overall_score}" />
+    <field name="status" value="validated" />
+    <field name="auto_approved" value="{auto_approved}" />
+  </output>
+
+</event-handler>

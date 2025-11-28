@@ -1,0 +1,31 @@
+# Rollback Planning Workflow
+name: rollback-planning
+description: "Create rollback procedure for a release"
+author: "BMad"
+module: bmm-release
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-release/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+rollback_config: "{config_source}:rollback"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-release/workflows/rollback-planning"
+instructions: "{installed_path}/instructions.md"
+
+# Input
+input:
+  release_id:
+    description: "Release to create rollback plan for"
+    required: false
+    default: "current"
+  target_version:
+    description: "Version to rollback to"
+    required: false
+
+# Output
+default_output_file: "{output_folder}/releases/rollback-plan-{version}.md"
+
+standalone: true

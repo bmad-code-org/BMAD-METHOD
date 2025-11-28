@@ -1,0 +1,56 @@
+# BMM-Release Event Subscriptions
+# Events this module listens to
+
+version: "1.0.0"
+module: "bmm-release"
+
+subscriptions:
+  # Quality gate events from bmm-metrics
+  - event_type: "metrics.quality.pass"
+    handler: "handlers/on-quality-pass.xml"
+    description: "Quality gates passed - can proceed with release"
+    filter:
+      # Only handle if this release candidate
+      match_field: "payload.story_id"
+      match_type: "in_release_candidate"
+    action: "proceed_with_release"
+    
+  - event_type: "metrics.quality.fail"
+    handler: "handlers/on-quality-fail.xml"
+    description: "Quality gates failed - block release"
+    filter:
+      match_field: "payload.story_id"
+      match_type: "in_release_candidate"
+    action: "block_release"
+
+  # Story events from core
+  - event_type: "story.done"
+    handler: "handlers/on-story-done.xml"
+    description: "Story completed - add to pending release items"
+    action: "add_to_pending_release"
+    
+  # Sprint events
+  - event_type: "sprint.ended"
+    handler: "handlers/on-sprint-ended.xml"
+    description: "Sprint ended - optionally create release candidate"
+    condition: "config.release.auto_create_on_sprint_end == true"
+    action: "create_release_candidate"
+
+  # Deployment events (from CI/CD or external systems)
+  - event_type: "deploy.completed"
+    handler: "handlers/on-deploy-completed.xml"
+    description: "Deployment finished - run health checks"
+    action: "verify_deployment"
+    
+  - event_type: "deploy.failed"
+    handler: "handlers/on-deploy-failed.xml"
+    description: "Deployment failed - initiate rollback if configured"
+    action: "handle_deployment_failure"
+
+# Event routing configuration
+routing:
+  # How to find the right release candidate for an event
+  release_candidate_lookup:
+    by_story_id: "state.pending_stories[payload.story_id]"
+    by_sprint_id: "state.sprint_releases[payload.sprint_id]"
+    by_release_id: "state.releases[payload.release_id]"

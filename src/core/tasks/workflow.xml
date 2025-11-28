@@ -64,6 +64,7 @@
           <tag>invoke-task xml tag → Execute specified task</tag>
           <tag>invoke-protocol name="protocol_name" xml tag → Execute reusable protocol from protocols section</tag>
           <tag>goto step="x" → Jump to specified step</tag>
+          <tag>publish event="type" xml tag → Emit event to subscribed modules (see Event System)</tag>
         </execute-tags>
       </substep>
 
@@ -91,7 +92,27 @@
         </if>
       </substep>
 
-      <substep n="2d" title="Step Completion">
+      <substep n="2d" title="Handle publish Tags (Event System)">
+        <if tag="publish">
+          <description>Emit events to the BMAD event bus for async module communication</description>
+          <action>Extract event type from publish tag's event attribute</action>
+          <action>Extract payload from nested elements or attributes</action>
+          <action>Invoke {bmad_folder}/core/events/publish-event.xml with event_type and payload</action>
+          <action>Log: "Event {event_type} published to {subscriber_count} subscribers"</action>
+          <note>Events are non-blocking - workflow continues immediately after publish</note>
+          <example>
+            &lt;publish event="story.done"&gt;
+              &lt;payload&gt;
+                &lt;story_id&gt;{{story_id}}&lt;/story_id&gt;
+                &lt;epic_id&gt;{{epic_id}}&lt;/epic_id&gt;
+                &lt;tests_passed&gt;true&lt;/tests_passed&gt;
+              &lt;/payload&gt;
+            &lt;/publish&gt;
+          </example>
+        </if>
+      </substep>
+
+      <substep n="2e" title="Step Completion">
         <check>If no special tags and NOT #yolo:</check>
         <ask>Continue to next step? (y/n/edit)</ask>
       </substep>
@@ -126,6 +147,7 @@
       <tag>invoke-workflow - Call another workflow</tag>
       <tag>invoke-task - Call a task</tag>
       <tag>invoke-protocol - Execute a reusable protocol (e.g., discover_inputs)</tag>
+      <tag>publish event="type" - Emit event to event bus for async module communication</tag>
     </execution>
     <output>
       <tag>template-output - Save content checkpoint</tag>

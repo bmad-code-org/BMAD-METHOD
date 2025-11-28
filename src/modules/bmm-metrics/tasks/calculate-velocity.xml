@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task
+  id="bmm-metrics/calculate-velocity"
+  name="Calculate Velocity"
+  description="Calculate sprint velocity from completed stories">
+
+  <objective>
+    Calculate sprint velocity by counting completed stories or summing story points,
+    and update rolling averages for trend analysis.
+  </objective>
+
+  <input>
+    <param name="sprint_id" type="string" required="true" description="Sprint identifier" />
+    <param name="completed_stories" type="array" required="true" description="Array of completed story objects" />
+    <param name="use_points" type="boolean" required="false" default="true" description="Use story points vs count" />
+  </input>
+
+  <flow>
+    <step n="1" title="Validate Input">
+      <action>Verify sprint_id is provided</action>
+      <action>Verify completed_stories array exists</action>
+      <action>Load sprint configuration for points vs count preference</action>
+    </step>
+
+    <step n="2" title="Calculate Raw Velocity">
+      <check if="use_points == true">
+        <action>Sum story points from completed_stories</action>
+        <action>velocity = SUM(story.points for story in completed_stories)</action>
+      </check>
+      <check if="use_points == false">
+        <action>Count completed stories</action>
+        <action>velocity = COUNT(completed_stories)</action>
+      </check>
+      <action>Store as {{current_velocity}}</action>
+    </step>
+
+    <step n="3" title="Load Historical Data">
+      <action>Load velocity history from module state</action>
+      <action>Get last 6 sprint velocities</action>
+      <action>Store as {{velocity_history}}</action>
+    </step>
+
+    <step n="4" title="Calculate Rolling Average">
+      <action>Add current_velocity to velocity_history</action>
+      <action>Take last 6 entries for calculation</action>
+      <action>rolling_average = AVG(velocity_history[-6:])</action>
+      <action>Store as {{rolling_average}}</action>
+    </step>
+
+    <step n="5" title="Determine Trend">
+      <action>Compare current_velocity to rolling_average</action>
+      <check if="current_velocity > rolling_average * 1.1">
+        <action>trend = "improving"</action>
+      </check>
+      <check if="current_velocity < rolling_average * 0.9">
+        <action>trend = "declining"</action>
+      </check>
+      <check if="else">
+        <action>trend = "stable"</action>
+      </check>
+    </step>
+
+    <step n="6" title="Calculate Variance">
+      <action>variance = ((current_velocity - rolling_average) / rolling_average) * 100</action>
+      <action>Store as {{variance_percent}}</action>
+    </step>
+  </flow>
+
+  <output>
+    <field name="sprint_id" value="{sprint_id}" />
+    <field name="velocity" value="{current_velocity}" />
+    <field name="rolling_average" value="{rolling_average}" />
+    <field name="trend" value="{trend}" />
+    <field name="variance_percent" value="{variance_percent}" />
+    <field name="story_count" value="{completed_stories.length}" />
+  </output>
+
+</task>

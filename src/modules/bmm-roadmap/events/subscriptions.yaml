@@ -1,0 +1,25 @@
+# BMM-Roadmap Event Subscriptions
+
+version: "1.0.0"
+module: "bmm-roadmap"
+
+subscriptions:
+  - event_type: "priority.queue.reordered"
+    handler: "handlers/on-priority-reordered.xml"
+    description: "Refresh roadmap with new priority order"
+    action: "refresh_roadmap"
+    
+  - event_type: "metrics.velocity.calculated"
+    handler: "handlers/on-velocity-calculated.xml"
+    description: "Update capacity projections"
+    action: "update_capacity"
+    
+  - event_type: "release.deployed"
+    handler: "handlers/on-release-deployed.xml"
+    description: "Update milestone completion"
+    action: "mark_milestone_progress"
+    
+  - event_type: "sprint.ended"
+    handler: "handlers/on-sprint-ended.xml"
+    description: "Update roadmap progress"
+    action: "update_progress"

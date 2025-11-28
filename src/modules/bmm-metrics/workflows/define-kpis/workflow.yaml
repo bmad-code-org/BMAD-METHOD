@@ -1,0 +1,43 @@
+# Define KPIs Workflow
+name: define-kpis
+description: "Define and configure product and engineering KPIs aligned with business objectives"
+author: "BMad"
+module: bmm-metrics
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-metrics/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-metrics/workflows/define-kpis"
+instructions: "{installed_path}/instructions.md"
+template: "{installed_path}/kpi-template.md"
+
+# Input
+input:
+  kpi_category:
+    description: "Category of KPIs to define (product, engineering, quality, all)"
+    required: false
+    default: "all"
+  baseline_period:
+    description: "Period to use for baseline calculation (e.g., 30d, 90d)"
+    required: false
+    default: "30d"
+
+# Output
+default_output_file: "{output_folder}/metrics/kpi-definitions-{{date}}.yaml"
+
+# Events this workflow publishes
+publishes:
+  - event_type: "metrics.kpi.defined"
+    condition: "When KPIs are successfully defined"
+
+# Dependencies
+requires:
+  - module: "bmm-core"
+    reason: "Access to project context and story data"
+
+standalone: true

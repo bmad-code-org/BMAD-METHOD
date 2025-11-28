@@ -1,0 +1,221 @@
+# Metric Type Definitions
+# Canonical definitions for all metric types in bmm-metrics module
+
+version: "1.0.0"
+
+# Velocity Metrics
+velocity_metrics:
+  sprint_velocity:
+    name: "Sprint Velocity"
+    description: "Number of story points (or stories) completed in a sprint"
+    unit: "points"
+    aggregation: "sum"
+    higher_is_better: true
+    category: "velocity"
+    
+  rolling_velocity:
+    name: "Rolling Velocity Average"
+    description: "Average velocity over last 6 sprints"
+    unit: "points"
+    aggregation: "average"
+    higher_is_better: true
+    category: "velocity"
+    window: 6
+    
+  sprint_completion_rate:
+    name: "Sprint Completion Rate"
+    description: "Percentage of committed stories completed"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: true
+    category: "velocity"
+    target: 80
+
+# Delivery Metrics
+delivery_metrics:
+  story_cycle_time:
+    name: "Story Cycle Time"
+    description: "Days from story start to completion"
+    unit: "days"
+    aggregation: "percentile"
+    percentiles: [50, 90, 95]
+    higher_is_better: false
+    category: "delivery"
+    
+  pr_review_time:
+    name: "PR Review Time"
+    description: "Hours from PR creation to first review"
+    unit: "hours"
+    aggregation: "percentile"
+    percentiles: [50, 90]
+    higher_is_better: false
+    category: "delivery"
+    
+  deployment_frequency:
+    name: "Deployment Frequency"
+    description: "Number of deployments per week"
+    unit: "deployments/week"
+    aggregation: "count"
+    higher_is_better: true
+    category: "delivery"
+    
+  lead_time_for_changes:
+    name: "Lead Time for Changes"
+    description: "Time from commit to production (DORA)"
+    unit: "hours"
+    aggregation: "percentile"
+    percentiles: [50]
+    higher_is_better: false
+    category: "delivery"
+    dora_metric: true
+
+# Quality Metrics
+quality_metrics:
+  test_coverage:
+    name: "Test Coverage"
+    description: "Percentage of code covered by tests"
+    unit: "percent"
+    aggregation: "latest"
+    higher_is_better: true
+    category: "quality"
+    
+  test_pass_rate:
+    name: "Test Pass Rate"
+    description: "Percentage of tests passing"
+    unit: "percent"
+    aggregation: "latest"
+    higher_is_better: true
+    category: "quality"
+    target: 100
+    
+  defect_escape_rate:
+    name: "Defect Escape Rate"
+    description: "Percentage of defects found in production vs total"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: false
+    category: "quality"
+    
+  change_failure_rate:
+    name: "Change Failure Rate"
+    description: "Percentage of deployments causing failures (DORA)"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: false
+    category: "quality"
+    dora_metric: true
+    
+  code_review_coverage:
+    name: "Code Review Coverage"
+    description: "Percentage of changes with peer review"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: true
+    category: "quality"
+    target: 100
+
+# Operations Metrics
+operations_metrics:
+  service_uptime:
+    name: "Service Uptime"
+    description: "Percentage of time service is available"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: true
+    category: "operations"
+    
+  mttr:
+    name: "Mean Time to Recovery"
+    description: "Average time to restore service after failure (DORA)"
+    unit: "hours"
+    aggregation: "average"
+    higher_is_better: false
+    category: "operations"
+    dora_metric: true
+    
+  incident_response_time:
+    name: "Incident Response Time"
+    description: "Time from incident report to acknowledgment"
+    unit: "minutes"
+    aggregation: "percentile"
+    percentiles: [50, 90]
+    higher_is_better: false
+    category: "operations"
+    
+  error_rate:
+    name: "Error Rate"
+    description: "Percentage of requests resulting in errors"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: false
+    category: "operations"
+
+# Security Metrics
+security_metrics:
+  critical_vulnerabilities:
+    name: "Critical Vulnerabilities"
+    description: "Count of open critical security vulnerabilities"
+    unit: "count"
+    aggregation: "latest"
+    higher_is_better: false
+    category: "security"
+    target: 0
+    
+  high_vulnerabilities:
+    name: "High Vulnerabilities"
+    description: "Count of open high security vulnerabilities"
+    unit: "count"
+    aggregation: "latest"
+    higher_is_better: false
+    category: "security"
+    
+  security_scan_pass_rate:
+    name: "Security Scan Pass Rate"
+    description: "Percentage of security scans passing"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: true
+    category: "security"
+
+# Product Metrics
+product_metrics:
+  user_activation_rate:
+    name: "User Activation Rate"
+    description: "Percentage of new users completing key action"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: true
+    category: "product"
+    
+  feature_adoption_rate:
+    name: "Feature Adoption Rate"
+    description: "Percentage of users using new features"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: true
+    category: "product"
+    
+  user_retention_d7:
+    name: "7-Day User Retention"
+    description: "Percentage of users returning after 7 days"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: true
+    category: "product"
+    
+  user_retention_d30:
+    name: "30-Day User Retention"
+    description: "Percentage of users returning after 30 days"
+    unit: "percent"
+    aggregation: "average"
+    higher_is_better: true
+    category: "product"
+    
+  nps_score:
+    name: "Net Promoter Score"
+    description: "Customer loyalty metric (-100 to +100)"
+    unit: "score"
+    aggregation: "latest"
+    higher_is_better: true
+    category: "product"
+    range: [-100, 100]

@@ -1,0 +1,234 @@
+# BMM-Metrics Module Manifest
+# Metrics, KPIs, and Quality Gate Tracking for BMAD
+
+name: bmm-metrics
+version: "1.0.0"
+display_name: "BMAD Metrics Module"
+description: "Track KPIs, SLAs, quality gates, and delivery metrics with event-driven architecture"
+author: "BMad"
+license: "MIT"
+
+# Module category and tags
+category: "operations"
+tags:
+  - metrics
+  - kpis
+  - sla
+  - quality-gates
+  - velocity
+  - dora-metrics
+
+# Dependencies
+dependencies:
+  core:
+    version: ">=1.0.0"
+    required: true
+  bmm-core:
+    version: ">=1.0.0"
+    required: false
+    reason: "Access to story and sprint data"
+
+# Event Integration
+events:
+  subscribes:
+    - story.done
+    - story.ready
+    - story.started
+    - sprint.started
+    - sprint.ended
+    - code.reviewed
+    - deploy.completed
+    - test.completed
+    
+  publishes:
+    - metrics.kpi.defined
+    - metrics.kpi.updated
+    - metrics.sla.defined
+    - metrics.sla.breach
+    - metrics.sla.warning
+    - metrics.quality.pass
+    - metrics.quality.fail
+    - metrics.velocity.calculated
+    - metrics.review.completed
+    - metrics.anomaly.detected
+
+# Agents provided by this module
+agents:
+  - name: metrics-analyst
+    file: agents/metrics-analyst.agent.yaml
+    description: "Metrics Analyst + KPI Strategist + Quality Gate Guardian"
+    icon: "📊"
+
+# Workflows provided
+workflows:
+  - name: define-kpis
+    path: workflows/define-kpis
+    description: "Define product and engineering KPIs"
+    standalone: true
+    
+  - name: define-slas
+    path: workflows/define-slas
+    description: "Set SLA thresholds and alerting rules"
+    standalone: true
+    
+  - name: track-metrics
+    path: workflows/track-metrics
+    description: "Collect and report current metrics"
+    standalone: true
+    
+  - name: quality-gate-check
+    path: workflows/quality-gate-check
+    description: "Validate quality gates for release"
+    standalone: true
+    triggers:
+      - module: bmm-release
+        workflow: release-planning
+        condition: "on quality.pass event"
+        
+  - name: metrics-review
+    path: workflows/metrics-review
+    description: "Analyze trends and generate insights"
+    standalone: true
+
+# Tasks provided
+tasks:
+  - name: calculate-velocity
+    file: tasks/calculate-velocity.xml
+    description: "Calculate sprint velocity"
+    
+  - name: calculate-cycle-time
+    file: tasks/calculate-cycle-time.xml
+    description: "Calculate story cycle time"
+    
+  - name: check-sla-breach
+    file: tasks/check-sla-breach.xml
+    description: "Check if metric breaches SLA"
+    
+  - name: generate-dashboard
+    file: tasks/generate-dashboard.xml
+    description: "Generate metrics dashboard"
+
+# Event Handlers
+event_handlers:
+  - name: on-story-done
+    file: events/handlers/on-story-done.xml
+    event: story.done
+    description: "Track story completion metrics"
+    
+  - name: on-sprint-ended
+    file: events/handlers/on-sprint-ended.xml
+    event: sprint.ended
+    description: "Calculate sprint velocity"
+
+# Data files
+data:
+  - name: metric-types
+    file: data/metric-types.yaml
+    description: "Canonical metric type definitions"
+    
+  - name: sla-thresholds
+    file: data/sla-thresholds.yaml
+    description: "Default SLA threshold definitions"
+
+# Configuration schema
+config_schema:
+  project_name:
+    type: string
+    required: true
+    description: "Project name for reports"
+    
+  user_name:
+    type: string
+    required: true
+    description: "User name for greetings"
+    
+  output_folder:
+    type: string
+    required: true
+    default: "docs"
+    description: "Output folder for reports"
+    
+  quality_gates:
+    type: object
+    required: true
+    description: "Quality gate configuration"
+    properties:
+      test_coverage:
+        type: object
+        properties:
+          threshold: { type: number, default: 80 }
+          blocking: { type: boolean, default: true }
+      test_pass_rate:
+        type: object
+        properties:
+          threshold: { type: number, default: 100 }
+          blocking: { type: boolean, default: true }
+      code_review:
+        type: object
+        properties:
+          required: { type: boolean, default: true }
+          blocking: { type: boolean, default: true }
+      no_critical_issues:
+        type: object
+        properties:
+          required: { type: boolean, default: true }
+          blocking: { type: boolean, default: true }
+      no_security_vulnerabilities:
+        type: object
+        properties:
+          required: { type: boolean, default: true }
+          blocking: { type: boolean, default: true }
+      documentation_complete:
+        type: object
+        properties:
+          required: { type: boolean, default: false }
+          blocking: { type: boolean, default: false }
+          
+  sla:
+    type: object
+    description: "SLA configuration"
+    
+  dashboard:
+    type: object
+    description: "Dashboard configuration"
+    properties:
+      refresh_interval: { type: string, default: "1h" }
+      default_period: { type: string, default: "current_sprint" }
+
+# Installation hooks
+install:
+  pre:
+    - action: "Verify core module installed"
+    - action: "Check event bus availability"
+  post:
+    - action: "Initialize module state file"
+    - action: "Subscribe to events"
+    - action: "Generate slash commands"
+
+uninstall:
+  pre:
+    - action: "Unsubscribe from events"
+  post:
+    - action: "Remove module state (optional)"
+
+# Slash commands to generate
+slash_commands:
+  - name: "metrics-define-kpis"
+    workflow: "define-kpis"
+    description: "Define product and engineering KPIs"
+    
+  - name: "metrics-define-slas"
+    workflow: "define-slas"
+    description: "Set SLA thresholds and alerting"
+    
+  - name: "metrics-track"
+    workflow: "track-metrics"
+    description: "Track and report current metrics"
+    
+  - name: "metrics-quality-gate"
+    workflow: "quality-gate-check"
+    description: "Run quality gate validation"
+    
+  - name: "metrics-review"
+    workflow: "metrics-review"
+    description: "Analyze metric trends"

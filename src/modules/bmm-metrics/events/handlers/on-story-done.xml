@@ -1,0 +1,114 @@
+<event-handler
+  id="bmm-metrics/on-story-done"
+  event="story.done"
+  description="Track story completion metrics, update velocity, check quality gates">
+
+  <objective>
+    When a story is marked done, calculate cycle time, update sprint metrics,
+    and optionally trigger quality gate validation.
+  </objective>
+
+  <preconditions>
+    <check>Event payload contains story_id</check>
+    <check>Event payload contains epic_id</check>
+    <check>Event payload contains completion_time</check>
+  </preconditions>
+
+  <flow>
+    <step n="1" title="Load Story Metrics State">
+      <action>Load module state from {module_path}/state/module-state.yaml</action>
+      <action>Find or create story tracking record for {event.payload.story_id}</action>
+    </step>
+
+    <step n="2" title="Calculate Cycle Time">
+      <action>Get story start time from state (story.started event timestamp)</action>
+      <action>Calculate cycle_time = completion_time - start_time</action>
+      <action>Convert to business days if configured</action>
+      <action>Store in story metrics record</action>
+
+      <metrics_update>
+        <metric name="story_cycle_time">
+          <value>{cycle_time_days}</value>
+          <unit>days</unit>
+          <story_id>{event.payload.story_id}</story_id>
+          <epic_id>{event.payload.epic_id}</epic_id>
+        </metric>
+      </metrics_update>
+    </step>
+
+    <step n="3" title="Update Sprint Velocity Tracking">
+      <action>Identify current sprint from state</action>
+      <action>Increment sprint completed count</action>
+      <check if="story has points">
+        <action>Add points to sprint velocity total</action>
+      </check>
+      <action>Update sprint progress percentage</action>
+    </step>
+
+    <step n="4" title="Check SLA Compliance">
+      <action>Load SLA thresholds from config</action>
+      <check if="cycle_time > sla.story_cycle_time.target">
+        <action>Mark SLA breach</action>
+        <publish event="metrics.sla.breach">
+          <payload>
+            <sla_name>story_cycle_time</sla_name>
+            <threshold>{sla.story_cycle_time.target}</threshold>
+            <actual_value>{cycle_time_days}</actual_value>
+            <breach_time>{event.payload.completion_time}</breach_time>
+            <severity>warning</severity>
+            <affected_item>
+              <type>story</type>
+              <id>{event.payload.story_id}</id>
+            </affected_item>
+          </payload>
+        </publish>
+      </check>
+    </step>
+
+    <step n="5" title="Update Quality Metrics">
+      <check if="event.payload.tests_passed is defined">
+        <action>Update test pass rate metric</action>
+      </check>
+      <check if="event.payload.files_changed is defined">
+        <action>Track files changed for change frequency metric</action>
+      </check>
+    </step>
+
+    <step n="6" title="Trigger Quality Gate (Optional)">
+      <check if="config.auto_quality_gate_on_done == true">
+        <action>Queue quality-gate-check workflow for this story</action>
+      </check>
+    </step>
+
+    <step n="7" title="Save State and Publish Update">
+      <action>Save updated state to module-state.yaml</action>
+      <action>Log: "Processed story.done for {event.payload.story_id}: cycle_time={cycle_time_days}d"</action>
+
+      <publish event="metrics.kpi.updated">
+        <payload>
+          <kpi_name>story_completion</kpi_name>
+          <current_value>1</current_value>
+          <target>1</target>
+          <status>on_track</status>
+          <context>
+            <story_id>{event.payload.story_id}</story_id>
+            <cycle_time_days>{cycle_time_days}</cycle_time_days>
+          </context>
+        </payload>
+      </publish>
+    </step>
+  </flow>
+
+  <on-error>
+    <action>Log ERROR: "Failed to process story.done: {error_message}"</action>
+    <action>Store event in retry queue if transient error</action>
+  </on-error>
+
+  <output>
+    <field name="story_id" value="{event.payload.story_id}" />
+    <field name="cycle_time_days" value="{cycle_time_days}" />
+    <field name="sla_compliant" value="{sla_compliant}" />
+    <field name="sprint_velocity_updated" value="true" />
+  </output>
+
+</event-handler>

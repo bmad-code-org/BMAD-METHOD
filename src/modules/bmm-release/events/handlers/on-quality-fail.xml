@@ -1,0 +1,118 @@
+<event-handler
+  id="bmm-release/on-quality-fail"
+  event="metrics.quality.fail"
+  description="Handle quality gate failure - block release">
+
+  <objective>
+    When quality gates fail for a release candidate, block the release,
+    notify stakeholders, and provide remediation guidance.
+  </objective>
+
+  <preconditions>
+    <check>Event payload contains story_id or release_candidate_id</check>
+    <check>Event payload contains failed_gates</check>
+    <check>Event payload contains blocking flag</check>
+  </preconditions>
+
+  <flow>
+    <step n="1" title="Identify Release Candidate">
+      <action>Load module state from {module_path}/state/module-state.yaml</action>
+      <check if="event.payload.release_candidate_id exists">
+        <action>Find release candidate by ID</action>
+      </check>
+      <check if="event.payload.story_id exists">
+        <action>Find release candidate containing this story</action>
+      </check>
+      <check if="no release candidate found">
+        <action>Log: "No release candidate found for quality fail event"</action>
+        <action>Exit handler - may be a story-level check not part of release</action>
+      </check>
+    </step>
+
+    <step n="2" title="Analyze Failure">
+      <action>Extract failed gates from event payload</action>
+      <action>Categorize failures as blocking vs non-blocking</action>
+      <action>Extract remediation steps from payload</action>
+
+      <failure_analysis>
+        <blocking_failures>{event.payload.failed_gates.filter(g => g.blocking)}</blocking_failures>
+        <non_blocking_failures>{event.payload.failed_gates.filter(g => !g.blocking)}</non_blocking_failures>
+        <blocking_count>{blocking_failures.length}</blocking_count>
+      </failure_analysis>
+    </step>
+
+    <step n="3" title="Update Release Candidate Status">
+      <check if="blocking_count > 0">
+        <action>Update release candidate status to "blocked"</action>
+        <action>Set quality_gate_passed = false</action>
+        <action>Set blocked_at = {event.timestamp}</action>
+        <action>Set blocked_reason = "Quality gates failed"</action>
+        <action>Set blocking_gates = {blocking_failures}</action>
+      </check>
+      <check if="blocking_count == 0">
+        <action>Update release candidate status to "warning"</action>
+        <action>Set quality_gate_passed = true (with warnings)</action>
+        <action>Set warnings = {non_blocking_failures}</action>
+      </check>
+    </step>
+
+    <step n="4" title="Publish Rejection Event" condition="blocking_count > 0">
+      <publish event="release.rejected">
+        <payload>
+          <release_id>{release_candidate.id}</release_id>
+          <version>{release_candidate.version}</version>
+          <rejected_by>quality_gates</rejected_by>
+          <reason>Quality gates failed: {blocking_failures.map(g => g.name).join(', ')}</reason>
+          <failed_gates>{blocking_failures}</failed_gates>
+          <remediation_steps>{event.payload.remediation_steps}</remediation_steps>
+          <timestamp>{current_timestamp}</timestamp>
+        </payload>
+      </publish>
+    </step>
+
+    <step n="5" title="Notify Stakeholders">
+      <action>Load notification config</action>
+      <action>Identify stakeholders for release</action>
+      
+      <notification>
+        <subject>Release {release_candidate.version} Blocked - Quality Gates Failed</subject>
+        <body>
+          Release candidate **{release_candidate.version}** has been blocked.
+
+          **Failed Gates ({blocking_count}):**
+          {#each blocking_failures}
+          - {name}: {actual} (threshold: {threshold})
+          {/each}
+
+          **Remediation Required:**
+          {#each event.payload.remediation_steps}
+          - {step}
+          {/each}
+
+          Address these issues and run quality gates again.
+        </body>
+        <channels>{config.notifications.on_failed.channels}</channels>
+      </notification>
+    </step>
+
+    <step n="6" title="Save State">
+      <action>Save updated state to module-state.yaml</action>
+      <action>Log: "Release {release_candidate.version} BLOCKED - {blocking_count} gates failed"</action>
+    </step>
+  </flow>
+
+  <on-error>
+    <action>Log ERROR: "Failed to process quality.fail event: {error_message}"</action>
+    <action>Mark release candidate as requiring manual review</action>
+    <action>Send alert to release team</action>
+  </on-error>
+
+  <output>
+    <field name="release_id" value="{release_candidate.id}" />
+    <field name="version" value="{release_candidate.version}" />
+    <field name="status" value="{status}" />
+    <field name="blocking_gates_count" value="{blocking_count}" />
+    <field name="blocked" value="{blocking_count > 0}" />
+  </output>
+
+</event-handler>

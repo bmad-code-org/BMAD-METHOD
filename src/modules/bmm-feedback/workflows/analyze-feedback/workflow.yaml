@@ -1,0 +1,38 @@
+# Analyze Feedback Workflow
+name: analyze-feedback
+description: "Analyze collected feedback for sentiment, categories, and insights"
+author: "BMad"
+module: bmm-feedback
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-feedback/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+categories: "{config_source}:categories"
+sentiment_config: "{config_source}:sentiment"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-feedback/workflows/analyze-feedback"
+instructions: "{installed_path}/instructions.md"
+
+# Input
+input:
+  feedback_ids:
+    description: "Specific feedback IDs to analyze (default: unanalyzed)"
+    required: false
+    default: "unanalyzed"
+
+# Output
+default_output_file: "{output_folder}/feedback/analysis-{{date}}.yaml"
+
+# Events
+publishes:
+  - event_type: "feedback.analyzed"
+    condition: "For each analyzed feedback item"
+  - event_type: "feedback.insight.generated"
+    condition: "When pattern threshold reached"
+  - event_type: "feedback.sentiment.alert"
+    condition: "When sentiment threshold breached"
+
+standalone: true

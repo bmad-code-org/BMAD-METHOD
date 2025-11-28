@@ -1,0 +1,39 @@
+# Collect Feedback Workflow
+name: collect-feedback
+description: "Collect feedback from configured sources"
+author: "BMad"
+module: bmm-feedback
+
+# Configuration
+config_source: "{project-root}/.bmad/bmm-feedback/config.yaml"
+project_name: "{config_source}:project_name"
+output_folder: "{config_source}:output_folder"
+sources: "{config_source}:sources"
+date: system-generated
+
+# Paths
+installed_path: "{project-root}/.bmad/bmm-feedback/workflows/collect-feedback"
+instructions: "{installed_path}/instructions.md"
+
+# Input
+input:
+  source:
+    description: "Specific source to collect from (default: all enabled)"
+    required: false
+    default: "all"
+  since:
+    description: "Collect feedback since this date"
+    required: false
+  release_id:
+    description: "Link feedback to specific release"
+    required: false
+
+# Output
+default_output_file: "{output_folder}/feedback/collection-{{date}}.yaml"
+
+# Events
+publishes:
+  - event_type: "feedback.received"
+    condition: "For each new feedback item collected"
+
+standalone: true
