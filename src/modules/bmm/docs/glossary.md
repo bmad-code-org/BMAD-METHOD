@@ -71,9 +71,9 @@ The methodology path (Quick Flow, BMad Method, or Enterprise Method) chosen for 
 
 ### Epic-Tech-Context (Epic Technical Context)
 
-**BMad Method/Enterprise tracks only.** Detailed technical planning document created during implementation (just-in-time) for each epic. Supplements PRD + Architecture with epic-specific implementation details, code-level design decisions, and integration points.
+**BMad Method/Enterprise tracks only.** Detailed technical planning document created during implementation (just-in-time) for each story via `create-story` workflow. Synthesizes PRD + Architecture + epics.md with story-specific implementation details, code-level design decisions, and integration points.
 
-**Key Difference:** Tech-spec (Quick Flow) is created upfront and is the only planning doc. Epic-tech-context (BMad Method/Enterprise) is created per epic during implementation and supplements PRD + Architecture.
+**Key Difference:** Tech-spec (Quick Flow) is created upfront and is the only planning doc. Story implementation documents (BMad Method/Enterprise) are created per story during implementation via `create-story` and synthesize all project artifacts into comprehensive developer context.
 
 ### PRD (Product Requirements Document)
 
@@ -127,11 +127,11 @@ Fast-track workflow system for Quick Flow track projects that goes straight from
 
 ### Just-In-Time Design
 
-Pattern where epic-tech-context is created during implementation (Phase 4) right before working on each epic, rather than all upfront. Enables learning and adaptation.
+Pattern where detailed story context is created during implementation (Phase 4) right before working on each story, rather than all upfront. Enables learning and adaptation.
 
 ### Context Injection
 
-Dynamic technical guidance generated for each story via epic-tech-context and story-context workflows, providing exact expertise when needed without upfront over-planning.
+Dynamic technical guidance generated for each story via the create-story workflow, providing exact expertise when needed without upfront over-planning.
 
 ---
 
@@ -151,7 +151,7 @@ Agent that designs system architecture, creates architecture documents, performs
 
 ### SM (Scrum Master)
 
-Agent that manages sprints, creates stories, generates contexts, and coordinates implementation. Primary orchestrator for Phase 4 implementation.
+Agent that manages sprints, creates story implementation documents with comprehensive context, and coordinates implementation. Primary orchestrator for Phase 4 implementation.
 
 ### DEV (Developer)
 
@@ -196,12 +196,11 @@ Multi-agent collaboration feature where all installed agents (19+ from BMM, CIS,
 ### Story Status Progression
 
 ```
-backlog → drafted → ready-for-dev → in-progress → review → done
+backlog → ready-for-dev → in-progress → review → done
 ```
 
-- **backlog** - Story exists in epic but not yet drafted
-- **drafted** - Story file created by SM via create-story
-- **ready-for-dev** - Story has context, ready for DEV via story-context
+- **backlog** - Story exists in epic but not yet started
+- **ready-for-dev** - Story file created by SM via create-story with comprehensive context
 - **in-progress** - DEV is implementing via dev-story
 - **review** - Implementation complete, awaiting code-review
 - **done** - Completed with DoD met
@@ -209,11 +208,11 @@ backlog → drafted → ready-for-dev → in-progress → review → done
 ### Epic Status Progression
 
 ```
-backlog → contexted
+backlog → in-progress → done
 ```
 
-- **backlog** - Epic exists in planning docs but no context yet
-- **contexted** - Epic has technical context via epic-tech-context
+- **backlog** - Epic exists in planning docs but not started
+- **in-progress** - Epic has at least one story in progress
 
 ### Retrospective
 
@@ -251,11 +250,11 @@ Markdown file containing story details: description, acceptance criteria, techni
 
 ### Story Context
 
-Technical guidance document created via story-context workflow that provides implementation-specific context, references existing patterns, suggests approaches, and injects expertise for the specific story.
+Technical guidance is now integrated directly into the story implementation document created via create-story workflow. This provides implementation-specific context, references existing patterns, suggests approaches, and injects expertise for the specific story.
 
-### Epic Context
+### Story Implementation Document
 
-Technical planning document created via epic-tech-context workflow before drafting stories within an epic. Provides epic-level technical direction, architecture notes, and implementation strategy.
+Comprehensive implementation guide created via the create-story workflow for each story. Contains story requirements, technical implementation guidance, architecture compliance notes, and developer context.
 
 ### Sprint Planning
 

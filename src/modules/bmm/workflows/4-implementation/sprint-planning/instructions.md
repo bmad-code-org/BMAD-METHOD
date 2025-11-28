@@ -22,12 +22,17 @@
 
 <workflow>
 
-<step n="1" goal="Parse epic files and extract all work items">
-<action>Communicate in {communication_language} with {user_name}</action>
-<action>Look for all files matching `{epics_pattern}` in {epics_location}</action>
-<action>Could be a single `epics.md` file or multiple `epic-1.md`, `epic-2.md` files</action>
+<step n="0.5" goal="Discover and load project documents">
+  <action>Communicate in {communication_language} with {user_name}</action>
+  <invoke-protocol name="discover_inputs" />
+  <note>After discovery, these content variables are available: {epics_content} (all epics loaded - uses FULL_LOAD strategy)</note>
+</step>
 
-<action>For each epic file found, extract:</action>
+<step n="1" goal="Parse epic files and extract all work items">
+<action>Parse {epics_content} to extract all epics and stories</action>
+<action>Epic files could be a single `epics.md` file or multiple `epic-1.md`, `epic-2.md` files</action>
+
+<action>For each epic found in {epics_content}, extract:</action>
 
 - Epic numbers from headers like `## Epic 1:` or `## Epic 2:`
 - Story IDs and titles from patterns like `### Story 1.1: User Authentication`
@@ -40,13 +45,8 @@
 - Convert title to kebab-case: `user-authentication`
 - Final key: `1-1-user-authentication`
 
-<action>Build complete inventory of all epics and stories from all epic files</action>
+<action>Build complete inventory of all epics and stories from {epics_content}</action>
 </step>
-
-  <step n="0.5" goal="Discover and load project documents">
-    <invoke-protocol name="discover_inputs" />
-    <note>After discovery, these content variables are available: {epics_content} (all epics loaded - uses FULL_LOAD strategy)</note>
-  </step>
 
 <step n="2" goal="Build sprint status structure">
 <action>For each epic found, create entries in this order:</action>
@@ -68,33 +68,35 @@ development_status:
 </step>
 
 <step n="3" goal="Apply intelligent status detection">
-<action>For each epic, check if tech context file exists:</action>
+<action>For each epic, check current status:</action>
 
-- Check: `{output_folder}/epic-{num}-context.md`
-- If exists → set epic status to `contexted`
-- Else → keep as `backlog`
+- If existing `{status_file}` exists and epic has status → preserve existing status
+- Else → set epic status to `backlog` (default)
 
 <action>For each story, detect current status by checking files:</action>
 
 **Story file detection:**
 
 - Check: `{story_location_absolute}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
-- If exists → upgrade status to at least `drafted`
-
-**Story context detection:**
-
-- Check: `{story_location_absolute}/{story-key}-context.md` (e.g., `stories/1-1-user-authentication-context.md`)
-- If exists → upgrade status to at least `ready-for-dev`
+- If file exists:
+  - Read story file to check Status field
+  - Map Status field to sprint status:
+    - "ready-for-dev" → `ready-for-dev`
+    - "in-progress" → `in-progress`
+    - "review" → `review`
+    - "done" → `done`
+    - Any other value → `ready-for-dev` (default for existing files)
+- If file doesn't exist → keep as `backlog`
 
 **Preservation rule:**
 
 - If existing `{status_file}` exists and has more advanced status, preserve it
-- Never downgrade status (e.g., don't change `done` to `drafted`)
+- Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
 
 **Status Flow Reference:**
 
-- Epic: `backlog` → `contexted`
-- Story: `backlog` → `drafted` → `ready-for-dev` → `in-progress` → `review` → `done`
+- Epic: `backlog` → `in-progress` → `done`
+- Story: `backlog` → `ready-for-dev` → `in-progress` → `review` → `done`
 - Retrospective: `optional` ↔ `completed`
   </step>
 
@@ -113,27 +115,27 @@ development_status:
 # STATUS DEFINITIONS:
 # ==================
 # Epic Status:
-#   - backlog: Epic exists in epic file but not contexted
-#   - contexted: Epic tech context created (required before drafting stories)
+#   - backlog: Epic exists in epic file but not started
+#   - in-progress: Epic has at least one story in progress
+#   - done: All stories in epic are completed
 #
 # Story Status:
 #   - backlog: Story only exists in epic file
-#   - drafted: Story file created in stories folder
-#   - ready-for-dev: Draft approved and story context created
-#   - in-progress: Developer actively working on implementation
-#   - review: Under SM review (via code-review workflow)
-#   - done: Story completed
+#   - ready-for-dev: Story file created by create-story workflow with comprehensive context (Status: ready-for-dev)
+#   - in-progress: Developer actively working on implementation (dev-story workflow)
+#   - review: Implementation complete, ready for review (code-review workflow)
+#   - done: Story completed and reviewed
 #
 # Retrospective Status:
 #   - optional: Can be completed but not required
-#   - completed: Retrospective has been done
+#   - completed: Retrospective has been done (retrospective workflow)
 #
 # WORKFLOW NOTES:
 # ===============
-# - Epics should be 'contexted' before stories can be 'drafted'
+# - Run create-story to create detailed story implementation documents
 # - Stories can be worked in parallel if team capacity allows
-# - SM typically drafts next story after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+# - Create next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review' when complete, code-review marks as 'done'
 
 generated: { date }
 project: { project_name }
@@ -164,7 +166,7 @@ development_status:
 
 - Total epics: {{epic_count}}
 - Total stories: {{story_count}}
-- Epics contexted: {{contexted_count}}
+- Epics in progress: {{in_progress_epic_count}}
 - Stories in progress: {{in_progress_count}}
 - Stories done: {{done_count}}
 
@@ -175,16 +177,37 @@ development_status:
 - **File Location:** {status_file}
 - **Total Epics:** {{epic_count}}
 - **Total Stories:** {{story_count}}
-- **Contexted Epics:** {{contexted_count}}
+- **Epics In Progress:** {{in_progress_epic_count}}
 - **Stories In Progress:** {{in_progress_count}}
 - **Stories Completed:** {{done_count}}
 
 **Next Steps:**
 
-1. Review the generated {status_file}
-2. Use this file to track development progress
-3. Agents will update statuses as they work
-4. Re-run this workflow to refresh auto-detected statuses
+1. **Review the generated {status_file}** - Verify all epics and stories are correctly listed
+
+2. **Create your first story** (if not already created):
+
+   ```
+   workflow create-story
+   ```
+
+   This will automatically select the next backlog story and create a detailed implementation document
+
+3. **Begin development**:
+
+   ```
+   workflow dev-story
+   ```
+
+   Use the dev agent to implement the story following the detailed plan
+
+4. **Workflow sequence for each story:**
+   - `create-story` → creates detailed story document
+   - `dev-story` → implements the story
+   - `code-review` → reviews and marks as done
+   - (repeat for next story)
+
+**Note:** Re-run `sprint-planning` anytime to refresh auto-detected statuses from existing story files
 
 </step>
 
@@ -197,24 +220,24 @@ development_status:
 **Epic Status Flow:**
 
 ```
-backlog → contexted
+backlog → in-progress → done
 ```
 
-- **backlog**: Epic exists in epic file but tech context not created
-- **contexted**: Epic tech context has been generated (prerequisite for story drafting)
+- **backlog**: Epic exists in epic file but not started
+- **in-progress**: Epic has at least one story in progress
+- **done**: All stories in epic are completed
 
 **Story Status Flow:**
 
 ```
-backlog → drafted → ready-for-dev → in-progress → review → done
+backlog → ready-for-dev → in-progress → review → done
 ```
 
 - **backlog**: Story only exists in epic file
-- **drafted**: Story file created (e.g., `stories/1-3-plant-naming.md`)
-- **ready-for-dev**: Draft approved + story context created
-- **in-progress**: Developer actively working
-- **review**: Under SM review (via code-review workflow)
-- **done**: Completed
+- **ready-for-dev**: Story file created by create-story workflow with comprehensive context (Status: ready-for-dev)
+- **in-progress**: Developer actively working (dev-story workflow)
+- **review**: Implementation complete, ready for review (code-review workflow)
+- **done**: Story completed and reviewed
 
 **Retrospective Status:**
 
@@ -227,8 +250,8 @@ optional ↔ completed
 
 ### Guidelines
 
-1. **Epic Context Recommended**: Epics should be `contexted` before stories can be `drafted`
+1. **Story Creation**: Run `create-story` workflow to create detailed implementation documents for backlog stories
 2. **Sequential Default**: Stories are typically worked in order, but parallel work is supported
 3. **Parallel Work Supported**: Multiple stories can be `in-progress` if team capacity allows
-4. **Review Before Done**: Stories should pass through `review` before `done`
-5. **Learning Transfer**: SM typically drafts next story after previous one is `done` to incorporate learnings
+4. **Review Before Done**: Stories should pass through `review` (code-review) before `done`
+5. **Learning Transfer**: Create next story after previous one is `done` to incorporate learnings

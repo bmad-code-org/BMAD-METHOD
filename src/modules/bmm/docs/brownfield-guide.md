@@ -251,7 +251,7 @@ Without AI-optimized documentation, workflows fail:
 - **tech-spec** (Quick Flow) can't auto-detect stack/patterns → Makes wrong assumptions
 - **PRD** (BMad Method) can't reference existing code → Designs incompatible features
 - **architecture** can't build on existing structure → Suggests conflicting patterns
-- **story-context** can't inject existing patterns → Dev agent rewrites working code
+- **create-story** can't reference existing patterns → Dev agent rewrites working code
 - **dev-story** invents implementations → Breaks existing integrations
 
 ### Key Principle
@@ -320,9 +320,7 @@ See the [Workflows section in BMM README](../README.md) for details.
 ```mermaid
 flowchart TD
     SPRINT[sprint-planning<br/>Initialize tracking]
-    EPIC[epic-tech-context<br/>Per epic]
-    CREATE[create-story]
-    CONTEXT[story-context]
+    CREATE[create-story<br/>Per story]
     DEV[dev-story]
     REVIEW[code-review]
     CHECK{More stories?}
@@ -343,15 +341,15 @@ flowchart TD
 
 **Status Progression:**
 
-- Epic: `backlog → contexted`
-- Story: `backlog → drafted → ready-for-dev → in-progress → review → done`
+- Epic: `backlog → in-progress → done`
+- Story: `backlog → ready-for-dev → in-progress → review → done`
 
 **Brownfield-Specific Implementation Tips:**
 
 1. **Respect existing patterns** - Follow established conventions
 2. **Test integration thoroughly** - Validate interactions with existing code
 3. **Use feature flags** - Enable gradual rollout
-4. **Context injection matters** - epic-tech-context and story-context reference existing patterns
+4. **Context injection matters** - create-story references existing patterns from documentation
 
 ---
 
@@ -375,7 +373,7 @@ When workflow-init asks about your work:
 
 ### 4. Respect Existing Patterns
 
-Tech-spec and story-context will detect conventions. Follow them unless explicitly modernizing.
+Tech-spec and create-story will reference detected conventions. Follow them unless explicitly modernizing.
 
 ### 5. Plan Integration Points Explicitly
 
@@ -407,9 +405,8 @@ Document in tech-spec/architecture:
 
 ### 9. Leverage Context Injection
 
-- Run `epic-tech-context` before story drafting
-- Always create `story-context` before implementation
-- These reference existing patterns for consistency
+- Run `create-story` before implementation
+- The workflow references existing patterns from documentation for consistency
 
 ### 10. Learn Continuously
 
@@ -457,7 +454,7 @@ Document in tech-spec/architecture:
    - Analyzes existing auth patterns
    - Confirms conventions
    - Creates tech-spec.md + epic + 3-5 stories
-3. **Implement:** Load SM → `sprint-planning` → `create-story` → `story-context`
+3. **Implement:** Load SM → `sprint-planning` → `create-story`
    Load DEV → `dev-story` for each story
 4. **Review:** Load DEV → `code-review`
 
@@ -479,7 +476,7 @@ Document in tech-spec/architecture:
 4. **Solution:** Load Architect → `create-architecture` → `create-epics-and-stories` → `implementation-readiness`
 5. **Implement:** Sprint-based (10-15 stories)
    - Load SM → `sprint-planning`
-   - Per epic: `epic-tech-context` → stories
+   - Per story: `create-story` → `dev-story`
    - Load DEV → `dev-story` per story
 6. **Review:** Per story completion
 
@@ -575,7 +572,7 @@ Document in tech-spec/architecture:
 **Solution:**
 
 1. Ensure `document-project` captured existing architecture
-2. Check `story-context` - should document integration points
+2. Check story files - should document integration points
 3. In tech-spec/architecture - explicitly document:
    - Which existing modules to modify
    - What APIs/services to integrate with
@@ -608,7 +605,7 @@ Document in tech-spec/architecture:
 
 1. Check convention detection (Quick Spec Flow should detect patterns)
 2. Review documentation - ensure `document-project` captured patterns
-3. Use `story-context` - injects pattern guidance
+3. Use `create-story` - injects pattern guidance
 4. Add to code-review checklist: pattern adherence, convention consistency
 5. Run retrospective to identify deviations early
 
@@ -644,7 +641,7 @@ implementation-readiness       # Final validation
 # Phase 4: Implementation (All Tracks)
 # SM agent:
 sprint-planning              # Initialize tracking
-create-story                 # Create story
+create-story                 # Create story implementation document with comprehensive context
 
 # DEV agent:
 dev-story                    # Implement
@@ -685,9 +682,7 @@ correct-course               # If issues
 **Phase 4 Implementation:**
 
 - `docs/sprint-status.yaml` - **Single source of truth**
-- `docs/epic-{n}-context.md`
-- `docs/stories/{epic}-{story}-{title}.md`
-- `docs/stories/{epic}-{story}-{title}-context.md`
+- `docs/stories/{epic}-{story}-{title}.md` - Story implementation documents
 
 ### Decision Flowchart
 

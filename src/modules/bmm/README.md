@@ -93,9 +93,9 @@ BMM automatically adjusts to project complexity (Levels 0-4):
 
 ### Story-Centric Implementation
 
-Stories move through a defined lifecycle: `backlog → drafted → ready → in-progress → review → done`
+Stories move through a defined lifecycle: `backlog → ready-for-dev → in-progress → review → done`
 
-Just-in-time epic context and story context provide exact expertise when needed.
+The create-story workflow provides comprehensive implementation context just-in-time when needed.
 
 👉 **[Implementation Workflows](./docs/workflows-implementation.md)** - Complete story lifecycle guide
 

@@ -105,7 +105,7 @@ Saved to: {sprint_artifacts}/tech-spec-{slug}.md
 [d] Done - exit
 [p] Party Mode - get feedback
 
-**Recommended:** Run `dev-spec {sprint_artifacts}/tech-spec-{slug}.md` in fresh context.
+**Recommended:** Run `quick-dev {sprint_artifacts}/tech-spec-{slug}.md` in fresh context.
 </output>
 
 <ask>Choice (a/b/d/p):</ask>

@@ -72,7 +72,7 @@
       <check if="no backlog story found">
         <output>📋 No backlog stories found in sprint-status.yaml
 
-          All stories are either already drafted, in progress, or done.
+          All stories are either already ready-for-dev, in progress, or done.
 
           **Options:**
           1. Run sprint-planning to refresh story tracking
@@ -95,7 +95,7 @@
       <check if="this is first story in epic {{epic_num}}">
         <action>Load {{sprint_status}} and check epic-{{epic_num}} status</action>
         <action>If epic status is "backlog" → update to "in-progress"</action>
-        <action>If epic status is "contexted" → this means same as "in-progress", no change needed</action>
+        <action>If epic status is already "in-progress" → no change needed</action>
         <output>📊 Epic {{epic_num}} status updated to in-progress</output>
       </check>
 
@@ -114,7 +114,7 @@
     <check if="no backlog story found">
       <output>📋 No backlog stories found in sprint-status.yaml
 
-        All stories are either already drafted, in progress, or done.
+        All stories are either already ready-for-dev, in progress, or done.
 
         **Options:**
         1. Run sprint-planning to refresh story tracking
@@ -137,7 +137,7 @@
     <check if="this is first story in epic {{epic_num}}">
       <action>Load {{sprint_status}} and check epic-{{epic_num}} status</action>
       <action>If epic status is "backlog" → update to "in-progress"</action>
-      <action>If epic status is "contexted" → this means same as "in-progress", no change needed</action>
+      <action>If epic status is already "in-progress" → no change needed</action>
       <output>📊 Epic {{epic_num}} status updated to in-progress</output>
     </check>
 
