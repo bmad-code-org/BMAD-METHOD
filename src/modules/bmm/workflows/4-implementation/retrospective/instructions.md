@@ -1395,9 +1395,9 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
 - Do NOT start Epic {{next_epic_num}} until review is complete
   {{else}}
 
-4. **Begin Epic {{next_epic_num}} planning when preparation complete**
-   - Load PM agent and run `epic-tech-context` for Epic {{next_epic_num}}
-   - Or continue with existing contexted epics
+4. **Begin Epic {{next_epic_num}} when ready**
+   - Start drafting stories with SM agent's `create-story`
+   - Epic will be marked as `in-progress` automatically when first story is created
    - Ensure all critical path items are done first
      {{/if}}
 

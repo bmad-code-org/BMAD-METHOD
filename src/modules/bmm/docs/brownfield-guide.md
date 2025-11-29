@@ -320,18 +320,14 @@ See the [Workflows section in BMM README](../README.md) for details.
 ```mermaid
 flowchart TD
     SPRINT[sprint-planning<br/>Initialize tracking]
-    EPIC[epic-tech-context<br/>Per epic]
     CREATE[create-story]
-    CONTEXT[story-context]
     DEV[dev-story]
     REVIEW[code-review]
     CHECK{More stories?}
     RETRO[retrospective<br/>Per epic]
 
-    SPRINT --> EPIC
-    EPIC --> CREATE
-    CREATE --> CONTEXT
-    CONTEXT --> DEV
+    SPRINT --> CREATE
+    CREATE --> DEV
     DEV --> REVIEW
     REVIEW --> CHECK
     CHECK -->|Yes| CREATE
@@ -343,7 +339,7 @@ flowchart TD
 
 **Status Progression:**
 
-- Epic: `backlog → contexted`
+- Epic: `backlog → in-progress → done`
 - Story: `backlog → drafted → ready-for-dev → in-progress → review → done`
 
 **Brownfield-Specific Implementation Tips:**
@@ -351,7 +347,6 @@ flowchart TD
 1. **Respect existing patterns** - Follow established conventions
 2. **Test integration thoroughly** - Validate interactions with existing code
 3. **Use feature flags** - Enable gradual rollout
-4. **Context injection matters** - epic-tech-context and story-context reference existing patterns
 
 ---
 
@@ -405,13 +400,7 @@ Document in tech-spec/architecture:
 - Context epics before drafting stories
 - Update `sprint-status.yaml` as work progresses
 
-### 9. Leverage Context Injection
-
-- Run `epic-tech-context` before story drafting
-- Always create `story-context` before implementation
-- These reference existing patterns for consistency
-
-### 10. Learn Continuously
+### 9. Learn Continuously
 
 - Run `retrospective` after each epic
 - Incorporate learnings into next stories
@@ -479,7 +468,7 @@ Document in tech-spec/architecture:
 4. **Solution:** Load Architect → `create-architecture` → `create-epics-and-stories` → `implementation-readiness`
 5. **Implement:** Sprint-based (10-15 stories)
    - Load SM → `sprint-planning`
-   - Per epic: `epic-tech-context` → stories
+   - Load SM → `create-story` per story
    - Load DEV → `dev-story` per story
 6. **Review:** Per story completion
 

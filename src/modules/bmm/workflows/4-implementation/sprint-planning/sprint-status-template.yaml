@@ -11,17 +11,17 @@
 # STATUS DEFINITIONS:
 # ==================
 # Epic Status:
-#   - backlog: Epic exists in epic file but not contexted
-#   - contexted or in-progress
-#   - done: Epic completed
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
 #
 # Story Status:
 #   - backlog: Story only exists in epic file
-#   - drafted: Story file created in stories folder by *create-story
-#   - ready-for-dev: Draft approved and story context created by *story-ready
-#   - in-progress: Developer actively working on implementation by *dev-story
-#   - review: Implementation complete, ready for review by *code-review
-#   - done: Story completed by *story-done
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved, ready for development
+#   - in-progress: Developer actively working on implementation
+#   - review: Implementation complete, ready for review
+#   - done: Story completed
 #
 # Retrospective Status:
 #   - optional: Can be completed but not required
@@ -29,9 +29,9 @@
 #
 # WORKFLOW NOTES:
 # ===============
-# - Epics should be marked `in-progress` before stories can be marked beyond `backlog`
+# - Mark epic as 'in-progress' when starting work on its first story
 # - SM typically drafts next story ONLY after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', dev reviews, then Dev moves to 'done'
+# - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
 

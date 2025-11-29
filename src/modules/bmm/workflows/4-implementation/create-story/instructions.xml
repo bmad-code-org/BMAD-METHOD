@@ -95,7 +95,22 @@
       <check if="this is first story in epic {{epic_num}}">
         <action>Load {{sprint_status}} and check epic-{{epic_num}} status</action>
         <action>If epic status is "backlog" → update to "in-progress"</action>
-        <action>If epic status is "contexted" → this means same as "in-progress", no change needed</action>
+        <action>If epic status is "contexted" (legacy status) → update to "in-progress" (backward compatibility)</action>
+        <action>If epic status is "in-progress" → no change needed</action>
+        <check if="epic status is 'done'">
+          <output>🚫 ERROR: Cannot create story in completed epic</output>
+          <output>Epic {{epic_num}} is marked as 'done'. All stories are complete.</output>
+          <output>If you need to add more work, either:</output>
+          <output>1. Manually change epic status back to 'in-progress' in sprint-status.yaml</output>
+          <output>2. Create a new epic for additional work</output>
+          <action>HALT - Cannot proceed</action>
+        </check>
+        <check if="epic status is not one of: backlog, contexted, in-progress, done">
+          <output>🚫 ERROR: Invalid epic status '{{epic_status}}'</output>
+          <output>Epic {{epic_num}} has invalid status. Expected: backlog, in-progress, or done</output>
+          <output>Please fix sprint-status.yaml manually or run sprint-planning to regenerate</output>
+          <action>HALT - Cannot proceed</action>
+        </check>
         <output>📊 Epic {{epic_num}} status updated to in-progress</output>
       </check>
 
@@ -137,7 +152,22 @@
     <check if="this is first story in epic {{epic_num}}">
       <action>Load {{sprint_status}} and check epic-{{epic_num}} status</action>
       <action>If epic status is "backlog" → update to "in-progress"</action>
-      <action>If epic status is "contexted" → this means same as "in-progress", no change needed</action>
+      <action>If epic status is "contexted" (legacy status) → update to "in-progress" (backward compatibility)</action>
+      <action>If epic status is "in-progress" → no change needed</action>
+      <check if="epic status is 'done'">
+        <output>🚫 ERROR: Cannot create story in completed epic</output>
+        <output>Epic {{epic_num}} is marked as 'done'. All stories are complete.</output>
+        <output>If you need to add more work, either:</output>
+        <output>1. Manually change epic status back to 'in-progress' in sprint-status.yaml</output>
+        <output>2. Create a new epic for additional work</output>
+        <action>HALT - Cannot proceed</action>
+      </check>
+      <check if="epic status is not one of: backlog, contexted, in-progress, done">
+        <output>🚫 ERROR: Invalid epic status '{{epic_status}}'</output>
+        <output>Epic {{epic_num}} has invalid status. Expected: backlog, in-progress, or done</output>
+        <output>Please fix sprint-status.yaml manually or run sprint-planning to regenerate</output>
+        <action>HALT - Cannot proceed</action>
+      </check>
       <output>📊 Epic {{epic_num}} status updated to in-progress</output>
     </check>
 
