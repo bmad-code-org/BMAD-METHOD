@@ -124,7 +124,7 @@ Each agent brings deep expertise and can be customized to match your team's styl
 - **Creative Intelligence Suite (CIS)** - Innovation & problem-solving
   - Brainstorming, design thinking, storytelling
   - 5 creative facilitation workflows
-  - [→ Creative Workflows](./src/modules/cis/README.md)
+  - [→ Creative Workflows](./src/modules/cis/readme.md)
 
 ### Key Features
 
