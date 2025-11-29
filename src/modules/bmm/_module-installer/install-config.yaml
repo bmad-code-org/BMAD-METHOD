@@ -36,7 +36,7 @@ user_skill_level:
       label: "Expert - Deep technical knowledge, be direct and technical"
 
 sprint_artifacts:
-  prompt: "Where should Sprint Artifacts be stored (sprint status, stories, story context, temp context, etc...)?"
+  prompt: "Where should Sprint Artifacts be stored (sprint status, story implementation documents, etc...)?"
   default: "{output_folder}/sprint-artifacts"
   result: "{project-root}/{value}"
 

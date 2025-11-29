@@ -11,27 +11,27 @@
 # STATUS DEFINITIONS:
 # ==================
 # Epic Status:
-#   - backlog: Epic exists in epic file but not contexted
-#   - contexted or in-progress
-#   - done: Epic completed
+#   - backlog: Epic exists in epic file but not started
+#   - in-progress: Epic has at least one story in progress
+#   - done: Epic completed (all stories done)
 #
 # Story Status:
 #   - backlog: Story only exists in epic file
-#   - drafted: Story file created in stories folder by *create-story
-#   - ready-for-dev: Draft approved and story context created by *story-ready
-#   - in-progress: Developer actively working on implementation by *dev-story
-#   - review: Implementation complete, ready for review by *code-review
-#   - done: Story completed by *story-done
+#   - ready-for-dev: Story file created by create-story workflow with comprehensive context (Status: ready-for-dev)
+#   - in-progress: Developer actively working on implementation (dev-story workflow)
+#   - review: Implementation complete, ready for review (code-review workflow)
+#   - done: Story completed and reviewed
 #
 # Retrospective Status:
 #   - optional: Can be completed but not required
-#   - completed: Retrospective has been done by *retrospective
+#   - completed: Retrospective has been done (retrospective workflow)
 #
 # WORKFLOW NOTES:
 # ===============
-# - Epics should be marked `in-progress` before stories can be marked beyond `backlog`
-# - SM typically drafts next story ONLY after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', dev reviews, then Dev moves to 'done'
+# - Run create-story to create detailed story implementation documents
+# - Stories can be worked in parallel if team capacity allows
+# - Create next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review' when complete, code-review marks as 'done'
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
 
@@ -42,9 +42,9 @@ tracking_system: file-system
 story_location: "{story_location}"
 
 development_status:
-  epic-1: backlog
+  epic-1: in-progress
   1-1-user-authentication: done
-  1-2-account-management: drafted
+  1-2-account-management: ready-for-dev
   1-3-plant-data-model: backlog
   1-4-add-plant-manual: backlog
   epic-1-retrospective: optional

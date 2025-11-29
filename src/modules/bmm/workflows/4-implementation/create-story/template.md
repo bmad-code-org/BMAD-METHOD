@@ -1,6 +1,6 @@
 # Story {{epic_num}}.{{story_num}}: {{story_title}}
 
-Status: drafted
+Status: ready-for-dev
 
 ## Story
 
@@ -38,7 +38,7 @@ so that {{benefit}}.
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+<!-- All context is now integrated directly in Dev Notes section above -->
 
 ### Agent Model Used
 

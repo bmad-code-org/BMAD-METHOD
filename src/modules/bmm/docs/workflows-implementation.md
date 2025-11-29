@@ -27,14 +27,16 @@ For a visual representation of the complete workflow, see: [workflow-method-gree
 
 ## Quick Reference
 
-| Workflow            | Agent | When                  | Purpose                               |
-| ------------------- | ----- | --------------------- | ------------------------------------- |
-| **sprint-planning** | SM    | Once at Phase 4 start | Initialize sprint tracking file       |
-| **create-story**    | SM    | Per story             | Create next story from epic backlog   |
-| **dev-story**       | DEV   | Per story             | Implement story with tests            |
-| **code-review**     | DEV   | Per story             | Senior dev quality review             |
-| **retrospective**   | SM    | After epic complete   | Review lessons and extract insights   |
-| **correct-course**  | SM    | When issues arise     | Handle significant mid-sprint changes |
+| Workflow                  | Agent | When                        | Purpose                                                         |
+| ------------------------- | ----- | --------------------------- | --------------------------------------------------------------- |
+| **sprint-planning**       | SM    | Once at Phase 4 start       | Initialize sprint tracking file                                 |
+| **create-story**          | SM    | Per story                   | Create story implementation document with comprehensive context |
+| **validate-create-story** | SM    | Optional after create-story | Validate story document quality                                 |
+| **develop-story**         | DEV   | Per story                   | Implement story with tests                                      |
+| **code-review**           | DEV   | Per story                   | Senior dev quality review and mark done                         |
+| **epic-retrospective**    | SM    | After epic complete         | Review lessons and extract insights                             |
+| **correct-course**        | SM    | When issues arise           | Handle significant mid-sprint changes                           |
+| **workflow-status**       | Any   | Anytime                     | Check "what should I do now?"                                   |
 
 ---
 
@@ -42,24 +44,25 @@ For a visual representation of the complete workflow, see: [workflow-method-gree
 
 ### SM (Scrum Master) - Primary Implementation Orchestrator
 
-**Workflows:** sprint-planning, create-story, retrospective, correct-course
+**Workflows:** sprint-planning, create-story, validate-create-story, epic-retrospective, correct-course
 
 **Responsibilities:**
 
 - Initialize and maintain sprint tracking
-- Create stories from epic backlog
-- Handle course corrections when issues arise
-- Facilitate retrospectives after epic completion
-- Orchestrate overall implementation flow
+- Create story implementation documents with comprehensive context
+- Orchestrate story lifecycle with optional validations
+- Handle course corrections
+- Facilitate retrospectives
 
 ### DEV (Developer) - Implementation and Quality
 
-**Workflows:** dev-story, code-review
+**Workflows:** develop-story, code-review
 
 **Responsibilities:**
 
 - Implement stories with tests
 - Perform senior developer code reviews
+- Mark stories complete and advance queue when review passes
 - Ensure quality and adherence to standards
 - Complete story implementation lifecycle
 
@@ -69,10 +72,11 @@ For a visual representation of the complete workflow, see: [workflow-method-gree
 
 Stories move through these states in the sprint status file:
 
-1. **TODO** - Story identified but not started
-2. **IN PROGRESS** - Story being implemented (create-story → story-context → dev-story)
-3. **READY FOR REVIEW** - Implementation complete, awaiting code review
-4. **DONE** - Accepted and complete
+1. **backlog** - Story exists in epics.md but not yet started
+2. **ready-for-dev** - Story file created by create-story with comprehensive context
+3. **in-progress** - Developer actively working on implementation
+4. **review** - Implementation complete, awaiting code review
+5. **done** - Story completed and reviewed
 
 ---
 
@@ -90,21 +94,19 @@ Stories move through these states in the sprint status file:
 
 1. SM runs `sprint-planning` (once)
 
-**Per Epic:**
-
-- Epic context and stories are already prepared from Phase 3
-
 **Per Story (repeat until epic complete):**
 
-1. SM runs `create-story`
-2. DEV runs `dev-story`
-3. DEV runs `code-review`
-4. If code review fails: DEV fixes issues in `dev-story`, then re-runs `code-review`
+1. SM runs `create-story` (creates comprehensive story implementation document)
+2. SM optionally runs `validate-create-story`
+3. DEV runs `develop-story`
+4. DEV runs `code-review`
+5. If code review passes: Story automatically marked as `done` in sprint status
+6. If code review finds issues: DEV fixes in `develop-story`, then back to code-review
 
 **After Epic Complete:**
 
-- SM runs `retrospective`
-- Move to next epic
+- SM runs `epic-retrospective`
+- Move to next epic (start with `create-story` for first story)
 
 **As Needed:**
 
@@ -118,6 +120,19 @@ Stories move through these states in the sprint status file:
 ### One Story at a Time
 
 Complete each story's full lifecycle before starting the next. This prevents context switching and ensures quality.
+
+### Comprehensive Story Context
+
+The `create-story` workflow generates comprehensive story implementation documents that include all necessary context:
+
+- Story requirements from epics.md
+- Technical implementation guidance from Architecture
+- UX patterns from UX Design (if available)
+- Previous story learnings
+- Git intelligence for code patterns
+- Latest technical specifics
+
+This provides just-in-time comprehensive context without upfront over-planning.
 
 ### Quality Gates
 
@@ -136,9 +151,10 @@ PRD (PM) → Architecture (Architect)
   → create-epics-and-stories (PM)  ← V6: After architecture!
   → implementation-readiness (Architect)
   → sprint-planning (SM, once)
-  → [Per Epic]:
-      → story loop (SM/DEV)
-      → retrospective (SM)
+  → [Per Story]:
+      create-story (SM) → develop-story (DEV) → code-review (DEV)
+  → [After Epic Complete]:
+      epic-retrospective (SM)
   → [Next Epic]
 ```
 
@@ -164,7 +180,10 @@ A: Run `correct-course` to analyze impact and route appropriately.
 A: Not recommended. Complete one story's full lifecycle before starting the next. Prevents context switching and ensures quality.
 
 **Q: What if code review finds issues?**
-A: DEV runs `dev-story` to make fixes, re-runs tests, then runs `code-review` again until it passes.
+A: DEV runs `develop-story` to make fixes, re-runs tests, then runs `code-review` again until it passes.
+
+**Q: When do I run validations?**
+A: Validations are optional quality gates. Use `validate-create-story` when you want independent review of story implementation documents before proceeding with development.
 
 ---
 

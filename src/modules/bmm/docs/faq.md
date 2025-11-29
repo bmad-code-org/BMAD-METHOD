@@ -90,7 +90,7 @@ When in doubt, start smaller. You can always run create-prd later if needed.
 
 ### Q: Do I always need architecture for Level 2?
 
-**A:** No, architecture is **optional** for Level 2. Only create architecture if you need system-level design. Many Level 2 projects work fine with just PRD + epic-tech-context created during implementation.
+**A:** No, architecture is **optional** for Level 2. Only create architecture if you need system-level design. Many Level 2 projects work fine with just PRD + epics.md created during planning.
 
 ### Q: What's the difference between Level 1 and Level 2?
 
@@ -162,14 +162,14 @@ If status file exists, use workflow-status. If not, use workflow-init.
 
 ## Planning Documents
 
-### Q: What's the difference between tech-spec and epic-tech-context?
+### Q: What's the difference between tech-spec and create-story?
 
 **A:**
 
 - **Tech-spec (Level 0-1):** Created upfront in Planning Phase, serves as primary/only planning document, a combination of enough technical and planning information to drive a single or multiple files
-- **Epic-tech-context (Level 2-4):** Created during Implementation Phase per epic, supplements PRD + Architecture
+- **Story implementation documents (Level 2-4):** Created during Implementation Phase via `create-story`, synthesizes PRD + Architecture + epics.md into comprehensive developer context
 
-Think of it as: tech-spec is for small projects (replaces PRD and architecture), epic-tech-context is for large projects (supplements PRD).
+Think of it as: tech-spec is for small projects (replaces PRD and architecture), create-story is for large projects (creates detailed implementation documents from PRD + Architecture + epics.md).
 
 ### Q: Why no tech-spec at Level 2+?
 
@@ -178,13 +178,13 @@ Think of it as: tech-spec is for small projects (replaces PRD and architecture),
 - PRD (product vision, functional requirements, non-functional requirements)
 - Architecture (system design)
 - Epics+Stories (created AFTER architecture is complete)
-- Epic-tech-context (detailed implementation per epic, created just-in-time)
+- Story implementation documents (detailed implementation per story, created just-in-time via create-story)
 
-### Q: When do I create epic-tech-context?
+### Q: When do I create story implementation documents?
 
-**A:** In Phase 4, right before implementing each epic. Don't create all epic-tech-context upfront - that's over-planning. Create them just-in-time using the epic-tech-context workflow as you're about to start working on that epic.
+**A:** In Phase 4, right before implementing each story. Don't create all story documents upfront - that's over-planning. Create them just-in-time using the create-story workflow as you're about to start working on that story.
 
-**Why just-in-time?** You'll learn from earlier epics, and those learnings improve later epic-tech-context.
+**Why just-in-time?** You'll learn from earlier stories, and those learnings improve later story documents.
 
 ### Q: Do I need a PRD for a bug fix?
 
@@ -209,47 +209,30 @@ PRDs are for Level 2-4 projects with multiple features requiring product-level c
 
 ## Implementation
 
-### Q: Do I need story-context for every story?
+### Q: Does create-story include all context I need?
 
-**A:** Technically no, but it's recommended. story-context provides implementation-specific guidance, references existing patterns, and injects expertise. Skip it only if:
+**A:** Yes! The create-story workflow generates comprehensive implementation documents that include:
 
-- Very simple story (self-explanatory)
-- You're already expert in the area
-- Time is extremely limited
+- Story requirements from epics.md
+- Technical implementation guidance from Architecture
+- UX patterns from UX Design (if available)
+- Previous story learnings
+- Git intelligence for code patterns
+- Latest technical specifics
 
-For Level 0-1 using tech-spec, story-context is less critical because tech-spec is already comprehensive.
-
-### Q: What if I don't create epic-tech-context before drafting stories?
-
-**A:** You can proceed without it, but you'll miss:
-
-- Epic-level technical direction
-- Architecture guidance for this epic
-- Integration strategy with other epics
-- Common patterns to follow across stories
-
-epic-tech-context helps ensure stories within an epic are cohesive.
+**Note:** Level 0-1 (Quick Flow) uses `tech-spec` + `quick-dev` workflow instead of create-story. The tech-spec serves as the primary context document for quick-dev.
 
 ### Q: How do I mark a story as done?
 
-**A:** You have two options:
+**A:** Run the `code-review` workflow! When code review passes:
 
-**Option 1: Use story-done workflow (Recommended)**
-
-1. Load SM agent
-2. Run `story-done` workflow
-3. Workflow automatically updates `sprint-status.yaml` (created by sprint-planning at Phase 4 start)
-4. Moves story from current status → `DONE`
-5. Advances the story queue
-
-**Option 2: Manual update**
-
-1. After dev-story completes and code-review passes
-2. Open `sprint-status.yaml` (created by sprint-planning)
-3. Change the story status from `review` to `done`
-4. Save the file
-
-The story-done workflow is faster and ensures proper status file updates.
+1. Load DEV agent
+2. Run `code-review` workflow
+3. Review implementation thoroughly
+4. If review passes, the workflow automatically:
+   - Updates `sprint-status.yaml` to mark story as `done`
+   - Advances the story queue
+5. If review fails, DEV fixes issues and runs code-review again
 
 ### Q: Can I work on multiple stories at once?
 
@@ -271,7 +254,7 @@ The story-done workflow is faster and ensures proper status file updates.
 - What went well
 - What could improve
 - Technical insights
-- Input for next epic-tech-context
+- Input for next story implementation
 
 Don't wait until project end - run after each epic for continuous improvement.
 

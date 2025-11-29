@@ -40,7 +40,7 @@
 
           **What would you like to do?**
           1. Run `create-story` to create next story from epics with comprehensive context
-          2. Run `*validate-create-story` to improve existing drafted stories before development
+          2. Run `*validate-create-story` to improve existing ready-for-dev stories before development
           3. Specify a particular story file to develop (provide full path)
           4. Check {{sprint_status}} file to see current sprint status
         </output>
@@ -85,7 +85,7 @@
 
           **Available Options:**
           1. Run `create-story` to create next story from epics with comprehensive context
-          2. Run `*validate-create-story` to improve existing drafted stories
+          2. Run `*validate-create-story` to improve existing ready-for-dev stories
           3. Specify which story to develop
         </output>
         <ask>What would you like to do? Choose option [1], [2], or [3]:</ask>
