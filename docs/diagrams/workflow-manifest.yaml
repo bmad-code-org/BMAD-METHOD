@@ -1,0 +1,254 @@
+version: "1.0"
+generated: "2025-11-30T14:11:39Z"
+source_commit: "31bdb1df"
+bmad_version: "6.0.0-alpha.12"
+
+# Entry point
+entry:
+  id: workflow-init
+  name: /workflow-init
+  outputs:
+    - file: "@bmm-workflow-status.yaml"
+      description: "BMM workflow tracking status"
+
+phases:
+  discovery:
+    label: "PHASE 1: DISCOVERY"
+    directory: "1-analysis"
+    optional: true
+    parallel: true # Activities can run in any order
+    workflows:
+      - id: brainstorm-project
+        name: /brainstorm-project
+        outputs: []
+      - id: research
+        name: /research
+        outputs: []
+      - id: domain-research
+        name: /domain-research
+        outputs: []
+      - id: document-project
+        name: /document-project
+        outputs: []
+      - id: product-brief
+        name: /product-brief
+        outputs:
+          - file: "@product-brief.md"
+            description: "Product vision and requirements"
+
+    # Connections within this phase
+    connections:
+      - from: [brainstorm-project, research, domain-research, document-project]
+        to: product-brief
+        type: converge # All activities converge to product-brief
+
+  planning:
+    label: "PHASE 2: PLANNING"
+    directory: "2-plan-workflows"
+    optional: false
+    parallel: false
+    workflows:
+      - id: tech-spec
+        name: /tech-spec
+        outputs:
+          - file: "@tech-spec.md"
+            description: "Technical specification"
+        optional: true # Part of quick-flow, not main flow
+      - id: prd
+        name: /prd
+        outputs:
+          - file: "@PRD.md"
+            description: "Product requirements document"
+      - id: ux-design
+        name: /ux-design
+        outputs:
+          - file: "@ux-design.md"
+            description: "UX design and wireframes"
+
+    # Decision points
+    decisions:
+      - id: has-ui
+        label: "Has UI?"
+        after: prd
+        branches:
+          - condition: "Yes"
+            to: ux-design
+          - condition: "No"
+            to: architecture # Cross-phase connection
+
+    connections:
+      - from: ux-design
+        to: architecture # Cross-phase connection
+
+  solutioning:
+    label: "PHASE 3: SOLUTIONING"
+    directory: "3-solutioning"
+    optional: false
+    parallel: false
+    workflows:
+      - id: architecture
+        name: /architecture
+        outputs:
+          - file: "@architecture.md"
+            description: "System architecture and design"
+      - id: create-epics-and-stories
+        name: /create-epics-and-stories
+        outputs:
+          - file: "@epics.md"
+            description: "Epic and story breakdown"
+      - id: implementation-readiness
+        name: /implementation-readiness
+        outputs:
+          - file: "@impl-readiness-report.md"
+            description: "Implementation readiness report"
+
+    connections:
+      - from: architecture
+        to: create-epics-and-stories
+        type: sequential
+      - from: create-epics-and-stories
+        to: implementation-readiness
+        type: sequential
+
+  implementation:
+    label: "PHASE 4: IMPLEMENTATION"
+    directory: "4-implementation"
+    optional: false
+    parallel: false
+    workflows:
+      - id: sprint-planning
+        name: /sprint-planning
+        outputs:
+          - file: "@sprint-status.yaml"
+            description: "Sprint status and planning"
+      - id: create-story
+        name: /create-story
+        outputs:
+          - file: "@{epic}-{story}-*.md"
+            description: "Story implementation details"
+      - id: dev-story
+        name: /dev-story
+        outputs: []
+      - id: code-review
+        name: /code-review
+        outputs: []
+      - id: story-done
+        name: /story-done
+        outputs: []
+      - id: retrospective
+        name: /retrospective
+        outputs: []
+      - id: correct-course
+        name: /correct-course
+        outputs:
+          - file: "@sprint-change-proposal.md"
+            description: "Sprint change proposal"
+        standalone: true # Not part of main flow
+
+    # Main flow
+    connections:
+      - from: sprint-planning
+        to: create-story
+        type: sequential
+      - from: create-story
+        to: dev-story
+        type: sequential
+      - from: dev-story
+        to: code-review
+        type: sequential
+      - from: code-review
+        to: story-done
+        type: sequential
+      - from: story-done
+        to: retrospective
+        type: sequential
+
+    # Feedback loops (iterative flows)
+    feedback_loops:
+      - from: code-review
+        to: dev-story
+        label: "fixes"
+        description: "Return to dev for fixes"
+      - from: story-done
+        to: create-story
+        label: "next story"
+        description: "Continue with next story in epic"
+      - from: retrospective
+        to: sprint-planning
+        label: "next epic"
+        description: "Start next epic/sprint"
+
+# Quick Flow (separate diagram, composited into main diagram)
+quick_flow:
+  auto_regenerate: false
+  directory: "bmad-quick-flow"
+  description: "Fast-track path for experienced teams"
+
+  # Quick-flow includes its own workflow-init node
+  entry:
+    id: workflow-init
+    name: /workflow-init
+    outputs:
+      - file: "@bmm-workflow-status.yaml"
+
+  workflows:
+    - id: create-tech-spec
+      name: /create-tech-spec
+      outputs:
+        - file: "@tech-spec.md"
+          description: "Technical specification"
+    - id: quick-dev
+      name: /quick-dev
+      outputs: []
+
+  connections:
+    - from: workflow-init
+      to: create-tech-spec
+      type: sequential
+    - from: create-tech-spec
+      to: quick-dev
+      type: sequential
+
+# Cross-phase connections (main diagram only)
+cross_phase_connections:
+  - from: entry.workflow-init
+    to: phases.discovery.activities
+    label: "Main flow"
+    type: entry
+  - from: phases.discovery.product-brief
+    to: phases.planning.prd
+    type: sequential
+  - from: phases.planning.tech-spec
+    to: phases.solutioning.create-epics-and-stories
+    label: "Quick-flow path"
+    type: quick_flow
+  - from: phases.solutioning.implementation-readiness
+    to: phases.implementation.sprint-planning
+    type: sequential
+
+# Legend for diagram generation
+legend:
+  title: "OUTPUTS"
+  items:
+    - file: "@bmm-workflow-status.yaml"
+      description: "BMM workflow tracking status"
+    - file: "@product-brief.md"
+      description: "Product vision and requirements"
+    - file: "@tech-spec.md"
+      description: "Technical specification"
+    - file: "@PRD.md"
+      description: "Product requirements document"
+    - file: "@ux-design.md"
+      description: "UX design and wireframes"
+    - file: "@architecture.md"
+      description: "System architecture and design"
+    - file: "@epics.md"
+      description: "Epic and story breakdown"
+    - file: "@impl-readiness-report.md"
+      description: "Implementation readiness report"
+    - file: "@sprint-status.yaml"
+      description: "Sprint status and planning"
+    - file: "@{epic}-{story}-*.md"
+      description: "Story implementation details"
+    - file: "@sprint-change-proposal.md"
+      description: "Sprint change proposal"

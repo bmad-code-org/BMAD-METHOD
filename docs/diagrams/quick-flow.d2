@@ -1,0 +1,98 @@
+direction: down
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+classes: {
+  terminal: {
+    style: {
+      fill: "#1a3a5c"
+      stroke: "#0d1f30"
+      stroke-width: 2
+      border-radius: 40
+      font-size: 24
+      font-color: "#fff"
+      italic: true
+    }
+  }
+  workflow: {
+    style: {
+      fill: "#fff"
+      stroke: "#7d2d9a"
+      stroke-width: 2
+      border-radius: 6
+      font-size: 27
+    }
+  }
+  workflow-impl: {
+    style: {
+      fill: "#fff"
+      stroke: "#2d9a7d"
+      stroke-width: 2
+      border-radius: 6
+      font-size: 27
+    }
+  }
+}
+
+# Outer container: 3 rows x 1 column
+outer: "" {
+  style.fill: transparent
+  style.stroke: transparent
+
+  grid-rows: 3
+  grid-columns: 1
+  vertical-gap: 20
+
+  # Row 1: Title
+  title: "QUICK FLOW" {
+    style.fill: transparent
+    style.stroke: transparent
+    style.font-size: 48
+    style.bold: true
+    style.font-color: "#1a3a5c"
+  }
+
+  # Row 2: Flow grid (3x3)
+  flow: "" {
+    style.fill: transparent
+    style.stroke: transparent
+
+    grid-rows: 3
+    grid-columns: 3
+    vertical-gap: 0
+    horizontal-gap: 60
+
+    # Row 1: spacer, spacer, exit
+    s1: "" { style.opacity: 0 }
+    s2: "" { style.opacity: 0 }
+    exit: "to /epics-and-stories" { class: terminal }
+
+    # Row 2: entry, tech-spec, spacer
+    entry: "from /workflow-init" { class: terminal }
+    tech: "/create-tech-spec\n@tech-spec.md\nShortcut for planning/arch" { class: workflow }
+    s3: "" { style.opacity: 0 }
+
+    # Row 3: spacer, spacer, quick-dev
+    s4: "" { style.opacity: 0 }
+    s5: "" { style.opacity: 0 }
+    quickdev: "/quick-dev\nShortcut for implementation\nCan run standalone" { class: workflow-impl }
+  }
+
+  # Row 3: Explanation
+  caption: "Fast track for simple changes" {
+    style.fill: transparent
+    style.stroke: transparent
+    style.font-size: 20
+    style.italic: true
+    style.font-color: "#666"
+  }
+}
+
+# Flow connections
+outer.flow.entry -> outer.flow.tech: { style.stroke-width: 2; style.stroke: "#555" }
+outer.flow.tech -> outer.flow.exit: { style.stroke-width: 2; style.stroke: "#888"; style.stroke-dash: 3 }
+outer.flow.tech -> outer.flow.quickdev: { style.stroke-width: 2; style.stroke: "#555" }

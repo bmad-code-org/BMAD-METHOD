@@ -1,0 +1,308 @@
+direction: down
+
+# Top-level vertical layout
+grid-rows: 4
+grid-columns: 1
+grid-gap: 20
+
+# Title row - left aligned via grid
+title-row: "" {
+  style.fill: transparent
+  style.stroke: transparent
+  grid-rows: 1
+  grid-columns: 1
+  horizontal-gap: 0
+
+  title: "BMAD METHOD V6.0.0-ALPHA.12" {
+    style.fill: transparent
+    style.stroke: transparent
+    style.font-size: 48
+    style.bold: true
+    style.font-color: "#1a3a5c"
+    label.near: top-left
+  }
+}
+
+# Legend - positioned near title-row (handled by inject-legend.py post-processor)
+
+
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+classes: {
+  phase1-box: {
+    style: {
+      fill: "#e8f4f8"
+      stroke: "#2d7d9a"
+      stroke-width: 3
+      border-radius: 12
+      font-size: 27
+      bold: true
+      font-color: "#1a5568"
+    }
+  }
+  phase2-box: {
+    style: {
+      fill: "#f0e8f8"
+      stroke: "#7d2d9a"
+      stroke-width: 3
+      border-radius: 12
+      font-size: 27
+      bold: true
+      font-color: "#4a1a68"
+    }
+  }
+  phase3-box: {
+    style: {
+      fill: "#f8f0e8"
+      stroke: "#9a7d2d"
+      stroke-width: 3
+      border-radius: 12
+      font-size: 27
+      bold: true
+      font-color: "#685a1a"
+    }
+  }
+  phase4-box: {
+    style: {
+      fill: "#e8f8f0"
+      stroke: "#2d9a7d"
+      stroke-width: 3
+      border-radius: 12
+      font-size: 27
+      bold: true
+      font-color: "#1a684a"
+    }
+  }
+  entry: {
+    style: {
+      fill: "#333"
+      stroke: "#111"
+      stroke-width: 2
+      border-radius: 8
+      font-size: 27
+      font-color: "#fff"
+      bold: true
+    }
+  }
+  n1: {
+    style: {
+      fill: "#fff"
+      stroke: "#2d7d9a"
+      stroke-width: 2
+      border-radius: 4
+      font-size: 27
+    }
+  }
+  n2: {
+    style: {
+      fill: "#fff"
+      stroke: "#7d2d9a"
+      stroke-width: 2
+      border-radius: 4
+      font-size: 27
+    }
+  }
+  n3: {
+    style: {
+      fill: "#fff"
+      stroke: "#9a7d2d"
+      stroke-width: 2
+      border-radius: 4
+      font-size: 27
+    }
+  }
+  n4: {
+    style: {
+      fill: "#fff"
+      stroke: "#2d9a7d"
+      stroke-width: 2
+      border-radius: 4
+      font-size: 27
+    }
+  }
+  decision: {
+    shape: diamond
+    style: {
+      fill: "#fff8e8"
+      stroke: "#7d2d9a"
+      stroke-width: 2
+      font-size: 27
+    }
+  }
+  opt: {
+    style: {
+      fill: "#f8f8f8"
+      stroke: "#888"
+      stroke-width: 2
+      stroke-dash: 5
+      border-radius: 4
+      font-size: 27
+    }
+  }
+}
+
+# Entry point row - positioned above border between Phase 1 and 2
+init-row: "" {
+  style.fill: transparent
+  style.stroke: transparent
+
+  grid-rows: 1
+  grid-columns: 4
+  grid-gap: 25
+
+  spacer-left: "" { style.opacity: 0 }
+  init: "/workflow-init\n@bmm-workflow-status.yaml" { class: n1 }
+  spacer-right1: "" { style.opacity: 0 }
+  spacer-right2: "" { style.opacity: 0 }
+}
+
+# Lanes container (horizontal) - wider gaps for A4 landscape ratio
+lanes: "" {
+  style.fill: transparent
+  style.stroke: transparent
+
+  grid-rows: 1
+  grid-columns: 4
+  grid-gap: 90
+
+  # PHASE 1: DISCOVERY - activities in any order, ending with Product Brief
+  phase1: "PHASE 1: DISCOVERY\n " {
+    class: phase1-box
+    style.stroke-dash: 5
+    width: 400
+
+    # Group of parallel/unordered activities - stacked vertically
+    activities: "Activities (any order)" {
+      style.fill: "transparent"
+      style.stroke: "#2d7d9a"
+      style.stroke-dash: 3
+      style.font-size: 26
+      style.font-color: "#666"
+      style.italic: true
+      style.border-radius: 8
+
+      grid-rows: 4
+      grid-columns: 1
+      grid-gap: 6
+
+      brain: "/brainstorm" { class: n1 }
+      research: "/research" { class: n1 }
+      domain: "/domain-research" { class: n1 }
+      doc: "/document-project" { class: n1 }
+    }
+
+    brief: "/product-brief\n@product-brief.md" { class: n1 }
+
+    activities -> brief
+  }
+
+  # PHASE 2: PLANNING - no internal grid
+  phase2: "PHASE 2: PLANNING\n " {
+    class: phase2-box
+    width: 350
+
+    tech: "/tech-spec\n@tech-spec.md" { class: opt }
+    prd: "/prd\n@PRD.md" { class: n2 }
+    hasui: "Has UI?" { class: decision }
+    ux: "/ux-design\n@ux-design.md" { class: n2 }
+
+    # Force Tech Spec above PRD
+    tech -> prd: { style.opacity: 0 }
+    prd -> hasui
+    hasui -> ux: Yes
+  }
+
+  # PHASE 3: SOLUTIONING - no internal grid
+  phase3: "PHASE 3: SOLUTIONING\n " {
+    class: phase3-box
+    width: 400
+
+    # Invisible spacer to push content down
+    spacer: "" {
+      style.opacity: 0
+      height: 60
+    }
+    arch: "/architecture\n@architecture.md" { class: n3 }
+    epics: "/create-epics-and-stories\n@epics.md" { class: n3 }
+    impl: "/implementation-readiness\n@impl-readiness-report.md" { class: n3 }
+
+    spacer -> arch: { style.opacity: 0 }
+    arch -> epics
+    epics -> impl
+  }
+
+  # PHASE 4: IMPLEMENTATION - no internal grid, let loops show
+  phase4: "PHASE 4: IMPLEMENTATION\n " {
+    class: phase4-box
+    width: 520
+
+    sprint: "/sprint-planning\n@sprint-status.yaml" { class: n4 }
+    create: "/create-story\n@{epic}-{story}-*.md" { class: n4 }
+    dev: "/dev-story" { class: n4 }
+    review: "/code-review" { class: n4 }
+    done: "/story-done" { class: n4 }
+    retro: "/retrospective" { class: n4 }
+
+    # Standalone utility - not connected to main flow, forced to bottom
+    course-container: "" {
+      style.fill: transparent
+      style.stroke: transparent
+      grid-rows: 2
+      grid-columns: 1
+      grid-gap: 4
+
+      course: "/correct-course\n@sprint-change-proposal.md" { class: n4 }
+      course-label: "(run when issues arise)" {
+        style.fill: transparent
+        style.stroke: transparent
+        style.font-size: 21
+        style.italic: true
+        style.font-color: "#666"
+      }
+    }
+    # Force course-container below dev (the lowest node in the flow)
+    dev -> course-container: { style.opacity: 0 }
+
+    # Main flow
+    sprint -> create
+    create -> dev
+    dev -> review
+    review -> done
+    done -> retro
+
+    # Feedback loops - these should now be visible
+    review -> dev: fixes { style.stroke-dash: 3; style.stroke: "#f57c00"; style.font-size: 21; style.italic: true }
+    done -> create: next story { style.stroke-dash: 3; style.stroke: "#f57c00"; style.font-size: 21; style.italic: true }
+    retro -> sprint: next epic { style.stroke-dash: 3; style.stroke: "#f57c00"; style.font-size: 21; style.italic: true }
+  }
+}
+
+# Entry to lanes
+init-row.init -> lanes.phase1.activities: { style.stroke: "#2d7d9a"; style.stroke-width: 2 }
+init-row.init -> lanes.phase2.tech: Quick-flow { style.stroke-dash: 5; style.stroke: "#999"; style.font-size: 21; style.italic: true }
+
+# Cross-phase flows
+lanes.phase1.brief -> lanes.phase2.prd
+lanes.phase2.hasui -> lanes.phase3.arch: No
+lanes.phase2.ux -> lanes.phase3.arch
+lanes.phase2.tech -> lanes.phase3.epics: { style.stroke-dash: 5; style.stroke: "#999" }
+lanes.phase3.impl -> lanes.phase4.sprint
+
+# Footer row
+footer-row: "" {
+  style.fill: transparent
+  style.stroke: transparent
+
+  footer: "DRAFTED: 2025-11-29 • REPOSITORY: github.com/bmad-code-org/BMAD-METHOD • LICENSE: MIT • UNCLASSIFIED • DISTRIBUTION: UNLIMITED • SUPERSEDES: ALL PREVIOUS EDITIONS" {
+    style.fill: transparent
+    style.stroke: transparent
+    style.font-size: 21
+    style.font-color: "#555"
+    style.italic: true
+    label.near: bottom-left
+  }
+}
