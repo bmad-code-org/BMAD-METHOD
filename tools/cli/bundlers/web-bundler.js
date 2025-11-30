@@ -880,6 +880,10 @@ class WebBundler {
 
     switch (ext) {
       case '.md': {
+
+        // Process all Markdown files to extract XML blocks
+        let processedContent = content;
+
         // Try to extract XML from markdown - handle both 3 and 4 backtick blocks
         // First try 4 backticks (which can contain 3 backtick blocks inside)
         let xmlMatches = [...content.matchAll(/````xml\s*([\s\S]*?)````/g)];
@@ -900,10 +904,8 @@ class WebBundler {
         if (xmlBlocks.length > 0) {
           // For XML content, just include it directly (it's already valid XML)
           processedContent = xmlBlocks.join('\n\n');
-        } else {
-          // No XML blocks found, skip non-XML markdown files
-          return;
         }
+
 
         break;
       }
