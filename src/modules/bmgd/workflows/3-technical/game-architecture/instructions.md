@@ -176,7 +176,7 @@ I see {{epic_count}} epics with {{story_count}} total stories.
 
     <check if="user_accepts_starter">
       <action>Get current starter command and options:
-        <WebSearch>{{starter_name}} CLI command options flags latest 2024</WebSearch>
+        <WebSearch>{{starter_name}} CLI command options flags latest 2025</WebSearch>
       </action>
 
       <action>Document the initialization command:
@@ -327,7 +327,7 @@ Let's work through the remaining {{remaining_count}} decisions."
 
   <check if="decision_involves_specific_technology">
     <action>Verify current stable version:
-      <WebSearch>{{technology}} latest stable version 2024</WebSearch>
+      <WebSearch>{{technology}} latest stable version 2025</WebSearch>
       <WebSearch>{{technology}} current LTS version</WebSearch>
     </action>
 

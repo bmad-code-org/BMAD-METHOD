@@ -121,9 +121,9 @@ If UX specification was loaded, consider UX requirements when selecting starter:
 Use WebSearch to find current, maintained starter templates:
 
 ```
-WebSearch: {{primary_technology}} starter template CLI create command latest 2024
-WebSearch: {{primary_technology}} boilerplate generator latest options 2024
-WebSearch: {{primary_technology}} production-ready starter best practices 2024
+WebSearch: {{primary_technology}} starter template CLI create command latest 2025
+WebSearch: {{primary_technology}} boilerplate generator latest options 2025
+WebSearch: {{primary_technology}} production-ready starter best practices 2025
 ```
 
 ### 4. Investigate Top Starter Options
@@ -134,7 +134,7 @@ For each promising starter found, investigate details:
 WebSearch: {{starter_name}} default setup technologies included latest
 WebSearch: {{starter_name}} project structure file organization
 WebSearch: {{starter_name}} production deployment capabilities
-WebSearch: {{starter_name}} recent updates maintenance status 2024
+WebSearch: {{starter_name}} recent updates maintenance status 2025
 ```
 
 ### 5. Analyze What Each Starter Provides
@@ -200,7 +200,7 @@ This is a great starting point that follows best practices and saves us from mak
 If user shows interest in a starter, get the exact current commands:
 
 ```
-WebSearch: {{starter_name}} CLI command options flags latest 2024
+WebSearch: {{starter_name}} CLI command options flags latest 2025
 WebSearch: {{starter_name}} create new project command examples
 ```
 

@@ -163,9 +163,9 @@ What feels right to you?"
 If decision involves specific technology:
 
 ```
-WebSearch: {{technology}} latest stable version 2024
+WebSearch: {{technology}} latest stable version 2025
 WebSearch: {{technology}} current LTS version
-WebSearch: {{technology}} production readiness 2024
+WebSearch: {{technology}} production readiness 2025
 ```
 
 **Get User Input:**
