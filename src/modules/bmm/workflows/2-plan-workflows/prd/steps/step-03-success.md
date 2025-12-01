@@ -1,8 +1,13 @@
 # Step 3: Success Criteria Definition
 
+**Progress: Step 3 of 10** - Next: User Journey Mapping
+
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
 - 🛑 NEVER generate content without user input
+
+- 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
+- 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
 - ✅ ALWAYS treat this as collaborative discovery between PM peers
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on defining what winning looks like for this product
@@ -27,7 +32,7 @@ This step will generate content and present choices:
 ## PROTOCOL INTEGRATION:
 
 - When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode
+- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -35,17 +40,45 @@ This step will generate content and present choices:
 
 - Current document and frontmatter from previous steps are available
 - Executive Summary and Project Classification already exist in document
+- Input documents from step-01 are available (product briefs, research, brainstorming)
 - No additional data files needed for this step
 - Focus on measurable, specific success criteria
+- LEVERAGE existing input documents to inform success criteria
 
 ## YOUR TASK:
 
-Define comprehensive success criteria that cover user success, business success, and technical success.
+Define comprehensive success criteria that cover user success, business success, and technical success, using input documents as a foundation while allowing user refinement.
 
 ## SUCCESS DISCOVERY SEQUENCE:
 
 ### 1. Begin Success Definition Conversation
 
+**Check Input Documents for Success Indicators:**
+Analyze product brief, research, and brainstorming documents for success criteria already mentioned.
+
+**If Input Documents Contain Success Criteria:**
+"Looking at your product brief and research, I see some initial success criteria already defined:
+
+**From your brief:**
+{{extracted_success_criteria_from_brief}}
+
+**From research:**
+{{extracted_success_criteria_from_research}}
+
+**From brainstorming:**
+{{extracted_success_criteria_from_brainstorming}}
+
+This gives us a great foundation. Let's refine and expand on these initial thoughts:
+
+**User Success First:**
+Based on what we have, how would you refine these user success indicators:
+
+- {{refined_user_success_from_documents}}
+- Are there other user success metrics we should consider?
+
+**What would make a user say 'this was worth it'** beyond what's already captured?"
+
+**If No Success Criteria in Input Documents:**
 Start with user-centered success:
 "Now that we understand what makes {{project_name}} special, let's define what success looks like.
 
@@ -171,13 +204,13 @@ Show the generated content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's dive deeper and refine these success metrics
 [P] Party Mode - Bring in different perspectives on success criteria
-[C] Continue - Save this to the document and move to next step"
+[C] Continue - Save success criteria and move to User Journey Mapping (Step 4 of 10)"
 
 ### 9. Handle Menu Selection
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute advanced-elicitation.xml with the current success criteria content
+- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current success criteria content
 - Process the enhanced success metrics that come back
 - Ask user: "Accept these improvements to the success criteria? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -185,7 +218,7 @@ Show the generated content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute party-mode workflow with the current success criteria
+- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current success criteria
 - Process the collaborative improvements to metrics and scope
 - Ask user: "Accept these changes to the success criteria? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -218,6 +251,10 @@ When user selects 'C', append the content directly to the document using the str
 ❌ Generating content without real user input on what success looks like
 ❌ Not presenting A/P/C menu after content generation
 ❌ Appending content without user selecting 'C'
+
+❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
+❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
+❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
 
 ## DOMAIN CONSIDERATIONS:
 

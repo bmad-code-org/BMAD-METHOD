@@ -1,8 +1,13 @@
 # Step 7: Project-Type Deep Dive
 
+**Progress: Step 7 of 11** - Next: Scoping
+
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
 - 🛑 NEVER generate content without user input
+
+- 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
+- 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
 - ✅ ALWAYS treat this as collaborative discovery between PM peers
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on project-type specific requirements and technical considerations
@@ -27,7 +32,7 @@ This step will generate content and present choices:
 ## PROTOCOL INTEGRATION:
 
 - When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode
+- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -48,7 +53,7 @@ Conduct project-type specific discovery using CSV-driven guidance to define tech
 
 Load project-type specific configuration:
 
-- Load `./project-types.csv` completely
+- Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/project-types.csv` completely
 - Find the row where `project_type` matches detected type from step-02
 - Extract these columns:
   - `key_questions` (semicolon-separated list of discovery questions)
@@ -150,13 +155,13 @@ Show the generated project-type content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's dive deeper into these technical requirements
 [P] Party Mode - Bring technical expertise perspectives to validate requirements
-[C] Continue - Save this to the document and move to next step"
+[C] Continue - Save this and move to Scoping (Step 8 of 11)"
 
 ### 7. Handle Menu Selection
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute advanced-elicitation.xml with the current project-type content
+- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current project-type content
 - Process the enhanced technical insights that come back
 - Ask user: "Accept these improvements to the technical requirements? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -164,7 +169,7 @@ Show the generated project-type content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute party-mode workflow with the current project-type requirements
+- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current project-type requirements
 - Process the collaborative technical expertise and validation
 - Ask user: "Accept these changes to the technical requirements? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -174,7 +179,7 @@ Show the generated project-type content and present choices:
 
 - Append the final content to `{output_folder}/prd.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]`
-- Load `./step-08-functional.md`
+- Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -200,6 +205,10 @@ When user selects 'C', append the content directly to the document using the str
 ❌ Not presenting A/P/C menu after content generation
 ❌ Appending content without user selecting 'C'
 
+❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
+❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
+❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
+
 ## PROJECT-TYPE EXAMPLES:
 
 **For api_backend:**
@@ -222,6 +231,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-08-functional.md` to synthesize functional requirements.
+After user selects 'C' and content is saved to document, load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md` to define project scope.
 
-Remember: Do NOT proceed to step-08 until user explicitly selects 'C' from the A/P/C menu and content is saved!
+Remember: Do NOT proceed to step-08 (Scoping) until user explicitly selects 'C' from the A/P/C menu and content is saved!

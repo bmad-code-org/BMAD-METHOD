@@ -52,7 +52,7 @@ agent:
       description: Generate single expressive image that explains ideas creatively and memorably
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
       description: Consult with other expert agents from the party
 
     - trigger: advanced-elicitation

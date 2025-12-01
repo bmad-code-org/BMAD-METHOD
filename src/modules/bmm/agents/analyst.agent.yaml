@@ -23,15 +23,16 @@ agent:
       description: Get workflow status or initialize a workflow if not already done (optional)
 
     - trigger: brainstorm-project
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/workflow.yaml"
-      description: Guided Brainstorming session with final report (optional)
+      exec: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.md"
+      data: "{project-root}/{bmad_folder}/bmm/data/project-context-template.md"
+      description: Guided Project Brainstorming session with final report (optional)
 
     - trigger: research
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/research/workflow.yaml"
-      description: Guided Research scoped to market and competitive analysis (optional)
+      exec: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/research/workflow.md"
+      description: Guided Research scoped to market, domain, competitive analysis, or technical research (optional)
 
     - trigger: product-brief
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief/workflow.md"
       description: Create a Product Brief (recommended input for PRD)
 
     - trigger: document-project
@@ -39,7 +40,7 @@ agent:
       description: Document your existing project (optional, but recommended for existing brownfield project efforts)
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
       description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation

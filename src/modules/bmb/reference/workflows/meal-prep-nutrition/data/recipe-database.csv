@@ -1,0 +1,28 @@
+category,name,prep_time,cook_time,total_time,protein_per_serving,complexity,meal_type,restrictions_friendly,batch_friendly
+Protein,Grilled Chicken Breast,10,20,30,35,beginner,lunch/dinner,all,yes
+Protein,Baked Salmon,5,15,20,22,beginner,lunch/dinner,gluten-free,no
+Protein,Lentils,0,25,25,18,beginner,lunch/dinner,vegan,yes
+Protein,Ground Turkey,5,15,20,25,beginner,lunch/dinner,all,yes
+Protein,Tofu Stir-fry,10,15,25,20,intermediate,lunch/dinner,vegan,no
+Protein,Eggs Scrambled,5,5,10,12,beginner,breakfast,vegetarian,no
+Protein,Greek Yogurt,0,0,0,17,beginner,snack,vegetarian,no
+Carb,Quinoa,5,15,20,8,beginner,lunch/dinner,gluten-free,yes
+Carb,Brown Rice,5,40,45,5,beginner,lunch/dinner,gluten-free,yes
+Carb,Sweet Potato,5,45,50,4,beginner,lunch/dinner,all,yes
+Carb,Oatmeal,2,5,7,5,beginner,breakfast,gluten-free,yes
+Carb,Whole Wheat Pasta,2,10,12,7,beginner,lunch/dinner,vegetarian,no
+Veggie,Broccoli,5,10,15,3,beginner,lunch/dinner,all,yes
+Veggie,Spinach,2,3,5,3,beginner,lunch/dinner,all,no
+Veggie,Bell Peppers,5,10,15,1,beginner,lunch/dinner,all,no
+Veggie,Kale,5,5,10,3,beginner,lunch/dinner,all,no
+Veggie,Avocado,2,0,2,2,beginner,snack/lunch,all,no
+Snack,Almonds,0,0,0,6,beginner,snack,gluten-free,no
+Snack,Apple with PB,2,0,2,4,beginner,snack,vegetarian,no
+Snack,Protein Smoothie,5,0,5,25,beginner,snack,all,no
+Snack,Hard Boiled Eggs,0,12,12,6,beginner,snack,vegetarian,yes
+Breakfast,Overnight Oats,5,0,5,10,beginner,breakfast,vegan,yes
+Breakfast,Protein Pancakes,10,10,20,20,intermediate,breakfast,vegetarian,no
+Breakfast,Veggie Omelet,5,10,15,18,intermediate,breakfast,vegetarian,no
+Quick Meal,Chicken Salad,10,0,10,30,beginner,lunch,gluten-free,no
+Quick Meal,Tuna Wrap,5,0,5,20,beginner,lunch,gluten-free,no
+Quick Meal,Buddha Bowl,15,0,15,15,intermediate,lunch,vegan,no

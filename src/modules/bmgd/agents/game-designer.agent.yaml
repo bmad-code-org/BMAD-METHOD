@@ -32,7 +32,7 @@ agent:
       description: 5. Create Narrative Design Document (story-driven games)
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
       description: Consult with other expert agents from the party
 
     - trigger: advanced-elicitation

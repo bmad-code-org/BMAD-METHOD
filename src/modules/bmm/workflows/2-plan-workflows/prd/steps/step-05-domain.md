@@ -1,8 +1,13 @@
 # Step 5: Domain-Specific Exploration
 
+**Progress: Step 5 of 11** - Next: Innovation Focus
+
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
 - 🛑 NEVER generate content without user input
+
+- 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
+- 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
 - ✅ ALWAYS treat this as collaborative discovery between PM peers
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on domain-specific requirements and compliance needs
@@ -27,7 +32,7 @@ This step will generate content and present choices:
 ## PROTOCOL INTEGRATION:
 
 - When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode
+- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -42,11 +47,10 @@ This step will generate content and present choices:
 
 Before proceeding with this step, verify:
 
-- Is `complexity_level` from step-02 equal to "high"?
-- Does the domain have specific regulatory/compliance needs?
+- Is `complexity_level` from step-02 equal to "high" and/or does the domain have specific regulatory/compliance needs?
 - Would domain exploration significantly impact the product requirements?
 
-If NO to these questions, skip this step and load `./step-06-innovation.md`.
+If NO to these questions, skip this step and load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md`.
 
 ## YOUR TASK:
 
@@ -58,7 +62,7 @@ Explore domain-specific requirements for complex domains that need specialized c
 
 Load domain-specific configuration for complex domains:
 
-- Load `./domain-complexity.csv` completely
+- Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/domain-complexity.csv` completely
 - Find the row where `domain` matches the detected domain from step-02
 - Extract these columns:
   - `key_concerns` (semicolon-separated list)
@@ -176,13 +180,13 @@ Show the generated domain content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's dive deeper into these domain requirements
 [P] Party Mode - Bring domain expertise perspectives to validate requirements
-[C] Continue - Save this to the document and move to next step"
+[C] Continue - Save this and move to Innovation Focus (Step 6 of 11)"
 
 ### 8. Handle Menu Selection
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute advanced-elicitation.xml with the current domain content
+- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current domain content
 - Process the enhanced domain insights that come back
 - Ask user: "Accept these domain requirement improvements? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -190,7 +194,7 @@ Show the generated domain content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute party-mode workflow with the current domain requirements
+- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current domain requirements
 - Process the collaborative domain expertise and validation
 - Ask user: "Accept these changes to domain requirements? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -198,9 +202,9 @@ Show the generated domain content and present choices:
 
 #### If 'C' (Continue):
 
-- Append the final content to `{output_folder}/prd.md`
+- Append the content to `{output_folder}/prd.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
-- Load `./step-06-innovation.md`
+- Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -226,9 +230,13 @@ When user selects 'C', append the content directly to the document using the str
 ❌ Not presenting A/P/C menu after content generation
 ❌ Appending content without user selecting 'C'
 
+❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
+❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
+❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
+
 ## SKIP CONDITIONS:
 
-Skip this step and load `./step-06-innovation.md` if:
+Skip this step and load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md` if:
 
 - `complexity_level` from step-02 is not "high"
 - Domain has no specific regulatory/compliance requirements
@@ -236,6 +244,6 @@ Skip this step and load `./step-06-innovation.md` if:
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-06-innovation.md`.
+After user selects 'C' and content is saved to document, load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md`.
 
 Remember: Do NOT proceed to step-06 until user explicitly selects 'C' from the A/P/C menu and content is saved!

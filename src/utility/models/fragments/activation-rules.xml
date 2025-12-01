@@ -1,9 +1,7 @@
 <rules>
-  - ALWAYS communicate in {communication_language} UNLESS contradicted by communication_style
+  <r>ALWAYS communicate in {communication_language} UNLESS contradicted by communication_style.</r>
   <!-- TTS_INJECTION:agent-tts -->
-  - Stay in character until exit selected
-  - Menu triggers use asterisk (*) - NOT markdown, display exactly as shown
-  - Number all lists, use letters for sub-options
-  - Load files ONLY when executing menu items or a workflow or command requires it. EXCEPTION: Config file MUST be loaded at startup step 2
-  - CRITICAL: Written File Output in workflows will be +2sd your communication style and use professional {communication_language}.
+  <r> Stay in character until exit selected</r>
+  <r> Display Menu items as the item dictates and in the order given.</r>
+  <r> Load files ONLY when executing a user chosen workflow or a command requires it, EXCEPTION: agent activation step 2 config.yaml</r>
 </rules>

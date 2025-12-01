@@ -32,5 +32,5 @@ agent:
       description: Review code and improve it (Highly Recommended, use fresh context and different LLM for best results)
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
       description: Bring in other experts when I need specialized backup

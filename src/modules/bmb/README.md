@@ -5,6 +5,8 @@ Specialized tools and workflows for creating, customizing, and extending BMad co
 ## Table of Contents
 
 - [Module Structure](#module-structure)
+- [Documentation](#documentation)
+- [Reference Materials](#reference-materials)
 - [Core Workflows](#core-workflows)
 - [Agent Types](#agent-types)
 - [Quick Start](#quick-start)
@@ -16,124 +18,172 @@ Specialized tools and workflows for creating, customizing, and extending BMad co
 
 **BMad Builder** - Master builder agent orchestrating all creation workflows with deep knowledge of BMad architecture and conventions.
 
+- Location: `.bmad/bmb/agents/bmad-builder.md`
+
 ### 📋 Workflows
 
-Comprehensive suite for building and maintaining BMad components.
+**Active Workflows** (Step-File Architecture)
+
+- Location: `src/modules/bmb/workflows/`
+- 5 core workflows with 41 step files total
+- Template-based execution with JIT loading
+
+**Legacy Workflows** (Being Migrated)
+
+- Location: `src/modules/bmb/workflows-legacy/`
+- Module-specific workflows pending conversion to step-file architecture
+
+### 📚 Documentation
+
+- Location: `src/modules/bmb/docs/`
+- Comprehensive guides for agents and workflows
+- Architecture patterns and best practices
+
+### 🔍 Reference Materials
+
+- Location: `src/modules/bmb/reference/`
+- Working examples of agents and workflows
+- Template patterns and implementation guides
+
+## Documentation
+
+### 📖 Agent Documentation
+
+- **[Agent Index](./docs/agents/index.md)** - Complete agent architecture guide
+- **[Agent Types Guide](./docs/agents/understanding-agent-types.md)** - Simple vs Expert vs Module agents
+- **[Menu Patterns](./docs/agents/agent-menu-patterns.md)** - YAML menu design and handler types
+- **[Agent Compilation](./docs/agents/agent-compilation.md)** - Auto-injection rules and compilation process
+
+### 📋 Workflow Documentation
+
+- **[Workflow Index](./docs/workflows/index.md)** - Core workflow system overview
+- **[Architecture Guide](./docs/workflows/architecture.md)** - Step-file design and JIT loading
+- **[Template System](./docs/workflows/step-template.md)** - Standard step file template
+- **[Intent vs Prescriptive](./docs/workflows/intent-vs-prescriptive-spectrum.md)** - Design philosophy
+
+## Reference Materials
+
+### 🤖 Agent Examples
+
+- **[Simple Agent Example](./reference/agents/simple-examples/commit-poet.agent.yaml)** - Self-contained agent
+- **[Expert Agent Example](./reference/agents/expert-examples/journal-keeper/)** - Agent with persistent memory
+- **[Module Agent Examples](./reference/agents/module-examples/)** - Integration patterns (BMM, CIS)
+
+### 📋 Workflow Examples
+
+- **[Meal Prep & Nutrition](./reference/workflows/meal-prep-nutrition/)** - Complete step-file workflow demonstration
+- **Template patterns** for document generation and state management
 
 ## Core Workflows
 
-### Creation Workflows
+### Creation Workflows (Step-File Architecture)
 
-**[create-agent](./workflows/create-agent/README.md)** - Build BMad agents
+**[create-agent](./workflows/create-agent/)** - Build BMad agents
 
-- Interactive persona development
-- Command structure design
-- YAML source compilation to .md
+- 11 guided steps from brainstorming to celebration
+- 18 reference data files with validation checklists
+- Template-based agent generation
 
-**[create-workflow](./workflows/create-workflow/README.md)** - Design workflows
+**[create-workflow](./workflows/create-workflow/)** - Design workflows
 
-- Structured multi-step processes
-- Configuration validation
-- Web bundle support
-
-**[create-module](./workflows/create-module/README.md)** - Build complete modules
-
-- Full module infrastructure
-- Agent and workflow integration
-- Installation automation
-
-**[module-brief](./workflows/module-brief/README.md)** - Strategic planning
-
-- Module blueprint creation
-- Vision and architecture
-- Comprehensive analysis
+- 12 structured steps from init to review
+- 9 template files for workflow creation
+- Step-file architecture implementation
 
 ### Editing Workflows
 
-**[edit-agent](./workflows/edit-agent/README.md)** - Modify existing agents
+**[edit-agent](./workflows/edit-agent/)** - Modify existing agents
 
-- Persona refinement
-- Command updates
+- 5 steps: discovery → validation
+- Intent-driven analysis and updates
 - Best practice compliance
 
-**[edit-workflow](./workflows/edit-workflow/README.md)** - Update workflows
+**[edit-workflow](./workflows/edit-workflow/)** - Update workflows
 
-- Structure maintenance
-- Configuration updates
-- Documentation sync
+- 5 steps: analyze → compliance check
+- Structure maintenance and validation
+- Template updates for consistency
 
-**[edit-module](./workflows/edit-module/README.md)** - Module enhancement
+### Quality Assurance
 
-- Component modifications
-- Dependency management
-- Version control
+**[workflow-compliance-check](./workflows/workflow-compliance-check/)** - Validation
 
-### Maintenance Workflows
+- 8 systematic validation steps
+- Adversarial analysis approach
+- Detailed compliance reporting
 
-**[convert-legacy](./workflows/convert-legacy/README.md)** - Migration tool
+### Legacy Migration (Pending)
 
-- v4 to v6 conversion
-- Structure compliance
-- Convention updates
+Workflows in `workflows-legacy/` are being migrated to step-file architecture:
 
-**[audit-workflow](./workflows/audit-workflow/README.md)** - Quality validation
-
-- Structure verification
-- Config standards check
-- Bloat detection
-- Web bundle completeness
-
-**[redoc](./workflows/redoc/README.md)** - Auto-documentation
-
-- Reverse-tree approach
-- Technical writer quality
-- Convention compliance
+- Module-specific workflows
+- Historical implementations
+- Conversion planning in progress
 
 ## Agent Types
 
 BMB creates three agent architectures:
 
-### Full Module Agent
+### Simple Agent
 
-- Complete persona and role definition
-- Command structure with fuzzy matching
-- Workflow integration
-- Module-specific capabilities
+- **Self-contained**: All logic in single YAML file
+- **Stateless**: No persistent memory across sessions
+- **Purpose**: Single utilities and specialized tools
+- **Example**: Commit poet, code formatter
 
-### Hybrid Agent
+### Expert Agent
 
-- Shared core capabilities
-- Module-specific extensions
-- Cross-module compatibility
+- **Persistent Memory**: Maintains knowledge across sessions
+- **Sidecar Resources**: External files and data storage
+- **Domain-specific**: Focuses on particular knowledge areas
+- **Example**: Journal keeper, domain consultant
 
-### Standalone Agent
+### Module Agent
 
-- Independent operation
-- Minimal dependencies
-- Specialized single purpose
+- **Team Integration**: Orchestrates within specific modules
+- **Workflow Coordination**: Manages complex processes
+- **Professional Infrastructure**: Enterprise-grade capabilities
+- **Examples**: BMM project manager, CIS innovation strategist
 
 ## Quick Start
 
-1. **Load BMad Builder agent** in your IDE
+### Using BMad Builder Agent
+
+1. **Load BMad Builder agent** in your IDE:
+   ```
+   /bmad:bmb:agents:bmad-builder
+   ```
 2. **Choose creation type:**
-   ```
-   *create-agent     # New agent
-   *create-workflow  # New workflow
-   *create-module    # Complete module
-   ```
-3. **Follow interactive prompts**
+   - `[CA]` Create Agent - Build new agents
+   - `[CW]` Create Workflow - Design workflows
+   - `[EA]` Edit Agent - Modify existing agents
+   - `[EW]` Edit Workflow - Update workflows
+   - `[VA]` Validate Agent - Quality check agents
+   - `[VW]` Validate Workflow - Quality check workflows
+
+3. **Follow interactive prompts** for step-by-step guidance
 
 ### Example: Creating an Agent
 
 ```
 User: I need a code review agent
-Builder: *create-agent
+Builder: [CA] Create Agent
 
-[Interactive session begins]
-- Brainstorming phase (optional)
-- Persona development
-- Command structure
-- Integration points
+[11-step guided process]
+Step 1: Brainstorm agent concept
+Step 2: Define persona and role
+Step 3: Design command structure
+...
+Step 11: Celebrate and deploy
+```
+
+### Direct Workflow Execution
+
+Workflows can also be run directly without the agent interface:
+
+```yaml
+# Execute specific workflow steps
+workflow: ./workflows/create-agent/workflow.yaml
 ```
 
 ## Use Cases
@@ -165,30 +215,47 @@ Package modules for:
 - Business processes
 - Educational frameworks
 
+## Architecture Principles
+
+### Step-File Workflow Design
+
+- **Micro-file Approach**: Each step is self-contained
+- **Just-In-Time Loading**: Only current step in memory
+- **Sequential Enforcement**: No skipping steps allowed
+- **State Tracking**: Progress documented in frontmatter
+- **Append-Only Building**: Documents grow through execution
+
+### Intent vs Prescriptive Spectrum
+
+- **Creative Workflows**: High user agency, AI as facilitator
+- **Structured Workflows**: Clear process, AI as guide
+- **Prescriptive Workflows**: Strict compliance, AI as validator
+
 ## Best Practices
 
-1. **Study existing patterns** - Review BMM/CIS implementations
-2. **Follow conventions** - Use established structures
-3. **Document thoroughly** - Clear instructions essential
-4. **Test iteratively** - Validate during creation
-5. **Consider reusability** - Build modular components
+1. **Study Reference Materials** - Review docs/ and reference/ examples
+2. **Choose Right Agent Type** - Simple vs Expert vs Module based on needs
+3. **Follow Step-File Patterns** - Use established templates and structures
+4. **Document Thoroughly** - Clear instructions and frontmatter metadata
+5. **Validate Continuously** - Use compliance workflows for quality
+6. **Maintain Consistency** - Follow YAML patterns and naming conventions
 
 ## Integration
 
 BMB components integrate with:
 
-- **BMad Core** - Framework foundation
-- **BMM** - Extend development capabilities
-- **CIS** - Leverage creative workflows
-- **Custom Modules** - Your domain solutions
+- **BMad Core** - Framework foundation and agent compilation
+- **BMM** - Development workflows and project management
+- **CIS** - Creative innovation and strategic workflows
+- **Custom Modules** - Domain-specific solutions
 
-## Related Documentation
+## Getting Help
 
-- **[Agent Creation Guide](./workflows/create-agent/README.md)** - Detailed instructions
-- **[Module Structure](./workflows/create-module/module-structure.md)** - Architecture patterns
-- **[BMM Module](../bmm/README.md)** - Reference implementation
-- **[Core Framework](../../core/README.md)** - Foundation concepts
+- **Documentation**: Check `docs/` for comprehensive guides
+- **Reference Materials**: See `reference/` for working examples
+- **Validation**: Use `workflow-compliance-check` for quality assurance
+- **Templates**: Leverage workflow templates for consistent patterns
 
 ---
 
-BMB empowers you to extend BMad Method for your specific needs while maintaining framework consistency and power.
+BMB provides a complete toolkit for extending BMad Method with disciplined, systematic approaches to agent and workflow development while maintaining framework consistency and power.
