@@ -1,16 +1,164 @@
 # Changelog
 
-## [Unreleased]
+## [6.0.0-alpha.13]
 
-### Added
+**Release: November 30, 2025**
 
-- **Playwright Utils Integration**: Test Architect now supports `@seontechnologies/playwright-utils` integration
-  - Installation prompt with `use_playwright_utils` configuration flag (mirrors tea_use_mcp_enhancements pattern)
-  - 11 comprehensive knowledge fragments covering ALL utilities: overview, api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
-  - Adaptive workflow recommendations in 6 workflows: automate (CRITICAL), framework, test-review, ci, atdd, test-design (light mention)
-  - 32 total knowledge fragments (21 core patterns + 11 playwright-utils)
-  - Context-aware fragment loading preserves existing behavior when flag is false
-  - Production-ready utilities from SEON Technologies now integrated with TEA's proven testing patterns
+### 🏗️ Revolutionary Workflow Architecture
+
+**Granular Step-File Workflow System (NEW in alpha.13):**
+
+- **Multi-Menu Support**: Workflows now support granular step-file architecture with dynamic menu generation
+- **Sharded Workflows**: Complete conversion of Phase 1 and 2 workflows to stepwise sharded architecture
+- **Improved Performance**: Reduced file loading times and eliminated time-based estimates throughout
+- **Workflow Builder**: New dedicated workflow builder for creating stepwise workflows
+- **PRD Workflow**: First completely reworked sharded workflow resolving Sonnet compatibility issues
+
+**Core Workflow Transformations:**
+
+- Phase 1 and 2 workflows completely converted to sharded step-flow architecture
+- UX Design workflow converted to sharded step workflow
+- Brainstorming, Research, and Party Mode updated to use sharded step-flow workflows
+- Architecture workflows enhanced with step sharding and performance improvements
+
+### 🎯 Code Review & Development Enhancement
+
+**Advanced Code Review System:**
+
+- **Adversarial Code Review**: Quick-dev workflow now recommends adversarial review approach for higher quality
+- **Multi-LLM Strategy**: Dev-story workflow recommends different LLM models for code review tasks
+- **Agent Compiler Optimization**: Complete handler cleanup and performance improvements
+
+### 🤖 Agent System Revolution
+
+**Universal Custom Agent Support:**
+
+- **Complete IDE Coverage**: Custom agent support extended to ALL remaining IDEs
+- **Antigravity IDE Integration**: Added custom agent support with proper gitignore configuration
+- **Multiple Source Locations**: Compile agents now checks multiple source locations for better discovery
+- **Persona Name Display**: Fixed proper persona names display in custom agent manifests
+- **New IDE Support**: Added support for Rovo Dev IDE
+
+**Agent Creation & Management:**
+
+- **Improved Creation Workflow**: Enhanced agent creation workflow with better documentation
+- **Parameter Clarity**: Renamed agent-install parameters for better understanding
+- **Menu Organization**: BMad Agents menu items logically ordered with optional/recommended/required tags
+- **GitHub Migration**: GitHub integration now uses agents folder instead of chatmodes
+
+### 🔧 Phase 4 & Sprint Evolution
+
+**Complete Phase 4 Transformation:**
+
+- **Simplified Architecture**: Phase 4 workflows completely transformed - simpler, faster, better results
+- **Sprint Planning Integration**: Unified sprint planning with placeholders for Jira, Linear, and Trello integration
+- **Status Management**: Better status loading and updating for Phase 4 artifacts
+- **Workflow Reduction**: Phase 4 streamlined to single sprint planning item with clear validation
+- **Dynamic Workflows**: All Level 1-3 workflows now dynamically suggest next steps based on context
+
+### 🧪 Testing Infrastructure Expansion
+
+**Playwright Utils Integration:**
+
+- Test Architect now supports `@seontechnologies/playwright-utils` integration
+- Installation prompt with `use_playwright_utils` configuration flag
+- 11 comprehensive knowledge fragments covering ALL utilities
+- Adaptive workflow recommendations across 6 testing workflows
+- Production-ready utilities from SEON Technologies integrated with TEA patterns
+
+**Testing Environment:**
+
+- **Web Bundle Support**: Enabled web bundles for test and development environments
+- **Test Architecture**: Enhanced test design for architecture level (Phase 3) testing
+
+### 📦 Installation & Configuration
+
+**Installer Improvements:**
+
+- **Cleanup Options**: Installer now allows cleanup of unneeded files during upgrades
+- **Username Default**: Installer now defaults to system username for better UX
+- **IDE Selection**: Added empty IDE selection warning and promoted Antigravity to recommended
+- **NPM Vulnerabilities**: Resolved all npm vulnerabilities for enhanced security
+- **Documentation Installation**: Made documentation installation optional to reduce footprint
+
+**Text-to-Speech from AgentVibes optional Integration:**
+
+- **TTS_INJECTION System**: Complete text-to-speech integration via injection system
+- **Agent Vibes**: Enhanced with TTS capabilities for voice feedback
+
+### 🛠️ Tool & IDE Updates
+
+**IDE Tool Enhancements:**
+
+- **GitHub Copilot**: Fixed tool names consistency across workflows
+- **KiloCode Integration**: Gave kilocode tool proper access to bmad modes
+- **Code Quality**: Added radix parameter to parseInt() calls for better reliability
+- **Agent Menu Optimization**: Improved agent performance in Claude Code slash commands
+
+### 📚 Documentation & Standards
+
+**Documentation Cleanup:**
+
+- **Installation Guide**: Removed fluff and updated with npx support
+- **Workflow Documentation**: Fixed documentation by removing non-existent workflows and Mermaid diagrams
+- **Phase Numbering**: Fixed phase numbering consistency throughout documentation
+- **Package References**: Corrected incorrect npm package references
+
+**Workflow Compliance:**
+
+- **Validation Checks**: Enhanced workflow validation checks for compliance
+- **Product Brief**: Updated to comply with documented workflow standards
+- **Status Integration**: Workflow-status can now call workflow-init for better integration
+
+### 🔍 Legacy Workflow Cleanup
+
+**Deprecated Workflows Removed:**
+
+- **Audit Workflow**: Completely removed audit workflow and all associated files
+- **Convert Legacy**: Removed legacy conversion utilities
+- **Create/Edit Workflows**: Removed old workflow creation and editing workflows
+- **Clean Architecture**: Simplified workflow structure by removing deprecated legacy workflows
+
+### 🐛 Technical Fixes
+
+**System Improvements:**
+
+- **File Path Handling**: Fixed various file path issues across workflows
+- **Manifest Updates**: Updated manifest to use agents folder structure
+- **Web Bundle Configuration**: Fixed web bundle configurations for better compatibility
+- **CSV Column Mismatch**: Fixed manifest schema upgrade issues
+
+### ⚠️ Breaking Changes
+
+**Workflow Architecture:**
+
+- All legacy workflows have been removed - ensure you're using the new stepwise sharded workflows
+- Phase 4 completely restructured - update any automation expecting old Phase 4 structure
+- Epic creation now requires architectural context (moved to Phase 3 in previous release)
+
+**Agent System:**
+
+- Custom agents now require proper compilation - use the new agent creation workflow
+- GitHub integration moved from chatmodes to agents folder - update any references
+
+### 📊 Impact Summary
+
+**New in alpha.13:**
+
+- **Stepwise Workflow Architecture**: Complete transformation of all workflows to granular step-file system
+- **Universal Custom Agent Support**: Extended to ALL IDEs with improved creation workflow
+- **Phase 4 Revolution**: Completely restructured with sprint planning integration
+- **Legacy Cleanup**: Removed all deprecated workflows for cleaner system
+- **Advanced Code Review**: New adversarial review approach with multi-LLM strategy
+- **Text-to-Speech**: Full TTS integration for voice feedback
+- **Testing Expansion**: Playwright utils integration across all testing workflows
+
+**Enhanced from alpha.12:**
+
+- **Performance**: Improved file loading and removed time-based estimates
+- **Documentation**: Complete cleanup with accurate references
+- **Installer**: Better UX with cleanup options and improved defaults
+- **Agent System**: More reliable compilation and better persona handling
 
 ## [6.0.0-alpha.12]
 

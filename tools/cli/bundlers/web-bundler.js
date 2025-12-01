@@ -1410,11 +1410,11 @@ class WebBundler {
     const menuItems = [];
 
     if (!hasHelp) {
-      menuItems.push(`${indent}<item cmd="*help">Show numbered menu</item>`);
+      menuItems.push(`${indent}<item cmd="*menu">[M] Redisplay Menu Options</item>`);
     }
 
     if (!hasExit) {
-      menuItems.push(`${indent}<item cmd="*exit">Exit with confirmation</item>`);
+      menuItems.push(`${indent}<item cmd="*dismiss">[D] Dismiss Agent</item>`);
     }
 
     if (menuItems.length === 0) {
