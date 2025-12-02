@@ -114,9 +114,9 @@ WDS introduces **3 specialized design agents** named after Norse mythology:
 
 | Agent | Role | Norse Meaning |
 |-------|------|---------------|
-| **Saga-Analyst** | Business & Product Analyst | Goddess of stories & wisdom - uncovers your business story |
-| **Freyja-PM** | Product Manager | Goddess of love, war & strategy - leads with heart and mind |
-| **Baldr-UX** | UX/UI Designer | God of light & beauty - makes everything radiant |
+| **Saga the Analyst** | Business & Product Analyst | Goddess of stories & wisdom - uncovers your business story |
+| **Freyja the PM** | Product Manager | Goddess of love, war & strategy - leads with heart and mind |
+| **Baldr the UX Expert** | UX/UI Designer | God of light & beauty - makes everything radiant |
 
 ---
 

@@ -207,14 +207,14 @@ src/modules/wds/
 
 | Agent | File | Role | Norse Meaning | Status |
 |-------|------|------|---------------|--------|
-| **Saga-Analyst** | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom | TO CREATE |
-| **Freyja-PM** | `freyja-pm.agent.yaml` | Product Manager | Goddess of love, war & strategy | TO CREATE |
-| **Baldr-UX** | `baldr-ux.agent.yaml` | UX/UI Designer | God of light & beauty | TO CREATE |
+| **Saga the Analyst** | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom | TO CREATE |
+| **Freyja the PM** | `freyja-pm.agent.yaml` | Product Manager | Goddess of love, war & strategy | TO CREATE |
+| **Baldr the UX Expert** | `baldr-ux.agent.yaml` | UX/UI Designer | God of light & beauty | TO CREATE |
 
-**Why Norse Mythology + Role Suffix?**
-- Distinctive and memorable mythology names
-- Role suffix makes function immediately clear
-- Not too obvious (avoided Thor, Odin)
+**Why "Name the Function" format?**
+- Reads naturally: "Saga the Analyst"
+- Distinctive Norse mythology names
+- Function is immediately clear
 - Creates unique WDS brand identity
 
 ---
@@ -399,12 +399,12 @@ What to avoid:
 | Order | Component | File | Status |
 |-------|-----------|------|--------|
 | 1 | Method Overview | `docs/method/wds-method-guide.md` | ✅ CREATED |
-| 2 | Phase 1 Guide | `docs/method/phase-1-exploration-guide.md` | TO CREATE |
-| 3 | Phase 2 Guide | `docs/method/phase-2-research-guide.md` | TO CREATE |
-| 4 | Phase 3 Guide | `docs/method/phase-3-requirements-guide.md` | TO CREATE |
-| 5 | Phase 4 Guide | `docs/method/phase-4-conceptual-guide.md` | TO CREATE |
-| 6 | Phase 5 Guide | `docs/method/phase-5-components-guide.md` | TO CREATE |
-| 7 | Phase 6 Guide | `docs/method/phase-6-integration-guide.md` | TO CREATE |
+| 2 | Phase 1 Guide | `docs/method/phase-1-exploration-guide.md` | ✅ CREATED |
+| 3 | Phase 2 Guide | `docs/method/phase-2-research-guide.md` | ✅ CREATED |
+| 4 | Phase 3 Guide | `docs/method/phase-3-requirements-guide.md` | ✅ CREATED |
+| 5 | Phase 4 Guide | `docs/method/phase-4-ux-design-guide.md` | ✅ CREATED |
+| 6 | Phase 5 Guide | `docs/method/phase-5-design-system-guide.md` | ✅ CREATED |
+| 7 | Phase 6 Guide | `docs/method/phase-6-integration-guide.md` | ✅ CREATED |
 
 #### Phase 2: Create Examples
 | Order | Component | Location | Status |
@@ -412,6 +412,32 @@ What to avoid:
 | 8 | Dog Week Examples | `examples/dog-week-patterns/` | TO CREATE |
 | 9 | Conversation Examples | `examples/conversation-examples/` | TO CREATE |
 | 10 | Starter Project | `examples/starter-project/` | TO CREATE |
+| 10b | **WDS Trigger Map** | `examples/wds-trigger-map/` | TO CREATE |
+| 10c | **Trigger Mapping Workshop** | `workflows/trigger-mapping-workshop/` | TO CREATE |
+
+**WDS Trigger Map Example:**
+Create a Trigger Map for WDS itself as a meta-example - shows the methodology applied to the methodology. Includes:
+- WDS Vision & SMART Objectives
+- Target Groups (designers, teams, agencies)
+- Personas with alliterative names
+- Usage goals (positive & negative)
+- Visual trigger map diagram
+
+This serves as both documentation and inspiration for users.
+
+**Trigger Mapping Workshop (Standalone):**
+Create a standalone Trigger Mapping workshop that can be used:
+- In WDS as part of Phase 2
+- In BMM as a brainstorming/strategic alignment session
+- In any project needing user-business alignment
+
+This makes the Trigger Mapping methodology available even in projects not driven by designers. Could be contributed to BMM's brainstorming workflows or CIS (Creative Intelligence Suite).
+
+Includes:
+- Workshop facilitation workflow
+- Agent instructions for running the workshop
+- Template for Trigger Map output
+- Integration points with BMM workflows
 
 #### Phase 3: Create Workflows
 | Order | Component | Location | Status |
@@ -483,7 +509,7 @@ This will include:
 ### Short-term Roadmap
 
 1. [x] Create `wds-method-guide.md`
-2. [ ] Create phase guide for each phase (6 files)
+2. [x] Create phase guide for each phase (6 files)
 3. [ ] Port Dog Week examples to `examples/dog-week-patterns/`
 4. [ ] Create conversation examples
 5. [ ] Create workflow-init workflow

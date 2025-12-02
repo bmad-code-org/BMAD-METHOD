@@ -45,7 +45,7 @@ WDS follows six phases, each producing artifacts in your project's `docs/` folde
 
 ### Phase 1: Product Exploration
 **Output:** `A-Product-Brief/`  
-**Agent:** Saga-Analyst
+**Agent:** Saga the Analyst
 
 Establish your strategic foundation through conversational discovery. Instead of filling out questionnaires, you have a conversation that builds understanding organically.
 
@@ -59,7 +59,7 @@ Establish your strategic foundation through conversational discovery. Instead of
 
 ### Phase 2: User Research
 **Output:** `B-Trigger-Map/`  
-**Agent:** Saga-Analyst
+**Agent:** Saga the Analyst
 
 Connect business goals to user psychology through Effect Mapping. Discover not just WHO your users are, but WHY they act and WHAT triggers their decisions.
 
@@ -74,7 +74,7 @@ Connect business goals to user psychology through Effect Mapping. Discover not j
 
 ### Phase 3: Requirements
 **Output:** `D-PRD/`  
-**Agent:** Freyja-PM
+**Agent:** Freyja the PM
 
 Define the technical foundation and functional requirements. Bridge the gap between strategic vision and implementation details.
 
@@ -89,7 +89,7 @@ Define the technical foundation and functional requirements. Bridge the gap betw
 
 ### Phase 4: Conceptual Design
 **Output:** `C-Scenarios/`  
-**Agent:** Baldr-UX
+**Agent:** Baldr the UX Expert
 
 Transform ideas into detailed visual specifications. Your agent helps you think out the design, assists in sketching, then specifies and pressure-tests every detail.
 
@@ -107,7 +107,7 @@ Transform ideas into detailed visual specifications. Your agent helps you think 
 
 ### Phase 5: Component Design
 **Output:** `D-Design-System/`  
-**Agent:** Baldr-UX
+**Agent:** Baldr the UX Expert
 
 Build your component library following atomic design principles. Create reusable patterns that serve user psychology.
 
@@ -122,7 +122,7 @@ Build your component library following atomic design principles. Create reusable
 
 ### Phase 6: Dev Integration
 **Output:** `E-UI-Roadmap/`  
-**Agent:** Freyja-PM
+**Agent:** Freyja the PM
 
 Prepare everything development teams need. Create the bridge between design and implementation.
 
@@ -220,7 +220,7 @@ Your agents will help you identify which phases fit your project.
 
 Three specialized agents guide you through WDS:
 
-### Saga-Analyst 📚
+### Saga the Analyst 📚
 *"The one who tells your business story"*
 
 Saga guides you through discovery and research. She's curious, patient, and helps you uncover insights you might not have seen yourself.
@@ -229,7 +229,7 @@ Saga guides you through discovery and research. She's curious, patient, and help
 - Phase 1: Product Exploration
 - Phase 2: User Research (Trigger Mapping)
 
-### Freyja-PM ⚔️
+### Freyja the PM ⚔️
 *"The strategic leader who sees what must be done"*
 
 Freyja helps you define requirements and prepare for development. She balances passion with strategy, knowing when to be fierce and when to be patient.
@@ -238,7 +238,7 @@ Freyja helps you define requirements and prepare for development. She balances p
 - Phase 3: Requirements
 - Phase 6: Dev Integration
 
-### Baldr-UX ✨
+### Baldr the UX Expert ✨
 *"The one who brings light and beauty"*
 
 Baldr transforms your ideas into beautiful, detailed specifications. He cares deeply about craft and ensures every detail serves the user experience.

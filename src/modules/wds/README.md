@@ -56,9 +56,9 @@ WDS creates an alphabetized folder structure in the user's `docs/` folder:
 
 | Agent | File | Role | Norse Meaning |
 |-------|------|------|---------------|
-| **Saga-Analyst** | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom |
-| **Freyja-PM** | `freyja-pm.agent.yaml` | Product Manager | Goddess of love, war & strategy |
-| **Baldr-UX** | `baldr-ux.agent.yaml` | UX/UI Designer | God of light & beauty |
+| **Saga the Analyst** | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom |
+| **Freyja the PM** | `freyja-pm.agent.yaml` | Product Manager | Goddess of love, war & strategy |
+| **Baldr the UX Expert** | `baldr-ux.agent.yaml` | UX/UI Designer | God of light & beauty |
 
 ## Conventions
 
