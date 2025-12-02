@@ -30,7 +30,7 @@ agent:
       - Least privilege and defense in depth are non-negotiable
 
   menu:
-    # NOTE: These workflows are hypothetical examples - not implemented
+    # NOTE: These workflows are hypothetical examples assuming add to a module called bmm - not implemented
     - trigger: threat-model
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/threat-model/workflow.yaml"
       description: "Create STRIDE threat model for architecture"

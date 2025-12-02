@@ -1,55 +1,70 @@
+---
+name: 'step-04-metrics'
+description: 'Define comprehensive success metrics that include user success, business objectives, and key performance indicators'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-04-metrics.md'
+nextStepFile: '{workflow_path}/steps/step-05-scope.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
+
+# Task References
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+---
+
 # Step 4: Success Metrics Definition
+
+## STEP GOAL:
+
+Define comprehensive success metrics that include user success, business objectives, and key performance indicators through collaborative metric definition aligned with product vision and user value.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
-- 🛑 NEVER generate content without user input
+### Universal Rules:
 
-- 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
-- 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS treat this as collaborative discovery between PM peers
+- 🛑 NEVER generate content without user input
+- 📖 CRITICAL: Read the complete step file before taking any action
+- 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
-- 💬 FOCUS on defining measurable success criteria and business objectives
-- 🎯 COLLABORATIVE metric definition that connects to user value
+
+### Role Reinforcement:
+
+- ✅ You are a product-focused Business Analyst facilitator
+- ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
+- ✅ We engage in collaborative dialogue, not command-response
+- ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
+- ✅ Maintain collaborative discovery tone throughout
+
+### Step-Specific Rules:
+
+- 🎯 Focus only on defining measurable success criteria and business objectives
+- 🚫 FORBIDDEN to create vague metrics that can't be measured or tracked
+- 💬 Approach: Systematic metric definition that connects user value to business success
+- 📋 COLLABORATIVE metric definition that drives actionable decisions
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis before taking any action
-- ⚠️ Present A/P/C menu after generating success metrics content
-- 💾 ONLY save when user chooses C (Continue)
+- 💾 Generate success metrics collaboratively with user
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
-- 🚫 FORBIDDEN to load next step until C is selected
-
-## COLLABORATION MENUS (A/P/C):
-
-This step will generate content and present choices:
-
-- **A (Advanced Elicitation)**: Use discovery protocols to develop deeper success metric insights
-- **P (Party Mode)**: Bring multiple perspectives to validate comprehensive success metrics
-- **C (Continue)**: Save the content to the document and proceed to next step
-
-## PROTOCOL INTEGRATION:
-
-- When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
-- PROTOCOLS always return to this step's A/P/C menu
-- User accepts/rejects protocol changes before proceeding
+- 🚫 FORBIDDEN to proceed without user confirmation through menu
 
 ## CONTEXT BOUNDARIES:
 
-- Current document and frontmatter from previous steps are available
-- Product vision and target users already defined
-- Connect metrics directly to user value and business objectives
-- Focus on measurable, actionable success criteria
+- Available context: Current document and frontmatter from previous steps, product vision and target users already defined
+- Focus: Creating measurable, actionable success criteria that align with product strategy
+- Limits: Focus on metrics that drive decisions and demonstrate real value creation
+- Dependencies: Product vision and user personas from previous steps must be complete
 
-## YOUR TASK:
-
-Define comprehensive success metrics that include user success, business objectives, and key performance indicators.
-
-## SUCCESS METRICS DISCOVERY SEQUENCE:
+## Sequence of Instructions (Do not deviate, skip, or optimize)
 
 ### 1. Begin Success Metrics Discovery
 
-Start with user-centered success definition:
+**Opening Exploration:**
 "Now that we know who {{project_name}} serves and what problem it solves, let's define what success looks like.
 
 **Success Discovery:**
@@ -62,34 +77,32 @@ Let's start with the user perspective."
 
 ### 2. User Success Metrics
 
+**User Success Questions:**
 Define success from the user's perspective:
-
-#### User Success Questions:
 
 - "What outcome are users trying to achieve?"
 - "How will they know the product is working for them?"
 - "What's the moment where they realize this is solving their problem?"
 - "What behaviors indicate users are getting value?"
 
-#### User Success Exploration:
+**User Success Exploration:**
+Guide from vague to specific metrics:
 
-- Guide from vague to specific metrics
 - "Users are happy" → "Users complete [key action] within [timeframe]"
 - "Product is useful" → "Users return [frequency] and use [core feature]"
 - Focus on outcomes and behaviors, not just satisfaction scores
 
 ### 3. Business Objectives
 
+**Business Success Questions:**
 Define business success metrics:
-
-#### Business Success Questions:
 
 - "What does success look like for the business at 3 months? 12 months?"
 - "Are we measuring revenue, user growth, engagement, something else?"
 - "What business metrics would make you say 'this is working'?"
 - "How does this product contribute to broader company goals?"
 
-#### Business Success Categories:
+**Business Success Categories:**
 
 - **Growth Metrics:** User acquisition, market penetration
 - **Engagement Metrics:** Usage patterns, retention, satisfaction
@@ -98,16 +111,15 @@ Define business success metrics:
 
 ### 4. Key Performance Indicators
 
+**KPI Development Process:**
 Define specific, measurable KPIs:
-
-#### KPI Development Process:
 
 - Transform objectives into measurable indicators
 - Ensure each KPI has a clear measurement method
 - Define targets and timeframes where appropriate
 - Include leading indicators that predict success
 
-#### KPI Examples:
+**KPI Examples:**
 
 - User acquisition: "X new users per month"
 - Engagement: "Y% of users complete core journey weekly"
@@ -115,9 +127,8 @@ Define specific, measurable KPIs:
 
 ### 5. Connect Metrics to Strategy
 
+**Strategic Alignment:**
 Ensure metrics align with product vision and user needs:
-
-#### Strategic Alignment:
 
 - Connect each metric back to the product vision
 - Ensure user success metrics drive business success
@@ -126,11 +137,8 @@ Ensure metrics align with product vision and user needs:
 
 ### 6. Generate Success Metrics Content
 
-Prepare the content to append to the document:
-
-#### Content Structure:
-
-When saving to document, append these Level 2 and Level 3 sections:
+**Content to Append:**
+Prepare the following structure for document append:
 
 ```markdown
 ## Success Metrics
@@ -146,93 +154,56 @@ When saving to document, append these Level 2 and Level 3 sections:
 [Key performance indicators content based on conversation, or N/A if not discussed]
 ```
 
-### 7. Present Content and Menu
+### 7. Present MENU OPTIONS
 
-Show the generated metrics content and present choices:
+**Content Presentation:**
 "I've defined success metrics that will help us track whether {{project_name}} is creating real value for users and achieving business objectives.
 
 **Here's what I'll add to the document:**
-
 [Show the complete markdown content from step 6]
 
-**What would you like to do?**
-[A] Advanced Elicitation - Let's dive deeper into these success metrics
-[P] Party Mode - Bring different perspectives to validate comprehensive metrics
-[C] Continue - Save this to the document and move to next step"
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-### 8. Handle Menu Selection
+#### Menu Handling Logic:
 
-#### If 'A' (Advanced Elicitation):
+- IF A: Execute {advancedElicitationTask} with current metrics content to dive deeper into success metric insights
+- IF P: Execute {partyModeWorkflow} to bring different perspectives to validate comprehensive metrics
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4], then only then load, read entire file, then execute {nextStepFile}
+- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
-- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current metrics content
-- Process the enhanced metric insights that come back
-- Ask user: "Accept these improvements to the success metrics? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
+#### EXECUTION RULES:
 
-#### If 'P' (Party Mode):
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+- After other menu items execution, return to this menu with updated content
+- User can chat or ask questions - always respond and then end with display again of the menu options
 
-- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current success metrics
-- Process the collaborative metric validation and additional insights
-- Ask user: "Accept these changes to the success metrics? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
+## CRITICAL STEP COMPLETION NOTE
 
-#### If 'C' (Continue):
+ONLY WHEN [C continue option] is selected and [success metrics finalized and saved to document with frontmatter updated], will you then load and read fully `{nextStepFile}` to execute and begin MVP scope definition.
 
-- Append the final content to `{default_output_file}`
-- Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
-- Load `./step-05-scope.md`
+---
 
-## APPEND TO DOCUMENT:
+## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-When user selects 'C', append the content directly to the document using the structure from step 6.
+### ✅ SUCCESS:
 
-## SUCCESS METRICS:
+- User success metrics that focus on outcomes and behaviors
+- Clear business objectives aligned with product strategy
+- Specific, measurable KPIs with defined targets and timeframes
+- Metrics that connect user value to business success
+- A/P/C menu presented and handled correctly with proper task execution
+- Content properly appended to document when C selected
+- Frontmatter updated with stepsCompleted: [1, 2, 3, 4]
 
-✅ User success metrics that focus on outcomes and behaviors
-✅ Clear business objectives aligned with product strategy
-✅ Specific, measurable KPIs with defined targets
-✅ Metrics that connect user value to business success
-✅ A/P/C menu presented and handled correctly
-✅ Content properly appended to document when C selected
+### ❌ SYSTEM FAILURE:
 
-## FAILURE MODES:
+- Vague success metrics that can't be measured or tracked
+- Business objectives disconnected from user success
+- Too many metrics or missing critical success indicators
+- Metrics that don't drive actionable decisions
+- Not presenting standard A/P/C menu after content generation
+- Appending content without user selecting 'C'
+- Not updating frontmatter properly
 
-❌ Vague success metrics that can't be measured or tracked
-❌ Business objectives disconnected from user success
-❌ Too many metrics or missing critical success indicators
-❌ Metrics that don't drive actionable decisions
-❌ Not presenting A/P/C menu after content generation
-❌ Appending content without user selecting 'C'
-
-❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
-❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
-❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
-
-## METRIC QUALITY CRITERIA:
-
-**Good Metrics:**
-
-- Specific and measurable
-- Connected to user value or business outcomes
-- Actionable - they inform decisions
-- Leading indicators when possible
-- Easy to track and understand
-
-**Avoid:**
-
-- Vanity metrics that look good but don't drive decisions
-- Metrics without clear measurement methods
-- Too many competing priorities
-- Metrics disconnected from product strategy
-
-## OPTIONAL SECTIONS:
-
-Business Objectives and KPIs sections are optional - include them if the discussion yields meaningful, specific objectives and indicators. If not, focus on the core user success metrics section.
-
-## NEXT STEP:
-
-After user selects 'C' and content is saved to document, load `./step-05-scope.md` to define MVP scope.
-
-Remember: Do NOT proceed to step-05 until user explicitly selects 'C' from the A/P/C menu and content is saved!
+**Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

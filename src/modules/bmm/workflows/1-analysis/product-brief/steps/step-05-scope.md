@@ -1,55 +1,70 @@
+---
+name: 'step-05-scope'
+description: 'Define MVP scope with clear boundaries and outline future vision while managing scope creep'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-05-scope.md'
+nextStepFile: '{workflow_path}/steps/step-06-complete.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
+
+# Task References
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+---
+
 # Step 5: MVP Scope Definition
+
+## STEP GOAL:
+
+Define MVP scope with clear boundaries and outline future vision through collaborative scope negotiation that balances ambition with realism.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
-- 🛑 NEVER generate content without user input
+### Universal Rules:
 
-- 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
-- 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS treat this as collaborative discovery between PM peers
+- 🛑 NEVER generate content without user input
+- 📖 CRITICAL: Read the complete step file before taking any action
+- 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
-- 💬 FOCUS on defining minimum viable scope and future vision
-- 🎯 COLLABORATIVE scope negotiation that balances ambition with realism
+
+### Role Reinforcement:
+
+- ✅ You are a product-focused Business Analyst facilitator
+- ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
+- ✅ We engage in collaborative dialogue, not command-response
+- ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
+- ✅ Maintain collaborative discovery tone throughout
+
+### Step-Specific Rules:
+
+- 🎯 Focus only on defining minimum viable scope and future vision
+- 🚫 FORBIDDEN to create MVP scope that's too large or includes non-essential features
+- 💬 Approach: Systematic scope negotiation with clear boundary setting
+- 📋 COLLABORATIVE scope definition that prevents scope creep
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis before taking any action
-- ⚠️ Present A/P/C menu after generating scope content
-- 💾 ONLY save when user chooses C (Continue)
+- 💾 Generate MVP scope collaboratively with user
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` before loading next step
-- 🚫 FORBIDDEN to load next step until C is selected
-
-## COLLABORATION MENUS (A/P/C):
-
-This step will generate content and present choices:
-
-- **A (Advanced Elicitation)**: Use discovery protocols to optimize scope definition
-- **P (Party Mode)**: Bring multiple perspectives to validate MVP scope
-- **C (Continue)**: Save the content to the document and proceed to next step
-
-## PROTOCOL INTEGRATION:
-
-- When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
-- PROTOCOLS always return to this step's A/P/C menu
-- User accepts/rejects protocol changes before proceeding
+- 🚫 FORBIDDEN to proceed without user confirmation through menu
 
 ## CONTEXT BOUNDARIES:
 
-- Current document and frontmatter from previous steps are available
-- Product vision, users, and success metrics already defined
-- Focus on defining what's essential for MVP vs. future enhancements
-- Balance user needs with implementation feasibility
+- Available context: Current document and frontmatter from previous steps, product vision, users, and success metrics already defined
+- Focus: Defining what's essential for MVP vs. future enhancements
+- Limits: Balance user needs with implementation feasibility
+- Dependencies: Product vision, user personas, and success metrics from previous steps must be complete
 
-## YOUR TASK:
-
-Define MVP scope with clear boundaries and outline future vision while managing scope creep.
-
-## MVP SCOPE DISCOVERY SEQUENCE:
+## Sequence of Instructions (Do not deviate, skip, or optimize)
 
 ### 1. Begin Scope Definition
 
-Start with MVP concept exploration:
+**Opening Exploration:**
 "Now that we understand what {{project_name}} does, who it serves, and how we'll measure success, let's define what we need to build first.
 
 **Scope Discovery:**
@@ -62,16 +77,15 @@ Let's start with the MVP mindset: what's the smallest version that creates real 
 
 ### 2. MVP Core Features Definition
 
+**MVP Feature Questions:**
 Define essential features for minimum viable product:
-
-#### MVP Feature Questions:
 
 - "What's the core functionality that must work?"
 - "Which features directly address the main problem we're solving?"
 - "What would users consider 'incomplete' if it was missing?"
 - "What features create the 'aha!' moment we discussed earlier?"
 
-#### MVP Criteria:
+**MVP Criteria:**
 
 - **Solves Core Problem:** Addresses the main pain point effectively
 - **User Value:** Creates meaningful outcome for target users
@@ -80,16 +94,15 @@ Define essential features for minimum viable product:
 
 ### 3. Out of Scope Boundaries
 
+**Out of Scope Exploration:**
 Define what explicitly won't be in MVP:
-
-#### Out of Scope Exploration:
 
 - "What features would be nice to have but aren't essential?"
 - "What functionality could wait for version 2.0?"
 - "What are we intentionally saying 'no' to for now?"
 - "How do we communicate these boundaries to stakeholders?"
 
-#### Boundary Setting:
+**Boundary Setting:**
 
 - Clear communication about what's not included
 - Rationale for deferring certain features
@@ -98,16 +111,15 @@ Define what explicitly won't be in MVP:
 
 ### 4. MVP Success Criteria
 
+**Success Validation:**
 Define what makes the MVP successful:
-
-#### Success Validation:
 
 - "How will we know the MVP is successful?"
 - "What metrics will indicate we should proceed beyond MVP?"
 - "What user feedback signals validate our approach?"
 - "What's the decision point for scaling beyond MVP?"
 
-#### Success Gates:
+**Success Gates:**
 
 - User adoption metrics
 - Problem validation evidence
@@ -116,16 +128,15 @@ Define what makes the MVP successful:
 
 ### 5. Future Vision Exploration
 
+**Vision Questions:**
 Define the longer-term product vision:
-
-#### Vision Questions:
 
 - "If this is wildly successful, what does it become in 2-3 years?"
 - "What capabilities would we add with more resources?"
 - "How does the MVP evolve into the full product vision?"
 - "What markets or user segments could we expand to?"
 
-#### Future Features:
+**Future Features:**
 
 - Post-MVP enhancements that build on core functionality
 - Scale considerations and growth capabilities
@@ -134,11 +145,8 @@ Define the longer-term product vision:
 
 ### 6. Generate MVP Scope Content
 
-Prepare the content to append to the document:
-
-#### Content Structure:
-
-When saving to document, append these Level 2 and Level 3 sections:
+**Content to Append:**
+Prepare the following structure for document append:
 
 ```markdown
 ## MVP Scope
@@ -160,92 +168,56 @@ When saving to document, append these Level 2 and Level 3 sections:
 [Future vision content based on conversation, or N/A if not discussed]
 ```
 
-### 7. Present Content and Menu
+### 7. Present MENU OPTIONS
 
-Show the generated scope content and present choices:
+**Content Presentation:**
 "I've defined the MVP scope for {{project_name}} that balances delivering real value with realistic boundaries. This gives us a clear path forward while keeping our options open for future growth.
 
 **Here's what I'll add to the document:**
-
 [Show the complete markdown content from step 6]
 
-**What would you like to do?**
-[A] Advanced Elicitation - Let's optimize this scope definition
-[P] Party Mode - Bring different perspectives to validate MVP scope
-[C] Continue - Save this to the document and move to final step"
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-### 8. Handle Menu Selection
+#### Menu Handling Logic:
 
-#### If 'A' (Advanced Elicitation):
+- IF A: Execute {advancedElicitationTask} with current scope content to optimize scope definition
+- IF P: Execute {partyModeWorkflow} to bring different perspectives to validate MVP scope
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4, 5], then only then load, read entire file, then execute {nextStepFile}
+- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
-- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current scope content
-- Process the enhanced scope insights that come back
-- Ask user: "Accept these improvements to the MVP scope? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
+#### EXECUTION RULES:
 
-#### If 'P' (Party Mode):
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+- After other menu items execution, return to this menu with updated content
+- User can chat or ask questions - always respond and then end with display again of the menu options
 
-- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current MVP scope
-- Process the collaborative scope validation and prioritization
-- Ask user: "Accept these changes to the MVP scope? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
+## CRITICAL STEP COMPLETION NOTE
 
-#### If 'C' (Continue):
+ONLY WHEN [C continue option] is selected and [MVP scope finalized and saved to document with frontmatter updated], will you then load and read fully `{nextStepFile}` to execute and complete the product brief workflow.
 
-- Append the final content to `{default_output_file}`
-- Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
-- Load `./step-06-complete.md`
+---
 
-## APPEND TO DOCUMENT:
+## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-When user selects 'C', append the content directly to the document using the structure from step 6.
+### ✅ SUCCESS:
 
-## SUCCESS METRICS:
+- MVP features that solve the core problem effectively
+- Clear out-of-scope boundaries that prevent scope creep
+- Success criteria that validate MVP approach and inform go/no-go decisions
+- Future vision that inspires while maintaining focus on MVP
+- A/P/C menu presented and handled correctly with proper task execution
+- Content properly appended to document when C selected
+- Frontmatter updated with stepsCompleted: [1, 2, 3, 4, 5]
 
-✅ MVP features that solve the core problem effectively
-✅ Clear out-of-scope boundaries that prevent scope creep
-✅ Success criteria that validate MVP approach
-✅ Future vision that inspires while maintaining focus
-✅ A/P/C menu presented and handled correctly
-✅ Content properly appended to document when C selected
+### ❌ SYSTEM FAILURE:
 
-## FAILURE MODES:
+- MVP scope too large or includes non-essential features
+- Missing clear boundaries leading to scope creep
+- No success criteria to validate MVP approach
+- Future vision disconnected from MVP foundation
+- Not presenting standard A/P/C menu after content generation
+- Appending content without user selecting 'C'
+- Not updating frontmatter properly
 
-❌ MVP scope too large or includes non-essential features
-❌ Missing clear boundaries leading to scope creep
-❌ No success criteria to validate MVP approach
-❌ Future vision disconnected from MVP foundation
-❌ Not presenting A/P/C menu after content generation
-❌ Appending content without user selecting 'C'
-
-❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
-❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
-❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
-
-## SCOPE NEGOTIATION PRINCIPLES:
-
-**MVP Mindset:**
-
-- Minimum features that create maximum user value
-- Fast learning and iteration capability
-- Clear success criteria for next phase decisions
-- Stakeholder alignment on boundaries
-
-**Scope Creep Prevention:**
-
-- Explicit out-of-scope documentation
-- Rationale for feature deferral
-- Clear roadmap for future additions
-- Regular scope validation against core problem
-
-## OPTIONAL SECTIONS:
-
-Future Vision and MVP Success Criteria sections are optional - include them if the discussion yields meaningful insights about long-term direction and success validation. Core Features and Out of Scope are essential sections.
-
-## NEXT STEP:
-
-After user selects 'C' and content is saved to document, load `./step-06-complete.md` to complete the product brief workflow.
-
-Remember: Do NOT proceed to step-06 until user explicitly selects 'C' from the A/P/C menu and content is saved!
+**Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

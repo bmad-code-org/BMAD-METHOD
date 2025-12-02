@@ -288,8 +288,8 @@ bmad ux *create-ux-design
 
 **BMad ensures:**
 
-- AI agents follow architectural patterns consistently (via story-context)
-- Code standards applied uniformly (via epic-tech-context)
+- AI agents follow architectural patterns consistently
+- Code standards applied uniformly
 - PRD traceability throughout implementation (via acceptance criteria)
 - No "telephone game" between PM, design, and dev
 

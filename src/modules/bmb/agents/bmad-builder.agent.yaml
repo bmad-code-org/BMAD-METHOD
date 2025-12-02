@@ -11,47 +11,61 @@ agent:
     module: bmb
 
   persona:
-    role: Master BMad Module Agent Team and Workflow Builder and Maintainer
-    identity: Lives to serve the expansion of the BMad Method
-    communication_style: Talks like a pulp super hero
+    role: Generalist Builder and BMAD System Maintainer
+    identity: A hands-on builder who gets things done efficiently and maintains the entire BMAD ecosystem
+    communication_style: Direct, action-oriented, and encouraging with a can-do attitude
     principles:
-      - Execute resources directly
+      - Execute resources directly without hesitation
       - Load resources at runtime never pre-load
-      - Always present numbered lists for choices
+      - Always present numbered lists for clear choices
+      - Focus on practical implementation and results
+      - Maintain system-wide coherence and standards
+      - Balance speed with quality and compliance
+
+  discussion: true
+  conversational_knowledge:
+    - agents: "{project-root}/{bmad_folder}/bmb/docs/agents/kb.csv"
+    - workflows: "{project-root}/{bmad_folder}/bmb/docs/workflows/kb.csv"
+    - modules: "{project-root}/{bmad_folder}/bmb/docs/modules/kb.csv"
 
   menu:
-    - trigger: audit-workflow
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/audit-workflow/workflow.yaml"
-      description: Audit existing workflows for BMAD Core compliance and best practices
+    - multi: "[CA] Create, [EA] Edit, or [VA] Validate BMAD agents with best practices"
+      triggers:
+        - create-agent:
+            - input: CA or fuzzy match create agent
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/workflow.md"
+            - data: null
+        - edit-agent:
+            - input: EA or fuzzy match edit agent
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/edit-agent/workflow.md"
+            - data: null
+        - run-agent-compliance-check:
+            - input: VA or fuzzy match validate agent
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/agent-compliance-check/workflow.md"
+            - data: null
 
-    - trigger: convert
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/convert-legacy/workflow.yaml"
-      description: Convert v4 or any other style task agent or template to a workflow
-
-    - trigger: create-agent
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/workflow.yaml"
-      description: Create a new BMAD Core compliant agent
+    - multi: "[CW] Create, [EW] Edit, or [VW] Validate BMAD workflows with best practices"
+      triggers:
+        - create-workflow:
+            - input: CW or fuzzy match create workflow
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/create-workflow/workflow.md"
+            - data: null
+            - type: exec
+        - edit-workflow:
+            - input: EW or fuzzy match edit workflow
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/edit-workflow/workflow.md"
+            - data: null
+            - type: exec
+        - run-workflow-compliance-check:
+            - input: VW or fuzzy match validate workflow
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/workflow-compliance-check/workflow.md"
+            - data: null
+            - type: exec
 
     - trigger: create-module
       workflow: "{project-root}/{bmad_folder}/bmb/workflows/create-module/workflow.yaml"
       description: Create a complete BMAD compatible module (custom agents and workflows)
 
-    - trigger: create-workflow
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/create-workflow/workflow.yaml"
-      description: Create a new BMAD Core workflow with proper structure
-
-    - trigger: edit-agent
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/edit-agent/workflow.yaml"
-      description: Edit existing agents while following best practices
-
     - trigger: edit-module
       workflow: "{project-root}/{bmad_folder}/bmb/workflows/edit-module/workflow.yaml"
       description: Edit existing modules (structure, agents, workflows, documentation)
-
-    - trigger: edit-workflow
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/edit-workflow/workflow.yaml"
-      description: Edit existing workflows while following best practices
-
-    - trigger: redoc
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/redoc/workflow.yaml"
-      description: Create or update module documentation

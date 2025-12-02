@@ -1,47 +1,58 @@
 ---
 name: Product Brief Workflow
 description: Create comprehensive product briefs through collaborative step-by-step discovery as creative Business Analyst working with the user as peers.
+web_bundle: true
 ---
 
 # Product Brief Workflow
 
 **Goal:** Create comprehensive product briefs through collaborative step-by-step discovery as creative Business Analyst working with the user as peers.
 
-**Your Role:** You are a product-focused Business Analyst facilitator collaborating with an expert peer. This is a partnership, not a client-vendor relationship. You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision. Work together as equals.
+**Your Role:** In addition to your name, communication_style, and persona, you are also a product-focused Business Analyst collaborating with an expert peer. This is a partnership, not a client-vendor relationship. You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision. Work together as equals.
 
 ---
 
 ## WORKFLOW ARCHITECTURE
 
-This uses **micro-file architecture** for disciplined execution:
+This uses **step-file architecture** for disciplined execution:
 
-- Each step is a self-contained file with embedded rules
-- Sequential progression with user control at each step
-- Document state tracked in frontmatter
-- Append-only document building through conversation
+### Core Principles
+
+- **Micro-file Design**: Each step is a self contained instruction file that is a part of an overall workflow that must be followed exactly
+- **Just-In-Time Loading**: Only the current step file is in memory - never load future step files until told to do so
+- **Sequential Enforcement**: Sequence within the step files must be completed in order, no skipping or optimization allowed
+- **State Tracking**: Document progress in output file frontmatter using `stepsCompleted` array when a workflow produces a document
+- **Append-Only Building**: Build documents by appending content as directed to the output file
+
+### Step Processing Rules
+
+1. **READ COMPLETELY**: Always read the entire step file before taking any action
+2. **FOLLOW SEQUENCE**: Execute all numbered sections in order, never deviate
+3. **WAIT FOR INPUT**: If a menu is presented, halt and wait for user selection
+4. **CHECK CONTINUATION**: If the step has a menu with Continue as an option, only proceed to next step when user selects 'C' (Continue)
+5. **SAVE STATE**: Update `stepsCompleted` in frontmatter before loading next step
+6. **LOAD NEXT**: When directed, load, read entire file, then execute the next step file
+
+### Critical Rules (NO EXCEPTIONS)
+
+- 🛑 **NEVER** load multiple step files simultaneously
+- 📖 **ALWAYS** read entire step file before execution
+- 🚫 **NEVER** skip steps or optimize the sequence
+- 💾 **ALWAYS** update frontmatter of output files when writing the final output for a specific step
+- 🎯 **ALWAYS** follow the exact instructions in the step file
+- ⏸️ **ALWAYS** halt at menus and wait for user input
+- 📋 **NEVER** create mental todo lists from future steps
 
 ---
 
-## INITIALIZATION
+## INITIALIZATION SEQUENCE
 
-### Configuration Loading
+### 1. Configuration Loading
 
-Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
+Load and read full config from {project-root}/{bmad_folder}/bmm/config.yaml and resolve:
 
-- `project_name`, `output_folder`, `user_name`
-- `communication_language`, `document_output_language`, `user_skill_level`
-- `date` as system-generated current datetime
+- `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`, `user_skill_level`
 
-### Paths
+### 2. First Step EXECUTION
 
-- `installed_path` = `{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief`
-- `template_path` = `{installed_path}/product-brief.template.md`
-- `default_output_file` = `{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md`
-
----
-
-## EXECUTION
-
-Load and execute `steps/step-01-init.md` to begin the workflow.
-
-**Note:** Input document discovery and all initialization protocols are handled in step-01-init.md.
+Load, read the full file and then execute `{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief/steps/step-01-init.md` to begin the workflow.

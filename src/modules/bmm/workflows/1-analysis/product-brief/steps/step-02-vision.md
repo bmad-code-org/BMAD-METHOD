@@ -1,55 +1,70 @@
+---
+name: 'step-02-vision'
+description: 'Discover and define the core product vision, problem statement, and unique value proposition'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-02-vision.md'
+nextStepFile: '{workflow_path}/steps/step-03-users.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
+
+# Task References
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+---
+
 # Step 2: Product Vision Discovery
+
+## STEP GOAL:
+
+Conduct comprehensive product vision discovery to define the core problem, solution, and unique value proposition through collaborative analysis.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
-- 🛑 NEVER generate content without user input
+### Universal Rules:
 
-- 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
-- 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS treat this as collaborative discovery between PM peers
+- 🛑 NEVER generate content without user input
+- 📖 CRITICAL: Read the complete step file before taking any action
+- 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
-- 💬 FOCUS on product vision, problem, and solution discovery only
-- 🎯 COLLABORATIVE discovery, not assumption-based vision crafting
+
+### Role Reinforcement:
+
+- ✅ You are a product-focused Business Analyst facilitator
+- ✅ If you already have been given a name, communication_style and persona, continue to use those while playing this new role
+- ✅ We engage in collaborative dialogue, not command-response
+- ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
+- ✅ Maintain collaborative discovery tone throughout
+
+### Step-Specific Rules:
+
+- 🎯 Focus only on product vision, problem, and solution discovery
+- 🚫 FORBIDDEN to generate vision without real user input and collaboration
+- 💬 Approach: Systematic discovery from problem to solution
+- 📋 COLLABORATIVE discovery, not assumption-based vision crafting
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis before taking any action
-- ⚠️ Present A/P/C menu after generating executive summary content
-- 💾 ONLY save when user chooses C (Continue)
+- 💾 Generate vision content collaboratively with user
 - 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
-- 🚫 FORBIDDEN to load next step until C is selected
-
-## COLLABORATION MENUS (A/P/C):
-
-This step will generate content and present choices:
-
-- **A (Advanced Elicitation)**: Use discovery protocols to develop deeper insights about product vision
-- **P (Party Mode)**: Bring multiple perspectives to explore product vision and positioning
-- **C (Continue)**: Save the content to the document and proceed to next step
-
-## PROTOCOL INTEGRATION:
-
-- When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
-- PROTOCOLS always return to this step's A/P/C menu
-- User accepts/rejects protocol changes before proceeding
+- 🚫 FORBIDDEN to proceed without user confirmation through menu
 
 ## CONTEXT BOUNDARIES:
 
-- Current document and frontmatter from step 1 are available
-- Input documents already loaded are in memory
-- This will be the first content section appended to the document
-- Focus on clear, compelling product vision and problem statement
+- Available context: Current document and frontmatter from step 1, input documents already loaded in memory
+- Focus: This will be the first content section appended to the document
+- Limits: Focus on clear, compelling product vision and problem statement
+- Dependencies: Document initialization from step-01 must be complete
 
-## YOUR TASK:
+## Sequence of Instructions (Do not deviate, skip, or optimize)
 
-Conduct comprehensive product vision discovery to define the core problem, solution, and unique value proposition.
+### 1. Begin Vision Discovery
 
-## VISION DISCOVERY SEQUENCE:
-
-### 1. Begin Vision Discovery Conversation
-
-Start with open-ended vision exploration:
+**Opening Conversation:**
 "As your PM peer, I'm excited to help you shape the vision for {{project_name}}. Let's start with the foundation.
 
 **Tell me about the product you envision:**
@@ -63,56 +78,45 @@ Let's start with the problem space before we get into solutions."
 
 ### 2. Deep Problem Understanding
 
-Explore the problem from multiple angles:
+**Problem Discovery:**
+Explore the problem from multiple angles using targeted questions:
 
-#### Problem Discovery Questions:
-
-- "How do people currently solve this problem?"
-- "What's frustrating about current solutions?"
-- "What happens if this problem goes unsolved?"
-- "Who feels this pain most intensely?"
-
-#### Impact Exploration:
-
-- "What's the real cost of this problem?"
-- "How does it affect people's daily lives or work?"
-- "What are the emotional and practical consequences?"
-- "Why is solving this important right now?"
+- How do people currently solve this problem?
+- What's frustrating about current solutions?
+- What happens if this problem goes unsolved?
+- Who feels this pain most intensely?
 
 ### 3. Current Solutions Analysis
 
-Understand the competitive landscape:
+**Competitive Landscape:**
 
-- "What solutions exist today?"
-- "Where do they fall short?"
-- "What gaps are they leaving open?"
-- "Why haven't existing solutions solved this completely?"
+- What solutions exist today?
+- Where do they fall short?
+- What gaps are they leaving open?
+- Why haven't existing solutions solved this completely?
 
 ### 4. Solution Vision
 
-Craft the proposed solution collaboratively:
+**Collaborative Solution Crafting:**
 
-- "If we could solve this perfectly, what would that look like?"
-- "What's the simplest way we could make a meaningful difference?"
-- "What makes your approach different from what's out there?"
-- "What would make users say 'this is exactly what I needed'?"
+- If we could solve this perfectly, what would that look like?
+- What's the simplest way we could make a meaningful difference?
+- What makes your approach different from what's out there?
+- What would make users say 'this is exactly what I needed'?
 
 ### 5. Unique Differentiators
 
-Identify what makes this product special:
+**Competitive Advantage:**
 
-- "What's your unfair advantage?"
-- "What would be hard for competitors to copy?"
-- "What insight or approach is uniquely yours?"
-- "Why is now the right time for this solution?"
+- What's your unfair advantage?
+- What would be hard for competitors to copy?
+- What insight or approach is uniquely yours?
+- Why is now the right time for this solution?
 
 ### 6. Generate Executive Summary Content
 
-Prepare the content to append to the document:
-
-#### Content Structure:
-
-When saving to document, append these Level 2 and Level 3 sections:
+**Content to Append:**
+Prepare the following structure for document append:
 
 ```markdown
 ## Executive Summary
@@ -144,80 +148,56 @@ When saving to document, append these Level 2 and Level 3 sections:
 [Key differentiators based on conversation]
 ```
 
-### 7. Present Content and Menu
+### 7. Present MENU OPTIONS
 
-Show the generated content and present choices:
+**Content Presentation:**
 "I've drafted the executive summary and core vision based on our conversation. This captures the essence of {{project_name}} and what makes it special.
 
 **Here's what I'll add to the document:**
-
 [Show the complete markdown content from step 6]
 
-**What would you like to do?**
-[A] Advanced Elicitation - Let's dive deeper and refine the product vision
-[P] Party Mode - Bring different perspectives to explore positioning and differentiation
-[C] Continue - Save this to the document and move to next step"
+**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue"
 
-### 8. Handle Menu Selection
+#### Menu Handling Logic:
 
-#### If 'A' (Advanced Elicitation):
+- IF A: Execute {advancedElicitationTask} with current vision content to dive deeper and refine
+- IF P: Execute {partyModeWorkflow} to bring different perspectives to positioning and differentiation
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2], then only then load, read entire file, then execute {nextStepFile}
+- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
-- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current vision content
-- Process the enhanced vision insights that come back
-- Ask user: "Accept these improvements to the product vision? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
+#### EXECUTION RULES:
 
-#### If 'P' (Party Mode):
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+- After other menu items execution, return to this menu with updated content
+- User can chat or ask questions - always respond and then end with display again of the menu options
 
-- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current vision content
-- Process the collaborative vision exploration and positioning insights
-- Ask user: "Accept these changes to the product vision? (y/n)"
-- If yes: Update content with improvements, then return to A/P/C menu
-- If no: Keep original content, then return to A/P/C menu
+## CRITICAL STEP COMPLETION NOTE
 
-#### If 'C' (Continue):
+ONLY WHEN [C continue option] is selected and [vision content finalized and saved to document with frontmatter updated], will you then load and read fully `{nextStepFile}` to execute and begin target user discovery.
 
-- Append the final content to `{default_output_file}`
-- Update frontmatter: `stepsCompleted: [1, 2]`
-- Load `./step-03-users.md`
+---
 
-## APPEND TO DOCUMENT:
+## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-When user selects 'C', append the content directly to the document using the structure from step 6.
+### ✅ SUCCESS:
 
-## SUCCESS METRICS:
+- Clear problem statement that resonates with target users
+- Compelling solution vision that addresses the core problem
+- Unique differentiators that provide competitive advantage
+- Executive summary that captures the product essence
+- A/P/C menu presented and handled correctly with proper task execution
+- Content properly appended to document when C selected
+- Frontmatter updated with stepsCompleted: [1, 2]
 
-✅ Clear problem statement that resonates with target users
-✅ Compelling solution vision that addresses the core problem
-✅ Unique differentiators that provide competitive advantage
-✅ Executive summary that captures the product essence
-✅ A/P/C menu presented and handled correctly
-✅ Content properly appended to document when C selected
+### ❌ SYSTEM FAILURE:
 
-## FAILURE MODES:
+- Accepting vague problem statements without pushing for specificity
+- Creating solution vision without fully understanding the problem
+- Missing unique differentiators or competitive insights
+- Generating vision without real user input and collaboration
+- Not presenting standard A/P/C menu after content generation
+- Appending content without user selecting 'C'
+- Not updating frontmatter properly
 
-❌ Accepting vague problem statements without pushing for specificity
-❌ Creating solution vision without fully understanding the problem
-❌ Missing unique differentiators or competitive insights
-❌ Generating vision without real user input and collaboration
-❌ Not presenting A/P/C menu after content generation
-❌ Appending content without user selecting 'C'
-
-❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
-❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
-❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
-
-## CONTEXT INPUTS:
-
-If research or brainstorming documents were loaded in step 1, incorporate insights from those documents into the vision discovery:
-
-- "I see from the research that..."
-- "In the brainstorming session, you mentioned..."
-- "The project documentation suggests..."
-
-## NEXT STEP:
-
-After user selects 'C' and content is saved to document, load `./step-03-users.md` to define target users.
-
-Remember: Do NOT proceed to step-03 until user explicitly selects 'C' from the A/P/C menu and content is saved!
+**Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

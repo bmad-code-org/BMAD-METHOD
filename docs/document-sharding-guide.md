@@ -190,7 +190,7 @@ Workflows load only needed sections:
 
 - Needs ALL epics to build complete status
 
-**epic-tech-context, create-story, story-context, code-review** (Selective):
+**create-story, code-review** (Selective):
 
 ```
 Working on Epic 3, Story 2:
