@@ -108,7 +108,8 @@ Stories move through these states in the sprint status file:
 
 **As Needed:**
 
-- Run `workflow-status` anytime to check progress
+- Run `sprint-status` anytime in Phase 4 to inspect sprint-status.yaml and get the next implementation command
+- Run `workflow-status` for cross-phase routing and project-level paths
 - Run `correct-course` if significant changes needed
 
 ---
@@ -155,7 +156,7 @@ PRD (PM) → Architecture (Architect)
 ## Troubleshooting
 
 **Q: Which workflow should I run next?**
-A: Run `workflow-status` - it reads the sprint status file and tells you exactly what to do.
+A: During implementation run `sprint-status` (fast check against sprint-status.yaml). For cross-phase routing run `workflow-status`.
 
 **Q: Story needs significant changes mid-implementation?**
 A: Run `correct-course` to analyze impact and route appropriately.
