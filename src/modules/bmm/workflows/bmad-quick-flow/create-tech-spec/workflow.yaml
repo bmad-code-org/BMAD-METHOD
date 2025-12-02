@@ -19,7 +19,7 @@ instructions: "{installed_path}/instructions.md"
 
 # Related workflows
 quick_dev_workflow: "{project-root}/{bmad_folder}/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml"
-party_mode_workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+party_mode_exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
 advanced_elicitation: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
 
 standalone: true

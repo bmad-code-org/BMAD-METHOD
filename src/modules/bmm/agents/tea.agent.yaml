@@ -61,7 +61,7 @@ agent:
       description: Review test quality using comprehensive knowledge base and best practices
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
       description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation

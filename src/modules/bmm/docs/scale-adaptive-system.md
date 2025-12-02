@@ -32,11 +32,11 @@ BMad Method adapts to three distinct planning tracks:
 
 ### Three Tracks at a Glance
 
-| Track                 | Planning Depth        | Time Investment | Best For                                   |
-| --------------------- | --------------------- | --------------- | ------------------------------------------ |
-| **Quick Flow**        | Tech-spec only        | Hours to 1 day  | Simple features, bug fixes, clear scope    |
-| **BMad Method**       | PRD + Arch + UX       | 1-3 days        | Products, platforms, complex features      |
-| **Enterprise Method** | Method + Test/Sec/Ops | 3-7 days        | Enterprise needs, compliance, multi-tenant |
+| Track                 | Planning Depth        | Best For                                   |
+| --------------------- | --------------------- | ------------------------------------------ |
+| **Quick Flow**        | Tech-spec only        | Simple features, bug fixes, clear scope    |
+| **BMad Method**       | PRD + Arch + UX       | Products, platforms, complex features      |
+| **Enterprise Method** | Method + Test/Sec/Ops | Enterprise needs, compliance, multi-tenant |
 
 ### Decision Tree
 

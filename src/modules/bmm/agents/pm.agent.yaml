@@ -19,25 +19,29 @@ agent:
       - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"
+      description: Get workflow status or initialize a workflow if not already done (optional)
+
     - trigger: create-prd
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.yaml"
-      description: Create Product Requirements Document (PRD)
+      exec: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.md"
+      description: Create Product Requirements Document (PRD) (Required for BMad Method flow)
 
     - trigger: validate-prd
       validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.yaml"
-      description: Validate PRD
+      description: Validate PRD (Highly Recommended, use fresh context and different LLM for best results)
 
     - trigger: create-epics-and-stories
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.yaml"
-      description: Create Epics and User Stories from PRD (Its recommended to not do this until the architecture is complete)
+      description: Create Epics and User Stories from PRD (Required for BMad Method flow AFTER the Architecture is completed)
 
     - trigger: correct-course
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml"
-      description: Course Correction Analysis
+      description: Course Correction Analysis (optional during implementation when things go off track)
       ide-only: true
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
       description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation

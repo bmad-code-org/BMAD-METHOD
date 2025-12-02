@@ -67,7 +67,7 @@ agent:
       description: (Optional) Navigate significant changes during game dev sprint
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
       description: Consult with other expert agents from the party
 
     - trigger: advanced-elicitation

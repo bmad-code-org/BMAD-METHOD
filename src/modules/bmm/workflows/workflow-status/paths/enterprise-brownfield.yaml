@@ -28,6 +28,7 @@ phases:
         optional: true
         agent: "analyst"
         command: "brainstorm-project"
+        note: "Uses core brainstorming workflow with project context template"
         included_by: "user_choice"
 
       - id: "research"

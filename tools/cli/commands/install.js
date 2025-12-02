@@ -9,8 +9,8 @@ const ui = new UI();
 module.exports = {
   command: 'install',
   description: 'Install BMAD Core agents and tools',
-  options: [],
-  action: async () => {
+  options: [['--skip-cleanup', 'Skip automatic cleanup of legacy files']],
+  action: async (options) => {
     try {
       const config = await ui.promptInstall();
 
@@ -44,6 +44,11 @@ module.exports = {
         config._requestedReinstall = true;
       }
 
+      // Add skip cleanup flag if option provided
+      if (options && options.skipCleanup) {
+        config.skipCleanup = true;
+      }
+
       // Regular install/update flow
       const result = await installer.install(config);
 
@@ -58,7 +63,7 @@ module.exports = {
         console.log(chalk.green('\n✨ Installation complete!'));
         console.log(chalk.cyan('BMAD Core and Selected Modules have been installed to:'), chalk.bold(result.path));
         console.log(chalk.yellow('\nThank you for helping test the early release version of the new BMad Core and BMad Method!'));
-        console.log(chalk.cyan('Stable Beta coming soon - please read the full readme.md and linked documentation to get started!'));
+        console.log(chalk.cyan('Stable Beta coming soon - please read the full README.md and linked documentation to get started!'));
 
         // Run AgentVibes installer if needed
         if (result.needsAgentVibes) {

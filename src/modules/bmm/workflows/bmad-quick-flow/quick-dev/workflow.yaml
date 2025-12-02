@@ -22,7 +22,7 @@ checklist: "{installed_path}/checklist.md"
 
 # Related workflows
 create_tech_spec_workflow: "{project-root}/{bmad_folder}/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml"
-party_mode_workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+party_mode_exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
 advanced_elicitation: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
 
 standalone: true

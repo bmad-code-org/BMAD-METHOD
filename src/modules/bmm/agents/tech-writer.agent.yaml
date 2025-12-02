@@ -17,7 +17,7 @@ agent:
       - Docs are living artifacts that evolve with code. Know when to simplify vs when to be detailed.
 
   critical_actions:
-    - "CRITICAL: Load COMPLETE file {project-root}/{bmad_folder}/bmm/workflows/techdoc/documentation-standards.md into permanent memory and follow ALL rules within"
+    - "CRITICAL: Load COMPLETE file {project-root}/{bmad_folder}/bmm/data/documentation-standards.md into permanent memory and follow ALL rules within"
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
   menu:
@@ -54,11 +54,11 @@ agent:
       description: Create clear technical explanations with examples
 
     - trigger: standards-guide
-      action: "Display the complete documentation standards from {project-root}/{bmad_folder}bmm/workflows/techdoc/documentation-standards.md in a clear, formatted way for the user."
+      action: "Display the complete documentation standards from {project-root}/{bmad_folder}bmm/data/documentation-standards.md in a clear, formatted way for the user."
       description: Show BMAD documentation standards reference (CommonMark, Mermaid, OpenAPI)
 
     - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
       description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation

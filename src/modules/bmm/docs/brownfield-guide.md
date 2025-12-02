@@ -89,7 +89,7 @@ You: "Yes"
 
 ---
 
-## Phase 0: Documentation (Critical First Step)
+## Documentation: Critical First Step
 
 🚨 **For brownfield projects: Always ensure adequate AI-usable documentation before planning**
 
@@ -159,7 +159,7 @@ If you have documentation but files are huge (>500 lines, 10+ level 2 sections):
 | **A**    | No documentation                           | `document-project`         | Only option - generate from scratch     |
 | **B**    | Docs exist but massive/outdated/incomplete | `document-project`         | Safer to regenerate than trust bad docs |
 | **C**    | Good docs but no structure                 | `shard-doc` → `index-docs` | Structure existing content for AI       |
-| **D**    | Confirmed AI-optimized docs with index.md  | Skip Phase 0               | Rare - only if you're 100% confident    |
+| **D**    | Confirmed AI-optimized docs with index.md  | Skip Documentation         | Rare - only if you're 100% confident    |
 
 ### Scenario A: No Documentation (Most Common)
 
@@ -231,7 +231,7 @@ If you have **good, current documentation** but it's in massive files:
 
 ### Scenario D: Confirmed AI-Optimized Documentation (Rare)
 
-**Action: Skip Phase 0**
+**Action: Skip Documentation**
 
 Only skip if ALL conditions met:
 
@@ -320,18 +320,14 @@ See the [Workflows section in BMM README](../README.md) for details.
 ```mermaid
 flowchart TD
     SPRINT[sprint-planning<br/>Initialize tracking]
-    EPIC[epic-tech-context<br/>Per epic]
     CREATE[create-story]
-    CONTEXT[story-context]
     DEV[dev-story]
     REVIEW[code-review]
     CHECK{More stories?}
     RETRO[retrospective<br/>Per epic]
 
-    SPRINT --> EPIC
-    EPIC --> CREATE
-    CREATE --> CONTEXT
-    CONTEXT --> DEV
+    SPRINT --> CREATE
+    CREATE --> DEV
     DEV --> REVIEW
     REVIEW --> CHECK
     CHECK -->|Yes| CREATE
@@ -343,7 +339,7 @@ flowchart TD
 
 **Status Progression:**
 
-- Epic: `backlog → contexted`
+- Epic: `backlog → in-progress → done`
 - Story: `backlog → drafted → ready-for-dev → in-progress → review → done`
 
 **Brownfield-Specific Implementation Tips:**
@@ -351,7 +347,6 @@ flowchart TD
 1. **Respect existing patterns** - Follow established conventions
 2. **Test integration thoroughly** - Validate interactions with existing code
 3. **Use feature flags** - Enable gradual rollout
-4. **Context injection matters** - epic-tech-context and story-context reference existing patterns
 
 ---
 
@@ -405,13 +400,7 @@ Document in tech-spec/architecture:
 - Context epics before drafting stories
 - Update `sprint-status.yaml` as work progresses
 
-### 9. Leverage Context Injection
-
-- Run `epic-tech-context` before story drafting
-- Always create `story-context` before implementation
-- These reference existing patterns for consistency
-
-### 10. Learn Continuously
+### 9. Learn Continuously
 
 - Run `retrospective` after each epic
 - Incorporate learnings into next stories
@@ -479,7 +468,7 @@ Document in tech-spec/architecture:
 4. **Solution:** Load Architect → `create-architecture` → `create-epics-and-stories` → `implementation-readiness`
 5. **Implement:** Sprint-based (10-15 stories)
    - Load SM → `sprint-planning`
-   - Per epic: `epic-tech-context` → stories
+   - Load SM → `create-story` per story
    - Load DEV → `dev-story` per story
 6. **Review:** Per story completion
 
@@ -619,7 +608,7 @@ Document in tech-spec/architecture:
 ### Commands by Phase
 
 ```bash
-# Phase 0: Documentation (If Needed)
+# Documentation (If Needed)
 # Analyst agent:
 document-project        # Create comprehensive docs (10-30min)
 # OR load index-docs task for existing docs (2-5min)
@@ -637,16 +626,14 @@ prd                     # BMad Method/Enterprise tracks
 
 # Phase 3: Solutioning (BMad Method/Enterprise)
 # Architect agent:
-create-architecture          # Extend architecture
+architecture                 # Create/extend architecture
 create-epics-and-stories     # Create epics and stories (after architecture)
 implementation-readiness       # Final validation
 
 # Phase 4: Implementation (All Tracks)
 # SM agent:
 sprint-planning              # Initialize tracking
-epic-tech-context            # Epic context
-create-story                 # Draft story
-story-context                # Story context
+create-story                 # Create story
 
 # DEV agent:
 dev-story                    # Implement
@@ -659,14 +646,14 @@ correct-course               # If issues
 
 ### Key Files
 
-**Phase 0 Output:**
+**Documentation Output:**
 
 - `docs/index.md` - **Master AI entry point (REQUIRED)**
 - `docs/project-overview.md`
 - `docs/architecture.md`
 - `docs/source-tree-analysis.md`
 
-**Phase 1-3 Tracking:**
+**Phase 1-4 Tracking:**
 
 - `docs/bmm-workflow-status.yaml` - Progress tracker
 
@@ -682,6 +669,7 @@ correct-course               # If issues
 **Phase 3 Architecture:**
 
 - `docs/architecture.md` (BMad Method/Enterprise tracks)
+- `docs/epics.md` + epic folders (from create-epics-and-stories)
 
 **Phase 4 Implementation:**
 
