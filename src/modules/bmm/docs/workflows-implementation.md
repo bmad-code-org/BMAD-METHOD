@@ -156,7 +156,7 @@ PRD (PM) → Architecture (Architect)
 ## Troubleshooting
 
 **Q: Which workflow should I run next?**
-A: During implementation run `sprint-status` (fast check against sprint-status.yaml). For cross-phase routing run `workflow-status`.
+A: Run `workflow-status` - it reads the sprint status file and tells you exactly what to do. During implementation (Phase 4) run `sprint-status` (fast check against sprint-status.yaml).
 
 **Q: Story needs significant changes mid-implementation?**
 A: Run `correct-course` to analyze impact and route appropriately.
