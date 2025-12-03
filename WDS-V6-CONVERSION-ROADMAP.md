@@ -3,8 +3,8 @@
 **Document Purpose:** Complete record of all decisions, context, and progress for converting Whiteport Design Studio to BMad Method v6 format. This document allows continuation of work if the conversation is lost.
 
 **Created:** December 2, 2025  
-**Last Updated:** December 2, 2025  
-**Status:** In Progress - Foundation Phase
+**Last Updated:** December 3, 2025  
+**Status:** In Progress - Examples Phase
 
 ---
 
@@ -411,7 +411,58 @@ What tends to feel less collaborative:
 
 ---
 
-## 7. Development Order
+## 6.5 Key Methodology Refinements (Dec 3, 2025)
+
+### Phase Naming Convention
+Each phase title now includes the artifact in parentheses:
+- Phase 1: Product Exploration (Product Brief)
+- Phase 2: Trigger Mapping (Trigger Map)
+- Phase 3: PRD Platform (Technical Foundation)
+- Phase 4: UX Design (UX-Sketches & Usage Scenarios)
+- Phase 5: Design System (Component Library)
+- Phase 6: PRD Finalization (Complete PRD)
+
+### Phase 2: Feature Impact Analysis
+Added a scoring system (Beta) for prioritizing features:
+- Positive drivers: +3/+2/+1 by priority
+- Negative drivers: +4/+3/+2 (higher due to loss aversion)
+- Bonuses for multi-group and multi-driver features
+- Outputs ranked feature list for MVP planning
+
+### Phase 3: PRD Platform
+Renamed from "Requirements" to emphasize:
+- Technical foundation work (platform, infrastructure)
+- Proofs of concept for risky features
+- Experimental endpoints that can start before design
+- Parallel with design work, not sequential
+
+### Phase 4: Step 4E - PRD Update
+Added step 4E after each page design:
+- Extract functional requirements discovered during design
+- Add to PRD with page references
+- PRD grows incrementally throughout Phase 4
+- Creates traceability: page → feature → epic
+
+### Phase 5: Optional & Parallel
+Clarified that Design System is:
+- **Optional** - chosen during project setup
+- **Parallel** - builds alongside Phase 4, not after
+- Includes unified naming for Figma/Code integration
+- Component library selection guidance added
+
+### Phase 6: PRD Finalization
+Renamed from "Dev Integration" to emphasize:
+- Compiling all functional requirements from Phase 4
+- Organizing by epic/feature area
+- Continuous handoff model (not single event)
+- First handoff at MVP, then ongoing updates
+
+### Removed from Guides
+- Duration estimates (project-dependent)
+- Inline code examples (belong in templates/examples)
+- Negative language ("expensive problems", "kills projects")
+
+---
 
 ### 7.1 Chosen Approach: Methodology-First
 
@@ -432,13 +483,24 @@ What tends to feel less collaborative:
 #### Phase 1: Define the Methodology
 | Order | Component | File | Status |
 |-------|-----------|------|--------|
-| 1 | Method Overview | `docs/method/wds-method-guide.md` | ✅ CREATED |
-| 2 | Phase 1 Guide | `docs/method/phase-1-exploration-guide.md` | ✅ CREATED |
-| 3 | Phase 2 Guide | `docs/method/phase-2-research-guide.md` | ✅ CREATED |
-| 4 | Phase 3 Guide | `docs/method/phase-3-requirements-guide.md` | ✅ CREATED |
-| 5 | Phase 4 Guide | `docs/method/phase-4-ux-design-guide.md` | ✅ CREATED |
-| 6 | Phase 5 Guide | `docs/method/phase-5-design-system-guide.md` | ✅ CREATED |
-| 7 | Phase 6 Guide | `docs/method/phase-6-integration-guide.md` | ✅ CREATED |
+| 1 | Method Overview | `docs/method/wds-method-guide.md` | ✅ COMPLETE |
+| 2 | Phase 1 Guide | `docs/method/phase-1-Product-exploration-guide.md` | ✅ COMPLETE |
+| 3 | Phase 2 Guide | `docs/method/phase-2-trigger-mapping-guide.md` | ✅ COMPLETE |
+| 4 | Phase 3 Guide | `docs/method/phase-3-PRD-Platform-guide.md` | ✅ COMPLETE |
+| 5 | Phase 4 Guide | `docs/method/phase-4-ux-design-guide.md` | ✅ COMPLETE |
+| 6 | Phase 5 Guide | `docs/method/phase-5-design-system-guide.md` | ✅ COMPLETE |
+| 7 | Phase 6 Guide | `docs/method/phase-6-PRD-Finalization-guide.md` | ✅ COMPLETE |
+
+**Methodology Phase Complete!** All phase guides refined with:
+- Positive language throughout (no "expensive problems", "kills projects", etc.)
+- Phase titles with artifacts in parentheses
+- Removed duration estimates (project-dependent)
+- Feature Impact Analysis with scoring system (Phase 2)
+- Step 4E: PRD Update during design (Phase 4)
+- Design System as optional parallel workflow (Phase 5)
+- PRD Finalization with continuous handoff model (Phase 6)
+- Unified naming conventions for Figma/Code integration
+- Code examples moved to templates/examples (not in guides)
 
 #### Phase 2: Create Examples
 | Order | Component | Location | Status |
@@ -503,26 +565,37 @@ Includes:
 | `README.md` | Fork overview, WDS contribution explanation | ✅ CREATED |
 | `WDS-V6-CONVERSION-ROADMAP.md` | This document | ✅ CREATED |
 
-### 8.2 Module Structure
+### 8.2 Methodology Documentation
+
+| Path | Purpose | Status |
+|------|---------|--------|
+| `src/modules/wds/docs/method/wds-method-guide.md` | Main methodology overview | ✅ COMPLETE |
+| `src/modules/wds/docs/method/phase-1-Product-exploration-guide.md` | Phase 1 guide | ✅ COMPLETE |
+| `src/modules/wds/docs/method/phase-2-trigger-mapping-guide.md` | Phase 2 guide | ✅ COMPLETE |
+| `src/modules/wds/docs/method/phase-3-PRD-Platform-guide.md` | Phase 3 guide | ✅ COMPLETE |
+| `src/modules/wds/docs/method/phase-4-ux-design-guide.md` | Phase 4 guide | ✅ COMPLETE |
+| `src/modules/wds/docs/method/phase-5-design-system-guide.md` | Phase 5 guide | ✅ COMPLETE |
+| `src/modules/wds/docs/method/phase-6-PRD-Finalization-guide.md` | Phase 6 guide | ✅ COMPLETE |
+
+### 8.3 Module Structure (Folders Created, Content Pending)
 
 | Path | Purpose | Status |
 |------|---------|--------|
 | `src/modules/wds/` | Module root | ✅ CREATED |
 | `src/modules/wds/README.md` | Module entry point | ✅ CREATED |
-| `src/modules/wds/_module-installer/` | Install config folder | ✅ CREATED (empty) |
-| `src/modules/wds/agents/` | Agents folder | ✅ CREATED (empty) |
-| `src/modules/wds/workflows/` | Workflows folder | ✅ CREATED (empty) |
-| `src/modules/wds/data/` | Data folder | ✅ CREATED (empty) |
-| `src/modules/wds/data/presentations/` | Agent presentations | ✅ CREATED (empty) |
-| `src/modules/wds/docs/` | Documentation folder | ✅ CREATED (empty) |
-| `src/modules/wds/docs/method/` | Methodology guides | ✅ CREATED (empty) |
-| `src/modules/wds/docs/images/` | Images folder | ✅ CREATED (empty) |
-| `src/modules/wds/examples/` | Examples folder | ✅ CREATED (empty) |
-| `src/modules/wds/examples/dog-week-patterns/` | Dog Week examples | ✅ CREATED (empty) |
-| `src/modules/wds/reference/` | Reference materials | ✅ CREATED (empty) |
-| `src/modules/wds/reference/templates/` | Templates | ✅ CREATED (empty) |
-| `src/modules/wds/reference/checklists/` | Checklists | ✅ CREATED (empty) |
-| `src/modules/wds/teams/` | Team configs | ✅ CREATED (empty) |
+| `src/modules/wds/_module-installer/` | Install config folder | EMPTY |
+| `src/modules/wds/agents/` | Agents folder | EMPTY |
+| `src/modules/wds/workflows/` | Workflows folder | EMPTY |
+| `src/modules/wds/data/` | Data folder | EMPTY |
+| `src/modules/wds/data/presentations/` | Agent presentations | EMPTY |
+| `src/modules/wds/docs/method/` | Methodology guides | ✅ COMPLETE |
+| `src/modules/wds/docs/images/` | Images folder | EMPTY |
+| `src/modules/wds/examples/` | Examples folder | EMPTY |
+| `src/modules/wds/examples/dog-week-patterns/` | Dog Week examples | TO CREATE |
+| `src/modules/wds/reference/` | Reference materials | EMPTY |
+| `src/modules/wds/reference/templates/` | Templates | TO CREATE |
+| `src/modules/wds/reference/checklists/` | Checklists | TO CREATE |
+| `src/modules/wds/teams/` | Team configs | EMPTY |
 
 ---
 
@@ -530,35 +603,34 @@ Includes:
 
 ### Immediate Next Action
 
-**Create `wds-method-guide.md`** - The methodology overview document
-
-This will include:
-- Overview of the 6 phases
-- What each phase produces
-- When to use each phase
-- How phases connect
-- The A-B-C-D-E folder structure
-- Links to examples (not rules)
+**Create Examples** - Port Dog Week patterns and create conversation examples
 
 ### Short-term Roadmap
 
 1. [x] Create `wds-method-guide.md`
 2. [x] Create phase guide for each phase (6 files)
-3. [ ] Port Dog Week examples to `examples/dog-week-patterns/`
-4. [ ] Create conversation examples
-5. [ ] Create workflow-init workflow
-6. [ ] Create first phase workflow (Phase 1)
-7. [ ] Create first agent (Saga-Analyst)
+3. [x] Refine all phase guides with positive language, proper naming
+4. [ ] Create WDS Trigger Map (meta-example for WDS itself)
+5. [ ] Create conversation examples
+6. [x] Create workflow-init workflow ✅
+7. [ ] Create phase workflows (1-6)
+8. [ ] Create agents (Saga, Freyja, Baldr)
+9. [ ] Create templates for component showcase, PRD, etc.
+10. [ ] Port Dog Week examples to `examples/dog-week-patterns/` (last - project in active development)
 
 ### Commit Checkpoint
 
-After creating methodology docs, commit with message:
+Ready to commit methodology phase:
 ```
-feat(wds): Add WDS methodology documentation
+feat(wds): Complete WDS methodology documentation
 
-- Add wds-method-guide.md with 6-phase overview
-- Add phase-specific guides
-- Establish show-don't-tell documentation approach
+- All 6 phase guides complete with positive language
+- Feature Impact Analysis with scoring (Phase 2)
+- Step 4E: PRD Update during design (Phase 4)
+- Design System as optional parallel workflow (Phase 5)
+- PRD Finalization with continuous handoff (Phase 6)
+- Unified naming conventions for Figma/Code
+- Main method guide updated
 ```
 
 ---

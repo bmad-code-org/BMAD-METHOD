@@ -12,26 +12,27 @@
 
 ## What is WDS?
 
-Whiteport Design Studio is a **design-focused methodology** that supports designers in their design process and help create detailed specifications through collaborative workshops, visual thinking, and systematic documentation perfect for development by AI and humans alike.
+Whiteport Design Studio is a **design-focused methodology** that supports designers in their design process and helps create detailed specifications through collaborative workshops, visual thinking, and systematic documentation perfect for development by AI and humans alike.
 
 WDS creates the **design artifacts** that development teams need to build exceptional products - from initial vision through detailed component specifications.
 
 ### The Core Idea
 
 ```
-Vision → Clarity → UX Design →      Design System →      Handoff
-   │         │             │                 │              │
-   │         │             │                 │              └── Dev teams get
-   │         │             │                 │                  everything
-   │         │             │                 │
-   │         │             │                 └── Components,
-   │         │             │                     tokens, patterns
-   │         │             │
-   │         │             └── Conceptualizing, Sketching,
-   │         │                 create specifications
+Vision → Clarity → UX Design → Design System → PRD Complete
+   │         │           │             │              │
+   │         │           │             │              └── Development
+   │         │           │             │                  gets everything
+   │         │           │             │
+   │         │           │             └── Components,
+   │         │           │                 tokens, patterns
+   │         │           │                 (optional, parallel)
+   │         │           │
+   │         │           └── Sketching, specifying,
+   │         │               prototyping, PRD grows
    │         │
-   │         └── User research,
-   │             trigger mapping
+   │         └── Trigger mapping,
+   │             Feature Impact Analysis
    │
    └── Strategic foundation,
        positioning, ICP
@@ -43,7 +44,7 @@ Vision → Clarity → UX Design →      Design System →      Handoff
 
 WDS follows six phases, each producing artifacts in your project's `docs/` folder:
 
-### Phase 1: Product Exploration
+### Phase 1: Product Exploration (Product Brief)
 **Output:** `A-Product-Brief/`  
 **Agent:** Saga the Analyst
 
@@ -57,82 +58,84 @@ Establish your strategic foundation through conversational discovery. Instead of
 
 ---
 
-### Phase 2: User Research
+### Phase 2: Trigger Mapping (Trigger Map)
 **Output:** `B-Trigger-Map/`  
 **Agent:** Saga the Analyst
 
-Connect business goals to user psychology through Effect Mapping. Discover not just WHO your users are, but WHY they act and WHAT triggers their decisions.
+Connect business goals to user psychology through Trigger Mapping. Discover not just WHO your users are, but WHY they act and WHAT triggers their decisions.
 
 **What you create:**
-- Business goals with clear priorities
+- Business goals (Vision + SMART objectives)
 - Target groups connected to business outcomes
 - Detailed personas with psychological depth
-- Usage goals (what users want vs what they fear)
-- Visual trigger map showing the strategic connections
+- Usage goals (positive and negative driving forces)
+- Visual trigger map showing strategic connections
+- Feature Impact Analysis with priority scoring
 
 ---
 
-### Phase 3: Requirements
-**Output:** `D-PRD/`  
+### Phase 3: PRD Platform (Technical Foundation)
+**Output:** `C-Requirements/`  
 **Agent:** Freyja the PM
 
-Define the technical foundation and functional requirements. Bridge the gap between strategic vision and implementation details.
+Prove your concept works technically - in parallel with design work. Validate platform decisions, create proofs of concept, and set up experimental endpoints.
 
 **What you create:**
 - Platform architecture decisions
-- Infrastructure specifications
-- Integration requirements
-- Security and performance needs
-- Functional feature specifications
+- Data model and integrations
+- Technical proofs of concept
+- Experimental endpoints
+- Security and performance framework
+- Technical constraints document (for UX Design)
 
 ---
 
-### Phase 4: Conceptual Design
+### Phase 4: UX Design (UX-Sketches & Usage Scenarios)
 **Output:** `C-Scenarios/`  
 **Agent:** Baldr the UX Expert
 
-Transform ideas into detailed visual specifications. Your agent helps you think out the design, assists in sketching, then specifies and pressure-tests every detail.
+Transform ideas into detailed visual specifications. Your agent helps you think out the design, assists in sketching, creates specifications, and builds HTML prototypes. Each page adds functional requirements to the PRD.
 
-**The key insight:** Designs that can be logically explained without gaps are easy to develop. The specification process reveals holes in your thinking before they become expensive development problems.
+**The key insight:** Designs that can be logically explained without gaps are easy to develop. The specification process reveals gaps early - when they're easy to address.
 
 **What you create:**
 - Scenario folder structure (numbered hierarchy)
 - Page specifications with full detail
 - Component definitions with Object IDs
 - Interaction behaviors and states
-- Multilingual content
 - HTML prototypes for validation
+- Functional requirements added to PRD (via step 4E)
 
 ---
 
-### Phase 5: Component Design
+### Phase 5: Design System (Component Library)
 **Output:** `D-Design-System/`  
 **Agent:** Baldr the UX Expert
 
-Build your component library following atomic design principles. Create reusable patterns that serve user psychology.
+Build your component library following atomic design principles. This phase is **optional** and runs **in parallel** with Phase 4 - as you design pages, you extract reusable components.
 
 **What you create:**
 - Design tokens (colors, typography, spacing)
 - Atomic components (buttons, inputs, labels)
 - Molecular components (form groups, cards)
 - Organism components (headers, complex sections)
-- Usage guidelines and variants
+- Interactive HTML component showcase
+- Figma/design tool integration with unified naming
 
 ---
 
-### Phase 6: Dev Integration
-**Output:** `E-UI-Roadmap/`  
+### Phase 6: PRD Finalization (Complete PRD)
+**Output:** Complete PRD in `C-Requirements/` + `E-UI-Roadmap/`  
 **Agent:** Freyja the PM
 
-Prepare everything development teams need. Create the bridge between design and implementation.
+Compile all functional requirements discovered during Phase 4 into a complete, development-ready PRD. This phase runs **continuously** - hand off as soon as you have MVP scope, then update as design progresses.
 
 **What you create:**
-- Priority sequence (what to build first)
-- Scenario-to-development mapping
-- Component inventory
-- Technical notes and constraints
-- Object ID inventory for testing
-- Handoff checklist
+- Complete PRD (Platform + Functional requirements)
+- Feature organization by epic/area
+- Development sequence with priorities
+- Handoff package in `E-UI-Roadmap/`
+- Scenario-to-epic mapping
 
 ---
 
@@ -154,21 +157,10 @@ WDS creates an organized folder structure in your project's `docs/` folder. Duri
 docs/
 ├── A-Product-Brief/
 ├── B-Trigger-Map/
+├── C-Platform-Requirements/
 ├── C-Scenarios/
-├── D-PRD/
 ├── D-Design-System/
-└── E-UI-Roadmap/
-```
-
-**Letters + lowercase**:
-```
-docs/
-├── A-product-brief/
-├── B-trigger-map/
-├── C-scenarios/
-├── D-prd/
-├── D-design-system/
-└── E-ui-roadmap/
+└── E-PRD-Finalization/
 ```
 
 **Numbers + Title-Case**:
@@ -176,21 +168,10 @@ docs/
 docs/
 ├── 01-Product-Brief/
 ├── 02-Trigger-Map/
+├── 03-Platform-Requirements/
 ├── 03-Scenarios/
-├── 04-PRD/
-├── 05-Design-System/
-└── 06-UI-Roadmap/
-```
-
-**Numbers + lowercase**:
-```
-docs/
-├── 01-product-brief/
-├── 02-trigger-map/
-├── 03-scenarios/
-├── 04-prd/
-├── 05-design-system/
-└── 06-ui-roadmap/
+├── 04-Design-System/
+└── 05-PRD-Finalization/
 ```
 
 **Default (Letters + Title-Case) is recommended because:**
@@ -206,11 +187,12 @@ Not every project needs all six phases. Select what you need based on your situa
 
 | Project Type | Recommended Phases |
 |--------------|-------------------|
-| **Landing page** | 1, 4, 5 |
+| **Landing page** | 1, 4 |
 | **Full product (greenfield)** | All six |
-| **Feature enhancement** | 2, 4, 5, 6 |
+| **Feature enhancement** | 2, 4, 6 |
 | **Design system only** | 4, 5 |
 | **Strategic planning** | 1, 2 |
+| **Quick prototype** | 4 only |
 
 Your agents will help you identify which phases fit your project.
 
@@ -227,16 +209,16 @@ Saga guides you through discovery and research. She's curious, patient, and help
 
 **Works with you on:**
 - Phase 1: Product Exploration
-- Phase 2: User Research (Trigger Mapping)
+- Phase 2: Trigger Mapping
 
 ### Freyja the PM ⚔️
 *"The strategic leader who sees what must be done"*
 
-Freyja helps you define requirements and prepare for development. She balances passion with strategy, knowing when to be fierce and when to be patient.
+Freyja helps you define technical requirements and finalize the PRD for development. She balances passion with strategy, knowing when to be fierce and when to be patient.
 
 **Works with you on:**
-- Phase 3: Requirements
-- Phase 6: Dev Integration
+- Phase 3: PRD Platform
+- Phase 6: PRD Finalization
 
 ### Baldr the UX Expert ✨
 *"The one who brings light and beauty"*
@@ -244,8 +226,8 @@ Freyja helps you define requirements and prepare for development. She balances p
 Baldr transforms your ideas into beautiful, detailed specifications. He cares deeply about craft and ensures every detail serves the user experience.
 
 **Works with you on:**
-- Phase 4: Conceptual Design
-- Phase 5: Component Design
+- Phase 4: UX Design
+- Phase 5: Design System
 
 ---
 
@@ -330,17 +312,30 @@ npx bmad-method@alpha install
 
 WDS focuses on **design** - creating the artifacts that guide development. The actual development process is handled by BMad Method (BMM) or your preferred development workflow.
 
+### The PRD Journey
+
 ```
-WDS Design Phases              Handoff              Development
-─────────────────              ──────               ───────────
-A-Product-Brief   ────┐
-B-Trigger-Map     ────┼────► E-UI-Roadmap ────────► BMM or your
-D-PRD             ────┤         (bridge)            development
-C-Scenarios       ────┤                             process
-D-Design-System   ────┘
+Phase 3: PRD starts              Phase 4: PRD grows           Phase 6: PRD completes
+(Technical Foundation)           (Each page adds features)    (Organized for dev)
+        │                                │                            │
+        ▼                                ▼                            ▼
+C-Requirements/           ────►   C-Requirements/      ────►   E-UI-Roadmap/
+├── Platform arch                 ├── Platform arch            ├── Priority sequence
+├── Data model                    ├── Data model               ├── Epic mapping
+├── Integrations                  ├── Integrations             ├── Component inventory
+└── Security                      └── Functional reqs ◄──┐     └── Handoff checklist
+                                      (from each page)  │
+                                                        │
+                                  C-Scenarios/ ─────────┘
+                                  (Page specs add features via 4E)
 ```
 
-The `E-UI-Roadmap/` folder contains everything development teams need to begin implementation without additional discovery work.
+### Parallel Streams
+
+Design and development can work in parallel:
+- Phase 3 complete → Backend/platform development can start
+- Phase 4 MVP scenarios complete → Phase 6 first handoff → Sprint 1 begins
+- Design continues → Regular Phase 6 updates → More sprints
 
 ---
 
@@ -348,9 +343,9 @@ The `E-UI-Roadmap/` folder contains everything development teams need to begin i
 
 - **Phase guides:** Detailed documentation for each phase
 - **Examples:** Dog Week patterns showing real artifacts
+- **Templates:** Ready-to-use templates for all deliverables
 - **Conversation examples:** See how agent sessions flow
 
 ---
 
 *Whiteport Design Studio - Part of the BMad ecosystem*
-
