@@ -26,12 +26,8 @@ agent:
       exec: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.md"
       description: Create an Architecture Document to Guide Development of a PRD (required for BMad Method projects)
 
-    - trigger: validate-architecture
-      validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture/workflow.yaml"
-      description: Validate Architecture Document (Recommended, use another LLM and fresh context for best results)
-
     - trigger: implementation-readiness
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness/workflow.md"
       description: Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)
 
     - trigger: create-excalidraw-diagram

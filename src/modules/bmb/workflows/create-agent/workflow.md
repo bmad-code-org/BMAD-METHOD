@@ -49,7 +49,7 @@ This uses **step-file architecture** for disciplined execution:
 
 ### 1. Configuration Loading
 
-Load and read full config from `{project-root}/.bmad/bmb/config.yaml`:
+Load and read full config from `{project-root}/{bmad_folder}/bmb/config.yaml`:
 
 - `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`
 
@@ -63,12 +63,12 @@ Load, read completely, then execute `steps/step-01-brainstorm.md` to begin the w
 
 # Technical documentation for agent building
 
-agent_compilation: "{project-root}/.bmad/bmb/docs/agents/agent-compilation.md"
-understanding_agent_types: "{project-root}/.bmad/bmb/docs/agents/understanding-agent-types.md"
-simple_agent_architecture: "{project-root}/.bmad/bmb/docs/agents/simple-agent-architecture.md"
-expert_agent_architecture: "{project-root}/.bmad/bmb/docs/agents/expert-agent-architecture.md"
-module_agent_architecture: "{project-root}/.bmad/bmb/docs/agents/module-agent-architecture.md"
-agent_menu_patterns: "{project-root}/.bmad/bmb/docs/agents/agent-menu-patterns.md"
+agent_compilation: "{project-root}/{bmad_folder}/bmb/docs/agents/agent-compilation.md"
+understanding_agent_types: "{project-root}/{bmad_folder}/bmb/docs/agents/understanding-agent-types.md"
+simple_agent_architecture: "{project-root}/{bmad_folder}/bmb/docs/agents/simple-agent-architecture.md"
+expert_agent_architecture: "{project-root}/{bmad_folder}/bmb/docs/agents/expert-agent-architecture.md"
+module_agent_architecture: "{project-root}/{bmad_folder}/bmb/docs/agents/module-agent-architecture.md"
+agent_menu_patterns: "{project-root}/{bmad_folder}/bmb/docs/agents/agent-menu-patterns.md"
 
 # Data and templates
 
@@ -83,9 +83,9 @@ module_agent_examples: "{project-root}/src/modules/bmb/reference/agents/module-e
 
 # Output configuration
 
-custom_agent_location: "{project-root}/.bmad/custom/src/agents"
-module_output_file: "{project-root}/.bmad/{target_module}/agents/{agent_filename}.agent.yaml"
+custom_agent_location: "{project-root}/{bmad_folder}/custom/src/agents"
+module_output_file: "{project-root}/{bmad_folder}/{target_module}/agents/{agent_filename}.agent.yaml"
 standalone_output_folder: "{custom_agent_location}/{agent_filename}"
 standalone_output_file: "{standalone_output_folder}/{agent_filename}.agent.yaml"
 standalone_info_guide: "{standalone_output_folder}/info-and-installation-guide.md"
-config_output_file: "{project-root}/.bmad/\_cfg/agents/{target_module}-{agent_filename}.customize.yaml"
+config_output_file: "{project-root}/{bmad_folder}/\_cfg/agents/{target_module}-{agent_filename}.customize.yaml"

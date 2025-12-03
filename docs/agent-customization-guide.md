@@ -138,10 +138,10 @@ critical_actions:
 # {bmad_folder}/_cfg/agents/bmm-dev.customize.yaml
 menu:
   - trigger: deploy-staging
-    workflow: '{project-root}/.bmad-custom/deploy-staging.yaml'
+    workflow: '{project-root}/{bmad_folder}/deploy-staging.yaml'
     description: Deploy to staging environment
   - trigger: deploy-prod
-    workflow: '{project-root}/.bmad-custom/deploy-prod.yaml'
+    workflow: '{project-root}/{bmad_folder}/deploy-prod.yaml'
     description: Deploy to production (with approval)
 ```
 

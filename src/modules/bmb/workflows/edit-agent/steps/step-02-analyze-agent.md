@@ -10,20 +10,20 @@ thisStepFile: '{workflow_path}/steps/step-02-analyze-agent.md'
 nextStepFile: '{workflow_path}/steps/step-03-propose-changes.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
 
 # Documentation References (load JIT based on user goals)
-understanding_agent_types: '{project-root}/.bmad/bmb/docs/agents/understanding-agent-types.md'
-agent_compilation: '{project-root}/.bmad/bmb/docs/agents/agent-compilation.md'
-simple_architecture: '{project-root}/.bmad/bmb/docs/agents/simple-agent-architecture.md'
-expert_architecture: '{project-root}/.bmad/bmb/docs/agents/expert-agent-architecture.md'
-module_architecture: '{project-root}/.bmad/bmb/docs/agents/module-agent-architecture.md'
-menu_patterns: '{project-root}/.bmad/bmb/docs/agents/agent-menu-patterns.md'
-communication_presets: '{project-root}/.bmad/bmb/workflows/create-agent/data/communication-presets.csv'
-reference_simple_agent: '{project-root}/.bmad/bmb/reference/agents/simple-examples/commit-poet.agent.yaml'
-reference_expert_agent: '{project-root}/.bmad/bmb/reference/agents/expert-examples/journal-keeper/journal-keeper.agent.yaml'
-validation: '{project-root}/.bmad/bmb/workflows/create-agent/data/agent-validation-checklist.md'
+understanding_agent_types: '{project-root}/{bmad_folder}/bmb/docs/agents/understanding-agent-types.md'
+agent_compilation: '{project-root}/{bmad_folder}/bmb/docs/agents/agent-compilation.md'
+simple_architecture: '{project-root}/{bmad_folder}/bmb/docs/agents/simple-agent-architecture.md'
+expert_architecture: '{project-root}/{bmad_folder}/bmb/docs/agents/expert-agent-architecture.md'
+module_architecture: '{project-root}/{bmad_folder}/bmb/docs/agents/module-agent-architecture.md'
+menu_patterns: '{project-root}/{bmad_folder}/bmb/docs/agents/agent-menu-patterns.md'
+communication_presets: '{project-root}/{bmad_folder}/bmb/workflows/create-agent/data/communication-presets.csv'
+reference_simple_agent: '{project-root}/{bmad_folder}/bmb/reference/agents/simple-examples/commit-poet.agent.yaml'
+reference_expert_agent: '{project-root}/{bmad_folder}/bmb/reference/agents/expert-examples/journal-keeper/journal-keeper.agent.yaml'
+validation: '{project-root}/{bmad_folder}/bmb/workflows/create-agent/data/agent-validation-checklist.md'
 ---
 
 # Step 2: Analyze Agent

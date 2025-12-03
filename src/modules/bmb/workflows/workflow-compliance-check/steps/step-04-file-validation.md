@@ -16,8 +16,8 @@ targetWorkflowPath: '{target_workflow_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md'
+stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
 csvStandards: '{project-root}/{bmad_folder}/bmb/docs/workflows/csv-data-file-standards.md'
 ---
 
@@ -253,7 +253,7 @@ For each file with issues:
 - **Formatting Standards:** [summary of markdown compliance issues]
 - **Data Validation:** [summary of CSV standards compliance]
 
-**Ready for Phase 5:** Holistic workflow analysis
+**Ready for Phase 5:** Intent Spectrum Validation analysis
 
 - Flow validation and goal alignment
 - Meta-workflow failure analysis

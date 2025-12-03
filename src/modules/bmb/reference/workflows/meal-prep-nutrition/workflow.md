@@ -49,9 +49,9 @@ This uses **step-file architecture** for disciplined execution:
 
 ### 1. Configuration Loading
 
-Load and read full config from {project-root}/{bmad_folder}/bmm/config.yaml and resolve:
+Load and read full config from {project-root}/{bmad_folder}/core/config.yaml and resolve:
 
-- `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`, `user_skill_level`
+- `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`
 
 ### 2. First Step EXECUTION
 

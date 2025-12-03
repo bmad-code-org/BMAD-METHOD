@@ -16,8 +16,8 @@ targetWorkflowFile: '{target_workflow_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md'
+stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
 intentSpectrum: '{project-root}/{bmad_folder}/bmb/docs/workflows/intent-vs-prescriptive-spectrum.md'
 ---
 
@@ -215,7 +215,7 @@ Evaluate workflow from user perspective:
 - **Optimization Opportunities:** [number key improvements identified]
 - **Meta-Workflow Failures:** [number issues that should have been prevented]
 
-**Ready for Phase 6:** Comprehensive compliance report generation
+**Ready for Phase 8:** Comprehensive compliance report generation
 
 - All findings compiled into structured report
 - Severity-ranked violation list

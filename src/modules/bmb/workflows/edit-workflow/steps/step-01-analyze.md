@@ -11,10 +11,6 @@ nextStepFile: '{workflow_path}/steps/step-02-discover.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/workflow-edit-{target_workflow_name}.md'
 
-# Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
-
 # Template References
 analysisTemplate: '{workflow_path}/templates/workflow-analysis.md'
 ---
@@ -134,8 +130,8 @@ Based on what the user wants to edit:
 Load reference documentation as needed:
 
 - `{project-root}/{bmad_folder}/bmb/docs/workflows/architecture.md`
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md`
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md`
+- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md`
+- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md`
 
 Check against best practices:
 

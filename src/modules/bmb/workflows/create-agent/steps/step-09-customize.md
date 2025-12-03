@@ -10,14 +10,14 @@ thisStepFile: '{workflow_path}/steps/step-09-customize.md'
 nextStepFile: '{workflow_path}/steps/step-10-build-tools.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/agent-customization-{project_name}.md'
-configOutputFile: '{project-root}/.bmad/_cfg/agents/{target_module}-{agent_filename}.customize.yaml'
+configOutputFile: '{project-root}/{bmad_folder}/_cfg/agents/{target_module}-{agent_filename}.customize.yaml'
 
 # Template References
 customizationTemplate: '{workflow_path}/templates/agent-customization.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 9: Optional Customization File

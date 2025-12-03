@@ -69,8 +69,8 @@ To facilitate collaborative improvements to the workflow, working iteratively on
 
 Load documentation as needed for specific improvements:
 
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md`
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md`
+- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md`
+- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md`
 - `{project-root}/{bmad_folder}/bmb/docs/workflows/architecture.md`
 
 ### 2. Address Each Improvement Iteratively
