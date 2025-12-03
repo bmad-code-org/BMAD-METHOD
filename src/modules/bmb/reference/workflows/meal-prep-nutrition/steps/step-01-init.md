@@ -157,7 +157,8 @@ Display: **Proceeding to user profile collection...**
 ### ✅ SUCCESS:
 
 - Document created from template
-- Frontmatter initialized with step 1 marked complete
+- update frontmatter `stepsCompleted` to add 4 at the end of the array before loading next step
+- Frontmatter initialized with `stepsCompleted: [1]`
 - User welcomed to the process
 - Ready to proceed to step 2
 
@@ -173,5 +174,3 @@ ONLY WHEN initialization setup is complete and document is created, will you the
 - Skipping welcome message
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.
-
----

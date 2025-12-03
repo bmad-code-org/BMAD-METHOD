@@ -81,10 +81,10 @@
 
 **Agent Documentation References**
 
-- Agent compilation guide: `{project-root}/.bmad/bmb/docs/agents/agent-compilation.md`
-- Agent types guide: `{project-root}/.bmad/bmb/docs/agents/understanding-agent-types.md`
+- Agent compilation guide: `{project-root}/{bmad_folder}/bmb/docs/agents/agent-compilation.md`
+- Agent types guide: `{project-root}/{bmad_folder}/bmb/docs/agents/understanding-agent-types.md`
 - Architecture docs: simple, expert, module agent architectures
-- Menu patterns guide: `{project-root}/.bmad/bmb/docs/agents/agent-menu-patterns.md`
+- Menu patterns guide: `{project-root}/{bmad_folder}/bmb/docs/agents/agent-menu-patterns.md`
 - Status: ✅ ALL REFERENCES PRESERVED
 
 **Communication Presets**

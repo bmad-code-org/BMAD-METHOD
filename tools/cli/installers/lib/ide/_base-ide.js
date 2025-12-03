@@ -536,6 +536,11 @@ class BaseIdeSetup {
     if (typeof content === 'string' && content.includes('{bmad_folder}')) {
       content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
     }
+
+    // Replace escape sequence {*bmad_folder*} with literal {bmad_folder}
+    if (typeof content === 'string' && content.includes('{*bmad_folder*}')) {
+      content = content.replaceAll('{*bmad_folder*}', '{bmad_folder}');
+    }
     await this.ensureDir(path.dirname(filePath));
     await fs.writeFile(filePath, content, 'utf8');
   }
@@ -561,6 +566,11 @@ class BaseIdeSetup {
         // Replace {bmad_folder} placeholder with actual folder name
         if (content.includes('{bmad_folder}')) {
           content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
+        }
+
+        // Replace escape sequence {*bmad_folder*} with literal {bmad_folder}
+        if (content.includes('{*bmad_folder*}')) {
+          content = content.replaceAll('{*bmad_folder*}', '{bmad_folder}');
         }
 
         // Write to dest with replaced content

@@ -7,10 +7,7 @@ workflow_path: '{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-n
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
-workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
-# Template References
-# This step doesn't use content templates, reads from existing output file
 ---
 
 # Step 1B: Workflow Continuation
@@ -38,9 +35,9 @@ To resume the nutrition planning workflow from where it was left off, ensuring s
 ### Step-Specific Rules:
 
 - 🎯 Focus ONLY on analyzing and resuming workflow state
-- 🚫 FORBIDDEN to modify content completed in previous steps
+- 🚫 FORBIDDEN to modify content during this step
 - 💬 Maintain continuity with previous sessions
-- 🚪 DETECT exact continuation point from frontmatter
+- 🚪 DETECT exact continuation point from frontmatter of incomplete file {outputFile}
 
 ## EXECUTION PROTOCOLS:
 
@@ -60,39 +57,19 @@ To resume the nutrition planning workflow from where it was left off, ensuring s
 
 ### 1. Analyze Current State
 
-Review the frontmatter to understand:
+Review the frontmatter of {outputFile} to understand:
 
-- `stepsCompleted`: Which steps are already done
-- `lastStep`: The most recently completed step number
-- `userProfile`: User information already collected
-- `nutritionGoals`: Goals already established
-- All other frontmatter variables
+- `stepsCompleted`: Which steps are already done, the rightmost value of the array is the last step completed. For example stepsCompleted: [1, 2, 3] would mean that steps 1, then 2, and then 3 were finished.
 
-Examine the nutrition-plan.md template to understand:
+### 2. Read the full step of every completed step
 
-- What sections are already completed
-- What recommendations have been made
-- Current progress through the plan
-- Any notes or adjustments documented
+- read each step file that corresponds to the stepsCompleted > 1.
 
-### 2. Confirm Continuation Point
+EXAMPLE: In the example `stepsCompleted: [1, 2, 3]` your would find the step 2 file by file name (step-02-profile.md) and step 3 file (step-03-assessment.md). the last file in the array is the last one completed, so you will follow the instruction to know what the next step to start processing is. reading that file would for example show that the next file is `steps/step-04-strategy.md`.
 
-Based on `lastStep`, prepare to continue with:
+### 3. Review the output completed previously
 
-- If `lastStep` = "init" → Continue to Step 3: Dietary Assessment
-- If `lastStep` = "assessment" → Continue to Step 4: Meal Strategy
-- If `lastStep` = "strategy" → Continue to Step 5/6 based on cooking frequency
-- If `lastStep` = "shopping" → Continue to Step 6: Prep Schedule
-
-### 3. Update Status
-
-Before proceeding, update frontmatter:
-
-```yaml
-stepsCompleted: [existing steps]
-lastStep: current
-continuationDate: [current date]
-```
+In addition to reading ONLY each step file that was completed, you will then read the {outputFile} to further understand what is done so far.
 
 ### 4. Welcome Back Dialog
 
@@ -103,7 +80,6 @@ continuationDate: [current date]
 - Briefly summarize progress made
 - Confirm any changes since last session
 - Validate that user is still aligned with goals
-- Proceed to next appropriate step
 
 ### 6. Present MENU OPTIONS
 
@@ -118,18 +94,12 @@ Display: **Resuming workflow - Select an Option:** [C] Continue
 
 #### Menu Handling Logic:
 
-- IF C: Update frontmatter with continuation info, then load, read entire file, then execute appropriate next step based on `lastStep`
-  - IF lastStep = "init": load {workflow_path}/step-03-assessment.md
-  - IF lastStep = "assessment": load {workflow_path}/step-04-strategy.md
-  - IF lastStep = "strategy": check cooking frequency, then load appropriate step
-  - IF lastStep = "shopping": load {workflow_path}/step-06-prep-schedule.md
+- IF C: follow the suggestion of the last completed step reviewed to continue as it suggested
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#5-present-menu-options)
 
 ## CRITICAL STEP COMPLETION NOTE
 
 ONLY WHEN C is selected and continuation analysis is complete, will you then update frontmatter and load, read entire file, then execute the appropriate next step file.
-
----
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 

@@ -11,12 +11,12 @@ nextStepFile: '{workflow_path}/steps/step-04-apply-changes.md'
 agentFile: '{{agent_path}}'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
 
 # Documentation References (load JIT if needed)
-communication_presets: '{project-root}/.bmad/bmb/workflows/create-agent/data/communication-presets.csv'
-agent_compilation: '{project-root}/.bmad/bmb/docs/agents/agent-compilation.md'
+communication_presets: '{project-root}/{bmad_folder}/bmb/workflows/create-agent/data/communication-presets.csv'
+agent_compilation: '{project-root}/{bmad_folder}/bmb/docs/agents/agent-compilation.md'
 ---
 
 # Step 3: Propose Changes

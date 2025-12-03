@@ -57,6 +57,7 @@ To analyze nutritional requirements, identify restrictions, and calculate target
 - 🎯 Use data from CSV files for comprehensive analysis
 - 💾 Calculate macros based on profile and goals
 - 📖 Document all findings in nutrition-plan.md
+- 📖 Update frontmatter `stepsCompleted` to add 3 at the end of the array before loading next step
 - 🚫 FORBIDDEN to prescribe medical nutrition therapy
 
 ## CONTEXT BOUNDARIES:

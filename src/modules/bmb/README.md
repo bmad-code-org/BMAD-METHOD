@@ -58,7 +58,7 @@ Specialized tools and workflows for creating, customizing, and extending BMad co
 
 - **[Workflow Index](./docs/workflows/index.md)** - Core workflow system overview
 - **[Architecture Guide](./docs/workflows/architecture.md)** - Step-file design and JIT loading
-- **[Template System](./docs/workflows/step-template.md)** - Standard step file template
+- **[Template System](./docs/workflows/templates/step-template.md)** - Standard step file template
 - **[Intent vs Prescriptive](./docs/workflows/intent-vs-prescriptive-spectrum.md)** - Design philosophy
 
 ## Reference Materials

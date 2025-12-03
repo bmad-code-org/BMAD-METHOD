@@ -127,6 +127,7 @@ class WorkflowCommandGenerator {
       .replaceAll('{{description}}', workflow.description)
       .replaceAll('{{workflow_path}}', workflowPath)
       .replaceAll('{bmad_folder}', this.bmadFolderName)
+      .replaceAll('{*bmad_folder*}', '{bmad_folder}')
       .replaceAll('{{interactive}}', workflow.interactive)
       .replaceAll('{{author}}', workflow.author || 'BMAD');
   }

@@ -1,6 +1,9 @@
 # Test fixtures with intentionally broken/malformed files
 test/fixtures/**
 
+# Contributor Covenant (external standard)
+CODE_OF_CONDUCT.md
+
 # BMAD runtime folders (user-specific, not in repo)
 .bmad/
 .bmad*/

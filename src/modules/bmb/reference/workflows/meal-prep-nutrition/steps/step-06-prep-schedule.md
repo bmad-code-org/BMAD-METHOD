@@ -180,14 +180,14 @@ Display: **Select an Option:** [A] Advanced Prep Techniques [P] Coach Perspectiv
 - HALT and AWAIT ANSWER
 - IF A: Execute `{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml`
 - IF P: Execute `{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md`
-- IF C: Update frontmatter with all steps completed, mark workflow complete, display final message
+- IF C: update frontmatter `stepsCompleted` to add 6 at the end of the array before loading next step, mark workflow complete, display final message
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#6-present-menu-options)
 
 ## CRITICAL STEP COMPLETION NOTE
 
 ONLY WHEN C is selected and content is saved to document:
 
-1. Update frontmatter with all steps completed and indicate final completion
+1. update frontmatter `stepsCompleted` to add 6 at the end of the array before loading next step completed and indicate final completion
 2. Display final completion message
 3. End workflow session
 
