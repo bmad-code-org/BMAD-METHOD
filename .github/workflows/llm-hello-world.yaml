@@ -155,76 +155,87 @@ jobs:
     steps:
       - name: Probe token limits
         env:
-          GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN }}
+          AUTH_TOKEN: ${{ secrets.COPILOT_PAT }}
+          FALLBACK_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Try Azure endpoint (Gemini's suggestion) - deprecated Oct 2025 but may have different limits
+          LLM_ENDPOINT_AZURE: "https://models.inference.ai.azure.com/chat/completions"
+          LLM_ENDPOINT_GITHUB: "https://models.github.ai/inference/chat/completions"
         run: |
           echo "=== Token Limit Probe ==="
-          echo "Testing progressively larger payloads to find the ceiling"
-          echo ""
 
-          # Test sizes in characters (roughly 4 chars per token)
-          SIZES=(2000 4000 8000 16000 32000 64000)
+          # Diagnostic: which token are we using?
+          if [ -n "$AUTH_TOKEN" ]; then
+            echo "Using: COPILOT_PAT (length: ${#AUTH_TOKEN} chars)"
+            TOKEN="$AUTH_TOKEN"
+          else
+            echo "Using: GITHUB_TOKEN (fallback)"
+            TOKEN="$FALLBACK_TOKEN"
+          fi
 
-          # Generate filler text (lorem ipsum style)
-          generate_filler() {
-            local size=$1
-            python3 -c "print(('The quick brown fox jumps over the lazy dog. ' * ($size // 45 + 1))[:$size])"
-          }
-
-          echo "| Size (chars) | ~Tokens | HTTP Status | Result |"
-          echo "|--------------|---------|-------------|--------|"
-
-          for SIZE in "${SIZES[@]}"; do
-            APPROX_TOKENS=$((SIZE / 4))
-
-            # Generate payload of specified size
-            FILLER=$(generate_filler $SIZE)
-
-            PROMPT="Respond with exactly one word: 'received'. Here is padding text to test token limits: $FILLER"
-            PROMPT_ESCAPED=$(echo "$PROMPT" | jq -Rs .)
-
-            # Call the LLM
-            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$LLM_ENDPOINT" \
-              -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d "{
-                \"model\": \"$LLM_MODEL\",
-                \"messages\": [
-                  {\"role\": \"user\", \"content\": $PROMPT_ESCAPED}
-                ],
-                \"max_tokens\": 10
-              }" 2>/dev/null)
-
-            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-            BODY=$(echo "$RESPONSE" | sed '$d')
-
-            if [ "$HTTP_CODE" = "200" ]; then
-              RESULT="OK"
+          # Test both endpoints
+          for ENDPOINT_NAME in "AZURE" "GITHUB"; do
+            if [ "$ENDPOINT_NAME" = "AZURE" ]; then
+              ENDPOINT="$LLM_ENDPOINT_AZURE"
             else
-              # Extract error message if present
-              ERROR_MSG=$(echo "$BODY" | jq -r '.error.message // .message // "Unknown error"' 2>/dev/null | head -c 50)
-              RESULT="FAIL: $ERROR_MSG"
-
-              # Log full error for debugging
-              echo ""
-              echo "::warning::Failed at ${SIZE} chars (~${APPROX_TOKENS} tokens)"
-              echo "Full error response:"
-              echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
-              echo ""
+              ENDPOINT="$LLM_ENDPOINT_GITHUB"
             fi
 
-            echo "| $SIZE | ~$APPROX_TOKENS | $HTTP_CODE | $RESULT |"
+            echo ""
+            echo "=== Testing $ENDPOINT_NAME endpoint ==="
+            echo "URL: $ENDPOINT"
+            echo "Model: gpt-4o"
+            echo ""
 
-            # Stop probing after first failure to avoid hammering the API
-            if [ "$HTTP_CODE" != "200" ]; then
-              echo ""
-              echo "=== Ceiling Found ==="
-              echo "Last successful size: $((SIZE / 2)) chars (~$((SIZE / 8)) tokens)"
-              echo "First failure at: $SIZE chars (~$APPROX_TOKENS tokens)"
-              break
-            fi
+            # Test sizes in characters (roughly 4 chars per token)
+            SIZES=(2000 4000 8000 16000 32000 64000 128000)
 
-            # Small delay to avoid rate limiting
-            sleep 1
+            echo "| Size (chars) | ~Tokens | HTTP Status | Result |"
+            echo "|--------------|---------|-------------|--------|"
+
+            for SIZE in "${SIZES[@]}"; do
+              APPROX_TOKENS=$((SIZE / 4))
+
+              # Generate filler
+              FILLER=$(python3 -c "print(('The quick brown fox jumps over the lazy dog. ' * ($SIZE // 45 + 1))[:$SIZE])")
+
+              PROMPT="Respond with exactly one word: 'received'. Here is padding text to test token limits: $FILLER"
+              PROMPT_ESCAPED=$(echo "$PROMPT" | jq -Rs .)
+
+              RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$ENDPOINT" \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "{
+                  \"model\": \"gpt-4o\",
+                  \"messages\": [
+                    {\"role\": \"user\", \"content\": $PROMPT_ESCAPED}
+                  ],
+                  \"max_tokens\": 10
+                }" 2>/dev/null)
+
+              HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+              BODY=$(echo "$RESPONSE" | sed '$d')
+
+              if [ "$HTTP_CODE" = "200" ]; then
+                RESULT="OK"
+              else
+                ERROR_MSG=$(echo "$BODY" | jq -r '.error.message // .message // "Unknown error"' 2>/dev/null | head -c 50)
+                RESULT="FAIL: $ERROR_MSG"
+                echo ""
+                echo "::warning::Failed at ${SIZE} chars (~${APPROX_TOKENS} tokens) on $ENDPOINT_NAME"
+                echo "Full error: $BODY"
+                echo ""
+              fi
+
+              echo "| $SIZE | ~$APPROX_TOKENS | $HTTP_CODE | $RESULT |"
+
+              if [ "$HTTP_CODE" != "200" ]; then
+                echo ""
+                echo "=== $ENDPOINT_NAME Ceiling: ~$((SIZE / 8)) tokens ==="
+                break
+              fi
+
+              sleep 1
+            done
           done
 
           echo ""
