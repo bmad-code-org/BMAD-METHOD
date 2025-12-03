@@ -14,7 +14,6 @@ on:
         options:
           - hello-world
           - token-probe
-          - triage-poc
         default: hello-world
 
 env:
