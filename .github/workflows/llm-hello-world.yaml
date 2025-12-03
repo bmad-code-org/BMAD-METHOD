@@ -168,7 +168,7 @@ jobs:
           # Generate filler text (lorem ipsum style)
           generate_filler() {
             local size=$1
-            python3 -c "print('The quick brown fox jumps over the lazy dog. ' * ($size // 45 + 1))[:$size]"
+            python3 -c "print(('The quick brown fox jumps over the lazy dog. ' * ($size // 45 + 1))[:$size])"
           }
 
           echo "| Size (chars) | ~Tokens | HTTP Status | Result |"
