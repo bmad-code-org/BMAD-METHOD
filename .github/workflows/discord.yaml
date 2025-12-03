@@ -36,17 +36,21 @@ jobs:
           PR_USER: ${{ github.event.pull_request.user.login }}
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
+          # escape markdown special chars
+          esc() { sed 's/[\\*_[\]()~`>]/\\&/g'; }
+
           if [ "$ACTION" = "opened" ]; then ICON="🔀"; LABEL="New PR"
           elif [ "$ACTION" = "closed" ] && [ "$MERGED" = "true" ]; then ICON="🎉"; LABEL="Merged"
           elif [ "$ACTION" = "closed" ]; then ICON="❌"; LABEL="Closed"
           elif [ "$ACTION" = "reopened" ]; then ICON="🔄"; LABEL="Reopened"
           else ICON="📋"; LABEL="Ready"; fi
 
-          BODY=$(echo "$PR_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          TITLE=$(echo "$PR_TITLE" | esc)
+          BODY=$(echo "$PR_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH | esc)
           [ ${#PR_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
           [ -n "$BODY" ] && BODY=" · $BODY"
 
-          MSG=$(printf '%s **[%s #%s: %s](<%s>)**\nby @%s%s' "$ICON" "$LABEL" "$PR_NUM" "$PR_TITLE" "$PR_URL" "$PR_USER" "$BODY")
+          MSG="$ICON **[$LABEL #$PR_NUM: $TITLE](<$PR_URL>)**"$'\n'"by @$PR_USER$BODY"
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Issue events
@@ -64,15 +68,19 @@ jobs:
           ISSUE_USER: ${{ github.event.issue.user.login }}
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
+          # escape markdown special chars
+          esc() { sed 's/[\\*_[\]()~`>]/\\&/g'; }
+
           if [ "$ACTION" = "opened" ]; then ICON="🐛"; LABEL="New Issue"
           elif [ "$ACTION" = "closed" ]; then ICON="✅"; LABEL="Closed"
           else ICON="🔄"; LABEL="Reopened"; fi
 
-          BODY=$(echo "$ISSUE_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          TITLE=$(echo "$ISSUE_TITLE" | esc)
+          BODY=$(echo "$ISSUE_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH | esc)
           [ ${#ISSUE_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
           [ -n "$BODY" ] && BODY=" · $BODY"
 
-          MSG=$(printf '%s **[%s #%s: %s](<%s>)**\nby @%s%s' "$ICON" "$LABEL" "$ISSUE_NUM" "$ISSUE_TITLE" "$ISSUE_URL" "$ISSUE_USER" "$BODY")
+          MSG="$ICON **[$LABEL #$ISSUE_NUM: $TITLE](<$ISSUE_URL>)**"$'\n'"by @$ISSUE_USER$BODY"
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Issue comment
@@ -90,12 +98,16 @@ jobs:
           COMMENT_USER: ${{ github.event.comment.user.login }}
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
+          # escape markdown special chars
+          esc() { sed 's/[\\*_[\]()~`>]/\\&/g'; }
+
           [ "$IS_PR" = "true" ] && TYPE="PR" || TYPE="Issue"
 
-          BODY=$(echo "$COMMENT_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          TITLE=$(echo "$ISSUE_TITLE" | esc)
+          BODY=$(echo "$COMMENT_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH | esc)
           [ ${#COMMENT_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
 
-          MSG=$(printf '💬 **[Comment on %s #%s: %s](<%s>)**\n@%s: %s' "$TYPE" "$ISSUE_NUM" "$ISSUE_TITLE" "$COMMENT_URL" "$COMMENT_USER" "$BODY")
+          MSG="💬 **[Comment on $TYPE #$ISSUE_NUM: $TITLE](<$COMMENT_URL>)**"$'\n'"@$COMMENT_USER: $BODY"
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # PR Review
@@ -113,15 +125,19 @@ jobs:
           REVIEW_USER: ${{ github.event.review.user.login }}
           REVIEW_BODY: ${{ github.event.review.body }}
         run: |
+          # escape markdown special chars
+          esc() { sed 's/[\\*_[\]()~`>]/\\&/g'; }
+
           if [ "$STATE" = "approved" ]; then ICON="✅"; LABEL="Approved"
           elif [ "$STATE" = "changes_requested" ]; then ICON="🔧"; LABEL="Changes Requested"
           else ICON="👀"; LABEL="Reviewed"; fi
 
-          BODY=$(echo "$REVIEW_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          TITLE=$(echo "$PR_TITLE" | esc)
+          BODY=$(echo "$REVIEW_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH | esc)
           [ ${#REVIEW_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
           [ -n "$BODY" ] && BODY=": $BODY"
 
-          MSG=$(printf '%s **[%s PR #%s: %s](<%s>)**\n@%s%s' "$ICON" "$LABEL" "$PR_NUM" "$PR_TITLE" "$REVIEW_URL" "$REVIEW_USER" "$BODY")
+          MSG="$ICON **[$LABEL PR #$PR_NUM: $TITLE](<$REVIEW_URL>)**"$'\n'"@$REVIEW_USER$BODY"
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # PR Review comment
@@ -138,10 +154,14 @@ jobs:
           COMMENT_USER: ${{ github.event.comment.user.login }}
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          BODY=$(echo "$COMMENT_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          # escape markdown special chars
+          esc() { sed 's/[\\*_[\]()~`>]/\\&/g'; }
+
+          TITLE=$(echo "$PR_TITLE" | esc)
+          BODY=$(echo "$COMMENT_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH | esc)
           [ ${#COMMENT_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
 
-          MSG=$(printf '💭 **[Review Comment PR #%s: %s](<%s>)**\n@%s: %s' "$PR_NUM" "$PR_TITLE" "$COMMENT_URL" "$COMMENT_USER" "$BODY")
+          MSG="💭 **[Review Comment PR #$PR_NUM: $TITLE](<$COMMENT_URL>)**"$'\n'"@$COMMENT_USER: $BODY"
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Release
@@ -157,11 +177,15 @@ jobs:
           URL: ${{ github.event.release.html_url }}
           RELEASE_BODY: ${{ github.event.release.body }}
         run: |
-          BODY=$(echo "$RELEASE_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          # escape markdown special chars
+          esc() { sed 's/[\\*_[\]()~`>]/\\&/g'; }
+
+          REL_NAME=$(echo "$NAME" | esc)
+          BODY=$(echo "$RELEASE_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH | esc)
           [ ${#RELEASE_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
           [ -n "$BODY" ] && BODY=" · $BODY"
 
-          MSG=$(printf '🚀 **[Release %s: %s](<%s>)**\n%s' "$TAG" "$NAME" "$URL" "$BODY")
+          MSG="🚀 **[Release $TAG: $REL_NAME](<$URL>)**"$'\n'"$BODY"
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Branch/tag created
