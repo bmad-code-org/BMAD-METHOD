@@ -17,7 +17,7 @@ on:
     types: [opened, closed, reopened]
 
 env:
-  MAX_BODY_LENGTH: 200
+  MAX_BODY_LENGTH: 300
 
 jobs:
   # Pull Request events
@@ -25,156 +25,144 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare message
-        id: prep
-        run: |
-          BODY="${{ github.event.pull_request.body }}"
-          BODY="${BODY//$'\n'/ }"
-          BODY="${BODY//$'\r'/}"
-          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
-            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
-          fi
-          echo "body=$BODY" >> $GITHUB_OUTPUT
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "${{ github.event.action == 'opened' && '🔀 New PR' || github.event.action == 'closed' && github.event.pull_request.merged && '🎉 PR Merged' || github.event.action == 'closed' && '❌ PR Closed' || github.event.action == 'reopened' && '🔄 PR Reopened' || '📋 PR Ready for Review' }}"
-          description: |
-            **[#${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }}) ${{ github.event.pull_request.title }}**
-            by @${{ github.event.pull_request.user.login }}${{ steps.prep.outputs.body && format(' · {0}', steps.prep.outputs.body) || '' }}
-          color: ${{ github.event.action == 'closed' && github.event.pull_request.merged && '0x6f42c1' || github.event.action == 'closed' && '0xcb2431' || '0x238636' }}
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ACTION: ${{ github.event.action }}
+          MERGED: ${{ github.event.pull_request.merged }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_USER: ${{ github.event.pull_request.user.login }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          if [ "$ACTION" = "opened" ]; then ICON="🔀"; LABEL="New PR"
+          elif [ "$ACTION" = "closed" ] && [ "$MERGED" = "true" ]; then ICON="🎉"; LABEL="Merged"
+          elif [ "$ACTION" = "closed" ]; then ICON="❌"; LABEL="Closed"
+          elif [ "$ACTION" = "reopened" ]; then ICON="🔄"; LABEL="Reopened"
+          else ICON="📋"; LABEL="Ready"; fi
+
+          BODY=$(echo "$PR_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          [ ${#PR_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
+          [ -n "$BODY" ] && BODY=" · $BODY"
+
+          MSG="$ICON **[$LABEL #$PR_NUM: $PR_TITLE]($PR_URL)** by @$PR_USER$BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Issue events
   issues:
     if: github.event_name == 'issues'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare message
-        id: prep
-        run: |
-          BODY="${{ github.event.issue.body }}"
-          BODY="${BODY//$'\n'/ }"
-          BODY="${BODY//$'\r'/}"
-          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
-            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
-          fi
-          echo "body=$BODY" >> $GITHUB_OUTPUT
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "${{ github.event.action == 'opened' && '🐛 New Issue' || github.event.action == 'closed' && '✅ Issue Closed' || '🔄 Issue Reopened' }}"
-          description: |
-            **[#${{ github.event.issue.number }}](${{ github.event.issue.html_url }}) ${{ github.event.issue.title }}**
-            by @${{ github.event.issue.user.login }}${{ steps.prep.outputs.body && format(' · {0}', steps.prep.outputs.body) || '' }}
-          color: ${{ github.event.action == 'closed' && '0x6f42c1' || '0x238636' }}
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ACTION: ${{ github.event.action }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          if [ "$ACTION" = "opened" ]; then ICON="🐛"; LABEL="New Issue"
+          elif [ "$ACTION" = "closed" ]; then ICON="✅"; LABEL="Closed"
+          else ICON="🔄"; LABEL="Reopened"; fi
+
+          BODY=$(echo "$ISSUE_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          [ ${#ISSUE_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
+          [ -n "$BODY" ] && BODY=" · $BODY"
+
+          MSG="$ICON **[$LABEL #$ISSUE_NUM: $ISSUE_TITLE]($ISSUE_URL)** by @$ISSUE_USER$BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Issue comment
   issue_comment:
     if: github.event_name == 'issue_comment'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare message
-        id: prep
-        run: |
-          BODY="${{ github.event.comment.body }}"
-          BODY="${BODY//$'\n'/ }"
-          BODY="${BODY//$'\r'/}"
-          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
-            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
-          fi
-          echo "body=$BODY" >> $GITHUB_OUTPUT
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "${{ github.event.issue.pull_request && '💬 Comment on PR' || '💬 Comment on Issue' }}"
-          description: |
-            **[#${{ github.event.issue.number }}](${{ github.event.comment.html_url }}) ${{ github.event.issue.title }}**
-            @${{ github.event.comment.user.login }}: ${{ steps.prep.outputs.body }}
-          color: 0x0366d6
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          IS_PR: ${{ github.event.issue.pull_request && 'true' || 'false' }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
+          COMMENT_USER: ${{ github.event.comment.user.login }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          [ "$IS_PR" = "true" ] && TYPE="PR" || TYPE="Issue"
+
+          BODY=$(echo "$COMMENT_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          [ ${#COMMENT_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
+
+          MSG="💬 **[Comment on $TYPE #$ISSUE_NUM: $ISSUE_TITLE]($COMMENT_URL)** @$COMMENT_USER: $BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # PR Review
   pull_request_review:
     if: github.event_name == 'pull_request_review'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare message
-        id: prep
-        run: |
-          BODY="${{ github.event.review.body }}"
-          BODY="${BODY//$'\n'/ }"
-          BODY="${BODY//$'\r'/}"
-          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
-            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
-          fi
-          echo "body=$BODY" >> $GITHUB_OUTPUT
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "${{ github.event.review.state == 'approved' && '✅ PR Approved' || github.event.review.state == 'changes_requested' && '🔧 Changes Requested' || '👀 PR Reviewed' }}"
-          description: |
-            **[#${{ github.event.pull_request.number }}](${{ github.event.review.html_url }}) ${{ github.event.pull_request.title }}**
-            @${{ github.event.review.user.login }}${{ steps.prep.outputs.body && format(': {0}', steps.prep.outputs.body) || '' }}
-          color: ${{ github.event.review.state == 'approved' && '0x238636' || github.event.review.state == 'changes_requested' && '0xd29922' || '0x0366d6' }}
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          STATE: ${{ github.event.review.state }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          REVIEW_URL: ${{ github.event.review.html_url }}
+          REVIEW_USER: ${{ github.event.review.user.login }}
+          REVIEW_BODY: ${{ github.event.review.body }}
+        run: |
+          if [ "$STATE" = "approved" ]; then ICON="✅"; LABEL="Approved"
+          elif [ "$STATE" = "changes_requested" ]; then ICON="🔧"; LABEL="Changes Requested"
+          else ICON="👀"; LABEL="Reviewed"; fi
+
+          BODY=$(echo "$REVIEW_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          [ ${#REVIEW_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
+          [ -n "$BODY" ] && BODY=": $BODY"
+
+          MSG="$ICON **[$LABEL PR #$PR_NUM: $PR_TITLE]($REVIEW_URL)** @$REVIEW_USER$BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # PR Review comment
   pull_request_review_comment:
     if: github.event_name == 'pull_request_review_comment'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare message
-        id: prep
-        run: |
-          BODY="${{ github.event.comment.body }}"
-          BODY="${BODY//$'\n'/ }"
-          BODY="${BODY//$'\r'/}"
-          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
-            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
-          fi
-          echo "body=$BODY" >> $GITHUB_OUTPUT
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "💭 Review Comment on PR"
-          description: |
-            **[#${{ github.event.pull_request.number }}](${{ github.event.comment.html_url }}) ${{ github.event.pull_request.title }}**
-            @${{ github.event.comment.user.login }}: ${{ steps.prep.outputs.body }}
-          color: 0x0366d6
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
+          COMMENT_USER: ${{ github.event.comment.user.login }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          BODY=$(echo "$COMMENT_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          [ ${#COMMENT_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
+
+          MSG="💭 **[Review Comment PR #$PR_NUM: $PR_TITLE]($COMMENT_URL)** @$COMMENT_USER: $BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Release
   release:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare message
-        id: prep
-        run: |
-          BODY="${{ github.event.release.body }}"
-          BODY="${BODY//$'\n'/ }"
-          BODY="${BODY//$'\r'/}"
-          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
-            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
-          fi
-          echo "body=$BODY" >> $GITHUB_OUTPUT
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "🚀 New Release Published"
-          description: |
-            **[${{ github.event.release.tag_name }}](${{ github.event.release.html_url }}) ${{ github.event.release.name }}**
-            ${{ steps.prep.outputs.body }}
-          color: 0x6f42c1
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          TAG: ${{ github.event.release.tag_name }}
+          NAME: ${{ github.event.release.name }}
+          URL: ${{ github.event.release.html_url }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: |
+          BODY=$(echo "$RELEASE_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
+          [ ${#RELEASE_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
+          [ -n "$BODY" ] && BODY=" · $BODY"
+
+          MSG="🚀 **[Release $TAG: $NAME]($URL)**$BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Branch/tag created
   create:
@@ -182,14 +170,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "${{ github.event.ref_type == 'branch' && '🌿 Branch Created' || '🏷️ Tag Created' }}"
-          description: |
-            **${{ github.event.ref }}** by @${{ github.actor }}
-          color: 0x238636
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          REF_TYPE: ${{ github.event.ref_type }}
+          REF: ${{ github.event.ref }}
+          ACTOR: ${{ github.actor }}
+          REPO_URL: ${{ github.event.repository.html_url }}
+        run: |
+          [ "$REF_TYPE" = "branch" ] && ICON="🌿" || ICON="🏷️"
+          MSG="$ICON **${REF_TYPE^} created: [$REF]($REPO_URL/tree/$REF)** by @$ACTOR"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Branch/tag deleted
   delete:
@@ -197,11 +187,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          nodetail: true
-          title: "${{ github.event.ref_type == 'branch' && '🗑️ Branch Deleted' || '🗑️ Tag Deleted' }}"
-          description: |
-            **${{ github.event.ref }}** by @${{ github.actor }}
-          color: 0xcb2431
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          REF_TYPE: ${{ github.event.ref_type }}
+          REF: ${{ github.event.ref }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          MSG="🗑️ **${REF_TYPE^} deleted: $REF** by @$ACTOR"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
