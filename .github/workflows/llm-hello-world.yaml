@@ -149,3 +149,84 @@ jobs:
           )"
 
           echo "Comment posted successfully!"
+
+  token-probe:
+    if: ${{ inputs.phase == 'token-probe' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe token limits
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "=== Token Limit Probe ==="
+          echo "Testing progressively larger payloads to find the ceiling"
+          echo ""
+
+          # Test sizes in characters (roughly 4 chars per token)
+          SIZES=(2000 4000 8000 16000 32000 64000)
+
+          # Generate filler text (lorem ipsum style)
+          generate_filler() {
+            local size=$1
+            python3 -c "print('The quick brown fox jumps over the lazy dog. ' * ($size // 45 + 1))[:$size]"
+          }
+
+          echo "| Size (chars) | ~Tokens | HTTP Status | Result |"
+          echo "|--------------|---------|-------------|--------|"
+
+          for SIZE in "${SIZES[@]}"; do
+            APPROX_TOKENS=$((SIZE / 4))
+
+            # Generate payload of specified size
+            FILLER=$(generate_filler $SIZE)
+
+            PROMPT="Respond with exactly one word: 'received'. Here is padding text to test token limits: $FILLER"
+            PROMPT_ESCAPED=$(echo "$PROMPT" | jq -Rs .)
+
+            # Call the LLM
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$LLM_ENDPOINT" \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"model\": \"$LLM_MODEL\",
+                \"messages\": [
+                  {\"role\": \"user\", \"content\": $PROMPT_ESCAPED}
+                ],
+                \"max_tokens\": 10
+              }" 2>/dev/null)
+
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+
+            if [ "$HTTP_CODE" = "200" ]; then
+              RESULT="OK"
+            else
+              # Extract error message if present
+              ERROR_MSG=$(echo "$BODY" | jq -r '.error.message // .message // "Unknown error"' 2>/dev/null | head -c 50)
+              RESULT="FAIL: $ERROR_MSG"
+
+              # Log full error for debugging
+              echo ""
+              echo "::warning::Failed at ${SIZE} chars (~${APPROX_TOKENS} tokens)"
+              echo "Full error response:"
+              echo "$BODY" | jq . 2>/dev/null || echo "$BODY"
+              echo ""
+            fi
+
+            echo "| $SIZE | ~$APPROX_TOKENS | $HTTP_CODE | $RESULT |"
+
+            # Stop probing after first failure to avoid hammering the API
+            if [ "$HTTP_CODE" != "200" ]; then
+              echo ""
+              echo "=== Ceiling Found ==="
+              echo "Last successful size: $((SIZE / 2)) chars (~$((SIZE / 8)) tokens)"
+              echo "First failure at: $SIZE chars (~$APPROX_TOKENS tokens)"
+              break
+            fi
+
+            # Small delay to avoid rate limiting
+            sleep 1
+          done
+
+          echo ""
+          echo "=== Probe Complete ==="
