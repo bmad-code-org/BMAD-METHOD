@@ -1,16 +1,207 @@
 name: Discord Notification
 
-"on": [pull_request, release, create, delete, issue_comment, pull_request_review, pull_request_review_comment]
+on:
+  pull_request:
+    types: [opened, closed, reopened, ready_for_review]
+  release:
+    types: [published]
+  create:
+  delete:
+  issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, closed, reopened]
+
+env:
+  MAX_BODY_LENGTH: 200
 
 jobs:
-  notify:
+  # Pull Request events
+  pull_request:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare message
+        id: prep
+        run: |
+          BODY="${{ github.event.pull_request.body }}"
+          BODY="${BODY//$'\n'/ }"
+          BODY="${BODY//$'\r'/}"
+          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
+            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
+          fi
+          echo "body=$BODY" >> $GITHUB_OUTPUT
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "${{ github.event.action == 'opened' && '🔀 New PR' || github.event.action == 'closed' && github.event.pull_request.merged && '🎉 PR Merged' || github.event.action == 'closed' && '❌ PR Closed' || github.event.action == 'reopened' && '🔄 PR Reopened' || '📋 PR Ready for Review' }}"
+          description: |
+            **[#${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }}) ${{ github.event.pull_request.title }}**
+            by @${{ github.event.pull_request.user.login }}${{ steps.prep.outputs.body && format(' · {0}', steps.prep.outputs.body) || '' }}
+          color: ${{ github.event.action == 'closed' && github.event.pull_request.merged && '0x6f42c1' || github.event.action == 'closed' && '0xcb2431' || '0x238636' }}
+
+  # Issue events
+  issues:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare message
+        id: prep
+        run: |
+          BODY="${{ github.event.issue.body }}"
+          BODY="${BODY//$'\n'/ }"
+          BODY="${BODY//$'\r'/}"
+          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
+            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
+          fi
+          echo "body=$BODY" >> $GITHUB_OUTPUT
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "${{ github.event.action == 'opened' && '🐛 New Issue' || github.event.action == 'closed' && '✅ Issue Closed' || '🔄 Issue Reopened' }}"
+          description: |
+            **[#${{ github.event.issue.number }}](${{ github.event.issue.html_url }}) ${{ github.event.issue.title }}**
+            by @${{ github.event.issue.user.login }}${{ steps.prep.outputs.body && format(' · {0}', steps.prep.outputs.body) || '' }}
+          color: ${{ github.event.action == 'closed' && '0x6f42c1' || '0x238636' }}
+
+  # Issue comment
+  issue_comment:
+    if: github.event_name == 'issue_comment'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare message
+        id: prep
+        run: |
+          BODY="${{ github.event.comment.body }}"
+          BODY="${BODY//$'\n'/ }"
+          BODY="${BODY//$'\r'/}"
+          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
+            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
+          fi
+          echo "body=$BODY" >> $GITHUB_OUTPUT
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "${{ github.event.issue.pull_request && '💬 Comment on PR' || '💬 Comment on Issue' }}"
+          description: |
+            **[#${{ github.event.issue.number }}](${{ github.event.comment.html_url }}) ${{ github.event.issue.title }}**
+            @${{ github.event.comment.user.login }}: ${{ steps.prep.outputs.body }}
+          color: 0x0366d6
+
+  # PR Review
+  pull_request_review:
+    if: github.event_name == 'pull_request_review'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare message
+        id: prep
+        run: |
+          BODY="${{ github.event.review.body }}"
+          BODY="${BODY//$'\n'/ }"
+          BODY="${BODY//$'\r'/}"
+          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
+            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
+          fi
+          echo "body=$BODY" >> $GITHUB_OUTPUT
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "${{ github.event.review.state == 'approved' && '✅ PR Approved' || github.event.review.state == 'changes_requested' && '🔧 Changes Requested' || '👀 PR Reviewed' }}"
+          description: |
+            **[#${{ github.event.pull_request.number }}](${{ github.event.review.html_url }}) ${{ github.event.pull_request.title }}**
+            @${{ github.event.review.user.login }}${{ steps.prep.outputs.body && format(': {0}', steps.prep.outputs.body) || '' }}
+          color: ${{ github.event.review.state == 'approved' && '0x238636' || github.event.review.state == 'changes_requested' && '0xd29922' || '0x0366d6' }}
+
+  # PR Review comment
+  pull_request_review_comment:
+    if: github.event_name == 'pull_request_review_comment'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare message
+        id: prep
+        run: |
+          BODY="${{ github.event.comment.body }}"
+          BODY="${BODY//$'\n'/ }"
+          BODY="${BODY//$'\r'/}"
+          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
+            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
+          fi
+          echo "body=$BODY" >> $GITHUB_OUTPUT
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "💭 Review Comment on PR"
+          description: |
+            **[#${{ github.event.pull_request.number }}](${{ github.event.comment.html_url }}) ${{ github.event.pull_request.title }}**
+            @${{ github.event.comment.user.login }}: ${{ steps.prep.outputs.body }}
+          color: 0x0366d6
+
+  # Release
+  release:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare message
+        id: prep
+        run: |
+          BODY="${{ github.event.release.body }}"
+          BODY="${BODY//$'\n'/ }"
+          BODY="${BODY//$'\r'/}"
+          if [ ${#BODY} -gt $MAX_BODY_LENGTH ]; then
+            BODY="${BODY:0:$MAX_BODY_LENGTH}..."
+          fi
+          echo "body=$BODY" >> $GITHUB_OUTPUT
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "🚀 New Release Published"
+          description: |
+            **[${{ github.event.release.tag_name }}](${{ github.event.release.html_url }}) ${{ github.event.release.name }}**
+            ${{ steps.prep.outputs.body }}
+          color: 0x6f42c1
+
+  # Branch/tag created
+  create:
+    if: github.event_name == 'create'
     runs-on: ubuntu-latest
     steps:
       - name: Notify Discord
         uses: sarisia/actions-status-discord@v1
-        if: always()
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
-          title: "Triggered by ${{ github.event_name }}"
-          color: 0x5865F2
+          nodetail: true
+          title: "${{ github.event.ref_type == 'branch' && '🌿 Branch Created' || '🏷️ Tag Created' }}"
+          description: |
+            **${{ github.event.ref }}** by @${{ github.actor }}
+          color: 0x238636
+
+  # Branch/tag deleted
+  delete:
+    if: github.event_name == 'delete'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Discord
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          nodetail: true
+          title: "${{ github.event.ref_type == 'branch' && '🗑️ Branch Deleted' || '🗑️ Tag Deleted' }}"
+          description: |
+            **${{ github.event.ref }}** by @${{ github.actor }}
+          color: 0xcb2431
