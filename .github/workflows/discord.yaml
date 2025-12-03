@@ -46,7 +46,7 @@ jobs:
           [ ${#PR_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
           [ -n "$BODY" ] && BODY=" · $BODY"
 
-          MSG="$ICON **[$LABEL #$PR_NUM: $PR_TITLE](<$PR_URL>)** by @$PR_USER$BODY"
+          MSG=$(printf '%s **[%s #%s: %s](<%s>)**\nby @%s%s' "$ICON" "$LABEL" "$PR_NUM" "$PR_TITLE" "$PR_URL" "$PR_USER" "$BODY")
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Issue events
@@ -72,7 +72,7 @@ jobs:
           [ ${#ISSUE_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
           [ -n "$BODY" ] && BODY=" · $BODY"
 
-          MSG="$ICON **[$LABEL #$ISSUE_NUM: $ISSUE_TITLE](<$ISSUE_URL>)** by @$ISSUE_USER$BODY"
+          MSG=$(printf '%s **[%s #%s: %s](<%s>)**\nby @%s%s' "$ICON" "$LABEL" "$ISSUE_NUM" "$ISSUE_TITLE" "$ISSUE_URL" "$ISSUE_USER" "$BODY")
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Issue comment
@@ -95,7 +95,7 @@ jobs:
           BODY=$(echo "$COMMENT_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
           [ ${#COMMENT_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
 
-          MSG="💬 **[Comment on $TYPE #$ISSUE_NUM: $ISSUE_TITLE](<$COMMENT_URL>)** @$COMMENT_USER: $BODY"
+          MSG=$(printf '💬 **[Comment on %s #%s: %s](<%s>)**\n@%s: %s' "$TYPE" "$ISSUE_NUM" "$ISSUE_TITLE" "$COMMENT_URL" "$COMMENT_USER" "$BODY")
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # PR Review
@@ -121,7 +121,7 @@ jobs:
           [ ${#REVIEW_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
           [ -n "$BODY" ] && BODY=": $BODY"
 
-          MSG="$ICON **[$LABEL PR #$PR_NUM: $PR_TITLE](<$REVIEW_URL>)** @$REVIEW_USER$BODY"
+          MSG=$(printf '%s **[%s PR #%s: %s](<%s>)**\n@%s%s' "$ICON" "$LABEL" "$PR_NUM" "$PR_TITLE" "$REVIEW_URL" "$REVIEW_USER" "$BODY")
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # PR Review comment
@@ -141,7 +141,7 @@ jobs:
           BODY=$(echo "$COMMENT_BODY" | tr '\n\r' '  ' | head -c $MAX_BODY_LENGTH)
           [ ${#COMMENT_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
 
-          MSG="💭 **[Review Comment PR #$PR_NUM: $PR_TITLE](<$COMMENT_URL>)** @$COMMENT_USER: $BODY"
+          MSG=$(printf '💭 **[Review Comment PR #%s: %s](<%s>)**\n@%s: %s' "$PR_NUM" "$PR_TITLE" "$COMMENT_URL" "$COMMENT_USER" "$BODY")
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Release
@@ -161,7 +161,7 @@ jobs:
           [ ${#RELEASE_BODY} -gt $MAX_BODY_LENGTH ] && BODY="${BODY}..."
           [ -n "$BODY" ] && BODY=" · $BODY"
 
-          MSG="🚀 **[Release $TAG: $NAME](<$URL>)**$BODY"
+          MSG=$(printf '🚀 **[Release %s: %s](<%s>)**\n%s' "$TAG" "$NAME" "$URL" "$BODY")
           jq -n --arg content "$MSG" '{content: $content}' | curl -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
 
   # Branch/tag created
