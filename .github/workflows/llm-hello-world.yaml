@@ -156,7 +156,7 @@ jobs:
     steps:
       - name: Probe token limits
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COPILOT_PAT || secrets.GITHUB_TOKEN }}
         run: |
           echo "=== Token Limit Probe ==="
           echo "Testing progressively larger payloads to find the ceiling"
