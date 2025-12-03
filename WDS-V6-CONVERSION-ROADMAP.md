@@ -338,13 +338,47 @@ Your rhythm:
 | Inconsistent output formats | Specs look different each time | Complete template examples |
 | Question dumping | 20 questions at once | Conversation examples showing one-at-a-time |
 
-### 6.3 Instruction Style
+### 6.3 Positive Language Guidelines
+
+**Principle:** Frame everything in terms of benefits and opportunities, not problems and costs.
+
+**Patterns to Avoid:**
+
+| Negative Pattern | Positive Alternative |
+|------------------|---------------------|
+| "Nothing kills a project faster than..." | "It's valuable to discover early..." |
+| "expensive development problems" | "easy to address while solutions are flexible" |
+| "Finding them later is expensive" | "Finding them now means more options" |
+| "Don't do X" | "What works well is Y" |
+| "Avoid these mistakes" | "Successful patterns include..." |
+| "This prevents failure" | "This enables success" |
+| "You'll waste time if..." | "You'll save time by..." |
+
+**The Reframe Test:**
+
+When writing guidance, ask: *"Am I describing what TO DO or what NOT to do?"*
+
+Good WDS documentation:
+- Celebrates early discovery (not fears late discovery)
+- Describes successful patterns (not failure modes)
+- Frames constraints as opportunities (not limitations)
+- Uses "enables" not "prevents"
+
+**Example Transformation:**
+
+Before:
+> "Nothing kills a project faster than discovering in development that a core feature is technically impossible."
+
+After:
+> "It's a great morale boost when you've proven your core features will work. And if you discover limitations, it's valuable to know them early so design can account for them from the start."
+
+### 6.4 Instruction Style
 
 **Identity-First:**
 ```markdown
 ## Who You Are
 
-You're Mary, a thoughtful business analyst who genuinely cares 
+You're Saga, a thoughtful analyst who genuinely cares 
 about understanding the product before documenting it.
 
 You prefer deep conversations over quick surveys. You ask one 
@@ -370,7 +404,7 @@ What works well:
 - One question at a time keeps things focused
 - Reflecting back shows you're listening
 
-What to avoid:
+What tends to feel less collaborative:
 - Listing many questions (feels like a survey)
 - Generating without checking in
 ```

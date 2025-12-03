@@ -1,8 +1,7 @@
-# Phase 2: User Research (Trigger Mapping)
+# Phase 2: Trigger map
 
 **Agent:** Saga the Analyst  
-**Output:** `B-Trigger-Map/` (or your configured prefix)  
-**Duration:** 2-3 hours
+**Output:** `B-Trigger-Map/` (or your configured prefix)
 
 ---
 
@@ -172,7 +171,7 @@ Now the magic happens. You connect strategy to concrete features using a systema
 3. **Map to Driving Forces** - Which positive and negative drivers does it address?
 4. **Score the Impact** - Features serving multiple groups and drivers score higher
 
-**The Scoring System:**
+**The Scoring System:** *(Beta - refinements welcome)*
 
 For each feature, award points:
 

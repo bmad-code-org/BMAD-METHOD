@@ -1,8 +1,7 @@
-# Phase 4: UX Design (Conceptual Specifications)
+# Phase 4: UX Design (UX-Sketches & Usage Scenarios)
 
 **Agent:** Baldr the UX Expert  
-**Output:** `C-Scenarios/` (or your configured prefix)  
-**Duration:** 2-4 hours per scenario (varies by complexity)
+**Output:** `C-Scenarios/` (or your configured prefix)
 
 ---
 
@@ -10,7 +9,7 @@
 
 UX Design transforms ideas into detailed visual specifications. Working with Baldr, you conceptualize, sketch, and specify every interaction until your design can be logically explained without gaps.
 
-**The key insight:** Designs that can be logically explained without gaps are easy to develop. The specification process reveals holes in your thinking before they become expensive development problems.
+**The key insight:** Designs that can be logically explained without gaps are easy to develop. The specification process reveals gaps in your thinking early - when they're easy to address.
 
 ---
 
@@ -24,14 +23,14 @@ For each scenario/page:
 - **Interaction Behaviors** - What happens when users interact
 - **State Definitions** - All possible states for dynamic elements
 - **Multilingual Content** - Text in all supported languages
-- **HTML Previews** - Interactive prototypes for validation
+- **HTML Prototypes** - Interactive prototypes for validation
 
 ---
 
-## Three Ways to Work
+## How Baldr the UX Expert helps you design software
 
 ### 4A: Scenario Exploration
-**When:** No sketch exists, discovering the solution together
+**When:** Discovering the Concept, the process, flow screen or component solution together, before sketching begin
 
 Baldr helps you:
 - Think through the user's journey
@@ -39,32 +38,68 @@ Baldr helps you:
 - Consider psychological triggers from your Trigger Map
 - Arrive at a clear solution ready for sketching
 
-### 4B: Sketch Analysis
-**When:** You have a sketch, need to specify it
+### 4B: UI Sketch Analysis
+**When:** You have a sketch and you need feedback on it
 
 Baldr helps you:
 - Analyze what the sketch shows
 - Ask clarifying questions
 - Identify all components and states
-- Create complete specifications
 
-### 4C: Specification Creation
+### 4C: Conceptual Specification
 **When:** Design is clear, need development-ready specs
 
 Baldr helps you:
 - Document every detail systematically
 - Assign Object IDs for testing
 - Define all interactions and states
-- Prepare multilingual content
+- Prepare multilingual content, error codes, instructions and any other content needed for the developers
 
-### 4D: HTML Preview
-**When:** Specifications complete, need visual validation
+### 4D: HTML Prototype
+**When:** Specifications complete, and we make the sketch come alive to test the concept
 
 Baldr helps you:
-- Create interactive HTML prototypes
+- Create interactive prototypes
 - Test the design in browser
 - Discover gaps and issues
-- Refine specifications before development
+- Refine specifications 
+- Visualize the concept before development
+
+### 4E: PRD Update
+**When:** Page design is complete, before moving to the next scenario
+
+Baldr helps you:
+- Identify what features this page requires
+- Add functional requirements to the PRD
+- Reference the page (e.g., "Required by: 2.1-Dog-Calendar")
+- Note any API endpoints, validations, or data needs discovered
+
+**Why this step matters:**
+
+Each page reveals concrete requirements:
+- "This form needs email validation"
+- "We need a GET endpoint for availability"
+- "Users need to upload images here"
+
+Capturing these while the page is fresh ensures nothing is forgotten. The PRD becomes a complete feature inventory with traceability to the pages that need each feature.
+
+**PRD grows like this:**
+
+```markdown
+## Functional Requirements
+
+### Email Validation
+**Required by:** 1.2-Sign-Up, 2.3-Profile-Edit
+- Validate format on input
+- Check domain exists
+- Prevent duplicates
+
+### Availability Calendar API
+**Required by:** 2.1-Dog-Calendar, 3.1-Booking-Flow
+- GET /api/walkers/{id}/availability
+- Returns 2-week window
+- Updates via WebSocket
+```
 
 ---
 
@@ -76,10 +111,10 @@ Scenarios organize your design work into a clear hierarchy:
 C-Scenarios/
 ├── 00-Scenario-Overview.md
 ├── 01-User-Onboarding/
-│   ├── 1.1-Welcome-Page/
-│   │   ├── 1.1-Welcome-Page.md
+│   ├── 1.1-Start-Page/
+│   │   ├── 1.1-Start-Page.md
 │   │   ├── Sketches/
-│   │   └── Frontend/
+│   │   └── Prototype/
 │   └── 1.2-Sign-Up/
 │       ├── 1.2-Sign-Up.md
 │       └── ...
@@ -110,6 +145,31 @@ signin-form-email-input
 signin-form-error-email
 ```
 
+### Design System Integration
+
+**When Design System is enabled** (Phase 5), each object in your specification includes component library references:
+
+**Example specification entry:**
+```markdown
+### Submit Button
+**Object ID:** `signin-form-submit-button`
+**Component:** primary-button (from Design System)
+**Figma Component:** Primary Button
+**Variant:** size=large, type=primary
+**State:** default
+
+Triggers form validation and submission...
+```
+
+**Benefits:**
+- Designers know which Figma component to use
+- Developers know which code component to implement
+- Design System ensures consistency
+- Object IDs connect spec → design → code
+
+**Without Design System:**
+Just describe the element directly in the specification without component references.
+
 ---
 
 ## The Pressure-Testing Process
@@ -122,11 +182,11 @@ When you try to specify every detail, you discover:
 - "What if the user does X before Y?"
 - "Where does this data come from?"
 
-Finding these gaps now is cheap. Finding them during development is expensive.
+Finding these gaps now means addressing them while solutions are still flexible.
 
 ---
 
-## HTML Previews
+## HTML Prototypes
 
 Interactive prototypes that validate your design:
 
@@ -145,14 +205,14 @@ Interactive prototypes that validate your design:
 
 **File Structure:**
 ```
-1.1-Welcome-Page/
-├── 1.1-Welcome-Page.md (specification)
+1.1-Start-Page/
+├── 1.1-Start-Page.md (specification)
 ├── Sketches/
 │   └── concept-sketch.jpg
-└── Frontend/
-    ├── 1.1-Welcome-Page-Preview.html
-    ├── 1.1-Welcome-Page-Preview.css
-    └── 1.1-Welcome-Page-Preview.js
+└── Prototype/
+    ├── 1.1-Start-Page-Prototype.html
+    ├── 1.1-Start-Page-Prototype.css
+    └── 1.1-Start-Page-Prototype.js
 ```
 
 ---
@@ -173,7 +233,7 @@ Interactive prototypes that validate your design:
 - Have sketches ready to specify
 - Know what you want, need to document it
 
-**Use HTML previews (4D) if:**
+**Use HTML prototypes (4D) if:**
 - Specifications feel complete
 - Want to validate before development
 - Need stakeholder sign-off
@@ -214,7 +274,7 @@ Your specifications enable:
 - Success states
 - Edge cases
 
-**Don't skip the preview**
+**Don't skip the prototype**
 - Click through your design
 - Find the gaps before development
 - Refine specs based on what you learn

@@ -1,8 +1,7 @@
-# Phase 1: Product Exploration
+# Phase 1: Product Exploration (Product Brief) (Project brief)
 
 **Agent:** Saga the Analyst  
-**Output:** `A-Product-Brief/` (or your configured prefix)  
-**Duration:** 30-60 minutes
+**Output:** `A-Product-Brief/` (or your configured prefix)
 
 ---
 

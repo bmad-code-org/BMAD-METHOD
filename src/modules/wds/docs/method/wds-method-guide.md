@@ -101,7 +101,7 @@ Transform ideas into detailed visual specifications. Your agent helps you think 
 - Component definitions with Object IDs
 - Interaction behaviors and states
 - Multilingual content
-- HTML previews for validation
+- HTML prototypes for validation
 
 ---
 
