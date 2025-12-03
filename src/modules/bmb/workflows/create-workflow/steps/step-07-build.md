@@ -1,34 +1,32 @@
 ---
-name: 'step-11-build'
+name: 'step-07-build'
 description: 'Generate all workflow files based on the approved plan'
 
 # Path Definitions
 workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-11-build.md'
-nextStepFile: '{workflow_path}/steps/step-12-review.md'
+thisStepFile: '{workflow_path}/steps/step-07-build.md'
+nextStepFile: '{workflow_path}/steps/step-08-review.md'
 workflowFile: '{workflow_path}/workflow.md'
 # Output files for workflow creation process
-workflowPlanFile: '{output_folder}/workflow-plan-{new_workflow_name}.md'
 targetWorkflowPath: '{custom_workflow_location}/{new_workflow_name}'
-
-# Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Template References
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md'
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md'
-contentTemplate: '{workflow_path}/templates/content-template.md'
-buildSummaryTemplate: '{workflow_path}/templates/build-summary.md'
+workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
+stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
+stepInitContinuableTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-01-init-continuable-template.md'
+step1bTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-1b-template.md'
+# No content templates needed - will create content as needed during build
+# No build summary template needed - will append summary directly to workflow plan
 ---
 
-# Step 5: Workflow File Generation
+# Step 7: Workflow File Generation
 
 ## STEP GOAL:
 
-To generate all the workflow files (workflow.md, step files, templates, and supporting files) based on the approved plan from the previous review step.
+To generate all the workflow files (workflow.md, step files, templates, and supporting files) based on the approved plan from the previous design step.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -58,20 +56,22 @@ To generate all the workflow files (workflow.md, step files, templates, and supp
 
 - 🎯 Generate files systematically from design
 - 💾 Document all generated files and their locations
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
+- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and build is complete
 
 ## CONTEXT BOUNDARIES:
 
-- Approved plan from step 10 guides implementation
+- Approved plan from step 6 guides implementation
 - Generate files in target workflow location
 - Load templates and documentation as needed during build
 - Follow step-file architecture principles
 
 ## BUILD REFERENCE MATERIALS:
 
-- When building each step file, you must follow template `{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md`
-- When building the main workflow.md file, you must follow template `{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md`
+- When building each step file, you must follow template `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md`
+- When building continuable step-01-init.md files, use template `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-01-init-continuable-template.md`
+- When building continuation steps, use template `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-1b-template.md`
+- When building the main workflow.md file, you must follow template `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md`
 - Example step files from {project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition/workflow.md for patterns
 
 ## FILE GENERATION SEQUENCE:
@@ -99,6 +99,7 @@ Create the workflow folder structure in the target location:
 ├── workflow.md
 ├── steps/
 │   ├── step-01-init.md
+│   ├── step-01b-continue.md (if continuation support needed)
 │   ├── step-02-[name].md
 │   └── ...
 ├── templates/
@@ -116,14 +117,54 @@ Load and follow {workflowTemplate}:
 
 - Create workflow.md using template structure
 - Insert workflow name and description
-- Configure all path variables ({project-root}, {bmad_folder}, {workflow_path})
+- Configure all path variables ({project-root}, {_bmad_folder_}, {workflow_path})
 - Set web_bundle flag to true unless user has indicated otherwise
 - Define role and goal
 - Include initialization path to step-01
 
 ### 4. Generate Step Files
 
-For each step in the design:
+#### 4a. Check for Continuation Support
+
+**Check the workflow plan for continuation support:**
+
+- Look for "continuation support: true" or similar flag
+- Check if step-01b-continue.md was included in the design
+- If workflow generates output documents, continuation is typically needed
+
+#### 4b. Generate step-01-init.md (with continuation logic)
+
+If continuation support is needed:
+
+- Load and follow {stepInitContinuableTemplate}
+- This template automatically includes all required continuation detection logic
+- Customize with workflow-specific information:
+  - Update workflow_path references
+  - Set correct outputFile and templateFile paths
+  - Adjust role and persona to match workflow type
+  - Customize welcome message for workflow context
+  - Configure input document discovery patterns (if any)
+- Template automatically handles:
+  - continueFile reference in frontmatter
+  - Logic to check for existing output files with stepsCompleted
+  - Routing to step-01b-continue.md for continuation
+  - Fresh workflow initialization
+
+#### 4c. Generate step-01b-continue.md (if needed)
+
+**If continuation support is required:**
+
+- Load and follow {step1bTemplate}
+- Customize with workflow-specific information:
+  - Update workflow_path references
+  - Set correct outputFile path
+  - Adjust role and persona to match workflow type
+  - Customize welcome back message for workflow context
+- Ensure proper nextStep detection logic based on step numbers
+
+#### 4d. Generate Remaining Step Files
+
+For each remaining step in the design:
 
 - Load and follow {stepTemplate}
 - Create step file using template structure
@@ -131,12 +172,12 @@ For each step in the design:
 - Ensure proper frontmatter with path references
 - Include appropriate menu handling and universal rules
 - Follow all mandatory rules and protocols from template
+- **Critical**: Ensure each step updates `stepsCompleted` array when completing
 
 ### 5. Generate Templates (If Needed)
 
 For document workflows:
 
-- Load {contentTemplate}
 - Create template.md with proper structure
 - Include all variables from design
 - Ensure variable naming consistency
@@ -219,7 +260,12 @@ Create a summary of what was generated:
 
 After generating all files, append to {workflowPlanFile}:
 
-Load and append the content from {buildSummaryTemplate}
+Create a build summary including:
+
+- List of all files created with full paths
+- Any customizations from templates
+- Manual steps needed
+- Next steps for testing
 
 ### 9. Present MENU OPTIONS
 

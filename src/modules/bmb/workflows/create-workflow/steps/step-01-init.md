@@ -1,6 +1,6 @@
 ---
 name: 'step-01-init'
-description: 'Initialize workflow creation session by detecting continuation state and setting up project'
+description: 'Initialize workflow creation session by gathering project information and setting up unique workflow folder'
 
 # Path Definitions
 workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
@@ -9,24 +9,19 @@ workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
 thisStepFile: '{workflow_path}/steps/step-01-init.md'
 nextStepFile: '{workflow_path}/steps/step-02-gather.md'
 workflowFile: '{workflow_path}/workflow.md'
+
 # Output files for workflow creation process
-workflowPlanFile: '{output_folder}/workflow-plan-{new_workflow_name}.md'
 targetWorkflowPath: '{custom_workflow_location}/{new_workflow_name}'
-
-# Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
-
+workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 # Template References
-projectInfoTemplate: '{workflow_path}/templates/project-info.md'
-workflowPlanTemplate: '{workflow_path}/templates/workflow-plan.md'
+# No workflow plan template needed - will create plan file directly
 ---
 
 # Step 1: Workflow Creation Initialization
 
 ## STEP GOAL:
 
-To initialize the workflow creation process by detecting continuation state, understanding project context, and preparing for collaborative workflow design.
+To initialize the workflow creation process by understanding project context, determining a unique workflow name, and preparing for collaborative workflow design.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -50,7 +45,7 @@ To initialize the workflow creation process by detecting continuation state, und
 - 🎯 Focus ONLY on initialization and project understanding
 - 🚫 FORBIDDEN to start designing workflow steps in this step
 - 💬 Ask questions conversationally to understand context
-- 🚪 DETECT existing workflow state and handle continuation properly
+- 🚪 ENSURE unique workflow naming to avoid conflicts
 
 ## EXECUTION PROTOCOLS:
 
@@ -68,35 +63,7 @@ To initialize the workflow creation process by detecting continuation state, und
 
 ## INITIALIZATION SEQUENCE:
 
-### 1. Check for Existing Workflow Creation
-
-First, check if there's already a workflow folder with the proposed name:
-
-- Look for folder at `{custom_workflow_location}/{new_workflow_name}/`
-- If exists, check if it contains a workflow.md file
-- If not exists, this is a fresh workflow creation session
-
-### 2. Handle Continuation (If Workflow Exists)
-
-If the workflow folder exists and has been worked on:
-
-- **STOP here** and continue with step 4 (Welcome Back)
-- Do not proceed with fresh initialization
-- Let step 4 handle the continuation logic
-
-### 3. Handle Completed Workflow
-
-If the workflow folder exists AND is complete:
-
-- Ask user: "I found an existing workflow '{new_workflow_name}' from [date]. Would you like to:
-  1. Create a new workflow with a different name
-  2. Review or modify the existing workflow"
-- If option 1: Get a new workflow name
-- If option 2: Load step 5 (Review)
-
-### 4. Fresh Workflow Setup (If No Workflow)
-
-#### A. Project Discovery
+### 1. Project Discovery
 
 Welcome the user and understand their needs:
 "Welcome! I'm excited to help you create a new workflow. Let's start by understanding what you want to build."
@@ -107,33 +74,55 @@ Ask conversationally:
 - What problem will this workflow solve?
 - Who will use this workflow?
 - What module will it belong to (bmb, bmm, cis, custom, stand-alone)?
-- What would you like to name this workflow folder? (kebab-case, e.g., "user-story-generator")
 
-#### B. Create Workflow Plan Document
+Also, Ask / suggest a workflow name / folder: (kebab-case, e.g., "user-story-generator")
 
-Create the workflow plan document at `{workflowPlanFile}` using the workflow plan template `{workflowPlanTemplate}`.
-Initialize frontmatter with:
+### 2. Ensure Unique Workflow Name
 
-```yaml
+After getting the workflow name:
+
+**Check for existing workflows:**
+
+- Look for folder at `{custom_workflow_location}/{new_workflow_name}/`
+- If it exists, inform the user and suggest or get from them a unique name or postfix
+
+**Example alternatives:**
+
+- Original: "user-story-generator"
+- Alternatives: "user-story-creator", "user-story-generator-2025", "user-story-generator-enhanced"
+
+**Loop until we have a unique name that doesn't conflict.**
+
+### 3. Determine Target Location
+
+Based on the module selection, confirm the target location:
+
+- For bmb module: `{custom_workflow_location}` (defaults to `{bmad_folder}/custom/src/workflows`)
+- For other modules: Check their install-config.yaml for custom workflow locations
+- Confirm the exact folder path where the workflow will be created
+- Store the confirmed path as `{targetWorkflowPath}`
+
+### 4. Create Workflow Plan Document
+
+Create the workflow plan document at `{workflowPlanFile}` with the following initial content:
+
+```markdown
 ---
-workflowName: ''
-targetModule: ''
-workflowType: ''
-flowPattern: ''
-date: [current date]
-user_name: { user_name }
 stepsCompleted: [1]
-lastStep: 'init'
 ---
+
+# Workflow Creation Plan: {new_workflow_name}
+
+## Initial Project Context
+
+- **Module:** [module from user]
+- **Target Location:** {targetWorkflowPath}
+- **Created:** [current date]
 ```
 
 This plan will capture all requirements and design details before building the actual workflow.
 
-### 5. Welcome Message
-
-"Great! I'm ready to help you create a structured workflow using our step-based architecture. We'll work together to design a workflow that's collaborative, maintainable, and follows best practices."
-
-### 6. Present MENU OPTIONS
+### 5. Present MENU OPTIONS
 
 Display: **Proceeding to requirements gathering...**
 
@@ -145,7 +134,7 @@ Display: **Proceeding to requirements gathering...**
 
 #### Menu Handling Logic:
 
-- After setup completion, immediately load, read entire file, then execute `{workflow_path}/step-02-gather.md` to begin requirements gathering
+- After setup completion and the workflow folder with the workflow plan file created already, only then immediately load, read entire file, and then execute `{workflow_path}/steps/step-02-gather.md` to begin requirements gathering
 
 ---
 

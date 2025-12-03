@@ -15,8 +15,8 @@ targetWorkflowFile: '{target_workflow_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md'
+stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
 ---
 
 # Step 8: Comprehensive Compliance Report Generation

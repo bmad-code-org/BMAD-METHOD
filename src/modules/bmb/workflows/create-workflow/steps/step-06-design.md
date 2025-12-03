@@ -1,31 +1,30 @@
 ---
-name: 'step-09-design'
-description: 'Design the workflow structure and step sequence based on gathered requirements and tools configuration'
+name: 'step-06-design'
+description: 'Design the workflow structure and step sequence based on gathered requirements, tools configuration, and output format'
 
 # Path Definitions
 workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-09-design.md'
-nextStepFile: '{workflow_path}/steps/step-10-plan-review.md'
+thisStepFile: '{workflow_path}/steps/step-06-design.md'
+nextStepFile: '{workflow_path}/steps/step-07-build.md'
 workflowFile: '{workflow_path}/workflow.md'
 # Output files for workflow creation process
-workflowPlanFile: '{output_folder}/workflow-plan-{new_workflow_name}.md'
 targetWorkflowPath: '{custom_workflow_location}/{new_workflow_name}'
+workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
 partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
-
 # Template References
-designTemplate: '{workflow_path}/templates/design-section.md'
+# No template needed - will append design details directly to workflow plan
 ---
 
-# Step 3: Workflow Structure Design
+# Step 6: Workflow Structure Design
 
 ## STEP GOAL:
 
-To collaboratively design the workflow structure, step sequence, and interaction patterns based on the requirements gathered in the previous step.
+To collaboratively design the workflow structure, step sequence, and interaction patterns based on the approved plan and output format requirements.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -55,12 +54,13 @@ To collaboratively design the workflow structure, step sequence, and interaction
 
 - 🎯 Guide collaborative design process
 - 💾 After completing design, append to {workflowPlanFile}
-- 📖 Update plan frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
+- 📖 Update plan frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6]` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and design is saved
 
 ## CONTEXT BOUNDARIES:
 
-- Requirements from step 2 are available and should inform design
+- Approved plan from step 4 is available and should inform design
+- Output format design from step 5 (if completed) guides structure
 - Load architecture documentation when needed for guidance
 - Focus ONLY on structure and flow design
 - Don't implement actual files in this step
@@ -70,9 +70,10 @@ To collaboratively design the workflow structure, step sequence, and interaction
 
 When designing, you may load these documents as needed:
 
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md` - Step file structure
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md` - Workflow configuration
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/architecture.md` - Architecture principles
+- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md` - Step file structure
+- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-01-init-continuable-template.md` - Continuable init step template
+- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-1b-template.md` - Continuation step template
+- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md` - Workflow configuration
 - `{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition/workflow.md` - Complete example
 
 ## WORKFLOW DESIGN PROCESS:
@@ -84,16 +85,43 @@ Let's reference our step creation documentation for best practices:
 Load and reference step-file architecture guide:
 
 ```
-Read: {project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md
+Read: {project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md
 ```
 
-This shows the standard structure for step files. Based on the requirements, collaboratively design:
+This shows the standard structure for step files. Also reference:
+
+```
+Read: {project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-1b-template.md
+```
+
+This shows the continuation step pattern for workflows that might take multiple sessions.
+
+Based on the approved plan, collaboratively design:
 
 - How many major steps does this workflow need? (Recommend 3-7)
 - What is the goal of each step?
 - Which steps are optional vs required?
 - Should any steps repeat or loop?
 - What are the decision points within steps?
+
+### 1a. Continuation Support Assessment
+
+**Ask the user:**
+"Will this workflow potentially take multiple sessions to complete? Consider:
+
+- Does this workflow generate a document/output file?
+- Might users need to pause and resume the workflow?
+- Does the workflow involve extensive data collection or analysis?
+- Are there complex decisions that might require multiple sessions?
+
+If **YES** to any of these, we should include continuation support using step-01b-continue.md."
+
+**If continuation support is needed:**
+
+- Include step-01-init.md (with continuation detection logic)
+- Include step-01b-continue.md (for resuming workflows)
+- Ensure every step updates `stepsCompleted` in output frontmatter
+- Design the workflow to persist state between sessions
 
 ### 2. Interaction Pattern Design
 
@@ -170,31 +198,35 @@ Present the design for review:
 - Ensure steps can be loaded independently
 - Design for Just-In-Time loading
 
-### Collaborative Dialogue
+### Sequential Flow with Clear Progression
 
-- Design for conversation, not command-response
-- Include decision points for user input
-- Make the workflow adaptable to user context
+- Each step should build on previous work
+- Include clear decision points
+- Maintain logical progression toward goal
 
-### Sequential Enforcement
+### Menu-Based Interactions
 
-- Design clear step dependencies
-- Ensure logical flow between steps
-- Include state tracking for progress
+- Include consistent menu patterns
+- Provide clear options at decision points
+- Allow for conversation within steps
 
-### Error Prevention
+### State Management
 
-- Include validation at key points
-- Design for common failure scenarios
-- Provide clear guidance to users
+- Track progress using `stepsCompleted` array
+- Persist state in output file frontmatter
+- Support continuation where appropriate
 
-## CONTENT TO APPEND TO PLAN:
+### 9. Document Design in Plan
 
-After completing the design, append to {workflowPlanFile}:
+Append to {workflowPlanFile}:
 
-Load and append the content from {designTemplate}
+- Complete step outline with names and purposes
+- Flow diagram or sequence description
+- Interaction patterns
+- File structure requirements
+- Special features and handling
 
-### 9. Present MENU OPTIONS
+### 10. Present MENU OPTIONS
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
@@ -210,12 +242,12 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
-- IF C: Save content to {workflowPlanFile}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
-- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#9-present-menu-options)
+- IF C: Save design to {workflowPlanFile}, update frontmatter, then load, read entire file, then execute {nextStepFile}
+- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#10-present-menu-options)
 
 ## CRITICAL STEP COMPLETION NOTE
 
-ONLY WHEN C is selected and content is saved to workflow plan and frontmatter is updated, will you then load, read entire file, then execute {nextStepFile} to execute and begin workflow file generation step.
+ONLY WHEN C is selected and design is saved will you load {nextStepFile} to begin implementation.
 
 ---
 
@@ -224,16 +256,16 @@ ONLY WHEN C is selected and content is saved to workflow plan and frontmatter is
 ### ✅ SUCCESS:
 
 - Workflow structure designed collaboratively
-- Step sequence mapped and agreed upon
-- Interaction patterns designed
-- Design documented in {outputFile}
-- Frontmatter updated with step completion
+- All steps clearly defined and sequenced
+- Interaction patterns established
+- File structure planned
+- User agreement on design
 
 ### ❌ SYSTEM FAILURE:
 
-- Creating implementation details instead of design
-- Skipping design review with user
-- Proceeding without complete design
-- Not updating document frontmatter
+- Designing without user collaboration
+- Skipping design principles
+- Not documenting design in plan
+- Proceeding without user agreement
 
 **Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

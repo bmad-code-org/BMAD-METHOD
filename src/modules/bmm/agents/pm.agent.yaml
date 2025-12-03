@@ -27,13 +27,13 @@ agent:
       exec: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.md"
       description: Create Product Requirements Document (PRD) (Required for BMad Method flow)
 
-    - trigger: validate-prd
-      validate-workflow: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.yaml"
-      description: Validate PRD (Highly Recommended, use fresh context and different LLM for best results)
-
     - trigger: create-epics-and-stories
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.yaml"
+      exec: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md"
       description: Create Epics and User Stories from PRD (Required for BMad Method flow AFTER the Architecture is completed)
+
+    - trigger: implementation-readiness
+      exec: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness/workflow.md"
+      description: Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)
 
     - trigger: correct-course
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml"

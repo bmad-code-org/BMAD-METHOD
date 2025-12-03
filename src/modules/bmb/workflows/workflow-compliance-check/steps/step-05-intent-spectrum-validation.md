@@ -16,8 +16,8 @@ targetWorkflowPath: '{target_workflow_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md'
+stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
 intentSpectrum: '{project-root}/{bmad_folder}/bmb/docs/workflows/intent-vs-prescriptive-spectrum.md'
 ---
 
@@ -222,7 +222,7 @@ Append to {complianceReportFile}:
 - **User Understanding:** Confirmed implications and benefits
 - **Implementation Ready:** Guidance provided for maintaining position
 
-**Ready for Phase 6:** Holistic workflow analysis
+**Ready for Phase 6:** Web Subprocess Validation analysis
 
 - Flow validation and completion paths
 - Goal alignment and optimization assessment

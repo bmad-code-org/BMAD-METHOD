@@ -15,8 +15,8 @@ outputFile: '{output_folder}/agent-identity-{project_name}.md'
 identityTemplate: '{workflow_path}/templates/agent-identity.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 5: Agent Naming and Identity

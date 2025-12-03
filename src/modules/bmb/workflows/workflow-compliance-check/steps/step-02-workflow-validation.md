@@ -16,8 +16,8 @@ targetWorkflowFile: '{target_workflow_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/workflow-template.md'
+stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
 ---
 
 # Step 2: Workflow.md Validation
@@ -132,10 +132,10 @@ For each deviation:
 
 "**Initialization Validation:**"
 
-- Configuration Loading uses correct path format: `{project-root}/{bmad_folder}/[module]/config.yaml` (variable substitution pattern)
+- Configuration Loading uses correct path format: `{project-root}/{*bmad_folder*}/[module]/config.yaml` (variable substitution pattern)
 - First step follows pattern: `step-01-init.md` OR documented deviation
 - Required config variables properly listed
-- Variables use proper substitution pattern: {project-root}, {bmad_folder}, {workflow_path}, etc.
+- Variables use proper substitution pattern: {project-root}, {_bmad_folder_}, {workflow_path}, etc.
 
 For violations:
 
@@ -198,7 +198,7 @@ Append to {complianceReportFile}:
 
 "**Phase 1 Complete:** Workflow.md validation finished with detailed violation analysis.
 
-**Ready for Phase 2:** Step-by-step validation against step-template.md
+**Ready for Phase 3:** Step-by-step validation against step-template.md
 
 This will check each step file for:
 

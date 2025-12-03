@@ -141,6 +141,11 @@ class Installer {
           content = content.replaceAll('{bmad_folder}', bmadFolderName);
         }
 
+        // Replace escape sequence {*bmad_folder*} with literal {bmad_folder}
+        if (content.includes('{*bmad_folder*}')) {
+          content = content.replaceAll('{*bmad_folder*}', '{bmad_folder}');
+        }
+
         // Process AgentVibes injection points
         content = this.processTTSInjectionPoints(content);
 

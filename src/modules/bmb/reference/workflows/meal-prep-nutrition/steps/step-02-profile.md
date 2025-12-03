@@ -53,7 +53,7 @@ To gather comprehensive user profile information through collaborative conversat
 
 - 🎯 Engage in natural conversation to gather profile information
 - 💾 After collecting all information, append to {outputFile}
-- 📖 Update frontmatter `stepsCompleted: [1, 2]` before loading next step
+- 📖 Update frontmatter `stepsCompleted` to add 2 at the end of the array before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' and content is saved
 
 ## CONTEXT BOUNDARIES:

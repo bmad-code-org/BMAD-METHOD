@@ -10,15 +10,15 @@ thisStepFile: '{workflow_path}/steps/step-06-build.md'
 nextStepFile: '{workflow_path}/steps/step-07-validate.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/agent-yaml-{project_name}.md'
-moduleOutputFile: '{project-root}/.bmad/{target_module}/agents/{agent_filename}.agent.yaml'
+moduleOutputFile: '{project-root}/{bmad_folder}/{target_module}/agents/{agent_filename}.agent.yaml'
 standaloneOutputFile: '{workflow_path}/data/{agent_filename}/{agent_filename}.agent.yaml'
 
 # Template References
 completeAgentTemplate: '{workflow_path}/templates/agent-complete-{agent_type}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 6: Build Complete Agent YAML

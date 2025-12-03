@@ -53,6 +53,11 @@ class ModuleManager {
         // Read the file content
         let content = await fs.readFile(sourcePath, 'utf8');
 
+        // Replace escape sequence {*bmad_folder*} with literal {bmad_folder}
+        if (content.includes('{*bmad_folder*}')) {
+          content = content.replaceAll('{*bmad_folder*}', '{bmad_folder}');
+        }
+
         // Replace {bmad_folder} placeholder with actual folder name
         if (content.includes('{bmad_folder}')) {
           content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
@@ -396,8 +401,9 @@ class ModuleManager {
     // Read the source YAML file
     let yamlContent = await fs.readFile(sourceFile, 'utf8');
 
-    // IMPORTANT: Replace {bmad_folder} BEFORE parsing YAML
+    // IMPORTANT: Replace escape sequence and placeholder BEFORE parsing YAML
     // Otherwise parsing will fail on the placeholder
+    yamlContent = yamlContent.replaceAll('{*bmad_folder*}', '{bmad_folder}');
     yamlContent = yamlContent.replaceAll('{bmad_folder}', this.bmadFolderName);
 
     try {

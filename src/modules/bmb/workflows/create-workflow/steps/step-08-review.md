@@ -1,27 +1,31 @@
 ---
-name: 'step-12-review'
+name: 'step-08-review'
 description: 'Review the generated workflow and provide final validation and next steps'
 
 # Path Definitions
 workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
 
 # File References
-thisStepFile: '{workflow_path}/steps/step-12-review.md'
+thisStepFile: '{workflow_path}/steps/step-08-review.md'
 workflowFile: '{workflow_path}/workflow.md'
+
 # Output files for workflow creation process
-workflowPlanFile: '{output_folder}/workflow-plan-{new_workflow_name}.md'
 targetWorkflowPath: '{custom_workflow_location}/{new_workflow_name}'
+workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
 partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
 
 # Template References
-reviewTemplate: '{workflow_path}/templates/review-section.md'
-completionTemplate: '{workflow_path}/templates/completion-section.md'
+# No review template needed - will append review summary directly to workflow plan
+# No completion template needed - will append completion details directly
+
+# Next step reference
+nextStepFile: '{workflow_path}/steps/step-09-complete.md'
 ---
 
-# Step 6: Workflow Review and Completion
+# Step 8: Workflow Review and Completion
 
 ## STEP GOAL:
 
@@ -55,7 +59,7 @@ To review the generated workflow for completeness, accuracy, and adherence to be
 
 - 🎯 Conduct thorough review of generated workflow
 - 💾 Document review findings and completion status
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5]` and mark complete
+- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]` and mark complete
 - 🚫 This is the final step - no next step to load
 
 ## CONTEXT BOUNDARIES:
@@ -197,26 +201,36 @@ Provide specific recommendations:
 
 After completing review, append to {workflowPlanFile}:
 
-Load and append the content from {reviewTemplate}
+Append review findings to {workflowPlanFile}:
 
-Then load and append the content from {completionTemplate}
+Create a review summary including:
 
-## FINAL MENU OPTIONS
+- Completeness check results
+- Accuracy validation
+- Compliance with best practices
+- Any issues found
 
-Display: **All Files Created Successfully!** [C] Complete & Get Validation Instructions
+Then append completion details:
+
+- Final approval status
+- Deployment recommendations
+- Usage guidance
+
+### 10. Present MENU OPTIONS
+
+Display: **Select an Option:** [C] Continue to Completion
 
 #### EXECUTION RULES:
 
 - ALWAYS halt and wait for user input after presenting menu
-- Provide compliance check guidance for new context execution
-- After other menu items execution, return to this menu
+- ONLY proceed to next step when user selects 'C'
 - User can chat or ask questions - always respond and then end with display again of the menu options
 - Use menu handling logic section below
 
 #### Menu Handling Logic:
 
-- IF C: Save content to {workflowPlanFile}, update frontmatter, then provide validation instructions for running in new context
-- IF Any other comments or queries: respond and redisplay menu
+- IF C: Save review to {workflowPlanFile}, update frontmatter, then load, read entire file, then execute {nextStepFile}
+- IF Any other comments or queries: help user respond then [Redisplay Menu Options](#10-present-menu-options)
 
 ## COMPLIANCE CHECK INSTRUCTIONS
 
