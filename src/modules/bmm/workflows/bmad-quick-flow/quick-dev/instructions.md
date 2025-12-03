@@ -32,18 +32,115 @@
 </check>
 
 <check if="Mode B">
-  <ask>**[t] Plan first** - Create tech-spec then implement
+
+  <!-- Escalation Threshold: Lightweight check - should we invoke scale-adaptive? -->
+
+<action>Evaluate escalation threshold against user input (minimal tokens, no file loading):
+
+**Triggers escalation** (if 2+ signals present):
+
+- Multiple components mentioned (e.g., dashboard + api + database)
+- System-level language (e.g., platform, integration, architecture)
+- Uncertainty about approach (e.g., "how should I", "best way to")
+- Multi-layer scope (e.g., UI + backend + data together)
+- Extended timeframe (e.g., "this week", "over the next few days")
+
+**Reduces signal:**
+
+- Simplicity markers (e.g., "just", "quickly", "fix", "bug", "typo", "simple", "basic", "minor")
+- Single file/component focus
+- Confident, specific request
+
+Use holistic judgment, not mechanical keyword matching.</action>
+
+  <!-- No Escalation: Simple request, offer existing choice -->
+  <check if="escalation threshold NOT triggered">
+    <ask>**[t] Plan first** - Create tech-spec then implement
 **[e] Execute directly** - Start now</ask>
 
-  <check if="t">
-    <action>Load and execute {create_tech_spec_workflow}</action>
-    <action>Continue to implementation after spec complete</action>
+    <check if="t">
+      <action>Load and execute {create_tech_spec_workflow}</action>
+      <action>Continue to implementation after spec complete</action>
+    </check>
+
+    <check if="e">
+      <ask>Any additional guidance before I begin? (patterns, files, constraints) Or "go" to start.</ask>
+      <goto>step_2</goto>
+    </check>
+
   </check>
 
-  <check if="e">
-    <ask>Any additional guidance before I begin? (patterns, files, constraints) Or "go" to start.</ask>
-    <goto>step_2</goto>
+  <!-- Escalation Triggered: Load scale-adaptive and evaluate level -->
+  <check if="escalation threshold triggered">
+    <action>Load {project_levels} and evaluate user input against detection_hints.keywords</action>
+    <action>Determine level (0-4) using scale-adaptive definitions</action>
+
+    <!-- Level 0: Scale-adaptive confirms simple, fall back to standard choice -->
+    <check if="level 0">
+      <ask>**[t] Plan first** - Create tech-spec then implement
+
+**[e] Execute directly** - Start now</ask>
+
+      <check if="t">
+        <action>Load and execute {create_tech_spec_workflow}</action>
+        <action>Continue to implementation after spec complete</action>
+      </check>
+
+      <check if="e">
+        <ask>Any additional guidance before I begin? (patterns, files, constraints) Or "go" to start.</ask>
+        <goto>step_2</goto>
+      </check>
+    </check>
+
+    <check if="level 1 or 2 or couldn't determine level">
+      <ask>This looks like a focused feature with multiple components.
+
+**[t] Create tech-spec first** (recommended)
+**[w] Seems bigger than quick-dev** — see what BMad Method recommends (workflow-init)
+**[e] Execute directly**</ask>
+
+      <check if="t">
+        <action>Load and execute {create_tech_spec_workflow}</action>
+        <action>Continue to implementation after spec complete</action>
+      </check>
+
+      <check if="w">
+        <action>Load and execute {workflow_init}</action>
+        <action>EXIT quick-dev - user has been routed to BMad Method</action>
+      </check>
+
+      <check if="e">
+        <ask>Any additional guidance before I begin? (patterns, files, constraints) Or "go" to start.</ask>
+        <goto>step_2</goto>
+      </check>
+    </check>
+
+    <!-- Level 3+: BMad Method territory, recommend workflow-init -->
+    <check if="level 3 or higher">
+      <ask>This sounds like platform/system work.
+
+**[w] Start BMad Method** (recommended) (workflow-init)
+**[t] Create tech-spec** (lighter planning)
+**[e] Execute directly** - feeling lucky</ask>
+
+      <check if="w">
+        <action>Load and execute {workflow_init}</action>
+        <action>EXIT quick-dev - user has been routed to BMad Method</action>
+      </check>
+
+      <check if="t">
+        <action>Load and execute {create_tech_spec_workflow}</action>
+        <action>Continue to implementation after spec complete</action>
+      </check>
+
+      <check if="e">
+        <ask>Any additional guidance before I begin? (patterns, files, constraints) Or "go" to start.</ask>
+        <goto>step_2</goto>
+      </check>
+    </check>
+
   </check>
+
 </check>
 
 </step>
