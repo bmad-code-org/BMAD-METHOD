@@ -44,11 +44,6 @@ phases:
         output: "Comprehensive Product Requirements Document"
         note: "Enterprise-level requirements with compliance considerations"
 
-      - id: "validate-prd"
-        recommended: true
-        agent: "pm"
-        command: "validate-prd"
-
       - id: "create-ux-design"
         recommended: true
         agent: "ux-designer"
@@ -102,7 +97,7 @@ phases:
         required: true
         agent: "architect"
         command: "implementation-readiness"
-        note: "Validates all planning artifacts + Epics + testability align before implementation"
+        note: "Validates PRD + Architecture + Epics + UX (optional)"
 
   - phase: 3
     name: "Implementation"

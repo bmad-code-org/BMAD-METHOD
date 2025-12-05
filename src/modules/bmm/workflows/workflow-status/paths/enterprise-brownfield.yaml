@@ -56,11 +56,6 @@ phases:
         output: "Enterprise PRD with compliance requirements"
         note: "Must address existing system constraints and migration strategy"
 
-      - id: "validate-prd"
-        recommended: true
-        agent: "pm"
-        command: "validate-prd"
-
       - id: "create-ux-design"
         recommended: true
         agent: "ux-designer"
@@ -114,7 +109,7 @@ phases:
         required: true
         agent: "architect"
         command: "implementation-readiness"
-        note: "Critical gate - validates all planning + Epics before touching production system"
+        note: "Validates PRD + Architecture + Epics + UX (optional)"
 
   - phase: 3
     name: "Implementation"

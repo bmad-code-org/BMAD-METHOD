@@ -76,8 +76,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 - `create-prd` - Create PRD for Level 2-4 projects (creates FRs/NFRs only)
 - `tech-spec` - Quick spec for Level 0-1 projects
 - `create-epics-and-stories` - Break PRD into implementable pieces (runs AFTER architecture)
-- `validate-prd` - Validate PRD completeness
-- `validate-tech-spec` - Validate Technical Specification
+- `implementation-readiness` - Validate PRD + Architecture + Epics + UX (optional)
 - `correct-course` - Handle mid-project changes
 - `workflow-init` - Initialize workflow tracking
 
@@ -146,7 +145,7 @@ The BMad Method Module (BMM) provides a comprehensive team of specialized AI age
 - `workflow-status` - Check what to do next
 - `create-architecture` - Produce a Scale Adaptive Architecture
 - `validate-architecture` - Validate architecture document
-- `implementation-readiness` - Validate readiness for Phase 4
+- `implementation-readiness` - Validate PRD + Architecture + Epics + UX (optional)
 
 **Communication Style:** Comprehensive yet pragmatic. Uses architectural metaphors. Balances technical depth with accessibility. Connects decisions to business value.
 
@@ -642,13 +641,12 @@ Some workflows are available to multiple agents:
 
 Many workflows have optional validation workflows that perform independent review:
 
-| Validation              | Agent       | Validates                        |
-| ----------------------- | ----------- | -------------------------------- |
-| `validate-prd`          | PM          | PRD completeness (FRs/NFRs only) |
-| `validate-tech-spec`    | PM          | Technical specification quality  |
-| `validate-architecture` | Architect   | Architecture document            |
-| `validate-design`       | UX Designer | UX specification and artifacts   |
-| `validate-create-story` | SM          | Story draft                      |
+| Validation                 | Agent       | Validates                                  |
+| -------------------------- | ----------- | ------------------------------------------ |
+| `implementation-readiness` | Architect   | PRD + Architecture + Epics + UX (optional) |
+| `validate-architecture`    | Architect   | Architecture document                      |
+| `validate-design`          | UX Designer | UX specification and artifacts             |
+| `validate-create-story`    | SM          | Story draft                                |
 
 **When to use validation:**
 
@@ -945,9 +943,8 @@ Agent analyzes project state → recommends next workflow
 
 ```
 Each phase has validation gates:
-- Phase 2 to 3: validate-prd, validate-tech-spec
-- Phase 3 to 4: implementation-readiness
-Run validation before advancing
+- Phase 3 to 4: implementation-readiness (validates PRD + Architecture + Epics + UX (optional))
+Run validation before advancing to implementation
 ```
 
 **Course correction:**

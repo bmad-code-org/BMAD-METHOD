@@ -55,11 +55,6 @@ phases:
         output: "PRD focused on new features/changes"
         note: "Must consider existing system constraints"
 
-      - id: "validate-prd"
-        optional: true
-        agent: "pm"
-        command: "validate-prd"
-
       - id: "create-ux-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
@@ -98,7 +93,7 @@ phases:
         required: true
         agent: "architect"
         command: "implementation-readiness"
-        note: "Validates PRD + UX + Architecture + Epics cohesion before implementation"
+        note: "Validates PRD + Architecture + Epics + UX (optional)"
 
   - phase: 3
     name: "Implementation"
