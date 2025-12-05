@@ -363,10 +363,59 @@ class UI {
       `🔧 Tools Configured: ${result.ides?.length > 0 ? result.ides.join(', ') : 'none'}`,
     ];
 
+    // Add AgentVibes TTS info if enabled
+    if (result.agentVibesEnabled) {
+      summary.push(`🎤 AgentVibes TTS: Enabled`);
+    }
+
     CLIUtils.displayBox(summary.join('\n\n'), {
       borderColor: 'green',
       borderStyle: 'round',
     });
+
+    // Display TTS injection details if present
+    if (result.ttsInjectedFiles && result.ttsInjectedFiles.length > 0) {
+      console.log('\n' + chalk.cyan.bold('═══════════════════════════════════════════════════'));
+      console.log(chalk.cyan.bold('            AgentVibes TTS Injection Summary'));
+      console.log(chalk.cyan.bold('═══════════════════════════════════════════════════\n'));
+
+      // Explain what TTS injection is
+      console.log(chalk.white.bold('What is TTS Injection?\n'));
+      console.log(chalk.dim('  TTS (Text-to-Speech) injection adds voice instructions to BMAD agents,'));
+      console.log(chalk.dim('  enabling them to speak their responses aloud using AgentVibes.\n'));
+      console.log(chalk.dim('  Example: When you activate the PM agent, it will greet you with'));
+      console.log(chalk.dim('  spoken audio like "Hey! I\'m your Project Manager. How can I help?"\n'));
+
+      console.log(chalk.green(`✅ TTS injection applied to ${result.ttsInjectedFiles.length} file(s):\n`));
+
+      // Group by type
+      const partyModeFiles = result.ttsInjectedFiles.filter((f) => f.type === 'party-mode');
+      const agentTTSFiles = result.ttsInjectedFiles.filter((f) => f.type === 'agent-tts');
+
+      if (partyModeFiles.length > 0) {
+        console.log(chalk.yellow('  Party Mode (multi-agent conversations):'));
+        for (const file of partyModeFiles) {
+          console.log(chalk.dim(`    • ${file.path}`));
+        }
+      }
+
+      if (agentTTSFiles.length > 0) {
+        console.log(chalk.yellow('  Agent TTS (individual agent voices):'));
+        for (const file of agentTTSFiles) {
+          console.log(chalk.dim(`    • ${file.path}`));
+        }
+      }
+
+      // Show backup info and restore command
+      console.log('\n' + chalk.white.bold('Backups & Recovery:\n'));
+      console.log(chalk.dim('  Pre-injection backups are stored in:'));
+      console.log(chalk.cyan('    ~/.bmad-tts-backups/\n'));
+      console.log(chalk.dim('  To restore original files (removes TTS instructions):'));
+      console.log(chalk.cyan(`    bmad-tts-injector.sh --restore ${result.path}\n`));
+
+      console.log(chalk.cyan('💡 BMAD agents will now speak when activated!'));
+      console.log(chalk.dim('   Ensure AgentVibes is installed: https://agentvibes.org'));
+    }
 
     console.log('\n' + chalk.green.bold('✨ BMAD is ready to use!'));
   }
