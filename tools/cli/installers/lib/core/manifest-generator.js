@@ -105,7 +105,7 @@ class ManifestGenerator {
   }
 
   /**
-   * Recursively find and parse workflow.yaml files
+   * Recursively find and parse workflow.yaml and workflow.md files
    */
   async getWorkflowsFromPath(basePath, moduleName) {
     const workflows = [];
@@ -126,11 +126,23 @@ class ManifestGenerator {
           // Recurse into subdirectories
           const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
           await findWorkflows(fullPath, newRelativePath);
-        } else if (entry.name === 'workflow.yaml') {
-          // Parse workflow file
+        } else if (entry.name === 'workflow.yaml' || entry.name === 'workflow.md') {
+          // Parse workflow file (both YAML and MD formats)
           try {
             const content = await fs.readFile(fullPath, 'utf8');
-            const workflow = yaml.load(content);
+
+            let workflow;
+            if (entry.name === 'workflow.yaml') {
+              // Parse YAML workflow
+              workflow = yaml.load(content);
+            } else {
+              // Parse MD workflow with YAML frontmatter
+              const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+              if (!frontmatterMatch) {
+                continue; // Skip MD files without frontmatter
+              }
+              workflow = yaml.load(frontmatterMatch[1]);
+            }
 
             // Skip template workflows (those with placeholder values)
             if (workflow.name && workflow.name.includes('{') && workflow.name.includes('}')) {
@@ -141,18 +153,15 @@ class ManifestGenerator {
               // Build relative path for installation
               const installPath =
                 moduleName === 'core'
-                  ? `${this.bmadFolderName}/core/workflows/${relativePath}/workflow.yaml`
-                  : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/workflow.yaml`;
+                  ? `${this.bmadFolderName}/core/workflows/${relativePath}/${entry.name}`
+                  : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/${entry.name}`;
 
-              // Check for standalone property (default: false)
-              const standalone = workflow.standalone === true;
-
+              // ALL workflows now generate commands - no standalone property needed
               workflows.push({
                 name: workflow.name,
                 description: workflow.description.replaceAll('"', '""'), // Escape quotes for CSV
                 module: moduleName,
                 path: installPath,
-                standalone: standalone,
               });
 
               // Add to files list
@@ -541,12 +550,12 @@ class ManifestGenerator {
   async writeWorkflowManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'workflow-manifest.csv');
 
-    // Create CSV header with standalone column
-    let csv = 'name,description,module,path,standalone\n';
+    // Create CSV header - removed standalone column as ALL workflows now generate commands
+    let csv = 'name,description,module,path\n';
 
-    // Add all workflows
+    // Add all workflows - no standalone property needed anymore
     for (const workflow of this.workflows) {
-      csv += `"${workflow.name}","${workflow.description}","${workflow.module}","${workflow.path}","${workflow.standalone}"\n`;
+      csv += `"${workflow.name}","${workflow.description}","${workflow.module}","${workflow.path}"\n`;
     }
 
     await fs.writeFile(csvPath, csv);

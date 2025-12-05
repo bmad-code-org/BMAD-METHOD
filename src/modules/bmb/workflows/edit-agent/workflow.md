@@ -1,5 +1,5 @@
 ---
-name: Edit Agent
+name: edit-agent
 description: Edit existing BMAD agents while following all best practices and conventions
 web_bundle: false
 ---

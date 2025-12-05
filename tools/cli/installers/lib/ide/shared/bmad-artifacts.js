@@ -90,6 +90,11 @@ async function getAgentsFromDir(dirPath, moduleName) {
       continue;
     }
 
+    // Skip README files and other non-agent files
+    if (file.toLowerCase() === 'readme.md' || file.toLowerCase().startsWith('readme-')) {
+      continue;
+    }
+
     if (file.includes('.customize.')) {
       continue;
     }
@@ -98,6 +103,11 @@ async function getAgentsFromDir(dirPath, moduleName) {
     const content = await fs.readFile(filePath, 'utf8');
 
     if (content.includes('localskip="true"')) {
+      continue;
+    }
+
+    // Only include files that have agent-specific content (compiled agents have <agent> tag)
+    if (!content.includes('<agent')) {
       continue;
     }
 

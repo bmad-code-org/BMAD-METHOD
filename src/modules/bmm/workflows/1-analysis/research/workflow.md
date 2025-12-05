@@ -1,6 +1,7 @@
 ---
-name: Research Workflow
+name: research
 description: Conduct comprehensive research across multiple domains using current web data and verified sources - Market, Technical, Domain and other research types.
+web_bundle: true
 ---
 
 # Research Workflow

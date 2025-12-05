@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 
 /**
  * Crush IDE setup handler
@@ -34,10 +35,23 @@ class CrushSetup extends BaseIdeSetup {
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Get tasks, tools, and workflows (standalone only)
+    // Get tasks, tools, and workflows (ALL workflows now generate commands)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
-    const workflows = await this.getWorkflows(bmadDir, true);
+
+    // Get ALL workflows using the new workflow command generator
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+
+    // Convert workflow artifacts to expected format for organizeByModule
+    const workflows = workflowArtifacts
+      .filter((artifact) => artifact.type === 'workflow-command')
+      .map((artifact) => ({
+        module: artifact.module,
+        name: path.basename(artifact.relativePath, '.md'),
+        path: artifact.sourcePath,
+        content: artifact.content,
+      }));
 
     // Organize by module
     const agentCount = await this.organizeByModule(commandsDir, agentArtifacts, tasks, tools, workflows, projectDir);
@@ -113,13 +127,12 @@ class CrushSetup extends BaseIdeSetup {
         toolCount++;
       }
 
-      // Copy module-specific workflows
+      // Copy module-specific workflow commands (already generated)
       const moduleWorkflows = workflows.filter((w) => w.module === module);
       for (const workflow of moduleWorkflows) {
-        const content = await this.readFile(workflow.path);
-        const commandContent = this.createWorkflowCommand(workflow, content);
+        // Use the pre-generated workflow command content
         const targetPath = path.join(moduleWorkflowsDir, `${workflow.name}.md`);
-        await this.writeFile(targetPath, commandContent);
+        await this.writeFile(targetPath, workflow.content);
         workflowCount++;
       }
     }
