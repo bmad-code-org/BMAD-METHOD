@@ -61,8 +61,8 @@ Scaffolds a production-ready CI/CD quality pipeline with test execution, burn-in
      - Ask user if unable to auto-detect
 
 5. **Read Environment Configuration**
-   - Check for `.nvmrc` to determine Node version
-   - Default to Node 20 LTS if not found
+   - Use `.nvmrc` for Node version if present
+   - If missing, default to a current LTS (Node 24) or newer instead of a fixed old version
    - Read `package.json` to identify dependencies (affects caching strategy)
 
 **Halt Condition:** If preflight checks fail, stop immediately and report which requirement failed.
