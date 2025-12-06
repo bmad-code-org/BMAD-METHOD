@@ -1037,10 +1037,6 @@
           "id": "arrow-discovery-no"
         },
         {
-          "type": "arrow",
-          "id": "arrow-prd-validate"
-        },
-        {
           "id": "arrow-phase1-to-phase2",
           "type": "arrow"
         },
@@ -1055,17 +1051,21 @@
         {
           "id": "arrow-has-ui-no",
           "type": "arrow"
+        },
+        {
+          "id": "arrow-prd-hasui",
+          "type": "arrow"
         }
       ],
       "locked": false,
-      "version": 107,
-      "versionNonce": 930129274,
+      "version": 108,
+      "versionNonce": 930129275,
       "index": "aN",
       "isDeleted": false,
       "strokeStyle": "solid",
       "seed": 1,
       "frameId": null,
-      "updated": 1764191563350,
+      "updated": 1764952855000,
       "link": null
     },
     {
@@ -1108,197 +1108,6 @@
       "lineHeight": 1.25
     },
     {
-      "id": "arrow-prd-validate",
-      "type": "arrow",
-      "x": 439.4640518625828,
-      "y": 331.0450590268819,
-      "width": 0.17283039375342923,
-      "height": 28.50332681186643,
-      "angle": 0,
-      "strokeColor": "#1976d2",
-      "backgroundColor": "transparent",
-      "fillStyle": "solid",
-      "strokeWidth": 2,
-      "roughness": 0,
-      "opacity": 100,
-      "groupIds": [],
-      "startBinding": {
-        "elementId": "proc-prd",
-        "focus": 0,
-        "gap": 1
-      },
-      "endBinding": {
-        "elementId": "proc-validate-prd",
-        "focus": 0,
-        "gap": 1
-      },
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          0.17283039375342923,
-          28.50332681186643
-        ]
-      ],
-      "lastCommittedPoint": null,
-      "version": 102,
-      "versionNonce": 1274591910,
-      "index": "aP",
-      "isDeleted": false,
-      "strokeStyle": "solid",
-      "seed": 1,
-      "frameId": null,
-      "roundness": null,
-      "boundElements": [],
-      "updated": 1764191023838,
-      "link": null,
-      "locked": false,
-      "startArrowhead": null,
-      "endArrowhead": "arrow"
-    },
-    {
-      "id": "proc-validate-prd",
-      "type": "rectangle",
-      "x": 360,
-      "y": 360,
-      "width": 160,
-      "height": 80,
-      "angle": 0,
-      "strokeColor": "#43a047",
-      "backgroundColor": "#c8e6c9",
-      "fillStyle": "solid",
-      "strokeWidth": 2,
-      "roughness": 0,
-      "opacity": 100,
-      "roundness": {
-        "type": 3,
-        "value": 8
-      },
-      "groupIds": [
-        "proc-validate-prd-group"
-      ],
-      "boundElements": [
-        {
-          "type": "text",
-          "id": "proc-validate-prd-text"
-        },
-        {
-          "type": "arrow",
-          "id": "arrow-prd-validate"
-        },
-        {
-          "type": "arrow",
-          "id": "arrow-validate-prd-hasui"
-        },
-        {
-          "id": "jv0rnlK2D9JKIGTO7pUtT",
-          "type": "arrow"
-        }
-      ],
-      "locked": false,
-      "version": 3,
-      "versionNonce": 894806650,
-      "index": "aQ",
-      "isDeleted": false,
-      "strokeStyle": "solid",
-      "seed": 1,
-      "frameId": null,
-      "updated": 1764191341774,
-      "link": null
-    },
-    {
-      "id": "proc-validate-prd-text",
-      "type": "text",
-      "x": 370,
-      "y": 375,
-      "width": 140,
-      "height": 50,
-      "angle": 0,
-      "strokeColor": "#1e1e1e",
-      "backgroundColor": "transparent",
-      "fillStyle": "solid",
-      "strokeWidth": 2,
-      "roughness": 0,
-      "opacity": 100,
-      "groupIds": [
-        "proc-validate-prd-group"
-      ],
-      "fontSize": 14,
-      "fontFamily": 1,
-      "text": "Validate PRD\n<<optional>>",
-      "textAlign": "center",
-      "verticalAlign": "middle",
-      "containerId": "proc-validate-prd",
-      "locked": false,
-      "version": 2,
-      "versionNonce": 944332155,
-      "index": "aR",
-      "isDeleted": false,
-      "strokeStyle": "solid",
-      "seed": 1,
-      "frameId": null,
-      "roundness": null,
-      "boundElements": [],
-      "updated": 1763522171080,
-      "link": null,
-      "originalText": "Validate PRD\n<<optional>>",
-      "autoResize": true,
-      "lineHeight": 1.7857142857142858
-    },
-    {
-      "id": "arrow-validate-prd-hasui",
-      "type": "arrow",
-      "x": 440,
-      "y": 440,
-      "width": 0,
-      "height": 30,
-      "angle": 0,
-      "strokeColor": "#1976d2",
-      "backgroundColor": "transparent",
-      "fillStyle": "solid",
-      "strokeWidth": 2,
-      "roughness": 0,
-      "opacity": 100,
-      "groupIds": [],
-      "startBinding": {
-        "elementId": "proc-validate-prd",
-        "focus": 0,
-        "gap": 1
-      },
-      "endBinding": {
-        "elementId": "decision-has-ui",
-        "focus": 0,
-        "gap": 1
-      },
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          0,
-          30
-        ]
-      ],
-      "lastCommittedPoint": null,
-      "version": 2,
-      "versionNonce": 1369541557,
-      "index": "aS",
-      "isDeleted": false,
-      "strokeStyle": "solid",
-      "seed": 1,
-      "frameId": null,
-      "roundness": null,
-      "boundElements": [],
-      "updated": 1763522171080,
-      "link": null,
-      "locked": false,
-      "startArrowhead": null,
-      "endArrowhead": "arrow"
-    },
-    {
       "id": "decision-has-ui",
       "type": "diamond",
       "x": 360,
@@ -1322,7 +1131,7 @@
         },
         {
           "type": "arrow",
-          "id": "arrow-validate-prd-hasui"
+          "id": "arrow-prd-hasui"
         },
         {
           "type": "arrow",
@@ -1334,15 +1143,15 @@
         }
       ],
       "locked": false,
-      "version": 2,
-      "versionNonce": 1003877915,
+      "version": 3,
+      "versionNonce": 1003877916,
       "index": "aT",
       "isDeleted": false,
       "strokeStyle": "solid",
       "seed": 1,
       "frameId": null,
       "roundness": null,
-      "updated": 1763522171080,
+      "updated": 1764952855000,
       "link": null
     },
     {
@@ -5162,6 +4971,57 @@
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": false
+    },
+    {
+      "id": "arrow-prd-hasui",
+      "type": "arrow",
+      "x": 440,
+      "y": 330,
+      "width": 0,
+      "height": 140,
+      "angle": 0,
+      "strokeColor": "#1976d2",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "roughness": 0,
+      "opacity": 100,
+      "groupIds": [],
+      "startBinding": {
+        "elementId": "proc-prd",
+        "focus": 0,
+        "gap": 1
+      },
+      "endBinding": {
+        "elementId": "decision-has-ui",
+        "focus": 0,
+        "gap": 1
+      },
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          140
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "version": 1,
+      "versionNonce": 1,
+      "index": "b1J",
+      "isDeleted": false,
+      "strokeStyle": "solid",
+      "seed": 1,
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1764952855000,
+      "link": null,
+      "locked": false,
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
     }
   ],
   "appState": {
