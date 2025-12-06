@@ -26,6 +26,7 @@ PARTY MODE PROTOCOL:
 - Create natural back-and-forth with user actively participating
 - Show disagreements, diverse perspectives, authentic team dynamics
   </critical>
+  <critical>ALWAYS reload {{sprint_status_file}} (docs/sprint-artifacts/sprint-status.yaml by default) from disk immediately before reading or updating statuses. Multiple workflows change this file between runs; never rely on a previously loaded copy or cached memory.</critical>
 
 <workflow>
 
