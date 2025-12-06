@@ -51,6 +51,7 @@ class Installer {
     this.configCollector = new ConfigCollector();
     this.ideConfigManager = new IdeConfigManager();
     this.installedFiles = []; // Track all installed files
+    this.ttsInjectedFiles = []; // Track files with TTS injection applied
   }
 
   /**
@@ -146,8 +147,8 @@ class Installer {
           content = content.replaceAll('{*bmad_folder*}', '{bmad_folder}');
         }
 
-        // Process AgentVibes injection points
-        content = this.processTTSInjectionPoints(content);
+        // Process AgentVibes injection points (pass targetPath for tracking)
+        content = this.processTTSInjectionPoints(content, targetPath);
 
         // Write to target with replaced content
         await fs.ensureDir(path.dirname(targetPath));
@@ -226,9 +227,13 @@ class Installer {
    *   - src/modules/bmm/agents/*.md (rules sections)
    * - TTS Hook: .claude/hooks/bmad-speak.sh (in AgentVibes repo)
    */
-  processTTSInjectionPoints(content) {
+  processTTSInjectionPoints(content, targetPath = null) {
     // Check if AgentVibes is enabled (set during installation configuration)
     const enableAgentVibes = this.enableAgentVibes || false;
+
+    // Check if content contains any TTS injection markers
+    const hasPartyMode = content.includes('<!-- TTS_INJECTION:party-mode -->');
+    const hasAgentTTS = content.includes('<!-- TTS_INJECTION:agent-tts -->');
 
     if (enableAgentVibes) {
       // Replace party-mode injection marker with actual TTS call
@@ -253,6 +258,12 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
    IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
    Run in background (&) to avoid blocking`,
       );
+
+      // Track files that had TTS injection applied
+      if (targetPath && (hasPartyMode || hasAgentTTS)) {
+        const injectionType = hasPartyMode ? 'party-mode' : 'agent-tts';
+        this.ttsInjectedFiles.push({ path: targetPath, type: injectionType });
+      }
     } else {
       // Strip injection markers cleanly when AgentVibes is disabled
       content = content.replaceAll(/<!-- TTS_INJECTION:party-mode -->\n?/g, '');
@@ -1021,6 +1032,8 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         modules: config.modules,
         ides: config.ides,
         customFiles: customFiles.length > 0 ? customFiles : undefined,
+        ttsInjectedFiles: this.enableAgentVibes && this.ttsInjectedFiles.length > 0 ? this.ttsInjectedFiles : undefined,
+        agentVibesEnabled: this.enableAgentVibes || false,
       });
 
       // Offer cleanup for legacy files (only for updates, not fresh installs, and only if not skipped)
@@ -1526,12 +1539,15 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
         // Build YAML + customize to .md
         const customizeExists = await fs.pathExists(customizePath);
-        const xmlContent = await this.xmlHandler.buildFromYaml(yamlPath, customizeExists ? customizePath : null, {
+        let xmlContent = await this.xmlHandler.buildFromYaml(yamlPath, customizeExists ? customizePath : null, {
           includeMetadata: true,
         });
 
         // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
         // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+        // Process TTS injection points (pass targetPath for tracking)
+        xmlContent = this.processTTSInjectionPoints(xmlContent, mdPath);
 
         // Write the built .md file to bmad/{module}/agents/ with POSIX-compliant final newline
         const content = xmlContent.endsWith('\n') ? xmlContent : xmlContent + '\n';
@@ -1628,12 +1644,15 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       }
 
       // Build YAML to XML .md
-      const xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
+      let xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
         includeMetadata: true,
       });
 
       // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
       // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+      // Process TTS injection points (pass targetPath for tracking)
+      xmlContent = this.processTTSInjectionPoints(xmlContent, targetMdPath);
 
       // Write the built .md file with POSIX-compliant final newline
       const content = xmlContent.endsWith('\n') ? xmlContent : xmlContent + '\n';
@@ -1722,12 +1741,15 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         }
 
         // Build YAML + customize to .md
-        const xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
+        let xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
           includeMetadata: true,
         });
 
         // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
         // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+        // Process TTS injection points (pass targetPath for tracking)
+        xmlContent = this.processTTSInjectionPoints(xmlContent, targetMdPath);
 
         // Write the rebuilt .md file with POSIX-compliant final newline
         const content = xmlContent.endsWith('\n') ? xmlContent : xmlContent + '\n';
