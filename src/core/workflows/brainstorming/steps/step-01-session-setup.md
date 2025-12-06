@@ -135,7 +135,7 @@ _[Content based on conversation about session parameters and facilitator approac
 
 When user selects approach, append the session overview content directly to `{output_folder}/analysis/brainstorming-session-{{date}}.md` using the structure from above.
 
-#### E. Continue to Technique Selection
+### E. Continue to Technique Selection
 
 "**Session setup complete!** I have a clear understanding of your goals and can select the perfect techniques for your brainstorming needs.
 

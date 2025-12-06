@@ -604,6 +604,6 @@ node tools/cli/regenerate-manifests.js
 
 ## Support
 
-- **Issues**: https://github.com/bmad-code-org/BMAD-METHOD/issues
-- **Discord**: https://discord.gg/gk8jAdXWmj (#general-dev, #bugs-issues)
-- **YouTube**: https://www.youtube.com/@BMadCode
+- **Issues**: <https://github.com/bmad-code-org/BMAD-METHOD/issues>
+- **Discord**: <https://discord.gg/gk8jAdXWmj> (#general-dev, #bugs-issues)
+- **YouTube**: <https://www.youtube.com/@BMadCode>

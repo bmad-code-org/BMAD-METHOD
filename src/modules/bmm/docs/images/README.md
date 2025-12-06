@@ -4,7 +4,7 @@
 
 When you edit `workflow-method-greenfield.excalidraw`, regenerate the SVG:
 
-1. Open https://excalidraw.com/
+1. Open <https://excalidraw.com/>
 2. Load the `.excalidraw` file
 3. Click menu (☰) → Export image → SVG
 4. **Set "Scale" to 1x** (default is 2x)

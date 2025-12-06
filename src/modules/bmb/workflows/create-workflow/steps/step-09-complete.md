@@ -156,7 +156,7 @@ Update {workflowPlanFile} frontmatter:
 
 Display: **Workflow Creation Complete!** [T] Test Workflow [M] Make Adjustments [D] Get Help
 
-#### Menu Handling Logic:
+### Menu Handling Logic:
 
 - IF T: Offer to run the newly created workflow with sample data
 - IF M: Offer to make specific adjustments to the workflow

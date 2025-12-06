@@ -538,7 +538,7 @@ Trust your expertise - BMM supports your decisions.
 
 ### Q: How do I report a bug or request a feature?
 
-**A:** Open a GitHub issue at: https://github.com/bmad-code-org/BMAD-METHOD/issues
+**A:** Open a GitHub issue at: <https://github.com/bmad-code-org/BMAD-METHOD/issues>
 
 Please include:
 

@@ -203,7 +203,7 @@ Module agents use the same injection process as simple agents:
 2. **Activation block** with standard steps
 3. **Menu handlers** based on usage (workflow, exec, tmpl, data)
 4. **Rules section** for consistent behavior
-5. **Auto-injected** *help and *exit commands
+5. **Auto-injected** \*help and \*exit commands
 
 **Key difference:** Module agents load **module-specific config** instead of core config:
 

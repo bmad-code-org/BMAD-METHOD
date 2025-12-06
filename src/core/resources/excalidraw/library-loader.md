@@ -4,7 +4,7 @@
 
 ## Purpose
 
-Load external .excalidrawlib files from https://libraries.excalidraw.com or custom sources.
+Load external .excalidrawlib files from <https://libraries.excalidraw.com> or custom sources.
 
 ## Planned Capabilities
 
@@ -34,7 +34,7 @@ libraries:
 
 ## Implementation Notes
 
-This will be developed when agents need to leverage the extensive library ecosystem available at https://libraries.excalidraw.com.
+This will be developed when agents need to leverage the extensive library ecosystem available at <https://libraries.excalidraw.com>.
 
 Hundreds of pre-built component libraries exist for:
 

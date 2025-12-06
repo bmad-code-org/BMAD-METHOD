@@ -149,13 +149,13 @@ ONLY WHEN [C continue option] is selected and [completion requirements], will yo
 
 <!-- TEMPLATE END-->
 
-## Common Menu Patterns to use in the final sequence item in a step file.
+## Common Menu Patterns to use in the final sequence item in a step file
 
 FYI Again - party mode is useful for the user to reach out and get opinions from other agents.
 
 Advanced elicitation is use to direct you to think of alternative outputs of a sequence you just performed.
 
-### Standard Menu - when a sequence in a step results in content produced by the agent or human that could be improved before proceeding.
+### Standard Menu - when a sequence in a step results in content produced by the agent or human that could be improved before proceeding
 
 ```markdown
 ### N. Present MENU OPTIONS
