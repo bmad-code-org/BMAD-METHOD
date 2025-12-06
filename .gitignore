@@ -73,3 +73,6 @@ z*/
 .agentvibes/
 .kiro/
 .roo
+
+# Generated voice map (user-specific)
+.bmad/_cfg/agent-voice-map.csv
