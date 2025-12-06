@@ -173,4 +173,4 @@ Market research workflow complete. User may:
 - Conduct additional competitive research on specific companies
 - Combine market research with other research types for comprehensive insights
 
-Congratulations on completing comprehensive market research ! 🎉
+Congratulations on completing comprehensive market research! 🎉

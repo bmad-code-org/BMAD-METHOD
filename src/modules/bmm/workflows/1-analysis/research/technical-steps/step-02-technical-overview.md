@@ -160,7 +160,7 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **technology stack analysis** for the technology landscape for {{research_topic}}.
+"I've completed **technology stack analysis** of the technology landscape for {{research_topic}}.
 
 **Key Technology Stack Findings:**
 

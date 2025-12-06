@@ -123,7 +123,7 @@ Search the web: "{{research_topic}} significance importance"
 
 ### Research Significance
 
-[Compelling narrative about why {{research_topic}} research is critical in current]
+[Compelling narrative about why {{research_topic}} research is critical right now]
 _Why this research matters now: [Strategic importance with current context]_
 _Source: [URL]_
 

@@ -155,7 +155,7 @@ Show the generated architectural patterns and present continue option:
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
-- Load: `./step-04-implementation-research.md`
+- Load: `./step-05-implementation-research.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -196,6 +196,6 @@ When user selects 'C', append the content directly to the research document usin
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-04-implementation-research.md` to focus on implementation approaches and technology adoption.
+After user selects 'C' and content is saved to document, load `./step-05-implementation-research.md` to focus on implementation approaches and technology adoption.
 
 Remember: Always emphasize current architectural data and rigorous source verification!

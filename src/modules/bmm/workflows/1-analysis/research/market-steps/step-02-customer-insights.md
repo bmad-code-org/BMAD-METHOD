@@ -154,7 +154,7 @@ Show the generated customer insights and present continue option:
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2]`
-- Load: `./step-03-competitive-analysis.md`
+- Load: `./step-05-competitive-analysis.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -194,6 +194,6 @@ When user selects 'C', append the content directly to the research document usin
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-03-competitive-analysis.md` to focus on competitive landscape analysis.
+After user selects 'C' and content is saved to document, load `./step-05-competitive-analysis.md` to focus on competitive landscape analysis.
 
 Remember: Always emphasize current customer data and rigorous source verification!

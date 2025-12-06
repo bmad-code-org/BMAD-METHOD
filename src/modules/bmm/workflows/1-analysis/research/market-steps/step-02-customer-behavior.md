@@ -159,7 +159,7 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **customer behavior analysis** for customer patterns for {{research_topic}}.
+"I've completed **customer behavior analysis** for {{research_topic}}, focusing on customer patterns.
 
 **Key Customer Behavior Findings:**
 

@@ -169,7 +169,7 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **integration patterns analysis** for system integration approaches for {{research_topic}}.
+"I've completed **integration patterns analysis** of system integration approaches for {{research_topic}}.
 
 **Key Integration Patterns Findings:**
 

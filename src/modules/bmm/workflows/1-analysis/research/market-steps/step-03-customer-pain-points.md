@@ -170,7 +170,7 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **customer pain points analysis** for customer challenges for {{research_topic}}.
+"I've completed **customer pain points analysis** for {{research_topic}}, focusing on customer challenges.
 
 **Key Pain Points Findings:**
 

@@ -180,7 +180,7 @@ _Source: [URL]_
 
 **Show analysis and present continue option:**
 
-"I've completed **customer decision processes analysis** for customer decision-making for {{research_topic}}.
+"I've completed **customer decision processes analysis** for {{research_topic}}, focusing on customer decision-making.
 
 **Key Decision Findings:**
 
