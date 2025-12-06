@@ -1,3 +1,21 @@
+---
+name: 'step-09-functional'
+description: 'Synthesize all discovery into comprehensive functional requirements'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-09-functional.md'
+nextStepFile: '{workflow_path}/steps/step-10-nonfunctional.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+
+# Task References
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+---
+
 # Step 9: Functional Requirements Synthesis
 
 **Progress: Step 9 of 11** - Next: Non-Functional Requirements

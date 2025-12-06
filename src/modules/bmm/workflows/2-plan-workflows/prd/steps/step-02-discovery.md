@@ -1,16 +1,53 @@
+---
+name: 'step-02-discovery'
+description: 'Conduct project and domain discovery with data-driven classification'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-02-discovery.md'
+nextStepFile: '{workflow_path}/steps/step-03-success.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+
+# Data Files
+projectTypesCSV: '{workflow_path}/project-types.csv'
+domainComplexityCSV: '{workflow_path}/domain-complexity.csv'
+
+# Task References
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+---
+
 # Step 2: Project & Domain Discovery
 
-**Progress: Step 2 of 10** - Next: Success Criteria Definition
+**Progress: Step 2 of 11** - Next: Success Criteria Definition
+
+## STEP GOAL:
+
+Conduct comprehensive project discovery that leverages existing input documents while allowing user refinement, with data-driven classification, and generate the Executive Summary content.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
-- 🛑 NEVER generate content without user input
+### Universal Rules:
 
-- 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
-- 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS treat this as collaborative discovery between PM peers
+- 🛑 NEVER generate content without user input
+- 📖 CRITICAL: Read the complete step file before taking any action
+- 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
-- 💬 FOCUS on project classification and vision alignment only
+
+### Role Reinforcement:
+
+- ✅ You are a product-focused PM facilitator collaborating with an expert peer
+- ✅ We engage in collaborative dialogue, not command-response
+- ✅ You bring structured thinking and facilitation skills, while the user brings domain expertise and product vision
+
+### Step-Specific Rules:
+
+- 🎯 Focus on project classification and vision alignment only
+- 🚫 FORBIDDEN to generate content without real user input
+- 💬 APPROACH: Adapt questions based on document context (brownfield vs greenfield)
 - 🎯 LOAD classification data BEFORE starting discovery conversation
 
 ## EXECUTION PROTOCOLS:
@@ -31,8 +68,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {advancedElicitationTask}
+- When 'P' selected: Execute {partyModeWorkflow}
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -40,40 +77,56 @@ This step will generate content and present choices:
 
 - Current document and frontmatter from step 1 are available
 - Input documents already loaded are in memory (product briefs, research, brainstorming, project docs)
+- **Document counts available in frontmatter `documentCounts`**
 - Classification CSV data will be loaded in this step only
 - This will be the first content section appended to the document
-- LEVERAGE existing input documents to accelerate discovery process
-- installed_path = `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd`
 
-## YOUR TASK:
+## Sequence of Instructions (Do not deviate, skip, or optimize)
 
-Conduct comprehensive project discovery that leverages existing input documents while allowing user refinement, with data-driven classification and generate the first content section.
+### 1. Read Document State from Frontmatter
 
-## DISCOVERY SEQUENCE:
+**CRITICAL FIRST ACTION:** Read the frontmatter from `{outputFile}` to get document counts.
 
-### 1. Load Classification Data
+```
+Read documentCounts from prd.md frontmatter:
+- briefCount = documentCounts.briefs
+- researchCount = documentCounts.research
+- brainstormingCount = documentCounts.brainstorming
+- projectDocsCount = documentCounts.projectDocs
+```
+
+**ANNOUNCE your understanding:**
+
+"From step 1, I have loaded:
+
+- Product briefs: {{briefCount}} files
+- Research: {{researchCount}} files
+- Brainstorming: {{brainstormingCount}} files
+- Project docs: {{projectDocsCount}} files
+
+{if projectDocsCount > 0}This is a **brownfield project** - I'll focus on understanding what you want to add or change.{else}This is a **greenfield project** - I'll help you define the full product vision.{/if}"
+
+### 2. Load Classification Data
 
 Load and prepare CSV data for intelligent classification:
 
-- Load `{installed_path}/project-types.csv` completely
-- Load `{installed_path/domain-complexity.csv` completely
+- Load `{projectTypesCSV}` completely
+- Load `{domainComplexityCSV}` completely
 - Parse column structures and store in memory for this step only
 
-### 2. Leverage Input Documents for Head Start
+### 3. Begin Discovery Conversation
 
-Analyze available input documents to provide informed discovery:
+**SELECT EXACTLY ONE DISCOVERY PATH based on document state:**
 
-**Check Input Documents Available:**
+---
 
-- Product Briefs: {{number_of_briefs}} documents loaded
-- Research Documents: {{number_of_research}} documents loaded
-- Brainstorming Results: {{number_of_brainstorming}} documents loaded
-- Project Documentation: {{number_of_project_docs}} documents loaded
+#### PATH A: Has Product Brief (briefCount > 0)
 
-**If Input Documents Exist:**
-"As your PM peer, I've reviewed your existing project documentation and have a great starting point for our discovery. Let me share what I understand and you can refine or correct as needed.
+**Use this path when:** `briefCount > 0`
 
-**Based on your product brief and research:**
+"As your PM peer, I've reviewed your product brief and have a great starting point for our discovery. Let me share what I understand and you can refine or correct as needed.
+
+**Based on your product brief:**
 
 **What you're building:**
 {{extracted_vision_from_brief}}
@@ -87,9 +140,47 @@ Analyze available input documents to provide informed discovery:
 **What makes it special:**
 {{extracted_differentiator_from_brief}}
 
+{if projectDocsCount > 0}I also see you have existing project documentation. This PRD will define how new features integrate with your existing system architecture.{/if}
+
 **How does this align with your vision?** Should we refine any of these points or are there important aspects I'm missing?"
 
-**If No Input Documents:**
+**AFTER this message, SKIP to Section 4.**
+
+---
+
+#### PATH B: No Brief but Has Project Docs - Brownfield (briefCount == 0 AND projectDocsCount > 0)
+
+**Use this path when:** `briefCount == 0 AND projectDocsCount > 0`
+
+**NOTE:** Extract the following from loaded project documentation (index.md, architecture.md, project-overview.md, etc.):
+
+"As your PM peer, I've reviewed your existing project documentation from document-project.
+
+**Your existing system includes:**
+
+- **Tech Stack:** {analyze index.md and architecture.md for technologies used}
+- **Architecture:** {summarize architecture patterns from architecture.md}
+- **Key Components:** {list main components from source-tree-analysis.md or project-overview.md}
+
+This PRD will define **new features or changes** to add to this existing codebase.
+
+**Tell me about what you want to add or change:**
+
+- What new capability or feature do you want to build?
+- What problem will this solve for your users?
+- How should it integrate with the existing system?
+- Is this adding new functionality, improving existing features, or fixing issues?
+
+I'll help you create a PRD focused on these additions while respecting your existing patterns and architecture."
+
+**AFTER this message, SKIP to Section 4.**
+
+---
+
+#### PATH C: No Documents - Greenfield (briefCount == 0 AND projectDocsCount == 0)
+
+**Use this path when:** `briefCount == 0 AND projectDocsCount == 0`
+
 "As your PM peer, I'm excited to help you shape {{project_name}}. Let me start by understanding what you want to build.
 
 **Tell me about what you want to create:**
@@ -100,9 +191,13 @@ Analyze available input documents to provide informed discovery:
 
 I'll be listening for signals to help us classify the project and domain so we can ask the right questions throughout our process."
 
-### 3. Listen for Classification Signals
+**AFTER this message, continue to Section 4.**
 
-As the user describes their product, listen for and match against:
+---
+
+### 4. Listen for Classification Signals
+
+As the user describes their product/feature, listen for and match against:
 
 #### Project Type Signals
 
@@ -122,11 +217,14 @@ Compare user description against `signals` from `domain-complexity.csv`:
 - Examples: "payment,banking,trading" → fintech
 - Store the matched `domain` and `complexity_level`
 
-### 4. Enhanced Classification with Document Context
+### 5. Present Classification for Validation
 
-Leverage both user input and document analysis for classification:
+**SELECT EXACTLY ONE CLASSIFICATION PRESENTATION based on document state:**
 
-**If Input Documents Exist:**
+---
+
+#### IF PATH A was used (briefCount > 0):
+
 "Based on your product brief and our discussion, I'm classifying this as:
 
 - **Project Type:** {project_type_from_brief_or_conversation}
@@ -136,10 +234,33 @@ Leverage both user input and document analysis for classification:
 From your brief, I detected these classification signals:
 {{classification_signals_from_brief}}
 
+{if projectDocsCount > 0}Your existing project documentation also indicates:
+
+- **Existing Tech Stack:** {from architecture.md or index.md}
+- **Architecture Pattern:** {from architecture.md}
+
+I'll ensure the new features align with your existing system.{/if}
+
 Combined with our conversation, this suggests the above classification. Does this sound right?"
 
-**If No Input Documents:**
-Present your classifications for user validation:
+---
+
+#### IF PATH B was used (briefCount == 0 AND projectDocsCount > 0):
+
+"Based on your existing project documentation and our discussion about new features:
+
+- **Existing Project Type:** {detected from project docs - e.g., web_app, api_backend}
+- **Tech Stack:** {from architecture.md or index.md}
+- **New Feature Type:** {from user's description of what they want to add}
+- **Domain:** {detected_domain}
+- **Complexity:** {complexity_level}
+
+I'll ensure the PRD aligns with your existing architecture patterns. Does this classification sound right?"
+
+---
+
+#### IF PATH C was used (briefCount == 0 AND projectDocsCount == 0):
+
 "Based on our conversation, I'm hearing this as:
 
 - **Project Type:** {detected_project_type}
@@ -148,11 +269,16 @@ Present your classifications for user validation:
 
 Does this sound right to you? I want to make sure we're on the same page before diving deeper."
 
-### 5. Identify What Makes It Special
+---
 
-Leverage input documents for initial understanding, then refine:
+### 6. Identify What Makes It Special
 
-**If Input Documents Exist:**
+**SELECT EXACTLY ONE DIFFERENTIATOR DISCOVERY based on document state:**
+
+---
+
+#### IF PATH A was used (briefCount > 0):
+
 "From your product brief, I understand that what makes this special is:
 {{extracted_differentiator_from_brief}}
 
@@ -162,7 +288,21 @@ Let's explore this deeper:
 - **Missing aspects:** Are there other differentiators that aren't captured in your brief?
 - **Evolution:** How has your thinking on this evolved since you wrote the brief?"
 
-**If No Input Documents:**
+---
+
+#### IF PATH B was used (briefCount == 0 AND projectDocsCount > 0):
+
+"Your existing system already provides certain capabilities. Now let's define what makes these **new additions** special:
+
+- What gap in your current system will this fill?
+- How will this improve the experience for your existing users?
+- What's the key insight that led you to prioritize this addition?
+- What would make users say 'finally, this is what we needed'?"
+
+---
+
+#### IF PATH C was used (briefCount == 0 AND projectDocsCount == 0):
+
 Ask focused questions to capture the product's unique value:
 
 - "What would make users say 'this is exactly what I needed'?"
@@ -170,7 +310,9 @@ Ask focused questions to capture the product's unique value:
 - "What assumption about [problem space] are you challenging?"
 - "If this succeeds wildly, what changed for your users?"
 
-### 6. Generate Executive Summary Content
+---
+
+### 7. Generate Executive Summary Content
 
 Based on the conversation, prepare the content to append to the document:
 
@@ -190,75 +332,84 @@ Based on the conversation, prepare the content to append to the document:
 **Technical Type:** {project_type}
 **Domain:** {domain}
 **Complexity:** {complexity_level}
+{if projectDocsCount > 0}**Project Context:** Brownfield - extending existing system{else}**Project Context:** Greenfield - new project{/if}
 
 {project_classification_content}
 ```
 
-### 7. Present Content and Menu
+### 8. Present Content and Menu
 
 Show the generated content to the user and present:
+
 "I've drafted our Executive Summary based on our conversation. This will be the first section of your PRD.
 
 **Here's what I'll add to the document:**
 
-[Show the complete markdown content from step 6]
+[Show the complete markdown content from step 7]
 
-**What would you like to do?**
+**Select an Option:**
 [A] Advanced Elicitation - Let's dive deeper and refine this content
 [P] Party Mode - Bring in different perspectives to improve this
-[C] Continue - Save this and move to Success Criteria Definition (Step 3 of 10)"
+[C] Continue - Save this and move to Success Criteria Definition (Step 3 of 11)"
 
-### 8. Handle Menu Selection
+### 9. Handle Menu Selection
 
-#### If 'A' (Advanced Elicitation):
+#### IF A (Advanced Elicitation):
 
-- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current content
+- Execute {advancedElicitationTask} with the current content
 - Process the enhanced content that comes back
 - Ask user: "Accept these changes to the Executive Summary? (y/n)"
 - If yes: Update the content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'P' (Party Mode):
+#### IF P (Party Mode):
 
-- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current content
+- Execute {partyModeWorkflow} with the current content
 - Process the collaborative improvements that come back
 - Ask user: "Accept these changes to the Executive Summary? (y/n)"
 - If yes: Update the content with improvements, then return to A/P/C menu
 - If no: Keep original content, then return to A/P/C menu
 
-#### If 'C' (Continue):
+#### IF C (Continue):
 
-- Append the final content to `{output_folder}/prd.md`
+- Append the final content to `{outputFile}`
 - Update frontmatter: `stepsCompleted: [1, 2]`
-- Load `./step-03-success.md`
+- Load `{nextStepFile}`
 
-## APPEND TO DOCUMENT:
+## CRITICAL STEP COMPLETION NOTE
 
-When user selects 'C', append the content directly to the document using the structure from step 6.
+ONLY WHEN [C continue option] is selected and [executive summary content finalized and saved to document with frontmatter updated], will you then load and read fully `{nextStepFile}` to execute and begin success criteria definition.
 
-## SUCCESS METRICS:
+---
 
-✅ Classification data loaded and used effectively
-✅ Input documents analyzed and leveraged for head start
-✅ User classifications validated and confirmed
-✅ Product differentiator clearly identified and refined
-✅ Executive summary content generated collaboratively with document context
-✅ A/P/C menu presented and handled correctly
-✅ Content properly appended to document when C selected
+## 🚨 SYSTEM SUCCESS/FAILURE METRICS
 
-## FAILURE MODES:
+### ✅ SUCCESS:
 
-❌ Skipping classification data loading and guessing classifications
-❌ Not leveraging existing input documents to accelerate discovery
-❌ Not validating classifications with user before proceeding
-❌ Generating executive summary without real user input
-❌ Missing the "what makes it special" discovery and refinement
-❌ Not presenting A/P/C menu after content generation
-❌ Appending content without user selecting 'C'
+- Document counts read from frontmatter and announced
+- Classification data loaded and used effectively
+- **Correct discovery path selected based on document counts**
+- Input documents analyzed and leveraged for head start
+- User classifications validated and confirmed
+- Product differentiator clearly identified and refined
+- Executive summary content generated collaboratively with document context
+- A/P/C menu presented and handled correctly
+- Content properly appended to document when C selected
+- Frontmatter updated with stepsCompleted: [1, 2]
 
-❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
-❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
-❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
+### ❌ SYSTEM FAILURE:
+
+- **Not reading documentCounts from frontmatter first**
+- **Executing multiple discovery paths instead of exactly one**
+- Skipping classification data loading and guessing classifications
+- Not leveraging existing input documents to accelerate discovery
+- Not validating classifications with user before proceeding
+- Generating executive summary without real user input
+- Missing the "what makes it special" discovery and refinement
+- Not presenting A/P/C menu after content generation
+- Appending content without user selecting 'C'
+
+**Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.
 
 ## COMPLEXITY HANDLING:
 
@@ -267,9 +418,3 @@ If `complexity_level = "high"`:
 - Note the `suggested_workflow` and `web_searches` from domain CSV
 - Consider mentioning domain research needs in classification section
 - Document complexity implications in project classification
-
-## NEXT STEP:
-
-After user selects 'C' and content is saved to document, load `installed_path/steps/step-03-success.md` to define success criteria.
-
-Remember: Do NOT proceed to step-03 until user explicitly selects 'C' from the A/P/C menu and content is saved!
