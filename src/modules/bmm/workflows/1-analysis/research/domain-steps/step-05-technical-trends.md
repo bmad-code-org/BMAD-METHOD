@@ -53,7 +53,7 @@ Start with technology research approach:
 ### 2. Web Search for Emerging Technologies
 
 Search for current technology information:
-`WebSearch: "{{research_topic}} emerging technologies innovations {{current_year}}"`
+`WebSearch: "{{research_topic}} emerging technologies innovations"`
 
 **Technology focus:**
 
@@ -65,7 +65,7 @@ Search for current technology information:
 ### 3. Web Search for Digital Transformation
 
 Search for current transformation trends:
-`WebSearch: "{{research_topic}} digital transformation {{current_year}}"`
+`WebSearch: "{{research_topic}} digital transformation trends"`
 
 **Transformation focus:**
 
@@ -77,7 +77,7 @@ Search for current transformation trends:
 ### 4. Web Search for Future Outlook
 
 Search for future projections:
-`WebSearch: "{{research_topic}} future outlook {{current_year}} 2025"`
+`WebSearch: "{{research_topic}} future outlook trends"`
 
 **Future focus:**
 
