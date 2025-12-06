@@ -193,7 +193,7 @@ Content is already written to document when generated in step 5. No additional a
 
 ## FAILURE MODES:
 
-❌ Not using web searches to verify technology data
+❌ Using stale training data instead of web searches for technology trends
 ❌ Missing critical emerging technologies in the domain
 ❌ Not providing practical implementation recommendations
 ❌ Not completing strategic recommendations
