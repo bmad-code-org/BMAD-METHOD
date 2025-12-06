@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current regulatory data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A REGULATORY ANALYST, not content generator
 - 💬 FOCUS on compliance requirements and regulatory landscape
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 
 ## EXECUTION PROTOCOLS:
@@ -31,14 +31,14 @@
 
 ## YOUR TASK:
 
-Conduct focused regulatory and compliance analysis using current {{current_year}} web data with emphasis on requirements that impact {{research_topic}}.
+Conduct focused regulatory and compliance analysis with emphasis on requirements that impact {{research_topic}}. Search the web to verify and supplement current facts.
 
 ## REGULATORY FOCUS SEQUENCE:
 
 ### 1. Begin Regulatory Analysis
 
 Start with regulatory research approach:
-"Now I'll focus on **regulatory and compliance requirements** that impact **{{research_topic}}** using current {{current_year}} data.
+"Now I'll focus on **regulatory and compliance requirements** that impact **{{research_topic}}**.
 
 **Regulatory Focus Areas:**
 
@@ -53,7 +53,7 @@ Start with regulatory research approach:
 ### 2. Web Search for Specific Regulations
 
 Search for current regulatory information:
-`WebSearch: "{{research_topic}} regulations compliance requirements {{current_year}}"`
+Search the web: "{{research_topic}} regulations compliance requirements"
 
 **Regulatory focus:**
 
@@ -65,7 +65,7 @@ Search for current regulatory information:
 ### 3. Web Search for Industry Standards
 
 Search for current industry standards:
-`WebSearch: "{{research_topic}} standards best practices {{current_year}}"`
+Search the web: "{{research_topic}} standards best practices"
 
 **Standards focus:**
 
@@ -77,7 +77,7 @@ Search for current industry standards:
 ### 4. Web Search for Data Privacy Requirements
 
 Search for current privacy regulations:
-`WebSearch: "data privacy regulations {{research_topic}} {{current_year}}"`
+Search the web: "data privacy regulations {{research_topic}}"
 
 **Privacy focus:**
 
@@ -100,32 +100,32 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### Applicable Regulations
 
 [Specific regulations analysis with source citations]
-_Source: [URL with {{current_year}} regulatory data]_
+_Source: [URL]_
 
 ### Industry Standards and Best Practices
 
 [Industry standards analysis with source citations]
-_Source: [URL with {{current_year}} standards data]_
+_Source: [URL]_
 
 ### Compliance Frameworks
 
 [Compliance frameworks analysis with source citations]
-_Source: [URL with {{current_year}} compliance data]_
+_Source: [URL]_
 
 ### Data Protection and Privacy
 
 [Privacy requirements analysis with source citations]
-_Source: [URL with {{current_year}} privacy data]_
+_Source: [URL]_
 
 ### Licensing and Certification
 
 [Licensing requirements analysis with source citations]
-_Source: [URL with {{current_year}} licensing data]_
+_Source: [URL]_
 
 ### Implementation Considerations
 
 [Practical implementation considerations with source citations]
-_Source: [URL with {{current_year}} implementation data]_
+_Source: [URL]_
 
 ### Risk Assessment
 
@@ -135,7 +135,7 @@ _Source: [URL with {{current_year}} implementation data]_
 ### 6. Present Analysis and Continue Option
 
 Show the generated regulatory analysis and present continue option:
-"I've completed **regulatory requirements analysis** using current {{current_year}} data to understand compliance requirements for {{research_topic}}.
+"I've completed **regulatory requirements analysis** for {{research_topic}}.
 
 **Key Regulatory Findings:**
 
@@ -162,7 +162,7 @@ Content is already written to document when generated in step 5. No additional a
 
 ## SUCCESS METRICS:
 
-✅ Applicable regulations identified with current {{current_year}} citations
+✅ Applicable regulations identified with current citations
 ✅ Industry standards and best practices documented
 ✅ Compliance frameworks clearly mapped
 ✅ Data protection requirements analyzed
@@ -172,7 +172,7 @@ Content is already written to document when generated in step 5. No additional a
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in regulatory web searches
+❌ Relying on training data instead of web search for current facts
 ❌ Missing critical regulatory requirements for the domain
 ❌ Not providing implementation considerations for compliance
 ❌ Not completing risk assessment for regulatory compliance
@@ -200,6 +200,6 @@ Content is already written to document when generated in step 5. No additional a
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-04-technical-trends.md` to analyze technical trends and innovations in the domain.
+After user selects 'C' and content is saved to document, load `./step-05-technical-trends.md` to analyze technical trends and innovations in the domain.
 
-Remember: Always emphasize current {{current_year}} regulatory data and practical implementation considerations!
+Remember: Search the web to verify regulatory facts and provide practical implementation considerations!

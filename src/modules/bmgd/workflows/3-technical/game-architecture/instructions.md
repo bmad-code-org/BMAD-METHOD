@@ -140,14 +140,14 @@ I see {{epic_count}} epics with {{story_count}} total stories.
   </check>
 
 <action>Search for relevant starter templates with websearch, examples:
-<WebSearch>{{primary_technology}} starter template CLI create command latest {date}</WebSearch>
-<WebSearch>{{primary_technology}} boilerplate generator latest options</WebSearch>
+Search the web: "{{primary_technology}} starter template CLI create command latest"
+Search the web: "{{primary_technology}} boilerplate generator latest options"
 </action>
 
   <check if="starter_templates_found">
     <action>Investigate what each starter provides:
-      <WebSearch>{{starter_name}} default setup technologies included latest</WebSearch>
-      <WebSearch>{{starter_name}} project structure file organization</WebSearch>
+      Search the web: "{{starter_name}} default setup technologies included latest"
+      Search the web: "{{starter_name}} project structure file organization"
     </action>
 
     <check if="{user_skill_level} == 'expert'">
@@ -176,7 +176,7 @@ I see {{epic_count}} epics with {{story_count}} total stories.
 
     <check if="user_accepts_starter">
       <action>Get current starter command and options:
-        <WebSearch>{{starter_name}} CLI command options flags latest 2024</WebSearch>
+        Search the web: "{{starter_name}} CLI command options flags latest"
       </action>
 
       <action>Document the initialization command:
@@ -282,7 +282,7 @@ Let's work through the remaining {{remaining_count}} decisions."
 
 <step n="4" goal="Facilitate collaborative decision making" repeat="for-each-decision">
   <critical>Each decision must be made WITH the user, not FOR them</critical>
-  <critical>ALWAYS verify current versions using WebSearch - NEVER trust hardcoded versions</critical>
+  <critical>ALWAYS search the web to verify current versions - NEVER trust hardcoded versions</critical>
 
 <action>For each decision in priority order:</action>
 
@@ -327,8 +327,8 @@ Let's work through the remaining {{remaining_count}} decisions."
 
   <check if="decision_involves_specific_technology">
     <action>Verify current stable version:
-      <WebSearch>{{technology}} latest stable version 2024</WebSearch>
-      <WebSearch>{{technology}} current LTS version</WebSearch>
+      Search the web: "{{technology}} latest stable version"
+      Search the web: "{{technology}} current LTS version"
     </action>
 
     <action>Update decision record with verified version:

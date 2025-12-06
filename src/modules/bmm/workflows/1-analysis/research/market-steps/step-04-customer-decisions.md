@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current customer data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A CUSTOMER DECISION ANALYST, not content generator
 - 💬 FOCUS on customer decision processes and journey mapping
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 
 ## EXECUTION PROTOCOLS:
@@ -32,7 +32,7 @@
 
 ## YOUR TASK:
 
-Conduct customer decision processes and journey analysis using current {{current_year}} web data with emphasis on decision factors and journey mapping.
+Conduct customer decision processes and journey analysis with emphasis on decision factors and journey mapping.
 
 ## CUSTOMER DECISIONS ANALYSIS SEQUENCE:
 
@@ -41,7 +41,7 @@ Conduct customer decision processes and journey analysis using current {{current
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different customer decision areas simultaneously and thoroughly.
 
 Start with customer decisions research approach:
-"Now I'll conduct **customer decision processes analysis** for **{{research_topic}}** using current {{current_year}} web data to understand customer decision-making.
+"Now I'll conduct **customer decision processes analysis** for **{{research_topic}}** to understand customer decision-making.
 
 **Customer Decisions Focus:**
 
@@ -57,10 +57,10 @@ Start with customer decisions research approach:
 
 **Execute multiple web searches simultaneously:**
 
-`WebSearch: "{{research_topic}} customer decision process {{current_year}}"`
-`WebSearch: "{{research_topic}} buying criteria factors {{current_year}}"`
-`WebSearch: "{{research_topic}} customer journey mapping {{current_year}}"`
-`WebSearch: "{{research_topic}} decision influencing factors {{current_year}}"`
+Search the web: "{{research_topic}} customer decision process"
+Search the web: "{{research_topic}} buying criteria factors"
+Search the web: "{{research_topic}} customer journey mapping"
+Search the web: "{{research_topic}} decision influencing factors"
 
 **Analysis approach:**
 
@@ -109,7 +109,7 @@ _Decision Stages: [Key stages in customer decision making]_
 _Decision Timelines: [Timeframes for different decisions]_
 _Complexity Levels: [Decision complexity assessment]_
 _Evaluation Methods: [How customers evaluate options]_
-_Source: [URL with {{current_year}} decision process data]_
+_Source: [URL]_
 
 ### Decision Factors and Criteria
 
@@ -118,7 +118,7 @@ _Primary Decision Factors: [Most important factors in decisions]_
 _Secondary Decision Factors: [Supporting factors influencing decisions]_
 _Weighing Analysis: [How different factors are weighed]_
 _Evoluton Patterns: [How factors change over time]_
-_Source: [URL with {{current_year}} decision factors data]_
+_Source: [URL]_
 
 ### Customer Journey Mapping
 
@@ -128,7 +128,7 @@ _Consideration Stage: [Evaluation and comparison process]_
 _Decision Stage: [Final decision-making process]_
 _Purchase Stage: [Purchase execution and completion]_
 _Post-Purchase Stage: [Post-decision evaluation and behavior]_
-_Source: [URL with {{current_year}} journey mapping data]_
+_Source: [URL]_
 
 ### Touchpoint Analysis
 
@@ -137,7 +137,7 @@ _Digital Touchpoints: [Online and digital interaction points]_
 _Offline Touchpoints: [Physical and in-person interaction points]_
 _Information Sources: [Where customers get information]_
 _Influence Channels: [What influences customer decisions]_
-_Source: [URL with {{current_year}} touchpoint data]_
+_Source: [URL]_
 
 ### Information Gathering Patterns
 
@@ -146,7 +146,7 @@ _Research Methods: [How customers research options]_
 _Information Sources Trusted: [Most trusted information sources]_
 _Research Duration: [Time spent gathering information]_
 _Evaluation Criteria: [How customers evaluate information]_
-_Source: [URL with {{current_year}} information gathering data]_
+_Source: [URL]_
 
 ### Decision Influencers
 
@@ -155,7 +155,7 @@ _Peer Influence: [How friends and family influence decisions]_
 _Expert Influence: [How expert opinions affect decisions]_
 _Media Influence: [How media and marketing affect decisions]_
 _Social Proof Influence: [How reviews and testimonials affect decisions]_
-_Source: [URL with {{current_year}} decision influencer data]_
+_Source: [URL]_
 
 ### Purchase Decision Factors
 
@@ -164,7 +164,7 @@ _Immediate Purchase Drivers: [Factors triggering immediate purchase]_
 _Delayed Purchase Drivers: [Factors causing purchase delays]_
 _Brand Loyalty Factors: [Factors driving repeat purchases]_
 _Price Sensitivity: [How price affects purchase decisions]_
-_Source: [URL with {{current_year}} purchase decision data]_
+_Source: [URL]_
 
 ### Customer Decision Optimizations
 
@@ -173,14 +173,14 @@ _Friction Reduction: [Ways to make decisions easier]_
 _Trust Building: [Building customer trust in decisions]_
 _Conversion Optimization: [Optimizing decision-to-purchase rates]_
 _Loyalty Building: [Building long-term customer relationships]_
-_Source: [URL with {{current_year}} decision optimization data]_
+_Source: [URL]_
 ```
 
 ### 5. Present Analysis and Continue Option
 
 **Show analysis and present continue option:**
 
-"I've completed **customer decision processes analysis** using current {{current_year}} data to understand customer decision-making for {{research_topic}}.
+"I've completed **customer decision processes analysis** for {{research_topic}}, focusing on customer decision-making.
 
 **Key Decision Findings:**
 
@@ -219,7 +219,8 @@ Content is already written to document when generated in step 4. No additional a
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in customer web searches
+❌ Relying solely on training data without web verification for current facts
+
 ❌ Missing critical decision-making process stages
 ❌ Not identifying key decision factors
 ❌ Incomplete customer journey mapping
@@ -237,7 +238,7 @@ Content is already written to document when generated in step 4. No additional a
 - Use customer journey mapping methodologies
 - Analyze buying criteria and decision factors
 - Study decision influence and touchpoint analysis
-- Focus on current {{current_year}} decision data
+- Focus on current decision data
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
@@ -254,4 +255,4 @@ Content is already written to document when generated in step 4. No additional a
 
 After user selects 'C', load `./step-05-competitive-analysis.md` to analyze competitive landscape, market positioning, and competitive strategies for {{research_topic}}.
 
-Remember: Always write research content to document immediately and emphasize current {{current_year}} customer decision data with rigorous source verification!
+Remember: Always write research content to document immediately and emphasize current customer decision data with rigorous source verification!

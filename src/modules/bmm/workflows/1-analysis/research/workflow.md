@@ -11,7 +11,7 @@ web_bundle: true
 **Document Standards:**
 
 - **Comprehensive Coverage**: Exhaustive research with no critical gaps
-- **Source Verification**: Every factual claim cited with URLs from {{current_year}}
+- **Source Verification**: Every factual claim backed by web sources with URL citations
 - **Document Length**: As long as needed to fully cover the research topic
 - **Professional Structure**: Compelling narrative introduction, detailed TOC, and comprehensive summary
 - **Authoritative Sources**: Multiple independent sources for all critical claims
@@ -46,7 +46,7 @@ Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
 
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
-- `date`, `current_year`, `current_month` as system-generated values
+- `date` as a system-generated value
 - `enable_web_research = true` (web research is default behavior)
 
 ### Paths
@@ -57,11 +57,17 @@ Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
 
 ---
 
+## PREREQUISITE
+
+**⛔ Web search required.** If unavailable, abort and tell the user.
+
+---
+
 ## RESEARCH BEHAVIOR
 
 ### Web Research Standards
 
-- **Current Data Only**: Always use {{current_year}} in web searches
+- **Current Data Only**: Search the web to verify and supplement your knowledge with current facts
 - **Source Verification**: Require citations for all factual claims
 - **Anti-Hallucination Protocol**: Never present information without verified sources
 - **Multiple Sources**: Require at least 2 independent sources for critical claims
@@ -88,7 +94,7 @@ Execute research type discovery and routing:
 **Research Standards:**
 
 - **Anti-Hallucination Protocol**: Never present information without verified sources
-- **Current Data Only**: Always use {{current_year}} in web searches
+- **Current Data Only**: Search the web to verify and supplement your knowledge with current facts
 - **Source Citation**: Always include URLs for factual claims from web searches
 - **Multiple Sources**: Require 2+ independent sources for critical claims
 - **Conflict Resolution**: Present conflicting views and note discrepancies
@@ -96,7 +102,7 @@ Execute research type discovery and routing:
 
 ### Collaborative Research Discovery
 
-"Welcome {{user_name}}! I'm excited to work with you as your research partner. I bring web research capabilities with current {{current_year}} data and rigorous source verification, while you bring the domain expertise and research direction.
+"Welcome {{user_name}}! I'm excited to work with you as your research partner. I bring web research capabilities with rigorous source verification, while you bring the domain expertise and research direction.
 
 **Let me help you clarify what you'd like to research.**
 
@@ -190,10 +196,9 @@ research_topic: '{{research_topic}}'
 research_goals: '{{research_goals}}'
 user_name: '{{user_name}}'
 date: '{{date}}'
-current_year: '{{current_year}}'
 web_research_enabled: true
 source_verification: true
 ---
 ```
 
-**Note:** All research workflows emphasize current web data with {{current_year}} searches and rigorous source verification.
+**Note:** All research workflows require web search for current data and source verification.

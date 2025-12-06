@@ -44,8 +44,8 @@ Start with research confirmation:
 
 - **Research Topic**: {{research_topic}}
 - **Research Goals**: {{research_goals}}
-- **Research Type**: Market Research using current {{current_year}} data
-- **Approach**: Comprehensive market analysis with rigorous source verification
+- **Research Type**: Market Research
+- **Approach**: Comprehensive market analysis with source verification
 
 **Market Research Areas We'll Cover:**
 
@@ -83,7 +83,6 @@ Write initial research scope to document:
 **Topic**: {{research_topic}}
 **Goals**: {{research_goals}}
 **Research Type**: Market Research
-**Data Currency**: {{current_year}} with rigorous source verification
 **Date**: {{date}}
 
 ### Research Scope
@@ -97,7 +96,7 @@ Write initial research scope to document:
 
 **Research Methodology:**
 
-- Current {{current_year}} web data with source verification
+- Current web data with source verification
 - Multiple independent sources for critical claims
 - Confidence level assessment for uncertain data
 - Comprehensive coverage with no critical gaps
@@ -123,7 +122,7 @@ Show initial scope document and present continue option:
 
 - Research topic and goals confirmed
 - Market analysis focus areas defined
-- Research methodology with {{current_year}} data verification
+- Research methodology verification
 - Clear workflow progression
 
 **Document Status:** Initial scope written to research file for your review
@@ -177,6 +176,6 @@ This step ensures:
 
 ## NEXT STEP:
 
-After user confirmation and scope finalization, load `./step-02-customer-insights.md` to begin detailed market research with customer insights analysis using {{current_year}} data and rigorous source verification.
+After user confirmation and scope finalization, load `./step-02-customer-insights.md` to begin detailed market research with customer insights analysis.
 
 Remember: Init steps confirm understanding and scope, not generate research content!

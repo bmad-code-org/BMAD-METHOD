@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current market data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A MARKET RESEARCH STRATEGIST, not content generator
 - 💬 FOCUS on strategic recommendations and actionable insights
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 
 ## EXECUTION PROTOCOLS:
 
@@ -38,7 +38,7 @@ Produce a comprehensive, authoritative market research document on **{{research_
 ### 1. Begin Strategic Synthesis
 
 Start with strategic synthesis approach:
-"Now I'll complete our market research with **strategic synthesis and recommendations** using current {{current_year}} data.
+"Now I'll complete our market research with **strategic synthesis and recommendations** .
 
 **Strategic Synthesis Focus:**
 
@@ -53,7 +53,7 @@ Start with strategic synthesis approach:
 ### 2. Web Search for Market Entry Strategies
 
 Search for current market strategies:
-`WebSearch: "market entry strategies best practices {{current_year}}"`
+Search the web: "market entry strategies best practices"
 
 **Strategy focus:**
 
@@ -65,7 +65,7 @@ Search for current market strategies:
 ### 3. Web Search for Risk Assessment
 
 Search for current risk approaches:
-`WebSearch: "market research risk assessment frameworks {{current_year}}"`
+Search the web: "market research risk assessment frameworks"
 
 **Risk focus:**
 
@@ -105,10 +105,10 @@ Prepare comprehensive market research document with full structure:
 
 ### Market Research Significance
 
-[Compelling market narrative about why {{research_topic}} research is critical in {{current_year}}]
-_Market Importance: [Strategic market significance with {{current_year}} context]_
+**Compelling market narrative about why {{research_topic}} research is critical now**
+_Market Importance: [Strategic market significance with up-to-date context]_
 _Business Impact: [Business implications of market research]_
-_Source: [URL with {{current_year}} market significance data]_
+_Source: [URL]_
 
 ### Market Research Methodology
 
@@ -117,7 +117,7 @@ _Source: [URL with {{current_year}} market significance data]_
 - **Market Scope**: [Comprehensive market coverage areas]
 - **Data Sources**: [Authoritative market sources and verification approach]
 - **Analysis Framework**: [Structured market analysis methodology]
-- **Time Period**: [{{current_year}} focus and market evolution context]
+- **Time Period**: [current focus and market evolution context]
 - **Geographic Coverage**: [Regional/global market scope]
 
 ### Market Research Goals and Objectives
@@ -134,12 +134,12 @@ _Source: [URL with {{current_year}} market significance data]_
 
 ### Market Size and Growth Projections
 
-[Comprehensive market analysis with {{current_year}} data]
+_[Comprehensive market analysis]_
 _Market Size: [Current market valuation and size]_
 _Growth Rate: [CAGR and market growth projections]_
 _Market Drivers: [Key factors driving market growth]_
 _Market Segments: [Detailed market segmentation analysis]_
-_Source: [URL with {{current_year}} market size data]_
+_Source: [URL]_
 
 ### Market Trends and Dynamics
 
@@ -147,7 +147,7 @@ _Source: [URL with {{current_year}} market size data]_
 _Emerging Trends: [Key market trends and their implications]_
 _Market Dynamics: [Forces shaping market evolution]_
 _Consumer Behavior Shifts: [Changes in customer behavior and preferences]_
-_Source: [URL with {{current_year}} market trends data]_
+_Source: [URL]_
 
 ### Pricing and Business Model Analysis
 
@@ -155,17 +155,17 @@ _Source: [URL with {{current_year}} market trends data]_
 _Pricing Strategies: [Current pricing approaches and models]_
 _Business Model Evolution: [Emerging and successful business models]_
 _Value Proposition Analysis: [Customer value proposition assessment]_
-_Source: [URL with {{current_year}} pricing data]_
+_Source: [URL]_
 
 ## 3. Customer Insights and Behavior Analysis
 
 ### Customer Behavior Patterns
 
-[Customer insights analysis with {{current_year}} context]
+[Customer insights analysis with current context]
 _Behavior Patterns: [Key customer behavior trends and patterns]_
 _Customer Journey: [Complete customer journey mapping]_
 _Decision Factors: [Factors influencing customer decisions]_
-_Source: [URL with {{current_year}} customer behavior data]_
+_Source: [URL]_
 
 ### Customer Pain Points and Needs
 
@@ -173,7 +173,7 @@ _Source: [URL with {{current_year}} customer behavior data]_
 _Pain Points: [Key customer challenges and frustrations]_
 _Unmet Needs: [Unsolved customer needs and opportunities]_
 _Customer Expectations: [Current customer expectations and requirements]_
-_Source: [URL with {{current_year}} customer insights data]_
+_Source: [URL]_
 
 ### Customer Segmentation and Targeting
 
@@ -181,7 +181,7 @@ _Source: [URL with {{current_year}} customer insights data]_
 _Customer Segments: [Detailed customer segment profiles]_
 _Target Market Analysis: [Most attractive customer segments]_
 _Segment-specific Strategies: [Tailored approaches for key segments]_
-_Source: [URL with {{current_year}} segmentation data]_
+_Source: [URL]_
 
 ## 4. Competitive Landscape and Positioning
 
@@ -191,7 +191,7 @@ _Source: [URL with {{current_year}} segmentation data]_
 _Market Leaders: [Dominant competitors and their strategies]_
 _Emerging Competitors: [New entrants and innovative approaches]_
 _Competitive Advantages: [Key differentiators and competitive advantages]_
-_Source: [URL with {{current_year}} competitive data]_
+_Source: [URL]_
 
 ### Market Positioning Strategies
 
@@ -199,7 +199,7 @@ _Source: [URL with {{current_year}} competitive data]_
 _Positioning Opportunities: [Opportunities for market differentiation]_
 _Competitive Gaps: [Unserved market needs and opportunities]_
 _Positioning Framework: [Recommended positioning approach]_
-_Source: [URL with {{current_year}} positioning data]_
+_Source: [URL]_
 
 ## 5. Strategic Market Recommendations
 
@@ -209,7 +209,7 @@ _Source: [URL with {{current_year}} positioning data]_
 _High-Value Opportunities: [Most attractive market opportunities]_
 _Market Entry Timing: [Optimal timing for market entry or expansion]_
 _Growth Strategies: [Recommended approaches for market growth]_
-_Source: [URL with {{current_year}} market opportunity data]_
+_Source: [URL]_
 
 ### Strategic Recommendations
 
@@ -217,7 +217,7 @@ _Source: [URL with {{current_year}} market opportunity data]_
 _Market Entry Strategy: [Recommended approach for market entry/expansion]_
 _Competitive Strategy: [Recommended competitive positioning and approach]_
 _Customer Acquisition Strategy: [Recommended customer acquisition approach]_
-_Source: [URL with {{current_year}} strategic data]_
+_Source: [URL]_
 
 ## 6. Market Entry and Growth Strategies
 
@@ -227,7 +227,7 @@ _Source: [URL with {{current_year}} strategic data]_
 _Market Entry Approach: [Recommended market entry strategy and tactics]_
 _Channel Strategy: [Optimal channels for market reach and customer acquisition]_
 _Partnership Strategy: [Strategic partnership and collaboration opportunities]_
-_Source: [URL with {{current_year}} market entry data]_
+_Source: [URL]_
 
 ### Growth and Scaling Strategy
 
@@ -235,7 +235,7 @@ _Source: [URL with {{current_year}} market entry data]_
 _Growth Phases: [Recommended phased approach to market growth]_
 _Scaling Considerations: [Key factors for successful market scaling]_
 _Expansion Opportunities: [Opportunities for geographic or segment expansion]_
-_Source: [URL with {{current_year}} growth strategy data]_
+_Source: [URL]_
 
 ## 7. Risk Assessment and Mitigation
 
@@ -245,7 +245,7 @@ _Source: [URL with {{current_year}} growth strategy data]_
 _Market Risks: [Key market-related risks and uncertainties]_
 _Competitive Risks: [Competitive threats and mitigation strategies]_
 _Regulatory Risks: [Regulatory and compliance considerations]_
-_Source: [URL with {{current_year}} risk assessment data]_
+_Source: [URL]_
 
 ### Mitigation Strategies
 
@@ -253,7 +253,7 @@ _Source: [URL with {{current_year}} risk assessment data]_
 _Risk Mitigation Approaches: [Strategies for managing identified risks]_
 _Contingency Planning: [Backup plans and alternative approaches]_
 _Market Sensitivity Analysis: [Impact of market changes on strategy]_
-_Source: [URL with {{current_year}} mitigation data]_
+_Source: [URL]_
 
 ## 8. Implementation Roadmap and Success Metrics
 
@@ -263,7 +263,7 @@ _Source: [URL with {{current_year}} mitigation data]_
 _Implementation Timeline: [Recommended phased implementation approach]_
 _Required Resources: [Key resources and capabilities needed]_
 _Implementation Milestones: [Key milestones and success criteria]_
-_Source: [URL with {{current_year}} implementation data]_
+_Source: [URL]_
 
 ### Success Metrics and KPIs
 
@@ -271,7 +271,7 @@ _Source: [URL with {{current_year}} implementation data]_
 _Key Performance Indicators: [Critical metrics for measuring success]_
 _Monitoring and Reporting: [Approach for tracking and reporting progress]_
 _Success Criteria: [Clear criteria for determining success]_
-_Source: [URL with {{current_year}} metrics data]_
+_Source: [URL]_
 
 ## 9. Future Market Outlook and Opportunities
 
@@ -281,7 +281,7 @@ _Source: [URL with {{current_year}} metrics data]_
 _Near-term Market Evolution: [1-2 year market development expectations]_
 _Medium-term Market Trends: [3-5 year expected market developments]_
 _Long-term Market Vision: [5+ year market outlook for {{research_topic}}]_
-_Source: [URL with {{current_year}} future trends data]_
+_Source: [URL]_
 
 ### Strategic Opportunities
 
@@ -289,7 +289,7 @@ _Source: [URL with {{current_year}} future trends data]_
 _Emerging Opportunities: [New market opportunities and their potential]_
 _Innovation Opportunities: [Areas for market innovation and differentiation]_
 _Strategic Market Investments: [Recommended market investments and priorities]_
-_Source: [URL with {{current_year}} opportunity data]_
+_Source: [URL]_
 
 ## 10. Market Research Methodology and Source Verification
 
@@ -299,7 +299,6 @@ _Source: [URL with {{current_year}} opportunity data]_
 _Primary Market Sources: [Key authoritative market sources used]_
 _Secondary Market Sources: [Supporting market research and analysis]_
 _Market Web Search Queries: [Complete list of market search queries used]_
-_Market Data Currency: [All market data verified for {{current_year}} currency]_
 
 ### Market Research Quality Assurance
 
@@ -344,9 +343,9 @@ _Market Analysis Tools: [Tools and resources for ongoing market analysis]_
 ---
 
 **Market Research Completion Date:** {{date}}
-**Research Period:** {{current_year}} comprehensive market analysis
+**Research Period:** current comprehensive market analysis
 **Document Length:** As needed for comprehensive market coverage
-**Source Verification:** All market facts cited with {{current_year}} sources
+**Source Verification:** All market facts cited with current sources
 **Market Confidence Level:** High - based on multiple authoritative market sources
 
 _This comprehensive market research document serves as an authoritative market reference on {{research_topic}} and provides strategic market insights for informed decision-making._
@@ -365,7 +364,7 @@ _This comprehensive market research document serves as an authoritative market r
 - **Exhaustive Market Research Coverage**: All market aspects of {{research_topic}} thoroughly analyzed
 - **Executive Market Summary**: Key market findings and strategic implications highlighted
 - **Strategic Market Recommendations**: Actionable market insights based on comprehensive research
-- **Complete Market Source Citations**: Every market claim verified with {{current_year}} sources
+- **Complete Market Source Citations**: Every market claim verified with current sources
 
 **Market Research Completeness:**
 
@@ -380,7 +379,7 @@ _This comprehensive market research document serves as an authoritative market r
 - Professional market structure and compelling narrative
 - As long as needed for comprehensive market coverage
 - Multiple independent sources for all market claims
-- {{current_year}} market data throughout with proper citations
+- current market data throughout with proper citations
 
 **Ready to complete this comprehensive market research document?**
 [C] Complete Research - Save final comprehensive market research document
@@ -404,7 +403,7 @@ When user selects 'C', append the content directly to the research document usin
 ✅ Exhaustive market research coverage across all market aspects
 ✅ Executive market summary with key findings and strategic implications
 ✅ Strategic market recommendations grounded in comprehensive research
-✅ Complete market source verification with {{current_year}} citations
+✅ Complete market source verification with current citations
 ✅ Professional market document structure and compelling narrative
 ✅ [C] complete option presented and handled correctly
 ✅ Market research workflow completed with comprehensive document
@@ -416,7 +415,7 @@ When user selects 'C', append the content directly to the research document usin
 ❌ Incomplete market research coverage across market aspects
 ❌ Not providing executive market summary with key findings
 ❌ Missing strategic market recommendations based on research
-❌ Not using {{current_year}} market sources for all factual claims
+❌ Relying solely on training data without web verification for current facts
 ❌ Producing market document without professional structure
 ❌ Not presenting completion option for final market document
 
@@ -461,7 +460,7 @@ Complete authoritative market research document on {{research_topic}} that:
 - Establishes professional market credibility through comprehensive research
 - Provides strategic market insights for informed decision-making
 - Serves as market reference document for continued use
-- Maintains highest market research quality standards with {{current_year}} verification
+- Maintains highest market research quality standards with current verification
 
 ## NEXT STEPS:
 

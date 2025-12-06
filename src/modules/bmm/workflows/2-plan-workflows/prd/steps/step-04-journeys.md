@@ -1,3 +1,21 @@
+---
+name: 'step-04-journeys'
+description: 'Map ALL user types that interact with the system with narrative story-based journeys'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-04-journeys.md'
+nextStepFile: '{workflow_path}/steps/step-05-domain.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+
+# Task References
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+---
+
 # Step 4: User Journey Mapping
 
 **Progress: Step 4 of 11** - Next: Domain Requirements

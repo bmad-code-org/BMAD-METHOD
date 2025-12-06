@@ -95,7 +95,6 @@ stepsCompleted: [1, 2, 3]
 workflowType: 'party-mode'
 user_name: '{{user_name}}'
 date: '{{date}}'
-current_year: '{{current_year}}'
 agents_loaded: true
 party_active: false
 workflow_completed: true

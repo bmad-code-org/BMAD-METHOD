@@ -9,13 +9,13 @@
 - ✅ ALWAYS treat this as collaborative discovery between architectural peers
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on making critical architectural decisions collaboratively
-- 🌐 ALWAYS verify current technology versions using WebSearch
+- 🌐 ALWAYS search the web to verify current technology versions
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis before taking any action
-- 🌐 Use WebSearch to verify technology versions and options
+- 🌐 Search the web to verify technology versions and options
 - ⚠️ Present A/P/C menu after each major decision category
 - 💾 ONLY save when user chooses C (Continue)
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4]` before loading next step
@@ -163,9 +163,9 @@ What feels right to you?"
 If decision involves specific technology:
 
 ```
-WebSearch: {{technology}} latest stable version 2024
-WebSearch: {{technology}} current LTS version
-WebSearch: {{technology}} production readiness 2024
+Search the web: "{{technology}} latest stable version"
+Search the web: "{{technology}} current LTS version"
+Search the web: "{{technology}} production readiness"
 ```
 
 **Get User Input:**
@@ -290,7 +290,7 @@ When user selects 'C', append the content directly to the document using the str
 ## SUCCESS METRICS:
 
 ✅ All critical architectural decisions made collaboratively
-✅ Technology versions verified using WebSearch
+✅ Technology versions verified using web search
 ✅ Decision rationale clearly documented
 ✅ Cascading implications identified and addressed
 ✅ User provided appropriate level of explanation for skill level
@@ -300,7 +300,7 @@ When user selects 'C', append the content directly to the document using the str
 ## FAILURE MODES:
 
 ❌ Making recommendations instead of facilitating decisions
-❌ Not verifying technology versions with WebSearch
+❌ Not verifying technology versions with web search
 ❌ Missing cascading implications between decisions
 ❌ Not adapting explanations to user skill level
 ❌ Forgetting to document decisions made by starter template

@@ -3,7 +3,6 @@
 **Date:** {{date}}
 **Author:** {{user_name}}
 **Research Type:** {{research_type}}
-**Data Currency:** {{current_year}}
 
 ---
 
