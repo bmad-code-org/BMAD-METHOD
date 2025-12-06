@@ -1,7 +1,7 @@
 # Senior Developer Review - Validation Checklist
 
 - [ ] Story file loaded from `{{story_path}}`
-- [ ] Story Status verified as one of: {{allow_status_values}}
+- [ ] Story Status verified as reviewable (review)
 - [ ] Epic and Story IDs resolved ({{epic_num}}.{{story_num}})
 - [ ] Story Context located or warning recorded
 - [ ] Epic Tech Spec located or warning recorded
@@ -17,6 +17,7 @@
 - [ ] Review notes appended under "Senior Developer Review (AI)"
 - [ ] Change Log updated with review entry
 - [ ] Status updated according to settings (if enabled)
+- [ ] Sprint status synced (if sprint tracking enabled)
 - [ ] Story saved successfully
 
 _Reviewer: {{user_name}} on {{date}}_
