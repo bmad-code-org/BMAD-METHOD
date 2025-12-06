@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current technical data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A TECHNOLOGY ANALYST, not content generator
 - 💬 FOCUS on emerging technologies and innovation patterns
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 
 ## EXECUTION PROTOCOLS:
@@ -31,14 +31,14 @@
 
 ## YOUR TASK:
 
-Conduct comprehensive technical trends analysis using current {{current_year}} web data with emphasis on innovations and emerging technologies impacting {{research_topic}}.
+Conduct comprehensive technical trends analysis using current web data with emphasis on innovations and emerging technologies impacting {{research_topic}}.
 
 ## TECHNICAL TRENDS SEQUENCE:
 
 ### 1. Begin Technical Trends Analysis
 
 Start with technology research approach:
-"Now I'll conduct **technical trends and emerging technologies** analysis for **{{research_topic}}** using current {{current_year}} data.
+"Now I'll conduct **technical trends and emerging technologies** analysis for **{{research_topic}}** using current data.
 
 **Technical Trends Focus:**
 
@@ -53,7 +53,7 @@ Start with technology research approach:
 ### 2. Web Search for Emerging Technologies
 
 Search for current technology information:
-`WebSearch: "{{research_topic}} emerging technologies innovations {{current_year}}"`
+Search the web: "{{research_topic}} emerging technologies innovations"
 
 **Technology focus:**
 
@@ -65,7 +65,7 @@ Search for current technology information:
 ### 3. Web Search for Digital Transformation
 
 Search for current transformation trends:
-`WebSearch: "{{research_topic}} digital transformation {{current_year}}"`
+Search the web: "{{research_topic}} digital transformation trends"
 
 **Transformation focus:**
 
@@ -77,7 +77,7 @@ Search for current transformation trends:
 ### 4. Web Search for Future Outlook
 
 Search for future projections:
-`WebSearch: "{{research_topic}} future outlook {{current_year}} 2025"`
+Search the web: "{{research_topic}} future outlook trends"
 
 **Future focus:**
 
@@ -102,32 +102,32 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### Emerging Technologies
 
 [Emerging technologies analysis with source citations]
-_Source: [URL with {{current_year}} technology data]_
+_Source: [URL]_
 
 ### Digital Transformation
 
 [Digital transformation analysis with source citations]
-_Source: [URL with {{current_year}} transformation data]_
+_Source: [URL]_
 
 ### Innovation Patterns
 
 [Innovation patterns analysis with source citations]
-_Source: [URL with {{current_year}} innovation data]_
+_Source: [URL]_
 
 ### Future Outlook
 
 [Future outlook and projections with source citations]
-_Source: [URL with {{current_year}} outlook data]_
+_Source: [URL]_
 
 ### Implementation Opportunities
 
 [Implementation opportunity analysis with source citations]
-_Source: [URL with {{current_year}} implementation data]_
+_Source: [URL]_
 
 ### Challenges and Risks
 
 [Challenges and risks assessment with source citations]
-_Source: [URL with {{current_year}} risk data]_
+_Source: [URL]_
 
 ## Recommendations
 
@@ -147,7 +147,7 @@ _Source: [URL with {{current_year}} risk data]_
 ### 6. Present Analysis and Complete Option
 
 Show the generated technical analysis and present complete option:
-"I've completed **technical trends and innovation analysis** using current {{current_year}} data to understand technology patterns for {{research_topic}}.
+"I've completed **technical trends and innovation analysis** for {{research_topic}}.
 
 **Technical Highlights:**
 
@@ -181,7 +181,7 @@ Content is already written to document when generated in step 5. No additional a
 
 ## SUCCESS METRICS:
 
-✅ Emerging technologies identified with current {{current_year}} data
+✅ Emerging technologies identified with current data
 ✅ Digital transformation trends clearly documented
 ✅ Future outlook and projections analyzed
 ✅ Implementation opportunities and challenges mapped
@@ -193,7 +193,7 @@ Content is already written to document when generated in step 5. No additional a
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in technology web searches
+❌ Relying solely on training data without web verification for current facts
 ❌ Missing critical emerging technologies in the domain
 ❌ Not providing practical implementation recommendations
 ❌ Not completing strategic recommendations
@@ -230,4 +230,4 @@ Research workflow complete. User may:
 - Conduct additional research on specific topics if needed
 - Move forward with product development based on research insights
 
-Congratulations on completing comprehensive domain research with current {{current_year}} data! 🎉
+Congratulations on completing comprehensive domain research! 🎉

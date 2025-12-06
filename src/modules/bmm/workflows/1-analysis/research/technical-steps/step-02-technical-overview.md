@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current technology data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A TECHNOLOGY STACK ANALYST, not content generator
 - 💬 FOCUS on languages, frameworks, tools, and platforms
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 
 ## EXECUTION PROTOCOLS:
@@ -31,7 +31,7 @@
 
 ## YOUR TASK:
 
-Conduct technology stack analysis focusing on languages, frameworks, tools, and platforms using current {{current_year}} web data with rigorous source verification.
+Conduct technology stack analysis focusing on languages, frameworks, tools, and platforms. Search the web to verify and supplement current facts.
 
 ## TECHNOLOGY STACK ANALYSIS SEQUENCE:
 
@@ -40,7 +40,7 @@ Conduct technology stack analysis focusing on languages, frameworks, tools, and 
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different technology stack areas simultaneously and thoroughly.
 
 Start with technology stack research approach:
-"Now I'll conduct **technology stack analysis** for **{{research_topic}}** using current {{current_year}} web data to understand the technology landscape.
+"Now I'll conduct **technology stack analysis** for **{{research_topic}}** to understand the technology landscape.
 
 **Technology Stack Focus:**
 
@@ -56,10 +56,10 @@ Start with technology stack research approach:
 
 **Execute multiple web searches simultaneously:**
 
-`WebSearch: "{{research_topic}} programming languages frameworks {{current_year}}"`
-`WebSearch: "{{research_topic}} development tools platforms {{current_year}}"`
-`WebSearch: "{{research_topic}} database storage technologies {{current_year}}"`
-`WebSearch: "{{research_topic}} cloud infrastructure platforms {{current_year}}"`
+Search the web: "{{research_topic}} programming languages frameworks"
+Search the web: "{{research_topic}} development tools platforms"
+Search the web: "{{research_topic}} database storage technologies"
+Search the web: "{{research_topic}} cloud infrastructure platforms"
 
 **Analysis approach:**
 
@@ -108,7 +108,7 @@ _Popular Languages: [Most widely used languages for {{research_topic}}]_
 _Emerging Languages: [Growing languages gaining adoption]_
 _Language Evolution: [How language preferences are changing]_
 _Performance Characteristics: [Language performance and suitability]_
-_Source: [URL with {{current_year}} language data]_
+_Source: [URL]_
 
 ### Development Frameworks and Libraries
 
@@ -117,7 +117,7 @@ _Major Frameworks: [Dominant frameworks and their use cases]_
 _Micro-frameworks: [Lightweight options and specialized libraries]_
 _Evolution Trends: [How frameworks are evolving and changing]_
 _Ecosystem Maturity: [Library availability and community support]_
-_Source: [URL with {{current_year}} framework data]_
+_Source: [URL]_
 
 ### Database and Storage Technologies
 
@@ -126,7 +126,7 @@ _Relational Databases: [Traditional SQL databases and their evolution]_
 _NoSQL Databases: [Document, key-value, graph, and other NoSQL options]_
 _In-Memory Databases: [Redis, Memcached, and performance-focused solutions]_
 _Data Warehousing: [Analytics and big data storage solutions]_
-_Source: [URL with {{current_year}} database data]_
+_Source: [URL]_
 
 ### Development Tools and Platforms
 
@@ -135,7 +135,7 @@ _IDE and Editors: [Development environments and their evolution]_
 _Version Control: [Git and related development tools]_
 _Build Systems: [Compilation, packaging, and automation tools]_
 _Testing Frameworks: [Unit testing, integration testing, and QA tools]_
-_Source: [URL with {{current_year}} tools data]_
+_Source: [URL]_
 
 ### Cloud Infrastructure and Deployment
 
@@ -144,7 +144,7 @@ _Major Cloud Providers: [AWS, Azure, GCP and their services]_
 _Container Technologies: [Docker, Kubernetes, and orchestration]_
 _Serverless Platforms: [FaaS and event-driven computing]_
 _CDN and Edge Computing: [Content delivery and distributed computing]_
-_Source: [URL with {{current_year}} cloud data]_
+_Source: [URL]_
 
 ### Technology Adoption Trends
 
@@ -153,14 +153,14 @@ _Migration Patterns: [How technology choices are evolving]_
 _Emerging Technologies: [New technologies gaining traction]_
 _Legacy Technology: [Older technologies being phased out]_
 _Community Trends: [Developer preferences and open-source adoption]_
-_Source: [URL with {{current_year}} adoption data]_
+_Source: [URL]_
 ```
 
 ### 5. Present Analysis and Continue Option
 
 **Show analysis and present continue option:**
 
-"I've completed **technology stack analysis** using current {{current_year}} data to understand the technology landscape for {{research_topic}}.
+"I've completed **technology stack analysis** of the technology landscape for {{research_topic}}.
 
 **Key Technology Stack Findings:**
 
@@ -199,7 +199,8 @@ Content is already written to document when generated in step 4. No additional a
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in technology web searches
+❌ Relying solely on training data without web verification for current facts
+
 ❌ Missing critical programming languages or frameworks
 ❌ Incomplete database and storage technology analysis
 ❌ Not identifying development tools and platforms
@@ -217,7 +218,7 @@ Content is already written to document when generated in step 4. No additional a
 - Use technology documentation and best practices guides
 - Analyze open-source projects and their technology choices
 - Study technology adoption patterns and migration trends
-- Focus on current {{current_year}} technology data
+- Focus on current technology data
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
@@ -234,4 +235,4 @@ Content is already written to document when generated in step 4. No additional a
 
 After user selects 'C', load `./step-03-integration-patterns.md` to analyze APIs, communication protocols, and system interoperability for {{research_topic}}.
 
-Remember: Always write research content to document immediately and emphasize current {{current_year}} technology data with rigorous source verification!
+Remember: Always write research content to document immediately and emphasize current technology data with rigorous source verification!

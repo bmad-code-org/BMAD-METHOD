@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current customer data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A CUSTOMER INSIGHTS ANALYST, not content generator
 - 💬 FOCUS on customer behavior and needs analysis
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 
 ## EXECUTION PROTOCOLS:
 
@@ -28,7 +28,7 @@
 
 ## YOUR TASK:
 
-Conduct comprehensive customer insights analysis using current {{current_year}} web data with emphasis on behavior patterns and needs.
+Conduct comprehensive customer insights analysis with emphasis on behavior patterns and needs.
 
 ## CUSTOMER INSIGHTS SEQUENCE:
 
@@ -37,7 +37,7 @@ Conduct comprehensive customer insights analysis using current {{current_year}} 
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different customer areas simultaneously and thoroughly
 
 Start with customer research approach:
-"Now I'll conduct **customer insights analysis** using current {{current_year}} web data to understand customer behavior and needs.
+"Now I'll conduct **customer insights analysis** to understand customer behavior and needs.
 
 **Customer Insights Focus:**
 
@@ -54,9 +54,9 @@ Start with customer research approach:
 
 **Execute multiple web searches simultaneously:**
 
-`WebSearch: "[product/service/market] customer behavior patterns {{current_year}}"`
-`WebSearch: "[product/service/market] customer pain points challenges {{current_year}}"`
-`WebSearch: "[product/service/market] customer decision process {{current_year}}"`
+Search the web: "[product/service/market] customer behavior patterns"
+Search the web: "[product/service/market] customer pain points challenges"
+Search the web: "[product/service/market] customer decision process"
 
 **Analysis approach:**
 
@@ -99,43 +99,43 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### Customer Behavior Patterns
 
 [Customer behavior analysis with source citations]
-_Source: [URL with {{current_year}} customer data]_
+_Source: [URL]_
 
 ### Pain Points and Challenges
 
 [Pain points analysis with source citations]
-_Source: [URL with {{current_year}} customer challenges data]_
+_Source: [URL]_
 
 ### Decision-Making Processes
 
 [Decision-making analysis with source citations]
-_Source: [URL with {{current_year}} decision process data]_
+_Source: [URL]_
 
 ### Customer Journey Mapping
 
 [Customer journey analysis with source citations]
-_Source: [URL with {{current_year}} customer journey data]_
+_Source: [URL]_
 
 ### Customer Satisfaction Drivers
 
 [Satisfaction drivers analysis with source citations]
-_Source: [URL with {{current_year}} satisfaction data]_
+_Source: [URL]_
 
 ### Demographic Profiles
 
 [Demographic profiles analysis with source citations]
-_Source: [URL with {{current_year}} demographic data]_
+_Source: [URL]_
 
 ### Psychographic Profiles
 
 [Psychographic profiles analysis with source citations]
-_Source: [URL with {{current_year}} psychographic data]_
+_Source: [URL]_
 ```
 
 ### 5. Present Analysis and Continue Option
 
 Show the generated customer insights and present continue option:
-"I've completed the **customer insights analysis** using current {{current_year}} data to understand customer behavior and needs.
+"I've completed the **customer insights analysis** for customer behavior and needs.
 
 **Key Customer Findings:**
 
@@ -154,7 +154,7 @@ Show the generated customer insights and present continue option:
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2]`
-- Load: `./step-03-competitive-analysis.md`
+- Load: `./step-05-competitive-analysis.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -162,7 +162,7 @@ When user selects 'C', append the content directly to the research document usin
 
 ## SUCCESS METRICS:
 
-✅ Customer behavior patterns identified with current {{current_year}} citations
+✅ Customer behavior patterns identified with current citations
 ✅ Pain points and challenges clearly documented
 ✅ Decision-making processes thoroughly analyzed
 ✅ Customer journey insights captured and mapped
@@ -172,7 +172,8 @@ When user selects 'C', append the content directly to the research document usin
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in customer web searches
+❌ Relying solely on training data without web verification for current facts
+
 ❌ Missing critical customer behavior patterns
 ❌ Not identifying key pain points and challenges
 ❌ Incomplete customer journey mapping
@@ -193,6 +194,6 @@ When user selects 'C', append the content directly to the research document usin
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-03-competitive-analysis.md` to focus on competitive landscape analysis.
+After user selects 'C' and content is saved to document, load `./step-05-competitive-analysis.md` to focus on competitive landscape analysis.
 
-Remember: Always emphasize current {{current_year}} customer data and rigorous source verification!
+Remember: Always emphasize current customer data and rigorous source verification!

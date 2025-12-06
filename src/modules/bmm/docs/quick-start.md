@@ -313,11 +313,10 @@ flowchart LR
         direction TB
         D1[Per Epic:<br/>epic context]
         D2[Per Story:<br/>create-story]
-        D3[story-context]
-        D4[dev-story]
-        D5[code-review]
-        D6[SM, DEV]
-        D1 ~~~ D2 ~~~ D3 ~~~ D4 ~~~ D5 ~~~ D6
+        D3[dev-story]
+        D4[code-review]
+        D5[SM, DEV]
+        D1 ~~~ D2 ~~~ D3 ~~~ D4 ~~~ D5
     end
 
     P1 --> P2

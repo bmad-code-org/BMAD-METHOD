@@ -25,7 +25,7 @@
 - **Research topic = "{{research_topic}}"** - discovered from initial discussion
 - **Research goals = "{{research_goals}}"** - captured from initial discussion
 - Focus on industry/domain analysis with web research
-- Web search capabilities with {{current_year}} data are enabled
+- Web search is required to verify and supplement your knowledge with current facts
 
 ## YOUR TASK:
 
@@ -48,7 +48,7 @@ Start with domain scope understanding:
 
 **Research Approach:**
 
-- Current {{current_year}} web data with rigorous source verification
+- All claims verified against current public sources
 - Multi-source validation for critical domain claims
 - Confidence levels for uncertain domain information
 - Comprehensive domain coverage with industry-specific insights
@@ -66,7 +66,7 @@ For **{{research_topic}}**, I will research:
 ✅ **Economic Factors** - market size, growth projections, economic impact
 ✅ **Supply Chain Analysis** - value chain, ecosystem, partnerships
 
-**All using current {{current_year}} web data with source verification.**
+**All claims verified against current public sources.**
 
 **Does this domain research scope and approach align with your goals?**
 [C] Continue - Begin domain research with this scope
@@ -77,7 +77,7 @@ For **{{research_topic}}**, I will research:
 
 - Document scope confirmation in research file
 - Update frontmatter: `stepsCompleted: [1]`
-- Load: `./step-02-industry-analysis.md`
+- Load: `./step-02-domain-analysis.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -99,7 +99,7 @@ When user selects 'C', append scope confirmation:
 
 **Research Methodology:**
 
-- Current {{current_year}} web data with rigorous source verification
+- All claims verified against current public sources
 - Multi-source validation for critical domain claims
 - Confidence level framework for uncertain information
 - Comprehensive domain coverage with industry-specific insights
@@ -111,7 +111,7 @@ When user selects 'C', append scope confirmation:
 
 ✅ Domain research scope clearly confirmed with user
 ✅ All domain analysis areas identified and explained
-✅ Research methodology with {{current_year}} data emphasized
+✅ Research methodology emphasized
 ✅ [C] continue option presented and handled correctly
 ✅ Scope confirmation documented when user proceeds
 ✅ Proper routing to next domain research step
@@ -120,7 +120,7 @@ When user selects 'C', append scope confirmation:
 
 ❌ Not clearly confirming domain research scope with user
 ❌ Missing critical domain analysis areas
-❌ Not emphasizing {{current_year}} web data requirement
+❌ Not explaining that web search is required for current facts
 ❌ Not presenting [C] continue option
 ❌ Proceeding without user scope confirmation
 ❌ Not routing to next domain research step
@@ -131,6 +131,6 @@ When user selects 'C', append scope confirmation:
 
 ## NEXT STEP:
 
-After user selects 'C', load `./step-02-industry-analysis.md` to begin industry analysis with current {{current_year}} web data.
+After user selects 'C', load `./step-02-domain-analysis.md` to begin industry analysis.
 
 Remember: This is SCOPE CONFIRMATION ONLY - no actual domain research yet, just confirming the research approach and scope!
