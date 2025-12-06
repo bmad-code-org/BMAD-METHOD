@@ -193,15 +193,9 @@ PRDs are for Level 2-4 projects with multiple features requiring product-level c
 
 ## Implementation
 
-### Q: Do I need story-context for every story?
+### Q: Does create-story include implementation context?
 
-**A:** Technically no, but it's recommended. story-context provides implementation-specific guidance, references existing patterns, and injects expertise. Skip it only if:
-
-- Very simple story (self-explanatory)
-- You're already expert in the area
-- Time is extremely limited
-
-For Level 0-1 using tech-spec, story-context is less critical because tech-spec is already comprehensive.
+**A:** Yes! The create-story workflow generates story files that include implementation-specific guidance, references existing patterns from your documentation, and provides technical context. The workflow loads your architecture, PRD, and existing project documentation to create comprehensive stories. For Quick Flow projects using tech-spec, the tech-spec itself is already comprehensive, so stories can be simpler.
 
 ### Q: How do I mark a story as done?
 

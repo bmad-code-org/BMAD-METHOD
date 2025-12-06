@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current technical data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A TECHNICAL RESEARCH STRATEGIST, not content generator
 - 💬 FOCUS on comprehensive technical synthesis and authoritative conclusions
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📄 PRODUCE COMPREHENSIVE DOCUMENT with narrative intro, TOC, and summary
 
 ## EXECUTION PROTOCOLS:
@@ -74,7 +74,7 @@ Produce a comprehensive, authoritative technical research document on **{{resear
 - Set authoritative, technical expert tone
 
 **Web Search for Technical Introduction Context:**
-`WebSearch: "{{research_topic}} technical significance importance {{current_year}}"`
+Search the web: "{{research_topic}} technical significance importance"
 
 ### 3. Synthesize All Technical Research Sections
 
@@ -95,7 +95,7 @@ Produce a comprehensive, authoritative technical research document on **{{resear
 
 ## Executive Summary
 
-[2-3 paragraph compelling summary of the most critical technical findings and strategic implications for {{research_topic}} based on comprehensive {{current_year}} technical research]
+[2-3 paragraph compelling summary of the most critical technical findings and strategic implications for {{research_topic}} based on comprehensive current technical research]
 
 **Key Technical Findings:**
 
@@ -127,10 +127,10 @@ Produce a comprehensive, authoritative technical research document on **{{resear
 
 ### Technical Research Significance
 
-[Compelling technical narrative about why {{research_topic}} research is critical in {{current_year}}]
-_Technical Importance: [Strategic technical significance with {{current_year}} context]_
+[Compelling technical narrative about why {{research_topic}} research is critical right now]
+_Technical Importance: [Strategic technical significance with current context]_
 _Business Impact: [Business implications of technical research]_
-_Source: [URL with {{current_year}} technical significance data]_
+_Source: [URL]_
 
 ### Technical Research Methodology
 
@@ -139,7 +139,7 @@ _Source: [URL with {{current_year}} technical significance data]_
 - **Technical Scope**: [Comprehensive technical coverage areas]
 - **Data Sources**: [Authoritative technical sources and verification approach]
 - **Analysis Framework**: [Structured technical analysis methodology]
-- **Time Period**: [{{current_year}} focus and technical evolution context]
+- **Time Period**: [current focus and technical evolution context]
 - **Technical Depth**: [Level of technical detail and analysis]
 
 ### Technical Research Goals and Objectives
@@ -156,11 +156,11 @@ _Source: [URL with {{current_year}} technical significance data]_
 
 ### Current Technical Architecture Patterns
 
-[Comprehensive architectural analysis synthesized from step-03 with {{current_year}} context]
+[Comprehensive architectural analysis synthesized from step-03 with current context]
 _Dominant Patterns: [Current architectural approaches]_
 _Architectural Evolution: [Historical and current evolution patterns]_
 _Architectural Trade-offs: [Key architectural decisions and implications]_
-_Source: [URL with {{current_year}} architectural data]_
+_Source: [URL]_
 
 ### System Design Principles and Best Practices
 
@@ -168,18 +168,18 @@ _Source: [URL with {{current_year}} architectural data]_
 _Design Principles: [Core principles guiding {{research_topic}} implementations]_
 _Best Practice Patterns: [Industry-standard approaches and methodologies]_
 _Architectural Quality Attributes: [Performance, scalability, maintainability considerations]_
-_Source: [URL with {{current_year}} design principles data]_
+_Source: [URL]_
 
 ## 3. Implementation Approaches and Best Practices
 
 ### Current Implementation Methodologies
 
-[Implementation analysis from step-04 with {{current_year}} context]
+[Implementation analysis from step-04 with current context]
 _Development Approaches: [Current development methodologies and approaches]_
 _Code Organization Patterns: [Structural patterns and organization strategies]_
 _Quality Assurance Practices: [Testing, validation, and quality approaches]_
 _Deployment Strategies: [Current deployment and operations practices]_
-_Source: [URL with {{current_year}} implementation data]_
+_Source: [URL]_
 
 ### Implementation Framework and Tooling
 
@@ -187,18 +187,18 @@ _Source: [URL with {{current_year}} implementation data]_
 _Development Frameworks: [Popular frameworks and their characteristics]_
 _Tool Ecosystem: [Development tools and platform considerations]_
 _Build and Deployment Systems: [CI/CD and automation approaches]_
-_Source: [URL with {{current_year}} framework data]_
+_Source: [URL]_
 
 ## 4. Technology Stack Evolution and Current Trends
 
 ### Current Technology Stack Landscape
 
-[Technology stack analysis from step-02 with {{current_year}} updates]
+[Technology stack analysis from step-02 with current updates]
 _Programming Languages: [Current language trends and adoption patterns]_
 _Frameworks and Libraries: [Popular frameworks and their use cases]_
 _Database and Storage Technologies: [Current data storage and management trends]_
 _API and Communication Technologies: [Integration and communication patterns]_
-_Source: [URL with {{current_year}} technology stack data]_
+_Source: [URL]_
 
 ### Technology Adoption Patterns
 
@@ -206,17 +206,17 @@ _Source: [URL with {{current_year}} technology stack data]_
 _Adoption Trends: [Technology adoption rates and patterns]_
 _Migration Patterns: [Technology migration and evolution trends]_
 _Emerging Technologies: [New technologies and their potential impact]_
-_Source: [URL with {{current_year}} adoption data]_
+_Source: [URL]_
 
 ## 5. Integration and Interoperability Patterns
 
 ### Current Integration Approaches
 
-[Integration patterns analysis with {{current_year}} context]
+[Integration patterns analysis with current context]
 _API Design Patterns: [Current API design and implementation patterns]_
 _Service Integration: [Microservices and service integration approaches]_
 _Data Integration: [Data exchange and integration patterns]_
-_Source: [URL with {{current_year}} integration data]_
+_Source: [URL]_
 
 ### Interoperability Standards and Protocols
 
@@ -224,7 +224,7 @@ _Source: [URL with {{current_year}} integration data]_
 _Standards Compliance: [Industry standards and compliance requirements]_
 _Protocol Selection: [Communication protocols and selection criteria]_
 _Integration Challenges: [Common integration challenges and solutions]_
-_Source: [URL with {{current_year}} interoperability data]_
+_Source: [URL]_
 
 ## 6. Performance and Scalability Analysis
 
@@ -234,7 +234,7 @@ _Source: [URL with {{current_year}} interoperability data]_
 _Performance Benchmarks: [Current performance characteristics and benchmarks]_
 _Optimization Strategies: [Performance optimization approaches and techniques]_
 _Monitoring and Measurement: [Performance monitoring and measurement practices]_
-_Source: [URL with {{current_year}} performance data]_
+_Source: [URL]_
 
 ### Scalability Patterns and Approaches
 
@@ -242,17 +242,17 @@ _Source: [URL with {{current_year}} performance data]_
 _Scalability Patterns: [Architectural and design patterns for scalability]_
 _Capacity Planning: [Capacity planning and resource management approaches]_
 _Elasticity and Auto-scaling: [Dynamic scaling approaches and implementations]_
-_Source: [URL with {{current_year}} scalability data]_
+_Source: [URL]_
 
 ## 7. Security and Compliance Considerations
 
 ### Security Best Practices and Frameworks
 
-[Security analysis with {{current_year}} context]
+[Security analysis with current context]
 _Security Frameworks: [Current security frameworks and best practices]_
 _Threat Landscape: [Current security threats and mitigation approaches]_
 _Secure Development Practices: [Secure coding and development lifecycle]_
-_Source: [URL with {{current_year}} security data]_
+_Source: [URL]_
 
 ### Compliance and Regulatory Considerations
 
@@ -260,7 +260,7 @@ _Source: [URL with {{current_year}} security data]_
 _Industry Standards: [Relevant industry standards and compliance requirements]_
 _Regulatory Compliance: [Legal and regulatory considerations for {{research_topic}}]_
 _Audit and Governance: [Technical audit and governance practices]_
-_Source: [URL with {{current_year}} compliance data]_
+_Source: [URL]_
 
 ## 8. Strategic Technical Recommendations
 
@@ -270,7 +270,7 @@ _Source: [URL with {{current_year}} compliance data]_
 _Architecture Recommendations: [Recommended architectural approaches and patterns]_
 _Technology Selection: [Recommended technology stack and selection criteria]_
 _Implementation Strategy: [Recommended implementation approaches and methodologies]_
-_Source: [URL with {{current_year}} technical strategy data]_
+_Source: [URL]_
 
 ### Competitive Technical Advantage
 
@@ -278,7 +278,7 @@ _Source: [URL with {{current_year}} technical strategy data]_
 _Technology Differentiation: [Technical approaches that provide competitive advantage]_
 _Innovation Opportunities: [Areas for technical innovation and differentiation]_
 _Strategic Technology Investments: [Recommended technology investments and priorities]_
-_Source: [URL with {{current_year}} competitive analysis data]_
+_Source: [URL]_
 
 ## 9. Implementation Roadmap and Risk Assessment
 
@@ -288,7 +288,7 @@ _Source: [URL with {{current_year}} competitive analysis data]_
 _Implementation Phases: [Recommended phased implementation approach]_
 _Technology Migration Strategy: [Approach for technology adoption and migration]_
 _Resource Planning: [Technical resources and capabilities planning]_
-_Source: [URL with {{current_year}} implementation planning data]_
+_Source: [URL]_
 
 ### Technical Risk Management
 
@@ -296,7 +296,7 @@ _Source: [URL with {{current_year}} implementation planning data]_
 _Technical Risks: [Major technical risks and mitigation strategies]_
 _Implementation Risks: [Risks associated with implementation and deployment]_
 _Business Impact Risks: [Technical risks and their business implications]_
-_Source: [URL with {{current_year}} technical risk data]_
+_Source: [URL]_
 
 ## 10. Future Technical Outlook and Innovation Opportunities
 
@@ -306,7 +306,7 @@ _Source: [URL with {{current_year}} technical risk data]_
 _Near-term Technical Evolution: [1-2 year technical development expectations]_
 _Medium-term Technology Trends: [3-5 year expected technical developments]_
 _Long-term Technical Vision: [5+ year technical outlook for {{research_topic}}]_
-_Source: [URL with {{current_year}} future trends data]_
+_Source: [URL]_
 
 ### Innovation and Research Opportunities
 
@@ -314,7 +314,7 @@ _Source: [URL with {{current_year}} future trends data]_
 _Research Opportunities: [Areas for technical research and innovation]_
 _Emerging Technology Adoption: [Potential new technologies and adoption timelines]_
 _Innovation Framework: [Approach for fostering technical innovation]_
-_Source: [URL with {{current_year}} innovation data]_
+_Source: [URL]_
 
 ## 11. Technical Research Methodology and Source Verification
 
@@ -324,7 +324,6 @@ _Source: [URL with {{current_year}} innovation data]_
 _Primary Technical Sources: [Key authoritative technical sources used]_
 _Secondary Technical Sources: [Supporting technical research and analysis]_
 _Technical Web Search Queries: [Complete list of technical search queries used]_
-_Technical Data Currency: [All technical data verified for {{current_year}} currency]_
 
 ### Technical Research Quality Assurance
 
@@ -370,9 +369,9 @@ _Technical Communities: [Professional networks and technical communities]_
 ---
 
 **Technical Research Completion Date:** {{date}}
-**Research Period:** {{current_year}} comprehensive technical analysis
+**Research Period:** current comprehensive technical analysis
 **Document Length:** As needed for comprehensive technical coverage
-**Source Verification:** All technical facts cited with {{current_year}} sources
+**Source Verification:** All technical facts cited with current sources
 **Technical Confidence Level:** High - based on multiple authoritative technical sources
 
 _This comprehensive technical research document serves as an authoritative technical reference on {{research_topic}} and provides strategic technical insights for informed decision-making and implementation._
@@ -391,7 +390,7 @@ _This comprehensive technical research document serves as an authoritative techn
 - **Exhaustive Technical Research Coverage**: All technical aspects of {{research_topic}} thoroughly analyzed
 - **Executive Technical Summary**: Key technical findings and strategic implications highlighted
 - **Strategic Technical Recommendations**: Actionable technical insights based on comprehensive research
-- **Complete Technical Source Citations**: Every technical claim verified with {{current_year}} sources
+- **Complete Technical Source Citations**: Every technical claim verified with current sources
 
 **Technical Research Completeness:**
 
@@ -407,7 +406,7 @@ _This comprehensive technical research document serves as an authoritative techn
 - Professional technical structure and compelling narrative
 - As long as needed for comprehensive technical coverage
 - Multiple independent technical sources for all claims
-- {{current_year}} technical data throughout with proper citations
+- current technical data throughout with proper citations
 
 **Ready to complete this comprehensive technical research document?**
 [C] Complete Research - Save final comprehensive technical document
@@ -432,7 +431,7 @@ When user selects 'C', append the complete comprehensive technical research docu
 ✅ Exhaustive technical research coverage across all technical aspects
 ✅ Executive technical summary with key findings and strategic implications
 ✅ Strategic technical recommendations grounded in comprehensive research
-✅ Complete technical source verification with {{current_year}} citations
+✅ Complete technical source verification with current citations
 ✅ Professional technical document structure and compelling narrative
 ✅ [C] complete option presented and handled correctly
 ✅ Technical research workflow completed with comprehensive document
@@ -444,7 +443,7 @@ When user selects 'C', append the complete comprehensive technical research docu
 ❌ Incomplete technical research coverage across technical aspects
 ❌ Not providing executive technical summary with key findings
 ❌ Missing strategic technical recommendations based on research
-❌ Not using {{current_year}} technical sources for all factual claims
+❌ Relying solely on training data without web verification for current facts
 ❌ Producing technical document without professional structure
 ❌ Not presenting completion option for final technical document
 
@@ -481,6 +480,6 @@ Complete authoritative technical research document on {{research_topic}} that:
 - Establishes technical credibility through comprehensive research
 - Provides strategic technical insights for informed decision-making
 - Serves as technical reference document for continued use
-- Maintains highest technical research quality standards with {{current_year}} verification
+- Maintains highest technical research quality standards with current verification
 
 Congratulations on completing comprehensive technical research with professional documentation! 🎉

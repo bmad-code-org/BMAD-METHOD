@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current domain data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A DOMAIN RESEARCH STRATEGIST, not content generator
 - 💬 FOCUS on comprehensive synthesis and authoritative conclusions
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📄 PRODUCE COMPREHENSIVE DOCUMENT with narrative intro, TOC, and summary
 
 ## EXECUTION PROTOCOLS:
@@ -72,7 +72,7 @@ Produce a comprehensive, authoritative research document on **{{research_topic}}
 - Set professional, authoritative tone
 
 **Web Search for Introduction Context:**
-`WebSearch: "{{research_topic}} significance importance {{current_year}}"`
+Search the web: "{{research_topic}} significance importance"
 
 ### 3. Synthesize All Research Sections
 
@@ -93,7 +93,7 @@ Produce a comprehensive, authoritative research document on **{{research_topic}}
 
 ## Executive Summary
 
-[2-3 paragraph compelling summary of the most critical findings and strategic implications for {{research_topic}} based on comprehensive {{current_year}} research]
+[2-3 paragraph compelling summary of the most critical findings and strategic implications for {{research_topic}} based on comprehensive current research]
 
 **Key Findings:**
 
@@ -123,9 +123,9 @@ Produce a comprehensive, authoritative research document on **{{research_topic}}
 
 ### Research Significance
 
-[Compelling narrative about why {{research_topic}} research is critical in {{current_year}}]
-_Why this research matters now: [Strategic importance with {{current_year}} context]_
-_Source: [URL with {{current_year}} industry significance data]_
+[Compelling narrative about why {{research_topic}} research is critical right now]
+_Why this research matters now: [Strategic importance with current context]_
+_Source: [URL]_
 
 ### Research Methodology
 
@@ -134,7 +134,7 @@ _Source: [URL with {{current_year}} industry significance data]_
 - **Research Scope**: [Comprehensive coverage areas]
 - **Data Sources**: [Authoritative sources and verification approach]
 - **Analysis Framework**: [Structured analysis methodology]
-- **Time Period**: [{{current_year}} focus and historical context]
+- **Time Period**: [current focus and historical context]
 - **Geographic Coverage**: [Regional/global scope]
 
 ### Research Goals and Objectives
@@ -151,11 +151,11 @@ _Source: [URL with {{current_year}} industry significance data]_
 
 ### Market Size and Growth Projections
 
-[Comprehensive market analysis synthesized from step-02 with {{current_year}} data]
+[Comprehensive market analysis synthesized from step-02 with current data]
 _Market Size: [Current market valuation]_
 _Growth Rate: [CAGR and projections]_
 _Market Drivers: [Key growth factors]_
-_Source: [URL with {{current_year}} market data]_
+_Source: [URL]_
 
 ### Industry Structure and Value Chain
 
@@ -163,17 +163,17 @@ _Source: [URL with {{current_year}} market data]_
 _Value Chain Components: [Detailed breakdown]_
 _Industry Segments: [Market segmentation analysis]_
 _Economic Impact: [Industry economic significance]_
-_Source: [URL with {{current_year}} industry structure data]_
+_Source: [URL]_
 
 ## 3. Technology Landscape and Innovation Trends
 
 ### Current Technology Adoption
 
-[Technology trends analysis from step-04 with {{current_year}} context]
+[Technology trends analysis from step-04 with current context]
 _Emerging Technologies: [Key technologies affecting {{research_topic}}]_
 _Adoption Patterns: [Technology adoption rates and patterns]_
 _Innovation Drivers: [Factors driving technology change]_
-_Source: [URL with {{current_year}} technology data]_
+_Source: [URL]_
 
 ### Digital Transformation Impact
 
@@ -181,17 +181,17 @@ _Source: [URL with {{current_year}} technology data]_
 _Transformation Trends: [Major digital transformation patterns]_
 _Disruption Opportunities: [Technology-driven opportunities]_
 _Future Technology Outlook: [Emerging technologies and timelines]_
-_Source: [URL with {{current_year}} digital transformation data]_
+_Source: [URL]_
 
 ## 4. Regulatory Framework and Compliance Requirements
 
 ### Current Regulatory Landscape
 
-[Regulatory analysis from step-03 with {{current_year}} updates]
+[Regulatory analysis from step-03 with current updates]
 _Key Regulations: [Critical regulatory requirements]_
 _Compliance Standards: [Industry standards and best practices]_
-_Recent Changes: [{{current_year}} regulatory updates and implications]_
-_Source: [URL with {{current_year}} regulatory data]_
+_Recent Changes: [current regulatory updates and implications]_
+_Source: [URL]_
 
 ### Risk and Compliance Considerations
 
@@ -199,17 +199,17 @@ _Source: [URL with {{current_year}} regulatory data]_
 _Compliance Risks: [Major regulatory and compliance risks]_
 _Risk Mitigation Strategies: [Approaches to manage regulatory risks]_
 _Future Regulatory Trends: [Anticipated regulatory developments]_
-_Source: [URL with {{current_year}} compliance data]_
+_Source: [URL]_
 
 ## 5. Competitive Landscape and Ecosystem Analysis
 
 ### Market Positioning and Key Players
 
-[Competitive analysis with {{current_year}} market positioning]
+[Competitive analysis with current market positioning]
 _Market Leaders: [Dominant players and strategies]_
 _Emerging Competitors: [New entrants and innovative approaches]_
 _Competitive Dynamics: [Market competition patterns and trends]_
-_Source: [URL with {{current_year}} competitive data]_
+_Source: [URL]_
 
 ### Ecosystem and Partnership Landscape
 
@@ -217,7 +217,7 @@ _Source: [URL with {{current_year}} competitive data]_
 _Ecosystem Players: [Key stakeholders and relationships]_
 _Partnership Opportunities: [Strategic collaboration potential]_
 _Supply Chain Dynamics: [Supply chain structure and risks]_
-_Source: [URL with {{current_year}} ecosystem data]_
+_Source: [URL]_
 
 ## 6. Strategic Insights and Domain Opportunities
 
@@ -227,7 +227,7 @@ _Source: [URL with {{current_year}} ecosystem data]_
 _Market-Technology Convergence: [How technology and market forces interact]_
 _Regulatory-Strategic Alignment: [How regulatory environment shapes strategy]_
 _Competitive Positioning Opportunities: [Strategic advantages based on research]_
-_Source: [URL with {{current_year}} strategic analysis data]_
+_Source: [URL]_
 
 ### Strategic Opportunities
 
@@ -235,7 +235,7 @@ _Source: [URL with {{current_year}} strategic analysis data]_
 _Market Opportunities: [Specific market entry or expansion opportunities]_
 _Technology Opportunities: [Technology adoption or innovation opportunities]_
 _Partnership Opportunities: [Strategic collaboration and partnership potential]_
-_Source: [URL with {{current_year}} opportunity data]_
+_Source: [URL]_
 
 ## 7. Implementation Considerations and Risk Assessment
 
@@ -245,7 +245,7 @@ _Source: [URL with {{current_year}} opportunity data]_
 _Implementation Timeline: [Recommended phased approach]_
 _Resource Requirements: [Key resources and capabilities needed]_
 _Success Factors: [Critical success factors for implementation]_
-_Source: [URL with {{current_year}} implementation data]_
+_Source: [URL]_
 
 ### Risk Management and Mitigation
 
@@ -253,7 +253,7 @@ _Source: [URL with {{current_year}} implementation data]_
 _Implementation Risks: [Major risks and mitigation approaches]_
 _Market Risks: [Market-related risks and contingency plans]_
 _Technology Risks: [Technology adoption and implementation risks]_
-_Source: [URL with {{current_year}} risk management data]_
+_Source: [URL]_
 
 ## 8. Future Outlook and Strategic Planning
 
@@ -263,7 +263,7 @@ _Source: [URL with {{current_year}} risk management data]_
 _Near-term Outlook: [1-2 year projections and implications]_
 _Medium-term Trends: [3-5 year expected developments]_
 _Long-term Vision: [5+ year strategic outlook for {{research_topic}}]_
-_Source: [URL with {{current_year}} future outlook data]_
+_Source: [URL]_
 
 ### Strategic Recommendations
 
@@ -271,7 +271,7 @@ _Source: [URL with {{current_year}} future outlook data]_
 _Immediate Actions: [Priority actions for next 6 months]_
 _Strategic Initiatives: [Key strategic initiatives for 1-2 years]_
 _Long-term Strategy: [Strategic positioning for 3+ years]_
-_Source: [URL with {{current_year}} strategic planning data]_
+_Source: [URL]_
 
 ## 9. Research Methodology and Source Verification
 
@@ -281,7 +281,6 @@ _Source: [URL with {{current_year}} strategic planning data]_
 _Primary Sources: [Key authoritative sources used]_
 _Secondary Sources: [Supporting research and analysis]_
 _Web Search Queries: [Complete list of search queries used]_
-_Data Currency: [All data verified for {{current_year}} currency]_
 
 ### Research Quality Assurance
 
@@ -327,9 +326,9 @@ _Professional Networks: [Industry communities and knowledge sources]_
 ---
 
 **Research Completion Date:** {{date}}
-**Research Period:** {{current_year}} comprehensive analysis
+**Research Period:** Comprehensive analysis
 **Document Length:** As needed for comprehensive coverage
-**Source Verification:** All facts cited with {{current_year}} sources
+**Source Verification:** All facts cited with sources
 **Confidence Level:** High - based on multiple authoritative sources
 
 _This comprehensive research document serves as an authoritative reference on {{research_topic}} and provides strategic insights for informed decision-making._
@@ -348,7 +347,7 @@ _This comprehensive research document serves as an authoritative reference on {{
 - **Exhaustive Research Coverage**: All aspects of {{research_topic}} thoroughly analyzed
 - **Executive Summary**: Key findings and strategic implications highlighted
 - **Strategic Recommendations**: Actionable insights based on comprehensive research
-- **Complete Source Citations**: Every factual claim verified with {{current_year}} sources
+- **Complete Source Citations**: Every factual claim verified with sources
 
 **Research Completeness:**
 
@@ -364,7 +363,7 @@ _This comprehensive research document serves as an authoritative reference on {{
 - Professional structure and compelling narrative
 - As long as needed for comprehensive coverage
 - Multiple independent sources for all claims
-- {{current_year}} data throughout with proper citations
+- Proper citations throughout
 
 **Ready to complete this comprehensive research document?**
 [C] Complete Research - Save final comprehensive document
@@ -389,7 +388,7 @@ When user selects 'C', append the complete comprehensive research document using
 ✅ Exhaustive research coverage across all domain aspects
 ✅ Executive summary with key findings and strategic implications
 ✅ Strategic recommendations grounded in comprehensive research
-✅ Complete source verification with {{current_year}} citations
+✅ Complete source verification with citations
 ✅ Professional document structure and compelling narrative
 ✅ [C] complete option presented and handled correctly
 ✅ Domain research workflow completed with comprehensive document
@@ -401,7 +400,7 @@ When user selects 'C', append the complete comprehensive research document using
 ❌ Incomplete research coverage across domain aspects
 ❌ Not providing executive summary with key findings
 ❌ Missing strategic recommendations based on research
-❌ Not using {{current_year}} sources for all factual claims
+❌ Relying solely on training data without web verification for current facts
 ❌ Producing document without professional structure
 ❌ Not presenting completion option for final document
 
@@ -438,6 +437,6 @@ Complete authoritative research document on {{research_topic}} that:
 - Establishes professional credibility through comprehensive research
 - Provides strategic insights for informed decision-making
 - Serves as reference document for continued use
-- Maintains highest research quality standards with {{current_year}} verification
+- Maintains highest research quality standards
 
-Congratulations on completing comprehensive domain research with professional documentation! 🎉
+Congratulations on completing comprehensive domain research! 🎉

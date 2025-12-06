@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current architectural data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A SYSTEMS ARCHITECT, not content generator
 - 💬 FOCUS on architectural patterns and design decisions
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 
 ## EXECUTION PROTOCOLS:
@@ -31,14 +31,14 @@
 
 ## YOUR TASK:
 
-Conduct comprehensive architectural patterns analysis using current {{current_year}} web data with emphasis on design decisions and implementation approaches for {{research_topic}}.
+Conduct comprehensive architectural patterns analysis with emphasis on design decisions and implementation approaches for {{research_topic}}.
 
 ## ARCHITECTURAL PATTERNS SEQUENCE:
 
 ### 1. Begin Architectural Patterns Analysis
 
 Start with architectural research approach:
-"Now I'll focus on **architectural patterns and design decisions** using current {{current_year}} data to understand effective architecture approaches for [technology/domain].
+"Now I'll focus on **architectural patterns and design decisions** for effective architecture approaches for [technology/domain].
 
 **Architectural Patterns Focus:**
 
@@ -53,7 +53,7 @@ Start with architectural research approach:
 ### 2. Web Search for System Architecture Patterns
 
 Search for current architecture patterns:
-`WebSearch: "system architecture patterns best practices {{current_year}}"`
+Search the web: "system architecture patterns best practices"
 
 **Architecture focus:**
 
@@ -65,7 +65,7 @@ Search for current architecture patterns:
 ### 3. Web Search for Design Principles
 
 Search for current design principles:
-`WebSearch: "software design principles patterns {{current_year}}"`
+Search the web: "software design principles patterns"
 
 **Design focus:**
 
@@ -77,7 +77,7 @@ Search for current design principles:
 ### 4. Web Search for Scalability Patterns
 
 Search for current scalability approaches:
-`WebSearch: "scalability architecture patterns {{current_year}}"`
+Search the web: "scalability architecture patterns"
 
 **Scalability focus:**
 
@@ -100,43 +100,43 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### System Architecture Patterns
 
 [System architecture patterns analysis with source citations]
-_Source: [URL with {{current_year}} architecture data]_
+_Source: [URL]_
 
 ### Design Principles and Best Practices
 
 [Design principles analysis with source citations]
-_Source: [URL with {{current_year}} design data]_
+_Source: [URL]_
 
 ### Scalability and Performance Patterns
 
 [Scalability patterns analysis with source citations]
-_Source: [URL with {{current_year}} scalability data]_
+_Source: [URL]_
 
 ### Integration and Communication Patterns
 
 [Integration patterns analysis with source citations]
-_Source: [URL with {{current_year}} integration data]_
+_Source: [URL]_
 
 ### Security Architecture Patterns
 
 [Security patterns analysis with source citations]
-_Source: [URL with {{current_year}} security data]_
+_Source: [URL]_
 
 ### Data Architecture Patterns
 
 [Data architecture analysis with source citations]
-_Source: [URL with {{current_year}} data architecture data]_
+_Source: [URL]_
 
 ### Deployment and Operations Architecture
 
 [Deployment architecture analysis with source citations]
-_Source: [URL with {{current_year}} deployment data]_
+_Source: [URL]_
 ```
 
 ### 6. Present Analysis and Continue Option
 
 Show the generated architectural patterns and present continue option:
-"I've completed the **architectural patterns analysis** using current {{current_year}} data to understand effective architecture approaches.
+"I've completed the **architectural patterns analysis** for effective architecture approaches.
 
 **Key Architectural Findings:**
 
@@ -155,7 +155,7 @@ Show the generated architectural patterns and present continue option:
 
 - Append the final content to the research document
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
-- Load: `./step-04-implementation-research.md`
+- Load: `./step-05-implementation-research.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -163,7 +163,7 @@ When user selects 'C', append the content directly to the research document usin
 
 ## SUCCESS METRICS:
 
-✅ System architecture patterns identified with current {{current_year}} citations
+✅ System architecture patterns identified with current citations
 ✅ Design principles clearly documented and analyzed
 ✅ Scalability and performance patterns thoroughly mapped
 ✅ Integration and communication patterns captured
@@ -174,7 +174,8 @@ When user selects 'C', append the content directly to the research document usin
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in architectural web searches
+❌ Relying solely on training data without web verification for current facts
+
 ❌ Missing critical system architecture patterns
 ❌ Not analyzing design trade-offs and considerations
 ❌ Incomplete scalability or performance patterns analysis
@@ -195,6 +196,6 @@ When user selects 'C', append the content directly to the research document usin
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `./step-04-implementation-research.md` to focus on implementation approaches and technology adoption.
+After user selects 'C' and content is saved to document, load `./step-05-implementation-research.md` to focus on implementation approaches and technology adoption.
 
-Remember: Always emphasize current {{current_year}} architectural data and rigorous source verification!
+Remember: Always emphasize current architectural data and rigorous source verification!

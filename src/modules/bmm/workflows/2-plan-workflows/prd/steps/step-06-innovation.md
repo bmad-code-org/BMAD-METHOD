@@ -1,3 +1,24 @@
+---
+name: 'step-06-innovation'
+description: 'Detect and explore innovative aspects of the product (optional step)'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-06-innovation.md'
+nextStepFile: '{workflow_path}/steps/step-07-project-type.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+
+# Data Files
+projectTypesCSV: '{workflow_path}/project-types.csv'
+
+# Task References
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+---
+
 # Step 6: Innovation Discovery
 
 **Progress: Step 6 of 11** - Next: Project Type Analysis

@@ -196,7 +196,7 @@ Your choice [1/2/3]:
 
 - Mode: {{workflow_mode}}
 - Scan Level: {{scan_level}}
-- Output: {output_folder}/bmm-index.md and related files
+- Output: {output_folder}/index.md and related files
 
 {{#if status_file_found}}
 **Status Updated:**

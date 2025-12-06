@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current integration data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE AN INTEGRATION ANALYST, not content generator
 - 💬 FOCUS on APIs, protocols, and system interoperability
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 
 ## EXECUTION PROTOCOLS:
@@ -31,7 +31,7 @@
 
 ## YOUR TASK:
 
-Conduct integration patterns analysis focusing on APIs, communication protocols, and system interoperability using current {{current_year}} web data with rigorous source verification.
+Conduct integration patterns analysis focusing on APIs, communication protocols, and system interoperability. Search the web to verify and supplement current facts.
 
 ## INTEGRATION PATTERNS ANALYSIS SEQUENCE:
 
@@ -40,7 +40,7 @@ Conduct integration patterns analysis focusing on APIs, communication protocols,
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different integration areas simultaneously and thoroughly.
 
 Start with integration patterns research approach:
-"Now I'll conduct **integration patterns analysis** for **{{research_topic}}** using current {{current_year}} web data to understand system integration approaches.
+"Now I'll conduct **integration patterns analysis** for **{{research_topic}}** to understand system integration approaches.
 
 **Integration Patterns Focus:**
 
@@ -56,10 +56,10 @@ Start with integration patterns research approach:
 
 **Execute multiple web searches simultaneously:**
 
-`WebSearch: "{{research_topic}} API design patterns protocols {{current_year}}"`
-`WebSearch: "{{research_topic}} communication protocols data formats {{current_year}}"`
-`WebSearch: "{{research_topic}} system interoperability integration {{current_year}}"`
-`WebSearch: "{{research_topic}} microservices integration patterns {{current_year}}"`
+Search the web: "{{research_topic}} API design patterns protocols"
+Search the web: "{{research_topic}} communication protocols data formats"
+Search the web: "{{research_topic}} system interoperability integration"
+Search the web: "{{research_topic}} microservices integration patterns"
 
 **Analysis approach:**
 
@@ -108,7 +108,7 @@ _RESTful APIs: [REST principles and best practices for {{research_topic}}]_
 _GraphQL APIs: [GraphQL adoption and implementation patterns]_
 _RPC and gRPC: [High-performance API communication patterns]_
 _Webhook Patterns: [Event-driven API integration approaches]_
-_Source: [URL with {{current_year}} API design data]_
+_Source: [URL]_
 
 ### Communication Protocols
 
@@ -117,7 +117,7 @@ _HTTP/HTTPS Protocols: [Web-based communication patterns and evolution]_
 _WebSocket Protocols: [Real-time communication and persistent connections]_
 _Message Queue Protocols: [AMQP, MQTT, and messaging patterns]_
 _grpc and Protocol Buffers: [High-performance binary communication protocols]_
-_Source: [URL with {{current_year}} communication protocols data]_
+_Source: [URL]_
 
 ### Data Formats and Standards
 
@@ -126,7 +126,7 @@ _JSON and XML: [Structured data exchange formats and their evolution]_
 _Protobuf and MessagePack: [Efficient binary serialization formats]_
 _CSV and Flat Files: [Legacy data integration and bulk transfer patterns]_
 _Custom Data Formats: [Domain-specific data exchange standards]_
-_Source: [URL with {{current_year}} data formats data]_
+_Source: [URL]_
 
 ### System Interoperability Approaches
 
@@ -135,7 +135,7 @@ _Point-to-Point Integration: [Direct system-to-system communication patterns]_
 _API Gateway Patterns: [Centralized API management and routing]_
 _Service Mesh: [Service-to-service communication and observability]_
 _Enterprise Service Bus: [Traditional enterprise integration patterns]_
-_Source: [URL with {{current_year}} interoperability data]_
+_Source: [URL]_
 
 ### Microservices Integration Patterns
 
@@ -144,7 +144,7 @@ _API Gateway Pattern: [External API management and routing]_
 _Service Discovery: [Dynamic service registration and discovery]_
 _Circuit Breaker Pattern: [Fault tolerance and resilience patterns]_
 _Saga Pattern: [Distributed transaction management]_
-_Source: [URL with {{current_year}} microservices data]_
+_Source: [URL]_
 
 ### Event-Driven Integration
 
@@ -153,7 +153,7 @@ _Publish-Subscribe Patterns: [Event broadcasting and subscription models]_
 _Event Sourcing: [Event-based state management and persistence]_
 _Message Broker Patterns: [RabbitMQ, Kafka, and message routing]_
 _CQRS Patterns: [Command Query Responsibility Segregation]_
-_Source: [URL with {{current_year}} event-driven data]_
+_Source: [URL]_
 
 ### Integration Security Patterns
 
@@ -162,14 +162,14 @@ _OAuth 2.0 and JWT: [API authentication and authorization patterns]_
 _API Key Management: [Secure API access and key rotation]_
 _Mutual TLS: [Certificate-based service authentication]_
 _Data Encryption: [Secure data transmission and storage]_
-_Source: [URL with {{current_year}} integration security data]_
+_Source: [URL]_
 ```
 
 ### 5. Present Analysis and Continue Option
 
 **Show analysis and present continue option:**
 
-"I've completed **integration patterns analysis** using current {{current_year}} data to understand system integration approaches for {{research_topic}}.
+"I've completed **integration patterns analysis** of system integration approaches for {{research_topic}}.
 
 **Key Integration Patterns Findings:**
 
@@ -208,7 +208,8 @@ Content is already written to document when generated in step 4. No additional a
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in integration web searches
+❌ Relying solely on training data without web verification for current facts
+
 ❌ Missing critical API design patterns or protocols
 ❌ Incomplete communication protocols analysis
 ❌ Not identifying system interoperability approaches
@@ -226,7 +227,7 @@ Content is already written to document when generated in step 4. No additional a
 - Use communication protocol specifications and standards
 - Analyze integration platform and middleware solutions
 - Study microservices architecture patterns and case studies
-- Focus on current {{current_year}} integration data
+- Focus on current integration data
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
@@ -243,4 +244,4 @@ Content is already written to document when generated in step 4. No additional a
 
 After user selects 'C', load `./step-04-architectural-patterns.md` to analyze architectural patterns, design decisions, and system structures for {{research_topic}}.
 
-Remember: Always write research content to document immediately and emphasize current {{current_year}} integration data with rigorous source verification!
+Remember: Always write research content to document immediately and emphasize current integration data with rigorous source verification!
