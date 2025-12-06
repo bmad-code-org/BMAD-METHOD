@@ -97,6 +97,7 @@ Welcome {{user_name}}! All BMAD agents are here and ready for a dynamic group di
 **Agent Introductions (if voice map with intros is available):**
 
 For each agent in the roster, if they have an intro message from the voice map:
+
 - Have the agent speak their intro message in-character
 - Use TTS to voice the introduction with their assigned voice
 - Format: `Bash: .claude/hooks/bmad-speak.sh "[Agent Name]" "[Their intro message]"`
