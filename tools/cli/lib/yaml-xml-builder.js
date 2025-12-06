@@ -342,14 +342,15 @@ class YamlXmlBuilder {
   /**
    * Build menu XML section (renamed from commands for clarity)
    * Auto-injects *help and *exit, adds * prefix to all triggers
+   * Supports both legacy format and new multi format with nested handlers
    * @param {Array} menuItems - Menu items from YAML
    * @param {boolean} forWebBundle - Whether building for web bundle
    */
   buildCommandsXml(menuItems, forWebBundle = false) {
     let xml = '  <menu>\n';
 
-    // Always inject *help first
-    xml += `    <item cmd="*help">Show numbered menu</item>\n`;
+    // Always inject menu display option first
+    xml += `    <item cmd="*menu">[M] Redisplay Menu Options</item>\n`;
 
     // Add user-defined menu items with * prefix
     if (menuItems && menuItems.length > 0) {
@@ -362,40 +363,138 @@ class YamlXmlBuilder {
         if (!forWebBundle && item['web-only'] === true) {
           continue;
         }
-        // Build command attributes - add * prefix if not present
-        let trigger = item.trigger || '';
-        if (!trigger.startsWith('*')) {
-          trigger = '*' + trigger;
+
+        // Handle multi format menu items with nested handlers
+        if (item.multi && item.triggers && Array.isArray(item.triggers)) {
+          xml += `    <item type="multi">${this.escapeXml(item.multi)}\n`;
+          xml += this.buildNestedHandlers(item.triggers);
+          xml += `    </item>\n`;
         }
+        // Handle legacy format menu items
+        else if (item.trigger) {
+          // For legacy items, keep using cmd with *<trigger> format
+          let trigger = item.trigger || '';
+          if (!trigger.startsWith('*')) {
+            trigger = '*' + trigger;
+          }
 
-        const attrs = [`cmd="${trigger}"`];
+          const attrs = [`cmd="${trigger}"`];
 
-        // Add handler attributes
-        // If workflow-install exists, use its value for workflow attribute (vendoring)
-        // workflow-install is build-time metadata - tells installer where to copy workflows
-        // The final XML should only have workflow pointing to the install location
-        if (item['workflow-install']) {
-          attrs.push(`workflow="${item['workflow-install']}"`);
-        } else if (item.workflow) {
-          attrs.push(`workflow="${item.workflow}"`);
+          // Add handler attributes
+          // If workflow-install exists, use its value for workflow attribute (vendoring)
+          // workflow-install is build-time metadata - tells installer where to copy workflows
+          // The final XML should only have workflow pointing to the install location
+          if (item['workflow-install']) {
+            attrs.push(`workflow="${item['workflow-install']}"`);
+          } else if (item.workflow) {
+            attrs.push(`workflow="${item.workflow}"`);
+          }
+
+          if (item['validate-workflow']) attrs.push(`validate-workflow="${item['validate-workflow']}"`);
+          if (item.exec) attrs.push(`exec="${item.exec}"`);
+          if (item.tmpl) attrs.push(`tmpl="${item.tmpl}"`);
+          if (item.data) attrs.push(`data="${item.data}"`);
+          if (item.action) attrs.push(`action="${item.action}"`);
+
+          xml += `    <item ${attrs.join(' ')}>${this.escapeXml(item.description || '')}</item>\n`;
         }
-
-        if (item['validate-workflow']) attrs.push(`validate-workflow="${item['validate-workflow']}"`);
-        if (item.exec) attrs.push(`exec="${item.exec}"`);
-        if (item.tmpl) attrs.push(`tmpl="${item.tmpl}"`);
-        if (item.data) attrs.push(`data="${item.data}"`);
-        if (item.action) attrs.push(`action="${item.action}"`);
-
-        xml += `    <item ${attrs.join(' ')}>${this.escapeXml(item.description || '')}</item>\n`;
       }
     }
 
-    // Always inject *exit last
-    xml += `    <item cmd="*exit">Exit with confirmation</item>\n`;
+    // Always inject dismiss last
+    xml += `    <item cmd="*dismiss">[D] Dismiss Agent</item>\n`;
 
     xml += '  </menu>\n';
 
     return xml;
+  }
+
+  /**
+   * Build nested handlers for multi format menu items
+   * @param {Array} triggers - Triggers array from multi format
+   * @returns {string} Handler XML
+   */
+  buildNestedHandlers(triggers) {
+    let xml = '';
+
+    for (const triggerGroup of triggers) {
+      for (const [triggerName, execArray] of Object.entries(triggerGroup)) {
+        // Build trigger with * prefix
+        let trigger = triggerName.startsWith('*') ? triggerName : '*' + triggerName;
+
+        // Extract the relevant execution data
+        const execData = this.processExecArray(execArray);
+
+        // For nested handlers in multi items, we don't need cmd attribute
+        // The match attribute will handle fuzzy matching
+        const attrs = [`match="${this.escapeXml(execData.description || '')}"`];
+
+        // Add handler attributes based on exec data
+        if (execData.route) attrs.push(`exec="${execData.route}"`);
+        if (execData.workflow) attrs.push(`workflow="${execData.workflow}"`);
+        if (execData['validate-workflow']) attrs.push(`validate-workflow="${execData['validate-workflow']}"`);
+        if (execData.action) attrs.push(`action="${execData.action}"`);
+        if (execData.data) attrs.push(`data="${execData.data}"`);
+        if (execData.tmpl) attrs.push(`tmpl="${execData.tmpl}"`);
+        // Only add type if it's not 'exec' (exec is already implied by the exec attribute)
+        if (execData.type && execData.type !== 'exec') attrs.push(`type="${execData.type}"`);
+
+        xml += `      <handler ${attrs.join(' ')}></handler>\n`;
+      }
+    }
+
+    return xml;
+  }
+
+  /**
+   * Process the execution array from multi format triggers
+   * Extracts relevant data for XML attributes
+   * @param {Array} execArray - Array of execution objects
+   * @returns {Object} Processed execution data
+   */
+  processExecArray(execArray) {
+    const result = {
+      description: '',
+      route: null,
+      workflow: null,
+      data: null,
+      action: null,
+      type: null,
+    };
+
+    if (!Array.isArray(execArray)) {
+      return result;
+    }
+
+    for (const exec of execArray) {
+      if (exec.input) {
+        // Use input as description if no explicit description is provided
+        result.description = exec.input;
+      }
+
+      if (exec.route) {
+        // Determine if it's a workflow or exec based on file extension or context
+        if (exec.route.endsWith('.yaml') || exec.route.endsWith('.yml')) {
+          result.workflow = exec.route;
+        } else {
+          result.route = exec.route;
+        }
+      }
+
+      if (exec.data !== null && exec.data !== undefined) {
+        result.data = exec.data;
+      }
+
+      if (exec.action) {
+        result.action = exec.action;
+      }
+
+      if (exec.type) {
+        result.type = exec.type;
+      }
+    }
+
+    return result;
   }
 
   /**

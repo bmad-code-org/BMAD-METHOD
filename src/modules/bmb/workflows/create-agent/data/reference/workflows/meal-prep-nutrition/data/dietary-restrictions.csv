@@ -1,0 +1,18 @@
+category,restriction,considerations,alternatives,notes
+Allergy,Nuts,Severe allergy, check labels carefully,Seeds, sunflower seed butter
+Allergy,Shellfish,Cross-reactivity with some fish,Fin fish, vegetarian proteins
+Allergy,Dairy,Calcium and vitamin D needs,Almond milk, fortified plant milks
+Allergy,Soy,Protein source replacement,Legumes, quinoa, seitan
+Allergy,Gluten,Celiac vs sensitivity,Quinoa, rice, certified gluten-free
+Medical,Diabetes,Carbohydrate timing and type,Fiber-rich foods, low glycemic
+Medical,Hypertension,Sodium restriction,Herbs, spices, salt-free seasonings
+Medical,IBS,FODMAP triggers,Low FODMAP vegetables, soluble fiber
+Ethical,Vegetarian,Complete protein combinations,Quinoa, buckwheat, hemp seeds
+Ethical,Vegan,B12 supplementation mandatory,Nutritional yeast, fortified foods
+Ethical,Halal,Meat sourcing requirements,Halal-certified products
+Ethical,Kosher,Dairy-meat separation,Parve alternatives
+Intolerance,Lactose,Dairy digestion issues,Lactase pills, aged cheeses
+Intolerance,FODMAP,Carbohydrate malabsorption,Low FODMAP fruits/veg
+Preference,Dislikes,Texture/flavor preferences,Similar texture alternatives
+Preference,Budget,Cost-effective options,Bulk buying, seasonal produce
+Preference,Convenience,Time-saving options,Pre-cut vegetables, frozen produce

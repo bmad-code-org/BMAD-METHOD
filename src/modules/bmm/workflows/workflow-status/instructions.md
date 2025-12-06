@@ -37,12 +37,19 @@
 <action>Search {output_folder}/ for file: bmm-workflow-status.yaml</action>
 
 <check if="no status file found">
-  <output>No workflow status found. To get started:
+  <output>No workflow status found.</output>
+  <ask>Would you like to run Workflow Init now? (y/n)</ask>
 
-Load analyst agent and run: `workflow-init`
+  <check if="response == y OR response == yes">
+    <action>Launching workflow-init to set up your project tracking...</action>
+    <invoke-workflow path="{project-root}/{bmad_folder}/bmm/workflows/workflow-status/init/workflow.yaml"></invoke-workflow>
+    <action>Exit workflow and let workflow-init take over</action>
+  </check>
 
-This will guide you through project setup and create your workflow path.</output>
-<action>Exit workflow</action>
+  <check if="else">
+    <output>No workflow status file. Run workflow-init when ready to enable progress tracking.</output>
+    <action>Exit workflow</action>
+  </check>
 </check>
 
 <check if="status file found">

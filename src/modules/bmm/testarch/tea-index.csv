@@ -20,3 +20,14 @@ test-priorities,Test Priorities Matrix,"P0–P3 criteria, coverage targets, exec
 test-healing-patterns,Test Healing Patterns,"Common failure patterns and automated fixes","healing,debugging,patterns",knowledge/test-healing-patterns.md
 selector-resilience,Selector Resilience,"Robust selector strategies and debugging techniques","selectors,locators,debugging",knowledge/selector-resilience.md
 timing-debugging,Timing Debugging,"Race condition identification and deterministic wait fixes","timing,async,debugging",knowledge/timing-debugging.md
+overview,Playwright Utils Overview,"Installation, design principles, fixture patterns","playwright-utils,fixtures",knowledge/overview.md
+api-request,API Request,"Typed HTTP client, schema validation","api,playwright-utils",knowledge/api-request.md
+network-recorder,Network Recorder,"HAR record/playback, CRUD detection","network,playwright-utils",knowledge/network-recorder.md
+auth-session,Auth Session,"Token persistence, multi-user","auth,playwright-utils",knowledge/auth-session.md
+intercept-network-call,Intercept Network Call,"Network spy/stub, JSON parsing","network,playwright-utils",knowledge/intercept-network-call.md
+recurse,Recurse Polling,"Async polling, condition waiting","polling,playwright-utils",knowledge/recurse.md
+log,Log Utility,"Report logging, structured output","logging,playwright-utils",knowledge/log.md
+file-utils,File Utilities,"CSV/XLSX/PDF/ZIP validation","files,playwright-utils",knowledge/file-utils.md
+burn-in,Burn-in Runner,"Smart test selection, git diff","ci,playwright-utils",knowledge/burn-in.md
+network-error-monitor,Network Error Monitor,"HTTP 4xx/5xx detection","monitoring,playwright-utils",knowledge/network-error-monitor.md
+fixtures-composition,Fixtures Composition,"mergeTests composition patterns","fixtures,playwright-utils",knowledge/fixtures-composition.md

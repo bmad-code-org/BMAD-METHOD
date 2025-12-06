@@ -6,14 +6,14 @@
     <mandate>Instructions are MANDATORY - either as file path, steps or embedded list in YAML, XML or markdown</mandate>
     <mandate>Execute ALL steps in instructions IN EXACT ORDER</mandate>
     <mandate>Save to template output file after EVERY "template-output" tag</mandate>
-    <mandate>NEVER delegate a step - YOU are responsible for every steps execution</mandate>
+    <mandate>NEVER skip a step - YOU are responsible for every steps execution without fail or excuse</mandate>
   </llm>
 
   <WORKFLOW-RULES critical="true">
     <rule n="1">Steps execute in exact numerical order (1, 2, 3...)</rule>
     <rule n="2">Optional steps: Ask user unless #yolo mode active</rule>
-    <rule n="3">Template-output tags: Save content → Show user → Get approval before continuing</rule>
-    <rule n="4">User must approve each major section before continuing UNLESS #yolo mode active</rule>
+    <rule n="3">Template-output tags: Save content, discuss with the user the section completed, and NEVER proceed until the users indicates
+      to proceed (unless YOLO mode has been activated)</rule>
   </WORKFLOW-RULES>
 
   <flow>
@@ -43,7 +43,7 @@
       </substep>
     </step>
 
-    <step n="2" title="Process Each Instruction Step">
+    <step n="2" title="Process Each Instruction Step in Order">
       <iterate>For each step in instructions:</iterate>
 
       <substep n="2a" title="Handle Step Attributes">
@@ -60,7 +60,7 @@
           <tag>action xml tag → Perform the action</tag>
           <tag>check if="condition" xml tag → Conditional block wrapping actions (requires closing &lt;/check&gt;)</tag>
           <tag>ask xml tag → Prompt user and WAIT for response</tag>
-          <tag>invoke-workflow xml tag → Execute another workflow with given inputs</tag>
+          <tag>invoke-workflow xml tag → Execute another workflow with given inputs and the workflow.xml runner</tag>
           <tag>invoke-task xml tag → Execute specified task</tag>
           <tag>invoke-protocol name="protocol_name" xml tag → Execute reusable protocol from protocols section</tag>
           <tag>goto step="x" → Jump to specified step</tag>
@@ -71,7 +71,6 @@
         <if tag="template-output">
           <mandate>Generate content for this section</mandate>
           <mandate>Save to file (Write first time, Edit subsequent)</mandate>
-          <action>Show checkpoint separator: ━━━━━━━━━━━━━━━━━━━━━━━</action>
           <action>Display generated content</action>
           <ask> [a] Advanced Elicitation, [c] Continue, [p] Party-Mode, [y] YOLO the rest of this document only. WAIT for response. <if
               response="a">
@@ -99,16 +98,14 @@
     </step>
 
     <step n="3" title="Completion">
-      <check>If checklist exists → Run validation</check>
-      <check>If template: false → Confirm actions completed</check>
-      <check>Else → Confirm document saved to output path</check>
+      <check>Confirm document saved to output path</check>
       <action>Report workflow completion</action>
     </step>
   </flow>
 
   <execution-modes>
-    <mode name="normal">Full user interaction at all decision points</mode>
-    <mode name="#yolo">Skip all confirmations and elicitation, minimize prompts and try to produce all of the workflow automatically by
+    <mode name="normal">Full user interaction and confirmation of EVERY step at EVERY template output - NO EXCEPTIONS except yolo MODE</mode>
+    <mode name="yolo">Skip all confirmations and elicitation, minimize prompts and try to produce all of the workflow automatically by
       simulating the remaining discussions with an simulated expert user</mode>
   </execution-modes>
 
@@ -124,7 +121,7 @@
       <tag>action - Required action to perform</tag>
       <tag>action if="condition" - Single conditional action (inline, no closing tag needed)</tag>
       <tag>check if="condition"&gt;...&lt;/check&gt; - Conditional block wrapping multiple items (closing tag required)</tag>
-      <tag>ask - Get user input (wait for response)</tag>
+      <tag>ask - Get user input (ALWAYS wait for response before continuing)</tag>
       <tag>goto - Jump to another step</tag>
       <tag>invoke-workflow - Call another workflow</tag>
       <tag>invoke-task - Call a task</tag>
@@ -136,35 +133,6 @@
       <tag>example - Show example output</tag>
     </output>
   </supported-tags>
-
-  <conditional-execution-patterns desc="When to use each pattern">
-    <pattern type="single-action">
-      <use-case>One action with a condition</use-case>
-      <syntax>&lt;action if="condition"&gt;Do something&lt;/action&gt;</syntax>
-      <example>&lt;action if="file exists"&gt;Load the file&lt;/action&gt;</example>
-      <rationale>Cleaner and more concise for single items</rationale>
-    </pattern>
-
-    <pattern type="multi-action-block">
-      <use-case>Multiple actions/tags under same condition</use-case>
-      <syntax>&lt;check if="condition"&gt;
-        &lt;action&gt;First action&lt;/action&gt;
-        &lt;action&gt;Second action&lt;/action&gt;
-        &lt;/check&gt;</syntax>
-      <example>&lt;check if="validation fails"&gt;
-        &lt;action&gt;Log error&lt;/action&gt;
-        &lt;goto step="1"&gt;Retry&lt;/goto&gt;
-        &lt;/check&gt;</example>
-      <rationale>Explicit scope boundaries prevent ambiguity</rationale>
-    </pattern>
-
-    <pattern type="nested-conditions">
-      <use-case>Else/alternative branches</use-case>
-      <syntax>&lt;check if="condition A"&gt;...&lt;/check&gt;
-        &lt;check if="else"&gt;...&lt;/check&gt;</syntax>
-      <rationale>Clear branching logic with explicit blocks</rationale>
-    </pattern>
-  </conditional-execution-patterns>
 
   <protocols desc="Reusable workflow protocols that can be invoked via invoke-protocol tag">
     <protocol name="discover_inputs" desc="Smart file discovery and loading based on input_file_patterns">
@@ -181,17 +149,8 @@
         <step n="2" title="Load Files Using Smart Strategies">
           <iterate>For each pattern in input_file_patterns:</iterate>
 
-          <substep n="2a" title="Try Whole Document First">
-            <action>Attempt glob match on 'whole' pattern (e.g., "{output_folder}/*prd*.md")</action>
-            <check if="matches found">
-              <action>Load ALL matching files completely (no offset/limit)</action>
-              <action>Store content in variable: {pattern_name_content} (e.g., {prd_content})</action>
-              <action>Mark pattern as RESOLVED, skip to next pattern</action>
-            </check>
-          </substep>
-
-          <substep n="2b" title="Try Sharded Document if Whole Not Found">
-            <check if="no whole matches AND sharded pattern exists">
+          <substep n="2a" title="Try Sharded Documents First">
+            <check if="sharded pattern exists">
               <action>Determine load_strategy from pattern config (defaults to FULL_LOAD if not specified)</action>
 
               <strategy name="FULL_LOAD">
@@ -224,11 +183,23 @@
                 <action>Store combined content in variable: {pattern_name_content}</action>
                 <note>When in doubt, LOAD IT - context is valuable, being thorough is better than missing critical info</note>
               </strategy>
+              <action>Mark pattern as RESOLVED, skip to next pattern</action>
+            </check>
+          </substep>
+
+          <substep n="2b" title="Try Whole Document if No Sharded Found">
+            <check if="no sharded matches found OR no sharded pattern exists">
+              <action>Attempt glob match on 'whole' pattern (e.g., "{output_folder}/*prd*.md")</action>
+              <check if="matches found">
+                <action>Load ALL matching files completely (no offset/limit)</action>
+                <action>Store content in variable: {pattern_name_content} (e.g., {prd_content})</action>
+                <action>Mark pattern as RESOLVED, skip to next pattern</action>
+              </check>
             </check>
           </substep>
 
           <substep n="2c" title="Handle Not Found">
-            <check if="no matches for whole OR sharded">
+            <check if="no matches for sharded OR whole">
               <action>Set {pattern_name_content} to empty string</action>
               <action>Note in session: "No {pattern_name} files found" (not an error, just unavailable, offer use change to provide)</action>
             </check>
@@ -238,8 +209,8 @@
         <step n="3" title="Report Discovery Results">
           <action>List all loaded content variables with file counts</action>
           <example>
-            ✓ Loaded {prd_content} from 1 file: PRD.md
-            ✓ Loaded {architecture_content} from 5 sharded files: architecture/index.md, architecture/system-design.md, ...
+            ✓ Loaded {prd_content} from 5 sharded files: prd/index.md, prd/requirements.md, ...
+            ✓ Loaded {architecture_content} from 1 file: Architecture.md
             ✓ Loaded {epics_content} from selective load: epics/epic-3.md
             ○ No ux_design files found
           </example>
@@ -247,24 +218,18 @@
         </step>
       </flow>
 
-      <usage-in-instructions>
-        <example desc="Typical usage in workflow instructions.md">
-          &lt;step n="0" goal="Discover and load project context"&gt;
-          &lt;invoke-protocol name="discover_inputs" /&gt;
-          &lt;/step&gt;
-
-          &lt;step n="1" goal="Analyze requirements"&gt;
-          &lt;action&gt;Review {prd_content} for functional requirements&lt;/action&gt;
-          &lt;action&gt;Cross-reference with {architecture_content} for technical constraints&lt;/action&gt;
-          &lt;/step&gt;
-        </example>
-      </usage-in-instructions>
     </protocol>
   </protocols>
 
   <llm final="true">
-    <mandate>This is the complete workflow execution engine</mandate>
-    <mandate>You MUST Follow instructions exactly as written and maintain conversation context between steps</mandate>
-    <mandate>If confused, re-read this task, the workflow yaml, and any yaml indicated files</mandate>
+    <critical-rules>
+      • This is the complete workflow execution engine
+      • You MUST Follow instructions exactly as written
+      • The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml
+      • You MUST have already loaded and processed: {installed_path}/workflow.yaml
+      • This workflow uses INTENT-DRIVEN PLANNING - adapt organically to product type and context
+      • YOU ARE FACILITATING A CONVERSATION With a user to produce a final document step by step. The whole process is meant to be
+      collaborative helping the user flesh out their ideas. Do not rush or optimize and skip any section.
+    </critical-rules>
   </llm>
-</task>
+</task> 

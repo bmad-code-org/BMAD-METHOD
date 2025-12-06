@@ -1,7 +1,5 @@
 # BMM Analysis Workflows (Phase 1)
 
-**Reading Time:** ~7 minutes
-
 ## Overview
 
 Phase 1 (Analysis) workflows are **optional** exploration and discovery tools that help validate ideas, understand markets, and generate strategic context before planning begins.
@@ -14,61 +12,35 @@ Phase 1 (Analysis) workflows are **optional** exploration and discovery tools th
 
 ---
 
-## Phase 1 Analysis Workflow Map
+## Phase 1 Analysis Workflow Overview
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#fff','primaryTextColor':'#000','primaryBorderColor':'#000','lineColor':'#000','fontSize':'16px','fontFamily':'arial'}}}%%
-graph TB
-    subgraph Discovery["<b>DISCOVERY & IDEATION (Optional)</b>"]
-        direction LR
-        BrainstormProject["<b>Analyst: brainstorm-project</b><br/>Multi-track solution exploration"]
-        BrainstormGame["<b>Analyst: brainstorm-game</b><br/>Game concept generation"]
-    end
+Phase 1 Analysis consists of three categories of optional workflows:
 
-    subgraph Research["<b>RESEARCH & VALIDATION (Optional)</b>"]
-        direction TB
-        ResearchWF["<b>Analyst: research</b><br/>• market (TAM/SAM/SOM)<br/>• technical (framework evaluation)<br/>• competitive (landscape)<br/>• user (personas, JTBD)<br/>• domain (industry analysis)<br/>• deep_prompt (AI research)"]
-    end
+### Discovery & Ideation (Optional)
 
-    subgraph Strategy["<b>STRATEGIC CAPTURE (Recommended for Greenfield)</b>"]
-        direction LR
-        ProductBrief["<b>Analyst: product-brief</b><br/>Product vision + strategy<br/>(Interactive or YOLO mode)"]
-        GameBrief["<b>Game Designer: game-brief</b><br/>Game vision capture<br/>(Interactive or YOLO mode)"]
-    end
+- **brainstorm-project** - Multi-track solution exploration for software projects
+- **brainstorm-game** - Game concept generation (coming soon)
 
-    Discovery -.->|Software| ProductBrief
-    Discovery -.->|Games| GameBrief
-    Discovery -.->|Validate ideas| Research
-    Research -.->|Inform brief| ProductBrief
-    Research -.->|Inform brief| GameBrief
-    ProductBrief --> Phase2["<b>Phase 2: prd workflow</b>"]
-    GameBrief --> Phase2Game["<b>Phase 2: gdd workflow</b>"]
-    Research -.->|Can feed directly| Phase2
+### Research & Validation (Optional)
 
-    style Discovery fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000
-    style Research fill:#fff9c4,stroke:#f57f17,stroke-width:3px,color:#000
-    style Strategy fill:#f3e5f5,stroke:#4a148c,stroke-width:3px,color:#000
-    style Phase2 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#000
-    style Phase2Game fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#000
+- **research** - Market, technical, competitive, user, domain, and AI research
+- **domain-research** - Industry-specific deep dive research
 
-    style BrainstormProject fill:#81d4fa,stroke:#0277bd,stroke-width:2px,color:#000
-    style BrainstormGame fill:#81d4fa,stroke:#0277bd,stroke-width:2px,color:#000
-    style ResearchWF fill:#fff59d,stroke:#f57f17,stroke-width:2px,color:#000
-    style ProductBrief fill:#ce93d8,stroke:#6a1b9a,stroke-width:2px,color:#000
-    style GameBrief fill:#ce93d8,stroke:#6a1b9a,stroke-width:2px,color:#000
-```
+### Strategic Capture (Recommended for Greenfield)
+
+- **product-brief** - Product vision and strategy definition
+
+These workflows feed into Phase 2 (Planning) workflows, particularly the `prd` workflow.
 
 ---
 
 ## Quick Reference
 
-| Workflow               | Agent         | Required    | Purpose                                                        | Output                       |
-| ---------------------- | ------------- | ----------- | -------------------------------------------------------------- | ---------------------------- |
-| **brainstorm-project** | Analyst       | No          | Explore solution approaches and architectures                  | Solution options + rationale |
-| **brainstorm-game**    | Analyst       | No          | Generate game concepts using creative techniques               | Game concepts + evaluation   |
-| **research**           | Analyst       | No          | Multi-type research (market/technical/competitive/user/domain) | Research reports             |
-| **product-brief**      | Analyst       | Recommended | Define product vision and strategy (interactive)               | Product Brief document       |
-| **game-brief**         | Game Designer | Recommended | Capture game vision before GDD (interactive)                   | Game Brief document          |
+| Workflow               | Agent   | Required    | Purpose                                                        | Output                       |
+| ---------------------- | ------- | ----------- | -------------------------------------------------------------- | ---------------------------- |
+| **brainstorm-project** | Analyst | No          | Explore solution approaches and architectures                  | Solution options + rationale |
+| **research**           | Analyst | No          | Multi-type research (market/technical/competitive/user/domain) | Research reports             |
+| **product-brief**      | Analyst | Recommended | Define product vision and strategy (interactive)               | Product Brief document       |
 
 ---
 
@@ -95,37 +67,6 @@ graph TB
 - Strategic recommendation with rationale
 
 **Example:** "We need a customer dashboard" → Options: Monolith SSR (faster), Microservices SPA (scalable), Hybrid (balanced) with recommendation.
-
----
-
-### brainstorm-game
-
-**Purpose:** Generate game concepts through systematic creative exploration using five brainstorming techniques.
-
-**Agent:** Analyst
-
-**When to Use:**
-
-- Generating original game concepts
-- Exploring variations on themes
-- Breaking creative blocks
-- Validating game ideas against constraints
-
-**Techniques Used:**
-
-- SCAMPER (systematic modification)
-- Mind Mapping (hierarchical exploration)
-- Lotus Blossom (radial expansion)
-- Six Thinking Hats (multi-perspective)
-- Random Word Association (lateral thinking)
-
-**Key Outputs:**
-
-- Method-specific artifacts (5 separate documents)
-- Consolidated concept document with feasibility
-- Design pillar alignment matrix
-
-**Example:** "Roguelike with psychological themes" → Emotions as characters, inner demons as enemies, therapy sessions as rest points, deck composition affects narrative.
 
 ---
 
@@ -190,42 +131,6 @@ graph TB
 
 ---
 
-### game-brief
-
-**Purpose:** Lightweight interactive brainstorming session capturing game vision before Game Design Document.
-
-**Agent:** Game Designer
-
-**When to Use:**
-
-- Starting new game project
-- Exploring game ideas before committing
-- Pitching concepts to team/stakeholders
-- Validating market fit and feasibility
-
-**Game Brief vs GDD:**
-
-| Aspect       | Game Brief         | GDD                       |
-| ------------ | ------------------ | ------------------------- |
-| Purpose      | Validate concept   | Design for implementation |
-| Detail Level | High-level vision  | Detailed specs            |
-| Format       | Conversational     | Structured                |
-| Output       | Concise vision doc | Comprehensive design      |
-
-**Key Outputs:**
-
-- Game vision (concept, pitch)
-- Target market and positioning
-- Core gameplay pillars
-- Scope and constraints
-- Reference framework
-- Risk assessment
-- Success criteria
-
-**Integration:** Feeds into GDD workflow (Phase 2).
-
----
-
 ## Decision Guide
 
 ### Starting a Software Project
@@ -234,16 +139,10 @@ graph TB
 brainstorm-project (if unclear) → research (market/technical) → product-brief → Phase 2 (prd)
 ```
 
-### Starting a Game Project
-
-```
-brainstorm-game (if generating concepts) → research (market/competitive) → game-brief → Phase 2 (gdd)
-```
-
 ### Validating an Idea
 
 ```
-research (market type) → product-brief or game-brief → Phase 2
+research (market type) → product-brief → Phase 2
 ```
 
 ### Technical Decision Only
@@ -258,6 +157,12 @@ research (technical type) → Use findings in Phase 3 (architecture)
 research (market/competitive type) → product-brief → Phase 2
 ```
 
+### Domain Research for Complex Industries
+
+```
+domain-research → research (compliance/regulatory) → product-brief → Phase 2
+```
+
 ---
 
 ## Integration with Phase 2 (Planning)
@@ -267,8 +172,8 @@ Analysis outputs feed directly into Planning:
 | Analysis Output             | Planning Input             |
 | --------------------------- | -------------------------- |
 | product-brief.md            | **prd** workflow           |
-| game-brief.md               | **gdd** workflow           |
 | market-research.md          | **prd** context            |
+| domain-research.md          | **prd** context            |
 | technical-research.md       | **architecture** (Phase 3) |
 | competitive-intelligence.md | **prd** positioning        |
 
@@ -306,18 +211,9 @@ Use analysis workflows to align stakeholders before committing to detailed plann
 
 ```
 1. brainstorm-project - explore approaches
-2. research (market) - validate viability
+2. research (market/technical/domain) - validate viability
 3. product-brief - capture strategic vision
 4. → Phase 2: prd
-```
-
-### Greenfield Game (Full Analysis)
-
-```
-1. brainstorm-game - generate concepts
-2. research (competitive) - understand landscape
-3. game-brief - capture vision
-4. → Phase 2: gdd
 ```
 
 ### Skip Analysis (Clear Requirements)
@@ -351,10 +247,10 @@ Use analysis workflows to align stakeholders before committing to detailed plann
 A: No! Analysis is entirely optional. Use only workflows that help you think through your problem.
 
 **Q: Which workflow should I start with?**
-A: If unsure, start with `research` (market type) to validate viability, then move to `product-brief` or `game-brief`.
+A: If unsure, start with `research` (market type) to validate viability, then move to `product-brief`.
 
 **Q: Can I skip straight to Planning?**
-A: Yes! If you know what you're building and why, skip Phase 1 entirely and start with Phase 2 (prd/gdd/tech-spec).
+A: Yes! If you know what you're building and why, skip Phase 1 entirely and start with Phase 2 (prd/tech-spec).
 
 **Q: How long should Analysis take?**
 A: Typically hours to 1-2 days. If taking longer, you may be over-analyzing. Move to Planning.
@@ -363,7 +259,7 @@ A: Typically hours to 1-2 days. If taking longer, you may be over-analyzing. Mov
 A: That's the point! Analysis helps you fail fast and pivot before heavy planning investment.
 
 **Q: Should brownfield projects do Analysis?**
-A: Usually no. Start with `document-project` (Phase 0), then skip to Planning (Phase 2).
+A: Usually no. Start with `document-project` (Documentation prerequisite), then skip to Planning (Phase 2).
 
 ---
 

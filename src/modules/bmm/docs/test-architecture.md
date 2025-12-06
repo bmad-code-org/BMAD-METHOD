@@ -88,9 +88,9 @@ graph TB
     style Waived fill:#9c27b0,stroke:#4a148c,stroke-width:3px,color:#000
 ```
 
-**Phase Numbering Note:** BMad uses a 4-phase methodology with optional Phase 0/1:
+**Phase Numbering Note:** BMad uses a 4-phase methodology with optional Phase 1 and documentation prerequisite:
 
-- **Phase 0** (Optional): Documentation (brownfield prerequisite - `*document-project`)
+- **Documentation** (Optional for brownfield): Prerequisite using `*document-project`
 - **Phase 1** (Optional): Discovery/Analysis (`*brainstorm`, `*research`, `*product-brief`)
 - **Phase 2** (Required): Planning (`*prd` creates PRD with FRs/NFRs)
 - **Phase 3** (Track-dependent): Solutioning (`*architecture` → `*create-epics-and-stories` → TEA: `*framework`, `*ci` → `*implementation-readiness`)
@@ -98,7 +98,7 @@ graph TB
 
 **TEA workflows:** `*framework` and `*ci` run once in Phase 3 after architecture. `*test-design` runs per-epic in Phase 4. Output: `test-design-epic-N.md`.
 
-Quick Flow track skips Phases 0, 1, and 3. BMad Method and Enterprise use all phases based on project needs.
+Quick Flow track skips Phase 1 and 3. BMad Method and Enterprise use all phases based on project needs.
 
 ### Why TEA is Different from Other BMM Agents
 
@@ -167,12 +167,34 @@ src/modules/bmm/
 
 TEA uniquely requires:
 
-- **Extensive domain knowledge**: 21 fragments, 12,821 lines covering test patterns, CI/CD, fixtures, quality practices, healing strategies
+- **Extensive domain knowledge**: 32 fragments covering test patterns, CI/CD, fixtures, quality practices, healing strategies, and optional playwright-utils integration
 - **Centralized reference system**: `tea-index.csv` for on-demand fragment loading during workflow execution
 - **Cross-cutting concerns**: Domain-specific testing patterns (vs project-specific artifacts like PRDs/stories)
-- **Optional MCP integration**: Healing, exploratory, and verification modes for enhanced testing capabilities
+- **Optional integrations**: MCP capabilities (healing, exploratory, verification) and playwright-utils support
 
 This architecture enables TEA to maintain consistent, production-ready testing patterns across all BMad projects while operating across multiple development phases.
+
+### Playwright Utils Integration
+
+TEA optionally integrates with `@seontechnologies/playwright-utils`, an open-source library providing fixture-based utilities for Playwright tests.
+
+**Installation:**
+
+```bash
+npm install -D @seontechnologies/playwright-utils
+```
+
+**Enable during BMAD installation** by answering "Yes" when prompted.
+
+**Supported utilities (11 total):**
+
+- api-request, network-recorder, auth-session, intercept-network-call, recurse
+- log, file-utils, burn-in, network-error-monitor
+- fixtures-composition (integration patterns)
+
+**Workflows adapt:** automate, framework, test-review, ci, atdd (+ light mention in test-design).
+
+**Knowledge base:** 32 total fragments (21 core patterns + 11 playwright-utils)
 
 </details>
 
@@ -237,22 +259,22 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 
 **🔄 Brownfield Deltas from Greenfield:**
 
-- ➕ Phase 0 (Documentation) - Document existing codebase if undocumented
+- ➕ Documentation (Prerequisite) - Document existing codebase if undocumented
 - ➕ Phase 2: `*trace` - Baseline existing test coverage before planning
 - 🔄 Phase 4: `*test-design` - Focus on regression hotspots and brownfield risks
 - 🔄 Phase 4: Story Review - May include `*nfr-assess` if not done earlier
 
-| Workflow Stage                | Test Architect                                                               | Dev / Team                                                                          | Outputs                                                                |
-| ----------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **Phase 0**: Documentation ➕ | -                                                                            | Analyst `*document-project` (if undocumented)                                       | Comprehensive project documentation                                    |
-| **Phase 1**: Discovery        | -                                                                            | Analyst/PM/Architect rerun planning workflows                                       | Updated planning artifacts in `{output_folder}`                        |
-| **Phase 2**: Planning         | Run ➕ `*trace` (baseline coverage)                                          | PM `*prd` (creates PRD with FRs/NFRs)                                               | PRD with FRs/NFRs, ➕ coverage baseline                                |
-| **Phase 3**: Solutioning      | Run `*framework`, `*ci` AFTER architecture and epic creation                 | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline               |
-| **Phase 4**: Sprint Start     | -                                                                            | SM `*sprint-planning`                                                               | Sprint status file with all epics and stories                          |
-| **Phase 4**: Epic Planning    | Run `*test-design` for THIS epic 🔄 (regression hotspots)                    | Review epic scope and brownfield risks                                              | `test-design-epic-N.md` with brownfield risk assessment and mitigation |
-| **Phase 4**: Story Dev        | (Optional) `*atdd` before dev, then `*automate` after                        | SM `*create-story`, DEV implements                                                  | Tests, story implementation                                            |
-| **Phase 4**: Story Review     | Apply `*test-review` (optional), re-run `*trace`, ➕ `*nfr-assess` if needed | Resolve gaps, update docs/tests                                                     | Quality report, refreshed coverage matrix, NFR report                  |
-| **Phase 4**: Release Gate     | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)            | Capture sign-offs, share release notes                                              | Quality audit, Gate YAML + release summary                             |
+| Workflow Stage                     | Test Architect                                                               | Dev / Team                                                                          | Outputs                                                                |
+| ---------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Documentation**: Prerequisite ➕ | -                                                                            | Analyst `*document-project` (if undocumented)                                       | Comprehensive project documentation                                    |
+| **Phase 1**: Discovery             | -                                                                            | Analyst/PM/Architect rerun planning workflows                                       | Updated planning artifacts in `{output_folder}`                        |
+| **Phase 2**: Planning              | Run ➕ `*trace` (baseline coverage)                                          | PM `*prd` (creates PRD with FRs/NFRs)                                               | PRD with FRs/NFRs, ➕ coverage baseline                                |
+| **Phase 3**: Solutioning           | Run `*framework`, `*ci` AFTER architecture and epic creation                 | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline               |
+| **Phase 4**: Sprint Start          | -                                                                            | SM `*sprint-planning`                                                               | Sprint status file with all epics and stories                          |
+| **Phase 4**: Epic Planning         | Run `*test-design` for THIS epic 🔄 (regression hotspots)                    | Review epic scope and brownfield risks                                              | `test-design-epic-N.md` with brownfield risk assessment and mitigation |
+| **Phase 4**: Story Dev             | (Optional) `*atdd` before dev, then `*automate` after                        | SM `*create-story`, DEV implements                                                  | Tests, story implementation                                            |
+| **Phase 4**: Story Review          | Apply `*test-review` (optional), re-run `*trace`, ➕ `*nfr-assess` if needed | Resolve gaps, update docs/tests                                                     | Quality report, refreshed coverage matrix, NFR report                  |
+| **Phase 4**: Release Gate          | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)            | Capture sign-offs, share release notes                                              | Quality audit, Gate YAML + release summary                             |
 
 <details>
 <summary>Execution Notes</summary>
@@ -377,6 +399,50 @@ MCP provides additional capabilities on top of TEA's default AI-based approach:
 ```
 
 **To disable**: Set `tea_use_mcp_enhancements: false` in `{bmad_folder}/bmm/config.yaml` OR remove MCPs from IDE config.
+
+</details>
+
+<details>
+<summary><strong>Optional Playwright Utils Integration</strong></summary>
+
+**Open-source Playwright utilities** from SEON Technologies (production-tested, npm published):
+
+- **Package**: `@seontechnologies/playwright-utils` ([npm](https://www.npmjs.com/package/@seontechnologies/playwright-utils) | [GitHub](https://github.com/seontechnologies/playwright-utils))
+- **Install**: `npm install -D @seontechnologies/playwright-utils`
+
+**How Playwright Utils Enhances TEA Workflows**:
+
+Provides fixture-based utilities that integrate into TEA's test generation and review workflows:
+
+1. `*framework`:
+   - Default: Basic Playwright scaffold
+   - **+ playwright-utils**: Scaffold with api-request, network-recorder, auth-session, burn-in, network-error-monitor fixtures pre-configured
+
+   Benefit: Production-ready patterns from day one
+
+2. `*automate`, `*atdd`:
+   - Default: Standard test patterns
+   - **+ playwright-utils**: Tests using api-request (schema validation), intercept-network-call (mocking), recurse (polling), log (structured logging), file-utils (CSV/PDF)
+
+   Benefit: Advanced patterns without boilerplate
+
+3. `*test-review`:
+   - Default: Reviews against core knowledge base (21 fragments)
+   - **+ playwright-utils**: Reviews against expanded knowledge base (32 fragments: 21 core + 11 playwright-utils)
+
+   Benefit: Reviews include fixture composition, auth patterns, network recording best practices
+
+4. `*ci`:
+   - Default: Standard CI workflow
+   - **+ playwright-utils**: CI workflow with burn-in script (smart test selection) and network-error-monitor integration
+
+   Benefit: Faster CI feedback, HTTP error detection
+
+**Utilities available** (11 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
+
+**Enable during BMAD installation** by answering "Yes" when prompted, or manually set `tea_use_playwright_utils: true` in `{bmad_folder}/bmm/config.yaml`.
+
+**To disable**: Set `tea_use_playwright_utils: false` in `{bmad_folder}/bmm/config.yaml`.
 
 </details>
 

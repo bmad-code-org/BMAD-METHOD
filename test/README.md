@@ -116,7 +116,7 @@ Tests required menu structure:
 
 Tests menu item command targets:
 
-- ✅ Valid: All 7 command types (`workflow`, `validate-workflow`, `exec`, `action`, `tmpl`, `data`, `run-workflow`)
+- ✅ Valid: All 6 command types (`workflow`, `validate-workflow`, `exec`, `action`, `tmpl`, `data`)
 - ✅ Valid: Multiple command targets in one menu item
 - ❌ Invalid: No command target fields
 - ❌ Invalid: Empty string command targets

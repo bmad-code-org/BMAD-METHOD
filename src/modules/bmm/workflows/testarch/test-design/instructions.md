@@ -66,7 +66,13 @@ The workflow auto-detects which mode to use based on project phase.
    - Note integration points and external system dependencies
    - Extract NFR requirements (performance SLOs, security requirements, etc.)
 
-2. **Load Knowledge Base Fragments (System-Level)**
+2. **Check Playwright Utils Flag**
+
+   Read `{config_source}` and check `config.tea_use_playwright_utils`.
+
+   If true, note that `@seontechnologies/playwright-utils` provides utilities for test implementation. Reference in test design where relevant.
+
+3. **Load Knowledge Base Fragments (System-Level)**
 
    **Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to load:
    - `nfr-criteria.md` - NFR validation approach (security, performance, reliability, maintainability)
@@ -74,7 +80,7 @@ The workflow auto-detects which mode to use based on project phase.
    - `risk-governance.md` - Testability risk identification
    - `test-quality.md` - Quality standards and Definition of Done
 
-3. **Analyze Existing Test Setup (if brownfield)**
+4. **Analyze Existing Test Setup (if brownfield)**
    - Search for existing test directories
    - Identify current test framework (if any)
    - Note testability concerns in existing codebase

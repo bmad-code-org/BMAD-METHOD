@@ -25,16 +25,16 @@ class WorkflowCommandGenerator {
       return { generated: 0 };
     }
 
-    // Filter to only standalone workflows
-    const standaloneWorkflows = workflows.filter((w) => w.standalone === 'true' || w.standalone === true);
+    // ALL workflows now generate commands - no standalone filtering
+    const allWorkflows = workflows;
 
     // Base commands directory
     const baseCommandsDir = path.join(projectDir, '.claude', 'commands', 'bmad');
 
     let generatedCount = 0;
 
-    // Generate a command file for each standalone workflow, organized by module
-    for (const workflow of standaloneWorkflows) {
+    // Generate a command file for each workflow, organized by module
+    for (const workflow of allWorkflows) {
       const moduleWorkflowsDir = path.join(baseCommandsDir, workflow.module, 'workflows');
       await fs.ensureDir(moduleWorkflowsDir);
 
@@ -46,7 +46,7 @@ class WorkflowCommandGenerator {
     }
 
     // Also create a workflow launcher README in each module
-    const groupedWorkflows = this.groupWorkflowsByModule(standaloneWorkflows);
+    const groupedWorkflows = this.groupWorkflowsByModule(allWorkflows);
     await this.createModuleWorkflowLaunchers(baseCommandsDir, groupedWorkflows);
 
     return { generated: generatedCount };
@@ -59,12 +59,12 @@ class WorkflowCommandGenerator {
       return { artifacts: [], counts: { commands: 0, launchers: 0 } };
     }
 
-    // Filter to only standalone workflows
-    const standaloneWorkflows = workflows.filter((w) => w.standalone === 'true' || w.standalone === true);
+    // ALL workflows now generate commands - no standalone filtering
+    const allWorkflows = workflows;
 
     const artifacts = [];
 
-    for (const workflow of standaloneWorkflows) {
+    for (const workflow of allWorkflows) {
       const commandContent = await this.generateCommandContent(workflow, bmadDir);
       artifacts.push({
         type: 'workflow-command',
@@ -75,7 +75,7 @@ class WorkflowCommandGenerator {
       });
     }
 
-    const groupedWorkflows = this.groupWorkflowsByModule(standaloneWorkflows);
+    const groupedWorkflows = this.groupWorkflowsByModule(allWorkflows);
     for (const [module, launcherContent] of Object.entries(this.buildModuleWorkflowLaunchers(groupedWorkflows))) {
       artifacts.push({
         type: 'workflow-launcher',
@@ -89,7 +89,7 @@ class WorkflowCommandGenerator {
     return {
       artifacts,
       counts: {
-        commands: standaloneWorkflows.length,
+        commands: allWorkflows.length,
         launchers: Object.keys(groupedWorkflows).length,
       },
     };
@@ -99,8 +99,13 @@ class WorkflowCommandGenerator {
    * Generate command content for a workflow
    */
   async generateCommandContent(workflow, bmadDir) {
-    // Load the template
-    const template = await fs.readFile(this.templatePath, 'utf8');
+    // Determine template based on workflow file type
+    const isMarkdownWorkflow = workflow.path.endsWith('workflow.md');
+    const templateName = isMarkdownWorkflow ? 'workflow-commander.md' : 'workflow-command-template.md';
+    const templatePath = path.join(path.dirname(this.templatePath), templateName);
+
+    // Load the appropriate template
+    const template = await fs.readFile(templatePath, 'utf8');
 
     // Convert source path to installed path
     // From: /Users/.../src/modules/bmm/workflows/.../workflow.yaml
@@ -127,8 +132,7 @@ class WorkflowCommandGenerator {
       .replaceAll('{{description}}', workflow.description)
       .replaceAll('{{workflow_path}}', workflowPath)
       .replaceAll('{bmad_folder}', this.bmadFolderName)
-      .replaceAll('{{interactive}}', workflow.interactive)
-      .replaceAll('{{author}}', workflow.author || 'BMAD');
+      .replaceAll('{*bmad_folder*}', '{bmad_folder}');
   }
 
   /**

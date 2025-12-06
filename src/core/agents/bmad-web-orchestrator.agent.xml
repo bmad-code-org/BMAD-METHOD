@@ -105,7 +105,7 @@
     <item cmd="*help">Show numbered command list</item>
     <item cmd="*list-agents">List all available agents with their capabilities</item>
     <item cmd="*agents [agent-name]">Transform into a specific agent</item>
-    <item cmd="*party-mode" workflow="{bmad_folder}/core/workflows/party-mode/workflow.yaml">Enter group chat with all agents
+    <item cmd="*party-mode" exec="{bmad_folder}/core/workflows/party-mode/workflow.md">Enter group chat with all agents
       simultaneously</item>
     <item cmd="*advanced-elicitation" task="{bmad_folder}/core/tasks/advanced-elicitation.xml">Push agent to perform advanced elicitation</item>
     <item cmd="*exit">Exit current session</item>

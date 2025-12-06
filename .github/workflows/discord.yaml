@@ -1,16 +1,286 @@
 name: Discord Notification
 
-"on": [pull_request, release, create, delete, issue_comment, pull_request_review, pull_request_review_comment]
+on:
+  pull_request:
+    types: [opened, closed, reopened, ready_for_review]
+  release:
+    types: [published]
+  create:
+  delete:
+  issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, closed, reopened]
+
+env:
+  MAX_TITLE: 100
+  MAX_BODY: 250
 
 jobs:
-  notify:
+  pull_request:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+      - name: Notify Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ACTION: ${{ github.event.action }}
+          MERGED: ${{ github.event.pull_request.merged }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_USER: ${{ github.event.pull_request.user.login }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -o pipefail
+          source .github/scripts/discord-helpers.sh
+          [ -z "$WEBHOOK" ] && exit 0
+
+          if [ "$ACTION" = "opened" ]; then ICON="🔀"; LABEL="New PR"
+          elif [ "$ACTION" = "closed" ] && [ "$MERGED" = "true" ]; then ICON="🎉"; LABEL="Merged"
+          elif [ "$ACTION" = "closed" ]; then ICON="❌"; LABEL="Closed"
+          elif [ "$ACTION" = "reopened" ]; then ICON="🔄"; LABEL="Reopened"
+          else ICON="📋"; LABEL="Ready"; fi
+
+          TITLE=$(printf '%s' "$PR_TITLE" | trunc $MAX_TITLE | esc)
+          [ ${#PR_TITLE} -gt $MAX_TITLE ] && TITLE="${TITLE}..."
+          BODY=$(printf '%s' "$PR_BODY" | trunc $MAX_BODY | esc)
+          [ -n "$PR_BODY" ] && [ ${#PR_BODY} -gt $MAX_BODY ] && BODY="${BODY}..."
+          [ -n "$BODY" ] && BODY=" · $BODY"
+          USER=$(printf '%s' "$PR_USER" | esc)
+
+          MSG="$ICON **[$LABEL #$PR_NUM: $TITLE](<$PR_URL>)**"$'\n'"by @$USER$BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
+
+  issues:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+      - name: Notify Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ACTION: ${{ github.event.action }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -o pipefail
+          source .github/scripts/discord-helpers.sh
+          [ -z "$WEBHOOK" ] && exit 0
+
+          if [ "$ACTION" = "opened" ]; then ICON="🐛"; LABEL="New Issue"; USER="$ISSUE_USER"
+          elif [ "$ACTION" = "closed" ]; then ICON="✅"; LABEL="Closed"; USER="$ACTOR"
+          else ICON="🔄"; LABEL="Reopened"; USER="$ACTOR"; fi
+
+          TITLE=$(printf '%s' "$ISSUE_TITLE" | trunc $MAX_TITLE | esc)
+          [ ${#ISSUE_TITLE} -gt $MAX_TITLE ] && TITLE="${TITLE}..."
+          BODY=$(printf '%s' "$ISSUE_BODY" | trunc $MAX_BODY | esc)
+          [ -n "$ISSUE_BODY" ] && [ ${#ISSUE_BODY} -gt $MAX_BODY ] && BODY="${BODY}..."
+          [ -n "$BODY" ] && BODY=" · $BODY"
+          USER=$(printf '%s' "$USER" | esc)
+
+          MSG="$ICON **[$LABEL #$ISSUE_NUM: $TITLE](<$ISSUE_URL>)**"$'\n'"by @$USER$BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
+
+  issue_comment:
+    if: github.event_name == 'issue_comment'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+      - name: Notify Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          IS_PR: ${{ github.event.issue.pull_request && 'true' || 'false' }}
+          ISSUE_NUM: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
+          COMMENT_USER: ${{ github.event.comment.user.login }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          set -o pipefail
+          source .github/scripts/discord-helpers.sh
+          [ -z "$WEBHOOK" ] && exit 0
+
+          [ "$IS_PR" = "true" ] && TYPE="PR" || TYPE="Issue"
+
+          TITLE=$(printf '%s' "$ISSUE_TITLE" | trunc $MAX_TITLE | esc)
+          [ ${#ISSUE_TITLE} -gt $MAX_TITLE ] && TITLE="${TITLE}..."
+          BODY=$(printf '%s' "$COMMENT_BODY" | trunc $MAX_BODY | esc)
+          [ ${#COMMENT_BODY} -gt $MAX_BODY ] && BODY="${BODY}..."
+          USER=$(printf '%s' "$COMMENT_USER" | esc)
+
+          MSG="💬 **[Comment on $TYPE #$ISSUE_NUM: $TITLE](<$COMMENT_URL>)**"$'\n'"@$USER: $BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
+
+  pull_request_review:
+    if: github.event_name == 'pull_request_review'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+      - name: Notify Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          STATE: ${{ github.event.review.state }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          REVIEW_URL: ${{ github.event.review.html_url }}
+          REVIEW_USER: ${{ github.event.review.user.login }}
+          REVIEW_BODY: ${{ github.event.review.body }}
+        run: |
+          set -o pipefail
+          source .github/scripts/discord-helpers.sh
+          [ -z "$WEBHOOK" ] && exit 0
+
+          if [ "$STATE" = "approved" ]; then ICON="✅"; LABEL="Approved"
+          elif [ "$STATE" = "changes_requested" ]; then ICON="🔧"; LABEL="Changes Requested"
+          else ICON="👀"; LABEL="Reviewed"; fi
+
+          TITLE=$(printf '%s' "$PR_TITLE" | trunc $MAX_TITLE | esc)
+          [ ${#PR_TITLE} -gt $MAX_TITLE ] && TITLE="${TITLE}..."
+          BODY=$(printf '%s' "$REVIEW_BODY" | trunc $MAX_BODY | esc)
+          [ -n "$REVIEW_BODY" ] && [ ${#REVIEW_BODY} -gt $MAX_BODY ] && BODY="${BODY}..."
+          [ -n "$BODY" ] && BODY=": $BODY"
+          USER=$(printf '%s' "$REVIEW_USER" | esc)
+
+          MSG="$ICON **[$LABEL PR #$PR_NUM: $TITLE](<$REVIEW_URL>)**"$'\n'"@$USER$BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
+
+  pull_request_review_comment:
+    if: github.event_name == 'pull_request_review_comment'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+      - name: Notify Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          COMMENT_URL: ${{ github.event.comment.html_url }}
+          COMMENT_USER: ${{ github.event.comment.user.login }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          set -o pipefail
+          source .github/scripts/discord-helpers.sh
+          [ -z "$WEBHOOK" ] && exit 0
+
+          TITLE=$(printf '%s' "$PR_TITLE" | trunc $MAX_TITLE | esc)
+          [ ${#PR_TITLE} -gt $MAX_TITLE ] && TITLE="${TITLE}..."
+          BODY=$(printf '%s' "$COMMENT_BODY" | trunc $MAX_BODY | esc)
+          [ ${#COMMENT_BODY} -gt $MAX_BODY ] && BODY="${BODY}..."
+          USER=$(printf '%s' "$COMMENT_USER" | esc)
+
+          MSG="💭 **[Review Comment PR #$PR_NUM: $TITLE](<$COMMENT_URL>)**"$'\n'"@$USER: $BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
+
+  release:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+      - name: Notify Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          TAG: ${{ github.event.release.tag_name }}
+          NAME: ${{ github.event.release.name }}
+          URL: ${{ github.event.release.html_url }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: |
+          set -o pipefail
+          source .github/scripts/discord-helpers.sh
+          [ -z "$WEBHOOK" ] && exit 0
+
+          REL_NAME=$(printf '%s' "$NAME" | trunc $MAX_TITLE | esc)
+          [ ${#NAME} -gt $MAX_TITLE ] && REL_NAME="${REL_NAME}..."
+          BODY=$(printf '%s' "$RELEASE_BODY" | trunc $MAX_BODY | esc)
+          [ -n "$RELEASE_BODY" ] && [ ${#RELEASE_BODY} -gt $MAX_BODY ] && BODY="${BODY}..."
+          [ -n "$BODY" ] && BODY=" · $BODY"
+          TAG_ESC=$(printf '%s' "$TAG" | esc)
+
+          MSG="🚀 **[Release $TAG_ESC: $REL_NAME](<$URL>)**"$'\n'"$BODY"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
+
+  create:
+    if: github.event_name == 'create'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          sparse-checkout-cone-mode: false
+      - name: Notify Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          REF_TYPE: ${{ github.event.ref_type }}
+          REF: ${{ github.event.ref }}
+          ACTOR: ${{ github.actor }}
+          REPO_URL: ${{ github.event.repository.html_url }}
+        run: |
+          set -o pipefail
+          source .github/scripts/discord-helpers.sh
+          [ -z "$WEBHOOK" ] && exit 0
+
+          [ "$REF_TYPE" = "branch" ] && ICON="🌿" || ICON="🏷️"
+          REF_TRUNC=$(printf '%s' "$REF" | trunc $MAX_TITLE)
+          [ ${#REF} -gt $MAX_TITLE ] && REF_TRUNC="${REF_TRUNC}..."
+          REF_ESC=$(printf '%s' "$REF_TRUNC" | esc)
+          REF_URL=$(jq -rn --arg ref "$REF" '$ref | @uri')
+          ACTOR_ESC=$(printf '%s' "$ACTOR" | esc)
+          MSG="$ICON **${REF_TYPE^} created: [$REF_ESC](<$REPO_URL/tree/$REF_URL>)** by @$ACTOR_ESC"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-
+
+  delete:
+    if: github.event_name == 'delete'
     runs-on: ubuntu-latest
     steps:
       - name: Notify Discord
-        uses: sarisia/actions-status-discord@v1
-        if: always()
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
-          title: "Triggered by ${{ github.event_name }}"
-          color: 0x5865F2
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          REF_TYPE: ${{ github.event.ref_type }}
+          REF: ${{ github.event.ref }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -o pipefail
+          [ -z "$WEBHOOK" ] && exit 0
+          esc() { sed -e 's/[][\*_()~`>]/\\&/g' -e 's/@/@ /g'; }
+          trunc() { tr '\n\r' '  ' | cut -c1-"$1"; }
+
+          REF_TRUNC=$(printf '%s' "$REF" | trunc 100)
+          [ ${#REF} -gt 100 ] && REF_TRUNC="${REF_TRUNC}..."
+          REF_ESC=$(printf '%s' "$REF_TRUNC" | esc)
+          ACTOR_ESC=$(printf '%s' "$ACTOR" | esc)
+          MSG="🗑️ **${REF_TYPE^} deleted: $REF_ESC** by @$ACTOR_ESC"
+          jq -n --arg content "$MSG" '{content: $content}' | curl -sf --retry 2 -X POST "$WEBHOOK" -H "Content-Type: application/json" -d @-

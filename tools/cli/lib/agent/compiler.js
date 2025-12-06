@@ -49,9 +49,10 @@ You must fully embody this agent's persona and follow all activation instruction
  * Build simple activation block for custom agents
  * @param {Array} criticalActions - Agent-specific critical actions
  * @param {Array} menuItems - Menu items to determine which handlers to include
+ * @param {string} deploymentType - 'ide' or 'web' - filters commands based on ide-only/web-only flags
  * @returns {string} Activation XML
  */
-function buildSimpleActivation(criticalActions = [], menuItems = []) {
+function buildSimpleActivation(criticalActions = [], menuItems = [], deploymentType = 'ide') {
   let activation = '<activation critical="MANDATORY">\n';
 
   let stepNum = 1;
@@ -75,13 +76,28 @@ function buildSimpleActivation(criticalActions = [], menuItems = []) {
   activation += `  <step n="${stepNum++}">On user input: Number → execute menu item[n] | Text → case-insensitive substring match | Multiple matches → ask user
       to clarify | No match → show "Not recognized"</step>\n`;
 
-  // Detect which handlers are actually used
+  // Filter menu items based on deployment type
+  const filteredMenuItems = menuItems.filter((item) => {
+    // Skip web-only commands for IDE deployment
+    if (deploymentType === 'ide' && item['web-only'] === true) {
+      return false;
+    }
+    // Skip ide-only commands for web deployment
+    if (deploymentType === 'web' && item['ide-only'] === true) {
+      return false;
+    }
+    return true;
+  });
+
+  // Detect which handlers are actually used in the filtered menu
   const usedHandlers = new Set();
-  for (const item of menuItems) {
+  for (const item of filteredMenuItems) {
     if (item.action) usedHandlers.add('action');
     if (item.workflow) usedHandlers.add('workflow');
     if (item.exec) usedHandlers.add('exec');
     if (item.tmpl) usedHandlers.add('tmpl');
+    if (item.data) usedHandlers.add('data');
+    if (item['validate-workflow']) usedHandlers.add('validate-workflow');
   }
 
   // Only include menu-handlers section if handlers are used
@@ -121,6 +137,25 @@ function buildSimpleActivation(criticalActions = [], menuItems = []) {
     if (usedHandlers.has('tmpl')) {
       activation += `      <handler type="tmpl">
         When menu item has: tmpl="template-path" → Load and apply the template
+      </handler>\n`;
+    }
+
+    if (usedHandlers.has('data')) {
+      activation += `      <handler type="data">
+        When menu item has: data="path/to/x.json|yaml|yml"
+        Load the file, parse as JSON/YAML, make available as {data} to subsequent operations
+      </handler>\n`;
+    }
+
+    if (usedHandlers.has('validate-workflow')) {
+      activation += `      <handler type="validate-workflow">
+        When menu item has: validate-workflow="path/to/workflow.yaml"
+        1. CRITICAL: Always LOAD {project-root}/{bmad_folder}/core/tasks/validate-workflow.xml
+        2. Read the complete file - this is the CORE OS for validating BMAD workflows
+        3. Pass the workflow.yaml path as 'workflow' parameter to those instructions
+        4. Pass any checklist.md from the workflow location as 'checklist' parameter if available
+        5. Execute validate-workflow.xml instructions precisely following all steps
+        6. Generate validation report with thorough analysis
       </handler>\n`;
     }
 
@@ -208,42 +243,141 @@ function buildPromptsXml(prompts) {
 
 /**
  * Build menu XML section
+ * Supports both legacy and multi format menu items
+ * Multi items display as a single menu item with nested handlers
  * @param {Array} menuItems - Menu items
  * @returns {string} Menu XML
  */
 function buildMenuXml(menuItems) {
   let xml = '  <menu>\n';
 
-  // Always inject *help first
-  xml += `    <item cmd="*help">Show numbered menu</item>\n`;
+  // Always inject menu display option first
+  xml += `    <item cmd="*menu">[M] Redisplay Menu Options</item>\n`;
 
   // Add user-defined menu items
   if (menuItems && menuItems.length > 0) {
     for (const item of menuItems) {
-      let trigger = item.trigger || '';
-      if (!trigger.startsWith('*')) {
-        trigger = '*' + trigger;
+      // Handle multi format menu items with nested handlers
+      if (item.multi && item.triggers && Array.isArray(item.triggers)) {
+        xml += `    <item type="multi">${escapeXml(item.multi)}\n`;
+        xml += buildNestedHandlers(item.triggers);
+        xml += `    </item>\n`;
       }
+      // Handle legacy format menu items
+      else if (item.trigger) {
+        // For legacy items, keep using cmd with *<trigger> format
+        let trigger = item.trigger || '';
+        if (!trigger.startsWith('*')) {
+          trigger = '*' + trigger;
+        }
 
-      const attrs = [`cmd="${trigger}"`];
+        const attrs = [`cmd="${trigger}"`];
 
-      // Add handler attributes
-      if (item.workflow) attrs.push(`workflow="${item.workflow}"`);
-      if (item.exec) attrs.push(`exec="${item.exec}"`);
-      if (item.tmpl) attrs.push(`tmpl="${item.tmpl}"`);
-      if (item.data) attrs.push(`data="${item.data}"`);
-      if (item.action) attrs.push(`action="${item.action}"`);
+        // Add handler attributes
+        if (item.workflow) attrs.push(`workflow="${item.workflow}"`);
+        if (item.exec) attrs.push(`exec="${item.exec}"`);
+        if (item.tmpl) attrs.push(`tmpl="${item.tmpl}"`);
+        if (item.data) attrs.push(`data="${item.data}"`);
+        if (item.action) attrs.push(`action="${item.action}"`);
 
-      xml += `    <item ${attrs.join(' ')}>${escapeXml(item.description || '')}</item>\n`;
+        xml += `    <item ${attrs.join(' ')}>${escapeXml(item.description || '')}</item>\n`;
+      }
     }
   }
 
-  // Always inject *exit last
-  xml += `    <item cmd="*exit">Exit with confirmation</item>\n`;
+  // Always inject dismiss last
+  xml += `    <item cmd="*dismiss">[D] Dismiss Agent</item>\n`;
 
   xml += '  </menu>\n';
 
   return xml;
+}
+
+/**
+ * Build nested handlers for multi format menu items
+ * @param {Array} triggers - Triggers array from multi format
+ * @returns {string} Handler XML
+ */
+function buildNestedHandlers(triggers) {
+  let xml = '';
+
+  for (const triggerGroup of triggers) {
+    for (const [triggerName, execArray] of Object.entries(triggerGroup)) {
+      // Build trigger with * prefix
+      let trigger = triggerName.startsWith('*') ? triggerName : '*' + triggerName;
+
+      // Extract the relevant execution data
+      const execData = processExecArray(execArray);
+
+      // For nested handlers in multi items, we use match attribute for fuzzy matching
+      const attrs = [`match="${escapeXml(execData.description || '')}"`];
+
+      // Add handler attributes based on exec data
+      if (execData.route) attrs.push(`exec="${execData.route}"`);
+      if (execData.workflow) attrs.push(`workflow="${execData.workflow}"`);
+      if (execData['validate-workflow']) attrs.push(`validate-workflow="${execData['validate-workflow']}"`);
+      if (execData.action) attrs.push(`action="${execData.action}"`);
+      if (execData.data) attrs.push(`data="${execData.data}"`);
+      if (execData.tmpl) attrs.push(`tmpl="${execData.tmpl}"`);
+      // Only add type if it's not 'exec' (exec is already implied by the exec attribute)
+      if (execData.type && execData.type !== 'exec') attrs.push(`type="${execData.type}"`);
+
+      xml += `      <handler ${attrs.join(' ')}></handler>\n`;
+    }
+  }
+
+  return xml;
+}
+
+/**
+ * Process the execution array from multi format triggers
+ * Extracts relevant data for XML attributes
+ * @param {Array} execArray - Array of execution objects
+ * @returns {Object} Processed execution data
+ */
+function processExecArray(execArray) {
+  const result = {
+    description: '',
+    route: null,
+    workflow: null,
+    data: null,
+    action: null,
+    type: null,
+  };
+
+  if (!Array.isArray(execArray)) {
+    return result;
+  }
+
+  for (const exec of execArray) {
+    if (exec.input) {
+      // Use input as description if no explicit description is provided
+      result.description = exec.input;
+    }
+
+    if (exec.route) {
+      // Determine if it's a workflow or exec based on file extension or context
+      if (exec.route.endsWith('.yaml') || exec.route.endsWith('.yml')) {
+        result.workflow = exec.route;
+      } else {
+        result.route = exec.route;
+      }
+    }
+
+    if (exec.data !== null && exec.data !== undefined) {
+      result.data = exec.data;
+    }
+
+    if (exec.action) {
+      result.action = exec.action;
+    }
+
+    if (exec.type) {
+      result.type = exec.type;
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -275,8 +409,8 @@ function compileToXml(agentYaml, agentName = '', targetPath = '') {
 
   xml += `<agent ${agentAttrs.join(' ')}>\n`;
 
-  // Activation block - pass menu items to determine which handlers to include
-  xml += buildSimpleActivation(agent.critical_actions || [], agent.menu || []);
+  // Activation block - pass menu items and deployment type to determine which handlers to include
+  xml += buildSimpleActivation(agent.critical_actions || [], agent.menu || [], 'ide');
 
   // Persona section
   xml += buildPersonaXml(agent.persona);
@@ -349,9 +483,38 @@ function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = ''
 }
 
 /**
+ * Process TTS injection markers in content
+ * @param {string} content - Content to process
+ * @param {boolean} enableAgentVibes - Whether AgentVibes is enabled
+ * @returns {Object} { content: string, hadInjection: boolean }
+ */
+function processTTSInjectionPoints(content, enableAgentVibes) {
+  const hasAgentTTS = content.includes('<!-- TTS_INJECTION:agent-tts -->');
+
+  if (enableAgentVibes && hasAgentTTS) {
+    // Replace agent-tts injection marker with TTS rule
+    content = content.replaceAll(
+      '<!-- TTS_INJECTION:agent-tts -->',
+      `- When responding to user messages, speak your responses using TTS:
+   Call: \`.claude/hooks/bmad-speak.sh '{agent-id}' '{response-text}'\` after each response
+   Replace {agent-id} with YOUR agent ID from <agent id="..."> tag at top of this file
+   Replace {response-text} with the text you just output to the user
+   IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
+   Run in background (&) to avoid blocking`,
+    );
+    return { content, hadInjection: true };
+  } else if (!enableAgentVibes && hasAgentTTS) {
+    // Strip injection markers when disabled
+    content = content.replaceAll(/<!-- TTS_INJECTION:agent-tts -->\n?/g, '');
+  }
+
+  return { content, hadInjection: false };
+}
+
+/**
  * Compile agent file to .md
  * @param {string} yamlPath - Path to agent YAML file
- * @param {Object} options - { answers: {}, outputPath: string }
+ * @param {Object} options - { answers: {}, outputPath: string, enableAgentVibes: boolean }
  * @returns {Object} Compilation result
  */
 function compileAgentFile(yamlPath, options = {}) {
@@ -367,13 +530,24 @@ function compileAgentFile(yamlPath, options = {}) {
     outputPath = path.join(dir, `${basename}.md`);
   }
 
+  // Process TTS injection points if enableAgentVibes option is provided
+  let xml = result.xml;
+  let ttsInjected = false;
+  if (options.enableAgentVibes !== undefined) {
+    const ttsResult = processTTSInjectionPoints(xml, options.enableAgentVibes);
+    xml = ttsResult.content;
+    ttsInjected = ttsResult.hadInjection;
+  }
+
   // Write compiled XML
-  fs.writeFileSync(outputPath, result.xml, 'utf8');
+  fs.writeFileSync(outputPath, xml, 'utf8');
 
   return {
     ...result,
+    xml,
     outputPath,
     sourcePath: yamlPath,
+    ttsInjected,
   };
 }
 
