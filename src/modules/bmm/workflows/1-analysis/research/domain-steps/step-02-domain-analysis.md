@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current industry data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE AN INDUSTRY ANALYST, not content generator
 - 💬 FOCUS on market size, growth, and industry dynamics
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📝 WRITE CONTENT IMMEDIATELY TO DOCUMENT
 
 ## EXECUTION PROTOCOLS:
@@ -31,7 +31,7 @@
 
 ## YOUR TASK:
 
-Conduct industry analysis focusing on market size, growth, and industry dynamics using current {{current_year}} web data with rigorous source verification.
+Conduct industry analysis focusing on market size, growth, and industry dynamics. Search the web to verify and supplement current facts.
 
 ## INDUSTRY ANALYSIS SEQUENCE:
 
@@ -40,7 +40,7 @@ Conduct industry analysis focusing on market size, growth, and industry dynamics
 **UTILIZE SUBPROCESSES AND SUBAGENTS**: Use research subagents, subprocesses or parallel processing if available to thoroughly analyze different industry areas simultaneously and thoroughly.
 
 Start with industry research approach:
-"Now I'll conduct **industry analysis** for **{{research_topic}}** using current {{current_year}} web data to understand market dynamics.
+"Now I'll conduct **industry analysis** for **{{research_topic}}** to understand market dynamics.
 
 **Industry Analysis Focus:**
 
@@ -56,10 +56,10 @@ Start with industry research approach:
 
 **Execute multiple web searches simultaneously:**
 
-`WebSearch: "{{research_topic}} market size value {{current_year}}"`
-`WebSearch: "{{research_topic}} market growth rate dynamics {{current_year}}"`
-`WebSearch: "{{research_topic}} market segmentation structure {{current_year}}"`
-`WebSearch: "{{research_topic}} industry trends evolution {{current_year}}"`
+Search the web: "{{research_topic}} market size value"
+Search the web: "{{research_topic}} market growth rate dynamics"
+Search the web: "{{research_topic}} market segmentation structure"
+Search the web: "{{research_topic}} industry trends evolution"
 
 **Analysis approach:**
 
@@ -104,11 +104,11 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### Market Size and Valuation
 
 [Market size analysis with source citations]
-_Total Market Size: [Current market valuation with {{current_year}} data]_
+_Total Market Size: [Current market valuation]_
 _Growth Rate: [CAGR and market growth projections]_
 _Market Segments: [Size and value of key market segments]_
 _Economic Impact: [Economic contribution and value creation]_
-_Source: [URL with {{current_year}} market size data]_
+_Source: [URL]_
 
 ### Market Dynamics and Growth
 
@@ -117,7 +117,7 @@ _Growth Drivers: [Key factors driving market growth]_
 _Growth Barriers: [Factors limiting market expansion]_
 _Cyclical Patterns: [Industry seasonality and cycles]_
 _Market Maturity: [Life cycle stage and development phase]_
-_Source: [URL with {{current_year}} market dynamics data]_
+_Source: [URL]_
 
 ### Market Structure and Segmentation
 
@@ -126,7 +126,7 @@ _Primary Segments: [Key market segments and their characteristics]_
 _Sub-segment Analysis: [Detailed breakdown of market sub-segments]_
 _Geographic Distribution: [Regional market variations and concentrations]_
 _Vertical Integration: [Supply chain and value chain structure]_
-_Source: [URL with {{current_year}} market structure data]_
+_Source: [URL]_
 
 ### Industry Trends and Evolution
 
@@ -135,7 +135,7 @@ _Emerging Trends: [Current industry developments and transformations]_
 _Historical Evolution: [Industry development over recent years]_
 _Technology Integration: [How technology is changing the industry]_
 _Future Outlook: [Projected industry developments and changes]_
-_Source: [URL with {{current_year}} industry trends data]_
+_Source: [URL]_
 
 ### Competitive Dynamics
 
@@ -144,14 +144,14 @@ _Market Concentration: [Level of market consolidation and competition]_
 _Competitive Intensity: [Degree of competition and rivalry]_
 _Barriers to Entry: [Obstacles for new market entrants]_
 _Innovation Pressure: [Rate of innovation and change]_
-_Source: [URL with {{current_year}} competitive dynamics data]_
+_Source: [URL]_
 ```
 
 ### 5. Present Analysis and Continue Option
 
 **Show analysis and present continue option:**
 
-"I've completed **industry analysis** using current {{current_year}} data to understand market dynamics for {{research_topic}}.
+"I've completed **industry analysis** for {{research_topic}}.
 
 **Key Industry Findings:**
 
@@ -190,7 +190,7 @@ Content is already written to document when generated in step 4. No additional a
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in industry web searches
+❌ Relying on training data instead of web search for current facts
 ❌ Missing critical market size or growth data
 ❌ Incomplete market structure analysis
 ❌ Not identifying key industry trends
@@ -208,7 +208,7 @@ Content is already written to document when generated in step 4. No additional a
 - Use authoritative sources (market research firms, industry associations)
 - Analyze market size, growth rates, and segmentation data
 - Study industry trends and evolution patterns
-- Focus on current {{current_year}} industry data
+- Search the web to verify facts
 - Present conflicting information when sources disagree
 - Apply confidence levels appropriately
 
@@ -225,4 +225,4 @@ Content is already written to document when generated in step 4. No additional a
 
 After user selects 'C', load `./step-03-competitive-landscape.md` to analyze competitive landscape, key players, and ecosystem analysis for {{research_topic}}.
 
-Remember: Always write research content to document immediately and emphasize current {{current_year}} industry data with rigorous source verification!
+Remember: Always write research content to document immediately and search the web to verify facts!
