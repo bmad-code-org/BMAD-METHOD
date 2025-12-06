@@ -1,6 +1,24 @@
+---
+name: 'step-03-success'
+description: 'Define comprehensive success criteria covering user, business, and technical success'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-03-success.md'
+nextStepFile: '{workflow_path}/steps/step-04-journeys.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+
+# Task References
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+---
+
 # Step 3: Success Criteria Definition
 
-**Progress: Step 3 of 10** - Next: User Journey Mapping
+**Progress: Step 3 of 11** - Next: User Journey Mapping
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -204,7 +222,7 @@ Show the generated content and present choices:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's dive deeper and refine these success metrics
 [P] Party Mode - Bring in different perspectives on success criteria
-[C] Continue - Save success criteria and move to User Journey Mapping (Step 4 of 10)"
+[C] Continue - Save success criteria and move to User Journey Mapping (Step 4 of 11)"
 
 ### 9. Handle Menu Selection
 

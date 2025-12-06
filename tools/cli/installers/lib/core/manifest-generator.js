@@ -650,13 +650,14 @@ class ManifestGenerator {
     if (this.allInstalledFiles && this.allInstalledFiles.length > 0) {
       // Process all installed files
       for (const filePath of this.allInstalledFiles) {
-        const relativePath = 'bmad' + filePath.replace(this.bmadDir, '').replaceAll('\\', '/');
+        // Store paths relative to bmadDir (no folder prefix)
+        const relativePath = filePath.replace(this.bmadDir, '').replaceAll('\\', '/').replace(/^\//, '');
         const ext = path.extname(filePath).toLowerCase();
         const fileName = path.basename(filePath, ext);
 
-        // Determine module from path
+        // Determine module from path (first directory component)
         const pathParts = relativePath.split('/');
-        const module = pathParts.length > 1 ? pathParts[1] : 'unknown';
+        const module = pathParts.length > 0 ? pathParts[0] : 'unknown';
 
         // Calculate hash
         const hash = await this.calculateFileHash(filePath);
@@ -672,10 +673,13 @@ class ManifestGenerator {
     } else {
       // Fallback: use the collected workflows/agents/tasks
       for (const file of this.files) {
-        const filePath = path.join(this.bmadDir, file.path.replace(this.bmadFolderName + '/', ''));
+        // Strip the folder prefix if present (for consistency)
+        const relPath = file.path.replace(this.bmadFolderName + '/', '');
+        const filePath = path.join(this.bmadDir, relPath);
         const hash = await this.calculateFileHash(filePath);
         allFiles.push({
           ...file,
+          path: relPath,
           hash: hash,
         });
       }

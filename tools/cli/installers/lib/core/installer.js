@@ -2210,8 +2210,9 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
     const installedFilesMap = new Map();
     for (const fileEntry of existingFilesManifest) {
       if (fileEntry.path) {
-        // Files in manifest are stored as relative paths starting with 'bmad/'
-        // Convert to absolute path
+        // Paths are relative to bmadDir. Legacy manifests incorrectly prefixed 'bmad/' -
+        // strip it if present. This is safe because no real path inside bmadDir would
+        // start with 'bmad/' (you'd never have .bmad/bmad/... as an actual structure).
         const relativePath = fileEntry.path.startsWith('bmad/') ? fileEntry.path.slice(5) : fileEntry.path;
         const absolutePath = path.join(bmadDir, relativePath);
         installedFilesMap.set(path.normalize(absolutePath), {
