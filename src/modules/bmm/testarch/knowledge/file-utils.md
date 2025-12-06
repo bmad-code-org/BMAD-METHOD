@@ -123,7 +123,7 @@ test('should validate PDF report', async () => {
   const { content } = await readPDF({ filePath: downloadPath });
 
   // content.text is extracted text from all pages
-  expect(content.text).toContain('Financial Report Q4 2025');
+  expect(content.text).toContain('Financial Report Q4 2024');
   expect(content.text).toContain('Total Revenue:');
 
   // Validate page count
