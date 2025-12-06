@@ -4,6 +4,7 @@ const yaml = require('js-yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 
 /**
  * Gemini CLI setup handler
@@ -68,8 +69,12 @@ class GeminiSetup extends BaseIdeSetup {
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Get tasks
+    // Get tasks and workflows (ALL workflows now generate commands)
     const tasks = await this.getTasks(bmadDir);
+
+    // Get ALL workflows using the new workflow command generator
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
 
     // Install agents as TOML files with bmad- prefix (flat structure)
     let agentCount = 0;
@@ -98,17 +103,37 @@ class GeminiSetup extends BaseIdeSetup {
       console.log(chalk.green(`  ✓ Added task: /bmad:tasks:${task.module}:${task.name}`));
     }
 
+    // Install workflows as TOML files with bmad- prefix (flat structure)
+    let workflowCount = 0;
+    for (const artifact of workflowArtifacts) {
+      if (artifact.type === 'workflow-command') {
+        // Create TOML wrapper around workflow command content
+        const tomlContent = await this.createWorkflowToml(artifact);
+
+        // Flat structure: bmad-workflow-{module}-{name}.toml
+        const workflowName = path.basename(artifact.relativePath, '.md');
+        const tomlPath = path.join(commandsDir, `bmad-workflow-${artifact.module}-${workflowName}.toml`);
+        await this.writeFile(tomlPath, tomlContent);
+        workflowCount++;
+
+        console.log(chalk.green(`  ✓ Added workflow: /bmad:workflows:${artifact.module}:${workflowName}`));
+      }
+    }
+
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents configured`));
     console.log(chalk.dim(`  - ${taskCount} tasks configured`));
+    console.log(chalk.dim(`  - ${workflowCount} workflows configured`));
     console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, commandsDir)}`));
     console.log(chalk.dim(`  - Agent activation: /bmad:agents:{agent-name}`));
     console.log(chalk.dim(`  - Task activation: /bmad:tasks:{task-name}`));
+    console.log(chalk.dim(`  - Workflow activation: /bmad:workflows:{workflow-name}`));
 
     return {
       success: true,
       agents: agentCount,
       tasks: taskCount,
+      workflows: workflowCount,
     };
   }
 
@@ -177,6 +202,27 @@ ${contentWithoutFrontmatter}
       .replaceAll('{{filename}}', task.filename);
 
     return tomlContent;
+  }
+
+  /**
+   * Create workflow TOML content from artifact
+   */
+  async createWorkflowToml(artifact) {
+    // Extract description from artifact content
+    const descriptionMatch = artifact.content.match(/description:\s*"([^"]+)"/);
+    const description = descriptionMatch
+      ? descriptionMatch[1]
+      : `BMAD ${artifact.module.toUpperCase()} Workflow: ${path.basename(artifact.relativePath, '.md')}`;
+
+    // Strip frontmatter from command content
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = artifact.content.replace(frontmatterRegex, '').trim();
+
+    return `description = "${description}"
+prompt = """
+${contentWithoutFrontmatter}
+"""
+`;
   }
 
   /**

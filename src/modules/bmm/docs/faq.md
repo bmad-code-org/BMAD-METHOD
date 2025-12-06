@@ -147,7 +147,7 @@ If status file exists, use workflow-status. If not, use workflow-init.
 
 ### Q: How do I know when Phase 3 is complete and I can start Phase 4?
 
-**A:** For Level 3-4, run the implementation-readiness workflow. It validates that PRD (FRs/NFRs), architecture, epics+stories, and UX (if applicable) are cohesive before implementation. Pass the gate check = ready for Phase 4.
+**A:** For Level 3-4, run the implementation-readiness workflow. It validates PRD + Architecture + Epics + UX (optional) are aligned before implementation. Pass the gate check = ready for Phase 4.
 
 ### Q: Can I run workflows in parallel or do they have to be sequential?
 

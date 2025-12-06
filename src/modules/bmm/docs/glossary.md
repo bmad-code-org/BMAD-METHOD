@@ -246,7 +246,7 @@ Workflow that initializes Phase 4 implementation by creating sprint-status.yaml,
 
 ### Gate Check
 
-Validation workflow (implementation-readiness) run before Phase 4 to ensure PRD, architecture, and UX documents are cohesive with no gaps or contradictions. Required for BMad Method and Enterprise Method tracks.
+Validation workflow (implementation-readiness) run before Phase 4 to ensure PRD + Architecture + Epics + UX (optional) are aligned with no gaps or contradictions. Required for BMad Method and Enterprise Method tracks.
 
 ### DoD (Definition of Done)
 

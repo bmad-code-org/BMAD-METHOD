@@ -1,5 +1,5 @@
 ---
-name: Product Brief Workflow
+name: create-product-brief
 description: Create comprehensive product briefs through collaborative step-by-step discovery as creative Business Analyst working with the user as peers.
 web_bundle: true
 ---

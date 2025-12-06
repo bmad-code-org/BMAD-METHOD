@@ -1,5 +1,5 @@
 ---
-name: Workflow Compliance Check
+name: workflow-compliance-check
 description: Systematic validation of workflows against BMAD standards with adversarial analysis and detailed reporting
 web_bundle: false
 ---

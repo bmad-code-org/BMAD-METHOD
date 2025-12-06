@@ -1,5 +1,5 @@
 ---
-name: Create Workflow
+name: create-workflow
 description: Create structured standalone workflows using markdown-based step architecture
 web_bundle: true
 ---
