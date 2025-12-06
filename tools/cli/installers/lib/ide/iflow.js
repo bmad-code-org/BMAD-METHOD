@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 
 /**
  * iFlow CLI setup handler
@@ -29,9 +30,11 @@ class IFlowSetup extends BaseIdeSetup {
     const commandsDir = path.join(iflowDir, this.commandsDir, 'bmad');
     const agentsDir = path.join(commandsDir, 'agents');
     const tasksDir = path.join(commandsDir, 'tasks');
+    const workflowsDir = path.join(commandsDir, 'workflows');
 
     await this.ensureDir(agentsDir);
     await this.ensureDir(tasksDir);
+    await this.ensureDir(workflowsDir);
 
     // Generate agent launchers
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
@@ -47,8 +50,12 @@ class IFlowSetup extends BaseIdeSetup {
       agentCount++;
     }
 
-    // Get tasks
+    // Get tasks and workflows (ALL workflows now generate commands)
     const tasks = await this.getTasks(bmadDir);
+
+    // Get ALL workflows using the new workflow command generator
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
 
     // Setup tasks as commands
     let taskCount = 0;
@@ -61,15 +68,27 @@ class IFlowSetup extends BaseIdeSetup {
       taskCount++;
     }
 
+    // Setup workflows as commands (already generated)
+    let workflowCount = 0;
+    for (const artifact of workflowArtifacts) {
+      if (artifact.type === 'workflow-command') {
+        const targetPath = path.join(workflowsDir, `${artifact.module}-${path.basename(artifact.relativePath, '.md')}.md`);
+        await this.writeFile(targetPath, artifact.content);
+        workflowCount++;
+      }
+    }
+
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agent commands created`));
     console.log(chalk.dim(`  - ${taskCount} task commands created`));
+    console.log(chalk.dim(`  - ${workflowCount} workflow commands created`));
     console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, commandsDir)}`));
 
     return {
       success: true,
       agents: agentCount,
       tasks: taskCount,
+      workflows: workflowCount,
     };
   }
 

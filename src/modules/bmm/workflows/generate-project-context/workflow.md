@@ -1,5 +1,5 @@
 ---
-name: Generate Project Context
+name: generate-project-context
 description: Creates a concise project_context.md file with critical rules and patterns that AI agents must follow when implementing code. Optimized for LLM context efficiency.
 ---
 

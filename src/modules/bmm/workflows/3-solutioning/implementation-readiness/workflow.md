@@ -1,5 +1,5 @@
 ---
-name: 'Implementation Readiness'
+name: check-implementation-readiness
 description: 'Critical validation workflow that assesses PRD, Architecture, and Epics & Stories for completeness and alignment before implementation. Uses adversarial review approach to find gaps and issues.'
 web_bundle: false
 ---

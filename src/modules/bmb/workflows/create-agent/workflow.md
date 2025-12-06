@@ -1,5 +1,5 @@
 ---
-name: Create Agent
+name: create-agent
 description: Interactive workflow to build BMAD Core compliant agents with optional brainstorming, persona development, and command structure
 web_bundle: true
 ---

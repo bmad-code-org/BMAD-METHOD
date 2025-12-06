@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 
 /**
  * Auggie CLI setup handler
@@ -33,10 +34,23 @@ class AuggieSetup extends BaseIdeSetup {
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Get tasks, tools, and workflows (standalone only)
+    // Get tasks, tools, and workflows (ALL workflows now generate commands)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
-    const workflows = await this.getWorkflows(bmadDir, true);
+
+    // Get ALL workflows using the new workflow command generator
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+
+    // Convert workflow artifacts to expected format
+    const workflows = workflowArtifacts
+      .filter((artifact) => artifact.type === 'workflow-command')
+      .map((artifact) => ({
+        module: artifact.module,
+        name: path.basename(artifact.relativePath, '.md'),
+        path: artifact.sourcePath,
+        content: artifact.content,
+      }));
 
     const bmadCommandsDir = path.join(location, 'bmad');
     const agentsDir = path.join(bmadCommandsDir, 'agents');
@@ -73,13 +87,11 @@ class AuggieSetup extends BaseIdeSetup {
       await this.writeFile(targetPath, commandContent);
     }
 
-    // Install workflows
+    // Install workflows (already generated commands)
     for (const workflow of workflows) {
-      const content = await this.readFile(workflow.path);
-      const commandContent = this.createWorkflowCommand(workflow, content);
-
+      // Use the pre-generated workflow command content
       const targetPath = path.join(workflowsDir, `${workflow.module}-${workflow.name}.md`);
-      await this.writeFile(targetPath, commandContent);
+      await this.writeFile(targetPath, workflow.content);
     }
 
     const totalInstalled = agentArtifacts.length + tasks.length + tools.length + workflows.length;

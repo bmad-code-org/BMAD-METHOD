@@ -156,16 +156,41 @@ class KiroCliSetup extends BaseIdeSetup {
       return;
     }
 
-    // Extract agent name from ID path (e.g., "{bmad_folder}/bmm/agents/analyst.md" -> "analyst")
-    const idPath = agentData.agent.metadata.id;
-    const basename = path.basename(idPath, '.md');
-    const agentName = basename.startsWith('bmad-') ? basename : `bmad-${basename}`;
+    // Extract module from file path
+    const normalizedPath = path.normalize(agentFile);
+    const pathParts = normalizedPath.split(path.sep);
+    const basename = path.basename(agentFile, '.agent.yaml');
+
+    // Find the module name from path
+    let moduleName = 'unknown';
+    if (pathParts.includes('src')) {
+      const srcIndex = pathParts.indexOf('src');
+      if (srcIndex + 3 < pathParts.length) {
+        const folderAfterSrc = pathParts[srcIndex + 1];
+        // Handle both src/core/agents and src/modules/[module]/agents patterns
+        if (folderAfterSrc === 'core') {
+          moduleName = 'core';
+        } else if (folderAfterSrc === 'modules') {
+          moduleName = pathParts[srcIndex + 2]; // The actual module name
+        }
+      }
+    }
+
+    // Extract the agent name from the ID path in YAML if available
+    let agentBaseName = basename;
+    if (agentData.agent && agentData.agent.metadata && agentData.agent.metadata.id) {
+      const idPath = agentData.agent.metadata.id;
+      agentBaseName = path.basename(idPath, '.md');
+    }
+
+    const agentName = `bmad-${moduleName}-${agentBaseName}`;
+    const sanitizedAgentName = this.sanitizeAgentName(agentName);
 
     // Create JSON definition
-    await this.createAgentDefinitionFromYaml(agentsDir, agentName, agentData);
+    await this.createAgentDefinitionFromYaml(agentsDir, sanitizedAgentName, agentData);
 
     // Create prompt file
-    await this.createAgentPromptFromYaml(agentsDir, agentName, agentData, projectDir);
+    await this.createAgentPromptFromYaml(agentsDir, sanitizedAgentName, agentData, projectDir);
   }
 
   /**

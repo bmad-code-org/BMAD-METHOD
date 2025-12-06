@@ -5,34 +5,13 @@ const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * Roo IDE setup handler
- * Creates custom modes in .roomodes file
+ * Creates custom commands in .roo/commands directory
  */
 class RooSetup extends BaseIdeSetup {
   constructor() {
     super('roo', 'Roo Code');
-    this.configFile = '.roomodes';
-    this.defaultPermissions = {
-      dev: {
-        description: 'Development files',
-        fileRegex: String.raw`.*\.(js|jsx|ts|tsx|py|java|cpp|c|h|cs|go|rs|php|rb|swift)$`,
-      },
-      config: {
-        description: 'Configuration files',
-        fileRegex: String.raw`.*\.(json|yaml|yml|toml|xml|ini|env|config)$`,
-      },
-      docs: {
-        description: 'Documentation files',
-        fileRegex: String.raw`.*\.(md|mdx|rst|txt|doc|docx)$`,
-      },
-      styles: {
-        description: 'Style and design files',
-        fileRegex: String.raw`.*\.(css|scss|sass|less|stylus)$`,
-      },
-      all: {
-        description: 'All files',
-        fileRegex: '.*',
-      },
-    };
+    this.configDir = '.roo';
+    this.commandsDir = 'commands';
   }
 
   /**
@@ -44,94 +23,96 @@ class RooSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Check for existing .roomodes file
-    const roomodesPath = path.join(projectDir, this.configFile);
-    let existingModes = [];
-    let existingContent = '';
+    // Create .roo/commands directory
+    const rooCommandsDir = path.join(projectDir, this.configDir, this.commandsDir);
+    await this.ensureDir(rooCommandsDir);
 
-    if (await this.pathExists(roomodesPath)) {
-      existingContent = await this.readFile(roomodesPath);
-      // Parse existing modes to avoid duplicates
-      const modeMatches = existingContent.matchAll(/- slug: ([\w-]+)/g);
-      for (const match of modeMatches) {
-        existingModes.push(match[1]);
-      }
-      console.log(chalk.yellow(`Found existing .roomodes file with ${existingModes.length} modes`));
-    }
-
-    // Generate agent launchers (though Roo will reference the actual .bmad agents)
+    // Generate agent launchers
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Always use 'all' permissions - users can customize in .roomodes file
-    const permissionChoice = 'all';
-
-    // Create modes content
-    let newModesContent = '';
     let addedCount = 0;
     let skippedCount = 0;
 
     for (const artifact of agentArtifacts) {
-      const slug = `bmad-${artifact.module}-${artifact.name}`;
+      const commandName = `bmad-${artifact.module}-agent-${artifact.name}`;
+      const commandPath = path.join(rooCommandsDir, `${commandName}.md`);
 
       // Skip if already exists
-      if (existingModes.includes(slug)) {
-        console.log(chalk.dim(`  Skipping ${slug} - already exists`));
+      if (await this.pathExists(commandPath)) {
+        console.log(chalk.dim(`  Skipping ${commandName} - already exists`));
         skippedCount++;
         continue;
       }
 
-      // Read the actual agent file from .bmad for metadata extraction
+      // Read the actual agent file from .bmad for metadata extraction (installed agents are .md files)
       const agentPath = path.join(bmadDir, artifact.module, 'agents', `${artifact.name}.md`);
       const content = await this.readFile(agentPath);
 
-      // Create mode entry that references the actual .bmad agent
-      const modeEntry = await this.createModeEntry(
-        { module: artifact.module, name: artifact.name, path: agentPath },
-        content,
-        permissionChoice,
-        projectDir,
-      );
+      // Create command file that references the actual .bmad agent
+      await this.createCommandFile({ module: artifact.module, name: artifact.name, path: agentPath }, content, commandPath, projectDir);
 
-      newModesContent += modeEntry;
       addedCount++;
-      console.log(chalk.green(`  ✓ Added mode: ${slug}`));
+      console.log(chalk.green(`  ✓ Added command: ${commandName}`));
     }
-
-    // Build final content
-    let finalContent = '';
-    if (existingContent) {
-      // Append to existing content
-      finalContent = existingContent.trim() + '\n' + newModesContent;
-    } else {
-      // Create new .roomodes file
-      finalContent = 'customModes:\n' + newModesContent;
-    }
-
-    // Write .roomodes file
-    await this.writeFile(roomodesPath, finalContent);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${addedCount} modes added`));
+    console.log(chalk.dim(`  - ${addedCount} commands added`));
     if (skippedCount > 0) {
-      console.log(chalk.dim(`  - ${skippedCount} modes skipped (already exist)`));
+      console.log(chalk.dim(`  - ${skippedCount} commands skipped (already exist)`));
     }
-    console.log(chalk.dim(`  - Configuration file: ${this.configFile}`));
-    console.log(chalk.dim(`  - Permission level: all (unrestricted)`));
-    console.log(chalk.yellow(`\n  💡 Tip: Edit ${this.configFile} to customize file permissions per agent`));
-    console.log(chalk.dim(`  Modes will be available when you open this project in Roo Code`));
+    console.log(chalk.dim(`  - Commands directory: ${this.configDir}/${this.commandsDir}/bmad/`));
+    console.log(chalk.dim(`  Commands will be available when you open this project in Roo Code`));
 
     return {
       success: true,
-      modes: addedCount,
+      commands: addedCount,
       skipped: skippedCount,
     };
   }
 
   /**
-   * Create a mode entry for an agent
+   * Create a unified command file for agents
+   * @param {string} commandPath - Path where to write the command file
+   * @param {Object} options - Command options
+   * @param {string} options.name - Display name for the command
+   * @param {string} options.description - Description for the command
+   * @param {string} options.agentPath - Path to the agent file (relative to project root)
+   * @param {string} [options.icon] - Icon emoji (defaults to 🤖)
+   * @param {string} [options.extraContent] - Additional content to include before activation
    */
-  async createModeEntry(agent, content, permissionChoice, projectDir) {
+  async createAgentCommandFile(commandPath, options) {
+    const { name, description, agentPath, icon = '🤖', extraContent = '' } = options;
+
+    // Build command content with YAML frontmatter
+    let commandContent = `---\n`;
+    commandContent += `name: '${icon} ${name}'\n`;
+    commandContent += `description: '${description}'\n`;
+    commandContent += `---\n\n`;
+
+    commandContent += `You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.\n\n`;
+
+    // Add any extra content (e.g., warnings for custom agents)
+    if (extraContent) {
+      commandContent += `${extraContent}\n\n`;
+    }
+
+    commandContent += `<agent-activation CRITICAL="TRUE">\n`;
+    commandContent += `1. LOAD the FULL agent file from @${agentPath}\n`;
+    commandContent += `2. READ its entire contents - this contains the complete agent persona, menu, and instructions\n`;
+    commandContent += `3. Execute ALL activation steps exactly as written in the agent file\n`;
+    commandContent += `4. Follow the agent's persona and menu system precisely\n`;
+    commandContent += `5. Stay in character throughout the session\n`;
+    commandContent += `</agent-activation>\n`;
+
+    // Write command file
+    await this.writeFile(commandPath, commandContent);
+  }
+
+  /**
+   * Create a command file for an agent
+   */
+  async createCommandFile(agent, content, commandPath, projectDir) {
     // Extract metadata from agent content
     const titleMatch = content.match(/title="([^"]+)"/);
     const title = titleMatch ? titleMatch[1] : this.formatTitle(agent.name);
@@ -142,66 +123,16 @@ class RooSetup extends BaseIdeSetup {
     const whenToUseMatch = content.match(/whenToUse="([^"]+)"/);
     const whenToUse = whenToUseMatch ? whenToUseMatch[1] : `Use for ${title} tasks`;
 
-    // Get the activation header from central template
-    const activationHeader = await this.getAgentCommandHeader();
-
-    const roleDefinitionMatch = content.match(/roleDefinition="([^"]+)"/);
-    const roleDefinition = roleDefinitionMatch
-      ? roleDefinitionMatch[1]
-      : `You are a ${title} specializing in ${title.toLowerCase()} tasks and responsibilities.`;
-
     // Get relative path
     const relativePath = path.relative(projectDir, agent.path).replaceAll('\\', '/');
 
-    // Determine permissions
-    const permissions = this.getPermissionsForAgent(agent, permissionChoice);
-
-    // Build mode entry
-    const slug = `bmad-${agent.module}-${agent.name}`;
-    let modeEntry = ` - slug: ${slug}\n`;
-    modeEntry += `   name: '${icon} ${title}'\n`;
-
-    if (permissions && permissions.description) {
-      modeEntry += `   description: '${permissions.description}'\n`;
-    }
-
-    modeEntry += `   roleDefinition: ${roleDefinition}\n`;
-    modeEntry += `   whenToUse: ${whenToUse}\n`;
-    modeEntry += `   customInstructions: ${activationHeader} Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`;
-    modeEntry += `   groups:\n`;
-    modeEntry += `    - read\n`;
-
-    if (permissions && permissions.fileRegex) {
-      modeEntry += `    - - edit\n`;
-      modeEntry += `      - fileRegex: ${permissions.fileRegex}\n`;
-      modeEntry += `        description: ${permissions.description}\n`;
-    } else {
-      modeEntry += `    - edit\n`;
-    }
-
-    return modeEntry;
-  }
-
-  /**
-   * Get permissions configuration for an agent
-   */
-  getPermissionsForAgent(agent, permissionChoice) {
-    if (permissionChoice === 'custom') {
-      // Custom logic based on agent name/module
-      if (agent.name.includes('dev') || agent.name.includes('code')) {
-        return this.defaultPermissions.dev;
-      } else if (agent.name.includes('doc') || agent.name.includes('write')) {
-        return this.defaultPermissions.docs;
-      } else if (agent.name.includes('config') || agent.name.includes('setup')) {
-        return this.defaultPermissions.config;
-      } else if (agent.name.includes('style') || agent.name.includes('css')) {
-        return this.defaultPermissions.styles;
-      }
-      // Default to all for custom agents
-      return this.defaultPermissions.all;
-    }
-
-    return this.defaultPermissions[permissionChoice] || null;
+    // Use unified method
+    await this.createAgentCommandFile(commandPath, {
+      name: title,
+      description: whenToUse,
+      agentPath: relativePath,
+      icon: icon,
+    });
   }
 
   /**
@@ -219,8 +150,26 @@ class RooSetup extends BaseIdeSetup {
    */
   async cleanup(projectDir) {
     const fs = require('fs-extra');
-    const roomodesPath = path.join(projectDir, this.configFile);
+    const rooCommandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
+    if (await fs.pathExists(rooCommandsDir)) {
+      const files = await fs.readdir(rooCommandsDir);
+      let removedCount = 0;
+
+      for (const file of files) {
+        if (file.startsWith('bmad-') && file.endsWith('.md')) {
+          await fs.remove(path.join(rooCommandsDir, file));
+          removedCount++;
+        }
+      }
+
+      if (removedCount > 0) {
+        console.log(chalk.dim(`Removed ${removedCount} BMAD commands from .roo/commands/`));
+      }
+    }
+
+    // Also clean up old .roomodes file if it exists
+    const roomodesPath = path.join(projectDir, '.roomodes');
     if (await fs.pathExists(roomodesPath)) {
       const content = await fs.readFile(roomodesPath, 'utf8');
 
@@ -245,7 +194,9 @@ class RooSetup extends BaseIdeSetup {
 
       // Write back filtered content
       await fs.writeFile(roomodesPath, filteredLines.join('\n'));
-      console.log(chalk.dim(`Removed ${removedCount} BMAD modes from .roomodes`));
+      if (removedCount > 0) {
+        console.log(chalk.dim(`Removed ${removedCount} BMAD modes from legacy .roomodes file`));
+      }
     }
   }
 
@@ -254,68 +205,53 @@ class RooSetup extends BaseIdeSetup {
    * @param {string} projectDir - Project directory
    * @param {string} agentName - Agent name (e.g., "fred-commit-poet")
    * @param {string} agentPath - Path to compiled agent (relative to project root)
-   * @param {Object} metadata - Agent metadata
+   * @param {Object} metadata - Agent metadata (unused, kept for compatibility)
    * @returns {Object} Installation result
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const roomodesPath = path.join(projectDir, this.configFile);
-    let existingContent = '';
+    const rooCommandsDir = path.join(projectDir, this.configDir, this.commandsDir);
+    await this.ensureDir(rooCommandsDir);
 
-    // Read existing .roomodes file
-    if (await this.pathExists(roomodesPath)) {
-      existingContent = await this.readFile(roomodesPath);
-    }
+    const commandName = `bmad-custom-agent-${agentName.toLowerCase()}`;
+    const commandPath = path.join(rooCommandsDir, `${commandName}.md`);
 
-    // Create custom agent mode entry
-    const slug = `bmad-custom-${agentName.toLowerCase()}`;
-    const modeEntry = ` - slug: ${slug}
-   name: 'BMAD Custom: ${agentName}'
-   description: |
-    Custom BMAD agent: ${agentName}
-
-    **⚠️ IMPORTANT**: Run @${agentPath} first to load the complete agent!
-
-    This is a launcher for the custom BMAD agent "${agentName}". The agent will follow the persona and instructions from the main agent file.
-   prompt: |
-    @${agentPath}
-   always: false
-   permissions: all
-`;
-
-    // Check if mode already exists
-    if (existingContent.includes(slug)) {
+    // Check if command already exists
+    if (await this.pathExists(commandPath)) {
       return {
         ide: 'roo',
-        path: this.configFile,
-        command: agentName,
+        path: path.join(this.configDir, this.commandsDir, `${commandName}.md`),
+        command: commandName,
         type: 'custom-agent-launcher',
         alreadyExists: true,
       };
     }
 
-    // Build final content
-    let finalContent = '';
-    if (existingContent) {
-      // Find customModes section or add it
-      if (existingContent.includes('customModes:')) {
-        // Append to existing customModes
-        finalContent = existingContent + modeEntry;
-      } else {
-        // Add customModes section
-        finalContent = existingContent.trim() + '\n\ncustomModes:\n' + modeEntry;
-      }
-    } else {
-      // Create new .roomodes file with customModes
-      finalContent = 'customModes:\n' + modeEntry;
-    }
+    // Read the custom agent file to extract metadata (same as regular agents)
+    const fullAgentPath = path.join(projectDir, agentPath);
+    const content = await this.readFile(fullAgentPath);
 
-    // Write .roomodes file
-    await this.writeFile(roomodesPath, finalContent);
+    // Extract metadata from agent content
+    const titleMatch = content.match(/title="([^"]+)"/);
+    const title = titleMatch ? titleMatch[1] : this.formatTitle(agentName);
+
+    const iconMatch = content.match(/icon="([^"]+)"/);
+    const icon = iconMatch ? iconMatch[1] : '🤖';
+
+    const whenToUseMatch = content.match(/whenToUse="([^"]+)"/);
+    const whenToUse = whenToUseMatch ? whenToUseMatch[1] : `Use for ${title} tasks`;
+
+    // Use unified method without extra content (clean)
+    await this.createAgentCommandFile(commandPath, {
+      name: title,
+      description: whenToUse,
+      agentPath: agentPath,
+      icon: icon,
+    });
 
     return {
       ide: 'roo',
-      path: this.configFile,
-      command: slug,
+      path: path.join(this.configDir, this.commandsDir, `${commandName}.md`),
+      command: commandName,
       type: 'custom-agent-launcher',
     };
   }

@@ -15,6 +15,8 @@ variables:
   npm_config_cache: "$CI_PROJECT_DIR/.npm"
   # Playwright browser cache
   PLAYWRIGHT_BROWSERS_PATH: "$CI_PROJECT_DIR/.cache/ms-playwright"
+  # Default Node version when .nvmrc is missing
+  DEFAULT_NODE_VERSION: "24"
 
 # Caching configuration
 cache:
@@ -29,19 +31,32 @@ cache:
 # Lint stage - Code quality checks
 lint:
   stage: lint
-  image: node:20
-  script:
+  image: node:$DEFAULT_NODE_VERSION
+  before_script:
+    - |
+      NODE_VERSION=$(cat .nvmrc 2>/dev/null || echo "$DEFAULT_NODE_VERSION")
+      echo "Using Node $NODE_VERSION"
+      npm install -g n
+      n "$NODE_VERSION"
+      node -v
     - npm ci
+  script:
     - npm run lint
   timeout: 5 minutes
 
 # Test stage - Parallel execution with sharding
 .test-template: &test-template
   stage: test
-  image: node:20
+  image: node:$DEFAULT_NODE_VERSION
   needs:
     - lint
   before_script:
+    - |
+      NODE_VERSION=$(cat .nvmrc 2>/dev/null || echo "$DEFAULT_NODE_VERSION")
+      echo "Using Node $NODE_VERSION"
+      npm install -g n
+      n "$NODE_VERSION"
+      node -v
     - npm ci
     - npx playwright install --with-deps chromium
   artifacts:
@@ -75,7 +90,7 @@ test:shard-4:
 # Burn-in stage - Flaky test detection
 burn-in:
   stage: burn-in
-  image: node:20
+  image: node:$DEFAULT_NODE_VERSION
   needs:
     - test:shard-1
     - test:shard-2
@@ -86,6 +101,12 @@ burn-in:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
   before_script:
+    - |
+      NODE_VERSION=$(cat .nvmrc 2>/dev/null || echo "$DEFAULT_NODE_VERSION")
+      echo "Using Node $NODE_VERSION"
+      npm install -g n
+      n "$NODE_VERSION"
+      node -v
     - npm ci
     - npx playwright install --with-deps chromium
   script:

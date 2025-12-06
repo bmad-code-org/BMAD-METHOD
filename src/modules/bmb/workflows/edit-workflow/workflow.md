@@ -1,5 +1,5 @@
 ---
-name: Edit Workflow
+name: edit-workflow
 description: Intelligent workflow editor that helps modify existing workflows while following best practices
 web_bundle: true
 ---

@@ -2,6 +2,7 @@ const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 
 /**
  * Cursor IDE setup handler
@@ -53,10 +54,22 @@ class CursorSetup extends BaseIdeSetup {
     // Convert artifacts to agent format for index creation
     const agents = agentArtifacts.map((a) => ({ module: a.module, name: a.name }));
 
-    // Get tasks, tools, and workflows (standalone only)
+    // Get tasks, tools, and workflows (ALL workflows now generate commands)
     const tasks = await this.getTasks(bmadDir, true);
     const tools = await this.getTools(bmadDir, true);
-    const workflows = await this.getWorkflows(bmadDir, true);
+
+    // Get ALL workflows using the new workflow command generator
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+
+    // Convert artifacts to workflow objects for directory creation
+    const workflows = workflowArtifacts
+      .filter((artifact) => artifact.type === 'workflow-command')
+      .map((artifact) => ({
+        module: artifact.module,
+        name: path.basename(artifact.relativePath, '.md'),
+        path: artifact.sourcePath,
+      }));
 
     // Create directories for each module
     const modules = new Set();
@@ -113,18 +126,21 @@ class CursorSetup extends BaseIdeSetup {
       toolCount++;
     }
 
-    // Process and copy workflows
+    // Process and copy workflow commands (generated, not raw workflows)
     let workflowCount = 0;
-    for (const workflow of workflows) {
-      const content = await this.readAndProcess(workflow.path, {
-        module: workflow.module,
-        name: workflow.name,
-      });
+    for (const artifact of workflowArtifacts) {
+      if (artifact.type === 'workflow-command') {
+        // Add MDC metadata header to workflow command
+        const content = this.wrapLauncherWithMDC(artifact.content, {
+          module: artifact.module,
+          name: path.basename(artifact.relativePath, '.md'),
+        });
 
-      const targetPath = path.join(bmadRulesDir, workflow.module, 'workflows', `${workflow.name}.mdc`);
+        const targetPath = path.join(bmadRulesDir, artifact.module, 'workflows', `${path.basename(artifact.relativePath, '.md')}.mdc`);
 
-      await this.writeFile(targetPath, content);
-      workflowCount++;
+        await this.writeFile(targetPath, content);
+        workflowCount++;
+      }
     }
 
     // Create BMAD index file (but NOT .cursorrules - user manages that)
