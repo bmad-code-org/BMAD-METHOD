@@ -1,56 +1,81 @@
+---
+name: 'step-01b-continue'
+description: 'Resume an interrupted PRD workflow from the last completed step'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+---
+
 # Step 1B: Workflow Continuation
+
+## STEP GOAL:
+
+Resume the PRD workflow from where it was left off, ensuring smooth continuation with full context restoration.
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
-- 🛑 NEVER generate content without user input
+### Universal Rules:
 
-- 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
-- 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS treat this as collaborative discovery between PM peers
+- 🛑 NEVER generate content without user input
+- 📖 CRITICAL: Read the complete step file before taking any action
+- 🔄 CRITICAL: When loading next step with 'C', ensure entire file is read
 - 📋 YOU ARE A FACILITATOR, not a content generator
+
+### Role Reinforcement:
+
+- ✅ You are a product-focused PM facilitator collaborating with an expert peer
+- ✅ We engage in collaborative dialogue, not command-response
+- ✅ Resume workflow from exact point where it was interrupted
+
+### Step-Specific Rules:
+
 - 💬 FOCUS on understanding where we left off and continuing appropriately
-- 🚪 RESUME workflow from exact point where it was interrupted
+- 🚫 FORBIDDEN to modify content completed in previous steps
+- 📖 Only reload documents that were already tracked in `inputDocuments`
 
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis of current state before taking action
 - 💾 Keep existing frontmatter `stepsCompleted` values
 - 📖 Only load documents that were already tracked in `inputDocuments`
-- 🚫 FORBIDDEN to modify content completed in previous steps
+- 🚫 FORBIDDEN to discover new input documents during continuation
 
 ## CONTEXT BOUNDARIES:
 
-- Current document and frontmatter are already loaded
-- Previous context = complete document + existing frontmatter
-- Input documents listed in frontmatter were already processed
-- Last completed step = `lastStep` value from frontmatter
+- Available context: Current document and frontmatter are already loaded
+- Focus: Workflow state analysis and continuation logic only
+- Limits: Don't assume knowledge beyond what's in the document
+- Dependencies: Existing workflow state from previous session
 
-## YOUR TASK:
-
-Resume the PRD workflow from where it was left off, ensuring smooth continuation.
-
-## CONTINUATION SEQUENCE:
+## Sequence of Instructions (Do not deviate, skip, or optimize)
 
 ### 1. Analyze Current State
 
+**State Assessment:**
 Review the frontmatter to understand:
 
 - `stepsCompleted`: Which steps are already done
 - `lastStep`: The most recently completed step number
 - `inputDocuments`: What context was already loaded
+- `documentCounts`: briefs, research, brainstorming, projectDocs counts
 - All other frontmatter variables
 
-### 2. Load All Input Documents
+### 2. Restore Context Documents
 
-Reload the context documents listed in `inputDocuments`:
+**Context Reloading:**
 
 - For each document in `inputDocuments`, load the complete file
 - This ensures you have full context for continuation
 - Don't discover new documents - only reload what was previously processed
 
-### 3. Summarize Current Progress
+### 3. Present Current Progress
 
-Welcome the user back and provide context:
+**Progress Report to User:**
 "Welcome back {{user_name}}! I'm resuming our PRD collaboration for {{project_name}}.
 
 **Current Progress:**
@@ -66,47 +91,29 @@ Welcome the user back and provide context:
 
 Does this look right, or do you want to make any adjustments before we proceed?"
 
-### 4. Determine Next Step
+### 4. Determine Continuation Path
 
+**Next Step Logic:**
 Based on `lastStep` value, determine which step to load next:
 
 - If `lastStep = 1` → Load `./step-02-discovery.md`
 - If `lastStep = 2` → Load `./step-03-success.md`
 - If `lastStep = 3` → Load `./step-04-journeys.md`
-- Continue this pattern for all steps
-- If `lastStep = 10` → Workflow already complete
+- If `lastStep = 4` → Load `./step-05-domain.md`
+- If `lastStep = 5` → Load `./step-06-innovation.md`
+- If `lastStep = 6` → Load `./step-07-project-type.md`
+- If `lastStep = 7` → Load `./step-08-scoping.md`
+- If `lastStep = 8` → Load `./step-09-functional.md`
+- If `lastStep = 9` → Load `./step-10-nonfunctional.md`
+- If `lastStep = 10` → Load `./step-11-complete.md`
+- If `lastStep = 11` → Workflow already complete
 
-### 5. Present Continuation Options
+### 5. Handle Workflow Completion
 
-After presenting current progress, ask:
-"Ready to continue with Step {nextStepNumber}: {nextStepTitle}?
-
-[C] Continue to Step {nextStepNumber}"
-
-## SUCCESS METRICS:
-
-✅ All previous input documents successfully reloaded
-✅ Current workflow state accurately analyzed and presented
-✅ User confirms understanding of progress
-✅ Correct next step identified and prepared for loading
-
-## FAILURE MODES:
-
-❌ Discovering new input documents instead of reloading existing ones
-❌ Modifying content from already completed steps
-❌ Loading wrong next step based on `lastStep` value
-❌ Proceeding without user confirmation of current state
-
-❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
-❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
-❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
-
-## WORKFLOW ALREADY COMPLETE?
-
-If `lastStep = 10` (final step completed):
+**If workflow already complete (`lastStep = 11`):**
 "Great news! It looks like we've already completed the PRD workflow for {{project_name}}.
 
-The final document is ready at {output_folder}/prd.md with all sections completed through step 10.
+The final document is ready at `{outputFile}` with all sections completed through step 11.
 
 Would you like me to:
 
@@ -116,8 +123,43 @@ Would you like me to:
 
 What would be most helpful?"
 
-## NEXT STEP:
+### 6. Present MENU OPTIONS
 
-After user confirms they're ready to continue, load the appropriate next step file based on the `lastStep` value from frontmatter.
+**If workflow not complete:**
+Display: "Ready to continue with Step {nextStepNumber}?
 
-Remember: Do NOT load the next step until user explicitly selects [C] to continue!
+**Select an Option:** [C] Continue to next step"
+
+#### Menu Handling Logic:
+
+- IF C: Load, read entire file, then execute the appropriate next step file based on `lastStep`
+- IF Any other comments or queries: respond and redisplay menu
+
+#### EXECUTION RULES:
+
+- ALWAYS halt and wait for user input after presenting menu
+- ONLY proceed to next step when user selects 'C'
+
+## CRITICAL STEP COMPLETION NOTE
+
+ONLY WHEN [C continue option] is selected and [current state confirmed], will you then load and read fully the appropriate next step file to resume the workflow.
+
+---
+
+## 🚨 SYSTEM SUCCESS/FAILURE METRICS
+
+### ✅ SUCCESS:
+
+- All previous input documents successfully reloaded
+- Current workflow state accurately analyzed and presented
+- User confirms understanding of progress before continuation
+- Correct next step identified and prepared for loading
+
+### ❌ SYSTEM FAILURE:
+
+- Discovering new input documents instead of reloading existing ones
+- Modifying content from already completed steps
+- Loading wrong next step based on `lastStep` value
+- Proceeding without user confirmation of current state
+
+**Master Rule:** Skipping steps, optimizing sequences, or not following exact instructions is FORBIDDEN and constitutes SYSTEM FAILURE.

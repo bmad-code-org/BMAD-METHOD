@@ -1,3 +1,16 @@
+---
+name: 'step-11-complete'
+description: 'Complete the PRD workflow, update status files, and suggest next steps'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-11-complete.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+---
+
 # Step 11: Workflow Completion
 
 **Final Step - Complete the PRD**
