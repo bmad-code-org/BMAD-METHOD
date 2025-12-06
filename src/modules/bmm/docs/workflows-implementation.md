@@ -70,7 +70,7 @@ For a visual representation of the complete workflow, see: [workflow-method-gree
 Stories move through these states in the sprint status file:
 
 1. **TODO** - Story identified but not started
-2. **IN PROGRESS** - Story being implemented (create-story → story-context → dev-story)
+2. **IN PROGRESS** - Story being implemented (create-story → dev-story)
 3. **READY FOR REVIEW** - Implementation complete, awaiting code review
 4. **DONE** - Accepted and complete
 

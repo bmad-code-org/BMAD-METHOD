@@ -1,6 +1,6 @@
 # Step 1: Workflow Initialization
 
-**Progress: Step 1 of 10** - Next: Project Discovery
+**Progress: Step 1 of 11** - Next: Project Discovery
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -134,7 +134,7 @@ Report what was found:
 
 Do you have any other documents you'd like me to include, or shall we continue to the next step?
 
-[C] Continue - Save this and move to Project Discovery (Step 2 of 10)
+[C] Continue - Save this and move to Project Discovery (Step 2 of 11)
 
 ## SUCCESS METRICS:
 
@@ -158,4 +158,4 @@ Do you have any other documents you'd like me to include, or shall we continue t
 
 ## NEXT STEP:
 
-After user selects [C] to continue, load `{installed_path}/step/step-02-discovery.md` to begin the project discovery phase.
+After user selects [C] to continue, load `{installed_path}/steps/step-02-discovery.md` to begin the project discovery phase.

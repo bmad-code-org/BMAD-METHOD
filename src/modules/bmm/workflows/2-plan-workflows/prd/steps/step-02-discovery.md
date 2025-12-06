@@ -1,6 +1,6 @@
 # Step 2: Project & Domain Discovery
 
-**Progress: Step 2 of 10** - Next: Success Criteria Definition
+**Progress: Step 2 of 11** - Next: Success Criteria Definition
 
 ## MANDATORY EXECUTION RULES (READ FIRST):
 
@@ -206,7 +206,7 @@ Show the generated content to the user and present:
 **What would you like to do?**
 [A] Advanced Elicitation - Let's dive deeper and refine this content
 [P] Party Mode - Bring in different perspectives to improve this
-[C] Continue - Save this and move to Success Criteria Definition (Step 3 of 10)"
+[C] Continue - Save this and move to Success Criteria Definition (Step 3 of 11)"
 
 ### 8. Handle Menu Selection
 

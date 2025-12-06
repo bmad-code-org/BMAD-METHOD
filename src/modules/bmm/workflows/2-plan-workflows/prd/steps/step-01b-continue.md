@@ -74,7 +74,7 @@ Based on `lastStep` value, determine which step to load next:
 - If `lastStep = 2` → Load `./step-03-success.md`
 - If `lastStep = 3` → Load `./step-04-journeys.md`
 - Continue this pattern for all steps
-- If `lastStep = 10` → Workflow already complete
+- If `lastStep = 11` → Workflow already complete
 
 ### 5. Present Continuation Options
 
@@ -103,10 +103,10 @@ After presenting current progress, ask:
 
 ## WORKFLOW ALREADY COMPLETE?
 
-If `lastStep = 10` (final step completed):
+If `lastStep = 11` (final step completed):
 "Great news! It looks like we've already completed the PRD workflow for {{project_name}}.
 
-The final document is ready at {output_folder}/prd.md with all sections completed through step 10.
+The final document is ready at {output_folder}/prd.md with all sections completed through step 11.
 
 Would you like me to:
 
