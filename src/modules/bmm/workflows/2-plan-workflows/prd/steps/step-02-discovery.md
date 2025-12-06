@@ -70,10 +70,11 @@ Analyze available input documents to provide informed discovery:
 - Brainstorming Results: {{number_of_brainstorming}} documents loaded
 - Project Documentation: {{number_of_project_docs}} documents loaded
 
-**If Input Documents Exist:**
-"As your PM peer, I've reviewed your existing project documentation and have a great starting point for our discovery. Let me share what I understand and you can refine or correct as needed.
+#### Branch A: Has Product Brief (number_of_briefs > 0)
 
-**Based on your product brief and research:**
+"As your PM peer, I've reviewed your product brief and have a great starting point for our discovery. Let me share what I understand and you can refine or correct as needed.
+
+**Based on your product brief:**
 
 **What you're building:**
 {{extracted_vision_from_brief}}
@@ -87,9 +88,36 @@ Analyze available input documents to provide informed discovery:
 **What makes it special:**
 {{extracted_differentiator_from_brief}}
 
+{{#if number_of_project_docs > 0}}
+I also see you have existing project documentation. This PRD will define how new features integrate with your existing system architecture.
+{{/if}}
+
 **How does this align with your vision?** Should we refine any of these points or are there important aspects I'm missing?"
 
-**If No Input Documents:**
+#### Branch B: No Brief but Has Project Docs (number_of_briefs == 0 AND number_of_project_docs > 0)
+
+**NOTE:** Extract the following from loaded project documentation (index.md, architecture.md, project-overview.md, etc.):
+
+"As your PM peer, I've reviewed your existing project documentation from document-project.
+
+**Your existing system includes:**
+
+- **Tech Stack:** {analyze index.md and architecture.md for technologies used}
+- **Architecture:** {summarize architecture patterns from architecture.md}
+- **Key Components:** {list main components from source-tree-analysis.md or project-overview.md}
+
+This PRD will define **new features or changes** to add to this existing codebase.
+
+**Tell me about what you want to add:**
+
+- What new capability or feature do you want to build?
+- What problem will this solve for your users?
+- How should it integrate with the existing system?
+
+I'll help you create a PRD focused on these additions while respecting your existing patterns and architecture."
+
+#### Branch C: No Documents (number_of_briefs == 0 AND number_of_project_docs == 0)
+
 "As your PM peer, I'm excited to help you shape {{project_name}}. Let me start by understanding what you want to build.
 
 **Tell me about what you want to create:**
@@ -126,7 +154,8 @@ Compare user description against `signals` from `domain-complexity.csv`:
 
 Leverage both user input and document analysis for classification:
 
-**If Input Documents Exist:**
+#### Branch A: Has Product Brief (number_of_briefs > 0)
+
 "Based on your product brief and our discussion, I'm classifying this as:
 
 - **Project Type:** {project_type_from_brief_or_conversation}
@@ -136,9 +165,31 @@ Leverage both user input and document analysis for classification:
 From your brief, I detected these classification signals:
 {{classification_signals_from_brief}}
 
+{{#if number_of_project_docs > 0}}
+Your existing project documentation also indicates:
+
+- **Existing Tech Stack:** {from architecture.md or index.md}
+- **Architecture Pattern:** {from architecture.md}
+
+I'll ensure the new features align with your existing system.
+{{/if}}
+
 Combined with our conversation, this suggests the above classification. Does this sound right?"
 
-**If No Input Documents:**
+#### Branch B: No Brief but Has Project Docs (number_of_briefs == 0 AND number_of_project_docs > 0)
+
+"Based on your existing project documentation and our discussion about new features:
+
+- **Existing Project Type:** {detected from project docs - e.g., web_app, api_backend}
+- **Tech Stack:** {from architecture.md or index.md}
+- **New Feature Type:** {from user's description of what they want to add}
+- **Domain:** {detected_domain}
+- **Complexity:** {complexity_level}
+
+I'll ensure the PRD aligns with your existing architecture patterns. Does this classification sound right?"
+
+#### Branch C: No Documents (number_of_briefs == 0 AND number_of_project_docs == 0)
+
 Present your classifications for user validation:
 "Based on our conversation, I'm hearing this as:
 
@@ -152,7 +203,8 @@ Does this sound right to you? I want to make sure we're on the same page before 
 
 Leverage input documents for initial understanding, then refine:
 
-**If Input Documents Exist:**
+#### Branch A: Has Product Brief (number_of_briefs > 0)
+
 "From your product brief, I understand that what makes this special is:
 {{extracted_differentiator_from_brief}}
 
@@ -162,7 +214,17 @@ Let's explore this deeper:
 - **Missing aspects:** Are there other differentiators that aren't captured in your brief?
 - **Evolution:** How has your thinking on this evolved since you wrote the brief?"
 
-**If No Input Documents:**
+#### Branch B: No Brief but Has Project Docs (number_of_briefs == 0 AND number_of_project_docs > 0)
+
+"Your existing system already provides certain capabilities. Now let's define what makes these **new additions** special:
+
+- What gap in your current system will this fill?
+- How will this improve the experience for your existing users?
+- What's the key insight that led you to prioritize this addition?
+- What would make users say 'finally, this is what we needed'?"
+
+#### Branch C: No Documents (number_of_briefs == 0 AND number_of_project_docs == 0)
+
 Ask focused questions to capture the product's unique value:
 
 - "What would make users say 'this is exactly what I needed'?"
