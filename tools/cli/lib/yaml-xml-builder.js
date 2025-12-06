@@ -233,21 +233,6 @@ class YamlXmlBuilder {
   }
 
   /**
-   * Build metadata comment
-   */
-  buildMetadataComment(metadata) {
-    const lines = ['<!-- BUILD-META', `  source: ${metadata.sourceFile || 'unknown'} (hash: ${metadata.sourceHash || 'unknown'})`];
-
-    if (metadata.customizeFile) {
-      lines.push(`  customize: ${metadata.customizeFile} (hash: ${metadata.customizeHash || 'unknown'})`);
-    }
-
-    lines.push(`  built: ${new Date().toISOString()}`, `  builder-version: ${metadata.builderVersion || '1.0.0'}`, '-->\n');
-
-    return lines.join('\n');
-  }
-
-  /**
    * Build persona XML section
    */
   buildPersonaXml(persona) {
