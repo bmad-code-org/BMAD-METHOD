@@ -27,6 +27,8 @@ config:
   brief_level: "{{brief_level}}"          # simplified or complete
   include_design_system: {{include_design_system}}
   component_library: "{{component_library}}"
+  specification_language: "{{specification_language}}"  # Language for writing specs (EN, SE, etc.)
+  product_languages: {{product_languages}}              # Array of languages product supports
 
 # Folder mapping (generated based on config)
 folders:

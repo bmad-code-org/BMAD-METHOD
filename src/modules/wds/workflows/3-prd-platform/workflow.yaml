@@ -1,6 +1,12 @@
+---
+name: PRD Platform Workflow
+description: Establish technical foundation, validate risky features, and set up experimental endpoints
+web_bundle: true
+---
+
+# WDS Phase 3: PRD Platform (Technical Foundation)
 name: "Phase 3: PRD Platform (Technical Foundation)"
 agent: "Freyja the PM"
-description: "Establish technical foundation, validate risky features, and set up experimental endpoints"
 version: "1.0.0"
 
 paths:

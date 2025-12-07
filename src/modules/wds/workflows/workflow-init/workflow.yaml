@@ -1,6 +1,11 @@
+---
+name: WDS Workflow Init
+description: Initialize a WDS design project by selecting phases based on project needs
+web_bundle: true
+---
+
 # WDS Workflow Init - Project Setup
 name: wds-workflow-init
-description: "Initialize a WDS design project by selecting phases based on project needs"
 author: "Whiteport Design Studio"
 
 # Critical variables from config

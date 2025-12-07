@@ -1,6 +1,11 @@
+---
+name: Product Brief Workflow
+description: Establish project context - foundation for all design work
+web_bundle: true
+---
+
 # WDS Phase 1: Project Brief
 name: project-brief
-description: "Establish project context - the foundation for all design work"
 author: "Whiteport Design Studio"
 phase: 1
 
@@ -25,8 +30,9 @@ workflows:
     instructions: "{installed_path}/simplified/instructions.md"
     template: "{installed_path}/simplified/simplified-brief.template.md"
   complete:
-    instructions: "{installed_path}/complete/instructions.md"
+    instructions: "{installed_path}/complete/workflow.md"
     template: "{installed_path}/complete/project-brief.template.md"
+    steps: "{installed_path}/complete/steps"
 
 # Output configuration
 output_file: "{output_folder}/A-Product-Brief/project-brief.md"

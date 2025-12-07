@@ -3,8 +3,8 @@
 **Document Purpose:** Complete record of all decisions, context, and progress for converting Whiteport Design Studio to BMad Method v6 format. This document allows continuation of work if the conversation is lost.
 
 **Created:** December 2, 2025  
-**Last Updated:** December 3, 2025  
-**Status:** In Progress - Examples Phase
+**Last Updated:** December 5, 2025  
+**Status:** In Progress - Workflows Phase (Phase 4 Complete + Dog Week Pattern)
 
 ---
 
@@ -538,8 +538,13 @@ Includes:
 #### Phase 3: Create Workflows
 | Order | Component | Location | Status |
 |-------|-----------|----------|--------|
-| 11 | workflow-init | `workflows/0-init/` | TO CREATE |
-| 12 | Phase Workflows | `workflows/1-6/` | TO CREATE |
+| 11 | workflow-init | `workflows/workflow-init/` | ✅ COMPLETE |
+| 12a | Phase 1 Workflow | `workflows/1-project-brief/` | ✅ COMPLETE |
+| 12b | Phase 2 Workflow | `workflows/2-trigger-mapping/` | ✅ COMPLETE |
+| 12c | Phase 3 Workflow | `workflows/3-prd-platform/` | ✅ COMPLETE |
+| 12d | **Phase 4 Workflow** | `workflows/4-ux-design/` | ✅ **COMPLETE (Dec 4)** |
+| 12e | Phase 5 Workflow | `workflows/5-design-system/` | TO CREATE |
+| 12f | Phase 6 Workflow | `workflows/6-integration/` | TO CREATE |
 
 #### Phase 4: Create Agents (The Norse Pantheon)
 | Order | Component | File | Status |
@@ -584,10 +589,19 @@ Includes:
 | `src/modules/wds/` | Module root | ✅ CREATED |
 | `src/modules/wds/README.md` | Module entry point | ✅ CREATED |
 | `src/modules/wds/_module-installer/` | Install config folder | EMPTY |
-| `src/modules/wds/agents/` | Agents folder | EMPTY |
-| `src/modules/wds/workflows/` | Workflows folder | EMPTY |
+| `src/modules/wds/agents/` | Agents folder | PARTIAL (saga skeleton) |
+| `src/modules/wds/workflows/` | Workflows folder | ✅ **PHASE 4 COMPLETE** |
+| `src/modules/wds/workflows/workflow-init/` | Workflow initialization | ✅ COMPLETE |
+| `src/modules/wds/workflows/1-project-brief/` | Phase 1 workflow | ✅ COMPLETE |
+| `src/modules/wds/workflows/2-trigger-mapping/` | Phase 2 workflow | ✅ COMPLETE |
+| `src/modules/wds/workflows/3-prd-platform/` | Phase 3 workflow | ✅ COMPLETE |
+| `src/modules/wds/workflows/4-ux-design/` | **Phase 4 workflow** | ✅ **COMPLETE (Dec 4)** |
+| `src/modules/wds/workflows/4-ux-design/substeps/` | **Phase 4 substeps (4A-4E)** | ✅ **COMPLETE (Dec 4)** |
+| `src/modules/wds/workflows/4-ux-design/templates/` | **Phase 4 templates** | ✅ **COMPLETE (Dec 4)** |
+| `src/modules/wds/workflows/5-design-system/` | Phase 5 workflow | TO CREATE |
+| `src/modules/wds/workflows/6-integration/` | Phase 6 workflow | TO CREATE |
 | `src/modules/wds/data/` | Data folder | EMPTY |
-| `src/modules/wds/data/presentations/` | Agent presentations | EMPTY |
+| `src/modules/wds/data/presentations/` | Agent presentations | TO CREATE |
 | `src/modules/wds/docs/method/` | Methodology guides | ✅ COMPLETE |
 | `src/modules/wds/docs/images/` | Images folder | EMPTY |
 | `src/modules/wds/examples/` | Examples folder | EMPTY |
@@ -610,27 +624,41 @@ Includes:
 1. [x] Create `wds-method-guide.md`
 2. [x] Create phase guide for each phase (6 files)
 3. [x] Refine all phase guides with positive language, proper naming
-4. [ ] Create WDS Trigger Map (meta-example for WDS itself)
-5. [ ] Create conversation examples
-6. [x] Create workflow-init workflow ✅
-7. [ ] Create phase workflows (1-6)
-8. [ ] Create agents (Saga, Freyja, Baldr)
-9. [ ] Create templates for component showcase, PRD, etc.
-10. [ ] Port Dog Week examples to `examples/dog-week-patterns/` (last - project in active development)
+4. [x] Create workflow-init workflow ✅
+5. [x] Create Phase 1-3 workflows ✅
+6. [x] **Create Phase 4 workflow (UX Design)** ✅ **COMPLETE Dec 4, 2025**
+7. [ ] Create Phase 5-6 workflows
+8. [ ] Create WDS Trigger Map (meta-example for WDS itself)
+9. [ ] Create conversation examples
+10. [ ] Create agents (Saga, Freyja, Baldr)
+11. [ ] Create templates for component showcase, PRD, etc.
+12. [ ] Port Dog Week examples to `examples/dog-week-patterns/` (last - project in active development)
 
 ### Commit Checkpoint
 
-Ready to commit methodology phase:
+**Ready to commit Phase 4 workflow:**
 ```
-feat(wds): Complete WDS methodology documentation
+feat(wds): Complete Phase 4 UX Design workflow with v6 best practices
 
-- All 6 phase guides complete with positive language
-- Feature Impact Analysis with scoring (Phase 2)
-- Step 4E: PRD Update during design (Phase 4)
-- Design System as optional parallel workflow (Phase 5)
-- PRD Finalization with continuous handoff (Phase 6)
-- Unified naming conventions for Figma/Code
-- Main method guide updated
+Phase 4 Workflow Complete:
+- Main workflow with goal-based instructions
+- Substeps 4A-4E following v6 patterns (exploration, analysis, specification, prototype, PRD update)
+- Complete page specification template with Object IDs
+- Scenario overview template
+- Concise, trust-the-agent instruction style
+- Optional steps where appropriate
+
+Conversion Progress:
+- Merged WDS-CONVERSION-ANALYSIS.md into roadmap
+- Updated roadmap with Phase 4 completion status
+- Added section 11: WPS2C → WDS Conversion Reference
+- Added section 12: Latest Updates (Dec 4, 2025)
+
+Templates Created:
+- page-specification.template.md (complete spec format)
+- scenario-overview.template.md (scenario structure)
+
+Next: Phase 5 (Design System) and Phase 6 (PRD Finalization) workflows
 ```
 
 ---
@@ -748,7 +776,358 @@ Our product (statement of primary differentiators)
 
 ---
 
+## 11. WPS2C → WDS Conversion Reference
+
+### 11.1 Agent Mapping
+
+| WPS2C v4 | WDS v6 | Status |
+|----------|--------|--------|
+| Mary (whiteport-analyst.md) | Saga-Analyst (saga-analyst.agent.yaml) | 🔄 Skeleton exists |
+| Sarah (whiteport-pm.md) | Freyja-PM (freyja-pm.agent.yaml) | ⏳ To create |
+| Sally (whiteport-ux-expert.md) | Baldr-UX (baldr-ux.agent.yaml) | ⏳ To create |
+| James (whiteport-dev.md) | N/A - moved to BMM | ✅ Complete |
+| Alex (whiteport-orchestrator.md) | N/A - workflow-status replaces | ✅ Complete |
+
+**Key Changes:**
+- Mary → **Saga** (Goddess of stories & wisdom)
+- Sarah → **Freyja** (Goddess of love, war & strategy)  
+- Sally → **Baldr** (God of light & beauty)
+- Norse Pantheon theme for unique WDS identity
+
+### 11.2 File Format Changes
+
+**WPS2C v4:** Markdown files (.md) with embedded YAML blocks
+```markdown
+# agent-name.md
+```yaml
+agent:
+  name: Mary
+  commands:
+    - help: Show help
+```
+```
+
+**WDS v6:** Pure YAML files (.agent.yaml) following v6 schema
+```yaml
+# agent-name.agent.yaml
+agent:
+  metadata:
+    id: "{bmad_folder}/wds/agents/saga-analyst.agent.yaml"
+    name: Saga
+    module: wds
+  persona:
+    role: ...
+    identity: ...
+  menu:
+    - trigger: command-name
+      workflow: path/to/workflow.yaml
+```
+
+### 11.3 Terminology Changes
+
+| WPS2C v4 | WDS v6 |
+|----------|--------|
+| Whiteport Sketch-to-Code | Whiteport Design Studio |
+| WPS2C | WDS |
+| Commands | Menu Triggers |
+| Tasks | Workflows |
+| `*command-name` | Workflow triggers |
+
+### 11.4 Presentation Files Mapping
+
+| WPS2C v4 File | WDS v6 Location | Purpose |
+|---------------|-----------------|---------|
+| mary-analyst-personal-presentation.md | data/presentations/saga-intro.md | Saga activation speech |
+| sarah-pm-personal-presentation.md | data/presentations/freyja-intro.md | Freyja activation speech |
+| sally-ux-expert-personal-presentation.md | data/presentations/baldr-intro.md | Baldr activation speech |
+| wps2c-analyst-business-presentation.md | examples/conversation-examples/analyst-session.md | Example session |
+| wps2c-pm-product-presentation.md | examples/conversation-examples/pm-session.md | Example session |
+| wps2c-ux-design-system-presentation.md | examples/conversation-examples/ux-session.md | Example session |
+
+### 11.5 Templates Mapping
+
+| WPS2C v4 Template | WDS v6 Location | Status |
+|-------------------|-----------------|--------|
+| product-brief-tmpl.yaml | workflows/1-project-brief/complete/project-brief.template.md | ✅ Created |
+| trigger-map-tmpl.yaml | workflows/2-trigger-mapping/templates/trigger-map.template.md | ✅ Created |
+| persona-tmpl.yaml | workflows/2-trigger-mapping/templates/persona.template.md | ⏳ To create |
+| scenarios-tmpl.yaml | workflows/4-ux-design/templates/scenario-overview.template.md | ✅ **Created Dec 4** |
+| page-spec-tmpl.yaml | workflows/4-ux-design/templates/page-specification.template.md | ✅ **Created Dec 4** |
+| design-system-structure-tmpl.yaml | workflows/5-design-system/templates/component.template.md | ⏳ To create |
+| component-tmpl.yaml | reference/templates/component.template.md | ⏳ To create |
+| sketch-review-tmpl.yaml | workflows/4-ux-design/templates/review.template.md | ⏳ To create |
+
+### 11.6 Standards/Data Files Mapping
+
+| WPS2C v4 File | WDS v6 Location | Purpose |
+|---------------|-----------------|---------|
+| wps2c-compliance-standards.md | data/wds-standards.md | Core methodology standards |
+| analyst-documentation-standards.md | data/documentation-standards.md | Documentation conventions |
+| sketch-documentation-standards.md | workflows/4-ux-design/sketch-standards.md | Sketch specification standards |
+| pm-documentation-standards.md | workflows/3-prd-platform/prd-standards.md | PRD writing standards |
+| mermaid-github-standards.md | data/mermaid-standards.md | Diagram standards |
+| technical-documentation-patterns.md | data/technical-patterns.md | Technical writing patterns |
+
+### 11.7 Content to Preserve from WPS2C
+
+**Core Methodology Elements:** ✅
+- Product Brief structure and process
+- Trigger Mapping (Effect Mapping) methodology
+- Feature Impact Analysis with scoring
+- Scenario-driven design approach  
+- Design System integration patterns
+
+**Agent Personalities:** 🔄
+- Mary's analytical, thoughtful approach → Saga
+- Sarah's strategic PM mindset → Freyja
+- Sally's design expertise and creativity → Baldr
+
+**Quality Patterns:** ✅
+- One question at a time (not survey-style)
+- Collaborative document building
+- Evidence-based analysis
+- Soft, encouraging language
+
+**Technical Patterns:** ✅
+- A-B-C-D-E folder structure
+- Title-Case-With-Dashes naming
+- Professional markdown formatting
+- Mermaid diagram standards
+
+### 11.8 Key Improvements in WDS v6
+
+**1. Soft Language Design Philosophy**
+- Removed MUST/FORBIDDEN/NEVER language
+- Identity-based persona definitions
+- Collaborative, not interrogative approach
+- Positive framing (enables vs prevents)
+
+**2. Example-Driven Learning**
+- Complete reference implementations
+- Conversation flow examples
+- Real project patterns (Dog Week)
+- Starter projects for practice
+
+**3. Phase Flexibility**
+- Phase-selectable (not rigid tracks)
+- Path presets for common scenarios
+- Optional phases (Design System)
+- Parallel workflows supported
+
+**4. Better Integration**
+- Clean handoff to BMM via E-UI-Roadmap
+- No development artifacts in design module
+- Clear separation of concerns
+- Continuous handoff model
+
+**5. Professional Tooling**
+- Proper v6 YAML schema compliance
+- Workflow validation support
+- Installation via BMad CLI
+- Module ecosystem integration
+
+### 11.9 Migration Notes
+
+**Breaking Changes:**
+- Agent activation syntax changes (*command → workflow trigger)
+- File format changes (.md → .agent.yaml)
+- Folder structure reorganization
+- Terminology updates throughout
+
+**Backward Compatibility:**
+- WPS2C v4 users must migrate to WDS v6
+- No automatic migration path
+- Dog Week project uses mixed terminology (in transition)
+- Old repo remains for reference
+
+**User Communication:**
+- WDS is evolution, not replacement
+- Same methodology, better implementation
+- Migration guide needed for v4 users
+- Clear benefits explanation
+
+---
+
+## 12. Latest Updates (December 5, 2025)
+
+### Phase 4 Workflow - Dog Week Pattern Implementation ✅
+
+#### Phase 4 Architecture (December 4)
+
+**Step-File Architecture:**
+- `workflows/4-ux-design/workflow.yaml` - Main workflow configuration
+- `workflows/4-ux-design/workflow.md` - Workflow orchestrator
+- `workflows/4-ux-design/steps/step-01-init.md` - Workflow initialization
+- `workflows/4-ux-design/steps/step-02-define-scenario.md` - Scenario structure
+- `workflows/4-ux-design/steps/step-03-design-page.md` - Page design orchestration
+- `workflows/4-ux-design/steps/step-04-complete-scenario.md` - Scenario completion
+- `workflows/4-ux-design/steps/step-05-next-steps.md` - Next actions
+
+**4C Micro-Steps (Specification Breakdown):**
+- `substeps/4c-01-page-basics.md` - Page basic information
+- `substeps/4c-02-layout-sections.md` - Layout sections definition
+- `substeps/4c-03-components-objects.md` - Components & objects identification
+- `substeps/4c-04-content-languages.md` - Content & language specs
+- `substeps/4c-05-interactions.md` - Interaction definitions
+- `substeps/4c-06-states.md` - Object states
+- `substeps/4c-07-validation.md` - Validation rules
+- `substeps/4c-08-generate-spec.md` - Final spec generation
+
+#### Dog Week Pattern Implementation (December 5)
+
+**Purpose-Based Text Organization:**
+- `object-types/heading-text.md` - Updated with purpose-based naming
+- `object-types/object-router.md` - Enhanced with intelligent interpretation
+- Text objects named by FUNCTION, not content (e.g., `start-hero-headline` not `welcome-text`)
+- Structure (position/style) separated from content
+- Translations grouped so each language reads coherently
+
+**Sketch Text Analysis:**
+- Horizontal line detection → text placeholders
+- Line thickness → font size estimation
+- Line spacing → line-height calculation
+- Character capacity estimation for content validation
+- `SKETCH-TEXT-ANALYSIS-GUIDE.md` - Complete analysis methodology
+
+**Translation Grouping:**
+- Text groups keep languages together
+- Each language reads as complete, coherent message
+- Dog Week format standardized across all projects
+- `TRANSLATION-ORGANIZATION-GUIDE.md` - Complete translation pattern
+- `DOG-WEEK-SPECIFICATION-PATTERN.md` - Full workflow integration example
+
+**Object Type Instructions:**
+- `object-types/button.md` - Button documentation
+- `object-types/text-input.md` - Text input fields
+- `object-types/link.md` - Link elements
+- `object-types/heading-text.md` - Headings & text with placeholder analysis
+- `object-types/image.md` - Image elements
+- `object-types/object-router.md` - Intelligent object detection & routing
+
+**Design Principles Applied:**
+- ✅ Goal-based trust-the-agent approach
+- ✅ Concise instructions (vs. long procedural lists)
+- ✅ Soft, collaborative language throughout
+- ✅ Clear step separation with micro-steps
+- ✅ Optional steps where appropriate
+- ✅ v6 best practices for instruction file sizing
+- ✅ Purpose-based naming (stable Object IDs)
+- ✅ Grouped translations (coherent reading)
+- ✅ Character capacity validation from sketches
+
+**Key Innovations:**
+1. **Purpose-Based Object IDs** - IDs reflect function, remain stable when content changes
+2. **Grouped Translations** - Each language reads coherently as a group
+3. **Sketch Text Analysis** - Automatic capacity estimation from visual markers
+4. **Intelligent Routing** - Agent suggests object types rather than asking lists
+
+**Architecture Documentation:**
+- `workflows/4-ux-design/ARCHITECTURE.md` - Complete Phase 4 architecture
+- `workflows/4-ux-design/SKETCH-TEXT-ANALYSIS-GUIDE.md` - Text analysis methodology
+- `workflows/4-ux-design/TRANSLATION-ORGANIZATION-GUIDE.md` - Translation patterns
+- `workflows/4-ux-design/DOG-WEEK-SPECIFICATION-PATTERN.md` - Complete workflow example
+
+**Next Actions:**
+- Create Phase 5 workflow (Design System)
+- Create Phase 6 workflow (PRD Finalization / Dev Integration)
+- Complete agent definitions (Freyja, Baldr)
+- Port agent presentations
+- Create remaining object-type instruction files (~15 more types)
+
+#### Language Configuration (December 5 - Later)
+
+**Multi-Language Support:**
+- `workflows/workflow-init/instructions.md` - Updated with language configuration (Step 4)
+- `workflows/wds-workflow-status-template.yaml` - Added language fields to config
+- `workflows/LANGUAGE-CONFIGURATION-GUIDE.md` - Complete multi-language guide
+- `workflows/LANGUAGE-FLOW-DIAGRAM.md` - Step-by-step language flow
+
+**Configuration Settings:**
+1. **Specification Language** - Language to write design specs in (EN, SE, etc.)
+2. **Product Languages** - Array of languages the product supports
+
+**Storage:**
+```yaml
+config:
+  specification_language: "EN"
+  product_languages:
+    - EN
+    - SE
+    - NO
+```
+
+**Impact on Workflows:**
+- Specs written in `specification_language`
+- All text objects include translations for ALL `product_languages`
+- Agents automatically request content for each configured language
+- Complete translation coverage from day one
+
+**Example (Dog Week):**
+- Specification Language: EN (specs written in English)
+- Product Languages: [EN, SE] (product supports English & Swedish)
+- Result: All text objects have both EN and SE content
+
+**Benefits:**
+- ✅ Flexible spec language separate from product languages
+- ✅ All translations grouped and coherent
+- ✅ No missing translations
+- ✅ Developer-friendly config
+- ✅ Easy to add languages mid-project
+
+#### Sketch Text Analysis Corrections (December 5 - Final)
+
+**Corrected Understanding:**
+- **Line thickness** → **font weight** (bold/regular), NOT font size!
+- **Distance between lines** → **font size**
+- **Confusion risk:** Large spacing (>60px) might be image/colored box, not text
+
+**Updated Files:**
+- `4-ux-design/object-types/heading-text.md` - Corrected analysis logic
+- `4-ux-design/SKETCH-TEXT-ANALYSIS-GUIDE.md` - Updated with correct interpretation
+- `4-ux-design/SKETCH-TEXT-QUICK-REFERENCE.md` - Quick reference card
+- `4-ux-design/SKETCH-TEXT-STRATEGY.md` - When to use text vs. markers
+
+**Best Practice - Actual Text vs. Markers:**
+
+**Use ACTUAL TEXT for:**
+- Headlines (provides content guidance)
+- Button labels (shows intended action)
+- Navigation items (clarifies structure)
+- Short, important text
+
+**Use LINE MARKERS for:**
+- Body paragraphs (content TBD)
+- Long descriptions (sizing only)
+- Placeholder content
+
+**Agent Behavior:**
+- Reads actual text from sketch as starting suggestion
+- **Proactively suggests translations for all configured languages**
+- Allows refinement during specification
+- Sketch text isn't final, just guidance
+- Analyzes markers for font size, weight, capacity
+
+**Example:**
+```
+Every walk. on time.  ← Agent reads this
+Every time.           ← Translates to all languages
+
+EN: Every walk. on time. Every time.
+SE: Varje promenad. i tid. Varje gång.  ← Agent suggests!
+
+Do these work? [1] Use [2] Adjust [3] Manual
+```
+
+**User can:**
+- Accept suggestions (fast!)
+- Refine specific translations
+- Provide manual input if preferred
+
+---
+
+---
+
 **End of Roadmap Document**
 
-*To continue: Open this document, review "Next Steps" section, and proceed with creating `wds-method-guide.md`*
+*To continue: Open this document, review "Next Steps" section for current priorities*
 

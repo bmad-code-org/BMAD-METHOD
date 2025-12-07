@@ -141,7 +141,49 @@ Choice [1/2]:</ask>
 <template-output>brief_level</template-output>
 </step>
 
-<step n="4" goal="Configure folder naming">
+<step n="4" goal="Configure languages">
+<output>WDS needs to know what language to write specifications in and what languages your product will support.</output>
+
+<ask>**Specification Language** - What language should WDS write the design specifications in?
+
+Common choices:
+1. **English** (EN) - Default, widely used
+2. **Swedish** (SE)
+3. **Norwegian** (NO)
+4. **Danish** (DK)
+5. **Other** - I'll specify
+
+Choice [1-5]:</ask>
+<action>Store specification_language</action>
+<template-output>specification_language</template-output>
+
+<ask>**Product Languages** - What languages will the final product support?
+
+List them separated by commas (e.g., "EN, SE" or "EN, SE, NO, DK"):
+
+Common language codes:
+- EN = English
+- SE = Swedish
+- NO = Norwegian
+- DK = Danish
+- FI = Finnish
+- DE = German
+- FR = French
+- ES = Spanish
+
+Product languages:</ask>
+<action>Store product_languages (parse as array)</action>
+<action>Validate language codes</action>
+<template-output>product_languages</template-output>
+
+<output>✅ **Language Configuration:**
+- **Specifications written in:** {{specification_language}}
+- **Product supports:** {{product_languages_list}}
+
+All text specifications will include translations for: {{product_languages_list}}</output>
+</step>
+
+<step n="5" goal="Configure folder naming">
 <output>WDS creates folders in your project's `docs/` directory. Let's configure how they're named.</output>
 
 <ask>Folder prefix style:
@@ -171,7 +213,7 @@ Choice [1/2]:</ask>
 <template-output>folder_case</template-output>
 </step>
 
-<step n="5" goal="Design System decision">
+<step n="6" goal="Design System decision">
 <check if="project_type in [full-product, landing-page, feature-enhancement]">
   <output>The **Design System** phase is optional but valuable for building reusable components.</output>
   
@@ -214,7 +256,7 @@ Skip Design System if:
 <template-output>include_design_system</template-output>
 </step>
 
-<step n="6" goal="Component library selection">
+<step n="7" goal="Component library selection">
 <check if="include_design_system == true">
   <output>For the Design System, you can build custom components or use an existing library.</output>
   
@@ -235,7 +277,7 @@ Choice [1-8]:</ask>
 </check>
 </step>
 
-<step n="7" goal="Generate workflow path">
+<step n="8" goal="Generate workflow path">
 <action>Load path file: {path_files}/{{project_type}}.yaml</action>
 <action>Build workflow_items from path file</action>
 <action>Apply brief_level setting (simplified or complete)</action>
@@ -248,14 +290,18 @@ Choice [1-8]:</ask>
 <template-output>workflow_items</template-output>
 <template-output>folder_names</template-output>
 <template-output>brief_level</template-output>
+<template-output>specification_language</template-output>
+<template-output>product_languages</template-output>
 </step>
 
-<step n="8" goal="Review and create">
+<step n="9" goal="Review and create">
 <output>Your WDS project setup:
 
 **Project:** {{project_name}}
 **Type:** {{project_type}}
 **Project Brief:** {{#if brief_level == 'complete'}}Complete{{else}}Simplified{{/if}}
+**Specification Language:** {{specification_language}}
+**Product Languages:** {{product_languages_list}}
 **Design System:** {{include_design_system}}
 {{#if component_library}}**Component Library:** {{component_library}}{{/if}}
 
