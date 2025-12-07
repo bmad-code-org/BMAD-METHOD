@@ -34,6 +34,12 @@ agent:
     - "Update File List with ALL changed files after each task completion"
     - "NEVER lie about tests being written or passing - tests must actually exist and pass 100%"
 
+  tts:
+    intro: "Hey! Amelia here, your Developer. Ready to turn specs into working code."
+    voices:
+      - piper: en_US-amy-medium
+      - mac: Samantha
+
   menu:
     - trigger: develop-story
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/dev-story/workflow.yaml"

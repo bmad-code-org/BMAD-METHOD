@@ -269,6 +269,21 @@ class ManifestGenerator {
             .replaceAll('"', '""'); // Escape quotes for CSV
         };
 
+        // Try to read TTS data from source YAML file
+        let ttsData = null;
+        const yamlFilePath = path.join(dirPath, `${agentName}.agent.yaml`);
+        if (await fs.pathExists(yamlFilePath)) {
+          try {
+            const yamlContent = await fs.readFile(yamlFilePath, 'utf8');
+            const agentYaml = yaml.load(yamlContent);
+            if (agentYaml?.agent?.tts) {
+              ttsData = agentYaml.agent.tts;
+            }
+          } catch {
+            // Silently skip if YAML parsing fails
+          }
+        }
+
         agents.push({
           name: agentName,
           displayName: nameMatch ? nameMatch[1] : agentName,
@@ -280,6 +295,7 @@ class ManifestGenerator {
           principles: principlesMatch ? cleanForCSV(principlesMatch[1]) : '',
           module: moduleName,
           path: installPath,
+          tts: ttsData, // Add TTS data from YAML
         });
 
         // Add to files list
@@ -595,62 +611,48 @@ class ManifestGenerator {
   async writeVoiceMap(cfgDir) {
     const csvPath = path.join(cfgDir, 'agent-voice-map.csv');
 
-    // Default voice assignments and intros for BMAD agents
-    // These can be customized by editing the generated CSV
-    const agentDefaults = {
-      'bmad-master': {
-        voice: 'en_US-lessac-medium',
-        intro: 'Greetings! The BMad Master is here to orchestrate and guide you through any workflow.',
-      },
-      analyst: {
-        voice: 'en_US-kristin-medium',
-        intro: "Hi there! I'm Mary, your Business Analyst. I'll help uncover the real requirements.",
-      },
-      architect: {
-        voice: 'en_GB-alan-medium',
-        intro: "Hello! Winston here, your Architect. I'll ensure we build something scalable and pragmatic.",
-      },
-      dev: {
-        voice: 'en_US-joe-medium',
-        intro: 'Hey! Amelia here, your Developer. Ready to turn specs into working code.',
-      },
-      pm: {
-        voice: 'en_US-ryan-high',
-        intro: "Hey team! John here, your Product Manager. Let's make sure we're building the right thing.",
-      },
-      sm: {
-        voice: 'en_US-amy-medium',
-        intro: "Hi everyone! Bob here, your Scrum Master. I'll keep us focused and moving forward.",
-      },
-      tea: {
-        voice: 'en_US-kusal-medium',
-        intro: 'Hello! Murat here, your Test Architect. Quality is my obsession.',
-      },
-      'tech-writer': {
-        voice: 'jenny',
-        intro: "Hi! I'm Paige, your Technical Writer. I'll make sure everything is documented clearly.",
-      },
-      'ux-designer': {
-        voice: 'kristin',
-        intro: 'Hey! Sally here, your UX Designer. The user experience is my top priority.',
-      },
-      'frame-expert': {
-        voice: 'en_GB-alan-medium',
-        intro: "Hello! Saif here, your Visual Design Expert. I'll help visualize your ideas.",
-      },
+    // Determine TTS provider from AgentVibes configuration
+    // Default to 'piper' if not specified
+    const ttsProvider = this.agentVibes?.provider || 'piper';
+
+    // Map provider names to voice field names
+    const providerVoiceField = {
+      piper: 'piper',
+      elevenlabs: 'piper', // ElevenLabs not used, fallback to piper
+      macos: 'mac',
     };
 
-    // Fallback values for agents not in the default map
-    const fallbackVoice = 'en_US-lessac-medium';
+    const voiceField = providerVoiceField[ttsProvider] || 'piper';
+
+    // Fallback values for agents without TTS data
+    const fallbackVoice = voiceField === 'mac' ? 'Samantha' : 'en_US-lessac-medium';
     const fallbackIntro = 'Hello! Ready to help with the discussion.';
 
     let csv = 'agent,voice,intro\n';
 
     // Add voice mapping and intro for each discovered agent
     for (const agent of this.agents) {
-      const defaults = agentDefaults[agent.name] || {};
-      const voice = defaults.voice || fallbackVoice;
-      const intro = defaults.intro || fallbackIntro;
+      let voice = fallbackVoice;
+      let intro = fallbackIntro;
+
+      // Extract voice and intro from agent's TTS data if available
+      if (agent.tts) {
+        // Get intro
+        if (agent.tts.intro) {
+          intro = agent.tts.intro;
+        }
+
+        // Get voice for the selected provider
+        if (agent.tts.voices && Array.isArray(agent.tts.voices)) {
+          for (const voiceEntry of agent.tts.voices) {
+            if (voiceEntry[voiceField]) {
+              voice = voiceEntry[voiceField];
+              break;
+            }
+          }
+        }
+      }
+
       // Escape quotes in intro for CSV
       const escapedIntro = intro.replaceAll('"', '""');
       csv += `${agent.name},${voice},"${escapedIntro}"\n`;

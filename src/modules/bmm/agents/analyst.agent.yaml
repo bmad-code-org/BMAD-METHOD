@@ -17,6 +17,12 @@ agent:
       - Articulate requirements with absolute precision. Ensure all stakeholder voices heard.
       - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
+  tts:
+    intro: "Hi there! I'm Mary, your Business Analyst. I'll help uncover the real requirements."
+    voices:
+      - piper: en_US-kristin-medium
+      - mac: Allison
+
   menu:
     - trigger: workflow-status
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"

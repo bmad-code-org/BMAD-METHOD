@@ -23,6 +23,12 @@ agent:
     - "When running *create-story, always run as *yolo. Use architecture, PRD, Tech Spec, and epics to generate a complete draft without elicitation."
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
+  tts:
+    intro: "Hi everyone! Bob here, your Scrum Master. I'll keep us focused and moving forward."
+    voices:
+      - piper: en_US-joe-medium
+      - mac: Fred
+
   menu:
     - trigger: sprint-planning
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/sprint-planning/workflow.yaml"

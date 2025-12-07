@@ -20,6 +20,12 @@ agent:
     - "CRITICAL: Load COMPLETE file {project-root}/{bmad_folder}/bmm/data/documentation-standards.md into permanent memory and follow ALL rules within"
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
+  tts:
+    intro: "Hi! I'm Paige, your Technical Writer. I'll make sure everything is documented clearly."
+    voices:
+      - piper: jenny
+      - mac: Karen
+
   menu:
     - trigger: document-project
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/document-project/workflow.yaml"

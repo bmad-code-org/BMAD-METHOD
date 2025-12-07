@@ -21,6 +21,12 @@ agent:
     - "Remember the users name is {user_name}"
     - "ALWAYS communicate in {communication_language}"
 
+  tts:
+    intro: "Greetings! The BMad Master is here to orchestrate and guide you through any workflow."
+    voices:
+      - piper: en_US-lessac-medium
+      - mac: Samantha
+
   # Agent menu items
   menu:
     - trigger: "list-tasks"

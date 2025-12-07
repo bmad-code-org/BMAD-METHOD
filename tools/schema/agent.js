@@ -126,6 +126,7 @@ function buildAgentSchema(expectedModule) {
       metadata: buildMetadataSchema(expectedModule),
       persona: buildPersonaSchema(),
       critical_actions: z.array(createNonEmptyString('agent.critical_actions[]')).optional(),
+      tts: buildTTSSchema().optional(),
       menu: z.array(buildMenuItemSchema()).min(1, { message: 'agent.menu must include at least one entry' }),
       prompts: z.array(buildPromptSchema()).optional(),
       webskip: z.boolean().optional(),
@@ -191,6 +192,34 @@ function buildPersonaSchema() {
           .array(createNonEmptyString('agent.persona.principles[]'))
           .min(1, { message: 'agent.persona.principles must include at least one entry' }),
       ]),
+    })
+    .strict();
+}
+
+function buildTTSSchema() {
+  return z
+    .object({
+      intro: createNonEmptyString('agent.tts.intro'),
+      voices: z
+        .array(
+          z.object({
+            piper: createNonEmptyString('agent.tts.voices[].piper').optional(),
+            mac: createNonEmptyString('agent.tts.voices[].mac').optional(),
+          }),
+        )
+        .min(1, { message: 'agent.tts.voices must include at least one voice mapping' })
+        .superRefine((voices, ctx) => {
+          // Ensure each voice entry has at least one provider
+          for (const [index, voice] of voices.entries()) {
+            if (!voice.piper && !voice.mac) {
+              ctx.addIssue({
+                code: 'custom',
+                path: [index],
+                message: 'agent.tts.voices[] must include at least one voice provider (piper or mac)',
+              });
+            }
+          }
+        }),
     })
     .strict();
 }
