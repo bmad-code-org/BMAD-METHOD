@@ -178,6 +178,7 @@ Show the generated core experience content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
+- Update frontmatter: `lastStep: 3`
 - Load `./step-04-emotional-response.md`
 
 ## APPEND TO DOCUMENT:

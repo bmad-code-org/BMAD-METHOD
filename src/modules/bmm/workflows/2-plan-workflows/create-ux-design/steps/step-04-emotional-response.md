@@ -181,6 +181,7 @@ Show the generated emotional response content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
+- Update frontmatter: `lastStep: 4`
 - Load `./step-05-inspiration.md`
 
 ## APPEND TO DOCUMENT:

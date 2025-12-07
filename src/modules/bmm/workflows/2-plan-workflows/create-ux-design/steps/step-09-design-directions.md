@@ -186,6 +186,7 @@ Show the generated design direction content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]`
+- Update frontmatter: `lastStep: 9`
 - Load `./step-10-user-journeys.md`
 
 ## APPEND TO DOCUMENT:

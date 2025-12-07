@@ -74,8 +74,17 @@ Based on `lastStep` value, determine which step to load next:
 - If `lastStep = 1` → Load `./step-02-discovery.md`
 - If `lastStep = 2` → Load `./step-03-core-experience.md`
 - If `lastStep = 3` → Load `./step-04-emotional-response.md`
-- Continue this pattern for all steps
-- If `lastStep` indicates final step → Workflow already complete
+- If `lastStep = 4` → Load `./step-05-inspiration.md`
+- If `lastStep = 5` → Load `./step-06-design-system.md`
+- If `lastStep = 6` → Load `./step-07-defining-experience.md`
+- If `lastStep = 7` → Load `./step-08-visual-foundation.md`
+- If `lastStep = 8` → Load `./step-09-design-directions.md`
+- If `lastStep = 9` → Load `./step-10-user-journeys.md`
+- If `lastStep = 10` → Load `./step-11-component-strategy.md`
+- If `lastStep = 11` → Load `./step-12-ux-patterns.md`
+- If `lastStep = 12` → Load `./step-13-responsive-accessibility.md`
+- If `lastStep = 13` → Load `./step-14-complete.md`
+- If `lastStep = 14` → Workflow already complete
 
 ### 5. Present Continuation Options
 

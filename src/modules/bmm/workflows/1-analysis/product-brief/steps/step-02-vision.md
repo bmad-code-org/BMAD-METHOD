@@ -162,7 +162,7 @@ Prepare the following structure for document append:
 
 - IF A: Execute {advancedElicitationTask} with current vision content to dive deeper and refine
 - IF P: Execute {partyModeWorkflow} to bring different perspectives to positioning and differentiation
-- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2], then only then load, read entire file, then execute {nextStepFile}
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2] and lastStep: 2, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
 #### EXECUTION RULES:
@@ -188,7 +188,7 @@ ONLY WHEN [C continue option] is selected and [vision content finalized and save
 - Executive summary that captures the product essence
 - A/P/C menu presented and handled correctly with proper task execution
 - Content properly appended to document when C selected
-- Frontmatter updated with stepsCompleted: [1, 2]
+- Frontmatter updated with stepsCompleted: [1, 2] and lastStep: 2
 
 ### ❌ SYSTEM FAILURE:
 

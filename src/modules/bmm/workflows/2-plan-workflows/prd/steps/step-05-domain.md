@@ -225,6 +225,7 @@ Show the generated domain content and present choices:
 
 - Append the content to `{output_folder}/prd.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
+- Update frontmatter: `lastStep: 5`
 - Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-06-innovation.md`
 
 ## APPEND TO DOCUMENT:

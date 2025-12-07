@@ -216,6 +216,7 @@ Show the generated defining experience content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]`
+- Update frontmatter: `lastStep: 7`
 - Load `./step-08-visual-foundation.md`
 
 ## APPEND TO DOCUMENT:

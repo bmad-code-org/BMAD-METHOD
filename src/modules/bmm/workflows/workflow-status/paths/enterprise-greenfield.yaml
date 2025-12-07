@@ -82,11 +82,6 @@ phases:
       #   output: "DevOps pipeline and infrastructure plan"
       #   note: "Future workflow - optional extended enterprise workflow for CI/CD, deployment, monitoring"
 
-      - id: "validate-architecture"
-        recommended: true
-        agent: "architect"
-        command: "validate-architecture"
-
       - id: "create-epics-and-stories"
         required: true
         agent: "pm"

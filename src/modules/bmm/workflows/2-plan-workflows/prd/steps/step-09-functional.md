@@ -36,7 +36,7 @@ partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workf
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating functional requirements
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]` before loading next step
+- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]` before loading next step
 - 🚫 FORBIDDEN to load next step until C is selected
 
 ## COLLABORATION MENUS (A/P/C):
@@ -227,6 +227,7 @@ Show the generated functional requirements and present choices:
 
 - Append the final content to `{output_folder}/prd.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]`
+- Update frontmatter: `lastStep: 9`
 - Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-10-nonfunctional.md`
 
 ## APPEND TO DOCUMENT:

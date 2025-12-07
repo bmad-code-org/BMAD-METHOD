@@ -246,6 +246,7 @@ Show the generated content and present choices:
 
 - Append the final content to `{output_folder}/prd.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3]`
+- Update frontmatter: `lastStep: 3`
 - Load `./step-04-journeys.md`
 
 ## APPEND TO DOCUMENT:

@@ -87,6 +87,7 @@ Update the main workflow status file:
 - Check if `{output_folder}/bmm-workflow-status.yaml` exists
 - If not, create it with basic structure
 - Update workflow_status["product-brief"] = `{outputFile}`
+- Update output document frontmatter: `lastStep: 6`
 - Add completion timestamp and metadata
 - Save file, preserving all comments and structure
 

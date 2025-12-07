@@ -1,6 +1,8 @@
 ---
 stepsCompleted: []
 inputDocuments: []
+workflowType: 'ux-design'
+lastStep: 0
 ---
 
 # UX Design Specification {{project_name}}

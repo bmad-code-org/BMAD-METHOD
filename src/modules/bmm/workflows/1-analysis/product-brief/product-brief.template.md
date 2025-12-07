@@ -1,3 +1,10 @@
+---
+stepsCompleted: []
+inputDocuments: []
+workflowType: 'product-brief'
+lastStep: 0
+---
+
 # Product Brief: {{project_name}}
 
 **Date:** {{date}}

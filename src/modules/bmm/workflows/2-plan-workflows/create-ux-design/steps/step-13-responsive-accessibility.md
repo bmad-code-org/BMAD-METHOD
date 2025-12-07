@@ -226,6 +226,7 @@ Show the generated responsive and accessibility content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]`
+- Update frontmatter: `lastStep: 13`
 - Load `./step-14-complete.md`
 
 ## APPEND TO DOCUMENT:

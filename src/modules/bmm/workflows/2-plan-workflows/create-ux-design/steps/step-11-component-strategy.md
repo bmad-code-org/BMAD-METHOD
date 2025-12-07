@@ -210,6 +210,7 @@ Show the generated component strategy content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]`
+- Update frontmatter: `lastStep: 11`
 - Load `./step-12-ux-patterns.md`
 
 ## APPEND TO DOCUMENT:

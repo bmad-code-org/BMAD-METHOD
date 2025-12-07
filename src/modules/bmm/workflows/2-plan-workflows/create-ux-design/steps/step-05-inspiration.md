@@ -196,6 +196,7 @@ Show the generated inspiration analysis content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5]`
+- Update frontmatter: `lastStep: 5`
 - Load `./step-06-design-system.md`
 
 ## APPEND TO DOCUMENT:

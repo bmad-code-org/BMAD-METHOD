@@ -199,6 +199,7 @@ Show the generated UX patterns content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]`
+- Update frontmatter: `lastStep: 12`
 - Load `./step-13-responsive-accessibility.md`
 
 ## APPEND TO DOCUMENT:

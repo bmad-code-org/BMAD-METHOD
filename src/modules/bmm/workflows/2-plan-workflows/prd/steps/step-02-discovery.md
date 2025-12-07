@@ -374,6 +374,7 @@ Show the generated content to the user and present:
 
 - Append the final content to `{outputFile}`
 - Update frontmatter: `stepsCompleted: [1, 2]`
+- Update frontmatter: `lastStep: 2`
 - Load `{nextStepFile}`
 
 ## CRITICAL STEP COMPLETION NOTE

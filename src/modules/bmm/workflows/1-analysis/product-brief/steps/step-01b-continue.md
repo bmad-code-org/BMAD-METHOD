@@ -104,7 +104,8 @@ Based on `lastStep` value, determine which step to load next:
 - If `lastStep = 1` → Load `./step-02-vision.md`
 - If `lastStep = 2` → Load `./step-03-users.md`
 - If `lastStep = 3` → Load `./step-04-metrics.md`
-- Continue this pattern for all steps
+- If `lastStep = 4` → Load `./step-05-scope.md`
+- If `lastStep = 5` → Load `./step-06-complete.md`
 - If `lastStep = 6` → Workflow already complete
 
 ### 5. Handle Workflow Completion

@@ -100,11 +100,6 @@ phases:
       #   output: "DevOps strategy for brownfield deployment"
       #   note: "Future workflow - optional extended enterprise workflow for CI/CD integration, deployment strategy, monitoring"
 
-      - id: "validate-architecture"
-        recommended: true
-        agent: "architect"
-        command: "validate-architecture"
-
       - id: "implementation-readiness"
         required: true
         agent: "architect"

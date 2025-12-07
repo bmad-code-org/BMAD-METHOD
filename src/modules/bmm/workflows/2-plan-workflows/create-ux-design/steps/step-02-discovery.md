@@ -172,6 +172,7 @@ Show the generated project understanding content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2]`
+- Update frontmatter: `lastStep: 2`
 - Load `./step-03-core-experience.md`
 
 ## APPEND TO DOCUMENT:

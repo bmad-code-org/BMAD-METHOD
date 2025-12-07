@@ -15,7 +15,7 @@
 
 - 🎯 Show your analysis before taking any action
 - 💾 Initialize document and update frontmatter
-- 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
+- 📖 Set up frontmatter `stepsCompleted: [1]` and `lastStep: 1` before loading next step
 - 🚫 FORBIDDEN to load next step until setup is complete
 
 ## CONTEXT BOUNDARIES:

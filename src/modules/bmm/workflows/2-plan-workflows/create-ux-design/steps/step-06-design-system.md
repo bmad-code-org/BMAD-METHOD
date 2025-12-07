@@ -214,6 +214,7 @@ Show the generated design system content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6]`
+- Update frontmatter: `lastStep: 6`
 - Load `./step-07-defining-experience.md`
 
 ## APPEND TO DOCUMENT:

@@ -168,7 +168,7 @@ Prepare the following structure for document append:
 
 - IF A: Execute {advancedElicitationTask} with current metrics content to dive deeper into success metric insights
 - IF P: Execute {partyModeWorkflow} to bring different perspectives to validate comprehensive metrics
-- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4], then only then load, read entire file, then execute {nextStepFile}
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4] and lastStep: 4, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
 #### EXECUTION RULES:
@@ -194,7 +194,7 @@ ONLY WHEN [C continue option] is selected and [success metrics finalized and sav
 - Metrics that connect user value to business success
 - A/P/C menu presented and handled correctly with proper task execution
 - Content properly appended to document when C selected
-- Frontmatter updated with stepsCompleted: [1, 2, 3, 4]
+- Frontmatter updated with stepsCompleted: [1, 2, 3, 4] and lastStep: 4
 
 ### ❌ SYSTEM FAILURE:
 

@@ -204,6 +204,7 @@ Show the generated user journey content and present choices:
 
 - Append the final content to `{output_folder}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`
+- Update frontmatter: `lastStep: 10`
 - Load `./step-11-component-strategy.md`
 
 ## APPEND TO DOCUMENT:

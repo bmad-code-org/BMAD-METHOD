@@ -261,6 +261,7 @@ Show the scoping decisions and present choices:
 
 - Append the final content to `{output_folder}/prd.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]`
+- Update frontmatter: `lastStep: 8`
 - Load `./step-09-functional.md`
 
 ## APPEND TO DOCUMENT:

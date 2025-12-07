@@ -182,7 +182,7 @@ Prepare the following structure for document append:
 
 - IF A: Execute {advancedElicitationTask} with current scope content to optimize scope definition
 - IF P: Execute {partyModeWorkflow} to bring different perspectives to validate MVP scope
-- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4, 5], then only then load, read entire file, then execute {nextStepFile}
+- IF C: Save content to {outputFile}, update frontmatter with stepsCompleted: [1, 2, 3, 4, 5] and lastStep: 5, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#7-present-menu-options)
 
 #### EXECUTION RULES:
@@ -208,7 +208,7 @@ ONLY WHEN [C continue option] is selected and [MVP scope finalized and saved to 
 - Future vision that inspires while maintaining focus on MVP
 - A/P/C menu presented and handled correctly with proper task execution
 - Content properly appended to document when C selected
-- Frontmatter updated with stepsCompleted: [1, 2, 3, 4, 5]
+- Frontmatter updated with stepsCompleted: [1, 2, 3, 4, 5] and lastStep: 5
 
 ### ❌ SYSTEM FAILURE:
 

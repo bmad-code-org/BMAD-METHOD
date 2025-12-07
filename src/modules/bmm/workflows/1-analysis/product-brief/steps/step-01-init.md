@@ -49,7 +49,7 @@ Initialize the product brief workflow by detecting continuation state and settin
 
 - 🎯 Show your analysis of current state before taking any action
 - 💾 Initialize document structure and update frontmatter appropriately
-- 📖 Set up frontmatter `stepsCompleted: [1]` before loading next step
+- 📖 Set up frontmatter `stepsCompleted: [1]` and `lastStep: 1` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C' (Continue)
 
 ## CONTEXT BOUNDARIES:

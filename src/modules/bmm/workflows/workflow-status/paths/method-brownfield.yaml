@@ -84,11 +84,6 @@ phases:
         output: "System-level testability review"
         note: "Testability assessment before gate check - auto-detects system-level mode"
 
-      - id: "validate-architecture"
-        optional: true
-        agent: "architect"
-        command: "validate-architecture"
-
       - id: "implementation-readiness"
         required: true
         agent: "architect"

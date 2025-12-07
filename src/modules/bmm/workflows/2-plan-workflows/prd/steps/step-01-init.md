@@ -156,10 +156,10 @@ projectDocsCount = 0
 stepsCompleted: []
 inputDocuments: []
 documentCounts:
-  briefs: { { briefCount } }
-  research: { { researchCount } }
-  brainstorming: { { brainstormingCount } }
-  projectDocs: { { projectDocsCount } }
+  briefs: '{{briefCount}}'
+  research: '{{researchCount}}'
+  brainstorming: '{{brainstormingCount}}'
+  projectDocs: '{{projectDocsCount}}'
 workflowType: 'prd'
 lastStep: 0
 project_name: '{{project_name}}'
@@ -202,7 +202,7 @@ Display menu after setup report:
 
 #### Menu Handling Logic:
 
-- IF C: Update frontmatter with `stepsCompleted: [1]`, then load, read entire file, then execute {nextStepFile}
+- IF C: Update frontmatter with `stepsCompleted: [1]` and `lastStep: 1`, then load, read entire file, then execute {nextStepFile}
 - IF user provides additional files: Load them, update inputDocuments and documentCounts, redisplay report
 - IF user asks questions: Answer and redisplay menu
 
