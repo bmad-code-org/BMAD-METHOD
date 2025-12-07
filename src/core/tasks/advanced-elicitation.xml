@@ -45,14 +45,14 @@
 
       <format>
         **Advanced Elicitation Options (If you launched Party Mode, they will participate randomly)**
-        Choose a number (1-5), [r] to Reshuffle, [a] List All, or [x] to Proceed:
+        Choose a number (1-5), [r] Random 5, [a] List All, or [x] to Proceed:
 
         1. [Method Name]
         2. [Method Name]
         3. [Method Name]
         4. [Method Name]
         5. [Method Name]
-        r. Reshuffle the list with 5 new options
+        r. Pick 5 random methods
         a. List all methods with descriptions
         x. Proceed / No Further Actions
       </format>
