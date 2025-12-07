@@ -9,11 +9,8 @@ Adversarial code review for GitHub PRs. Works with any LLM agent.
 
 ## Usage
 
-```bash
-# Claude Code
-claude "Review PR #123 using tools/maintainer/pr-review/review-prompt.md"
+Point your agent at `review-prompt.md` and ask it to review a specific PR:
 
-# Other agents: copy review-prompt.md contents to your agent
-```
+> "Read tools/maintainer/pr-review/review-prompt.md and apply it to PR #123"
 
 See `review-prompt.md` for full details on output format, safety features, and how it works.
