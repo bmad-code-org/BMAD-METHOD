@@ -31,6 +31,7 @@ See `review-pr.md` for full prompt structure, severity ratings, and sandboxing r
 
 - Trivial PRs (typo fixes, version bumps, single-line changes)
 - PRs you've already reviewed manually
+- PRs where you haven't agreed on the approach yet — fix the direction before the implementation
 
 ## Workflow Tips
 
