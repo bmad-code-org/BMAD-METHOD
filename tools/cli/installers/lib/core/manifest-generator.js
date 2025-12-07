@@ -618,7 +618,6 @@ class ManifestGenerator {
     // Map provider names to voice field names
     const providerVoiceField = {
       piper: 'piper',
-      elevenlabs: 'piper', // ElevenLabs not used, fallback to piper
       macos: 'mac',
     };
 
