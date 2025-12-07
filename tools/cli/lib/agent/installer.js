@@ -36,13 +36,46 @@ function findBmadConfig(startPath = process.cwd()) {
 }
 
 /**
- * Resolve path variables like {project-root} and {bmad-folder}
+ * Resolve path variables like {project-root}, {bmad-folder}, {installed_path}
+ * and {config_source} using provided context data
  * @param {string} pathStr - Path with variables
- * @param {Object} context - Contains projectRoot, bmadFolder
+ * @param {Object} context - Contains projectRoot, bmadFolder, installed_path, config_source
  * @returns {string} Resolved path
  */
-function resolvePath(pathStr, context) {
-  return pathStr.replaceAll('{project-root}', context.projectRoot).replaceAll('{bmad-folder}', context.bmadFolder);
+function resolvePath(pathStr, context = {}) {
+  if (!pathStr || typeof pathStr !== 'string') return pathStr;
+
+  const normalizedContext = {
+    projectRoot: context.projectRoot,
+    bmadFolder: context.bmadFolder,
+    installed_path: context.installed_path || context.installedPath,
+    config_source: context.config_source || context.configSource,
+  };
+
+  const replacements = {
+    '{project-root}': normalizedContext.projectRoot,
+    '{project_root}': normalizedContext.projectRoot,
+    '{bmad-folder}': normalizedContext.bmadFolder,
+    '{bmad_folder}': normalizedContext.bmadFolder,
+    '{installed_path}': normalizedContext.installed_path,
+    '{config_source}': normalizedContext.config_source,
+  };
+
+  // Also map any additional context keys directly to {key} tokens
+  for (const [key, value] of Object.entries(context)) {
+    if (value === undefined || value === null) continue;
+
+    const snakeKey = key.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`);
+    const dashKey = snakeKey.replaceAll('_', '-');
+
+    replacements[`{${snakeKey}}`] ??= value;
+    replacements[`{${dashKey}}`] ??= value;
+  }
+
+  return Object.entries(replacements).reduce((result, [token, value]) => {
+    if (value === undefined || value === null) return result;
+    return result.replaceAll(token, value);
+  }, pathStr);
 }
 
 /**
@@ -281,7 +314,13 @@ function installAgent(agentInfo, answers, targetPath, options = {}) {
     }
 
     // Find and copy sidecar folder
-    const sidecarFiles = copyAgentSidecarFiles(agentInfo.path, agentSidecarDir, agentInfo.yamlFile);
+    const installContext = {
+      projectRoot: options.projectRoot || process.cwd(),
+      bmadFolder: options.bmadFolder || '.bmad',
+      ...(options.installContext || {}),
+    };
+
+    const sidecarFiles = copyAgentSidecarFiles(agentInfo.path, agentSidecarDir, agentInfo.yamlFile, installContext);
     result.sidecarCopied = true;
     result.sidecarFiles = sidecarFiles;
     result.sidecarDir = agentSidecarDir;
@@ -335,9 +374,11 @@ function copySidecarFiles(sourceDir, targetDir, excludeYaml) {
  * @param {string} excludeYaml - The .agent.yaml file to exclude
  * @returns {Array} List of copied files
  */
-function copyAgentSidecarFiles(sourceDir, targetSidecarDir, excludeYaml) {
+function copyAgentSidecarFiles(sourceDir, targetSidecarDir, excludeYaml, pathContext = {}) {
   const copied = [];
   const preserved = [];
+
+  const textExtensions = ['.md', '.mdx', '.yaml', '.yml', '.json', '.txt', '.xml', '.csv'];
 
   // Find folders with "sidecar" in the name
   const entries = fs.readdirSync(sourceDir, { withFileTypes: true });
@@ -368,7 +409,22 @@ function copyAgentSidecarFiles(sourceDir, targetSidecarDir, excludeYaml) {
               // File exists - preserve it
               preserved.push(destPath);
             } else {
-              // File doesn't exist - copy it
+              // File doesn't exist - copy it with placeholder resolution when applicable
+              const ext = path.extname(srcPath).toLowerCase();
+              const shouldResolve = Object.keys(pathContext).length > 0 && textExtensions.includes(ext);
+
+              if (shouldResolve) {
+                try {
+                  const content = fs.readFileSync(srcPath, 'utf8');
+                  const resolved = resolvePath(content, pathContext);
+                  fs.writeFileSync(destPath, resolved, 'utf8');
+                  copied.push(destPath);
+                  continue;
+                } catch {
+                  // Fall back to raw copy below if resolution fails
+                }
+              }
+
               fs.copyFileSync(srcPath, destPath);
               copied.push(destPath);
             }

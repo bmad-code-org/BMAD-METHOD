@@ -15,6 +15,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
+const { resolvePath } = require('../tools/cli/lib/agent/installer');
 
 // ANSI colors
 const colors = {
@@ -138,18 +139,20 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 3: Path Variable Resolution${colors.reset}\n`);
 
   try {
-    const builder = new YamlXmlBuilder();
+    const context = {
+      projectRoot: '/home/project',
+      bmadFolder: 'bmad-custom',
+      installed_path: '/home/project/bmad-custom/workflows/demo',
+      config_source: '/home/project/bmad-custom/config.yaml',
+    };
 
-    // Test path resolution logic (if exposed)
-    // This would test {project-root}, {installed_path}, {config_source} resolution
-
-    const testPath = '{project-root}/bmad/bmm/config.yaml';
-    const expectedPattern = /\/bmad\/bmm\/config\.yaml$/;
+    const testPath = '{project-root}/{bmad_folder}/workflows/{installed_path}/config?{config_source}';
+    const resolved = resolvePath(testPath, context);
 
     assert(
-      true, // Placeholder - would test actual resolution
-      'Path variable resolution pattern matches expected format',
-      'Note: This test validates path resolution logic exists',
+      resolved === '/home/project/bmad-custom/workflows//home/project/bmad-custom/workflows/demo/config?/home/project/bmad-custom/config.yaml',
+      'Path variable resolution replaces all documented tokens',
+      `Resolved: ${resolved}`,
     );
   } catch (error) {
     assert(false, 'Path resolution works', error.message);
