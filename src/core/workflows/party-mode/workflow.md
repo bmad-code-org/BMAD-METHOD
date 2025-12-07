@@ -64,7 +64,7 @@ Parse CSV manifest to extract agent entries with complete information:
 
 Build complete agent roster with merged personalities for conversation orchestration.
 
-### Voice Map Loading (Optional)
+### Voice Map Loading
 
 If `agent_voice_map_path` exists, load agent voice configuration:
 
