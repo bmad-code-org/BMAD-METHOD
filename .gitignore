@@ -54,6 +54,9 @@ flattened-codebase.xml
 #UAT template testing output files
 tools/template-test-generator/test-scenarios/
 
+# Maintainer tools output
+tools/maintainer/pr-review/output/
+
 # Bundler temporary files and generated bundles
 .bundler-temp/
 
