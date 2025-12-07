@@ -300,6 +300,15 @@ class ModuleManager {
    * @returns {string|null} Path to the module source or null if not found
    */
   async findModuleSource(moduleName) {
+    // Special handling for core module - it's in src/core not src/modules
+    if (moduleName === 'core') {
+      const corePath = getSourcePath('core');
+      if (await fs.pathExists(corePath)) {
+        return corePath;
+      }
+      return null;
+    }
+
     const projectRoot = getProjectRoot();
 
     // First, check src/modules
