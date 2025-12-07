@@ -1965,11 +1965,18 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       // Only regenerate YAML manifest for IDE updates if needed
       const existingManifestPath = path.join(bmadDir, '_cfg', 'manifest.yaml');
       let existingIdes = [];
+      let installedModules = [];
       if (await fs.pathExists(existingManifestPath)) {
         const manifestContent = await fs.readFile(existingManifestPath, 'utf8');
         const yaml = require('js-yaml');
         const manifest = yaml.load(manifestContent);
         existingIdes = manifest.ides || [];
+
+        // Get installed modules from the bmad directory
+        const moduleEntries = await fs.readdir(bmadDir, { withFileTypes: true });
+        installedModules = moduleEntries
+          .filter((entry) => entry.isDirectory() && entry.name !== '_cfg' && entry.name !== 'docs' && entry.name !== 'agents')
+          .map((entry) => entry.name);
       }
 
       // Update IDE configurations using the existing IDE list from manifest
