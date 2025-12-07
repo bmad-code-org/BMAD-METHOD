@@ -84,11 +84,27 @@ module.exports = {
 
           // Run AgentVibes installer
           const { execSync } = require('node:child_process');
+          const fs = require('node:fs');
+          const path = require('node:path');
+
           try {
-            execSync('npx agentvibes@latest install', {
+            // Clear ALL npm config env vars to prevent inheritance issues
+            // when BMAD is invoked with --prefix flag
+            // npm sets many npm_config_* and npm_package_* vars that can interfere
+            const cleanEnv = Object.fromEntries(
+              Object.entries(process.env).filter(([key]) => !key.startsWith('npm_config_') && !key.startsWith('npm_package_')),
+            );
+
+            // Check if this is first-time AgentVibes installation
+            const agentvibesDir = path.join(result.projectDir, '.agentvibes');
+            const isFirstTime = !fs.existsSync(agentvibesDir);
+            const installCmd = isFirstTime ? 'npx agentvibes@latest install --with-audio' : 'npx agentvibes@latest install';
+
+            execSync(installCmd, {
               cwd: result.projectDir,
               stdio: 'inherit',
               shell: true,
+              env: cleanEnv,
             });
             console.log(chalk.green('\n✓ AgentVibes installation complete'));
           } catch {

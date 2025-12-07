@@ -22,6 +22,12 @@ agent:
   critical_actions:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
+  tts:
+    intro: "Hey! Sally here, your UX Designer. The user experience is my top priority."
+    voices:
+      - piper: kristin
+      - mac: Victoria
+
   menu:
     - trigger: create-ux-design
       exec: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/create-ux-design/workflow.md"

@@ -58,6 +58,9 @@ class ManifestGenerator {
     // Filter out any undefined/null values from IDE list
     this.selectedIdes = resolvedIdes.filter((ide) => ide && typeof ide === 'string');
 
+    // Store AgentVibes configuration for manifest
+    this.agentVibes = options.agentVibes || null;
+
     // Collect workflow data
     await this.collectWorkflows(selectedModules);
 
@@ -75,6 +78,7 @@ class ManifestGenerator {
       await this.writeMainManifest(cfgDir),
       await this.writeWorkflowManifest(cfgDir),
       await this.writeAgentManifest(cfgDir),
+      await this.writeVoiceMap(cfgDir),
       await this.writeTaskManifest(cfgDir),
       await this.writeToolManifest(cfgDir),
       await this.writeFilesManifest(cfgDir),
@@ -277,6 +281,21 @@ class ManifestGenerator {
             .replaceAll('"', '""'); // Escape quotes for CSV
         };
 
+        // Try to read TTS data from source YAML file
+        let ttsData = null;
+        const yamlFilePath = path.join(dirPath, `${agentName}.agent.yaml`);
+        if (await fs.pathExists(yamlFilePath)) {
+          try {
+            const yamlContent = await fs.readFile(yamlFilePath, 'utf8');
+            const agentYaml = yaml.load(yamlContent);
+            if (agentYaml?.agent?.tts) {
+              ttsData = agentYaml.agent.tts;
+            }
+          } catch {
+            // Silently skip if YAML parsing fails
+          }
+        }
+
         agents.push({
           name: agentName,
           displayName: nameMatch ? nameMatch[1] : agentName,
@@ -288,6 +307,7 @@ class ManifestGenerator {
           principles: principlesMatch ? cleanForCSV(principlesMatch[1]) : '',
           module: moduleName,
           path: installPath,
+          tts: ttsData, // Add TTS data from YAML
         });
 
         // Add to files list
@@ -458,6 +478,7 @@ class ManifestGenerator {
       },
       modules: this.modules,
       ides: this.selectedIdes,
+      agentVibes: this.agentVibes, // Track AgentVibes TTS configuration
     };
 
     const yamlStr = yaml.dump(manifest, {
@@ -587,6 +608,65 @@ class ManifestGenerator {
     // Add all agents
     for (const agent of this.agents) {
       csv += `"${agent.name}","${agent.displayName}","${agent.title}","${agent.icon}","${agent.role}","${agent.identity}","${agent.communicationStyle}","${agent.principles}","${agent.module}","${agent.path}"\n`;
+    }
+
+    await fs.writeFile(csvPath, csv);
+    return csvPath;
+  }
+
+  /**
+   * Write agent voice map CSV for AgentVibes TTS integration
+   * Maps agent IDs to default Piper TTS voices and intro messages
+   * AgentVibes will use this if present, otherwise falls back to its own defaults
+   * @returns {string} Path to the voice map file
+   */
+  async writeVoiceMap(cfgDir) {
+    const csvPath = path.join(cfgDir, 'agent-voice-map.csv');
+
+    // Determine TTS provider from AgentVibes configuration
+    // Default to 'piper' if not specified
+    const ttsProvider = this.agentVibes?.provider || 'piper';
+
+    // Map provider names to voice field names
+    const providerVoiceField = {
+      piper: 'piper',
+      macos: 'mac',
+    };
+
+    const voiceField = providerVoiceField[ttsProvider] || 'piper';
+
+    // Fallback values for agents without TTS data
+    const fallbackVoice = voiceField === 'mac' ? 'Samantha' : 'en_US-lessac-medium';
+    const fallbackIntro = 'Hello! Ready to help with the discussion.';
+
+    let csv = 'agent,voice,intro\n';
+
+    // Add voice mapping and intro for each discovered agent
+    for (const agent of this.agents) {
+      let voice = fallbackVoice;
+      let intro = fallbackIntro;
+
+      // Extract voice and intro from agent's TTS data if available
+      if (agent.tts) {
+        // Get intro
+        if (agent.tts.intro) {
+          intro = agent.tts.intro;
+        }
+
+        // Get voice for the selected provider
+        if (agent.tts.voices && Array.isArray(agent.tts.voices)) {
+          for (const voiceEntry of agent.tts.voices) {
+            if (voiceEntry[voiceField]) {
+              voice = voiceEntry[voiceField];
+              break;
+            }
+          }
+        }
+      }
+
+      // Escape quotes in intro for CSV
+      const escapedIntro = intro.replaceAll('"', '""');
+      csv += `${agent.name},${voice},"${escapedIntro}"\n`;
     }
 
     await fs.writeFile(csvPath, csv);

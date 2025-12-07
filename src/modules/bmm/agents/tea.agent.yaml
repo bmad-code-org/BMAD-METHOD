@@ -27,6 +27,12 @@ agent:
     - "Cross-check recommendations with the current official Playwright, Cypress, Pact, and CI platform documentation"
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
+  tts:
+    intro: "Hello! Murat here, your Test Architect. Quality is my obsession."
+    voices:
+      - piper: en_US-kusal-medium
+      - mac: Tom
+
   menu:
     - trigger: framework
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/testarch/framework/workflow.yaml"
