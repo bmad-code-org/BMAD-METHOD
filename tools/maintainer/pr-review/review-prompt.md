@@ -20,30 +20,6 @@ Before proceeding, you MUST verify:
 
 ## Preflight Checks
 
-### 0.0 Ensure Clean Checkout
-
-Before anything else, verify the working tree is clean and check out the PR branch.
-
-```bash
-# Check for uncommitted changes
-git status --porcelain
-```
-
-If output is non-empty, STOP and tell user:
-
-> "You have uncommitted changes. Please commit or stash them before running a PR review."
-
-If clean, fetch and checkout the PR branch:
-
-```bash
-# Fetch and checkout PR branch (gh handles the remote fetch)
-gh pr checkout {PR_NUMBER}
-```
-
-If checkout fails, STOP and report the error.
-
-Now you're on the PR branch with full access to all files as they exist in the PR.
-
 ### 0.1 Parse PR Input
 
 Extract PR number from user input. Examples of valid formats:
@@ -63,10 +39,38 @@ If mismatch detected, ask user:
 
 > "This PR is from `{detected_repo}` but we're in `{current_repo}`. Proceed with reviewing `{detected_repo}#123`? (y/n)"
 
-### 0.2 Check PR Size
+If user confirms, store `{REPO}` for use in all subsequent `gh` commands.
+
+### 0.2 Ensure Clean Checkout
+
+Verify the working tree is clean and check out the PR branch.
 
 ```bash
-gh pr view {PR_NUMBER} --json additions,deletions,changedFiles -q '{"additions": .additions, "deletions": .deletions, "files": .changedFiles}'
+# Check for uncommitted changes
+git status --porcelain
+```
+
+If output is non-empty, STOP and tell user:
+
+> "You have uncommitted changes. Please commit or stash them before running a PR review."
+
+If clean, fetch and checkout the PR branch:
+
+```bash
+# Fetch and checkout PR branch
+# For cross-repo PRs, include --repo {REPO}
+gh pr checkout {PR_NUMBER} [--repo {REPO}]
+```
+
+If checkout fails, STOP and report the error.
+
+Now you're on the PR branch with full access to all files as they exist in the PR.
+
+### 0.3 Check PR Size
+
+```bash
+# For cross-repo PRs, include --repo {REPO}
+gh pr view {PR_NUMBER} [--repo {REPO}] --json additions,deletions,changedFiles -q '{"additions": .additions, "deletions": .deletions, "files": .changedFiles}'
 ```
 
 **Size thresholds:**
@@ -84,10 +88,11 @@ If thresholds exceeded, ask user:
 > **[p] Proceed** - Review everything (may be slow/expensive)
 > **[a] Abort** - Stop here"
 
-### 0.3 Note Binary Files
+### 0.4 Note Binary Files
 
 ```bash
-gh pr diff {PR_NUMBER} --name-only | grep -E '\.(png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|pdf|zip|tar|gz|bin|exe|dll|so|dylib)$' || echo "No binary files detected"
+# For cross-repo PRs, include --repo {REPO}
+gh pr diff {PR_NUMBER} [--repo {REPO}] --name-only | grep -E '\.(png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|pdf|zip|tar|gz|bin|exe|dll|so|dylib)$' || echo "No binary files detected"
 ```
 
 Store list of binary files to skip. Note them in final output.
@@ -205,7 +210,7 @@ Ask user for explicit confirmation:
 **Write review to a temp file, then post:**
 
 1. Write the review content to a temp file with a unique name (include PR number to avoid collisions)
-2. Post using `gh pr comment {PR_NUMBER} --body-file {path}`
+2. Post using `gh pr comment {PR_NUMBER} [--repo {REPO}] --body-file {path}`
 3. Delete the temp file after successful post
 
 Do NOT use heredocs or `echo` - markdown code blocks will break shell parsing. Use your file writing tool instead.
@@ -220,7 +225,7 @@ Do NOT use heredocs or `echo` - markdown code blocks will break shell parsing. U
    ```
 
 2. Keep the temp file and tell the user where it is, so they can post manually with:
-   `gh pr comment {PR_NUMBER} --body-file {path}`
+   `gh pr comment {PR_NUMBER} [--repo {REPO}] --body-file {path}`
 
 **If save only (s):**
 
