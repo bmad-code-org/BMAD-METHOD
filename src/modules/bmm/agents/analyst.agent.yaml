@@ -39,11 +39,14 @@ agent:
       workflow: "{project-root}/{bmad_folder}/bmm/workflows/document-project/workflow.yaml"
       description: Document your existing project (optional, but recommended for existing brownfield project efforts)
 
-    - trigger: party-mode
-      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
-      description: Bring the whole team in to chat with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+    - multi: "[SPM] Start Party Mode (optionally suggest attendees and topic), [CH] Chat"
+      triggers:
+        - party-mode:
+            - input: SPM or fuzzy match start party mode
+            - route: "{project-root}/{bmad_folder}/core/workflows/edit-agent/workflow.md"
+            - data: what is being discussed or suggested with the command, along with custom party custom agents if specified
+            - type: exec
+        - expert-chat:
+            - input: CH or fuzzy match validate agent
+            - action: agent responds as expert based on its personal to converse
+            - type: action

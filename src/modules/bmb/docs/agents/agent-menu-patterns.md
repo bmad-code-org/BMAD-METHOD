@@ -375,7 +375,7 @@ exec: "../../../core/tasks/validate.xml"
 
 - `{project-root}` - Project root directory
 - `{bmad_folder}` - BMAD installation folder
-- `{agent-folder}` - Agent installation directory (Expert agents)
+- `{agent_sidecar_folder}` - Agent installation directory (Expert agents)
 - `{output_folder}` - Document output location
 - `{user_name}` - User's name from config
 - `{communication_language}` - Language preference
@@ -415,9 +415,9 @@ menu:
 
 ```yaml
 critical_actions:
-  - 'Load {agent-folder}/memories.md'
-  - 'Follow {agent-folder}/instructions.md'
-  - 'ONLY access {agent-folder}/'
+  - 'Load ./memories.md'
+  - 'Follow ./instructions.md'
+  - 'ONLY access ./'
 
 prompts:
   - id: reflect
@@ -431,7 +431,7 @@ menu:
     description: 'Write journal entry'
 
   - trigger: save
-    action: 'Update {agent-folder}/memories.md with session insights'
+    action: 'Update ./memories.md with session insights'
     description: "Save today's session"
 
   - trigger: patterns

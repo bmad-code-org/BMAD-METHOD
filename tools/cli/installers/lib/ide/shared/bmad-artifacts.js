@@ -76,46 +76,51 @@ async function getTasksFromBmad(bmadDir, selectedModules = []) {
   return tasks;
 }
 
-async function getAgentsFromDir(dirPath, moduleName) {
+async function getAgentsFromDir(dirPath, moduleName, relativePath = '') {
   const agents = [];
 
   if (!(await fs.pathExists(dirPath))) {
     return agents;
   }
 
-  const files = await fs.readdir(dirPath);
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
-  for (const file of files) {
-    if (!file.endsWith('.md')) {
-      continue;
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name);
+    const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+
+    if (entry.isDirectory()) {
+      // Recurse into subdirectories
+      const subDirAgents = await getAgentsFromDir(fullPath, moduleName, newRelativePath);
+      agents.push(...subDirAgents);
+    } else if (entry.name.endsWith('.md')) {
+      // Skip README files and other non-agent files
+      if (entry.name.toLowerCase() === 'readme.md' || entry.name.toLowerCase().startsWith('readme-')) {
+        continue;
+      }
+
+      if (entry.name.includes('.customize.')) {
+        continue;
+      }
+
+      const content = await fs.readFile(fullPath, 'utf8');
+
+      if (content.includes('localskip="true"')) {
+        continue;
+      }
+
+      // Only include files that have agent-specific content (compiled agents have <agent> tag)
+      if (!content.includes('<agent')) {
+        continue;
+      }
+
+      agents.push({
+        path: fullPath,
+        name: entry.name.replace('.md', ''),
+        module: moduleName,
+        relativePath: newRelativePath, // Keep the .md extension for the full path
+      });
     }
-
-    // Skip README files and other non-agent files
-    if (file.toLowerCase() === 'readme.md' || file.toLowerCase().startsWith('readme-')) {
-      continue;
-    }
-
-    if (file.includes('.customize.')) {
-      continue;
-    }
-
-    const filePath = path.join(dirPath, file);
-    const content = await fs.readFile(filePath, 'utf8');
-
-    if (content.includes('localskip="true"')) {
-      continue;
-    }
-
-    // Only include files that have agent-specific content (compiled agents have <agent> tag)
-    if (!content.includes('<agent')) {
-      continue;
-    }
-
-    agents.push({
-      path: filePath,
-      name: file.replace('.md', ''),
-      module: moduleName,
-    });
   }
 
   return agents;

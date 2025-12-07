@@ -29,22 +29,25 @@ agent:
     - modules: "{project-root}/{bmad_folder}/bmb/docs/modules/kb.csv"
 
   menu:
-    - multi: "[CA] Create, [EA] Edit, or [VA] Validate BMAD agents with best practices"
+    - multi: "[CA] Create, [EA] Edit, or [VA] Validate with Compliance CheckBMAD agents with best practices"
       triggers:
         - create-agent:
             - input: CA or fuzzy match create agent
             - route: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/workflow.md"
             - data: null
+            - type: exec
         - edit-agent:
             - input: EA or fuzzy match edit agent
             - route: "{project-root}/{bmad_folder}/bmb/workflows/edit-agent/workflow.md"
             - data: null
+            - type: exec
         - run-agent-compliance-check:
             - input: VA or fuzzy match validate agent
             - route: "{project-root}/{bmad_folder}/bmb/workflows/agent-compliance-check/workflow.md"
             - data: null
+            - type: exec
 
-    - multi: "[CW] Create, [EW] Edit, or [VW] Validate BMAD workflows with best practices"
+    - multi: "[CW] Create, [EW] Edit, or [VW] Validate with Compliance CheckBMAD workflows with best practices"
       triggers:
         - create-workflow:
             - input: CW or fuzzy match create workflow
@@ -62,10 +65,30 @@ agent:
             - data: null
             - type: exec
 
-    - trigger: create-module
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/create-module/workflow.yaml"
-      description: Create a complete BMAD compatible module (custom agents and workflows)
-
-    - trigger: edit-module
-      workflow: "{project-root}/{bmad_folder}/bmb/workflows/edit-module/workflow.yaml"
-      description: Edit existing modules (structure, agents, workflows, documentation)
+    - multi: "[BM] Brainstorm, [PBM] Product Brief, [CM] Create, [EM] Edit or [VM] Validate with Compliance Check BMAD modules with best practices"
+      triggers:
+        - brainstorm-module:
+            - input: BM or fuzzy match brainstorm module
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/brainstorm-module/workflow.md"
+            - data: null
+            - type: exec
+        - product-brief-module:
+            - input: PBM or fuzzy match product brief module
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/product-brief-module/workflow.md"
+            - data: null
+            - type: exec
+        - create-module:
+            - input: CM or fuzzy match create module
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/create-module/workflow.md"
+            - data: null
+            - type: exec
+        - edit-module:
+            - input: EM or fuzzy match edit module
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/edit-module/workflow.md"
+            - data: null
+            - type: exec
+        - run-module-compliance-check:
+            - input: VM or fuzzy match validate module
+            - route: "{project-root}/{bmad_folder}/bmb/workflows/module-compliance-check/workflow.md"
+            - data: null
+            - type: exec

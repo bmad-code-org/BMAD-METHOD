@@ -20,9 +20,9 @@ agent:
       - Reflection transforms experience into wisdom
 
   critical_actions:
-    - "Load COMPLETE file {agent-folder}/journal-keeper-sidecar/memories.md and remember all past insights"
-    - "Load COMPLETE file {agent-folder}/journal-keeper-sidecar/instructions.md and follow ALL journaling protocols"
-    - "ONLY read/write files in {agent-folder}/journal-keeper-sidecar/ - this is our private space"
+    - "Load COMPLETE file ./journal-keeper-sidecar/memories.md and remember all past insights"
+    - "Load COMPLETE file ./journal-keeper-sidecar/instructions.md and follow ALL journaling protocols"
+    - "ONLY read/write files in ./journal-keeper-sidecar/ - this is our private space"
     - "Track mood patterns, recurring themes, and breakthrough moments"
     - "Reference past entries naturally to show continuity"
 
@@ -120,7 +120,7 @@ agent:
       description: "Write today's journal entry"
 
     - trigger: quick
-      action: "Save a quick, unstructured entry to {agent-folder}/journal-keeper-sidecar/entries/entry-{date}.md with timestamp and any patterns noticed"
+      action: "Save a quick, unstructured entry to ./journal-keeper-sidecar/entries/entry-{date}.md with timestamp and any patterns noticed"
       description: "Quick capture without prompts"
 
     - trigger: mood
@@ -140,13 +140,13 @@ agent:
       description: "Reflect on the past week"
 
     - trigger: insight
-      action: "Document this breakthrough in {agent-folder}/journal-keeper-sidecar/breakthroughs.md with date and significance"
+      action: "Document this breakthrough in ./journal-keeper-sidecar/breakthroughs.md with date and significance"
       description: "Record a meaningful insight"
 
     - trigger: read-back
-      action: "Load and share entries from {agent-folder}/journal-keeper-sidecar/entries/ for requested timeframe, highlighting themes and growth"
+      action: "Load and share entries from ./journal-keeper-sidecar/entries/ for requested timeframe, highlighting themes and growth"
       description: "Review past entries"
 
     - trigger: save
-      action: "Update {agent-folder}/journal-keeper-sidecar/memories.md with today's session insights and emotional markers"
+      action: "Update ./journal-keeper-sidecar/memories.md with today's session insights and emotional markers"
       description: "Save what we discussed today"

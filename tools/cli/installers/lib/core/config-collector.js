@@ -182,14 +182,24 @@ class ConfigCollector {
     }
 
     // Load module's install config schema
-    const installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-config.yaml');
-    const legacyConfigPath = path.join(getModulePath(moduleName), 'config.yaml');
+    // First, try the standard src/modules location
+    let installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-config.yaml');
+
+    // If not found in src/modules, we need to find it by searching the project
+    if (!(await fs.pathExists(installerConfigPath))) {
+      // Use the module manager to find the module source
+      const { ModuleManager } = require('../modules/manager');
+      const moduleManager = new ModuleManager();
+      const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
+
+      if (moduleSourcePath) {
+        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'install-config.yaml');
+      }
+    }
 
     let configPath = null;
     if (await fs.pathExists(installerConfigPath)) {
       configPath = installerConfigPath;
-    } else if (await fs.pathExists(legacyConfigPath)) {
-      configPath = legacyConfigPath;
     } else {
       // No config schema for this module - use existing values
       if (this.existingConfig && this.existingConfig[moduleName]) {
@@ -396,15 +406,25 @@ class ConfigCollector {
     if (!this.allAnswers) {
       this.allAnswers = {};
     }
-    // Load module's config.yaml (check new location first, then fallback)
-    const installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-config.yaml');
-    const legacyConfigPath = path.join(getModulePath(moduleName), 'config.yaml');
+    // Load module's config
+    // First, try the standard src/modules location
+    let installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-config.yaml');
+
+    // If not found in src/modules, we need to find it by searching the project
+    if (!(await fs.pathExists(installerConfigPath))) {
+      // Use the module manager to find the module source
+      const { ModuleManager } = require('../modules/manager');
+      const moduleManager = new ModuleManager();
+      const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
+
+      if (moduleSourcePath) {
+        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'install-config.yaml');
+      }
+    }
 
     let configPath = null;
     if (await fs.pathExists(installerConfigPath)) {
       configPath = installerConfigPath;
-    } else if (await fs.pathExists(legacyConfigPath)) {
-      configPath = legacyConfigPath;
     } else {
       // No config for this module
       return;

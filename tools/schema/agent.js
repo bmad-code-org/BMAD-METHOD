@@ -75,27 +75,41 @@ function agentSchema(options = {}) {
           }
           // Handle multi format with triggers array (new format)
           else if (item.triggers && Array.isArray(item.triggers)) {
-            for (const triggerGroup of item.triggers) {
-              for (const triggerKey of Object.keys(triggerGroup)) {
-                if (!TRIGGER_PATTERN.test(triggerKey)) {
+            for (const [triggerIndex, triggerItem] of item.triggers.entries()) {
+              let triggerName = null;
+
+              // Extract trigger name from all three formats
+              if (triggerItem.trigger) {
+                // Format 1: Simple flat format with trigger field
+                triggerName = triggerItem.trigger;
+              } else {
+                // Format 2a or 2b: Object-key format
+                const keys = Object.keys(triggerItem);
+                if (keys.length === 1 && keys[0] !== 'trigger') {
+                  triggerName = keys[0];
+                }
+              }
+
+              if (triggerName) {
+                if (!TRIGGER_PATTERN.test(triggerName)) {
                   ctx.addIssue({
                     code: 'custom',
-                    path: ['agent', 'menu', index, 'triggers'],
-                    message: `agent.menu[].triggers key must be kebab-case (lowercase words separated by hyphen) - got "${triggerKey}"`,
+                    path: ['agent', 'menu', index, 'triggers', triggerIndex],
+                    message: `agent.menu[].triggers[] must be kebab-case (lowercase words separated by hyphen) - got "${triggerName}"`,
                   });
                   return;
                 }
 
-                if (seenTriggers.has(triggerKey)) {
+                if (seenTriggers.has(triggerName)) {
                   ctx.addIssue({
                     code: 'custom',
-                    path: ['agent', 'menu', index, 'triggers'],
-                    message: `agent.menu[].triggers key duplicates "${triggerKey}" within the same agent`,
+                    path: ['agent', 'menu', index, 'triggers', triggerIndex],
+                    message: `agent.menu[].triggers[] duplicates "${triggerName}" within the same agent`,
                   });
                   return;
                 }
 
-                seenTriggers.add(triggerKey);
+                seenTriggers.add(triggerName);
               }
             }
           }
@@ -250,101 +264,147 @@ function buildMenuItemSchema() {
     .object({
       multi: createNonEmptyString('agent.menu[].multi'),
       triggers: z
-        .array(z.object({}).passthrough())
-        .refine(
-          (triggers) => {
-            // Each item in triggers array should be an object with exactly one key
-            for (const trigger of triggers) {
-              const keys = Object.keys(trigger);
-              if (keys.length !== 1) {
-                return false;
-              }
+        .array(
+          z.union([
+            // Format 1: Simple flat format (has trigger field)
+            z
+              .object({
+                trigger: z.string(),
+                input: createNonEmptyString('agent.menu[].triggers[].input'),
+                route: createNonEmptyString('agent.menu[].triggers[].route').optional(),
+                action: createNonEmptyString('agent.menu[].triggers[].action').optional(),
+                data: z.string().optional(),
+                type: z.enum(['exec', 'action', 'workflow']).optional(),
+              })
+              .strict()
+              .refine((data) => data.trigger, { message: 'Must have trigger field' })
+              .superRefine((value, ctx) => {
+                // Must have either route or action (or both)
+                if (!value.route && !value.action) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: 'agent.menu[].triggers[] must have either route or action (or both)',
+                  });
+                }
+              }),
+            // Format 2a: Object with array format (like bmad-builder.agent.yaml)
+            z
+              .object({})
+              .passthrough()
+              .refine(
+                (value) => {
+                  const keys = Object.keys(value);
+                  if (keys.length !== 1) return false;
+                  const triggerItems = value[keys[0]];
+                  return Array.isArray(triggerItems);
+                },
+                { message: 'Must be object with single key pointing to array' },
+              )
+              .superRefine((value, ctx) => {
+                const triggerName = Object.keys(value)[0];
+                const triggerItems = value[triggerName];
 
-              const execArray = trigger[keys[0]];
-              if (!Array.isArray(execArray)) {
-                return false;
-              }
+                if (!Array.isArray(triggerItems)) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must be an array of items`,
+                  });
+                  return;
+                }
 
-              // Check required fields
-              const hasInput = execArray.some((item) => 'input' in item);
-              const hasRouteOrAction = execArray.some((item) => 'route' in item || 'action' in item);
+                // Check required fields in the array
+                const hasInput = triggerItems.some((item) => 'input' in item);
+                const hasRouteOrAction = triggerItems.some((item) => 'route' in item || 'action' in item);
 
-              if (!hasInput) {
-                return false;
-              }
+                if (!hasInput) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must have an input field`,
+                  });
+                }
 
-              // If not TODO, must have route or action
-              const isTodo = execArray.some((item) => item.route === 'TODO' || item.action === 'TODO');
-              if (!isTodo && !hasRouteOrAction) {
-                return false;
-              }
-            }
-            return true;
-          },
-          {
-            message: 'agent.menu[].triggers must be an array of trigger objects with input and either route/action or TODO',
-          },
+                if (!hasRouteOrAction) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must have a route or action field`,
+                  });
+                }
+              }),
+            // Format 2b: Object with direct fields (like analyst.agent.yaml)
+            z
+              .object({})
+              .passthrough()
+              .refine(
+                (value) => {
+                  const keys = Object.keys(value);
+                  if (keys.length !== 1) return false;
+                  const triggerFields = value[keys[0]];
+                  return !Array.isArray(triggerFields) && typeof triggerFields === 'object';
+                },
+                { message: 'Must be object with single key pointing to object' },
+              )
+              .superRefine((value, ctx) => {
+                const triggerName = Object.keys(value)[0];
+                const triggerFields = value[triggerName];
+
+                // Check required fields
+                if (!triggerFields.input || typeof triggerFields.input !== 'string') {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must have an input field`,
+                  });
+                }
+
+                if (!triggerFields.route && !triggerFields.action) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must have a route or action field`,
+                  });
+                }
+              }),
+          ]),
         )
-        .transform((triggers) => {
-          // Validate and clean up the triggers
-          for (const trigger of triggers) {
-            const keys = Object.keys(trigger);
-            if (keys.length !== 1) {
-              throw new Error('Each trigger object must have exactly one key');
-            }
-
-            const execArray = trigger[keys[0]];
-            if (!Array.isArray(execArray)) {
-              throw new TypeError(`Trigger "${keys[0]}" must be an array`);
-            }
-
-            // Validate each item in the exec array
-            for (const item of execArray) {
-              if ('input' in item && typeof item.input !== 'string') {
-                throw new Error('Input must be a string');
-              }
-              if ('route' in item && typeof item.route !== 'string' && item.route !== 'TODO') {
-                throw new Error('Route must be a string or TODO');
-              }
-              if ('type' in item && !['exec', 'action', 'workflow', 'TODO'].includes(item.type)) {
-                throw new Error('Type must be one of: exec, action, workflow, TODO');
-              }
-            }
-          }
-          return triggers;
-        }),
+        .min(1, { message: 'agent.menu[].triggers must have at least one trigger' }),
       discussion: z.boolean().optional(),
     })
     .strict()
     .superRefine((value, ctx) => {
-      // Extract all trigger keys for validation
-      const triggerKeys = [];
-      for (const triggerGroup of value.triggers) {
-        for (const key of Object.keys(triggerGroup)) {
-          triggerKeys.push(key);
+      // Check for duplicate trigger names
+      const seenTriggers = new Set();
+      for (const [index, triggerItem] of value.triggers.entries()) {
+        let triggerName = null;
 
-          // Validate trigger key format
-          if (!TRIGGER_PATTERN.test(key)) {
+        // Extract trigger name from either format
+        if (triggerItem.trigger) {
+          // Format 1
+          triggerName = triggerItem.trigger;
+        } else {
+          // Format 2
+          const keys = Object.keys(triggerItem);
+          if (keys.length === 1) {
+            triggerName = keys[0];
+          }
+        }
+
+        if (triggerName) {
+          if (seenTriggers.has(triggerName)) {
             ctx.addIssue({
               code: 'custom',
-              path: ['agent', 'menu', 'triggers'],
-              message: `Trigger key "${key}" must be kebab-case (lowercase words separated by hyphen)`,
+              path: ['agent', 'menu', 'triggers', index],
+              message: `Trigger name "${triggerName}" is duplicated`,
+            });
+          }
+          seenTriggers.add(triggerName);
+
+          // Validate trigger name format
+          if (!TRIGGER_PATTERN.test(triggerName)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['agent', 'menu', 'triggers', index],
+              message: `Trigger name "${triggerName}" must be kebab-case (lowercase words separated by hyphen)`,
             });
           }
         }
-      }
-
-      // Check for duplicates
-      const seenTriggers = new Set();
-      for (const triggerKey of triggerKeys) {
-        if (seenTriggers.has(triggerKey)) {
-          ctx.addIssue({
-            code: 'custom',
-            path: ['agent', 'menu', 'triggers'],
-            message: `Trigger key "${triggerKey}" is duplicated`,
-          });
-        }
-        seenTriggers.add(triggerKey);
       }
     });
 

@@ -37,6 +37,7 @@ const { AgentPartyGenerator } = require('../../../lib/agent-party-generator');
 const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
+const { replaceAgentSidecarFolders } = require('./post-install-sidecar-replacement');
 
 class Installer {
   constructor() {
@@ -446,6 +447,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
     // Set bmad folder name on module manager and IDE manager for placeholder replacement
     this.moduleManager.setBmadFolderName(bmadFolderName);
+    this.moduleManager.setCoreConfig(moduleConfigs.core || {});
     this.ideManager.setBmadFolderName(bmadFolderName);
 
     // Tool selection will be collected after we determine if it's a reinstall/update/new install
@@ -1024,6 +1026,20 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         }
       }
 
+      // Replace {agent_sidecar_folder} placeholders in all agent files
+      console.log(chalk.dim('\n  Configuring agent sidecar folders...'));
+      const sidecarResults = await replaceAgentSidecarFolders(bmadDir);
+
+      if (sidecarResults.filesReplaced > 0) {
+        console.log(
+          chalk.green(
+            `  ✓ Updated ${sidecarResults.filesReplaced} agent file(s) with ${sidecarResults.totalReplacements} sidecar reference(s)`,
+          ),
+        );
+      } else {
+        console.log(chalk.dim('  No agent sidecar references found'));
+      }
+
       // Display completion message
       const { UI } = require('../../../lib/ui');
       const ui = new UI();
@@ -1035,23 +1051,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         ttsInjectedFiles: this.enableAgentVibes && this.ttsInjectedFiles.length > 0 ? this.ttsInjectedFiles : undefined,
         agentVibesEnabled: this.enableAgentVibes || false,
       });
-
-      // Offer cleanup for legacy files (only for updates, not fresh installs, and only if not skipped)
-      if (!config.skipCleanup && config._isUpdate) {
-        try {
-          const cleanupResult = await this.performCleanup(bmadDir, false);
-          if (cleanupResult.deleted > 0) {
-            console.log(chalk.green(`\n✓ Cleaned up ${cleanupResult.deleted} legacy file${cleanupResult.deleted > 1 ? 's' : ''}`));
-          }
-          if (cleanupResult.retained > 0) {
-            console.log(chalk.dim(`Run 'bmad cleanup' anytime to manage retained files`));
-          }
-        } catch (cleanupError) {
-          // Don't fail the installation for cleanup errors
-          console.log(chalk.yellow(`\n⚠️  Cleanup warning: ${cleanupError.message}`));
-          console.log(chalk.dim('Run "bmad cleanup" to manually clean up legacy files'));
-        }
-      }
 
       return {
         success: true,
@@ -1546,18 +1545,76 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
         // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
 
+        // Replace {agent_sidecar_folder} if configured
+        const coreConfig = this.configCollector.collectedConfig.core || {};
+        if (coreConfig.agent_sidecar_folder && xmlContent.includes('{agent_sidecar_folder}')) {
+          xmlContent = xmlContent.replaceAll('{agent_sidecar_folder}', coreConfig.agent_sidecar_folder);
+        }
+
         // Process TTS injection points (pass targetPath for tracking)
         xmlContent = this.processTTSInjectionPoints(xmlContent, mdPath);
+
+        // Check if agent has sidecar and copy it
+        let agentYamlContent = null;
+        let hasSidecar = false;
+
+        try {
+          agentYamlContent = await fs.readFile(yamlPath, 'utf8');
+          const yamlLib = require('yaml');
+          const agentYaml = yamlLib.parse(agentYamlContent);
+          hasSidecar = agentYaml?.agent?.metadata?.hasSidecar === true;
+        } catch {
+          // Continue without sidecar processing
+        }
 
         // Write the built .md file to bmad/{module}/agents/ with POSIX-compliant final newline
         const content = xmlContent.endsWith('\n') ? xmlContent : xmlContent + '\n';
         await fs.writeFile(mdPath, content, 'utf8');
         this.installedFiles.push(mdPath);
 
+        // Copy sidecar files if agent has hasSidecar flag
+        if (hasSidecar) {
+          const { copyAgentSidecarFiles } = require('../../../lib/agent/installer');
+
+          // Get agent sidecar folder from core config
+          const coreConfigPath = path.join(bmadDir, 'bmb', 'config.yaml');
+          let agentSidecarFolder;
+
+          if (await fs.pathExists(coreConfigPath)) {
+            const yamlLib = require('yaml');
+            const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
+            const coreConfig = yamlLib.parse(coreConfigContent);
+            agentSidecarFolder = coreConfig.agent_sidecar_folder || agentSidecarFolder;
+          }
+
+          // Resolve path variables
+          const resolvedSidecarFolder = agentSidecarFolder
+            .replaceAll('{project-root}', projectDir)
+            .replaceAll('{bmad_folder}', this.bmadFolderName || 'bmad');
+
+          // Create sidecar directory for this agent
+          const agentSidecarDir = path.join(resolvedSidecarFolder, agentName);
+          await fs.ensureDir(agentSidecarDir);
+
+          // Find and copy sidecar folder from source module
+          const sourceModulePath = getSourcePath(`modules/${moduleName}`);
+          const sourceAgentPath = path.join(sourceModulePath, 'agents');
+
+          // Copy sidecar files (preserve existing, add new)
+          const sidecarResult = copyAgentSidecarFiles(sourceAgentPath, agentSidecarDir, yamlPath);
+
+          if (sidecarResult.copied.length > 0) {
+            console.log(chalk.dim(`  Copied ${sidecarResult.copied.length} new sidecar file(s) to: ${agentSidecarDir}`));
+          }
+          if (sidecarResult.preserved.length > 0) {
+            console.log(chalk.dim(`  Preserved ${sidecarResult.preserved.length} existing sidecar file(s)`));
+          }
+        }
+
         // Remove the source YAML file - we can regenerate from installer source if needed
         await fs.remove(yamlPath);
 
-        console.log(chalk.dim(`  Built agent: ${agentName}.md`));
+        console.log(chalk.dim(`  Built agent: ${agentName}.md${hasSidecar ? ' (with sidecar)' : ''}`));
       }
       // Handle legacy .md agents - inject activation if needed
       else if (agentFile.endsWith('.md')) {
@@ -1747,6 +1804,21 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
         // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
         // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+        // Replace {agent_sidecar_folder} if configured
+        const coreConfigPath = path.join(bmadDir, 'bmb', 'config.yaml');
+        let agentSidecarFolder = null;
+
+        if (await fs.pathExists(coreConfigPath)) {
+          const yamlLib = require('yaml');
+          const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
+          const coreConfig = yamlLib.parse(coreConfigContent);
+          agentSidecarFolder = coreConfig.agent_sidecar_folder;
+        }
+
+        if (agentSidecarFolder && xmlContent.includes('{agent_sidecar_folder}')) {
+          xmlContent = xmlContent.replaceAll('{agent_sidecar_folder}', agentSidecarFolder);
+        }
 
         // Process TTS injection points (pass targetPath for tracking)
         xmlContent = this.processTTSInjectionPoints(xmlContent, targetMdPath);
@@ -2532,8 +2604,10 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
             agentType = parts.slice(-2).join('-'); // Take last 2 parts as type
           }
 
-          // Create target directory
-          const agentTargetDir = path.join(customAgentsDir, finalAgentName);
+          // Create target directory - use relative path if agent is in a subdirectory
+          const agentTargetDir = agent.relativePath
+            ? path.join(customAgentsDir, agent.relativePath)
+            : path.join(customAgentsDir, finalAgentName);
           await fs.ensureDir(agentTargetDir);
 
           // Calculate paths
@@ -2547,6 +2621,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
             agentConfig.defaults || {},
             finalAgentName,
             relativePath,
+            { config: config.coreConfig },
           );
 
           // Write compiled agent
@@ -2562,10 +2637,26 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
             await fs.copy(agent.yamlFile, backupYamlPath);
           }
 
-          // Copy sidecar files if expert agent
-          if (agent.hasSidecar && agent.type === 'expert') {
-            const { copySidecarFiles } = require('../../../lib/agent/installer');
-            copySidecarFiles(agent.path, agentTargetDir, agent.yamlFile);
+          // Copy sidecar files for agents with hasSidecar flag
+          if (agentConfig.hasSidecar === true && agent.type === 'expert') {
+            const { copyAgentSidecarFiles } = require('../../../lib/agent/installer');
+
+            // Get agent sidecar folder from config or use default
+            const agentSidecarFolder = config.coreConfig?.agent_sidecar_folder;
+
+            // Resolve path variables
+            const resolvedSidecarFolder = agentSidecarFolder.replaceAll('{project-root}', projectDir).replaceAll('{bmad_folder}', bmadDir);
+
+            // Create sidecar directory for this agent
+            const agentSidecarDir = path.join(resolvedSidecarFolder, finalAgentName);
+            await fs.ensureDir(agentSidecarDir);
+
+            // Copy sidecar files (preserve existing, add new)
+            const sidecarResult = copyAgentSidecarFiles(agent.path, agentSidecarDir, agent.yamlFile);
+
+            if (sidecarResult.copied.length > 0 || sidecarResult.preserved.length > 0) {
+              console.log(chalk.dim(`  Sidecar: ${sidecarResult.copied.length} new, ${sidecarResult.preserved.length} preserved`));
+            }
           }
 
           // Update manifest CSV
@@ -2622,362 +2713,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         await this.copyFileWithPlaceholderReplacement(sourceDocPath, targetDocPath, this.bmadFolderName || 'bmad');
       }
     }
-  }
-
-  /**
-   * Scan for legacy/obsolete files in BMAD installation
-   * @param {string} bmadDir - BMAD installation directory
-   * @returns {Object} Categorized files for cleanup
-   */
-  async scanForLegacyFiles(bmadDir) {
-    const legacyFiles = {
-      backup: [],
-      documentation: [],
-      deprecated_task: [],
-      unknown: [],
-    };
-
-    try {
-      // Load files manifest to understand what should exist
-      const manifestPath = path.join(bmadDir, 'files-manifest.csv');
-      const manifestFiles = new Set();
-
-      if (await fs.pathExists(manifestPath)) {
-        const manifestContent = await fs.readFile(manifestPath, 'utf8');
-        const lines = manifestContent.split('\n').slice(1); // Skip header
-        for (const line of lines) {
-          if (line.trim()) {
-            const relativePath = line.split(',')[0];
-            if (relativePath) {
-              manifestFiles.add(relativePath);
-            }
-          }
-        }
-      }
-
-      // Scan all files recursively
-      const allFiles = await this.getAllFiles(bmadDir);
-
-      for (const filePath of allFiles) {
-        const relativePath = path.relative(bmadDir, filePath);
-
-        // Skip expected files
-        if (this.isExpectedFile(relativePath, manifestFiles)) {
-          continue;
-        }
-
-        // Categorize legacy files
-        if (relativePath.endsWith('.bak')) {
-          legacyFiles.backup.push({
-            path: filePath,
-            relativePath: relativePath,
-            size: (await fs.stat(filePath)).size,
-            mtime: (await fs.stat(filePath)).mtime,
-          });
-        } else if (this.isDocumentationFile(relativePath)) {
-          legacyFiles.documentation.push({
-            path: filePath,
-            relativePath: relativePath,
-            size: (await fs.stat(filePath)).size,
-            mtime: (await fs.stat(filePath)).mtime,
-          });
-        } else if (this.isDeprecatedTaskFile(relativePath)) {
-          const suggestedAlternative = this.suggestAlternative(relativePath);
-          legacyFiles.deprecated_task.push({
-            path: filePath,
-            relativePath: relativePath,
-            size: (await fs.stat(filePath)).size,
-            mtime: (await fs.stat(filePath)).mtime,
-            suggestedAlternative,
-          });
-        } else {
-          legacyFiles.unknown.push({
-            path: filePath,
-            relativePath: relativePath,
-            size: (await fs.stat(filePath)).size,
-            mtime: (await fs.stat(filePath)).mtime,
-          });
-        }
-      }
-    } catch (error) {
-      console.warn(`Warning: Could not scan for legacy files: ${error.message}`);
-    }
-
-    return legacyFiles;
-  }
-
-  /**
-   * Get all files in directory recursively
-   * @param {string} dir - Directory to scan
-   * @returns {Array} Array of file paths
-   */
-  async getAllFiles(dir) {
-    const files = [];
-
-    async function scan(currentDir) {
-      const entries = await fs.readdir(currentDir);
-
-      for (const entry of entries) {
-        const fullPath = path.join(currentDir, entry);
-        const stat = await fs.stat(fullPath);
-
-        if (stat.isDirectory()) {
-          // Skip certain directories
-          if (!['node_modules', '.git', 'dist', 'build'].includes(entry)) {
-            await scan(fullPath);
-          }
-        } else {
-          files.push(fullPath);
-        }
-      }
-    }
-
-    await scan(dir);
-    return files;
-  }
-
-  /**
-   * Check if file is expected in installation
-   * @param {string} relativePath - Relative path from BMAD dir
-   * @param {Set} manifestFiles - Files from manifest
-   * @returns {boolean} True if expected file
-   */
-  isExpectedFile(relativePath, manifestFiles) {
-    // Core files in manifest
-    if (manifestFiles.has(relativePath)) {
-      return true;
-    }
-
-    // Configuration files
-    if (relativePath.startsWith('_cfg/') || relativePath === 'config.yaml') {
-      return true;
-    }
-
-    // Custom files
-    if (relativePath.startsWith('custom/') || relativePath === 'manifest.yaml') {
-      return true;
-    }
-
-    // Generated files
-    if (relativePath === 'manifest.csv' || relativePath === 'files-manifest.csv') {
-      return true;
-    }
-
-    // IDE-specific files
-    const ides = ['vscode', 'cursor', 'windsurf', 'claude-code', 'github-copilot', 'zsh', 'bash', 'fish'];
-    if (ides.some((ide) => relativePath.includes(ide))) {
-      return true;
-    }
-
-    // BMAD MODULE STRUCTURES - recognize valid module content
-    const modulePrefixes = ['bmb/', 'bmm/', 'cis/', 'core/', 'bmgd/'];
-    const validExtensions = ['.yaml', '.yml', '.json', '.csv', '.md', '.xml', '.svg', '.png', '.jpg', '.gif', '.excalidraw', '.js'];
-
-    // Check if this file is in a recognized module directory
-    for (const modulePrefix of modulePrefixes) {
-      if (relativePath.startsWith(modulePrefix)) {
-        // Check if it has a valid extension
-        const hasValidExtension = validExtensions.some((ext) => relativePath.endsWith(ext));
-        if (hasValidExtension) {
-          return true;
-        }
-      }
-    }
-
-    // Special case for core module resources
-    if (relativePath.startsWith('core/resources/')) {
-      return true;
-    }
-
-    // Special case for docs directory
-    if (relativePath.startsWith('docs/')) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Check if file is documentation
-   * @param {string} relativePath - Relative path
-   * @returns {boolean} True if documentation
-   */
-  isDocumentationFile(relativePath) {
-    const docExtensions = ['.md', '.txt', '.pdf'];
-    const docPatterns = ['docs/', 'README', 'CHANGELOG', 'LICENSE'];
-
-    return docExtensions.some((ext) => relativePath.endsWith(ext)) || docPatterns.some((pattern) => relativePath.includes(pattern));
-  }
-
-  /**
-   * Check if file is deprecated task file
-   * @param {string} relativePath - Relative path
-   * @returns {boolean} True if deprecated
-   */
-  isDeprecatedTaskFile(relativePath) {
-    // Known deprecated files
-    const deprecatedFiles = ['adv-elicit-methods.csv', 'game-resources.json', 'ux-workflow.json'];
-
-    return deprecatedFiles.some((dep) => relativePath.includes(dep));
-  }
-
-  /**
-   * Suggest alternative for deprecated file
-   * @param {string} relativePath - Deprecated file path
-   * @returns {string} Suggested alternative
-   */
-  suggestAlternative(relativePath) {
-    const alternatives = {
-      'adv-elicit-methods.csv': 'Use the new structured workflows in src/modules/',
-      'game-resources.json': 'Resources are now integrated into modules',
-      'ux-workflow.json': 'UX workflows are now in src/modules/bmm/workflows/',
-    };
-
-    for (const [deprecated, alternative] of Object.entries(alternatives)) {
-      if (relativePath.includes(deprecated)) {
-        return alternative;
-      }
-    }
-
-    return 'Check src/modules/ for new alternatives';
-  }
-
-  /**
-   * Perform interactive cleanup of legacy files
-   * @param {string} bmadDir - BMAD installation directory
-   * @param {boolean} skipInteractive - Skip interactive prompts
-   * @returns {Object} Cleanup results
-   */
-  async performCleanup(bmadDir, skipInteractive = false) {
-    const inquirer = require('inquirer');
-    const yaml = require('js-yaml');
-
-    // Load user retention preferences
-    const retentionPath = path.join(bmadDir, '_cfg', 'user-retained-files.yaml');
-    let retentionData = { retainedFiles: [], history: [] };
-
-    if (await fs.pathExists(retentionPath)) {
-      const retentionContent = await fs.readFile(retentionPath, 'utf8');
-      retentionData = yaml.load(retentionContent) || retentionData;
-    }
-
-    // Scan for legacy files
-    const legacyFiles = await this.scanForLegacyFiles(bmadDir);
-    const allLegacyFiles = [...legacyFiles.backup, ...legacyFiles.documentation, ...legacyFiles.deprecated_task, ...legacyFiles.unknown];
-
-    if (allLegacyFiles.length === 0) {
-      return { deleted: 0, retained: 0, message: 'No legacy files found' };
-    }
-
-    let deletedCount = 0;
-    let retainedCount = 0;
-    const filesToDelete = [];
-
-    if (skipInteractive) {
-      // Auto-delete all non-retained files
-      for (const file of allLegacyFiles) {
-        if (!retentionData.retainedFiles.includes(file.relativePath)) {
-          filesToDelete.push(file);
-        }
-      }
-    } else {
-      // Interactive cleanup
-      console.log(chalk.cyan('\n🧹 Legacy File Cleanup\n'));
-      console.log(chalk.dim('The following obsolete files were found:\n'));
-
-      // Group files by category
-      const categories = [];
-      if (legacyFiles.backup.length > 0) {
-        categories.push({ name: 'Backup Files (.bak)', files: legacyFiles.backup });
-      }
-      if (legacyFiles.documentation.length > 0) {
-        categories.push({ name: 'Documentation', files: legacyFiles.documentation });
-      }
-      if (legacyFiles.deprecated_task.length > 0) {
-        categories.push({ name: 'Deprecated Task Files', files: legacyFiles.deprecated_task });
-      }
-      if (legacyFiles.unknown.length > 0) {
-        categories.push({ name: 'Unknown Files', files: legacyFiles.unknown });
-      }
-
-      for (const category of categories) {
-        console.log(chalk.yellow(`${category.name}:`));
-        for (const file of category.files) {
-          const size = (file.size / 1024).toFixed(1);
-          const date = file.mtime.toLocaleDateString();
-          let line = `  - ${file.relativePath} (${size}KB, ${date})`;
-          if (file.suggestedAlternative) {
-            line += chalk.dim(` → ${file.suggestedAlternative}`);
-          }
-          console.log(chalk.dim(line));
-        }
-        console.log();
-      }
-
-      const prompt = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'proceed',
-          message: 'Would you like to review these files for cleanup?',
-          default: true,
-        },
-      ]);
-
-      if (!prompt.proceed) {
-        return { deleted: 0, retained: allLegacyFiles.length, message: 'Cleanup cancelled by user' };
-      }
-
-      // Show selection interface
-      const selectionPrompt = await inquirer.prompt([
-        {
-          type: 'checkbox',
-          name: 'filesToDelete',
-          message: 'Select files to delete (use SPACEBAR to select, ENTER to continue):',
-          choices: allLegacyFiles.map((file) => {
-            const isRetained = retentionData.retainedFiles.includes(file.relativePath);
-            const description = `${file.relativePath} (${(file.size / 1024).toFixed(1)}KB)`;
-            return {
-              name: description,
-              value: file,
-              checked: !isRetained && !file.relativePath.includes('.bak'),
-            };
-          }),
-          pageSize: Math.min(allLegacyFiles.length, 15),
-        },
-      ]);
-
-      filesToDelete.push(...selectionPrompt.filesToDelete);
-    }
-
-    // Delete selected files
-    for (const file of filesToDelete) {
-      try {
-        await fs.remove(file.path);
-        deletedCount++;
-      } catch (error) {
-        console.warn(`Warning: Could not delete ${file.relativePath}: ${error.message}`);
-      }
-    }
-
-    // Count retained files
-    retainedCount = allLegacyFiles.length - deletedCount;
-
-    // Update retention data
-    const newlyRetained = allLegacyFiles.filter((f) => !filesToDelete.includes(f)).map((f) => f.relativePath);
-
-    retentionData.retainedFiles = [...new Set([...retentionData.retainedFiles, ...newlyRetained])];
-    retentionData.history.push({
-      date: new Date().toISOString(),
-      deleted: deletedCount,
-      retained: retainedCount,
-      files: filesToDelete.map((f) => f.relativePath),
-    });
-
-    // Save retention data
-    await fs.ensureDir(path.dirname(retentionPath));
-    await fs.writeFile(retentionPath, yaml.dump(retentionData), 'utf8');
-
-    return { deleted: deletedCount, retained: retainedCount };
   }
 }
 

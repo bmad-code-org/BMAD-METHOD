@@ -116,8 +116,18 @@ class UI {
 
     const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
     const coreConfig = await this.collectCoreConfig(confirmedDirectory);
-    const moduleChoices = await this.getModuleChoices(installedModuleIds);
-    const selectedModules = await this.selectModules(moduleChoices);
+
+    // Skip module selection during update/reinstall - keep existing modules
+    let selectedModules;
+    if (actionType === 'update' || actionType === 'reinstall') {
+      // Keep all existing installed modules during update/reinstall
+      selectedModules = [...installedModuleIds];
+      console.log(chalk.cyan('\n📦 Keeping existing modules: ') + selectedModules.join(', '));
+    } else {
+      // Only show module selection for new installs
+      const moduleChoices = await this.getModuleChoices(installedModuleIds);
+      selectedModules = await this.selectModules(moduleChoices);
+    }
 
     // Prompt for AgentVibes TTS integration
     const agentVibesConfig = await this.promptAgentVibes(confirmedDirectory);

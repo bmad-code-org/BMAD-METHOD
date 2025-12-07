@@ -34,9 +34,13 @@ class ManifestGenerator {
 
     // Store modules list (all modules including preserved ones)
     const preservedModules = options.preservedModules || [];
+
+    // Scan the bmad directory to find all actually installed modules
+    const installedModules = await this.scanInstalledModules(bmadDir);
+
     // Deduplicate modules list to prevent duplicates
-    this.modules = [...new Set(['core', ...selectedModules, ...preservedModules])];
-    this.updatedModules = [...new Set(['core', ...selectedModules])]; // Only these get rescanned
+    this.modules = [...new Set(['core', ...selectedModules, ...preservedModules, ...installedModules])];
+    this.updatedModules = [...new Set(['core', ...selectedModules, ...installedModules])]; // All installed modules get rescanned
     this.preservedModules = preservedModules; // These stay as-is in CSVs
     this.bmadDir = bmadDir;
     this.bmadFolderName = path.basename(bmadDir); // Get the actual folder name (e.g., '.bmad' or 'bmad')
@@ -216,18 +220,23 @@ class ManifestGenerator {
   }
 
   /**
-   * Get agents from a directory
+   * Get agents from a directory recursively
    * Only includes compiled .md files (not .agent.yaml source files)
    */
-  async getAgentsFromDir(dirPath, moduleName) {
+  async getAgentsFromDir(dirPath, moduleName, relativePath = '') {
     const agents = [];
-    const files = await fs.readdir(dirPath);
+    const entries = await fs.readdir(dirPath, { withFileTypes: true });
 
-    for (const file of files) {
-      // Only include .md files, skip .agent.yaml source files and README.md
-      if (file.endsWith('.md') && !file.endsWith('.agent.yaml') && file.toLowerCase() !== 'readme.md') {
-        const filePath = path.join(dirPath, file);
-        const content = await fs.readFile(filePath, 'utf8');
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry.name);
+
+      if (entry.isDirectory()) {
+        // Recurse into subdirectories
+        const newRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+        const subDirAgents = await this.getAgentsFromDir(fullPath, moduleName, newRelativePath);
+        agents.push(...subDirAgents);
+      } else if (entry.name.endsWith('.md') && !entry.name.endsWith('.agent.yaml') && entry.name.toLowerCase() !== 'readme.md') {
+        const content = await fs.readFile(fullPath, 'utf8');
 
         // Skip files that don't contain <agent> tag (e.g., README files)
         if (!content.includes('<agent')) {
@@ -251,10 +260,13 @@ class ManifestGenerator {
         const principlesMatch = content.match(/<principles>([\s\S]*?)<\/principles>/);
 
         // Build relative path for installation
+        const fileRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
         const installPath =
-          moduleName === 'core' ? `${this.bmadFolderName}/core/agents/${file}` : `${this.bmadFolderName}/${moduleName}/agents/${file}`;
+          moduleName === 'core'
+            ? `${this.bmadFolderName}/core/agents/${fileRelativePath}`
+            : `${this.bmadFolderName}/${moduleName}/agents/${fileRelativePath}`;
 
-        const agentName = file.replace('.md', '');
+        const agentName = entry.name.replace('.md', '');
 
         // Helper function to clean and escape CSV content
         const cleanForCSV = (text) => {
@@ -699,6 +711,42 @@ class ManifestGenerator {
 
     await fs.writeFile(csvPath, csv);
     return csvPath;
+  }
+
+  /**
+   * Scan the bmad directory to find all installed modules
+   * @param {string} bmadDir - Path to bmad directory
+   * @returns {Array} List of module names
+   */
+  async scanInstalledModules(bmadDir) {
+    const modules = [];
+
+    try {
+      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        // Skip if not a directory or is a special directory
+        if (!entry.isDirectory() || entry.name.startsWith('.') || entry.name === '_cfg') {
+          continue;
+        }
+
+        // Check if this looks like a module (has agents, workflows, or tasks directory)
+        const modulePath = path.join(bmadDir, entry.name);
+        const hasAgents = await fs.pathExists(path.join(modulePath, 'agents'));
+        const hasWorkflows = await fs.pathExists(path.join(modulePath, 'workflows'));
+        const hasTasks = await fs.pathExists(path.join(modulePath, 'tasks'));
+        const hasTools = await fs.pathExists(path.join(modulePath, 'tools'));
+
+        // If it has any of these directories, it's likely a module
+        if (hasAgents || hasWorkflows || hasTasks || hasTools) {
+          modules.push(entry.name);
+        }
+      }
+    } catch (error) {
+      console.warn(`Warning: Could not scan for installed modules: ${error.message}`);
+    }
+
+    return modules;
   }
 }
 

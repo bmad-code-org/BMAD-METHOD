@@ -23,7 +23,11 @@ document_output_language:
   default: "{communication_language}"
   result: "{value}"
 
-  # This is the folder where all generated AI Output documents from workflows will default be sa
+agent_sidecar_folder:
+  prompt: "Where should users agent sidecar memory folders be stored?"
+  default: ".bmad-user-memory"
+  result: "{project-root}/{value}"
+
 output_folder:
   prompt: "Where should AI Generated Artifacts be saved across all modules?"
   default: "docs"
