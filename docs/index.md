@@ -98,8 +98,10 @@ Instructions for loading agents and running workflows in your development enviro
 
 ### Custom Agents
 
-- **[Custom Agent Installation](./custom-agent-installation.md)** - Install and personalize agents with `bmad agent-install`
+- **[Custom Agent Installation](./custom-agent-installation.md)** - Install and personalize agents using `custom.yaml` with `npx bmad-method install` (or `bmad install`)
 - [Agent Customization Guide](./agent-customization-guide.md) - Customize agent behavior and responses
+
+> Note: The legacy `bmad agent-install` command was removed in alpha.14. Use the `custom.yaml` installer flow instead when upgrading from earlier alphas.
 
 ### Installation & Bundling
 
