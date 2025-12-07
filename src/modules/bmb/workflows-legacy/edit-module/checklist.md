@@ -24,7 +24,6 @@ Use this checklist to validate module edits meet BMAD Core standards.
 
 ### Optional Fields (if used)
 
-- [ ] custom_agent_location documented
 - [ ] custom_module_location documented
 - [ ] Module-specific fields documented in README
 

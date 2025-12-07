@@ -15,7 +15,7 @@ const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generat
  */
 class RovoDevSetup extends BaseIdeSetup {
   constructor() {
-    super('rovo-dev', 'Atlassian Rovo Dev', true); // preferred IDE
+    super('rovo-dev', 'Atlassian Rovo Dev', false);
     this.configDir = '.rovodev';
     this.subagentsDir = 'subagents';
     this.workflowsDir = 'workflows';

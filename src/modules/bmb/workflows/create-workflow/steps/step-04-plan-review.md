@@ -10,7 +10,7 @@ thisStepFile: '{workflow_path}/steps/step-04-plan-review.md'
 nextStepFormDesign: '{workflow_path}/steps/step-05-output-format-design.md'
 nextStepDesign: '{workflow_path}/steps/step-06-design.md'
 
-targetWorkflowPath: '{custom_workflow_location}/{new_workflow_name}'
+targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References

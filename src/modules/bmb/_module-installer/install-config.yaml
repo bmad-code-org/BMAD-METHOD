@@ -15,17 +15,12 @@ subheader: "Configure the settings for the BoMB Factory!\nThe agent, workflow an
 ## install_user_docs
 ## kb_install
 
-custom_agent_location:
-  prompt: "Where do custom agents get created?"
-  default: "{bmad_folder}/custom/src/agents"
-  result: "{project-root}/{value}"
-
-custom_workflow_location:
-  prompt: "Where do custom workflows get stored?"
-  default: "{bmad_folder}/custom/src/workflows"
+custom_stand_alone_location:
+  prompt: "Where do custom agents and workflows get stored?"
+  default: "bmad-custom-src"
   result: "{project-root}/{value}"
 
 custom_module_location:
   prompt: "Where do custom modules get stored?"
-  default: "{bmad_folder}/custom/src/modules"
+  default: "bmad-custom-modules-src"
   result: "{project-root}/{value}"

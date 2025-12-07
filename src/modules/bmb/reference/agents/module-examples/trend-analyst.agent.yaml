@@ -10,7 +10,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/cis/agents/trend-analyst.md"
+    id: "{*bmad_folder*}/cis/agents/trend-analyst.md"
     name: "Nova"
     title: "Trend Analyst"
     icon: "📈"
@@ -32,26 +32,26 @@ agent:
   menu:
     # NOTE: These workflows are hypothetical examples - not implemented
     - trigger: scan-trends
-      workflow: "{project-root}/{bmad_folder}/cis/workflows/trend-scan/workflow.yaml"
+      exec: "{project-root}/{*bmad_folder*}/cis/workflows/trend-scan/workflow.md"
       description: "Scan for emerging trends in a domain"
 
     - trigger: analyze-trend
-      workflow: "{project-root}/{bmad_folder}/cis/workflows/trend-analysis/workflow.yaml"
+      exec: "{project-root}/{*bmad_folder*}/cis/workflows/trend-analysis/workflow.md"
       description: "Deep dive on a specific trend"
 
     - trigger: opportunity-map
-      workflow: "{project-root}/{bmad_folder}/cis/workflows/opportunity-mapping/workflow.yaml"
+      exec: "{project-root}/{*bmad_folder*}/cis/workflows/opportunity-mapping/workflow.md"
       description: "Map trend to strategic opportunities"
 
     - trigger: competitor-trends
-      exec: "{project-root}/{bmad_folder}/cis/tasks/competitor-trend-watch.xml"
+      exec: "{project-root}/{*bmad_folder*}/cis/tasks/competitor-trend-watch.xml"
       description: "Monitor competitor trend adoption"
 
     # Core workflows that exist
     - trigger: brainstorm
-      workflow: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml"
+      exec: "{project-root}/{*bmad_folder*}/core/workflows/brainstorming/workflow.md"
       description: "Brainstorm trend implications"
 
     - trigger: party-mode
-      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
+      exec: "{project-root}/{*bmad_folder*}/core/workflows/party-mode/workflow.md"
       description: "Discuss trends with other agents"

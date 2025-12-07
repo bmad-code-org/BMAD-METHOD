@@ -1,5 +1,100 @@
 # Changelog
 
+## [6.0.0-alpha.14]
+
+**Release: December 7, 2025**
+
+### 🔧 Installation & Configuration Revolution
+
+**Custom Module Installation Overhaul:**
+
+- **Simple custom.yaml Installation**: Custom agents and workflows can now be installed with a single YAML file
+- **IDE Configuration Preservation**: Upgrades will no longer delete custom modules, agents, and workflows from IDE configuration
+- **Removed Legacy agent-install Command**: Streamlined installation process (BREAKING CHANGE)
+- **Sidecar File Retention**: Custom sidecar files are preserved during updates
+- **Flexible Agent Sidecar Locations**: Fully configurable via config options instead of hardcoded paths
+
+**Module Discovery System Transformation:**
+
+- **Recursive Agent Discovery**: Deep scanning for agents across entire project structure
+- **Enhanced Manifest Generation**: Comprehensive scanning of all installed modules
+- **Nested Agent Support**: Fixed nested agents appearing in CLI commands
+- **Module Reinstall Fix**: Prevented modules from showing as obsolete during reinstall
+
+### 🏗️ Advanced Builder Features
+
+**Workflow Builder Evolution:**
+
+- **Continuable Workflows**: Create workflows with sophisticated branching and continuation logic
+- **Template LOD Options**: Level of Detail output options for flexible workflow generation
+- **Step-Based Architecture**: Complete conversion to granular step-file system
+- **Enhanced Creation Process**: Improved workflow creation with better template handling
+
+**Module Builder Revolution:**
+
+- **11-Step Module Creation**: Comprehensive step-by-step module generation process
+- **Production-Ready Templates**: Complete templates for agents, installers, and workflow plans
+- **Built-in Validation System**: Ensures module quality and BMad Core compliance
+- **Professional Documentation**: Auto-generated module documentation and structure
+
+### 🚀 BMad Method (BMM) Enhancements
+
+**Workflow Improvements:**
+
+- **Brownfield PRD Support**: Enhanced PRD workflow for existing project integration
+- **Sprint Status Command**: New workflow for tracking development progress
+- **Step-Based Format**: Improved continue functionality across all workflows
+- **Quick-Spec-Flow Documentation**: Rapid development specification flows
+
+**Documentation Revolution:**
+
+- **Comprehensive Troubleshooting Guide**: 680-line detailed troubleshooting documentation
+- **Quality Check Integration**: Added markdownlint-cli2 for markdown quality assurance
+- **Enhanced Test Architecture**: Improved CI/CD templates and testing workflows
+
+### 🌟 New Features & Integrations
+
+**Kiro-Cli Installer:**
+
+- **Intelligent Routing**: Smart routing to quick-dev workflow
+- **BMad Core Compliance**: Full compliance with BMad standards
+
+**Discord Notifications:**
+
+- **Compact Format**: Streamlined plain-text notifications
+- **Bug Fixes**: Resolved notification delivery issues
+
+**Example Mental Wellness Module (MWM):**
+
+- **Complete Module Example**: Demonstrates advanced module patterns
+- **Multiple Agents**: CBT Coach, Crisis Navigator, Meditation Guide, Wellness Companion
+- **Workflow Showcase**: Crisis support, daily check-in, meditation, journaling workflows
+
+### 🐛 Bug Fixes & Optimizations
+
+- Fixed version reading from package.json instead of hardcoded fallback
+- Removed hardcoded years from WebSearch queries
+- Removed broken build caching mechanism
+- Fixed hardcoded 'bmad' prefix from files-manifest.csv paths
+- Enhanced TTS injection summary with tracking and documentation
+- Fixed CI nvmrc configuration issues
+
+### 📊 Statistics
+
+- **335 files changed** with 17,161 additions and 8,204 deletions
+- **46 commits** since alpha.13
+
+### ⚠️ Breaking Changes
+
+1. **Removed agent-install Command**: Migrate to new custom.yaml installation system
+2. **Agent Sidecar Configuration**: Now requires explicit config instead of hardcoded paths
+
+### 📦 New Dependencies
+
+- `markdownlint-cli2: ^0.19.1` - Professional markdown linting
+
+---
+
 ## [6.0.0-alpha.13]
 
 **Release: November 30, 2025**

@@ -52,6 +52,9 @@ class UI {
       await installer.handleLegacyV4Migration(confirmedDirectory, legacyV4);
     }
 
+    // Prompt for custom content location (separate from installation directory)
+    const customContentConfig = await this.promptCustomContentLocation();
+
     // Check if there's an existing BMAD installation
     const fs = require('fs-extra');
     const path = require('node:path');
@@ -85,9 +88,12 @@ class UI {
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
+        // Even for quick update, ask about custom content
+        const customContentConfig = await this.promptCustomContentLocation();
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
+          customContent: customContentConfig,
         };
       }
 
@@ -116,8 +122,31 @@ class UI {
 
     const { installedModuleIds } = await this.getExistingInstallation(confirmedDirectory);
     const coreConfig = await this.collectCoreConfig(confirmedDirectory);
-    const moduleChoices = await this.getModuleChoices(installedModuleIds);
-    const selectedModules = await this.selectModules(moduleChoices);
+
+    // Skip module selection during update/reinstall - keep existing modules
+    let selectedModules;
+    if (actionType === 'update' || actionType === 'reinstall') {
+      // Keep all existing installed modules during update/reinstall
+      selectedModules = [...installedModuleIds];
+      console.log(chalk.cyan('\n📦 Keeping existing modules: ') + selectedModules.join(', '));
+    } else {
+      // Only show module selection for new installs
+      const moduleChoices = await this.getModuleChoices(installedModuleIds, customContentConfig);
+      selectedModules = await this.selectModules(moduleChoices);
+
+      // Check which custom content items were selected
+      const selectedCustomContent = selectedModules.filter((mod) => mod.startsWith('__CUSTOM_CONTENT__'));
+      if (selectedCustomContent.length > 0) {
+        customContentConfig.selected = true;
+        customContentConfig.selectedFiles = selectedCustomContent.map((mod) => mod.replace('__CUSTOM_CONTENT__', ''));
+        // Filter out custom content markers since they're not real modules
+        selectedModules = selectedModules.filter((mod) => !mod.startsWith('__CUSTOM_CONTENT__'));
+      } else if (customContentConfig.hasCustomContent) {
+        // User provided custom content but didn't select any
+        customContentConfig.selected = false;
+        customContentConfig.selectedFiles = [];
+      }
+    }
 
     // Collect IDE tool selection AFTER configuration prompts (fixes Windows/PowerShell hang)
     // This allows text-based prompts to complete before the checkbox prompt
@@ -138,7 +167,9 @@ class UI {
       ides: toolSelection.ides,
       skipIde: toolSelection.skipIde,
       coreConfig: coreConfig, // Pass collected core config to installer
-      enableAgentVibes: agentVibesConfig.enabled, // AgentVibes TTS integration
+      // Custom content configuration
+      customContent: customContentConfig,
+      enableAgentVibes: agentVibesConfig.enabled,
       agentVibesInstalled: agentVibesConfig.alreadyInstalled,
     };
   }
@@ -474,19 +505,52 @@ class UI {
   /**
    * Get module choices for selection
    * @param {Set} installedModuleIds - Currently installed module IDs
+   * @param {Object} customContentConfig - Custom content configuration
    * @returns {Array} Module choices for inquirer
    */
-  async getModuleChoices(installedModuleIds) {
+  async getModuleChoices(installedModuleIds, customContentConfig = null) {
+    const moduleChoices = [];
+    const isNewInstallation = installedModuleIds.size === 0;
+
+    // Add custom content items first if found
+    if (customContentConfig && customContentConfig.hasCustomContent && customContentConfig.customPath) {
+      // Add separator before custom content
+      moduleChoices.push(new inquirer.Separator('── Custom Content ──'));
+
+      // Get the custom content info to display proper names
+      const { CustomHandler } = require('../installers/lib/custom/handler');
+      const customHandler = new CustomHandler();
+      const customFiles = await customHandler.findCustomContent(customContentConfig.customPath);
+
+      for (const customFile of customFiles) {
+        const customInfo = await customHandler.getCustomInfo(customFile);
+        if (customInfo) {
+          moduleChoices.push({
+            name: `${chalk.cyan('✓')} ${customInfo.name} ${chalk.gray(`(${customInfo.relativePath})`)}`,
+            value: `__CUSTOM_CONTENT__${customFile}`, // Unique value for each custom content
+            checked: true, // Default to selected since user chose to provide custom content
+          });
+        }
+      }
+
+      // Add separator for official content
+      moduleChoices.push(new inquirer.Separator('── Official Content ──'));
+    }
+
+    // Add official modules
     const { ModuleManager } = require('../installers/lib/modules/manager');
     const moduleManager = new ModuleManager();
     const availableModules = await moduleManager.listAvailable();
 
-    const isNewInstallation = installedModuleIds.size === 0;
-    return availableModules.map((mod) => ({
-      name: mod.name,
-      value: mod.id,
-      checked: isNewInstallation ? mod.defaultSelected || false : installedModuleIds.has(mod.id),
-    }));
+    for (const mod of availableModules) {
+      moduleChoices.push({
+        name: mod.name,
+        value: mod.id,
+        checked: isNewInstallation ? mod.defaultSelected || false : installedModuleIds.has(mod.id),
+      });
+    }
+
+    return moduleChoices;
   }
 
   /**
@@ -560,6 +624,111 @@ class UI {
           console.log(chalk.gray('Directory exists and is empty'));
         }
       }
+    }
+  }
+
+  /**
+   * Prompt for custom content location
+   * @returns {Object} Custom content configuration
+   */
+  async promptCustomContentLocation() {
+    try {
+      CLIUtils.displaySection('Custom Content', 'Optional: Add custom agents and workflows');
+
+      const { hasCustomContent } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'hasCustomContent',
+          message: 'Do you have custom content to install?',
+          choices: [
+            { name: 'No (skip custom content)', value: 'none' },
+            { name: 'Enter a directory path', value: 'directory' },
+            { name: 'Enter a URL', value: 'url' },
+          ],
+          default: 'none',
+        },
+      ]);
+
+      if (hasCustomContent === 'none') {
+        return { hasCustomContent: false };
+      }
+
+      if (hasCustomContent === 'url') {
+        console.log(chalk.yellow('\nURL-based custom content installation is coming soon!'));
+        console.log(chalk.cyan('For now, please download your custom content and choose "Enter a directory path".\n'));
+        return { hasCustomContent: false };
+      }
+
+      if (hasCustomContent === 'directory') {
+        let customPath;
+        while (!customPath) {
+          let expandedPath;
+          const { directory } = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'directory',
+              message: 'Enter the path to your custom content directory:',
+              default: process.cwd(), // Use actual current working directory
+              validate: async (input) => {
+                if (!input || input.trim() === '') {
+                  return 'Please enter a directory path';
+                }
+
+                try {
+                  expandedPath = this.expandUserPath(input.trim());
+                } catch (error) {
+                  return error.message;
+                }
+
+                // Check if the path exists
+                const pathExists = await fs.pathExists(expandedPath);
+                if (!pathExists) {
+                  return 'Directory does not exist';
+                }
+
+                return true;
+              },
+            },
+          ]);
+
+          // Now expand the path for use after the prompt
+          expandedPath = this.expandUserPath(directory.trim());
+
+          // Check if directory has custom content
+          const { CustomHandler } = require('../installers/lib/custom/handler');
+          const customHandler = new CustomHandler();
+          const customFiles = await customHandler.findCustomContent(expandedPath);
+
+          if (customFiles.length === 0) {
+            console.log(chalk.yellow(`\nNo custom.yaml files found in ${expandedPath}`));
+
+            const { tryAgain } = await inquirer.prompt([
+              {
+                type: 'confirm',
+                name: 'tryAgain',
+                message: 'Try a different directory?',
+                default: true,
+              },
+            ]);
+
+            if (tryAgain) {
+              continue;
+            } else {
+              return { hasCustomContent: false };
+            }
+          }
+
+          customPath = expandedPath;
+          console.log(chalk.green(`\n✓ Found ${customFiles.length} custom content file(s)`));
+        }
+
+        return { hasCustomContent: true, customPath };
+      }
+
+      return { hasCustomContent: false };
+    } catch (error) {
+      console.error(chalk.red('Error in custom content prompt:'), error);
+      return { hasCustomContent: false };
     }
   }
 

@@ -2,12 +2,24 @@
 
 ## Installation
 
-```bash
-# Quick install (interactive)
-npx bmad-method agent-install --source ./{agent_filename}.agent.yaml
+Create a `custom.yaml` file in the agent folder:
 
-# Quick install (non-interactive)
-npx bmad-method agent-install --source ./{agent_filename}.agent.yaml --defaults
+```yaml
+code: { agent_code }
+name: '{agent_name}'
+default_selected: true
+```
+
+Then run:
+
+```bash
+npx bmad-method install
+```
+
+Or if you have bmad-cli installed globally:
+
+```bash
+bmad install
 ```
 
 ## About This Agent

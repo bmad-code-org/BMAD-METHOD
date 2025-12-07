@@ -438,9 +438,10 @@ function compileToXml(agentYaml, agentName = '', targetPath = '') {
  * @param {Object} answers - Answers from install_config questions (or defaults)
  * @param {string} agentName - Optional final agent name (user's custom persona name)
  * @param {string} targetPath - Optional target path for agent ID
+ * @param {Object} options - Additional options including config
  * @returns {Object} { xml: string, metadata: Object }
  */
-function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = '') {
+function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = '', options = {}) {
   // Parse YAML
   const agentYaml = yaml.parse(yamlContent);
 
@@ -466,14 +467,22 @@ function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = ''
     finalAnswers = { ...defaults, ...answers };
   }
 
+  // Add agent_sidecar_folder to answers if provided in config
+  if (options.config && options.config.agent_sidecar_folder) {
+    finalAnswers.agent_sidecar_folder = options.config.agent_sidecar_folder;
+  }
+
   // Process templates with answers
   const processedYaml = processAgentYaml(agentYaml, finalAnswers);
 
   // Strip install_config from output
   const cleanYaml = stripInstallConfig(processedYaml);
 
-  // Compile to XML
-  const xml = compileToXml(cleanYaml, agentName, targetPath);
+  // Replace {agent_sidecar_folder} in XML content
+  let xml = compileToXml(cleanYaml, agentName, targetPath);
+  if (finalAnswers.agent_sidecar_folder) {
+    xml = xml.replaceAll('{agent_sidecar_folder}', finalAnswers.agent_sidecar_folder);
+  }
 
   return {
     xml,

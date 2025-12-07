@@ -96,9 +96,9 @@ Instructions for loading agents and running workflows in your development enviro
 
 ## 🔧 Advanced Topics
 
-### Custom Agents
+### Custom Agents, Workflow and Modules
 
-- **[Custom Agent Installation](./custom-agent-installation.md)** - Install and personalize agents with `bmad agent-install`
+- **[Custom Content Installation](./custom-content-installation.md)** - Install and personalize agents, workflows and modules with the default bmad-method installer!
 - [Agent Customization Guide](./agent-customization-guide.md) - Customize agent behavior and responses
 
 ### Installation & Bundling
