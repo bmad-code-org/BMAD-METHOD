@@ -53,34 +53,22 @@ tea_use_playwright_utils:
   default: false
   result: "{value}"
 
-# External Code Review Agents Configuration
-# These are auto-detected at runtime, but user can set preference here
+# External Code Review Agent Selection
+# Allows delegating code reviews to an external AI agent CLI for independent, unbiased reviews
 # Useful when using a different AI as primary IDE agent (e.g., Codex/Gemini users can use Claude for reviews)
-external_review_agents:
-  codex_available:
-    prompt: false # Auto-detected at runtime
-    default: false
-    result: "{value}"
-  gemini_available:
-    prompt: false # Auto-detected at runtime
-    default: false
-    result: "{value}"
-  claude_available:
-    prompt: false # Auto-detected at runtime
-    default: false
-    result: "{value}"
-  preferred_agent:
-    prompt: "Which external code review agent do you prefer (if multiple are available)?"
-    default: "codex"
-    result: "{value}"
-    single-select:
-      - value: "codex"
-        label: "Codex (OpenAI) - Fast code review with OpenAI models"
-      - value: "gemini"
-        label: "Gemini (Google) - Code review with Google models"
-      - value: "claude"
-        label: "Claude (Anthropic) - Code review with Claude models (good for Codex/Gemini users)"
-  last_checked:
-    prompt: false # System-managed timestamp
-    default: null
-    result: "{value}"
+external_review_agent:
+  prompt:
+    - "Which external agent should perform code reviews?"
+    - "External agents provide independent, unbiased reviews separate from your primary IDE agent."
+    - "The selected CLI must be installed and configured on your system."
+  default: "none"
+  result: "{value}"
+  single-select:
+    - value: "codex"
+      label: "Codex (OpenAI) - Code review using OpenAI Codex CLI"
+    - value: "gemini"
+      label: "Gemini (Google) - Code review using Google Gemini CLI"
+    - value: "claude"
+      label: "Claude Code (Anthropic) - Code review using Claude Code CLI"
+    - value: "none"
+      label: "None - Use built-in review (no external agent)"

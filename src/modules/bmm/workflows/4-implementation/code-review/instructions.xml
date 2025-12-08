@@ -67,21 +67,16 @@
     <set-var name="gemini_available" value="false" />
     <set-var name="claude_available" value="false" />
     <set-var name="external_agent_failed" value="false" />
-    <set-var name="skip_detection" value="false" />
+    <set-var name="preferred_agent" value="{external_review_agent}" />
 
-    <!-- Check if config already has agent availability defined -->
-    <check if="{external_review_agents.codex_available} == true OR {external_review_agents.gemini_available} == true OR {external_review_agents.claude_available} == true">
-      <set-var name="skip_detection" value="true" />
-      <set-var name="codex_available" value="{external_review_agents.codex_available}" />
-      <set-var name="gemini_available" value="{external_review_agents.gemini_available}" />
-      <set-var name="claude_available" value="{external_review_agents.claude_available}" />
-      <output>📋 Using cached agent detection from config.yaml</output>
-      <output>   Codex: {{codex_available}}, Gemini: {{gemini_available}}, Claude: {{claude_available}}</output>
+    <!-- Check if user has disabled external agents -->
+    <check if="{{preferred_agent}} == 'none'">
+      <output>📋 External agent disabled in config - will use built-in adversarial review</output>
     </check>
 
-    <!-- Only run detection if not already in config -->
-    <check if="{{skip_detection}} == false">
-      <output>🔍 No cached detection found - detecting available agents...</output>
+    <!-- Only detect and use external agents if not set to "none" -->
+    <check if="{{preferred_agent}} != 'none'">
+      <output>🔍 Detecting external agent availability...</output>
 
       <!-- Detect Codex CLI availability -->
       <invoke-bash cmd="command -v codex &amp;&amp; codex --version 2>/dev/null || echo 'NOT_FOUND'" />
@@ -104,66 +99,43 @@
         <output>✓ Claude CLI detected</output>
       </check>
 
-      <!-- Update config.yaml with detection results -->
-      <invoke-bash cmd="
-CONFIG_FILE='{config_source}'
-if grep -q '^external_review_agents:' &quot;$CONFIG_FILE&quot; 2>/dev/null; then
-  sed -i.bak -e '/^external_review_agents:/,/^[^ ]/ {
-    s/codex_available:.*/codex_available: {{codex_available}}/
-    s/gemini_available:.*/gemini_available: {{gemini_available}}/
-    s/claude_available:.*/claude_available: {{claude_available}}/
-    s/last_checked:.*/last_checked: {{date}}/
-  }' &quot;$CONFIG_FILE&quot;
-  rm -f &quot;$CONFIG_FILE.bak&quot;
-else
-  cat >> &quot;$CONFIG_FILE&quot; &lt;&lt;EOF
+      <!-- Select which external agent to use based on availability and preference -->
+      <check if="{{preferred_agent}} == 'codex' AND {{codex_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="codex" />
+      </check>
+      <check if="{{preferred_agent}} == 'gemini' AND {{gemini_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="gemini" />
+      </check>
+      <check if="{{preferred_agent}} == 'claude' AND {{claude_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="claude" />
+      </check>
 
-external_review_agents:
-  codex_available: {{codex_available}}
-  gemini_available: {{gemini_available}}
-  claude_available: {{claude_available}}
-  preferred_agent: codex
-  last_checked: {{date}}
-EOF
-fi
-echo 'Config updated'
-" />
-      <output>📝 Config updated with detection results</output>
-    </check>
+      <!-- Fallback selection if preferred agent not available -->
+      <check if="{{use_external_agent}} == false AND {{codex_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="codex" />
+        <output>⚠️ Preferred agent ({{preferred_agent}}) not available, falling back to Codex</output>
+      </check>
+      <check if="{{use_external_agent}} == false AND {{gemini_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="gemini" />
+        <output>⚠️ Preferred agent ({{preferred_agent}}) not available, falling back to Gemini</output>
+      </check>
+      <check if="{{use_external_agent}} == false AND {{claude_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="claude" />
+        <output>⚠️ Preferred agent ({{preferred_agent}}) not available, falling back to Claude</output>
+      </check>
 
-    <!-- Select which external agent to use based on availability and preference -->
-    <check if="{external_review_agents.preferred_agent} == 'codex' AND {{codex_available}} == true">
-      <set-var name="use_external_agent" value="true" />
-      <set-var name="external_agent_cmd" value="codex" />
-    </check>
-    <check if="{external_review_agents.preferred_agent} == 'gemini' AND {{gemini_available}} == true">
-      <set-var name="use_external_agent" value="true" />
-      <set-var name="external_agent_cmd" value="gemini" />
-    </check>
-    <check if="{external_review_agents.preferred_agent} == 'claude' AND {{claude_available}} == true">
-      <set-var name="use_external_agent" value="true" />
-      <set-var name="external_agent_cmd" value="claude" />
-    </check>
-
-    <!-- Fallback selection if preferred agent not available -->
-    <check if="{{use_external_agent}} == false AND {{codex_available}} == true">
-      <set-var name="use_external_agent" value="true" />
-      <set-var name="external_agent_cmd" value="codex" />
-    </check>
-    <check if="{{use_external_agent}} == false AND {{gemini_available}} == true">
-      <set-var name="use_external_agent" value="true" />
-      <set-var name="external_agent_cmd" value="gemini" />
-    </check>
-    <check if="{{use_external_agent}} == false AND {{claude_available}} == true">
-      <set-var name="use_external_agent" value="true" />
-      <set-var name="external_agent_cmd" value="claude" />
-    </check>
-
-    <check if="{{use_external_agent}} == true">
-      <output>🤖 External agent selected: {{external_agent_cmd}} - will delegate code review</output>
-    </check>
-    <check if="{{use_external_agent}} == false">
-      <output>📋 No external agent available - will use built-in adversarial review</output>
+      <check if="{{use_external_agent}} == true">
+        <output>🤖 External agent selected: {{external_agent_cmd}} - will delegate code review</output>
+      </check>
+      <check if="{{use_external_agent}} == false">
+        <output>📋 No external agent available - will use built-in adversarial review</output>
+      </check>
     </check>
   </step>
 
@@ -208,83 +180,21 @@ echo 'Config updated'
       <critical>Copy the invoke-bash cmd attribute EXACTLY as written below.</critical>
       <critical>DO NOT remove flags, reorder arguments, or "improve" the command.</critical>
 
+      <!-- External agent prompt is loaded from external-agent-prompt.md -->
+      <set-var name="external_prompt_file" value="{installed_path}/external-agent-prompt.md" />
+      <action>Load {{external_prompt_file}} content into {{external_prompt}}</action>
+
       <check if="{{external_agent_cmd}} == 'codex'">
-        <critical>CODEX: Use codex exec --full-auto with inline prompt</critical>
-        <invoke-bash cmd="codex exec --full-auto 'You are an ADVERSARIAL code reviewer. Your job is to find problems, not approve code.
-
-REQUIREMENTS:
-- Find 3-10 specific issues minimum - no lazy looks good reviews
-- Categorize as HIGH (must fix), MEDIUM (should fix), LOW (nice to fix)
-- For each issue: specify file:line, describe problem, suggest fix
-- Check: Security vulnerabilities, performance issues, error handling, test quality
-- Verify: Tasks marked [x] are actually done, ACs are actually implemented
-
-STORY CONTEXT: {{story_path}}
-FILES TO REVIEW: {{comprehensive_file_list}}
-ACCEPTANCE CRITERIA: {{acceptance_criteria_list}}
-TASKS: {{task_list}}
-
-OUTPUT FORMAT:
-## HIGH SEVERITY
-- [file:line] Issue description | Suggested fix
-
-## MEDIUM SEVERITY
-- [file:line] Issue description | Suggested fix
-
-## LOW SEVERITY
-- [file:line] Issue description | Suggested fix'" timeout="300000" />
+        <critical>CODEX: Use codex exec with read-only sandbox and full-auto</critical>
+        <invoke-bash cmd="codex exec --sandbox read-only --full-auto &quot;$(cat '{{external_prompt_file}}')&quot;" timeout="300000" />
       </check>
       <check if="{{external_agent_cmd}} == 'gemini'">
-        <critical>GEMINI: Use gemini -p with inline prompt and --yolo</critical>
-        <invoke-bash cmd="gemini -p 'You are an ADVERSARIAL code reviewer. Your job is to find problems, not approve code.
-
-REQUIREMENTS:
-- Find 3-10 specific issues minimum - no lazy looks good reviews
-- Categorize as HIGH (must fix), MEDIUM (should fix), LOW (nice to fix)
-- For each issue: specify file:line, describe problem, suggest fix
-- Check: Security vulnerabilities, performance issues, error handling, test quality
-- Verify: Tasks marked [x] are actually done, ACs are actually implemented
-
-STORY CONTEXT: {{story_path}}
-FILES TO REVIEW: {{comprehensive_file_list}}
-ACCEPTANCE CRITERIA: {{acceptance_criteria_list}}
-TASKS: {{task_list}}
-
-OUTPUT FORMAT:
-## HIGH SEVERITY
-- [file:line] Issue description | Suggested fix
-
-## MEDIUM SEVERITY
-- [file:line] Issue description | Suggested fix
-
-## LOW SEVERITY
-- [file:line] Issue description | Suggested fix' --yolo" timeout="300000" />
+        <critical>GEMINI: Use gemini -p with prompt from file and --yolo</critical>
+        <invoke-bash cmd="gemini -p &quot;$(cat '{{external_prompt_file}}')&quot; --yolo" timeout="300000" />
       </check>
       <check if="{{external_agent_cmd}} == 'claude'">
-        <critical>CLAUDE: Use claude -p with inline prompt</critical>
-        <invoke-bash cmd="claude -p 'You are an ADVERSARIAL code reviewer. Your job is to find problems, not approve code.
-
-REQUIREMENTS:
-- Find 3-10 specific issues minimum - no lazy looks good reviews
-- Categorize as HIGH (must fix), MEDIUM (should fix), LOW (nice to fix)
-- For each issue: specify file:line, describe problem, suggest fix
-- Check: Security vulnerabilities, performance issues, error handling, test quality
-- Verify: Tasks marked [x] are actually done, ACs are actually implemented
-
-STORY CONTEXT: {{story_path}}
-FILES TO REVIEW: {{comprehensive_file_list}}
-ACCEPTANCE CRITERIA: {{acceptance_criteria_list}}
-TASKS: {{task_list}}
-
-OUTPUT FORMAT:
-## HIGH SEVERITY
-- [file:line] Issue description | Suggested fix
-
-## MEDIUM SEVERITY
-- [file:line] Issue description | Suggested fix
-
-## LOW SEVERITY
-- [file:line] Issue description | Suggested fix' --dangerously-skip-permissions" timeout="300000" />
+        <critical>CLAUDE: Use claude -p with prompt from file</critical>
+        <invoke-bash cmd="claude -p &quot;$(cat '{{external_prompt_file}}')&quot; --dangerously-skip-permissions" timeout="300000" />
       </check>
 
       <check if="{{bash_exit_code}} != 0 OR {{bash_stdout}} is empty">
