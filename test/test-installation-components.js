@@ -158,6 +158,35 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test 4: Workflow command paths anchor to project root
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 4: Workflow Command Paths${colors.reset}\n`);
+
+  try {
+    const { WorkflowCommandGenerator } = require('../tools/cli/installers/lib/ide/shared/workflow-command-generator');
+    const generator = new WorkflowCommandGenerator('.bmad');
+
+    const workflow = {
+      name: 'create-architecture',
+      module: 'bmm',
+      description: 'Architecture workflow',
+      path: '.bmad/bmm/workflows/3-solutioning/architecture/workflow.md',
+    };
+
+    const content = await generator.generateCommandContent(workflow, '');
+
+    assert(
+      content.includes('{project-root}/.bmad/bmm/workflows/3-solutioning/architecture/workflow.md'),
+      'workflow command uses project-root anchored workflow path',
+    );
+    assert(!content.includes('@.bmad/bmm'), 'workflow command avoids relative @.bmad paths that IDEs resolve incorrectly');
+  } catch (error) {
+    assert(false, 'workflow command generator anchors paths', error.message);
+  }
+
+  console.log('');
+
+  // ============================================================
   // Test 5: TEA Agent Special Handling
   // ============================================================
   console.log(`${colors.yellow}Test Suite 5: TEA Agent Compilation${colors.reset}\n`);
