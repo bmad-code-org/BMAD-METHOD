@@ -391,8 +391,8 @@ class ModuleManager {
           if (config.code === moduleName) {
             return modulePath;
           }
-        } catch {
-          // Skip if can't read config
+        } catch (error) {
+          throw new Error(`Failed to parse module.yaml at ${configPath}: ${error.message}`);
         }
       }
     }

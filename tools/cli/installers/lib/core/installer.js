@@ -39,6 +39,7 @@ const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
 const { replaceAgentSidecarFolders } = require('./post-install-sidecar-replacement');
+const { CustomHandler } = require('../custom/handler');
 
 class Installer {
   constructor() {
@@ -407,7 +408,10 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
    * @param {string[]} config.ides - IDEs to configure
    * @param {boolean} config.skipIde - Skip IDE configuration
    */
-  async install(config) {
+  async install(originalConfig) {
+    // Clone config to avoid mutating the caller's object
+    const config = { ...originalConfig };
+
     // Display BMAD logo
     CLIUtils.displayLogo();
 
@@ -440,7 +444,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
       // Handle selectedFiles (from existing install path or manual directory input)
       if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
-        const { CustomHandler } = require('../custom/handler');
         const customHandler = new CustomHandler();
         for (const customFile of config.customContent.selectedFiles) {
           const customInfo = await customHandler.getCustomInfo(customFile, path.resolve(config.directory));
@@ -837,9 +840,8 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       // Regular custom content from user input (non-cached)
       if (finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
         // Add custom modules to the installation list
+        const customHandler = new CustomHandler();
         for (const customFile of finalCustomContent.selectedFiles) {
-          const { CustomHandler } = require('../custom/handler');
-          const customHandler = new CustomHandler();
           const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
           if (customInfo && customInfo.id) {
             allModules.push(customInfo.id);
@@ -929,7 +931,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
           // Finally check regular custom content
           if (!isCustomModule && finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
-            const { CustomHandler } = require('../custom/handler');
             const customHandler = new CustomHandler();
             for (const customFile of finalCustomContent.selectedFiles) {
               const info = await customHandler.getCustomInfo(customFile, projectDir);
@@ -943,7 +944,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
           if (isCustomModule && customInfo) {
             // Install custom module using CustomHandler but as a proper module
-            const { CustomHandler } = require('../custom/handler');
             const customHandler = new CustomHandler();
 
             // Install to module directory instead of custom directory
@@ -972,19 +972,39 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
               if (await fs.pathExists(customDir)) {
                 // Move contents to module directory
                 const items = await fs.readdir(customDir);
-                for (const item of items) {
-                  const srcPath = path.join(customDir, item);
-                  const destPath = path.join(moduleTargetPath, item);
+                const movedItems = [];
+                try {
+                  for (const item of items) {
+                    const srcPath = path.join(customDir, item);
+                    const destPath = path.join(moduleTargetPath, item);
 
-                  // If destination exists, remove it first (or we could merge)
-                  if (await fs.pathExists(destPath)) {
-                    await fs.remove(destPath);
+                    // If destination exists, remove it first (or we could merge)
+                    if (await fs.pathExists(destPath)) {
+                      await fs.remove(destPath);
+                    }
+
+                    await fs.move(srcPath, destPath);
+                    movedItems.push({ src: srcPath, dest: destPath });
                   }
-
-                  await fs.move(srcPath, destPath);
+                } catch (moveError) {
+                  // Rollback: restore any successfully moved items
+                  for (const moved of movedItems) {
+                    try {
+                      await fs.move(moved.dest, moved.src);
+                    } catch {
+                      // Best-effort rollback - log if it fails
+                      console.error(`Failed to rollback ${moved.dest} during cleanup`);
+                    }
+                  }
+                  throw new Error(`Failed to move custom module files: ${moveError.message}`);
                 }
               }
-              await fs.remove(tempCustomPath);
+              try {
+                await fs.remove(tempCustomPath);
+              } catch (cleanupError) {
+                // Non-fatal: temp directory cleanup failed but files were moved successfully
+                console.warn(`Warning: Could not clean up temp directory: ${cleanupError.message}`);
+              }
             }
 
             // Create module config (include collected config from module.yaml prompts)
@@ -1066,9 +1086,8 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         config.customContent.selectedFiles
       ) {
         // Filter out custom modules that were already installed
+        const customHandler = new CustomHandler();
         for (const customFile of config.customContent.selectedFiles) {
-          const { CustomHandler } = require('../custom/handler');
-          const customHandler = new CustomHandler();
           const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
 
           // Skip if this was installed as a module
@@ -1080,7 +1099,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
       if (remainingCustomContent.length > 0) {
         spinner.start('Installing remaining custom content...');
-        const { CustomHandler } = require('../custom/handler');
         const customHandler = new CustomHandler();
 
         // Use the remaining files
@@ -2581,18 +2599,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         installedModules,
       );
 
-      // Handle both old return format (array) and new format (object)
-      let validCustomModules = [];
-      let keptModulesWithoutSources = [];
-
-      if (Array.isArray(customModuleResult)) {
-        // Old format - just an array
-        validCustomModules = customModuleResult;
-      } else if (customModuleResult && typeof customModuleResult === 'object') {
-        // New format - object with two arrays
-        validCustomModules = customModuleResult.validCustomModules || [];
-        keptModulesWithoutSources = customModuleResult.keptModulesWithoutSources || [];
-      }
+      const { validCustomModules, keptModulesWithoutSources } = customModuleResult;
 
       const customModulesFromManifest = validCustomModules.map((m) => ({
         ...m,
@@ -3371,7 +3378,10 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
     // If no missing sources, return immediately
     if (customModulesWithMissingSources.length === 0) {
-      return validCustomModules;
+      return {
+        validCustomModules,
+        keptModulesWithoutSources: [],
+      };
     }
 
     // Stop any spinner for interactive prompts

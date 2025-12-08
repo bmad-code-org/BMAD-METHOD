@@ -24,6 +24,7 @@ const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
 const { CLIUtils } = require('./cli-utils');
+const { CustomHandler } = require('../installers/lib/custom/handler');
 
 /**
  * UI utilities for the installer
@@ -150,7 +151,6 @@ class UI {
         const { CustomModuleCache } = require('../installers/lib/core/custom-module-cache');
         const cache = new CustomModuleCache(bmadDir);
 
-        const { CustomHandler } = require('../installers/lib/custom/handler');
         const customHandler = new CustomHandler();
         const customFiles = await customHandler.findCustomContent(customContentConfig.customPath);
 
@@ -218,7 +218,6 @@ class UI {
           customContentConfig.selectedFiles = selectedCustomContent.map((mod) => mod.replace('__CUSTOM_CONTENT__', ''));
           // Convert custom content to module IDs for installation
           const customContentModuleIds = [];
-          const { CustomHandler } = require('../installers/lib/custom/handler');
           const customHandler = new CustomHandler();
           for (const customFile of customContentConfig.selectedFiles) {
             // Get the module info to extract the ID
@@ -637,8 +636,8 @@ class UI {
                 moduleData = yaml.load(yamlContent);
                 foundPath = configPath;
                 break;
-              } catch {
-                // Continue to next path
+              } catch (error) {
+                throw new Error(`Failed to parse config at ${configPath}: ${error.message}`);
               }
             }
           }
@@ -654,20 +653,11 @@ class UI {
               cached: true,
             });
           } else {
-            // Debug: show what paths we tried to check
-            console.log(chalk.dim(`DEBUG: No module config found for ${cachedModule.id}`));
-            console.log(
-              chalk.dim(
-                `DEBUG: Tried paths:`,
-                possibleConfigPaths.map((p) => p.replace(cachedModule.cachePath, '.')),
-              ),
-            );
-            console.log(chalk.dim(`DEBUG: cachedModule:`, JSON.stringify(cachedModule, null, 2)));
+            // Module config not found - skip silently (non-critical)
           }
         }
       } else if (customContentConfig.customPath) {
         // Existing installation - show from directory
-        const { CustomHandler } = require('../installers/lib/custom/handler');
         const customHandler = new CustomHandler();
         const customFiles = await customHandler.findCustomContent(customContentConfig.customPath);
 
@@ -882,7 +872,6 @@ class UI {
           expandedPath = this.expandUserPath(directory.trim());
 
           // Check if directory has custom content
-          const { CustomHandler } = require('../installers/lib/custom/handler');
           const customHandler = new CustomHandler();
           const customFiles = await customHandler.findCustomContent(expandedPath);
 
@@ -1277,7 +1266,6 @@ class UI {
       const resolvedPath = CLIUtils.expandPath(customPath);
 
       // Find custom content
-      const { CustomHandler } = require('../installers/lib/custom/handler');
       const customHandler = new CustomHandler();
       const customFiles = await customHandler.findCustomContent(resolvedPath);
 
@@ -1302,12 +1290,10 @@ class UI {
 
       // Display found items
       console.log(chalk.cyan(`\nFound ${customFiles.length} custom content file(s):`));
-      const { CustomHandler: CustomHandler2 } = require('../installers/lib/custom/handler');
-      const customHandler2 = new CustomHandler2();
       const customContentItems = [];
 
       for (const customFile of customFiles) {
-        const customInfo = await customHandler2.getCustomInfo(customFile);
+        const customInfo = await customHandler.getCustomInfo(customFile);
         if (customInfo) {
           customContentItems.push({
             name: `${chalk.cyan('✓')} ${customInfo.name} ${chalk.gray(`(${customInfo.relativePath})`)}`,
