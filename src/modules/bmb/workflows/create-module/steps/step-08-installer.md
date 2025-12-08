@@ -37,7 +37,7 @@ partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workf
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Use configuration plan from step 5
-- 💾 Create install-config.yaml with all fields
+- 💾 Create module.yaml with all fields
 - 📖 Add "step-08-installer" to stepsCompleted array` before loading next step
 - 🚫 FORBIDDEN to load next step until user selects 'C'
 
@@ -50,7 +50,7 @@ partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workf
 
 ## STEP GOAL:
 
-To create the module installer configuration (install-config.yaml) that defines how users will install and configure the module.
+To create the module installer configuration (module.yaml) that defines how users will install and configure the module.
 
 ## INSTALLER SETUP PROCESS:
 
@@ -74,11 +74,11 @@ From step 5, we planned these configuration fields:
 Ensure \_module-installer directory exists
 Directory: {custom_module_location}/{module_name}/\_module-installer/
 
-### 3. Create install-config.yaml
+### 3. Create module.yaml
 
-"I'll create the install-config.yaml file based on your configuration plan. This is the core installer configuration file."
+"I'll create the module.yaml file based on your configuration plan. This is the core installer configuration file."
 
-Create file: {custom_module_location}/{module_name}/\_module-installer/install-config.yaml from template {installConfigTemplate}
+Create file: {custom_module_location}/{module_name}/module.yaml from template {installConfigTemplate}
 
 ### 4. Handle Custom Installation Logic
 
@@ -117,7 +117,7 @@ Update module-plan.md with installer section:
 
 ### Install Configuration
 
-- File: \_module-installer/install-config.yaml
+- File: module.yaml
 - Module code: {module_name}
 - Default selected: false
 - Configuration fields: [count]
@@ -166,7 +166,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ### ✅ SUCCESS:
 
-- install-config.yaml created with all planned fields
+- module.yaml created with all planned fields
 - YAML syntax valid
 - Custom installation logic prepared (if needed)
 - Installer follows BMAD standards
@@ -174,7 +174,7 @@ Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Conti
 
 ### ❌ SYSTEM FAILURE:
 
-- Not creating install-config.yaml
+- Not creating module.yaml
 - Invalid YAML syntax
 - Missing required fields
 - Not using proper path templates

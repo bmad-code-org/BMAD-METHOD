@@ -64,7 +64,7 @@ A custom module follows this structure:
 my-module/
 ├── _module-installer/
 │   ├── installer.js           # optional, when it exists it will run with module installation
-│   └── install-config.yaml    # Module installation configuration with custom question and answer capture
+├── module.yaml                # Module installation configuration with custom question and answer capture
 ├── docs/                      # Module documentation
 ├── agents/                    # Module-specific agents
 ├── workflows/                 # Module-specific workflows
@@ -77,7 +77,7 @@ my-module/
 
 #### Module Configuration
 
-The `_module-installer/install-config.yaml` file defines how your module is installed:
+The `module.yaml` file defines how your module is installed:
 
 ```yaml
 # Module metadata
@@ -98,12 +98,6 @@ my_setting:
 #### Example
 
 See `/example-custom-module` for a complete example:
-
-```bash
-# The example is ready to use - just rename the _module-installer/install-config file:
-mv example-custom-module/mwm/_module-installer/install-config.bak \
-   example-custom-module/mwm/_module-installer/install-config.yaml
-```
 
 ## Installation Process
 
@@ -129,7 +123,7 @@ If you select "Enter a directory path", the installer will prompt for the locati
 The installer will:
 
 - Scan the directory and all subdirectories for the presence of a `custom.yaml` file (standalone content such as agents and workflows)
-- Scan for `_module-installer/install-config.yaml` files (modules)
+- Scan for `module.yaml` files (modules)
 - Display an indication of how many installable folders it has found. Note that a project with stand along agents and workflows all under a single folder like the example will just list the count as 1 for that directory.
 
 ### Step 3: Selecting Content
@@ -230,7 +224,7 @@ Custom content can be distributed:
 
 ### No Custom Content Found
 
-- Ensure your `custom.yaml` or `install-config.yaml` files are properly named
+- Ensure your `custom.yaml` or `module.yaml` files are properly named
 - Check file permissions
 - Verify the directory path is correct
 

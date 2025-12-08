@@ -1,3 +1,4 @@
 code: bmad-custom
 name: "BMAD-Custom: Sample Stand Alone Custom Agents and Workflows"
 default_selected: true
+type: custom

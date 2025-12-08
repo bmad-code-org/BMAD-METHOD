@@ -129,8 +129,9 @@ bmgd/
 │       (Uses BMM workflows via cross-module references)
 ├── templates/
 ├── data/
+├── module.yaml
 └── _module-installer/
-    └── install-config.yaml
+    └── installer.js (optional)
 ```
 
 ## Configuration

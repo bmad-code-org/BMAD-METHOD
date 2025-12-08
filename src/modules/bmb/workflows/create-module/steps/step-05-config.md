@@ -184,7 +184,7 @@ Update module-plan.md with configuration section:
 
 ### Result Configuration Structure
 
-The install-config.yaml will generate:
+The module.yaml will generate:
 - Module configuration at: {bmad_folder}/{module_code}/config.yaml
 - User settings stored as: [describe structure]
 ````

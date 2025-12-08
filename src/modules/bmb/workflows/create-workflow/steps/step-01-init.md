@@ -98,7 +98,7 @@ After getting the workflow name:
 Based on the module selection, confirm the target location:
 
 - For bmb module: `{custom_workflow_location}` (defaults to `{bmad_folder}/custom/src/workflows`)
-- For other modules: Check their install-config.yaml for custom workflow locations
+- For other modules: Check their module.yaml for custom workflow locations
 - Confirm the exact folder path where the workflow will be created
 - Store the confirmed path as `{targetWorkflowPath}`
 

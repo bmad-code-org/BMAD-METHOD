@@ -6,7 +6,7 @@
 /**
  * @param {Object} options - Installation options
  * @param {string} options.projectRoot - Project root directory
- * @param {Object} options.config - Module configuration from install-config.yaml
+ * @param {Object} options.config - Module configuration from module.yaml
  * @param {Array} options.installedIDEs - List of IDE codes being configured
  * @param {Object} options.logger - Logger instance (log, warn, error methods)
  * @returns {boolean} - true if successful, false to abort installation

@@ -41,7 +41,7 @@ CLI uses Commander.js, commands auto-loaded from `tools/cli/commands/`:
 ### Core Architecture Patterns
 
 1. **IDE Handlers**: Each IDE extends BaseIdeSetup class
-2. **Module Installers**: Modules can have `_module-installer/installer.js`
+2. **Module Installers**: Modules can have `module.yaml` and `_module-installer/installer.js`
 3. **Sub-modules**: IDE-specific customizations in `sub-modules/{ide-name}/`
 4. **Shared Utilities**: `tools/cli/installers/lib/ide/shared/` contains generators
 
