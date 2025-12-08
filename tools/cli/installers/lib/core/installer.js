@@ -39,6 +39,7 @@ const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
 const { replaceAgentSidecarFolders } = require('./post-install-sidecar-replacement');
+const { CustomHandler } = require('../custom/handler');
 
 class Installer {
   constructor() {
@@ -440,7 +441,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
       // Handle selectedFiles (from existing install path or manual directory input)
       if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
-        const { CustomHandler } = require('../custom/handler');
         const customHandler = new CustomHandler();
         for (const customFile of config.customContent.selectedFiles) {
           const customInfo = await customHandler.getCustomInfo(customFile, path.resolve(config.directory));
@@ -837,9 +837,8 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       // Regular custom content from user input (non-cached)
       if (finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
         // Add custom modules to the installation list
+        const customHandler = new CustomHandler();
         for (const customFile of finalCustomContent.selectedFiles) {
-          const { CustomHandler } = require('../custom/handler');
-          const customHandler = new CustomHandler();
           const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
           if (customInfo && customInfo.id) {
             allModules.push(customInfo.id);
@@ -929,7 +928,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
           // Finally check regular custom content
           if (!isCustomModule && finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
-            const { CustomHandler } = require('../custom/handler');
             const customHandler = new CustomHandler();
             for (const customFile of finalCustomContent.selectedFiles) {
               const info = await customHandler.getCustomInfo(customFile, projectDir);
@@ -943,7 +941,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
           if (isCustomModule && customInfo) {
             // Install custom module using CustomHandler but as a proper module
-            const { CustomHandler } = require('../custom/handler');
             const customHandler = new CustomHandler();
 
             // Install to module directory instead of custom directory
@@ -1086,9 +1083,8 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         config.customContent.selectedFiles
       ) {
         // Filter out custom modules that were already installed
+        const customHandler = new CustomHandler();
         for (const customFile of config.customContent.selectedFiles) {
-          const { CustomHandler } = require('../custom/handler');
-          const customHandler = new CustomHandler();
           const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
 
           // Skip if this was installed as a module
@@ -1100,7 +1096,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
       if (remainingCustomContent.length > 0) {
         spinner.start('Installing remaining custom content...');
-        const { CustomHandler } = require('../custom/handler');
         const customHandler = new CustomHandler();
 
         // Use the remaining files
