@@ -22,6 +22,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const ora = require('ora');
+const inquirer = require('inquirer');
 const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
 const { ModuleManager } = require('../modules/manager');
@@ -750,13 +751,81 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       spinner.text = 'Creating directory structure...';
       await this.createDirectoryStructure(bmadDir);
 
-      // Resolve dependencies for selected modules
-      spinner.text = 'Resolving dependencies...';
+      // Get project root
       const projectRoot = getProjectRoot();
-      const modulesToInstall = config.installCore ? ['core', ...config.modules] : config.modules;
+
+      // Step 1: Install core module first (if requested)
+      if (config.installCore) {
+        spinner.start('Installing BMAD core...');
+        await this.installCoreWithDependencies(bmadDir, { core: {} });
+        spinner.succeed('Core installed');
+
+        // Generate core config file
+        await this.generateModuleConfigs(bmadDir, { core: config.coreConfig || {} });
+      }
+
+      // Custom content is already handled in UI before module selection
+      let finalCustomContent = config.customContent;
+
+      // Step 3: Prepare modules list including cached custom modules
+      let allModules = [...(config.modules || [])];
+
+      // During quick update, we might have custom module sources from the manifest
+      if (config._customModuleSources) {
+        // Add custom modules from stored sources
+        for (const [moduleId, customInfo] of config._customModuleSources) {
+          if (!allModules.includes(moduleId) && (await fs.pathExists(customInfo.sourcePath))) {
+            allModules.push(moduleId);
+          }
+        }
+      }
+
+      // Add cached custom modules
+      if (finalCustomContent && finalCustomContent.cachedModules) {
+        for (const cachedModule of finalCustomContent.cachedModules) {
+          if (!allModules.includes(cachedModule.id)) {
+            allModules.push(cachedModule.id);
+          }
+        }
+      }
+
+      // Regular custom content from user input (non-cached)
+      if (finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
+        // Add custom modules to the installation list
+        for (const customFile of finalCustomContent.selectedFiles) {
+          const { CustomHandler } = require('../custom/handler');
+          const customHandler = new CustomHandler();
+          const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
+          if (customInfo && customInfo.id) {
+            allModules.push(customInfo.id);
+          }
+        }
+      }
+
+      // Don't include core again if already installed
+      if (config.installCore) {
+        allModules = allModules.filter((m) => m !== 'core');
+      }
+
+      const modulesToInstall = allModules;
 
       // For dependency resolution, we need to pass the project root
-      const resolution = await this.dependencyResolver.resolve(projectRoot, config.modules || [], { verbose: config.verbose });
+      // Create a temporary module manager that knows about custom content locations
+      const tempModuleManager = new ModuleManager({
+        scanProjectForModules: true,
+        bmadDir: bmadDir, // Pass bmadDir so we can check cache
+      });
+
+      // Make sure custom modules are discoverable
+      if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
+        // The dependency resolver needs to know about these modules
+        // We'll handle custom modules separately in the installation loop
+      }
+
+      const resolution = await this.dependencyResolver.resolve(projectRoot, allModules, {
+        verbose: config.verbose,
+        moduleManager: tempModuleManager,
+      });
 
       if (config.verbose) {
         spinner.succeed('Dependencies resolved');
@@ -764,24 +833,159 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         spinner.succeed('Dependencies resolved');
       }
 
-      // Install core if requested or if dependencies require it
-      if (config.installCore || resolution.byModule.core) {
-        spinner.start('Installing BMAD core...');
-        await this.installCoreWithDependencies(bmadDir, resolution.byModule.core);
-        spinner.succeed('Core installed');
-      }
+      // Core is already installed above, skip if included in resolution
 
       // Install modules with their dependencies
-      if (config.modules && config.modules.length > 0) {
-        for (const moduleName of config.modules) {
+      if (allModules && allModules.length > 0) {
+        const installedModuleNames = new Set();
+
+        for (const moduleName of allModules) {
+          // Skip if already installed
+          if (installedModuleNames.has(moduleName)) {
+            continue;
+          }
+          installedModuleNames.add(moduleName);
+
           spinner.start(`Installing module: ${moduleName}...`);
-          await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
+
+          // Check if this is a custom module
+          let isCustomModule = false;
+          let customInfo = null;
+          let useCache = false;
+
+          // First check if we have a cached version
+          if (finalCustomContent && finalCustomContent.cachedModules) {
+            const cachedModule = finalCustomContent.cachedModules.find((m) => m.id === moduleName);
+            if (cachedModule) {
+              isCustomModule = true;
+              customInfo = {
+                id: moduleName,
+                path: cachedModule.cachePath,
+                config: {},
+              };
+              useCache = true;
+            }
+          }
+
+          // Then check if we have custom module sources from the manifest (for quick update)
+          if (!isCustomModule && config._customModuleSources && config._customModuleSources.has(moduleName)) {
+            customInfo = config._customModuleSources.get(moduleName);
+            isCustomModule = true;
+
+            // Check if this is a cached module (source path starts with _cfg)
+            if (customInfo.sourcePath && (customInfo.sourcePath.startsWith('_cfg') || customInfo.sourcePath.includes('_cfg/custom'))) {
+              useCache = true;
+              // Make sure we have the right path structure
+              if (!customInfo.path) {
+                customInfo.path = customInfo.sourcePath;
+              }
+            }
+          }
+
+          // Finally check regular custom content
+          if (!isCustomModule && finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
+            const { CustomHandler } = require('../custom/handler');
+            const customHandler = new CustomHandler();
+            for (const customFile of finalCustomContent.selectedFiles) {
+              const info = await customHandler.getCustomInfo(customFile, projectDir);
+              if (info && info.id === moduleName) {
+                isCustomModule = true;
+                customInfo = info;
+                break;
+              }
+            }
+          }
+
+          if (isCustomModule && customInfo) {
+            // Install custom module using CustomHandler but as a proper module
+            const { CustomHandler } = require('../custom/handler');
+            const customHandler = new CustomHandler();
+
+            // Install to module directory instead of custom directory
+            const moduleTargetPath = path.join(bmadDir, moduleName);
+            await fs.ensureDir(moduleTargetPath);
+
+            const result = await customHandler.install(
+              customInfo.path,
+              path.join(bmadDir, 'temp-custom'),
+              { ...config.coreConfig, ...customInfo.config, _bmadDir: bmadDir },
+              (filePath) => {
+                // Track installed files with correct path
+                const relativePath = path.relative(path.join(bmadDir, 'temp-custom'), filePath);
+                const finalPath = path.join(moduleTargetPath, relativePath);
+                this.installedFiles.push(finalPath);
+              },
+            );
+
+            // Move from temp-custom to actual module directory
+            const tempCustomPath = path.join(bmadDir, 'temp-custom');
+            if (await fs.pathExists(tempCustomPath)) {
+              const customDir = path.join(tempCustomPath, 'custom');
+              if (await fs.pathExists(customDir)) {
+                // Move contents to module directory
+                const items = await fs.readdir(customDir);
+                for (const item of items) {
+                  const srcPath = path.join(customDir, item);
+                  const destPath = path.join(moduleTargetPath, item);
+
+                  // If destination exists, remove it first (or we could merge)
+                  if (await fs.pathExists(destPath)) {
+                    await fs.remove(destPath);
+                  }
+
+                  await fs.move(srcPath, destPath);
+                }
+              }
+              await fs.remove(tempCustomPath);
+            }
+
+            // Create module config
+            await this.generateModuleConfigs(bmadDir, { [moduleName]: { ...config.coreConfig, ...customInfo.config } });
+
+            // Store custom module info for later manifest update
+            if (!config._customModulesToTrack) {
+              config._customModulesToTrack = [];
+            }
+
+            // For cached modules, use appropriate path handling
+            let sourcePath;
+            if (useCache) {
+              // Check if we have cached modules info (from initial install)
+              if (finalCustomContent && finalCustomContent.cachedModules) {
+                sourcePath = finalCustomContent.cachedModules.find((m) => m.id === moduleName)?.relativePath;
+              } else {
+                // During update, the sourcePath is already cache-relative if it starts with _cfg
+                sourcePath =
+                  customInfo.sourcePath && customInfo.sourcePath.startsWith('_cfg')
+                    ? customInfo.sourcePath
+                    : path.relative(bmadDir, customInfo.path || customInfo.sourcePath);
+              }
+            } else {
+              sourcePath = path.resolve(customInfo.path || customInfo.sourcePath);
+            }
+
+            config._customModulesToTrack.push({
+              id: customInfo.id,
+              name: customInfo.name,
+              sourcePath: sourcePath,
+              installDate: new Date().toISOString(),
+            });
+          } else {
+            // Regular module installation
+            // Special case for core module
+            if (moduleName === 'core') {
+              await this.installCoreWithDependencies(bmadDir, resolution.byModule[moduleName]);
+            } else {
+              await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
+            }
+          }
+
           spinner.succeed(`Module installed: ${moduleName}`);
         }
 
         // Install partial modules (only dependencies)
         for (const [module, files] of Object.entries(resolution.byModule)) {
-          if (!config.modules.includes(module) && module !== 'core') {
+          if (!allModules.includes(module) && module !== 'core') {
             const totalFiles =
               files.agents.length +
               files.tasks.length +
@@ -799,6 +1003,11 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       }
 
       // Install custom content if provided AND selected
+      // Process custom content that wasn't installed as modules
+      // This is now handled in the module installation loop above
+      // This section is kept for backward compatibility with any custom content
+      // that doesn't have a module structure
+      const remainingCustomContent = [];
       if (
         config.customContent &&
         config.customContent.hasCustomContent &&
@@ -806,12 +1015,26 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         config.customContent.selected &&
         config.customContent.selectedFiles
       ) {
-        spinner.start('Installing custom content...');
+        // Filter out custom modules that were already installed
+        for (const customFile of config.customContent.selectedFiles) {
+          const { CustomHandler } = require('../custom/handler');
+          const customHandler = new CustomHandler();
+          const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
+
+          // Skip if this was installed as a module
+          if (!customInfo || !customInfo.id || !allModules.includes(customInfo.id)) {
+            remainingCustomContent.push(customFile);
+          }
+        }
+      }
+
+      if (remainingCustomContent.length > 0) {
+        spinner.start('Installing remaining custom content...');
         const { CustomHandler } = require('../custom/handler');
         const customHandler = new CustomHandler();
 
-        // Use the selected files instead of finding all files
-        const customFiles = config.customContent.selectedFiles;
+        // Use the remaining files
+        const customFiles = remainingCustomContent;
 
         if (customFiles.length > 0) {
           console.log(chalk.cyan(`\n  Found ${customFiles.length} custom content file(s):`));
@@ -867,13 +1090,36 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       spinner.start('Generating workflow and agent manifests...');
       const manifestGen = new ManifestGenerator();
 
-      // Include preserved modules (from quick update) in the manifest
-      const allModulesToList = config._preserveModules ? [...(config.modules || []), ...config._preserveModules] : config.modules || [];
+      // For quick update, we need ALL installed modules in the manifest
+      // Not just the ones being updated
+      const allModulesForManifest = config._quickUpdate
+        ? config._existingModules || allModules || []
+        : config._preserveModules
+          ? [...allModules, ...config._preserveModules]
+          : allModules || [];
 
-      const manifestStats = await manifestGen.generateManifests(bmadDir, config.modules || [], this.installedFiles, {
+      // For regular installs (including when called from quick update), use what we have
+      let modulesForCsvPreserve;
+      if (config._quickUpdate) {
+        // Quick update - use existing modules or fall back to modules being updated
+        modulesForCsvPreserve = config._existingModules || allModules || [];
+      } else {
+        // Regular install - use the modules we're installing plus any preserved ones
+        modulesForCsvPreserve = config._preserveModules ? [...allModules, ...config._preserveModules] : allModules;
+      }
+
+      const manifestStats = await manifestGen.generateManifests(bmadDir, allModulesForManifest, this.installedFiles, {
         ides: config.ides || [],
-        preservedModules: config._preserveModules || [], // Scan these from installed bmad/ dir
+        preservedModules: modulesForCsvPreserve, // Scan these from installed bmad/ dir
       });
+
+      // Add custom modules to manifest (now that it exists)
+      if (config._customModulesToTrack && config._customModulesToTrack.length > 0) {
+        spinner.text = 'Storing custom module sources...';
+        for (const customModule of config._customModulesToTrack) {
+          await this.manifest.addCustomModule(bmadDir, customModule);
+        }
+      }
 
       spinner.succeed(
         `Manifests generated: ${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools, ${manifestStats.files} files`,
@@ -1136,6 +1382,30 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       // Compare versions and determine what needs updating
       const currentVersion = existingInstall.version;
       const newVersion = require(path.join(getProjectRoot(), 'package.json')).version;
+
+      // Check for custom modules with missing sources before update
+      const customModuleSources = new Map();
+      if (existingInstall.customModules) {
+        for (const customModule of existingInstall.customModules) {
+          customModuleSources.set(customModule.id, customModule);
+        }
+      }
+
+      if (customModuleSources.size > 0) {
+        spinner.stop();
+        console.log(chalk.yellow('\nChecking custom module sources before update...'));
+
+        const projectRoot = getProjectRoot();
+        await this.handleMissingCustomSources(
+          customModuleSources,
+          bmadDir,
+          projectRoot,
+          'update',
+          existingInstall.modules.map((m) => m.id),
+        );
+
+        spinner.start('Preparing update...');
+      }
 
       if (config.dryRun) {
         spinner.stop();
@@ -1905,6 +2175,24 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         throw new Error(`BMAD not installed at ${bmadDir}`);
       }
 
+      // Check for custom modules with missing sources
+      const manifest = await this.manifest.read(bmadDir);
+      if (manifest && manifest.customModules && manifest.customModules.length > 0) {
+        spinner.stop();
+        console.log(chalk.yellow('\nChecking custom module sources before compilation...'));
+
+        const customModuleSources = new Map();
+        for (const customModule of manifest.customModules) {
+          customModuleSources.set(customModule.id, customModule);
+        }
+
+        const projectRoot = getProjectRoot();
+        const installedModules = manifest.modules || [];
+        await this.handleMissingCustomSources(customModuleSources, bmadDir, projectRoot, 'compile-agents', installedModules);
+
+        spinner.start('Rebuilding agent files...');
+      }
+
       let agentCount = 0;
       let taskCount = 0;
 
@@ -2056,17 +2344,245 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       const existingInstall = await this.detector.detect(bmadDir);
       const installedModules = existingInstall.modules.map((m) => m.id);
       const configuredIdes = existingInstall.ides || [];
+      const projectRoot = path.dirname(bmadDir);
+
+      // Get custom module sources from manifest
+      const customModuleSources = new Map();
+      if (existingInstall.customModules) {
+        for (const customModule of existingInstall.customModules) {
+          // Ensure we have an absolute sourcePath
+          let absoluteSourcePath = customModule.sourcePath;
+
+          // Check if sourcePath is a cache-relative path (starts with _cfg/)
+          if (absoluteSourcePath && absoluteSourcePath.startsWith('_cfg')) {
+            // Convert cache-relative path to absolute path
+            absoluteSourcePath = path.join(bmadDir, absoluteSourcePath);
+          }
+          // If no sourcePath but we have relativePath, convert it
+          else if (!absoluteSourcePath && customModule.relativePath) {
+            // relativePath is relative to the project root (parent of bmad dir)
+            absoluteSourcePath = path.resolve(projectRoot, customModule.relativePath);
+          }
+          // Ensure sourcePath is absolute for anything else
+          else if (absoluteSourcePath && !path.isAbsolute(absoluteSourcePath)) {
+            absoluteSourcePath = path.resolve(absoluteSourcePath);
+          }
+
+          // Update the custom module object with the absolute path
+          const updatedModule = {
+            ...customModule,
+            sourcePath: absoluteSourcePath,
+          };
+
+          customModuleSources.set(customModule.id, updatedModule);
+        }
+      }
 
       // Load saved IDE configurations
       const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
 
       // Get available modules (what we have source for)
-      const availableModules = await this.moduleManager.listAvailable();
-      const availableModuleIds = new Set(availableModules.map((m) => m.id));
+      const availableModulesData = await this.moduleManager.listAvailable();
+      const availableModules = [...availableModulesData.modules, ...availableModulesData.customModules];
+
+      // Add custom modules from manifest if their sources exist
+      for (const [moduleId, customModule] of customModuleSources) {
+        // Use the absolute sourcePath
+        const sourcePath = customModule.sourcePath;
+
+        // Check if source exists at the recorded path
+        if (
+          sourcePath &&
+          (await fs.pathExists(sourcePath)) && // Add to available modules if not already there
+          !availableModules.some((m) => m.id === moduleId)
+        ) {
+          availableModules.push({
+            id: moduleId,
+            name: customModule.name || moduleId,
+            path: sourcePath,
+            isCustom: true,
+            fromManifest: true,
+          });
+        }
+      }
+
+      // Check for untracked custom modules (installed but not in manifest)
+      const untrackedCustomModules = [];
+      for (const installedModule of installedModules) {
+        // Skip standard modules and core
+        const standardModuleIds = ['bmb', 'bmgd', 'bmm', 'cis', 'core'];
+        if (standardModuleIds.includes(installedModule)) {
+          continue;
+        }
+
+        // Check if this installed module is not tracked in customModules
+        if (!customModuleSources.has(installedModule)) {
+          const modulePath = path.join(bmadDir, installedModule);
+          if (await fs.pathExists(modulePath)) {
+            untrackedCustomModules.push({
+              id: installedModule,
+              name: installedModule, // We don't have the original name
+              path: modulePath,
+              untracked: true,
+            });
+          }
+        }
+      }
+
+      // If we found untracked custom modules, offer to track them
+      if (untrackedCustomModules.length > 0) {
+        spinner.stop();
+        console.log(chalk.yellow(`\n⚠️  Found ${untrackedCustomModules.length} custom module(s) not tracked in manifest:`));
+
+        for (const untracked of untrackedCustomModules) {
+          console.log(chalk.dim(`  • ${untracked.id} (installed at ${path.relative(projectRoot, untracked.path)})`));
+        }
+
+        const { trackModules } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'trackModules',
+            message: chalk.cyan('Would you like to scan for their source locations?'),
+            default: true,
+          },
+        ]);
+
+        if (trackModules) {
+          const { scanDirectory } = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'scanDirectory',
+              message: 'Enter directory to scan for custom module sources (or leave blank to skip):',
+              default: projectRoot,
+              validate: async (input) => {
+                if (input && input.trim() !== '') {
+                  const expandedPath = path.resolve(input.trim());
+                  if (!(await fs.pathExists(expandedPath))) {
+                    return 'Directory does not exist';
+                  }
+                  const stats = await fs.stat(expandedPath);
+                  if (!stats.isDirectory()) {
+                    return 'Path must be a directory';
+                  }
+                }
+                return true;
+              },
+            },
+          ]);
+
+          if (scanDirectory && scanDirectory.trim() !== '') {
+            console.log(chalk.dim('\nScanning for custom module sources...'));
+
+            // Scan for all module.yaml files
+            const allModulePaths = await this.moduleManager.findModulesInProject(scanDirectory);
+            const { ModuleManager } = require('../modules/manager');
+            const mm = new ModuleManager({ scanProjectForModules: true });
+
+            for (const untracked of untrackedCustomModules) {
+              let foundSource = null;
+
+              // Try to find by module ID
+              for (const modulePath of allModulePaths) {
+                try {
+                  const moduleInfo = await mm.getModuleInfo(modulePath);
+                  if (moduleInfo && moduleInfo.id === untracked.id) {
+                    foundSource = {
+                      path: modulePath,
+                      info: moduleInfo,
+                    };
+                    break;
+                  }
+                } catch {
+                  // Continue searching
+                }
+              }
+
+              if (foundSource) {
+                console.log(chalk.green(`  ✓ Found source for ${untracked.id}: ${path.relative(projectRoot, foundSource.path)}`));
+
+                // Add to manifest
+                await this.manifest.addCustomModule(bmadDir, {
+                  id: untracked.id,
+                  name: foundSource.info.name || untracked.name,
+                  sourcePath: path.resolve(foundSource.path),
+                  installDate: new Date().toISOString(),
+                  tracked: true,
+                });
+
+                // Add to customModuleSources for processing
+                customModuleSources.set(untracked.id, {
+                  id: untracked.id,
+                  name: foundSource.info.name || untracked.name,
+                  sourcePath: path.resolve(foundSource.path),
+                });
+              } else {
+                console.log(chalk.yellow(`  ⚠ Could not find source for ${untracked.id}`));
+              }
+            }
+          }
+        }
+
+        console.log(chalk.dim('\nUntracked custom modules will remain installed but cannot be updated without their source.'));
+        spinner.start('Preparing update...');
+      }
+
+      // Handle missing custom module sources using shared method
+      const customModuleResult = await this.handleMissingCustomSources(
+        customModuleSources,
+        bmadDir,
+        projectRoot,
+        'update',
+        installedModules,
+      );
+
+      // Handle both old return format (array) and new format (object)
+      let validCustomModules = [];
+      let keptModulesWithoutSources = [];
+
+      if (Array.isArray(customModuleResult)) {
+        // Old format - just an array
+        validCustomModules = customModuleResult;
+      } else if (customModuleResult && typeof customModuleResult === 'object') {
+        // New format - object with two arrays
+        validCustomModules = customModuleResult.validCustomModules || [];
+        keptModulesWithoutSources = customModuleResult.keptModulesWithoutSources || [];
+      }
+
+      const customModulesFromManifest = validCustomModules.map((m) => ({
+        ...m,
+        isCustom: true,
+        hasUpdate: true,
+      }));
+
+      // Add untracked modules to the update list but mark them as untrackable
+      for (const untracked of untrackedCustomModules) {
+        if (!customModuleSources.has(untracked.id)) {
+          customModulesFromManifest.push({
+            ...untracked,
+            isCustom: true,
+            hasUpdate: false, // Can't update without source
+            untracked: true,
+          });
+        }
+      }
+
+      const allAvailableModules = [...availableModules, ...customModulesFromManifest];
+      const availableModuleIds = new Set(allAvailableModules.map((m) => m.id));
+
+      // Core module is special - never include it in update flow
+      const nonCoreInstalledModules = installedModules.filter((id) => id !== 'core');
 
       // Only update modules that are BOTH installed AND available (we have source for)
-      const modulesToUpdate = installedModules.filter((id) => availableModuleIds.has(id));
-      const skippedModules = installedModules.filter((id) => !availableModuleIds.has(id));
+      const modulesToUpdate = nonCoreInstalledModules.filter((id) => availableModuleIds.has(id));
+      const skippedModules = nonCoreInstalledModules.filter((id) => !availableModuleIds.has(id));
+
+      // Add custom modules that were kept without sources to the skipped modules
+      // This ensures their agents are preserved in the manifest
+      for (const keptModule of keptModulesWithoutSources) {
+        if (!skippedModules.includes(keptModule)) {
+          skippedModules.push(keptModule);
+        }
+      }
 
       spinner.succeed(`Found ${modulesToUpdate.length} module(s) to update and ${configuredIdes.length} configured tool(s)`);
 
@@ -2131,6 +2647,8 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         _quickUpdate: true, // Flag to skip certain prompts
         _preserveModules: skippedModules, // Preserve these in manifest even though we didn't update them
         _savedIdeConfigs: savedIdeConfigs, // Pass saved IDE configs to installer
+        _customModuleSources: customModuleSources, // Pass custom module sources for updates
+        _existingModules: installedModules, // Pass all installed modules for manifest generation
       };
 
       // Call the standard install method
@@ -2769,6 +3287,230 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         await this.copyFileWithPlaceholderReplacement(sourceDocPath, targetDocPath, this.bmadFolderName || 'bmad');
       }
     }
+  }
+
+  /**
+   * Handle missing custom module sources interactively
+   * @param {Map} customModuleSources - Map of custom module ID to info
+   * @param {string} bmadDir - BMAD directory
+   * @param {string} projectRoot - Project root directory
+   * @param {string} operation - Current operation ('update', 'compile', etc.)
+   * @param {Array} installedModules - Array of installed module IDs (will be modified)
+   * @returns {Object} Object with validCustomModules array and keptModulesWithoutSources array
+   */
+  async handleMissingCustomSources(customModuleSources, bmadDir, projectRoot, operation, installedModules) {
+    const validCustomModules = [];
+    const keptModulesWithoutSources = []; // Track modules kept without sources
+    const customModulesWithMissingSources = [];
+
+    // Check which sources exist
+    for (const [moduleId, customInfo] of customModuleSources) {
+      if (await fs.pathExists(customInfo.sourcePath)) {
+        validCustomModules.push({
+          id: moduleId,
+          name: customInfo.name,
+          path: customInfo.sourcePath,
+          info: customInfo,
+        });
+      } else {
+        customModulesWithMissingSources.push({
+          id: moduleId,
+          name: customInfo.name,
+          sourcePath: customInfo.sourcePath,
+          relativePath: customInfo.relativePath,
+          info: customInfo,
+        });
+      }
+    }
+
+    // If no missing sources, return immediately
+    if (customModulesWithMissingSources.length === 0) {
+      return validCustomModules;
+    }
+
+    // Stop any spinner for interactive prompts
+    const currentSpinner = ora();
+    if (currentSpinner.isSpinning) {
+      currentSpinner.stop();
+    }
+
+    console.log(chalk.yellow(`\n⚠️  Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`));
+
+    const inquirer = require('inquirer');
+    let keptCount = 0;
+    let updatedCount = 0;
+    let removedCount = 0;
+
+    for (const missing of customModulesWithMissingSources) {
+      console.log(chalk.dim(`  • ${missing.name} (${missing.id})`));
+      console.log(chalk.dim(`    Original source: ${missing.relativePath}`));
+      console.log(chalk.dim(`    Full path: ${missing.sourcePath}`));
+
+      const choices = [
+        {
+          name: 'Keep installed (will not be processed)',
+          value: 'keep',
+          short: 'Keep',
+        },
+        {
+          name: 'Specify new source location',
+          value: 'update',
+          short: 'Update',
+        },
+      ];
+
+      // Only add remove option if not just compiling agents
+      if (operation !== 'compile-agents') {
+        choices.push({
+          name: '⚠️  REMOVE module completely (destructive!)',
+          value: 'remove',
+          short: 'Remove',
+        });
+      }
+
+      const { action } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'action',
+          message: `How would you like to handle "${missing.name}"?`,
+          choices,
+        },
+      ]);
+
+      switch (action) {
+        case 'update': {
+          const { newSourcePath } = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'newSourcePath',
+              message: 'Enter the new path to the custom module:',
+              default: missing.sourcePath,
+              validate: async (input) => {
+                if (!input || input.trim() === '') {
+                  return 'Please enter a path';
+                }
+                const expandedPath = path.resolve(input.trim());
+                if (!(await fs.pathExists(expandedPath))) {
+                  return 'Path does not exist';
+                }
+                // Check if it looks like a valid module
+                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+                const agentsPath = path.join(expandedPath, 'agents');
+                const workflowsPath = path.join(expandedPath, 'workflows');
+
+                if (!(await fs.pathExists(moduleYamlPath)) && !(await fs.pathExists(agentsPath)) && !(await fs.pathExists(workflowsPath))) {
+                  return 'Path does not appear to contain a valid custom module';
+                }
+                return true;
+              },
+            },
+          ]);
+
+          // Update the source in manifest
+          const resolvedPath = path.resolve(newSourcePath.trim());
+          missing.info.sourcePath = resolvedPath;
+          // Remove relativePath - we only store absolute sourcePath now
+          delete missing.info.relativePath;
+          await this.manifest.addCustomModule(bmadDir, missing.info);
+
+          validCustomModules.push({
+            id: moduleId,
+            name: missing.name,
+            path: resolvedPath,
+            info: missing.info,
+          });
+
+          updatedCount++;
+          console.log(chalk.green(`✓ Updated source location`));
+
+          break;
+        }
+        case 'remove': {
+          // Extra confirmation for destructive remove
+          console.log(chalk.red.bold(`\n⚠️  WARNING: This will PERMANENTLY DELETE "${missing.name}" and all its files!`));
+          console.log(chalk.red(`  Module location: ${path.join(bmadDir, moduleId)}`));
+
+          const { confirm } = await inquirer.prompt([
+            {
+              type: 'confirm',
+              name: 'confirm',
+              message: chalk.red.bold('Are you absolutely sure you want to delete this module?'),
+              default: false,
+            },
+          ]);
+
+          if (confirm) {
+            const { typedConfirm } = await inquirer.prompt([
+              {
+                type: 'input',
+                name: 'typedConfirm',
+                message: chalk.red.bold('Type "DELETE" to confirm permanent deletion:'),
+                validate: (input) => {
+                  if (input !== 'DELETE') {
+                    return chalk.red('You must type "DELETE" exactly to proceed');
+                  }
+                  return true;
+                },
+              },
+            ]);
+
+            if (typedConfirm === 'DELETE') {
+              // Remove the module from filesystem and manifest
+              const modulePath = path.join(bmadDir, moduleId);
+              if (await fs.pathExists(modulePath)) {
+                const fsExtra = require('fs-extra');
+                await fsExtra.remove(modulePath);
+                console.log(chalk.yellow(`  ✓ Deleted module directory: ${path.relative(projectRoot, modulePath)}`));
+              }
+
+              await this.manifest.removeModule(bmadDir, moduleId);
+              await this.manifest.removeCustomModule(bmadDir, moduleId);
+              console.log(chalk.yellow(`  ✓ Removed from manifest`));
+
+              // Also remove from installedModules list
+              if (installedModules && installedModules.includes(moduleId)) {
+                const index = installedModules.indexOf(moduleId);
+                if (index !== -1) {
+                  installedModules.splice(index, 1);
+                }
+              }
+
+              removedCount++;
+              console.log(chalk.red.bold(`✓ "${missing.name}" has been permanently removed`));
+            } else {
+              console.log(chalk.dim('  Removal cancelled - module will be kept'));
+              keptCount++;
+            }
+          } else {
+            console.log(chalk.dim('  Removal cancelled - module will be kept'));
+            keptCount++;
+          }
+
+          break;
+        }
+        case 'keep': {
+          keptCount++;
+          keptModulesWithoutSources.push(moduleId);
+          console.log(chalk.dim(`  Module will be kept as-is`));
+
+          break;
+        }
+        // No default
+      }
+    }
+
+    // Show summary
+    if (keptCount > 0 || updatedCount > 0 || removedCount > 0) {
+      console.log(chalk.dim(`\nSummary for custom modules with missing sources:`));
+      if (keptCount > 0) console.log(chalk.dim(`  • ${keptCount} module(s) kept as-is`));
+      if (updatedCount > 0) console.log(chalk.dim(`  • ${updatedCount} module(s) updated with new sources`));
+      if (removedCount > 0) console.log(chalk.red(`  • ${removedCount} module(s) permanently deleted`));
+    }
+
+    return {
+      validCustomModules,
+      keptModulesWithoutSources,
+    };
   }
 }
 

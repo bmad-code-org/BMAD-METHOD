@@ -3,6 +3,7 @@ const boxen = require('boxen');
 const wrapAnsi = require('wrap-ansi');
 const figlet = require('figlet');
 const path = require('node:path');
+const os = require('node:os');
 
 const CLIUtils = {
   /**
@@ -84,8 +85,8 @@ const CLIUtils = {
   /**
    * Display module configuration header
    * @param {string} moduleName - Module name (fallback if no custom header)
-   * @param {string} header - Custom header from install-config.yaml
-   * @param {string} subheader - Custom subheader from install-config.yaml
+   * @param {string} header - Custom header from module.yaml
+   * @param {string} subheader - Custom subheader from module.yaml
    */
   displayModuleConfigHeader(moduleName, header = null, subheader = null) {
     // Simple blue banner with custom header/subheader if provided
@@ -100,8 +101,8 @@ const CLIUtils = {
   /**
    * Display module with no custom configuration
    * @param {string} moduleName - Module name (fallback if no custom header)
-   * @param {string} header - Custom header from install-config.yaml
-   * @param {string} subheader - Custom subheader from install-config.yaml
+   * @param {string} header - Custom header from module.yaml
+   * @param {string} subheader - Custom subheader from module.yaml
    */
   displayModuleNoConfig(moduleName, header = null, subheader = null) {
     // Show full banner with header/subheader, just like modules with config
@@ -204,6 +205,22 @@ const CLIUtils = {
   displayModuleComplete(moduleName, clearScreen = false) {
     // No longer clear screen or show boxes - just a simple completion message
     // This is deprecated but kept for backwards compatibility
+  },
+
+  /**
+   * Expand path with ~ expansion
+   * @param {string} inputPath - Path to expand
+   * @returns {string} Expanded path
+   */
+  expandPath(inputPath) {
+    if (!inputPath) return inputPath;
+
+    // Expand ~ to home directory
+    if (inputPath.startsWith('~')) {
+      return path.join(os.homedir(), inputPath.slice(1));
+    }
+
+    return inputPath;
   },
 };
 

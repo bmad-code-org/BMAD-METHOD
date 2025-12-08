@@ -5,7 +5,7 @@ const chalk = require('chalk');
  *
  * @param {Object} options - Installation options
  * @param {string} options.projectRoot - The root directory of the target project
- * @param {Object} options.config - Module configuration from install-config.yaml
+ * @param {Object} options.config - Module configuration from module.yaml
  * @param {Object} options.logger - Logger instance for output
  * @returns {Promise<boolean>} - Success status
  */

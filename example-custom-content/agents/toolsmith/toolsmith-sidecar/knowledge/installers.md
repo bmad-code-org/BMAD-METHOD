@@ -117,7 +117,7 @@ Contains:
 
 - Add new IDE handler: Create file in /tools/cli/installers/lib/ide/, extend BaseIdeSetup
 - Fix installer bug: Check installer.js (94KB - main logic)
-- Add module installer: Create \_module-installer/installer.js in module
+- Add module installer: Create \_module-installer/installer.js if custom installer logic needed
 - Update shared generators: Modify files in /shared/ directory
 
 ## Relationships

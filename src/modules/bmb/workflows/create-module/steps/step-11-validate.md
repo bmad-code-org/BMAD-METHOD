@@ -73,8 +73,8 @@ Expected Structure:
 ├── templates/                 [✅/❌]
 ├── data/                      [✅/❌]
 ├── _module-installer/         [✅/❌]
-│   ├── install-config.yaml   [✅/❌]
-│   └── installer.js          [✅/N/A]
+│   └── installer.js           [✅/N/A]
+├── module.yaml                [✅/❌]
 └── README.md                  [✅/❌]
 ```
 
@@ -87,7 +87,7 @@ Expected Structure:
 "**2. Configuration Files Check**"
 
 **Install Configuration:**
-Validate install-config.yaml
+Validate module.yaml
 
 - [ ] YAML syntax valid
 - [ ] Module code matches folder name

@@ -207,9 +207,10 @@ workflow {workflow_name}
 ├── workflows/       # ✅ Structure created, plans written
 ├── tasks/           # ✅ Created
 ├── templates/       # ✅ Created
-├── data/           # ✅ Created
+├── data/            # ✅ Created
 ├── _module-installer/  # ✅ Configured
-└── README.md       # ✅ Complete
+└── README.md        # ✅ Complete
+└── module.yaml      # ✅ Complete
 ```
 
 ## Completion Criteria

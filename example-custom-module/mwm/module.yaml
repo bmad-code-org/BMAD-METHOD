@@ -4,6 +4,7 @@
 code: mwm
 name: "MWM: Mental Wellness Module"
 default_selected: false
+type: module
 
 header: "MWM™: Custom Wellness Module"
 subheader: "Demo of Potential Non Coding Custom Module Use case"

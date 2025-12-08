@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const chalk = require('chalk');
 const yaml = require('js-yaml');
 const { FileOps } = require('../../../lib/file-ops');
+const { XmlHandler } = require('../../../lib/xml-handler');
 
 /**
  * Handler for custom content (custom.yaml)
@@ -11,6 +12,7 @@ const { FileOps } = require('../../../lib/file-ops');
 class CustomHandler {
   constructor() {
     this.fileOps = new FileOps();
+    this.xmlHandler = new XmlHandler();
   }
 
   /**
@@ -52,6 +54,12 @@ class CustomHandler {
           } else if (entry.name === 'custom.yaml') {
             // Found a custom.yaml file
             customPaths.push(fullPath);
+          } else if (
+            entry.name === 'module.yaml' && // Check if this is a custom module (either in _module-installer or in root directory)
+            // Skip if it's in src/modules (those are standard modules)
+            !fullPath.includes(path.join('src', 'modules'))
+          ) {
+            customPaths.push(fullPath);
           }
         }
       } catch {
@@ -66,40 +74,44 @@ class CustomHandler {
   }
 
   /**
-   * Get custom content info from a custom.yaml file
-   * @param {string} customYamlPath - Path to custom.yaml file
+   * Get custom content info from a custom.yaml or module.yaml file
+   * @param {string} configPath - Path to config file
    * @param {string} projectRoot - Project root directory for calculating relative paths
    * @returns {Object|null} Custom content info
    */
-  async getCustomInfo(customYamlPath, projectRoot = null) {
+  async getCustomInfo(configPath, projectRoot = null) {
     try {
-      const configContent = await fs.readFile(customYamlPath, 'utf8');
+      const configContent = await fs.readFile(configPath, 'utf8');
 
       // Try to parse YAML with error handling
       let config;
       try {
         config = yaml.load(configContent);
       } catch (parseError) {
-        console.warn(chalk.yellow(`Warning: YAML parse error in ${customYamlPath}:`, parseError.message));
+        console.warn(chalk.yellow(`Warning: YAML parse error in ${configPath}:`, parseError.message));
         return null;
       }
 
-      const customDir = path.dirname(customYamlPath);
+      // Check if this is an module.yaml (module) or custom.yaml (custom content)
+      const isInstallConfig = configPath.endsWith('module.yaml');
+      const configDir = path.dirname(configPath);
+
       // Use provided projectRoot or fall back to process.cwd()
       const basePath = projectRoot || process.cwd();
-      const relativePath = path.relative(basePath, customDir);
+      const relativePath = path.relative(basePath, configDir);
 
       return {
-        id: config.code || path.basename(customDir),
-        name: config.name || `Custom: ${path.basename(customDir)}`,
-        description: config.description || 'Custom agents and workflows',
-        path: customDir,
+        id: config.code || 'unknown-code',
+        name: config.name,
+        description: config.description || '',
+        path: configDir,
         relativePath: relativePath,
         defaultSelected: config.default_selected === true,
         config: config,
+        isInstallConfig: isInstallConfig, // Track which type this is
       };
     } catch (error) {
-      console.warn(chalk.yellow(`Warning: Failed to read ${customYamlPath}:`, error.message));
+      console.warn(chalk.yellow(`Warning: Failed to read ${configPath}:`, error.message));
       return null;
     }
   }
@@ -131,10 +143,10 @@ class CustomHandler {
       await fs.ensureDir(bmadAgentsDir);
       await fs.ensureDir(bmadWorkflowsDir);
 
-      // Process agents - copy entire agents directory structure
+      // Process agents - compile and copy agents
       const agentsDir = path.join(customPath, 'agents');
       if (await fs.pathExists(agentsDir)) {
-        await this.copyDirectory(agentsDir, bmadAgentsDir, results, fileTrackingCallback, config);
+        await this.compileAndCopyAgents(agentsDir, bmadAgentsDir, bmadDir, config, fileTrackingCallback, results);
 
         // Count agent files
         const agentFiles = await this.findFilesRecursively(agentsDir, ['.agent.yaml', '.md']);
@@ -268,6 +280,114 @@ class CustomHandler {
         } catch (error) {
           results.errors.push(`Failed to copy ${entry.name}: ${error.message}`);
         }
+      }
+    }
+  }
+
+  /**
+   * Compile .agent.yaml files to .md format and handle sidecars
+   * @param {string} sourceAgentsPath - Source agents directory
+   * @param {string} targetAgentsPath - Target agents directory
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {Object} config - Configuration for placeholder replacement
+   * @param {Function} fileTrackingCallback - Optional callback to track installed files
+   * @param {Object} results - Results object to update
+   */
+  async compileAndCopyAgents(sourceAgentsPath, targetAgentsPath, bmadDir, config, fileTrackingCallback, results) {
+    // Get all .agent.yaml files recursively
+    const agentFiles = await this.findFilesRecursively(sourceAgentsPath, ['.agent.yaml']);
+
+    for (const agentFile of agentFiles) {
+      const relativePath = path.relative(sourceAgentsPath, agentFile);
+      const targetDir = path.join(targetAgentsPath, path.dirname(relativePath));
+
+      await fs.ensureDir(targetDir);
+
+      const agentName = path.basename(agentFile, '.agent.yaml');
+      const targetMdPath = path.join(targetDir, `${agentName}.md`);
+      // Use the actual bmadDir if available (for when installing to temp dir)
+      const actualBmadDir = config._bmadDir || bmadDir;
+      const customizePath = path.join(actualBmadDir, '_cfg', 'agents', `custom-${agentName}.customize.yaml`);
+
+      // Read and compile the YAML
+      try {
+        const yamlContent = await fs.readFile(agentFile, 'utf8');
+        const { compileAgent } = require('../../../lib/agent/compiler');
+
+        // Create customize template if it doesn't exist
+        if (!(await fs.pathExists(customizePath))) {
+          const { getSourcePath } = require('../../../lib/project-root');
+          const genericTemplatePath = getSourcePath('utility', 'templates', 'agent.customize.template.yaml');
+          if (await fs.pathExists(genericTemplatePath)) {
+            // Copy with placeholder replacement
+            let templateContent = await fs.readFile(genericTemplatePath, 'utf8');
+            templateContent = templateContent.replaceAll('{bmad_folder}', config.bmad_folder || 'bmad');
+            await fs.writeFile(customizePath, templateContent, 'utf8');
+            console.log(chalk.dim(`  Created customize: custom-${agentName}.customize.yaml`));
+          }
+        }
+
+        // Compile the agent
+        const { xml } = compileAgent(yamlContent, {}, agentName, relativePath, { config });
+
+        // Replace placeholders in the compiled content
+        let processedXml = xml;
+        processedXml = processedXml.replaceAll('{bmad_folder}', config.bmad_folder || 'bmad');
+        processedXml = processedXml.replaceAll('{user_name}', config.user_name || 'User');
+        processedXml = processedXml.replaceAll('{communication_language}', config.communication_language || 'English');
+        processedXml = processedXml.replaceAll('{output_folder}', config.output_folder || 'docs');
+
+        // Write the compiled MD file
+        await fs.writeFile(targetMdPath, processedXml, 'utf8');
+
+        // Check if agent has sidecar
+        let hasSidecar = false;
+        try {
+          const yamlLib = require('yaml');
+          const agentYaml = yamlLib.parse(yamlContent);
+          hasSidecar = agentYaml?.agent?.metadata?.hasSidecar === true;
+        } catch {
+          // Continue without sidecar processing
+        }
+
+        // Copy sidecar files if agent has hasSidecar flag
+        if (hasSidecar && config.agent_sidecar_folder) {
+          const { copyAgentSidecarFiles } = require('../../../lib/agent/installer');
+
+          // Resolve agent sidecar folder path
+          const projectDir = path.dirname(bmadDir);
+          const resolvedSidecarFolder = config.agent_sidecar_folder
+            .replaceAll('{project-root}', projectDir)
+            .replaceAll('{bmad_folder}', path.basename(bmadDir));
+
+          // Create sidecar directory for this agent
+          const agentSidecarDir = path.join(resolvedSidecarFolder, agentName);
+          await fs.ensureDir(agentSidecarDir);
+
+          // Copy sidecar files
+          const sidecarResult = copyAgentSidecarFiles(path.dirname(agentFile), agentSidecarDir, agentFile);
+
+          if (sidecarResult.copied.length > 0) {
+            console.log(chalk.dim(`    Copied ${sidecarResult.copied.length} sidecar file(s) to: ${agentSidecarDir}`));
+          }
+          if (sidecarResult.preserved.length > 0) {
+            console.log(chalk.dim(`    Preserved ${sidecarResult.preserved.length} existing sidecar file(s)`));
+          }
+        }
+
+        // Track the file
+        if (fileTrackingCallback) {
+          fileTrackingCallback(targetMdPath);
+        }
+
+        console.log(
+          chalk.dim(
+            `    Compiled agent: ${agentName} -> ${path.relative(targetAgentsPath, targetMdPath)}${hasSidecar ? ' (with sidecar)' : ''}`,
+          ),
+        );
+      } catch (error) {
+        console.warn(chalk.yellow(`    Failed to compile agent ${agentName}:`, error.message));
+        results.errors.push(`Failed to compile agent ${agentName}: ${error.message}`);
       }
     }
   }

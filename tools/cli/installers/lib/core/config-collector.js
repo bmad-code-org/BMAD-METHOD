@@ -183,24 +183,28 @@ class ConfigCollector {
 
     // Load module's install config schema
     // First, try the standard src/modules location
-    let installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-config.yaml');
+    let installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'module.yaml');
+    let moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
 
     // If not found in src/modules, we need to find it by searching the project
-    if (!(await fs.pathExists(installerConfigPath))) {
+    if (!(await fs.pathExists(installerConfigPath)) && !(await fs.pathExists(moduleConfigPath))) {
       // Use the module manager to find the module source
       const { ModuleManager } = require('../modules/manager');
       const moduleManager = new ModuleManager();
       const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
 
       if (moduleSourcePath) {
-        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'install-config.yaml');
+        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'module.yaml');
+        moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
       }
     }
 
     let configPath = null;
     let isCustomModule = false;
 
-    if (await fs.pathExists(installerConfigPath)) {
+    if (await fs.pathExists(moduleConfigPath)) {
+      configPath = moduleConfigPath;
+    } else if (await fs.pathExists(installerConfigPath)) {
       configPath = installerConfigPath;
     } else {
       // Check if this is a custom module with custom.yaml
@@ -448,22 +452,26 @@ class ConfigCollector {
     }
     // Load module's config
     // First, try the standard src/modules location
-    let installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'install-config.yaml');
+    let installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'module.yaml');
+    let moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
 
     // If not found in src/modules, we need to find it by searching the project
-    if (!(await fs.pathExists(installerConfigPath))) {
+    if (!(await fs.pathExists(installerConfigPath)) && !(await fs.pathExists(moduleConfigPath))) {
       // Use the module manager to find the module source
       const { ModuleManager } = require('../modules/manager');
       const moduleManager = new ModuleManager();
       const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
 
       if (moduleSourcePath) {
-        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'install-config.yaml');
+        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'module.yaml');
+        moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
       }
     }
 
     let configPath = null;
-    if (await fs.pathExists(installerConfigPath)) {
+    if (await fs.pathExists(moduleConfigPath)) {
+      configPath = moduleConfigPath;
+    } else if (await fs.pathExists(installerConfigPath)) {
       configPath = installerConfigPath;
     } else {
       // No config for this module

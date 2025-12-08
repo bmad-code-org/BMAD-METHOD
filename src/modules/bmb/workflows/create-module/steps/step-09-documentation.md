@@ -133,7 +133,8 @@ bmad install {module_name}
 ├── tasks/                     # Task files
 ├── templates/                 # Shared templates
 ├── data/                      # Module data
-├── _module-installer/         # Installation config
+├── _module-installer/         # Installation optional js file with custom install routine
+├── module.yaml                # yaml config and install questions
 └── README.md                  # This file
 ```
 

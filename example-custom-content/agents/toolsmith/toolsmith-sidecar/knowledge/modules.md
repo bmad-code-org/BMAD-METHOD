@@ -27,7 +27,7 @@ src/modules/{module-name}/
 │       ├── injections.yaml
 │       ├── config.yaml
 │       └── sub-agents/
-├── install-config.yaml        # Module install configuration
+├── module.yaml        # Module install configuration
 └── README.md                  # Module documentation
 ```
 
@@ -145,7 +145,7 @@ Defined in @/tools/cli/lib/platform-codes.js
 - Create new module installer: Add \_module-installer/installer.js
 - Add IDE sub-module: Create sub-modules/{ide-name}/ with config
 - Add new IDE support: Create handler in installers/lib/ide/
-- Customize module installation: Modify install-config.yaml
+- Customize module installation: Modify module.yaml
 
 ## Relationships
 

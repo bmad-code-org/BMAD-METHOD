@@ -113,10 +113,10 @@ For a [module type] module, we'll create this structure:"
 │   └── [template-files]
 ├── data/                      # Module data files
 │   └── [data-files]
+├── module.yaml                # Required
 ├── _module-installer/         # Installation configuration
-│   ├── install-config.yaml   # Required
-│   ├── installer.js          # Optional
-│   └── assets/               # Optional install assets
+│   ├── installer.js           # Optional
+│   └── assets/                # Optional install assets
 └── README.md                  # Module documentation
 ```
 
