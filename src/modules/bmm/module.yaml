@@ -52,3 +52,35 @@ tea_use_playwright_utils:
     - "You must install packages yourself, or use test architect's *framework command."
   default: false
   result: "{value}"
+
+# External Code Review Agents Configuration
+# These are auto-detected at runtime, but user can set preference here
+# Useful when using a different AI as primary IDE agent (e.g., Codex/Gemini users can use Claude for reviews)
+external_review_agents:
+  codex_available:
+    prompt: false # Auto-detected at runtime
+    default: false
+    result: "{value}"
+  gemini_available:
+    prompt: false # Auto-detected at runtime
+    default: false
+    result: "{value}"
+  claude_available:
+    prompt: false # Auto-detected at runtime
+    default: false
+    result: "{value}"
+  preferred_agent:
+    prompt: "Which external code review agent do you prefer (if multiple are available)?"
+    default: "codex"
+    result: "{value}"
+    single-select:
+      - value: "codex"
+        label: "Codex (OpenAI) - Fast code review with OpenAI models"
+      - value: "gemini"
+        label: "Gemini (Google) - Code review with Google models"
+      - value: "claude"
+        label: "Claude (Anthropic) - Code review with Claude models (good for Codex/Gemini users)"
+  last_checked:
+    prompt: false # System-managed timestamp
+    default: null
+    result: "{value}"
