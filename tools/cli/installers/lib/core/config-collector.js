@@ -132,8 +132,12 @@ class ConfigCollector {
    * Collect configuration for all modules
    * @param {Array} modules - List of modules to configure (including 'core')
    * @param {string} projectDir - Target project directory
+   * @param {Object} options - Additional options
+   * @param {Map} options.customModulePaths - Map of module ID to source path for custom modules
    */
-  async collectAllConfigurations(modules, projectDir) {
+  async collectAllConfigurations(modules, projectDir, options = {}) {
+    // Store custom module paths for use in collectModuleConfig
+    this.customModulePaths = options.customModulePaths || new Map();
     await this.loadExistingConfig(projectDir);
 
     // Check if core was already collected (e.g., in early collection phase)
@@ -451,11 +455,21 @@ class ConfigCollector {
       this.allAnswers = {};
     }
     // Load module's config
-    // First, try the standard src/modules location
-    let installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'module.yaml');
-    let moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
+    // First, check if we have a custom module path for this module
+    let installerConfigPath = null;
+    let moduleConfigPath = null;
 
-    // If not found in src/modules, we need to find it by searching the project
+    if (this.customModulePaths && this.customModulePaths.has(moduleName)) {
+      const customPath = this.customModulePaths.get(moduleName);
+      installerConfigPath = path.join(customPath, '_module-installer', 'module.yaml');
+      moduleConfigPath = path.join(customPath, 'module.yaml');
+    } else {
+      // Try the standard src/modules location
+      installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'module.yaml');
+      moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
+    }
+
+    // If not found in src/modules or custom paths, search the project
     if (!(await fs.pathExists(installerConfigPath)) && !(await fs.pathExists(moduleConfigPath))) {
       // Use the module manager to find the module source
       const { ModuleManager } = require('../modules/manager');

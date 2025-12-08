@@ -435,8 +435,53 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       // Quick update already collected all configs, use them directly
       moduleConfigs = this.configCollector.collectedConfig;
     } else {
+      // Build custom module paths map from customContent
+      const customModulePaths = new Map();
+
+      // Handle selectedFiles (from existing install path or manual directory input)
+      if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
+        const { CustomHandler } = require('../custom/handler');
+        const customHandler = new CustomHandler();
+        for (const customFile of config.customContent.selectedFiles) {
+          const customInfo = await customHandler.getCustomInfo(customFile, path.resolve(config.directory));
+          if (customInfo && customInfo.id) {
+            customModulePaths.set(customInfo.id, customInfo.path);
+          }
+        }
+      }
+
+      // Handle cachedModules (from new install path where modules are cached)
+      // Only include modules that were actually selected for installation
+      if (config.customContent && config.customContent.cachedModules) {
+        // Get selected cached module IDs (if available)
+        const selectedCachedIds = config.customContent.selectedCachedModules || [];
+        // If no selection info, include all cached modules (for backward compatibility)
+        const shouldIncludeAll = selectedCachedIds.length === 0 && config.customContent.selected;
+
+        for (const cachedModule of config.customContent.cachedModules) {
+          // For cached modules, the path is the cachePath which contains the module.yaml
+          if (
+            cachedModule.id &&
+            cachedModule.cachePath && // Include if selected or if we should include all
+            (shouldIncludeAll || selectedCachedIds.includes(cachedModule.id))
+          ) {
+            customModulePaths.set(cachedModule.id, cachedModule.cachePath);
+          }
+        }
+      }
+
+      // Get list of all modules including custom modules
+      const allModulesForConfig = [...(config.modules || [])];
+      for (const [moduleId] of customModulePaths) {
+        if (!allModulesForConfig.includes(moduleId)) {
+          allModulesForConfig.push(moduleId);
+        }
+      }
+
       // Regular install - collect configurations (core was already collected in UI.promptInstall if interactive)
-      moduleConfigs = await this.configCollector.collectAllConfigurations(config.modules || [], path.resolve(config.directory));
+      moduleConfigs = await this.configCollector.collectAllConfigurations(allModulesForConfig, path.resolve(config.directory), {
+        customModulePaths,
+      });
     }
 
     // Get bmad_folder from config (default to 'bmad' for backwards compatibility)
@@ -905,10 +950,13 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
             const moduleTargetPath = path.join(bmadDir, moduleName);
             await fs.ensureDir(moduleTargetPath);
 
+            // Get collected config for this custom module (from module.yaml prompts)
+            const collectedModuleConfig = moduleConfigs[moduleName] || {};
+
             const result = await customHandler.install(
               customInfo.path,
               path.join(bmadDir, 'temp-custom'),
-              { ...config.coreConfig, ...customInfo.config, _bmadDir: bmadDir },
+              { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig, _bmadDir: bmadDir },
               (filePath) => {
                 // Track installed files with correct path
                 const relativePath = path.relative(path.join(bmadDir, 'temp-custom'), filePath);
@@ -939,8 +987,10 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
               await fs.remove(tempCustomPath);
             }
 
-            // Create module config
-            await this.generateModuleConfigs(bmadDir, { [moduleName]: { ...config.coreConfig, ...customInfo.config } });
+            // Create module config (include collected config from module.yaml prompts)
+            await this.generateModuleConfigs(bmadDir, {
+              [moduleName]: { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig },
+            });
 
             // Store custom module info for later manifest update
             if (!config._customModulesToTrack) {
