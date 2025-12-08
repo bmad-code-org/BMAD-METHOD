@@ -581,7 +581,7 @@ class ManifestGenerator {
    */
   async writeWorkflowManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'workflow-manifest.csv');
-    const escapeCsv = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
     const parseCsvLine = (line) => {
       const columns = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
       return columns.map((c) => c.replaceAll(/^"|"$/g, ''));
@@ -635,12 +635,7 @@ class ManifestGenerator {
 
     // Write all workflows
     for (const [, value] of allWorkflows) {
-      const row = [
-        escapeCsv(value.name),
-        escapeCsv(value.description),
-        escapeCsv(value.module),
-        escapeCsv(value.path),
-      ].join(',');
+      const row = [escapeCsv(value.name), escapeCsv(value.description), escapeCsv(value.module), escapeCsv(value.path)].join(',');
       csv += row + '\n';
     }
 
