@@ -28,6 +28,9 @@
 - **Research goals = "{{research_goals}}"** - established from initial discussion
 - Focus on APIs, protocols, and system interoperability
 - Web search capabilities with source verification are enabled
+- **DeepWiki MCP** - Check `deepwiki_enabled` from frontmatter for enhanced repository analysis
+- **DeepWiki repos** - If enabled, `deepwiki_repos` contains validated repositories to query
+- **Query budget** - Track `deepwiki_queries_used` against `deepwiki_query_budget`
 
 ## YOUR TASK:
 
@@ -165,6 +168,342 @@ _Data Encryption: [Secure data transmission and storage]_
 _Source: [URL]_
 ```
 
+### 3.5 DeepWiki-Enhanced Cross-Repository Analysis (CONDITIONAL)
+
+**⚠️ ONLY EXECUTE THIS SECTION IF `deepwiki_enabled: true` IN FRONTMATTER**
+
+If DeepWiki is not enabled, skip directly to Section 5.
+
+---
+
+#### DeepWiki Query Protocol
+
+**Confidence Label System:**
+| Label | Meaning | Source |
+|-------|---------|--------|
+| 🟢 `[REPO-VERIFIED]` | Direct from repo docs via DeepWiki | Single repo query |
+| 🟡 `[CROSS-REPO-DOCUMENTED]` | Explicit integration docs found | Rare - high value |
+| 🟠 `[LLM-SYNTHESIZED]` | Combined from per-repo facts | Requires POC |
+| 🔴 `[HYPOTHESIS-ONLY]` | Speculative, no supporting docs | Do not use without validation |
+
+---
+
+#### Phase 1: Cross-Reference Detection
+
+For each pair of repositories (A, B) in `deepwiki_repos`:
+
+```
+ask_question(repo_A, "Does {repo_A} document integration patterns with {repo_B} or similar frameworks in its category?")
+```
+
+**If cross-reference found:**
+
+- Mark as `[CROSS-REPO-DOCUMENTED]` - this is rare and high value
+- Extract the documented integration pattern
+- Note the source section in DeepWiki
+
+**If not found:**
+
+- Continue to Phase 2 for this pair
+- Mark any synthesis as `[LLM-SYNTHESIZED]`
+
+**Update query count:** `deepwiki_queries_used += 1` per query
+
+---
+
+#### Phase 2: Structured Per-Repository Extraction
+
+For each repository in `deepwiki_repos`, run these queries:
+
+**Q1 - Integration APIs:**
+
+```
+ask_question(repo, "What APIs does {repo} expose for external integration? Include function signatures and parameters.")
+```
+
+**Q2 - Communication Protocols:**
+
+```
+ask_question(repo, "What communication protocols and data formats does {repo} support for inter-process or inter-service communication?")
+```
+
+**Q3 - Extension Points:**
+
+```
+ask_question(repo, "What are the documented extension points, plugin architecture, or hooks in {repo}?")
+```
+
+**Q4 - Third-Party Ecosystem:**
+
+```
+ask_question(repo, "What third-party libraries, plugins, or bridges exist for {repo} integration with other frameworks?")
+```
+
+**Q5 - Ecosystem Discovery (Enhanced):**
+
+```
+ask_question(repo, "What official adapters, integrations, or framework-specific packages does {repo} provide? Include any Next.js, React, Vue, Svelte, or mobile adapters.")
+```
+
+**Store results per repository with:**
+
+- API signatures extracted
+- Protocol support identified
+- Extension mechanisms documented
+- Ecosystem libraries discovered
+- Official adapters/integrations listed
+
+**Update query count:** `deepwiki_queries_used += 5` per repository
+
+---
+
+#### Phase 3: LLM Cross-Repository Synthesis
+
+**⚠️ CRITICAL: This section produces `[LLM-SYNTHESIZED]` content. Label explicitly.**
+
+Using Phase 1 and Phase 2 data, synthesize cross-repo integration patterns:
+
+**For each repository pair (A, B):**
+
+1. **Compare APIs:** Identify compatible integration points
+   - Does A expose an API that B can consume?
+   - Does B expose an API that A can consume?
+
+2. **Compare Protocols:** Identify communication compatibility
+   - Do they share common protocols (HTTP, WebSocket, IPC)?
+   - Are data formats compatible (JSON, Protobuf)?
+
+3. **Identify Bridge Patterns:**
+   - Can A's extension points connect to B?
+   - Are there ecosystem libraries that bridge A and B?
+
+4. **Hypothesize Integration Architecture:**
+   - How would data flow between A and B?
+   - What is the recommended communication pattern?
+
+**MANDATORY: Label all synthesis output as `[LLM-SYNTHESIZED]`**
+
+---
+
+#### Phase 3.5: UI Library Component Analysis (CONDITIONAL)
+
+**⚠️ ONLY EXECUTE THIS SECTION IF ANY REPO IN `deepwiki_repos` HAS `type: ui-library` OR `type: ui-primitive`**
+
+For each UI library/primitive repository, run these specialized queries:
+
+**Q1 - Component Inventory:**
+
+```
+ask_question(repo, "What UI components does {repo} provide? List all available components with their primary purpose.")
+```
+
+**Q2 - Theming & Customization:**
+
+```
+ask_question(repo, "How does {repo} handle theming and customization? What are the theming APIs, CSS variables, or design tokens available?")
+```
+
+**Q3 - Composition Patterns:**
+
+```
+ask_question(repo, "What composition patterns does {repo} support? How do components compose together, and what are the slot/children patterns?")
+```
+
+**Q4 - Accessibility Features:**
+
+```
+ask_question(repo, "What accessibility features are built into {repo}? List ARIA support, keyboard navigation, and screen reader considerations.")
+```
+
+**Q5 - Variant & State System:**
+
+```
+ask_question(repo, "How does {repo} handle component variants and states? What props control visual variations (size, color, disabled, etc.)?"
+```
+
+**Update query count:** `deepwiki_queries_used += 5` per UI library repo
+
+---
+
+##### UI Component Capability Matrix Output
+
+For each UI library, generate this matrix:
+
+```markdown
+### {Repo} Component Capability Matrix [REPO-VERIFIED]
+
+**Library Type:** {ui-library|ui-primitive}
+**Source:** DeepWiki query on {repo}
+
+#### Available Components
+
+| Component | Category | Variants             | Accessibility        | Composable |
+| --------- | -------- | -------------------- | -------------------- | ---------- |
+| Button    | Action   | size, color, variant | ✅ ARIA              | ✅         |
+| Input     | Form     | size, state          | ✅ Label association | ✅         |
+| ...       | ...      | ...                  | ...                  | ...        |
+
+#### Theming System
+
+| Aspect          | Support | Method        |
+| --------------- | ------- | ------------- |
+| CSS Variables   | ✅/❌   | {description} |
+| Design Tokens   | ✅/❌   | {description} |
+| Runtime Theming | ✅/❌   | {description} |
+| Dark Mode       | ✅/❌   | {description} |
+
+#### Composition Patterns
+
+- **Slot Pattern:** {supported/not supported} - {description}
+- **Compound Components:** {supported/not supported} - {description}
+- **Render Props:** {supported/not supported} - {description}
+- **Polymorphic `as` Prop:** {supported/not supported} - {description}
+
+#### Accessibility Summary
+
+| Feature             | Coverage              |
+| ------------------- | --------------------- |
+| ARIA Attributes     | {auto/manual/partial} |
+| Keyboard Navigation | {full/partial/none}   |
+| Focus Management    | {automatic/manual}    |
+| Screen Reader       | {tested/untested}     |
+```
+
+---
+
+#### Phase 4: POC Validation Checklist Generation
+
+For each synthesized integration pattern, generate a validation checklist:
+
+```markdown
+### POC Validation Checklist: {Repo A} ↔ {Repo B}
+
+**Pattern:** {synthesized pattern description}
+**Confidence:** [LLM-SYNTHESIZED]
+
+**Validation Steps:**
+
+- [ ] {Repo A} API successfully called from integration code
+- [ ] {Repo B} receives data in expected format
+- [ ] Bidirectional communication works (if applicable)
+- [ ] Error handling propagates correctly across boundary
+- [ ] Performance acceptable for use case
+- [ ] No memory leaks or resource issues at boundary
+
+**Unknown/Unverified:**
+
+- [ ] Thread safety across framework boundaries
+- [ ] Lifecycle coordination between frameworks
+- [ ] Version compatibility for untested combinations
+```
+
+---
+
+#### DeepWiki Output Structure
+
+Append to document after web search content:
+
+```markdown
+## Cross-Repository Integration Analysis [DEEPWIKI-ENHANCED]
+
+**Data Sources:** DeepWiki MCP queries on {{deepwiki_repos}}
+**Queries Used:** {{deepwiki_queries_used}} / {{deepwiki_query_budget}}
+**Data Freshness:** DeepWiki indexes updated periodically - verify critical APIs against current release notes
+
+---
+
+### Per-Repository Integration Surfaces
+
+#### {Repo A} Integration Surface [REPO-VERIFIED]
+
+**Source:** DeepWiki query on {repo_A}
+
+**Public APIs:**
+{extracted from Q1}
+
+**Communication Protocols:**
+{extracted from Q2}
+
+**Extension Points:**
+{extracted from Q3}
+
+**Ecosystem Libraries:**
+{extracted from Q4}
+
+---
+
+#### {Repo B} Integration Surface [REPO-VERIFIED]
+
+**Source:** DeepWiki query on {repo_B}
+
+{same structure as above}
+
+---
+
+### Cross-Repository Integration Patterns
+
+#### Direct Integration Documentation [CROSS-REPO-DOCUMENTED]
+
+{Only if Phase 1 found actual cross-repo docs - often empty}
+
+_No direct cross-repository documentation found._ (if empty)
+
+---
+
+#### Synthesized Integration Patterns [LLM-SYNTHESIZED]
+
+**⚠️ WARNING: The following patterns are LLM synthesis based on per-repo facts.**
+**They require POC validation before use in architecture decisions.**
+
+##### Pattern: {Repo A} ↔ {Repo B} Bridge
+
+**Hypothesis:** {description of how they might integrate}
+
+**Based on:**
+
+- {Repo A}'s {api} [REPO-VERIFIED]
+- {Repo B}'s {api} [REPO-VERIFIED]
+
+**Confidence:** 🟠 [LLM-SYNTHESIZED] - No direct documentation found
+
+**Recommended Data Flow:**
+```
+
+{Repo A} → {mechanism} → {Repo B}
+{Repo B} → {mechanism} → {Repo A} (if bidirectional)
+
+````
+
+**Code Example (Conceptual):**
+```{language}
+// Integration pattern - REQUIRES VALIDATION
+{conceptual code based on extracted APIs}
+````
+
+---
+
+### POC Validation Requirements
+
+**⚠️ This research is INCOMPLETE until the following POC validations pass:**
+
+{aggregated checklists from Phase 4}
+
+---
+
+### DeepWiki Query Log
+
+| Query | Repository | Purpose                   | Result          |
+| ----- | ---------- | ------------------------- | --------------- |
+| 1     | {repo}     | Cross-reference detection | Found/Not found |
+| 2     | {repo}     | Integration APIs          | {summary}       |
+| ...   | ...        | ...                       | ...             |
+
+**Total Queries:** {{deepwiki_queries_used}} / {{deepwiki_query_budget}}
+
+```
+
+---
+
 ### 5. Present Analysis and Continue Option
 
 **Show analysis and present continue option:**
@@ -178,6 +517,12 @@ _Source: [URL]_
 - System interoperability approaches documented
 - Microservices integration patterns mapped
 - Event-driven integration strategies identified
+
+**DeepWiki Enhancement (if enabled):**
+- Per-repository integration surfaces documented [REPO-VERIFIED]
+- Cross-repository patterns synthesized [LLM-SYNTHESIZED]
+- POC validation checklists generated
+- Query budget: {{deepwiki_queries_used}} / {{deepwiki_query_budget}}
 
 **Ready to proceed to architectural patterns analysis?**
 [C] Continue - Save this to document and proceed to architectural patterns
@@ -206,6 +551,18 @@ Content is already written to document when generated in step 4. No additional a
 ✅ Proper routing to next step (architectural patterns)
 ✅ Research goals alignment maintained
 
+### DeepWiki Success Metrics (if enabled):
+
+✅ Phase 1 cross-reference detection executed for all repo pairs
+✅ Phase 2 structured extraction completed for all repos (5 queries each)
+✅ Phase 3 synthesis clearly labeled as `[LLM-SYNTHESIZED]`
+✅ Phase 3.5 UI Component Analysis executed for ui-library/ui-primitive repos (if any)
+✅ Phase 4 POC validation checklists generated for all synthesized patterns
+✅ Per-repo facts labeled as `[REPO-VERIFIED]`
+✅ Query budget tracked and displayed
+✅ DeepWiki output structure appended to document
+✅ UI Component Capability Matrix generated for each UI library (if applicable)
+
 ## FAILURE MODES:
 
 ❌ Relying solely on training data without web verification for current facts
@@ -216,6 +573,17 @@ Content is already written to document when generated in step 4. No additional a
 ❌ Not writing content immediately to document
 ❌ Not presenting [C] continue option after content generation
 ❌ Not routing to architectural patterns step
+
+### DeepWiki Failure Modes (if enabled):
+
+❌ Not checking `deepwiki_enabled` before executing DeepWiki section
+❌ Labeling synthesized content as `[REPO-VERIFIED]` (CRITICAL - trust violation)
+❌ Not generating POC validation checklists for synthesized patterns
+❌ Exceeding query budget without warning
+❌ Not tracking `deepwiki_queries_used` in frontmatter
+❌ Presenting synthesized patterns without confidence labels
+❌ Not executing Phase 3.5 UI queries when ui-library/ui-primitive repos are present
+❌ Missing UI Component Capability Matrix for UI library repos
 
 ❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
@@ -245,3 +613,4 @@ Content is already written to document when generated in step 4. No additional a
 After user selects 'C', load `./step-04-architectural-patterns.md` to analyze architectural patterns, design decisions, and system structures for {{research_topic}}.
 
 Remember: Always write research content to document immediately and emphasize current integration data with rigorous source verification!
+```

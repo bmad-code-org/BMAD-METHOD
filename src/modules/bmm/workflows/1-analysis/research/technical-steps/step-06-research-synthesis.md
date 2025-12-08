@@ -29,6 +29,9 @@
 - All technical research sections have been completed (overview, architecture, implementation)
 - Web search capabilities with source verification are enabled
 - This is the final synthesis step producing the complete technical research document
+- **DeepWiki MCP** - Check `deepwiki_enabled` from frontmatter for Integration Research Findings section
+- **DeepWiki data** - If enabled, cross-repo analysis from step-03 should be synthesized here
+- **Query usage** - `deepwiki_queries_used` / `deepwiki_query_budget` for final reporting
 
 ## YOUR TASK:
 
@@ -59,6 +62,7 @@ Produce a comprehensive, authoritative technical research document on **{{resear
 - Strategic Technical Recommendations
 - Implementation Roadmap and Risk Assessment
 - Future Technical Outlook and Innovation Opportunities
+- **Integration Research Findings** (if DeepWiki enabled)
 - Technical Research Methodology and Source Documentation
 - Technical Appendices and Reference Materials
 ```
@@ -411,6 +415,190 @@ _This comprehensive technical research document serves as an authoritative techn
 **Ready to complete this comprehensive technical research document?**
 [C] Complete Research - Save final comprehensive technical document
 
+### 5.5 Integration Research Findings (CONDITIONAL)
+
+**⚠️ ONLY INCLUDE THIS SECTION IF `deepwiki_enabled: true` IN FRONTMATTER**
+
+If DeepWiki was not enabled, skip this section entirely.
+
+---
+
+#### Integration Research Findings Section
+
+Append to the final document before the Methodology section:
+
+```markdown
+## Integration Research Findings [DEEPWIKI-ENHANCED]
+
+**⚠️ READ THIS FIRST - For Downstream Agents (Architect, DEV)**
+
+This section contains two types of findings:
+
+- **[REPO-VERIFIED]**: Facts extracted directly from repository documentation via DeepWiki
+- **[LLM-SYNTHESIZED]**: Cross-repo patterns inferred by combining per-repo facts
+
+**DO NOT** treat synthesized patterns as validated until POC checklist passes.
+
+---
+
+### Data Source Summary
+
+| Repository | DeepWiki Indexed | Version     | Queries Used |
+| ---------- | ---------------- | ----------- | ------------ |
+| {{repo_1}} | ✅               | {{version}} | {{queries}}  |
+| {{repo_2}} | ✅               | {{version}} | {{queries}}  |
+| {{repo_3}} | ✅/❌            | {{version}} | {{queries}}  |
+
+**Total DeepWiki Queries:** {{deepwiki_queries_used}} / {{deepwiki_query_budget}}
+
+**Data Freshness Notice:** DeepWiki indexes repositories periodically. For production implementations, verify critical API signatures against current official documentation and release notes.
+
+---
+
+### Confidence Level Legend
+
+| Label                     | Icon | Meaning                                | Action Required                   |
+| ------------------------- | ---- | -------------------------------------- | --------------------------------- |
+| `[REPO-VERIFIED]`         | 🟢   | Direct from repo docs via DeepWiki     | Normal confidence                 |
+| `[CROSS-REPO-DOCUMENTED]` | 🟡   | Explicit integration docs found (rare) | High confidence                   |
+| `[LLM-SYNTHESIZED]`       | 🟠   | Combined from per-repo facts           | **POC required before use**       |
+| `[HYPOTHESIS-ONLY]`       | 🔴   | Speculative, no supporting docs        | **Do not use without validation** |
+
+---
+
+### Framework Compatibility Matrix
+
+| Framework A        | Framework B        | Integration Pattern | Confidence           | POC Status       |
+| ------------------ | ------------------ | ------------------- | -------------------- | ---------------- |
+| {{repo_A}}@{{ver}} | {{repo_B}}@{{ver}} | {{pattern_summary}} | {{confidence_label}} | ⬜ Not validated |
+
+---
+
+### For Downstream Agents
+
+#### For Architect Agent
+
+When using this research for architecture decisions:
+
+1. **[REPO-VERIFIED] facts**: Use with normal confidence for design decisions
+2. **[LLM-SYNTHESIZED] patterns**: Treat as hypotheses, not validated approaches
+3. **Before committing to an integration pattern**: Ensure DEV has validated via POC checklist
+4. **Version awareness**: Note the documented versions; your project may use different versions
+
+#### For DEV Agent
+
+When implementing based on this research:
+
+1. **Start with POC validation**: Before full implementation, validate synthesized patterns
+2. **Use the POC checklists**: Each synthesized pattern has a validation checklist
+3. **Report discrepancies**: If actual behavior differs from research, flag for Analyst
+4. **Version check**: Verify your project's framework versions match documented versions
+
+#### For UX Designer (CONDITIONAL - only if UI library repos were queried)
+
+**⚠️ ONLY INCLUDE THIS SECTION IF `deepwiki_has_ui_repos: true` IN FRONTMATTER**
+
+When using this research for design decisions:
+
+1. **Component Capability Matrix**: Reference the matrix for available components and their variants
+2. **Theming System**: Check documented theming approach before designing custom themes
+3. **Composition Patterns**: Understand how components compose before designing complex UIs
+4. **Accessibility**: Note built-in accessibility features and gaps that need manual handling
+
+##### UI Library Summary for UX Designers
+
+| Library    | Components | Theming    | Dark Mode   | Accessibility |
+| ---------- | ---------- | ---------- | ----------- | ------------- |
+| {{repo_1}} | {{count}}  | {{method}} | {{support}} | {{level}}     |
+| {{repo_2}} | {{count}}  | {{method}} | {{support}} | {{level}}     |
+
+##### Component Availability Quick Reference
+
+| Component Type  | {{repo_1}} | {{repo_2}} | Notes     |
+| --------------- | ---------- | ---------- | --------- |
+| Buttons         | ✅/❌      | ✅/❌      | {{notes}} |
+| Forms/Inputs    | ✅/❌      | ✅/❌      | {{notes}} |
+| Navigation      | ✅/❌      | ✅/❌      | {{notes}} |
+| Data Display    | ✅/❌      | ✅/❌      | {{notes}} |
+| Feedback/Alerts | ✅/❌      | ✅/❌      | {{notes}} |
+| Layout          | ✅/❌      | ✅/❌      | {{notes}} |
+| Overlay/Modal   | ✅/❌      | ✅/❌      | {{notes}} |
+
+##### Theming Compatibility
+
+| Aspect        | {{repo_1}}  | {{repo_2}}  | Integration Notes |
+| ------------- | ----------- | ----------- | ----------------- |
+| CSS Variables | {{support}} | {{support}} | {{notes}}         |
+| Design Tokens | {{support}} | {{support}} | {{notes}}         |
+| Custom Themes | {{support}} | {{support}} | {{notes}}         |
+| Color Schemes | {{support}} | {{support}} | {{notes}}         |
+
+##### Design System Recommendations [LLM-SYNTHESIZED]
+
+Based on the component capability analysis:
+
+1. **Primary UI Library**: {{recommendation}} - {{rationale}}
+2. **Supplement with**: {{recommendation}} - {{rationale}}
+3. **Custom Components Needed**: {{list of gaps}}
+4. **Accessibility Gaps to Address**: {{list}}
+
+**⚠️ Note:** Design system recommendations are synthesized and should be validated with a UI prototype.
+
+---
+
+### POC Validation Summary
+
+**⚠️ This research is INCOMPLETE until the following POC validations pass:**
+
+#### {Repo A} ↔ {Repo B} Integration
+
+**Pattern:** {{pattern_description}}
+**Confidence:** 🟠 [LLM-SYNTHESIZED]
+
+**Validation Checklist:**
+
+- [ ] {{Repo A}} API successfully called from integration code
+- [ ] {{Repo B}} receives data in expected format
+- [ ] Bidirectional communication works (if applicable)
+- [ ] Error handling propagates correctly across boundary
+- [ ] Performance acceptable for use case
+- [ ] No memory leaks or resource issues at boundary
+
+**Unknown/Unverified:**
+
+- [ ] Thread safety across framework boundaries
+- [ ] Lifecycle coordination between frameworks
+- [ ] Version compatibility for untested combinations
+
+---
+
+### Known Limitations and Gaps
+
+Based on DeepWiki research, the following areas require additional investigation:
+
+- [ ] {{Gap 1}}: {{description}}
+- [ ] {{Gap 2}}: {{description}}
+- [ ] {{Gap 3}}: {{description}}
+
+---
+
+### DeepWiki Query Audit Trail
+
+For transparency and reproducibility:
+
+| #   | Repository | Query Purpose             | Result Summary      |
+| --- | ---------- | ------------------------- | ------------------- |
+| 1   | {{repo}}   | Cross-reference detection | {{found/not found}} |
+| 2   | {{repo}}   | Integration APIs          | {{summary}}         |
+| 3   | {{repo}}   | Communication protocols   | {{summary}}         |
+| ... | ...        | ...                       | ...                 |
+
+**Research Date:** {{date}}
+**DeepWiki MCP Endpoint:** https://mcp.deepwiki.com/sse
+```
+
+---
+
 ### 6. Handle Final Technical Completion
 
 #### If 'C' (Complete Research):
@@ -436,6 +624,26 @@ When user selects 'C', append the complete comprehensive technical research docu
 ✅ [C] complete option presented and handled correctly
 ✅ Technical research workflow completed with comprehensive document
 
+### DeepWiki Success Metrics (if enabled):
+
+✅ Integration Research Findings section included in final document
+✅ Data Source Summary with repo versions and query counts
+✅ Confidence Level Legend clearly displayed
+✅ Framework Compatibility Matrix populated
+✅ Downstream Agent Instructions for Architect and DEV
+✅ POC Validation Summary with all checklists aggregated
+✅ Known Limitations and Gaps documented
+✅ DeepWiki Query Audit Trail for transparency
+
+### UI Library Success Metrics (if deepwiki_has_ui_repos: true):
+
+✅ "For UX Designer" section included with guidance
+✅ UI Library Summary table populated
+✅ Component Availability Quick Reference matrix generated
+✅ Theming Compatibility matrix documented
+✅ Design System Recommendations with [LLM-SYNTHESIZED] label
+✅ Component Capability Matrix from step-03 referenced
+
 ## FAILURE MODES:
 
 ❌ Not producing compelling technical introduction
@@ -446,6 +654,24 @@ When user selects 'C', append the complete comprehensive technical research docu
 ❌ Relying solely on training data without web verification for current facts
 ❌ Producing technical document without professional structure
 ❌ Not presenting completion option for final technical document
+
+### DeepWiki Failure Modes (if enabled):
+
+❌ Not checking `deepwiki_enabled` before including Integration Research Findings
+❌ Missing Downstream Agent Instructions (Architect/DEV guidance)
+❌ Not including POC Validation Summary
+❌ Omitting confidence labels from final output
+❌ Not reporting total query usage
+❌ Missing Data Freshness Notice
+
+### UI Library Failure Modes (if deepwiki_has_ui_repos: true):
+
+❌ Not checking `deepwiki_has_ui_repos` before including UX Designer section
+❌ Missing UI Library Summary table
+❌ Not including Component Availability Quick Reference
+❌ Missing Theming Compatibility analysis
+❌ Design System Recommendations without [LLM-SYNTHESIZED] label
+❌ Not referencing Component Capability Matrix from step-03
 
 ❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
