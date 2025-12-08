@@ -2596,18 +2596,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         installedModules,
       );
 
-      // Handle both old return format (array) and new format (object)
-      let validCustomModules = [];
-      let keptModulesWithoutSources = [];
-
-      if (Array.isArray(customModuleResult)) {
-        // Old format - just an array
-        validCustomModules = customModuleResult;
-      } else if (customModuleResult && typeof customModuleResult === 'object') {
-        // New format - object with two arrays
-        validCustomModules = customModuleResult.validCustomModules || [];
-        keptModulesWithoutSources = customModuleResult.keptModulesWithoutSources || [];
-      }
+      const { validCustomModules, keptModulesWithoutSources } = customModuleResult;
 
       const customModulesFromManifest = validCustomModules.map((m) => ({
         ...m,
@@ -3386,7 +3375,10 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
     // If no missing sources, return immediately
     if (customModulesWithMissingSources.length === 0) {
-      return validCustomModules;
+      return {
+        validCustomModules,
+        keptModulesWithoutSources: [],
+      };
     }
 
     // Stop any spinner for interactive prompts
