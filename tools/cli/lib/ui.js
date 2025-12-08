@@ -654,15 +654,7 @@ class UI {
               cached: true,
             });
           } else {
-            // Debug: show what paths we tried to check
-            console.log(chalk.dim(`DEBUG: No module config found for ${cachedModule.id}`));
-            console.log(
-              chalk.dim(
-                `DEBUG: Tried paths:`,
-                possibleConfigPaths.map((p) => p.replace(cachedModule.cachePath, '.')),
-              ),
-            );
-            console.log(chalk.dim(`DEBUG: cachedModule:`, JSON.stringify(cachedModule, null, 2)));
+            // Module config not found - skip silently (non-critical)
           }
         }
       } else if (customContentConfig.customPath) {
