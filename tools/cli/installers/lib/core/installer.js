@@ -972,19 +972,39 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
               if (await fs.pathExists(customDir)) {
                 // Move contents to module directory
                 const items = await fs.readdir(customDir);
-                for (const item of items) {
-                  const srcPath = path.join(customDir, item);
-                  const destPath = path.join(moduleTargetPath, item);
+                const movedItems = [];
+                try {
+                  for (const item of items) {
+                    const srcPath = path.join(customDir, item);
+                    const destPath = path.join(moduleTargetPath, item);
 
-                  // If destination exists, remove it first (or we could merge)
-                  if (await fs.pathExists(destPath)) {
-                    await fs.remove(destPath);
+                    // If destination exists, remove it first (or we could merge)
+                    if (await fs.pathExists(destPath)) {
+                      await fs.remove(destPath);
+                    }
+
+                    await fs.move(srcPath, destPath);
+                    movedItems.push({ src: srcPath, dest: destPath });
                   }
-
-                  await fs.move(srcPath, destPath);
+                } catch (moveError) {
+                  // Rollback: restore any successfully moved items
+                  for (const moved of movedItems) {
+                    try {
+                      await fs.move(moved.dest, moved.src);
+                    } catch {
+                      // Best-effort rollback - log if it fails
+                      console.error(`Failed to rollback ${moved.dest} during cleanup`);
+                    }
+                  }
+                  throw new Error(`Failed to move custom module files: ${moveError.message}`);
                 }
               }
-              await fs.remove(tempCustomPath);
+              try {
+                await fs.remove(tempCustomPath);
+              } catch (cleanupError) {
+                // Non-fatal: temp directory cleanup failed but files were moved successfully
+                console.warn(`Warning: Could not clean up temp directory: ${cleanupError.message}`);
+              }
             }
 
             // Create module config (include collected config from module.yaml prompts)
