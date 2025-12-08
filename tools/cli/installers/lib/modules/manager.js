@@ -302,7 +302,7 @@ class ModuleManager {
   async findModuleSource(moduleName) {
     // Special handling for core module - it's in src/core not src/modules
     if (moduleName === 'core') {
-      const corePath = getSourcePath('core');
+      const corePath = getModulePath('core');
       if (await fs.pathExists(corePath)) {
         return corePath;
       }
@@ -1080,16 +1080,10 @@ class ModuleManager {
    * @param {Object} options - Installation options
    */
   async runModuleInstaller(moduleName, bmadDir, options = {}) {
-    // Special handling for core module - it's in src/core not src/modules
-    let sourcePath;
-    if (moduleName === 'core') {
-      sourcePath = getSourcePath('core');
-    } else {
-      sourcePath = await this.findModuleSource(moduleName);
-      if (!sourcePath) {
-        // No source found, skip module installer
-        return;
-      }
+    const sourcePath = await this.findModuleSource(moduleName);
+    if (!sourcePath) {
+      // No source found, skip module installer
+      return;
     }
 
     const installerPath = path.join(sourcePath, '_module-installer', 'installer.js');
