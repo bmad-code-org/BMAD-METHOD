@@ -408,7 +408,10 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
    * @param {string[]} config.ides - IDEs to configure
    * @param {boolean} config.skipIde - Skip IDE configuration
    */
-  async install(config) {
+  async install(originalConfig) {
+    // Clone config to avoid mutating the caller's object
+    const config = { ...originalConfig };
+
     // Display BMAD logo
     CLIUtils.displayLogo();
 
