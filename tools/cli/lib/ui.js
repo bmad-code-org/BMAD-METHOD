@@ -636,8 +636,8 @@ class UI {
                 moduleData = yaml.load(yamlContent);
                 foundPath = configPath;
                 break;
-              } catch {
-                // Continue to next path
+              } catch (error) {
+                throw new Error(`Failed to parse config at ${configPath}: ${error.message}`);
               }
             }
           }
