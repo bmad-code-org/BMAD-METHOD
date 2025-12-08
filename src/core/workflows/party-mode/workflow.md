@@ -27,11 +27,11 @@ This uses **micro-file architecture** with **sequential conversation orchestrati
 
 ### Configuration Loading
 
-Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
+Load config from `{project-root}/{bmad_folder}/core/config.yaml` and resolve:
 
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
-- `date`, `current_year`, `current_month` as system-generated values
+- `date` as a system-generated value
 - Agent manifest path: `{project-root}/{bmad_folder}/_cfg/agent-manifest.csv`
 
 ### Paths
@@ -118,7 +118,6 @@ stepsCompleted: [1]
 workflowType: 'party-mode'
 user_name: '{{user_name}}'
 date: '{{date}}'
-current_year: '{{current_year}}'
 agents_loaded: true
 party_active: true
 exit_triggers: ['*exit', 'goodbye', 'end party', 'quit']

@@ -6,7 +6,7 @@
 - ✅ ALWAYS treat this as collaborative discovery between architectural peers
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on evaluating starter template options with current versions
-- 🌐 ALWAYS verify current versions using WebSearch - NEVER trust hardcoded versions
+- 🌐 ALWAYS search the web to verify current versions - NEVER trust hardcoded versions
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete architecture
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
@@ -14,7 +14,7 @@
 ## EXECUTION PROTOCOLS:
 
 - 🎯 Show your analysis before taking any action
-- 🌐 Use WebSearch to verify current versions and options
+- 🌐 Search the web to verify current versions and options
 - ⚠️ Present A/P/C menu after generating starter template analysis
 - 💾 ONLY save when user chooses C (Continue)
 - 📖 Update frontmatter `stepsCompleted: [1, 2, 3]` before loading next step
@@ -118,12 +118,12 @@ If UX specification was loaded, consider UX requirements when selecting starter:
 
 ### 3. Research Current Starter Options
 
-Use WebSearch to find current, maintained starter templates:
+Search the web to find current, maintained starter templates:
 
 ```
-WebSearch: {{primary_technology}} starter template CLI create command latest 2024
-WebSearch: {{primary_technology}} boilerplate generator latest options 2024
-WebSearch: {{primary_technology}} production-ready starter best practices 2024
+Search the web: "{{primary_technology}} starter template CLI create command latest"
+Search the web: "{{primary_technology}} boilerplate generator latest options"
+Search the web: "{{primary_technology}} production-ready starter best practices"
 ```
 
 ### 4. Investigate Top Starter Options
@@ -131,10 +131,10 @@ WebSearch: {{primary_technology}} production-ready starter best practices 2024
 For each promising starter found, investigate details:
 
 ```
-WebSearch: {{starter_name}} default setup technologies included latest
-WebSearch: {{starter_name}} project structure file organization
-WebSearch: {{starter_name}} production deployment capabilities
-WebSearch: {{starter_name}} recent updates maintenance status 2024
+Search the web: "{{starter_name}} default setup technologies included latest"
+Search the web: "{{starter_name}} project structure file organization"
+Search the web: "{{starter_name}} production deployment capabilities"
+Search the web: "{{starter_name}} recent updates maintenance status"
 ```
 
 ### 5. Analyze What Each Starter Provides
@@ -200,8 +200,8 @@ This is a great starting point that follows best practices and saves us from mak
 If user shows interest in a starter, get the exact current commands:
 
 ```
-WebSearch: {{starter_name}} CLI command options flags latest 2024
-WebSearch: {{starter_name}} create new project command examples
+Search the web: "{{starter_name}} CLI command options flags latest"
+Search the web: "{{starter_name}} create new project command examples"
 ```
 
 ### 8. Generate Starter Template Content
@@ -304,7 +304,7 @@ When user selects 'C', append the content directly to the document using the str
 
 ✅ Primary technology domain correctly identified from project context
 ✅ Current, maintained starter templates researched and evaluated
-✅ All versions verified using WebSearch, not hardcoded
+✅ All versions verified using web search, not hardcoded
 ✅ Architectural implications of starter choice clearly documented
 ✅ User provided with clear rationale for starter selection
 ✅ A/P/C menu presented and handled correctly
@@ -312,7 +312,7 @@ When user selects 'C', append the content directly to the document using the str
 
 ## FAILURE MODES:
 
-❌ Not verifying current versions with WebSearch
+❌ Not verifying current versions with web search
 ❌ Ignoring UX requirements when evaluating starters
 ❌ Not documenting what architectural decisions the starter makes
 ❌ Failing to consider maintenance status of starter templates

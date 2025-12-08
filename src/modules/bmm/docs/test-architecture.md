@@ -138,12 +138,12 @@ Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
 **Standard agents**: 1-3 workflows per phase
 **TEA**: 8 workflows across Phase 3, Phase 4, and Release Gate
 
-| Phase       | TEA Workflows                                         | Frequency        | Purpose                                        |
-| ----------- | ----------------------------------------------------- | ---------------- | ---------------------------------------------- |
-| **Phase 2** | (none)                                                | -                | Planning phase - PM defines requirements       |
-| **Phase 3** | *framework, *ci                                       | Once per project | Setup test infrastructure AFTER architecture   |
-| **Phase 4** | *test-design, *atdd, *automate, *test-review, \*trace | Per epic/story   | Test planning per epic, then per-story testing |
-| **Release** | *nfr-assess, *trace (Phase 2: gate)                   | Per epic/release | Go/no-go decision                              |
+| Phase       | TEA Workflows                                             | Frequency        | Purpose                                        |
+| ----------- | --------------------------------------------------------- | ---------------- | ---------------------------------------------- |
+| **Phase 2** | (none)                                                    | -                | Planning phase - PM defines requirements       |
+| **Phase 3** | \*framework, \*ci                                         | Once per project | Setup test infrastructure AFTER architecture   |
+| **Phase 4** | \*test-design, \*atdd, \*automate, \*test-review, \*trace | Per epic/story   | Test planning per epic, then per-story testing |
+| **Release** | \*nfr-assess, \*trace (Phase 2: gate)                     | Per epic/release | Go/no-go decision                              |
 
 **Note**: `*trace` is a two-phase workflow: Phase 1 (traceability) + Phase 2 (gate decision). This reduces cognitive load while maintaining natural workflow.
 

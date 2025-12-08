@@ -4,7 +4,7 @@
 
 - [ ] Git repository initialized (`.git/` exists)
 - [ ] Git remote configured (`git remote -v` shows origin)
-- [ ] Test framework configured (playwright.config._ or cypress.config._)
+- [ ] Test framework configured (`playwright.config._` or `cypress.config._`)
 - [ ] Local tests pass (`npm run test:e2e` succeeds)
 - [ ] Team agrees on CI platform
 - [ ] Access to CI platform settings (if updating)

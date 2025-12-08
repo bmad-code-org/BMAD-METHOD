@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "bmad-method",
-  "version": "6.0.0-alpha.13",
+  "version": "6.0.0-alpha.15",
   "description": "Breakthrough Method of Agile AI-driven Development",
   "keywords": [
     "agile",
@@ -24,7 +24,6 @@
     "bmad-method": "tools/bmad-npx-wrapper.js"
   },
   "scripts": {
-    "bmad:agent-install": "node tools/cli/bmad-cli.js agent-install",
     "bmad:install": "node tools/cli/bmad-cli.js install",
     "bmad:status": "node tools/cli/bmad-cli.js status",
     "bundle": "node tools/cli/bundlers/bundle-web.js all",
@@ -34,13 +33,14 @@
     "install:bmad": "node tools/cli/bmad-cli.js install",
     "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
+    "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "prepare": "husky",
     "rebundle": "node tools/cli/bundlers/bundle-web.js rebundle",
     "release:major": "gh workflow run \"Manual Release\" -f version_bump=major",
     "release:minor": "gh workflow run \"Manual Release\" -f version_bump=minor",
     "release:patch": "gh workflow run \"Manual Release\" -f version_bump=patch",
     "release:watch": "gh run watch",
-    "test": "npm run test:schemas && npm run test:install && npm run validate:bundles && npm run validate:schemas && npm run lint && npm run format:check",
+    "test": "npm run test:schemas && npm run test:install && npm run validate:bundles && npm run validate:schemas && npm run lint && npm run lint:md && npm run format:check",
     "test:coverage": "c8 --reporter=text --reporter=html npm run test:schemas",
     "test:install": "node test/test-installation-components.js",
     "test:schemas": "node test/test-agent-schema.js",
@@ -56,7 +56,11 @@
       "eslint --fix",
       "npm run format:fix"
     ],
-    "*.{json,md}": [
+    "*.json": [
+      "npm run format:fix"
+    ],
+    "*.md": [
+      "markdownlint-cli2",
       "npm run format:fix"
     ]
   },
@@ -90,6 +94,7 @@
     "husky": "^9.1.7",
     "jest": "^30.0.4",
     "lint-staged": "^16.1.1",
+    "markdownlint-cli2": "^0.19.1",
     "prettier": "^3.5.3",
     "prettier-plugin-packagejson": "^2.5.19",
     "yaml-eslint-parser": "^1.2.3",

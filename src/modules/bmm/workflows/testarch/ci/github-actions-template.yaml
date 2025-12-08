@@ -27,10 +27,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Determine Node version
+        id: node-version
+        run: |
+          if [ -f .nvmrc ]; then
+            echo "value=$(cat .nvmrc)" >> "$GITHUB_OUTPUT"
+            echo "Using Node from .nvmrc"
+          else
+            echo "value=24" >> "$GITHUB_OUTPUT"
+            echo "Using default Node 24 (current LTS)"
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version: ${{ steps.node-version.outputs.value }}
           cache: "npm"
 
       - name: Install dependencies
@@ -54,10 +65,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Determine Node version
+        id: node-version
+        run: |
+          if [ -f .nvmrc ]; then
+            echo "value=$(cat .nvmrc)" >> "$GITHUB_OUTPUT"
+            echo "Using Node from .nvmrc"
+          else
+            echo "value=22" >> "$GITHUB_OUTPUT"
+            echo "Using default Node 22 (current LTS)"
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version: ${{ steps.node-version.outputs.value }}
           cache: "npm"
 
       - name: Cache Playwright browsers
@@ -99,10 +121,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Determine Node version
+        id: node-version
+        run: |
+          if [ -f .nvmrc ]; then
+            echo "value=$(cat .nvmrc)" >> "$GITHUB_OUTPUT"
+            echo "Using Node from .nvmrc"
+          else
+            echo "value=22" >> "$GITHUB_OUTPUT"
+            echo "Using default Node 22 (current LTS)"
+          fi
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
+          node-version: ${{ steps.node-version.outputs.value }}
           cache: "npm"
 
       - name: Cache Playwright browsers

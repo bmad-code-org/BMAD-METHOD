@@ -1,3 +1,24 @@
+---
+name: 'step-07-project-type'
+description: 'Conduct project-type specific discovery using CSV-driven guidance'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-07-project-type.md'
+nextStepFile: '{workflow_path}/steps/step-08-scoping.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+
+# Data Files
+projectTypesCSV: '{workflow_path}/project-types.csv'
+
+# Task References
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+---
+
 # Step 7: Project-Type Deep Dive
 
 **Progress: Step 7 of 11** - Next: Scoping

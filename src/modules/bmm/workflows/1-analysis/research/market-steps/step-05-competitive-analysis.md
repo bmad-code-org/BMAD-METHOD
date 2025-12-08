@@ -6,10 +6,10 @@
 
 - 📖 CRITICAL: ALWAYS read the complete step file before taking any action - partial understanding leads to incomplete decisions
 - 🔄 CRITICAL: When loading next step with 'C', ensure the entire file is read and understood before proceeding
-- ✅ ALWAYS use {{current_year}} web searches for current competitive data
+- ✅ Search the web to verify and supplement your knowledge with current facts
 - 📋 YOU ARE A COMPETITIVE ANALYST, not content generator
 - 💬 FOCUS on competitive landscape and market positioning
-- 🔍 WEB RESEARCH REQUIRED - Use {{current_year}} data and verify sources
+- 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 
 ## EXECUTION PROTOCOLS:
 
@@ -28,14 +28,14 @@
 
 ## YOUR TASK:
 
-Conduct comprehensive competitive analysis using current {{current_year}} web data with emphasis on market positioning.
+Conduct comprehensive competitive analysis with emphasis on market positioning.
 
 ## COMPETITIVE ANALYSIS SEQUENCE:
 
 ### 1. Begin Competitive Analysis
 
 Start with competitive research approach:
-"Now I'll conduct **competitive analysis** using current {{current_year}} web data to understand the competitive landscape.
+"Now I'll conduct **competitive analysis** to understand the competitive landscape.
 
 **Competitive Analysis Focus:**
 
@@ -61,43 +61,43 @@ When saving to document, append these Level 2 and Level 3 sections:
 ### Key Market Players
 
 [Key players analysis with market share data]
-_Source: [URL with {{current_year}} market share data]_
+_Source: [URL]_
 
 ### Market Share Analysis
 
 [Market share analysis with source citations]
-_Source: [URL with {{current_year}} market share data]_
+_Source: [URL]_
 
 ### Competitive Positioning
 
 [Positioning analysis with source citations]
-_Source: [URL with {{current_year}} positioning data]_
+_Source: [URL]_
 
 ### Strengths and Weaknesses
 
 [SWOT analysis with source citations]
-_Source: [URL with {{current_year}} competitor analysis]_
+_Source: [URL]_
 
 ### Market Differentiation
 
 [Differentiation analysis with source citations]
-_Source: [URL with {{current_year}} differentiation data]_
+_Source: [URL]_
 
 ### Competitive Threats
 
 [Threats analysis with source citations]
-_Source: [URL with {{current_year}} threat assessment]_
+_Source: [URL]_
 
 ### Opportunities
 
 [Competitive opportunities analysis with source citations]
-_Source: [URL with {{current_year}} opportunity data]_
+_Source: [URL]_
 ```
 
 ### 3. Present Analysis and Complete Option
 
 Show the generated competitive analysis and present complete option:
-"I've completed the **competitive analysis** using current {{current_year}} data to understand the competitive landscape.
+"I've completed the **competitive analysis** for the competitive landscape.
 
 **Key Competitive Findings:**
 
@@ -124,7 +124,7 @@ When user selects 'C', append the content directly to the research document usin
 
 ## SUCCESS METRICS:
 
-✅ Key market players identified with {{current_year}} data
+✅ Key market players identified
 ✅ Market share analysis completed with source verification
 ✅ Competitive positioning strategies clearly mapped
 ✅ Strengths and weaknesses thoroughly analyzed
@@ -135,7 +135,8 @@ When user selects 'C', append the content directly to the research document usin
 
 ## FAILURE MODES:
 
-❌ Not using {{current_year}} in competitive web searches
+❌ Relying solely on training data without web verification for current facts
+
 ❌ Missing key market players or market share data
 ❌ Incomplete competitive positioning analysis
 ❌ Not identifying market differentiation opportunities
@@ -172,4 +173,4 @@ Market research workflow complete. User may:
 - Conduct additional competitive research on specific companies
 - Combine market research with other research types for comprehensive insights
 
-Congratulations on completing comprehensive market research with current {{current_year}} data! 🎉
+Congratulations on completing comprehensive market research! 🎉

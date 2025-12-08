@@ -28,11 +28,13 @@ class AgentCommandGenerator {
 
     for (const agent of agents) {
       const launcherContent = await this.generateLauncherContent(agent);
+      // Use relativePath if available (for nested agents), otherwise just name with .md
+      const agentPathInModule = agent.relativePath || `${agent.name}.md`;
       artifacts.push({
         type: 'agent-launcher',
         module: agent.module,
         name: agent.name,
-        relativePath: path.join(agent.module, 'agents', `${agent.name}.md`),
+        relativePath: path.join(agent.module, 'agents', agentPathInModule),
         content: launcherContent,
         sourcePath: agent.path,
       });
@@ -56,9 +58,12 @@ class AgentCommandGenerator {
     const template = await fs.readFile(this.templatePath, 'utf8');
 
     // Replace template variables
+    // Use relativePath if available (for nested agents), otherwise just name with .md
+    const agentPathInModule = agent.relativePath || `${agent.name}.md`;
     return template
       .replaceAll('{{name}}', agent.name)
       .replaceAll('{{module}}', agent.module)
+      .replaceAll('{{path}}', agentPathInModule)
       .replaceAll('{{description}}', agent.description || `${agent.name} agent`)
       .replaceAll('{bmad_folder}', this.bmadFolderName)
       .replaceAll('{*bmad_folder*}', '{bmad_folder}');

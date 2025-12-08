@@ -43,12 +43,6 @@ phases:
         command: "prd"
         output: "Product Requirements Document with FRs and NFRs"
 
-      - id: "validate-prd"
-        optional: true
-        agent: "pm"
-        command: "validate-prd"
-        note: "Quality check for PRD completeness"
-
       - id: "create-ux-design"
         conditional: "if_has_ui"
         agent: "ux-designer"
@@ -89,7 +83,7 @@ phases:
         required: true
         agent: "architect"
         command: "implementation-readiness"
-        note: "Validates PRD + UX + Architecture + Epics + Testability cohesion before implementation"
+        note: "Validates PRD + Architecture + Epics + UX (optional)"
 
   - phase: 3
     name: "Implementation"

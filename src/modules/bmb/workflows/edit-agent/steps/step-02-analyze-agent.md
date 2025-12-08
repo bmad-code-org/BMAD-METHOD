@@ -85,9 +85,9 @@ Load the agent file from the path provided in step 1:
 
 - Load and read the .agent.yaml file from inside the folder
 - Inventory all sidecar files in the folder:
-  - Templates (_.md, _.txt)
+  - Templates (`_.md`, `_.txt`)
   - Documentation files
-  - Knowledge base files (_.csv, _.json, \*.yaml)
+  - Knowledge base files (`_.csv`, `_.json`, `*.yaml`)
   - Any other resources referenced by the agent
 - Note: Expert agent with sidecar structure
 

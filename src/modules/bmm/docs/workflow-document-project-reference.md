@@ -57,7 +57,7 @@ Choose the right scan depth for your needs:
 - Initial understanding of project structure
 - Planning next steps before deeper analysis
 
-**Does NOT read:** Source code files (_.js, _.ts, _.py, _.go, etc.)
+**Does NOT read:** Source code files (`_.js`, `_.ts`, `_.py`, `_.go`, etc.)
 
 ### 2. Deep Scan
 

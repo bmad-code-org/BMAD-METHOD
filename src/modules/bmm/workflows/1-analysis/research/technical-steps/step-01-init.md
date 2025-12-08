@@ -25,7 +25,7 @@
 - **Research topic = "{{research_topic}}"** - discovered from initial discussion
 - **Research goals = "{{research_goals}}"** - captured from initial discussion
 - Focus on technical architecture and implementation research
-- Web search capabilities with {{current_year}} data are enabled
+- Web search is required to verify and supplement your knowledge with current facts
 
 ## YOUR TASK:
 
@@ -48,7 +48,7 @@ Start with technical scope understanding:
 
 **Research Approach:**
 
-- Current {{current_year}} web data with rigorous source verification
+- Current web data with rigorous source verification
 - Multi-source validation for critical technical claims
 - Confidence levels for uncertain technical information
 - Comprehensive technical coverage with architecture-specific insights
@@ -66,7 +66,7 @@ For **{{research_topic}}**, I will research:
 ✅ **Integration Patterns** - APIs, protocols, interoperability
 ✅ **Performance Considerations** - scalability, optimization, patterns
 
-**All using current {{current_year}} web data with source verification.**
+**All claims verified against current public sources.**
 
 **Does this technical research scope and approach align with your goals?**
 [C] Continue - Begin technical research with this scope
@@ -77,7 +77,7 @@ For **{{research_topic}}**, I will research:
 
 - Document scope confirmation in research file
 - Update frontmatter: `stepsCompleted: [1]`
-- Load: `./step-02-technology-stack.md`
+- Load: `./step-02-technical-overview.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -99,7 +99,7 @@ When user selects 'C', append scope confirmation:
 
 **Research Methodology:**
 
-- Current {{current_year}} web data with rigorous source verification
+- Current web data with rigorous source verification
 - Multi-source validation for critical technical claims
 - Confidence level framework for uncertain information
 - Comprehensive technical coverage with architecture-specific insights
@@ -111,7 +111,7 @@ When user selects 'C', append scope confirmation:
 
 ✅ Technical research scope clearly confirmed with user
 ✅ All technical analysis areas identified and explained
-✅ Research methodology with {{current_year}} data emphasized
+✅ Research methodology emphasized
 ✅ [C] continue option presented and handled correctly
 ✅ Scope confirmation documented when user proceeds
 ✅ Proper routing to next technical research step
@@ -120,7 +120,7 @@ When user selects 'C', append scope confirmation:
 
 ❌ Not clearly confirming technical research scope with user
 ❌ Missing critical technical analysis areas
-❌ Not emphasizing {{current_year}} web data requirement
+❌ Not explaining that web search is required for current facts
 ❌ Not presenting [C] continue option
 ❌ Proceeding without user scope confirmation
 ❌ Not routing to next technical research step
@@ -131,6 +131,6 @@ When user selects 'C', append scope confirmation:
 
 ## NEXT STEP:
 
-After user selects 'C', load `./step-02-technology-stack.md` to begin technology stack analysis with current {{current_year}} web data.
+After user selects 'C', load `./step-02-technical-overview.md` to begin technology stack analysis.
 
 Remember: This is SCOPE CONFIRMATION ONLY - no actual technical research yet, just confirming the research approach and scope!

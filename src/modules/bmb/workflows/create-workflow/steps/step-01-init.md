@@ -11,7 +11,7 @@ nextStepFile: '{workflow_path}/steps/step-02-gather.md'
 workflowFile: '{workflow_path}/workflow.md'
 
 # Output files for workflow creation process
-targetWorkflowPath: '{custom_workflow_location}/{new_workflow_name}'
+targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 # Template References
 # No workflow plan template needed - will create plan file directly
@@ -83,7 +83,7 @@ After getting the workflow name:
 
 **Check for existing workflows:**
 
-- Look for folder at `{custom_workflow_location}/{new_workflow_name}/`
+- Look for folder at `{custom_stand_alone_location}/workflows/{new_workflow_name}/`
 - If it exists, inform the user and suggest or get from them a unique name or postfix
 
 **Example alternatives:**
@@ -98,7 +98,7 @@ After getting the workflow name:
 Based on the module selection, confirm the target location:
 
 - For bmb module: `{custom_workflow_location}` (defaults to `{bmad_folder}/custom/src/workflows`)
-- For other modules: Check their install-config.yaml for custom workflow locations
+- For other modules: Check their module.yaml for custom workflow locations
 - Confirm the exact folder path where the workflow will be created
 - Store the confirmed path as `{targetWorkflowPath}`
 

@@ -95,6 +95,10 @@ Game development equivalent of PRD, created by Game Designer agent for game proj
 
 ## Workflow and Phases
 
+### Phase 0: Documentation (Prerequisite)
+
+**Conditional phase for brownfield projects.** Creates comprehensive codebase documentation before planning. Only required if existing documentation is insufficient for AI agents.
+
 ### Phase 1: Analysis (Optional)
 
 Discovery and research phase including brainstorming, research workflows, and product brief creation. Optional for Quick Flow, recommended for BMad Method, required for Enterprise Method.
@@ -187,7 +191,7 @@ backlog → drafted → ready-for-dev → in-progress → review → done
 
 - **backlog** - Story exists in epic but not yet drafted
 - **drafted** - Story file created by SM via create-story
-- **ready-for-dev** - Story has context, ready for DEV via story-context
+- **ready-for-dev** - Story drafted and reviewed, ready for DEV
 - **in-progress** - DEV is implementing via dev-story
 - **review** - Implementation complete, awaiting code-review
 - **done** - Completed with DoD met
@@ -238,7 +242,7 @@ Markdown file containing story details: description, acceptance criteria, techni
 
 ### Story Context
 
-Technical guidance document created via story-context workflow that provides implementation-specific context, references existing patterns, suggests approaches, and injects expertise for the specific story.
+Implementation guidance embedded within story files during the create-story workflow. Provides implementation-specific context, references existing patterns, suggests approaches, and helps maintain consistency with established codebase conventions.
 
 ### Sprint Planning
 
@@ -246,7 +250,7 @@ Workflow that initializes Phase 4 implementation by creating sprint-status.yaml,
 
 ### Gate Check
 
-Validation workflow (implementation-readiness) run before Phase 4 to ensure PRD, architecture, and UX documents are cohesive with no gaps or contradictions. Required for BMad Method and Enterprise Method tracks.
+Validation workflow (implementation-readiness) run before Phase 4 to ensure PRD + Architecture + Epics + UX (optional) are aligned with no gaps or contradictions. Required for BMad Method and Enterprise Method tracks.
 
 ### DoD (Definition of Done)
 

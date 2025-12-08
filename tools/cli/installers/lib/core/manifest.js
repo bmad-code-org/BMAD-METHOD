@@ -61,6 +61,7 @@ class Manifest {
           installDate: manifestData.installation?.installDate,
           lastUpdated: manifestData.installation?.lastUpdated,
           modules: manifestData.modules || [],
+          customModules: manifestData.customModules || [],
           ides: manifestData.ides || [],
         };
       } catch (error) {
@@ -93,6 +94,7 @@ class Manifest {
         lastUpdated: manifest.lastUpdated,
       },
       modules: manifest.modules || [],
+      customModules: manifest.customModules || [],
       ides: manifest.ides || [],
     };
 
@@ -534,6 +536,51 @@ class Manifest {
     }
 
     return configs;
+  }
+  /**
+   * Add a custom module to the manifest with its source path
+   * @param {string} bmadDir - Path to bmad directory
+   * @param {Object} customModule - Custom module info
+   */
+  async addCustomModule(bmadDir, customModule) {
+    const manifest = await this.read(bmadDir);
+    if (!manifest) {
+      throw new Error('No manifest found');
+    }
+
+    if (!manifest.customModules) {
+      manifest.customModules = [];
+    }
+
+    // Check if custom module already exists
+    const existingIndex = manifest.customModules.findIndex((m) => m.id === customModule.id);
+    if (existingIndex === -1) {
+      // Add new entry
+      manifest.customModules.push(customModule);
+    } else {
+      // Update existing entry
+      manifest.customModules[existingIndex] = customModule;
+    }
+
+    await this.update(bmadDir, { customModules: manifest.customModules });
+  }
+
+  /**
+   * Remove a custom module from the manifest
+   * @param {string} bmadDir - Path to bmad directory
+   * @param {string} moduleId - Module ID to remove
+   */
+  async removeCustomModule(bmadDir, moduleId) {
+    const manifest = await this.read(bmadDir);
+    if (!manifest || !manifest.customModules) {
+      return;
+    }
+
+    const index = manifest.customModules.findIndex((m) => m.id === moduleId);
+    if (index !== -1) {
+      manifest.customModules.splice(index, 1);
+      await this.update(bmadDir, { customModules: manifest.customModules });
+    }
   }
 }
 

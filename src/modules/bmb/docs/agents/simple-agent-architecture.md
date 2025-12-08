@@ -217,9 +217,13 @@ Features demonstrated:
 # Copy to your project
 cp /path/to/commit-poet.agent.yaml .bmad/custom/agents/
 
-# Install with personalization
-bmad agent-install
-# or: npx bmad-method agent-install
+# Create custom.yaml and install
+echo "code: my-agent
+name: My Agent
+default_selected: true" > custom.yaml
+
+npx bmad-method install
+# or: bmad install
 ```
 
 The installer:

@@ -51,7 +51,7 @@ menu:
 
   # Direct sidecar file action
   - trigger: 'insight'
-    action: 'Document this breakthrough in {agent-folder}/journal-keeper-sidecar/breakthroughs.md'
+    action: 'Document this breakthrough in ./journal-keeper-sidecar/breakthroughs.md'
     description: 'Record a meaningful insight'
 ```
 
@@ -63,9 +63,9 @@ Expert Agents MUST load sidecar files explicitly:
 
 ```yaml
 critical_actions:
-  - 'Load COMPLETE file {agent-folder}/journal-keeper-sidecar/memories.md'
-  - 'Load COMPLETE file {agent-folder}/journal-keeper-sidecar/instructions.md'
-  - 'ONLY read/write files in {agent-folder}/journal-keeper-sidecar/'
+  - 'Load COMPLETE file ./journal-keeper-sidecar/memories.md'
+  - 'Load COMPLETE file ./journal-keeper-sidecar/instructions.md'
+  - 'ONLY read/write files in ./journal-keeper-sidecar/'
 ```
 
 **Key points:**

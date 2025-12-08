@@ -10,7 +10,7 @@ thisStepFile: '{workflow_path}/steps/step-06-design.md'
 nextStepFile: '{workflow_path}/steps/step-07-build.md'
 workflowFile: '{workflow_path}/workflow.md'
 # Output files for workflow creation process
-targetWorkflowPath: '{custom_workflow_location}/{new_workflow_name}'
+targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References

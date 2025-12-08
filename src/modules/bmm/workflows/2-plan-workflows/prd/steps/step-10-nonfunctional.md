@@ -1,3 +1,21 @@
+---
+name: 'step-10-nonfunctional'
+description: 'Define quality attributes that matter for this specific product'
+
+# Path Definitions
+workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+
+# File References
+thisStepFile: '{workflow_path}/steps/step-10-nonfunctional.md'
+nextStepFile: '{workflow_path}/steps/step-11-complete.md'
+workflowFile: '{workflow_path}/workflow.md'
+outputFile: '{output_folder}/prd.md'
+
+# Task References
+advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+---
+
 # Step 10: Non-Functional Requirements
 
 **Progress: Step 10 of 11** - Next: Complete PRD

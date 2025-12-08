@@ -1,164 +1,199 @@
 # Changelog
 
+## [6.0.0-alpha.15]
+
+**Release: December 7, 2025**
+
+### 🔧 Module Installation Standardization
+
+**Unified Module Configuration:**
+
+- **module.yaml Standard**: All modules now use `module.yaml` instead of `_module-installer/install-config.yaml` for consistent configuration (BREAKING CHANGE)
+- **Universal Installer**: Both core and custom modules now use the same installer with consistent behavior
+- **Streamlined Module Creation**: Module builder templates updated to use new module.yaml standard
+- **Enhanced Module Discovery**: Improved module caching and discovery mechanisms
+
+**Custom Content Installation Revolution:**
+
+- **Interactive Custom Content Search**: Installer now proactively asks if you have custom content to install
+- **Flexible Location Specification**: Users can indicate custom content location during installation
+- **Improved Custom Module Handler**: Enhanced error handling and debug output for custom installations
+- **Comprehensive Documentation**: New custom-content-installation.md guide (245 lines) replacing custom-agent-installation.md
+
+### 🤖 Code Review Integration Expansion
+
+**AI Review Tools:**
+
+- **CodeRabbit AI Integration**: Added .coderabbit.yaml configuration for automated code review
+- **Raven's Verdict PR Review Tool**: New PR review automation tool (297 lines of documentation)
+- **Review Path Configuration**: Proper exclusion patterns for node_modules and generated files
+- **Review Documentation**: Comprehensive usage guidance and skip conditions for PRs
+
+### 📚 Documentation Improvements
+
+**Documentation Restructuring:**
+
+- **Code of Conduct**: Moved to .github/ folder following GitHub standards
+- **Gem Creation Link**: Updated to point to Gemini Gem manager instead of deprecated interface
+- **Example Custom Content**: Improved README files and disabled example modules to prevent accidental installation
+- **Custom Module Documentation**: Enhanced module installation guides with new YAML structure
+
+### 🧹 Cleanup & Optimization
+
+**Memory Management:**
+
+- **Removed Hardcoded .bmad Folders**: Cleaned up demo content to use configurable paths
+- **Sidecar File Cleanup**: Removed old .bmad-user-memory folders from wellness modules
+- **Example Content Organization**: Better organization of example-custom-content directory
+
+**Installer Improvements:**
+
+- **Debug Output Enhancement**: Added informative debug output when installer encounters errors
+- **Custom Module Caching**: Improved caching mechanism for custom module installations
+- **Consistent Behavior**: All modules now behave consistently regardless of custom or core status
+
+### 📊 Statistics
+
+- **77 files changed** with 2,852 additions and 607 deletions
+- **15 commits** since alpha.14
+
+### ⚠️ Breaking Changes
+
+1. **module.yaml Configuration**: All modules must now use `module.yaml` instead of `_module-installer/install-config.yaml`
+   - Core modules updated automatically
+   - Custom modules will need to rename their configuration file
+   - Module builder templates generate new format
+
+### 📦 New Dependencies
+
+- No new dependencies added in this release
+
+---
+
+## [6.0.0-alpha.14]
+
+**Release: December 7, 2025**
+
+### 🔧 Installation & Configuration Revolution
+
+**Custom Module Installation Overhaul:**
+
+- **Simple custom.yaml Installation**: Custom agents and workflows can now be installed with a single YAML file
+- **IDE Configuration Preservation**: Upgrades will no longer delete custom modules, agents, and workflows from IDE configuration
+- **Removed Legacy agent-install Command**: Streamlined installation process (BREAKING CHANGE)
+- **Sidecar File Retention**: Custom sidecar files are preserved during updates
+- **Flexible Agent Sidecar Locations**: Fully configurable via config options instead of hardcoded paths
+
+**Module Discovery System Transformation:**
+
+- **Recursive Agent Discovery**: Deep scanning for agents across entire project structure
+- **Enhanced Manifest Generation**: Comprehensive scanning of all installed modules
+- **Nested Agent Support**: Fixed nested agents appearing in CLI commands
+- **Module Reinstall Fix**: Prevented modules from showing as obsolete during reinstall
+
+### 🏗️ Advanced Builder Features
+
+**Workflow Builder Evolution:**
+
+- **Continuable Workflows**: Create workflows with sophisticated branching and continuation logic
+- **Template LOD Options**: Level of Detail output options for flexible workflow generation
+- **Step-Based Architecture**: Complete conversion to granular step-file system
+- **Enhanced Creation Process**: Improved workflow creation with better template handling
+
+**Module Builder Revolution:**
+
+- **11-Step Module Creation**: Comprehensive step-by-step module generation process
+- **Production-Ready Templates**: Complete templates for agents, installers, and workflow plans
+- **Built-in Validation System**: Ensures module quality and BMad Core compliance
+- **Professional Documentation**: Auto-generated module documentation and structure
+
+### 🚀 BMad Method (BMM) Enhancements
+
+**Workflow Improvements:**
+
+- **Brownfield PRD Support**: Enhanced PRD workflow for existing project integration
+- **Sprint Status Command**: New workflow for tracking development progress
+- **Step-Based Format**: Improved continue functionality across all workflows
+- **Quick-Spec-Flow Documentation**: Rapid development specification flows
+
+**Documentation Revolution:**
+
+- **Comprehensive Troubleshooting Guide**: 680-line detailed troubleshooting documentation
+- **Quality Check Integration**: Added markdownlint-cli2 for markdown quality assurance
+- **Enhanced Test Architecture**: Improved CI/CD templates and testing workflows
+
+### 🌟 New Features & Integrations
+
+**Kiro-Cli Installer:**
+
+- **Intelligent Routing**: Smart routing to quick-dev workflow
+- **BMad Core Compliance**: Full compliance with BMad standards
+
+**Discord Notifications:**
+
+- **Compact Format**: Streamlined plain-text notifications
+- **Bug Fixes**: Resolved notification delivery issues
+
+**Example Mental Wellness Module (MWM):**
+
+- **Complete Module Example**: Demonstrates advanced module patterns
+- **Multiple Agents**: CBT Coach, Crisis Navigator, Meditation Guide, Wellness Companion
+- **Workflow Showcase**: Crisis support, daily check-in, meditation, journaling workflows
+
+### 🐛 Bug Fixes & Optimizations
+
+- Fixed version reading from package.json instead of hardcoded fallback
+- Removed hardcoded years from WebSearch queries
+- Removed broken build caching mechanism
+- Fixed hardcoded 'bmad' prefix from files-manifest.csv paths
+- Enhanced TTS injection summary with tracking and documentation
+- Fixed CI nvmrc configuration issues
+
+### 📊 Statistics
+
+- **335 files changed** with 17,161 additions and 8,204 deletions
+- **46 commits** since alpha.13
+
+### ⚠️ Breaking Changes
+
+1. **Removed agent-install Command**: Migrate to new custom.yaml installation system
+2. **Agent Sidecar Configuration**: Now requires explicit config instead of hardcoded paths
+
+### 📦 New Dependencies
+
+- `markdownlint-cli2: ^0.19.1` - Professional markdown linting
+
+---
+
 ## [6.0.0-alpha.13]
 
 **Release: November 30, 2025**
 
 ### 🏗️ Revolutionary Workflow Architecture
 
-**Granular Step-File Workflow System (NEW in alpha.13):**
-
-- **Multi-Menu Support**: Workflows now support granular step-file architecture with dynamic menu generation
-- **Sharded Workflows**: Complete conversion of Phase 1 and 2 workflows to stepwise sharded architecture
-- **Improved Performance**: Reduced file loading times and eliminated time-based estimates throughout
-- **Workflow Builder**: New dedicated workflow builder for creating stepwise workflows
-- **PRD Workflow**: First completely reworked sharded workflow resolving Sonnet compatibility issues
-
-**Core Workflow Transformations:**
-
-- Phase 1 and 2 workflows completely converted to sharded step-flow architecture
-- UX Design workflow converted to sharded step workflow
-- Brainstorming, Research, and Party Mode updated to use sharded step-flow workflows
-- Architecture workflows enhanced with step sharding and performance improvements
-
-### 🎯 Code Review & Development Enhancement
-
-**Advanced Code Review System:**
-
-- **Adversarial Code Review**: Quick-dev workflow now recommends adversarial review approach for higher quality
-- **Multi-LLM Strategy**: Dev-story workflow recommends different LLM models for code review tasks
-- **Agent Compiler Optimization**: Complete handler cleanup and performance improvements
+- **Step-File System**: Complete conversion to granular step-file architecture with dynamic menu generation
+- **Phase 4 Transformation**: Simplified architecture with sprint planning integration (Jira, Linear, Trello)
+- **Performance Improvements**: Eliminated time-based estimates, reduced file loading times
+- **Legacy Cleanup**: Removed all deprecated workflows for cleaner system
 
 ### 🤖 Agent System Revolution
 
-**Universal Custom Agent Support:**
+- **Universal Custom Agent Support**: Extended to ALL IDEs including Antigravity and Rovo Dev
+- **Agent Creation Workflow**: Enhanced with better documentation and parameter clarity
+- **Multi-Source Discovery**: Agents now check multiple source locations for better discovery
+- **GitHub Migration**: Integration moved from chatmodes to agents folder
 
-- **Complete IDE Coverage**: Custom agent support extended to ALL remaining IDEs
-- **Antigravity IDE Integration**: Added custom agent support with proper gitignore configuration
-- **Multiple Source Locations**: Compile agents now checks multiple source locations for better discovery
-- **Persona Name Display**: Fixed proper persona names display in custom agent manifests
-- **New IDE Support**: Added support for Rovo Dev IDE
+### 🧪 Testing Infrastructure
 
-**Agent Creation & Management:**
-
-- **Improved Creation Workflow**: Enhanced agent creation workflow with better documentation
-- **Parameter Clarity**: Renamed agent-install parameters for better understanding
-- **Menu Organization**: BMad Agents menu items logically ordered with optional/recommended/required tags
-- **GitHub Migration**: GitHub integration now uses agents folder instead of chatmodes
-
-### 🔧 Phase 4 & Sprint Evolution
-
-**Complete Phase 4 Transformation:**
-
-- **Simplified Architecture**: Phase 4 workflows completely transformed - simpler, faster, better results
-- **Sprint Planning Integration**: Unified sprint planning with placeholders for Jira, Linear, and Trello integration
-- **Status Management**: Better status loading and updating for Phase 4 artifacts
-- **Workflow Reduction**: Phase 4 streamlined to single sprint planning item with clear validation
-- **Dynamic Workflows**: All Level 1-3 workflows now dynamically suggest next steps based on context
-
-### 🧪 Testing Infrastructure Expansion
-
-**Playwright Utils Integration:**
-
-- Test Architect now supports `@seontechnologies/playwright-utils` integration
-- Installation prompt with `use_playwright_utils` configuration flag
-- 11 comprehensive knowledge fragments covering ALL utilities
-- Adaptive workflow recommendations across 6 testing workflows
-- Production-ready utilities from SEON Technologies integrated with TEA patterns
-
-**Testing Environment:**
-
-- **Web Bundle Support**: Enabled web bundles for test and development environments
-- **Test Architecture**: Enhanced test design for architecture level (Phase 3) testing
-
-### 📦 Installation & Configuration
-
-**Installer Improvements:**
-
-- **Cleanup Options**: Installer now allows cleanup of unneeded files during upgrades
-- **Username Default**: Installer now defaults to system username for better UX
-- **IDE Selection**: Added empty IDE selection warning and promoted Antigravity to recommended
-- **NPM Vulnerabilities**: Resolved all npm vulnerabilities for enhanced security
-- **Documentation Installation**: Made documentation installation optional to reduce footprint
-
-**Text-to-Speech from AgentVibes optional Integration:**
-
-- **TTS_INJECTION System**: Complete text-to-speech integration via injection system
-- **Agent Vibes**: Enhanced with TTS capabilities for voice feedback
-
-### 🛠️ Tool & IDE Updates
-
-**IDE Tool Enhancements:**
-
-- **GitHub Copilot**: Fixed tool names consistency across workflows
-- **KiloCode Integration**: Gave kilocode tool proper access to bmad modes
-- **Code Quality**: Added radix parameter to parseInt() calls for better reliability
-- **Agent Menu Optimization**: Improved agent performance in Claude Code slash commands
-
-### 📚 Documentation & Standards
-
-**Documentation Cleanup:**
-
-- **Installation Guide**: Removed fluff and updated with npx support
-- **Workflow Documentation**: Fixed documentation by removing non-existent workflows and Mermaid diagrams
-- **Phase Numbering**: Fixed phase numbering consistency throughout documentation
-- **Package References**: Corrected incorrect npm package references
-
-**Workflow Compliance:**
-
-- **Validation Checks**: Enhanced workflow validation checks for compliance
-- **Product Brief**: Updated to comply with documented workflow standards
-- **Status Integration**: Workflow-status can now call workflow-init for better integration
-
-### 🔍 Legacy Workflow Cleanup
-
-**Deprecated Workflows Removed:**
-
-- **Audit Workflow**: Completely removed audit workflow and all associated files
-- **Convert Legacy**: Removed legacy conversion utilities
-- **Create/Edit Workflows**: Removed old workflow creation and editing workflows
-- **Clean Architecture**: Simplified workflow structure by removing deprecated legacy workflows
-
-### 🐛 Technical Fixes
-
-**System Improvements:**
-
-- **File Path Handling**: Fixed various file path issues across workflows
-- **Manifest Updates**: Updated manifest to use agents folder structure
-- **Web Bundle Configuration**: Fixed web bundle configurations for better compatibility
-- **CSV Column Mismatch**: Fixed manifest schema upgrade issues
+- **Playwright Utils Integration**: @seontechnologies/playwright-utils across all testing workflows
+- **TTS Injection System**: Complete text-to-speech integration for voice feedback
+- **Web Bundle Test Support**: Enabled web bundles for test environments
 
 ### ⚠️ Breaking Changes
 
-**Workflow Architecture:**
-
-- All legacy workflows have been removed - ensure you're using the new stepwise sharded workflows
-- Phase 4 completely restructured - update any automation expecting old Phase 4 structure
-- Epic creation now requires architectural context (moved to Phase 3 in previous release)
-
-**Agent System:**
-
-- Custom agents now require proper compilation - use the new agent creation workflow
-- GitHub integration moved from chatmodes to agents folder - update any references
-
-### 📊 Impact Summary
-
-**New in alpha.13:**
-
-- **Stepwise Workflow Architecture**: Complete transformation of all workflows to granular step-file system
-- **Universal Custom Agent Support**: Extended to ALL IDEs with improved creation workflow
-- **Phase 4 Revolution**: Completely restructured with sprint planning integration
-- **Legacy Cleanup**: Removed all deprecated workflows for cleaner system
-- **Advanced Code Review**: New adversarial review approach with multi-LLM strategy
-- **Text-to-Speech**: Full TTS integration for voice feedback
-- **Testing Expansion**: Playwright utils integration across all testing workflows
-
-**Enhanced from alpha.12:**
-
-- **Performance**: Improved file loading and removed time-based estimates
-- **Documentation**: Complete cleanup with accurate references
-- **Installer**: Better UX with cleanup options and improved defaults
-- **Agent System**: More reliable compilation and better persona handling
+1. **Legacy Workflows Removed**: Migrate to new stepwise sharded workflows
+2. **Phase 4 Restructured**: Update automation expecting old Phase 4 structure
+3. **Agent Compilation Required**: Custom agents must use new creation workflow
 
 ## [6.0.0-alpha.12]
 
@@ -172,313 +207,101 @@
 
 **Release: November 18, 2025**
 
-This alpha release introduces a complete agent installation system with the new `bmad agent-install` command, vastly improves the BMB agent builder capabilities with comprehensive documentation and reference agents, and refines diagram distribution to better align with BMad Method's core principle: **BMad agents mirror real agile teams**.
+### 🚀 Agent Installation Revolution
 
-### 🎨 Diagram Capabilities Refined and Distributed
-
-**Excalidraw Integration Evolution:**
-
-Building on the excellent Excalidraw integration introduced with the Frame Expert agent, we've refined how diagram capabilities are distributed across the BMad Method ecosystem to better reflect real agile team dynamics.
-
-**The Refinement:**
-
-- The valuable Excalidraw diagramming capabilities have been distributed to the agents who naturally create these artifacts in real teams
-- **Architect**: System architecture diagrams, data flow visualizations
-- **Product Manager**: Process flowcharts and workflow diagrams
-- **UX Designer**: Wireframe creation capabilities
-- **Tech Writer**: All diagram types for documentation needs
-- **New CIS Agent**: presentation-master for specialized visual communication
-
-**Shared Infrastructure Enhancement:**
-
-- Excalidraw templates, component libraries, and validation patterns elevated to core resources
-- Available to both BMM agents AND CIS presentation specialists
-- Preserves all the excellent Excalidraw functionality while aligning with natural team roles
-
-### 🚀 New Agent Installation System
-
-**Agent Installation Infrastructure (NEW in alpha.11):**
-
-- `bmad agent-install` CLI command with interactive persona customization
-- **YAML → XML compilation engine** with smart handler injection
-- Supports Simple (single file), Expert (with sidecars), and Module agents
-- Handlebars-style template variable processing
-- Automatic manifest tracking and IDE integration
-- Source preservation in `_cfg/custom/agents/` for reinstallation
-
-**New Reference Agents Added:**
-
-- **commit-poet**: Poetic git commit message generator (Simple agent example)
-- **journal-keeper**: Daily journaling agent with templates (Expert agent example)
-- **security-engineer & trend-analyst**: Module agent examples with ecosystem integration
-
-**Critical Persona Field Guidance Added:**
-
-New documentation explaining how LLMs interpret persona fields for better agent quality:
-
-- **role** → "What knowledge, skills, and capabilities do I possess?"
-- **identity** → "What background, experience, and context shape my responses?"
-- **communication_style** → "What verbal patterns, word choice, and phrasing do I use?"
-- **principles** → "What beliefs and operating philosophy drive my choices?"
-
-Key insight: `communication_style` should ONLY describe HOW the agent talks, not WHAT they do
-
-**BMM Agent Voice Enhancement:**
-
-All 9 existing BMM agents enhanced with distinct, memorable communication voices:
-
-- **Mary (analyst)**: "Treats analysis like a treasure hunt - excited by every clue"
-- **John (PM)**: "Asks 'WHY?' relentlessly like a detective on a case"
-- **Winston (architect)**: "Champions boring technology that actually works"
-- **Amelia (dev)**: "Ultra-succinct. Speaks in file paths and AC IDs"
-- **Sally (UX)**: "Paints pictures with words, telling user stories that make you FEEL"
-
-### 🔧 Edit-Agent Workflow Comprehensive Enhancement
-
-**Expert Agent Sidecar Support (NEW):**
-
-- Automatically detects and handles Expert agents with multiple files
-- Loads and manages templates, data files, knowledge bases
-- Smart sidecar analysis: maps references, finds orphans, validates paths
-- 5 complete sidecar editing patterns with warm, educational feedback
-
-**7-Step Communication Style Refinement Pattern:**
-
-1. Diagnose current style with red flag word detection
-2. Extract non-style content to working copy
-3. Discover TRUE communication style through interview questions
-4. Craft pure style using presets and reference agents
-5. Show before/after transformation with full context
-6. Validate against standards (zero red flags)
-7. Confirm with user through dramatic reading
-
-**Unified Validation Checklist:**
-
-- Single source of truth: `agent-validation-checklist.md` (160 lines)
-- Shared between create-agent and edit-agent workflows
-- Comprehensive persona field separation validation
-- Expert agent sidecar validation (9 specific checks)
-- Common issues and fixes with real examples
+- **bmad agent-install CLI**: Interactive agent installation with persona customization
+- **4 Reference Agents**: commit-poet, journal-keeper, security-engineer, trend-analyst
+- **Agent Compilation Engine**: YAML → XML with smart handler injection
+- **60 Communication Presets**: Pure communication styles for agent personas
 
 ### 📚 BMB Agent Builder Enhancement
 
-**Vastly Improved Agent Creation & Editing Capabilities:**
+- **Complete Documentation Suite**: 7 new guides for agent architecture and creation
+- **Expert Agent Sidecar Support**: Multi-file agents with templates and knowledge bases
+- **Unified Validation**: 160-line checklist shared across workflows
+- **BMM Agent Voices**: All 9 agents enhanced with distinct communication styles
 
-- Create-agent and edit-agent workflows now have accurate, comprehensive documentation
-- All context references updated and validated for consistency
-- Workflows can now properly guide users through complex agent design decisions
+### 🎯 Workflow Architecture Change
 
-**New Agent Documentation Suite:**
-
-- `understanding-agent-types.md` - Architecture vs capability distinction
-- `simple-agent-architecture.md` - Self-contained agents guide
-- `expert-agent-architecture.md` - Agents with sidecar files
-- `module-agent-architecture.md` - Workflow-integrated agents
-- `agent-compilation.md` - YAML → XML transformation process
-- `agent-menu-patterns.md` - Menu design patterns
-- `communication-presets.csv` - 60 pure communication styles for reference
-
-**New Reference Agents for Learning:**
-
-- Complete working examples of Simple, Expert, and Module agents
-- Can be installed directly via the new `bmad agent-install` command
-- Serve as both learning resources and ready-to-use agents
-
-### 🎯 Epic Creation Moved to Phase 3 (After Architecture)
-
-**Workflow Sequence Corrected:**
-
-```
-Phase 2: PRD → UX Design
-Phase 3: Architecture → Epics & Stories ← NOW HERE (technically informed)
-```
-
-**Why This Fundamental Change:**
-
-- Epics need architectural context: API contracts, data models, technical decisions
-- Stories can reference actual architectural patterns and constraints
-- Reduces rewrites when architecture reveals complexity
-- Better complexity-based estimation (not time-based)
-
-### 🖥️ New IDE Support
-
-**Google Antigravity IDE Installer:**
-
-- Flattened file naming for proper slash commands (bmad-module-agents-name.md)
-- Namespace isolation prevents module conflicts
-- Subagent installation support (project or user level)
-- Module-specific injection configuration
-
-**Codex CLI Enhancement:**
-
-- Now supports both global and project-specific installation
-- CODEX_HOME configuration for multi-project workflows
-- OS-specific setup instructions (Unix/Mac/Windows)
-
-### 🏗️ Reference Agents & Standards
-
-**New Reference Agents Provide Clear Examples:**
-
-- **commit-poet.agent.yaml**: Simple agent with pure communication style
-- **journal-keeper.agent.yaml**: Expert agent with sidecar file structure
-- **security-engineer.agent.yaml**: Module agent for ecosystem integration
-- **trend-analyst.agent.yaml**: Module agent with cross-workflow capabilities
-
-**Agent Type Clarification:**
-
-- Clear documentation that agent types (Simple/Expert/Module) describe architecture, not capability
-- Module = designed for ecosystem integration, not limited in function
-
-### 🐛 Technical Improvements
-
-**Linting Compliance:**
-
-- Fixed all ESLint warnings across agent tooling
-- `'utf-8'` → `'utf8'` (unicorn/text-encoding-identifier-case)
-- `hasOwnProperty` → `Object.hasOwn` (unicorn/prefer-object-has-own)
-- `JSON.parse(JSON.stringify(...))` → `structuredClone(...)`
-
-**Agent Compilation Engine:**
-
-- Auto-injects frontmatter, activation, handlers, help/exit menu items
-- Smart handler inclusion (only includes handlers actually used)
-- Proper XML escaping and formatting
-- Persona name customization support
-
-### 📊 Impact Summary
-
-**New in alpha.11:**
-
-- **Agent installation system** with `bmad agent-install` CLI command
-- **4 new reference agents** (commit-poet, journal-keeper, security-engineer, trend-analyst)
-- **Complete agent documentation suite** with 7 new focused guides
-- **Expert agent sidecar support** in edit-agent workflow
-- **2 new IDE installers** (Google Antigravity, enhanced Codex)
-- **Unified validation checklist** (160 lines) for consistent quality standards
-- **60 pure communication style presets** for agent persona design
-
-**Enhanced from alpha.10:**
-
-- **BMB agent builder workflows** with accurate context and comprehensive guidance
-- **All 9 BMM agents** enhanced with distinct, memorable communication voices
-- **Excalidraw capabilities** refined and distributed to role-appropriate agents
-- **Epic creation** moved to Phase 3 (after Architecture) for technical context
+- **Epic Creation Moved**: Now in Phase 3 after Architecture for technical context
+- **Excalidraw Distribution**: Diagram capabilities moved to role-appropriate agents
+- **Google Antigravity IDE**: New installer with flattened file naming
 
 ### ⚠️ Breaking Changes
 
-**Agent Changes:**
-
-- Frame Expert agent retired - diagram capabilities now available through role-appropriate agents:
-  - Architecture diagrams → `/architect`
-  - Process flows → `/pm`
-  - Wireframes → `/ux-designer`
-  - Documentation visuals → `/tech-writer`
-
-**Workflow Changes:**
-
-- Epic creation moved from Phase 2 to Phase 3 (after Architecture)
-- Excalidraw workflows redistributed to appropriate agents
-
-**Installation Changes:**
-
-- New `bmad agent-install` command replaces manual agent installation
-- Agent YAML files must be compiled to XML for use
-
-### 🔄 Migration Notes
-
-**For Existing Projects:**
-
-1. **Frame Expert Users:**
-   - Transition to role-appropriate agents for diagrams
-   - All Excalidraw functionality preserved and enhanced
-   - Shared templates now in core resources for wider access
-
-2. **Agent Installation:**
-   - Use `bmad agent-install` for all agent installations
-   - Existing manual installations still work but won't have customization
-
-3. **Epic Creation Timing:**
-   - Epics now created in Phase 3 after Architecture
-   - Update any automation expecting epics in Phase 2
-
-4. **Communication Styles:**
-   - Review agent communication_style fields
-   - Remove any role/identity/principle content
-   - Use communication-presets.csv for pure styles
-
-5. **Expert Agents:**
-   - Edit-agent workflow now fully supports sidecar files
-   - Organize templates and data files in agent folder
+1. **Frame Expert Retired**: Use role-appropriate agents for diagrams
+2. **Agent Installation**: New bmad agent-install command replaces manual installation
+3. **Epic Creation Phase**: Moved from Phase 2 to Phase 3
 
 ## [6.0.0-alpha.10]
 
 **Release: November 16, 2025**
 
-- **🎯 Epics Generated AFTER Architecture**: Major milestone - epics/stories now created after architecture for technically-informed user stories with better acceptance criteria
-- **🎨 Frame Expert Agent**: New Excalidraw specialist with 4 diagram workflows (flowchart, diagram, dataflow, wireframe) for visual documentation
-- **⏰ Time Estimate Prohibition**: Critical warnings added across 33 workflows - acknowledges AI has fundamentally changed development speed
-- **🎯 Platform-Specific Commands**: New `ide-only`/`web-only` fields filter menu items based on environment (IDE vs web bundle)
-- **🔧 Agent Customization**: Enhanced memory/prompts merging via `*.customize.yaml` files for persistent agent personalization
+- **Epics After Architecture**: Major milestone - technically-informed user stories created post-architecture
+- **Frame Expert Agent**: New Excalidraw specialist with 4 diagram workflows
+- **Time Estimate Prohibition**: Warnings across 33 workflows acknowledging AI's impact on development speed
+- **Platform-Specific Commands**: ide-only/web-only fields filter menu items by environment
+- **Agent Customization**: Enhanced memory/prompts merging via \*.customize.yaml files
 
 ## [6.0.0-alpha.9]
 
 **Release: November 12, 2025**
 
-- **🚀 Intelligent File Discovery Protocol**: New `discover_inputs` with FULL_LOAD, SELECTIVE_LOAD, and INDEX_GUIDED strategies for automatic context loading
-- **📚 3-Track System**: Simplified from 5 levels to 3 intuitive tracks: quick-flow, bmad-method, and enterprise-bmad-method
-- **🌐 Web Bundles Guide**: Comprehensive documentation for Gemini Gems and Custom GPTs with 60-80% cost savings strategies
-- **🏗️ Unified Output Structure**: Eliminated `.ephemeral/` folders - all artifacts now in single configurable output folder
-- **🎮 BMGD Phase 4**: Added 10 game development workflows following BMM patterns with game-specific adaptations
+- **Intelligent File Discovery**: discover_inputs with FULL_LOAD, SELECTIVE_LOAD, INDEX_GUIDED strategies
+- **3-Track System**: Simplified from 5 levels to 3 intuitive tracks
+- **Web Bundles Guide**: Comprehensive documentation with 60-80% cost savings strategies
+- **Unified Output Structure**: Eliminated .ephemeral/ folders - single configurable output folder
+- **BMGD Phase 4**: Added 10 game development workflows with BMM patterns
 
 ## [6.0.0-alpha.8]
 
 **Release: November 9, 2025**
 
-- **🎯 Configurable Installation**: Custom directories with `.bmad` hidden folder default for cleaner project structure
-- **🚀 Optimized Agent Loading**: CLI loads from installed files eliminating duplication and maintenance burden
-- **🌐 Party Mode Everywhere**: All web bundles include multi-agent collaboration with customizable party configurations
-- **🔧 Phase 4 Artifact Separation**: Stories, code reviews, sprint plans now configurable outside docs folder
-- **📦 Expanded Web Bundles**: All BMM, BMGD, and CIS agents bundled with advanced elicitation integration
+- **Configurable Installation**: Custom directories with .bmad hidden folder default
+- **Optimized Agent Loading**: CLI loads from installed files, eliminating duplication
+- **Party Mode Everywhere**: All web bundles include multi-agent collaboration
+- **Phase 4 Artifact Separation**: Stories, code reviews, sprint plans configurable outside docs
+- **Expanded Web Bundles**: All BMM, BMGD, CIS agents bundled with elicitation integration
 
 ## [6.0.0-alpha.7]
 
 **Release: November 7, 2025**
 
-- **🌐 Workflow Vendoring**: Web bundler performs automatic workflow vendoring for cross-module dependencies
-- **🎮 BMGD Module Extraction**: Game development split into standalone module with 4-phase industry-standard structure
-- **🔧 Enhanced Dependency Resolution**: Better handling of `web_bundle: false` workflows with positive resolution messages
-- **📚 Advanced Elicitation Fix**: Added missing CSV files to workflow bundles fixing runtime failures
-- **🐛 Claude Code Fix**: Resolved README slash command installation regression
+- **Workflow Vendoring**: Web bundler performs automatic cross-module dependency vendoring
+- **BMGD Module Extraction**: Game development split into standalone 4-phase structure
+- **Enhanced Dependency Resolution**: Better handling of web_bundle: false workflows
+- **Advanced Elicitation Fix**: Added missing CSV files to workflow bundles
+- **Claude Code Fix**: Resolved README slash command installation regression
 
 ## [6.0.0-alpha.6]
 
 **Release: November 4, 2025**
 
-- **🐛 Critical Installer Fixes**: Fixed manifestPath error and option display issues blocking installation
-- **📖 Conditional Docs Installation**: Optional documentation installation to reduce footprint in production
-- **🎨 Improved Installer UX**: Better formatting with descriptive labels and clearer feedback
-- **🧹 Issue Tracker Cleanup**: Closed 54 legacy v4 issues for focused v6 development
-- **📝 Contributing Updates**: Removed references to non-existent branches in documentation
+- **Critical Installer Fixes**: Fixed manifestPath error and option display issues
+- **Conditional Docs Installation**: Optional documentation to reduce production footprint
+- **Improved Installer UX**: Better formatting with descriptive labels and clearer feedback
+- **Issue Tracker Cleanup**: Closed 54 legacy v4 issues for focused v6 development
+- **Contributing Updates**: Removed references to non-existent branches
 
 ## [6.0.0-alpha.5]
 
 **Release: November 4, 2025**
 
-- **🎯 3-Track Scale System**: Revolutionary simplification from 5 confusing levels to 3 intuitive preference-driven tracks
-- **✨ Elicitation Modernization**: Replaced legacy XML tags with explicit `invoke-task` pattern at strategic decision points
-- **📚 PM/UX Evolution Section**: Added November 2025 industry research on AI Agent PMs and Full-Stack Product Leads
-- **🏗️ Brownfield Reality Check**: Rewrote Phase 0 with 4 real-world scenarios for messy existing codebases
-- **📖 Documentation Accuracy**: All agent capabilities now match YAML source of truth with zero hallucination risk
+- **3-Track Scale System**: Simplified from 5 levels to 3 intuitive preference-driven tracks
+- **Elicitation Modernization**: Replaced legacy XML tags with explicit invoke-task pattern
+- **PM/UX Evolution**: Added November 2025 industry research on AI Agent PMs
+- **Brownfield Reality Check**: Rewrote Phase 0 with 4 real-world scenarios
+- **Documentation Accuracy**: All agent capabilities now match YAML source of truth
 
 ## [6.0.0-alpha.4]
 
 **Release: November 2, 2025**
 
-- **📚 Documentation Hub**: Created 18 comprehensive guides (7000+ lines) with professional technical writing standards
-- **🤖 Paige Agent**: New technical documentation specialist available across all BMM phases
-- **🚀 Quick Spec Flow**: Intelligent Level 0-1 planning with auto-stack detection and brownfield analysis
-- **📦 Universal Shard-Doc**: Split large markdown documents into organized sections with dual-strategy loading
-- **🔧 Intent-Driven Planning**: PRD and Product Brief transformed from template-filling to natural conversation
+- **Documentation Hub**: Created 18 comprehensive guides (7000+ lines) with professional standards
+- **Paige Agent**: New technical documentation specialist across all BMM phases
+- **Quick Spec Flow**: Intelligent Level 0-1 planning with auto-stack detection
+- **Universal Shard-Doc**: Split large markdown documents with dual-strategy loading
+- **Intent-Driven Planning**: PRD and Product Brief transformed from template-filling to conversation
 
 ## [6.0.0-alpha.3]
 

@@ -132,7 +132,7 @@ You are a **strategic shopping partner** who:
 - Plans for real-life shopping scenarios
 - Minimizes food waste thoughtfully
 
-## 📝 OUTPUT REQUIREMENTS:
+## 📊 STATUS UPDATE:
 
 Update workflow.md frontmatter:
 

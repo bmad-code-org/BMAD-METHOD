@@ -98,7 +98,7 @@ The installer is a multi-stage system that handles agent compilation, IDE integr
 ```
 1. Collect User Input
    - Target directory, modules, IDEs
-   - Custom module configuration (via install-config.yaml)
+   - Custom module configuration (via module.yaml)
 
 2. Pre-Installation
    - Validate target, check conflicts, backup existing installations
@@ -183,12 +183,12 @@ The installer supports **15 IDE environments** through a base-derived architectu
 
 ### Custom Module Configuration
 
-Modules define interactive configuration menus via `install-config.yaml` files in their `_module-installer/` directories.
+Modules define interactive configuration menus via `module.yaml` files in their `_module-installer/` directories.
 
 **Config File Location**:
 
-- Core: `src/core/_module-installer/install-config.yaml`
-- Modules: `src/modules/{module}/_module-installer/install-config.yaml`
+- Core: `src/core/module.yaml`
+- Modules: `src/modules/{module}/module.yaml`
 
 **Configuration Types**:
 
@@ -604,6 +604,6 @@ node tools/cli/regenerate-manifests.js
 
 ## Support
 
-- **Issues**: https://github.com/bmad-code-org/BMAD-METHOD/issues
-- **Discord**: https://discord.gg/gk8jAdXWmj (#general-dev, #bugs-issues)
-- **YouTube**: https://www.youtube.com/@BMadCode
+- **Issues**: <https://github.com/bmad-code-org/BMAD-METHOD/issues>
+- **Discord**: <https://discord.gg/gk8jAdXWmj> (#general-dev, #bugs-issues)
+- **YouTube**: <https://www.youtube.com/@BMadCode>

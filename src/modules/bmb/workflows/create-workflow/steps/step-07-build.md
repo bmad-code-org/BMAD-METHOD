@@ -10,7 +10,7 @@ thisStepFile: '{workflow_path}/steps/step-07-build.md'
 nextStepFile: '{workflow_path}/steps/step-08-review.md'
 workflowFile: '{workflow_path}/workflow.md'
 # Output files for workflow creation process
-targetWorkflowPath: '{custom_workflow_location}/{new_workflow_name}'
+targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Template References
@@ -95,7 +95,7 @@ Ready to proceed?"
 Create the workflow folder structure in the target location:
 
 ```
-{custom_workflow_location}/{workflow_name}/
+{custom_stand_alone_location}/workflows/{workflow_name}/
 ├── workflow.md
 ├── steps/
 │   ├── step-01-init.md
@@ -109,7 +109,7 @@ Create the workflow folder structure in the target location:
 ```
 
 For bmb module, this will be: `{bmad_folder}/custom/src/workflows/{workflow_name}/`
-For other modules, check their install-config.yaml for custom_workflow_location
+For other modules, check their module.yaml for custom_workflow_location
 
 ### 3. Generate workflow.md
 

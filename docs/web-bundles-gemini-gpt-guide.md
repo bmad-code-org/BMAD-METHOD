@@ -73,7 +73,7 @@ web-bundles/
 
 **Create a Gem:**
 
-1. Go to [Google AI Studio](https://aistudio.google.com/)
+1. Go to [Gemini Gem manager](https://gemini.google.com/gems/view)
 2. Click "New Gem" or "Create Gem"
 3. Give your Gem a name (e.g., "BMad PM Agent")
 4. **Enable "Code execution" for best results with document generation**

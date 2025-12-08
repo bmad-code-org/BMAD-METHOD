@@ -152,7 +152,7 @@ Then load and append content from {completionTemplate}
 
 Display: **Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Continue
 
-#### EXECUTION RULES:
+### EXECUTION RULES:
 
 - ALWAYS halt and wait for user input after presenting menu
 - ONLY proceed to next step when user selects 'C'

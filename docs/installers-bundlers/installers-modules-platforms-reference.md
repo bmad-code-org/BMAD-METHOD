@@ -59,6 +59,7 @@ project-root/
 ### Key Exclusions
 
 - `_module-installer/` directories are never copied to destination
+- module.yaml
 - `localskip="true"` agents are filtered out
 - Source `config.yaml` templates are replaced with generated configs
 
@@ -92,8 +93,8 @@ Creative Innovation Studio for design workflows
 ```
 src/modules/{module}/
 ├── _module-installer/       # Not copied to destination
-│   ├── installer.js        # Post-install logic
-│   └── install-config.yaml
+│   ├── installer.js         # Post-install logic
+├── module.yaml
 ├── agents/
 ├── tasks/
 ├── templates/
@@ -107,7 +108,7 @@ src/modules/{module}/
 
 ### Collection Process
 
-Modules define prompts in `install-config.yaml`:
+Modules define prompts in `module.yaml`:
 
 ```yaml
 project_name:
@@ -218,12 +219,12 @@ Platform-specific content without source modification:
    src/modules/mymod/
    ├── _module-installer/
    │   ├── installer.js
-   │   └── install-config.yaml
+   ├── module.yaml
    ├── agents/
    └── tasks/
    ```
 
-2. **Configuration** (`install-config.yaml`)
+2. **Configuration** (`module.yaml`)
 
    ```yaml
    code: mymod

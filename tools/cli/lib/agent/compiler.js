@@ -438,23 +438,16 @@ function compileToXml(agentYaml, agentName = '', targetPath = '') {
  * @param {Object} answers - Answers from install_config questions (or defaults)
  * @param {string} agentName - Optional final agent name (user's custom persona name)
  * @param {string} targetPath - Optional target path for agent ID
+ * @param {Object} options - Additional options including config
  * @returns {Object} { xml: string, metadata: Object }
  */
-function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = '') {
+function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = '', options = {}) {
   // Parse YAML
   const agentYaml = yaml.parse(yamlContent);
 
-  // Inject custom agent name into metadata.name if provided
-  // This is the user's chosen persona name (e.g., "Fred" instead of "Inkwell Von Comitizen")
-  if (agentName && agentYaml.agent && agentYaml.agent.metadata) {
-    // Convert kebab-case to title case for the name field
-    // e.g., "fred-commit-poet" → "Fred Commit Poet"
-    const titleCaseName = agentName
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-    agentYaml.agent.metadata.name = titleCaseName;
-  }
+  // Note: agentName parameter is for UI display only, not for modifying the YAML
+  // The persona name (metadata.name) should always come from the YAML file
+  // We should NEVER modify metadata.name as it's part of the agent's identity
 
   // Extract install_config
   const installConfig = extractInstallConfig(agentYaml);
@@ -466,14 +459,22 @@ function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = ''
     finalAnswers = { ...defaults, ...answers };
   }
 
+  // Add agent_sidecar_folder to answers if provided in config
+  if (options.config && options.config.agent_sidecar_folder) {
+    finalAnswers.agent_sidecar_folder = options.config.agent_sidecar_folder;
+  }
+
   // Process templates with answers
   const processedYaml = processAgentYaml(agentYaml, finalAnswers);
 
   // Strip install_config from output
   const cleanYaml = stripInstallConfig(processedYaml);
 
-  // Compile to XML
-  const xml = compileToXml(cleanYaml, agentName, targetPath);
+  // Replace {agent_sidecar_folder} in XML content
+  let xml = compileToXml(cleanYaml, agentName, targetPath);
+  if (finalAnswers.agent_sidecar_folder) {
+    xml = xml.replaceAll('{agent_sidecar_folder}', finalAnswers.agent_sidecar_folder);
+  }
 
   return {
     xml,
@@ -483,9 +484,38 @@ function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = ''
 }
 
 /**
+ * Process TTS injection markers in content
+ * @param {string} content - Content to process
+ * @param {boolean} enableAgentVibes - Whether AgentVibes is enabled
+ * @returns {Object} { content: string, hadInjection: boolean }
+ */
+function processTTSInjectionPoints(content, enableAgentVibes) {
+  const hasAgentTTS = content.includes('<!-- TTS_INJECTION:agent-tts -->');
+
+  if (enableAgentVibes && hasAgentTTS) {
+    // Replace agent-tts injection marker with TTS rule
+    content = content.replaceAll(
+      '<!-- TTS_INJECTION:agent-tts -->',
+      `- When responding to user messages, speak your responses using TTS:
+   Call: \`.claude/hooks/bmad-speak.sh '{agent-id}' '{response-text}'\` after each response
+   Replace {agent-id} with YOUR agent ID from <agent id="..."> tag at top of this file
+   Replace {response-text} with the text you just output to the user
+   IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
+   Run in background (&) to avoid blocking`,
+    );
+    return { content, hadInjection: true };
+  } else if (!enableAgentVibes && hasAgentTTS) {
+    // Strip injection markers when disabled
+    content = content.replaceAll(/<!-- TTS_INJECTION:agent-tts -->\n?/g, '');
+  }
+
+  return { content, hadInjection: false };
+}
+
+/**
  * Compile agent file to .md
  * @param {string} yamlPath - Path to agent YAML file
- * @param {Object} options - { answers: {}, outputPath: string }
+ * @param {Object} options - { answers: {}, outputPath: string, enableAgentVibes: boolean }
  * @returns {Object} Compilation result
  */
 function compileAgentFile(yamlPath, options = {}) {
@@ -501,13 +531,24 @@ function compileAgentFile(yamlPath, options = {}) {
     outputPath = path.join(dir, `${basename}.md`);
   }
 
+  // Process TTS injection points if enableAgentVibes option is provided
+  let xml = result.xml;
+  let ttsInjected = false;
+  if (options.enableAgentVibes !== undefined) {
+    const ttsResult = processTTSInjectionPoints(xml, options.enableAgentVibes);
+    xml = ttsResult.content;
+    ttsInjected = ttsResult.hadInjection;
+  }
+
   // Write compiled XML
-  fs.writeFileSync(outputPath, result.xml, 'utf8');
+  fs.writeFileSync(outputPath, xml, 'utf8');
 
   return {
     ...result,
+    xml,
     outputPath,
     sourcePath: yamlPath,
+    ttsInjected,
   };
 }
 

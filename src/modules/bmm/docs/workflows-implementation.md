@@ -70,7 +70,7 @@ For a visual representation of the complete workflow, see: [workflow-method-gree
 Stories move through these states in the sprint status file:
 
 1. **TODO** - Story identified but not started
-2. **IN PROGRESS** - Story being implemented (create-story → story-context → dev-story)
+2. **IN PROGRESS** - Story being implemented (create-story → dev-story)
 3. **READY FOR REVIEW** - Implementation complete, awaiting code review
 4. **DONE** - Accepted and complete
 
@@ -141,17 +141,58 @@ PRD (PM) → Architecture (Architect)
       → story loop (SM/DEV)
       → retrospective (SM)
   → [Next Epic]
+Current Phase: 4 (Implementation)
+Current Epic: Epic 1 (Authentication)
+Current Sprint: Sprint 1
+
+Next Story: Story 1.3 (Email Verification)
+Status: TODO
+Dependencies: Story 1.2 (DONE) ✅
+
+**Recommendation:** Run `create-story` to generate Story 1.3
+
+After create-story:
+1. Run story-context
+2. Run dev-story
+3. Run code-review
+4. Run story-done
 ```
 
+See: [workflow-status instructions](../workflows/workflow-status/instructions.md)
+
 ---
+
+### document-project
+
+**Purpose:** Analyze and document brownfield projects by scanning codebase, architecture, and patterns.
+
+**Agent:** Analyst
+**Duration:** 1-3 hours
+**When to Use:** Brownfield projects without documentation
+
+**How It Works:**
+
+1. Scans codebase structure
+2. Identifies architecture patterns
+3. Documents technology stack
+4. Creates reference documentation
+5. Generates PRD-like document from existing code
+
+**Output:** `project-documentation-{date}.md`
+
+**When to Run:**
+
+- Before starting work on legacy project
+- When inheriting undocumented codebase
+- Creating onboarding documentation
+
+See: [document-project reference](./workflow-document-project-reference.md)
 
 ## Related Documentation
 
 - [Phase 1: Analysis Workflows](./workflows-analysis.md)
 - [Phase 2: Planning Workflows](./workflows-planning.md)
 - [Phase 3: Solutioning Workflows](./workflows-solutioning.md)
-
----
 
 ## Troubleshooting
 
@@ -166,7 +207,5 @@ A: Not recommended. Complete one story's full lifecycle before starting the next
 
 **Q: What if code review finds issues?**
 A: DEV runs `dev-story` to make fixes, re-runs tests, then runs `code-review` again until it passes.
-
----
 
 _Phase 4 Implementation - One story at a time, done right._

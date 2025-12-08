@@ -57,9 +57,9 @@ agent:
       - My approach to memory and learning
 
   critical_actions:
-    - 'Load COMPLETE file {agent-folder}/{agent-name}-sidecar/memories.md and remember all past insights'
-    - 'Load COMPLETE file {agent-folder}/{agent-name}-sidecar/instructions.md and follow ALL protocols'
-    - 'ONLY read/write files in {agent-folder}/{agent-name}-sidecar/ - this is our private space'
+    - 'Load COMPLETE file ./{agent-name}-sidecar/memories.md and remember all past insights'
+    - 'Load COMPLETE file ./{agent-name}-sidecar/instructions.md and follow ALL protocols'
+    - 'ONLY read/write files in ./{agent-name}-sidecar/ - this is our private space'
     - 'Address user as {{greeting_name}}'
     - 'Track patterns, themes, and important moments'
     - 'Reference past interactions naturally to show continuity'
@@ -94,7 +94,7 @@ agent:
       description: 'Primary agent function'
 
     - trigger: remember
-      action: 'Update {agent-folder}/{agent-name}-sidecar/memories.md with session insights'
+      action: 'Update ./{agent-name}-sidecar/memories.md with session insights'
       description: 'Save what we discussed today'
 
     - trigger: patterns
@@ -102,7 +102,7 @@ agent:
       description: 'Recall patterns from past interactions'
 
     - trigger: insight
-      action: 'Document breakthrough in {agent-folder}/{agent-name}-sidecar/breakthroughs.md'
+      action: 'Document breakthrough in ./{agent-name}-sidecar/breakthroughs.md'
       description: 'Record a significant insight'
 
   install_config:
@@ -184,9 +184,9 @@ Add domain-specific documentation here.
 
 ```yaml
 critical_actions:
-  - 'Load COMPLETE file {agent-folder}/{sidecar}/memories.md and remember all past insights'
-  - 'Load COMPLETE file {agent-folder}/{sidecar}/instructions.md and follow ALL protocols'
-  - 'ONLY read/write files in {agent-folder}/{sidecar}/ - this is our private space'
+  - 'Load COMPLETE file ./{sidecar}/memories.md and remember all past insights'
+  - 'Load COMPLETE file ./{sidecar}/instructions.md and follow ALL protocols'
+  - 'ONLY read/write files in ./{sidecar}/ - this is our private space'
 ```
 
 **Key patterns:**
@@ -196,7 +196,7 @@ critical_actions:
 - **Memory integration** - Past context becomes part of current session
 - **Protocol adherence** - Ensures consistent behavior
 
-### {agent-folder} Variable
+### {agent_sidecar_folder} Variable
 
 Special variable resolved during installation:
 
@@ -211,9 +211,9 @@ Same as simple agents, PLUS:
 1. **Critical actions become numbered activation steps**
 
    ```xml
-   <step n="4">Load COMPLETE file {agent-folder}/memories.md...</step>
-   <step n="5">Load COMPLETE file {agent-folder}/instructions.md...</step>
-   <step n="6">ONLY read/write files in {agent-folder}/...</step>
+   <step n="4">Load COMPLETE file ./memories.md...</step>
+   <step n="5">Load COMPLETE file ./instructions.md...</step>
+   <step n="6">ONLY read/write files in ./...</step>
    ```
 
 2. **Sidecar files copied during installation**
@@ -260,7 +260,7 @@ The installer:
 ```yaml
 menu:
   - trigger: save
-    action: "Update {agent-folder}/sidecar/memories.md with today's session insights"
+    action: "Update ./sidecar/memories.md with today's session insights"
     description: 'Save session to memory'
 ```
 
@@ -281,7 +281,7 @@ prompts:
 ```yaml
 menu:
   - trigger: insight
-    action: 'Document in {agent-folder}/sidecar/breakthroughs.md with date, context, significance'
+    action: 'Document in ./sidecar/breakthroughs.md with date, context, significance'
     description: 'Record meaningful insight'
 ```
 
@@ -291,7 +291,7 @@ menu:
 
 ```yaml
 critical_actions:
-  - 'ONLY read/write files in {agent-folder}/sidecar/ - NO OTHER FOLDERS'
+  - 'ONLY read/write files in ./sidecar/ - NO OTHER FOLDERS'
 ```
 
 ### User Space Access
@@ -305,15 +305,15 @@ critical_actions:
 
 ```yaml
 critical_actions:
-  - 'Load knowledge from {agent-folder}/knowledge/ but NEVER modify'
-  - 'Write ONLY to {agent-folder}/sessions/'
+  - 'Load knowledge from ./knowledge/ but NEVER modify'
+  - 'Write ONLY to ./sessions/'
 ```
 
 ## Best Practices
 
 1. **Load sidecar files in critical_actions** - Must be explicit and MANDATORY
 2. **Enforce domain restrictions** - Clear boundaries prevent scope creep
-3. **Use {agent-folder} paths** - Portable across installations
+3. **Use {agent_sidecar_folder} paths** - Portable across installations
 4. **Design for memory growth** - Structure sidecar files for accumulation
 5. **Reference past naturally** - Don't dump memory, weave it into conversation
 6. **Separate concerns** - Memories, instructions, knowledge in distinct files
@@ -356,8 +356,8 @@ identity: |
 - [ ] Sidecar folder structure created and populated
 - [ ] memories.md has clear section structure
 - [ ] instructions.md contains core directives
-- [ ] Menu actions reference {agent-folder} correctly
-- [ ] File paths use {agent-folder} variable
+- [ ] Menu actions reference {agent_sidecar_folder} correctly
+- [ ] File paths use {agent_sidecar_folder} variable
 - [ ] Install config personalizes sidecar references
 - [ ] Agent folder named consistently: `{agent-name}/`
 - [ ] YAML file named: `{agent-name}.agent.yaml`

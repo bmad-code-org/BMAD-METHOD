@@ -173,9 +173,6 @@ Quality assurance guidance:
 - Test design workflows
 - Quality gates
 - Risk assessment
-- NFR validation
-
----
 
 ## 🏗️ Module Structure
 
