@@ -1,0 +1,76 @@
+# WDS Project Configuration
+# Generated: {{DATE}}
+
+project:
+  name: "{{PROJECT_NAME}}"
+  description: "{{PROJECT_DESCRIPTION}}"
+  wds_version: "6.0"
+  created: "{{DATE}}"
+
+# Design System Configuration
+design_system:
+  enabled: {{DESIGN_SYSTEM_ENABLED}}  # true | false
+  mode: "{{DESIGN_SYSTEM_MODE}}"      # "none" | "custom" | "library"
+  
+  # If mode: custom
+  figma:
+    enabled: {{FIGMA_ENABLED}}        # true | false
+    file_url: "{{FIGMA_URL}}"         # Figma file URL (if applicable)
+    
+  # If mode: library
+  library:
+    name: "{{LIBRARY_NAME}}"          # e.g., "shadcn/ui", "MUI", "Radix"
+    version: "{{LIBRARY_VERSION}}"    # e.g., "1.0.0"
+
+# Sketching Tool Configuration
+sketching:
+  tool: "{{SKETCHING_TOOL}}"          # "paper" | "excalidraw" | "figma" | "other"
+  
+  # If tool: excalidraw
+  excalidraw:
+    enabled: {{EXCALIDRAW_ENABLED}}   # true | false
+    
+    # Auto-export to PNG/SVG on save
+    auto_export: {{AUTO_EXPORT}}      # true | false
+    
+    # Load WDS component library
+    use_library: {{USE_LIBRARY}}      # true | false
+    
+    # Grid settings
+    grid_size: {{GRID_SIZE}}          # pixels (recommended: 20)
+    snap_to_grid: {{SNAP_TO_GRID}}    # true | false
+    
+    # Default theme
+    theme: "{{THEME}}"                # "light" | "dark"
+    
+    # File organization
+    sketches_folder: "sketches"       # relative to scenario folder
+
+# Output Folders
+output:
+  root: "."                           # Project root
+  project_brief: "A-Project-Brief"
+  trigger_map: "B-Trigger-Map"
+  scenarios: "C-Scenarios"
+  design_system: "D-Design-System"
+
+# Workflow Preferences
+workflow:
+  # Phase 4: UX Design
+  ux_design:
+    sketch_first: {{SKETCH_FIRST}}    # true | false
+    ai_suggestions: {{AI_SUGGESTIONS}} # true | false
+    
+  # Phase 5: Design System
+  design_system:
+    auto_extract: {{AUTO_EXTRACT}}    # true | false
+    similarity_threshold: {{SIMILARITY_THRESHOLD}} # 0.0-1.0 (recommended: 0.7)
+
+# Team Configuration
+team:
+  designer: "{{DESIGNER_NAME}}"
+  stakeholders: []                    # Add stakeholder names
+
+# Notes
+notes: |
+  {{PROJECT_NOTES}}

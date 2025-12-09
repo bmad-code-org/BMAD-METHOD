@@ -1837,13 +1837,54 @@ workflows/5-design-system/
 - **Automatically regenerated** after every component change
 - **Version controlled** with git
 
+**Course Structure Update (Dec 9):**
+- Tutorials integrated into course modules (no separate tutorial/ folder)
+- Created tutorials for key modules: 02, 04, 08, 12
+- Updated navigation (where-to-go-next.md, course-overview.md)
+- Deprecated old tutorial/ folder with migration guide
+
+**Tutorial Files Created:**
+- `course/module-02-project-brief/tutorial-02.md` - Create Project Brief
+- `course/module-04-map-triggers-outcomes/tutorial-04.md` - Map Triggers & Outcomes
+- `course/module-08-initialize-scenario/tutorial-08.md` - Initialize Scenario
+- `course/module-12-why-based-specs/tutorial-12.md` - Why-Based Specifications
+
+**Excalidraw Integration (Dec 9):**
+- Optional sketching tool integration with project configuration
+- Created comprehensive documentation and workflows
+- AI collaboration patterns for generation and analysis
+- Export workflows for GitHub display
+
+**Excalidraw Files Created:**
+- `workflows/4-ux-design/excalidraw-integration/README.md` - Overview and quick start
+- `workflows/4-ux-design/excalidraw-integration/excalidraw-setup.md` - Installation and configuration
+- `workflows/4-ux-design/excalidraw-integration/sketching-guide.md` - How to sketch effectively
+- `workflows/4-ux-design/excalidraw-integration/ai-collaboration.md` - Working with AI
+- `workflows/4-ux-design/excalidraw-integration/export-workflow.md` - Export for GitHub
+- `workflows/workflow-init/project-config.template.yaml` - Project configuration template
+- `workflows/workflow-init/excalidraw-setup-prompt.md` - Agent setup instructions
+
+**Excalidraw Features:**
+- ✅ Optional (enable in project config)
+- ✅ VS Code extension or web app
+- ✅ AI can generate .excalidraw files
+- ✅ AI can analyze sketches (upload PNG)
+- ✅ WDS component library (future)
+- ✅ Auto-export to PNG/SVG (optional)
+- ✅ 20px grid system (matches WDS spacing)
+- ✅ Version control friendly (JSON)
+
 **Next Steps:**
 1. Create Phase 6 workflow (Integration/PRD Finalization)
-2. Test Phase 5 workflow with real project
-3. Refine assessment criteria based on usage
-4. Add more shared knowledge documents as patterns emerge
-5. Test Figma MCP integration with real components
-6. Test catalog generation with real components
+2. Complete remaining module tutorials (03, 05-07, 09-11, 13-16)
+3. Create WDS Excalidraw component library (.excalidrawlib)
+4. Implement auto-export automation (GitHub Actions)
+5. Test Phase 5 workflow with real project
+6. Refine assessment criteria based on usage
+7. Add more shared knowledge documents as patterns emerge
+8. Test Figma MCP integration with real components
+9. Test catalog generation with real components
+10. Test Excalidraw integration with real scenarios
 
 ---
 

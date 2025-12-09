@@ -6,20 +6,27 @@
 
 ## Choose Your Path
 
-### 🎓 Learn the Concepts (Recommended First)
+### 🎓 Take the Course
 
-**[Tutorial](../01-tutorial/00-TUTORIAL-GUIDE.md)**
+**[WDS Course: From Designer to Linchpin](../course/00-course-overview.md)**
 
-Deep dive into:
-- Why designers are irreplaceable in the AI era
-- What WDS is and how it works
-- The BMad Method philosophy
-- Why-based specifications
-- Complete walkthroughs
+Complete training from project brief to AI-ready specifications:
 
-**Best for:** Understanding the "why" behind WDS
+**Module 01: Why WDS Matters**  
+Learn how to be indispensable in the AI era. Understand the paradigm shift where design becomes specification.  
+→ [Start Module 01](../course/module-01-why-wds-matters/module-01-overview.md)
 
-**Time:** 1-2 hours (video series)
+**Modules 02-16: Complete WDS Workflow**  
+Master every phase from trigger mapping through design system to development handoff. Each module includes:
+- **Lessons** - Theory and concepts with NotebookLM audio
+- **Tutorials** - Step-by-step hands-on guides
+- **Practice** - Apply to your own project
+
+→ [View All Modules](../course/00-course-overview.md)
+
+**Best for:** Comprehensive learning with structured curriculum
+
+**Time:** ~10 hours (lessons + tutorials + practice)
 
 ---
 
@@ -29,21 +36,25 @@ Deep dive into:
 
 Step-by-step workflows for:
 
-**Phase 1: Trigger Mapping**  
-Understand WHO your users are, WHAT triggers their needs, and WHY your business exists. Create a Trigger Map that identifies target groups, their pain points, desired outcomes, and prioritized features. This becomes the foundation for all design decisions.  
-→ [Watch Tutorial: Trigger Map Walkthrough](../tutorial/04-trigger-map-walkthrough.md)
+**Phase 1: Project Brief**  
+Define vision, goals, stakeholders, and constraints that guide all design decisions.  
+→ [Tutorial: Create Project Brief](../course/module-02-project-brief/tutorial-02.md)
 
-**Phase 2: Information Architecture**  
-Structure your content hierarchy and navigation based on user mental models and business goals. Organize information so users can find what they need intuitively, without cognitive overload.  
-→ [Learn more in BMad Method Overview](../tutorial/03-bmad-method-overview.md)
+**Phase 2: Trigger Mapping**  
+Understand WHO your users are, WHAT triggers their needs, and WHY your business exists. Create a Trigger Map that connects user psychology to business value.  
+→ [Tutorial: Map Triggers & Outcomes](../course/module-04-map-triggers-outcomes/tutorial-04.md)
 
-**Phase 3: Interaction Design**  
-Sketch user flows and state transitions. Design the journey from trigger moment to mutual success. Create visual representations of how users move through your product and how the interface responds to their actions.  
-→ [Watch Tutorial: Scenario Initialization](../tutorial/05-scenario-init-walkthrough.md)
+**Phase 3: Platform Requirements**  
+Document technical constraints, integrations, and infrastructure needs.  
+→ [Workflows Guide](../WDS-WORKFLOWS-GUIDE.md)
 
-**Phase 4: UX Specifications**  
-Transform sketches into why-based specifications that AI can implement correctly while preserving your design intent. Document not just WHAT to build, but WHY each decision was made, ensuring AI follows your reasoning instead of making "helpful" mistakes.  
-→ [Watch Tutorial: Sketch to Specification](../tutorial/06-sketch-to-spec-walkthrough.md) | [Why-Based Specs](../tutorial/07-why-based-specifications.md)
+**Phase 4: UX Design**  
+Transform ideas into why-based specifications that preserve your design intent. AI agents help you think through solutions, then capture your brilliance in specifications that give your designs eternal life.  
+→ [Tutorial: Initialize Scenario](../course/module-08-initialize-scenario/tutorial-08.md) | [Tutorial: Why-Based Specs](../course/module-12-why-based-specs/tutorial-12.md)
+
+**Phase 5: Design System**  
+Extract design tokens, create reusable components, and generate interactive HTML catalog.  
+→ [Workflows Guide](../WDS-WORKFLOWS-GUIDE.md)
 
 **Best for:** Hands-on learning with a real project
 

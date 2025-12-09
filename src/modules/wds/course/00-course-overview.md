@@ -49,16 +49,15 @@ Review prerequisites, choose your learning path, and get support:
 ## Course Structure
 
 Each module contains:
-- **Inspiration** - Why this matters and what you'll gain
-- **Teaching** - How to do it with confidence and AI support
-- **Practice** - Apply it to your own project
-- **Tutorial** - Quick step-by-step guide (for practical modules)
+- **Lessons** - Theory and concepts (with NotebookLM audio support)
+- **Tutorial** - Step-by-step hands-on guide (for practical modules)
+- **Practice** - Apply to your own project
 
 **Learning format:**
-- Read as documentation
-- Generate videos/podcasts with NotebookLM
-- Use in workshops and team training
-- Apply to real projects as you learn
+- **Lessons** - Read as documentation or generate audio with NotebookLM
+- **Tutorials** - Follow step-by-step guides with AI support
+- **Practice** - Apply to real projects as you learn
+- **Workshops** - Use for team training
 
 ---
 
@@ -68,11 +67,11 @@ Each module contains:
 - [Module 01: Why WDS Matters](module-01-why-wds-matters/module-01-overview.md)
 
 ### Phase 1: Project Brief
-- [Module 02: Create Project Brief](module-02-project-brief/)
+- [Module 02: Create Project Brief](module-02-project-brief/) • [Tutorial →](module-02-project-brief/tutorial-02.md)
 
 ### Phase 2: Trigger Mapping
 - [Module 03: Identify Target Groups](module-03-identify-target-groups/)
-- [Module 04: Map Triggers & Outcomes](module-04-map-triggers-outcomes/)
+- [Module 04: Map Triggers & Outcomes](module-04-map-triggers-outcomes/) • [Tutorial →](module-04-map-triggers-outcomes/tutorial-04.md)
 - [Module 05: Prioritize Features](module-05-prioritize-features/)
 
 ### Phase 3: Platform Requirements
@@ -80,11 +79,11 @@ Each module contains:
 - [Module 07: Functional Requirements](module-07-functional-requirements/)
 
 ### Phase 4: Conceptual Design (UX Design)
-- [Module 08: Initialize Scenario](module-08-initialize-scenario/)
+- [Module 08: Initialize Scenario](module-08-initialize-scenario/) • [Tutorial →](module-08-initialize-scenario/tutorial-08.md)
 - [Module 09: Sketch Interfaces](module-09-sketch-interfaces/)
 - [Module 10: Analyze with AI](module-10-analyze-with-ai/)
 - [Module 11: Decompose Components](module-11-decompose-components/)
-- [Module 12: Why-Based Specifications](module-12-why-based-specs/)
+- [Module 12: Why-Based Specifications](module-12-why-based-specs/) • [Tutorial →](module-12-why-based-specs/tutorial-12.md)
 - [Module 13: Validate Specifications](module-13-validate-specifications/)
 
 ### Phase 5: Design System
