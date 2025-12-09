@@ -1849,14 +1849,14 @@ workflows/5-design-system/
 - `course/module-08-initialize-scenario/tutorial-08.md` - Initialize Scenario
 - `course/module-12-why-based-specs/tutorial-12.md` - Why-Based Specifications
 
-**Excalidraw Integration (Dec 9):**
+**Excalidraw Integration (Dec 9 AM):**
 - Optional sketching tool integration with project configuration
 - Created comprehensive documentation and workflows
 - AI collaboration patterns for generation and analysis
 - Export workflows for GitHub display
 
 **Excalidraw Files Created:**
-- `workflows/4-ux-design/excalidraw-integration/README.md` - Overview and quick start
+- `workflows/4-ux-design/excalidraw-integration/excalidraw-guide.md` - Overview and quick start
 - `workflows/4-ux-design/excalidraw-integration/excalidraw-setup.md` - Installation and configuration
 - `workflows/4-ux-design/excalidraw-integration/sketching-guide.md` - How to sketch effectively
 - `workflows/4-ux-design/excalidraw-integration/ai-collaboration.md` - Working with AI
@@ -1874,17 +1874,105 @@ workflows/5-design-system/
 - ✅ 20px grid system (matches WDS spacing)
 - ✅ Version control friendly (JSON)
 
+**WDS ↔ BMad Integration (Dec 9 PM):**
+- Designed complete integration architecture between WDS and BMad Method
+- Simplified to 3 clean touch points (not 7!)
+- Created Design Delivery objects for clean handoff
+- Implemented multi-agent handoff dialog
+- Created test scenarios for designer validation
+- Phase 6 renamed to "Design Deliveries" (single handoff point)
+
+**Integration Files Created:**
+- `src/core/resources/wds/design-delivery-spec.md` - Design Delivery specification
+- `src/core/resources/wds/platform-requirements-spec.md` - Platform Requirements specification
+- `src/core/resources/wds/handoff-protocol.md` - Multi-agent handoff protocol
+- `src/core/resources/wds/integration-guide.md` - Complete integration overview
+- `templates/design-delivery.template.yaml` - Design Delivery template
+- `templates/platform-requirements.template.yaml` - Platform Requirements template
+- `templates/test-scenario.template.yaml` - Test Scenario template
+
+**The 3 Touch Points:**
+1. **Platform Requirements** (WDS Phase 3 → BMad)
+   - WDS overrides BMad's tech stack decisions
+   - Designer defines technical foundation
+   
+2. **Design Deliveries** (WDS Phase 6 → BMad)
+   - Complete design package handed off at once
+   - Includes all scenarios, components, test scenarios
+   - Single handoff with multi-agent dialog
+   
+3. **Designer Validation** (BMad Phase 3 → WDS Phase 7)
+   - BMad requests validation when complete
+   - Designer tests and creates issues if needed
+   - Iterates until sign-off
+
+**Integration Features:**
+- ✅ 3 clean touch points (simplified from 7)
+- ✅ Epic-based design deliveries (testable user flows)
+- ✅ Multi-agent handoff dialog (20-30 min structured conversation)
+- ✅ Platform requirements handoff (WDS overrides BMad)
+- ✅ Complete design package at once (not incremental)
+- ✅ Designer validation after implementation
+- ✅ BMad works with or without WDS (graceful fallback)
+- ✅ Complete traceability (design → dev → test → ship)
+
+**WDS Workflow Files Created (Dec 9):**
+- `workflows/6-design-deliveries/design-deliveries-guide.md` - Phase 6 workflow (iterative handoffs)
+- `workflows/7-testing/testing-guide.md` - Phase 7 workflow (designer validation)
+- `workflows/8-ongoing-development/existing-product-guide.md` - Phase 8 workflow (existing product entry point)
+- `workflows/workflow-init/project-type-selection.md` - Project type selection (new vs existing)
+
+**Two Entry Points to WDS:**
+1. **New Product** (Phases 1-7)
+   - Starting from scratch
+   - Complete user flows
+   - Full creative freedom
+   
+2. **Existing Product** (Phase 8)
+   - Jump into existing product
+   - Strategic improvements
+   - Targeted updates
+   - Linchpin designer role
+
+**Complete WDS Workflow (Phases 1-8):**
+- ✅ Phase 1: Project Brief (New Product)
+- ✅ Phase 2: Trigger Map (New Product)
+- ✅ Phase 3: Platform Requirements (Touch Point 1) (New Product)
+- ✅ Phase 4: UX Design (iterative)
+- ✅ Phase 5: Design System (iterative)
+- ✅ Phase 6: Design Deliveries (Touch Point 2)
+- ✅ Phase 7: Testing (Touch Point 3)
+- ✅ Phase 8: Existing Product Development (Existing Product Entry Point)
+  - Phase 8.1: Limited Project Brief
+  - Phase 8.2: Existing Context
+  - Phase 8.3: Critical Updates
+  - Phase 8.4: System Update Delivery
+  - Phase 8.5: Validation
+
+**BMad Integration Complete (Dec 9):**
+- ✅ Created WDS detection step for BMad architecture workflow
+- ✅ Updated BMad Architect agent (WDS-aware)
+- ✅ Updated BMad Developer agent (design system awareness)
+- ✅ BMad now detects and respects WDS artifacts
+- ✅ BMad reads platform requirements, design deliveries, design system
+- ✅ BMad offers handoff dialog when Design Deliveries exist
+
+**BMad Files Updated:**
+- `src/modules/bmm/workflows/3-solutioning/architecture/steps/step-01a-wds-detection.md` - WDS detection step
+- `src/modules/bmm/workflows/3-solutioning/architecture/steps/step-01-init.md` - Updated to call WDS detection
+- `src/modules/bmm/agents/architect.agent.yaml` - Added WDS awareness
+- `src/modules/bmm/agents/dev.agent.yaml` - Added design system awareness
+
 **Next Steps:**
-1. Create Phase 6 workflow (Integration/PRD Finalization)
-2. Complete remaining module tutorials (03, 05-07, 09-11, 13-16)
-3. Create WDS Excalidraw component library (.excalidrawlib)
-4. Implement auto-export automation (GitHub Actions)
-5. Test Phase 5 workflow with real project
-6. Refine assessment criteria based on usage
-7. Add more shared knowledge documents as patterns emerge
-8. Test Figma MCP integration with real components
-9. Test catalog generation with real components
-10. Test Excalidraw integration with real scenarios
+1. Complete remaining module tutorials (03, 05-07, 09-11, 13-16)
+2. Create WDS Excalidraw component library (.excalidrawlib)
+3. Implement auto-export automation (GitHub Actions)
+4. Test complete WDS → BMad workflow with real project
+5. Refine assessment criteria based on usage
+6. Add more shared knowledge documents as patterns emerge
+7. Test Figma MCP integration with real components
+8. Test catalog generation with real components
+9. Test Excalidraw integration with real scenarios
 
 ---
 
