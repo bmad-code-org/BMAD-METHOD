@@ -1122,7 +1122,13 @@ class ModuleManager {
     if (moduleName === 'core') {
       sourcePath = getSourcePath('core');
     } else {
-      sourcePath = await this.findModuleSource(moduleName);
+      // First check if module is in cache (for custom modules installed from external directories)
+      const cachePath = path.join(bmadDir, '_cfg', 'custom', moduleName);
+      if (await fs.pathExists(cachePath)) {
+        sourcePath = cachePath;
+      } else {
+        sourcePath = await this.findModuleSource(moduleName);
+      }
       if (!sourcePath) {
         // No source found, skip module installer
         return;
