@@ -9,13 +9,43 @@
 ```
 Which type of project are you working on?
 
-1. New Product
-2. Existing Product
+1. New Product (Greenfield)
+2. Existing Product (Brownfield)
 ```
 
 ---
 
-## Option 1: New Product
+## Software Development Terminology
+
+### Greenfield Development
+**Definition:** Building a new project from scratch with no constraints from existing systems.
+
+**Origin:** Agricultural term - plowing a green field that has never been cultivated.
+
+**In software:**
+- No legacy code to maintain
+- Full creative freedom
+- Define architecture from scratch
+- Choose tech stack freely
+- Design without constraints
+
+---
+
+### Brownfield Development
+**Definition:** Developing within an existing system with established constraints.
+
+**Origin:** Industrial term - redeveloping land previously used for industrial purposes.
+
+**In software:**
+- Existing codebase to work with
+- Legacy systems to integrate
+- Established patterns to follow
+- Tech stack already decided
+- Work within constraints
+
+---
+
+## Option 1: New Product (Greenfield)
 
 **Choose this if:**
 - ✅ Starting from scratch
@@ -23,6 +53,7 @@ Which type of project are you working on?
 - ✅ Designing complete user flows
 - ✅ Full creative freedom
 - ✅ Defining tech stack
+- ✅ **Greenfield development**
 
 **You'll start with:**
 - Phase 1: Project Brief (full)
@@ -37,7 +68,7 @@ Which type of project are you working on?
 
 ---
 
-## Option 2: Existing Product
+## Option 2: Existing Product (Brownfield)
 
 **Choose this if:**
 - ✅ Product already exists and is live
@@ -45,6 +76,7 @@ Which type of project are you working on?
 - ✅ Making strategic improvements, not complete redesign
 - ✅ Working within existing constraints
 - ✅ Tech stack already decided
+- ✅ **Brownfield development**
 
 **You'll start with:**
 - Phase 8.1: Limited Project Brief (strategic challenge)

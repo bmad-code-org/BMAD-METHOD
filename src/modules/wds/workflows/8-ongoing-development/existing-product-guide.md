@@ -4,13 +4,33 @@
 
 ---
 
+## 🔑 Key Point: You Still Create a Project Brief!
+
+**Brownfield projects (existing products) still need a Project Brief - just adapted to focus on:**
+- ✅ The strategic challenge you're solving
+- ✅ The scope of changes
+- ✅ Success criteria
+- ✅ Constraints
+
+**You're not skipping Phase 1 - you're adapting it to the existing product context.**
+
+---
+
 ## Two Entry Points to WDS
 
-### **Entry Point 1: New Product (Phases 1-7)**
+### **Entry Point 1: New Product (Phases 1-7) - Greenfield + Kaikaku**
 Starting from scratch, designing complete user flows
 
-### **Entry Point 2: Existing Product (Phase 8)**
+**Terminology:**
+- **Greenfield:** Building from scratch with no existing constraints
+- **Kaikaku (改革):** Revolutionary change, complete transformation
+
+### **Entry Point 2: Existing Product (Phase 8) - Brownfield + Kaizen**
 Jumping into an existing product to make strategic changes
+
+**Terminology:**
+- **Brownfield:** Working within existing system and constraints
+- **Kaizen (改善):** Continuous improvement, small incremental changes
 
 **This phase is for:**
 - Existing products that need strategic improvements
@@ -26,7 +46,7 @@ When joining an existing product, you:
 1. Focus on strategic challenges (not complete redesign)
 2. Make targeted improvements to existing screens
 3. Add new features incrementally
-4. Package changes as system updates
+4. Package changes as Design Deliveries (small scope)
 5. Work within existing constraints
 
 **This is a different workflow** - you're not designing complete flows, you're making critical updates to an existing system.
@@ -41,10 +61,11 @@ Existing Product
 Strategic Challenge Identified
     ↓
 ┌─────────────────────────────────────┐
-│ Phase 8.1: Limited Project Brief    │
+│ Phase 8.1: Project Brief (Adapted)  │
 │ - What strategic challenge?         │
 │ - What are we trying to solve?      │
 │ - Why bring in WDS designer?        │
+│ - What's the scope?                 │
 └─────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────┐
@@ -64,9 +85,9 @@ Strategic Challenge Identified
 └─────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────┐
-│ Phase 8.4: System Update Delivery   │
+│ Phase 8.4: Design Delivery          │
 │ → [Touch Point 2: WDS → BMad]       │
-│   Hand off changes                  │
+│   Hand off changes (DD-XXX)         │
 └─────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────┐
@@ -75,7 +96,7 @@ Strategic Challenge Identified
 │   Designer validates                │
 └─────────────────────────────────────┘
     ↓
-✅ Deploy System Update
+✅ Deploy Changes
     ↓
 (Repeat for next strategic challenge)
 ```
@@ -100,17 +121,24 @@ Which type of project are you working on?
    → Focused on critical updates, not complete redesign
 ```
 
-**If you choose "Existing Product":**
-- Skip Phases 1-2 (or do limited versions)
-- Skip Phase 3 (tech stack already decided)
-- Focus on Phase 8 workflow
-- Make targeted changes, not complete flows
+**If you choose "Existing Product" (Brownfield):**
+- **Phase 1 (Project Brief):** Adapted - focus on strategic challenge, not full vision
+- **Phase 2 (Trigger Map):** Optional - print out focused trigger map if needed
+- **Phase 3 (Platform Requirements):** Skip - tech stack already decided
+- **Phase 4-5:** Adapted - update existing screens, not complete flows
+- **Phase 6-7:** Same - deliveries and validation work the same way
 
 ---
 
-## Phase 8.1: Limited Project Brief
+## Phase 8.1: Project Brief (Adapted for Brownfield)
 
-**Instead of a full project brief, focus on:**
+**IMPORTANT: You still create a Project Brief - just adapted to the existing product context.**
+
+**Brownfield vs Greenfield:**
+- **Greenfield (New Product):** Full Project Brief covering vision, goals, stakeholders, constraints
+- **Brownfield (Existing Product):** Focused Project Brief covering the strategic challenge and scope
+
+**You're not skipping the Project Brief - you're adapting it to focus on:**
 
 ### **The Strategic Challenge**
 
@@ -315,7 +343,7 @@ Forcing users to add a dog feels like homework, causes drop-off
 
 ---
 
-## What Triggers a System Update?
+## What Triggers a Design Delivery?
 
 ### **Accumulated Changes**
 
@@ -328,11 +356,11 @@ Forcing users to add a dog feels like homework, causes drop-off
 
 **When enough changes accumulate:**
 ```
-10-15 small changes = System Update
+10-15 small changes = Design Delivery
 OR
-3-5 medium features = System Update
+3-5 medium features = Design Delivery
 OR
-1 major feature = System Update
+1 major feature = Design Delivery
 ```
 
 ### **Business Triggers**
@@ -411,21 +439,21 @@ Low Priority (Backlog):
 
 **Track changes:**
 ```
-Changes for System Update v1.1:
+Changes for Design Delivery DD-011 (v1.1):
 ✓ Fixed: Login button alignment on iPad
 ✓ Added: Loading spinner to all async actions
 ✓ Enhanced: "Remember me" checkbox on login
-✓ Updated: Button component (new loading state)
-✓ Refined: Error messages (clearer wording)
+✓ Updated: Error messages for clarity
+✓ Improved: Empty state when no tasks
 ```
 
 ---
 
-### Step 4: Create System Update Delivery
+### Step 4: Create Design Delivery
 
 **When enough changes accumulate:**
 
-**File:** `deliveries/DD-XXX-system-update-vX.X.yaml`
+**File:** `deliveries/DD-XXX-design-delivery-vX.X.yaml`
 
 ```yaml
 delivery:
@@ -492,18 +520,18 @@ estimated_complexity:
 6. Sign off and deploy
 
 **BMad receives:**
-- System Update delivery
+- Design Delivery (DD-XXX)
 - Updated specifications
 - Design system changes
 - Test scenario
 
 ---
 
-### Step 6: Deploy System Update
+### Step 6: Deploy Changes
 
 **After validation:**
 ```
-✅ System Update v1.1 approved
+✅ Design Delivery DD-011 (v1.1) approved
 ✅ All tests passed
 ✅ Ready to deploy
 
@@ -516,7 +544,7 @@ Deployment:
 
 **Release notes (auto-generated from delivery):**
 ```markdown
-# System Update v1.1
+# Version 1.1 Release
 
 ## What's New
 
@@ -551,15 +579,15 @@ v1.0 Launch
     ↓
 Gather feedback (2 weeks)
     ↓
-v1.1 System Update (bug fixes + enhancements)
+v1.1 Release (bug fixes + enhancements) - DD-011
     ↓
 Gather feedback (4 weeks)
     ↓
-v1.2 System Update (new features)
+v1.2 Release (new features) - DD-012
     ↓
 Gather feedback (8 weeks)
     ↓
-v2.0 Major Update (significant changes)
+v2.0 Major Update (significant changes) - DD-020
     ↓
 (Repeat)
 ```
@@ -786,7 +814,7 @@ THE END! 🎬
 
 **Ongoing Development:**
 - Return to Phase 4-5 for changes
-- Use Phase 6 for system updates
+- Use Phase 6 for Design Deliveries (small scope)
 - Use Phase 7 for validation
 - Repeat indefinitely
 

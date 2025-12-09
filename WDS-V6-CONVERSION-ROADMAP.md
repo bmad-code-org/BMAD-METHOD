@@ -1964,19 +1964,33 @@ workflows/5-design-system/
 - `src/modules/bmm/agents/dev.agent.yaml` - Added design system awareness
 
 **Next Steps:**
+
+### Immediate (This Week)
+1. ✅ Complete DD-XXX migration in Phase 8 step files (7 files) - DONE
+2. Test Phase 6/7/8 workflows with real project
+3. Create commit for Dec 9 session work
+
+### Short-term (Next Week)
 1. Complete remaining module tutorials (03, 05-07, 09-11, 13-16)
 2. Create WDS Excalidraw component library (.excalidrawlib)
-3. Implement auto-export automation (GitHub Actions)
-4. Test complete WDS → BMad workflow with real project
-5. Refine assessment criteria based on usage
-6. Add more shared knowledge documents as patterns emerge
-7. Test Figma MCP integration with real components
-8. Test catalog generation with real components
-9. Test Excalidraw integration with real scenarios
+3. Test complete WDS → BMad workflow end-to-end
+
+### Long-term (This Month)
+1. Implement auto-export automation (GitHub Actions)
+2. Refine assessment criteria based on usage
+3. Test Figma MCP integration with real components
+4. Test catalog generation with real components
+5. Add more shared knowledge documents as patterns emerge
 
 ---
 
-## 16. Future: Dogweek Design System Refactoring (Backlog)
+## 16. Session: Dec 9, 2025 - Micro-Steps & Concepts ✅
+
+**See changelog:** [CHANGELOG.md](./CHANGELOG.md#2025-12-09---micro-steps--concepts)
+
+---
+
+## 19. Future: Dogweek Design System Refactoring (Backlog)
 
 **Purpose:** Use Dogweek as live case study to validate WDS Phase 5
 

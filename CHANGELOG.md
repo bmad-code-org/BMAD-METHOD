@@ -1,5 +1,25 @@
 # Changelog
 
+## [Unreleased]
+
+### 2025-12-09 - Micro-Steps & Concepts
+
+**Completed:** Micro-file architecture for Phases 6, 7, 8 + Concepts integration + DD-XXX simplification
+
+**See detailed log:** [conversion-logs/session-2025-12-09-micro-steps-concepts.md](./conversion-logs/session-2025-12-09-micro-steps-concepts.md)
+
+**Summary:**
+- ✅ Phase 6: Design Deliveries (7 micro-step files)
+- ✅ Phase 7: Testing (8 micro-step files)
+- ✅ Phase 8: Ongoing Development (9 micro-step files)
+- ✅ Greenfield/Brownfield + Kaizen/Kaikaku concepts integrated
+- ✅ Glossary created with all terminology
+- ✅ DD-XXX simplification complete (all SU-XXX references updated)
+
+**Files created:** 26 files, ~27,000 lines
+
+---
+
 ## [6.0.0-alpha.13]
 
 **Release: November 30, 2025**
