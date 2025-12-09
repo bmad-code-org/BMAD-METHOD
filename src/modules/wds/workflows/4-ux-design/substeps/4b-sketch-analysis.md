@@ -29,14 +29,36 @@
 Your sketch:</ask>
 
 <action>Analyze entire sketch holistically:
-1. Identify logical sections (header, hero, features, cards, footer, etc.)
-2. Determine section boundaries (whitespace, visual grouping, layout)
-3. Recognize section purposes from visual context
-4. Count objects/elements in each section
-5. Check if sections look like components from previous pages
+1. **Establish Scale First:**
+   - Check if other pages in project have been analyzed
+   - Look for established text styles (body text, buttons, headings)
+   - Identify UI anchors (browser chrome, scrollbars, buttons, icons)
+   - Use previous pages + UI elements to calibrate scale
+
+2. **Identify Sections:**
+   - Identify logical sections (header, hero, features, cards, footer, etc.)
+   - Determine section boundaries (whitespace, visual grouping, layout)
+   - Recognize section purposes from visual context
+   - Count objects/elements in each section
+
+3. **Cross-Page Pattern Matching:**
+   - Check if sections look like components from previous pages
+   - Compare text styles to established patterns (e.g., "thin lines, icon-sized spacing = 16px body text")
+   - Note potential design system components
 </action>
 
 <output>**📊 I've analyzed your sketch. Here's what I see:**
+
+{{#if has_previous_pages}}
+**🔗 Cross-Page References Detected:**
+{{#each established_patterns}}
+- {{pattern_name}}: {{specification}} (from {{source_page}})
+{{/each}}
+
+I'll use these as reference points for consistency.
+{{/if}}
+
+---
 
 **{{page_name}}** contains **{{section_count}} main sections:**
 
@@ -48,6 +70,9 @@ Your sketch:</ask>
 - **Layout:** {{layout_description}}
 {{#if looks_like_previous_component}}
 - 💡 **Component?** Similar to {{component_name}} from {{previous_page}}
+{{/if}}
+{{#if matches_established_pattern}}
+- ✅ **Pattern Match:** Text styles match {{pattern_name}} from {{source_page}}
 {{/if}}
 {{/each}}
 ---
@@ -120,37 +145,48 @@ I'll interpret the objects, functions, and content for each section. You can con
 
 **📍 Section {{current_index}}/{{total_sections}}: {{section_name}}**</output>
 
-### 3A: AI Reads & Interprets Section
+### 3A: AI Reads & Interprets Section (Recursive)
 
-<action>For current section:
-1. Identify all objects (top-left to bottom-right within section)
-2. Determine object types (button, text, input, image, etc.)
-3. Interpret object functions (what does it do?)
-4. Interpret object purposes (why is it here?)
-5. Detect text (actual text vs. markers)
-6. Analyze visual hierarchy
-7. Suggest Object IDs based on purpose
+<action>For current section, identify objects **Top-Left to Bottom-Right**:
+
+1. **Identify Top-Level Containers** (e.g., Cards, Rows, Groups)
+   - IF container has children → Dive in and identify child elements
+   - IF repeating group (e.g., 3 Feature Cards) → Identify as "Repeating Pattern"
+
+2. **Handle Repeating Objects:**
+   - **Fixed Count (e.g., 3 Cards):** Name individually (`card-01`, `card-02`, `card-03`)
+   - **Dynamic List:** Define as Pattern + Data Source
+
+3. **Determine Object Hierarchy:**
+   - Parent: `feature-card-01`
+   - Child: `feature-card-01-icon`, `feature-card-01-title`
+
+4. **Interpret Attributes:**
+   - Type (Button, Text, Input)
+   - Function & Purpose
+   - Text Content (Actual vs. Markers)
+   - Visual Hierarchy
 </action>
 
 <output>**My interpretation of "{{section_name}}":**
 
 **Section Purpose:** {{interpreted_section_purpose}}
 
-**Objects I see:**
+**Hierarchy I see:**
 
 {{#each interpreted_objects}}
-{{object_index}}. **{{interpreted_type}}** ({{position_description}})
+{{object_index}}. **{{interpreted_type}}** ({{hierarchy_level}})
    - **Object ID:** `{{suggested_object_id}}`
+   {{#if is_container}}
+   - **Contains:**
+     {{#each children}}
+     - {{child_type}}: `{{child_object_id}}`
+     {{/each}}
+   {{/if}}
    - **Function:** {{interpreted_function}}
    - **Purpose:** {{interpreted_purpose}}
    {{#if has_actual_text}}
    - **Text in sketch:** "{{extracted_text}}"
-   {{/if}}
-   {{#if has_line_markers}}
-   - **Text capacity:** ~{{estimated_chars}} characters ({{line_count}} lines)
-   {{/if}}
-   {{#if is_interactive}}
-   - **Behavior:** {{interpreted_behavior}}
    {{/if}}
 {{/each}}
 

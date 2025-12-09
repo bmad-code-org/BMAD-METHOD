@@ -44,6 +44,21 @@ Starting from top-left corner of this section...</output>
     5. Return here when complete
   </action>
   
+  ### DESIGN SYSTEM CHECK (IF ENABLED)
+  
+  <action>After component specification complete:
+    1. Check project config: Is design system enabled?
+    2. If YES: Load and execute `workflows/5-design-system/design-system-router.md`
+    3. Design system router will:
+       - Check for similar components
+       - Run opportunity/risk assessment if needed
+       - Extract component-level info to design system
+       - Return component reference
+       - Update page spec with reference
+    4. If NO: Keep complete specification on page
+    5. Continue to next object
+  </action>
+  
   <ask>**More objects in {{section_name}}?**
   
   1. **Yes** - Document next object (move right, then down)

@@ -131,10 +131,10 @@
 **Agent reads:**
 1. **Logo text:** "Dog Week" → suggests as logo content
 2. **H1 actual text:** "Every walk. on time. Every time." → suggests as starting headline
-3. **Marker analysis:** 2 thin lines → body text, 16px, ~120-140 chars
+3. **Marker analysis:** 2 thin lines → body text, spacing matches icon size (~16-20px), ~120-140 chars
 4. **CTA actual text:** "start planning - free forever" → suggests as button label
 5. **Small actual text:** "Never ask whose turn it is again" → suggests as supporting text
-6. **Marker analysis:** 3 thin lines → feature description, 16px, ~180-210 chars
+6. **Marker analysis:** 3 thin lines → feature description, spacing matches icon size (~16-20px), ~180-210 chars
 
 **Agent output:**
 ```
@@ -155,37 +155,41 @@ SE: [Your Swedish translation]
 
 ## Technical Details for Markers
 
-### Line Thickness → Font Weight
+### Line Thickness → Font Weight (Relative)
 
 ```
-═══════════════════  ← 4px = Bold (700)
-───────────────────  ← 2px = Medium (500)
-─────────────────────  ← 1px = Regular (400)
+═══════════════════  ← Thickest = Bold (700)
+───────────────────  ← Medium = Medium (500)
+─────────────────────  ← Thinnest = Regular (400)
 ```
 
-### Distance Between Lines → Font Size
+**Compare relative thickness within the sketch, not absolute pixels.**
+
+### Distance Between Lines → Font Size (Context-Based)
 
 ```
 ═══════════════════
-      ↕ 42px        ← 42px font
+      ↕ ~Button Height  ← H1 (~40-48px)
 ═══════════════════
 
 ───────────────────
-    ↕ 24px          ← ~16px font (body)
+    ↕ ~Icon Size        ← Body (~16-20px)
 ───────────────────
 ```
+
+**Use UI elements (buttons, icons, scrollbars) as scale references.**
 
 ### Complete Example
 
 ```
-═══════════════════  ← 4px thick
-      ↕ 42px
-═══════════════════  ← 4px thick
+═══════════════════  ← Thickest lines in sketch
+      ↕ ~Button Height
+═══════════════════  ← Thickest lines in sketch
 ```
 
 **Analysis:**
-- Thickness: Bold
-- Distance: 42px font
+- Thickness: Bold (relative to other text)
+- Distance: Matches button height (~40-48px)
 - Lines: 2
 - Capacity: ~50-60 chars
 
@@ -219,8 +223,8 @@ SE:
 ```
 Text placeholder detected:
 - 4 horizontal lines
-- Line thickness: 1px → Regular weight
-- Distance: 24px → 16px font
+- Line thickness: Thinnest → Regular weight
+- Distance: Matches icon/scrollbar size → ~16-20px font
 - Capacity: ~240-280 characters
 
 Content for Feature Description:
@@ -259,8 +263,8 @@ When AI analyzes sketch text markers, the workflow is:
 ### Step 1: AI Analyzes Sketch
 Agent detects text markers and estimates properties:
 ```
-Line thickness: 3px → Bold font weight
-Spacing between pairs: 24px → ~42px font size estimate
+Line thickness: Thicker than body text → Bold font weight
+Spacing between pairs: Similar to button height → ~40-48px font size estimate
 Line-height: ~1.2 (calculated from font size)
 Character capacity: ~35 characters per line
 ```
@@ -269,8 +273,8 @@ Character capacity: ~35 characters per line
 Agent shows analysis WITH explanation of how estimates were derived:
 ```markdown
 - **Style**: 
-  - Font weight: Bold (from 3px thick line markers in sketch)
-  - Font size: 42px (est. from 24px vertical spacing between line pairs)
+  - Font weight: Bold (from thick line markers, relative to body text)
+  - Font size: 42px (est. from spacing matching button height)
   - Line-height: 1.2 (est. calculated as font-size × 1.2)
 ```
 
@@ -282,8 +286,8 @@ Agent shows analysis WITH explanation of how estimates were derived:
 
 ### Step 3: Designer Confirms/Adjusts
 Designer reviews estimates and either:
-1. **Confirms** - "Yes, 42px based on 24px spacing is correct"
-2. **Adjusts** - "Actually, the spacing was 28px, so make it 48px instead"
+1. **Confirms** - "Yes, 42px based on button-height spacing is correct"
+2. **Adjusts** - "Actually, the spacing is larger, make it 48px instead"
 3. **Overrides** - "Ignore the sketch measurements, I want it to be 56px"
 
 ### Step 4: Finalize Specification

@@ -3,8 +3,8 @@
 **Document Purpose:** Complete record of all decisions, context, and progress for converting Whiteport Design Studio to BMad Method v6 format. This document allows continuation of work if the conversation is lost.
 
 **Created:** December 2, 2025  
-**Last Updated:** December 5, 2025  
-**Status:** In Progress - Workflows Phase (Phase 4 Complete + Dog Week Pattern)
+**Last Updated:** December 9, 2025  
+**Status:** In Progress - Course Development Phase (Getting Started Complete)
 
 ---
 
@@ -543,7 +543,7 @@ Includes:
 | 12b | Phase 2 Workflow | `workflows/2-trigger-mapping/` | ✅ COMPLETE |
 | 12c | Phase 3 Workflow | `workflows/3-prd-platform/` | ✅ COMPLETE |
 | 12d | **Phase 4 Workflow** | `workflows/4-ux-design/` | ✅ **COMPLETE (Dec 4)** |
-| 12e | Phase 5 Workflow | `workflows/5-design-system/` | TO CREATE |
+| 12e | **Phase 5 Workflow** | `workflows/5-design-system/` | ✅ **COMPLETE (Dec 9)** |
 | 12f | Phase 6 Workflow | `workflows/6-integration/` | TO CREATE |
 
 #### Phase 4: Create Agents (The Norse Pantheon)
@@ -590,13 +590,16 @@ Includes:
 | `src/modules/wds/README.md` | Module entry point | ✅ CREATED |
 | `src/modules/wds/_module-installer/` | Install config folder | EMPTY |
 | `src/modules/wds/agents/` | Agents folder | PARTIAL (saga skeleton) |
-| `src/modules/wds/workflows/` | Workflows folder | ✅ **PHASE 4 COMPLETE** |
+| `src/modules/wds/workflows/` | Workflows folder | ✅ **PHASE 5 COMPLETE** |
 | `src/modules/wds/workflows/workflow-init/` | Workflow initialization | ✅ COMPLETE |
 | `src/modules/wds/workflows/1-project-brief/` | Phase 1 workflow | ✅ COMPLETE |
 | `src/modules/wds/workflows/2-trigger-mapping/` | Phase 2 workflow | ✅ COMPLETE |
 | `src/modules/wds/workflows/3-prd-platform/` | Phase 3 workflow | ✅ COMPLETE |
 | `src/modules/wds/workflows/4-ux-design/` | **Phase 4 workflow** | ✅ **COMPLETE (Dec 4)** |
 | `src/modules/wds/workflows/4-ux-design/substeps/` | **Phase 4 substeps (4A-4E)** | ✅ **COMPLETE (Dec 4)** |
+| `src/modules/wds/workflows/5-design-system/` | **Phase 5 workflow** | ✅ **COMPLETE (Dec 9)** |
+| `src/modules/wds/workflows/5-design-system/assessment/` | **Opportunity/Risk micro-instructions** | ✅ **COMPLETE (Dec 9)** |
+| `src/modules/wds/workflows/5-design-system/operations/` | **Design system operations** | ✅ **COMPLETE (Dec 9)** |
 | `src/modules/wds/workflows/4-ux-design/templates/` | **Phase 4 templates** | ✅ **COMPLETE (Dec 4)** |
 | `src/modules/wds/workflows/5-design-system/` | Phase 5 workflow | TO CREATE |
 | `src/modules/wds/workflows/6-integration/` | Phase 6 workflow | TO CREATE |
@@ -1125,9 +1128,754 @@ Do these work? [1] Use [2] Adjust [3] Manual
 
 ---
 
+## 13. WDS Course Development (December 9, 2025)
+
+### 13.1 Course Structure Overview
+
+**Purpose:** Educational course teaching WDS methodology to designers
+
+**Location:** `src/modules/wds/course/`
+
+**Format:**
+- Read as documentation
+- Generate videos/podcasts with NotebookLM
+- Use in workshops and team training
+- Apply to real projects as you learn
+
+**Module Structure:**
+Each module contains:
+- **Inspiration** - Why this matters and what you'll gain
+- **Teaching** - How to do it with confidence and AI support
+- **Practice** - Apply it to your own project
+- **Tutorial** - Quick step-by-step guide (for practical modules)
+
+### 13.2 Course Modules Planned
+
+**16 Total Modules:**
+
+#### Foundation
+- Module 01: Why WDS Matters ✅ COMPLETE
+
+#### Phase 1: Project Brief
+- Module 02: Create Project Brief ⏳ TO CREATE
+
+#### Phase 2: Trigger Mapping
+- Module 03: Identify Target Groups ⏳ TO CREATE
+- Module 04: Map Triggers & Outcomes ⏳ TO CREATE
+- Module 05: Prioritize Features ⏳ TO CREATE
+
+#### Phase 3: Platform Requirements
+- Module 06: Platform Requirements ⏳ TO CREATE
+- Module 07: Functional Requirements ⏳ TO CREATE
+
+#### Phase 4: Conceptual Design (UX Design)
+- Module 08: Initialize Scenario ⏳ TO CREATE
+- Module 09: Sketch Interfaces ⏳ TO CREATE
+- Module 10: Analyze with AI ⏳ TO CREATE
+- Module 11: Decompose Components ⏳ TO CREATE
+- Module 12: Why-Based Specifications ⏳ TO CREATE
+- Module 13: Validate Specifications ⏳ TO CREATE
+
+#### Phase 5: Design System
+- Module 14: Extract Design Tokens ⏳ TO CREATE
+- Module 15: Component Library ⏳ TO CREATE
+
+#### Phase 6: Development Integration
+- Module 16: UI Roadmap ⏳ TO CREATE
+
+### 13.3 Getting Started Section - COMPLETE ✅
+
+**Location:** `src/modules/wds/course/00-getting-started/`
+
+**Files Created:**
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `00-getting-started-overview.md` | Navigation hub for getting started | ✅ COMPLETE |
+| `01-prerequisites.md` | Skills, tools, requirements | ✅ COMPLETE |
+| `02-learning-paths.md` | Full Immersion, Quick Start, Self-Paced | ✅ COMPLETE |
+| `03-support.md` | Testimonials, FAQ, community | ✅ COMPLETE |
+| `00-getting-started-NOTEBOOKLM-PROMPT.md` | Podcast/video generation prompt | ✅ COMPLETE |
+
+**Key Decisions:**
+- Removed redundant "About the Course" file (merged into course overview)
+- Removed "About WDS" from getting started (belongs in main docs)
+- Focused on practical preparation only
+
+### 13.4 Course Overview - COMPLETE ✅
+
+**Location:** `src/modules/wds/course/00-course-overview.md`
+
+**Content:**
+- Welcome and paradigm shift
+- Who created WDS (Mårten Angner background)
+- Complete module table of contents (all 16 modules)
+- Learning paths (Complete, Quick Start, Phase-Specific)
+- Prerequisites summary
+- Module structure pattern
+- Clear call to action
+
+**Key Changes:**
+- Simplified module list to clean table of contents
+- Added "Who Created WDS?" section
+- Merged redundant content from getting started
+- Removed verbose descriptions
+
+### 13.5 Module 01: Why WDS Matters - COMPLETE ✅
+
+**Location:** `src/modules/wds/course/module-01-why-wds-matters/`
+
+**Files:**
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `module-01-overview.md` | Module navigation and overview | ✅ COMPLETE |
+| `lesson-01-the-problem.md` | The Problem We're Solving | ✅ COMPLETE |
+| `lesson-02-the-solution.md` | Becoming a Linchpin Designer | ✅ COMPLETE |
+| `lesson-03-the-path-forward.md` | Your Transformation | ✅ COMPLETE |
+
+**Content Based On:**
+- Seth Godin's "Linchpin: Are You Indispensable?"
+- Factory mindset vs Linchpin mindset
+- 5 dimensions of design thinking
+- AI as amplifier, not replacement
+- Emotional labor concept adapted to design
+
+### 13.6 NotebookLM Prompt Refinements
+
+**Key Messaging Changes:**
+
+**Removed:**
+- ❌ Speed claims ("5x faster", "3-5x productivity")
+- ❌ Fake testimonials (Sarah K., Marcus L., Priya S.)
+- ❌ Unrealistic promises
+
+**Added:**
+- ✅ IDE learning curve (5-10 hours)
+- ✅ GitHub workflow requirement
+- ✅ Financial cost transparency ($15-80/month for Cursor)
+- ✅ Frontend prototyping capability
+- ✅ Usability testing without dev team
+- ✅ Strategic thinker value proposition
+
+**New Value Proposition:**
+- Not about speed - about depth and completeness
+- Become the strategic thinker your team needs
+- Create specifications developers actually need
+- Generate content that perfectly lifts your designs
+- Work is deeper, more complete, more fulfilling
+- Eventually deliver parts of frontend work
+
+**Honest About Costs:**
+- Learning curve: IDE and GitHub workflow
+- Time: 10 hours course + 5-10 hours tools
+- Money: $15-20/month (small projects) to $80/month (enterprise)
+- Stepping into developer territory (uncomfortable at first)
+
+**Benefits Emphasized:**
+- Remove biggest barrier between designers and developers
+- Designs live in same place as code
+- No more handoff nightmares
+- Create standalone frontend prototypes
+- Conduct usability testing independently
+- No longer blocked by development schedules
+
+### 13.7 Next Steps for Course Development
+
+**Immediate Priority:**
+Create Module 02: Project Brief as template for remaining modules
+
+**Recommended Approach:**
+1. **Option 1: Prioritize Core Modules** (Quick Start path)
+   - Module 02: Project Brief
+   - Module 04: Map Triggers & Outcomes
+   - Module 08: Initialize Scenario
+   - Module 12: Why-Based Specifications
+
+2. **Option 2: Create Module Templates**
+   - Template structure for each module type
+   - Fill in with specific content later
+   - Faster to generate full course
+
+3. **Option 3: One Phase at a Time**
+   - Complete Phase 1 (Module 02) fully
+   - Then Phase 2 (Modules 03-05)
+   - Then Phase 3, 4, 5, 6
+
+**Content Sources:**
+- Tutorial content from `src/modules/wds/tutorial/`
+- Methodology guides from `src/modules/wds/docs/method/`
+- Workflow documentation from `src/modules/wds/workflows/`
+- Dog Week examples (when ready)
+
+**Module Template Structure:**
+```
+module-XX-name/
+├── module-XX-overview.md          # Navigation and module intro
+├── lesson-01-inspiration.md       # Why this matters
+├── lesson-02-teaching.md          # How to do it
+├── lesson-03-practice.md          # Apply it
+└── tutorial.md                    # Quick step-by-step (optional)
+```
+
+**Estimated Scope:**
+- 15 modules remaining (Module 02-16)
+- Each module: 4 files minimum
+- Total: ~60 files to create
+- Content: Tens of thousands of lines
+
+**Recommendation:**
+Wait until conversion is complete, then tackle course development systematically using the proven Module 01 structure as template.
+
+---
+
+## 14. Latest Updates Summary
+
+### December 9, 2025 - Course Development Session
+
+**Completed:**
+- ✅ Getting Started section (5 files)
+- ✅ Course Overview refinement
+- ✅ Module 01: Why WDS Matters (4 files)
+- ✅ NotebookLM prompt with accurate messaging
+- ✅ Removed redundant files
+- ✅ Merged overlapping content
+
+**Key Refinements:**
+- Honest about IDE/GitHub learning curve
+- Transparent about costs ($15-80/month)
+- Focus on strategic value, not speed
+- Frontend prototyping as major benefit
+- Removed fake testimonials
+- Removed speed claims
+
+**Files Structure:**
+```
+course/
+├── 00-course-overview.md                    ✅ COMPLETE
+├── 00-getting-started/                      ✅ COMPLETE
+│   ├── 00-getting-started-overview.md
+│   ├── 01-prerequisites.md
+│   ├── 02-learning-paths.md
+│   ├── 03-support.md
+│   └── 00-getting-started-NOTEBOOKLM-PROMPT.md
+└── module-01-why-wds-matters/               ✅ COMPLETE
+    ├── module-01-overview.md
+    ├── lesson-01-the-problem.md
+    ├── lesson-02-the-solution.md
+    └── lesson-03-the-path-forward.md
+```
+
+**Next Session:**
+- Continue with Module 02-16 creation
+- Use Module 01 as template
+- Consider prioritizing Quick Start modules first
+- Reference tutorial and workflow content
+
+---
+
+---
+
+## 15. Design System Architecture (December 9, 2025)
+
+### 15.1 Core Principles
+
+**Three-Way Split Architecture:**
+
+```
+1. Page Specification (Logical View)
+   ├── Component references
+   ├── Page-specific content (labels, error texts)
+   ├── Layout/structure
+   └── WHY this page exists
+
+2. Design System (Visual/Component Library)
+   ├── Component definitions
+   ├── States & variants
+   ├── Styling/tokens
+   └── Reusable patterns
+
+3. Functionality/Storyboards (Behavior)
+   ├── Interactions
+   ├── State transitions
+   ├── User flows
+   └── Component behaviors
+```
+
+**Key Separation:**
+- **Specification = Content** (what the component is)
+- **Organization = Structure** (where it lives)
+- **Design System = Optional** (chosen in Phase 1)
+
+### 15.2 Design System Options
+
+**Three Modes (Chosen in Project Exploration):**
+
+**Option A: No Design System**
+- Components stay page-specific
+- AI/dev team handles consistency
+- Faster for simple projects
+
+**Option B: Custom Design System**
+- Designer defines in Figma
+- Components extracted as discovered
+- Figma MCP endpoints for integration
+
+**Option C: Component Library Design System**
+- Uses shadcn/Radix/etc.
+- Library chosen during setup
+- Components mapped to library defaults
+
+### 15.3 Component Flow with Design System
+
+**Complete Specification → Extract → Reference:**
+
+```
+1. Specification Component (Pure)
+   └── Captures EVERYTHING about object (mixed content)
+
+2. Orchestration Layer
+   ├── Receives complete specification
+   ├── Design system enabled?
+   │
+   └── YES → Design System Router
+       ├── A. Extract component-level info
+       ├── B. Add/update design system entry
+       ├── C. Create reference ID
+       ├── D. Return to page spec
+       ├── E. Replace component info with reference
+       └── F. Keep only page-specific info
+
+3. Result: Clean separation
+   ├── Page spec: References + page-specific content
+   └── Design system: Component definitions
+```
+
+**Example:**
+
+**Complete Specification:**
+```yaml
+Login Button:
+  why: Submit login credentials
+  label: "Log in"                    # Page-specific
+  error_text: "Invalid credentials"  # Page-specific
+  states: [default, hover, disabled] # Component-level
+  variants: [primary, secondary]     # Component-level
+  styling: {...}                     # Component-level
+```
+
+**After Split:**
+
+**Design System:**
+```yaml
+# D-Design-System/components/button.md
+Button Component [btn-001]:
+  states: [default, hover, disabled]
+  variants: [primary, secondary]
+  styling: {...}
+```
+
+**Page Spec:**
+```yaml
+# C-Scenarios/login-page.md
+Login Button:
+  component: Button.primary [btn-001]  # Reference
+  why: Submit login credentials
+  label: "Log in"
+  error_text: "Invalid credentials"
+```
+
+### 15.4 Design System Router
+
+**Parallel to Sketch Router:**
+
+```
+Design System Router
+├── Check: Does similar component exist?
+│
+├── NO → Route to: Create New Component
+│   └── Add to design system, create reference
+│
+└── YES → Route to: Opportunity/Risk Assessment
+    ├── Scan existing components
+    ├── Compare attributes
+    ├── Calculate similarity
+    ├── Identify opportunities
+    ├── Identify risks
+    ├── Present decision to designer
+    └── Execute decision:
+        ├── Same → Reuse reference
+        ├── Variant → Add variant to existing
+        └── New → Create new component
+```
+
+**Router Characteristics:**
+- Dumb and simple (just identify and route)
+- Doesn't contain business logic
+- Keeps orchestration clean
+- Parallel pattern to sketch router
+
+### 15.5 Opportunity/Risk Assessment
+
+**Micro-Instruction Breakdown:**
+
+```
+workflows/5-design-system/assessment/
+├── 01-scan-existing.md           # Find similar components
+├── 02-compare-attributes.md      # Compare systematically
+├── 03-calculate-similarity.md    # Score the match
+├── 04-identify-opportunities.md  # What could we gain?
+├── 05-identify-risks.md          # What could go wrong?
+├── 06-present-decision.md        # Show designer options
+└── 07-execute-decision.md        # Implement choice
+```
+
+**Example Conversation:**
+```
+Agent: "I found a button similar to btn-001 (Primary Button).
+
+Similarities:
+- Same size and shape
+- Same color scheme
+- Same hover behavior
+
+Differences:
+- Different label ('Continue' vs 'Submit')
+- Different icon (arrow vs checkmark)
+
+Options:
+[1] Same component (just change label/icon)
+[2] New variant of btn-001 (add 'continue' variant)
+[3] New component btn-002 (different purpose)
+
+If variant:
+✅ Pros: Consistency, easier maintenance
+❌ Cons: More complex component
+
+If separate:
+✅ Pros: Independence, flexibility
+❌ Cons: Potential inconsistency
+
+What's your call?"
+```
+
+**Key Insight:** Design systems are inherently challenging. WDS acknowledges risks and creates conversation points for designer judgment.
+
+### 15.6 Layered Knowledge Architecture
+
+**Centralized Concepts + Component-Specific Instructions:**
+
+```
+Core Principles (Shared)
+├── data/design-system/
+│   ├── token-architecture.md      # Structure vs style separation
+│   ├── naming-conventions.md      # Token naming rules
+│   ├── state-management.md        # Component states
+│   └── validation-patterns.md     # Form validation
+│
+└── Referenced by component types
+
+↓
+
+Component-Type Instructions (Specific)
+├── object-types/text-heading.md
+│   ├── References: token-architecture.md
+│   ├── References: naming-conventions.md
+│   └── Heading-specific rules
+│
+├── object-types/button.md
+│   ├── References: token-architecture.md
+│   ├── References: state-management.md
+│   └── Button-specific rules
+│
+└── object-types/input-field.md
+    ├── References: token-architecture.md
+    ├── References: validation-patterns.md
+    └── Input-specific rules
+```
+
+**Benefits:**
+- Small, digestible instruction files
+- Shared knowledge in one place
+- Selective loading (only what's needed)
+- Composable knowledge
+- Easy to maintain and update
+
+**Example: Structure vs Style Separation**
+
+**Shared Principle (`data/design-system/token-architecture.md`):**
+```markdown
+# Design Token Architecture
+
+## Core Principle
+Separate semantic structure from visual style.
+
+HTML defines meaning, tokens define appearance.
+
+<h2> = Semantic (second-level heading)
+"Display Large" = Visual (48px, bold, tight spacing)
+
+They should be independent!
+```
+
+**Component Application (`object-types/text-heading.md`):**
+```markdown
+# Text Heading Specification
+
+**References:** data/design-system/token-architecture.md
+
+## Heading-Specific Rules
+1. Identify semantic level (h1-h6)
+2. Map to design token (display-large, heading-1, etc.)
+3. Never mix structure with style
+4. Store structure in page spec
+5. Store style in design system tokens
+```
+
+### 15.7 Company Customization Model
+
+**Key Feature: Companies Can Fork WDS**
+
+```
+Company forks WDS
+├── Keeps: Core workflow architecture
+├── Keeps: Router logic
+├── Keeps: Orchestration patterns
+│
+└── Customizes:
+    ├── data/design-system/
+    │   ├── token-architecture.md    # Company standards
+    │   ├── naming-conventions.md    # Company naming
+    │   └── brand-guidelines.md      # Company brand
+    │
+    └── object-types/
+        ├── button.md                # Company button patterns
+        ├── input-field.md           # Company form standards
+        └── card.md                  # Company card patterns
+```
+
+**Use Cases:**
+
+**1. Enterprise with Design System**
+```
+Acme Corp forks WDS:
+├── Adds: data/design-system/acme-tokens.md
+├── Adds: data/design-system/acme-components.md
+└── Customizes: object-types/ to match Acme patterns
+
+Result: Every project uses Acme standards automatically
+```
+
+**2. Agency with Multiple Clients**
+```
+Agency forks WDS:
+├── Branch: client-a (Client A standards)
+├── Branch: client-b (Client B standards)
+└── Branch: main (Agency defaults)
+
+Result: Switch branch = switch standards
+```
+
+**3. Design System Team**
+```
+Design System Team forks WDS:
+├── Adds: Their component library specs
+├── Adds: Their token architecture
+└── Adds: Their validation rules
+
+Result: All designers use same system
+```
+
+**Benefits:**
+- ✅ Company-specific standards
+- ✅ Version controlled
+- ✅ Shareable across teams
+- ✅ Evolvable over time
+- ✅ Consistent across projects
+- ✅ Open-source dream: Customize without breaking core
+
+### 15.8 Design System Workflow Structure
+
+**Planned Structure:**
+
+```
+workflows/5-design-system/
+├── workflow.yaml                      # Main workflow entry
+├── design-system-router.md            # Router logic
+│
+├── assessment/                        # Opportunity/Risk micro-instructions
+│   ├── 01-scan-existing.md
+│   ├── 02-compare-attributes.md
+│   ├── 03-calculate-similarity.md
+│   ├── 04-identify-opportunities.md
+│   ├── 05-identify-risks.md
+│   ├── 06-present-decision.md
+│   └── 07-execute-decision.md
+│
+├── operations/                        # Design system operations
+│   ├── create-new-component.md
+│   ├── add-variant.md
+│   ├── update-component.md
+│   └── initialize-design-system.md
+│
+└── templates/                         # Output templates
+    ├── component.template.md
+    ├── design-tokens.template.md
+    └── component-library-config.template.md
+```
+
+**Integration Points:**
+- Called from Phase 4 orchestration (4c-03-components-objects.md)
+- Triggered after component specification
+- Only active if design system enabled in project
+- First component triggers initialization
+
+### 15.9 Key Risks Identified
+
+**1. Component Matching**
+- How to recognize "same" vs "similar" vs "different"
+- Solution: Similarity scoring + designer judgment
+
+**2. Circular References**
+- Page → Component → Functionality → Component
+- Solution: Clear hierarchy (Page → Component → Functionality)
+
+**3. Sync Problems**
+- Component evolves, references may break
+- Solution: Reference IDs + update notifications
+
+**4. Component Boundaries**
+- Icon in button? Nested components?
+- Solution: Designer conversation + guidelines
+
+**5. First Component**
+- When to initialize design system?
+- Solution: Auto-initialize on first component if enabled
+
+**6. Storyboard Granularity**
+- Component behavior vs page flow
+- Solution: Clear separation guidelines
+
+**Mitigation Strategy:**
+- AI identifies risks
+- Designer makes judgment calls
+- AI executes decisions
+- Transparent process with pros/cons
+
+### 15.10 Implementation Complete (December 9, 2025)
+
+**✅ Phase 5 Design System Workflow Complete!**
+
+**Files Created:**
+
+**Workflow Structure:**
+- `workflows/5-design-system/workflow.yaml`
+- `workflows/5-design-system/README.md`
+- `workflows/5-design-system/design-system-router.md`
+
+**Assessment Micro-Instructions (7 files):**
+- `assessment/01-scan-existing.md`
+- `assessment/02-compare-attributes.md`
+- `assessment/03-calculate-similarity.md`
+- `assessment/04-identify-opportunities.md`
+- `assessment/05-identify-risks.md`
+- `assessment/06-present-decision.md`
+- `assessment/07-execute-decision.md`
+
+**Component Operations (4 files):**
+- `operations/initialize-design-system.md`
+- `operations/create-new-component.md`
+- `operations/add-variant.md`
+- `operations/update-component.md`
+
+**Shared Knowledge Documents (4 files):**
+- `data/design-system/token-architecture.md`
+- `data/design-system/naming-conventions.md`
+- `data/design-system/component-boundaries.md`
+- `data/design-system/state-management.md`
+- `data/design-system/validation-patterns.md`
+
+**Templates (3 files):**
+- `templates/component.template.md`
+- `templates/design-tokens.template.md`
+- `templates/component-library-config.template.md`
+
+**Integration:**
+- Updated `workflows/4-ux-design/substeps/4c-03-components-objects.md` to call design system router
+
+**Total Files Created:** 27 files (22 core + 3 Figma + 2 catalog)
+
+**Key Features Implemented:**
+- ✅ Three design system modes (None/Custom/Library)
+- ✅ On-demand component extraction
+- ✅ Similarity detection and assessment
+- ✅ Opportunity/risk analysis with designer decision
+- ✅ Component operations (create/variant/update)
+- ✅ Layered knowledge architecture
+- ✅ Company customization support
+- ✅ Integration with Phase 4 workflow
+- ✅ **Figma integration (Mode B) - COMPLETE (Dec 9)**
+- ✅ **Interactive HTML catalog - COMPLETE (Dec 9)**
+
+**Figma Integration Files (Dec 9):**
+- `data/design-system/figma-component-structure.md` - Component organization in Figma
+- `figma-integration/figma-designer-guide.md` - Step-by-step designer instructions
+- `figma-integration/figma-mcp-integration.md` - Technical MCP integration guide
+
+**Interactive Catalog Files (Dec 9):**
+- `templates/catalog.template.html` - Interactive HTML catalog template
+- `operations/generate-catalog.md` - Catalog generation workflow
+
+**Catalog Features:**
+- Fixed sidebar navigation
+- Live component previews with all variants/states
+- Interactive state toggles
+- Design token swatches
+- Code examples
+- Changelog tracking
+- Figma links (Mode B)
+- **Automatically regenerated** after every component change
+- **Version controlled** with git
+
+**Next Steps:**
+1. Create Phase 6 workflow (Integration/PRD Finalization)
+2. Test Phase 5 workflow with real project
+3. Refine assessment criteria based on usage
+4. Add more shared knowledge documents as patterns emerge
+5. Test Figma MCP integration with real components
+6. Test catalog generation with real components
+
+---
+
+## 16. Future: Dogweek Design System Refactoring (Backlog)
+
+**Purpose:** Use Dogweek as live case study to validate WDS Phase 5
+
+**Identified Issues in Dogweek:**
+1. **Button Proliferation:** 8 separate button files (should be 1 component with variants)
+2. **Structure/Style Confusion:** H1 component hardcoded to visual style (breaks semantic HTML)
+3. **No Token Architecture:** Hardcoded values instead of design tokens
+4. **No Component IDs:** File-based organization, no usage tracking
+5. **No Similarity Detection:** Manual component management
+
+**Proposed Refactoring:**
+- Consolidate 8 button files → 1 Button component [btn-001] with variants
+- Separate semantic HTML (h1-h6) from visual tokens (heading-hero, heading-page)
+- Implement design token system (colors, typography, spacing)
+- Add component IDs and usage tracking
+- Create component references in page specs
+
+**Benefits:**
+- ✅ Validates WDS Phase 5 on production system
+- ✅ Improves Dogweek maintainability
+- ✅ Creates migration guide for other projects
+- ✅ Generates real-world examples for WDS course
+
+**Status:** Backlog (after Phase 6 complete)
+
 ---
 
 **End of Roadmap Document**
 
-*To continue: Open this document, review "Next Steps" section for current priorities*
+*To continue: Phase 6 (Integration) is the final workflow to create*
 

@@ -82,40 +82,83 @@ Justified/Full-width text:
 
 ---
 
+## Step 0: Establish Scale Using Project Context
+
+**Before analyzing individual text elements, establish your reference points:**
+
+### 1. Check Previous Pages in Project
+
+If analyzing multiple pages in the same project:
+
+**Look for established patterns:**
+```
+Start Page (already analyzed):
+- Body text: Thin lines, icon-sized spacing → 16px Regular
+- Button labels: Medium lines → 16px Semibold
+- Page title: Thick lines, button-height spacing → 48px Bold
+
+Current Page (About Page):
+- Similar thin lines, icon-sized spacing → **Same: 16px Regular**
+- Similar medium lines in buttons → **Same: 16px Semibold**
+```
+
+**Design System Integration:**
+- If project has a design system, match visual patterns to existing components
+- Body text that looks like Start Page body text → Use same specification
+- Buttons that look like Start Page buttons → Use same specification
+
+**Benefits:**
+- ✅ Maintains consistency across all pages
+- ✅ Builds reusable design patterns
+- ✅ Reduces specification time for subsequent pages
+- ✅ Creates cohesive user experience
+
+### 2. Find UI Anchors in Current Sketch
+
+- Browser chrome (address bar, scrollbars)
+- Standard UI elements (buttons, icons, form inputs)
+- Use these to calibrate scale for this specific sketch resolution
+
+---
+
 ## Analysis Rules
 
-### 1. Line Thickness → Font Weight
+### 1. Line Thickness → Font Weight (Relative)
 
 **Line thickness indicates font weight (bold/regular), NOT font size**
 
-| Line Thickness | Font Weight | CSS Value | Typical Use |
-|----------------|-------------|-----------|-------------|
-| 4-5px thick (═══) | Bold | font-weight: 700 | Headlines, strong emphasis |
-| 3px thick (═══) | Semibold | font-weight: 600 | Subheadings, medium emphasis |
-| 2px medium (──) | Medium | font-weight: 500 | Slightly emphasized text |
-| 1px normal (──) | Regular | font-weight: 400 | Body text, normal content |
-| <1px thin (─) | Light | font-weight: 300 | Subtle text, de-emphasized |
+**Compare lines RELATIVE to each other within the sketch:**
 
-### 2. Distance Between Lines → Font Size
+| Relative Thickness | Font Weight | CSS Value | Typical Use |
+|-------------------|-------------|-----------|-------------|
+| Thickest (═══) | Bold | font-weight: 700 | Headlines, strong emphasis |
+| Thick (═══) | Semibold | font-weight: 600 | Subheadings, medium emphasis |
+| Medium (──) | Medium | font-weight: 500 | Slightly emphasized text |
+| Thin (──) | Regular | font-weight: 400 | Body text, normal content |
+| Thinnest (─) | Light | font-weight: 300 | Subtle text, de-emphasized |
 
-**The vertical spacing between lines indicates font size**
+**Don't measure pixels—compare thickness relative to other text in the same sketch.**
 
-| Distance Between Lines | Estimated Font Size | Typical Use |
-|------------------------|---------------------|-------------|
-| 42-50px | 36-48px | H1 - Page titles |
-| 32-40px | 28-36px | H2 - Section headings |
-| 24-30px | 20-28px | H3 - Subsection headings |
-| 18-24px | 14-20px | Body text / Paragraphs |
-| 12-16px | 10-14px | Captions / Helper text |
+### 2. Distance Between Lines → Font Size (Context-Based)
 
-**⚠️ Important:** If distance is very large (>60px), verify this is text and not an image placeholder or colored box!
+**The vertical spacing between lines indicates font size—compare to UI elements**
+
+| Spacing Relative To | Estimated Font Size | Typical Use |
+|---------------------|---------------------|-------------|
+| Button Height | ~40-48px | Large Heading - Page titles |
+| Address Bar Height | ~32-40px | Medium Heading - Section headings |
+| Between Button & Icon | ~24-32px | Small Heading - Subsection headings |
+| Icon/Scrollbar Size | ~16-24px | Body text / Paragraphs |
+| Half Icon Size | ~12-16px | Captions / Helper text |
+
+**⚠️ Important:** If spacing seems disproportionately large (>2x button height), verify this is text and not an image placeholder or colored box!
 
 ### 2a. Visual Examples: Text vs. Image Confusion
 
 **TEXT - Normal spacing:**
 ```
 ═══════════════════════════════  ← Bold line
-                                  ← 42px distance
+                                  ← ~Button Height
 ═══════════════════════════════  ← Bold line
 
 This is clearly TEXT (H1 heading)
@@ -125,7 +168,7 @@ This is clearly TEXT (H1 heading)
 ```
 ═══════════════════════════════  ← Line?
                                   
-                                  ← 80px+ distance (too large!)
+                                  ← Much larger than any UI element!
                                   
 ═══════════════════════════════  ← Line?
 
@@ -133,7 +176,7 @@ This might be an IMAGE PLACEHOLDER or COLORED BOX, not text!
 Ask user to confirm.
 ```
 
-**When in doubt:** If distance >60px, ask: "Is this text or an image/box?"
+**When in doubt:** If spacing is disproportionately large compared to UI elements, ask: "Is this text or an image/box?"
 
 ### 3. Text Alignment → Horizontal Position
 
@@ -219,14 +262,14 @@ Left-aligned:           Center-aligned:        Right-aligned:
 
 ### 5. Characters Per Line
 
-**Based on font size and line width:**
+**Based on estimated font size and line width:**
 
 ```
-Font 48px:  ═══════════════════     = ~20-25 chars
-Font 36px:  ═══════════════════════ = ~25-30 chars
-Font 24px:  ─────────────────────── = ~40-50 chars
-Font 16px:  ──────────────────────────────── = ~60-70 chars
-Font 12px:  ──────────────────────────────────── = ~80-90 chars
+Large Heading (~48px):  ═══════════════════     = ~20-25 chars
+Medium Heading (~36px): ═══════════════════════ = ~25-30 chars
+Small Heading (~24px):  ─────────────────────── = ~40-50 chars
+Body Text (~16px):      ──────────────────────────────── = ~60-70 chars
+Caption (~12px):        ──────────────────────────────────── = ~80-90 chars
 ```
 
 ---
@@ -242,13 +285,14 @@ Font 12px:  ──────────────────────�
 ```
 
 **Analysis:**
-- **Type:** H1 Heading
+- **Type:** Large Heading (Page Title)
 - **Lines:** 2
-- **Line thickness:** 4px → **Bold** (font-weight: 700)
-- **Distance between lines:** 42px → **42px font-size**
+- **Line thickness:** Thickest in sketch → **Bold** (font-weight: 700)
+- **Distance between lines:** Matches button height → **~40-48px font-size**
 - **Line-height:** ~1.2 (calculated from spacing)
 - **Alignment:** Center
 - **Capacity:** ~25-30 chars per line = 50-60 total
+- **Semantic HTML:** Determined by page structure (likely H1 if page title)
 
 **Content Guidance:**
 ```
@@ -269,8 +313,8 @@ Swedish: "Välkommen till Din / Hundvårdshub" (50 chars) ✅
 **Analysis:**
 - **Type:** Body text / Paragraph
 - **Lines:** 4
-- **Line thickness:** 1px → **Regular** (font-weight: 400)
-- **Distance between lines:** 24px → **16px font-size**
+- **Line thickness:** Thinnest in sketch → **Regular** (font-weight: 400)
+- **Distance between lines:** Matches icon/scrollbar size → **~16-20px font-size**
 - **Line-height:** ~1.5 (calculated from spacing)
 - **Alignment:** Left
 - **Capacity:** ~60-70 chars per line = 240-280 total
@@ -298,8 +342,8 @@ vård de behöver." (218 chars) ✅
 **Analysis:**
 - **Type:** Button label
 - **Lines:** 1
-- **Line thickness:** 2px → **Semibold** (font-weight: 600)
-- **Estimated font-size:** 16-18px (button standard)
+- **Line thickness:** Medium (relative) → **Semibold** (font-weight: 600)
+- **Estimated font-size:** ~16-18px (button standard)
 - **Capacity:** ~8-12 characters
 
 **Content Guidance:**
@@ -319,26 +363,29 @@ When analyzing sketches with text placeholders:
 How many horizontal bar groups do you see?
 ```
 
-### Step 2: Measure Line Thickness → Font Weight
+### Step 2: Compare Line Thickness → Font Weight
 ```
-Line thickness indicates font weight:
-- Very thick (4-5px) → Bold (font-weight: 700)
-- Thick (3px) → Semibold (font-weight: 600)
-- Normal (2px) → Medium (font-weight: 500)
-- Thin (1px) → Regular (font-weight: 400)
-- Very thin (<1px) → Light (font-weight: 300)
+Line thickness indicates font weight (RELATIVE comparison):
+- Thickest lines → Bold (font-weight: 700)
+- Thick lines → Semibold (font-weight: 600)
+- Medium lines → Medium (font-weight: 500)
+- Thin lines → Regular (font-weight: 400)
+- Thinnest lines → Light (font-weight: 300)
 ```
 
-### Step 3: Measure Distance Between Lines → Font Size
+### Step 3: Compare Distance to UI Elements → Font Size
 ```
-Vertical distance between horizontal lines:
-- 42-50px → 36-48px font (H1)
-- 32-40px → 28-36px font (H2)
-- 24-30px → 20-28px font (H3)
-- 18-24px → 14-20px font (Body)
-- 12-16px → 10-14px font (Caption)
+Vertical spacing relative to context anchors:
+- Matches Button Height → ~40-48px font (Large Heading)
+- Matches Address Bar → ~32-40px font (Medium Heading)
+- Between Button & Icon → ~24-32px font (Small Heading)
+- Matches Icon/Scrollbar → ~16-24px font (Body Text)
+- Half Icon Size → ~12-16px font (Caption/Small Text)
 
-⚠️ If distance is >60px, verify this is text (not image/box)!
+⚠️ If spacing is disproportionately large, verify this is text (not image/box)!
+
+NOTE: Visual size ≠ Semantic HTML level (H1/H2/H3).
+Semantic heading levels are determined by content structure, not appearance.
 ```
 
 ### Step 4: Calculate Line-Height
@@ -415,8 +462,9 @@ Consider shortening or increasing font size.
 >
 > **Analysis:**
 > - 2 lines of text (thick bars)
-> - Line thickness: 3px → ~28-32px font
-> - Spacing: 3px → ~1.3 line-height
+> - Line thickness: Thick (relative) → Bold weight
+> - Spacing: Less than button height → ~28-32px font
+> - Line-height: ~1.3 (calculated)
 > - Alignment: Center
 > - Capacity: ~50-60 characters (25-30 per line)
 >

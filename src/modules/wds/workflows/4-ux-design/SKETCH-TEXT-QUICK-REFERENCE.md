@@ -8,9 +8,27 @@
 
 **Before analyzing specific text, scan the ENTIRE sketch to establish scale.**
 
-1. **Find Anchors:** Look for standard UI elements (Browser chrome, Scrollbars, Buttons, Icons).
-2. **Determine Base Unit:** If a Scrollbar is "Standard Width" (e.g., 16px), how big is everything else relative to it?
-3. **Calibrate:** Use these known objects to calibrate your eye for this specific image resolution.
+1. **Find UI Anchors:** Look for standard UI elements (Browser chrome, Scrollbars, Buttons, Icons).
+2. **Check Project References:** Look at other sketches in the same project for established text styles.
+3. **Determine Base Unit:** If a Scrollbar is "Standard Width" (e.g., 16px), how big is everything else relative to it?
+4. **Calibrate:** Use these known objects to calibrate your eye for this specific image resolution.
+
+### Cross-Page Reference Strategy
+
+**If body text was defined on the Start Page:**
+- Start Page body text: Spacing matches icon size → 16px Regular
+- **Current page:** Similar thin lines with icon-sized spacing → **Same: 16px Regular**
+
+**Benefits:**
+- ✅ Maintains visual consistency across pages
+- ✅ Builds design system patterns naturally
+- ✅ Reduces guesswork on subsequent pages
+- ✅ Creates coherent user experience
+
+**When to use:**
+- Body text, captions, button labels (common across pages)
+- Navigation items (should be identical)
+- Form labels and inputs (standardized patterns)
 
 ---
 
@@ -35,7 +53,7 @@
 ```
 [ Button ]           ← Standard height ref (~40-48px)
    ↕
-═══════════════════  ← Matches button height? ~40px font (H1)
+═══════════════════  ← Matches button height? ~40-48px (Large Heading)
       ↕
 ═══════════════════
 ```
@@ -47,6 +65,8 @@
 - **Scrollbar**: ~16px width
 
 **Rule:** Use these anchors to estimate the scale of text spacing.
+
+**Note:** Visual size ≠ Semantic HTML (H1/H2/H3). Heading levels are determined by document structure, not appearance.
 
 ---
 
@@ -63,7 +83,7 @@
 
 **Analysis:**
 - **Context:** Spacing looks similar to the "Sign In" button height nearby.
-- **Inference:** If button is ~48px, this font is ~48px (H1).
+- **Inference:** If button is ~48px, this font is ~48px (Large Heading).
 - **Weight:** Thicker than body text markers → **Bold**.
 - **Result:** `font: bold 48px / 1.2`
 
@@ -71,7 +91,7 @@
 
 ## Common Patterns
 
-### H1 Heading
+### Large Heading (Page Title)
 ```
 ═══════════════════  ← Thickest lines
       ↕
@@ -80,7 +100,7 @@
 - **Clue:** Spacing matches Address Bar height (~40px)
 - **Est:** ~40-48px, Bold
 
-### H2 Heading
+### Medium Heading (Section Title)
 ```
 ═══════════════════  ← Medium-Thick lines
       ↕
@@ -89,7 +109,7 @@
 - **Clue:** Spacing is slightly less than button height
 - **Est:** ~32px, Semibold
 
-### Body Text
+### Body Text (Paragraph)
 ```
 ─────────────────────  ← Thinnest lines
     ↕
@@ -136,8 +156,8 @@ See horizontal lines?
     │   └─ Thinner than avg? → Regular
     │
     ├─ Compare DISTANCE (Context)
-    │   └─ Matches Button Height? → H1 (~40-48px)
-    │   └─ Matches Icon Size? → Body (~16-24px)
+    │   └─ Matches Button Height? → Large Heading (~40-48px)
+    │   └─ Matches Icon Size? → Body Text (~16-24px)
     │   └─ Huge Gap? → Image/Container
     │
     └─ Check Context Anchors
