@@ -11,6 +11,7 @@ This document defines the **WDS Specification Pattern** used in Phase 4 (UX Desi
 **Dog Week Start Page** is used as the example implementation to demonstrate the pattern in action.
 
 **Related Documentation:**
+
 - **`SKETCH-TEXT-ANALYSIS-GUIDE.md`** - How sketch analysis values are derived
 - **`HTML-VS-VISUAL-STYLES.md`** - HTML tags vs visual text styles
 - **`TRANSLATION-ORGANIZATION-GUIDE.md`** - Purpose-based text organization
@@ -20,15 +21,20 @@ This document defines the **WDS Specification Pattern** used in Phase 4 (UX Desi
 ## Key Principles
 
 ### 1. Purpose-Based Naming
+
 Text objects are named by **function, not content**:
+
 - ✅ `hero-headline` (describes purpose)
 - ❌ `welcome-message` (describes content)
 
 ### 2. Grouped Translations
+
 All product languages grouped together per object for coherent review.
 
 ### 3. Estimated Values from Sketch Analysis
+
 When text properties are estimated from sketch markers:
+
 - **Spell out the values explicitly** (e.g., `42px (est. from 24px spacing)`)
 - **Mark with analysis note** to show reasoning
 - **Designer confirms or adjusts** during specification dialog
@@ -46,6 +52,7 @@ This ensures transparency about which values came from AI interpretation vs. des
 
 ```markdown
 ### Hero Object
+
 **Purpose**: Primary value proposition and main conversion action
 
 #### Primary Headline
@@ -53,10 +60,12 @@ This ensures transparency about which values came from AI interpretation vs. des
 **OBJECT ID**: `start-hero-headline`
 
 **HTML Structure:**
+
 - **Tag**: h1
 - **Semantic Purpose**: Main page heading for SEO and accessibility
 
 **Visual Style:**
+
 - **Style Name**: Hero headline
 - **Font weight**: Bold (from 3px thick line markers in sketch)
 - **Font size**: 56px (est. from 32px vertical spacing between line pairs)
@@ -70,6 +79,7 @@ This ensures transparency about which values came from AI interpretation vs. des
 **Behavior**: Updates with language toggle
 
 **Content**:
+
 - EN: "Every walk. on time. Every time."
 - SE: "Varje promenad. i tid. Varje gång."
 
@@ -80,10 +90,12 @@ This ensures transparency about which values came from AI interpretation vs. des
 **OBJECT ID**: `start-hero-supporting`
 
 **HTML Structure:**
+
 - **Tag**: p
 - **Semantic Purpose**: Paragraph text providing additional context
 
 **Visual Style:**
+
 - **Style Name**: Body text large
 - **Font weight**: Regular (from 1px thin line markers in sketch)
 - **Font size**: 18px (est. from 14px vertical spacing between line pairs)
@@ -96,13 +108,16 @@ This ensures transparency about which values came from AI interpretation vs. des
 **Behavior**: Updates with language toggle
 
 **Content**:
+
 - EN: "Organize your family around dog care. Never miss a walk again."
 - SE: "Organisera din familj kring hundvård. Missa aldrig en promenad igen."
 
 > **Sketch Analysis:** Line thickness (1px) → Regular weight. Line spacing (14px) → ~18px font size estimate. Designer should confirm these values.
 
 #### Primary CTA Button
+
 **OBJECT ID**: `start-hero-cta`
+
 - **Component**: [Button Primary Large](/docs/D-Design-System/.../Button-Primary.md)
 - **Position**: Center, below supporting text, 24px margin-top
 - **Behavior**: Navigate to /auth/signup
@@ -113,11 +128,13 @@ This ensures transparency about which values came from AI interpretation vs. des
 ```
 
 **Reading in English:**
+
 > **Every walk. on time. Every time.**
 > Organize your family around dog care. Never miss a walk again.
 > [start planning - free forever]
 
 **Reading in Swedish:**
+
 > **Varje promenad. i tid. Varje gång.**
 > Organisera din familj kring hundvård. Missa aldrig en promenad igen.
 > [börja planera - gratis för alltid]
@@ -127,6 +144,7 @@ This ensures transparency about which values came from AI interpretation vs. des
 ## The Complete Process
 
 ### Step 1: Sketch Analysis (4B)
+
 ```
 Agent sees sketch with horizontal lines:
 
@@ -142,11 +160,12 @@ Agent sees sketch with horizontal lines:
 
 Agent identifies:
 1. TEXT GROUP (2 thick lines) - Hero headline
-2. TEXT GROUP (2 thin lines) - Supporting text  
+2. TEXT GROUP (2 thin lines) - Supporting text
 3. BUTTON - CTA
 ```
 
 ### Step 2: Object Detection (4C-03 + object-router)
+
 ```
 For Object 1:
   → Detects horizontal lines
@@ -162,6 +181,7 @@ heading-text.md:
 ```
 
 ### Step 3: Content with Grouped Translations
+
 ```
 Agent asks:
 
@@ -181,15 +201,18 @@ Do these work? [1] Use these [2] Adjust [3] Manual"
 User provides:
 1  ← Accepts suggestions!
 
-Agent validates: 
+Agent validates:
 ✅ EN: 37 chars (fits 60 capacity)
 ✅ SE: 36 chars (fits 60 capacity)
 ```
 
 ### Step 4: Generate Specification
+
 ```markdown
 #### Primary Headline
+
 **OBJECT ID**: `start-hero-headline`
+
 - **Component**: H1 heading
 - **Position**: Center of hero
 - **Style**: Bold, 42px, line-height 1.2
@@ -205,11 +228,13 @@ Agent validates:
 ### 1. Purpose-Based Object IDs
 
 **Stable Naming:**
+
 - Content changes don't affect Object IDs
 - IDs remain semantic and meaningful
 - Easy to find by function
 
 **Examples:**
+
 ```markdown
 `start-hero-headline` ← Purpose clear
 `signin-form-email-label` ← Function clear
@@ -219,6 +244,7 @@ Agent validates:
 ### 2. Separated Concerns
 
 **Structure/Style** (rarely changes):
+
 ```markdown
 - **Component**: H1 heading
 - **Position**: Center of hero
@@ -226,6 +252,7 @@ Agent validates:
 ```
 
 **Content** (often changes):
+
 ```markdown
 - **Content**:
   - EN: "..."
@@ -235,24 +262,29 @@ Agent validates:
 ### 3. Grouped Translations
 
 **Benefits:**
+
 - Each language reads as complete message
 - Translator sees full context
 - Natural language flow
 - Easy to verify coherence
 
 **Format:**
+
 ```markdown
 ### Text Group
 
 #### Element 1
+
 - EN: "..."
 - SE: "..."
 
 #### Element 2
+
 - EN: "..."
 - SE: "..."
 
 #### Element 3
+
 - EN: "..."
 - SE: "..."
 ```
@@ -260,6 +292,7 @@ Agent validates:
 ### 4. Character Capacity Validation
 
 **From Sketch Analysis:**
+
 ```
 Agent: "Sketch shows 2 lines, ~50-60 chars capacity"
 
@@ -269,6 +302,7 @@ Agent: "✅ Content fits within sketch capacity!"
 ```
 
 **If too long:**
+
 ```
 Agent: "⚠️ Your content (85 chars) exceeds capacity (60 chars).
 Consider shortening or adjusting font size."
@@ -314,24 +348,26 @@ Consider shortening or adjusting font size."
 
 ```markdown
 #### {{Purpose_Title}}
+
 **OBJECT ID**: `{{page-section-purpose}}`
+
 - **Component**: {{type}} ({{class_or_ref}})
 - **Position**: {{position_description}}
-{{#if has_behavior}}
+  {{#if has_behavior}}
 - **Behavior**: {{behavior_description}}
-{{/if}}
-{{#if has_style_details}}
+  {{/if}}
+  {{#if has_style_details}}
 - **Style**: {{style_specifications}}
-{{/if}}
-{{#if links_to_input}}
+  {{/if}}
+  {{#if links_to_input}}
 - **For**: {{input_object_id}}
-{{/if}}
+  {{/if}}
 - **Content**:
   - EN: "{{english_text}}"
   - SE: "{{swedish_text}}"
-  {{#each additional_language}}
+    {{#each additional_language}}
   - {{code}}: "{{text}}"
-  {{/each}}
+    {{/each}}
 ```
 
 ---
@@ -341,16 +377,21 @@ Consider shortening or adjusting font size."
 These follow the exact pattern we're implementing:
 
 **From 1.1-Start-Page.md:**
+
 ```markdown
 #### Primary Headline
+
 **OBJECT ID**: `start-hero-headline`
+
 - **Component**: H1 heading (`.text-heading-1`)
 - **Content**:
   - EN: "Every walk. on time. Every time."
   - SE: "Varje promenad. i tid. Varje gång."
 
 #### Primary CTA Button
+
 **OBJECT ID**: `start-hero-cta`
+
 - **Component**: [Button Primary Large](/docs/D-Design-System/.../Button-Primary.md)
 - **Content**:
   - EN: "start planning - free forever"
@@ -358,11 +399,14 @@ These follow the exact pattern we're implementing:
 ```
 
 **From 1.2-Sign-In.md (Header example):**
+
 ```markdown
-#### Sign In Button  
+#### Sign In Button
+
 **OBJECT ID**: `start-header-signin`
+
 - **Component**: [Button Secondary](/docs/D-Design-System/.../Button-Secondary.md)
-- **Content**: 
+- **Content**:
   - EN: "Sign in"
   - SE: "Logga in"
 - **Behavior**: Navigate to sign-in page
@@ -390,4 +434,3 @@ For each text element:
 ---
 
 **This is the WDS standard for text specifications, proven by Dog Week!** 🎨🌍✨
-

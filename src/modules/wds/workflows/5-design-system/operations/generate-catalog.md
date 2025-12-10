@@ -2,7 +2,8 @@
 
 **Purpose:** Create/update the interactive HTML catalog that showcases all design system components with live examples.
 
-**When to run:** 
+**When to run:**
+
 - After initializing design system
 - After creating new component
 - After adding variant
@@ -14,6 +15,7 @@
 ## Overview
 
 The interactive catalog is a **living documentation** of the design system:
+
 - Shows all components with live examples
 - Displays all variants and states
 - Includes design tokens
@@ -26,12 +28,14 @@ The interactive catalog is a **living documentation** of the design system:
 ## Input
 
 **Design System Files:**
+
 - `D-Design-System/components/*.md` - All component specifications
 - `D-Design-System/design-tokens.md` - Design token definitions
 - `D-Design-System/figma-mappings.md` - Figma references (if Mode B)
 - `D-Design-System/component-library-config.md` - Library config (if Mode C)
 
 **Project Config:**
+
 - Project name
 - Design system mode
 - Version number
@@ -42,9 +46,11 @@ The interactive catalog is a **living documentation** of the design system:
 ## Output
 
 **Generated File:**
+
 - `D-Design-System/catalog.html` - Interactive HTML catalog
 
 **Features:**
+
 - Fixed sidebar navigation
 - Live component previews
 - Interactive state toggles
@@ -65,6 +71,7 @@ Load catalog template:
 **File:** `workflows/5-design-system/templates/catalog.template.html`
 
 **Template variables:**
+
 ```
 {{PROJECT_NAME}}
 {{PROJECT_ICON}}
@@ -96,16 +103,18 @@ Extract project metadata:
 </action>
 
 **From project config:**
+
 ```yaml
-project_name: "Dog Week"
-project_icon: "🐕"
-project_description: "Family dog care coordination platform"
-design_system_mode: "custom" # or "library" or "none"
-created_date: "2024-09-15"
-version: "1.0.0"
+project_name: 'Dog Week'
+project_icon: '🐕'
+project_description: 'Family dog care coordination platform'
+design_system_mode: 'custom' # or "library" or "none"
+created_date: '2024-09-15'
+version: '1.0.0'
 ```
 
 **Calculate:**
+
 ```
 component_count: Count files in D-Design-System/components/
 last_updated: Current date/time
@@ -120,6 +129,7 @@ Build component navigation from component files:
 </action>
 
 **Scan components:**
+
 ```
 D-Design-System/components/
 ├── button.md [btn-001]
@@ -129,6 +139,7 @@ D-Design-System/components/
 ```
 
 **Group by category:**
+
 ```
 Interactive:
 - Button [btn-001]
@@ -144,21 +155,22 @@ Display:
 ```
 
 **Generate HTML:**
+
 ```html
 <div class="nav-section">
-    <h4 class="nav-section-title">Interactive</h4>
-    <ul class="nav-list">
-        <li><a href="#button" class="nav-link">Button</a></li>
-        <li><a href="#link" class="nav-link">Link</a></li>
-    </ul>
+  <h4 class="nav-section-title">Interactive</h4>
+  <ul class="nav-list">
+    <li><a href="#button" class="nav-link">Button</a></li>
+    <li><a href="#link" class="nav-link">Link</a></li>
+  </ul>
 </div>
 
 <div class="nav-section">
-    <h4 class="nav-section-title">Form</h4>
-    <ul class="nav-list">
-        <li><a href="#input" class="nav-link">Input</a></li>
-        <li><a href="#select" class="nav-link">Select</a></li>
-    </ul>
+  <h4 class="nav-section-title">Form</h4>
+  <ul class="nav-list">
+    <li><a href="#input" class="nav-link">Input</a></li>
+    <li><a href="#select" class="nav-link">Select</a></li>
+  </ul>
 </div>
 ```
 
@@ -175,6 +187,7 @@ Read and format design tokens:
 **Load:** `D-Design-System/design-tokens.md`
 
 **Parse tokens:**
+
 ```yaml
 Colors:
   primary-500: #3b82f6
@@ -193,42 +206,40 @@ Spacing:
 ```
 
 **Generate color swatches:**
+
 ```html
 <div class="component-card">
-    <h3 class="text-lg font-semibold mb-4">Primary Colors</h3>
-    <div class="variant-grid">
-        <div>
-            <div class="token-swatch" style="background: #3b82f6;"></div>
-            <p class="text-sm font-mono mt-2">primary-500</p>
-            <p class="text-xs text-gray-500">#3b82f6</p>
-        </div>
-        <div>
-            <div class="token-swatch" style="background: #2563eb;"></div>
-            <p class="text-sm font-mono mt-2">primary-600</p>
-            <p class="text-xs text-gray-500">#2563eb</p>
-        </div>
+  <h3 class="text-lg font-semibold mb-4">Primary Colors</h3>
+  <div class="variant-grid">
+    <div>
+      <div class="token-swatch" style="background: #3b82f6;"></div>
+      <p class="text-sm font-mono mt-2">primary-500</p>
+      <p class="text-xs text-gray-500">#3b82f6</p>
     </div>
+    <div>
+      <div class="token-swatch" style="background: #2563eb;"></div>
+      <p class="text-sm font-mono mt-2">primary-600</p>
+      <p class="text-xs text-gray-500">#2563eb</p>
+    </div>
+  </div>
 </div>
 ```
 
 **Generate typography examples:**
+
 ```html
 <div class="component-card">
-    <h3 class="text-lg font-semibold mb-4">Typography Scale</h3>
-    <div class="space-y-4">
-        <div>
-            <p class="text-sm text-gray-500 mb-1">text-display (3.75rem)</p>
-            <p style="font-size: 3.75rem; font-weight: 800; line-height: 1.1;">
-                Display Text
-            </p>
-        </div>
-        <div>
-            <p class="text-sm text-gray-500 mb-1">text-heading-1 (3rem)</p>
-            <p style="font-size: 3rem; font-weight: 700; line-height: 1.2;">
-                Heading 1
-            </p>
-        </div>
+  <h3 class="text-lg font-semibold mb-4">Typography Scale</h3>
+  <div class="space-y-4">
+    <div>
+      <p class="text-sm text-gray-500 mb-1">text-display (3.75rem)</p>
+      <p style="font-size: 3.75rem; font-weight: 800; line-height: 1.1;">Display Text</p>
     </div>
+    <div>
+      <p class="text-sm text-gray-500 mb-1">text-heading-1 (3rem)</p>
+      <p style="font-size: 3rem; font-weight: 700; line-height: 1.2;">Heading 1</p>
+    </div>
+  </div>
 </div>
 ```
 
@@ -247,6 +258,7 @@ For each component, generate interactive showcase:
 ### Parse Component
 
 **Read component file:**
+
 ```markdown
 # Button Component [btn-001]
 
@@ -254,12 +266,14 @@ For each component, generate interactive showcase:
 **Category:** Action
 
 ## Variants
+
 - primary
 - secondary
 - ghost
 - outline
 
 ## States
+
 - default
 - hover
 - active
@@ -267,6 +281,7 @@ For each component, generate interactive showcase:
 - loading
 
 ## Sizes
+
 - small
 - medium
 - large
@@ -275,138 +290,117 @@ For each component, generate interactive showcase:
 ### Generate Component Section
 
 **HTML structure:**
+
 ```html
 <section id="button" class="mb-16" style="scroll-margin-top: 2rem;">
-    <h2 class="text-3xl font-bold text-gray-900 mb-6">
-        Button 
-        <span class="version-badge">[btn-001]</span>
-        <span class="usage-badge">Used in 12 pages</span>
-    </h2>
-    
-    <!-- Component Description -->
-    <div class="component-card">
-        <p class="text-gray-700 mb-4">
-            {{COMPONENT_DESCRIPTION}}
-        </p>
-        <div class="flex gap-2">
-            <span class="text-sm text-gray-600">
-                <strong>Type:</strong> Interactive
-            </span>
-            <span class="text-sm text-gray-600">
-                <strong>Category:</strong> Action
-            </span>
-        </div>
+  <h2 class="text-3xl font-bold text-gray-900 mb-6">
+    Button
+    <span class="version-badge">[btn-001]</span>
+    <span class="usage-badge">Used in 12 pages</span>
+  </h2>
+
+  <!-- Component Description -->
+  <div class="component-card">
+    <p class="text-gray-700 mb-4">{{COMPONENT_DESCRIPTION}}</p>
+    <div class="flex gap-2">
+      <span class="text-sm text-gray-600"> <strong>Type:</strong> Interactive </span>
+      <span class="text-sm text-gray-600"> <strong>Category:</strong> Action </span>
     </div>
-    
-    <!-- Variants -->
-    <div class="component-card">
-        <h3 class="text-xl font-semibold mb-4">Variants</h3>
-        <div class="component-preview">
-            <div class="variant-grid">
-                {{VARIANT_EXAMPLES}}
-            </div>
-        </div>
+  </div>
+
+  <!-- Variants -->
+  <div class="component-card">
+    <h3 class="text-xl font-semibold mb-4">Variants</h3>
+    <div class="component-preview">
+      <div class="variant-grid">{{VARIANT_EXAMPLES}}</div>
     </div>
-    
-    <!-- States -->
-    <div class="component-card">
-        <h3 class="text-xl font-semibold mb-4">States</h3>
-        <div class="component-preview">
-            <div class="state-grid">
-                {{STATE_EXAMPLES}}
-            </div>
-        </div>
-        
-        <!-- Interactive State Toggle -->
-        <div class="mt-4">
-            <p class="text-sm text-gray-600 mb-2">Try it:</p>
-            <div class="flex gap-2 mb-4">
-                <button onclick="toggleState(this, 'demo-button', 'default')" 
-                        class="px-3 py-1 rounded text-sm bg-blue-500 text-white">
-                    Default
-                </button>
-                <button onclick="toggleState(this, 'demo-button', 'hover')" 
-                        class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700">
-                    Hover
-                </button>
-                <button onclick="toggleState(this, 'demo-button', 'active')" 
-                        class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700">
-                    Active
-                </button>
-                <button onclick="toggleState(this, 'demo-button', 'disabled')" 
-                        class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700">
-                    Disabled
-                </button>
-            </div>
-            <div class="component-preview">
-                <button id="demo-button" class="state-default">
-                    Interactive Button
-                </button>
-            </div>
-        </div>
+  </div>
+
+  <!-- States -->
+  <div class="component-card">
+    <h3 class="text-xl font-semibold mb-4">States</h3>
+    <div class="component-preview">
+      <div class="state-grid">{{STATE_EXAMPLES}}</div>
     </div>
-    
-    <!-- Code Example -->
-    <div class="component-card">
-        <h3 class="text-xl font-semibold mb-4">Code Example</h3>
-        <div class="code-block">
-            <pre>{{CODE_EXAMPLE}}</pre>
-        </div>
+
+    <!-- Interactive State Toggle -->
+    <div class="mt-4">
+      <p class="text-sm text-gray-600 mb-2">Try it:</p>
+      <div class="flex gap-2 mb-4">
+        <button onclick="toggleState(this, 'demo-button', 'default')" class="px-3 py-1 rounded text-sm bg-blue-500 text-white">
+          Default
+        </button>
+        <button onclick="toggleState(this, 'demo-button', 'hover')" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700">
+          Hover
+        </button>
+        <button onclick="toggleState(this, 'demo-button', 'active')" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700">
+          Active
+        </button>
+        <button onclick="toggleState(this, 'demo-button', 'disabled')" class="px-3 py-1 rounded text-sm bg-gray-200 text-gray-700">
+          Disabled
+        </button>
+      </div>
+      <div class="component-preview">
+        <button id="demo-button" class="state-default">Interactive Button</button>
+      </div>
     </div>
-    
-    <!-- Usage Guidelines -->
-    <div class="component-card">
-        <h3 class="text-xl font-semibold mb-4">Usage Guidelines</h3>
-        {{USAGE_GUIDELINES}}
+  </div>
+
+  <!-- Code Example -->
+  <div class="component-card">
+    <h3 class="text-xl font-semibold mb-4">Code Example</h3>
+    <div class="code-block">
+      <pre>{{CODE_EXAMPLE}}</pre>
     </div>
-    
-    <!-- Figma Link (if Mode B) -->
-    {{FIGMA_COMPONENT_LINK}}
-    
+  </div>
+
+  <!-- Usage Guidelines -->
+  <div class="component-card">
+    <h3 class="text-xl font-semibold mb-4">Usage Guidelines</h3>
+    {{USAGE_GUIDELINES}}
+  </div>
+
+  <!-- Figma Link (if Mode B) -->
+  {{FIGMA_COMPONENT_LINK}}
 </section>
 ```
 
 ### Generate Variant Examples
 
 **For each variant:**
+
 ```html
 <div>
-    <button class="btn-primary btn-medium">
-        Primary Button
-    </button>
-    <p class="text-xs text-gray-500 mt-2">primary</p>
+  <button class="btn-primary btn-medium">Primary Button</button>
+  <p class="text-xs text-gray-500 mt-2">primary</p>
 </div>
 
 <div>
-    <button class="btn-secondary btn-medium">
-        Secondary Button
-    </button>
-    <p class="text-xs text-gray-500 mt-2">secondary</p>
+  <button class="btn-secondary btn-medium">Secondary Button</button>
+  <p class="text-xs text-gray-500 mt-2">secondary</p>
 </div>
 ```
 
 ### Generate State Examples
 
 **For each state:**
+
 ```html
 <div>
-    <button class="btn-primary btn-medium state-default">
-        Default
-    </button>
-    <p class="text-xs text-gray-500 mt-2">default</p>
+  <button class="btn-primary btn-medium state-default">Default</button>
+  <p class="text-xs text-gray-500 mt-2">default</p>
 </div>
 
 <div>
-    <button class="btn-primary btn-medium state-hover">
-        Hover
-    </button>
-    <p class="text-xs text-gray-500 mt-2">hover</p>
+  <button class="btn-primary btn-medium state-hover">Hover</button>
+  <p class="text-xs text-gray-500 mt-2">hover</p>
 </div>
 ```
 
 ### Generate Code Example
 
 **Extract from component spec:**
+
 ```tsx
 import { Button } from '@/components/button';
 
@@ -430,6 +424,7 @@ Build changelog from component version histories:
 </action>
 
 **Scan all components for version history:**
+
 ```markdown
 ## Version History
 
@@ -437,28 +432,30 @@ Build changelog from component version histories:
 **Last Updated:** 2024-12-09
 
 **Changes:**
+
 - 2024-09-15: Created component
 - 2024-10-01: Added loading state
 - 2024-12-09: Updated hover animation
 ```
 
 **Generate changelog HTML:**
+
 ```html
 <div class="space-y-4">
-    <div class="border-l-4 border-blue-500 pl-4">
-        <p class="font-semibold">December 9, 2024</p>
-        <ul class="text-sm text-gray-600 mt-1">
-            <li>• Button: Updated hover animation</li>
-            <li>• Input: Added success state</li>
-        </ul>
-    </div>
-    
-    <div class="border-l-4 border-gray-300 pl-4">
-        <p class="font-semibold">October 1, 2024</p>
-        <ul class="text-sm text-gray-600 mt-1">
-            <li>• Button: Added loading state</li>
-        </ul>
-    </div>
+  <div class="border-l-4 border-blue-500 pl-4">
+    <p class="font-semibold">December 9, 2024</p>
+    <ul class="text-sm text-gray-600 mt-1">
+      <li>• Button: Updated hover animation</li>
+      <li>• Input: Added success state</li>
+    </ul>
+  </div>
+
+  <div class="border-l-4 border-gray-300 pl-4">
+    <p class="font-semibold">October 1, 2024</p>
+    <ul class="text-sm text-gray-600 mt-1">
+      <li>• Button: Added loading state</li>
+    </ul>
+  </div>
 </div>
 ```
 
@@ -475,25 +472,25 @@ If Mode B, add Figma component links:
 **Load:** `D-Design-System/figma-mappings.md`
 
 **Parse mappings:**
+
 ```yaml
 Button [btn-001] → figma://file/abc123/node/456:789
 Input [inp-001] → figma://file/abc123/node/456:790
 ```
 
 **Generate Figma section:**
+
 ```html
 <h3 class="text-lg font-semibold mb-4">Figma Components</h3>
 <div class="space-y-2">
-    <a href="figma://file/abc123/node/456:789" 
-       class="flex items-center gap-2 text-blue-600 hover:text-blue-800">
-        <svg><!-- Figma icon --></svg>
-        Button [btn-001]
-    </a>
-    <a href="figma://file/abc123/node/456:790" 
-       class="flex items-center gap-2 text-blue-600 hover:text-blue-800">
-        <svg><!-- Figma icon --></svg>
-        Input [inp-001]
-    </a>
+  <a href="figma://file/abc123/node/456:789" class="flex items-center gap-2 text-blue-600 hover:text-blue-800">
+    <svg><!-- Figma icon --></svg>
+    Button [btn-001]
+  </a>
+  <a href="figma://file/abc123/node/456:790" class="flex items-center gap-2 text-blue-600 hover:text-blue-800">
+    <svg><!-- Figma icon --></svg>
+    Input [inp-001]
+  </a>
 </div>
 ```
 
@@ -508,6 +505,7 @@ Create mode-specific installation instructions:
 </action>
 
 **Mode B (Custom/Figma):**
+
 ```bash
 # Install dependencies
 npm install
@@ -520,6 +518,7 @@ import { Button } from '@/components/button';
 ```
 
 **Mode C (Component Library):**
+
 ```bash
 # Install component library
 npm install shadcn-ui
@@ -546,6 +545,7 @@ Save generated HTML:
 **Content:** Fully populated template with all sections
 
 **Validation:**
+
 - All template variables replaced
 - Valid HTML structure
 - All component sections included
@@ -561,12 +561,14 @@ Version control the catalog:
 </action>
 
 **Git operations:**
+
 ```bash
 git add D-Design-System/catalog.html
 git commit -m "Update design system catalog - [component changes]"
 ```
 
 **Commit message format:**
+
 ```
 Update design system catalog - Added Button loading state
 
@@ -580,6 +582,7 @@ Update design system catalog - Added Button loading state
 ## Output Format
 
 **Success message:**
+
 ```
 ✅ Design system catalog generated
 
@@ -602,6 +605,7 @@ Changes committed to git.
 **Error:** Catalog template not found
 
 **Action:**
+
 ```
 ⚠️ Catalog template missing
 
@@ -615,6 +619,7 @@ Please ensure WDS is properly installed.
 **Error:** Component file has invalid format
 
 **Action:**
+
 ```
 ⚠️ Invalid component specification
 
@@ -630,6 +635,7 @@ Please fix component specification.
 **Error:** No components in design system
 
 **Action:**
+
 ```
 ⚠️ No components found
 
@@ -644,12 +650,14 @@ Add components to populate catalog.
 ## Automation
 
 **Catalog is automatically regenerated:**
+
 - After creating new component
 - After adding variant
 - After updating component
 - After updating design tokens
 
 **Manual regeneration:**
+
 ```
 Agent: Regenerate design system catalog
 ```
@@ -659,6 +667,7 @@ Agent: Regenerate design system catalog
 ## Best Practices
 
 ### DO ✅
+
 - Regenerate after every component change
 - Commit catalog with component changes
 - Include all variants and states
@@ -666,6 +675,7 @@ Agent: Regenerate design system catalog
 - Keep changelog updated
 
 ### DON'T ❌
+
 - Don't manually edit catalog.html
 - Don't skip catalog regeneration
 - Don't forget to commit changes

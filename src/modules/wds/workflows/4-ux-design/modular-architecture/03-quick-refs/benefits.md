@@ -7,11 +7,13 @@
 ## 1. Prevents Overwhelming Specs
 
 **Before:**
+
 - 800-line monolithic file
 - Everything mixed together
 - Hard to find anything
 
 **After:**
+
 - 3 focused files (100-200 lines each)
 - Clear separation
 - Easy to navigate
@@ -21,16 +23,19 @@
 ## 2. Clean Handoffs
 
 **Visual Designer** receives:
+
 - `Components/` folder only
 - Clear visual specifications
 - Creates Figma components
 
 **Developer** receives:
+
 - `Features/` folder only
 - Clear business logic
 - Implements functionality
 
 **You** maintain:
+
 - `Pages/` folder
 - Design system integrity
 - Page-specific content
@@ -43,7 +48,8 @@
 
 **Cause:** Monolithic spec, developer overwhelmed
 
-**Solution:** 
+**Solution:**
+
 - Component file lists ALL visual elements
 - Feature file lists ALL interactions
 - Storyboard shows ALL states
@@ -56,11 +62,13 @@
 **Change request:** "Add countdown timers"
 
 **Before (Code):**
+
 - Regenerate code
 - Previous features break
 - 2+ hours fixing
 
 **After (Spec):**
+
 - Update Feature file (15 minutes)
 - Regenerate with full context
 - Everything works
@@ -96,6 +104,7 @@ Everyone works in parallel, no conflicts.
 ## 7. Design System Integrity
 
 **Page files** reference components:
+
 ```markdown
 **Component:** button-primary.component.md
 ```
@@ -113,6 +122,7 @@ Easy to update design system globally.
 **Over product lifecycle:** 100+ hours
 
 **Quality improvement:**
+
 - Zero missing features
 - Consistent design
 - Maintainable codebase

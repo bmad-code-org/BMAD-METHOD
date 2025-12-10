@@ -11,24 +11,28 @@
 ### Interactive Components (Buttons, Links)
 
 **Required:**
+
 - `default` - Normal, ready for interaction
 - `hover` - Mouse over component
 - `active` - Being clicked/pressed
 - `disabled` - Cannot interact
 
 **Optional:**
+
 - `loading` - Processing action
 - `focus` - Keyboard focus
 
 ### Form Components (Inputs, Selects)
 
 **Required:**
+
 - `default` - Empty, ready for input
 - `focus` - Active input
 - `filled` - Has content
 - `disabled` - Cannot edit
 
 **Optional:**
+
 - `error` - Validation failed
 - `success` - Validation passed
 - `loading` - Fetching data
@@ -36,6 +40,7 @@
 ### Feedback Components (Alerts, Toasts)
 
 **Required:**
+
 - `default` - Neutral information
 - `success` - Positive feedback
 - `error` - Error feedback
@@ -46,6 +51,7 @@
 ## State Naming
 
 **Use standard names:**
+
 - ✅ `hover` not `mouseover`
 - ✅ `disabled` not `inactive`
 - ✅ `loading` not `processing`
@@ -59,8 +65,7 @@
 **Define how states change:**
 
 ```yaml
-Button States:
-  default → hover (mouse enters)
+Button States: default → hover (mouse enters)
   hover → active (mouse down)
   active → hover (mouse up)
   hover → default (mouse leaves)

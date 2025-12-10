@@ -1,12 +1,15 @@
 # Step 2: Capture Vision
 
 ## Purpose
+
 Help user articulate their vision for the product.
 
 ## Context for Agent
+
 You are exploring the big picture with the user. Your goal is to help them crystallize their aspirational vision into a clear statement that will guide all decisions.
 
 ## Key Elements
+
 This step captures the high-level, aspirational direction that will guide all decisions.
 
 ## Instructions
@@ -27,11 +30,14 @@ This step captures the high-level, aspirational direction that will guide all de
    - Use collaborative language: "What I'm hearing is..." or "It sounds like..."
 
 ## Next Step
+
 After capturing vision, proceed to step-03-positioning.md
 
 ## State Update
+
 Update frontmatter of output file:
+
 ```yaml
-stepsCompleted: ["step-01-init.md", "step-02-vision.md"]
-vision: "[captured vision statement]"
+stepsCompleted: ['step-01-init.md', 'step-02-vision.md']
+vision: '[captured vision statement]'
 ```

@@ -22,6 +22,7 @@
 ```
 
 **When to use:**
+
 - Headlines (H1, H2, H3)
 - Button labels
 - Navigation items
@@ -51,6 +52,7 @@
 ```
 
 **When to use:**
+
 - Body paragraphs
 - Long descriptions
 - Feature lists (when wording TBD)
@@ -85,6 +87,7 @@
 ```
 
 **Result:**
+
 - Headlines provide content guidance
 - Body text shows sizing and capacity
 - Buttons show clear actions
@@ -129,6 +132,7 @@
 ### Agent Analysis
 
 **Agent reads:**
+
 1. **Logo text:** "Dog Week" → suggests as logo content
 2. **H1 actual text:** "Every walk. on time. Every time." → suggests as starting headline
 3. **Marker analysis:** 2 thin lines → body text, spacing matches icon size (~16-20px), ~120-140 chars
@@ -137,6 +141,7 @@
 6. **Marker analysis:** 3 thin lines → feature description, spacing matches icon size (~16-20px), ~180-210 chars
 
 **Agent output:**
+
 ```
 I found text in your sketch: "Every walk. on time. Every time."
 
@@ -147,6 +152,7 @@ SE: [Your Swedish translation]
 ```
 
 **User can:**
+
 - ✅ Keep the sketch text
 - ✅ Change it completely
 - ✅ Refine it slightly
@@ -188,6 +194,7 @@ SE: [Your Swedish translation]
 ```
 
 **Analysis:**
+
 - Thickness: Bold (relative to other text)
 - Distance: Matches button height (~40-48px)
 - Lines: 2
@@ -200,18 +207,20 @@ SE: [Your Swedish translation]
 ### When Sketch Has Actual Text
 
 **Agent says:**
+
 ```
 I found text in your sketch: "Every walk. on time."
 
 Content for Primary Headline:
 
 EN: Every walk. on time.
-SE: 
+SE:
 
 (You can keep the sketch text or change it)
 ```
 
 **Benefits:**
+
 - Pre-filled starting point
 - Still editable
 - Saves time
@@ -220,6 +229,7 @@ SE:
 ### When Sketch Has Line Markers
 
 **Agent says:**
+
 ```
 Text placeholder detected:
 - 4 horizontal lines
@@ -235,11 +245,13 @@ EN:
 ```
 
 **User provides:**
+
 ```
 EN: Organize your family around dog care. Assign walks, track feeding schedules, and never miss a walk again.
 ```
 
 **Agent suggests:**
+
 ```
 Great! Here are translation suggestions:
 
@@ -249,6 +261,7 @@ Does this work, or would you like to adjust it?
 ```
 
 **Benefits:**
+
 - Clear capacity guidance
 - Agent suggests translations
 - User reviews and confirms
@@ -261,7 +274,9 @@ Does this work, or would you like to adjust it?
 When AI analyzes sketch text markers, the workflow is:
 
 ### Step 1: AI Analyzes Sketch
+
 Agent detects text markers and estimates properties:
+
 ```
 Line thickness: Thicker than body text → Bold font weight
 Spacing between pairs: Similar to button height → ~40-48px font size estimate
@@ -270,30 +285,37 @@ Character capacity: ~35 characters per line
 ```
 
 ### Step 2: AI Presents Estimates with Reasoning
+
 Agent shows analysis WITH explanation of how estimates were derived:
+
 ```markdown
-- **Style**: 
+- **Style**:
   - Font weight: Bold (from thick line markers, relative to body text)
   - Font size: 42px (est. from spacing matching button height)
   - Line-height: 1.2 (est. calculated as font-size × 1.2)
 ```
 
 **Why show reasoning?**
+
 - Designer understands **how** AI interpreted the sketch
 - Designer can judge if estimation logic makes sense
 - Makes it easy to adjust if sketch measurements were different
 - Builds trust through transparency
 
 ### Step 3: Designer Confirms/Adjusts
+
 Designer reviews estimates and either:
+
 1. **Confirms** - "Yes, 42px based on button-height spacing is correct"
 2. **Adjusts** - "Actually, the spacing is larger, make it 48px instead"
 3. **Overrides** - "Ignore the sketch measurements, I want it to be 56px"
 
 ### Step 4: Finalize Specification
+
 Agent updates spec with confirmed values, removes estimation notes:
+
 ```markdown
-- **Style**: 
+- **Style**:
   - Font weight: Bold
   - Font size: 48px
   - Line-height: 1.15
@@ -301,7 +323,8 @@ Agent updates spec with confirmed values, removes estimation notes:
 
 Clean, production-ready specification with no estimation artifacts.
 
-**Key Principle:** 
+**Key Principle:**
+
 - **All estimated values are spelled out explicitly** (not hidden)
 - **Marked with (est.) label** to indicate AI interpretation
 - **Designer confirms or adjusts** each estimated value
@@ -359,6 +382,7 @@ This ensures **transparency** about which values came from AI sketch analysis vs
 ### During Sketching
 
 **Designer:**
+
 ```
 1. Draw page layout
 2. Add ACTUAL TEXT for headlines/buttons
@@ -370,6 +394,7 @@ This ensures **transparency** about which values came from AI sketch analysis vs
 ### During Specification (Phase 4)
 
 **Agent:**
+
 ```
 1. Analyze sketch
 2. Read any actual text found
@@ -381,6 +406,7 @@ This ensures **transparency** about which values came from AI sketch analysis vs
 ```
 
 **User:**
+
 ```
 1. See sketch text as suggestion
 2. Keep, change, or refine
@@ -413,7 +439,7 @@ SE: Varje promenad. i tid. Varje gång.
 These are my suggestions. Do they work?
 
 1. Use these translations
-2. Adjust translations  
+2. Adjust translations
 3. Manual input
 
 Choice [1/2/3]:
@@ -432,9 +458,11 @@ Or refines:
 
 SE: Varje promenad. Punktligt. Varje gång.  ← Adjusted
 ```
-EN: Every walk. on time. Every time.  ← Keeps it!
+
+EN: Every walk. on time. Every time. ← Keeps it!
 SE: Varje promenad. i tid. Varje gång.
-```
+
+````
 
 ### Specification Result:
 
@@ -447,7 +475,7 @@ SE: Varje promenad. i tid. Varje gång.
 - **Content**:
   - EN: "Every walk. on time. Every time."
   - SE: "Varje promenad. i tid. Varje gång."
-```
+````
 
 **Result:** Sketch text became final content! ✅
 
@@ -455,20 +483,22 @@ SE: Varje promenad. i tid. Varje gång.
 
 ## Summary
 
-| Element Type | Sketch Method | Agent Behavior |
-|--------------|---------------|----------------|
-| **Headlines** | Actual text | Reads & suggests as starting content |
-| **Buttons** | Actual text | Reads & suggests as button label |
-| **Navigation** | Actual text | Reads & suggests as nav items |
-| **Body paragraphs** | Line markers | Analyzes for size/capacity, requests content |
-| **Descriptions** | Line markers | Analyzes for size/capacity, requests content |
+| Element Type        | Sketch Method | Agent Behavior                               |
+| ------------------- | ------------- | -------------------------------------------- |
+| **Headlines**       | Actual text   | Reads & suggests as starting content         |
+| **Buttons**         | Actual text   | Reads & suggests as button label             |
+| **Navigation**      | Actual text   | Reads & suggests as nav items                |
+| **Body paragraphs** | Line markers  | Analyzes for size/capacity, requests content |
+| **Descriptions**    | Line markers  | Analyzes for size/capacity, requests content |
 
 **Golden Rule:**
+
 - **Important/short text** = Draw actual text
 - **Long/placeholder text** = Use line markers
 - **Mix both** for best results
 
 **Remember:**
+
 - Sketch text is a suggestion, not final
 - Agent will ask to confirm or change
 - Refinement happens during specification
@@ -477,4 +507,3 @@ SE: Varje promenad. i tid. Varje gång.
 ---
 
 **Use actual text for headlines, markers for body text!** 📝✨
-

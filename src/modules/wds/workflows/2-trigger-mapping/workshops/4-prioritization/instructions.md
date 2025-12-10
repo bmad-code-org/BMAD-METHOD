@@ -8,6 +8,7 @@
 <output>**Workshop 4: Prioritization** 🎯
 
 Now we make the hard choices. We'll prioritize:
+
 1. Business goals (visions)
 2. Objectives under each goal
 3. Target groups
@@ -22,8 +23,9 @@ For each decision, I'll challenge you to explain **why** - because clear reasoni
 
 You have multiple vision areas:
 {{#each visions}}
+
 - {{this}}
-{{/each}}</output>
+  {{/each}}</output>
 
 <ask>**Which business goal is most critical right now?**
 
@@ -44,7 +46,7 @@ Help me understand your reasoning. What makes this the priority?</ask>
 <output>**Your Business Goal Priority:**
 {{#each prioritized_visions}}
 {{@index + 1}}. **{{this.vision}}**
-   *Why:* {{this.reasoning}}
+_Why:_ {{this.reasoning}}
 {{/each}}</output>
 
 <template-output>prioritized_visions</template-output>
@@ -56,8 +58,9 @@ Help me understand your reasoning. What makes this the priority?</ask>
 
 For "{{top_vision}}", you have these objectives:
 {{#each top_vision_objectives}}
+
 - {{this.statement}}
-{{/each}}</output>
+  {{/each}}</output>
 
 <ask>**Which objective is most important to achieve first?**
 
@@ -74,7 +77,7 @@ What's your reasoning?</ask>
 <output>**Objective Priority for "{{top_vision}}":**
 {{#each prioritized_objectives}}
 {{@index + 1}}. {{this.statement}}
-   *Why:* {{this.reasoning}}
+_Why:_ {{this.reasoning}}
 {{/each}}</output>
 
 <template-output>prioritized_objectives</template-output>
@@ -85,8 +88,9 @@ What's your reasoning?</ask>
 
 Your target groups:
 {{#each personas}}
+
 - {{this.name}}
-{{/each}}
+  {{/each}}
 
 Looking at your top objective: "{{top_objective}}"</output>
 
@@ -105,7 +109,7 @@ What's the logic?</ask>
 <output>**Your Target Group Priority:**
 {{#each prioritized_groups}}
 {{@index + 1}}. **{{this.name}}**
-   *Why:* {{this.reasoning}}
+_Why:_ {{this.reasoning}}
 {{/each}}</output>
 
 <ask>The top group gets most design attention. Does this ranking reflect your strategy?</ask>
@@ -123,13 +127,15 @@ What's the logic?</ask>
 Their drivers:
 ✅ Positive:
 {{#each current_group.positive_drivers}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 ⚠️ Negative:
 {{#each current_group.negative_drivers}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **Rank the top 3-5 drivers** this group cares most about.
 
@@ -158,18 +164,21 @@ Remember: negative drivers often have more weight (loss aversion).</ask>
 
 **Must Address:**
 {{#each must_address_drivers}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **Should Address:**
 {{#each should_address_drivers}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **Could Address (if time permits):**
 {{#each could_address_drivers}}
+
 - {{this}}
-{{/each}}</output>
+  {{/each}}</output>
 
 <ask>Does this focus feel right? This guides all feature decisions.</ask>
 
@@ -180,6 +189,7 @@ Remember: negative drivers often have more weight (loss aversion).</ask>
 <output>**Workshop 4 Complete!** ✅
 
 **Your Strategic Focus:**
+
 - Design primarily for **{{top_group.name}}**
 - Address: {{top_drivers_summary}}
 
@@ -191,4 +201,3 @@ Next, we'll analyze which features best serve these priorities.</output>
 </step>
 
 </workshop>
-

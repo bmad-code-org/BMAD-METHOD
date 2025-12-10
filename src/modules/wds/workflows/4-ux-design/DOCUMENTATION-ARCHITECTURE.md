@@ -71,6 +71,7 @@ Currently sketch text analysis rules are duplicated across multiple files, makin
 ## Refactoring Plan
 
 ### Keep As-Is (Single Source of Truth)
+
 ✅ `SKETCH-TEXT-ANALYSIS-GUIDE.md` - Master guide with all rules
 ✅ `SKETCH-TEXT-QUICK-REFERENCE.md` - Quick reference
 ✅ `SKETCH-TEXT-STRATEGY.md` - Strategy guide
@@ -78,26 +79,31 @@ Currently sketch text analysis rules are duplicated across multiple files, makin
 ### Refactor (Remove Duplication, Add References)
 
 **`TEXT-DETECTION-PRIORITY.md`:**
+
 - Keep: Detection logic (pairs vs single)
 - Remove: Detailed analysis rules (thickness → weight, spacing → size)
 - Add: Reference to master guide
 
 **`heading-text.md`:**
+
 - Keep: Workflow steps
 - Remove: Duplicate explanations of analysis rules
 - Add: Reference to master guide
 - Show: Example output only
 
 **`object-router.md`:**
+
 - Keep: Routing logic
 - Remove: Any duplicate analysis
 - Add: Reference to TEXT-DETECTION-PRIORITY.md
 
 **`WDS-SPECIFICATION-PATTERN.md`:**
+
 - Keep: Examples
 - Add: Note "See SKETCH-TEXT-ANALYSIS-GUIDE.md for how these values were derived"
 
 **`TRANSLATION-ORGANIZATION-GUIDE.md`:**
+
 - Keep: Organization patterns
 - Add: Reference to master guide for analysis
 
@@ -121,14 +127,16 @@ In instruction files, use this pattern:
 <output>Analyzing text markers in sketch...</output>
 
 <action>Apply text marker analysis rules from SKETCH-TEXT-ANALYSIS-GUIDE.md:
+
 - Count pairs → number of lines
 - Measure thickness → font weight
 - Measure spacing → font size estimate
 - Check position → alignment
 - Calculate length → character capacity
-</action>
+  </action>
 
 <output>**Sketch Analysis:**
+
 - 2 line pairs → 2 lines of text
 - Thick lines (3px) → Bold weight
 - Spacing (24px) → ~42px font size estimate
@@ -143,6 +151,7 @@ For detailed analysis rules, see: SKETCH-TEXT-ANALYSIS-GUIDE.md</output>
 ## Status
 
 **To Do:**
+
 - [ ] Refactor TEXT-DETECTION-PRIORITY.md
 - [ ] Refactor heading-text.md
 - [ ] Refactor object-router.md
@@ -150,4 +159,3 @@ For detailed analysis rules, see: SKETCH-TEXT-ANALYSIS-GUIDE.md</output>
 - [ ] Add references in TRANSLATION-ORGANIZATION-GUIDE.md
 
 **Result:** Clean, maintainable documentation architecture! 🎯
-

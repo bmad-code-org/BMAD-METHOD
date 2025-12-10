@@ -9,6 +9,7 @@ Officially hand off the Design Delivery to BMad and confirm they have everything
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 6.4 (Handoff dialog complete)
 - ✅ Handoff log documented
 - ✅ Delivery status updated to "in_development"
@@ -20,27 +21,32 @@ Officially hand off the Design Delivery to BMad and confirm they have everything
 ### Verify BMad Has All Artifacts
 
 **Design Delivery:**
+
 - [ ] File exists: `deliveries/DD-XXX-name.yaml`
 - [ ] Status: "in_development"
 - [ ] Handed off timestamp recorded
 - [ ] Assigned to BMad Architect
 
 **Test Scenario:**
+
 - [ ] File exists: `test-scenarios/TS-XXX-name.yaml`
 - [ ] All tests defined
 - [ ] Sign-off criteria clear
 
 **Scenario Specifications:**
+
 - [ ] All scenarios in `C-Scenarios/` are complete
 - [ ] All specifications are up-to-date
 - [ ] All design references are valid
 
 **Design System:**
+
 - [ ] All components in `D-Design-System/` are defined
 - [ ] Design tokens are documented
 - [ ] Component specifications are complete
 
 **Handoff Log:**
+
 - [ ] File exists: `deliveries/DD-XXX-handoff-log.md`
 - [ ] All key points documented
 - [ ] Epic breakdown recorded
@@ -136,6 +142,7 @@ BMad Architect
 ## In Progress
 
 ### DD-XXX: [Flow Name]
+
 - Status: In Development
 - Assigned: BMad Architect
 - Started: 2024-12-09
@@ -146,6 +153,7 @@ BMad Architect
 ## Next Up
 
 ### DD-XXX+1: [Next Flow Name]
+
 - Status: In Design
 - Phase: 4-5 (UX Design & Design System)
 - Designer: Working on scenarios
@@ -159,17 +167,20 @@ BMad Architect
 **Track progress:**
 
 **Weekly check-ins:**
+
 - Schedule brief sync with BMad Architect
 - Review progress
 - Answer questions
 - Unblock issues
 
 **Communication channel:**
+
 - Slack/Teams channel: #dd-xxx-implementation
 - Quick questions welcome
 - Async updates appreciated
 
 **Milestone notifications:**
+
 - Epic 1 complete → Notify designer
 - Epic 2 complete → Notify designer
 - All epics complete → Ready for validation (Touch Point 3)
@@ -207,12 +218,14 @@ I want this to succeed!"
 ### BMad's Work (Phases 3-4)
 
 **Phase 3: Architecture**
+
 - Create architecture document
 - Define technical approach
 - Identify dependencies
 - Plan implementation
 
 **Phase 4: Implementation**
+
 - Break down into dev stories
 - Implement features
 - Write tests
@@ -227,6 +240,7 @@ I want this to succeed!"
 **While BMad builds this flow, you design the next one!**
 
 **Return to Phase 4-5:**
+
 - Design next complete testable flow
 - Create specifications
 - Define components
@@ -274,16 +288,19 @@ After confirming handoff:
 ### DO ✅
 
 **Be available:**
+
 - Answer questions promptly
 - Unblock issues quickly
 - Provide clarifications
 
 **Be collaborative:**
+
 - "How can I help?"
 - "Let's figure this out together"
 - "I'm here if you need me"
 
 **Be flexible:**
+
 - Adjust design if technical constraints arise
 - Find creative solutions
 - Focus on user value, not ego
@@ -291,14 +308,17 @@ After confirming handoff:
 ### DON'T ❌
 
 **Don't disappear:**
+
 - "I handed it off, not my problem anymore" ❌
 - Stay engaged throughout implementation
 
 **Don't be rigid:**
+
 - "It must be exactly like this" ❌
 - Be open to technical suggestions
 
 **Don't ignore questions:**
+
 - Respond within 24 hours
 - If you don't know, say so and find out
 

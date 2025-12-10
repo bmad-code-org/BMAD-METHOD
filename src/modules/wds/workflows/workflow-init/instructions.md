@@ -16,15 +16,16 @@ Let's figure out which phases you need.</output>
 <ask>Tell me about your project in a few sentences. What are you designing?</ask>
 <action>Store user_description</action>
 <action>Analyze description for project indicators:
+
 - "landing page", "single page", "simple" → landing-page path
 - "product", "platform", "app", "system", "full" → full-product path
 - "strategy", "research", "discovery", "planning" → digital-strategy path
 - "design system", "components", "library" → design-system path
 - "feature", "enhancement", "addition" → feature-enhancement path
 - "quick", "prototype", "poc", "test" → quick-prototype path
-</action>
-<template-output>user_description</template-output>
-</step>
+  </action>
+  <template-output>user_description</template-output>
+  </step>
 
 <step n="2" goal="Confirm project type">
 <output>Based on what you shared, this sounds like a **{{detected_project_type}}** project.</output>
@@ -70,7 +71,7 @@ Best for: Building component libraries
 Phase 4 only
 Best for: Rapid prototyping, proof of concepts</output>
 
-  <ask>Which fits your project?
+<ask>Which fits your project?
 
 1. Full Product
 2. Landing Page
@@ -80,7 +81,7 @@ Best for: Rapid prototyping, proof of concepts</output>
 6. Quick Prototype
 
 Choice [1-6]:</ask>
-  <action>Map choice to project_type</action>
+<action>Map choice to project_type</action>
 </check>
 
 <template-output>project_type</template-output>
@@ -93,23 +94,25 @@ Choice [1-6]:</ask>
   <output>For **{{project_type}}** projects, a **Complete Project Brief** is included.
 
 This covers:
+
 - Vision & positioning
 - Target users (ICP)
 - Success criteria
 - Competitive landscape
 - Strategic constraints</output>
   <action>Set brief_level = "complete"</action>
-</check>
+  </check>
 
 <check if="project_type in [quick-prototype, landing-page]">
   <output>For **{{project_type}}** projects, a **Simplified Project Brief** keeps things fast.
 
 This covers:
+
 - Scope & challenge
 - Opportunity
 - Design goals</output>
   <action>Set brief_level = "simplified"</action>
-</check>
+  </check>
 
 <check if="project_type in [feature-enhancement, design-system-only]">
   <ask>Project Brief depth:
@@ -118,14 +121,13 @@ This covers:
    - Scope & challenge
    - Opportunity
    - Design goals
-   Best for: Quick features, time-pressured work
-   
+     Best for: Quick features, time-pressured work
 2. **Complete** (30-60 min)
    - Vision & positioning
    - Target users (ICP)
    - Success criteria
    - Competitive landscape
-   Best for: When you want strategic clarity
+     Best for: When you want strategic clarity
 
 Choice [1/2]:</ask>
 
@@ -147,6 +149,7 @@ Choice [1/2]:</ask>
 <ask>**Specification Language** - What language should WDS write the design specifications in?
 
 Common choices:
+
 1. **English** (EN) - Default, widely used
 2. **Swedish** (SE)
 3. **Norwegian** (NO)
@@ -162,6 +165,7 @@ Choice [1-5]:</ask>
 List them separated by commas (e.g., "EN, SE" or "EN, SE, NO, DK"):
 
 Common language codes:
+
 - EN = English
 - SE = Swedish
 - NO = Norwegian
@@ -177,6 +181,7 @@ Product languages:</ask>
 <template-output>product_languages</template-output>
 
 <output>✅ **Language Configuration:**
+
 - **Specifications written in:** {{specification_language}}
 - **Product supports:** {{product_languages_list}}
 
@@ -191,7 +196,6 @@ All text specifications will include translations for: {{product_languages_list}
 1. **Letters** (A-Product-Brief, B-Trigger-Map, C-...)
    - Distinctive WDS branding
    - Easy visual grouping
-   
 2. **Numbers** (01-Product-Brief, 02-Trigger-Map, 03-...)
    - Traditional sequential numbering
    - Familiar format
@@ -204,7 +208,6 @@ Choice [1/2]:</ask>
 
 1. **Title-Case** (A-Product-Brief, B-Trigger-Map)
    - Easier to read for non-technical stakeholders
-   
 2. **lowercase** (a-product-brief, b-trigger-map)
    - Developer-friendly convention
 
@@ -233,21 +236,22 @@ Choice [1/2/3]:</ask>
 - You plan to hand off to developers who need component docs
 
 Skip Design System if:
+
 - It's a simple, one-off project
 - You're using an existing design system (Material, Chakra, etc.)
 - You need to move fast without component documentation</output>
-    <ask>Based on this, include Design System? (y/n)</ask>
-    <action>Set include_design_system based on answer</action>
+  <ask>Based on this, include Design System? (y/n)</ask>
+  <action>Set include_design_system based on answer</action>
   </check>
 
-  <check if="choice == 1">
-    <action>Set include_design_system = true</action>
-  </check>
+    <check if="choice == 1">
+      <action>Set include_design_system = true</action>
+    </check>
 
-  <check if="choice == 2">
-    <action>Set include_design_system = false</action>
+    <check if="choice == 2">
+      <action>Set include_design_system = false</action>
+    </check>
   </check>
-</check>
 
 <check if="project_type == design-system-only">
   <action>Set include_design_system = true</action>
@@ -272,8 +276,8 @@ Skip Design System if:
 8. **Undecided** - I'll choose during the project
 
 Choice [1-8]:</ask>
-  <action>Set component_library based on choice</action>
-  <template-output>component_library</template-output>
+<action>Set component_library based on choice</action>
+<template-output>component_library</template-output>
 </check>
 </step>
 
@@ -307,8 +311,9 @@ Choice [1-8]:</ask>
 
 **Phases enabled:**
 {{#each enabled_phases}}
+
 - Phase {{this.number}}: {{this.name}} → `{{this.folder}}/`
-{{/each}}
+  {{/each}}
 
 **Folder naming:** {{folder_prefix}} + {{folder_case}}
 Example: `{{example_folder_name}}`
@@ -341,12 +346,12 @@ Happy designing! 🎨</output>
 
 You can also manually create your project structure:
 {{#each enabled_phases}}
+
 - Create `docs/{{this.folder}}/` for {{this.name}}
-{{/each}}
+  {{/each}}
 
 Happy designing! 🎨</output>
 </check>
 </step>
 
 </workflow>
-

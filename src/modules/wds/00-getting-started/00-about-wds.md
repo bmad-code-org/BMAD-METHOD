@@ -9,6 +9,7 @@
 **Whiteport Design Studio (WDS)** is a design methodology that makes designers indispensable in the AI era.
 
 **The paradigm shift:**
+
 - The design becomes the specification
 - The specification becomes the product
 - The code is just the printout
@@ -38,6 +39,7 @@ WDS solves this by preserving design thinking through AI-ready specifications.
 ## How It Works
 
 WDS provides:
+
 - A systematic workflow from product brief to AI-ready specifications
 - Why-based specifications (WHAT + WHY + WHAT NOT TO DO)
 - AI agents specifically tailored for design work
@@ -48,6 +50,7 @@ WDS provides:
 ## Free and Open-Source
 
 WDS is completely free and open-source:
+
 - No cost barriers or subscriptions
 - AI agents included
 - Community-driven development
@@ -60,6 +63,7 @@ WDS is completely free and open-source:
 ## Real-World Proof
 
 **Dog Week project:**
+
 - Traditional approach: 26 weeks, mediocre result
 - WDS approach: 5 weeks, exceptional result
 - **5x speed increase with better quality**

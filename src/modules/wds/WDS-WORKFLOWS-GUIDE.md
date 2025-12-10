@@ -34,14 +34,14 @@ wds/
 
 WDS creates an alphabetized folder structure in the user's `docs/` folder:
 
-| Folder | Phase | Purpose |
-|--------|-------|---------|
-| `A-Product-Brief/` | 1 | Strategic foundation & vision |
-| `B-Trigger-Map/` | 2 | Business goals, personas, drivers |
-| `C-Scenarios/` | 4 | Visual specifications & sketches |
-| `D-PRD/` | 3 | Product requirements documentation |
-| `D-Design-System/` | 5 | Component library & design tokens |
-| `E-UI-Roadmap/` | 6 | Development integration bridge |
+| Folder             | Phase | Purpose                            |
+| ------------------ | ----- | ---------------------------------- |
+| `A-Product-Brief/` | 1     | Strategic foundation & vision      |
+| `B-Trigger-Map/`   | 2     | Business goals, personas, drivers  |
+| `C-Scenarios/`     | 4     | Visual specifications & sketches   |
+| `D-PRD/`           | 3     | Product requirements documentation |
+| `D-Design-System/` | 5     | Component library & design tokens  |
+| `E-UI-Roadmap/`    | 6     | Development integration bridge     |
 
 ## Phases
 
@@ -54,11 +54,11 @@ WDS creates an alphabetized folder structure in the user's `docs/` folder:
 
 ## Agents - The Norse Pantheon 🏔️
 
-| Agent | File | Role | Norse Meaning |
-|-------|------|------|---------------|
-| **Saga the Analyst** | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom |
-| **Idunn the PM** | `idunn-pm.agent.yaml` | Product Manager | Goddess of renewal & youth |
-| **Freyja the Designer** | `freyja-ux.agent.yaml` | UX/UI Designer | Goddess of beauty, magic & strategy |
+| Agent                   | File                      | Role                       | Norse Meaning                       |
+| ----------------------- | ------------------------- | -------------------------- | ----------------------------------- |
+| **Saga the Analyst**    | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom         |
+| **Idunn the PM**        | `idunn-pm.agent.yaml`     | Product Manager            | Goddess of renewal & youth          |
+| **Freyja the Designer** | `freyja-ux.agent.yaml`    | UX/UI Designer             | Goddess of beauty, magic & strategy |
 
 ## Conventions
 
@@ -88,4 +88,3 @@ WDS → E-UI-Roadmap/ → BMM Architecture & Stories
 ---
 
 <sub>Part of the BMad ecosystem • Contributed by Whiteport Collective</sub>
-

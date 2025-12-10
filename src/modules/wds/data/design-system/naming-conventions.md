@@ -11,6 +11,7 @@
 **Format:** `[type-prefix]-[number]`
 
 **Prefixes:**
+
 - btn = Button
 - inp = Input Field
 - chk = Checkbox
@@ -25,11 +26,13 @@
 - acc = Accordion
 
 **Examples:**
+
 - `btn-001` = First button component
 - `inp-002` = Second input field component
 - `mdl-001` = First modal component
 
 **Rules:**
+
 - Always lowercase
 - Always hyphenated
 - Always zero-padded (001, not 1)
@@ -42,12 +45,14 @@
 **Format:** `[Type] [Descriptor]` or just `[Type]`
 
 **Examples:**
+
 - `Button` (generic)
 - `Navigation Button` (specific)
 - `Primary Button` (variant-focused)
 - `Icon Button` (visual-focused)
 
 **Rules:**
+
 - Title case
 - Descriptive but concise
 - Avoid redundancy (not "Button Button")
@@ -59,6 +64,7 @@
 **Format:** Lowercase, hyphenated
 
 **Purpose-Based:**
+
 - `primary` - Main action
 - `secondary` - Secondary action
 - `destructive` - Delete/remove
@@ -67,16 +73,19 @@
 - `navigation` - Navigation action
 
 **Visual-Based:**
+
 - `outlined` - Border, no fill
 - `ghost` - Transparent background
 - `solid` - Filled background
 
 **Size-Based:**
+
 - `small` - Compact
 - `medium` - Default
 - `large` - Prominent
 
 **Rules:**
+
 - Lowercase
 - Hyphenated for multi-word
 - Semantic over visual when possible
@@ -86,6 +95,7 @@
 ## State Names
 
 **Standard States:**
+
 - `default` - Normal state
 - `hover` - Mouse over
 - `active` - Being clicked/pressed
@@ -97,6 +107,7 @@
 - `warning` - Warning state
 
 **Rules:**
+
 - Lowercase
 - Single word preferred
 - Use standard names when possible
@@ -108,6 +119,7 @@
 **Format:** `--{category}-{property}-{variant}`
 
 **Color Tokens:**
+
 ```
 --color-primary-500
 --color-gray-900
@@ -116,6 +128,7 @@
 ```
 
 **Typography Tokens:**
+
 ```
 --text-xs
 --text-base
@@ -125,6 +138,7 @@
 ```
 
 **Spacing Tokens:**
+
 ```
 --spacing-1
 --spacing-4
@@ -132,6 +146,7 @@
 ```
 
 **Component Tokens:**
+
 ```
 --button-padding-x
 --input-border-color
@@ -139,6 +154,7 @@
 ```
 
 **Rules:**
+
 - Kebab-case
 - Hierarchical (general → specific)
 - Semantic names preferred
@@ -148,6 +164,7 @@
 ## File Names
 
 **Component Files:**
+
 ```
 button.md
 navigation-button.md
@@ -155,6 +172,7 @@ input-field.md
 ```
 
 **Rules:**
+
 - Lowercase
 - Hyphenated
 - Match component name (simplified)
@@ -172,6 +190,7 @@ templates/
 ```
 
 **Rules:**
+
 - Lowercase
 - Hyphenated
 - Plural for collections

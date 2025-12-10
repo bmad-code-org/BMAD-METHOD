@@ -49,10 +49,10 @@ Phase 7.7: Iterate or Approve
 
 ```
 BMad Developer: "Feature complete: DD-001 Login & Onboarding
-                 
+
                  Build: v0.1.0-beta.1
                  Device: Staging environment
-                 
+
                  Ready for designer validation.
                  Test scenario: test-scenarios/TS-001.yaml"
 ```

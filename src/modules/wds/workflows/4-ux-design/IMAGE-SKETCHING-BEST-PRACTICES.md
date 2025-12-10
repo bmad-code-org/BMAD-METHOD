@@ -9,6 +9,7 @@
 ### Why Sketch Real Content?
 
 When you sketch what the image should actually show (rather than just "X" or "image here"), you:
+
 - **Provide visual direction** - Designer/developer understands image purpose
 - **Enable AI interpretation** - Agent can suggest appropriate image content
 - **Guide art direction** - Photographer/illustrator knows what's needed
@@ -22,6 +23,7 @@ When you sketch what the image should actually show (rather than just "X" or "im
 ### 1. Portrait/Profile Photos
 
 **Sketch a simple face:**
+
 ```
 ┌──────────────┐
 │   ◠  ◠       │  ← Simple eyes
@@ -45,6 +47,7 @@ or
 ### 2. Hero Images / Backgrounds
 
 **Sketch landscape/scenery:**
+
 ```
 ┌──────────────────────────┐
 │                          │
@@ -55,6 +58,7 @@ or
 ```
 
 **Sketch clouds/sky:**
+
 ```
 ┌──────────────────────────┐
 │  ~   ~      ~            │
@@ -65,6 +69,7 @@ or
 ```
 
 **Sketch abstract shapes:**
+
 ```
 ┌──────────────────────────┐
 │   ∿∿∿     ≈≈≈           │
@@ -78,6 +83,7 @@ or
 ### 3. Product Images
 
 **Sketch the product outline:**
+
 ```
 ┌──────────────┐
 │   |‾‾‾‾|     │  ← Phone outline
@@ -101,6 +107,7 @@ or
 ### 4. Icons / Illustrations
 
 **Sketch simple icon shapes:**
+
 ```
 ┌──────┐
 │  ⚙   │  ← Settings gear
@@ -124,6 +131,7 @@ or
 ### 5. Abstract/Decorative Images
 
 **Use soft, flowing shapes:**
+
 ```
 ┌──────────────────────────┐
 │    ∞                     │
@@ -134,6 +142,7 @@ or
 ```
 
 **Use geometric patterns:**
+
 ```
 ┌──────────────────────────┐
 │  ◆    ○    ▢             │
@@ -157,6 +166,7 @@ or
 ```
 
 **Problems with X markers:**
+
 - ❌ **No context** - Doesn't communicate what image shows
 - ❌ **No direction** - No guidance for content selection
 - ❌ **Intrusive** - Visually distracting in sketch
@@ -181,6 +191,7 @@ When analyzing sketches, the AI should:
 ### Example Detection
 
 **Sketch shows:**
+
 ```
 ┌──────────────────────────┐
 │    /\   /\    /\         │
@@ -190,6 +201,7 @@ When analyzing sketches, the AI should:
 ```
 
 **AI interprets:**
+
 - Rectangle container detected
 - Mountain/landscape sketch inside
 - **Purpose:** Hero background image showing outdoor/nature scene
@@ -201,24 +213,28 @@ When analyzing sketches, the AI should:
 ## Benefits of Sketching Real Content
 
 ### For Designers
+
 - ✅ Communicate visual intent clearly
 - ✅ Test composition and layout
 - ✅ Provide art direction
 - ✅ Inspire creative solutions
 
 ### For AI Agents
+
 - ✅ Understand image purpose from context
 - ✅ Suggest appropriate image sources
 - ✅ Recommend image dimensions and aspect ratios
 - ✅ Generate meaningful alt text
 
 ### For Developers
+
 - ✅ Understand what image represents
 - ✅ Know how to style and position image
 - ✅ Select appropriate placeholder images
 - ✅ Write meaningful alt text for accessibility
 
 ### For Stakeholders
+
 - ✅ Visualize final design better
 - ✅ Provide meaningful feedback
 - ✅ Understand design intent
@@ -228,28 +244,29 @@ When analyzing sketches, the AI should:
 
 ## Quick Reference
 
-| Image Type | Sketch Technique | Example |
-|------------|------------------|---------|
-| **Portrait/Face** | Simple face with eyes and smile | ◠ ◠  ᵕ |
-| **Landscape** | Mountains, trees, horizon | /\\ /\\ /\\ |
-| **Sky/Clouds** | Wavy cloud shapes | ~ ~ ~ |
-| **Product** | Product outline/silhouette | Phone, laptop shape |
-| **Icon** | Simple icon shape | ⚙ ♥ ✓ |
-| **Abstract** | Flowing, organic shapes | ∿ ≋ ∞ |
-| **Geometric** | Shapes and patterns | ◆ ○ ▢ |
+| Image Type        | Sketch Technique                | Example             |
+| ----------------- | ------------------------------- | ------------------- |
+| **Portrait/Face** | Simple face with eyes and smile | ◠ ◠ ᵕ               |
+| **Landscape**     | Mountains, trees, horizon       | /\\ /\\ /\\         |
+| **Sky/Clouds**    | Wavy cloud shapes               | ~ ~ ~               |
+| **Product**       | Product outline/silhouette      | Phone, laptop shape |
+| **Icon**          | Simple icon shape               | ⚙ ♥ ✓             |
+| **Abstract**      | Flowing, organic shapes         | ∿ ≋ ∞               |
+| **Geometric**     | Shapes and patterns             | ◆ ○ ▢               |
 
 ---
 
 ## Summary
 
 **WDS Image Sketching Philosophy:**
+
 > "Sketch what you see, not just where it goes."
 
 **Guidelines:**
+
 - ✅ **Draw the actual content** - Faces, landscapes, products
 - ✅ **Use soft, organic shapes** - Clouds, waves for abstract images
 - ✅ **Keep it simple** - Quick sketches are fine, detail level matches sketch fidelity
 - ❌ **Avoid generic X markers** - Provides no useful context
 
 **Result:** Better communication, clearer intent, more useful AI analysis! 🎨✨
-

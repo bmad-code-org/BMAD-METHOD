@@ -9,6 +9,7 @@
 Complex interactive components (calendars, booking systems, multi-step workflows) have **state transitions** and **interaction flows** that are difficult to describe in text alone.
 
 **Storyboards** provide visual, sequential documentation of:
+
 - State transitions (e.g., Empty → Booked → Active → Completed)
 - User interactions and system responses
 - Time-based changes (countdowns, timers)
@@ -23,6 +24,7 @@ Complex interactive components (calendars, booking systems, multi-step workflows
 **Purpose:** Show how a component changes states over time
 
 **Example:** Dog Week Walk Booking States
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  State Transition Storyboard                    │
@@ -57,6 +59,7 @@ Complex interactive components (calendars, booking systems, multi-step workflows
 **Purpose:** Show step-by-step user interactions
 
 **Example:** Calendar Booking Flow
+
 ```
 Frame 1: User views calendar
 Frame 2: User taps "Book" button
@@ -70,6 +73,7 @@ Frame 5: Week overview quarter circle turns gray
 **Purpose:** Show how multiple components interact
 
 **Example:** Week View + Leaderboard + Calendar Sync
+
 ```
 Frame 1: User clicks day circle in week overview
 Frame 2: Calendar scrolls to that day
@@ -84,11 +88,11 @@ Frame 5: Leaderboard count increments
 
 ### Where Storyboards Belong
 
-| File Type | Contains Storyboard? | Purpose |
-|-----------|---------------------|---------|
-| **Pages/** | ❌ No | Page layout only |
-| **Components/** | ⚠️ Visual states only | Static appearance of each state |
-| **Features/** | ✅ YES | State transitions & interaction flows |
+| File Type       | Contains Storyboard?  | Purpose                               |
+| --------------- | --------------------- | ------------------------------------- |
+| **Pages/**      | ❌ No                 | Page layout only                      |
+| **Components/** | ⚠️ Visual states only | Static appearance of each state       |
+| **Features/**   | ✅ YES                | State transitions & interaction flows |
 
 ### Storyboard Storage
 
@@ -147,19 +151,23 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Visual Reference:** Storyboard Frame 1
 
 **Appearance:**
+
 - White background
 - Dog avatar only (no user avatar)
 - Time range: "8-11"
 - Action button: "Book" / "Boka"
 
 **Triggers:**
+
 - Initial state for all unbooked slots
 - Appears when walk is unbooked
 
 **Transitions:**
+
 - User clicks "Book" → GRAY (Booked)
 
 **Business Rules:**
+
 - Any family member can book
 - Booking awards +1 leaderboard point
 - Updates week overview quarter circle to gray
@@ -171,6 +179,7 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Visual Reference:** Storyboard Frame 2
 
 **Appearance:**
+
 - Gray background
 - Dog avatar + User avatar overlay
 - Names: "Rufus & Patrick"
@@ -178,14 +187,17 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 - No action button (tap card for details)
 
 **Triggers:**
+
 - User books empty slot (WHITE → GRAY)
 - Walk is scheduled but time window not yet open
 
 **Transitions:**
+
 - Time window opens (8:00 arrives) → ORANGE (Countdown)
 - User unbooks walk → WHITE (Empty)
 
 **Business Rules:**
+
 - Shows who booked the walk
 - Tap card to view details/unbook
 - Leaderboard point already awarded
@@ -197,6 +209,7 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Visual Reference:** Storyboard Frame 3
 
 **Appearance:**
+
 - Orange background
 - Dog avatar only (user avatar removed)
 - Countdown timer: "32 min left" / "32 min kvar"
@@ -204,14 +217,17 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 - Action button: "Start" / "Starta"
 
 **Triggers:**
+
 - Scheduled time arrives (8:00) → GRAY to ORANGE
 - Real-time countdown updates every minute
 
 **Transitions:**
+
 - User clicks "Start" → BLUE (In Progress)
 - Countdown reaches 0 (11:00) → RED (Missed)
 
 **Business Rules:**
+
 - Countdown shows time remaining in window
 - Urgency indicator (warning icon)
 - Can only start if no other walk active for this dog
@@ -223,6 +239,7 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Visual Reference:** Storyboard Frame 4
 
 **Appearance:**
+
 - Blue background
 - Dog avatar + User avatar overlay
 - Status: "Started 09:32 • 23 min ago"
@@ -230,13 +247,16 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 - No action button (tap card for completion)
 
 **Triggers:**
+
 - User starts walk (ORANGE → BLUE)
 - Real-time duration updates every minute
 
 **Transitions:**
+
 - User completes walk → GREEN (Completed)
 
 **Business Rules:**
+
 - Blocks other walks for this dog
 - Shows elapsed time since start
 - Tap card to complete walk or view progress
@@ -248,6 +268,7 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Visual Reference:** Storyboard Frame 5
 
 **Appearance:**
+
 - Green background
 - Dog avatar + User avatar overlay
 - Duration: "32 min walk" / "32 min promenad"
@@ -255,12 +276,15 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 - No action button
 
 **Triggers:**
+
 - User completes active walk (BLUE → GREEN)
 
 **Transitions:**
+
 - None (final successful state)
 
 **Business Rules:**
+
 - Permanent record of completed walk
 - Shows actual walk duration
 - Unblocks dog for next walk
@@ -272,6 +296,7 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Visual Reference:** Storyboard Frame 6
 
 **Appearance:**
+
 - Red background
 - Dog avatar only (no user avatar)
 - Message: "No walk registered" / "Ingen promenad registrerad"
@@ -279,12 +304,15 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 - No action button
 
 **Triggers:**
+
 - Countdown expires without walk being started (ORANGE → RED)
 
 **Transitions:**
+
 - None (permanent accountability record)
 
 **Business Rules:**
+
 - Cannot be changed or deleted
 - Leaderboard point remains (no penalty)
 - Shows who booked but didn't complete
@@ -298,35 +326,29 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Storyboard:** `Storyboards/booking-flow.jpg`
 
 **Steps:**
+
 1. **User views empty slot** (WHITE state)
    - Sees "Book" button
-   
 2. **User taps "Book"**
    - System validates user is family member
    - System creates booking record
-   
 3. **Immediate updates:**
    - Card → GRAY state
    - Leaderboard: User +1 point
    - Week overview: Quarter circle → gray
-   
 4. **Time window opens** (8:00 arrives)
    - Card → ORANGE state
    - Countdown timer starts
-   
 5. **User taps "Start"**
    - System validates no other active walk for dog
    - System records start time
-   
 6. **Immediate updates:**
    - Card → BLUE state
    - Duration counter starts
    - Other walks for dog → disabled
-   
 7. **User completes walk** (via Walk Details page)
    - System records completion time
    - System calculates duration
-   
 8. **Immediate updates:**
    - Card → GREEN state
    - Week overview: Quarter circle → green
@@ -339,6 +361,7 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Storyboard:** `Storyboards/missed-walk-flow.jpg`
 
 **Steps:**
+
 1. Walk booked (GRAY state)
 2. Time window opens (ORANGE state)
 3. Countdown timer runs
@@ -354,11 +377,13 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 **Storyboard:** `Storyboards/calendar-sync-flow.jpg`
 
 **Components Involved:**
+
 - Week Overview (top section)
 - Leaderboard (middle section)
 - Booking Calendar (bottom section)
 
 **Sync Flow:**
+
 1. User books walk in calendar
 2. **Sync 1:** Week overview quarter circle updates
 3. **Sync 2:** Leaderboard count increments
@@ -370,8 +395,8 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
 ---
 
 ## State Machine Diagram
-
 ```
+
                     ┌─────────────┐
                     │   WHITE     │
                     │   (Empty)   │
@@ -407,6 +432,7 @@ Manages walk slot state transitions, user booking interactions, and automatic ti
                      │
                      ▼
                    [END]
+
 ```
 
 ---
@@ -449,12 +475,14 @@ Don't need storyboards for:
 
 Number frames sequentially:
 ```
+
 1. Initial state
 2. After user action
 3. System response
 4. Next state
 5. Alternative path
-```
+
+````
 
 ### Storyboard Annotations
 
@@ -547,7 +575,7 @@ Include:
 ## Error Handling
 
 {Error states, recovery flows, etc.}
-```
+````
 
 ---
 
@@ -579,12 +607,14 @@ Features/
 ### 1. Visual Clarity
 
 **Before (Text only):**
+
 ```
-When the user books a walk, the card changes to gray, 
+When the user books a walk, the card changes to gray,
 the leaderboard updates, and the week overview changes.
 ```
 
 **After (With storyboard):**
+
 ```
 See Storyboard Frame 2-3 for visual state transition.
 ```
@@ -592,6 +622,7 @@ See Storyboard Frame 2-3 for visual state transition.
 ### 2. Developer Understanding
 
 Developers can:
+
 - See exact visual states
 - Understand transition triggers
 - Identify edge cases visually
@@ -600,6 +631,7 @@ Developers can:
 ### 3. Design Consistency
 
 Designers can:
+
 - Ensure all states are visually distinct
 - Verify state transitions make sense
 - Spot missing states or transitions
@@ -608,6 +640,7 @@ Designers can:
 ### 4. QA Testing
 
 QA can:
+
 - Use storyboard as test script
 - Verify all states are implemented
 - Test all transition paths
@@ -620,6 +653,7 @@ QA can:
 ### Step 1: Sketch Storyboard
 
 During UX design phase:
+
 1. Identify complex interactive components
 2. Sketch state transitions on paper/whiteboard
 3. Number frames sequentially
@@ -643,6 +677,7 @@ Features/Storyboards/{component-name}-{type}.jpg
 ### Step 4: Document States
 
 For each frame in storyboard:
+
 - Create state definition
 - Link to storyboard frame number
 - Describe triggers and transitions
@@ -656,17 +691,20 @@ Convert storyboard to ASCII state machine diagram for quick reference
 ## Summary
 
 **Storyboards are essential for:**
+
 - 🎯 Complex state machines (calendars, booking systems)
 - 🎯 Multi-step workflows (onboarding, checkout)
 - 🎯 Time-based interactions (countdowns, timers)
 - 🎯 Multi-component synchronization
 
 **Store storyboards in:**
+
 - `Features/Storyboards/` folder
 - Reference from Feature files
 - Link to specific frames in state definitions
 
 **Benefits:**
+
 - ✅ Visual clarity for developers
 - ✅ Design consistency
 - ✅ QA test scripts

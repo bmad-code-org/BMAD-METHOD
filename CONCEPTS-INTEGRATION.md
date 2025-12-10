@@ -7,9 +7,11 @@
 ## Core Documentation
 
 ### Glossary (Complete Reference)
+
 **File:** `src/core/resources/wds/glossary.md`
 
 **Contains:**
+
 - ✅ Greenfield Development (definition, origin, examples)
 - ✅ Brownfield Development (definition, origin, examples)
 - ✅ Kaizen (改善) - Continuous Improvement (definition, philosophy, examples)
@@ -26,9 +28,11 @@
 ## Workflow Documentation
 
 ### 1. Project Type Selection
+
 **File:** `src/modules/wds/workflows/workflow-init/project-type-selection.md`
 
 **Concepts integrated:**
+
 - ✅ **Greenfield Development** - New Product entry point
 - ✅ **Brownfield Development** - Existing Product entry point
 - ✅ Definitions and origins
@@ -38,6 +42,7 @@
 **Section:** "Software Development Terminology"
 
 **Usage:**
+
 ```
 Which type of project are you working on?
 
@@ -48,9 +53,11 @@ Which type of project are you working on?
 ---
 
 ### 2. Phase 8 Workflow
+
 **File:** `src/modules/wds/workflows/8-ongoing-development/workflow.md`
 
 **Concepts integrated:**
+
 - ✅ **Kaizen (改善)** - Continuous Improvement (detailed)
 - ✅ **Kaikaku (改革)** - Revolutionary Change (detailed)
 - ✅ When to use each approach
@@ -60,6 +67,7 @@ Which type of project are you working on?
 **Section:** "Lean Manufacturing Philosophy"
 
 **Key insight:**
+
 ```
 Kaikaku (改革): Build product v1.0 (Phases 1-7)
     ↓
@@ -73,9 +81,11 @@ Kaizen cycle 1, 2, 3, 4, 5... (ongoing)
 ---
 
 ### 3. Existing Product Guide
+
 **File:** `src/modules/wds/workflows/8-ongoing-development/existing-product-guide.md`
 
 **Concepts integrated:**
+
 - ✅ **Brownfield + Kaizen** - Phase 8 approach
 - ✅ **Greenfield + Kaikaku** - Phases 1-7 approach
 - ✅ Terminology explanations
@@ -88,9 +98,11 @@ Kaizen cycle 1, 2, 3, 4, 5... (ongoing)
 ---
 
 ### 4. Phase 8 Step 8.8 (Iterate)
+
 **File:** `src/modules/wds/workflows/8-ongoing-development/steps/step-8.8-iterate.md`
 
 **Concepts integrated:**
+
 - ✅ **Kaizen vs Kaikaku** comparison
 - ✅ Quick reference for designers
 - ✅ Link to glossary
@@ -105,9 +117,11 @@ Reminds designers they're in Kaizen mode (small, continuous improvements) vs Kai
 ## Concept Usage by WDS Phase
 
 ### Phases 1-7: New Product Development
+
 **Approach:** Greenfield + Kaikaku
 
 **Characteristics:**
+
 - Starting from scratch
 - Complete user flows
 - Revolutionary change
@@ -115,15 +129,18 @@ Reminds designers they're in Kaizen mode (small, continuous improvements) vs Kai
 - Months of work
 
 **Concepts:**
+
 - Greenfield Development
 - Kaikaku (改革) - Revolutionary Change
 
 ---
 
 ### Phase 8: Ongoing Development
+
 **Approach:** Brownfield + Kaizen
 
 **Characteristics:**
+
 - Existing product
 - Incremental improvements
 - Continuous improvement
@@ -131,6 +148,7 @@ Reminds designers they're in Kaizen mode (small, continuous improvements) vs Kai
 - 1-2 week cycles
 
 **Concepts:**
+
 - Brownfield Development
 - Kaizen (改善) - Continuous Improvement
 - Muda (無駄) - Waste elimination
@@ -162,18 +180,20 @@ Reminds designers they're in Kaizen mode (small, continuous improvements) vs Kai
 **Question:** "Should I do small improvements or big redesign?"
 
 **Small Improvements (Kaizen 改善):**
+
 - ✅ Product is working
 - ✅ Want low-risk changes
 - ✅ 1-2 week cycles
 - ✅ Continuous learning
-→ Stay in Phase 8, create System Updates
+  → Stay in Phase 8, create System Updates
 
 **Big Redesign (Kaikaku 改革):**
+
 - ✅ Product needs overhaul
 - ✅ Fundamental problems
 - ✅ Months of work
 - ✅ Revolutionary change
-→ Return to Phases 1-7, create Design Deliveries
+  → Return to Phases 1-7, create Design Deliveries
 
 ---
 
@@ -182,16 +202,16 @@ Reminds designers they're in Kaizen mode (small, continuous improvements) vs Kai
 ```
 1. Glossary (src/core/resources/wds/glossary.md)
    └─ Complete definitions and philosophy
-      
+
 2. Project Type Selection (workflows/workflow-init/project-type-selection.md)
    └─ Greenfield vs Brownfield choice
-      
+
 3. Phase 8 Workflow (workflows/8-ongoing-development/workflow.md)
    └─ Kaizen vs Kaikaku philosophy
-      
+
 4. Existing Product Guide (workflows/8-ongoing-development/existing-product-guide.md)
    └─ Brownfield + Kaizen approach
-      
+
 5. Step 8.8 (workflows/8-ongoing-development/steps/step-8.8-iterate.md)
    └─ Quick reference during iteration
 ```
@@ -227,18 +247,21 @@ Reminds designers they're in Kaizen mode (small, continuous improvements) vs Kai
 ## Key Takeaways
 
 **For Designers:**
+
 1. Understand if you're in Greenfield or Brownfield context
 2. Choose Kaikaku (revolutionary) or Kaizen (continuous) approach
 3. Use appropriate deliverables (DD-XXX vs SU-XXX)
 4. Follow appropriate workflow (Phases 1-7 vs Phase 8)
 
 **For Documentation:**
+
 1. Glossary is the source of truth
 2. Concepts are integrated where relevant
 3. Quick references in workflow steps
 4. Consistent terminology throughout
 
 **Philosophy:**
+
 - Kaikaku to establish, Kaizen to improve
 - Greenfield gives freedom, Brownfield gives context
 - Small improvements compound over time

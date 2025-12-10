@@ -82,12 +82,12 @@ You: "Yes"
 Agent: "Based on your Trigger Map:
         - Target: Parents (tired of nagging)
         - Trigger: Family conflict
-        
+
         For the Hero section, I suggest:
         Headline: 'Stop Nagging. Start Harmony.'
-        
+
         Does this address their frustration?"
-        
+
 You: "Perfect!"
 ```
 
@@ -98,6 +98,7 @@ You: "Perfect!"
 ## What Just Happened?
 
 You created **why-based specifications** in 5 minutes:
+
 - Connected to user psychology (Trigger Map)
 - Grounded in real context (Scenario Init)
 - Generated with AI assistance (Agent collaboration)
@@ -108,12 +109,15 @@ You created **why-based specifications** in 5 minutes:
 ## Next Steps
 
 ### Learn the Concepts
+
 [Tutorial](../01-tutorial/00-TUTORIAL-GUIDE.md) - Deep dive into WDS philosophy
 
 ### Start Your Project
+
 [Workflows Guide](../WDS-WORKFLOWS-GUIDE.md) - Full workflow documentation
 
 ### Get Help
+
 [Community](https://discord.gg/whiteport) - Join the WDS community
 
 ---

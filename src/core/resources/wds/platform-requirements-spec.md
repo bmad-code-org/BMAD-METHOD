@@ -7,6 +7,7 @@
 ## What are Platform Requirements?
 
 Platform Requirements define the technical foundation for the product:
+
 - Tech stack choices (frontend, backend, database)
 - Required integrations
 - Infrastructure constraints
@@ -29,80 +30,80 @@ Platform Requirements define the technical foundation for the product:
 # Consumed by: BMad Architecture Phase
 
 project:
-  name: "Dog Week"
-  type: "mobile_app"              # mobile_app | web_app | desktop_app | api
-  wds_version: "6.0"
-  created_at: "2024-12-09T10:00:00Z"
+  name: 'Dog Week'
+  type: 'mobile_app' # mobile_app | web_app | desktop_app | api
+  wds_version: '6.0'
+  created_at: '2024-12-09T10:00:00Z'
 
 platform:
   frontend:
-    framework: "react_native"
-    version: "0.72"
-    state_management: "zustand"
-    navigation: "react_navigation"
-    styling: "tailwind"
-    ui_library: "shadcn"          # optional
-  
+    framework: 'react_native'
+    version: '0.72'
+    state_management: 'zustand'
+    navigation: 'react_navigation'
+    styling: 'tailwind'
+    ui_library: 'shadcn' # optional
+
   backend:
-    framework: "supabase"
-    version: "2.x"
-    auth: "supabase_auth"
-    database: "postgresql"
-    storage: "supabase_storage"
-    api: "rest"                   # rest | graphql | grpc
-  
+    framework: 'supabase'
+    version: '2.x'
+    auth: 'supabase_auth'
+    database: 'postgresql'
+    storage: 'supabase_storage'
+    api: 'rest' # rest | graphql | grpc
+
   database:
-    type: "postgresql"
-    version: "15"
-    orm: "prisma"                 # optional
-  
+    type: 'postgresql'
+    version: '15'
+    orm: 'prisma' # optional
+
   deployment:
-    frontend: "expo_eas"
-    backend: "supabase_cloud"
-    ci_cd: "github_actions"
-    hosting: "vercel"             # if web app
+    frontend: 'expo_eas'
+    backend: 'supabase_cloud'
+    ci_cd: 'github_actions'
+    hosting: 'vercel' # if web app
 
 integrations:
-  - name: "push_notifications"
-    provider: "expo"
+  - name: 'push_notifications'
+    provider: 'expo'
     required: true
-    purpose: "Task reminders and family updates"
-    
-  - name: "image_upload"
-    provider: "cloudinary"
+    purpose: 'Task reminders and family updates'
+
+  - name: 'image_upload'
+    provider: 'cloudinary'
     required: false
-    purpose: "Dog photos and user avatars"
-    
-  - name: "analytics"
-    provider: "posthog"
+    purpose: 'Dog photos and user avatars'
+
+  - name: 'analytics'
+    provider: 'posthog'
     required: false
-    purpose: "User behavior tracking"
+    purpose: 'User behavior tracking'
 
 constraints:
-  - "Must work offline (core features)"
-  - "Must support iOS 14+ and Android 10+"
-  - "Must be accessible (WCAG 2.1 AA)"
-  - "Must handle slow networks gracefully"
-  - "Must support family sharing (multi-user)"
-  - "Must sync in real-time across devices"
+  - 'Must work offline (core features)'
+  - 'Must support iOS 14+ and Android 10+'
+  - 'Must be accessible (WCAG 2.1 AA)'
+  - 'Must handle slow networks gracefully'
+  - 'Must support family sharing (multi-user)'
+  - 'Must sync in real-time across devices'
 
 performance_requirements:
-  - "App launch < 2 seconds"
-  - "Screen transitions < 300ms"
-  - "API response time < 500ms"
-  - "Offline mode must work for 7 days"
+  - 'App launch < 2 seconds'
+  - 'Screen transitions < 300ms'
+  - 'API response time < 500ms'
+  - 'Offline mode must work for 7 days'
 
 security_requirements:
-  - "End-to-end encryption for family data"
-  - "Secure password storage (bcrypt)"
-  - "OAuth 2.0 for third-party auth"
-  - "GDPR compliant data handling"
+  - 'End-to-end encryption for family data'
+  - 'Secure password storage (bcrypt)'
+  - 'OAuth 2.0 for third-party auth'
+  - 'GDPR compliant data handling'
 
 wds_metadata:
-  project_brief: "A-Project-Brief/project-brief.md"
-  trigger_map: "B-Trigger-Map/trigger-map.md"
-  scenarios: "C-Scenarios/"
-  design_system: "D-Design-System/"
+  project_brief: 'A-Project-Brief/project-brief.md'
+  trigger_map: 'B-Trigger-Map/trigger-map.md'
+  scenarios: 'C-Scenarios/'
+  design_system: 'D-Design-System/'
 ```
 
 ---
@@ -188,6 +189,7 @@ for constraint in constraints:
 ### Respect Designer Decisions
 
 **The designer (with stakeholders) has already decided:**
+
 - ✅ Tech stack
 - ✅ Integrations
 - ✅ Constraints
@@ -228,18 +230,21 @@ Do NOT proceed until resolved.
 ## Tech Stack (from Platform Requirements)
 
 ### Frontend
+
 - Framework: React Native 0.72
 - State: Zustand
 - Navigation: React Navigation
 - Styling: Tailwind CSS
 
 ### Backend
+
 - Framework: Supabase 2.x
 - Auth: Supabase Auth
 - Database: PostgreSQL 15
 - Storage: Supabase Storage
 
 ### Deployment
+
 - Frontend: Expo EAS
 - Backend: Supabase Cloud
 - CI/CD: GitHub Actions
@@ -289,20 +294,22 @@ Design Deliveries reference Platform Requirements
 ### Example
 
 **Platform Requirements:**
+
 ```yaml
 platform:
   frontend:
-    framework: "react_native"
+    framework: 'react_native'
   backend:
-    framework: "supabase"
+    framework: 'supabase'
 ```
 
 **Design Delivery DD-001:**
+
 ```yaml
 technical_requirements:
   platform:
-    frontend: "react_native"    # Matches platform requirements
-    backend: "supabase"          # Matches platform requirements
+    frontend: 'react_native' # Matches platform requirements
+    backend: 'supabase' # Matches platform requirements
 ```
 
 **Your job:** Ensure consistency between platform requirements and design deliveries
@@ -314,24 +321,27 @@ technical_requirements:
 ### Types of Constraints
 
 **Technical Constraints:**
+
 ```yaml
 constraints:
-  - "Must work offline (core features)"
-  - "Must support iOS 14+ and Android 10+"
+  - 'Must work offline (core features)'
+  - 'Must support iOS 14+ and Android 10+'
 ```
 
 **Business Constraints:**
+
 ```yaml
 constraints:
-  - "Must launch in 3 months"
-  - "Must support 10,000 concurrent users"
+  - 'Must launch in 3 months'
+  - 'Must support 10,000 concurrent users'
 ```
 
 **Regulatory Constraints:**
+
 ```yaml
 constraints:
-  - "Must be GDPR compliant"
-  - "Must be WCAG 2.1 AA accessible"
+  - 'Must be GDPR compliant'
+  - 'Must be WCAG 2.1 AA accessible'
 ```
 
 ### Handling Constraints
@@ -342,12 +352,14 @@ constraints:
 Constraint: "Must work offline (core features)"
 
 Architecture Impact:
+
 - Implement local data cache
 - Sync strategy when online
 - Conflict resolution
 - Offline UI indicators
 
 Implementation:
+
 - Use AsyncStorage for local cache
 - Supabase Realtime for sync
 - Optimistic UI updates
@@ -361,9 +373,9 @@ Implementation:
 
 ```yaml
 performance_requirements:
-  - "App launch < 2 seconds"
-  - "Screen transitions < 300ms"
-  - "API response time < 500ms"
+  - 'App launch < 2 seconds'
+  - 'Screen transitions < 300ms'
+  - 'API response time < 500ms'
 ```
 
 ### Architecture Decisions
@@ -372,6 +384,7 @@ performance_requirements:
 Performance Requirement: "App launch < 2 seconds"
 
 Architecture Decisions:
+
 1. Lazy load non-critical screens
 2. Cache authentication state
 3. Preload critical data
@@ -379,6 +392,7 @@ Architecture Decisions:
 5. Use code splitting
 
 Measurement:
+
 - Add performance monitoring
 - Track launch time in analytics
 - Set up alerts if > 2 seconds
@@ -392,9 +406,9 @@ Measurement:
 
 ```yaml
 security_requirements:
-  - "End-to-end encryption for family data"
-  - "Secure password storage (bcrypt)"
-  - "OAuth 2.0 for third-party auth"
+  - 'End-to-end encryption for family data'
+  - 'Secure password storage (bcrypt)'
+  - 'OAuth 2.0 for third-party auth'
 ```
 
 ### Architecture Decisions
@@ -403,12 +417,14 @@ security_requirements:
 Security Requirement: "End-to-end encryption for family data"
 
 Architecture Decisions:
+
 1. Generate encryption keys per family
 2. Store keys securely (device keychain)
 3. Encrypt data before sending to server
 4. Decrypt data on device only
 
 Implementation:
+
 - Use expo-crypto for encryption
 - Use expo-secure-store for key storage
 - Implement key rotation strategy
@@ -422,9 +438,9 @@ Implementation:
 
 ```yaml
 deployment:
-  frontend: "expo_eas"
-  backend: "supabase_cloud"
-  ci_cd: "github_actions"
+  frontend: 'expo_eas'
+  backend: 'supabase_cloud'
+  ci_cd: 'github_actions'
 ```
 
 ### Architecture Decisions
@@ -433,6 +449,7 @@ deployment:
 Deployment: Expo EAS + Supabase Cloud + GitHub Actions
 
 CI/CD Pipeline:
+
 1. Push to GitHub
 2. GitHub Actions runs tests
 3. Build app with Expo EAS
@@ -440,6 +457,7 @@ CI/CD Pipeline:
 5. Submit to App Store / Play Store
 
 Environments:
+
 - Development: dev.supabase.co
 - Staging: staging.supabase.co
 - Production: prod.supabase.co
@@ -453,10 +471,10 @@ Environments:
 
 ```yaml
 wds_metadata:
-  project_brief: "A-Project-Brief/project-brief.md"
-  trigger_map: "B-Trigger-Map/trigger-map.md"
-  scenarios: "C-Scenarios/"
-  design_system: "D-Design-System/"
+  project_brief: 'A-Project-Brief/project-brief.md'
+  trigger_map: 'B-Trigger-Map/trigger-map.md'
+  scenarios: 'C-Scenarios/'
+  design_system: 'D-Design-System/'
 ```
 
 **This tells you where to find additional context:**

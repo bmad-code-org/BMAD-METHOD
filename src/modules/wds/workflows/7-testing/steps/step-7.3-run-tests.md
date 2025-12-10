@@ -9,6 +9,7 @@ Execute all test scenarios defined in the test scenario file and document result
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 7.2 (preparation complete)
 - ✅ Test scenario file open
 - ✅ Environment accessible
@@ -27,6 +28,7 @@ Execute all test scenarios defined in the test scenario file and document result
 5. **Accessibility Tests**
 
 **Why this order?**
+
 - Happy path must work first
 - Errors and edge cases build on happy path
 - Design system and accessibility are final polish
@@ -41,12 +43,12 @@ Execute all test scenarios defined in the test scenario file and document result
 
 ```yaml
 happy_path:
-  - id: "HP-001"
-    name: "New User Complete Onboarding"
+  - id: 'HP-001'
+    name: 'New User Complete Onboarding'
     steps:
-      - action: "Open app"
-        expected: "Welcome screen appears"
-        design_ref: "C-Scenarios/01-welcome/Frontend/specifications.md"
+      - action: 'Open app'
+        expected: 'Welcome screen appears'
+        design_ref: 'C-Scenarios/01-welcome/Frontend/specifications.md'
 ```
 
 ---
@@ -73,6 +75,7 @@ happy_path:
    - Note any differences
 
 5. **Mark as Pass or Fail**
+
    ```
    ✓ PASS: Matches expected result
    ✗ FAIL: Doesn't match expected result
@@ -84,22 +87,26 @@ happy_path:
    - Save with clear name: `HP-001-step-3-FAIL.png`
 
 7. **Document in notes**
+
    ```markdown
    ## HP-001: New User Complete Onboarding
-   
+
    ### Step 1: Open app
+
    - Action: Opened app
    - Expected: Welcome screen appears
    - Actual: Welcome screen appears ✓
    - Result: PASS
-   
+
    ### Step 2: Tap "Get Started"
+
    - Action: Tapped "Get Started" button
    - Expected: Login/Signup choice appears
    - Actual: Login/Signup choice appears ✓
    - Result: PASS
-   
+
    ### Step 3: Tap "Create Account"
+
    - Action: Tapped "Create Account"
    - Expected: Signup form with smooth 300ms transition
    - Actual: Signup form appears instantly (no transition)
@@ -118,6 +125,7 @@ happy_path:
 # Happy Path Test Results
 
 ## HP-001: New User Complete Onboarding
+
 - Status: FAIL
 - Steps: 9 total
 - Passed: 8/9 (89%)
@@ -127,6 +135,7 @@ happy_path:
 - Recording: happy-path-HP-001.mov
 
 ## HP-002: Returning User Login
+
 - Status: PASS
 - Steps: 5 total
 - Passed: 5/5 (100%)
@@ -136,6 +145,7 @@ happy_path:
 - Recording: happy-path-HP-002.mov
 
 ## Summary
+
 - Total Tests: 2
 - Passed: 1/2 (50%)
 - Failed: 1/2 (50%)
@@ -152,10 +162,10 @@ happy_path:
 
 ```yaml
 error_states:
-  - id: "ES-001"
-    name: "Email Already Exists"
+  - id: 'ES-001'
+    name: 'Email Already Exists'
     steps:
-      - action: "Enter existing email"
+      - action: 'Enter existing email'
       - action: "Tap 'Create Account'"
       - expected: "Error message: 'This email is already registered...'"
 ```
@@ -187,9 +197,10 @@ error_states:
    - Verify recovery options
 
 5. **Document results**
+
    ```markdown
    ## ES-001: Email Already Exists
-   
+
    - Setup: Used test2@example.com (existing account)
    - Action: Entered email, tapped "Create Account"
    - Expected: Error: "This email is already registered. Try logging in instead."
@@ -207,24 +218,29 @@ error_states:
 # Error State Test Results
 
 ## ES-001: Email Already Exists
+
 - Status: FAIL
 - Issue: Error message too brief
 - Severity: Medium
 
 ## ES-002: Invalid Email Format
+
 - Status: PASS
 - Real-time validation works correctly
 
 ## ES-003: Weak Password
+
 - Status: PASS
 - Password strength indicator works
 
 ## ES-004: Network Timeout
+
 - Status: FAIL
 - Issue: No timeout handling, app hangs
 - Severity: High
 
 ## Summary
+
 - Total Tests: 4
 - Passed: 2/4 (50%)
 - Failed: 2/4 (50%)
@@ -241,13 +257,13 @@ error_states:
 
 ```yaml
 edge_cases:
-  - id: "EC-001"
-    name: "User Closes App Mid-Onboarding"
+  - id: 'EC-001'
+    name: 'User Closes App Mid-Onboarding'
     steps:
-      - action: "Start onboarding, complete signup"
-      - action: "Close app (force quit)"
-      - action: "Reopen app"
-      - expected: "Resume at Family Setup"
+      - action: 'Start onboarding, complete signup'
+      - action: 'Close app (force quit)'
+      - action: 'Reopen app'
+      - expected: 'Resume at Family Setup'
 ```
 
 ---
@@ -271,9 +287,10 @@ edge_cases:
    - Is user experience smooth?
 
 4. **Document results**
+
    ```markdown
    ## EC-001: User Closes App Mid-Onboarding
-   
+
    - Setup: Completed signup, at Family Setup screen
    - Action: Force quit app, reopened
    - Expected: Resume at Family Setup (progress saved)
@@ -292,19 +309,23 @@ edge_cases:
 # Edge Case Test Results
 
 ## EC-001: User Closes App Mid-Onboarding
+
 - Status: FAIL
 - Issue: Progress not saved
 - Severity: High
 
 ## EC-002: User Navigates Back
+
 - Status: PASS
 - Confirmation dialog works correctly
 
 ## EC-003: Very Long Family Name
+
 - Status: PASS
 - Field truncates at 50 characters
 
 ## Summary
+
 - Total Tests: 3
 - Passed: 2/3 (67%)
 - Failed: 1/3 (33%)
@@ -321,16 +342,16 @@ edge_cases:
 
 ```yaml
 design_system_checks:
-  - id: "DS-001"
-    name: "Button Components"
+  - id: 'DS-001'
+    name: 'Button Components'
     checks:
-      - component: "Primary Button"
-        instances: ["Get Started", "Create Account"]
+      - component: 'Primary Button'
+        instances: ['Get Started', 'Create Account']
         verify:
-          - "Height: 48px"
-          - "Background: #2563EB"
-          - "Text: #FFFFFF"
-          - "Typography: 16px, semibold"
+          - 'Height: 48px'
+          - 'Background: #2563EB'
+          - 'Text: #FFFFFF'
+          - 'Typography: 16px, semibold'
 ```
 
 ---
@@ -371,10 +392,12 @@ design_system_checks:
    - Focus state
 
 7. **Document results**
+
    ```markdown
    ## DS-001: Button Components
-   
+
    ### Primary Button: "Get Started"
+
    - Height: 48px ✓
    - Background: #3B82F6 ✗ (Expected: #2563EB)
    - Text: #FFFFFF ✓
@@ -383,8 +406,9 @@ design_system_checks:
    - Padding: 12px 24px ✓
    - Result: FAIL (wrong background color)
    - Screenshot: DS-001-button-color-FAIL.png
-   
+
    ### Primary Button: "Create Account"
+
    - Height: 48px ✓
    - Background: #3B82F6 ✗ (Expected: #2563EB)
    - Text: #FFFFFF ✓
@@ -400,21 +424,25 @@ design_system_checks:
 # Design System Validation Results
 
 ## DS-001: Button Components
+
 - Status: FAIL
 - Issue: Primary button color incorrect (#3B82F6 vs #2563EB)
 - Instances: All primary buttons affected
 - Severity: High
 
 ## DS-002: Input Components
+
 - Status: PASS
 - All input fields match specifications
 
 ## DS-003: Spacing and Layout
+
 - Status: PASS
 - Screen padding: 20px ✓
 - Element spacing: 16px ✓
 
 ## Summary
+
 - Total Components: 3 types
 - Compliant: 2/3 (67%)
 - Non-compliant: 1/3 (33%)
@@ -429,6 +457,7 @@ design_system_checks:
 ### Screen Reader Testing
 
 **Enable screen reader:**
+
 - iOS: VoiceOver (Settings → Accessibility)
 - Android: TalkBack (Settings → Accessibility)
 
@@ -452,19 +481,21 @@ design_system_checks:
    - Are they clear?
 
 5. **Document results**
+
    ```markdown
    ## A11Y-001: Screen Reader Navigation
-   
+
    - Setup: Enabled VoiceOver on iOS
    - Test: Navigated through onboarding
    - Result: PARTIAL PASS
-   
+
    Issues:
+
    - "Get Started" button announced as just "Button" ✗
    - Email field announced correctly ✓
    - Password field announced correctly ✓
    - Error messages not announced ✗
-   
+
    Severity: Medium
    ```
 
@@ -485,14 +516,15 @@ design_system_checks:
    - Error text on background: 4.5:1 minimum
 
 4. **Document results**
+
    ```markdown
    ## A11Y-002: Color Contrast
-   
+
    - Body text on white: 7.2:1 ✓ (PASS)
    - Button text on primary: 5.1:1 ✓ (PASS)
    - Error text on white: 4.8:1 ✓ (PASS)
    - Link text on white: 3.9:1 ✗ (FAIL - below 4.5:1)
-   
+
    Result: FAIL (link contrast too low)
    ```
 
@@ -515,14 +547,15 @@ design_system_checks:
    - Measure actual spacing
 
 4. **Document results**
+
    ```markdown
    ## A11Y-003: Touch Targets
-   
+
    - Primary buttons: 48×120px ✓ (PASS)
    - Input fields: 48px height ✓ (PASS)
    - Text links: 32px height ✗ (FAIL - below 44px)
    - Spacing between buttons: 16px ✓ (PASS)
-   
+
    Result: FAIL (text links too small)
    ```
 
@@ -534,21 +567,25 @@ design_system_checks:
 # Accessibility Test Results
 
 ## A11Y-001: Screen Reader Navigation
+
 - Status: PARTIAL PASS
 - Issues: 2 (button labels, error announcements)
 - Severity: Medium
 
 ## A11Y-002: Color Contrast
+
 - Status: FAIL
 - Issue: Link contrast too low (3.9:1)
 - Severity: Medium
 
 ## A11Y-003: Touch Targets
+
 - Status: FAIL
 - Issue: Text links too small (32px)
 - Severity: Low
 
 ## Summary
+
 - Total Tests: 3
 - Passed: 0/3 (0%)
 - Partial: 1/3 (33%)
@@ -587,12 +624,14 @@ design_system_checks:
 **Total Issues:** 8
 
 **By Severity:**
+
 - Critical: 0
 - High: 3
 - Medium: 3
 - Low: 2
 
 **By Category:**
+
 - Functionality: 3
 - Design System: 1
 - Accessibility: 4

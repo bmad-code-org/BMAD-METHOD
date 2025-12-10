@@ -39,18 +39,22 @@ Choice [1/2/3/4/5]:</ask>
 ## MENU HANDLING
 
 ### Choice 1: Design Another Scenario
+
 <action>Return to Step 2 (Define Scenario)</action>
 <action>Load `steps/step-02-define-scenario.md`</action>
 
 ### Choice 2: Phase 5 (Design System)
+
 <output>To start Phase 5, activate Freyja (WDS Designer) again and run the Design System workflow.</output>
 <action>Exit this workflow</action>
 
 ### Choice 3: Phase 6 (PRD Finalization)
+
 <output>To start Phase 6, activate Idunn (WDS PM) and run the PRD Finalization workflow.</output>
 <action>Exit this workflow</action>
 
 ### Choice 4: Review Progress
+
 <action>List all scenarios in C-Scenarios/</action>
 <action>Show completion status for each</action>
 <action>Count total pages designed</action>
@@ -59,6 +63,7 @@ Choice [1/2/3/4/5]:</ask>
 <action>If Y, return to menu in this step</action>
 
 ### Choice 5: Exit
+
 <output>Perfect! All your work is saved. Resume anytime by running the UX Design workflow again.
 
 See you next time! 🎨✨</output>
@@ -69,4 +74,3 @@ See you next time! 🎨✨</output>
 ## WORKFLOW COMPLETE
 
 This is the final step. User either loops to another scenario or exits.
-

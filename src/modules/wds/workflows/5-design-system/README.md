@@ -11,11 +11,13 @@
 ## When This Workflow Runs
 
 **Triggered from Phase 4:**
+
 - After component specification is complete
 - Only if design system is enabled in project
 - First component triggers automatic initialization
 
 **Not a Separate Phase:**
+
 - Runs in parallel with Phase 4
 - Integrated into component specification flow
 - Designer doesn't "switch" to design system mode
@@ -27,12 +29,14 @@
 **Chosen during Phase 1 (Project Exploration):**
 
 ### Mode A: No Design System
+
 - Components stay page-specific
 - AI/dev team handles consistency
 - Faster for simple projects
 - **This workflow doesn't run**
 
 ### Mode B: Custom Design System
+
 - Designer defines components in Figma
 - Components extracted as discovered
 - Figma MCP endpoints for integration
@@ -40,6 +44,7 @@
 - **See:** `figma-integration/` folder for complete Figma workflow
 
 ### Mode C: Component Library Design System
+
 - Uses shadcn/Radix/etc.
 - Library chosen during setup
 - Components mapped to library defaults
@@ -79,11 +84,13 @@ Functionality/Storyboards (Behavior)
 ## Workflow Components
 
 ### 1. Design System Router
+
 **File:** `design-system-router.md`
 
 **Purpose:** Identify if component is new, similar, or duplicate
 
 **Flow:**
+
 ```
 Component specified → Router checks design system
 ├── No similar component → Create new
@@ -91,11 +98,13 @@ Component specified → Router checks design system
 ```
 
 ### 2. Opportunity/Risk Assessment
+
 **Folder:** `assessment/`
 
 **Purpose:** Help designer make informed decisions about component reuse
 
 **7 Micro-Instructions:**
+
 1. Scan existing components
 2. Compare attributes
 3. Calculate similarity
@@ -105,22 +114,26 @@ Component specified → Router checks design system
 7. Execute decision
 
 ### 3. Component Operations
+
 **Folder:** `operations/`
 
 **Purpose:** Execute design system actions
 
 **4 Operations:**
+
 - Initialize design system (first component)
 - Create new component
 - Add variant to existing component
 - Update component definition
 
 ### 4. Output Templates
+
 **Folder:** `templates/`
 
 **Purpose:** Consistent design system file structure
 
 **3 Templates:**
+
 - Component specification
 - Design tokens
 - Component library config
@@ -132,6 +145,7 @@ Component specified → Router checks design system
 **Called from:** `workflows/4-ux-design/substeps/4c-03-components-objects.md`
 
 **Integration Point:**
+
 ```
 For each component:
 1. Specify component (Phase 4)
@@ -145,6 +159,7 @@ For each component:
 ```
 
 **Result:**
+
 - Page spec contains references + page-specific content
 - Design system contains component definitions
 - Clean separation maintained
@@ -154,31 +169,37 @@ For each component:
 ## Key Risks & Mitigation
 
 ### 1. Component Matching
+
 **Risk:** How to recognize "same" vs "similar" vs "different"
 
 **Mitigation:** Similarity scoring + designer judgment via assessment flow
 
 ### 2. Circular References
+
 **Risk:** Page → Component → Functionality → Component
 
 **Mitigation:** Clear hierarchy (Page → Component → Functionality)
 
 ### 3. Sync Problems
+
 **Risk:** Component evolves, references may break
 
 **Mitigation:** Reference IDs + update notifications
 
 ### 4. Component Boundaries
+
 **Risk:** Icon in button? Nested components?
 
 **Mitigation:** Designer conversation + guidelines in shared knowledge
 
 ### 5. First Component
+
 **Risk:** When to initialize design system?
 
 **Mitigation:** Auto-initialize on first component if enabled
 
 ### 6. Storyboard Granularity
+
 **Risk:** Component behavior vs page flow
 
 **Mitigation:** Clear separation guidelines in shared knowledge
@@ -192,6 +213,7 @@ For each component:
 **Purpose:** Centralized design system principles referenced by all component types
 
 **Documents:**
+
 - `token-architecture.md` - Structure vs style separation
 - `naming-conventions.md` - Token naming rules
 - `state-management.md` - Component states
@@ -210,11 +232,13 @@ For each component:
 **Purpose:** Enable seamless Figma ↔ WDS synchronization for custom design systems
 
 **Documents:**
+
 - `figma-designer-guide.md` - Step-by-step guide for designers
 - `figma-mcp-integration.md` - Technical MCP integration guide
 - `figma-component-structure.md` - Component organization in Figma (in data/design-system/)
 
 **Workflow:**
+
 1. Designer creates/updates component in Figma
 2. Designer adds WDS component ID to description
 3. MCP reads component via Figma API
@@ -222,6 +246,7 @@ For each component:
 5. Designer reviews and confirms
 
 **Key Features:**
+
 - Component structure guidelines
 - Design token mapping
 - Variant and state organization
@@ -235,6 +260,7 @@ For each component:
 **Key Feature:** Companies can fork WDS and customize design system standards
 
 **Customization Points:**
+
 - `data/design-system/` - Company-specific principles
 - `object-types/` - Company component patterns
 - `templates/` - Company output formats
@@ -258,6 +284,7 @@ D-Design-System/
 ```
 
 **Component File Structure:**
+
 ```markdown
 # Button Component [btn-001]
 
@@ -266,20 +293,24 @@ D-Design-System/
 **Figma:** [Link] (if Mode B)
 
 ## Variants
+
 - primary
 - secondary
 - ghost
 
 ## States
+
 - default
 - hover
 - active
 - disabled
 
 ## Styling
+
 [Design tokens or Figma reference]
 
 ## Used In
+
 - Login page (login button)
 - Signup page (create account button)
 - Dashboard (action buttons)

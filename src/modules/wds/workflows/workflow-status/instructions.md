@@ -15,7 +15,7 @@ To get started, run the workflow-init:
 `/bmad:wds:workflows:workflow-init`
 
 Or activate any WDS agent (Saga, Idunn, or Freyja) and describe your project.</output>
-  <action>Exit workflow</action>
+<action>Exit workflow</action>
 </check>
 
 <action>Load and parse wds-workflow-status.yaml</action>
@@ -29,12 +29,13 @@ Or activate any WDS agent (Saga, Idunn, or Freyja) and describe your project.</o
 </action>
 
 <action>Identify:
+
 - completed_phases: Phases with all artifacts
 - current_phase: First incomplete required phase
 - next_agent: Agent for current phase
 - blocked_phases: Phases waiting on dependencies
-</action>
-</step>
+  </action>
+  </step>
 
 <step n="3" goal="Display status">
 <output>**WDS Project Status** 🎨
@@ -50,12 +51,12 @@ Or activate any WDS agent (Saga, Idunn, or Freyja) and describe your project.</o
 {{#if this.status == 'in-progress'}}🔄{{/if}}
 {{#if this.status == 'pending'}}⏳{{/if}}
 {{#if this.status == 'skipped'}}⏭️{{/if}}
- **Phase {{this.number}}: {{this.name}}**
-   Agent: {{this.agent}}
-   Folder: `{{this.folder}}`
-   Status: {{this.status}}
+**Phase {{this.number}}: {{this.name}}**
+Agent: {{this.agent}}
+Folder: `{{this.folder}}`
+Status: {{this.status}}
 {{#if this.artifacts}}
-   Artifacts: {{this.artifact_count}} created
+Artifacts: {{this.artifact_count}} created
 {{/if}}
 
 {{/each}}
@@ -93,7 +94,7 @@ Choice [1/2/3/4]:</ask>
 3. Or just tell {{current_phase.agent}} what you want to work on
 
 Happy designing! 🎨</output>
-  </check>
+</check>
 
   <check if="choice == 2">
     <ask>Which phase?
@@ -102,12 +103,12 @@ Happy designing! 🎨</output>
 {{/each}}
 
 Choice:</ask>
-    <output>To work on **Phase {{selected_phase.number}}: {{selected_phase.name}}**:
+<output>To work on **Phase {{selected_phase.number}}: {{selected_phase.name}}**:
 
 Agent: **{{selected_phase.agent}}**
 Folder: `{{selected_phase.folder}}`
 Command: `/bmad:wds:workflows:{{selected_phase.workflow_id}}`</output>
-  </check>
+</check>
 
   <check if="choice == 3">
     <ask>Which phase to view?
@@ -116,7 +117,7 @@ Command: `/bmad:wds:workflows:{{selected_phase.workflow_id}}`</output>
 {{/each}}
 
 Choice:</ask>
-    <output>**Phase {{selected.number}}: {{selected.name}}**
+<output>**Phase {{selected.number}}: {{selected.name}}**
 
 **Purpose:** {{selected.description}}
 **Agent:** {{selected.agent}}
@@ -126,17 +127,17 @@ Choice:</ask>
 {{#if selected.artifacts}}
 **Artifacts created:**
 {{#each selected.artifacts}}
+
 - {{this}}
-{{/each}}
-{{else}}
-**Artifacts:** None yet
-{{/if}}
+  {{/each}}
+  {{else}}
+  **Artifacts:** None yet
+  {{/if}}
 
 **What this phase produces:**
 {{selected.produces}}</output>
-  </check>
+</check>
 </check>
 </step>
 
 </workflow>
-

@@ -9,13 +9,15 @@
 ## When This Runs
 
 **Triggered from Phase 4:**
+
 - After component specification is complete
 - Only if design system is enabled in project
 - Before returning to page specification
 
 **Input:** Complete component specification (mixed content)
 
-**Output:** 
+**Output:**
+
 - Design system entry (component-level info)
 - Page specification reference (page-specific info)
 
@@ -138,6 +140,7 @@ Check if design system folder exists:
 🎉 This is your first design system component!
 
 I'll initialize the design system structure and add this component.
+
 ```
 
 **Route to:** `operations/initialize-design-system.md`
@@ -146,7 +149,9 @@ I'll initialize the design system structure and add this component.
 <output>
 **If not first:**
 ```
+
 📊 Checking existing design system for similar components...
+
 ```
 
 **Continue to Step 3**
@@ -166,10 +171,13 @@ Scan design system folder:
 <output>
 **Existing components found:**
 ```
+
 Found 3 existing components:
+
 - Button [btn-001]
 - Input Field [inp-001]
 - Card [crd-001]
+
 ```
 
 **Continue to Step 4**
@@ -178,7 +186,9 @@ Found 3 existing components:
 <output>
 **No similar components:**
 ```
+
 No similar components found in design system.
+
 ```
 
 **Route to:** `operations/create-new-component.md`
@@ -198,9 +208,11 @@ Compare current component to existing:
 <output>
 **Type match found:**
 ```
+
 🔍 Found existing Button component [btn-001]
 
 Checking similarity...
+
 ```
 
 **Route to:** `assessment/01-scan-existing.md`
@@ -209,8 +221,10 @@ Checking similarity...
 <output>
 **No type match:**
 ```
+
 This is a new component type: [ComponentType]
-```
+
+````
 
 **Route to:** `operations/create-new-component.md`
 </output>
@@ -255,24 +269,26 @@ Login Button:
   states: [default, hover, disabled]
   variants: [primary, secondary]
   styling: {...}
-```
+````
 
 **Output (Page Spec with Reference):**
+
 ```yaml
 Login Button:
   component: Button.primary [btn-001]
   why: Submit login credentials
-  label: "Log in"
-  error_text: "Invalid credentials"
+  label: 'Log in'
+  error_text: 'Invalid credentials'
 ```
 
 **Output (Design System Entry):**
+
 ```yaml
 # D-Design-System/components/button.md
 Button Component [btn-001]:
   states: [default, hover, disabled]
   variants: [primary, secondary]
-  styling: {...}
+  styling: { ... }
 ```
 
 ---
@@ -280,6 +296,7 @@ Button Component [btn-001]:
 ## Router Characteristics
 
 **✅ Does:**
+
 - Check design system status
 - Identify first component
 - Scan existing components
@@ -287,6 +304,7 @@ Button Component [btn-001]:
 - Route to appropriate operation
 
 **❌ Doesn't:**
+
 - Make design decisions
 - Contain specification logic
 - Store component knowledge
@@ -300,12 +318,14 @@ Button Component [btn-001]:
 ## Error Handling
 
 **If design system folder missing but config says enabled:**
+
 ```
 ⚠️ Design system is enabled but folder doesn't exist.
 Treating this as first component and initializing.
 ```
 
 **If component type unclear:**
+
 ```
 ❓ I'm not sure what type of component this is.
 
@@ -321,6 +341,7 @@ Your choice:
 ```
 
 **If similarity check fails:**
+
 ```
 ⚠️ I couldn't determine similarity automatically.
 
@@ -337,6 +358,7 @@ Your choice:
 ## Next Steps
 
 **After routing:**
+
 - Follow the routed operation instructions
 - Complete design system entry
 - Return reference to Phase 4

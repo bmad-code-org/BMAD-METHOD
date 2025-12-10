@@ -21,6 +21,7 @@ By the end, developers have a complete PRD covering both technical foundation an
 **Updated PRD (C-Requirements/) includes:**
 
 **From Phase 3 (Technical Foundation):**
+
 - Platform architecture
 - Data model
 - Integration map
@@ -29,6 +30,7 @@ By the end, developers have a complete PRD covering both technical foundation an
 - Security framework
 
 **Added from Phase 4 (Functional Requirements):**
+
 - All features discovered during page design
 - Page-to-feature traceability
 - Priority rankings
@@ -36,12 +38,14 @@ By the end, developers have a complete PRD covering both technical foundation an
 - Implementation notes
 
 **New in Phase 6:**
+
 - Feature organization by epic/area
 - Development sequence
 - MVP scope definition
 - Technical dependencies mapped
 
 **Handoff Package (E-UI-Roadmap/):**
+
 - Priority sequence document
 - Scenario-to-development mapping
 - Component inventory (if Design System enabled)
@@ -86,18 +90,21 @@ From 2.1-Dog-Calendar:
 ### Features
 
 **User Registration**
+
 - Required by: 1.2-Sign-Up
 - Email validation (format, domain, duplicates)
 - Phone validation with country codes
 - Account activation flow
 
 **User Login**
+
 - Required by: 1.1-Start-Page, multiple pages
 - Email/password authentication
 - Session management (30-day persistence)
 - "Remember me" functionality
 
 **Password Management**
+
 - Required by: 1.1-Start-Page (reset link)
 - Password reset via email
 - Password strength validation
@@ -114,9 +121,11 @@ Reference the scoring you did in Phase 2 to inform priorities:
 ## Development Sequence
 
 ### Priority 1: MVP - Core User Flow
+
 **Target:** Weeks 1-4
 
 Features from Epic 1 (Authentication) + Epic 2 (Core Booking):
+
 - User registration (Impact Score: 14)
 - User login (Impact Score: 16)
 - Availability calendar (Impact Score: 16)
@@ -126,9 +135,11 @@ Features from Epic 1 (Authentication) + Epic 2 (Core Booking):
 Serves Priority 1 target group, addresses highest-impact drivers.
 
 ### Priority 2: Enhanced Features
+
 **Target:** Weeks 5-8
 
 Features from Epic 3 (Payments) + Epic 4 (Notifications):
+
 - Payment processing (Impact Score: 12)
 - Booking confirmations (Impact Score: 11)
 - Calendar sync (Impact Score: 8)
@@ -142,6 +153,7 @@ Features from Epic 3 (Payments) + Epic 4 (Notifications):
 ## Feature Dependencies
 
 **Booking Flow** depends on:
+
 - ✓ User authentication (must be logged in)
 - ✓ Availability calendar (must see open slots)
 - ⚠️ Payment system (can launch with "pay in person" temporarily)
@@ -173,21 +185,25 @@ Your finalized PRD in `C-Requirements/` combines all phases:
 ## 1. Technical Foundation (from Phase 3)
 
 ### Platform Architecture
+
 - Technology stack decisions
-- Infrastructure approach  
+- Infrastructure approach
 - Hosting and deployment
 
 ### Data Model
+
 - Core entities and relationships
 - Database schema
 - Data flow diagrams
 
 ### Integrations
+
 - External services (Google Maps, Stripe, etc.)
 - API specifications
 - Authentication providers
 
 ### Security & Performance
+
 - Authentication/authorization approach
 - Data protection
 - Performance requirements
@@ -196,7 +212,9 @@ Your finalized PRD in `C-Requirements/` combines all phases:
 ## 2. Functional Requirements (from Phase 4)
 
 ### Epic 1: User Authentication & Account Management
+
 **Features:**
+
 - User registration (Required by: 1.2-Sign-Up)
 - User login (Required by: 1.1-Start-Page, multiple)
 - Password management (Required by: 1.1-Start-Page)
@@ -204,25 +222,30 @@ Your finalized PRD in `C-Requirements/` combines all phases:
 [Detailed specifications for each feature]
 
 ### Epic 2: [Next Epic]
+
 [...]
 
 ## 3. Development Roadmap (from Phase 6)
 
 ### Priority 1: MVP (Weeks 1-4)
+
 - Features list with Impact Scores
 - Why these first (references Trigger Map)
 - Timeline estimate
 - Dependencies
 
 ### Priority 2: Enhanced Features (Weeks 5-8)
+
 [...]
 
 ## 4. Dependencies & Constraints
+
 - Technical dependencies between features
 - Design constraints from Phase 4
 - Third-party limitations discovered in Phase 3
 
 ## 5. Success Metrics
+
 - Business goals from Phase 1
 - Feature-specific KPIs
 - How we measure success
@@ -235,7 +258,7 @@ Your finalized PRD in `C-Requirements/` combines all phases:
 **The pattern:**
 
 - **Phase 3:** Initial PRD with technical foundation
-- **Phase 4:** PRD grows with each page (step 4E adds requirements)  
+- **Phase 4:** PRD grows with each page (step 4E adds requirements)
 - **Phase 6 (First time):** Organize MVP scope from completed scenarios
   - Create first handoff package
   - Development can begin
@@ -251,12 +274,14 @@ Your finalized PRD in `C-Requirements/` combines all phases:
 ## When to Use This Phase
 
 **First PRD Finalization when:**
+
 - You have MVP-level scenarios complete (enough for dev to start)
-- Core user flows are specified  
+- Core user flows are specified
 - Critical features are documented
 - Enough work for 2-4 week sprint
 
 **Ongoing PRD Updates as:**
+
 - Additional scenarios complete
 - New feature areas designed
 - Priorities shift based on learning
@@ -285,12 +310,12 @@ Week 9+:  Design continues in parallel with development
 
 Complete list for test automation:
 
-| Scenario | Object ID | Element Type | Notes |
-|----------|-----------|--------------|-------|
-| 1.1 | `welcome-hero-cta` | Button | Primary action |
-| 1.1 | `welcome-signin-link` | Link | Secondary action |
-| 1.2 | `signin-email-input` | Input | Required field |
-| 1.2 | `signin-error-email` | Error | Validation message |
+| Scenario | Object ID             | Element Type | Notes              |
+| -------- | --------------------- | ------------ | ------------------ |
+| 1.1      | `welcome-hero-cta`    | Button       | Primary action     |
+| 1.1      | `welcome-signin-link` | Link         | Secondary action   |
+| 1.2      | `signin-email-input`  | Input        | Required field     |
+| 1.2      | `signin-error-email`  | Error        | Validation message |
 
 ---
 
@@ -299,6 +324,7 @@ Complete list for test automation:
 ### Review Completeness
 
 Before handoff, verify:
+
 - All scenarios specified and reviewed
 - Design system covers all components
 - Object IDs assigned throughout
@@ -308,6 +334,7 @@ Before handoff, verify:
 ### Identify Priorities
 
 With Freyja, map your Trigger Map priorities to development order:
+
 - Which user triggers are most critical?
 - What's the minimum viable experience?
 - What can wait for later releases?
@@ -315,6 +342,7 @@ With Freyja, map your Trigger Map priorities to development order:
 ### Document Technical Context
 
 Capture what developers need to know:
+
 - Design decisions and their rationale
 - Technical constraints discovered during design
 - Interaction patterns that need special attention
@@ -323,6 +351,7 @@ Capture what developers need to know:
 ### Create the Handoff
 
 Organize everything into the UI Roadmap folder:
+
 - Clear priority sequence
 - Complete component inventory
 - Technical notes and open questions
@@ -336,26 +365,31 @@ Organize everything into the UI Roadmap folder:
 ## Design Handoff Verification
 
 ### Product Foundation
+
 - [ ] Product Brief complete and current
 - [ ] Trigger Map with prioritized users and goals
 - [ ] ICP clearly defined
 
 ### Requirements
+
 - [ ] PRD with technical specifications
 - [ ] Platform architecture documented
 - [ ] Integration requirements listed
 
 ### Visual Design
+
 - [ ] All scenarios have specifications
 - [ ] All pages have Object IDs
 - [ ] States documented (empty, loading, error, success)
 
 ### Design System
+
 - [ ] All components documented
 - [ ] Design tokens defined
 - [ ] Usage guidelines written
 
 ### Validation
+
 - [ ] HTML prototypes created for key scenarios
 - [ ] Stakeholder review complete
 - [ ] Open questions documented
@@ -368,12 +402,14 @@ Organize everything into the UI Roadmap folder:
 ## When to Use This Phase
 
 **First handoff when:**
+
 - You have enough scenarios for MVP
 - Core user flows are specified
 - Critical components are documented
 - Developers can start building foundational features
 
 **Ongoing handoffs as:**
+
 - Each major scenario completes
 - New component patterns emerge
 - Design decisions affect development
@@ -402,6 +438,7 @@ Development and design work in parallel streams, with regular sync points.
 ## What to Prepare
 
 Bring:
+
 - Completed scenario specifications (Phase 4)
 - Design System (Phase 5)
 - PRD (Phase 3)
@@ -423,21 +460,25 @@ Your UI Roadmap enables:
 ## Tips for Great Sessions
 
 **Think from dev perspective**
+
 - What questions will developers have?
 - What decisions can't you make for them?
 - What context will save them time?
 
 **Be explicit about priorities**
+
 - Not everything is Priority 1
 - Make trade-offs visible
 - Connect priorities to business goals
 
 **Document the unknowns**
+
 - Open questions are valuable
 - Don't pretend certainty you don't have
 - Let dev team contribute decisions
 
 **Keep it updated**
+
 - Handoff is ongoing, not one-time
 - Update as design evolves
 - Maintain as source of truth
@@ -453,6 +494,7 @@ WDS → E-UI-Roadmap/ → BMM Architecture & Stories
 ```
 
 The UI Roadmap provides:
+
 - Context for architecture decisions
 - Specifications for story creation
 - Priorities for sprint planning
@@ -466,5 +508,4 @@ See: `examples/dog-week-patterns/E-UI-Roadmap/` for a complete UI Roadmap from a
 
 ---
 
-*Phase 6 of the Whiteport Design Studio method*
-
+_Phase 6 of the Whiteport Design Studio method_

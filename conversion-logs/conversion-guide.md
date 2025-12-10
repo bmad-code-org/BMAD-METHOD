@@ -13,6 +13,7 @@ This directory contains detailed logs of each conversion session, keeping the ma
 ## Structure
 
 Each session gets its own log file:
+
 - `session-YYYY-MM-DD-topic.md` - Detailed work log for that session
 
 ---
@@ -28,6 +29,7 @@ Each session gets its own log file:
 ## What Goes in Session Logs
 
 **Each session log should document:**
+
 - Date and duration
 - Objectives
 - Files created/modified
@@ -43,6 +45,7 @@ Each session gets its own log file:
 ## What Stays in Roadmap
 
 **The main roadmap (`WDS-V6-CONVERSION-ROADMAP.md`) should contain:**
+
 - Current work in progress
 - Next planned work
 - Future backlog items

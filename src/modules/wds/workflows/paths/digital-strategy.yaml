@@ -36,4 +36,3 @@ phases:
         command: "trigger-mapping"
         output: "Trigger Map with personas, business goals, Feature Impact Analysis"
         note: "Strategic user research and prioritization"
-

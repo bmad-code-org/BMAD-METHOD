@@ -43,6 +43,7 @@ People light up when asked to share their vision. They become collaborators, not
 **Opening (5-10 minutes)**
 
 Saga asks about your project in your own words. She listens for:
+
 - What you emphasize naturally
 - Where your energy goes
 - What excites vs. what stresses you
@@ -51,6 +52,7 @@ Saga asks about your project in your own words. She listens for:
 **Exploration (15-30 minutes)**
 
 The conversation adapts to what you reveal:
+
 - If you mention users → deeper into user insights
 - If you mention problems → explore the cost of not solving
 - If you mention competition → discover differentiation
@@ -61,6 +63,7 @@ Each answer reveals the next question. It's jazz, not classical music.
 **Synthesis (10-15 minutes)**
 
 Saga reflects back your vision in organized form:
+
 - Connecting dots you shared across topics
 - Highlighting insights you might not have seen
 - Building the foundation for next phases
@@ -68,6 +71,7 @@ Saga reflects back your vision in organized form:
 ### Living Document
 
 As you talk, the Product Brief grows in real-time:
+
 - Immediate validation and refinement
 - Real-time course correction
 - You own the content because you helped create it
@@ -78,11 +82,13 @@ As you talk, the Product Brief grows in real-time:
 ## When to Use This Phase
 
 **Always start here if:**
+
 - Building something new
 - Starting a new project
 - Need strategic clarity before diving into design
 
 **Skip if:**
+
 - You already have a clear, documented product brief
 - Just enhancing an existing feature
 - Working on a design system without new product context
@@ -92,6 +98,7 @@ As you talk, the Product Brief grows in real-time:
 ## What to Prepare
 
 Come ready to share:
+
 - Your project idea (even if rough)
 - The problem you're solving
 - Who might use it
@@ -116,18 +123,22 @@ The brief becomes the reference point everyone shares.
 ## Tips for Great Sessions
 
 **Let the conversation flow**
+
 - Share what feels important, even if it seems tangential
 - Follow your energy - where you're excited matters
 
 **Think out loud**
+
 - Half-formed thoughts are welcome
 - will help you refine them
 
 **Be honest about uncertainty**
+
 - "I'm not sure about X" is useful information
 - Better to surface doubts now than later
 
 **Review as you go**
+
 - Check that what's captured matches your thinking
 - Correct misunderstandings immediately
 
@@ -139,5 +150,4 @@ See: `examples/dog-week-patterns/A-Product-Brief/` for a complete Product Brief 
 
 ---
 
-*Phase 1 of the Whiteport Design Studio method*
-
+_Phase 1 of the Whiteport Design Studio method_

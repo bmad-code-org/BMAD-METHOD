@@ -17,12 +17,13 @@
 - Where users go next (exit points):</ask>
 
 <action>Store page_basics:
-  - page_title
-  - url_route
-  - user_goal
-  - entry_points
-  - exit_points
-</action>
+
+- page_title
+- url_route
+- user_goal
+- entry_points
+- exit_points
+  </action>
 
 <output>✅ **Page basics captured!**
 
@@ -40,15 +41,15 @@
 
 ```yaml
 page_basics:
-  title: "Sign In"
-  route: "/auth/signin"
-  user_goal: "Authenticate to access their account"
+  title: 'Sign In'
+  route: '/auth/signin'
+  user_goal: 'Authenticate to access their account'
   entry_points:
     - "Landing page 'Sign In' button"
-    - "Protected route redirects"
+    - 'Protected route redirects'
   exit_points:
-    - "Dashboard (success)"
-    - "Password reset (forgot password)"
+    - 'Dashboard (success)'
+    - 'Password reset (forgot password)'
 ```
 
 ---
@@ -56,4 +57,3 @@ page_basics:
 ## NEXT STEP
 
 Load `substeps/4c-02-layout-sections.md`
-

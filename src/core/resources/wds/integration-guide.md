@@ -60,7 +60,8 @@ WDS (Whiteport Design Studio) and BMad Method integrate seamlessly to create a c
 
 **When:** WDS Phase 6 Complete
 **Direction:** WDS → BMad (Complete design handoff)
-**Files:** 
+**Files:**
+
 - `deliveries/DD-*.yaml` (Design Deliveries)
 - `C-Scenarios/` (All scenario specifications)
 - `D-Design-System/` (Component library)
@@ -71,12 +72,14 @@ WDS (Whiteport Design Studio) and BMad Method integrate seamlessly to create a c
 **BMad Action:** Read everything, break down into dev epics, implement features
 
 **Includes:**
+
 - Multi-agent handoff dialog (20-min structured conversation)
 - All design deliveries packaged as testable epics
 - Complete design system specifications
 - Test scenarios for validation
 
-**Read:** 
+**Read:**
+
 - [design-delivery-spec.md](design-delivery-spec.md)
 - [handoff-protocol.md](handoff-protocol.md)
 
@@ -87,6 +90,7 @@ WDS (Whiteport Design Studio) and BMad Method integrate seamlessly to create a c
 **When:** After BMad Implementation Complete
 **Direction:** BMad → WDS (BMad integrates with WDS testing)
 **Files:**
+
 - `test-reports/TR-*.md` (Test results)
 - `issues/ISS-*.md` (Issues found)
 
@@ -96,13 +100,14 @@ WDS (Whiteport Design Studio) and BMad Method integrate seamlessly to create a c
 **BMad Action:** Fix issues, retest until designer approval
 
 **Process:**
+
 1. BMad notifies WDS: "Feature complete, ready for validation"
 2. WDS runs test scenarios
 3. WDS creates issues if problems found
 4. BMad fixes issues
 5. Repeat until WDS signs off
 
-**Read:** [testing-protocol.md](testing-protocol.md) *(to be created)*
+**Read:** [testing-protocol.md](testing-protocol.md) _(to be created)_
 
 ---
 
@@ -167,17 +172,17 @@ project/
 ```yaml
 platform:
   frontend:
-    framework: "react_native"
+    framework: 'react_native'
   backend:
-    framework: "supabase"
+    framework: 'supabase'
 
 integrations:
-  - name: "supabase_auth"
+  - name: 'supabase_auth'
     required: true
 
 constraints:
-  - "Must work offline"
-  - "Must be accessible"
+  - 'Must work offline'
+  - 'Must be accessible'
 ```
 
 **This overrides BMad's tech stack decisions!**
@@ -190,6 +195,7 @@ constraints:
 
 **Strategic Approach:**
 Design until you have a **complete testable user flow** that:
+
 - ✅ Delivers value to the business
 - ✅ Delivers value to the end user
 - ✅ Can be tested for real feedback
@@ -198,12 +204,14 @@ Design until you have a **complete testable user flow** that:
 **You're NOT designing everything at once!** You're designing the minimum complete flow that can be tested and validated.
 
 **Phase 4: UX Design**
+
 - Design scenarios for ONE complete user flow
 - Create specifications for each scenario
 - Ensure the flow delivers measurable value
 - Verify it's testable end-to-end
 
 **Phase 5: Design System**
+
 - Define components needed for THIS flow
 - Create design tokens for these components
 - Document usage guidelines
@@ -232,6 +240,7 @@ D-Design-System/
 **Iterative Approach:**
 
 **First Delivery (Fastest Path to Testing):**
+
 1. **Design ONE complete user flow** (Phases 4-5)
    - Example: Login & Onboarding
    - Delivers value: Users can access the app
@@ -251,19 +260,22 @@ D-Design-System/
 5. **Hand off to BMad** → Development starts!
 
 **While BMad builds DD-001, you design DD-002:**
+
 - Continue with next complete flow
 - Example: Morning Dog Care
 - Hand off when ready
 - Parallel work = faster delivery
 
 **Benefits:**
+
 - ✅ Get to testing faster (weeks, not months)
 - ✅ Validate design with real users early
 - ✅ Learn and iterate before designing everything
 - ✅ Parallel work (design + dev happening simultaneously)
 - ✅ Deliver value incrementally
 
-**Templates:** 
+**Templates:**
+
 - `templates/design-delivery.template.yaml`
 - `templates/test-scenario.template.yaml`
 
@@ -272,12 +284,14 @@ D-Design-System/
 ### Phase 7: Testing (After BMad Implementation)
 
 **Wait for BMad notification:**
+
 ```
 "Feature complete: DD-001 Login & Onboarding
  Ready for designer validation"
 ```
 
 **Then:**
+
 1. **Run test scenarios**
 2. **Create issues** if problems found
 3. **Wait for fixes**
@@ -297,12 +311,12 @@ D-Design-System/
 if [ -d "deliveries" ]; then
   echo "✓ WDS Design Deliveries found"
   mode="wds-enhanced"
-  
+
 # Priority 2: Platform Requirements
 elif [ -f "A-Project-Brief/platform-requirements.yaml" ]; then
   echo "✓ WDS Platform Requirements found"
   mode="wds-basic"
-  
+
 # Priority 3: Traditional
 else
   echo "⚠ No WDS artifacts"
@@ -472,6 +486,7 @@ fi
 **Phase 7:** Wait for implementation, then validate → **Touch Point 3**
 
 **Repeat Phases 4-7 for each flow:**
+
 - While BMad builds flow 1, design flow 2
 - Parallel work = faster delivery
 - Test and learn early
@@ -479,15 +494,18 @@ fi
 ### For BMad Projects
 
 **Check for Touch Point 1:** Platform Requirements
+
 - If found: Read and respect tech stack
 - If not found: Make your own decisions
 
 **Wait for Touch Point 2:** Design Deliveries
+
 - Receive complete design package
 - Break down into dev epics
 - Implement features
 
 **Trigger Touch Point 3:** Request validation
+
 - Notify designer when complete
 - Fix issues as needed
 - Iterate until sign-off

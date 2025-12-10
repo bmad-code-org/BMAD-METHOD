@@ -11,6 +11,7 @@
 **Best for:** Working within IDE, integrated workflow
 
 **Steps:**
+
 ```
 1. Open VS Code
 2. Extensions (Ctrl+Shift+X / Cmd+Shift+X)
@@ -20,12 +21,14 @@
 ```
 
 **Usage:**
+
 - Create new `.excalidraw` file
 - Click to open in Excalidraw editor
 - Edit and save (Ctrl+S / Cmd+S)
 - File auto-saves to project
 
 **Pros:**
+
 - ✅ Never leave IDE
 - ✅ Direct file access
 - ✅ Git integration
@@ -36,6 +39,7 @@
 **Best for:** Quick sketching, no installation
 
 **Steps:**
+
 ```
 1. Go to https://excalidraw.com
 2. Start drawing
@@ -44,12 +48,14 @@
 ```
 
 **Usage:**
+
 - Open in browser
 - Draw and iterate
 - Download when done
 - Place in project
 
 **Pros:**
+
 - ✅ Zero installation
 - ✅ Works anywhere
 - ✅ Always latest version
@@ -60,6 +66,7 @@
 **Best for:** Dedicated sketching tool
 
 **Steps:**
+
 ```
 1. Download from https://github.com/excalidraw/excalidraw-desktop
 2. Install for your OS
@@ -67,6 +74,7 @@
 ```
 
 **Pros:**
+
 - ✅ Standalone app
 - ✅ Offline capable
 - ✅ Native performance
@@ -78,13 +86,14 @@
 ### **Enable Excalidraw in Project**
 
 **During project initialization:**
+
 ```
 Agent: "Which sketching tool would you like to use?
         1. Paper and pen (scan/photograph)
         2. Excalidraw (digital, AI-friendly)
         3. Figma (professional tool)
         4. Other digital tool
-        
+
         Your choice:"
 ```
 
@@ -94,30 +103,30 @@ Agent: "Which sketching tool would you like to use?
 
 ```yaml
 project:
-  name: "Dog Week"
-  wds_version: "6.0"
+  name: 'Dog Week'
+  wds_version: '6.0'
 
 sketching:
-  tool: excalidraw  # "paper" | "excalidraw" | "figma" | "other"
-  
+  tool: excalidraw # "paper" | "excalidraw" | "figma" | "other"
+
   excalidraw:
     enabled: true
-    
+
     # Auto-export to PNG/SVG on save
-    auto_export: false  # true | false
-    
+    auto_export: false # true | false
+
     # Load WDS component library
-    use_library: true   # true | false
-    
+    use_library: true # true | false
+
     # Grid settings
-    grid_size: 20       # pixels
-    snap_to_grid: true  # true | false
-    
+    grid_size: 20 # pixels
+    snap_to_grid: true # true | false
+
     # Default theme
-    theme: light        # "light" | "dark"
-    
+    theme: light # "light" | "dark"
+
     # File organization
-    sketches_folder: "sketches"  # relative to scenario folder
+    sketches_folder: 'sketches' # relative to scenario folder
 ```
 
 ---
@@ -142,15 +151,18 @@ sketching:
 ### **Recommended Settings**
 
 **Grid:**
+
 - Size: 20px (matches WDS spacing)
 - Snap: Enabled (for alignment)
 - Visible: Optional (toggle with Ctrl+')
 
 **Theme:**
+
 - Light: Better for screenshots
 - Dark: Easier on eyes for long sessions
 
 **Auto-save:**
+
 - Enabled by default in VS Code
 - Saves on every change
 
@@ -161,6 +173,7 @@ sketching:
 ### **What is it?**
 
 Pre-built Excalidraw components for common UI elements:
+
 - Device frames (mobile, tablet, desktop)
 - Buttons, inputs, cards
 - Navigation patterns
@@ -171,6 +184,7 @@ Pre-built Excalidraw components for common UI elements:
 **If `use_library: true` in config:**
 
 **VS Code:**
+
 ```
 1. Open any .excalidraw file
 2. Click library icon (bottom toolbar)
@@ -180,6 +194,7 @@ Pre-built Excalidraw components for common UI elements:
 ```
 
 **Web:**
+
 ```
 1. Open https://excalidraw.com
 2. Click library icon
@@ -190,6 +205,7 @@ Pre-built Excalidraw components for common UI elements:
 ### **Usage**
 
 **Drag and drop:**
+
 ```
 1. Open library panel
 2. Find component (e.g., "Mobile Frame")
@@ -198,6 +214,7 @@ Pre-built Excalidraw components for common UI elements:
 ```
 
 **Components included:**
+
 - Mobile Frame (375x812)
 - Tablet Frame (768x1024)
 - Desktop Frame (1440x900)
@@ -215,6 +232,7 @@ Pre-built Excalidraw components for common UI elements:
 ### **Why 20px Grid?**
 
 **Matches WDS spacing system:**
+
 - Consistent alignment
 - Clean layouts
 - Easy calculations
@@ -223,6 +241,7 @@ Pre-built Excalidraw components for common UI elements:
 ### **Setup**
 
 **VS Code:**
+
 ```
 Settings → Extensions → Excalidraw
 - Grid Mode: ✓ Enabled
@@ -231,6 +250,7 @@ Settings → Extensions → Excalidraw
 ```
 
 **Web:**
+
 ```
 View menu → Show grid (Ctrl+')
 Settings → Grid size: 20
@@ -239,6 +259,7 @@ Settings → Grid size: 20
 ### **Usage**
 
 **All elements snap to 20px increments:**
+
 - Position: 0, 20, 40, 60, 80...
 - Size: 100, 120, 140, 160...
 - Spacing: 20, 40, 60, 80...
@@ -250,12 +271,14 @@ Settings → Grid size: 20
 ### **Light Theme (Recommended)**
 
 **Best for:**
+
 - Screenshots and exports
 - GitHub display
 - Documentation
 - Presentations
 
 **Colors:**
+
 - Background: White
 - Shapes: Light colors
 - Text: Dark gray/black
@@ -263,11 +286,13 @@ Settings → Grid size: 20
 ### **Dark Theme**
 
 **Best for:**
+
 - Long sketching sessions
 - Reduced eye strain
 - Personal preference
 
 **Colors:**
+
 - Background: Dark gray
 - Shapes: Bright colors
 - Text: White/light gray
@@ -275,11 +300,13 @@ Settings → Grid size: 20
 ### **Setup**
 
 **VS Code:**
+
 ```
 Settings → Excalidraw → Theme: light/dark
 ```
 
 **Web:**
+
 ```
 Settings icon → Appearance → Theme
 ```
@@ -310,6 +337,7 @@ C-Scenarios/
 ### **Naming Conventions**
 
 **Source files:**
+
 ```
 [page-name].excalidraw
 [component-name].excalidraw
@@ -317,6 +345,7 @@ C-Scenarios/
 ```
 
 **Exports:**
+
 ```
 [page-name].png          (for GitHub/docs)
 [page-name].svg          (scalable, optional)
@@ -324,6 +353,7 @@ C-Scenarios/
 ```
 
 **Examples:**
+
 ```
 dashboard.excalidraw
 dashboard.png
@@ -340,6 +370,7 @@ user-flow.svg
 ### **Manual Export**
 
 **VS Code:**
+
 ```
 1. Open .excalidraw file
 2. Click hamburger menu (top-right)
@@ -348,6 +379,7 @@ user-flow.svg
 ```
 
 **Web:**
+
 ```
 1. File menu → Export image
 2. Choose format (PNG/SVG)
@@ -360,6 +392,7 @@ user-flow.svg
 **If `auto_export: true` in config:**
 
 **GitHub Actions automatically:**
+
 - Detects `.excalidraw` file changes
 - Generates PNG and SVG
 - Commits to repository
@@ -374,6 +407,7 @@ user-flow.svg
 ### **Essential Shortcuts**
 
 **Drawing:**
+
 - `R` - Rectangle
 - `D` - Diamond
 - `O` - Ellipse
@@ -382,17 +416,20 @@ user-flow.svg
 - `L` - Line
 
 **Editing:**
+
 - `Ctrl/Cmd + D` - Duplicate
 - `Ctrl/Cmd + G` - Group
 - `Ctrl/Cmd + Shift + G` - Ungroup
 - `Delete` - Delete selected
 
 **View:**
+
 - `Ctrl/Cmd + '` - Toggle grid
 - `Ctrl/Cmd + Wheel` - Zoom
 - `Space + Drag` - Pan canvas
 
 **Selection:**
+
 - `Ctrl/Cmd + A` - Select all
 - `Shift + Click` - Multi-select
 - `Ctrl/Cmd + Click` - Add to selection
@@ -406,6 +443,7 @@ user-flow.svg
 **Issue:** Extension installed but files won't open
 
 **Solutions:**
+
 1. Restart VS Code
 2. Check extension is enabled (Extensions panel)
 3. Try right-click → Open With → Excalidraw
@@ -417,6 +455,7 @@ user-flow.svg
 **Issue:** "Invalid file" error
 
 **Solutions:**
+
 1. Verify file extension is `.excalidraw`
 2. Check JSON is valid (open in text editor)
 3. Try opening in web version
@@ -428,6 +467,7 @@ user-flow.svg
 **Issue:** Elements don't snap to grid
 
 **Solutions:**
+
 1. Enable "Snap to grid" in settings
 2. Check grid size is set (20px)
 3. Toggle grid visibility (Ctrl+')
@@ -438,6 +478,7 @@ user-flow.svg
 **Issue:** Component library not appearing
 
 **Solutions:**
+
 1. Verify file path is correct
 2. Check `.excalidrawlib` file exists
 3. Try uploading manually
@@ -449,6 +490,7 @@ user-flow.svg
 ## Best Practices
 
 ### **DO ✅**
+
 - Use 20px grid for alignment
 - Save frequently (auto-save helps)
 - Export PNG for documentation
@@ -457,6 +499,7 @@ user-flow.svg
 - Label all elements clearly
 
 ### **DON'T ❌**
+
 - Don't skip grid alignment
 - Don't forget to export for GitHub
 - Don't delete source files
@@ -469,12 +512,14 @@ user-flow.svg
 ## Next Steps
 
 **After setup:**
+
 1. ✅ Excalidraw installed and configured
 2. ✅ Project config updated
 3. ✅ Library loaded (optional)
 4. ✅ Grid and theme set
 
 **Now learn:**
+
 - [Sketching Guide](sketching-guide.md) - How to sketch in WDS
 - [AI Collaboration](ai-collaboration.md) - Work with AI
 - [Export Workflow](export-workflow.md) - Share your work

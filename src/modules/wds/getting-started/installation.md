@@ -33,6 +33,7 @@ npm start
 ## Verify Installation
 
 You should see:
+
 ```
 ✅ WDS is running
 🎨 Ready to design

@@ -1,4 +1,5 @@
 # Module 01: Why WDS Matters
+
 ## Lesson 2: Becoming a Linchpin Designer
 
 **The solution: WDS methodology**
@@ -14,6 +15,7 @@ WDS teaches you to be this person systematically. Not through vague advice about
 This is what makes you indispensable. Not your Figma skills. Not your aesthetic taste. Your ability to walk into chaos and create order.
 
 **The irreplaceable designer:**
+
 - Transforms complexity into clarity
 - Invents solutions nobody expected
 - Bridges business, psychology, and technology
@@ -32,6 +34,7 @@ AI can generate variations endlessly and make things look polished on the surfac
 This is where user-centric creativity becomes critical. You're not just creating - you're evaluating, connecting, and protecting. You understand what it feels like to be a parent struggling to get their kids to help with the dog. You can sense when a business goal conflicts with user needs and find a creative solution that serves both. You're the advocate for the user's presence in every decision. You're the gatekeeper who ensures the impactful meeting between business and user actually happens through the product.
 
 **The designer as gatekeeper:**
+
 - Catches AI's confident but ridiculous mistakes before they ship
 - Evaluates if solutions actually make logical sense
 - Ensures business goals don't contradict user needs
@@ -54,6 +57,7 @@ Here's the paradigm shift: **The design becomes the specification. The specifica
 You remain in the loop - the skilled, experienced designer who evaluates AI's work, catches its confident mistakes, and ensures what ships actually makes sense. You become the key designer player - the person who makes things happen. AI becomes your tool - powerful but requiring your expertise to guide it.
 
 **The designer's transformation:**
+
 - **Before:** Creates mockups → Hands off → Hopes it works → Limited leverage
 - **After:** Design thinking → Specification → Gatekeeper → Clarity for all → Scales infinitely
 - **Result:** From replaceable cog to indispensable gatekeeper - your design IS the product

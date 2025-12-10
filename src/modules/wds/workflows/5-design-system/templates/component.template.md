@@ -21,10 +21,12 @@
 ## States
 
 **Required States:**
+
 - default
 - [other required states]
 
 **Optional States:**
+
 - [optional states if any]
 
 **State Descriptions:**
@@ -105,6 +107,7 @@
 **Pages:** [count]
 
 **Examples:**
+
 - [Page] - [Usage]
 
 ---
@@ -121,6 +124,7 @@
 **Last Updated:** [Date]
 
 **Changes:**
+
 - [Date]: [Change]
 
 ---

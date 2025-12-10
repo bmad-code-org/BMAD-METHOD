@@ -7,29 +7,34 @@
 ## The 5 Questions
 
 ### 1. Core Feature
+
 ```
 "Transparent pricing breakdown - shows all costs upfront"
 ```
 
 ### 2. Entry Point
+
 ```
 "Google search 'affordable [product]'"
 ```
 
 ### 3. Mental State
+
 ```
 "Anxious about hidden costs, need transparency before committing"
 ```
 
 ### 4. Mutual Success
+
 ```
 Business: Purchase completed
 User: Confident in value, no surprise costs
 ```
 
 ### 5. Shortest Path
+
 ```
-Google → Product page → Transparent pricing → 
+Google → Product page → Transparent pricing →
 Add to cart → Checkout → Confirmation
 ```
 

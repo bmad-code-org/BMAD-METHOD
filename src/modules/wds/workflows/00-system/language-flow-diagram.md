@@ -29,6 +29,7 @@ Product languages: EN, SE
 ```
 
 **Agent stores:**
+
 - `specification_language = "EN"`
 - `product_languages = ["EN", "SE"]`
 
@@ -74,6 +75,7 @@ config:
 ```
 
 **Agent now knows:**
+
 - Write specs in English
 - Request content in English AND Swedish for all text
 
@@ -124,11 +126,12 @@ Line height: 1.2
 ...
 ```
 
-*Spec written in English (specification_language)*
+_Spec written in English (specification_language)_
 
 ### Step 3: Content with Translations
 
 **Agent reads config:**
+
 ```xml
 <action>Load product_languages from config → ["EN", "SE"]</action>
 ```
@@ -147,6 +150,7 @@ SE:
 ```
 
 **User provides:**
+
 ```
 EN: Every walk. on time. Every time.
 
@@ -154,6 +158,7 @@ SE: Varje promenad. i tid. Varje gång.
 ```
 
 **Agent validates:**
+
 ```
 ✅ EN content: 37 characters (fits 60 capacity)
 ✅ SE content: 36 characters (fits 60 capacity)
@@ -168,20 +173,23 @@ SE: Varje promenad. i tid. Varje gång.
 ```markdown
 # 1.1 Start Page
 
-The start page serves as the primary entry point...    ← English (spec language)
+The start page serves as the primary entry point... ← English (spec language)
 
 ## Page Sections
 
 ### Hero Object
-**Purpose**: Primary value proposition                 ← English (spec language)
+
+**Purpose**: Primary value proposition ← English (spec language)
 
 #### Primary Headline
+
 **OBJECT ID**: `start-hero-headline`
+
 - **Component**: H1 heading (`.text-heading-1`)
-- **Position**: Center of hero section                 ← English (spec language)
-- **Style**: Bold, 42px, line-height 1.2               ← English (spec language)
-- **Behavior**: Updates with language toggle           ← English (spec language)
-- **Content**:                                         ← Product languages
+- **Position**: Center of hero section ← English (spec language)
+- **Style**: Bold, 42px, line-height 1.2 ← English (spec language)
+- **Behavior**: Updates with language toggle ← English (spec language)
+- **Content**: ← Product languages
   - EN: "Every walk. on time. Every time."
   - SE: "Varje promenad. i tid. Varje gång."
 ```
@@ -194,39 +202,48 @@ The start page serves as the primary entry point...    ← English (spec languag
 
 ```markdown
 ### Hero Object
-**Purpose**: Primary value proposition                 ← Spec language
+
+**Purpose**: Primary value proposition ← Spec language
 
 #### Primary Headline
+
 **OBJECT ID**: `start-hero-headline`
+
 - **Component**: H1 heading
-- **Position**: Center of hero, top                    ← Spec language
+- **Position**: Center of hero, top ← Spec language
 - **Content**:
-  - EN: "Every walk. on time. Every time."            ← Product languages
+  - EN: "Every walk. on time. Every time." ← Product languages
   - SE: "Varje promenad. i tid. Varje gång."
 
 #### Supporting Text
+
 **OBJECT ID**: `start-hero-supporting`
+
 - **Component**: Body text
-- **Position**: Below headline                         ← Spec language
+- **Position**: Below headline ← Spec language
 - **Content**:
-  - EN: "Never miss a walk again."                    ← Product languages
+  - EN: "Never miss a walk again." ← Product languages
   - SE: "Missa aldrig en promenad."
 
 #### Primary CTA
+
 **OBJECT ID**: `start-hero-cta`
+
 - **Component**: Button Primary
-- **Position**: Center, below text                     ← Spec language
+- **Position**: Center, below text ← Spec language
 - **Content**:
-  - EN: "Get Started"                                 ← Product languages
+  - EN: "Get Started" ← Product languages
   - SE: "Kom Igång"
 ```
 
 **Reading in English:**
+
 > Every walk. on time. Every time.
 > Never miss a walk again.
 > [Get Started]
 
 **Reading in Swedish:**
+
 > Varje promenad. i tid. Varje gång.
 > Missa aldrig en promenad.
 > [Kom Igång]
@@ -254,16 +271,16 @@ const supportedLanguages = ['en', 'se'];
 const translations = {
   'start-hero-headline': {
     en: 'Every walk. on time. Every time.',
-    se: 'Varje promenad. i tid. Varje gång.'
+    se: 'Varje promenad. i tid. Varje gång.',
   },
   'start-hero-supporting': {
     en: 'Never miss a walk again.',
-    se: 'Missa aldrig en promenad.'
+    se: 'Missa aldrig en promenad.',
   },
   'start-hero-cta': {
     en: 'Get Started',
-    se: 'Kom Igång'
-  }
+    se: 'Kom Igång',
+  },
 };
 
 // Language toggle
@@ -342,11 +359,13 @@ function setLanguage(lang: 'en' | 'se') {
 ### ✅ Two Distinct Languages
 
 **Specification Language:**
+
 - Documentation language
 - For designers, PMs, developers
 - Describes structure, behavior, logic
 
 **Product Languages:**
+
 - User-facing content
 - What end users see
 - Can be multiple languages
@@ -354,6 +373,7 @@ function setLanguage(lang: 'en' | 'se') {
 ### ✅ Early Configuration
 
 **Set during workflow init** - before any design work
+
 - No mid-project surprises
 - All stakeholders aligned
 - Complete from day one
@@ -361,6 +381,7 @@ function setLanguage(lang: 'en' | 'se') {
 ### ✅ Automatic Propagation
 
 **Config flows through all phases:**
+
 - Phase 1: Brief in spec language
 - Phase 2: Trigger Map in spec language
 - Phase 4: Specs in spec language, content in ALL product languages
@@ -387,6 +408,7 @@ Each language complete and coherent!
 ## Example: Adding Norwegian Mid-Project
 
 **Original config:**
+
 ```yaml
 product_languages:
   - EN
@@ -396,20 +418,23 @@ product_languages:
 **User needs Norwegian:**
 
 1. **Update config:**
+
 ```yaml
 product_languages:
   - EN
   - SE
-  - NO  # Added
+  - NO # Added
 ```
 
 2. **Add to existing specs:**
+
 ```markdown
 #### Primary Headline
+
 - **Content**:
   - EN: "Every walk. on time."
   - SE: "Varje promenad. i tid."
-  - NO: "Hver tur. i tide."  ← Add to all text objects
+  - NO: "Hver tur. i tide." ← Add to all text objects
 ```
 
 3. **Future text objects automatically include NO**
@@ -419,6 +444,3 @@ Agents read updated config and request 3 languages going forward.
 ---
 
 **Language configuration ensures complete, production-ready translations from the very beginning!** 🌍✨
-
-
-

@@ -21,6 +21,7 @@ Generate unique component ID:
 </action>
 
 **Type Prefixes:**
+
 ```
 Button → btn
 Input Field → inp
@@ -51,6 +52,7 @@ Spacer → spc
 ```
 
 **Example:**
+
 ```
 Component Type: Button
 Existing Button IDs: btn-001, btn-002
@@ -78,6 +80,7 @@ Categorize component for organization:
 </action>
 
 **Example:**
+
 ```
 Component: Button
 Category: Interactive
@@ -91,6 +94,7 @@ Category: Interactive
 From complete specification, extract component-level info:
 
 **Visual Attributes:**
+
 - Size (small, medium, large)
 - Shape (rounded, square, pill)
 - Color scheme
@@ -99,6 +103,7 @@ From complete specification, extract component-level info:
 - Border style
 
 **Behavioral Attributes:**
+
 - States (default, hover, active, disabled, loading, error)
 - Interactions (click, hover, focus, blur)
 - Animations/transitions
@@ -106,17 +111,19 @@ From complete specification, extract component-level info:
 - Accessibility attributes
 
 **Functional Attributes:**
+
 - Purpose/role
 - Input/output type
 - Validation rules
 - Required/optional
 
 **Design System Attributes:**
+
 - Variants (if any)
 - Design tokens used
 - Figma reference (if Mode B)
 - Library component (if Mode C)
-</action>
+  </action>
 
 ---
 
@@ -130,7 +137,7 @@ Use component template to create file:
 
 **Template Structure:**
 
-```markdown
+````markdown
 # [Component Name] [component-id]
 
 **Type:** [Interactive/Form/Layout/Content/Feedback/Navigation]
@@ -150,6 +157,7 @@ Use component template to create file:
 [If component has variants, list them]
 
 **Example:**
+
 - primary - Main call-to-action
 - secondary - Secondary actions
 - ghost - Subtle actions
@@ -162,12 +170,14 @@ This component has no variants.
 ## States
 
 **Required States:**
+
 - default
 - hover
 - active
 - disabled
 
 **Optional States:**
+
 - loading
 - error
 - success
@@ -191,24 +201,26 @@ This component has no variants.
 ### Design Tokens
 
 [If using design tokens:]
+
 ```yaml
 colors:
   background: primary-500
   text: white
   border: primary-600
-  
+
 typography:
   font-size: text-base
   font-weight: semibold
-  
+
 spacing:
   padding-x: 4
   padding-y: 2
-  
+
 effects:
   border-radius: md
   shadow: sm
 ```
+````
 
 ### Figma Reference
 
@@ -245,6 +257,7 @@ effects:
 ### Animations
 
 [If component has animations:]
+
 - [Animation description]
 - Duration: [ms]
 - Easing: [easing function]
@@ -254,12 +267,14 @@ effects:
 ## Accessibility
 
 **ARIA Attributes:**
+
 - role: [role]
 - aria-label: [label]
 - aria-disabled: [when disabled]
 - [Other ARIA attributes]
 
 **Keyboard Support:**
+
 - Enter/Space: [action]
 - Tab: [navigation]
 - [Other keyboard support]
@@ -294,6 +309,7 @@ effects:
 **Usage Count:** [Number]
 
 **Examples:**
+
 - [Page name] - [Specific usage]
 - [Page name] - [Specific usage]
 
@@ -302,6 +318,7 @@ effects:
 ## Related Components
 
 [If this component is related to others:]
+
 - [Related component 1] - [Relationship]
 - [Related component 2] - [Relationship]
 
@@ -313,6 +330,7 @@ effects:
 **Last Updated:** [Date]
 
 **Changes:**
+
 - [Date]: Created component
 - [Date]: [Change description]
 
@@ -321,7 +339,8 @@ effects:
 ## Notes
 
 [Any additional notes, considerations, or future plans]
-```
+
+````
 
 ---
 
@@ -385,7 +404,7 @@ Use buttons for important actions that change state or navigate to new content.
 
 **Size:** medium (h-10, px-4)
 **Shape:** rounded (border-radius: 0.375rem)
-**Colors:** 
+**Colors:**
 - Background: blue-600
 - Text: white
 - Border: none
@@ -409,21 +428,21 @@ colors:
     hover: blue-700
     active: blue-800
   text: white
-  
+
 typography:
   size: text-sm
   weight: semibold
-  
+
 spacing:
   padding-x: 4
   padding-y: 2
   gap: 2
-  
+
 effects:
   border-radius: md
   shadow: sm
   transition: all 150ms ease
-```
+````
 
 ### Library Component
 
@@ -441,26 +460,31 @@ effects:
 Triggers associated action (form submit, navigation, etc.)
 
 **Hover:**
+
 - Background darkens
 - Slight scale increase (1.02)
 - Cursor changes to pointer
 
 **Focus:**
+
 - Blue outline ring
 - Maintains hover state
 
 **Keyboard:**
+
 - Enter/Space triggers click
 - Tab navigates to/from button
 
 ### Animations
 
 **Hover Scale:**
+
 - Duration: 150ms
 - Easing: ease-in-out
 - Scale: 1.02
 
 **Click Feedback:**
+
 - Duration: 100ms
 - Scale: 0.98
 
@@ -469,12 +493,14 @@ Triggers associated action (form submit, navigation, etc.)
 ## Accessibility
 
 **ARIA Attributes:**
+
 - role: button
 - aria-label: [Descriptive label if icon-only]
 - aria-disabled: true [when disabled]
 - aria-busy: true [when loading]
 
 **Keyboard Support:**
+
 - Enter/Space: Triggers button action
 - Tab: Moves focus to/from button
 
@@ -515,6 +541,7 @@ Announces button label and state (disabled, busy, etc.)
 **Usage Count:** 1
 
 **Examples:**
+
 - Login page - Submit credentials button
 
 ---
@@ -532,6 +559,7 @@ Announces button label and state (disabled, busy, etc.)
 **Last Updated:** 2024-12-09
 
 **Changes:**
+
 - 2024-12-09: Created component
 
 ---
@@ -539,7 +567,8 @@ Announces button label and state (disabled, busy, etc.)
 ## Notes
 
 This is the primary button component. Consider adding more variants as needs emerge (danger, success, etc.).
-```
+
+````
 
 ---
 
@@ -560,7 +589,7 @@ Add component to index:
 - Button [btn-003] - Standard action button  ← Added
 
 **Total Interactive:** 3
-```
+````
 
 ---
 
@@ -587,6 +616,7 @@ Generate reference for page spec:
 </action>
 
 **Output:**
+
 ```yaml
 component_reference:
   id: btn-003
@@ -613,6 +643,7 @@ Design system stats updated.
 Reference ready for page spec.
 
 Next: Return to Phase 4 to complete page specification
+
 ```
 </output>
 
@@ -636,36 +667,45 @@ Validate component creation:
 
 **If ID conflict:**
 ```
+
 ⚠️ Component ID btn-003 already exists.
 
 Generating alternative ID: btn-004
+
 ```
 
 **If file creation fails:**
 ```
+
 ❌ Error creating component file.
 
 Error: [error message]
 
 Would you like to:
+
 1. Retry
 2. Create with different ID
 3. Skip design system for this component
 
 Your choice:
+
 ```
 
 **If template population incomplete:**
 ```
+
 ⚠️ Some component information is missing.
 
 Missing:
+
 - [List of missing fields]
 
 I'll create the component with placeholders.
 You can fill in details later.
+
 ```
 
 ---
 
 **This operation creates a new component. Return to Phase 4 with component reference.**
+```

@@ -90,4 +90,3 @@ phases:
         command: "prd-finalization"
         output: "Feature requirements, integration notes, handoff"
         note: "Compile feature requirements for development"
-

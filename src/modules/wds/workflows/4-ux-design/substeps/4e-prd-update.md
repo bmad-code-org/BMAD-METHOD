@@ -7,6 +7,7 @@
 <output>**Time to capture what we learned!**
 
 Every page reveals concrete requirements:
+
 - "This form needs email validation"
 - "We need a GET endpoint for availability"
 - "Users need to upload images here"
@@ -18,6 +19,7 @@ Capturing these while the page is fresh ensures nothing is forgotten. The PRD be
 <ask>**Let's identify the functional requirements this page revealed.**
 
 Think about:
+
 - API endpoints needed
 - Data validation rules
 - File upload/storage
@@ -29,13 +31,13 @@ Think about:
 What functionality does this page require from the backend/platform?</ask>
 
 <action>For each requirement:
-  <ask>**Requirement: {{requirement_name}}**
-  
-  - What does it do?
-  - Why is it needed?
-  - Any specific constraints or rules?</ask>
-  
-  <action>Document requirement details</action>
+<ask>**Requirement: {{requirement_name}}**
+
+- What does it do?
+- Why is it needed?
+- Any specific constraints or rules?</ask>
+
+<action>Document requirement details</action>
 </action>
 
 ## PRD Integration
@@ -43,6 +45,7 @@ What functionality does this page require from the backend/platform?</ask>
 <output>**I'll add these requirements to your PRD.**
 
 Each requirement will include:
+
 - Clear description
 - Reference to this page (e.g., "Required by: 2.1-Dog-Calendar")
 - Any technical notes discovered during design</output>
@@ -55,13 +58,16 @@ Each requirement will include:
 ## Functional Requirements
 
 ### {{requirement_name}}
+
 **Required by:** {{page_reference}}
+
 - {{requirement_description}}
 - {{constraints}}
 - {{technical_notes}}
 
 [Add to appropriate section of PRD]
 ```
+
 </action>
 
 <action>Update PRD file with new requirements</action>
@@ -71,8 +77,9 @@ Each requirement will include:
 
 **Added {{requirement_count}} requirements:**
 {{#each requirement}}
+
 - {{requirement_name}} (required by {{page_reference}})
-{{/each}}
+  {{/each}}
 
 **PRD Location:** `D-PRD/PRD.md`
 
@@ -83,11 +90,13 @@ Your PRD is growing incrementally with every page you design. This creates compl
 <output>**Page "{page_name}" is complete!** 🎉
 
 **Created:**
+
 - ✅ Specification: `C-Scenarios/{scenario}/{page}/{page}.md`
 - ✅ Prototype: `C-Scenarios/{scenario}/{page}/Prototype/`
 - ✅ PRD Requirements: Added to `D-PRD/PRD.md`
 
 **Your page is development-ready with:**
+
 - Complete Object ID mapping
 - All states and interactions documented
 - Multilingual content specified
@@ -128,4 +137,3 @@ Choice [1/2/3/4]:</ask>
 ---
 
 **Step 4E Complete** - Page fully designed and specified!
-

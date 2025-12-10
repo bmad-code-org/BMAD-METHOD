@@ -14,9 +14,11 @@
 **URL/Route:** {url-path}
 
 **Entry Points:**
+
 - {How users arrive at this page}
 
 **Exit Points:**
+
 - {Where users go after completing their goal}
 
 **Main User Goal:** {Primary objective for users on this page}
@@ -54,6 +56,7 @@
 {/if}
 
 **States:**
+
 - **Default:** {Description and behavior}
 - **Hover:** {Hover state appearance and behavior}
 - **Active:** {Active/clicked state}
@@ -65,6 +68,7 @@
 {What happens when user interacts with this component}
 
 **Content:**
+
 - **English:** {Text content in English}
 - **{Language2}:** {Text content in second language}
 - **{Language3}:** {Text content in third language}
@@ -119,17 +123,17 @@
 
 {If applicable - for forms and inputs}
 
-| Field | Rule | Error Code | Error Message |
-|-------|------|------------|---------------|
+| Field        | Rule              | Error Code | Error Message   |
+| ------------ | ----------------- | ---------- | --------------- |
 | {field-name} | {validation-rule} | {ERR_CODE} | {error-message} |
 
 ---
 
 ## Error Messages
 
-| Error Code | Trigger | Message (English) | Message ({Lang2}) | Recovery |
-|------------|---------|-------------------|-------------------|----------|
-| ERR_001 | {When this error occurs} | {English message} | {Translated message} | {How to fix} |
+| Error Code | Trigger                  | Message (English) | Message ({Lang2})    | Recovery     |
+| ---------- | ------------------------ | ----------------- | -------------------- | ------------ |
+| ERR_001    | {When this error occurs} | {English message} | {Translated message} | {How to fix} |
 
 ---
 
@@ -137,13 +141,14 @@
 
 ### Data Sources
 
-| Data Element | Source | Type | Required | Notes |
-|--------------|--------|------|----------|-------|
+| Data Element | Source                   | Type        | Required | Notes   |
+| ------------ | ------------------------ | ----------- | -------- | ------- |
 | {data-field} | {API endpoint or static} | {data-type} | {yes/no} | {notes} |
 
 ### API Endpoints
 
 **{Endpoint Name}**
+
 - **Method:** {GET/POST/PUT/DELETE}
 - **Path:** `/api/{path}`
 - **Purpose:** {What this endpoint does}
@@ -180,6 +185,7 @@
 ### User Interactions
 
 **{Interaction Name}**
+
 1. User {action}
 2. System {response}
 3. Page {state change}
@@ -213,6 +219,7 @@
 ## Development Checklist
 
 Before implementing:
+
 - [ ] All Object IDs assigned and documented
 - [ ] All states defined and specified
 - [ ] Validation rules clear
@@ -224,5 +231,4 @@ Before implementing:
 
 ---
 
-*Created using Whiteport Design Studio (WDS) methodology*
-
+_Created using Whiteport Design Studio (WDS) methodology_

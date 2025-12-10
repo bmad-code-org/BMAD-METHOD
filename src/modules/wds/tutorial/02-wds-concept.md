@@ -18,6 +18,7 @@ In the last video, we talked about why designers are irreplaceable in the AI era
 ### Traditional Design Handoff Nightmare
 
 **Recognize this disaster?**
+
 - You create gorgeous designs in isolation
 - Designs disappear into "design backlog purgatory"
 - Months later, developers build something vaguely similar
@@ -37,6 +38,7 @@ With AI development, there's a new problem:
 But if you're unclear, AI starts hallucinating and leaves your project in a death spiral.
 
 **The new reality:**
+
 - 🎯 Clear specifications = Perfect AI implementation
 - 🌪️ Unclear specifications = AI hallucination death spiral
 
@@ -49,11 +51,13 @@ But if you're unclear, AI starts hallucinating and leaves your project in a deat
 **WDS is a specification-first design system.**
 
 Instead of:
+
 ```
 Sketch → Hope developers understand → Fix in QA
 ```
 
 WDS gives you:
+
 ```
 Trigger Map → Scenario Init → Sketch → Why-Based Specs → AI Implementation
 ```
@@ -65,6 +69,7 @@ Trigger Map → Scenario Init → Sketch → Why-Based Specs → AI Implementati
 There is no longer a bottleneck in writing code. The bottleneck is **knowing what to build**.
 
 And that requires:
+
 - Understanding user psychology (Trigger Map)
 - Defining the journey (Scenario Init)
 - Capturing design intent (Why-Based Specs)
@@ -73,11 +78,13 @@ And that requires:
 ### WDS = Designer + AI Partnership
 
 **WDS is not:**
+
 - ❌ AI replacing designers
 - ❌ Automated design generation
 - ❌ Generic template system
 
 **WDS is:**
+
 - ✅ AI amplifying designer thinking
 - ✅ Socratic questioning to elevate decisions
 - ✅ Why-based specifications that preserve intent
@@ -89,6 +96,7 @@ And that requires:
 ### 1. Socratic Questioning
 
 **Traditional AI:**
+
 ```
 You: "Create a calendar"
 AI: *Generates generic calendar*
@@ -96,11 +104,12 @@ You: "No, that's not right..."
 ```
 
 **WDS Agent:**
+
 ```
 You: "I need a calendar"
 Agent: "Help me understand - why week view instead of daily?"
 You: "Swedish families think in weeks..."
-Agent: "Got it! So we match their mental model. 
+Agent: "Got it! So we match their mental model.
         Should I avoid adding daily/monthly views?"
 You: "Exactly!"
 ```
@@ -112,19 +121,22 @@ You: "Exactly!"
 ### 2. Why-Based Specifications
 
 **Traditional Spec:**
+
 ```markdown
 ## Calendar Component
+
 - Week view
 - 7 columns (days)
 - Color-coded states
 ```
 
 **WDS Why-Based Spec:**
+
 ```markdown
 ## Calendar Component
 
 WHY Week View:
-Swedish families think in "Vecka 40". This matches their 
+Swedish families think in "Vecka 40". This matches their
 mental model. Daily view is too granular, monthly too abstract.
 → AI: Don't add daily/monthly views, even if you think it's "better"
 
@@ -146,12 +158,14 @@ Notifications would break the "fun, not punishing" tone.
 ### 3. Modular Architecture
 
 **Traditional approach:**
+
 ```
 One giant specification file (800 lines)
 ├─ Layout + Visual + Logic + API + Content
 ```
 
 **WDS Modular Architecture:**
+
 ```
 Pages/02-calendar-page.md (100 lines)
 ├─ WHERE: Page context, layout, content
@@ -163,7 +177,8 @@ Features/walk-booking-logic.feature.md (200 lines)
 ├─ WHAT: Business rules, validation, API
 ```
 
-**The difference:** 
+**The difference:**
+
 - Clear separation of concerns
 - Easy to maintain and update
 - Clean handoffs to specialists
@@ -176,6 +191,7 @@ Features/walk-booking-logic.feature.md (200 lines)
 ### The Complete Flow
 
 **Phase 1: Trigger Map**
+
 ```
 WHO: Parents (need accountability)
 TRIGGER: Family conflict over dog care
@@ -184,6 +200,7 @@ FEATURE: Family dog walk calendar
 ```
 
 **Phase 2: Scenario Init**
+
 ```
 Entry Point: Google search (frustrated)
 Mental State: Tired of nagging, want simple solution
@@ -192,6 +209,7 @@ Shortest Path: Landing → Sign up → Setup → Calendar → First walk
 ```
 
 **Phase 3: Sketch**
+
 ```
 You: [Upload sketch of calendar page]
 Agent: "I see: Week view, leaderboard, countdown timers.
@@ -199,6 +217,7 @@ Agent: "I see: Week view, leaderboard, countdown timers.
 ```
 
 **Phase 4: Why-Based Specifications**
+
 ```
 Agent: "Why week view instead of daily?"
 You: "Swedish families think in weeks..."
@@ -208,6 +227,7 @@ Agent: "Perfect! Documenting:
 ```
 
 **Phase 5: AI Implementation**
+
 ```
 AI: *Implements exactly as specified*
     *Skips "helpful" features that would break intent*
@@ -247,6 +267,7 @@ AI: *Implements exactly as specified*
 5. **Designer-AI Partnership** - Amplification, not replacement
 
 **The result:**
+
 - AI implements correctly first time
 - Design intent is preserved
 - Specifications become design knowledge
@@ -259,6 +280,7 @@ AI: *Implements exactly as specified*
 In the next video, we'll dive into the **BMad Method** - the systematic approach that makes WDS possible.
 
 You'll learn:
+
 - The 4 phases of design thinking
 - How each phase builds on the previous
 - Why this method works with AI

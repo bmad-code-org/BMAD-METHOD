@@ -9,6 +9,7 @@ Design the incremental improvement - not a complete redesign, but a targeted upd
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 8.2 (context gathered)
 - ✅ Root cause identified
 - ✅ Hypothesis formed
@@ -19,6 +20,7 @@ Design the incremental improvement - not a complete redesign, but a targeted upd
 ## Kaizen Principle: Small, Focused Changes
 
 **Remember:**
+
 - ❌ Complete redesign
 - ✅ Targeted improvement
 - ❌ Change everything
@@ -42,6 +44,7 @@ Design the incremental improvement - not a complete redesign, but a targeted upd
 ### Screen/Feature: [Name]
 
 **Changes:**
+
 - [ ] Copy/messaging
 - [ ] Visual hierarchy
 - [ ] Component usage
@@ -50,6 +53,7 @@ Design the incremental improvement - not a complete redesign, but a targeted upd
 - [ ] Data structure
 
 **Specific changes:**
+
 1. [Specific change 1]
 2. [Specific change 2]
 3. [Specific change 3]
@@ -59,6 +63,7 @@ Design the incremental improvement - not a complete redesign, but a targeted upd
 ## What's Staying
 
 **Unchanged:**
+
 - ✓ Brand colors
 - ✓ Typography
 - ✓ Core layout structure
@@ -71,9 +76,9 @@ Design the incremental improvement - not a complete redesign, but a targeted upd
 
 Example:
 "Brand colors and typography are fixed by brand guidelines.
- Core layout structure works well and changing it would
- require extensive development. We're focusing on content
- and interaction improvements only."
+Core layout structure works well and changing it would
+require extensive development. We're focusing on content
+and interaction improvements only."
 ```
 
 ---
@@ -107,12 +112,16 @@ Example:
 
 ### Before (v1.0)
 ```
+
 [Describe old structure]
+
 ```
 
 ### After (v2.0)
 ```
+
 [Describe new structure]
+
 ```
 
 ---
@@ -210,7 +219,7 @@ Example:
 
 Example:
 "Inline tooltip to guide users through Feature X on first use.
- Needed because analytics show 40% drop-off due to confusion."
+Needed because analytics show 40% drop-off due to confusion."
 
 ---
 
@@ -223,10 +232,12 @@ Example:
 ## Usage
 
 **Where used:**
+
 - Screen X: [Context]
 - Screen Y: [Context]
 
 **When shown:**
+
 - First time user sees Feature X
 - Can be dismissed
 - Doesn't show again after dismissal
@@ -252,11 +263,13 @@ Example:
 ## What Changed
 
 ### Change 1: [Name]
+
 - **Before:** [Description]
 - **After:** [Description]
 - **Rationale:** [Why?]
 
 ### Change 2: [Name]
+
 - **Before:** [Description]
 - **After:** [Description]
 - **Rationale:** [Why?]
@@ -272,6 +285,7 @@ Example:
 ## Migration Notes
 
 **For developers:**
+
 - [What needs to change in code?]
 - [Any breaking changes?]
 - [Backward compatibility?]
@@ -294,11 +308,13 @@ Example:
 [What it looked like before]
 
 **User Experience:**
+
 - User sees: [Description]
 - User feels: [Description]
 - Problem: [What was wrong?]
 
 **Metrics:**
+
 - Usage: 15%
 - Drop-off: 40%
 - Satisfaction: 3.2/5
@@ -311,11 +327,13 @@ Example:
 [What it looks like after]
 
 **User Experience:**
+
 - User sees: [Description]
 - User feels: [Description]
 - Improvement: [What's better?]
 
 **Expected Metrics:**
+
 - Usage: 60% (target)
 - Drop-off: 10% (target)
 - Satisfaction: 4.5/5 (target)
@@ -364,29 +382,35 @@ Example:
 # Hypothesis Validation: [Update Name]
 
 ## Hypothesis
+
 [What do we believe will happen?]
 
 Example:
 "If we add inline onboarding to Feature X, usage will
- increase from 15% to 60% because users will understand
- how to use it."
+increase from 15% to 60% because users will understand
+how to use it."
 
 ## Assumptions
+
 1. [Assumption 1]
 2. [Assumption 2]
 3. [Assumption 3]
 
 ## Risks
+
 1. [Risk 1]: [Mitigation]
 2. [Risk 2]: [Mitigation]
 
 ## Success Criteria
+
 - [Metric 1]: [Current] → [Target]
 - [Metric 2]: [Current] → [Target]
 - [Timeframe]: 2 weeks after release
 
 ## Failure Criteria
+
 If after 2 weeks:
+
 - [Metric 1] < [Threshold]: Rollback or iterate
 - [Metric 2] < [Threshold]: Rollback or iterate
 ```
@@ -431,16 +455,19 @@ After designing the update:
 ### DO ✅
 
 **Be surgical:**
+
 - Change only what's necessary
 - Keep scope tight
 - One improvement at a time
 
 **Be clear:**
+
 - Document what's changing
 - Document what's staying
 - Show before/after
 
 **Be measurable:**
+
 - Define success metrics
 - Set realistic targets
 - Plan measurement
@@ -448,14 +475,17 @@ After designing the update:
 ### DON'T ❌
 
 **Don't scope creep:**
+
 - "While we're at it..." ❌
 - Stay focused ✅
 
 **Don't redesign:**
+
 - Complete overhaul ❌
 - Targeted improvement ✅
 
 **Don't guess:**
+
 - Use data to validate
 - Test hypotheses
 - Measure impact

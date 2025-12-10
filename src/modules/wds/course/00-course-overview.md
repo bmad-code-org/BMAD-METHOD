@@ -9,11 +9,13 @@
 This comprehensive course teaches you the complete WDS workflow through **practical modules** that transform how you design products.
 
 **The paradigm shift:**
+
 - The design becomes the specification
 - The specification becomes the product
 - The code is just the printout
 
 **What you'll become:**
+
 - The linchpin designer who makes things happen
 - The gatekeeper between business goals and user needs
 - The irreplaceable designer in the AI era
@@ -38,6 +40,7 @@ Mårten developed WDS to solve this problem - a methodology where design thinkin
 **[→ Getting Started Guide](00-getting-started/overview.md)**
 
 Review prerequisites, choose your learning path, and get support:
+
 - **Prerequisites** - Skills, tools, time investment
 - **Learning Paths** - Full immersion, quick start, or self-paced
 - **Support** - Testimonials, FAQ, community
@@ -49,11 +52,13 @@ Review prerequisites, choose your learning path, and get support:
 ## Course Structure
 
 Each module contains:
+
 - **Lessons** - Theory and concepts (with NotebookLM audio support)
 - **Tutorial** - Step-by-step hands-on guide (for practical modules)
 - **Practice** - Apply to your own project
 
 **Learning format:**
+
 - **Lessons** - Read as documentation or generate audio with NotebookLM
 - **Tutorials** - Follow step-by-step guides with AI support
 - **Practice** - Apply to real projects as you learn
@@ -64,21 +69,26 @@ Each module contains:
 ## Course Modules
 
 ### Foundation
+
 - [Module 01: Why WDS Matters](module-01-why-wds-matters/module-01-overview.md)
 
 ### Phase 1: Project Brief
+
 - [Module 02: Create Project Brief](module-02-project-brief/) • [Tutorial →](module-02-project-brief/tutorial-02.md)
 
 ### Phase 2: Trigger Mapping
+
 - [Module 03: Identify Target Groups](module-03-identify-target-groups/)
 - [Module 04: Map Triggers & Outcomes](module-04-map-triggers-outcomes/) • [Tutorial →](module-04-map-triggers-outcomes/tutorial-04.md)
 - [Module 05: Prioritize Features](module-05-prioritize-features/)
 
 ### Phase 3: Platform Requirements
+
 - [Module 06: Platform Requirements](module-06-platform-requirements/)
 - [Module 07: Functional Requirements](module-07-functional-requirements/)
 
 ### Phase 4: Conceptual Design (UX Design)
+
 - [Module 08: Initialize Scenario](module-08-initialize-scenario/) • [Tutorial →](module-08-initialize-scenario/tutorial-08.md)
 - [Module 09: Sketch Interfaces](module-09-sketch-interfaces/)
 - [Module 10: Analyze with AI](module-10-analyze-with-ai/)
@@ -87,10 +97,12 @@ Each module contains:
 - [Module 13: Validate Specifications](module-13-validate-specifications/)
 
 ### Phase 5: Design System
+
 - [Module 14: Extract Design Tokens](module-14-extract-design-tokens/)
 - [Module 15: Component Library](module-15-component-library/)
 
 ### Phase 6: Development Integration
+
 - [Module 16: UI Roadmap](module-16-ui-roadmap/)
 
 ---
@@ -108,6 +120,7 @@ Each module contains:
 ## NotebookLM Integration
 
 Each module has matching content for NotebookLM:
+
 - Feed module lessons to NotebookLM
 - Generate audio podcasts for learning on the go
 - Generate video presentations for team training
@@ -122,21 +135,25 @@ Each module has matching content for NotebookLM:
 Every module follows the same pattern:
 
 **1. Inspiration (10 min)**
+
 - Why this step matters
 - The transformation you'll experience
 - Real-world impact
 
 **2. Teaching (20 min)**
+
 - How to do it with confidence
 - AI support at each step
 - Dog Week example walkthrough
 
 **3. Practice (10 min)**
+
 - Apply to your own project
 - Step-by-step instructions
 - Success criteria
 
 **4. Tutorial (optional)**
+
 - Quick step-by-step guide
 - "Just show me how to do it"
 - For practical modules only
@@ -156,12 +173,14 @@ Once you've completed the modules:
 ## Prerequisites
 
 **What you need:**
+
 - Basic design thinking and UX principles
 - Ability to sketch interfaces (hand-drawn or digital)
 - Understanding of user needs and business goals
 - Willingness to think deeply about WHY
 
 **What you DON'T need:**
+
 - ❌ Coding skills
 - ❌ Advanced technical knowledge
 - ❌ Experience with AI tools

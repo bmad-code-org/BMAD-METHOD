@@ -16,16 +16,19 @@
 ### Cross-Page Reference Strategy
 
 **If body text was defined on the Start Page:**
+
 - Start Page body text: Spacing matches icon size → 16px Regular
 - **Current page:** Similar thin lines with icon-sized spacing → **Same: 16px Regular**
 
 **Benefits:**
+
 - ✅ Maintains visual consistency across pages
 - ✅ Builds design system patterns naturally
 - ✅ Reduces guesswork on subsequent pages
 - ✅ Creates coherent user experience
 
 **When to use:**
+
 - Body text, captions, button labels (common across pages)
 - Navigation items (should be identical)
 - Form labels and inputs (standardized patterns)
@@ -59,6 +62,7 @@
 ```
 
 **Context Anchors:**
+
 - **Browser Address Bar**: ~40px height
 - **Standard Button**: ~40-48px height
 - **Cursor/Icon**: ~16-24px size
@@ -75,6 +79,7 @@
 ### Example: Hero Headline
 
 **Sketch:**
+
 ```
 ═══════════════════════════════  ← Line 1: Thickest lines in sketch
                                   ↕ Spacing ≈ Same as button height
@@ -82,6 +87,7 @@
 ```
 
 **Analysis:**
+
 - **Context:** Spacing looks similar to the "Sign In" button height nearby.
 - **Inference:** If button is ~48px, this font is ~48px (Large Heading).
 - **Weight:** Thicker than body text markers → **Bold**.
@@ -92,29 +98,35 @@
 ## Common Patterns
 
 ### Large Heading (Page Title)
+
 ```
 ═══════════════════  ← Thickest lines
       ↕
 ═══════════════════
 ```
+
 - **Clue:** Spacing matches Address Bar height (~40px)
 - **Est:** ~40-48px, Bold
 
 ### Medium Heading (Section Title)
+
 ```
 ═══════════════════  ← Medium-Thick lines
       ↕
 ═══════════════════
 ```
+
 - **Clue:** Spacing is slightly less than button height
 - **Est:** ~32px, Semibold
 
 ### Body Text (Paragraph)
+
 ```
 ─────────────────────  ← Thinnest lines
     ↕
 ─────────────────────
 ```
+
 - **Clue:** Spacing matches scrollbar width or small icon (~16-24px)
 - **Est:** ~16px, Regular
 
@@ -123,23 +135,27 @@
 ## ⚠️ Confusion Warning
 
 ### Text (Normal)
+
 ```
 ═══════════════════
     ↕ Spacing < 2x Button Height
 ═══════════════════
 ```
+
 ✅ Likely TEXT
 
 ### Image/Box (Too Large)
+
 ```
 ═══════════════════
-        
-        
+
+
     ↕ Spacing > 2x Button Height
-        
-        
+
+
 ═══════════════════
 ```
+
 ❓ Likely IMAGE or CONTAINER
 
 **Rule:** If spacing seems disproportionately large compared to UI elements, verify!
@@ -172,6 +188,7 @@ See horizontal lines?
 **CONTEXT = SCALE**
 
 Think of it like looking at a map:
+
 - Use the scale key (buttons, bars) to measure distances.
 - Don't guess miles (pixels) without a reference!
 
@@ -186,11 +203,13 @@ Think of it like looking at a map:
 ```
 
 **Analysis:**
+
 - Thickness: Bold (relative to body lines)
 - Distance: Matches button (~48px)
 - Result: `font: bold 48px / 1.2`
 
 **Content:**
+
 ```
 EN: "Every walk. on time. Every time."
 SE: "Varje promenad. i tid. Varje gång."
@@ -201,6 +220,3 @@ Both fit in ~50-60 character capacity! ✅
 ---
 
 **Remember: Context is King! Compare, don't just measure.** 📏✨
-
-
-

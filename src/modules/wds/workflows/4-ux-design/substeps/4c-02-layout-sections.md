@@ -15,16 +15,18 @@ Think about the major areas of the page (header, main content, sidebar, footer, 
 Describe each major section and its purpose.
 
 Example:
+
 - Header: Logo, navigation, user menu
 - Hero: Welcome message and primary CTA
 - Main Content: Sign-up form
 - Footer: Links and legal info</ask>
 
 <action>For each section:
-  - Store section_name
-  - Store section_purpose
-  - Store section_priority (primary/secondary)
-</action>
+
+- Store section_name
+- Store section_purpose
+- Store section_priority (primary/secondary)
+  </action>
 
 <output>✅ **Layout sections defined!**
 
@@ -44,17 +46,17 @@ Example:
 
 ```yaml
 layout_sections:
-  - name: "Header"
-    purpose: "Navigation and branding"
-    priority: "secondary"
-    
-  - name: "Sign In Form"
-    purpose: "User authentication"
-    priority: "primary"
-    
-  - name: "Footer"
-    purpose: "Legal links and support"
-    priority: "secondary"
+  - name: 'Header'
+    purpose: 'Navigation and branding'
+    priority: 'secondary'
+
+  - name: 'Sign In Form'
+    purpose: 'User authentication'
+    priority: 'primary'
+
+  - name: 'Footer'
+    purpose: 'Legal links and support'
+    priority: 'secondary'
 ```
 
 ---
@@ -62,4 +64,3 @@ layout_sections:
 ## NEXT STEP
 
 Load `substeps/4c-03-components-objects.md`
-

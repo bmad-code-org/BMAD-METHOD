@@ -21,20 +21,24 @@ Does CONTENT vary by page context?
 ## Page File Content
 
 **Document in Page file when:**
+
 - ✅ Content changes per page
 - ✅ Data varies by user/context
 - ✅ Configuration differs by placement
 
 **Examples:**
+
 - Hero heading: "Welcome" (Home) vs "About Us" (About)
 - Search placeholder: "Search products..." vs "Search help..."
 - Calendar header: "Familjen Svensson: Vecka 40" (user's family)
 - API endpoint: `/api/families/:currentFamilyId/walks` (user-specific)
 
 **⚠️ Common Mistake:**
+
 ```markdown
 ❌ Wrong: Features/hero-logic.feature.md
 **Content:**
+
 - Heading: "Welcome to Dog Week" (Home page)
 - Heading: "About Dog Week" (About page)
 
@@ -48,25 +52,30 @@ Pages/02-about-page.md → "About Dog Week"
 ## Feature File Content
 
 **Document in Feature file when:**
+
 - ✅ Content is the same everywhere
 - ✅ Generic validation messages
 - ✅ Standard UI text
 
 **Examples:**
+
 - Button text: "Submit" (always the same)
 - Error message: "Invalid email" (generic validation)
 - Loading text: "Loading..." (standard)
 - Tooltip: "Click to expand" (generic interaction)
 
 **⚠️ Common Mistake:**
+
 ```markdown
 ❌ Wrong: Pages/01-home-page.md
 **Content:**
+
 - Submit button: "Submit"
 - Error message: "Invalid email"
 
 ✅ Right: Features/form-submit-logic.feature.md
 **Generic Content:**
+
 - Submit button: "Submit"
 - Error message: "Invalid email"
 ```
@@ -76,19 +85,23 @@ Pages/02-about-page.md → "About Dog Week"
 ## Component File Content
 
 **Component files contain NO content:**
+
 - ❌ No text
 - ❌ No images
 - ❌ No data
 - ✅ Only visual design (colors, spacing, states)
 
 **Exception:** Content slots
+
 ```markdown
 **Content Slots:**
+
 - Heading text (configurable per page)
 - Background image (configurable per page)
 ```
 
 **⚠️ Common Mistakes:**
+
 ```markdown
 ❌ Wrong: Features/button-logic.feature.md
 **Visual:** Background: Blue, Height: 48px
@@ -109,18 +122,18 @@ Pages/02-about-page.md → "About Dog Week"
 
 ## Decision Matrix
 
-| Content Type | Page-Specific? | Where? |
-|--------------|----------------|--------|
-| Hero heading | ✅ YES | Page |
-| Hero background | ✅ YES | Page |
-| Search placeholder | ✅ YES | Page |
-| User's family name | ✅ YES | Page |
-| API with user context | ✅ YES | Page |
-| Submit button text | ❌ NO | Feature |
-| Error messages | ❌ NO | Feature |
-| Loading text | ❌ NO | Feature |
-| Tooltip text | ❌ NO | Feature |
-| Button color | ❌ Visual | Component |
+| Content Type          | Page-Specific? | Where?    |
+| --------------------- | -------------- | --------- |
+| Hero heading          | ✅ YES         | Page      |
+| Hero background       | ✅ YES         | Page      |
+| Search placeholder    | ✅ YES         | Page      |
+| User's family name    | ✅ YES         | Page      |
+| API with user context | ✅ YES         | Page      |
+| Submit button text    | ❌ NO          | Feature   |
+| Error messages        | ❌ NO          | Feature   |
+| Loading text          | ❌ NO          | Feature   |
+| Tooltip text          | ❌ NO          | Feature   |
+| Button color          | ❌ Visual      | Component |
 
 ---
 

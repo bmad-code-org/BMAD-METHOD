@@ -8,7 +8,7 @@
 
 ```
 Agent: "What does success look like for both sides?
-        
+
         For the business: [what outcome?]
         For the user: [what state/feeling/outcome?]"
 ```
@@ -18,6 +18,7 @@ Agent: "What does success look like for both sides?
 ## Why This Matters
 
 Success must be mutual:
+
 - Business gets value
 - User gets value
 - Both are happy
@@ -35,6 +36,7 @@ Designer: "Business: Active subscription
 ```
 
 **Why both matter:**
+
 - Business needs subscription (revenue)
 - User needs harmony (problem solved)
 - Subscription only works if harmony is real

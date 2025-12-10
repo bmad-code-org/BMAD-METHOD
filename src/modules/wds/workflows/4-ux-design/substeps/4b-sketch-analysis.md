@@ -29,6 +29,7 @@
 Your sketch:</ask>
 
 <action>Analyze entire sketch holistically:
+
 1. **Establish Scale First:**
    - Check if other pages in project have been analyzed
    - Look for established text styles (body text, buttons, headings)
@@ -45,15 +46,16 @@ Your sketch:</ask>
    - Check if sections look like components from previous pages
    - Compare text styles to established patterns (e.g., "thin lines, icon-sized spacing = 16px body text")
    - Note potential design system components
-</action>
+     </action>
 
 <output>**📊 I've analyzed your sketch. Here's what I see:**
 
 {{#if has_previous_pages}}
 **🔗 Cross-Page References Detected:**
 {{#each established_patterns}}
+
 - {{pattern_name}}: {{specification}} (from {{source_page}})
-{{/each}}
+  {{/each}}
 
 I'll use these as reference points for consistency.
 {{/if}}
@@ -62,19 +64,21 @@ I'll use these as reference points for consistency.
 
 **{{page_name}}** contains **{{section_count}} main sections:**
 
-{{#each identified_sections}}
----
+## {{#each identified_sections}}
+
 **Section {{index}}: {{section_name}}** ({{location}})
+
 - **Purpose:** {{interpreted_purpose}}
 - **Contains:** {{object_count}} objects/elements
 - **Layout:** {{layout_description}}
-{{#if looks_like_previous_component}}
+  {{#if looks_like_previous_component}}
 - 💡 **Component?** Similar to {{component_name}} from {{previous_page}}
-{{/if}}
-{{#if matches_established_pattern}}
+  {{/if}}
+  {{#if matches_established_pattern}}
 - ✅ **Pattern Match:** Text styles match {{pattern_name}} from {{source_page}}
-{{/if}}
-{{/each}}
+  {{/if}}
+  {{/each}}
+
 ---
 
 This is my interpretation of the structure. Does this look right?</output>
@@ -97,17 +101,17 @@ Current breakdown:
 {{/each}}
 
 Your changes:</ask>
-  
-  <action>Update section structure based on feedback</action>
-  <output>**Updated structure:**
-  
-  {{#each updated_sections}}
-  {{index}}. {{section_name}} - {{interpreted_purpose}}
-  {{/each}}
-  
-  Does this look better?</output>
-  
-  <action>Loop until user confirms structure</action>
+
+<action>Update section structure based on feedback</action>
+<output>**Updated structure:**
+
+{{#each updated_sections}}
+{{index}}. {{section_name}} - {{interpreted_purpose}}
+{{/each}}
+
+Does this look better?</output>
+
+<action>Loop until user confirms structure</action>
 </check>
 
 ---
@@ -129,8 +133,8 @@ Your changes:</ask>
 3. **Let me decide section-by-section** - I'll choose as we go
 
 Choice [1/2/3]:</ask>
-  
-  <action>Mark sections as components or page-specific based on user choice</action>
+
+<action>Mark sections as components or page-specific based on user choice</action>
 </check>
 
 ---
@@ -166,7 +170,7 @@ I'll interpret the objects, functions, and content for each section. You can con
    - Function & Purpose
    - Text Content (Actual vs. Markers)
    - Visual Hierarchy
-</action>
+     </action>
 
 <output>**My interpretation of "{{section_name}}":**
 
@@ -176,19 +180,20 @@ I'll interpret the objects, functions, and content for each section. You can con
 
 {{#each interpreted_objects}}
 {{object_index}}. **{{interpreted_type}}** ({{hierarchy_level}})
-   - **Object ID:** `{{suggested_object_id}}`
-   {{#if is_container}}
-   - **Contains:**
-     {{#each children}}
-     - {{child_type}}: `{{child_object_id}}`
-     {{/each}}
-   {{/if}}
-   - **Function:** {{interpreted_function}}
-   - **Purpose:** {{interpreted_purpose}}
-   {{#if has_actual_text}}
-   - **Text in sketch:** "{{extracted_text}}"
-   {{/if}}
-{{/each}}
+
+- **Object ID:** `{{suggested_object_id}}`
+  {{#if is_container}}
+- **Contains:**
+  {{#each children}}
+  - {{child_type}}: `{{child_object_id}}`
+    {{/each}}
+    {{/if}}
+- **Function:** {{interpreted_function}}
+- **Purpose:** {{interpreted_purpose}}
+  {{#if has_actual_text}}
+- **Text in sketch:** "{{extracted_text}}"
+  {{/if}}
+  {{/each}}
 
 **Overall Function:** {{section_function_summary}}</output>
 
@@ -246,8 +251,8 @@ Choice [1/2/3/4]:</ask>
 
 I'll suggest translations for everything at once.</output>
 
-{{#each text_objects}}
----
+## {{#each text_objects}}
+
 **{{object_purpose}}** (`{{object_id}}`)
 
 {{#if has_actual_text}}
@@ -289,8 +294,8 @@ Use these? [1] Yes [2] Adjust [3] Manual</output>
 
 {{/if}}
 
-<action>Store confirmed content for this object</action>
----
+## <action>Store confirmed content for this object</action>
+
 {{/each}}
 
 ---
@@ -302,6 +307,7 @@ Use these? [1] Yes [2] Adjust [3] Manual</output>
 Let me generate the complete section specification...</output>
 
 <action>Generate section spec:
+
 1. Section header with purpose
 2. All objects with full details
 3. All translations grouped by object
@@ -309,32 +315,36 @@ Let me generate the complete section specification...</output>
 5. Interactions and behaviors
 6. States if applicable
 7. Validation rules if applicable
-</action>
+   </action>
 
 <output>**✅ Section "{{section_name}}" specification generated!**
 
 ```markdown
 ### {{Section_Name}}
+
 **Purpose**: {{section_purpose}}
 
 {{#each objects}}
+
 #### {{Object_Purpose_Title}}
+
 **OBJECT ID**: `{{object_id}}`
+
 - **Component**: {{component_type}}
 - **Position**: {{position}}
 - **Style**: {{style_specs}}
-{{#if has_behavior}}
+  {{#if has_behavior}}
 - **Behavior**: {{behavior}}
-{{/if}}
-{{#if is_text}}
+  {{/if}}
+  {{#if is_text}}
 - **Content**:
   {{#each product_languages}}
   - {{this}}: "{{content}}"
-  {{/each}}
-{{/if}}
-{{#if has_states}}
+    {{/each}}
+    {{/if}}
+    {{#if has_states}}
 - **States**: {{states}}
-{{/if}}
+  {{/if}}
 
 {{/each}}
 ```
@@ -395,6 +405,7 @@ Let me generate the complete section specification...</output>
 ### Step 1: Holistic Reading
 
 **AI:**
+
 ```
 I've analyzed your sketch. Here's what I see:
 
@@ -434,6 +445,7 @@ Does this structure look right?
 ### Step 2: Section 1 - Header
 
 **AI interprets:**
+
 ```
 My interpretation of "Header":
 
@@ -466,6 +478,7 @@ Does this interpretation look right?
 **User:** `1` (Confirms)
 
 **AI suggests content:**
+
 ```
 Content for "Sign In Button":
 
@@ -481,18 +494,24 @@ Use these? [1] Yes [2] Adjust [3] Manual
 **User:** `1` (Accepts)
 
 **AI generates:**
+
 ```markdown
 ### Header Object
+
 **Purpose**: Navigation and user access with language selection
 
 #### Dog Week Logo
+
 **OBJECT ID**: `start-header-logo`
+
 - **Component**: [Logo Component](/docs/D-Design-System/.../Logo.md)
 - **Position**: Left-aligned
 - **Behavior**: Links to home page
 
-#### Sign In Button  
+#### Sign In Button
+
 **OBJECT ID**: `start-header-signin`
+
 - **Component**: [Button Secondary](/docs/D-Design-System/.../Button-Secondary.md)
 - **Position**: Right side (before language selector)
 - **Behavior**: Navigate to sign-in page
@@ -501,7 +520,9 @@ Use these? [1] Yes [2] Adjust [3] Manual
   - SE: "Logga in"
 
 #### Language Selector
+
 **OBJECT ID**: `start-header-language`
+
 - **Component**: [Language Selector](/docs/D-Design-System/.../LanguageSelector.md)
 - **Position**: Right side (after sign-in button)
 - **Behavior**: onChange → toggle language

@@ -22,13 +22,13 @@ workflow_path: "{{workflow_path_file}}"
 
 # Configuration
 config:
-  folder_prefix: "{{folder_prefix}}"      # letters or numbers
-  folder_case: "{{folder_case}}"          # title or lowercase
-  brief_level: "{{brief_level}}"          # simplified or complete
-  include_design_system: {{include_design_system}}
+  folder_prefix: "{{folder_prefix}}" # letters or numbers
+  folder_case: "{{folder_case}}" # title or lowercase
+  brief_level: "{{brief_level}}" # simplified or complete
+  include_design_system: { { include_design_system } }
   component_library: "{{component_library}}"
-  specification_language: "{{specification_language}}"  # Language for writing specs (EN, SE, etc.)
-  product_languages: {{product_languages}}              # Array of languages product supports
+  specification_language: "{{specification_language}}" # Language for writing specs (EN, SE, etc.)
+  product_languages: { { product_languages } } # Array of languages product supports
 
 # Folder mapping (generated based on config)
 folders:
@@ -41,7 +41,6 @@ folders:
 
 # Workflow status tracking
 workflow_status: "{{workflow_items}}"
-
 # Example structure when populated:
 # workflow_status:
 #   phase_1_project_brief:

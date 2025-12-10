@@ -13,6 +13,7 @@
 **Compare across 4 dimensions:**
 
 ### 1. Visual Attributes
+
 - Size (small, medium, large)
 - Shape (rounded, square, pill)
 - Color scheme
@@ -21,6 +22,7 @@
 - Border style
 
 ### 2. Functional Attributes
+
 - Purpose/intent
 - User action
 - Input/output type
@@ -28,6 +30,7 @@
 - Required/optional
 
 ### 3. Behavioral Attributes
+
 - States (default, hover, active, disabled, loading, error)
 - Interactions (click, hover, focus, blur)
 - Animations/transitions
@@ -35,6 +38,7 @@
 - Accessibility
 
 ### 4. Contextual Attributes
+
 - Usage pattern (where it appears)
 - Frequency (how often used)
 - Relationship to other components
@@ -52,6 +56,7 @@ Compare visual attributes:
 </action>
 
 **Example:**
+
 ```
 Visual Comparison: Current Button vs Button [btn-001]
 
@@ -78,6 +83,7 @@ Compare functional attributes:
 </action>
 
 **Example:**
+
 ```
 Functional Comparison: Current Button vs Button [btn-001]
 
@@ -105,6 +111,7 @@ Compare behavioral attributes:
 </action>
 
 **Example:**
+
 ```
 Behavioral Comparison: Current Button vs Button [btn-001]
 
@@ -131,6 +138,7 @@ Compare contextual attributes:
 </action>
 
 **Example:**
+
 ```
 Contextual Comparison: Current Button vs Button [btn-001]
 
@@ -158,11 +166,13 @@ Score each dimension:
 </action>
 
 **Scoring Guide:**
+
 - **High:** 80%+ attributes match
 - **Medium:** 50-79% attributes match
 - **Low:** <50% attributes match
 
 **Example:**
+
 ```
 Similarity Score: Current Button vs Button [btn-001]
 
@@ -198,6 +208,7 @@ Present comparison summary:
 
 **Similarity Score:** Medium-High (71%)
 ```
+
 </output>
 
 ---
@@ -218,6 +229,7 @@ Pass comparison data to similarity calculation:
 ## Edge Cases
 
 **Perfect match (100%):**
+
 ```
 ✓ This component is identical to btn-001.
 
@@ -227,6 +239,7 @@ This is likely the same component with different content.
 **Recommend:** Reuse existing component
 
 **Very low similarity (<30%):**
+
 ```
 ✗ This component is very different from btn-001.
 
@@ -236,6 +249,7 @@ Despite being the same type, these serve different purposes.
 **Recommend:** Create new component
 
 **Multiple candidates:**
+
 ```
 📊 Comparing to 2 candidates:
 
@@ -252,6 +266,7 @@ btn-001 is the closest match.
 ## Output Format
 
 **For next step:**
+
 ```json
 {
   "comparison": {

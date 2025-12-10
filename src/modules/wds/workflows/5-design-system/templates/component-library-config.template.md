@@ -19,10 +19,12 @@
 **Format:** `WDS Component → Library Component`
 
 ### Interactive Components
+
 - Button [btn-001] → shadcn/ui Button
 - [More mappings]
 
 ### Form Components
+
 - Input Field [inp-001] → shadcn/ui Input
 - [More mappings]
 

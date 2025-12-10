@@ -9,6 +9,7 @@ Understand the existing product context before making changes.
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 8.1 (opportunity identified)
 - ✅ Limited brief or improvement file created
 - ✅ Clear understanding of the problem
@@ -32,6 +33,7 @@ Understand the existing product context before making changes.
 - Market research
 
 **Review and understand:**
+
 - Why does this product exist?
 - What's the business model?
 - Who are the competitors?
@@ -50,6 +52,7 @@ Understand the existing product context before making changes.
 - User feedback summaries
 
 **Review and understand:**
+
 - Who are the users?
 - What are their needs?
 - What are their pain points?
@@ -69,6 +72,7 @@ Understand the existing product context before making changes.
 - API documentation
 
 **Review and understand:**
+
 - What features exist?
 - How does it work?
 - What's the tech stack?
@@ -86,23 +90,27 @@ Understand the existing product context before making changes.
    - Use all major features
 
 2. **Document your experience**
+
    ```markdown
    # First Impressions: [Product Name]
-   
+
    **Date:** 2024-12-09
    **Context:** First-time user, no prior knowledge
-   
+
    ## Onboarding
+
    - Step 1: [What happened? How did it feel?]
    - Step 2: [What happened? How did it feel?]
    - Confusion points: [Where was I confused?]
    - Delights: [What felt great?]
-   
+
    ## Core Features
+
    - Feature X: [Experience]
    - Feature Y: [Experience]
-   
+
    ## Overall Impression
+
    [What's your gut feeling about this product?]
    ```
 
@@ -142,10 +150,7 @@ Example:
 **What happens now?**
 
 Example:
-"1. Welcome screen (confusing value prop)
- 2. Family setup (unclear what 'family' means)
- 3. Dog addition (forced, feels like homework)
- 4. 60% drop off before reaching dashboard"
+"1. Welcome screen (confusing value prop) 2. Family setup (unclear what 'family' means) 3. Dog addition (forced, feels like homework) 4. 60% drop off before reaching dashboard"
 
 ---
 
@@ -155,7 +160,7 @@ Example:
 
 Example:
 "User understands value, completes setup smoothly,
- reaches dashboard feeling confident and excited"
+reaches dashboard feeling confident and excited"
 
 ---
 
@@ -165,10 +170,11 @@ Example:
 
 Example:
 "- Unclear value proposition
- - 'Family' concept is confusing (cultural context)
- - Forced dog addition feels like work
- - No sense of progress or achievement
- - No celebration of completion"
+
+- 'Family' concept is confusing (cultural context)
+- Forced dog addition feels like work
+- No sense of progress or achievement
+- No celebration of completion"
 
 ---
 
@@ -178,10 +184,11 @@ Example:
 
 Example:
 "- Clarify value prop on welcome screen
- - Simplify family concept explanation
- - Make dog addition optional
- - Add progress indicators
- - Add celebration on completion"
+
+- Simplify family concept explanation
+- Make dog addition optional
+- Add progress indicators
+- Add celebration on completion"
 ```
 
 ---
@@ -203,17 +210,20 @@ Example:
 **Focus:** Feature X engagement
 
 ## Usage Metrics
+
 - Users who saw Feature X: 1,200
 - Users who used Feature X: 180 (15%)
 - Users who completed action: 90 (7.5%)
 - Drop-off point: Step 2 (40% drop off)
 
 ## User Segments
+
 - New users: 10% usage
 - Returning users: 20% usage
 - Power users: 60% usage
 
 ## Insight
+
 New and returning users struggle with Feature X.
 Power users understand it. Suggests onboarding gap.
 ```
@@ -233,19 +243,23 @@ Power users understand it. Suggests onboarding gap.
 ## Themes
 
 ### Confusion (12 mentions)
+
 - "I don't understand how to use Feature X"
 - "Feature X seems broken"
 - "What is Feature X for?"
 
 ### Requests (8 mentions)
+
 - "Can Feature X do Y?"
 - "Wish Feature X had Z"
 
 ### Praise (4 mentions)
+
 - "Once I figured it out, Feature X is great!"
 - "Feature X saves me time"
 
 ## Insight
+
 Users who figure out Feature X love it.
 But most users never figure it out.
 Onboarding is the problem.
@@ -266,6 +280,7 @@ Onboarding is the problem.
 **Assumptions:** [What did you assume about users?]
 
 ## What We Learned
+
 - Assumption: Users would understand Feature X intuitively
 - Reality: Users need explicit guidance
 - Lesson: Add onboarding for complex features
@@ -281,18 +296,21 @@ Onboarding is the problem.
 # Competitive Analysis: Feature X
 
 ## Competitor A
+
 - Approach: [How do they do it?]
 - Onboarding: [Do they have guidance?]
 - Pros: [What works well?]
 - Cons: [What doesn't work?]
 
 ## Competitor B
+
 - Approach: [How do they do it?]
 - Onboarding: [Do they have guidance?]
 - Pros: [What works well?]
 - Cons: [What doesn't work?]
 
 ## Insights
+
 [What can we learn from competitors?]
 ```
 
@@ -306,18 +324,22 @@ Onboarding is the problem.
 # Context Synthesis: [Improvement Name]
 
 ## What We Know
+
 1. [Key insight from analytics]
 2. [Key insight from user feedback]
 3. [Key insight from competitive analysis]
 4. [Key insight from original design]
 
 ## Root Cause
+
 [Why is this problem happening?]
 
 ## Hypothesis
+
 [What do we believe will solve it?]
 
 ## Validation Plan
+
 [How will we know if we're right?]
 ```
 

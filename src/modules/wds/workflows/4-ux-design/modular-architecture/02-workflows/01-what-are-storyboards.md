@@ -7,6 +7,7 @@
 ## Definition
 
 A **storyboard** is a visual sequence showing:
+
 - State transitions (empty → loading → active → completed)
 - User interactions (click, type, swipe)
 - System responses (updates, animations, feedback)
@@ -17,11 +18,13 @@ A **storyboard** is a visual sequence showing:
 ## Format
 
 **Hand-drawn sketches** (recommended):
+
 - Quick to create
 - Easy to iterate
 - Focus on functionality, not polish
 
 **Example:** Dog Week `App-Main-Booking-States.jpg`
+
 - 6 frames showing walk states
 - Numbered sequentially
 - Annotated with triggers
@@ -31,6 +34,7 @@ A **storyboard** is a visual sequence showing:
 ## Purpose
 
 Storyboards answer:
+
 - "What does this look like in each state?"
 - "How do users move between states?"
 - "What triggers each transition?"
@@ -41,12 +45,14 @@ Storyboards answer:
 ## Why Visual?
 
 **Text description:**
+
 ```
-When the user books a walk, the card changes to gray, 
+When the user books a walk, the card changes to gray,
 the leaderboard updates, and the week overview changes.
 ```
 
 **Storyboard:**
+
 ```
 Frame 1: WHITE card with "Book" button
 Frame 2: User taps "Book"

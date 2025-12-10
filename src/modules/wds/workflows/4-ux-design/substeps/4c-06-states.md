@@ -15,6 +15,7 @@ States show how the page and components appear in different situations.</output>
 <ask>**What are the different page-level states?**
 
 Think about:
+
 - Default/loaded state
 - Empty state (no data)
 - Loading state (fetching data)
@@ -22,6 +23,7 @@ Think about:
 - Success state (after action completes)
 
 For each state, describe:
+
 - When it occurs
 - What the user sees
 - What actions are available</ask>
@@ -35,20 +37,20 @@ For each state, describe:
 For components with multiple appearances, we'll specify each state.</output>
 
 <action>For components with multiple states:
-  <ask>**{{object_id}}** states:
-  
-  - Default:
-  - Hover:
-  - Active/Pressed:
-  - Focus:
-  - Disabled:
-  - Loading:
-  - Error:
-  - Success:
-  
-  (Only specify states that apply to this component)</ask>
-  
-  <action>Store component_states</action>
+<ask>**{{object_id}}** states:
+
+- Default:
+- Hover:
+- Active/Pressed:
+- Focus:
+- Disabled:
+- Loading:
+- Error:
+- Success:
+
+(Only specify states that apply to this component)</ask>
+
+<action>Store component_states</action>
 </action>
 
 <output>✅ **All states defined!**
@@ -71,49 +73,49 @@ For components with multiple appearances, we'll specify each state.</output>
 ```yaml
 page_states:
   default:
-    trigger: "Page loads normally"
-    appearance: "Empty form ready for input"
-    actions: "User can fill form and submit"
-    
+    trigger: 'Page loads normally'
+    appearance: 'Empty form ready for input'
+    actions: 'User can fill form and submit'
+
   loading:
-    trigger: "After submit clicked"
-    appearance: "Submit button shows spinner, form disabled"
-    actions: "Wait for response"
-    
+    trigger: 'After submit clicked'
+    appearance: 'Submit button shows spinner, form disabled'
+    actions: 'Wait for response'
+
   error:
-    trigger: "Authentication fails"
-    appearance: "Error message above form, submit button re-enabled"
-    actions: "User can retry with different credentials"
-    
+    trigger: 'Authentication fails'
+    appearance: 'Error message above form, submit button re-enabled'
+    actions: 'User can retry with different credentials'
+
   success:
-    trigger: "Authentication succeeds"
-    appearance: "Brief success message"
-    actions: "Redirect to dashboard"
+    trigger: 'Authentication succeeds'
+    appearance: 'Brief success message'
+    actions: 'Redirect to dashboard'
 
 component_states:
   signin-form-email-input:
     default:
-      appearance: "Gray border, placeholder text"
+      appearance: 'Gray border, placeholder text'
     focus:
-      appearance: "Primary color border, label floats up"
+      appearance: 'Primary color border, label floats up'
     filled:
-      appearance: "Dark border, label stays up"
+      appearance: 'Dark border, label stays up'
     error:
-      appearance: "Red border, error message below"
+      appearance: 'Red border, error message below'
     disabled:
-      appearance: "Light gray background, cursor not-allowed"
-      
+      appearance: 'Light gray background, cursor not-allowed'
+
   signin-form-submit-button:
     default:
-      appearance: "Primary color background, white text"
+      appearance: 'Primary color background, white text'
     hover:
-      appearance: "Darker primary color"
+      appearance: 'Darker primary color'
     active:
-      appearance: "Even darker, slight scale down"
+      appearance: 'Even darker, slight scale down'
     loading:
       appearance: "Spinner icon, text 'Signing in...'"
     disabled:
-      appearance: "Gray background, lower opacity"
+      appearance: 'Gray background, lower opacity'
 ```
 
 ---
@@ -121,4 +123,3 @@ component_states:
 ## NEXT STEP
 
 Load `substeps/4c-07-validation.md`
-

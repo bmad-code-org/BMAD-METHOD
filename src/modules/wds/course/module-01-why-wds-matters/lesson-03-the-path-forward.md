@@ -1,4 +1,5 @@
 # Module 01: Why WDS Matters
+
 ## Lesson 3: Your Transformation
 
 **From replaceable to indispensable**
@@ -16,7 +17,7 @@ This is what makes you indispensable as a designer. AI can help you think throug
 **The 5 dimensions of design thinking:**
 
 1. **Business Existence (WHY)** - Understanding purpose and value creation
-2. **Business Goals (SUCCESS)** - Connecting to metrics and impact  
+2. **Business Goals (SUCCESS)** - Connecting to metrics and impact
 3. **Product Strategy (HOW)** - Making hard choices about features
 4. **Target Groups (WHO)** - Empathy and understanding needs
 5. **Technical Viability (FEASIBLE)** - Bridging design and implementation
@@ -38,6 +39,7 @@ This course moves you to the other side. You'll become confident in your indispe
 You'll become the designer who makes things happen. The one they can't do without. The linchpin designer.
 
 **Your transformation as a designer:**
+
 - **Before:** Threatened, uncertain, frustrated, limited, replaceable
 - **After:** Confident, clear, empowered, unstoppable, indispensable
 - **Result:** The designer who makes things happen
@@ -57,24 +59,27 @@ Compare the outcomes. The traditional approach - creating mockups, handing off t
 That's a 5x speed increase with better quality. But more importantly, the key designer's creative thinking was preserved and amplified instead of diluted and lost.
 
 **The comparison:**
+
 - **Traditional (cog designer):** 26 weeks → Mediocre result → Intent lost
 - **WDS (linchpin designer):** 5 weeks → Exceptional result → Intent preserved
 - **Key difference:** Designer's user-centric creativity captured and amplified
 
 ---
 
-*More case studies will be added here as they become available.*
+_More case studies will be added here as they become available._
 
 ---
 
 ## Module Complete!
 
 You've completed Module 01: Why WDS Matters. You now understand:
+
 - ✅ The problem: Factory mindset vs linchpin mindset
 - ✅ The solution: Becoming a linchpin designer with WDS
 - ✅ The path forward: 5-dimensional thinking and transformation
 
 **Next steps:**
+
 - Review the practicalities if you haven't already
 - Start Module 02: Project Brief
 - Apply these concepts to your own work

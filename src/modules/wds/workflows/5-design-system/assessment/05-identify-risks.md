@@ -15,24 +15,28 @@
 **Potential Risks:**
 
 #### Loss of Distinction
+
 - ❌ Different purposes look identical
 - ❌ Users can't distinguish actions
 - ❌ Semantic meaning lost
 - ❌ Accessibility issues (same label, different action)
 
 #### Constraint
+
 - ❌ Forced to use existing styling
 - ❌ Can't optimize for specific use case
 - ❌ Future changes constrained
 - ❌ Design evolution limited
 
 #### Confusion
+
 - ❌ Developers confused about usage
 - ❌ Same component, different behaviors
 - ❌ Unclear when to use
 - ❌ Documentation complexity
 
 #### Technical Debt
+
 - ❌ Component becomes overloaded
 - ❌ Too many conditional behaviors
 - ❌ Hard to maintain
@@ -45,24 +49,28 @@
 **Potential Risks:**
 
 #### Complexity
+
 - ❌ Component becomes complex
 - ❌ Many variants to manage
 - ❌ Harder to understand
 - ❌ More documentation needed
 
 #### Maintenance Burden
+
 - ❌ Changes affect all variants
 - ❌ Testing becomes complex
 - ❌ More edge cases to handle
 - ❌ Harder to refactor
 
 #### Variant Explosion
+
 - ❌ Too many variants over time
 - ❌ Unclear which variant to use
 - ❌ Variants become too specific
 - ❌ Component loses coherence
 
 #### Coupling
+
 - ❌ Variants tightly coupled
 - ❌ Can't change one without affecting others
 - ❌ Shared code creates dependencies
@@ -75,24 +83,28 @@
 **Potential Risks:**
 
 #### Inconsistency
+
 - ❌ Visual inconsistency across pages
 - ❌ Different styling for similar components
 - ❌ User confusion
 - ❌ Brand fragmentation
 
 #### Duplication
+
 - ❌ Duplicate code
 - ❌ Duplicate maintenance
 - ❌ Duplicate testing
 - ❌ Duplicate documentation
 
 #### Proliferation
+
 - ❌ Too many components in design system
 - ❌ Hard to find right component
 - ❌ Developers create more duplicates
 - ❌ Design system becomes unwieldy
 
 #### Divergence
+
 - ❌ Components drift over time
 - ❌ Accidental inconsistencies
 - ❌ Harder to maintain coherence
@@ -107,6 +119,7 @@ Based on similarity level and comparison, identify which risks apply
 </action>
 
 **Example (72% similarity, different purposes):**
+
 ```
 Current Situation:
 - High visual similarity (90%)
@@ -171,6 +184,7 @@ Rate each risk as Low/Medium/High severity based on:
 </action>
 
 **Example:**
+
 ```
 Risk Severity Assessment:
 
@@ -202,6 +216,7 @@ Highlight risks that would make an option unsuitable
 </action>
 
 **Example:**
+
 ```
 🚨 Deal-Breaker Risks:
 
@@ -230,6 +245,7 @@ For each risk, identify if/how it can be mitigated
 </action>
 
 **Example:**
+
 ```
 Risk Mitigation:
 
@@ -268,6 +284,7 @@ Pass risk analysis to decision presentation:
 ## Edge Cases
 
 **All options have high risks:**
+
 ```
 ⚠️ All Options Have Significant Risks
 
@@ -280,6 +297,7 @@ I'll present all trade-offs clearly so you can make an informed choice.
 ```
 
 **No significant risks:**
+
 ```
 ✅ Low Risk Situation
 
@@ -292,6 +310,7 @@ Focus on opportunities to decide.
 ```
 
 **One option has deal-breaker risk:**
+
 ```
 🚨 One Option Not Recommended
 
@@ -305,6 +324,7 @@ I'll present Variant vs New as the viable options.
 ## Output Format
 
 **For next step:**
+
 ```json
 {
   "risks": {

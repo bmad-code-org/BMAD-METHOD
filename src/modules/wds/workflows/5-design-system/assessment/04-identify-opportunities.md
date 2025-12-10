@@ -13,12 +13,15 @@
 For each similar component, there are 3 options:
 
 ### Option 1: Reuse Existing Component
+
 Use the existing component reference, just change content
 
 ### Option 2: Add Variant to Existing
+
 Extend existing component with new variant
 
 ### Option 3: Create New Component
+
 Create separate component in design system
 
 ---
@@ -30,24 +33,28 @@ Create separate component in design system
 **Potential Opportunities:**
 
 #### Consistency
+
 - ✅ Visual consistency across pages
 - ✅ Behavioral consistency (same interactions)
 - ✅ User familiarity (looks/works the same)
 - ✅ Brand coherence
 
 #### Maintenance
+
 - ✅ Single source of truth
 - ✅ Update once, applies everywhere
 - ✅ Easier to maintain
 - ✅ Fewer files to manage
 
 #### Development
+
 - ✅ Faster development (component exists)
 - ✅ Less code duplication
 - ✅ Easier testing (test once)
 - ✅ Better performance (reused code)
 
 #### Design System
+
 - ✅ Cleaner design system
 - ✅ Fewer components to document
 - ✅ Easier for developers to find
@@ -60,24 +67,28 @@ Create separate component in design system
 **Potential Opportunities:**
 
 #### Flexibility
+
 - ✅ Accommodates different use cases
 - ✅ Maintains component family
 - ✅ Allows contextual adaptation
 - ✅ Supports design evolution
 
 #### Consistency
+
 - ✅ Related components stay connected
 - ✅ Shared base styling
 - ✅ Consistent naming pattern
 - ✅ Clear component relationships
 
 #### Scalability
+
 - ✅ Easy to add more variants later
 - ✅ Supports design system growth
 - ✅ Handles edge cases gracefully
 - ✅ Accommodates future needs
 
 #### Documentation
+
 - ✅ Variants documented together
 - ✅ Clear component family
 - ✅ Easier to understand relationships
@@ -90,24 +101,28 @@ Create separate component in design system
 **Potential Opportunities:**
 
 #### Clarity
+
 - ✅ Clear separation of concerns
 - ✅ Distinct purpose/function
 - ✅ No confusion about usage
 - ✅ Semantic clarity
 
 #### Simplicity
+
 - ✅ Simpler component definition
 - ✅ No complex variant logic
 - ✅ Easier to understand
 - ✅ Fewer edge cases
 
 #### Independence
+
 - ✅ Can evolve independently
 - ✅ No impact on other components
 - ✅ Easier to modify
 - ✅ No unintended side effects
 
 #### Specificity
+
 - ✅ Optimized for specific use case
 - ✅ No unnecessary features
 - ✅ Better performance
@@ -122,6 +137,7 @@ Based on similarity level and comparison, identify which opportunities apply
 </action>
 
 **Example (72% similarity):**
+
 ```
 Current Situation:
 - High visual similarity
@@ -184,6 +200,7 @@ Based on comparison data, identify the most compelling opportunities for each op
 </action>
 
 **Example:**
+
 ```
 🌟 Strongest Opportunities:
 
@@ -216,6 +233,7 @@ Factor in project-specific considerations:
 </action>
 
 **Example:**
+
 ```
 📋 Project Context:
 
@@ -248,6 +266,7 @@ Pass opportunity analysis to risk identification:
 ## Edge Cases
 
 **All options have strong opportunities:**
+
 ```
 ✨ All Options Look Good!
 
@@ -260,6 +279,7 @@ This means the risks will be the deciding factor.
 ```
 
 **No clear opportunities:**
+
 ```
 ⚠️ No Strong Opportunities Identified
 
@@ -271,6 +291,7 @@ I'll focus on risks to help clarify the decision.
 ```
 
 **Conflicting opportunities:**
+
 ```
 ⚠️ Conflicting Opportunities
 
@@ -287,6 +308,7 @@ Your design philosophy will guide this decision:
 ## Output Format
 
 **For next step:**
+
 ```json
 {
   "opportunities": {

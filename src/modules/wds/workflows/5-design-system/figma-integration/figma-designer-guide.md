@@ -22,6 +22,7 @@
 ### Create Design System File
 
 **File structure:**
+
 ```
 [Project Name] Design System
 ├── 📄 Cover
@@ -39,6 +40,7 @@
 ```
 
 **Tips:**
+
 - Use clear page names
 - Organize by component type
 - Keep foundation separate
@@ -51,6 +53,7 @@
 **Create Figma variables:**
 
 **Colors:**
+
 ```
 Collection: Colors
 ├── primary/50
@@ -63,6 +66,7 @@ Collection: Colors
 ```
 
 **Spacing:**
+
 ```
 Collection: Spacing
 ├── spacing/1 = 4px
@@ -73,6 +77,7 @@ Collection: Spacing
 ```
 
 **Typography:**
+
 ```
 Styles: Typography
 ├── Display/Large
@@ -89,6 +94,7 @@ Styles: Typography
 ### Example: Button Component
 
 **1. Create Base Frame**
+
 ```
 Frame name: Button/Primary [btn-001]
 Size: Hug contents (width), Fixed 44px (height)
@@ -98,6 +104,7 @@ Gap: 8px
 ```
 
 **2. Add Content**
+
 ```
 ├── Icon (optional)
 │   └── Size: 20x20px
@@ -107,6 +114,7 @@ Gap: 8px
 ```
 
 **3. Apply Design Tokens**
+
 ```
 Background: primary/600 (variable)
 Text Color: white (variable)
@@ -114,6 +122,7 @@ Border Radius: 8px
 ```
 
 **4. Create Component**
+
 ```
 Select frame → Create Component
 Name: Button/Primary [btn-001]
@@ -124,6 +133,7 @@ Name: Button/Primary [btn-001]
 ### Add Component Description
 
 **In component description field:**
+
 ```
 Button Primary [btn-001]
 
@@ -158,16 +168,19 @@ Primary action button for main user actions.
 **Select component → Add variant property:**
 
 **Property 1: Type**
+
 ```
 Values: Primary, Secondary, Ghost, Outline
 ```
 
 **Property 2: Size**
+
 ```
 Values: Small, Medium, Large
 ```
 
 **Property 3: State**
+
 ```
 Values: Default, Hover, Active, Disabled, Loading
 ```
@@ -177,6 +190,7 @@ Values: Default, Hover, Active, Disabled, Loading
 ### Design Each Variant
 
 **Type=Primary, Size=Medium, State=Default:**
+
 ```
 Background: primary/600
 Text: white
@@ -184,6 +198,7 @@ Padding: 16px × 12px
 ```
 
 **Type=Primary, Size=Medium, State=Hover:**
+
 ```
 Background: primary/700 (darker)
 Text: white
@@ -191,6 +206,7 @@ Scale: 1.02 (slightly larger)
 ```
 
 **Type=Primary, Size=Medium, State=Active:**
+
 ```
 Background: primary/800 (darkest)
 Text: white
@@ -198,6 +214,7 @@ Scale: 0.98 (slightly smaller)
 ```
 
 **Type=Primary, Size=Medium, State=Disabled:**
+
 ```
 Background: gray/300
 Text: gray/500
@@ -206,6 +223,7 @@ Cursor: not-allowed
 ```
 
 **Type=Primary, Size=Medium, State=Loading:**
+
 ```
 Background: primary/600
 Text: white
@@ -218,6 +236,7 @@ Opacity: 0.8
 ### Adjust for Sizes
 
 **Small:**
+
 ```
 Padding: 12px × 8px
 Text: Body/Small
@@ -226,6 +245,7 @@ Height: 36px
 ```
 
 **Medium (default):**
+
 ```
 Padding: 16px × 12px
 Text: Body/Medium
@@ -234,6 +254,7 @@ Height: 44px
 ```
 
 **Large:**
+
 ```
 Padding: 20px × 16px
 Text: Body/Large
@@ -248,6 +269,7 @@ Height: 52px
 ### Visual State Indicators
 
 **Create a documentation frame:**
+
 ```
 Frame: Button States Documentation
 ├── Default
@@ -263,6 +285,7 @@ Frame: Button States Documentation
 ```
 
 **Add annotations:**
+
 - State name
 - Visual changes
 - Interaction behavior
@@ -279,6 +302,7 @@ Frame: Button States Documentation
 **2. Right-click → "Copy link to selection"**
 
 **3. Extract node ID from URL:**
+
 ```
 URL: https://www.figma.com/file/abc123/Design-System?node-id=456:789
 
@@ -289,6 +313,7 @@ Full reference: figma://file/abc123/node/456:789
 ```
 
 **4. Add to WDS mapping file:**
+
 ```yaml
 # D-Design-System/figma-mappings.md
 Button [btn-001] → figma://file/abc123/node/456:789
@@ -303,16 +328,19 @@ Button [btn-001] → figma://file/abc123/node/456:789
 **1. Create component in Figma** (steps above)
 
 **2. Notify WDS system:**
+
 - Add component ID to Figma description
 - Copy Figma node ID
 - Update `figma-mappings.md`
 
 **3. Generate WDS specification:**
+
 - Use Figma MCP to read component
 - Generate component specification
 - Review and confirm
 
 **4. Verify sync:**
+
 - Check WDS component file created
 - Verify all variants captured
 - Confirm states documented
@@ -327,18 +355,21 @@ Button [btn-001] → figma://file/abc123/node/456:789
 **1. Create/update component in Figma**
 
 **2. Run MCP sync command:**
+
 ```bash
 # In WDS project
 wds figma sync Button/Primary
 ```
 
 **3. MCP will:**
+
 - Read component from Figma
 - Extract variants and states
 - Generate WDS specification
 - Update figma-mappings.md
 
 **4. Review generated spec:**
+
 - Check accuracy
 - Add missing details
 - Confirm and commit
@@ -352,16 +383,19 @@ wds figma sync Button/Primary
 **When updating a component:**
 
 **1. Update in Figma:**
+
 - Modify component
 - Update description if needed
 - Maintain component ID
 
 **2. Sync to WDS:**
+
 - Run MCP sync (if available)
 - Or manually update WDS spec
 - Update version history
 
 **3. Notify team:**
+
 - Document changes
 - Update affected pages
 - Test implementations
@@ -373,11 +407,13 @@ wds figma sync Button/Primary
 **Track component changes:**
 
 **In Figma:**
+
 - Use Figma version history
 - Add version notes
 - Tag major changes
 
 **In WDS:**
+
 ```markdown
 ## Version History
 
@@ -385,6 +421,7 @@ wds figma sync Button/Primary
 **Last Updated:** 2024-12-15
 
 **Changes:**
+
 - 2024-12-09: Created component
 - 2024-12-12: Added loading state
 - 2024-12-15: Updated hover animation
@@ -397,26 +434,31 @@ wds figma sync Button/Primary
 ### DO ✅
 
 **1. Use Design Tokens**
+
 - Always use variables for colors
 - Use variables for spacing
 - Apply text styles consistently
 
 **2. Document Thoroughly**
+
 - Clear component descriptions
 - Usage guidelines
 - Accessibility notes
 
 **3. Maintain Consistency**
+
 - Follow naming conventions
 - Use consistent spacing
 - Apply standard states
 
 **4. Test Instances**
+
 - Create example instances
 - Test all variants
 - Verify responsive behavior
 
 **5. Keep Organized**
+
 - Logical component grouping
 - Clear page structure
 - Clean component hierarchy
@@ -426,26 +468,31 @@ wds figma sync Button/Primary
 ### DON'T ❌
 
 **1. Hardcode Values**
+
 - Don't use hex colors directly
 - Don't use pixel values without variables
 - Don't skip design tokens
 
 **2. Detach Instances**
+
 - Don't break component connections
 - Don't create one-off variations
 - Don't lose main component link
 
 **3. Skip Documentation**
+
 - Don't leave descriptions empty
 - Don't forget WDS component ID
 - Don't skip usage guidelines
 
 **4. Ignore States**
+
 - Don't create only default state
 - Don't forget hover/active
 - Don't skip disabled state
 
 **5. Break Naming Conventions**
+
 - Don't use inconsistent names
 - Don't forget component IDs
 - Don't use unclear abbreviations
@@ -457,26 +504,31 @@ wds figma sync Button/Primary
 ### Creating a New Component Type
 
 **1. Research:**
+
 - Check if similar component exists
 - Review WDS component boundaries guide
 - Decide: new component or variant?
 
 **2. Design:**
+
 - Create base component
 - Add all required states
 - Apply design tokens
 
 **3. Document:**
+
 - Write clear description
 - Add WDS component ID
 - Document usage guidelines
 
 **4. Sync:**
+
 - Get Figma node ID
 - Update WDS mappings
 - Generate specification
 
 **5. Test:**
+
 - Create example instances
 - Test all variants
 - Verify responsive behavior
@@ -486,21 +538,25 @@ wds figma sync Button/Primary
 ### Adding a Variant to Existing Component
 
 **1. Assess:**
+
 - Is this truly a variant?
 - Or should it be a new component?
 - Check with WDS assessment flow
 
 **2. Add Variant:**
+
 - Add new variant property value
 - Design variant appearance
 - Document differences
 
 **3. Update Documentation:**
+
 - Update component description
 - Add variant to list
 - Document when to use
 
 **4. Sync:**
+
 - Update WDS specification
 - Add variant to component file
 - Update version history
@@ -510,21 +566,25 @@ wds figma sync Button/Primary
 ### Updating Component Styling
 
 **1. Plan Change:**
+
 - Document what's changing
 - Check impact on instances
 - Notify team
 
 **2. Update Component:**
+
 - Modify main component
 - Test all variants
 - Verify instances update
 
 **3. Sync to WDS:**
+
 - Update WDS specification
 - Document changes
 - Update version history
 
 **4. Verify:**
+
 - Check all instances
 - Test in examples
 - Confirm with team
@@ -538,6 +598,7 @@ wds figma sync Button/Primary
 **Problem:** MCP can't read component
 
 **Solutions:**
+
 - Check component name format
 - Verify WDS component ID in description
 - Ensure component is published
@@ -550,6 +611,7 @@ wds figma sync Button/Primary
 **Problem:** Some variants missing in WDS
 
 **Solutions:**
+
 - Check variant property names
 - Verify all combinations exist
 - Ensure consistent naming
@@ -562,6 +624,7 @@ wds figma sync Button/Primary
 **Problem:** Hardcoded values instead of variables
 
 **Solutions:**
+
 - Replace hex colors with variables
 - Use spacing variables
 - Apply text styles
@@ -574,6 +637,7 @@ wds figma sync Button/Primary
 **Problem:** Updates break instance overrides
 
 **Solutions:**
+
 - Don't change component structure
 - Add new properties instead
 - Maintain backward compatibility

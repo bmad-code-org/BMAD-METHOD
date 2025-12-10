@@ -47,13 +47,13 @@ Choice [1/2/3]:</ask>
 <check if="choice == 1">
   <ask>**Which existing component?**
 
-  From your component library:
-  {{list_available_link_components}}
+From your component library:
+{{list_available_link_components}}
 
-  Component name:</ask>
-  
-  <action>Store design_system_component</action>
-  <action>Store component_status = "existing"</action>
+Component name:</ask>
+
+<action>Store design_system_component</action>
+<action>Store component_status = "existing"</action>
 </check>
 
 <check if="choice == 2">
@@ -84,13 +84,15 @@ Choice [1/2/3]:</ask>
 <ask>**Link text in all languages:**
 
 {{#each language}}
+
 - **{{language}}:**
-{{/each}}
+  {{/each}}
 
 **Target/Destination:**
+
 - URL or route:
 - Opens in: same tab / new tab
-</ask>
+  </ask>
 
 ---
 
@@ -99,24 +101,28 @@ Choice [1/2/3]:</ask>
 <ask>**Visual styling:**
 
 **Default:**
+
 - Text color:
 - Text decoration: (underline/none)
 - Font weight:
 - Icon: (if any)
 
 **Hover:**
+
 - Text color:
 - Text decoration:
 - Cursor:
 
 **Active/Visited:**
+
 - Text color:
 - Show as visited: yes/no
 
 **Focus:**
+
 - Outline color:
 - Text decoration:
-</ask>
+  </ask>
 
 ---
 
@@ -132,28 +138,30 @@ Choice [1/2/3]:</ask>
 
 **Content:**
 {{#each language}}
+
 - **{{language}}:** {{link_text}}
-{{/each}}
+  {{/each}}
 
 {{#if has_icon}}
 **Icon:** {{icon_name}} ({{icon_position}})
 {{/if}}
 
 **States:**
+
 - **Default:** {{default_color}}, {{default_decoration}}
 - **Hover:** {{hover_color}}, {{hover_decoration}}
 - **Active:** {{active_color}}
 - **Focus:** Outline {{focus_outline}}
 
 **Interaction:**
+
 - On click: Navigate to {{destination}}
-{{#if opens_new_tab}}
+  {{#if opens_new_tab}}
 - Opens in new tab
 - Includes rel="noopener noreferrer"
-{{/if}}
+  {{/if}}
 ```
 
 ---
 
 **Return to 4c-03**
-

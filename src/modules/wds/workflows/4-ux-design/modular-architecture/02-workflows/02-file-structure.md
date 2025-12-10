@@ -30,6 +30,7 @@ project-root/
 ## Why Features/Storyboards/?
 
 Storyboards document **functionality**, not visual design:
+
 - State transitions (functional)
 - User interactions (functional)
 - Business logic flows (functional)
@@ -41,6 +42,7 @@ Therefore, they belong with **Features**, not Components.
 ## Reference Pattern
 
 **From Feature File:**
+
 ```markdown
 Features/walk-booking-logic.feature.md
 
@@ -50,6 +52,7 @@ Features/walk-booking-logic.feature.md
 ```
 
 **From Component File:**
+
 ```markdown
 Components/walk-slot-card.component.md
 
@@ -64,11 +67,13 @@ See storyboard for state transitions:
 ## Separation from Page Sketches
 
 **Page Sketches** (Sketches/ folder):
+
 - Show page layout
 - Static view of entire page
 - Used during initial design
 
 **Storyboards** (Features/Storyboards/ folder):
+
 - Show component behavior
 - Sequential frames showing changes
 - Used during specification

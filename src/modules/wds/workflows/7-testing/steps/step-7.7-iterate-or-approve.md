@@ -9,6 +9,7 @@ Either iterate with BMad to fix issues, or approve the feature for production.
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 7.6 (sent to BMad)
 - ✅ BMad acknowledged receipt
 - ✅ Clear on next steps
@@ -20,6 +21,7 @@ Either iterate with BMad to fix issues, or approve the feature for production.
 ### Path A: Issues Found → Iterate
 
 **If test result was FAIL:**
+
 - BMad fixes issues
 - You retest
 - Repeat until approved
@@ -27,6 +29,7 @@ Either iterate with BMad to fix issues, or approve the feature for production.
 ### Path B: No Issues → Approve
 
 **If test result was PASS:**
+
 - Feature approved
 - Ready for production
 - Phase 7 complete!
@@ -41,17 +44,18 @@ Either iterate with BMad to fix issues, or approve the feature for production.
 
 ```
 BMad Developer: "Working on fixes for DD-XXX.
-                 
+
                  Progress:
                  ✓ ISS-002: Button color fixed
                  ✓ ISS-003: Button labels added
                  ⏳ ISS-004: Progress save in progress
                  ⏳ ISS-005: Network timeout handling in progress
-                 
+
                  Will notify when all fixes complete."
 ```
 
 **Your role during fixes:**
+
 - Be available for questions
 - Clarify issues if needed
 - Review fixes if BMad requests early feedback
@@ -64,7 +68,7 @@ BMad Developer: "Working on fixes for DD-XXX.
 
 ```
 BMad Developer: "All issues fixed for DD-XXX!
-                 
+
                  Fixed:
                  ✓ ISS-002: Button color (now using design token)
                  ✓ ISS-003: Button labels (accessibility improved)
@@ -72,12 +76,12 @@ BMad Developer: "All issues fixed for DD-XXX!
                  ✓ ISS-005: Network timeout (30s timeout + retry)
                  ✓ ISS-001: Transition animation (300ms fade)
                  ✓ ISS-006: Error message (more helpful)
-                 
+
                  Low severity issues (ISS-007, ISS-008) moved to backlog.
-                 
+
                  Build: v0.1.0-beta.2
                  Environment: Staging
-                 
+
                  Ready for retest!"
 ```
 
@@ -88,32 +92,38 @@ BMad Developer: "All issues fixed for DD-XXX!
 **Run tests again:**
 
 **Focus on:**
+
 1. **Fixed issues** (verify they're actually fixed)
 2. **Regression testing** (ensure fixes didn't break anything)
 3. **Related areas** (check if fixes affected other parts)
 
 **Abbreviated testing:**
+
 - Don't need to run ALL tests again
 - Focus on areas that were fixed
 - Spot-check other areas for regression
 
 **Example retest plan:**
+
 ```markdown
 # Retest Plan: DD-XXX (v0.1.0-beta.2)
 
 ## Fixed Issues to Verify
 
 ### ISS-002: Button Color
+
 - [ ] Check all primary buttons
 - [ ] Verify color is #2563EB
 - [ ] Check on all screens
 
 ### ISS-003: Button Labels
+
 - [ ] Enable VoiceOver
 - [ ] Verify all buttons have descriptive labels
 - [ ] Check all interactive elements
 
 ### ISS-004: Progress Save
+
 - [ ] Complete signup
 - [ ] Force quit app
 - [ ] Reopen app
@@ -152,31 +162,37 @@ BMad Developer: "All issues fixed for DD-XXX!
 ## Fixed Issues Verification
 
 ### ISS-002: Button Color
+
 - **Status:** FIXED ✅
 - **Verification:** All primary buttons now use #2563EB
 - **Result:** PASS
 
 ### ISS-003: Button Labels
+
 - **Status:** FIXED ✅
 - **Verification:** VoiceOver announces descriptive labels
 - **Result:** PASS
 
 ### ISS-004: Progress Save
+
 - **Status:** FIXED ✅
 - **Verification:** App resumes at correct point after force quit
 - **Result:** PASS
 
 ### ISS-005: Network Timeout
+
 - **Status:** FIXED ✅
 - **Verification:** 30s timeout with retry button
 - **Result:** PASS
 
 ### ISS-001: Transition Animation
+
 - **Status:** FIXED ✅
 - **Verification:** 300ms fade transition working
 - **Result:** PASS
 
 ### ISS-006: Error Message
+
 - **Status:** FIXED ✅
 - **Verification:** Error message now helpful and actionable
 - **Result:** PASS
@@ -186,14 +202,17 @@ BMad Developer: "All issues fixed for DD-XXX!
 ## Regression Testing
 
 ### Happy Path HP-001
+
 - **Status:** PASS ✅
 - **No regressions detected**
 
 ### Error States
+
 - **Status:** PASS ✅
 - **No regressions detected**
 
 ### Design System
+
 - **Compliance:** 98% (up from 67%)
 - **Status:** PASS ✅
 
@@ -315,12 +334,14 @@ Thanks,
 ### Step 6: Repeat Until Approved
 
 **Keep iterating:**
+
 - BMad fixes issues
 - You retest
 - Report results
 - Repeat until all issues resolved
 
 **Typical iteration:**
+
 ```
 Round 1: 8 issues found
 Round 2: 2 new issues found (6 fixed)
@@ -398,6 +419,7 @@ certify that:
 This feature is authorized for production deployment.
 
 **Next Steps:**
+
 1. Merge to main branch
 2. Deploy to production
 3. Monitor user feedback
@@ -448,11 +470,11 @@ WDS Designer
 
 ```yaml
 delivery:
-  status: "complete"
-  approved_at: "2024-12-09T16:00:00Z"
-  approved_by: "[Your name]"
+  status: 'complete'
+  approved_at: '2024-12-09T16:00:00Z'
+  approved_by: '[Your name]'
   ready_for_production: true
-  sign_off_document: "deliveries/DD-XXX-sign-off.md"
+  sign_off_document: 'deliveries/DD-XXX-sign-off.md'
 ```
 
 ---
@@ -461,9 +483,9 @@ delivery:
 
 ```yaml
 delivery:
-  status: "in_testing"
+  status: 'in_testing'
   retest_count: 2
-  last_retest_at: "2024-12-15T14:00:00Z"
+  last_retest_at: '2024-12-15T14:00:00Z'
   issues_remaining: 2
 ```
 
@@ -480,6 +502,7 @@ delivery:
 ✅ Ready for production
 
 **What happens next:**
+
 - BMad deploys to production
 - Feature goes live
 - Users start using it
@@ -531,16 +554,19 @@ delivery:
 ### DO ✅
 
 **Be patient:**
+
 - Iteration is normal
 - Quality takes time
 - Don't rush approval
 
 **Be thorough:**
+
 - Verify all fixes
 - Check for regressions
 - Don't skip retest
 
 **Be appreciative:**
+
 - Acknowledge good work
 - Celebrate success
 - Thank the team
@@ -548,20 +574,23 @@ delivery:
 ### DON'T ❌
 
 **Don't approve prematurely:**
+
 - All issues must be fixed
 - Quality standards must be met
 - Don't compromise
 
 **Don't iterate forever:**
+
 - If stuck, discuss with team
 - Find pragmatic solutions
 - Know when "good enough"
 
 **Don't forget documentation:**
+
 - Sign-off is required
 - Update delivery status
 - Document everything
 
 ---
 
-**Remember:** Quality is the goal. Iterate until it's right, then celebrate success!** 🎉✨
+**Remember:** Quality is the goal. Iterate until it's right, then celebrate success!\*\* 🎉✨

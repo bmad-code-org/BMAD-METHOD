@@ -12,11 +12,13 @@
 Now we create a **Design Brief** - strategic guidance for the designer on which features matter most and to whom.
 
 For each feature, we'll assess impact on each persona using a simple scale:
+
 - **High** = Addresses major need or fear
 - **Medium** = Helpful but not critical
 - **Low** = Minimal impact
 
 This creates a scored, prioritized feature list that guides:
+
 - **Phase 4: UX Design** - Which scenarios to design first
 - **Phase 6: PRD/Development** - Epic and story prioritization
 
@@ -43,6 +45,7 @@ Skip foundational features (auth, profiles, basic CRUD).
 <output>I'm creating your Feature Impact Analysis document.
 
 **Scoring:**
+
 - **Primary Persona:** High = 5 pts | Medium = 3 pts | Low = 1 pt
 - **Other Personas:** High = 3 pts | Medium = 1 pt | Low = 0 pts
 
@@ -66,9 +69,10 @@ How does this impact each persona?</output>
 <action>Record response</action>
 
 <action>Calculate score:
+
 - Primary: High=5, Medium=3, Low=1
 - Others: High=3, Medium=1, Low=0
-</action>
+  </action>
 
 <output>✓ **{{current_feature}}** — Score: {{calculated_score}}</output>
 
@@ -89,17 +93,19 @@ How does this impact each persona?</output>
 <action>Sort features by score (high to low)</action>
 
 <action>Calculate dynamic thresholds based on persona count:
+
 - max_possible = 5 (primary high) + 3 × (other_persona_count)
 - must_have_threshold = Features with Primary High (5) OR score ≥ (max_possible - 3)
 - consider_threshold = mid-range scores
 - defer_threshold = low scores
-</action>
+  </action>
 
 <action>Apply decisions:
+
 - **Must Have:** Primary scored High (5 pts) OR score in top tier
 - **Consider:** Medium-range scores, might serve strategic needs
 - **Defer:** Low scores, minimal strategic value
-</action>
+  </action>
 
 <output>**Scoring complete!** Here's your prioritized feature list:
 
@@ -108,6 +114,7 @@ How does this impact each persona?</output>
 {{/each}}
 
 **Scoring context:**
+
 - Max possible score with {{persona_count}} personas: {{max_possible}}
 - Top tier (Must Have): {{must_have_threshold}}+
 - Primary critical (Must Have): Features with Primary High (5)
@@ -131,6 +138,7 @@ Do NOT include analysis section - keep it clean.
 **Saved to:** `B-Trigger-Map/00-feature-impact-analysis.md`
 
 This is your **Design Brief** - it tells the designer:
+
 - **What to design first** - Top-scoring features = priority scenarios
 - **Prominence in UI** - High scores = prominent placement
 - **Who to optimize for** - Which persona's needs matter most
@@ -138,6 +146,7 @@ This is your **Design Brief** - it tells the designer:
 **Trigger Mapping Complete!** 🎉
 
 You now have:
+
 - Clear business priorities
 - Defined target personas with drivers
 - Strategically ranked features

@@ -18,6 +18,7 @@ Learn how to be indispensable in the AI era. Understand the paradigm shift where
 
 **Modules 02-16: Complete WDS Workflow**  
 Master every phase from trigger mapping through design system to development handoff. Each module includes:
+
 - **Lessons** - Theory and concepts with NotebookLM audio
 - **Tutorials** - Step-by-step hands-on guides
 - **Practice** - Apply to your own project
@@ -67,6 +68,7 @@ Extract design tokens, create reusable components, and generate interactive HTML
 **[Modular Architecture](../workflows/4-ux-design/modular-architecture/00-MODULAR-ARCHITECTURE-GUIDE.md)**
 
 Technical details on:
+
 - Three-tier file structure
 - Content placement rules
 - Component decomposition
@@ -98,17 +100,21 @@ Technical details on:
 ## Community & Support
 
 ### Discord
+
 Join the WDS community for:
+
 - Questions and answers
 - Project feedback
 - Feature discussions
 
 ### GitHub
+
 - Report issues
 - Request features
 - Contribute
 
 ### YouTube
+
 - Video tutorials
 - Walkthroughs
 - Case studies

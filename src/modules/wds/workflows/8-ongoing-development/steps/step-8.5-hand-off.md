@@ -9,6 +9,7 @@ Hand off the Design Delivery (small scope) to BMad for implementation.
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 8.4 (Design Delivery created)
 - ✅ All artifacts ready
 - ✅ Test scenario created
@@ -84,6 +85,7 @@ WDS Designer
 Refer to Phase 6, Step 6.4 for complete handoff dialog process.
 
 **Key topics:**
+
 1. Problem and solution overview
 2. What's changing vs staying
 3. Technical requirements
@@ -128,11 +130,11 @@ BMad Developer
 
 ```yaml
 delivery:
-  status: "in_development"  # Changed from "ready_for_handoff"
-  handed_off_at: "2024-12-09T15:00:00Z"
-  developer: "[BMad Developer name]"
-  development_start: "2024-12-10T09:00:00Z"
-  expected_completion: "2024-12-12T17:00:00Z"
+  status: 'in_development' # Changed from "ready_for_handoff"
+  handed_off_at: '2024-12-09T15:00:00Z'
+  developer: '[BMad Developer name]'
+  development_start: '2024-12-10T09:00:00Z'
+  expected_completion: '2024-12-12T17:00:00Z'
 ```
 
 ---

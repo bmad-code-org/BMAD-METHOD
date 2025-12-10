@@ -22,13 +22,13 @@ They should be independent!
 ## The Problem
 
 **Bad Practice:**
+
 ```html
-<h2 class="text-4xl font-bold text-blue-600">
-  Heading
-</h2>
+<h2 class="text-4xl font-bold text-blue-600">Heading</h2>
 ```
 
 **Issues:**
+
 - Visual styling mixed with semantic HTML
 - Can't change h2 appearance without changing all h2s
 - h2 means "second-level heading" but looks like "display large"
@@ -41,13 +41,13 @@ They should be independent!
 **Good Practice:**
 
 **HTML (Semantic):**
+
 ```html
-<h2 class="heading-section">
-  Heading
-</h2>
+<h2 class="heading-section">Heading</h2>
 ```
 
 **Design Tokens (Visual):**
+
 ```css
 .heading-section {
   font-size: var(--text-4xl);
@@ -57,6 +57,7 @@ They should be independent!
 ```
 
 **Benefits:**
+
 - Semantic HTML stays semantic
 - Visual style is centralized
 - Can change appearance without touching HTML
@@ -67,6 +68,7 @@ They should be independent!
 ## Token Hierarchy
 
 ### Level 1: Raw Values
+
 ```css
 --spacing-4: 1rem;
 --color-blue-600: #2563eb;
@@ -74,6 +76,7 @@ They should be independent!
 ```
 
 ### Level 2: Semantic Tokens
+
 ```css
 --text-heading-large: var(--font-size-4xl);
 --color-primary: var(--color-blue-600);
@@ -81,6 +84,7 @@ They should be independent!
 ```
 
 ### Level 3: Component Tokens
+
 ```css
 --button-padding-x: var(--spacing-section);
 --button-color-primary: var(--color-primary);
@@ -96,6 +100,7 @@ They should be independent!
 ### In Page Specifications
 
 **Specify semantic structure:**
+
 ```yaml
 Page Structure:
   - Section Heading (h2)
@@ -104,6 +109,7 @@ Page Structure:
 ```
 
 **NOT visual styling:**
+
 ```yaml
 # ❌ Don't do this
 Page Structure:
@@ -115,11 +121,12 @@ Page Structure:
 ### In Design System
 
 **Specify visual styling:**
+
 ```yaml
 Section Heading:
   html_element: h2
   design_token: heading-section
-  
+
 Design Token Definition:
   heading-section:
     font-size: text-4xl
@@ -153,15 +160,17 @@ Design Token Definition:
 **Example Output:**
 
 **Page Spec:**
+
 ```yaml
 Hero Section:
   heading:
     element: h2
     token: heading-section
-    content: "Welcome to Our Product"
+    content: 'Welcome to Our Product'
 ```
 
 **Design System:**
+
 ```yaml
 Tokens:
   heading-section:
@@ -192,16 +201,18 @@ Tokens:
 **Example Output:**
 
 **Page Spec:**
+
 ```yaml
 Login Form:
   submit_button:
     element: button
     type: submit
     component: Button.primary
-    label: "Log in"
+    label: 'Log in'
 ```
 
 **Design System:**
+
 ```yaml
 Button Component:
   variants:
@@ -234,19 +245,21 @@ Button Component:
 **Example Output:**
 
 **Page Spec:**
+
 ```yaml
 Login Form:
   email_field:
     element: input
     type: email
     component: InputField.email
-    label: "Email address"
-    placeholder: "you@example.com"
+    label: 'Email address'
+    placeholder: 'you@example.com'
     required: true
     validation: email_format
 ```
 
 **Design System:**
+
 ```yaml
 Input Field Component:
   base_styling:
@@ -255,7 +268,7 @@ Input Field Component:
     border: 1px solid gray-300
     border-radius: radius-md
     font-size: text-base
-  
+
   variants:
     email:
       icon: envelope
@@ -294,12 +307,14 @@ Input Field Component:
 ### Mistake 1: Mixing Structure and Style
 
 **❌ Bad:**
+
 ```yaml
 Page:
   - "Large blue heading" (h2)
 ```
 
 **✅ Good:**
+
 ```yaml
 Page:
   - Section heading (h2 → heading-section token)
@@ -308,6 +323,7 @@ Page:
 ### Mistake 2: Hardcoding Visual Values
 
 **❌ Bad:**
+
 ```yaml
 Button:
   background: #2563eb
@@ -315,6 +331,7 @@ Button:
 ```
 
 **✅ Good:**
+
 ```yaml
 Button:
   background: primary-600
@@ -324,11 +341,13 @@ Button:
 ### Mistake 3: Using Visual Names for Semantic Elements
 
 **❌ Bad:**
+
 ```yaml
 <h2 class="big-blue-text">
 ```
 
 **✅ Good:**
+
 ```yaml
 <h2 class="section-heading">
 ```
@@ -338,6 +357,7 @@ Button:
 ## Token Naming Conventions
 
 ### Colors
+
 ```
 --color-{category}-{shade}
 --color-primary-600
@@ -346,6 +366,7 @@ Button:
 ```
 
 ### Typography
+
 ```
 --text-{size}
 --text-base
@@ -354,6 +375,7 @@ Button:
 ```
 
 ### Spacing
+
 ```
 --spacing-{scale}
 --spacing-2
@@ -362,6 +384,7 @@ Button:
 ```
 
 ### Component-Specific
+
 ```
 --{component}-{property}-{variant}
 --button-padding-primary
@@ -376,11 +399,13 @@ Button:
 ### Phase 4: Page Specification
 
 **Agent specifies:**
+
 - Semantic HTML elements
 - Component references
 - Content and labels
 
 **Agent does NOT specify:**
+
 - Exact colors
 - Exact sizes
 - Exact spacing
@@ -388,26 +413,30 @@ Button:
 ### Phase 5: Design System
 
 **Agent specifies:**
+
 - Design tokens
 - Component styling
 - Visual properties
 
 **Agent does NOT specify:**
+
 - Page-specific content
 - Semantic structure
 
 ### Integration
 
 **Page spec references design system:**
+
 ```yaml
 Hero:
   heading:
     element: h2
     token: heading-hero  ← Reference to design system
-    content: "Welcome"
+    content: 'Welcome'
 ```
 
 **Design system defines token:**
+
 ```yaml
 Tokens:
   heading-hero:

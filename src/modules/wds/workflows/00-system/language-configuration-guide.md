@@ -22,6 +22,7 @@ These are configured during workflow initialization and stored in `wds-workflow-
 During WDS project setup, you'll be asked:
 
 **Question 1: Specification Language**
+
 ```
 What language should WDS write the design specifications in?
 
@@ -33,6 +34,7 @@ What language should WDS write the design specifications in?
 ```
 
 **Question 2: Product Languages**
+
 ```
 What languages will the final product support?
 
@@ -49,7 +51,7 @@ Settings are stored in `docs/wds-workflow-status.yaml`:
 
 ```yaml
 config:
-  specification_language: "EN"
+  specification_language: 'EN'
   product_languages:
     - EN
     - SE
@@ -63,6 +65,7 @@ config:
 ### Specification Language
 
 **Used for:**
+
 - Instructions and guidance text in specs
 - Section descriptions
 - Comments and annotations
@@ -70,19 +73,23 @@ config:
 - Design system documentation
 
 **Example:**
+
 ```markdown
 # 1.1 Start Page
 
 ## Page Purpose
-Convert visitors into users by addressing...  ← Written in spec language
+
+Convert visitors into users by addressing... ← Written in spec language
 
 ## User Situation
-Family members experiencing daily stress...    ← Written in spec language
+
+Family members experiencing daily stress... ← Written in spec language
 ```
 
 ### Product Languages
 
 **Used for:**
+
 - All user-facing text content
 - Button labels
 - Form labels
@@ -91,11 +98,14 @@ Family members experiencing daily stress...    ← Written in spec language
 - Any text the END USER sees
 
 **Example:**
+
 ```markdown
 #### Primary CTA Button
+
 **OBJECT ID**: `start-hero-cta`
+
 - **Component**: Button Primary
-- **Content**:                         ← Product languages
+- **Content**: ← Product languages
   - EN: "Get Started"
   - SE: "Kom Igång"
   - NO: "Kom i Gang"
@@ -109,13 +119,14 @@ Family members experiencing daily stress...    ← Written in spec language
 
 ```yaml
 config:
-  specification_language: "EN"     # Specs written in English
+  specification_language: 'EN' # Specs written in English
   product_languages:
-    - EN                            # Product supports English
-    - SE                            # and Swedish
+    - EN # Product supports English
+    - SE # and Swedish
 ```
 
 **Result:**
+
 - Design specs written in English
 - All text objects have EN and SE translations
 
@@ -123,29 +134,29 @@ config:
 
 ```yaml
 config:
-  specification_language: "EN"     # Specs in English
+  specification_language: 'EN' # Specs in English
   product_languages:
     - EN
     - SE
     - NO
     - DK
-    - FI                            # 5 Nordic languages
+    - FI # 5 Nordic languages
 ```
 
 ### Internal Swedish Tool
 
 ```yaml
 config:
-  specification_language: "SE"     # Specs in Swedish
+  specification_language: 'SE' # Specs in Swedish
   product_languages:
-    - SE                            # Only Swedish product
+    - SE # Only Swedish product
 ```
 
 ### Global Product
 
 ```yaml
 config:
-  specification_language: "EN"
+  specification_language: 'EN'
   product_languages:
     - EN
     - SE
@@ -167,9 +178,11 @@ config:
 # Product Brief
 
 ## Vision
+
 Create a platform that... ← Spec language
 
 ## Target Users
+
 Swedish families with... ← Spec language
 ```
 
@@ -186,13 +199,16 @@ Personas and triggers documented in spec language.
 
 ```markdown
 ## Hero Object
-**Purpose**: Primary value proposition  ← Spec language
+
+**Purpose**: Primary value proposition ← Spec language
 
 #### Primary Headline
+
 **OBJECT ID**: `start-hero-headline`
+
 - **Component**: H1 heading
-- **Position**: Center of hero         ← Spec language
-- **Content**:                         ← Product languages
+- **Position**: Center of hero ← Spec language
+- **Content**: ← Product languages
   - EN: "Every walk. on time."
   - SE: "Varje promenad. i tid."
 ```
@@ -205,10 +221,12 @@ Personas and triggers documented in spec language.
 ```markdown
 ## Button Component
 
-### Usage                              ← Spec language
+### Usage ← Spec language
+
 Use this button for primary actions...
 
-### Examples                           ← Product languages
+### Examples ← Product languages
+
 - EN: "Submit", "Save", "Continue"
 - SE: "Skicka", "Spara", "Fortsätt"
 ```
@@ -227,22 +245,26 @@ Every text object follows this pattern:
 
 ```markdown
 #### {{Purpose_Name}}
+
 **OBJECT ID**: `{{id}}`
+
 - **Component**: {{type}}
-- **Position**: {{description}}        ← Spec language
-- **Style**: {{specifications}}        ← Spec language
-- **Behavior**: {{description}}        ← Spec language
-- **Content**:                         ← Product languages
+- **Position**: {{description}} ← Spec language
+- **Style**: {{specifications}} ← Spec language
+- **Behavior**: {{description}} ← Spec language
+- **Content**: ← Product languages
   {{#each product_languages}}
   - {{this}}: "{{content}}"
-  {{/each}}
+    {{/each}}
 ```
 
 **Real Example:**
 
 ```markdown
 #### Email Label
+
 **OBJECT ID**: `signin-form-email-label`
+
 - **Component**: Label text
 - **Position**: Above email input field
 - **For**: signin-form-email-input
@@ -304,6 +326,7 @@ User provides all translations, agent validates and documents.
 ### ✅ Developer-Friendly
 
 Config provides:
+
 ```yaml
 product_languages:
   - EN
@@ -318,6 +341,7 @@ Developers know exactly what languages to implement.
 ## Language Codes Reference
 
 **Nordic:**
+
 - EN = English
 - SE = Swedish (Svenska)
 - NO = Norwegian (Norsk)
@@ -325,6 +349,7 @@ Developers know exactly what languages to implement.
 - FI = Finnish (Suomi)
 
 **Western Europe:**
+
 - DE = German (Deutsch)
 - FR = French (Français)
 - ES = Spanish (Español)
@@ -333,16 +358,19 @@ Developers know exactly what languages to implement.
 - PT = Portuguese (Português)
 
 **Eastern Europe:**
+
 - PL = Polish (Polski)
 - CZ = Czech (Čeština)
 - RU = Russian (Русский)
 
 **Asia:**
+
 - JA = Japanese (日本語)
 - ZH = Chinese (中文)
 - KO = Korean (한국어)
 
 **Other:**
+
 - AR = Arabic (العربية)
 - TR = Turkish (Türkçe)
 
@@ -362,7 +390,7 @@ Product Languages: EN, SE
 ```yaml
 # docs/wds-workflow-status.yaml
 config:
-  specification_language: "EN"
+  specification_language: 'EN'
   product_languages:
     - EN
     - SE
@@ -373,15 +401,17 @@ config:
 ```markdown
 # 1.1 Start Page
 
-The start page serves as the primary entry point...  ← Written in EN
+The start page serves as the primary entry point... ← Written in EN
 
 #### Primary Headline
+
 **OBJECT ID**: `start-hero-headline`
+
 - **Component**: H1 heading
-- **Position**: Center of hero section               ← Written in EN
+- **Position**: Center of hero section ← Written in EN
 - **Content**:
-  - EN: "Every walk. on time. Every time."          ← Product language 1
-  - SE: "Varje promenad. i tid. Varje gång."        ← Product language 2
+  - EN: "Every walk. on time. Every time." ← Product language 1
+  - SE: "Varje promenad. i tid. Varje gång." ← Product language 2
 ```
 
 ### For Developers
@@ -394,8 +424,8 @@ const languages = ['EN', 'SE'];
 const content = {
   'start-hero-headline': {
     en: 'Every walk. on time. Every time.',
-    se: 'Varje promenad. i tid. Varje gång.'
-  }
+    se: 'Varje promenad. i tid. Varje gång.',
+  },
 };
 ```
 
@@ -410,6 +440,7 @@ If you need to add/change languages mid-project:
 3. **Continue** with new language config
 
 **Before:**
+
 ```yaml
 product_languages:
   - EN
@@ -417,25 +448,25 @@ product_languages:
 ```
 
 **After:**
+
 ```yaml
 product_languages:
   - EN
   - SE
-  - NO  # Added Norwegian
+  - NO # Added Norwegian
 ```
 
 **Update existing specs:**
+
 ```markdown
 #### Primary Headline
+
 - **Content**:
   - EN: "Every walk. on time."
   - SE: "Varje promenad. i tid."
-  - NO: "Hver tur. i tide."  ← Add new language
+  - NO: "Hver tur. i tide." ← Add new language
 ```
 
 ---
 
 **Language configuration ensures complete, translation-ready specifications from day one!** 🌍✨
-
-
-

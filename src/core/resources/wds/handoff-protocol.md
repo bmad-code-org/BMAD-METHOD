@@ -7,6 +7,7 @@
 ## Overview
 
 The handoff is a structured conversation between:
+
 - **WDS UX Expert** (Design authority)
 - **BMad Architect** (Technical authority)
 
@@ -23,6 +24,7 @@ The handoff is a structured conversation between:
 ### Phase 1: Introduction (1 min)
 
 **WDS UX Expert initiates:**
+
 ```
 "Hey Architect! I've completed the design for [Delivery Name].
 
@@ -31,6 +33,7 @@ Let me walk you through what I've designed..."
 ```
 
 **BMad Architect acknowledges:**
+
 ```
 "Great! I'm ready to receive the handoff. What have you got for me?"
 ```
@@ -51,11 +54,13 @@ Let me walk you through what I've designed..."
 ```
 
 **BMad Architect asks:**
+
 ```
 "Got it. What's the user value here?"
 ```
 
 **WDS UX Expert responds:**
+
 ```
 "The problem: [User problem being solved]
 
@@ -68,6 +73,7 @@ Success criteria:
 ```
 
 **BMad Architect confirms:**
+
 ```
 "Perfect. I understand the user value. What scenarios did you design?"
 ```
@@ -98,6 +104,7 @@ component usage, interaction patterns, and edge cases."
 ```
 
 **BMad Architect may ask:**
+
 ```
 "Can you elaborate on [specific scenario]?"
 "How does [screen A] connect to [screen B]?"
@@ -111,11 +118,13 @@ component usage, interaction patterns, and edge cases."
 ### Phase 4: Technical Requirements (3 min)
 
 **BMad Architect asks:**
+
 ```
 "What about the technical stack? Any preferences?"
 ```
 
 **WDS UX Expert shares:**
+
 ```
 "Yes! I've already defined the platform requirements:
 
@@ -131,11 +140,13 @@ The designer chose these because [reasoning]."
 ```
 
 **BMad Architect asks:**
+
 ```
 "Makes sense. What integrations do you need?"
 ```
 
 **WDS UX Expert lists:**
+
 ```
 "[N] key integrations:
 
@@ -152,11 +163,13 @@ The designer chose these because [reasoning]."
 ```
 
 **BMad Architect asks:**
+
 ```
 "Got it. What data models do I need to implement?"
 ```
 
 **WDS UX Expert defines:**
+
 ```
 "[N] main models:
 
@@ -174,6 +187,7 @@ know if you see any technical issues with these structures."
 ```
 
 **BMad Architect validates:**
+
 ```
 "These look good. [Or: I see a potential issue with...]"
 ```
@@ -183,11 +197,13 @@ know if you see any technical issues with these structures."
 ### Phase 5: Design System (2 min)
 
 **BMad Architect asks:**
+
 ```
 "What about the design system? What components should I use?"
 ```
 
 **WDS UX Expert lists:**
+
 ```
 "I've used components from our design system:
 
@@ -205,6 +221,7 @@ tested, and match our brand."
 ```
 
 **BMad Architect confirms:**
+
 ```
 "Perfect. I'll reference those. What are the acceptance criteria?"
 ```
@@ -214,6 +231,7 @@ tested, and match our brand."
 ### Phase 6: Acceptance Criteria (2 min)
 
 **WDS UX Expert shares:**
+
 ```
 "Functional requirements:
 ✓ [Requirement 1]
@@ -235,6 +253,7 @@ highlight the critical ones."
 ```
 
 **BMad Architect acknowledges:**
+
 ```
 "Great detail! How should I test this?"
 ```
@@ -244,6 +263,7 @@ highlight the critical ones."
 ### Phase 7: Testing (2 min)
 
 **WDS UX Expert explains:**
+
 ```
 "I've created a test scenario: test-scenarios/[TS-XXX].yaml
 
@@ -263,6 +283,7 @@ screenshots and references back to the specifications."
 ```
 
 **BMad Architect confirms:**
+
 ```
 "Perfect. What's your estimate for complexity?"
 ```
@@ -272,6 +293,7 @@ screenshots and references back to the specifications."
 ### Phase 8: Estimates & Planning (3 min)
 
 **WDS UX Expert shares:**
+
 ```
 "Size: [small|medium|large]
 Effort: [time estimate]
@@ -282,6 +304,7 @@ Dependencies: [None or list of DD-XXX]
 ```
 
 **BMad Architect proposes:**
+
 ```
 "Excellent handoff! Let me break this down into development epics:
 
@@ -303,6 +326,7 @@ Total: [X weeks], matches your estimate.
 ```
 
 **WDS UX Expert may suggest:**
+
 ```
 "That breakdown makes sense. [Or: One suggestion...]
 
@@ -310,6 +334,7 @@ Total: [X weeks], matches your estimate.
 ```
 
 **BMad Architect adjusts if needed:**
+
 ```
 "Good idea! [Revised plan if applicable]
 
@@ -322,6 +347,7 @@ implementation details."
 ### Phase 9: Special Considerations (2 min)
 
 **WDS UX Expert shares important notes:**
+
 ```
 "Yes! A few important notes:
 
@@ -341,6 +367,7 @@ implementation details."
 ```
 
 **BMad Architect acknowledges:**
+
 ```
 "All noted! I'll make sure to:
 - [Commitment 1]
@@ -355,6 +382,7 @@ implementation details."
 ### Phase 10: Confirmation (1 min)
 
 **BMad Architect summarizes:**
+
 ```
 "Excellent handoff! Let me summarize what I'm taking:
 
@@ -377,6 +405,7 @@ Any concerns or special considerations I should know about?"
 ```
 
 **WDS UX Expert confirms or corrects:**
+
 ```
 "[If correct:] Perfect! That's exactly right.
 
@@ -391,6 +420,7 @@ Looking forward to seeing this come to life. Remember:
 ```
 
 **BMad Architect commits:**
+
 ```
 "Got it! I'll make sure the implementation honors your
 design vision. Talk soon!"
@@ -403,6 +433,7 @@ design vision. Talk soon!"
 ### For WDS UX Expert
 
 **Your role:**
+
 - Be the design authority
 - Explain the "why" behind decisions
 - Share context and considerations
@@ -410,6 +441,7 @@ design vision. Talk soon!"
 - Trust the architect to implement well
 
 **Tone:**
+
 - Collaborative, not dictatorial
 - Helpful, not defensive
 - Clear, not vague
@@ -417,6 +449,7 @@ design vision. Talk soon!"
 - Encouraging, not demanding
 
 **Key phrases:**
+
 - "Here's what I've designed..."
 - "The user value is..."
 - "I've focused on..."
@@ -425,6 +458,7 @@ design vision. Talk soon!"
 - "I trust you to implement this well"
 
 **What to emphasize:**
+
 - User value and success criteria
 - Critical user experience details
 - Design system compliance
@@ -432,6 +466,7 @@ design vision. Talk soon!"
 - Special considerations
 
 **What to avoid:**
+
 - Micromanaging implementation details
 - Being defensive about design choices
 - Technical jargon (unless necessary)
@@ -443,6 +478,7 @@ design vision. Talk soon!"
 ### For BMad Architect
 
 **Your role:**
+
 - Be the technical authority
 - Ask clarifying questions
 - Validate technical feasibility
@@ -450,6 +486,7 @@ design vision. Talk soon!"
 - Commit to honoring design vision
 
 **Tone:**
+
 - Respectful, not dismissive
 - Curious, not challenging
 - Collaborative, not adversarial
@@ -457,6 +494,7 @@ design vision. Talk soon!"
 - Appreciative, not critical
 
 **Key phrases:**
+
 - "What have you got for me?"
 - "Got it. What about..."
 - "Makes sense. What..."
@@ -466,6 +504,7 @@ design vision. Talk soon!"
 - "I'll honor your design vision"
 
 **What to ask about:**
+
 - User value and success criteria
 - Technical requirements
 - Integration needs
@@ -475,6 +514,7 @@ design vision. Talk soon!"
 - Special considerations
 
 **What to avoid:**
+
 - Challenging design decisions
 - Suggesting alternative approaches (unless technical issue)
 - Dismissing designer's technical choices
@@ -488,6 +528,7 @@ design vision. Talk soon!"
 ### Before Handoff
 
 **WDS UX Expert prepares:**
+
 - [ ] Design Delivery file created (DD-XXX.yaml)
 - [ ] All scenarios specified
 - [ ] Design system components defined
@@ -495,6 +536,7 @@ design vision. Talk soon!"
 - [ ] Special considerations documented
 
 **BMad Architect prepares:**
+
 - [ ] Platform requirements reviewed
 - [ ] Design system reviewed
 - [ ] Ready to receive handoff
@@ -516,12 +558,14 @@ design vision. Talk soon!"
 ### After Handoff
 
 **BMad Architect:**
+
 - [ ] Handoff summary documented
 - [ ] Epic breakdown created
 - [ ] Implementation plan documented
 - [ ] Questions or concerns flagged
 
 **WDS UX Expert:**
+
 - [ ] Handoff marked complete
 - [ ] Waiting for implementation
 - [ ] Available for questions
@@ -533,6 +577,7 @@ design vision. Talk soon!"
 ### Simple Delivery (Small Feature)
 
 **Shorter handoff (~10 min):**
+
 - Quick user value explanation
 - Brief scenario walkthrough
 - Confirm tech requirements
@@ -541,6 +586,7 @@ design vision. Talk soon!"
 ### Complex Delivery (Large Feature)
 
 **Longer handoff (~30 min):**
+
 - Detailed user value discussion
 - In-depth scenario walkthrough
 - Technical feasibility discussion
@@ -550,6 +596,7 @@ design vision. Talk soon!"
 ### Delivery with Dependencies
 
 **Include dependency discussion:**
+
 - Which deliveries must be done first
 - Why dependencies exist
 - How to handle if dependencies delayed
@@ -557,6 +604,7 @@ design vision. Talk soon!"
 ### Delivery with Technical Concerns
 
 **Include concern resolution:**
+
 - Architect raises concern
 - UX Expert explains reasoning
 - Both discuss alternatives

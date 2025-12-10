@@ -33,12 +33,14 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 **What's the next most valuable flow to design?**
 
 **Prioritization criteria:**
+
 1. **User value:** What solves the biggest user problem?
 2. **Business value:** What delivers the most ROI?
 3. **Dependencies:** What needs to be built next?
 4. **Risk:** What's the riskiest to validate early?
 
 **Example prioritization:**
+
 ```
 ✅ Flow 1: Login & Onboarding (DONE - in development)
 → Flow 2: Morning Dog Care (NEXT - highest user value)
@@ -114,6 +116,7 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 - ✅ No blockers or dependencies
 
 **Then repeat Phase 6:**
+
 - 6.1: Detect completion
 - 6.2: Create Design Delivery
 - 6.3: Create Test Scenario
@@ -133,23 +136,27 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 # Design Deliveries Tracker
 
 ## DD-001: Login & Onboarding
+
 - Status: In Development (BMad)
 - Handed off: 2024-12-09
 - Expected completion: 2024-12-30
 - Next: Validation (Phase 7)
 
 ## DD-002: Morning Dog Care
+
 - Status: In Design (WDS)
 - Phase: 4 (UX Design)
 - Progress: 3/5 scenarios complete
 - Expected handoff: 2024-12-16
 
 ## DD-003: Calendar View
+
 - Status: Not Started
 - Priority: Medium
 - Planned start: 2024-12-20
 
 ## DD-004: Family Chat
+
 - Status: Not Started
 - Priority: Low
 - Planned start: TBD
@@ -195,10 +202,12 @@ Questions or blockers on DD-001?"
 ### Week 3 Example
 
 **Monday-Tuesday:**
+
 - Test DD-001 (Phase 7)
 - Create issues if needed
 
 **Wednesday-Friday:**
+
 - Design DD-003 scenarios
 - Define DD-003 components
 
@@ -213,17 +222,20 @@ Questions or blockers on DD-001?"
 ### After Each Handoff
 
 **Reflect:**
+
 - What went well?
 - What was unclear?
 - What questions did BMad ask?
 - How can I improve next delivery?
 
 **Update templates:**
+
 - Add missing fields
 - Clarify confusing sections
 - Improve examples
 
 **Update process:**
+
 - Streamline handoff dialog
 - Better test scenarios
 - Clearer specifications

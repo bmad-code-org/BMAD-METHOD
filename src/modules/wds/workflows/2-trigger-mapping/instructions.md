@@ -9,6 +9,7 @@
 <output>Hi {user_name}! I'm Saga, and I'll facilitate your **Trigger Mapping** session.
 
 Trigger Mapping connects your business goals to user psychology. It answers:
+
 - **Why** will users engage with your product?
 - **What** motivates them (positive drivers)?
 - **What** do they want to avoid (negative drivers)?
@@ -27,6 +28,7 @@ Each workshop builds on the previous. You can run them all together (60-90 min) 
 Ready to begin? 🎯</output>
 
 <ask>Would you like to:
+
 1. **Full session** - All 5 workshops now
 2. **Workshop by workshop** - Start with Business Goals, continue later
 3. **Jump to specific workshop** - If you've done some already</ask>
@@ -86,6 +88,7 @@ Ready to begin? 🎯</output>
 <output>✅ **Trigger Mapping complete!**
 
 **Created:**
+
 - `B-Trigger-Map/00-Trigger-Map-Poster.md` - Visual overview
 - `B-Trigger-Map/01-Business-Goals.md` - Visions & objectives
 - `B-Trigger-Map/02-Target-Groups.md` - All personas with drivers
@@ -96,6 +99,7 @@ Ready to begin? 🎯</output>
 {{summary_of_priorities}}
 
 You now have strategic clarity on:
+
 - What success looks like (business goals)
 - Who to focus on (target groups)
 - What drives them (positive & negative forces)
@@ -105,4 +109,3 @@ Ready for the next phase! 🚀</output>
 </step>
 
 </workflow>
-

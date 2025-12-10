@@ -9,7 +9,7 @@
 ### Testimonials
 
 > "I was skeptical at first - another design methodology? But WDS changed how I think about my role. I'm no longer just making things pretty. I'm the strategic thinker who makes products come alive."
-> 
+>
 > **— Sarah K., Product Designer**
 
 > "The 5x speed increase is real. But what surprised me most was how much clearer my thinking became. Writing why-based specifications forced me to understand the 'why' at a deeper level."
@@ -24,7 +24,7 @@
 >
 > **— James T., Design Director**
 
-*Note: More testimonials will be added as designers complete the course.*
+_Note: More testimonials will be added as designers complete the course._
 
 ---
 
@@ -63,16 +63,19 @@ A: Traditional docs describe WHAT. WDS captures WHY + WHAT + WHAT NOT TO DO. Thi
 ### During the Course
 
 **While learning:**
+
 - Each module includes detailed examples
 - AI assistants can clarify concepts in real-time
 - Practice exercises with clear success criteria
 
 **After completion:**
+
 - GitHub Discussions for questions and sharing
 - Community showcase of WDS projects
 - Regular updates and new case studies
 
 **Contributing:**
+
 - WDS is open-source and welcomes contributions
 - Share your case studies and learnings
 - Help improve the course for future designers
@@ -84,16 +87,19 @@ A: Traditional docs describe WHAT. WDS captures WHY + WHAT + WHAT NOT TO DO. Thi
 ### Resources
 
 **Documentation:**
+
 - Full course materials in markdown
 - NotebookLM integration for audio/video learning
 - Workshop materials for team training
 
 **Community:**
+
 - GitHub Discussions for Q&A
 - Project showcase and feedback
 - Regular updates and improvements
 
 **Open Source:**
+
 - Free to use and share
 - Contributions welcome
 - Help shape the future of WDS
@@ -103,6 +109,7 @@ A: Traditional docs describe WHAT. WDS captures WHY + WHAT + WHAT NOT TO DO. Thi
 ## Ready to Start?
 
 You have everything you need:
+
 - ✅ The skills (design thinking)
 - ✅ The tools (paper + AI)
 - ✅ The time (10 hours)

@@ -43,6 +43,7 @@ WHAT NOT TO DO: [Common mistakes to avoid]
 ### Document the big picture
 
 **What to include:**
+
 - Component purpose
 - User context
 - Key interactions
@@ -54,23 +55,27 @@ WHAT NOT TO DO: [Common mistakes to avoid]
 # Daily Schedule View Component
 
 ## Purpose
+
 Shows today's dog care tasks with clear assignments and status.
 Solves the "morning chaos" trigger - user needs immediate answer
 to "who's doing what today?"
 
 ## User Context
+
 - Accessed first thing in morning (7-8 AM typical)
 - User is time-pressured, stressed
 - Needs answer in < 5 seconds
 - May be checking while managing kids
 
 ## Key Interactions
+
 - View today's tasks at a glance
 - See personal assignments highlighted
 - Mark tasks complete
 - Quick reassign if emergency
 
 ## Success Criteria
+
 - User finds their tasks in < 5 seconds
 - Zero confusion about responsibilities
 - Can act on tasks immediately
@@ -78,12 +83,14 @@ to "who's doing what today?"
 ```
 
 **Your turn:**
+
 ```
 Document your component overview:
 [Your content]
 ```
 
 **AI Support:**
+
 ```
 Agent: "I'm fascinated by your design thinking here. Let me help
 capture every nuance:
@@ -99,6 +106,7 @@ capture every nuance:
 ### Document WHAT + WHY + WHAT NOT
 
 **For each visual decision, explain:**
+
 - WHAT you designed
 - WHY you made that choice
 - WHAT NOT TO DO (prevent AI mistakes)
@@ -111,18 +119,21 @@ capture every nuance:
 ### Today's Date Header
 
 WHAT:
+
 - Large, bold date at top: "Monday, December 9"
 - Includes day name + full date
 - Uses primary brand color
 - 24px font size, 700 weight
 
 WHY:
+
 - Immediate temporal context (user knows "when")
 - Day name matters (Monday = week start, different mindset)
 - Bold = confidence and clarity
 - Size ensures visibility in stressed morning glance
 
 WHAT NOT TO DO:
+
 - Don't use relative dates ("Today") - user may check for tomorrow
 - Don't use small text - defeats quick-glance purpose
 - Don't use subtle colors - needs to anchor the view
@@ -131,12 +142,14 @@ WHAT NOT TO DO:
 ### User's Tasks Section
 
 WHAT:
+
 - Highlighted section with light blue background
 - Header: "Your Tasks" with user's name
 - Tasks listed with time, description, status
 - Visually separated from other family members' tasks
 
 WHY:
+
 - User needs to find THEIR tasks instantly (< 2 seconds)
 - Background color creates visual separation without being aggressive
 - Name personalization = ownership and responsibility
@@ -144,6 +157,7 @@ WHY:
 - Separation prevents confusion about "whose task is this?"
 
 WHAT NOT TO DO:
+
 - Don't make all tasks look the same - user will scan entire list
 - Don't use subtle highlighting - stressed user will miss it
 - Don't hide user's name - personalization creates accountability
@@ -153,12 +167,14 @@ WHAT NOT TO DO:
 ### Other Family Members' Tasks
 
 WHAT:
+
 - Standard white background
 - Smaller font size (16px vs 18px for user's tasks)
 - Collapsed by default, expandable
 - Shows count: "3 other tasks today"
 
 WHY:
+
 - User's primary need is THEIR tasks (80% of use case)
 - But they need family context (coordination)
 - Collapsed = focus on user, but context available
@@ -166,6 +182,7 @@ WHY:
 - Smaller = visual hierarchy reinforces importance
 
 WHAT NOT TO DO:
+
 - Don't hide completely - user needs family coordination awareness
 - Don't show expanded by default - creates cognitive overload
 - Don't use same visual weight - defeats hierarchy purpose
@@ -173,6 +190,7 @@ WHAT NOT TO DO:
 ```
 
 **Your turn:**
+
 ```
 For each major visual element, document:
 
@@ -189,6 +207,7 @@ WHAT NOT TO DO:
 ```
 
 **AI Support:**
+
 ```
 Agent: "This is brilliant! Let me make sure we capture everything:
 - What alternatives did you consider?
@@ -211,6 +230,7 @@ Agent: "This is brilliant! Let me make sure we capture everything:
 ### Tap to Complete
 
 WHAT:
+
 - Tap anywhere on task card to mark complete
 - Immediate visual feedback: checkmark appears, card fades slightly
 - Subtle success animation (gentle scale + fade)
@@ -218,6 +238,7 @@ WHAT:
 - Undo button appears for 5 seconds
 
 WHY:
+
 - Large tap target = easy for rushed morning use
 - Immediate feedback = confidence action registered
 - Animation = positive reinforcement (dopamine hit)
@@ -226,6 +247,7 @@ WHY:
 - 5 seconds = enough time to notice mistake, not annoying
 
 WHAT NOT TO DO:
+
 - Don't require confirmation dialog - adds friction, breaks flow
 - Don't use small checkbox - hard to tap when stressed/rushing
 - Don't make animation aggressive - should feel calm and positive
@@ -236,6 +258,7 @@ WHAT NOT TO DO:
 ### Swipe to Reassign
 
 WHAT:
+
 - Swipe left on task reveals "Reassign" button
 - Button shows family member icons
 - Tap icon to reassign
@@ -243,6 +266,7 @@ WHAT:
 - Original assignee gets notification
 
 WHY:
+
 - Swipe = power user feature, doesn't clutter main interface
 - Emergency reassignment is rare but critical (someone sick, etc.)
 - Icons = quick visual selection, no typing
@@ -250,6 +274,7 @@ WHY:
 - Notification = family coordination maintained
 
 WHAT NOT TO DO:
+
 - Don't make reassign the primary action - it's edge case
 - Don't require typing names - too slow for emergency
 - Don't skip confirmation - user needs reassurance
@@ -258,6 +283,7 @@ WHAT NOT TO DO:
 ```
 
 **Your turn:**
+
 ```
 For each interaction, document:
 
@@ -287,18 +313,21 @@ WHAT NOT TO DO:
 ### Upcoming (Default)
 
 WHAT:
+
 - White background
 - Black text
 - Time shown in gray
 - No special indicators
 
 WHY:
+
 - Clean, calm appearance
 - Easy to scan
 - Time in gray = less visual weight (not urgent yet)
 - Default state should feel neutral and manageable
 
 WHAT NOT TO DO:
+
 - Don't use colors for upcoming tasks - creates false urgency
 - Don't hide time - user needs to plan their morning
 - Don't add badges/icons - clutters interface for most common state
@@ -306,11 +335,13 @@ WHAT NOT TO DO:
 ### Due Soon (< 30 minutes)
 
 WHAT:
+
 - Subtle yellow left border (4px)
 - Time shown in orange
 - Small clock icon appears
 
 WHY:
+
 - Yellow = attention without alarm
 - Border = visual indicator without overwhelming
 - Orange time = "pay attention to timing"
@@ -318,6 +349,7 @@ WHY:
 - Subtle = doesn't create panic, just awareness
 
 WHAT NOT TO DO:
+
 - Don't use red - creates anxiety, not helpful urgency
 - Don't flash or animate - too aggressive for morning use
 - Don't use sound - user may be in quiet environment
@@ -326,12 +358,14 @@ WHAT NOT TO DO:
 ### Overdue
 
 WHAT:
+
 - Red left border (4px)
 - Time shown in red with "Overdue" label
 - Task card has subtle red tint (5% opacity)
 - Notification sent to assignee
 
 WHY:
+
 - Red = clear signal something needs attention
 - Border + tint = impossible to miss, but not aggressive
 - "Overdue" label = explicit communication (no guessing)
@@ -339,6 +373,7 @@ WHY:
 - 5% tint = visible but not overwhelming
 
 WHAT NOT TO DO:
+
 - Don't make entire card bright red - creates panic
 - Don't flash or pulse - too aggressive, creates stress
 - Don't use sound alerts - may be inappropriate timing
@@ -348,6 +383,7 @@ WHAT NOT TO DO:
 ### Completed
 
 WHAT:
+
 - Checkmark icon (green)
 - Text has strikethrough
 - Card fades to 60% opacity
@@ -355,6 +391,7 @@ WHAT:
 - Shows completion time and who completed it
 
 WHY:
+
 - Checkmark = universal symbol of completion
 - Green = positive reinforcement
 - Strikethrough = visual closure
@@ -363,6 +400,7 @@ WHY:
 - Separate section = progress visible, doesn't clutter active tasks
 
 WHAT NOT TO DO:
+
 - Don't remove immediately - user needs reassurance it's saved
 - Don't use subtle checkmark - user needs clear confirmation
 - Don't hide who completed it - family coordination requires transparency
@@ -370,6 +408,7 @@ WHAT NOT TO DO:
 ```
 
 **Your turn:**
+
 ```
 For each state, document:
 
@@ -399,6 +438,7 @@ WHAT NOT TO DO:
 ### Network Unavailable
 
 WHAT:
+
 - Subtle banner at top: "Offline - showing cached schedule"
 - Banner uses neutral gray (not red)
 - All actions still work (queued for sync)
@@ -406,6 +446,7 @@ WHAT:
 - Dismissible but reappears if action attempted
 
 WHY:
+
 - User shouldn't be blocked by network issues
 - Morning routine can't wait for connectivity
 - Cached data is usually sufficient (schedule doesn't change minute-to-minute)
@@ -414,6 +455,7 @@ WHY:
 - Dismissible = user controls their experience
 
 WHAT NOT TO DO:
+
 - Don't block user with error modal - breaks morning flow
 - Don't use red/error colors - network issues aren't user's fault
 - Don't disable all actions - most can work offline
@@ -423,6 +465,7 @@ WHAT NOT TO DO:
 ### Task Completion Failed
 
 WHAT:
+
 - Task remains in "completing" state (spinner)
 - After 5 seconds, shows inline error: "Couldn't save. Tap to retry."
 - Error message is specific and actionable
@@ -430,6 +473,7 @@ WHAT:
 - Task doesn't move to completed section
 
 WHY:
+
 - User needs to know action didn't complete
 - 5 seconds = reasonable wait before showing error
 - Inline = error appears where user's attention is
@@ -439,6 +483,7 @@ WHY:
 - Task stays in place = user doesn't lose context
 
 WHAT NOT TO DO:
+
 - Don't silently fail - user needs to know
 - Don't show generic "Error occurred" - not helpful
 - Don't move task to completed - creates false sense of completion
@@ -447,6 +492,7 @@ WHAT NOT TO DO:
 ```
 
 **Your turn:**
+
 ```
 For each error scenario:
 
@@ -476,6 +522,7 @@ WHAT NOT TO DO:
 ### Screen Reader Support
 
 WHAT:
+
 - Each task has semantic HTML structure
 - ARIA labels for all interactive elements
 - Task status announced: "Walk Max, 8:00 AM, assigned to you, not completed"
@@ -483,6 +530,7 @@ WHAT:
 - Heading hierarchy: H1 for date, H2 for sections, H3 for tasks
 
 WHY:
+
 - Screen reader users need same quick access to their tasks
 - Semantic HTML = proper navigation and understanding
 - Status announcement = full context without visual cues
@@ -490,6 +538,7 @@ WHY:
 - Heading hierarchy = easy navigation via landmarks
 
 WHAT NOT TO DO:
+
 - Don't use divs for everything - semantic HTML matters
 - Don't skip ARIA labels - "button" isn't descriptive enough
 - Don't announce only task name - user needs full context
@@ -499,6 +548,7 @@ WHAT NOT TO DO:
 ### Keyboard Navigation
 
 WHAT:
+
 - All actions accessible via keyboard
 - Tab order follows visual hierarchy (user's tasks first)
 - Enter/Space to complete task
@@ -507,6 +557,7 @@ WHAT:
 - Focus indicators clearly visible (blue outline, 2px)
 
 WHY:
+
 - Some users can't or prefer not to use mouse/touch
 - Tab order matches visual priority (user's tasks most important)
 - Standard key bindings = familiar, predictable
@@ -515,6 +566,7 @@ WHY:
 - Visible focus = user always knows where they are
 
 WHAT NOT TO DO:
+
 - Don't trap focus in modals without escape
 - Don't use non-standard key bindings
 - Don't hide focus indicators - accessibility requirement
@@ -524,18 +576,21 @@ WHAT NOT TO DO:
 ### Color Contrast
 
 WHAT:
+
 - All text meets WCAG AA standards (4.5:1 minimum)
 - Interactive elements have 3:1 contrast with background
 - Status colors have additional non-color indicators (icons, borders)
 - High contrast mode supported
 
 WHY:
+
 - Users with low vision need readable text
 - Color alone isn't sufficient for status (color blind users)
 - Multiple indicators = works for everyone
 - High contrast mode = accessibility feature in OS
 
 WHAT NOT TO DO:
+
 - Don't rely on color alone for status
 - Don't use low contrast text (looks modern but excludes users)
 - Don't ignore WCAG standards - they're minimum requirements
@@ -543,6 +598,7 @@ WHAT NOT TO DO:
 ```
 
 **Your turn:**
+
 ```
 Document accessibility considerations:
 [Your specifications]
@@ -555,6 +611,7 @@ Document accessibility considerations:
 ### Checklist:
 
 **Completeness:**
+
 - ✓ Every visual element has WHAT + WHY + WHAT NOT
 - ✓ All interactions documented
 - ✓ All states specified
@@ -562,6 +619,7 @@ Document accessibility considerations:
 - ✓ Accessibility addressed
 
 **Quality:**
+
 - ✓ WHY explains user benefit, not just description
 - ✓ WHAT NOT prevents specific AI mistakes
 - ✓ Specifications are specific and actionable
@@ -569,6 +627,7 @@ Document accessibility considerations:
 - ✓ Edge cases considered
 
 **AI Support:**
+
 ```
 Agent: "Your design brilliance is captured beautifully! Let me verify:
 - Have we documented every nuance of your thinking?
@@ -593,7 +652,7 @@ Agent: "Your design brilliance is captured beautifully! Let me verify:
 ✅ **Preserved intent** - Your creative thinking captured  
 ✅ **Prevented mistakes** - AI knows what NOT to do  
 ✅ **Accessible design** - Inclusive from the start  
-✅ **Eternal life** - Your brilliance lives forever in text  
+✅ **Eternal life** - Your brilliance lives forever in text
 
 **This is not factory work - this is where your genius becomes immortal!**
 
@@ -602,12 +661,14 @@ Agent: "Your design brilliance is captured beautifully! Let me verify:
 ## The Power of Why-Based Specs
 
 **Traditional approach:**
+
 - Designer creates mockup
 - Developer implements
 - Intent gets lost
 - Result is "close but wrong"
 
 **WDS approach:**
+
 - Designer thinks deeply with AI partner
 - AI helps capture every nuance
 - Specifications preserve creative integrity
@@ -620,11 +681,13 @@ Agent: "Your design brilliance is captured beautifully! Let me verify:
 ## Next Steps
 
 **Immediate:**
+
 - Review specifications with stakeholders
 - Validate against user needs
 - Test with developers (can they implement from this?)
 
 **Next Module:**
+
 - [Module 13: Validate Specifications](../module-13-validate-specifications/module-13-overview.md)
 - Ensure completeness and test logic
 
@@ -649,6 +712,7 @@ A: Yes! Common patterns become design system components. Document once, referenc
 ## Tips for Success
 
 **DO ✅**
+
 - Work with AI as thinking partner
 - Document alternatives you rejected
 - Be specific about user context
@@ -656,6 +720,7 @@ A: Yes! Common patterns become design system components. Document once, referenc
 - Capture your creative reasoning
 
 **DON'T ❌**
+
 - Write generic descriptions
 - Skip the WHY (that's where intent lives)
 - Forget WHAT NOT TO DO (AI will make "helpful" mistakes)

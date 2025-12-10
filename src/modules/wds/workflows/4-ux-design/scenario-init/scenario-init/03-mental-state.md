@@ -8,7 +8,7 @@
 
 ```
 Agent: "When they find your solution, how are they feeling?
-        
+
         Think about:
         - What just happened? (trigger moment)
         - What are they hoping for?
@@ -20,6 +20,7 @@ Agent: "When they find your solution, how are they feeling?
 ## Why This Matters
 
 Mental state determines:
+
 - Tone of content
 - Complexity of interface
 - Type of features needed
@@ -38,6 +39,7 @@ Designer: "Just had another fight about who walks the dog.
 ```
 
 **Design implications:**
+
 - Tone: Empathetic, not preachy
 - Interface: Simple, not complex
 - Features: Automated accountability, not more work

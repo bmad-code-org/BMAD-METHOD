@@ -7,7 +7,7 @@
 ## The Question
 
 ```
-Agent: "Where does your primary target group first come into 
+Agent: "Where does your primary target group first come into
         contact with this solution?"
 ```
 
@@ -16,11 +16,13 @@ Agent: "Where does your primary target group first come into
 ## Why This Matters
 
 The entry point determines:
+
 - Where the scenario starts
 - What mental state they're in
 - What context you're designing for
 
 **Common entry points:**
+
 - Google search
 - ChatGPT recommendation
 - App store browsing
@@ -33,11 +35,12 @@ The entry point determines:
 ## Example: Dog Week
 
 ```
-Designer: "Google search - they're frustrated with family conflict 
+Designer: "Google search - they're frustrated with family conflict
            over dog care."
 ```
 
 **Why this matters:**
+
 - They're actively searching (high intent)
 - They're frustrated (emotional state)
 - They need immediate clarity (landing page critical)

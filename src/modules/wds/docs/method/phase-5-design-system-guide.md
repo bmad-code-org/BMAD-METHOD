@@ -31,7 +31,9 @@ Your Design System includes:
 Following Brad Frost's methodology:
 
 ### Foundation (Design Tokens)
+
 The values everything else builds on:
+
 - **Colors** - Primary, secondary, semantic (success, error, warning)
 - **Typography** - Font families, sizes, weights, line heights
 - **Spacing** - Consistent spacing scale
@@ -40,7 +42,9 @@ The values everything else builds on:
 - **Breakpoints** - Responsive design points
 
 ### Atoms
+
 The smallest building blocks:
+
 - Buttons
 - Input fields
 - Labels
@@ -49,14 +53,18 @@ The smallest building blocks:
 - Dividers
 
 ### Molecules
+
 Groups of atoms working together:
+
 - Form groups (label + input + error)
 - Search bars (input + button)
 - Card headers (title + action)
 - Navigation items (icon + label)
 
 ### Organisms
+
 Complex components made of molecules:
+
 - Page headers
 - Navigation bars
 - Form sections
@@ -69,7 +77,7 @@ Complex components made of molecules:
 
 ### The Parallel Workflow
 
-Phase 5 isn't a separate phase you do *after* Phase 4 - it happens **during** Phase 4:
+Phase 5 isn't a separate phase you do _after_ Phase 4 - it happens **during** Phase 4:
 
 ```
 Phase 4 Page Design          →    Phase 5 Design System
@@ -82,6 +90,7 @@ Notice pattern across pages  →    Extract as reusable component
 ```
 
 **The rhythm:**
+
 1. Design a page/component in Phase 4
 2. Notice "This could be reusable"
 3. Extract to Design System
@@ -105,6 +114,7 @@ As you specify scenarios in Phase 4, components naturally emerge:
 **Step 1: Spot the Pattern**
 
 While working on Phase 4 scenarios, notice when you're designing something reusable:
+
 - "I just designed this button for Page 1.1... and I need it again on Page 1.2"
 - "This form input pattern will be used everywhere"
 - "We have 3 different card layouts, but they share the same structure"
@@ -130,10 +140,11 @@ D-Design-System/
 
 Use this template for each component:
 
-```markdown
+````markdown
 # Primary Button
 
 ## Overview
+
 The primary button is used for the main call-to-action on any page or section.
 
 ## Component Details
@@ -146,11 +157,13 @@ The primary button is used for the main call-to-action on any page or section.
 ## Variants
 
 ### Size
+
 - **Small:** Compact spaces, secondary actions
 - **Medium:** Default size for most use cases
 - **Large:** Hero sections, important CTAs
 
 ### State
+
 - **Default:** Ready for interaction
 - **Hover:** Visual feedback on mouse over
 - **Active:** Currently being clicked
@@ -160,6 +173,7 @@ The primary button is used for the main call-to-action on any page or section.
 ## Visual Specifications
 
 **Design Tokens:**
+
 - Background: `color-primary-500`
 - Text: `color-white`
 - Border Radius: `radius-md`
@@ -167,6 +181,7 @@ The primary button is used for the main call-to-action on any page or section.
 - Font: `font-semibold`, `text-base`
 
 **States:**
+
 - Hover: `color-primary-600`
 - Active: `color-primary-700`
 - Disabled: `color-gray-300`, opacity 50%
@@ -174,12 +189,14 @@ The primary button is used for the main call-to-action on any page or section.
 ## Usage Guidelines
 
 **When to use:**
+
 - Primary action on a page or modal
 - Main CTA in hero sections
 - Form submissions
 - Confirmation actions
 
 **When NOT to use:**
+
 - Multiple primary actions (use secondary instead)
 - Destructive actions (use danger variant)
 - Navigation (use links or secondary buttons)
@@ -194,20 +211,26 @@ The primary button is used for the main call-to-action on any page or section.
 ## Example Usage
 
 **In specifications:**
+
 ```markdown
 ### Submit Button
+
 **Object ID:** `contact-form-submit-button`
 **Component:** primary-button
 **Variant:** size=large
 **State:** default → loading → success
 ```
+````
 
 **In Figma:**
 Use "Primary Button" component from library
 
 **In Code (if using Chakra):**
+
 ```jsx
-<Button colorScheme="blue" size="lg">Submit</Button>
+<Button colorScheme="blue" size="lg">
+  Submit
+</Button>
 ```
 
 ## Used In
@@ -216,6 +239,7 @@ Use "Primary Button" component from library
 - 1.2-Sign-Up: Submit registration
 - 2.1-Contact-Form: Send message
 - [Update as you use the component]
+
 ```
 
 **Step 4: Update as You Go**
@@ -230,23 +254,25 @@ Each time you use this component in a new scenario:
 **As you work through Phase 4:**
 
 ```
+
 Design Page 1.1
-  ↓
+↓
 Notice: "This button is reusable"
-  ↓
+↓
 Create: primary-button.md in Design System
-  ↓
+↓
 Reference in 1.1 spec: component=primary-button
-  ↓
+↓
 Design Page 1.2
-  ↓
+↓
 Need same button: Reference existing component
-  ↓
+↓
 Design Page 2.1
-  ↓
+↓
 Need slightly different: Add variant to component doc
-  ↓
+↓
 Update all references with new variant option
+
 ```
 
 ---
@@ -258,15 +284,17 @@ Beyond documentation, create an **interactive HTML guide** where stakeholders an
 ### Structure
 
 ```
+
 D-Design-System/
-├── component-showcase.html    ← Interactive guide
+├── component-showcase.html ← Interactive guide
 ├── component-showcase.css
 ├── component-showcase.js
 ├── 01-design-tokens.md
 ├── 02-atoms/
-│   ├── primary-button.md
-│   └── ...
-```
+│ ├── primary-button.md
+│ └── ...
+
+````
 
 ### What the Showcase Includes
 
@@ -562,7 +590,7 @@ These libraries work well with WDS's specification approach:
 
 **When to use:**
 Primary call-to-action buttons...
-```
+````
 
 ---
 
@@ -574,11 +602,11 @@ Your WDS component system connects to your visual design tools (Figma, Sketch, A
 
 **Use the exact same names across all tools:**
 
-| WDS Component Name | Figma Component | Code Component | Object ID |
-|-------------------|-----------------|----------------|-----------|
-| `primary-button` | Primary Button | `PrimaryButton` | `*-primary-button` |
-| `text-input` | Text Input | `TextInput` | `*-text-input` |
-| `form-group` | Form Group | `FormGroup` | `*-form-group` |
+| WDS Component Name | Figma Component | Code Component  | Object ID          |
+| ------------------ | --------------- | --------------- | ------------------ |
+| `primary-button`   | Primary Button  | `PrimaryButton` | `*-primary-button` |
+| `text-input`       | Text Input      | `TextInput`     | `*-text-input`     |
+| `form-group`       | Form Group      | `FormGroup`     | `*-form-group`     |
 
 ### The Workflow
 
@@ -598,6 +626,7 @@ signin-form-submit-primary-button (everywhere)
 **Component Library Structure:**
 
 Match your WDS atomic design structure:
+
 ```
 Design File/
 ├── 🎨 Design Tokens
@@ -618,6 +647,7 @@ Design File/
 ```
 
 **Naming in Figma:**
+
 - Component names match WDS names (kebab-case or Title Case)
 - Variants match WDS variants (Primary, Secondary, Disabled)
 - Properties match WDS states (default, hover, active, error)
@@ -644,18 +674,23 @@ Design File/
 The design system is living documentation that grows with your product:
 
 ### Starting Point
+
 Begin with what you need for current scenarios:
+
 - Extract components from Phase 4 work
 - Document only what you're actually using
 - Avoid speculating about future needs
 
 ### Evolution
+
 As you design more scenarios:
+
 - New patterns emerge → add to system
 - Inconsistencies appear → consolidate
 - Components evolve → update documentation
 
 ### Maintenance
+
 - Keep specs in sync with implementation
 - Remove unused components
 - Update when design language evolves
@@ -665,24 +700,28 @@ As you design more scenarios:
 ## When to Use This Phase
 
 **Enable Design System phase if:**
+
 - Building reusable component library
 - Multiple pages/scenarios with shared patterns
 - Need design consistency across product
 - Handoff requires component documentation
 
 **Work in parallel with Phase 4 when enabled:**
+
 - As you sketch, identify component patterns
 - As you specify, extract to Design System
 - Design System grows with each page completed
 - No separate "design system phase" at the end
 
 **Skip this phase if:**
+
 - Small project (single landing page)
 - Using existing design system (Material, Chakra, etc.)
 - One-off designs without reuse
 - Quick prototype or MVP without component library needs
 
 **Dedicated consolidation when:**
+
 - Multiple scenarios complete, need cleanup
 - Preparing for development handoff
 - Found inconsistencies to resolve
@@ -695,6 +734,7 @@ As you design more scenarios:
 ## What to Prepare
 
 Bring:
+
 - Completed or in-progress scenario specs (Phase 4)
 - Any existing brand guidelines
 - Technical framework constraints (React components, etc.)
@@ -714,21 +754,25 @@ Your Design System enables:
 ## Tips for Great Sessions
 
 **Extract, don't invent**
+
 - Components should come from real design needs
 - Don't create components "just in case"
 - Let the system grow from actual scenarios
 
 **Document the why**
+
 - Why does this button look this way?
 - What user trigger does it serve?
 - When should developers use variant A vs B?
 
 **Stay consistent**
+
 - Same component = same specification
 - Variations should be intentional
 - When in doubt, simplify
 
 **Connect to psychology**
+
 - Every design choice serves a purpose
 - Reference your Trigger Map
 - Components should feel intentional, not arbitrary
@@ -741,5 +785,4 @@ See: `examples/dog-week-patterns/D-Design-System/` for a complete Design System 
 
 ---
 
-*Phase 5 of the Whiteport Design Studio method*
-
+_Phase 5 of the Whiteport Design Studio method_

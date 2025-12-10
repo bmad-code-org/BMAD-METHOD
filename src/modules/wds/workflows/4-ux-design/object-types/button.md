@@ -53,13 +53,13 @@ Choice [1/2/3]:</ask>
 <check if="choice == 1">
   <ask>**Which existing component?**
 
-  From your component library:
-  {{list_available_button_components}}
+From your component library:
+{{list_available_button_components}}
 
-  Component name:</ask>
-  
-  <action>Store design_system_component</action>
-  <action>Store component_status = "existing"</action>
+Component name:</ask>
+
+<action>Store design_system_component</action>
+<action>Store component_status = "existing"</action>
 </check>
 
 <check if="choice == 2">
@@ -90,9 +90,10 @@ Choice [1/2/3]:</ask>
 <ask>**Button text in all languages:**
 
 {{#each language}}
+
 - **{{language}}:**
-{{/each}}
-</ask>
+  {{/each}}
+  </ask>
 
 <action>Store button_text for each language</action>
 
@@ -119,32 +120,37 @@ Choice [1-4]:</ask>
 <ask>**For each state, describe the appearance:**
 
 **Default state:**
+
 - Background color:
 - Text color:
 - Border:
 
 **Hover state:**
+
 - Background color:
 - Text color:
 - Border:
 - Other changes (shadow, scale, etc.):
 
 **Active/Pressed state:**
+
 - Background color:
 - Text color:
 - Visual feedback:
 
 **Disabled state:**
+
 - Background color:
 - Text color:
 - Cursor:
 - Why disabled:
 
 **Loading state** (if applicable):
+
 - Show spinner: yes/no
 - Loading text (in all languages):
 - Disable other actions: yes/no
-</ask>
+  </ask>
 
 <action>Store state definitions for all states</action>
 
@@ -155,6 +161,7 @@ Choice [1-4]:</ask>
 <ask>**What happens when user clicks this button?**
 
 Describe the complete flow:
+
 1. User clicks...
 2. Button changes to... (state)
 3. System does... (action/API call)
@@ -162,7 +169,7 @@ Describe the complete flow:
 5. If error...
 6. User sees... (result)
 7. Navigate to... (if applicable)
-</ask>
+   </ask>
 
 <action>Store interaction_flow</action>
 
@@ -176,7 +183,7 @@ Describe the complete flow:
 - Required fields must be filled: yes/no
 - User must be authenticated: yes/no
 - Other prerequisites:
-</ask>
+  </ask>
 
 <action>Store prerequisites</action>
 
@@ -198,8 +205,9 @@ Describe the complete flow:
 
 **Content:**
 {{#each language}}
+
 - **{{language}}:** {{button_text}}
-{{/each}}
+  {{/each}}
 
 {{#if has_icon}}
 **Icon:** {{icon_name}} ({{icon_position}})
@@ -207,44 +215,52 @@ Describe the complete flow:
 
 **States:**
 
-*Default:*
+_Default:_
+
 - Background: {{default_bg}}
 - Text: {{default_text}}
 - Border: {{default_border}}
 
-*Hover:*
+_Hover:_
+
 - Background: {{hover_bg}}
 - Text: {{hover_text}}
 - Changes: {{hover_changes}}
 
-*Active:*
+_Active:_
+
 - Background: {{active_bg}}
 - Text: {{active_text}}
 - Feedback: {{active_feedback}}
 
-*Disabled:*
+_Disabled:_
+
 - Background: {{disabled_bg}}
 - Text: {{disabled_text}}
 - Cursor: not-allowed
 - When: {{disabled_condition}}
 
 {{#if has_loading_state}}
-*Loading:*
+_Loading:_
+
 - Spinner: visible
 - Text: {{loading_text}}
 - Actions: disabled
-{{/if}}
+  {{/if}}
 
 **Interaction:**
+
 1. {{interaction_step_1}}
 2. {{interaction_step_2}}
-...
+   ...
 
 {{#if has_prerequisites}}
 **Requirements:**
+
 - {{prerequisite_list}}
-{{/if}}
+  {{/if}}
 ```
+
 </action>
 
 <output>✅ **Button documented!**
@@ -264,6 +280,7 @@ Specification added to page document.</output>
 **Figma Component:** Button/Primary/Large
 
 **Content:**
+
 - **English:** Sign In
 - **Swedish:** Logga In
 
@@ -271,37 +288,43 @@ Specification added to page document.</output>
 
 **States:**
 
-*Default:*
+_Default:_
+
 - Background: #0066CC (primary blue)
 - Text: #FFFFFF (white)
 - Border: none
 - Border-radius: 8px
 - Padding: 12px 24px
 
-*Hover:*
+_Hover:_
+
 - Background: #0052A3 (darker blue)
 - Text: #FFFFFF
 - Changes: slight shadow (0 2px 8px rgba(0,0,0,0.15))
 
-*Active:*
+_Active:_
+
 - Background: #003D7A (even darker)
 - Text: #FFFFFF
 - Feedback: scale(0.98), shadow removed
 
-*Disabled:*
+_Disabled:_
+
 - Background: #CCCCCC (gray)
 - Text: #666666 (dark gray)
 - Opacity: 0.6
 - Cursor: not-allowed
 - When: Form validation fails or during submission
 
-*Loading:*
+_Loading:_
+
 - Spinner: visible (white, 16px)
 - Text (EN): "Signing in..."
 - Text (SV): "Loggar in..."
 - Actions: All form interactions disabled
 
 **Interaction:**
+
 1. User clicks button
 2. Button enters loading state (spinner shows)
 3. Validate all form fields
@@ -311,6 +334,7 @@ Specification added to page document.</output>
 7. On API error: show error message above form, exit loading state
 
 **Requirements:**
+
 - Email field must contain valid email
 - Password field must not be empty
 - No existing submission in progress
@@ -319,4 +343,3 @@ Specification added to page document.</output>
 ---
 
 **Return to 4c-03 to continue with next object**
-

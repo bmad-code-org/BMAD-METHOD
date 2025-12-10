@@ -29,12 +29,14 @@ This tutorial teaches you how to map the psychological triggers that drive user 
 From Module 03, choose your highest-priority target group.
 
 **Example (Dog Week):**
+
 ```
 Target Group: Busy Parents with Family Dog
 Priority: #1 (highest impact + feasibility)
 ```
 
 **Your turn:**
+
 ```
 Selected Target Group: [Your top group]
 Why this group: [Reasoning]
@@ -51,6 +53,7 @@ A specific moment when a user realizes they have a need your product can solve.
 ### Framework: The Trigger Moment
 
 **Ask:**
+
 - WHEN does the user feel pain/frustration?
 - WHAT specific situation causes this?
 - WHY does this matter to them emotionally?
@@ -58,6 +61,7 @@ A specific moment when a user realizes they have a need your product can solve.
 **Example (Dog Week - Busy Parents):**
 
 **Trigger 1: Morning Chaos**
+
 ```
 WHEN: Monday morning, everyone rushing
 WHAT: Nobody knows who's walking the dog
@@ -65,6 +69,7 @@ WHY: Stress, guilt, family conflict, dog's needs unmet
 ```
 
 **Trigger 2: Forgotten Feeding**
+
 ```
 WHEN: Evening, parent realizes dog wasn't fed
 WHAT: Uncertainty about who was responsible
@@ -72,6 +77,7 @@ WHY: Guilt, worry about dog's health, family tension
 ```
 
 **Trigger 3: Vet Appointment Missed**
+
 ```
 WHEN: Vet calls about missed appointment
 WHAT: Nobody remembered or knew about it
@@ -79,6 +85,7 @@ WHY: Embarrassment, concern for dog, wasted money
 ```
 
 **Your turn:**
+
 ```
 Identify 3-5 trigger moments for your target group:
 
@@ -96,6 +103,7 @@ WHY:
 ```
 
 **AI Support:**
+
 ```
 Agent: "Let's dig deeper into each trigger:
 - What happens right before this moment?
@@ -115,6 +123,7 @@ The underlying requirement the user has when triggered.
 ### Framework: From Trigger to Need
 
 **For each trigger, ask:**
+
 - What does the user need in this moment?
 - What would make this situation better?
 - What's the core problem to solve?
@@ -122,6 +131,7 @@ The underlying requirement the user has when triggered.
 **Example (Dog Week):**
 
 **Trigger: Morning Chaos**
+
 ```
 Need: Know immediately who's responsible for dog care today
 Need: See the full week's schedule at a glance
@@ -129,6 +139,7 @@ Need: Get reminded before tasks are due
 ```
 
 **Trigger: Forgotten Feeding**
+
 ```
 Need: Track whether tasks were completed
 Need: Get notifications when tasks are overdue
@@ -136,6 +147,7 @@ Need: See task history to avoid confusion
 ```
 
 **Your turn:**
+
 ```
 For each trigger, identify 2-3 core needs:
 
@@ -159,6 +171,7 @@ The specific feature or capability that addresses the need.
 ### Framework: Need to Solution
 
 **For each need, ask:**
+
 - What feature would solve this?
 - How would it work?
 - What's the simplest version?
@@ -166,6 +179,7 @@ The specific feature or capability that addresses the need.
 **Example (Dog Week):**
 
 **Need: Know who's responsible today**
+
 ```
 Solution: Daily schedule view with assigned responsibilities
 - Shows today's tasks
@@ -174,6 +188,7 @@ Solution: Daily schedule view with assigned responsibilities
 ```
 
 **Need: Get reminded before tasks are due**
+
 ```
 Solution: Smart notifications
 - Reminder 1 hour before task
@@ -182,6 +197,7 @@ Solution: Smart notifications
 ```
 
 **Your turn:**
+
 ```
 For each need, define a solution:
 
@@ -195,6 +211,7 @@ Solution: [Feature name]
 ```
 
 **AI Support:**
+
 ```
 Agent: "Let's validate each solution:
 - Does this truly solve the need?
@@ -214,6 +231,7 @@ The business value created when users get their needs met.
 ### Framework: Solution to Outcome
 
 **For each solution, ask:**
+
 - How does this create business value?
 - What metrics improve?
 - How does this support business goals?
@@ -221,9 +239,10 @@ The business value created when users get their needs met.
 **Example (Dog Week):**
 
 **Solution: Daily schedule view**
+
 ```
 User Outcome: Reduced stress, better dog care
-Business Outcome: 
+Business Outcome:
 - Increased daily active users (checking schedule)
 - Higher retention (solving real pain)
 - Word-of-mouth growth (visible family benefit)
@@ -231,6 +250,7 @@ Metrics: DAU, retention rate, NPS
 ```
 
 **Solution: Smart notifications**
+
 ```
 User Outcome: Never miss dog care tasks
 Business Outcome:
@@ -241,6 +261,7 @@ Metrics: Notification open rate, task completion rate, conversion
 ```
 
 **Your turn:**
+
 ```
 For each solution, map to business outcomes:
 
@@ -305,6 +326,7 @@ TRIGGER → NEED → SOLUTION → OUTCOME
 ```
 
 **Your turn:**
+
 ```
 Create your trigger map:
 [Your complete map]
@@ -317,6 +339,7 @@ Create your trigger map:
 ### Framework: Impact Score
 
 **For each trigger-to-outcome chain, rate:**
+
 - **User Impact** (1-5): How much does this help the user?
 - **Business Impact** (1-5): How much business value does this create?
 - **Feasibility** (1-5): How easy is this to build?
@@ -340,6 +363,7 @@ Create your trigger map:
 ```
 
 **Your turn:**
+
 ```
 Score and rank your triggers:
 [Your prioritized list]
@@ -361,13 +385,14 @@ Score and rank your triggers:
 ✅ **Mapped user needs** - You understand WHAT users need  
 ✅ **Defined solutions** - You know WHAT to build  
 ✅ **Connected to business** - You know WHY each feature matters  
-✅ **Prioritized features** - You know WHAT to build first  
+✅ **Prioritized features** - You know WHAT to build first
 
 ---
 
 ## The Power of Trigger Mapping
 
 **This is strategic gold:**
+
 - Every feature traces back to a real user trigger
 - Every decision is backed by user psychology
 - Every feature connects to business value
@@ -382,11 +407,13 @@ Score and rank your triggers:
 ## Next Steps
 
 **Immediate:**
+
 - Repeat for your top 2-3 target groups
 - Compare trigger maps across groups
 - Identify overlapping needs (efficiency opportunity)
 
 **Next Module:**
+
 - [Module 05: Prioritize Features](../module-05-prioritize-features/module-05-overview.md)
 - Create your feature roadmap based on trigger impact
 
@@ -411,6 +438,7 @@ A: User research, interviews, observation. The trigger map is a hypothesis to te
 ## Tips for Success
 
 **DO ✅**
+
 - Be specific about trigger moments
 - Focus on emotional impact (the "why")
 - Connect everything to business outcomes
@@ -418,6 +446,7 @@ A: User research, interviews, observation. The trigger map is a hypothesis to te
 - Test assumptions with users
 
 **DON'T ❌**
+
 - List generic "user wants X" statements
 - Skip the emotional "why"
 - Create solutions without clear triggers

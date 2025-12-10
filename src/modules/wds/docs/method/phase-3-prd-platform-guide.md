@@ -18,6 +18,7 @@ By the end, you'll have a solid technical foundation and confidence that your ke
 **Prove our concept works technically — in parallel with design work.**
 
 While UX designers explore how users interact with features, technical validation runs alongside:
+
 - Can we actually build this?
 - Do the external services we need exist and work as expected?
 - What platform and infrastructure do we need?
@@ -46,12 +47,14 @@ Design and technical validation inform each other. Neither waits for the other t
 Establish the technical foundation:
 
 **Architecture:**
+
 - What technology stack fits your needs?
 - Monolith vs. microservices vs. serverless?
 - What hosting/infrastructure approach?
 - What are the key technical constraints?
 
 **Data Model:**
+
 - What are the core entities?
 - How do they relate to each other?
 - What's the database strategy?
@@ -72,15 +75,16 @@ Identify all external dependencies:
 
 **Examples:**
 
-| Feature Idea | Proof of Concept Question |
-|--------------|---------------------------|
+| Feature Idea                        | Proof of Concept Question                                          |
+| ----------------------------------- | ------------------------------------------------------------------ |
 | "Show drive time between locations" | Can we call Google Maps Directions API and get estimated duration? |
-| "Real-time availability updates" | Can we set up WebSocket connections that scale? |
-| "AI-powered recommendations" | Does the ML model perform well enough with our data? |
-| "Offline mode" | Can we sync data reliably when connection returns? |
-| "Video calling" | Which provider works best? What's the latency? |
+| "Real-time availability updates"    | Can we set up WebSocket connections that scale?                    |
+| "AI-powered recommendations"        | Does the ML model perform well enough with our data?               |
+| "Offline mode"                      | Can we sync data reliably when connection returns?                 |
+| "Video calling"                     | Which provider works best? What's the latency?                     |
 
 **What a PoC validates:**
+
 - The API/service exists and does what we need
 - Performance is acceptable
 - Cost is within budget
@@ -88,6 +92,7 @@ Identify all external dependencies:
 - Edge cases are handleable
 
 **PoC Output:**
+
 - Working code snippet or prototype
 - Documented limitations and gotchas
 - Cost estimates (API calls, compute, etc.)
@@ -98,12 +103,14 @@ Identify all external dependencies:
 ### Stage 4: Security & Performance Framework (20-30 minutes)
 
 **Security:**
+
 - Authentication approach (passwords, OAuth, SSO, passwordless)
 - Authorization model (roles, permissions, row-level security)
 - Data encryption needs (at rest, in transit)
 - Compliance requirements (GDPR, HIPAA, PCI-DSS, etc.)
 
 **Performance:**
+
 - Expected load and scale
 - Response time expectations
 - Availability requirements (99.9%? 99.99%?)
@@ -122,16 +129,17 @@ Even before the UI is designed, you often know certain data operations are essen
 
 **What to set up:**
 
-| Endpoint Type | Example | Why Early? |
-|---------------|---------|------------|
-| Core CRUD | `GET /api/dogs`, `POST /api/bookings` | Foundation for everything |
+| Endpoint Type         | Example                                  | Why Early?                  |
+| --------------------- | ---------------------------------------- | --------------------------- |
+| Core CRUD             | `GET /api/dogs`, `POST /api/bookings`    | Foundation for everything   |
 | External integrations | `GET /api/routes/estimate` (Google Maps) | Validates third-party works |
-| Authentication | `/api/auth/login`, `/api/auth/refresh` | Security model proven |
-| Key calculations | `/api/availability/check` | Business logic validated |
+| Authentication        | `/api/auth/login`, `/api/auth/refresh`   | Security model proven       |
+| Key calculations      | `/api/availability/check`                | Business logic validated    |
 
 **Output:**
 
 For each experimental endpoint, document:
+
 - Endpoint specification (method, path, request/response)
 - What it validates
 - Current status (stub, working, blocked)
@@ -196,12 +204,14 @@ This parallelism is one of WDS's key efficiency gains. Development teams can beg
 ## When to Use This Phase
 
 **Use this phase when:**
+
 - Building platform/infrastructure for a new product
 - Features depend on external APIs or services
 - Innovative features need technical validation
 - Development team needs architectural clarity before design
 
 **Skip or minimize if:**
+
 - Simple project with obvious technical approach
 - Working within existing platform/infrastructure
 - Enhancement that doesn't change architecture
@@ -212,6 +222,7 @@ This parallelism is one of WDS's key efficiency gains. Development teams can beg
 ## What to Prepare
 
 Bring:
+
 - Product Brief (Phase 1)
 - Trigger Map with Feature Impact Analysis (Phase 2)
 - Any existing technical constraints
@@ -232,19 +243,23 @@ Your technical foundation enables:
 ## Tips for Great Sessions
 
 **Validate risky features first**
+
 - If the Google Maps API doesn't return drive times in a usable format, you need to know NOW
 - Don't design features you can't build
 
 **Document constraints clearly**
+
 - Designers need to know what's possible
 - "Loading state required" vs "instant" changes UX significantly
 
 **Involve developers**
+
 - Technical decisions benefit from dev input
 - PoC work may require developer time
 - Architecture is a conversation, not a decree
 
 **Stay connected to strategy**
+
 - Reference Feature Impact Analysis scores
 - High-impact features deserve more PoC investment
 - Don't over-engineer for hypothetical needs
@@ -257,13 +272,13 @@ See: `examples/dog-week-patterns/C-Requirements/` for the Dog Week technical fou
 
 **What Dog Week needed to prove early:**
 
-- *"Can we show dog owners how long it takes to walk to a dog walker?"* → Google Maps Directions API returns walking time between coordinates ✓
-- *"Can we check real-time availability across multiple walkers?"* → Endpoint aggregates calendar data in <200ms ✓
-- *"Can we handle Swish payments for Swedish users?"* → Swish API integration validated with test transactions ✓
-- *"Can walkers see their schedule on mobile?"* → Responsive calendar component renders correctly on iOS/Android browsers ✓
+- _"Can we show dog owners how long it takes to walk to a dog walker?"_ → Google Maps Directions API returns walking time between coordinates ✓
+- _"Can we check real-time availability across multiple walkers?"_ → Endpoint aggregates calendar data in <200ms ✓
+- _"Can we handle Swish payments for Swedish users?"_ → Swish API integration validated with test transactions ✓
+- _"Can walkers see their schedule on mobile?"_ → Responsive calendar component renders correctly on iOS/Android browsers ✓
 
 These early discoveries shaped both the design AND the development approach.
 
 ---
 
-*Phase 3 of the Whiteport Design Studio method*
+_Phase 3 of the Whiteport Design Studio method_

@@ -10,10 +10,11 @@
 Now we identify the people who matter most to achieving your goals.
 
 We'll create:
+
 - A list of user groups
 - Rich descriptions (personas)
 - Understanding of their context</output>
-</intro>
+  </intro>
 
 <step n="1" goal="Identify user groups">
 <output>Looking at your objectives:
@@ -47,6 +48,7 @@ List the types of people that come to mind.</ask>
 <ask>**Which 2-4 groups are most critical to your success?**
 
 Consider:
+
 - Who has the most influence on your objectives?
 - Who, if delighted, would drive the others?
 - Where is the biggest opportunity?</ask>
@@ -92,8 +94,9 @@ Consider:
 
 **Your Target Groups:**
 {{#each personas}}
+
 - **{{this.name}}** - {{this.summary}}
-{{/each}}
+  {{/each}}
 
 These are the people we're designing for. Next, we'll explore what drives them - both toward and away from solutions.</output>
 
@@ -101,4 +104,3 @@ These are the people we're designing for. Next, we'll explore what drives them -
 </step>
 
 </workshop>
-

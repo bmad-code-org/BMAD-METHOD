@@ -33,13 +33,13 @@ Choice [1/2/3]:</ask>
 <check if="choice == 1">
   <ask>**Which existing image pattern?**
 
-  From your Design System:
-  {{list_available_image_patterns}}
+From your Design System:
+{{list_available_image_patterns}}
 
-  Component name:</ask>
-  
-  <action>Store design_system_component</action>
-  <action>Store component_status = "existing"</action>
+Component name:</ask>
+
+<action>Store design_system_component</action>
+<action>Store component_status = "existing"</action>
 </check>
 
 <check if="choice == 2">
@@ -70,23 +70,26 @@ Choice [1/2/3]:</ask>
 <ask>**Image properties:**
 
 **Source:**
+
 - Image filename/path:
 - Alt text (EN):
 - Alt text (SV):
 - Is decorative (no alt needed): yes/no
 
 **Dimensions:**
+
 - Width:
 - Height:
 - Aspect ratio:
 - Object-fit: (cover/contain/fill)
 
 **Responsive behavior:**
+
 - Mobile size:
 - Tablet size:
 - Desktop size:
 - Retina/2x version: yes/no
-</ask>
+  </ask>
 
 ---
 
@@ -95,17 +98,20 @@ Choice [1/2/3]:</ask>
 <ask>**Image states:**
 
 **Loading:**
+
 - Placeholder: (color/skeleton/blur)
 - Lazy loading: yes/no
 
 **Error:**
+
 - Fallback image: (if any)
 - Error message display: yes/no
 
 **Loaded:**
+
 - Fade-in animation: yes/no
 - Animation duration:
-</ask>
+  </ask>
 
 ---
 
@@ -118,32 +124,37 @@ Choice [1/2/3]:</ask>
 **Type:** image
 
 **Source:**
+
 - File: {{image_path}}
 - Alt (EN): {{alt_text_en}}
 - Alt (SV): {{alt_text_sv}}
-{{#if is_decorative}}
+  {{#if is_decorative}}
 - Decorative: role="presentation"
-{{/if}}
+  {{/if}}
 
 **Dimensions:**
+
 - Width: {{width}}
 - Height: {{height}}
 - Aspect ratio: {{aspect_ratio}}
 - Object-fit: {{object_fit}}
 
 **Responsive:**
+
 - Mobile: {{mobile_size}}
 - Tablet: {{tablet_size}}
 - Desktop: {{desktop_size}}
-{{#if has_retina}}
+  {{#if has_retina}}
 - Retina (@2x): {{retina_path}}
-{{/if}}
+  {{/if}}
 
 **Loading:**
+
 - Placeholder: {{placeholder_type}}
 - Lazy load: {{lazy_loading}}
 
 **States:**
+
 - **Loading:** {{loading_state}}
 - **Error:** {{error_fallback}}
 - **Loaded:** {{loaded_animation}}
@@ -152,4 +163,3 @@ Choice [1/2/3]:</ask>
 ---
 
 **Return to 4c-03**
-

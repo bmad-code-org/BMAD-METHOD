@@ -9,6 +9,7 @@ Initiate a structured handoff conversation with the BMad Architect to transfer d
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 6.3 (Test Scenario created)
 - ✅ Design Delivery file ready: `deliveries/DD-XXX-name.yaml`
 - ✅ Test Scenario file ready: `test-scenarios/TS-XXX-name.yaml`
@@ -23,6 +24,7 @@ Initiate a structured handoff conversation with the BMad Architect to transfer d
 **Duration:** 20-30 minutes
 
 **Participants:**
+
 - WDS UX Expert (you)
 - BMad Architect
 
@@ -33,19 +35,21 @@ Initiate a structured handoff conversation with the BMad Architect to transfer d
 ### Phase 1: Introduction (2 min)
 
 **You say:**
+
 ```
 "Hey Architect! I've completed the design for [Flow Name].
  I'd like to walk you through Design Delivery DD-XXX.
- 
+
  This delivery includes:
  - [Number] scenarios
  - [Number] components
  - Complete test scenarios
- 
+
  Ready for the walkthrough?"
 ```
 
 **Architect responds:**
+
 ```
 "Absolutely! Let's go through it."
 ```
@@ -74,6 +78,7 @@ This is critical because [business value]."
 ```
 
 **Questions to answer:**
+
 - Why does this flow matter?
 - What business value does it deliver?
 - How will we measure success?
@@ -101,11 +106,13 @@ The complete flow is:
 ```
 
 **Show:**
+
 - Excalidraw sketches (if available)
 - Scenario specifications
 - User flow diagrams
 
 **Architect may ask:**
+
 - "What happens if [edge case]?"
 - "How does this integrate with [existing feature]?"
 - "What's the data flow here?"
@@ -144,6 +151,7 @@ Security:
 ```
 
 **Architect may ask:**
+
 - "Why this tech stack?"
 - "Are there any constraints?"
 - "What about [technical concern]?"
@@ -179,6 +187,7 @@ All components follow our design tokens:
 ```
 
 **Architect may ask:**
+
 - "Do these components already exist?"
 - "Any new components needed?"
 - "What about [specific state]?"
@@ -258,6 +267,7 @@ Does this align with your technical assessment?"
 ```
 
 **Architect responds with their estimate:**
+
 ```
 "I'll break this into [number] epics:
 - Epic 1: [Name] ([time])
@@ -287,6 +297,7 @@ Questions or concerns?"
 ```
 
 **Architect may raise:**
+
 - Technical challenges
 - Integration concerns
 - Timeline issues
@@ -333,6 +344,7 @@ You: "Perfect! I'll start designing the next flow while
 **Date:** 2024-12-09
 **Duration:** 25 minutes
 **Participants:**
+
 - WDS UX Expert: [Your name]
 - BMad Architect: Winston
 
@@ -385,10 +397,10 @@ A: "Save progress, resume at last incomplete step"
 
 ```yaml
 delivery:
-  status: "in_development"  # Changed from "ready"
-  handed_off_at: "2024-12-09T12:30:00Z"
-  assigned_to: "bmad-architect"
-  handoff_log: "deliveries/DD-XXX-handoff-log.md"
+  status: 'in_development' # Changed from "ready"
+  handed_off_at: '2024-12-09T12:30:00Z'
+  assigned_to: 'bmad-architect'
+  handoff_log: 'deliveries/DD-XXX-handoff-log.md'
 ```
 
 ---

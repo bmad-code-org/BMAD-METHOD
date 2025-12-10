@@ -9,6 +9,7 @@ Document all problems found during testing as issue tickets that BMad can fix.
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 7.3 (all tests executed)
 - ✅ Test results documented
 - ✅ Screenshots captured
@@ -23,6 +24,7 @@ Document all problems found during testing as issue tickets that BMad can fix.
 **Create issue file:** `issues/ISS-XXX-description.md`
 
 **Numbering:**
+
 - Start at ISS-001
 - Increment for each issue
 - Use leading zeros
@@ -31,7 +33,7 @@ Document all problems found during testing as issue tickets that BMad can fix.
 
 ## Issue Template
 
-```markdown
+````markdown
 # Issue: [Short Description]
 
 **ID:** ISS-XXX
@@ -81,6 +83,7 @@ Document all problems found during testing as issue tickets that BMad can fix.
 ```code
 [Code example if applicable]
 ```
+````
 
 ## Related Issues
 
@@ -89,7 +92,8 @@ Document all problems found during testing as issue tickets that BMad can fix.
 ---
 
 **Priority for fix:** [Next release | This release | Future]
-```
+
+````
 
 ---
 
@@ -207,12 +211,13 @@ Add transition animation to navigation:
     animationDuration: 300,
   }}
 />
-```
+````
 
 ---
 
 **Priority for fix:** This release
-```
+
+````
 
 ---
 
@@ -272,9 +277,10 @@ backgroundColor: '#3B82F6'
 
 // After
 backgroundColor: tokens.button.primary.background // #2563EB
-```
+````
 
 Affected components:
+
 - "Get Started" button
 - "Create Account" button
 - "Continue" button
@@ -283,7 +289,8 @@ Affected components:
 ---
 
 **Priority for fix:** This release (High severity)
-```
+
+````
 
 ---
 
@@ -351,16 +358,18 @@ Add accessibility labels to all buttons:
   accessibilityLabel="Create Account button"
   accessibilityHint="Opens signup form"
 />
-```
+````
 
 Affected buttons:
+
 - All buttons in onboarding flow
 - Estimate: 8 buttons total
 
 ---
 
 **Priority for fix:** This release (Accessibility blocker)
-```
+
+````
 
 ---
 
@@ -425,7 +434,7 @@ None
 **Can fix later:**
 - ISS-007 (Low)
 - ISS-008 (Low)
-```
+````
 
 ---
 
@@ -468,16 +477,19 @@ After creating all issue tickets:
 ### DO ✅
 
 **Be specific:**
+
 - Clear descriptions
 - Exact values (colors, sizes)
 - Precise steps to reproduce
 
 **Be helpful:**
+
 - Provide recommendations
 - Include code examples
 - Link to design references
 
 **Be organized:**
+
 - Consistent numbering
 - Clear file names
 - Issues list for tracking
@@ -485,14 +497,17 @@ After creating all issue tickets:
 ### DON'T ❌
 
 **Don't be vague:**
+
 - "It doesn't look right" ❌
 - "Button color is #3B82F6, should be #2563EB" ✅
 
 **Don't blame:**
+
 - Focus on the issue, not the person
 - Be collaborative, not critical
 
 **Don't skip documentation:**
+
 - Every issue needs full documentation
 - Screenshots are required
 - Design references are required

@@ -18,6 +18,7 @@ This document summarizes technical decisions and constraints that inform UX desi
 ### Validated Features
 
 {{#each validated_features}}
+
 #### {{this.feature_name}}
 
 **Status:** {{this.status}}  
@@ -29,8 +30,9 @@ This document summarizes technical decisions and constraints that inform UX desi
 ### Platform Capabilities
 
 {{#each platform_capabilities}}
+
 - **{{this.capability}}:** {{this.description}}
-{{/each}}
+  {{/each}}
 
 ---
 
@@ -39,6 +41,7 @@ This document summarizes technical decisions and constraints that inform UX desi
 ### Technical Limitations
 
 {{#each limitations}}
+
 #### {{this.area}}
 
 **Constraint:** {{this.constraint}}  
@@ -50,8 +53,9 @@ This document summarizes technical decisions and constraints that inform UX desi
 ### External API Constraints
 
 {{#each api_constraints}}
+
 - **{{this.service}}:** {{this.constraint}} - {{this.design_impact}}
-{{/each}}
+  {{/each}}
 
 ---
 
@@ -60,6 +64,7 @@ This document summarizes technical decisions and constraints that inform UX desi
 ### Performance Characteristics
 
 {{#each performance_characteristics}}
+
 #### {{this.operation}}
 
 - **Expected Time:** {{this.time}}
@@ -71,8 +76,9 @@ This document summarizes technical decisions and constraints that inform UX desi
 ### Connection Requirements
 
 {{#each connection_requirements}}
+
 - **{{this.feature}}:** {{this.requirement}} - {{this.design_impact}}
-{{/each}}
+  {{/each}}
 
 ---
 
@@ -81,6 +87,7 @@ This document summarizes technical decisions and constraints that inform UX desi
 ### Cost-Sensitive Features
 
 {{#each expensive_features}}
+
 #### {{this.feature}}
 
 **Cost Driver:** {{this.cost_driver}}  
@@ -94,12 +101,15 @@ This document summarizes technical decisions and constraints that inform UX desi
 ## 🌐 Platform Compatibility
 
 ### Browser Support
+
 {{browser_support}}
 
 ### Device Support
+
 {{device_support}}
 
 ### Accessibility
+
 {{accessibility_considerations}}
 
 ---
@@ -107,12 +117,15 @@ This document summarizes technical decisions and constraints that inform UX desi
 ## 🔒 Security Constraints
 
 ### Authentication
+
 {{authentication_constraints}}
 
 ### Data Handling
+
 {{data_handling_constraints}}
 
 ### Compliance
+
 {{compliance_constraints}}
 
 ---
@@ -120,13 +133,17 @@ This document summarizes technical decisions and constraints that inform UX desi
 ## 📱 Offline Behavior
 
 {{#if offline_support}}
+
 ### What Works Offline
+
 {{offline_capabilities}}
 
 ### What Requires Connection
+
 {{online_requirements}}
 
 ### Sync Strategy
+
 {{sync_strategy}}
 {{else}}
 **Offline Mode:** Not supported - All features require active connection
@@ -139,6 +156,7 @@ This document summarizes technical decisions and constraints that inform UX desi
 Based on technical validation:
 
 {{#each design_recommendations}}
+
 ### {{this.category}}
 
 {{this.recommendation}}
@@ -153,11 +171,12 @@ Based on technical validation:
 
 {{#if open_questions}}
 {{#each open_questions}}
+
 - {{this}}
-{{/each}}
-{{else}}
-No open questions at this time.
-{{/if}}
+  {{/each}}
+  {{else}}
+  No open questions at this time.
+  {{/if}}
 
 ---
 
@@ -169,5 +188,4 @@ No open questions at this time.
 
 ---
 
-*Phase 3 → 4 Handoff Document for {{project_name}}*
-
+_Phase 3 → 4 Handoff Document for {{project_name}}_

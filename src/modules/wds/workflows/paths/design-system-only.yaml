@@ -59,4 +59,3 @@ phases:
         command: "design-system"
         output: "Complete component documentation, HTML showcase"
         note: "The primary deliverable for this path"
-

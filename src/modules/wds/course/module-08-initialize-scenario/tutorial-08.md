@@ -45,11 +45,13 @@ A specific user journey from trigger moment to successful outcome.
 ### How to choose:
 
 **From your trigger map, select:**
+
 - Highest priority trigger
 - Clear start and end points
 - Manageable scope for first design
 
 **Example (Dog Week):**
+
 ```
 Scenario: Morning Dog Care Assignment
 Trigger: Morning chaos - nobody knows who's walking the dog
@@ -58,6 +60,7 @@ Scope: From opening app to seeing today's assignments
 ```
 
 **Your turn:**
+
 ```
 Scenario Name: [Your scenario]
 Trigger: [From trigger map]
@@ -72,12 +75,14 @@ Scope: [Start → End]
 ### Define your target user
 
 **Be specific:**
+
 - Which target group?
 - What's their context?
 - What's their mindset?
 - What are they trying to accomplish?
 
 **Example (Dog Week):**
+
 ```
 WHO: Sarah, busy parent with family dog
 
@@ -100,6 +105,7 @@ Goal:
 ```
 
 **Your turn:**
+
 ```
 WHO: [User name/persona]
 
@@ -118,6 +124,7 @@ Goal:
 ```
 
 **AI Support:**
+
 ```
 Agent: "Let's make this user vivid:
 - What's their emotional state?
@@ -133,12 +140,14 @@ Agent: "Let's make this user vivid:
 ### Define the trigger moment
 
 **Be specific about:**
+
 - Exact moment user realizes they need this
 - What caused the trigger
 - Emotional state at trigger
 - What they've tried before
 
 **Example (Dog Week):**
+
 ```
 WHAT Trigger: Morning Chaos
 
@@ -168,6 +177,7 @@ Previous Attempts:
 ```
 
 **Your turn:**
+
 ```
 WHAT Trigger: [Trigger name]
 
@@ -194,16 +204,19 @@ Previous Attempts:
 **Two perspectives:**
 
 **User Value:**
+
 - What pain does this solve?
 - What does success feel like?
 - What changes in their life?
 
 **Business Value:**
+
 - How does this support business goals?
 - What metrics improve?
 - What's the strategic importance?
 
 **Example (Dog Week):**
+
 ```
 WHY - User Value:
 
@@ -247,6 +260,7 @@ Strategic Importance:
 ```
 
 **Your turn:**
+
 ```
 WHY - User Value:
 Pain Solved:
@@ -276,6 +290,7 @@ Strategic Importance:
 ### Define the success flow
 
 **Map the ideal journey:**
+
 - User starts at trigger
 - Takes clear actions
 - System responds appropriately
@@ -283,6 +298,7 @@ Strategic Importance:
 - Mutual success achieved
 
 **Example (Dog Week):**
+
 ```
 HAPPY PATH: Morning Dog Care Check
 
@@ -320,6 +336,7 @@ MUTUAL SUCCESS:
 ```
 
 **Your turn:**
+
 ```
 HAPPY PATH: [Scenario name]
 
@@ -343,6 +360,7 @@ MUTUAL SUCCESS:
 ```
 
 **AI Support:**
+
 ```
 Agent: "Let's optimize this flow:
 - Can we reduce steps?
@@ -358,6 +376,7 @@ Agent: "Let's optimize this flow:
 ### Identify edge cases
 
 **Consider:**
+
 - First-time users
 - Error states
 - Missing data
@@ -365,6 +384,7 @@ Agent: "Let's optimize this flow:
 - System failures
 
 **Example (Dog Week):**
+
 ```
 EDGE CASES:
 
@@ -400,6 +420,7 @@ Someone Else's Phone:
 ```
 
 **Your turn:**
+
 ```
 EDGE CASES:
 
@@ -421,6 +442,7 @@ EDGE CASES:
 **Create file:** `C-Scenarios/[scenario-name]/00-scenario-init.md`
 
 **Include all 5 questions:**
+
 1. WHO - Target user in context
 2. WHAT Trigger - Specific moment
 3. WHY - User + business value
@@ -437,7 +459,7 @@ EDGE CASES:
 ✅ **Specific trigger** - You know WHAT brings them here  
 ✅ **Defined value** - You know WHY this matters  
 ✅ **Success flow** - You know the HAPPY PATH  
-✅ **Edge cases** - You know WHAT could go wrong  
+✅ **Edge cases** - You know WHAT could go wrong
 
 **You're ready to start sketching!**
 
@@ -446,11 +468,13 @@ EDGE CASES:
 ## Next Steps
 
 **Immediate:**
+
 - Review initialization with stakeholders
 - Validate assumptions with users (if possible)
 - Gather any missing information
 
 **Next Module:**
+
 - [Module 09: Sketch Interfaces](../module-09-sketch-interfaces/module-09-overview.md)
 - Start drawing your solution with AI guidance
 
@@ -475,6 +499,7 @@ A: Yes! This is a living document. Update as you learn.
 ## Tips for Success
 
 **DO ✅**
+
 - Be specific about user context
 - Connect to trigger map
 - Define clear success criteria
@@ -482,6 +507,7 @@ A: Yes! This is a living document. Update as you learn.
 - Get stakeholder alignment
 
 **DON'T ❌**
+
 - Rush through the questions
 - Skip the "why"
 - Ignore edge cases

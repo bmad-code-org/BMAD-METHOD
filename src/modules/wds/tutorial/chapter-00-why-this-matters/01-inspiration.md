@@ -1,4 +1,5 @@
 # Chapter 0: Why WDS Matters
+
 ## Part 1: Inspiration
 
 **Learn how to be indispensable in the AI era**
@@ -14,6 +15,7 @@ This isn't about working faster or making shinier designs. It's about becoming w
 In the AI era, designers who master WDS become linchpin designers. They connect ideas that seem unrelated, make judgment calls when there's no clear answer, and create experiences that feel right in ways that can't be reduced to a formula.
 
 **What makes an irreplaceable designer:**
+
 - Connects disparate ideas across business, psychology, and technology
 - Makes things happen when there's no instruction manual
 - Creates value that can't be commoditized or automated
@@ -30,6 +32,7 @@ By the end of this tutorial, you'll have a completely different relationship wit
 Most importantly, you'll understand the five dimensions of thinking that only humans can navigate simultaneously - and you'll know how to use them to create designs that AI could never conceive on its own.
 
 **Your transformation:**
+
 - ✅ Understand why designers are irreplaceable in the AI era
 - ✅ Master the 5 dimensions of designer thinking
 - ✅ Recognize what AI can and cannot do
@@ -49,6 +52,7 @@ Traditional design work follows this exact pattern. You get a brief (instruction
 Here's the uncomfortable truth: AI is really, really good at factory work. If your job is to follow instructions and create predictable outputs, you're in trouble. But if you can become a linchpin - someone who connects ideas, makes judgment calls, and creates meaning - you become more valuable than ever.
 
 **The factory mindset in design:**
+
 - Creates mockups by following briefs (instructions)
 - Hands off to developers (replaceable step)
 - Hopes they understand (no real connection)
@@ -64,6 +68,7 @@ Let's be honest about what's happening. AI can now generate mockups in seconds. 
 But here's the thing: AI cannot be a linchpin. It can't walk into a messy situation and figure out what actually needs to happen. It can't sense when a client is asking for the wrong thing. It can't connect a business goal to a psychological insight to a technical constraint and come up with something nobody expected but everyone loves.
 
 **What AI does better than cogs:**
+
 - Generates mockups instantly (no creative block)
 - Follows design systems perfectly (zero deviation)
 - Iterates through hundreds of variations (no fatigue)
@@ -87,6 +92,7 @@ Linchpin designers do what AI fundamentally cannot do: they give products a soul
 The bottleneck in product development used to be coding. AI demolished that. Now the bottleneck is **products worth building** - figuring out what to create that won't be just more noise in an ocean of AI-generated mediocrity.
 
 **What makes products come alive (what only designers can do):**
+
 - Navigate 5 dimensions to find the human truth at the intersection
 - Make judgment calls that create emotional resonance, not just functionality
 - Build trust through decisions that show someone cared
@@ -107,6 +113,7 @@ WDS teaches you to be this person systematically. Not through vague advice about
 This is what makes you indispensable. Not your Figma skills. Not your aesthetic taste. Your ability to walk into chaos and create order.
 
 **The irreplaceable designer:**
+
 - Transforms complexity into clarity
 - Invents solutions nobody expected
 - Bridges business, psychology, and technology
@@ -125,6 +132,7 @@ AI can generate variations endlessly and make things look polished on the surfac
 This is where user-centric creativity becomes critical. You're not just creating - you're evaluating, connecting, and protecting. You understand what it feels like to be a parent struggling to get their kids to help with the dog. You can sense when a business goal conflicts with user needs and find a creative solution that serves both. You're the advocate for the user's presence in every decision. You're the gatekeeper who ensures the impactful meeting between business and user actually happens through the product.
 
 **The designer as gatekeeper:**
+
 - Catches AI's confident but ridiculous mistakes before they ship
 - Evaluates if solutions actually make logical sense
 - Ensures business goals don't contradict user needs
@@ -147,6 +155,7 @@ Here's the paradigm shift: **The design becomes the specification. The specifica
 You remain in the loop - the skilled, experienced designer who evaluates AI's work, catches its confident mistakes, and ensures what ships actually makes sense. You become the key designer player - the person who makes things happen. AI becomes your tool - powerful but requiring your expertise to guide it.
 
 **The designer's transformation:**
+
 - **Before:** Creates mockups → Hands off → Hopes it works → Limited leverage
 - **After:** Design thinking → Specification → Gatekeeper → Clarity for all → Scales infinitely
 - **Result:** From replaceable cog to indispensable gatekeeper - your design IS the product
@@ -166,7 +175,7 @@ This is what makes you indispensable as a designer. AI can help you think throug
 **The 5 dimensions of design thinking:**
 
 1. **Business Existence (WHY)** - Understanding purpose and value creation
-2. **Business Goals (SUCCESS)** - Connecting to metrics and impact  
+2. **Business Goals (SUCCESS)** - Connecting to metrics and impact
 3. **Product Strategy (HOW)** - Making hard choices about features
 4. **Target Groups (WHO)** - Empathy and understanding needs
 5. **Technical Viability (FEASIBLE)** - Bridging design and implementation
@@ -188,6 +197,7 @@ This tutorial moves you to the other side. You'll become confident in your indis
 You'll become the designer who makes things happen. The one they can't do without. The linchpin designer.
 
 **Your transformation as a designer:**
+
 - **Before:** Threatened, uncertain, frustrated, limited, replaceable
 - **After:** Confident, clear, empowered, unstoppable, indispensable
 - **Result:** The designer who makes things happen
@@ -207,19 +217,21 @@ Compare the outcomes. The traditional approach - creating mockups, handing off t
 That's a 5x speed increase with better quality. But more importantly, the key designer's creative thinking was preserved and amplified instead of diluted and lost.
 
 **The comparison:**
+
 - **Traditional (cog designer):** 26 weeks → Mediocre result → Intent lost
 - **WDS (linchpin designer):** 5 weeks → Exceptional result → Intent preserved
 - **Key difference:** Designer's user-centric creativity captured and amplified
 
 ---
 
-*More case studies will be added here as they become available.*
+_More case studies will be added here as they become available._
 
 ---
 
 ## Ready to Begin?
 
 **Before you start, check the practicalities:**
+
 - What skills you need (spoiler: you already have them)
 - Time investment and learning paths
 - Tools required (mostly free)
@@ -232,6 +244,7 @@ That's a 5x speed increase with better quality. But more importantly, the key de
 **Or jump straight into the methodology:**
 
 In the next section (Teaching), you'll learn the concrete methodology:
+
 - The 5 dimensions in detail with examples
 - What AI cannot do (and what it can)
 - Why specifications are the new code

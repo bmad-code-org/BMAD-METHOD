@@ -27,6 +27,7 @@ Excalidraw is a free, open-source whiteboard tool that:
 ✓ Version control friendly (JSON files)
 
 Would you like me to configure Excalidraw for this project? (y/n)
+
 ```
 </ask>
 
@@ -40,17 +41,20 @@ Would you like me to configure Excalidraw for this project? (y/n)
 
 <ask>
 ```
+
 Excalidraw files (.excalidraw) don't display in GitHub by default.
 They need to be exported to PNG/SVG for documentation.
 
 Would you like automatic export enabled?
 
 Options:
+
 1. Manual export (you export when needed)
 2. Auto-export (GitHub Actions exports automatically on save)
 
 Your choice (1/2):
-```
+
+````
 </ask>
 
 **Record:**
@@ -58,7 +62,7 @@ Your choice (1/2):
 excalidraw:
   auto_export: true   # if option 2
   auto_export: false  # if option 1
-```
+````
 
 **Note:** If auto-export chosen, inform user that GitHub Actions setup will be needed
 
@@ -74,7 +78,8 @@ WDS includes an Excalidraw component library with:
 - Layout templates
 
 Would you like to use the WDS component library? (y/n)
-```
+
+````
 </ask>
 
 **Record:**
@@ -82,7 +87,7 @@ Would you like to use the WDS component library? (y/n)
 excalidraw:
   use_library: true   # if yes
   use_library: false  # if no
-```
+````
 
 ---
 
@@ -95,12 +100,14 @@ Excalidraw can snap elements to a grid for alignment.
 WDS recommends 20px grid (matches spacing system).
 
 Grid settings:
+
 1. 20px grid with snap (recommended)
 2. 10px grid with snap (finer control)
 3. No grid (free-form)
 
 Your choice (1/2/3):
-```
+
+````
 </ask>
 
 **Record:**
@@ -111,7 +118,7 @@ excalidraw:
   grid_size: 0           # if option 3
   snap_to_grid: true     # if option 1 or 2
   snap_to_grid: false    # if option 3
-```
+````
 
 ---
 
@@ -125,7 +132,8 @@ Choose default Excalidraw theme:
 2. Dark (easier on eyes for long sessions)
 
 Your choice (1/2):
-```
+
+````
 </ask>
 
 **Record:**
@@ -133,7 +141,7 @@ Your choice (1/2):
 excalidraw:
   theme: "light"   # if option 1
   theme: "dark"    # if option 2
-```
+````
 
 ---
 
@@ -148,12 +156,12 @@ Configuration saved to: project-config.yaml
 NEXT STEPS:
 
 1. Install Excalidraw (choose one):
-   
+
    Option A: VS Code Extension (Recommended)
    - Open Extensions (Ctrl+Shift+X)
    - Search "Excalidraw"
    - Install "Excalidraw Editor"
-   
+
    Option B: Web App
    - Go to https://excalidraw.com
    - No installation needed
@@ -169,12 +177,14 @@ NEXT STEPS:
    - Theme: {{THEME}}
 
 DOCUMENTATION:
+
 - Setup Guide: workflows/4-ux-design/excalidraw-integration/excalidraw-setup.md
 - Sketching Guide: workflows/4-ux-design/excalidraw-integration/sketching-guide.md
 - AI Collaboration: workflows/4-ux-design/excalidraw-integration/ai-collaboration.md
 
 Ready to start sketching! 🎨
-```
+
+````
 </output>
 
 ---
@@ -186,7 +196,7 @@ Ready to start sketching! 🎨
 ```yaml
 sketching:
   tool: excalidraw
-  
+
   excalidraw:
     enabled: true
     auto_export: {{USER_CHOICE}}
@@ -195,7 +205,7 @@ sketching:
     snap_to_grid: {{USER_CHOICE}}
     theme: {{USER_CHOICE}}
     sketches_folder: "sketches"
-```
+````
 
 ---
 
@@ -206,18 +216,21 @@ sketching:
 No problem! You can use any sketching tool you prefer.
 
 Common alternatives:
+
 - Paper and pen (photograph/scan)
 - Figma (professional design tool)
 - iPad + Apple Pencil
 - Other digital whiteboard tools
 
 WDS works with any sketching method. Just:
+
 1. Create your sketches
 2. Export to PNG/JPG
 3. Upload to AI for analysis
 4. Save in scenario sketches folder
 
 Configuration saved with: sketching.tool: "other"
+
 ```
 </output>
 
@@ -229,26 +242,32 @@ Configuration saved with: sketching.tool: "other"
 
 **If Excalidraw enabled:**
 ```
+
 Agent: "I see you've configured Excalidraw for this project.
 
 Would you like to:
+
 1. Sketch manually in Excalidraw
 2. Have me generate layout variations in Excalidraw
 3. Use a different tool for this scenario
 
 Your choice:"
+
 ```
 
 **If Excalidraw not enabled:**
 ```
+
 Agent: "Time to sketch the interface.
 
 You can:
+
 1. Sketch on paper (photograph/scan)
 2. Use your preferred digital tool
 3. Enable Excalidraw now (if you'd like)
 
 Your choice:"
+
 ```
 
 ---
@@ -259,6 +278,7 @@ Your choice:"
 
 <output>
 ```
+
 Not sure if Excalidraw is right for you?
 
 PROS:
@@ -278,6 +298,7 @@ Try it! You can always switch tools later.
 Configuration can be changed in project-config.yaml.
 
 Would you like to enable Excalidraw? (y/n)
+
 ```
 </output>
 
@@ -285,23 +306,23 @@ Would you like to enable Excalidraw? (y/n)
 
 <output>
 ```
+
 Having trouble installing Excalidraw?
 
 FALLBACK OPTIONS:
 
 1. Use web version (no installation):
    https://excalidraw.com
-   
 2. Use different tool temporarily:
    - Paper and pen
    - Figma
    - Other whiteboard tool
-   
 3. Skip sketching for now:
    - Describe interface verbally
    - AI can generate sketches later
 
 Your choice:
+
 ```
 </output>
 
@@ -311,9 +332,11 @@ Your choice:
 
 **Create folder structure:**
 ```
+
 C-Scenarios/
 └── [scenario-name]/
-    └── sketches/        ← Created automatically
+└── sketches/ ← Created automatically
+
 ```
 
 **If use_library: true:**
@@ -339,3 +362,4 @@ C-Scenarios/
 ---
 
 **This prompt ensures smooth Excalidraw setup tailored to user preferences!** ⚙️✨
+```

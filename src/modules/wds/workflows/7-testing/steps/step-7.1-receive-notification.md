@@ -12,20 +12,20 @@ BMad has notified you that a feature is complete and ready for designer validati
 
 ```
 BMad Developer: "Feature complete: DD-XXX [Flow Name]
-                 
+
                  Implemented:
                  ✓ All [number] scenarios
                  ✓ All error states
                  ✓ All edge cases
                  ✓ Design system components
-                 
+
                  Build: v0.1.0-beta.1
                  Environment: Staging
                  Device: [Platform details]
-                 
+
                  Ready for designer validation.
                  Test scenario: test-scenarios/TS-XXX.yaml
-                 
+
                  Please validate and let me know if any issues."
 ```
 
@@ -37,14 +37,15 @@ BMad Developer: "Feature complete: DD-XXX [Flow Name]
 
 ```
 WDS Designer: "Received! Starting validation testing for DD-XXX.
-               
+
                I'll run through test scenario TS-XXX and report
                back within [timeframe].
-               
+
                Thanks for the notification!"
 ```
 
 **Set expectations:**
+
 - Small flow: "Will complete testing today"
 - Medium flow: "Will complete testing within 2 days"
 - Large flow: "Will complete testing within 1 week"
@@ -82,11 +83,11 @@ WDS Designer: "Received! Starting validation testing for DD-XXX.
 
 ```
 WDS Designer: "Quick question before I start testing:
-               
+
                - What's the staging URL?
                - Do I need login credentials?
                - Which device should I test on?
-               
+
                Thanks!"
 ```
 
@@ -99,18 +100,22 @@ WDS Designer: "Quick question before I start testing:
 **Block time for testing:**
 
 ### Small Flow (1-2 scenarios)
+
 - **Time needed:** 2-4 hours
 - **Schedule:** Same day or next day
 
 ### Medium Flow (3-5 scenarios)
+
 - **Time needed:** 1-2 days
 - **Schedule:** Within 2 days
 
 ### Large Flow (6+ scenarios)
+
 - **Time needed:** 3-5 days
 - **Schedule:** Within 1 week
 
 **Add buffer for:**
+
 - Finding issues
 - Creating issue tickets
 - Writing test report
@@ -136,6 +141,7 @@ WDS Designer: "Quick question before I start testing:
 **Test Scenario:** test-scenarios/TS-XXX.yaml
 
 **Progress:**
+
 - [ ] Happy path tests
 - [ ] Error state tests
 - [ ] Edge case tests
@@ -154,11 +160,11 @@ WDS Designer: "Quick question before I start testing:
 
 ```
 WDS Designer: "Testing update for DD-XXX:
-               
+
                Started: Today 2pm
                Progress: Running happy path tests
                Expected completion: Tomorrow 5pm
-               
+
                Will notify you when complete!"
 ```
 
@@ -166,13 +172,13 @@ WDS Designer: "Testing update for DD-XXX:
 
 ```
 WDS Designer: "Quick heads up on DD-XXX:
-               
+
                Found critical issue in first test:
                - Login button not working
-               
+
                Continuing testing to find all issues,
                but wanted to give you early warning.
-               
+
                Full report coming tomorrow."
 ```
 
@@ -215,17 +221,20 @@ After acknowledging receipt and scheduling:
 ### DO ✅
 
 **Respond quickly:**
+
 - Acknowledge within 24 hours
 - Set clear expectations
 - Schedule testing time
 
 **Verify everything:**
+
 - Build details
 - Access credentials
 - Test scenarios
 - Design artifacts
 
 **Communicate proactively:**
+
 - Keep BMad informed
 - Report early if critical issues
 - Set realistic timelines
@@ -233,14 +242,17 @@ After acknowledging receipt and scheduling:
 ### DON'T ❌
 
 **Don't delay:**
+
 - Respond within 24 hours
 - Don't make BMad wait
 
 **Don't start unprepared:**
+
 - Verify you have everything
 - Don't waste time searching for files
 
 **Don't go silent:**
+
 - Keep BMad updated
 - Don't disappear during testing
 

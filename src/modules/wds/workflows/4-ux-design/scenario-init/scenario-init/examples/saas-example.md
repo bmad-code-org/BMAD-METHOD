@@ -7,29 +7,34 @@
 ## The 5 Questions
 
 ### 1. Core Feature
+
 ```
 "Quick setup wizard - gets users to first success fast"
 ```
 
 ### 2. Entry Point
+
 ```
 "ChatGPT recommendation"
 ```
 
 ### 3. Mental State
+
 ```
 "Overwhelmed by current tools, need simple solution that just works"
 ```
 
 ### 4. Mutual Success
+
 ```
 Business: Active monthly subscription
 User: Problem solved, no complexity added
 ```
 
 ### 5. Shortest Path
+
 ```
-ChatGPT → Landing → See demo → Sign up → 
+ChatGPT → Landing → See demo → Sign up →
 Quick setup → First success
 ```
 

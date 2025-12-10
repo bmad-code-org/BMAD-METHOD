@@ -8,6 +8,7 @@
 <output>**Workshop 1: Business Goals** 🎯
 
 We'll define what success looks like at two levels:
+
 - **Vision** - The inspiring, aspirational goal (not easily quantified)
 - **Objectives** - SMART metrics that indicate progress
 
@@ -20,6 +21,7 @@ Let's start with the dream, then make it measurable.</output>
 Think big. If everything goes perfectly, what position do you want to hold?
 
 Examples:
+
 - "Be the most trusted platform for dog owners in Sweden"
 - "The go-to tool for indie designers"
 - "Make project management actually enjoyable"</ask>
@@ -39,6 +41,7 @@ Examples:
 <ask>**How would you measure progress toward this vision?**
 
 Think about:
+
 - User metrics (adoption, engagement, retention)
 - Business metrics (revenue, growth, market share)
 - Quality metrics (satisfaction, referrals, reviews)
@@ -46,12 +49,13 @@ Think about:
 What numbers would make you confident you're on track?</ask>
 
 <action>For each metric mentioned, help make it SMART:
+
 - **S**pecific - What exactly?
 - **M**easurable - What number?
 - **A**chievable - Is this realistic?
 - **R**elevant - Does this connect to the vision?
 - **T**ime-bound - By when?
-</action>
+  </action>
 
 <action>Aim for 3-5 clear objectives</action>
 </step>
@@ -62,6 +66,7 @@ What numbers would make you confident you're on track?</ask>
 <action>For each objective, walk through:
 
 Example transformation:
+
 - Vague: "Get influential users"
 - SMART: "Onboard 10 verified dog trainers with 1000+ followers by Q4 2026"
 
@@ -71,10 +76,11 @@ Present each refined objective for confirmation.</action>
 
 {{#each objectives}}
 **Objective {{@index + 1}}:** {{this.statement}}
+
 - Metric: {{this.metric}}
 - Target: {{this.target}}
 - Timeline: {{this.timeline}}
-{{/each}}
+  {{/each}}
 
 Do these capture what success looks like? Any adjustments?</ask>
 
@@ -98,4 +104,3 @@ This gives us clear targets to work toward. Next, we'll identify who can help yo
 </step>
 
 </workshop>
-

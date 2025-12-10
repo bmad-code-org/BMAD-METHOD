@@ -8,9 +8,9 @@
 
 ```
 Agent: "Looking at your Trigger Map and prioritized feature list,
-        what's the core feature that delivers value to your 
+        what's the core feature that delivers value to your
         primary target group?
-        
+
         This is what we should sketch first."
 ```
 
@@ -19,6 +19,7 @@ Agent: "Looking at your Trigger Map and prioritized feature list,
 ## Why This Matters
 
 Your Trigger Map already identified:
+
 - Primary target group
 - What triggers their need
 - What outcome they want
@@ -30,17 +31,20 @@ Your Trigger Map already identified:
 ## Example: Dog Week
 
 **From Trigger Map:**
+
 - Target: Parents
 - Trigger: Family conflict over dog care
 - Outcome: Accountability without nagging
 
 **Feature Selection:**
+
 ```
-Designer: "The family dog walk calendar - it solves the accountability 
+Designer: "The family dog walk calendar - it solves the accountability
            problem that causes conflict."
 ```
 
 **Why this feature first:**
+
 - Directly addresses the trigger (conflict)
 - Serves the primary target group (parents)
 - Delivers the desired outcome (accountability)

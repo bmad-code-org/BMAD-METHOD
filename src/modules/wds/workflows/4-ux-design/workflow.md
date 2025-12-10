@@ -1,7 +1,7 @@
 ---
 name: UX Design Workflow
 description: Transform ideas into detailed visual specifications through scenario-driven design
-main_config: "{project-root}/{bmad_folder}/wds/config.yaml"
+main_config: '{project-root}/{bmad_folder}/wds/config.yaml'
 web_bundle: true
 ---
 
@@ -59,4 +59,3 @@ Load and read full config from {main_config} and resolve:
 ### 2. First Step Execution
 
 Load, read the full file and then execute `steps/step-01-init.md` to begin the workflow.
-

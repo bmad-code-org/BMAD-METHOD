@@ -26,6 +26,7 @@ When a complex component is detected, the agent guides you through 3 steps:
 6. **Does DATA source change based on page context?**
 
 **You answer, agent captures:**
+
 - Pages list
 - Position
 - Size
@@ -49,6 +50,7 @@ When a complex component is detected, the agent guides you through 3 steps:
    - Can it transition to other states?
 
 **You answer, agent captures:**
+
 - State count
 - State definitions
 - Storyboard reference (if exists)
@@ -69,6 +71,7 @@ When a complex component is detected, the agent guides you through 3 steps:
 5. Does it update other components?
 
 **You answer, agent captures:**
+
 - User actions
 - System responses
 - Business rules
@@ -88,6 +91,7 @@ See: [Coaching Dialogue Example](examples/coaching-dialogue.md)
 ## Output: Three Files
 
 **1. Page File**
+
 ```markdown
 Pages/02-calendar-page.md
 
@@ -96,33 +100,40 @@ Pages/02-calendar-page.md
 
 **Position:** Main content, full-width
 **Page-Specific Content:**
+
 - Header: "Familjen Svensson: Vecka 40"
 - Data: GET /api/families/:currentFamilyId/walks
 ```
 
 **2. Component File**
+
 ```markdown
 Components/walk-slot-card.component.md
 
 **Visual Specifications:**
+
 - 6 states (WHITE, GRAY, ORANGE, BLUE, GREEN, RED)
 - Typography, colors, spacing
 - Storyboard: Features/Storyboards/walk-states.jpg
 ```
 
 **3. Feature File**
+
 ```markdown
 Features/walk-booking-logic.feature.md
 
 **User Interactions:**
+
 - Book walk → GRAY state
 - Start walk → BLUE state
 
 **Business Rules:**
+
 - One active walk per dog
 - Can't book if slot taken
 
 **API Endpoints:**
+
 - POST /api/walks
 - PUT /api/walks/:id/start
 ```

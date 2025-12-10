@@ -9,6 +9,7 @@ Monitor the impact of your Design Delivery (small scope) and measure if it achie
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 8.6 (validation complete)
 - ✅ Design Delivery deployed to production
 - ✅ Success metrics defined
@@ -37,10 +38,11 @@ Ship → Monitor → Learn → Improve → Ship...
 
 ```yaml
 metrics:
-  measurement_period: "2 weeks after release"
+  measurement_period: '2 weeks after release'
 ```
 
 **Example timeline:**
+
 - Release: 2024-12-13
 - Measurement start: 2024-12-13
 - Measurement end: 2024-12-27
@@ -55,13 +57,13 @@ metrics:
 ```yaml
 metrics:
   baseline:
-    - metric: "Feature X usage rate"
-      current: "15%"
-      target: "60%"
-    
-    - metric: "Drop-off rate"
-      current: "40%"
-      target: "10%"
+    - metric: 'Feature X usage rate'
+      current: '15%'
+      target: '60%'
+
+    - metric: 'Drop-off rate'
+      current: '40%'
+      target: '10%'
 ```
 
 **Create tracking dashboard:**
@@ -74,13 +76,13 @@ metrics:
 
 ## Daily Tracking
 
-| Date | Feature X Usage | Drop-off Rate | Notes |
-|------|----------------|---------------|-------|
-| 12/13 | 18% | 38% | Day 1 |
-| 12/14 | 22% | 35% | Trending up |
-| 12/15 | 28% | 30% | Good progress |
-| ... | ... | ... | ... |
-| 12/27 | 58% | 12% | Final |
+| Date  | Feature X Usage | Drop-off Rate | Notes         |
+| ----- | --------------- | ------------- | ------------- |
+| 12/13 | 18%             | 38%           | Day 1         |
+| 12/14 | 22%             | 35%           | Trending up   |
+| 12/15 | 28%             | 30%           | Good progress |
+| ...   | ...             | ...           | ...           |
+| 12/27 | 58%             | 12%           | Final         |
 
 ## Trend Analysis
 
@@ -94,12 +96,14 @@ metrics:
 **Monitor multiple channels:**
 
 #### User Feedback
+
 - App store reviews
 - In-app feedback
 - Support tickets
 - User interviews
 
 #### Team Feedback
+
 - Developer observations
 - Support team insights
 - Stakeholder reactions
@@ -110,15 +114,18 @@ metrics:
 # Qualitative Feedback: DD-XXX
 
 ## Positive Feedback (8 mentions)
+
 - "Now I understand how to use Feature X!" (3)
 - "The guide was really helpful" (2)
 - "Love the new onboarding" (3)
 
 ## Negative Feedback (2 mentions)
+
 - "Guide is too long" (1)
 - "Can't skip the guide" (1)
 
 ## Neutral Feedback (3 mentions)
+
 - "Didn't notice the change" (3)
 ```
 
@@ -147,15 +154,16 @@ metrics:
 
 Example:
 "Design Delivery DD-XXX successfully improved Feature X usage from
- 15% to 58%, nearly meeting the 60% target. Drop-off decreased
- from 40% to 12%, exceeding the 10% target. User feedback is
- overwhelmingly positive."
+15% to 58%, nearly meeting the 60% target. Drop-off decreased
+from 40% to 12%, exceeding the 10% target. User feedback is
+overwhelmingly positive."
 
 ---
 
 ## Metrics Results
 
 ### Metric 1: Feature X Usage Rate
+
 - **Baseline:** 15%
 - **Target:** 60%
 - **Actual:** 58%
@@ -163,6 +171,7 @@ Example:
 - **Trend:** Steady increase over 2 weeks
 
 ### Metric 2: Drop-off Rate
+
 - **Baseline:** 40%
 - **Target:** 10%
 - **Actual:** 12%
@@ -170,12 +179,14 @@ Example:
 - **Trend:** Sharp decrease in first week, stabilized
 
 ### Metric 3: Support Tickets
+
 - **Baseline:** 12/month
 - **Target:** 2/month
 - **Actual:** 3/month
 - **Result:** 75% reduction ✅ (PASS)
 
 ### Metric 4: User Satisfaction
+
 - **Baseline:** 3.2/5
 - **Target:** 4.5/5
 - **Actual:** 4.3/5
@@ -186,6 +197,7 @@ Example:
 ## Overall Assessment
 
 **Success Criteria:**
+
 - Feature X usage > 50% ✅
 - Drop-off < 15% ✅
 - Support tickets < 5/month ✅
@@ -243,11 +255,13 @@ All success criteria met or exceeded.
 ## Recommendations
 
 ### Short-term (Next Sprint)
+
 1. Add "Skip" button to guide
 2. Shorten guide from 5 steps to 3 steps
 3. A/B test guide length
 
 ### Long-term (Next Quarter)
+
 1. Apply onboarding pattern to other features
 2. Create reusable onboarding component
 3. Measure onboarding impact across product
@@ -262,7 +276,7 @@ All success criteria met or exceeded.
 
 Example:
 "Feature Y has similar low usage (20%). Apply same onboarding
- pattern to Feature Y in next Kaizen cycle."
+pattern to Feature Y in next Kaizen cycle."
 
 ---
 
@@ -322,18 +336,18 @@ WDS Designer
 
 ```yaml
 delivery:
-  status: "measured"
-  measurement_complete: "2024-12-28T10:00:00Z"
-  impact_report: "analytics/DD-XXX-impact-report.md"
-  result: "success"
+  status: 'measured'
+  measurement_complete: '2024-12-28T10:00:00Z'
+  impact_report: 'analytics/DD-XXX-impact-report.md'
+  result: 'success'
   metrics_achieved:
-    - "Feature X usage: 58% (target: 60%)"
-    - "Drop-off: 12% (target: 10%)"
-    - "Support tickets: 3/month (target: 2/month)"
+    - 'Feature X usage: 58% (target: 60%)'
+    - 'Drop-off: 12% (target: 10%)'
+    - 'Support tickets: 3/month (target: 2/month)'
   learnings:
-    - "Onboarding matters for complex features"
-    - "Small changes have big impact"
-    - "Measurement validates hypotheses"
+    - 'Onboarding matters for complex features'
+    - 'Small changes have big impact'
+    - 'Measurement validates hypotheses'
 ```
 
 ---
@@ -376,16 +390,19 @@ After monitoring and learning:
 ### DO ✅
 
 **Be patient:**
+
 - Give changes time to work
 - Don't end measurement early
 - Wait for trends to stabilize
 
 **Be thorough:**
+
 - Track all metrics
 - Gather qualitative feedback
 - Document learnings
 
 **Be honest:**
+
 - Report actual results
 - Acknowledge what didn't work
 - Learn from failures
@@ -393,16 +410,19 @@ After monitoring and learning:
 ### DON'T ❌
 
 **Don't cherry-pick:**
+
 - Report all metrics, not just good ones
 - Be honest about failures
 - Learn from everything
 
 **Don't stop measuring:**
+
 - Kaizen requires continuous measurement
 - Always be monitoring
 - Always be learning
 
 **Don't skip sharing:**
+
 - Team needs to know results
 - Celebrate successes
 - Learn from failures together

@@ -36,4 +36,3 @@ phases:
         command: "ux-design"
         output: "Quick specifications and HTML prototypes"
         note: "Focus on getting something visible fast"
-

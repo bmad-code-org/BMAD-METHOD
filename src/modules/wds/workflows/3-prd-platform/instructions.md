@@ -50,11 +50,13 @@ Before starting, ensure you have:
 **Freyja's Role:**
 
 Greet the user and explain this phase:
+
 - "We're establishing your technical foundation—proving that innovative features work before investing in design."
 - "We'll make platform decisions, validate risky features with PoCs, and set up experimental endpoints."
 - "This enables backend development to start in parallel with UX design."
 
 Review available context:
+
 - Read the Product Brief to understand project scope and constraints
 - Read the Feature Impact Analysis to identify high-priority features
 - Ask: "Do you already have any technical constraints or platform preferences?"
@@ -206,7 +208,7 @@ Ask systematically:
 Read the Product Brief and identify relevant integration categories based on features mentioned:
 
 - **Payment Processing:** Transactions, subscriptions, e-commerce, paid features, pricing
-- **Communication:** User notifications, emails, SMS, alerts, reminders  
+- **Communication:** User notifications, emails, SMS, alerts, reminders
 - **Maps/Location:** Geographic features, addresses, directions, proximity, location-based services
 - **Search:** Large content volumes, filtering, discovery features
 - **Calendar/Scheduling:** Bookings, appointments, events, availability
@@ -230,6 +232,7 @@ Read the Product Brief and identify relevant integration categories based on fea
 **Go through each relevant category systematically:**
 
 **3A: Authentication & Identity**
+
 - "How will users authenticate?" (OAuth, email/password, SSO, passwordless)
 - "Which providers?" (Google, Microsoft, Auth0, etc.)
 - **Document for each:**
@@ -240,6 +243,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Technical risk (high/medium/low)
 
 **3B: Payment Processing** (if applicable)
+
 - "Do you need payment processing?"
 - "Which payment providers?" (Stripe, PayPal, Klarna, Swish, regional systems)
 - "What payment methods?" (credit cards, bank transfers, mobile payments, digital wallets)
@@ -262,6 +266,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Technical risk level
 
 **3C: Communication Services**
+
 - "Do you need to send emails?" → Which service? (SendGrid, Mailgun, AWS SES, Postmark)
 - "Do you need SMS?" → Which service? (Twilio, MessageBird, Vonage)
 - "Push notifications?" → Which service? (Firebase Cloud Messaging, OneSignal, Pusher)
@@ -279,6 +284,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & cost
 
 **3D: Search Services** (if applicable)
+
 - "Do you need advanced search functionality?"
 - "Which service?" (Algolia, Elasticsearch, Typesense, Meilisearch)
 - **Document for each:**
@@ -295,6 +301,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & cost
 
 **3E: Maps & Location** (if applicable)
+
 - "Do you need maps or geolocation?"
 - "Which service?" (Google Maps, Mapbox, OpenStreetMap, Here)
 - **Document for each:**
@@ -313,6 +320,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & risk level
 
 **3F: Data & Analytics**
+
 - "What analytics do you need?" (Google Analytics, Mixpanel, Amplitude, custom)
 - "Error tracking?" (Sentry, Rollbar, Bugsnag)
 - "Application monitoring?" (New Relic, Datadog, AppDynamics)
@@ -329,6 +337,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & cost
 
 **3G: Storage & Media**
+
 - "Do you need file/image storage?" (S3, Azure Blob, Google Cloud Storage, Cloudinary)
 - "CDN for assets?" (CloudFlare, Fastly, AWS CloudFront)
 - "Video hosting/streaming?" (Vimeo, YouTube, Mux, AWS Media Services)
@@ -346,6 +355,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & cost
 
 **3H: Calendar & Scheduling** (if applicable)
+
 - "Do you need calendar integrations?"
 - "Which services?" (Google Calendar, Outlook/Microsoft 365, iCal)
 - "Scheduling/booking systems?" (Calendly-style booking)
@@ -360,6 +370,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & cost
 
 **3I: Social Media & Content** (if applicable)
+
 - "Do you need social media integrations?"
 - "Which platforms?" (Facebook, Twitter/X, LinkedIn, Instagram)
 - "Social login?" (covered in 3A, but cross-reference)
@@ -374,6 +385,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & cost
 
 **3J: Customer Support & Help** (if applicable)
+
 - "Do you need customer support tools?"
 - "Which services?" (Intercom, Zendesk, Helpscout, Crisp)
 - "Live chat?" (service or custom)
@@ -388,6 +400,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & cost
 
 **3K: Marketing & Growth** (if applicable)
+
 - "Do you need marketing automation?"
 - "Which services?" (Mailchimp, HubSpot, ActiveCampaign)
 - "A/B testing?" (Optimizely, VWO, custom)
@@ -402,6 +415,7 @@ Read the Product Brief and identify relevant integration categories based on fea
   - Priority & cost
 
 **3L: Domain-Specific APIs**
+
 - "Any other APIs specific to your domain?" (industry-specific services)
 - Examples: Weather APIs, financial data, shipping/logistics, government data, industry databases
 - **Document for each:**
@@ -425,18 +439,21 @@ Read the Product Brief and identify relevant integration categories based on fea
 **Goal:** Determine which features need Proofs of Concept (PoCs).
 
 Review the Feature Impact Analysis and ask:
+
 - **Which features are innovative or unproven?**
 - **Which features depend on external APIs that might have limitations?**
 - **Which features have unknown performance characteristics?**
 - **Which features might not be technically feasible?**
 
 **Red Flags That Suggest PoC Needed:**
+
 - "Can we actually get X data from Y service?"
 - "Will this perform fast enough?"
 - "Does this API return data in a usable format?"
 - "Can we achieve real-time updates at scale?"
 
 Create a list of features requiring validation, prioritized by:
+
 1. **High Feature Impact Score** (from Phase 2) + **High Technical Risk**
 2. **Medium Feature Impact** + **High Technical Risk**
 3. **High Feature Impact** + **Medium Technical Risk**
@@ -469,6 +486,7 @@ For each feature identified in Step 4:
 **Output:** Create `02-Technical-Proofs-Of-Concept.md` documenting all PoC work.
 
 **Positive Framing:**
+
 - When features work: "Great! This proves [feature] is technically sound. Design can proceed with confidence."
 - When features have limitations: "Valuable discovery! We found [limitation] early. This helps design account for it from the start."
 - When features don't work: "Important learning! This saves weeks of design work on an infeasible feature. Let's explore alternatives."
@@ -618,6 +636,7 @@ Ask systematically about all regulatory requirements:
 "Let's start with authentication. Based on our security framework, what auth endpoints do you need?"
 
 For each endpoint:
+
 - Method & Path (e.g., `POST /api/auth/login`)
 - Purpose & business value
 - Request/response format with detailed schemas
@@ -636,6 +655,7 @@ Common auth endpoints: login, logout, token refresh, password reset, email verif
 Go through each entity from the data model systematically:
 
 For each entity, define all CRUD operations:
+
 - `GET /api/{entity}` - List with pagination
 - `GET /api/{entity}/:id` - Get single item
 - `POST /api/{entity}` - Create new
@@ -643,17 +663,19 @@ For each entity, define all CRUD operations:
 - `DELETE /api/{entity}/:id` - Delete item
 
 **Business Rules for each:**
-  - Validation rules (required fields, formats, constraints)
-  - Authorization (who can perform this operation?)
-  - Pagination parameters (page size, sorting, filtering)
-  - Related data inclusion (nested objects, joins)
-  - Business logic constraints
+
+- Validation rules (required fields, formats, constraints)
+- Authorization (who can perform this operation?)
+- Pagination parameters (page size, sorting, filtering)
+- Related data inclusion (nested objects, joins)
+- Business logic constraints
 
 **7C: External Integration APIs**
 
 "Which external services need API endpoints? Let's create wrappers for each."
 
 For each external service from Step 3:
+
 - Method & Path
 - Purpose ("Wraps Google Maps API to get walking time")
 - Request/response format
@@ -672,6 +694,7 @@ For each external service from Step 3:
 Examples: availability checks, pricing, recommendations, aggregations
 
 For each:
+
 - Method & Path
 - Purpose & business value
 - Request/response format
@@ -705,6 +728,7 @@ For each:
 "We identified your core entities earlier. Now let's document the complete data model."
 
 For each entity:
+
 - Entity name & purpose
 - All fields with types, constraints, defaults
 - Relationships to other entities (one-to-many, many-to-many)
@@ -723,6 +747,7 @@ Create entity relationship diagram (ERD) showing all connections.
 "What are your performance and scalability expectations?"
 
 Document systematically:
+
 - **Response Times:** Expected latency for each API category
 - **Throughput:** Concurrent users, requests per second
 - **Data Volume:** Expected record counts, storage needs
@@ -732,6 +757,7 @@ Document systematically:
 **Ask:** "Any other data modeling or performance considerations we should capture?"
 
 **Outputs:**
+
 - `05-Data-Models.md` - Complete schemas and ERD
 - `06-Performance-Requirements.md` - Benchmarks and scalability specs
 
@@ -746,6 +772,7 @@ Document systematically:
 "This document tells the UX team what they need to know about technical possibilities and limitations."
 
 **Include:**
+
 - **What's Possible:** Validated features from PoCs, platform capabilities
 - **What Has Limitations:** Technical constraints, API limits, performance characteristics
 - **What Affects Design:** Loading states, offline behavior, real-time vs. polling
@@ -756,6 +783,7 @@ Document systematically:
 "How do we know when each platform component is 'done'?"
 
 For each major platform area (auth, integrations, security, etc.):
+
 - **Functional Criteria:** What must work?
 - **Performance Criteria:** How fast/scalable must it be?
 - **Security Criteria:** What security standards must be met?
@@ -764,6 +792,7 @@ For each major platform area (auth, integrations, security, etc.):
 **Ask:** "Any other constraints or success criteria we should document?"
 
 **Outputs:**
+
 - `07-Technical-Constraints.md` - UX design handoff
 - `08-Acceptance-Criteria.md` - Testable success definitions
 
@@ -782,6 +811,7 @@ For each major platform area (auth, integrations, security, etc.):
 "Let's look at your high-priority features from Phase 2..."
 
 Read the Feature Impact Analysis (B-Trigger-Map/03-Feature-Impact-Analysis.md) and identify:
+
 - **Must Have features** (high scores, high for primary persona)
 - **Consider for MVP features** (balanced scores)
 - **Platform dependencies** - What platform work is needed to enable each high-impact feature?
@@ -832,21 +862,19 @@ For each recommended epic, note which high-priority features it enables:
 "Here's the order I'd recommend, based on Feature Impact Analysis:"
 
 **Priority 1: Enable Must-Have Features**
+
 1. **Foundation First:** Core infrastructure (hosting, database, basic security)
 2. **High-Impact Dependencies:** Platform work needed for Must-Have features
    - [Epic] enables [Feature] (Score: X) for [Primary Persona]
    - [Epic] enables [Feature] (Score: Y) for [Primary Persona]
 
-**Priority 2: Risk Mitigation**
-3. **Complex Integrations:** External APIs that are risky or complex (fail fast)
-   - [Integration Epic] enables [Feature] (Score: X)
+**Priority 2: Risk Mitigation** 3. **Complex Integrations:** External APIs that are risky or complex (fail fast)
 
-**Priority 3: Secondary Features**
-4. **Remaining Integrations:** Other external services
-5. **Advanced Features:** Performance optimization, advanced security
+- [Integration Epic] enables [Feature] (Score: X)
 
-**Priority 4: Operations**
-6. **Monitoring & Tools:** Logging, analytics, maintenance tools
+**Priority 3: Secondary Features** 4. **Remaining Integrations:** Other external services 5. **Advanced Features:** Performance optimization, advanced security
+
+**Priority 4: Operations** 6. **Monitoring & Tools:** Logging, analytics, maintenance tools
 
 **10D: Feature-to-Epic Mapping**
 
@@ -862,12 +890,14 @@ Create a table:
 **10E: API Contracts for Future UI Development**
 
 "These API specifications are ready for frontend development:"
+
 - [List key API categories organized by priority features they enable]
 - Backend can implement these in parallel with Phase 4 (UX Design)
 
 **10F: Dependencies & Parallel Work**
 
 "Key dependencies to consider:"
+
 - What must be done before high-impact features can be built?
 - What can be developed independently in parallel?
 - What provides the most risk reduction AND feature enablement if done early?
@@ -875,6 +905,7 @@ Create a table:
 **Ask:** "Does this platform work organization make sense based on your feature priorities? Any initiatives or priorities you'd adjust?"
 
 **Output:** Create `09-Platform-Backlog-Recommendations.md` with:
+
 - **Feature Impact Summary** - High-priority features from Phase 2
 - **Feature-to-Epic Mapping** - Clear connections between features and platform work
 - Recommended initiative structure
@@ -901,8 +932,8 @@ Create a table:
 ```markdown
 # Product Requirements Document: [Project Name]
 
-*Phase 3 Complete: Technical Foundation Established*  
-*Last Updated: [Date]*
+_Phase 3 Complete: Technical Foundation Established_  
+_Last Updated: [Date]_
 
 ---
 
@@ -916,30 +947,39 @@ Create a table:
 ## 2. Technical Foundation (Phase 3)
 
 ### 2.1 Platform Architecture
+
 [Link to C-Requirements/00-Platform-Architecture.md]
 
 ### 2.2 External Integrations
+
 [Link to C-Requirements/01-Integration-Map.md]
 
 ### 2.3 Technical Validation
+
 [Link to C-Requirements/02-Technical-Proofs-Of-Concept.md]
 
 ### 2.4 Security & Compliance
+
 [Link to C-Requirements/03-Security-Framework.md]
 
 ### 2.5 API Specifications
+
 [Link to C-Requirements/04-API-Specifications.md]
 
 ### 2.6 Data Models
+
 [Link to C-Requirements/05-Data-Models.md]
 
 ### 2.7 Performance Requirements
+
 [Link to C-Requirements/06-Performance-Requirements.md]
 
 ### 2.8 Technical Constraints
+
 [Link to C-Requirements/07-Technical-Constraints.md]
 
 ### 2.9 Acceptance Criteria
+
 [Link to C-Requirements/08-Acceptance-Criteria.md]
 
 ---
@@ -949,6 +989,7 @@ Create a table:
 [Link to C-Requirements/09-Platform-Backlog-Recommendations.md]
 
 **Summary:**
+
 - **Recommended Initiatives:** [List]
 - **Suggested Epics:** [Count]
 - **API Contracts Ready:** [Key APIs]
@@ -958,24 +999,28 @@ Create a table:
 
 ## 4. Functional Requirements (Phase 4)
 
-*This section will be populated during Phase 4 (UX Design) as each page/scenario is completed.*
+_This section will be populated during Phase 4 (UX Design) as each page/scenario is completed._
 
 ### [Feature Area 1]
-*Coming from Phase 4*
+
+_Coming from Phase 4_
 
 ### [Feature Area 2]
-*Coming from Phase 4*
+
+_Coming from Phase 4_
 
 ---
 
 ## 5. Next Steps
 
 **For BMM Agents:**
+
 - Use platform backlog recommendations to create E-Backlog/ structure
 - Create detailed epics and stories from requirements documents
 - Establish implementation roadmap with dependencies
 
 **For Phase 4 (UX Design):**
+
 - Technical constraints document provides design boundaries
 - API specifications define data available to UI
 - Begin UX design with confidence in technical feasibility
@@ -1033,6 +1078,7 @@ Create a table:
 7. **"Anything about performance, scalability, or deployment we should capture?"**
 
 **If user identifies gaps:**
+
 - Document the additional items in the appropriate files
 - "Great catch! Let me add that to [relevant document]..."
 - After adding, return to completeness check
@@ -1062,6 +1108,7 @@ Create a table:
    - Each completed page will add functional requirements to the PRD
 
 **What happens next:**
+
 - Platform backlog recommendations guide BMM agents in creating E-Backlog/
 - Development teams can begin platform work based on requirements
 - Phase 4 (UX Design) can begin, informed by technical constraints
@@ -1075,22 +1122,27 @@ Create a table:
 ### For Freyja the PM:
 
 **Validate Early, Often:**
+
 - Don't let risky features proceed without PoC validation
 - "Let's prove this works before investing in design"
 
 **Positive Language:**
+
 - Frame discoveries as valuable, not failures
 - "Great that we learned this now, not after design is complete"
 
 **Stay Connected to Strategy:**
+
 - Reference Feature Impact Analysis scores when prioritizing PoCs
 - High-impact features deserve thorough validation
 
 **Enable Parallel Work:**
+
 - Think about what backend teams can start building immediately
 - Experimental endpoints should focus on clear, achievable tasks
 
 **Document for Design:**
+
 - Technical Constraints doc is crucial for Phase 4 success
 - Be specific about what design needs to accommodate
 
@@ -1106,5 +1158,4 @@ Use these templates to structure outputs:
 
 ---
 
-*Phase 3 workflow for Whiteport Design Studio (WDS) methodology*
-
+_Phase 3 workflow for Whiteport Design Studio (WDS) methodology_

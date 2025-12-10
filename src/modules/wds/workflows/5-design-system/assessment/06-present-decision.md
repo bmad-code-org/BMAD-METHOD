@@ -11,18 +11,23 @@
 ## Presentation Structure
 
 ### 1. Context Summary
+
 What we're deciding and why
 
 ### 2. The Options
+
 Clear description of each choice
 
 ### 3. Comparison Table
+
 Side-by-side trade-offs
 
 ### 4. Recommendation
+
 AI's suggestion based on analysis
 
 ### 5. Designer Choice
+
 Let designer decide
 
 ---
@@ -48,6 +53,7 @@ Let designer decide
 ✗ Different usage context
 
 **Decision:** How should we handle this in the design system?
+
 ```
 </output>
 
@@ -57,6 +63,7 @@ Let designer decide
 
 <output>
 ```
+
 📋 Your Options:
 
 **Option 1: Reuse Existing Component**
@@ -64,11 +71,13 @@ Use Button [btn-001], just change the label to "Continue"
 
 **Option 2: Add Variant**
 Add "navigation" variant to Button [btn-001]
+
 - Button.primary (submit)
 - Button.navigation (continue)
 
 **Option 3: Create New Component**
 Create separate "Navigation Button" component [btn-002]
+
 ```
 </output>
 
@@ -78,22 +87,24 @@ Create separate "Navigation Button" component [btn-002]
 
 <output>
 ```
+
 📊 Trade-Offs Comparison:
 
 ┌─────────────┬──────────────────┬──────────────────┬──────────────────┐
-│             │ Reuse [btn-001]  │ Add Variant      │ Create New       │
+│ │ Reuse [btn-001] │ Add Variant │ Create New │
 ├─────────────┼──────────────────┼──────────────────┼──────────────────┤
-│ Consistency │ ✅ Highest       │ ✅ High          │ ⚠️ Medium        │
-│ Maintenance │ ✅ Easiest       │ ⚠️ Moderate      │ ❌ More work     │
-│ Clarity     │ ❌ Confusing     │ ⚠️ Moderate      │ ✅ Clearest      │
-│ Flexibility │ ❌ Constrained   │ ✅ Flexible      │ ✅ Independent   │
-│ Complexity  │ ✅ Simple        │ ⚠️ More complex  │ ✅ Simple        │
-│ Semantics   │ ❌ Lost          │ ⚠️ Preserved     │ ✅ Clear         │
+│ Consistency │ ✅ Highest │ ✅ High │ ⚠️ Medium │
+│ Maintenance │ ✅ Easiest │ ⚠️ Moderate │ ❌ More work │
+│ Clarity │ ❌ Confusing │ ⚠️ Moderate │ ✅ Clearest │
+│ Flexibility │ ❌ Constrained │ ✅ Flexible │ ✅ Independent │
+│ Complexity │ ✅ Simple │ ⚠️ More complex │ ✅ Simple │
+│ Semantics │ ❌ Lost │ ⚠️ Preserved │ ✅ Clear │
 ├─────────────┼──────────────────┼──────────────────┼──────────────────┤
-│ Best For    │ Identical use    │ Related purposes │ Different roles  │
+│ Best For │ Identical use │ Related purposes │ Different roles │
 └─────────────┴──────────────────┴──────────────────┴──────────────────┘
 
 Legend: ✅ Strong benefit | ⚠️ Trade-off | ❌ Potential issue
+
 ```
 </output>
 
@@ -103,6 +114,7 @@ Legend: ✅ Strong benefit | ⚠️ Trade-off | ❌ Potential issue
 
 <output>
 ```
+
 🔍 Detailed Analysis:
 
 **Option 1: Reuse Button [btn-001]**
@@ -160,6 +172,7 @@ Risks:
 Mitigation: Shared design tokens ensure visual consistency
 
 Verdict: ✅ Safest option, especially for semantically different purposes
+
 ```
 </output>
 
@@ -173,6 +186,7 @@ Based on analysis, provide recommendation with reasoning
 
 <output>
 ```
+
 🤖 AI Recommendation: Create New Component (Option 3)
 
 **Reasoning:**
@@ -197,8 +211,9 @@ Based on analysis, provide recommendation with reasoning
    - Better to establish clear patterns now
    - Easier to merge later than split
 
-**However:** If you expect many button types (delete, cancel, save, etc.), 
+**However:** If you expect many button types (delete, cancel, save, etc.),
 Option 2 (variant) might be better for organization.
+
 ```
 </output>
 
@@ -208,23 +223,25 @@ Option 2 (variant) might be better for organization.
 
 <ask>
 ```
+
 💭 Your Decision:
 
 Based on this analysis, which approach fits your design intent?
 
 [1] Reuse Button [btn-001]
-    → Choose if: Visual consistency is paramount, purposes are actually the same
+→ Choose if: Visual consistency is paramount, purposes are actually the same
 
 [2] Add "navigation" variant to Button [btn-001]
-    → Choose if: You want button family, expect more button types
+→ Choose if: You want button family, expect more button types
 
 [3] Create new "Navigation Button" [btn-002]
-    → Choose if: Semantic distinction matters, want independence
+→ Choose if: Semantic distinction matters, want independence
 
 [4] I need more information
-    → I can clarify any aspect of the analysis
+→ I can clarify any aspect of the analysis
 
 Your choice (1/2/3/4):
+
 ```
 </ask>
 
@@ -238,30 +255,37 @@ Based on designer's choice, route to appropriate operation
 
 **If Choice 1 (Reuse):**
 ```
+
 ✅ Got it - reusing Button [btn-001]
 
 I'll update the page spec to reference the existing component.
+
 ```
 **Route to:** `07-execute-decision.md` with action: `reuse`
 
 **If Choice 2 (Variant):**
 ```
+
 ✅ Got it - adding "navigation" variant to Button [btn-001]
 
 I'll update the component definition and create the reference.
+
 ```
 **Route to:** `07-execute-decision.md` with action: `add_variant`
 
 **If Choice 3 (New):**
 ```
+
 ✅ Got it - creating new Navigation Button [btn-002]
 
 I'll create the new component and set up the reference.
+
 ```
 **Route to:** `07-execute-decision.md` with action: `create_new`
 
 **If Choice 4 (More Info):**
 ```
+
 📚 What would you like to know more about?
 
 - Similarity calculation details
@@ -271,6 +295,7 @@ I'll create the new component and set up the reference.
 - Something else
 
 Your question:
+
 ```
 **Provide clarification, then re-present decision**
 
@@ -282,6 +307,7 @@ Your question:
 
 <output>
 ```
+
 ✨ These components are very similar!
 
 Similarity: 87%
@@ -291,6 +317,7 @@ or different things that happen to look similar?
 
 If same thing → Reuse
 If different things → Variant or New
+
 ```
 </output>
 
@@ -298,6 +325,7 @@ If different things → Variant or New
 
 <output>
 ```
+
 ⚠️ These components are quite different.
 
 Similarity: 38%
@@ -307,6 +335,7 @@ Creating a new component is likely the best choice.
 
 Would you like to proceed with creating a new component,
 or would you like to see the full analysis?
+
 ```
 </output>
 
@@ -314,6 +343,7 @@ or would you like to see the full analysis?
 
 <output>
 ```
+
 🤔 This is a borderline case.
 
 Similarity: 64% (right between "High" and "Medium")
@@ -327,6 +357,7 @@ This could go either way. I'll present both perspectives:
 [Present new component option]
 
 Your design philosophy will guide this decision.
+
 ```
 </output>
 
@@ -336,19 +367,23 @@ Your design philosophy will guide this decision.
 
 **Designer asks for recommendation:**
 ```
+
 Based on the analysis, I recommend Option 3 (Create New).
 
 But this is your design system - you know your project best.
 
 What's most important to you?
+
 - Consistency? → Reuse or Variant
 - Clarity? → New
 - Flexibility? → Variant
 - Simplicity? → Reuse or New
+
 ```
 
 **Designer is unsure:**
 ```
+
 That's okay! This is a judgment call.
 
 Here's a simple heuristic:
@@ -359,21 +394,25 @@ B) "Related buttons, different purposes" → Variant
 C) "Different buttons entirely" → New
 
 What's your gut feeling?
+
 ```
 
 **Designer wants to defer decision:**
 ```
+
 ✅ No problem!
 
 I'll create it as a new component for now.
 
 You can always:
+
 - Merge it later if you decide they're the same
 - Convert it to a variant if you see a pattern
 - Keep it separate if the distinction is valuable
 
 Design systems evolve - this isn't permanent.
-```
+
+````
 
 ---
 
@@ -389,7 +428,7 @@ Design systems evolve - this isn't permanent.
     "designer_notes": "Navigation and submission are different actions"
   }
 }
-```
+````
 
 ---
 

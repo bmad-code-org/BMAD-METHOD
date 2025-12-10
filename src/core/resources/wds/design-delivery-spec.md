@@ -7,6 +7,7 @@
 ## What is a Design Delivery?
 
 A Design Delivery (DD) is a package created by WDS that contains:
+
 - Complete user flow specifications
 - Technical requirements
 - Design system references
@@ -26,15 +27,15 @@ A Design Delivery (DD) is a package created by WDS that contains:
 
 ```yaml
 delivery:
-  id: "DD-001"                    # Unique identifier (DD-XXX)
-  name: "Login & Onboarding"      # Human-readable name
-  type: "user_flow"               # user_flow | feature | component
-  status: "ready"                 # ready | in_progress | blocked
-  priority: "high"                # high | medium | low
-  created_by: "wds-ux-expert"     # Creator agent
-  created_at: "2024-12-09T10:00:00Z"
-  updated_at: "2024-12-09T10:00:00Z"
-  version: "1.0"
+  id: 'DD-001' # Unique identifier (DD-XXX)
+  name: 'Login & Onboarding' # Human-readable name
+  type: 'user_flow' # user_flow | feature | component
+  status: 'ready' # ready | in_progress | blocked
+  priority: 'high' # high | medium | low
+  created_by: 'wds-ux-expert' # Creator agent
+  created_at: '2024-12-09T10:00:00Z'
+  updated_at: '2024-12-09T10:00:00Z'
+  version: '1.0'
 
 description: |
   Complete user authentication and onboarding flow.
@@ -42,89 +43,89 @@ description: |
   Testable as standalone feature with real users.
 
 user_value:
-  problem: "Users need to access the app securely and set up their family"
-  solution: "Streamlined onboarding with family setup"
+  problem: 'Users need to access the app securely and set up their family'
+  solution: 'Streamlined onboarding with family setup'
   success_criteria:
-    - "User completes signup in under 2 minutes"
-    - "User successfully joins or creates family"
-    - "User reaches functional dashboard"
-    - "90% completion rate for onboarding flow"
+    - 'User completes signup in under 2 minutes'
+    - 'User successfully joins or creates family'
+    - 'User reaches functional dashboard'
+    - '90% completion rate for onboarding flow'
 
 design_artifacts:
   scenarios:
-    - id: "01-welcome"
-      path: "C-Scenarios/01-welcome-screen/"
-      screens: ["welcome"]
-      
-    - id: "02-login"
-      path: "C-Scenarios/02-login/"
-      screens: ["login", "forgot-password"]
-  
+    - id: '01-welcome'
+      path: 'C-Scenarios/01-welcome-screen/'
+      screens: ['welcome']
+
+    - id: '02-login'
+      path: 'C-Scenarios/02-login/'
+      screens: ['login', 'forgot-password']
+
   user_flows:
-    - name: "New User Onboarding"
-      path: "C-Scenarios/flows/new-user-onboarding.excalidraw"
-      entry: "welcome"
-      exit: "dashboard"
-      
+    - name: 'New User Onboarding'
+      path: 'C-Scenarios/flows/new-user-onboarding.excalidraw'
+      entry: 'welcome'
+      exit: 'dashboard'
+
   design_system:
     components:
-      - "Button (Primary, Secondary)"
-      - "Input Field (Email, Password)"
-      - "Card (Welcome, Family)"
-    path: "D-Design-System/"
+      - 'Button (Primary, Secondary)'
+      - 'Input Field (Email, Password)'
+      - 'Card (Welcome, Family)'
+    path: 'D-Design-System/'
 
 technical_requirements:
   platform:
-    frontend: "react_native"
-    backend: "supabase"
-    
+    frontend: 'react_native'
+    backend: 'supabase'
+
   integrations:
-    - name: "supabase_auth"
-      purpose: "User authentication"
+    - name: 'supabase_auth'
+      purpose: 'User authentication'
       required: true
-      
-    - name: "email_verification"
-      purpose: "Verify user email"
+
+    - name: 'email_verification'
+      purpose: 'Verify user email'
       required: true
-      
+
   data_models:
-    - name: "User"
-      fields: ["email", "name", "avatar"]
-      
-    - name: "Family"
-      fields: ["name", "invite_code", "members"]
+    - name: 'User'
+      fields: ['email', 'name', 'avatar']
+
+    - name: 'Family'
+      fields: ['name', 'invite_code', 'members']
 
 acceptance_criteria:
   functional:
-    - "User can create account with email/password"
-    - "User receives verification email"
-    - "User can create new family or join existing"
-    
+    - 'User can create account with email/password'
+    - 'User receives verification email'
+    - 'User can create new family or join existing'
+
   non_functional:
-    - "Onboarding completes in < 2 minutes"
-    - "Works offline (cached welcome screen)"
-    - "Accessible (WCAG 2.1 AA)"
-    
+    - 'Onboarding completes in < 2 minutes'
+    - 'Works offline (cached welcome screen)'
+    - 'Accessible (WCAG 2.1 AA)'
+
   edge_cases:
-    - "Email already exists → Show login option"
-    - "Invalid invite code → Show error, allow retry"
-    - "Network error during signup → Save progress, retry"
+    - 'Email already exists → Show login option'
+    - 'Invalid invite code → Show error, allow retry'
+    - 'Network error during signup → Save progress, retry'
 
 testing_guidance:
   user_testing:
-    - "Test with 5 families (different tech comfort levels)"
-    - "Measure completion time and drop-off points"
-    
+    - 'Test with 5 families (different tech comfort levels)'
+    - 'Measure completion time and drop-off points'
+
   qa_testing:
-    - "Test all error states"
-    - "Test offline scenarios"
-    - "Test accessibility with screen reader"
+    - 'Test all error states'
+    - 'Test offline scenarios'
+    - 'Test accessibility with screen reader'
 
 estimated_complexity:
-  size: "medium"              # small | medium | large
-  effort: "2-3 weeks"         # Time estimate
-  risk: "low"                 # low | medium | high
-  dependencies: []            # Other DD-XXX IDs needed first
+  size: 'medium' # small | medium | large
+  effort: '2-3 weeks' # Time estimate
+  risk: 'low' # low | medium | high
+  dependencies: [] # Other DD-XXX IDs needed first
 
 notes: |
   This is the first user-facing feature and sets the tone
@@ -178,11 +179,11 @@ for scenario in scenarios:
     scenario_id = scenario['id']
     scenario_path = scenario['path']
     screens = scenario['screens']
-    
+
     print(f"Scenario: {scenario_id}")
     print(f"Path: {scenario_path}")
     print(f"Screens: {', '.join(screens)}")
-    
+
     # Read scenario specifications
     spec_path = f"{scenario_path}/Frontend/specifications.md"
     # Read and parse specifications...
@@ -205,7 +206,7 @@ for integration in integrations:
     name = integration['name']
     required = integration['required']
     purpose = integration['purpose']
-    
+
     print(f"Integration: {name} ({'required' if required else 'optional'})")
     print(f"Purpose: {purpose}")
 ```
@@ -332,6 +333,7 @@ Source: DD-001 scenario 04
 ### 1. Respect Designer Decisions
 
 **The designer has already made these choices:**
+
 - Tech stack (platform.frontend, platform.backend)
 - Integrations (technical_requirements.integrations)
 - Component usage (design_system.components)
@@ -339,6 +341,7 @@ Source: DD-001 scenario 04
 **Your job:** Implement these choices faithfully
 
 **Exception:** If you see a technical problem, flag it:
+
 ```
 "⚠️ Technical Concern: DD-001 specifies Supabase Auth,
 but project already uses Firebase. Recommend discussing
@@ -348,6 +351,7 @@ with designer before proceeding."
 ### 2. Maintain Traceability
 
 **Always link back to source:**
+
 ```markdown
 Epic 1.2: Login Screen
 **Source:** DD-001 (Login & Onboarding)
@@ -359,11 +363,12 @@ Epic 1.2: Login Screen
 ### 3. Use Acceptance Criteria
 
 **Designer provided acceptance criteria - these are your requirements:**
+
 ```yaml
 acceptance_criteria:
   functional:
-    - "User can create account with email/password"
-    - "User receives verification email"
+    - 'User can create account with email/password'
+    - 'User receives verification email'
 ```
 
 **Your epics must cover ALL acceptance criteria**
@@ -371,13 +376,14 @@ acceptance_criteria:
 ### 4. Follow Testing Guidance
 
 **Designer provided testing guidance:**
+
 ```yaml
 testing_guidance:
   user_testing:
-    - "Test with 5 families (different tech comfort levels)"
+    - 'Test with 5 families (different tech comfort levels)'
   qa_testing:
-    - "Test all error states"
-    - "Test offline scenarios"
+    - 'Test all error states'
+    - 'Test offline scenarios'
 ```
 
 **Your test plans should follow this guidance**
@@ -415,7 +421,7 @@ elif status == 'blocked':
 
 ```yaml
 estimated_complexity:
-  dependencies: ["DD-002", "DD-005"]
+  dependencies: ['DD-002', 'DD-005']
 ```
 
 **This means:** DD-001 requires DD-002 and DD-005 to be implemented first
@@ -440,9 +446,9 @@ else:
 
 ```yaml
 delivery:
-  version: "1.1"
-  updated_at: "2024-12-15T14:00:00Z"
-  
+  version: '1.1'
+  updated_at: '2024-12-15T14:00:00Z'
+
 notes: |
   Version 1.1 changes:
   - Added offline support requirement

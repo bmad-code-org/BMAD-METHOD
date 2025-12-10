@@ -93,4 +93,3 @@ phases:
         command: "prd-finalization"
         output: "Complete PRD, development roadmap, handoff package"
         note: "Can run multiple times as design progresses"
-

@@ -19,12 +19,14 @@ Understanding both is crucial. Research shows people work harder to avoid pain t
 <output>For each persona, we'll explore:
 
 **Positive Drivers** (toward motivation):
+
 - Aspirations and dreams
 - Desired outcomes
 - Experiences they seek
 - Status or recognition goals
 
 **Negative Drivers** (away-from motivation):
+
 - Fears and anxieties
 - Problems they want gone
 - Frustrations they're tired of
@@ -42,6 +44,7 @@ The magic happens when your design addresses both.</output>
 What does {{persona.name}} want to achieve or experience?
 
 Think about:
+
 - What would make their day better?
 - What would they brag about to colleagues?
 - What would make them feel successful?</ask>
@@ -52,6 +55,7 @@ Think about:
 What does {{persona.name}} want to avoid or escape?
 
 Think about:
+
 - What keeps them up at night?
 - What frustrations are they tired of?
 - What risks worry them?
@@ -63,13 +67,15 @@ Think about:
 
 ✅ **Positive Drivers:**
 {{#each positive_drivers}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 ⚠️ **Negative Drivers:**
 {{#each negative_drivers}}
+
 - {{this}}
-{{/each}}</output>
+  {{/each}}</output>
 
 <ask>Does this capture what truly motivates {{persona.name}}? Anything to add?</ask>
 
@@ -82,10 +88,11 @@ Think about:
 <output>Looking across all personas, I notice some patterns...</output>
 
 <action>Analyze for:
+
 - Common drivers across groups
 - Unique drivers per group
 - Potential conflicts between groups
-</action>
+  </action>
 
 <output>**Cross-Group Patterns:**
 
@@ -110,9 +117,10 @@ We've mapped the psychological landscape:
 
 {{#each personas}}
 **{{this.name}}:**
+
 - Wants: {{this.top_positive_driver}}
 - Avoids: {{this.top_negative_driver}}
-{{/each}}
+  {{/each}}
 
 This is powerful insight. Next, we'll prioritize which groups and drivers to focus on.</output>
 
@@ -120,4 +128,3 @@ This is powerful insight. Next, we'll prioritize which groups and drivers to foc
 </step>
 
 </workshop>
-

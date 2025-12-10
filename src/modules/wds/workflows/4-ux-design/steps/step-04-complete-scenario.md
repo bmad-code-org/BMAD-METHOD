@@ -21,22 +21,24 @@ Acknowledge completion and transition to next steps.
 <output>✅ **Scenario "{scenario_name}" complete!**
 
 **Created:**
+
 - Scenario folder: `C-Scenarios/{nn}-{scenario-name}/`
 - Page specifications: {{page_count}} pages
-{{#if prototype_count > 0}}
+  {{#if prototype_count > 0}}
 - HTML prototypes: {{prototype_count}} prototypes
-{{/if}}
+  {{/if}}
 - PRD updates: {{requirements_count}} requirements added
 
 **Each page includes:**
+
 - Complete specification with Object IDs
 - Component definitions
 - Interaction behaviors
 - State definitions
 - Multilingual content
-{{#if prototype_count > 0}}
+  {{#if prototype_count > 0}}
 - Interactive prototype
-{{/if}}
+  {{/if}}
 
 **Your specifications are development-ready!** 🎨</output>
 
@@ -55,4 +57,3 @@ Choice [C]:</ask>
 ## NEXT STEP
 
 When user selects [C], load `steps/step-05-next-steps.md` for workflow completion.
-

@@ -16,7 +16,7 @@ Simply upload THIS FILE to NotebookLM and use the prompt below to generate engag
 
 Create an engaging 15-minute podcast conversation between two hosts discussing the Whiteport Design Studio (WDS) course getting started guide.
 
-**IMPORTANT: WDS stands for Whiteport Design Studio - always refer to it by its full name "Whiteport Design Studio" or "WDS" throughout the conversation.** 
+**IMPORTANT: WDS stands for Whiteport Design Studio - always refer to it by its full name "Whiteport Design Studio" or "WDS" throughout the conversation.**
 
 **Host 1 (The Skeptic):** A designer who's heard about WDS but is uncertain about investing time in another methodology. Asks practical questions about prerequisites, time commitment, and real-world value.
 
@@ -26,7 +26,7 @@ Create an engaging 15-minute podcast conversation between two hosts discussing t
 
 ### 1. Opening (2 min) - Hook the listener
 
-Start with The Skeptic expressing fatigue: "Another design methodology? I've been through Lean UX, Design Thinking, Jobs to be Done... what makes Whiteport Design Studio different?" 
+Start with The Skeptic expressing fatigue: "Another design methodology? I've been through Lean UX, Design Thinking, Jobs to be Done... what makes Whiteport Design Studio different?"
 
 The Advocate responds with the core paradigm shift that changes everything: "Here's what's different - in Whiteport Design Studio, the design becomes the specification. The specification becomes the product. The code is just the printout - the projection to the end user." Explain that this isn't just another process overlay, it's a fundamental shift in how designers work with AI.
 
@@ -125,21 +125,25 @@ The Advocate: "Then go to the WDS GitHub repository. Start with Module 01. The t
 At the end of the podcast, The Advocate should mention these resources for listeners who want to explore further:
 
 **Getting Started:**
+
 - Whiteport Design Studio Course: Start with Module 01 - Why WDS Matters
 - GitHub Repository: github.com/bmad-code-org (full course materials, examples, templates)
 - BMad Method Website: bmadmethod.com (case studies, blog posts, methodology deep dives)
 
 **Community & Support:**
+
 - GitHub Discussions: Ask questions, share projects, get feedback
 - NotebookLM Integration: Generate audio/video versions of any module
 - Workshop Materials: Available for team training
 
 **Real-World Examples:**
+
 - Case Studies: See real transformations from traditional to Whiteport Design Studio approach
 - Design System Examples: How Whiteport Design Studio scales across products
 - Specification Templates: Start with proven patterns
 
 **Tools & Templates:**
+
 - Project Brief Template: Start your first WDS project
 - Trigger Map Template: Map user needs to features
 - Scenario Specification Template: Create AI-ready specs
@@ -148,6 +152,7 @@ At the end of the podcast, The Advocate should mention these resources for liste
 The Advocate emphasizes: "Everything is free and open-source. BMad Method built Whiteport Design Studio to help designers thrive in the AI era, not to sell you something. Download it, use it, share it with your team, contribute back if you find it valuable. The only cost is your time - 10 hours to learn, a lifetime of being indispensable."
 
 **Tone:**
+
 - Conversational and engaging, not academic
 - The Skeptic asks real questions designers actually have
 - The Advocate provides concrete answers with examples
@@ -156,6 +161,7 @@ The Advocate emphasizes: "Everything is free and open-source. BMad Method built 
 - Reference real case studies showing traditional vs WDS transformation
 
 **Key messages to emphasize:**
+
 - **The designer's crossroads** - factory worker or linchpin, replaceable or indispensable
 - **The existential choice** - this is about who you choose to become, not what tools you learn
 - **Four deliverables** - where your creative brilliance becomes immortal
@@ -168,6 +174,7 @@ The Advocate emphasizes: "Everything is free and open-source. BMad Method built 
 - Free and open-source (only pay for AI credits when you use it - ~$15-20/month typical)
 
 **Avoid:**
+
 - Being too salesy or promotional
 - Oversimplifying the learning curve
 - Making unrealistic promises
@@ -178,6 +185,7 @@ The Advocate emphasizes: "Everything is free and open-source. BMad Method built 
 ## Expected Output
 
 A natural, engaging conversation that:
+
 - **Focuses on the designer's existential crossroads** - the choice between factory work and linchpin work
 - **Makes the transformation emotional and personal** - this is about who you choose to become
 - **Emphasizes the four deliverables** as proof of linchpin designer status
@@ -195,6 +203,7 @@ A natural, engaging conversation that:
 If generating video instead of audio, add these visual elements:
 
 **On-screen text:**
+
 - "The Designer's Crossroads: Factory Worker or Linchpin?"
 - "Replaceable or Indispensable - You Choose"
 - The four deliverables as graphics (Project Brief, Trigger Map, Conceptual Specifications, Design System)
@@ -204,6 +213,7 @@ If generating video instead of audio, add these visual elements:
 - "Next: Module 01 - The Transformation Begins" as closing card
 
 **B-roll suggestions:**
+
 - Designer at crossroads - two paths diverging
 - Factory assembly line vs creative studio (visual metaphor)
 - The four deliverables as beautiful artifacts
@@ -230,6 +240,7 @@ If generating video instead of audio, add these visual elements:
 ## Next Steps
 
 After generating the Getting Started content:
+
 - Create NotebookLM prompt for Module 01: Why WDS Matters
 - Build prompts for all 16 modules (complete audio course library)
 - Share in BMad Discord designer channel

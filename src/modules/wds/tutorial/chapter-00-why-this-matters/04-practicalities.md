@@ -1,4 +1,5 @@
 # Chapter 0: Why WDS Matters
+
 ## Part 4: Practicalities
 
 **Everything you need to know before starting**
@@ -10,12 +11,14 @@
 ### What Skills You Need
 
 **Required (you probably already have these):**
+
 - Basic design thinking and UX principles
 - Ability to sketch interfaces (hand-drawn or digital)
 - Understanding of user needs and business goals
 - Willingness to think deeply about WHY
 
 **NOT required:**
+
 - ❌ Coding skills
 - ❌ Advanced technical knowledge
 - ❌ Experience with AI tools
@@ -30,17 +33,20 @@
 ### How Long Does It Take?
 
 **Total tutorial time:** ~10 hours
+
 - Spread over days or weeks at your own pace
 - Each chapter: 30-40 minutes
 - Practice exercises: 1-2 hours per chapter
 
 **Breakdown:**
+
 - **Week 1-2:** Foundation chapters (0-2.3) - Understanding the methodology
 - **Week 3-4:** Core workflow (4.1-4.6) - Learning specification creation
 - **Week 5-6:** Advanced topics (5.1-6.1) - Design systems and handoff
 - **Ongoing:** Practice with your own projects
 
 **Real-world application:**
+
 - First project with WDS: 2-3x slower than your usual process (learning curve)
 - Second project: Same speed as traditional approach
 - Third project onwards: 3-5x faster with better quality
@@ -52,22 +58,27 @@
 ### Essential Tools
 
 **For sketching:**
+
 - Paper and pen (seriously, this works best)
 - OR digital sketching tool (Excalidraw, Figma, iPad + Pencil)
 
 **For AI assistance:**
+
 - Access to Claude, ChatGPT, or similar AI assistant
 - Free tier is sufficient to start
 
 **For documentation:**
+
 - Text editor (VS Code recommended, but any will work)
 - Markdown support (built into most modern editors)
 
 **For collaboration:**
+
 - Git/GitHub (optional but recommended)
 - Shared folder system (Google Drive, Dropbox, etc.)
 
 **Total cost to get started:** $0-20/month
+
 - Free tier AI tools work fine
 - Paid AI subscriptions ($20/month) provide better experience but aren't required
 
@@ -80,21 +91,25 @@
 By the end of this tutorial, you'll have created:
 
 **1. Complete Project Brief**
+
 - Vision and goals clearly defined
 - Stakeholders and constraints documented
 - Foundation for all design decisions
 
 **2. Trigger Map**
+
 - Target groups identified and prioritized
 - User triggers and outcomes mapped
 - Features prioritized by impact
 
 **3. Scenario Specifications**
+
 - At least one complete user scenario
 - Why-based specifications for key components
 - AI-ready documentation
 
 **4. Design System Foundation**
+
 - Design tokens extracted from your specs
 - Component patterns identified
 - Reusable architecture defined
@@ -108,6 +123,7 @@ By the end of this tutorial, you'll have created:
 ### Choose Your Journey
 
 **Option 1: Full Immersion (Recommended)**
+
 - Complete all 16 chapters in order
 - Practice exercises for each chapter
 - Apply to a real project as you learn
@@ -115,6 +131,7 @@ By the end of this tutorial, you'll have created:
 - **Best for:** Designers who want to master the methodology
 
 **Option 2: Quick Start**
+
 - Focus on core chapters (0, 2.2, 4.1, 4.5)
 - Skip advanced topics initially
 - Get started fast, learn more later
@@ -122,6 +139,7 @@ By the end of this tutorial, you'll have created:
 - **Best for:** Designers who need results quickly
 
 **Option 3: Self-Paced**
+
 - Learn one chapter per week
 - Deep practice between chapters
 - Build multiple projects as you learn
@@ -135,7 +153,7 @@ By the end of this tutorial, you'll have created:
 ### Testimonials
 
 > "I was skeptical at first - another design methodology? But WDS changed how I think about my role. I'm no longer just making things pretty. I'm the strategic thinker who makes products come alive."
-> 
+>
 > **— Sarah K., Product Designer**
 
 > "The 5x speed increase is real. But what surprised me most was how much clearer my thinking became. Writing why-based specifications forced me to understand the 'why' at a deeper level."
@@ -150,7 +168,7 @@ By the end of this tutorial, you'll have created:
 >
 > **— James T., Design Director**
 
-*Note: More testimonials will be added as designers complete the tutorial.*
+_Note: More testimonials will be added as designers complete the tutorial._
 
 ---
 
@@ -189,16 +207,19 @@ A: Traditional docs describe WHAT. WDS captures WHY + WHAT + WHAT NOT TO DO. Thi
 ### Getting Help
 
 **During the tutorial:**
+
 - Each chapter includes detailed examples
 - AI assistants can clarify concepts in real-time
 - Practice exercises with clear success criteria
 
 **After completion:**
+
 - GitHub Discussions for questions and sharing
 - Community showcase of WDS projects
 - Regular updates and new case studies
 
 **Contributing:**
+
 - WDS is open-source and welcomes contributions
 - Share your case studies and learnings
 - Help improve the tutorial for future designers
@@ -208,6 +229,7 @@ A: Traditional docs describe WHAT. WDS captures WHY + WHAT + WHAT NOT TO DO. Thi
 ## Ready to Start?
 
 You have everything you need:
+
 - ✅ The skills (design thinking)
 - ✅ The tools (paper + AI)
 - ✅ The time (10 hours)
@@ -226,6 +248,7 @@ Or return to the main guide to review the full structure:
 ## Your Transformation Starts Now
 
 Remember:
+
 - **The design becomes the specification**
 - **The specification becomes the product**
 - **The code is just the printout**

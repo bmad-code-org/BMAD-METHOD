@@ -27,11 +27,13 @@ This tutorial walks you through creating a complete project brief that serves as
 ## Before You Start
 
 **You'll need:**
+
 - A project idea (existing or new)
 - 30-45 minutes of focused time
 - Access to stakeholder information (if available)
 
 **AI Support:**
+
 - AI agent will guide you through each section
 - Ask clarifying questions
 - Help structure your thinking
@@ -48,25 +50,29 @@ The project vision is a clear, compelling statement of what you're building and 
 ### How to do it:
 
 **Ask yourself:**
+
 - What problem does this solve?
 - Who benefits from this solution?
 - What makes this unique or valuable?
 - What's the desired end state?
 
 **Example (Dog Week):**
+
 ```
-Vision: A family coordination platform that helps parents manage 
-their dog's care schedule, ensuring every family member knows their 
+Vision: A family coordination platform that helps parents manage
+their dog's care schedule, ensuring every family member knows their
 responsibilities and the dog's needs are consistently met.
 ```
 
 **Your turn:**
+
 ```
 Write your project vision:
 [Your vision here]
 ```
 
 **AI Support:**
+
 ```
 Agent: "Let me help you refine your vision. Tell me:
 - What problem are you solving?
@@ -85,6 +91,7 @@ Specific, measurable objectives that define project success from a business pers
 ### How to do it:
 
 **Framework: SMART Goals**
+
 - **S**pecific - Clear and unambiguous
 - **M**easurable - Can track progress
 - **A**chievable - Realistic given resources
@@ -92,6 +99,7 @@ Specific, measurable objectives that define project success from a business pers
 - **T**ime-bound - Has a deadline
 
 **Example (Dog Week):**
+
 ```
 Business Goals:
 1. Acquire 1,000 active families within 6 months of launch
@@ -101,6 +109,7 @@ Business Goals:
 ```
 
 **Your turn:**
+
 ```
 List 3-5 business goals:
 1. [Goal 1]
@@ -109,6 +118,7 @@ List 3-5 business goals:
 ```
 
 **AI Support:**
+
 ```
 Agent: "Let's make these goals SMART. For each goal, I'll help you:
 - Make it specific and measurable
@@ -127,6 +137,7 @@ People who have a stake in the project's success or will be affected by it.
 ### How to do it:
 
 **Categories:**
+
 - **Primary Users** - Direct users of the product
 - **Secondary Users** - Indirect beneficiaries
 - **Business Stakeholders** - Decision makers, investors
@@ -134,6 +145,7 @@ People who have a stake in the project's success or will be affected by it.
 - **External Stakeholders** - Partners, regulators, community
 
 **Example (Dog Week):**
+
 ```
 Stakeholders:
 - Primary: Parents managing family dog care
@@ -144,6 +156,7 @@ Stakeholders:
 ```
 
 **Your turn:**
+
 ```
 List your stakeholders by category:
 [Your stakeholders]
@@ -162,6 +175,7 @@ Limitations and requirements that shape your design decisions.
 **Categories:**
 
 **Technical Constraints:**
+
 - Platform requirements (web, mobile, desktop)
 - Browser/device support
 - Performance requirements
@@ -169,6 +183,7 @@ Limitations and requirements that shape your design decisions.
 - Security/compliance needs
 
 **Business Constraints:**
+
 - Budget limitations
 - Timeline requirements
 - Resource availability
@@ -176,12 +191,14 @@ Limitations and requirements that shape your design decisions.
 - Competitive landscape
 
 **Design Constraints:**
+
 - Brand guidelines
 - Accessibility requirements
 - Localization needs
 - Existing design systems
 
 **Example (Dog Week):**
+
 ```
 Constraints:
 Technical:
@@ -202,12 +219,14 @@ Design:
 ```
 
 **Your turn:**
+
 ```
 Document your constraints:
 [Your constraints]
 ```
 
 **AI Support:**
+
 ```
 Agent: "Let's identify constraints you might have missed:
 - Have you considered accessibility?
@@ -227,12 +246,14 @@ Specific metrics that indicate whether the project achieved its goals.
 ### How to do it:
 
 **Framework:**
+
 - **User Success** - How users benefit
 - **Business Success** - Revenue, growth, efficiency
 - **Technical Success** - Performance, reliability, scalability
 - **Design Success** - Usability, satisfaction, engagement
 
 **Example (Dog Week):**
+
 ```
 Success Criteria:
 
@@ -258,6 +279,7 @@ Design Success:
 ```
 
 **Your turn:**
+
 ```
 Define your success criteria:
 [Your criteria]
@@ -270,6 +292,7 @@ Define your success criteria:
 ### Checklist:
 
 **Completeness:**
+
 - ✓ Vision is clear and compelling
 - ✓ Goals are SMART
 - ✓ All stakeholder groups identified
@@ -277,12 +300,14 @@ Define your success criteria:
 - ✓ Success criteria defined
 
 **Quality:**
+
 - ✓ Vision is inspiring and actionable
 - ✓ Goals are measurable and realistic
 - ✓ Constraints are specific and justified
 - ✓ Success criteria are trackable
 
 **AI Support:**
+
 ```
 Agent: "Let me review your project brief:
 - Is the vision clear?
@@ -300,6 +325,7 @@ Agent: "Let me review your project brief:
 **Use template from:** `workflows/1-project-brief/complete/project-brief.template.md`
 
 **Populate with your content:**
+
 - Vision
 - Business goals
 - Stakeholders
@@ -314,18 +340,20 @@ Agent: "Let me review your project brief:
 ✅ **Measurable goals** - You can track progress and success  
 ✅ **Stakeholder map** - You know who to consider in decisions  
 ✅ **Documented constraints** - Design decisions have clear boundaries  
-✅ **Success criteria** - You'll know when you've succeeded  
+✅ **Success criteria** - You'll know when you've succeeded
 
 ---
 
 ## Next Steps
 
 **Immediate:**
+
 - Share project brief with stakeholders for feedback
 - Get alignment on vision and goals
 - Confirm constraints are accurate
 
 **Next Module:**
+
 - [Module 03: Identify Target Groups](../module-03-identify-target-groups/module-03-overview.md)
 - Start mapping WHO your users are
 
@@ -350,6 +378,7 @@ A: Use the brief to facilitate alignment discussions. Document disagreements and
 ## Tips for Success
 
 **DO ✅**
+
 - Be specific and concrete
 - Make goals measurable
 - Document the "why" behind constraints
@@ -357,6 +386,7 @@ A: Use the brief to facilitate alignment discussions. Document disagreements and
 - Keep it concise (2-3 pages max)
 
 **DON'T ❌**
+
 - Write vague, aspirational statements
 - Set unrealistic goals
 - Skip constraint documentation

@@ -21,12 +21,14 @@
 <action>Analyze complexity indicators:
 
 **Simple Component Indicators:**
+
 - Single state (no hover, active, loading variations)
 - No user interaction (static display)
 - No data dependencies
 - No business logic
 
 **Complex Component Indicators:**
+
 - Multiple states (3+ states: empty, loading, active, completed, error)
 - Time-based changes (countdowns, timers, real-time updates)
 - Multi-step interactions (booking → starting → completing)
@@ -35,9 +37,10 @@
 - State machines (defined transition paths)
 
 **Examples:**
+
 - **Simple:** Static text, image, basic button
 - **Complex:** Calendar widget, booking system, search with filters, multi-step form
-</action>
+  </action>
 
 ---
 
@@ -52,6 +55,7 @@
 This {{object_name}} is straightforward - I'll document it in the page specification.
 
 **What I'll capture:**
+
 - Visual appearance (size, color, position)
 - Content (text in all languages)
 - Basic interaction (if any)
@@ -75,10 +79,12 @@ I see this {{object_name}} has multiple states and interactions. Let me help you
 
 **Complexity Indicators I Found:**
 {{#each complexity_indicators}}
+
 - {{indicator_description}}
-{{/each}}
+  {{/each}}
 
 **To keep this manageable, I'll help you separate:**
+
 1. **Page Context** - Where it appears, size, position
 2. **Visual Design** - How each state looks (for Figma)
 3. **Functional Logic** - How it behaves, business rules
@@ -102,9 +108,9 @@ Choice [1/2]:</ask>
   <output>**Okay!** I'll document everything in the page spec.
 
 ⚠️ **Note:** This may create a large specification file. Consider decomposition for easier maintenance.</output>
-  
-  <action>Route to standard object-type file</action>
-  <action>Document in Page file only</action>
+
+<action>Route to standard object-type file</action>
+<action>Document in Page file only</action>
 </check>
 
 </check>
@@ -116,6 +122,7 @@ Choice [1/2]:</ask>
 <output>**Let's break down this {{object_name}} into manageable pieces!**
 
 I'll ask you questions to separate the three concerns:
+
 - **WHERE** it appears (Page)
 - **HOW** it looks (Component)
 - **WHAT** it does (Feature)
@@ -153,23 +160,25 @@ I'll ask you questions to separate the three concerns:
 Your answers:</ask>
 
 <action>Capture page context:
+
 - Pages: {{pages_list}}
 - Position: {{position}}
 - Size: {{size}}
 - Reusability: {{is_reusable}}
 - Content Varies: {{content_varies_by_page}}
 - Data Source Varies: {{data_source_varies_by_page}}
-</action>
+  </action>
 
 <output>**✅ Page Context Captured**
 
 **What goes in the Page file:**
 {{#if content_varies_by_page}}
+
 - ✅ **Page-Specific Content** (headings, text, images that change per page)
-{{/if}}
-{{#if data_source_varies_by_page}}
+  {{/if}}
+  {{#if data_source_varies_by_page}}
 - ✅ **Page-Specific Data Configuration** (API endpoints, filters, scope)
-{{/if}}
+  {{/if}}
 - ✅ **Position & Size** (where and how big)
 - ✅ **Component Reference** (link to visual design)
 - ✅ **Feature Reference** (link to functionality)
@@ -180,8 +189,9 @@ Your answers:</ask>
 
 This will go in:
 {{#each pages_list}}
+
 - `Pages/{{page_number}}-{{page_name}}.md`
-{{/each}}
+  {{/each}}
 
 ---
 
@@ -194,6 +204,7 @@ This will go in:
 Looking at your sketch/storyboard, how many different visual states does this component have?
 
 Examples:
+
 - **Simple:** Just 1 state (always looks the same)
 - **Interactive:** 2-3 states (default, hover, active)
 - **Complex:** 4+ states (empty, loading, active, completed, error)
@@ -241,10 +252,11 @@ Examples:
 <output>**✅ Visual Design Captured**
 
 This will go in:
+
 - `Components/{{component_name}}.component.md`
-{{#if has_storyboard}}
+  {{#if has_storyboard}}
 - Storyboard reference: `Features/Storyboards/{{storyboard_file}}`
-{{/if}}
+  {{/if}}
 
 ---
 
@@ -272,20 +284,22 @@ This will go in:
 Your answers:</ask>
 
 <action>Capture functional logic:
+
 - User Actions: {{user_actions_list}}
 - System Responses: {{system_responses_list}}
 - Business Rules: {{business_rules_list}}
 - API Dependencies: {{api_endpoints_list}}
 - Component Sync: {{synced_components_list}}
-</action>
+  </action>
 
 <output>**✅ Functional Logic Captured**
 
 This will go in:
+
 - `Features/{{feature_name}}.feature.md`
-{{#if has_storyboard}}
+  {{#if has_storyboard}}
 - Storyboard reference: `Features/Storyboards/{{storyboard_file}}`
-{{/if}}
+  {{/if}}
 
 ---
 
@@ -294,6 +308,7 @@ This will go in:
 **Great! Here's how your {{object_name}} will be documented:**
 
 **1. Page File** (`Pages/{{page_number}}-{{page_name}}.md`)
+
 ```markdown
 ### {{section_name}}
 
@@ -305,11 +320,13 @@ This will go in:
 
 **Configuration:**
 {{#each page_specific_config}}
+
 - {{config_item}}
-{{/each}}
+  {{/each}}
 ```
 
 **2. Component File** (`Components/{{component_name}}.component.md`)
+
 ```markdown
 # {{component_name}} Component
 
@@ -319,19 +336,24 @@ This will go in:
 ## Visual Specifications
 
 {{#each states}}
+
 ### State: {{state_name}}
+
 - Background: {{background_color}}
 - Icons: {{icons_list}}
 - Layout: {{layout_description}}
-{{/each}}
+  {{/each}}
 
 {{#if has_storyboard}}
+
 ## Visual Storyboard
+
 ![{{storyboard_name}}](../Features/Storyboards/{{storyboard_file}})
 {{/if}}
 ```
 
 **3. Feature File** (`Features/{{feature_name}}.feature.md`)
+
 ```markdown
 # {{feature_name}} Feature
 
@@ -339,35 +361,43 @@ This will go in:
 **Type:** {{feature_type}}
 
 {{#if has_storyboard}}
+
 ## Visual Storyboard
+
 ![{{storyboard_name}}](Storyboards/{{storyboard_file}})
 {{/if}}
 
 ## User Interactions
 
 {{#each user_actions}}
+
 ### {{action_name}}
+
 **Flow:**
+
 1. User {{user_action}}
 2. System {{system_response}}
 3. Updates: {{component_updates}}
-{{/each}}
+   {{/each}}
 
 ## Business Rules
+
 {{#each business_rules}}
+
 - {{rule_description}}
-{{/each}}
+  {{/each}}
 
 ## API Endpoints
+
 {{#each api_endpoints}}
+
 - {{endpoint_description}}
-{{/each}}
+  {{/each}}
 ```
 
 **Does this breakdown look good?**</output>
 
-<ask>1. **Yes** - Create these files
-2. **Adjust** - I need to change something
+<ask>1. **Yes** - Create these files 2. **Adjust** - I need to change something
 
 Choice [1/2]:</ask>
 
@@ -404,6 +434,7 @@ Choice [1/2]:</ask>
 **Object:** "Get Started" button
 
 **Complexity Assessment:**
+
 - ✅ Single interaction (click → navigate)
 - ✅ 2-3 states (default, hover, active)
 - ❌ No business logic
@@ -419,6 +450,7 @@ Choice [1/2]:</ask>
 **Object:** Search input with dropdown suggestions
 
 **Complexity Assessment:**
+
 - ⚠️ Multiple states (empty, typing, loading, results, no results, error)
 - ⚠️ Real-time updates (debounced API calls)
 - ⚠️ Business logic (minimum 3 characters, max 10 results)
@@ -428,7 +460,8 @@ Choice [1/2]:</ask>
 **Result:** **COMPLEX** - Decompose into 3 files
 
 **Decomposition:**
-- **Page (if content varies):** 
+
+- **Page (if content varies):**
   - Product page: Placeholder "Search products...", scope: products only
   - Help page: Placeholder "Search help...", scope: help articles only
 - **Component:** Visual states (empty, focused, loading, results dropdown)
@@ -441,6 +474,7 @@ Choice [1/2]:</ask>
 **Object:** Dog Week calendar with week view, leaderboard, booking slots
 
 **Complexity Assessment:**
+
 - ⚠️ 6 walk states (WHITE, GRAY, ORANGE, BLUE, GREEN, RED)
 - ⚠️ Time-based transitions (countdown timers, auto-state changes)
 - ⚠️ Complex business rules (per-dog blocking, early start rules)
@@ -451,6 +485,7 @@ Choice [1/2]:</ask>
 **Result:** **HIGHLY COMPLEX** - Decompose into 3 files + storyboard
 
 **Decomposition:**
+
 - **Page:** Layout (3 sections: week overview, leaderboard, calendar), responsive behavior
 - **Component:** Visual design of all 6 states, week circles, leaderboard cards
 - **Feature:** State machine logic, booking flow, time-based transitions, API integration
@@ -463,10 +498,11 @@ Choice [1/2]:</ask>
 ### Scenario: Designer adds Calendar Widget
 
 **Agent:**
+
 ```
 🔍 Complex Component Detected
 
-I see this "Calendar Booking Widget" has multiple states and interactions. 
+I see this "Calendar Booking Widget" has multiple states and interactions.
 Let me help you break this down properly!
 
 **Complexity Indicators I Found:**
@@ -489,6 +525,7 @@ Ready to break this down?
 **Designer:** "Yes"
 
 **Agent:**
+
 ```
 Let's break down this Calendar Booking Widget into manageable pieces!
 
@@ -504,7 +541,8 @@ Let's break down this Calendar Booking Widget into manageable pieces!
 4. Is this the same component on multiple pages, or page-specific?
 ```
 
-**Designer:** 
+**Designer:**
+
 ```
 1. Calendar page only
 2. Main content area, takes up full width below header
@@ -515,7 +553,8 @@ Let's break down this Calendar Booking Widget into manageable pieces!
 ```
 
 **Agent:**
-```
+
+````
 ✅ Page Context Captured
 
 **What goes in the Page file:**
@@ -548,27 +587,30 @@ This will go in:
 - API Endpoint: GET /api/families/:currentFamilyId/walks?week=:weekNumber
 - Dogs Displayed: All dogs in current user's family
 - Family Members: All members in current user's family
-```
+````
 
 ---
 
 ### Step 2: Visual Design (HOW IT LOOKS)
 
-Looking at your sketch/storyboard, how many different visual states does 
+Looking at your sketch/storyboard, how many different visual states does
 this component have?
 
 **How many states do you see?**
+
 ```
 
 **Designer:** "6 states - I have a storyboard showing them all"
 
 **Agent:**
 ```
+
 📊 Multiple States Detected!
 
 **For each state, I need:**
 
 State 1: Empty (WHITE)
+
 1. What does it look like?
 2. What triggers this state?
 3. Can it transition to other states?
@@ -576,15 +618,18 @@ State 1: Empty (WHITE)
 [... repeat for all 6 states ...]
 
 **Do you have a storyboard sketch showing these states?**
+
 ```
 
 **Designer:** "Yes, see Sketches/App-Main-Booking-States.jpg"
 
 **Agent:**
 ```
+
 ✅ Visual Design Captured
 
 This will go in:
+
 - `Components/walk-slot-card.component.md`
 - Storyboard reference: `Features/Storyboards/walk-state-transitions.jpg`
 
@@ -599,23 +644,28 @@ This will go in:
 3. Are there any business rules?
 4. Does it need data from an API?
 5. Does it update other components?
+
 ```
 
 **Designer:**
 ```
+
 1. Book walks, start walks, complete walks
 2. Card changes color, leaderboard updates, week view syncs
-3. Can't start walk if another is active for same dog, 
+3. Can't start walk if another is active for same dog,
    can't book if slot already taken
 4. Yes - GET /api/walks, POST /api/walks, PUT /api/walks/:id
 5. Yes - updates leaderboard count and week overview quarter circles
+
 ```
 
 **Agent:**
 ```
+
 ✅ Functional Logic Captured
 
 This will go in:
+
 - `Features/walk-booking-logic.feature.md`
 - Storyboard reference: `Features/Storyboards/walk-state-transitions.jpg`
 
@@ -626,16 +676,19 @@ This will go in:
 **Great! Here's how your Calendar Booking Widget will be documented:**
 
 **1. Page File** (`Pages/02-calendar-page.md`)
+
 - Position: Main content, full-width
 - Component reference: `walk-slot-card.component.md`
 - Feature reference: `walk-booking-logic.feature.md`
 
 **2. Component File** (`Components/walk-slot-card.component.md`)
+
 - 6 visual states with colors, icons, layouts
 - Storyboard: `Features/Storyboards/walk-state-transitions.jpg`
 - Figma component mapping
 
 **3. Feature File** (`Features/walk-booking-logic.feature.md`)
+
 - State machine with 6 states
 - Business rules (blocking, validation)
 - API endpoints
@@ -643,15 +696,18 @@ This will go in:
 - Storyboard: `Storyboards/walk-state-transitions.jpg`
 
 **Does this breakdown look good?**
+
 ```
 
 **Designer:** "Yes!"
 
 **Agent:**
 ```
+
 ✅ Perfect! I'll create the three files.
 
 **Next Steps:**
+
 - Page file: Lightweight, just placement and config
 - Component file: Visual design for Figma handoff
 - Feature file: Logic for developer implementation
@@ -659,9 +715,11 @@ This will go in:
 This keeps everything organized and maintainable!
 
 **Handoff Strategy:**
+
 - Send Component file → Visual Designer (for Figma)
 - Send Feature file → Developer (for implementation)
 - Keep Page file → Your reference for layout
+
 ```
 
 ---
@@ -672,15 +730,18 @@ This keeps everything organized and maintainable!
 
 **Before (Monolithic):**
 ```
+
 Pages/02-calendar-page.md (800 lines)
 ├─ Everything mixed together
 ├─ Developer confused about what to build
 ├─ Designer confused about what to design
 └─ Prototype misses features (leaderboard, week view)
+
 ```
 
 **After (Decomposed):**
 ```
+
 Pages/02-calendar-page.md (100 lines)
 ├─ Just layout and references
 
@@ -691,6 +752,7 @@ Components/walk-slot-card.component.md (150 lines)
 Features/walk-booking-logic.feature.md (200 lines)
 ├─ Logic only
 └─ Developer knows exactly what to implement
+
 ```
 
 ### 2. Clear Handoffs
@@ -717,26 +779,27 @@ Features/walk-booking-logic.feature.md (200 lines)
 ## Content Placement Decision Tree
 
 ```
+
 ┌─────────────────────────────────────────────────┐
-│  Does CONTENT vary by page context?             │
-│  (text, images, data source)                    │
+│ Does CONTENT vary by page context? │
+│ (text, images, data source) │
 └────────────┬────────────────────────────────────┘
-             │
-      ┌──────┴──────┐
-      │             │
-     YES            NO
-      │             │
-      ▼             ▼
-┌─────────────┐  ┌──────────────┐
-│ Page File   │  │ Feature File │
-│             │  │              │
-│ Document:   │  │ Document:    │
-│ - Headings  │  │ - Generic    │
-│ - Text      │  │   content    │
-│ - Images    │  │ - Default    │
-│ - Data API  │  │   config     │
-│ - Scope     │  │              │
-└─────────────┘  └──────────────┘
+│
+┌──────┴──────┐
+│ │
+YES NO
+│ │
+▼ ▼
+┌─────────────┐ ┌──────────────┐
+│ Page File │ │ Feature File │
+│ │ │ │
+│ Document: │ │ Document: │
+│ - Headings │ │ - Generic │
+│ - Text │ │ content │
+│ - Images │ │ - Default │
+│ - Data API │ │ config │
+│ - Scope │ │ │
+└─────────────┘ └──────────────┘
 
 Examples:
 
@@ -751,6 +814,7 @@ Feature File (Content Same Everywhere):
 ✅ Error message: "Invalid email" (generic validation)
 ✅ Tooltip: "Click to expand" (generic interaction)
 ✅ Data API: /api/products (same for all users)
+
 ```
 
 ---
@@ -775,3 +839,4 @@ Feature File (Content Same Everywhere):
 - ✅ Easy to maintain and update
 - ✅ Design system integrity preserved
 - ✅ Clear separation of page-specific vs generic content
+```

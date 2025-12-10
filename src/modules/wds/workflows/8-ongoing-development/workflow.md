@@ -30,6 +30,7 @@ Phase 8 is about **Kaizen (改善)** - the Japanese philosophy of continuous imp
 **Definition:** Small, incremental, continuous improvements over time.
 
 **Characteristics:**
+
 - Small changes (1-2 weeks each)
 - Low cost, low risk
 - Everyone participates
@@ -39,6 +40,7 @@ Phase 8 is about **Kaizen (改善)** - the Japanese philosophy of continuous imp
 - Bottom-up approach
 
 **In product design:**
+
 - Ship → Learn → Improve → Ship → Repeat
 - Small updates beat big redesigns
 - User feedback drives improvements
@@ -47,6 +49,7 @@ Phase 8 is about **Kaizen (改善)** - the Japanese philosophy of continuous imp
 - Team learns continuously
 
 **Example:**
+
 - Add onboarding tooltip to improve feature usage
 - Optimize button color for better conversion
 - Improve error message clarity
@@ -62,6 +65,7 @@ Phase 8 is about **Kaizen (改善)** - the Japanese philosophy of continuous imp
 **Definition:** Radical, revolutionary transformation in a short period.
 
 **Characteristics:**
+
 - Large changes (months)
 - High cost, high risk
 - Leadership-driven
@@ -71,6 +75,7 @@ Phase 8 is about **Kaizen (改善)** - the Japanese philosophy of continuous imp
 - Top-down approach
 
 **In product design:**
+
 - Complete redesign
 - Platform migration
 - Architecture overhaul
@@ -78,6 +83,7 @@ Phase 8 is about **Kaizen (改善)** - the Japanese philosophy of continuous imp
 - Business model pivot
 
 **Example:**
+
 - Complete product redesign
 - Migrate from web to mobile-first
 - Rebrand entire product
@@ -90,6 +96,7 @@ Phase 8 is about **Kaizen (改善)** - the Japanese philosophy of continuous imp
 ### When to Use Each
 
 **Use Kaizen (改善) when:**
+
 - ✅ Product is live and working
 - ✅ Need continuous improvement
 - ✅ Want low-risk changes
@@ -98,6 +105,7 @@ Phase 8 is about **Kaizen (改善)** - the Japanese philosophy of continuous imp
 - ✅ **Phase 8: Ongoing Development**
 
 **Use Kaikaku (改革) when:**
+
 - ✅ Starting from scratch (greenfield)
 - ✅ Product needs complete overhaul
 - ✅ Market demands radical change
@@ -224,9 +232,11 @@ You: "Time for a Kaizen cycle to improve Feature X."
 Load and execute the appropriate step file based on your context:
 
 **Existing Product Entry Point:**
+
 - `steps/step-8.1-identify-challenge.md`
 
 **Continuous Improvement:**
+
 - `steps/step-8.1-monitor-performance.md`
 
 **Note:** Each step will guide you to the next step when ready.
@@ -247,12 +257,14 @@ Load and execute the appropriate step file based on your context:
 ## Key Differences from Phases 1-7
 
 **Phase 8 is NOT about:**
+
 - ❌ Complete redesigns
 - ❌ Designing full user flows from scratch
 - ❌ Starting with blank canvas
 - ❌ Defining tech stack (already decided)
 
 **Phase 8 IS about:**
+
 - ✅ Strategic, targeted improvements
 - ✅ Updating existing screens and features
 - ✅ Incremental changes that compound
@@ -270,6 +282,7 @@ This cycle never stops!
 ```
 
 **Each cycle:**
+
 - Takes 1-2 weeks (small changes)
 - Focuses on one improvement
 - Ships to production
@@ -277,6 +290,7 @@ This cycle never stops!
 - Informs next cycle
 
 **Over time:**
+
 - Small improvements compound
 - Product quality increases
 - User satisfaction grows

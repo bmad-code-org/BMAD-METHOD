@@ -9,6 +9,7 @@
 <output>Hi {user_name}! I'm Saga, and I'll guide you through creating a **Complete Project Brief**.
 
 This is our strategic foundation - we'll explore:
+
 - Vision & positioning
 - Target users (ICP)
 - Success criteria
@@ -32,11 +33,12 @@ Ready to begin? 🎯</output>
 If this project succeeds beyond your wildest dreams, what does that look like? Don't worry about being realistic yet - dream big.</ask>
 
 <action>Listen for:
+
 - Aspirational outcomes
 - Impact on users
 - Market position
 - Emotional drivers
-</action>
+  </action>
 
 <action>Reflect back and help crystallize into a clear vision statement</action>
 
@@ -50,15 +52,16 @@ If this project succeeds beyond your wildest dreams, what does that look like? D
 
 Complete this statement:
 
-*For [target customer] who [need/opportunity], [product name] is a [category] that [key benefit]. Unlike [alternatives], we [differentiator].*</ask>
+_For [target customer] who [need/opportunity], [product name] is a [category] that [key benefit]. Unlike [alternatives], we [differentiator]._</ask>
 
 <action>If user struggles, break it down:
+
 1. Who's the target customer?
 2. What's their need or opportunity?
 3. What category does this fit?
 4. What's the key benefit?
 5. What makes it different from alternatives?
-</action>
+   </action>
 
 <action>Help craft a clear positioning statement</action>
 
@@ -144,18 +147,20 @@ Others who interact with the product but aren't the primary user?</ask>
 <ask>**What metrics or outcomes define success?**
 
 Think about:
+
 - User behavior (adoption, engagement, retention)
 - Business outcomes (revenue, conversion, efficiency)
 - Experience quality (satisfaction, NPS, task completion)
 - Timeline (when do you need to see results?)</ask>
 
 <action>Help make criteria SMART:
+
 - Specific
 - Measurable
 - Achievable
 - Relevant
 - Time-bound
-</action>
+  </action>
 
 <template-output>success_criteria</template-output>
 </step>
@@ -166,16 +171,18 @@ Think about:
 <ask>**What alternatives do your users have today?**
 
 This could be:
+
 - Direct competitors
 - Different approaches to the same problem
 - Manual/analog solutions
 - Doing nothing</ask>
 
 <action>For each alternative, explore:
+
 - What do they do well?
 - Where do they fall short?
 - Why might users choose them over you?
-</action>
+  </action>
 
 <ask>**What's your unfair advantage?**
 
@@ -241,6 +248,7 @@ Company stage, team capabilities, market conditions, past attempts?</ask>
 {{constraints}}
 
 ---
+
 </output>
 
 <ask>Does this capture your strategic foundation? Anything to refine?</ask>
@@ -255,6 +263,7 @@ Company stage, team capabilities, market conditions, past attempts?</ask>
 Location: `A-Product-Brief/project-brief.md`
 
 This strategic foundation will guide all design decisions. You're ready for:
+
 - **Phase 2: Trigger Mapping** - Deep dive into user psychology
 - **Phase 3: PRD Platform** - Technical foundation
 
@@ -262,4 +271,3 @@ Your vision is clear. Let's build something great! 🚀</output>
 </step>
 
 </workflow>
-

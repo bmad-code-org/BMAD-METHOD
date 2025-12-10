@@ -18,6 +18,7 @@ Scan design system components:
 </action>
 
 **Example:**
+
 ```
 Current component: Button
 
@@ -41,6 +42,7 @@ For each matching component, extract:
 </action>
 
 **Example:**
+
 ```yaml
 Button [btn-001]:
   variants: [primary, secondary, ghost]
@@ -70,9 +72,11 @@ Present matching components:
 - Shape: rounded
 - Used in: 3 pages (login, signup, dashboard)
 ```
+
 </output>
 
 **If multiple matches:**
+
 ```
 🔍 Found 2 existing Button components:
 
@@ -103,6 +107,7 @@ Pass candidate list to comparison step:
 ## Edge Cases
 
 **No matching components found:**
+
 ```
 ✓ No existing Button components in design system.
 
@@ -112,6 +117,7 @@ This will be the first Button component.
 **Route to:** `operations/create-new-component.md`
 
 **Design system empty:**
+
 ```
 ✓ Design system is empty.
 
@@ -121,6 +127,7 @@ This will be the first component.
 **Route to:** `operations/initialize-design-system.md`
 
 **Multiple type matches:**
+
 ```
 🔍 Found 2 Button-type components:
 
@@ -134,6 +141,7 @@ I'll compare your new button to both to find the best match.
 ## Output Format
 
 **For next step:**
+
 ```json
 {
   "current_component": {

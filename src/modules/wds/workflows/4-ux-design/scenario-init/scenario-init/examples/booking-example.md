@@ -7,29 +7,34 @@
 ## The 5 Questions
 
 ### 1. Core Feature
+
 ```
 "Consultation booking with social proof - testimonials + credentials"
 ```
 
 ### 2. Entry Point
+
 ```
 "Friend recommendation (shared link)"
 ```
 
 ### 3. Mental State
+
 ```
 "Curious but cautious, need to trust before committing time/money"
 ```
 
 ### 4. Mutual Success
+
 ```
 Business: Consultation booked (lead captured)
 User: Confident in decision, looking forward to meeting
 ```
 
 ### 5. Shortest Path
+
 ```
-Friend link → About page → Testimonials → 
+Friend link → About page → Testimonials →
 Book consultation → Confirmation
 ```
 

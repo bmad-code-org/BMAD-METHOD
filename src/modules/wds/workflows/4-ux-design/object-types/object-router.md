@@ -9,10 +9,11 @@
 <output>**Analyzing object from sketch...**</output>
 
 <action>Apply text detection rules from `TEXT-DETECTION-PRIORITY.md`:
-- Look for horizontal line PAIRS (2 lines together = text marker)  
+
+- Look for horizontal line PAIRS (2 lines together = text marker)
 - Single lines alone = decorative elements (dividers, borders)
 - Count pairs to determine number of text lines
-</action>
+  </action>
 
 <check if="horizontal_lines_detected">
   <output>**✓ TEXT ELEMENT DETECTED**
@@ -39,32 +40,36 @@
 <check if="not_text_element">
 
 <action>Examine object characteristics:
+
 - Visual appearance (shape, style, position)
 - Context (what's around it, where in form/page)
 - Interactive indicators (buttons, inputs, links)
 - Container indicators (boxes, cards, modals)
 - Media indicators (image placeholders, video frames)
-</action>
+  </action>
 
 <output>**My interpretation:**
 
 **This looks like a {{suggested_object_type}}.**
 
 Based on what I see:
+
 - {{observation_1}}
 - {{observation_2}}
 - {{observation_3}}
 
 {{#if is_text_element}}
 **Text Analysis from Sketch:**
+
 - **{{line_count}} lines of text** (horizontal bar groups)
 - **Line thickness:** {{thickness}} → ~{{estimated_font_size}} font
 - **Line spacing:** {{spacing}} → ~{{estimated_line_height}} line-height
 - **Alignment:** {{detected_alignment}}
 - **Content capacity:** ~{{total_chars}} characters ({{chars_per_line}} per line)
-{{/if}}
+  {{/if}}
 
 **I think this {{component_name}}:**
+
 - {{suggested_purpose}}
 - {{suggested_interaction}}
 - {{suggested_result}}
@@ -75,9 +80,7 @@ Based on what I see:
 
 **Does this match your intent?**</output>
 
-<ask>1. **Yes** - That's correct
-2. **Close** - Similar but let me clarify
-3. **No** - It's actually something different
+<ask>1. **Yes** - That's correct 2. **Close** - Similar but let me clarify 3. **No** - It's actually something different
 
 Choice [1/2/3]:</ask>
 
@@ -132,11 +135,13 @@ Choice [1/2/3]:</ask>
 <action>Based on confirmed object type, load appropriate instruction file:
 
 **TEXT ELEMENTS (DETECTED FIRST):**
+
 - Horizontal line groups → `object-types/heading-text.md`
   - Handles: Headings (H1-H6), Paragraphs, Labels, Captions
   - Includes: Sketch text analysis, character capacity, content guidance
 
 **INTERACTIVE ELEMENTS:**
+
 - **Button shapes** → `object-types/button.md`
 - **Input fields** → `object-types/text-input.md`
 - **Textarea boxes** → `object-types/textarea.md`
@@ -147,26 +152,31 @@ Choice [1/2/3]:</ask>
 - **Underlined text/arrows** → `object-types/link.md`
 
 **MEDIA ELEMENTS:**
+
 - **Image placeholders (X or box)** → `object-types/image.md`
 - **Video frame** → `object-types/video.md`
 
 **CONTAINER ELEMENTS:**
+
 - **Card/box container** → `object-types/card.md`
 - **Overlay/popup** → `object-types/modal-dialog.md`
 - **Grid/rows** → `object-types/table.md`
 - **Bullet/numbered items** → `object-types/list.md`
 
 **NAVIGATION ELEMENTS:**
+
 - **Menu/tabs** → `object-types/navigation.md`
 
 **STATUS ELEMENTS:**
+
 - **Small circle/pill** → `object-types/badge.md`
 - **Banner/box with icon** → `object-types/alert-toast.md`
 - **Bar/spinner** → `object-types/progress.md`
 
 **CUSTOM:**
+
 - **Unique component** → `object-types/custom-component.md`
-</action>
+  </action>
 
 </check>
 
@@ -203,6 +213,7 @@ Choice [1/2]:</ask>
 ## INTERPRETATION EXAMPLES
 
 **Example 1: Button**
+
 ```
 My interpretation:
 
@@ -224,6 +235,7 @@ Does this match your intent?
 ```
 
 **Example 2: Text/Heading with Placeholder Lines**
+
 ```
 My interpretation:
 
@@ -253,6 +265,7 @@ Does this match your intent?
 ```
 
 **Example 3: Body Text with Multiple Lines**
+
 ```
 My interpretation:
 
@@ -282,6 +295,7 @@ Does this match your intent?
 ```
 
 **Example 3: Link**
+
 ```
 My interpretation:
 
@@ -307,21 +321,25 @@ Does this match your intent?
 ## KEY PRINCIPLES
 
 **✅ Agent demonstrates intelligence**
+
 - Analyzes visual and contextual clues
 - Makes informed suggestions
 - Shows reasoning process
 
 **✅ Trust-the-agent approach**
+
 - Agent interprets, user confirms
 - Not procedural checkbox selection
 - Collaborative intelligence
 
 **✅ Efficient workflow**
+
 - Quick confirmation when correct
 - Easy correction when needed
 - Natural conversation flow
 
 **✅ Context-aware**
+
 - Understands form flow
 - Recognizes UI patterns
 - Applies common sense

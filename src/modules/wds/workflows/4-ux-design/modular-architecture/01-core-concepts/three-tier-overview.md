@@ -7,9 +7,11 @@
 ## The Three File Types
 
 ### 1. Pages/ (WHERE)
+
 **Purpose:** Page-specific context and placement
 
 **Contains:**
+
 - Position & size
 - Page-specific content (varies by page)
 - Page-specific data (user context)
@@ -17,8 +19,10 @@
 - Feature references
 
 **Example:**
+
 ```markdown
 Pages/02-calendar-page.md
+
 - Position: Main content, full-width
 - Content: "Familjen Svensson: Vecka 40" (user's family)
 - Data: GET /api/families/:currentFamilyId/walks
@@ -29,9 +33,11 @@ Pages/02-calendar-page.md
 ---
 
 ### 2. Components/ (HOW IT LOOKS)
+
 **Purpose:** Visual design specifications
 
 **Contains:**
+
 - Visual specs (colors, spacing, typography)
 - States (default, hover, active, loading, error)
 - Variants (sizes, types, themes)
@@ -40,8 +46,10 @@ Pages/02-calendar-page.md
 - ❌ NO content, NO logic
 
 **Example:**
+
 ```markdown
 Components/walk-slot-card.component.md
+
 - 6 visual states (WHITE, GRAY, ORANGE, BLUE, GREEN, RED)
 - Typography: 16px Medium, 12px Regular
 - Colors: Blue (#3B82F6), Orange (#FB923C), etc.
@@ -51,9 +59,11 @@ Components/walk-slot-card.component.md
 ---
 
 ### 3. Features/ (WHAT IT DOES)
+
 **Purpose:** Functional logic and business rules
 
 **Contains:**
+
 - User interactions
 - Business rules
 - State management
@@ -63,8 +73,10 @@ Components/walk-slot-card.component.md
 - ❌ NO visual design
 
 **Example:**
+
 ```markdown
 Features/walk-booking-logic.feature.md
+
 - Book walk → GRAY state
 - Start walk → BLUE state
 - Business rule: One active walk per dog
@@ -77,6 +89,7 @@ Features/walk-booking-logic.feature.md
 ## Why Three Tiers?
 
 ### Before (Monolithic)
+
 ```
 Pages/02-calendar-page.md (800 lines)
 ├─ Everything mixed together
@@ -86,6 +99,7 @@ Pages/02-calendar-page.md (800 lines)
 ```
 
 ### After (Modular)
+
 ```
 Pages/02-calendar-page.md (100 lines)
 ├─ Just placement + user context
@@ -104,16 +118,19 @@ Features/walk-booking-logic.feature.md (200 lines)
 ## Handoff Strategy
 
 **Visual Designer** receives:
+
 - `Components/` folder
 - Creates Figma components
 - Matches visual specs exactly
 
 **Developer** receives:
+
 - `Features/` folder
 - Implements business logic
 - Uses API endpoints specified
 
 **You** maintain:
+
 - `Pages/` folder
 - Track design system integrity
 - Manage page-specific content

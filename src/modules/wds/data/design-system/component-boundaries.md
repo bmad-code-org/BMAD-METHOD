@@ -48,6 +48,7 @@ This is the most common design system challenge.
 **Answer:** Depends on usage:
 
 **Part of Button (Variant):**
+
 ```yaml
 Button Component:
   variants:
@@ -55,14 +56,17 @@ Button Component:
     - with-icon-right
     - icon-only
 ```
+
 **When:** Icon is always the same type (e.g., always arrow for navigation)
 
 **Separate Components:**
+
 ```yaml
 Button Component: (text only)
 Icon Component: (standalone)
 Composition: Button + Icon
 ```
+
 **When:** Icons vary widely, button can exist without icon
 
 **Recommendation:** Start with variant, split if complexity grows.
@@ -111,12 +115,14 @@ Composition: Card contains Button
 **Answer:** Depends on complexity:
 
 **Simple (Single Component):**
+
 ```yaml
 Navigation Bar Component:
   includes: All nav items as configuration
 ```
 
 **Complex (Composition):**
+
 ```yaml
 Navigation Bar: (container)
 Navigation Item: (individual item)
@@ -150,11 +156,13 @@ Composition: Nav Bar contains Nav Items
 ### Step 2: Consider Complexity
 
 **Low Complexity:** Keep together
+
 - Icon in button
 - Label with input
 - Simple list items
 
 **High Complexity:** Split apart
+
 - Complex nested structures
 - Independent behaviors
 - Different lifecycle
@@ -162,10 +170,12 @@ Composition: Nav Bar contains Nav Items
 ### Step 3: Think About Maintenance
 
 **Together:**
+
 - ✅ Easier to keep consistent
 - ❌ Component becomes complex
 
 **Apart:**
+
 - ✅ Simpler components
 - ❌ More components to manage
 
@@ -240,6 +250,7 @@ Button Component:
 ### Example 1: Button
 
 **One Component:**
+
 ```yaml
 Button:
   variants: primary, secondary, ghost
@@ -251,6 +262,7 @@ Button:
 ### Example 2: Input Types
 
 **Multiple Components:**
+
 ```yaml
 Text Input: (text entry)
 Select Dropdown: (choose from list)
@@ -263,6 +275,7 @@ Radio: (choose one)
 ### Example 3: Modal
 
 **Compound Component:**
+
 ```yaml
 Modal: (overlay + container)
 Modal Header: (title + close button)
@@ -277,6 +290,7 @@ Modal Footer: (actions)
 ## When in Doubt
 
 **Start simple:**
+
 1. Create as single component
 2. Add variants as needed
 3. Split when complexity becomes painful

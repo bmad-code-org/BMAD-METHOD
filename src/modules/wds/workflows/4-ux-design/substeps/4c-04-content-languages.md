@@ -17,14 +17,15 @@ List all languages (e.g., English, Swedish, Spanish):</ask>
 We'll go through each text element and provide content in all {{language_count}} languages.</output>
 
 <action>For each text element (labels, buttons, headings, messages):
-  <ask>**{{element_name}}:**
-  
-  {{#each language}}
-  - {{language}}:
+<ask>**{{element_name}}:**
+
+{{#each language}}
+
+- {{language}}:
   {{/each}}
   </ask>
-  
-  <action>Store multilingual content for element</action>
+
+<action>Store multilingual content for element</action>
 </action>
 
 <output>✅ **Content specified in all languages!**
@@ -51,28 +52,28 @@ supported_languages:
 
 content:
   page_title:
-    en: "Sign In"
-    sv: "Logga In"
-    
+    en: 'Sign In'
+    sv: 'Logga In'
+
   email_label:
-    en: "Email Address"
-    sv: "E-postadress"
-    
+    en: 'Email Address'
+    sv: 'E-postadress'
+
   email_placeholder:
-    en: "your@email.com"
-    sv: "din@epost.com"
-    
+    en: 'your@email.com'
+    sv: 'din@epost.com'
+
   password_label:
-    en: "Password"
-    sv: "Lösenord"
-    
+    en: 'Password'
+    sv: 'Lösenord'
+
   submit_button:
-    en: "Sign In"
-    sv: "Logga In"
-    
+    en: 'Sign In'
+    sv: 'Logga In'
+
   forgot_password_link:
-    en: "Forgot password?"
-    sv: "Glömt lösenord?"
+    en: 'Forgot password?'
+    sv: 'Glömt lösenord?'
 ```
 
 ---
@@ -80,4 +81,3 @@ content:
 ## NEXT STEP
 
 Load `substeps/4c-05-interactions.md`
-

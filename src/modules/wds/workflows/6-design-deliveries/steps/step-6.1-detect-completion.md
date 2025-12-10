@@ -72,6 +72,7 @@ Check if you have a complete testable flow ready for handoff.
 ### ✅ YES - Flow is Complete
 
 **Proceed to Phase 6.2:**
+
 ```
 [C] Continue to step-6.2-create-delivery.md
 ```
@@ -83,16 +84,19 @@ Check if you have a complete testable flow ready for handoff.
 **What's missing?**
 
 **If scenarios are incomplete:**
+
 - Return to Phase 4: UX Design
 - Complete missing scenarios
 - Return to this step when done
 
 **If components are incomplete:**
+
 - Return to Phase 5: Design System
 - Define missing components
 - Return to this step when done
 
 **If flow is not testable:**
+
 - Identify missing pieces
 - Complete the flow
 - Return to this step when done

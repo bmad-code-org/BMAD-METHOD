@@ -11,12 +11,15 @@
 ## Execution Paths
 
 ### Path A: Reuse Existing Component
+
 Designer chose to use existing component as-is
 
 ### Path B: Add Variant
+
 Designer chose to add variant to existing component
 
 ### Path C: Create New Component
+
 Designer chose to create new component
 
 ---
@@ -30,7 +33,8 @@ Designer chose to create new component
 ✅ Reusing Button [btn-001]
 
 I'll update your page spec to reference the existing component.
-```
+
+````
 </output>
 
 ### Step 2: Extract Page-Specific Content
@@ -49,7 +53,7 @@ Page-Specific Content:
 - label: "Continue"
 - why: "Navigate to next step in onboarding"
 - context: "Multi-step form navigation"
-```
+````
 
 ### Step 3: Create Reference
 
@@ -61,13 +65,14 @@ Create reference to existing component:
 </action>
 
 **Output:**
+
 ```yaml
 # C-Scenarios/onboarding-page.md
 
 Continue Button:
   component: Button.primary [btn-001]
   why: Navigate to next step in onboarding
-  label: "Continue"
+  label: 'Continue'
 ```
 
 ### Step 4: Update Component Usage
@@ -79,14 +84,15 @@ Update design system component to track usage:
 </action>
 
 **Update:**
+
 ```yaml
 # D-Design-System/components/button.md
 
 Used In:
-- Login page (login button)
-- Signup page (create account button)
-- Dashboard (action buttons)
-- Onboarding page (continue button)  ← Added
+  - Login page (login button)
+  - Signup page (create account button)
+  - Dashboard (action buttons)
+  - Onboarding page (continue button)  ← Added
 ```
 
 ### Step 5: Complete
@@ -97,6 +103,7 @@ Used In:
 
 Page spec updated with reference.
 Component usage tracked.
+
 ```
 </output>
 
@@ -110,10 +117,12 @@ Component usage tracked.
 
 <output>
 ```
+
 ✅ Adding "navigation" variant to Button [btn-001]
 
 I'll update the component definition and create the reference.
-```
+
+````
 </output>
 
 ### Step 2: Extract Component-Level Info
@@ -131,7 +140,7 @@ Navigation Variant:
 - icon: arrow-right
 - loading_state: true
 - hover_animation: icon_shift
-```
+````
 
 ### Step 3: Update Component Definition
 
@@ -143,19 +152,19 @@ Add variant to existing component:
 </action>
 
 **Update:**
+
 ```yaml
 # D-Design-System/components/button.md
 
 Button Component [btn-001]:
-  
   variants:
     - primary (submit actions)
     - secondary (cancel actions)
     - navigation (continue/next actions)  ← Added
-  
+
   shared_states:
     - default, hover, active, disabled
-  
+
   variant_specific:
     navigation:
       icon: arrow-right
@@ -170,13 +179,14 @@ Create reference with variant specified:
 </action>
 
 **Output:**
+
 ```yaml
 # C-Scenarios/onboarding-page.md
 
 Continue Button:
   component: Button.navigation [btn-001]  ← Variant specified
   why: Navigate to next step in onboarding
-  label: "Continue"
+  label: 'Continue'
 ```
 
 ### Step 5: Update Usage Tracking
@@ -186,6 +196,7 @@ Track variant usage:
 </action>
 
 **Update:**
+
 ```yaml
 # D-Design-System/components/button.md
 
@@ -204,6 +215,7 @@ Variant Usage:
 Component definition updated.
 Page spec created with variant reference.
 Variant usage tracked.
+
 ```
 </output>
 
@@ -217,9 +229,11 @@ Variant usage tracked.
 
 <output>
 ```
+
 ✅ Creating new Navigation Button [btn-002]
 
 I'll create the component definition and set up the reference.
+
 ```
 </output>
 
@@ -234,9 +248,11 @@ Generate unique component ID:
 
 **Example:**
 ```
+
 Existing Button IDs: btn-001
 New ID: btn-002
-```
+
+````
 
 ### Step 3: Extract Component-Level Info
 
@@ -259,7 +275,7 @@ Component-Level Info:
   color: blue
   shape: rounded
   hover_animation: icon_shift
-```
+````
 
 ### Step 4: Create Component File
 
@@ -270,6 +286,7 @@ Create new component file using template:
 **Route to:** `operations/create-new-component.md`
 
 **Output:**
+
 ```yaml
 # D-Design-System/components/navigation-button.md
 
@@ -305,13 +322,14 @@ Create reference in page spec:
 </action>
 
 **Output:**
+
 ```yaml
 # C-Scenarios/onboarding-page.md
 
 Continue Button:
   component: NavigationButton [btn-002]
   why: Navigate to next step in onboarding
-  label: "Continue"
+  label: 'Continue'
 ```
 
 ### Step 6: Update Design System Index
@@ -321,14 +339,15 @@ Add to design system component list:
 </action>
 
 **Update:**
+
 ```yaml
 # D-Design-System/components/README.md
 
 Components:
-- Button [btn-001] - Primary action buttons
-- Input Field [inp-001] - Text input fields
-- Card [crd-001] - Content cards
-- Navigation Button [btn-002] - Navigation actions  ← Added
+  - Button [btn-001] - Primary action buttons
+  - Input Field [inp-001] - Text input fields
+  - Card [crd-001] - Content cards
+  - Navigation Button [btn-002] - Navigation actions  ← Added
 ```
 
 ### Step 7: Complete
@@ -340,7 +359,8 @@ Components:
 Component file created: D-Design-System/components/navigation-button.md
 Page spec created with reference.
 Design system index updated.
-```
+
+````
 </output>
 
 **Return to Phase 4**
@@ -366,7 +386,7 @@ Update project tracking:
 - Reason: Semantic distinction from submit buttons
 - Decision: Create new vs variant
 - Designer: Chose clarity over consistency
-```
+````
 
 ### Notify Designer
 
@@ -377,8 +397,9 @@ Update project tracking:
 Components: 4 (was 3)
 Latest: Navigation Button [btn-002]
 
-Your design system is growing! Consider reviewing component 
+Your design system is growing! Consider reviewing component
 organization when you reach 10+ components.
+
 ```
 </output>
 
@@ -388,35 +409,42 @@ organization when you reach 10+ components.
 
 **If component creation fails:**
 ```
+
 ❌ Error creating component file.
 
 Error: [error message]
 
 Would you like to:
+
 1. Retry
 2. Create manually
 3. Skip design system for this component
 
 Your choice:
+
 ```
 
 **If reference creation fails:**
 ```
+
 ❌ Error updating page spec.
 
 Error: [error message]
 
 Component was created successfully, but page reference failed.
 I'll keep the complete spec on the page for now.
+
 ```
 
 **If ID conflict:**
 ```
+
 ⚠️ Component ID conflict detected.
 
 btn-002 already exists but with different content.
 
 Generating alternative ID: btn-003
+
 ```
 
 ---
@@ -436,13 +464,16 @@ Validate execution:
 
 **If validation fails:**
 ```
+
 ⚠️ Validation Warning:
 
 Some steps may not have completed successfully.
 Please review:
+
 - [List of potential issues]
 
 Continue anyway? (y/n)
+
 ```
 
 ---
@@ -467,6 +498,7 @@ Return control to Phase 4 orchestration:
 
 <output>
 ```
+
 ✅ Design System Operation Complete
 
 Action: Created new component
@@ -475,14 +507,17 @@ Page: Onboarding page
 Reference: NavigationButton [btn-002]
 
 Files Updated:
+
 - D-Design-System/components/navigation-button.md (created)
 - C-Scenarios/onboarding-page.md (reference added)
 - D-Design-System/components/README.md (index updated)
 
 Next: Continue with next component in Phase 4
+
 ```
 </output>
 
 ---
 
 **This completes the assessment and execution flow. Control returns to Phase 4.**
+```

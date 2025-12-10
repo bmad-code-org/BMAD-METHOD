@@ -12,6 +12,7 @@
 - ✅ No business logic
 
 **Examples:**
+
 - Static text
 - Image
 - Basic button (just click → navigate)
@@ -30,6 +31,7 @@
 - ⚠️ State machines (defined transition paths)
 
 **Examples:**
+
 - Calendar widget (6 states)
 - Search with autocomplete (5+ states)
 - Multi-step form (progress tracking)
@@ -44,6 +46,7 @@
 ### Example 1: Simple Button
 
 **Indicators:**
+
 - ✅ Single interaction (click → navigate)
 - ✅ 2-3 states (default, hover, active)
 - ❌ No business logic
@@ -56,6 +59,7 @@
 ### Example 2: Search Bar
 
 **Indicators:**
+
 - ⚠️ Multiple states (empty, typing, loading, results, error)
 - ⚠️ Real-time updates (debounced API calls)
 - ⚠️ Business logic (min 3 characters, max 10 results)
@@ -69,6 +73,7 @@
 ### Example 3: Calendar Widget
 
 **Indicators:**
+
 - ⚠️ 6 walk states
 - ⚠️ Time-based transitions (countdown timers)
 - ⚠️ Complex business rules (per-dog blocking)
@@ -83,6 +88,7 @@
 ## When to Decompose
 
 **Decompose when component has:**
+
 - 3+ visual states
 - Business rules
 - API dependencies
@@ -90,12 +96,14 @@
 - Multi-component interactions
 
 **Keep simple when component has:**
+
 - 1-2 states
 - No logic
 - No data
 - Static display
 
 **⚠️ Common Mistake:**
+
 ```markdown
 ❌ Wrong: Everything in one file
 Pages/02-calendar-page.md (800 lines)

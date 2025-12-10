@@ -38,9 +38,10 @@ WDS Trigger Mapping is based on the groundbreaking **Effect Management** methodo
 The methodology gained wider recognition through Gojko Adzic's book **"Impact Mapping: Making a Big Impact with Software Products and Projects"** (2012), which acknowledges Effect Mapping as a key influence.
 
 > **Founder's Note:** I personally acquired the insights about the power of the Effect Map back in 2007, and it has served as the philosophical basis for all of my work in UX for almost 20 years. I am eternally grateful for this model that I now have the pleasure to share with the world in an updated version suitable for modern projects.
-> — *Martin Eriksson, WDS Creator*
+> — _Martin Eriksson, WDS Creator_
 
 📚 **Further Reading:**
+
 - [Impact Mapping on Amazon](https://www.amazon.com/Impact-Mapping-Software-Products-Projects/dp/0955683645) - Gojko Adzic's book building on Effect Mapping concepts
 - [impactmapping.org](https://www.impactmapping.org) - Resources and community
 
@@ -53,11 +54,13 @@ Effect Mapping is the original model that connects business goals to user behavi
 Trigger Mapping is WDS's adaptation of Effect Mapping, designed for longer shelf life and deeper psychological insight:
 
 **Simplified:**
+
 - Leaves out actions/features from the map
 - Focuses on the strategic connections
 - Map stays relevant even as features evolve
 
 **Enhanced:**
+
 - Adds **negative driving forces** (fears, frustrations)
 - Creates fuller picture of user psychology
 - Both what users want AND what they want to avoid
@@ -67,6 +70,7 @@ Trigger Mapping is WDS's adaptation of Effect Mapping, designed for longer shelf
 Any software is about **flow of value**. There's always a group of people who, through their use of the software, make your success happen.
 
 These users have their own goals:
+
 - **GAIN** - Benefits and positive outcomes they achieve
 - **PAIN** - Resistance and friction they experience
 
@@ -81,10 +85,11 @@ The Trigger Map combines three critical layers in one picture:
 3. **Usage Goals** - Their WHY (Driving forces both positive - what they wish to achieve, and negative - what they wish to avoid)
 
 When all levels are then prioritized, you have perfect guidance for design:
+
 - Present features that add value to your most prioritized goal first
 - To the highest prioritized target group
 - In a way that best suits their most prioritized usage goal
-- Make sound decisions about priority of bugs or features based on the total impact on users' goals 
+- Make sound decisions about priority of bugs or features based on the total impact on users' goals
 
 ---
 
@@ -98,18 +103,21 @@ Business goals work at two levels:
 
 **Vision (Motivating, not easily quantifiable)**
 A statement that inspires and guides direction:
+
 - "Become the most popular free and open source design support framework"
 - "Be the go-to partner for SMB digital transformation"
 - "Make professional UX accessible to every startup"
 
 **Objectives (SMART metrics)**
 Specific, measurable targets that indicate progress toward the vision:
+
 - "10,000 active designer users by 2027"
 - "100 community contributions accepted by Q4 2026"
 - "50% of users complete full 6-phase workflow"
 - "NPS score of 60+ from design professionals"
 
 You'll define both levels:
+
 - Vision that motivates the team
 - Objectives with clear success metrics
 
@@ -118,6 +126,7 @@ You'll define both levels:
 Key question: "Who needs to succeed for YOU to succeed?"
 
 Instead of demographics, you discover:
+
 - User types who can drive business success
 - The role each type plays in your strategy
 - How different users contribute differently
@@ -134,6 +143,7 @@ For each user type:
 "Now the flip side: What do they desperately want to avoid? What would feel like failure?"
 
 This reveals:
+
 - **Positive Triggers** - What motivates action
 - **Negative Triggers** - What prevents engagement
 - **Emotional Drivers** - The psychology behind decisions
@@ -142,6 +152,7 @@ This reveals:
 ### Stage 4: Visual Strategy Map (15-20 minutes)
 
 Saga helps build the complete trigger map:
+
 - Connecting every user insight to business goals
 - Creating the visual strategy guide
 - Validating the strategic logic together
@@ -171,37 +182,38 @@ Now the magic happens. You connect strategy to concrete features using a systema
 3. **Map to Driving Forces** - Which positive and negative drivers does it address?
 4. **Score the Impact** - Features serving multiple groups and drivers score higher
 
-**The Scoring System:** *(Beta - refinements welcome)*
+**The Scoring System:** _(Beta - refinements welcome)_
 
 For each feature, award points:
 
-| Impact | Points |
-|--------|--------|
-| Serves Priority 1 Target Group | +3 |
-| Serves Priority 2 Target Group | +2 |
-| Serves Priority 3 Target Group | +1 |
-| Addresses Priority 1 Positive Driver | +3 |
-| Addresses Priority 2 Positive Driver | +2 |
-| Addresses Priority 3 Positive Driver | +1 |
-| **Addresses Priority 1 Negative Driver** | **+4** |
-| **Addresses Priority 2 Negative Driver** | **+3** |
-| **Addresses Priority 3 Negative Driver** | **+2** |
-| Serves multiple target groups | +2 bonus |
+| Impact                                       | Points   |
+| -------------------------------------------- | -------- |
+| Serves Priority 1 Target Group               | +3       |
+| Serves Priority 2 Target Group               | +2       |
+| Serves Priority 3 Target Group               | +1       |
+| Addresses Priority 1 Positive Driver         | +3       |
+| Addresses Priority 2 Positive Driver         | +2       |
+| Addresses Priority 3 Positive Driver         | +1       |
+| **Addresses Priority 1 Negative Driver**     | **+4**   |
+| **Addresses Priority 2 Negative Driver**     | **+3**   |
+| **Addresses Priority 3 Negative Driver**     | **+2**   |
+| Serves multiple target groups                | +2 bonus |
 | Addresses both positive AND negative drivers | +2 bonus |
 
 > **Why negative drivers score higher:** Loss aversion is a well-documented psychological principle - humans work harder to avoid pain than to pursue gain. Features that remove friction, fear, or frustration create stronger user loyalty than features that simply add benefits.
 
 **Example:**
 
-| Feature | Target Groups | Driving Forces | Score |
-|---------|---------------|----------------|-------|
+| Feature           | Target Groups                     | Driving Forces                                                                    | Score  |
+| ----------------- | --------------------------------- | --------------------------------------------------------------------------------- | ------ |
 | One-click booking | P1 Dog Owner (+3), P2 Walker (+2) | Convenience (+3), Fear of complexity (-P1: +4), Multi-group (+2), Both types (+2) | **16** |
-| Review system | P1 Dog Owner (+3) | Trust (+2), Fear of bad walker (-P1: +4), Both types (+2) | **11** |
-| Calendar sync | P2 Walker (+2) | Efficiency (+1) | **3** |
+| Review system     | P1 Dog Owner (+3)                 | Trust (+2), Fear of bad walker (-P1: +4), Both types (+2)                         | **11** |
+| Calendar sync     | P2 Walker (+2)                    | Efficiency (+1)                                                                   | **3**  |
 
 **The Output:**
 
 A ranked feature list showing:
+
 - Which features have the broadest impact
 - Which features are "single-purpose" vs "multi-impact"
 - Natural MVP candidates (highest scores)
@@ -220,11 +232,13 @@ Traditional personas describe demographics: "Jennifer, 34, likes yoga and lattes
 WDS personas capture psychology:
 
 **Alliterative Naming** - Each persona gets a memorable name that hints at their role:
+
 - "Patrick the Professional" - Decision-maker focused on efficiency
 - "Sophie the Socializer" - Values connection and community
 - "Tyler the Technical" - Wants control and customization
 
 **What Each Persona Includes:**
+
 - Role and context
 - Goals they're trying to achieve
 - Fears and frustrations
@@ -237,16 +251,19 @@ WDS personas capture psychology:
 ## When to Use This Phase
 
 **Use after Phase 1 if:**
+
 - Building a new product
 - Need clarity on who you're building for
 - Want design decisions grounded in user psychology
 
 **Start here if:**
+
 - You have product vision but unclear user strategy
 - Existing personas feel shallow or unused
 - Features aren't connecting with users
 
 **Skip if:**
+
 - Quick enhancement to existing feature
 - Users are already well-documented and validated
 - Design system work without new user research
@@ -256,6 +273,7 @@ WDS personas capture psychology:
 ## What to Prepare
 
 Bring:
+
 - Your completed Product Brief (Phase 1)
 - Any existing user research (even informal)
 - Stakeholder availability for the workshop
@@ -277,15 +295,18 @@ The trigger map becomes the strategic brain of your product.
 ## Tips for Great Sessions
 
 **Think strategically, not demographically**
+
 - "Who needs to win for us to win?" not "Who might use this?"
 - Connect every user insight to business outcomes
 
 **Go deep on psychology**
+
 - Push beyond surface responses
 - Ask "why" multiple times
 - Understand motivations, not just behaviors
 
 **Build the map live**
+
 - See connections as they emerge
 - Validate strategic logic together
 - Make it visual and shareable
@@ -298,5 +319,4 @@ See: `examples/dog-week-patterns/B-Trigger-Map/` for a complete Trigger Map with
 
 ---
 
-*Phase 2 of the Whiteport Design Studio method*
-
+_Phase 2 of the Whiteport Design Studio method_

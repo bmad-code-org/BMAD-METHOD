@@ -18,11 +18,13 @@ Which type of project are you working on?
 ## Software Development Terminology
 
 ### Greenfield Development
+
 **Definition:** Building a new project from scratch with no constraints from existing systems.
 
 **Origin:** Agricultural term - plowing a green field that has never been cultivated.
 
 **In software:**
+
 - No legacy code to maintain
 - Full creative freedom
 - Define architecture from scratch
@@ -32,11 +34,13 @@ Which type of project are you working on?
 ---
 
 ### Brownfield Development
+
 **Definition:** Developing within an existing system with established constraints.
 
 **Origin:** Industrial term - redeveloping land previously used for industrial purposes.
 
 **In software:**
+
 - Existing codebase to work with
 - Legacy systems to integrate
 - Established patterns to follow
@@ -48,6 +52,7 @@ Which type of project are you working on?
 ## Option 1: New Product (Greenfield)
 
 **Choose this if:**
+
 - ✅ Starting from scratch
 - ✅ No existing product or codebase
 - ✅ Designing complete user flows
@@ -56,12 +61,14 @@ Which type of project are you working on?
 - ✅ **Greenfield development**
 
 **You'll start with:**
+
 - Phase 1: Project Brief (full)
 - Phase 2: Trigger Map (complete)
 - Phase 3: Platform Requirements (define tech stack)
 - Phases 4-7: Iterative development
 
 **Example scenarios:**
+
 - "We're building a new dog care app from scratch"
 - "Startup launching first product"
 - "New feature that's completely separate from existing product"
@@ -71,6 +78,7 @@ Which type of project are you working on?
 ## Option 2: Existing Product (Brownfield)
 
 **Choose this if:**
+
 - ✅ Product already exists and is live
 - ✅ Brought in as "linchpin designer" to solve specific problems
 - ✅ Making strategic improvements, not complete redesign
@@ -79,12 +87,14 @@ Which type of project are you working on?
 - ✅ **Brownfield development**
 
 **You'll start with:**
+
 - Phase 8.1: Limited Project Brief (strategic challenge)
 - Phase 8.2: Existing Context (upload materials, print trigger map)
 - Phase 8.3: Critical Updates (targeted changes)
 - Phase 8.4-8.5: Delivery and validation
 
 **Example scenarios:**
+
 - "Onboarding has 60% drop-off, need to redesign it"
 - "Users don't understand key feature, need UX improvements"
 - "Adding new feature to existing product"
@@ -94,16 +104,16 @@ Which type of project are you working on?
 
 ## Comparison
 
-| Aspect | New Product | Existing Product |
-|--------|-------------|------------------|
-| **Entry Point** | Phase 1 | Phase 8 |
-| **Project Brief** | Full (vision, goals, stakeholders) | Limited (strategic challenge) |
-| **Trigger Map** | Complete (all user needs) | Focused (specific problem) |
-| **Platform Requirements** | Define from scratch | Already decided |
-| **Design Scope** | Complete user flows | Targeted updates |
-| **Creative Freedom** | High | Constrained |
-| **Timeline** | Months | Weeks |
-| **Deliverables** | Multiple Design Deliveries | Design Deliveries (small scope) |
+| Aspect                    | New Product                        | Existing Product                |
+| ------------------------- | ---------------------------------- | ------------------------------- |
+| **Entry Point**           | Phase 1                            | Phase 8                         |
+| **Project Brief**         | Full (vision, goals, stakeholders) | Limited (strategic challenge)   |
+| **Trigger Map**           | Complete (all user needs)          | Focused (specific problem)      |
+| **Platform Requirements** | Define from scratch                | Already decided                 |
+| **Design Scope**          | Complete user flows                | Targeted updates                |
+| **Creative Freedom**      | High                               | Constrained                     |
+| **Timeline**              | Months                             | Weeks                           |
+| **Deliverables**          | Multiple Design Deliveries         | Design Deliveries (small scope) |
 
 ---
 
@@ -150,22 +160,22 @@ First, what's the strategic challenge you're trying to solve?
 
 ```yaml
 project:
-  type: "new_product"  # or "existing_product"
-  entry_point: "phase_1"  # or "phase_8"
+  type: 'new_product' # or "existing_product"
+  entry_point: 'phase_1' # or "phase_8"
 
 # If existing_product:
 existing_product:
-  strategic_challenge: "Onboarding has 60% drop-off rate"
-  scope: "Redesign onboarding flow (4 screens)"
+  strategic_challenge: 'Onboarding has 60% drop-off rate'
+  scope: 'Redesign onboarding flow (4 screens)'
   constraints:
-    - "Tech stack: React Native + Supabase (fixed)"
-    - "Brand: Colors and logo are fixed"
-    - "Timeline: 2 weeks"
-  
+    - 'Tech stack: React Native + Supabase (fixed)'
+    - 'Brand: Colors and logo are fixed'
+    - 'Timeline: 2 weeks'
+
   existing_materials:
-    business_goals: "path/to/business-goals.pdf"
-    user_research: "path/to/user-research.pdf"
-    current_design_system: "path/to/design-system/"
+    business_goals: 'path/to/business-goals.pdf'
+    user_research: 'path/to/user-research.pdf'
+    current_design_system: 'path/to/design-system/'
 ```
 
 ---
@@ -217,12 +227,14 @@ Phase 8.5: Validation ← [Touch Point 3]
 ## Tips for Choosing
 
 ### Choose New Product if:
+
 - You have time to design properly
 - You want to establish best practices
 - You're defining the product vision
 - You have creative freedom
 
 ### Choose Existing Product if:
+
 - You're solving a specific problem
 - Timeline is tight (weeks, not months)
 - Product is already live
@@ -231,6 +243,7 @@ Phase 8.5: Validation ← [Touch Point 3]
 ### Not Sure?
 
 **Ask yourself:**
+
 1. Is there already a live product? → Existing Product
 2. Are you starting from scratch? → New Product
 3. Are you redesigning one specific area? → Existing Product
@@ -243,6 +256,7 @@ Phase 8.5: Validation ← [Touch Point 3]
 ### New Product Examples
 
 **Dog Week App:**
+
 - Type: New Product
 - Entry: Phase 1
 - Scope: Complete app from scratch
@@ -250,6 +264,7 @@ Phase 8.5: Validation ← [Touch Point 3]
 - Deliveries: 10-15 Design Deliveries
 
 **SaaS Dashboard:**
+
 - Type: New Product
 - Entry: Phase 1
 - Scope: Complete dashboard experience
@@ -261,6 +276,7 @@ Phase 8.5: Validation ← [Touch Point 3]
 ### Existing Product Examples
 
 **Onboarding Flow Improvement:**
+
 - Type: Existing Product
 - Challenge: 60% drop-off rate
 - Scope: 4 screens
@@ -268,6 +284,7 @@ Phase 8.5: Validation ← [Touch Point 3]
 - Delivery: 1 Design Delivery (DD-XXX, small scope)
 
 **Checkout Flow Improvement:**
+
 - Type: Existing Product
 - Challenge: Low conversion rate
 - Scope: 3 screens + payment flow
@@ -275,6 +292,7 @@ Phase 8.5: Validation ← [Touch Point 3]
 - Delivery: 1 Design Delivery (DD-XXX, small scope)
 
 **New Feature Addition:**
+
 - Type: Existing Product
 - Challenge: Users requesting calendar view
 - Scope: New calendar feature

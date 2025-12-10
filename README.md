@@ -79,6 +79,7 @@ docs/
 ```
 
 **Why alphabetical?** The `A-B-C-D-E` prefix creates a clear visual namespace that:
+
 - Groups WDS artifacts together in file explorers
 - Distinguishes from other project documentation
 - Provides natural sort order matching workflow progression
@@ -90,16 +91,16 @@ docs/
 
 WDS provides **8 design phases** that can be selected based on project scale:
 
-| Phase | Name | Output Folder | Description |
-|-------|------|---------------|-------------|
-| 1️⃣ | **Product Exploration** | `A-Product-Brief/` | Vision, positioning, ICP framework |
-| 2️⃣ | **Trigger Mapping** | `B-Trigger-Map/` | Personas, business goals, Feature Impact Analysis |
-| 3️⃣ | **PRD Platform** | `C-Platform-Requirements/` | Technical foundation (parallel with Phase 4) |
-| 4️⃣ | **UX Design** | `C-Scenarios/` | User scenarios, sketches, specifications |
-| 5️⃣ | **Design System** | `D-Design-System/` | Design tokens, component library (optional) |
-| 6️⃣ | **PRD & Design Deliveries** | `E-PRD/` | Complete PRD + packaged flows for BMM |
-| 7️⃣ | **Testing** | `F-Testing/` | Designer validation of implementation |
-| 8️⃣ | **Product Development** | `G-Product-Development/` | Ongoing improvements (existing products) |
+| Phase | Name                        | Output Folder              | Description                                       |
+| ----- | --------------------------- | -------------------------- | ------------------------------------------------- |
+| 1️⃣    | **Product Exploration**     | `A-Product-Brief/`         | Vision, positioning, ICP framework                |
+| 2️⃣    | **Trigger Mapping**         | `B-Trigger-Map/`           | Personas, business goals, Feature Impact Analysis |
+| 3️⃣    | **PRD Platform**            | `C-Platform-Requirements/` | Technical foundation (parallel with Phase 4)      |
+| 4️⃣    | **UX Design**               | `C-Scenarios/`             | User scenarios, sketches, specifications          |
+| 5️⃣    | **Design System**           | `D-Design-System/`         | Design tokens, component library (optional)       |
+| 6️⃣    | **PRD & Design Deliveries** | `E-PRD/`                   | Complete PRD + packaged flows for BMM             |
+| 7️⃣    | **Testing**                 | `F-Testing/`               | Designer validation of implementation             |
+| 8️⃣    | **Product Development**     | `G-Product-Development/`   | Ongoing improvements (existing products)          |
 
 ### Phase-Selectable Workflow
 
@@ -116,11 +117,11 @@ Unlike rigid tracks, WDS allows users to **select individual phases** based on p
 
 WDS introduces **3 specialized design agents** named after Norse mythology:
 
-| Agent | Role | Norse Meaning |
-|-------|------|---------------|
-| **Saga the WDS Analyst** | Business & Product Analyst | Goddess of stories & wisdom - uncovers your business story |
-| **Idunn the WDS PM** | Product Manager | Goddess of renewal & youth - keeps projects vital and thriving |
-| **Freyja the WDS Designer** | UX/UI Designer | Goddess of beauty, magic & strategy - creates experiences users love |
+| Agent                       | Role                       | Norse Meaning                                                        |
+| --------------------------- | -------------------------- | -------------------------------------------------------------------- |
+| **Saga the WDS Analyst**    | Business & Product Analyst | Goddess of stories & wisdom - uncovers your business story           |
+| **Idunn the WDS PM**        | Product Manager            | Goddess of renewal & youth - keeps projects vital and thriving       |
+| **Freyja the WDS Designer** | UX/UI Designer             | Goddess of beauty, magic & strategy - creates experiences users love |
 
 ---
 
@@ -140,6 +141,7 @@ E-PRD/              ──────────────►  PRD + Design 
 ```
 
 The `E-PRD/` folder serves as the **integration bridge**, containing:
+
 - Complete PRD (00-PRD.md) with functional requirements
 - Design Deliveries (DD-XXX.yaml) - packaged flows for BMM handoff
 - Scenario-to-epic mapping
@@ -173,6 +175,7 @@ bmad install wds
 ### What Gets Installed
 
 The WDS installer creates:
+
 - ✅ `docs/` directory structure with alphabetized folders (A-G)
 - ✅ All 8 phase folders ready for your design work
 - ✅ `.gitkeep` files to preserve empty directories
@@ -251,6 +254,7 @@ git push origin main
 ## 📚 Original BMad Method Documentation
 
 For complete BMad Method documentation, see:
+
 - **[BMad Method README](https://github.com/bmad-code-org/BMAD-METHOD)** - Main documentation
 - **[BMM Module Docs](./src/modules/bmm/docs/README.md)** - Development workflows
 - **[Agent Customization](./docs/agent-customization-guide.md)** - Customize agents

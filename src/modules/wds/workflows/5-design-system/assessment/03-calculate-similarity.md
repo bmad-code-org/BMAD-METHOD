@@ -11,7 +11,9 @@
 ## Similarity Levels
 
 ### Level 1: Identical (95-100%)
+
 **Characteristics:**
+
 - All visual attributes match
 - Same functional purpose
 - Same behavioral patterns
@@ -24,7 +26,9 @@
 ---
 
 ### Level 2: Very High Similarity (80-94%)
+
 **Characteristics:**
+
 - Visual attributes mostly match
 - Same core function
 - Minor behavioral differences
@@ -37,7 +41,9 @@
 ---
 
 ### Level 3: High Similarity (65-79%)
+
 **Characteristics:**
+
 - Visual attributes similar
 - Related functional purpose
 - Some behavioral differences
@@ -50,7 +56,9 @@
 ---
 
 ### Level 4: Medium Similarity (45-64%)
+
 **Characteristics:**
+
 - Some visual overlap
 - Different functional purpose
 - Different behaviors
@@ -63,7 +71,9 @@
 ---
 
 ### Level 5: Low Similarity (20-44%)
+
 **Characteristics:**
+
 - Minimal visual overlap
 - Different function
 - Different behaviors
@@ -76,7 +86,9 @@
 ---
 
 ### Level 6: No Similarity (<20%)
+
 **Characteristics:**
+
 - No meaningful overlap
 - Completely different purpose
 - Unrelated patterns
@@ -107,9 +119,10 @@ Calculate overall similarity:
 
 4. Convert to percentage:
    - Similarity % = Overall × 100
-</action>
+     </action>
 
 **Example:**
+
 ```
 Dimension Scores:
 - Visual: High (1.0)
@@ -137,13 +150,14 @@ Apply calculation logic to comparison data
 ```
 📊 Similarity Calculation
 
-Visual:      High (1.0)    × 30% = 0.30
-Functional:  Medium (0.6)  × 30% = 0.18
-Behavioral:  Medium (0.6)  × 25% = 0.15
-Contextual:  Medium (0.6)  × 15% = 0.09
+Visual: High (1.0) × 30% = 0.30
+Functional: Medium (0.6) × 30% = 0.18
+Behavioral: Medium (0.6) × 25% = 0.15
+Contextual: Medium (0.6) × 15% = 0.09
 
 Overall Similarity: 72%
 Level: High Similarity (Level 3)
+
 ```
 </output>
 
@@ -157,15 +171,18 @@ Map percentage to similarity level
 
 <output>
 ```
+
 **Similarity Level: High (72%)**
 
 This component is similar to Button [btn-001] but has some differences.
 
 Could be:
+
 - A variant of the existing button
 - A new related button component
 
 Designer decision needed.
+
 ```
 </output>
 
@@ -179,45 +196,57 @@ Based on similarity level, generate recommendation with reasoning
 
 **For Level 1-2 (Identical/Very High):**
 ```
+
 ✅ Recommendation: Reuse existing component
 
 Reasoning:
+
 - Components are nearly identical
 - Only content/labels differ
 - Same visual and behavioral patterns
 - Maintaining consistency is straightforward
+
 ```
 
 **For Level 3 (High):**
 ```
+
 🤔 Recommendation: Designer decision needed
 
 This could go either way:
+
 - Similar enough to be a variant
 - Different enough to be separate
 
 I'll present the trade-offs so you can decide.
+
 ```
 
 **For Level 4-5 (Medium/Low):**
 ```
+
 🆕 Recommendation: Create new component
 
 Reasoning:
+
 - Significant functional differences
 - Different usage contexts
 - Trying to merge would create complexity
 - Better to keep separate
+
 ```
 
 **For Level 6 (No similarity):**
 ```
+
 ✅ Recommendation: Definitely create new component
 
 Reasoning:
+
 - Components are fundamentally different
 - No meaningful overlap
 - No benefit to linking them
+
 ```
 
 ---
@@ -230,6 +259,7 @@ Highlight the most important differences that affect the decision
 
 **Example:**
 ```
+
 🔑 Key Decision Factors:
 
 1. **Icon presence** - Current has icon, existing doesn't
@@ -242,6 +272,7 @@ Highlight the most important differences that affect the decision
    Impact: Semantic meaning, developer understanding
 
 These differences will affect your decision.
+
 ```
 
 ---
@@ -263,15 +294,18 @@ Pass classification and recommendation to opportunity identification:
 
 **Borderline cases (near threshold):**
 ```
+
 ⚠️ Borderline Case: 64% similarity
 
 This is right on the edge between "High" and "Medium" similarity.
 
 I'll present both perspectives so you can make an informed decision.
+
 ```
 
 **Multiple candidates with similar scores:**
 ```
+
 📊 Multiple Similar Candidates:
 
 Button [btn-001]: 72% similarity
@@ -279,19 +313,23 @@ Button [btn-003]: 68% similarity
 
 btn-001 is slightly closer, but both are viable options.
 I'll compare to btn-001 for the decision.
+
 ```
 
 **Perfect match but different context:**
 ```
+
 ⚠️ Unusual Pattern: 98% similarity but different context
 
 Visually and behaviorally identical, but used in completely different contexts.
 
 This might indicate:
+
 - Same component, different use case ✓
 - Accidental duplication ⚠️
 - Context-specific variant needed 🤔
-```
+
+````
 
 ---
 
@@ -312,7 +350,7 @@ This might indicate:
     ]
   }
 }
-```
+````
 
 ---
 

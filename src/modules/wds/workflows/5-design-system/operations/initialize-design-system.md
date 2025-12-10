@@ -21,6 +21,7 @@ I'll create the folder structure and add this component.
 
 Design System Mode: [Custom/Library]
 Component Library: [shadcn/Radix/etc. if applicable]
+
 ```
 </output>
 
@@ -31,16 +32,19 @@ Component Library: [shadcn/Radix/etc. if applicable]
 <action>
 Create design system folders:
 ```
+
 D-Design-System/
 ├── components/
 ├── design-tokens.md (placeholder)
 ├── component-library-config.md (if Mode C)
 └── figma-mappings.md (if Mode B)
+
 ```
 </action>
 
 <output>
 ```
+
 📁 Created Design System Structure:
 
 D-Design-System/
@@ -49,7 +53,8 @@ D-Design-System/
 └── [mode-specific files]
 
 ✅ Folder structure ready!
-```
+
+````
 </output>
 
 ---
@@ -104,7 +109,7 @@ Design tokens will be extracted as components are added to the design system.
 ---
 
 **Tokens will be populated as components are specified.**
-```
+````
 
 ---
 
@@ -129,10 +134,11 @@ Create Figma mappings file:
 Components in this design system are linked to Figma components for visual reference and design handoff.
 
 ### Format
-
 ```
+
 Component ID → Figma Node ID
 [component-id] → figma://file/[file-id]/node/[node-id]
+
 ```
 
 ## Mappings
@@ -155,7 +161,7 @@ Create component library config:
 
 **File:** `D-Design-System/component-library-config.md`
 
-```markdown
+````markdown
 # Component Library Configuration
 
 **Library:** [shadcn/Radix/MUI/etc.]
@@ -184,6 +190,7 @@ Format: `WDS Component → Library Component`
   "borderRadius": {}
 }
 ```
+````
 
 [To be updated as design system grows]
 
@@ -196,7 +203,8 @@ Format: `WDS Component → Library Component`
 ---
 
 **Library documentation:** [Link]
-```
+
+````
 
 ---
 
@@ -252,7 +260,7 @@ Each component file includes:
 ---
 
 **Components are added automatically as they're discovered during specification.**
-```
+````
 
 ---
 
@@ -278,6 +286,7 @@ Create interactive HTML catalog:
 **Load and execute:** `operations/generate-catalog.md`
 
 **Initial catalog includes:**
+
 - Project introduction
 - Design tokens (if defined)
 - First component showcase
@@ -285,6 +294,7 @@ Create interactive HTML catalog:
 - Empty changelog
 
 **Output:**
+
 ```
 ✅ Initial catalog generated
 
@@ -302,6 +312,7 @@ Mark design system as initialized:
 </action>
 
 **Update project config:**
+
 ```yaml
 design_system:
   enabled: true
@@ -332,6 +343,7 @@ added to the design system if they're reusable.
 
 Next: Continue with component specification in Phase 4
 ```
+
 </output>
 
 ---
@@ -350,6 +362,7 @@ Validate initialization:
 </action>
 
 **If validation fails:**
+
 ```
 ⚠️ Initialization Warning
 
@@ -365,6 +378,7 @@ Would you like to retry initialization? (y/n)
 ## Error Handling
 
 **If folder already exists:**
+
 ```
 ⚠️ D-Design-System/ folder already exists.
 
@@ -379,6 +393,7 @@ Your choice:
 ```
 
 **If component creation fails:**
+
 ```
 ❌ Error creating first component.
 
@@ -389,6 +404,7 @@ You can add components manually or retry.
 ```
 
 **If mode not specified:**
+
 ```
 ⚠️ Design system mode not specified in project config.
 
@@ -410,21 +426,25 @@ Your choice:
 💡 Design System Tips:
 
 **What happens next:**
+
 - As you specify components, I'll check for similarities
 - Reusable components will be added to the design system
 - You'll make decisions about variants vs new components
 
 **Best practices:**
+
 - Be consistent with component boundaries
 - Think about reusability early
 - Don't over-engineer - start simple
 
 **You can always:**
+
 - Add components manually
 - Refactor the design system
 - Merge or split components later
 
 Design systems evolve - this is just the beginning!
+
 ```
 </output>
 
@@ -444,3 +464,4 @@ Return to design system router:
 ---
 
 **This operation runs once per project. Subsequent components use create-new-component or add-variant operations.**
+```

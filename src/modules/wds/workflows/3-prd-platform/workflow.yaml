@@ -3,7 +3,6 @@ name: PRD Platform Workflow
 description: Establish technical foundation, validate risky features, and set up experimental endpoints
 web_bundle: true
 ---
-
 # WDS Phase 3: PRD Platform (Technical Foundation)
 name: "Phase 3: PRD Platform (Technical Foundation)"
 agent: "Freyja the PM"
@@ -37,4 +36,3 @@ optional_inputs:
   - "Existing technical constraints"
 
 estimated_duration: "2-4 hours (plus PoC development time)"
-

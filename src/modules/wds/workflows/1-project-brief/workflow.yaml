@@ -3,7 +3,6 @@ name: Product Brief Workflow
 description: Establish project context - foundation for all design work
 web_bundle: true
 ---
-
 # WDS Phase 1: Project Brief
 name: project-brief
 author: "Whiteport Design Studio"
@@ -42,4 +41,3 @@ primary_agent: "saga-analyst"
 
 standalone: true
 web_bundle: false
-

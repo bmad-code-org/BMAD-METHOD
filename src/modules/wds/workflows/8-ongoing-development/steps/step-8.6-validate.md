@@ -9,6 +9,7 @@ Validate that the Design Delivery (small scope) was implemented correctly.
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 8.5 (handed off to BMad)
 - ✅ BMad notified you implementation is complete
 - ✅ Test scenario file ready
@@ -56,6 +57,7 @@ BMad Developer
 **Load:** `test-scenarios/TS-XXX.yaml`
 
 **Focus on:**
+
 - New functionality (what changed)
 - Regression testing (what should stay the same)
 - Edge cases specific to the update
@@ -72,6 +74,7 @@ BMad Developer
 ## New Functionality Tests
 
 ### HP-001: [New feature works]
+
 - Action: [Test new feature]
 - Expected: [New behavior]
 - Actual: [What happened]
@@ -84,6 +87,7 @@ BMad Developer
 ## Regression Tests
 
 ### REG-001: [Existing feature unchanged]
+
 - Action: [Use existing feature]
 - Expected: [Works as before]
 - Actual: [What happened]
@@ -115,6 +119,7 @@ BMad Developer
 ## New Functionality
 
 ### Test HP-001: [Name]
+
 - Status: [PASS | FAIL]
 - Notes: [Any observations]
 
@@ -125,6 +130,7 @@ BMad Developer
 ## Regression Testing
 
 ### Test REG-001: [Name]
+
 - Status: [PASS | FAIL]
 - Notes: [Any observations]
 
@@ -219,9 +225,9 @@ Thanks,
 
 ```yaml
 delivery:
-  status: "complete"
-  validated_at: "2024-12-13T16:00:00Z"
-  approved_by: "[Your name]"
+  status: 'complete'
+  validated_at: '2024-12-13T16:00:00Z'
+  approved_by: '[Your name]'
   ready_for_production: true
 ```
 
@@ -229,7 +235,7 @@ delivery:
 
 ```yaml
 delivery:
-  status: "in_testing"
+  status: 'in_testing'
   issues_found: 2
   retest_required: true
 ```

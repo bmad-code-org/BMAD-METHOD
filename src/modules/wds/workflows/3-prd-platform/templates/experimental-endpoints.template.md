@@ -9,6 +9,7 @@
 ## Purpose
 
 These are early API specifications for endpoints we know we'll need. Setting them up now enables:
+
 - Early backend development (parallel with UX design)
 - Validation that our data model works
 - Fail-fast discovery of integration issues
@@ -27,17 +28,20 @@ These are early API specifications for endpoints we know we'll need. Setting the
 ## Authentication Endpoints
 
 {{#each auth_endpoints}}
+
 ### {{this.method}} {{this.path}}
 
 **Status:** {{this.status}}  
 **Purpose:** {{this.purpose}}
 
 **Request:**
+
 ```json
 {{this.request_example}}
 ```
 
 **Response:**
+
 ```json
 {{this.response_example}}
 ```
@@ -45,11 +49,13 @@ These are early API specifications for endpoints we know we'll need. Setting the
 **Notes:** {{this.notes}}
 
 ---
+
 {{/each}}
 
 ## Core CRUD Operations
 
 {{#each crud_endpoints}}
+
 ### {{this.method}} {{this.path}}
 
 **Status:** {{this.status}}  
@@ -57,11 +63,13 @@ These are early API specifications for endpoints we know we'll need. Setting the
 **Entity:** {{this.entity}}
 
 **Request:**
+
 ```json
 {{this.request_example}}
 ```
 
 **Response:**
+
 ```json
 {{this.response_example}}
 ```
@@ -70,11 +78,13 @@ These are early API specifications for endpoints we know we'll need. Setting the
 **Notes:** {{this.notes}}
 
 ---
+
 {{/each}}
 
 ## External Integration Endpoints
 
 {{#each integration_endpoints}}
+
 ### {{this.method}} {{this.path}}
 
 **Status:** {{this.status}}  
@@ -82,53 +92,62 @@ These are early API specifications for endpoints we know we'll need. Setting the
 **External Service:** {{this.external_service}}
 
 **Request:**
+
 ```json
 {{this.request_example}}
 ```
 
 **Response:**
+
 ```json
 {{this.response_example}}
 ```
 
 **Validates:**
+
 - {{#each this.validates}}
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **Cost per Call:** {{this.cost_per_call}}  
 **Rate Limits:** {{this.rate_limits}}  
 **Notes:** {{this.notes}}
 
 ---
+
 {{/each}}
 
 ## Business Logic Endpoints
 
 {{#each logic_endpoints}}
+
 ### {{this.method}} {{this.path}}
 
 **Status:** {{this.status}}  
 **Purpose:** {{this.purpose}}
 
 **Request:**
+
 ```json
 {{this.request_example}}
 ```
 
 **Response:**
+
 ```json
 {{this.response_example}}
 ```
 
 **Business Rules:**
 {{#each this.business_rules}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **Notes:** {{this.notes}}
 
 ---
+
 {{/each}}
 
 ## Error Handling
@@ -149,27 +168,32 @@ These are early API specifications for endpoints we know we'll need. Setting the
 ### Common Error Codes
 
 {{#each error_codes}}
+
 - **{{this.code}}** ({{this.http_status}}): {{this.description}}
-{{/each}}
+  {{/each}}
 
 ---
 
 ## API Conventions
 
 ### Base URL
+
 ```
 {{api_base_url}}
 ```
 
 ### Authentication
+
 {{api_authentication_method}}
 
 ### Request Headers
+
 ```
 {{api_request_headers}}
 ```
 
 ### Response Format
+
 {{api_response_format}}
 
 ---
@@ -179,8 +203,9 @@ These are early API specifications for endpoints we know we'll need. Setting the
 These endpoints are also tracked in `E-PRD-Finalization/` as handoff tasks:
 
 {{#each development_tasks}}
+
 - [ ] **{{this.endpoint}}** - {{this.description}} (Priority: {{this.priority}})
-{{/each}}
+      {{/each}}
 
 ---
 
@@ -193,5 +218,4 @@ These endpoints are also tracked in `E-PRD-Finalization/` as handoff tasks:
 
 ---
 
-*Phase 3 artifact for {{project_name}}*
-
+_Phase 3 artifact for {{project_name}}_

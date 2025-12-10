@@ -11,6 +11,7 @@
 **[Tutorial](../01-tutorial/00-TUTORIAL-GUIDE.md)**
 
 Deep dive into:
+
 - Why designers are irreplaceable in the AI era
 - What WDS is and how it works
 - The BMad Method philosophy
@@ -28,6 +29,7 @@ Deep dive into:
 **[Workflows Guide](../WDS-WORKFLOWS-GUIDE.md)**
 
 Step-by-step workflows for:
+
 - Phase 1: Trigger Mapping
 - Phase 2: Information Architecture
 - Phase 3: Interaction Design
@@ -44,6 +46,7 @@ Step-by-step workflows for:
 **[Modular Architecture](../workflows/4-ux-design/modular-architecture/00-MODULAR-ARCHITECTURE-GUIDE.md)**
 
 Technical details on:
+
 - Three-tier file structure
 - Content placement rules
 - Component decomposition
@@ -75,17 +78,21 @@ Technical details on:
 ## Community & Support
 
 ### Discord
+
 Join the WDS community for:
+
 - Questions and answers
 - Project feedback
 - Feature discussions
 
 ### GitHub
+
 - Report issues
 - Request features
 - Contribute
 
 ### YouTube
+
 - Video tutorials
 - Walkthroughs
 - Case studies

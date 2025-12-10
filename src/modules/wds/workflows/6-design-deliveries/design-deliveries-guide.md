@@ -42,6 +42,7 @@ Phase 6.6: Continue with Next Flow
 ✅ **Ready for development:** No blockers or dependencies
 
 **Example:**
+
 ```
 Flow: Login & Onboarding
 ✓ Scenario 01: Welcome screen
@@ -81,6 +82,7 @@ Flow: Login & Onboarding
 **Use template:** `templates/design-delivery.template.yaml`
 
 **Include:**
+
 - All scenarios for this flow
 - Technical requirements
 - Design system components used
@@ -89,27 +91,28 @@ Flow: Login & Onboarding
 - Complexity estimate
 
 **Example:**
+
 ```yaml
 delivery:
-  id: "DD-001"
-  name: "Login & Onboarding Flow"
-  status: "ready"
-  priority: "high"
+  id: 'DD-001'
+  name: 'Login & Onboarding Flow'
+  status: 'ready'
+  priority: 'high'
 
 design_artifacts:
   scenarios:
-    - id: "01-welcome"
-      path: "C-Scenarios/01-welcome-screen/"
-    - id: "02-login"
-      path: "C-Scenarios/02-login/"
+    - id: '01-welcome'
+      path: 'C-Scenarios/01-welcome-screen/'
+    - id: '02-login'
+      path: 'C-Scenarios/02-login/'
     # ... etc
 
 user_value:
-  problem: "Users need to access the app securely"
-  solution: "Streamlined onboarding with family setup"
+  problem: 'Users need to access the app securely'
+  solution: 'Streamlined onboarding with family setup'
   success_criteria:
-    - "User completes signup in under 2 minutes"
-    - "90% completion rate"
+    - 'User completes signup in under 2 minutes'
+    - '90% completion rate'
 ```
 
 ---
@@ -121,6 +124,7 @@ user_value:
 **Use template:** `templates/test-scenario.template.yaml`
 
 **Include:**
+
 - Happy path tests
 - Error state tests
 - Edge case tests
@@ -129,19 +133,20 @@ user_value:
 - Usability tests
 
 **Example:**
+
 ```yaml
 test_scenario:
-  id: "TS-001"
-  name: "Login & Onboarding Testing"
-  delivery_id: "DD-001"
+  id: 'TS-001'
+  name: 'Login & Onboarding Testing'
+  delivery_id: 'DD-001'
 
 happy_path:
-  - id: "HP-001"
-    name: "New User Complete Onboarding"
+  - id: 'HP-001'
+    name: 'New User Complete Onboarding'
     steps:
-      - action: "Open app"
-        expected: "Welcome screen appears"
-        design_ref: "C-Scenarios/01-welcome/Frontend/specifications.md"
+      - action: 'Open app'
+        expected: 'Welcome screen appears'
+        design_ref: 'C-Scenarios/01-welcome/Frontend/specifications.md'
       # ... etc
 ```
 
@@ -156,6 +161,7 @@ happy_path:
 **Protocol:** See `src/core/resources/wds/handoff-protocol.md`
 
 **Topics to cover:**
+
 1. User value and success criteria
 2. Scenario walkthrough
 3. Technical requirements
@@ -168,17 +174,18 @@ happy_path:
 10. Confirmation
 
 **Example:**
+
 ```
-WDS UX Expert: "Hey Architect! I've completed the design for 
-                Login & Onboarding. Let me walk you through 
+WDS UX Expert: "Hey Architect! I've completed the design for
+                Login & Onboarding. Let me walk you through
                 Design Delivery DD-001..."
 
 [20-minute structured conversation]
 
-BMad Architect: "Handoff complete! I'll break this down into 
+BMad Architect: "Handoff complete! I'll break this down into
                  4 development epics. Total: 3 weeks."
 
-WDS UX Expert: "Perfect! I'll start designing the next flow 
+WDS UX Expert: "Perfect! I'll start designing the next flow
                 while you build this one."
 ```
 
@@ -189,20 +196,23 @@ WDS UX Expert: "Perfect! I'll start designing the next flow
 **Mark delivery as handed off:**
 
 Update delivery status:
+
 ```yaml
 delivery:
-  status: "in_development"
-  handed_off_at: "2024-12-09T11:00:00Z"
-  assigned_to: "bmad-architect"
+  status: 'in_development'
+  handed_off_at: '2024-12-09T11:00:00Z'
+  assigned_to: 'bmad-architect'
 ```
 
 **BMad receives:**
+
 - Design Delivery (DD-XXX.yaml)
 - All scenario specifications
 - Design system components
 - Test scenario (TS-XXX.yaml)
 
 **BMad starts:**
+
 - Architecture design
 - Epic breakdown
 - Implementation
@@ -214,16 +224,19 @@ delivery:
 **While BMad builds this flow, you design the next one!**
 
 **Return to Phase 4:**
+
 - Design next complete testable flow
 - Create specifications
 - Define components
 
 **Then return to Phase 6:**
+
 - Create next Design Delivery
 - Hand off to BMad
 - Repeat
 
 **Parallel work:**
+
 ```
 Week 1: Design Flow 1
 Week 2: Handoff Flow 1 → BMad builds Flow 1
@@ -245,6 +258,7 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 **Location:** `deliveries/DD-XXX-name.yaml`
 
 **Contents:**
+
 - Delivery metadata (id, name, status, priority)
 - User value (problem, solution, success criteria)
 - Design artifacts (scenarios, flows, components)
@@ -260,6 +274,7 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 **Location:** `test-scenarios/TS-XXX-name.yaml`
 
 **Contents:**
+
 - Test metadata (id, name, delivery_id, status)
 - Test objectives
 - Happy path tests
@@ -278,6 +293,7 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 **Location:** `deliveries/DD-XXX-handoff-log.md`
 
 **Contents:**
+
 - Handoff date and duration
 - Participants
 - Key points discussed
@@ -340,6 +356,7 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 **Goal:** Get to testing as fast as possible
 
 **Approach:**
+
 1. Design the most critical user flow first
 2. Example: Login & Onboarding (users must access app)
 3. Keep it simple and focused
@@ -353,6 +370,7 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 **Goal:** Deliver value incrementally
 
 **Approach:**
+
 1. Each delivery adds new value
 2. Example: DD-001 (Login) → DD-002 (Core Feature) → DD-003 (Enhancement)
 3. Users see progress
@@ -366,6 +384,7 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 **Goal:** Maximize throughput
 
 **Approach:**
+
 1. Designer designs Flow 2 while BMad builds Flow 1
 2. Designer designs Flow 3 while BMad builds Flow 2
 3. Designer tests Flow 1 while designing Flow 4
@@ -379,24 +398,28 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 ### DO ✅
 
 **Design complete flows:**
+
 - Entry point to exit point
 - All scenarios specified
 - All components defined
 - Testable end-to-end
 
 **Deliver value:**
+
 - Business value (ROI, metrics)
 - User value (solves problem)
 - Testable (can validate)
 - Ready (no blockers)
 
 **Communicate clearly:**
+
 - Handoff dialog is crucial
 - Answer all questions
 - Document decisions
 - Stay available
 
 **Iterate fast:**
+
 - Don't design everything at once
 - Get to testing quickly
 - Learn from real users
@@ -405,21 +428,25 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 ### DON'T ❌
 
 **Don't wait:**
+
 - Don't design all flows before handing off
 - Don't wait for perfection
 - Don't block development
 
 **Don't over-design:**
+
 - Don't add unnecessary features
 - Don't gold-plate
 - Don't lose focus on value
 
 **Don't under-specify:**
+
 - Don't leave gaps in specifications
 - Don't assume BMad will figure it out
 - Don't skip edge cases
 
 **Don't disappear:**
+
 - Don't hand off and vanish
 - Don't ignore questions
 - Don't skip validation (Phase 7)
@@ -443,15 +470,18 @@ Week 4: Handoff Flow 3 → BMad builds Flow 3
 ## Resources
 
 **Templates:**
+
 - `templates/design-delivery.template.yaml`
 - `templates/test-scenario.template.yaml`
 
 **Specifications:**
+
 - `src/core/resources/wds/design-delivery-spec.md`
 - `src/core/resources/wds/handoff-protocol.md`
 - `src/core/resources/wds/integration-guide.md`
 
 **Examples:**
+
 - See `WDS-V6-CONVERSION-ROADMAP.md` for integration details
 
 ---

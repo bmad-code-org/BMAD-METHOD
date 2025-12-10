@@ -7,6 +7,7 @@
 ## Purpose
 
 Phase 7 is where you:
+
 1. Wait for BMad to notify you that a feature is complete
 2. Run test scenarios to validate implementation
 3. Create issues if problems are found
@@ -23,21 +24,22 @@ Phase 7 is where you:
 
 ```
 BMad Developer: "Feature complete: DD-001 Login & Onboarding
-                 
+
                  Implemented:
                  ✓ All 4 scenarios
                  ✓ All error states
                  ✓ All edge cases
                  ✓ Design system components
-                 
+
                  Build: v0.1.0-beta.1
                  Device: Staging environment
-                 
+
                  Ready for designer validation.
                  Test scenario: test-scenarios/TS-001.yaml"
 ```
 
 **You respond:**
+
 ```
 WDS Analyst: "Received! Starting validation testing..."
 ```
@@ -49,12 +51,14 @@ WDS Analyst: "Received! Starting validation testing..."
 ### Step 1: Prepare for Testing
 
 **Gather materials:**
+
 - [ ] Test scenario file (TS-XXX.yaml)
 - [ ] Design Delivery file (DD-XXX.yaml)
 - [ ] Scenario specifications (C-Scenarios/)
 - [ ] Design system specs (D-Design-System/)
 
 **Set up environment:**
+
 - [ ] Access to staging build
 - [ ] Test devices ready (iOS, Android, etc.)
 - [ ] Test data prepared
@@ -69,15 +73,16 @@ WDS Analyst: "Received! Starting validation testing..."
 
 ```yaml
 happy_path:
-  - id: "HP-001"
-    name: "New User Complete Onboarding"
+  - id: 'HP-001'
+    name: 'New User Complete Onboarding'
     steps:
-      - action: "Open app"
-        expected: "Welcome screen appears"
-        design_ref: "C-Scenarios/01-welcome/Frontend/specifications.md"
+      - action: 'Open app'
+        expected: 'Welcome screen appears'
+        design_ref: 'C-Scenarios/01-welcome/Frontend/specifications.md'
 ```
 
 **For each step:**
+
 1. Perform the action
 2. Observe the result
 3. Compare to expected result
@@ -87,6 +92,7 @@ happy_path:
 7. Note any deviations
 
 **Record results:**
+
 ```
 HP-001: New User Complete Onboarding
 ✓ Step 1: Open app → Welcome screen appears (PASS)
@@ -106,15 +112,16 @@ HP-001: New User Complete Onboarding
 
 ```yaml
 error_states:
-  - id: "ES-001"
-    name: "Email Already Exists"
+  - id: 'ES-001'
+    name: 'Email Already Exists'
     steps:
-      - action: "Enter existing email"
+      - action: 'Enter existing email'
       - action: "Tap 'Create Account'"
       - expected: "Error message: 'This email is already registered...'"
 ```
 
 **Verify:**
+
 - Error messages are clear and helpful
 - Error states are visually distinct
 - Recovery options are provided
@@ -128,16 +135,17 @@ error_states:
 
 ```yaml
 edge_cases:
-  - id: "EC-001"
-    name: "User Closes App Mid-Onboarding"
+  - id: 'EC-001'
+    name: 'User Closes App Mid-Onboarding'
     steps:
-      - action: "Start onboarding, complete signup"
-      - action: "Close app (force quit)"
-      - action: "Reopen app"
-      - expected: "Resume at Family Setup"
+      - action: 'Start onboarding, complete signup'
+      - action: 'Close app (force quit)'
+      - action: 'Reopen app'
+      - expected: 'Resume at Family Setup'
 ```
 
 **Verify:**
+
 - Edge cases are handled gracefully
 - No crashes or blank screens
 - User experience is smooth
@@ -150,18 +158,19 @@ edge_cases:
 
 ```yaml
 design_system_checks:
-  - id: "DS-001"
-    name: "Button Components"
+  - id: 'DS-001'
+    name: 'Button Components'
     checks:
-      - component: "Primary Button"
-        instances: ["Get Started", "Create Account"]
+      - component: 'Primary Button'
+        instances: ['Get Started', 'Create Account']
         verify:
-          - "Correct size (48px height)"
-          - "Correct color (primary brand color)"
-          - "Correct typography (16px, semibold)"
+          - 'Correct size (48px height)'
+          - 'Correct color (primary brand color)'
+          - 'Correct typography (16px, semibold)'
 ```
 
 **Verify:**
+
 - Components match design system specs
 - Colors are correct
 - Typography is correct
@@ -176,16 +185,17 @@ design_system_checks:
 
 ```yaml
 accessibility:
-  - id: "A11Y-001"
-    name: "Screen Reader Navigation"
-    setup: "Enable VoiceOver (iOS) or TalkBack (Android)"
+  - id: 'A11Y-001'
+    name: 'Screen Reader Navigation'
+    setup: 'Enable VoiceOver (iOS) or TalkBack (Android)'
     verify:
-      - "All buttons have descriptive labels"
-      - "Form fields announce their purpose"
-      - "Error messages are announced"
+      - 'All buttons have descriptive labels'
+      - 'Form fields announce their purpose'
+      - 'Error messages are announced'
 ```
 
 **Verify:**
+
 - Screen reader can navigate
 - All interactive elements are accessible
 - Color contrast meets WCAG 2.1 AA
@@ -200,7 +210,8 @@ accessibility:
 **File:** `issues/ISS-XXX-description.md`
 
 **Template:**
-```markdown
+
+````markdown
 # Issue: Button Color Incorrect
 
 **ID:** ISS-001
@@ -210,34 +221,45 @@ accessibility:
 **Test:** TS-001, Check: DS-001
 
 ## Description
+
 Primary button color doesn't match design system specification.
 
 ## Expected
+
 Primary button background: #2563EB (brand primary)
 
 ## Actual
+
 Primary button background: #3B82F6 (lighter blue)
 
 ## Impact
+
 Brand inconsistency, doesn't match design system
 
 ## Design Reference
+
 - Design System: D-Design-System/03-Atomic-Components/Buttons/Button-Primary.md
 - Design Token: tokens/colors.json → "button.primary.background"
 
 ## Steps to Reproduce
+
 1. Open Login screen
 2. Observe "Sign In" button color
 
 ## Screenshot
+
 ![Button color issue](screenshots/ISS-001.png)
 
 ## Recommendation
+
 Update button background color to use design token:
+
 ```tsx
-backgroundColor: tokens.button.primary.background // #2563EB
+backgroundColor: tokens.button.primary.background; // #2563EB
 ```
-```
+````
+
+````
 
 **Severity levels:**
 - **Critical:** Blocks usage, must fix immediately
@@ -300,7 +322,7 @@ backgroundColor: tokens.button.primary.background // #2563EB
 **Status:** NOT APPROVED
 **Reason:** High severity issue + design system compliance below threshold
 **Retest Required:** Yes
-```
+````
 
 ---
 
@@ -310,23 +332,24 @@ backgroundColor: tokens.button.primary.background // #2563EB
 
 ```
 WDS Analyst: "Testing complete for DD-001.
-              
+
               Results: 2 issues found
               - ISS-001: Button color incorrect (HIGH)
               - ISS-002: Transition too fast (MEDIUM)
-              
+
               Test report: test-reports/TR-001-2024-12-09.md
               Issues: issues/ISS-001.md, issues/ISS-002.md
-              
+
               Please fix and notify when ready for retest."
 ```
 
 **BMad responds:**
+
 ```
 BMad Developer: "Issues received. Fixing:
                  - ISS-001: Button color
                  - ISS-002: Transition speed
-                 
+
                  Will notify when ready for retest."
 ```
 
@@ -335,6 +358,7 @@ BMad Developer: "Issues received. Fixing:
 ### Step 10: Iterate Until Approved
 
 **BMad fixes issues:**
+
 ```
 BMad Developer: "Issues fixed.
                  Build: v0.1.0-beta.2
@@ -342,24 +366,27 @@ BMad Developer: "Issues fixed.
 ```
 
 **You retest:**
+
 - Run test scenarios again
 - Verify issues are fixed
 - Check for new issues
 - Update test report
 
 **If approved:**
+
 ```
 WDS Analyst: "Retest complete!
-              
+
               All issues resolved.
               Design system compliance: 98%
-              
+
               ✅ APPROVED - Ready to ship!
-              
+
               Test report: test-reports/TR-001-2024-12-15.md"
 ```
 
 **If not approved:**
+
 - Create new issues
 - Send to BMad
 - Repeat until approved
@@ -369,6 +396,7 @@ WDS Analyst: "Retest complete!
 ## Sign-Off Criteria
 
 **Required for approval:**
+
 - [ ] All critical tests pass
 - [ ] No critical or high severity issues
 - [ ] Design system compliance > 95%
@@ -377,6 +405,7 @@ WDS Analyst: "Retest complete!
 - [ ] All acceptance criteria met
 
 **Designer approval:**
+
 ```
 I confirm that the implemented feature matches the design
 specifications and meets the quality standards defined in
@@ -395,6 +424,7 @@ Date: ________________
 **Location:** `test-reports/TR-XXX-YYYY-MM-DD.md`
 
 **Contents:**
+
 - Test summary (date, tester, device, build)
 - Overall result (pass/fail/partial)
 - Test coverage (happy path, errors, edge cases, etc.)
@@ -409,6 +439,7 @@ Date: ________________
 **Location:** `issues/ISS-XXX-description.md`
 
 **Contents:**
+
 - Issue metadata (id, severity, status, delivery, test)
 - Description
 - Expected vs Actual
@@ -425,16 +456,19 @@ Date: ________________
 ### Design System Violations
 
 **Button color incorrect:**
+
 - Expected: Design token color
 - Actual: Hardcoded color
 - Fix: Use design token
 
 **Typography wrong:**
+
 - Expected: 16px, Semibold
 - Actual: 14px, Regular
 - Fix: Use design system styles
 
 **Spacing inconsistent:**
+
 - Expected: 20px between elements
 - Actual: 15px, 18px, 23px
 - Fix: Use spacing tokens
@@ -444,16 +478,19 @@ Date: ________________
 ### Interaction Issues
 
 **Transition too fast:**
+
 - Expected: 300ms smooth transition
 - Actual: Instant transition
 - Fix: Add transition animation
 
 **Touch target too small:**
+
 - Expected: 44×44px minimum
 - Actual: 32×32px
 - Fix: Increase button size
 
 **No loading state:**
+
 - Expected: Spinner during load
 - Actual: Blank screen
 - Fix: Add loading indicator
@@ -463,16 +500,19 @@ Date: ________________
 ### Accessibility Issues
 
 **Missing labels:**
+
 - Expected: Descriptive button labels
 - Actual: Generic "Button" label
 - Fix: Add aria-label
 
 **Low contrast:**
+
 - Expected: 4.5:1 contrast ratio
 - Actual: 3:1 contrast ratio
 - Fix: Increase text color contrast
 
 **Not keyboard accessible:**
+
 - Expected: Can navigate with keyboard
 - Actual: Keyboard navigation doesn't work
 - Fix: Add keyboard support
@@ -484,24 +524,28 @@ Date: ________________
 ### DO ✅
 
 **Be thorough:**
+
 - Test every step in test scenario
 - Check all design references
 - Verify all acceptance criteria
 - Don't skip edge cases
 
 **Be specific:**
+
 - Clear issue descriptions
 - Include screenshots/videos
 - Reference design specs
 - Provide recommendations
 
 **Be collaborative:**
+
 - Communicate clearly with BMad
 - Answer questions promptly
 - Appreciate good work
 - Focus on quality, not blame
 
 **Be iterative:**
+
 - Expect multiple rounds
 - Test quickly and provide feedback
 - Don't wait for perfection
@@ -510,20 +554,24 @@ Date: ________________
 ### DON'T ❌
 
 **Don't be vague:**
+
 - "It doesn't look right" ❌
 - "Button color is #3B82F6, should be #2563EB" ✅
 
 **Don't be nitpicky:**
+
 - Focus on critical issues first
 - Don't block on minor details
 - Remember: good enough to ship
 
 **Don't disappear:**
+
 - Respond to BMad questions
 - Retest promptly
 - Stay engaged until sign-off
 
 **Don't skip documentation:**
+
 - Always create test reports
 - Always document issues
 - Always provide clear feedback
@@ -540,6 +588,7 @@ Date: ________________
 4. **Continue** with next delivery (return to Phase 4-5)
 
 **If more flows in progress:**
+
 - Test next completed flow
 - Continue parallel work
 - Maintain quality standards
@@ -549,11 +598,13 @@ Date: ________________
 ## Resources
 
 **Templates:**
+
 - `templates/test-scenario.template.yaml`
 - `templates/test-report.template.md` (to be created)
 - `templates/issue.template.md` (to be created)
 
 **Specifications:**
+
 - `src/core/resources/wds/integration-guide.md`
 - Test scenario files in `test-scenarios/`
 

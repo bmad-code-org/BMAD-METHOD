@@ -7,18 +7,22 @@
 ## The Two-Layer System
 
 ### Layer 1: HTML Semantic Structure (h1-h6, p, etc.)
+
 **Purpose:** SEO, accessibility, document outline, screen readers
 
 **Rules:**
+
 - **Each page must have exactly ONE h1** (main page title)
 - **Heading hierarchy must be logical** (h1 → h2 → h3, no skipping)
 - **Same across all pages** for semantic consistency
 - **Not about visual appearance**
 
 ### Layer 2: Visual Text Styles (Design System)
+
 **Purpose:** Visual hierarchy, branding, design consistency
 
 **Rules:**
+
 - **Named by visual purpose** (Display-Large, Headline-Primary, Body-Regular, etc.)
 - **Can be applied to any HTML tag**
 - **Different pages can use different visual styles** for the same HTML tag
@@ -29,24 +33,30 @@
 ## Why Separate?
 
 ### Problem: Mixing HTML and Visual Styles
+
 ```markdown
 ❌ BAD:
+
 - **Style**: H1 heading
 
 What does this mean?
+
 - Is it an h1 tag?
 - Is it a visual style that looks like an h1?
 - What if another page needs h1 but different visual style?
 ```
 
 ### Solution: Specify Both Independently
+
 ```markdown
 ✅ GOOD:
+
 - **HTML Tag**: h1 (semantic structure)
 - **Visual Style**: Display-Large (from Design System)
 ```
 
 **Now we know:**
+
 - HTML: This is the main page heading (h1 for SEO)
 - Visual: It uses the "Display-Large" design system style
 - Another page could have: h1 + Headline-Medium (different visual, same semantic)
@@ -58,6 +68,7 @@ What does this mean?
 ### Example 1: Landing Page vs. Article Page
 
 **Landing Page - Hero Headline:**
+
 ```markdown
 - **HTML Tag**: h1
 - **Visual Style**: Hero headline
@@ -65,6 +76,7 @@ What does this mean?
 ```
 
 **Article Page - Article Title:**
+
 ```markdown
 - **HTML Tag**: h1
 - **Visual Style**: Main header
@@ -76,6 +88,7 @@ What does this mean?
 ### Example 2: Same Visual Style, Different Semantics
 
 **Section Heading:**
+
 ```markdown
 - **HTML Tag**: h2
 - **Visual Style**: Sub header
@@ -83,6 +96,7 @@ What does this mean?
 ```
 
 **Testimonial Quote:**
+
 ```markdown
 - **HTML Tag**: p
 - **Visual Style**: Sub header
@@ -120,6 +134,7 @@ What does this mean?
 ✅ **Button text** - Text within buttons
 
 ### Bad Visual Style Names
+
 ❌ **H1-Style** / **Heading-1** - Confuses with HTML tags
 ❌ **Text-Size-42** - Just a number, not semantic
 ❌ **Big-Text** - Too vague
@@ -137,10 +152,12 @@ What does this mean?
 **OBJECT ID**: `start-hero-headline`
 
 **HTML Structure:**
+
 - **Tag**: h1
 - **Purpose**: Main page heading (SEO/accessibility)
 
 **Visual Style:**
+
 - **Style Name**: Hero headline
 - **Font weight**: Bold (from 3px thick line markers in sketch)
 - **Font size**: 56px (est. from 32px spacing between line pairs)
@@ -153,6 +170,7 @@ What does this mean?
 **Behavior**: Updates with language toggle
 
 **Content**:
+
 - EN: "Every walk. on time. Every time."
 - SE: "Varje promenad. i tid. Varje gång."
 ```
@@ -173,6 +191,7 @@ What does this mean?
 ## Common Patterns
 
 ### Pattern 1: Landing Page
+
 ```
 h1 → Hero headline (big hero text, 56px)
 h2 → Sub header (section headings, 32px)
@@ -181,6 +200,7 @@ p → Body text (regular paragraphs, 16px)
 ```
 
 ### Pattern 2: Blog Post
+
 ```
 h1 → Main header (article title, 36px)
 h2 → Sub header (section headings, 28px)
@@ -189,6 +209,7 @@ p → Body text large (article body, 18px)
 ```
 
 ### Pattern 3: Dashboard
+
 ```
 h1 → Main header (page title, 28px)
 h2 → Card header (widget titles, 20px)
@@ -220,4 +241,3 @@ The CSS class references the **visual style name** (hero-headline, main-header),
 ---
 
 **Remember:** HTML tags = Document structure. Visual styles = Appearance. Keep them separate! 🎯
-

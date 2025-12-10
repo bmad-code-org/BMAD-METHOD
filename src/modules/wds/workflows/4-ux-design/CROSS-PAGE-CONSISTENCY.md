@@ -9,6 +9,7 @@
 **Text that looks similar and serves the same role should have the same specification across all pages.**
 
 This creates:
+
 - ✅ Consistent user experience
 - ✅ Natural design system patterns
 - ✅ Faster specification process
@@ -25,7 +26,7 @@ This creates:
 ```
 Start Page Analysis:
 ├─ Body Text: Thin lines, icon-sized spacing → 16px Regular
-├─ Button Labels: Medium lines → 16px Semibold  
+├─ Button Labels: Medium lines → 16px Semibold
 ├─ Page Title: Thick lines, button-height spacing → 48px Bold
 ├─ Navigation: Medium lines, small spacing → 14px Medium
 └─ Caption: Thinnest lines, half-icon spacing → 12px Regular
@@ -40,12 +41,14 @@ Start Page Analysis:
 **When analyzing the About Page sketch:**
 
 #### Step 1: Check Previous Pages
+
 ```
-Agent: "I see you've already analyzed the Start Page. 
+Agent: "I see you've already analyzed the Start Page.
 I'll use those text styles as reference points."
 ```
 
 #### Step 2: Match Visual Patterns
+
 ```
 About Page body text:
 - Thin lines ✓
@@ -57,6 +60,7 @@ About Page body text:
 ```
 
 #### Step 3: Confirm with Designer
+
 ```
 Agent: "This body text looks identical to Start Page body text.
 Should I use the same specification (16px Regular)?"
@@ -125,11 +129,13 @@ Components Identified:
 ### Benefits
 
 **Without explicit design system:**
+
 - Maintains consistency through pattern recognition
 - Reduces specification time (reference previous pages)
 - Creates professional, cohesive experience
 
 **With explicit design system:**
+
 - Automatically maps to existing components
 - Validates sketch against design system
 - Suggests design system updates when new patterns emerge

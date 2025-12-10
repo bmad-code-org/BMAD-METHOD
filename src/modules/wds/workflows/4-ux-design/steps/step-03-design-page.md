@@ -70,6 +70,7 @@ Choice [1/2]:</ask>
 <output>**Time to create the complete specification.** 📝
 
 We'll go through this systematically in focused steps:
+
 1. Page basics
 2. Layout sections
 3. Components & Object IDs
@@ -82,15 +83,16 @@ We'll go through this systematically in focused steps:
 This ensures nothing is missed and every detail is captured.</output>
 
 <action>Execute substeps in sequence:
-  1. Load and execute `substeps/4c-01-page-basics.md`
-  2. Load and execute `substeps/4c-02-layout-sections.md`
-  3. Load and execute `substeps/4c-03-components-objects.md`
-  4. Load and execute `substeps/4c-04-content-languages.md`
-  5. Load and execute `substeps/4c-05-interactions.md`
-  6. Load and execute `substeps/4c-06-states.md`
-  7. Load and execute `substeps/4c-07-validation.md`
-  8. Load and execute `substeps/4c-08-generate-spec.md`
-</action>
+
+1. Load and execute `substeps/4c-01-page-basics.md`
+2. Load and execute `substeps/4c-02-layout-sections.md`
+3. Load and execute `substeps/4c-03-components-objects.md`
+4. Load and execute `substeps/4c-04-content-languages.md`
+5. Load and execute `substeps/4c-05-interactions.md`
+6. Load and execute `substeps/4c-06-states.md`
+7. Load and execute `substeps/4c-07-validation.md`
+8. Load and execute `substeps/4c-08-generate-spec.md`
+   </action>
 
 <action>When all 4C substeps complete, return here and continue to 4D</action>
 
@@ -130,10 +132,11 @@ Choice [1/2]:</ask>
 <output>**Page "{page-name}" is complete!** 🎉
 
 **Created:**
+
 - ✅ Specification: `C-Scenarios/{scenario}/{page}/{page}.md`
-{{#if prototype_created}}
+  {{#if prototype_created}}
 - ✅ Prototype: `C-Scenarios/{scenario}/{page}/Prototype/`
-{{/if}}
+  {{/if}}
 - ✅ PRD Requirements: Added to `D-PRD/PRD.md`
 
 **Your page is development-ready!** ✨</output>
@@ -148,11 +151,11 @@ Choice [1/2]:</ask>
 <check if="more_pages_remaining">
   <ask>**Next page: {next_page_name}**
 
-  [C] Continue to next page
-  [P] Pause - Save and continue later
+[C] Continue to next page
+[P] Pause - Save and continue later
 
-  Choice [C/P]:</ask>
-  
+Choice [C/P]:</ask>
+
   <check if="choice == C">
     <action>Loop back to top of Step 3 with new page</action>
   </check>
@@ -173,6 +176,7 @@ Choice [1/2]:</ask>
 ## STATE MANAGEMENT
 
 After each page:
+
 - Update scenario-info.yaml with current_page_index
 - Mark page as complete in tracking
 - Save progress
@@ -183,4 +187,3 @@ After each page:
 
 - If more pages: Loop back to top of Step 3
 - If scenario complete: Load `steps/step-04-complete-scenario.md`
-

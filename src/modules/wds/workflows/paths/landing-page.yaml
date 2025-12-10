@@ -51,4 +51,3 @@ phases:
         command: "design-system"
         output: "Component documentation"
         note: "Optional - skip for truly simple one-off pages"
-

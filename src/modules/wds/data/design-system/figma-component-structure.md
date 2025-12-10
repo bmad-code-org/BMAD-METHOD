@@ -40,6 +40,7 @@ Design System File (Figma)
 ```
 
 **Benefits:**
+
 - Clear organization
 - Easy navigation
 - Matches WDS structure
@@ -54,6 +55,7 @@ Design System File (Figma)
 **Pattern:** `[ComponentType]/[ComponentName]`
 
 **Examples:**
+
 ```
 Button/Primary
 Button/Secondary
@@ -65,6 +67,7 @@ Card/Content
 ```
 
 **Rules:**
+
 - Use forward slash for hierarchy
 - Title case for names
 - Match WDS component names
@@ -94,6 +97,7 @@ Card/Content
    - Padding/gap values
 
 **Example Description:**
+
 ```
 Button Primary [btn-001]
 
@@ -112,17 +116,20 @@ WDS Component: Button.primary [btn-001]
 **Use Figma's variant properties:**
 
 **Property 1: Type** (variant)
+
 - Primary
 - Secondary
 - Ghost
 - Outline
 
 **Property 2: Size**
+
 - Small
 - Medium
 - Large
 
 **Property 3: State**
+
 - Default
 - Hover
 - Active
@@ -130,6 +137,7 @@ WDS Component: Button.primary [btn-001]
 - Loading
 
 **Property 4: Icon** (optional)
+
 - None
 - Left
 - Right
@@ -144,6 +152,7 @@ WDS Component: Button.primary [btn-001]
 **Format:** `Property=Value`
 
 **Examples:**
+
 ```
 Type=Primary, Size=Medium, State=Default
 Type=Primary, Size=Medium, State=Hover
@@ -151,6 +160,7 @@ Type=Secondary, Size=Large, State=Disabled
 ```
 
 **Benefits:**
+
 - Clear property structure
 - Easy to find specific variants
 - MCP can parse programmatically
@@ -163,6 +173,7 @@ Type=Secondary, Size=Large, State=Disabled
 ### Required States
 
 **Interactive Components (Buttons, Links):**
+
 - Default
 - Hover
 - Active (pressed)
@@ -171,6 +182,7 @@ Type=Secondary, Size=Large, State=Disabled
 - Loading (optional)
 
 **Form Components (Inputs, Selects):**
+
 - Default (empty)
 - Focus (active)
 - Filled (has content)
@@ -179,6 +191,7 @@ Type=Secondary, Size=Large, State=Disabled
 - Success (optional)
 
 **Feedback Components (Alerts, Toasts):**
+
 - Default
 - Success
 - Error
@@ -192,6 +205,7 @@ Type=Secondary, Size=Large, State=Disabled
 **Document state changes:**
 
 **Hover:**
+
 - Background color change
 - Border change
 - Shadow change
@@ -199,16 +213,19 @@ Type=Secondary, Size=Large, State=Disabled
 - Cursor change
 
 **Active:**
+
 - Background color (darker)
 - Scale (slightly smaller)
 - Shadow (reduced)
 
 **Disabled:**
+
 - Opacity (0.5-0.6)
 - Cursor (not-allowed)
 - Grayscale (optional)
 
 **Loading:**
+
 - Spinner/progress indicator
 - Disabled interaction
 - Loading text
@@ -222,6 +239,7 @@ Type=Secondary, Size=Large, State=Disabled
 **Map Figma variables to WDS tokens:**
 
 **Colors:**
+
 ```
 Figma Variable → WDS Token
 primary/500 → color-primary-500
@@ -230,6 +248,7 @@ success/600 → color-success-600
 ```
 
 **Typography:**
+
 ```
 Figma Style → WDS Token
 Text/Display → text-display
@@ -238,6 +257,7 @@ Text/Body → text-body
 ```
 
 **Spacing:**
+
 ```
 Figma Variable → WDS Token
 spacing/2 → spacing-2
@@ -246,6 +266,7 @@ spacing/8 → spacing-8
 ```
 
 **Effects:**
+
 ```
 Figma Effect → WDS Token
 shadow/sm → shadow-sm
@@ -285,6 +306,7 @@ radius/md → radius-md
 ```
 
 **Example:**
+
 ```
 Button Primary [btn-001]
 
@@ -321,11 +343,13 @@ Button Primary [btn-001]
 ### Spacing
 
 **Use consistent spacing values:**
+
 - Padding: 8px, 12px, 16px, 24px
 - Gap: 4px, 8px, 12px, 16px
 - Match WDS spacing tokens
 
 **Auto Layout Settings:**
+
 - Horizontal/Vertical alignment
 - Padding (all sides or specific)
 - Gap between items
@@ -338,16 +362,19 @@ Button Primary [btn-001]
 **Set appropriate constraints:**
 
 **Buttons:**
+
 - Hug contents (width)
 - Fixed height
 - Min width for touch targets (44px)
 
 **Inputs:**
+
 - Fill container (width)
 - Fixed height (40-48px)
 - Responsive to content
 
 **Cards:**
+
 - Fill container or fixed width
 - Hug contents (height)
 - Responsive to content
@@ -359,18 +386,21 @@ Button Primary [btn-001]
 ### Creating Instances
 
 **Best practices:**
+
 - Always use component instances (not detached)
 - Override only necessary properties
 - Maintain connection to main component
 - Document overrides if needed
 
 **Overridable Properties:**
+
 - Text content
 - Icons
 - Colors (if using variables)
 - Spacing (if needed)
 
 **Non-Overridable:**
+
 - Structure
 - Layout
 - Core styling
@@ -385,16 +415,19 @@ Button Primary [btn-001]
 **Add WDS component ID to Figma:**
 
 **In component description:**
+
 ```
 Button Primary [btn-001]
 ```
 
 **In component name:**
+
 ```
 Button/Primary [btn-001]
 ```
 
 **Benefits:**
+
 - Easy to find components
 - Clear WDS mapping
 - MCP can extract ID
@@ -407,16 +440,19 @@ Button/Primary [btn-001]
 **Figma generates unique node IDs:**
 
 **Format:**
+
 ```
 figma://file/[file-id]/node/[node-id]
 ```
 
 **How to get node ID:**
+
 1. Select component in Figma
 2. Right-click → "Copy link to selection"
 3. Extract node ID from URL
 
 **Store in WDS:**
+
 ```yaml
 # D-Design-System/figma-mappings.md
 Button [btn-001] → figma://file/abc123/node/456:789
@@ -495,12 +531,14 @@ Input [inp-001] → figma://file/abc123/node/456:790
 ### ❌ Mistake 1: Hardcoded Values
 
 **Wrong:**
+
 ```
 Background: #2563eb (hardcoded hex)
 Padding: 16px (hardcoded value)
 ```
 
 **Right:**
+
 ```
 Background: primary/600 (variable)
 Padding: spacing/4 (variable)
@@ -509,11 +547,13 @@ Padding: spacing/4 (variable)
 ### ❌ Mistake 2: Detached Instances
 
 **Wrong:**
+
 - Detaching component instances
 - Losing connection to main component
 - Manual updates required
 
 **Right:**
+
 - Always use instances
 - Override only necessary properties
 - Maintain component connection
@@ -521,6 +561,7 @@ Padding: spacing/4 (variable)
 ### ❌ Mistake 3: Inconsistent Naming
 
 **Wrong:**
+
 ```
 btn-primary
 ButtonSecondary
@@ -528,6 +569,7 @@ button_ghost
 ```
 
 **Right:**
+
 ```
 Button/Primary
 Button/Secondary
@@ -537,11 +579,13 @@ Button/Ghost
 ### ❌ Mistake 4: Missing States
 
 **Wrong:**
+
 - Only default state
 - No hover/active states
 - No disabled state
 
 **Right:**
+
 - All required states
 - Visual differentiation
 - State transitions documented
@@ -549,12 +593,14 @@ Button/Ghost
 ### ❌ Mistake 5: No WDS Component ID
 
 **Wrong:**
+
 ```
 Button Primary
 (no component ID)
 ```
 
 **Right:**
+
 ```
 Button Primary [btn-001]
 (clear WDS mapping)
@@ -569,6 +615,7 @@ Button Primary [btn-001]
 **Component Name:** `Button/Primary [btn-001]`
 
 **Description:**
+
 ```
 Button Primary [btn-001]
 
@@ -581,6 +628,7 @@ Sizes: small, medium, large
 ```
 
 **Variants:**
+
 ```
 Type=Primary, Size=Medium, State=Default
 Type=Primary, Size=Medium, State=Hover
@@ -591,6 +639,7 @@ Type=Primary, Size=Large, State=Default
 ```
 
 **Properties:**
+
 - Auto Layout: Horizontal
 - Padding: 16px (horizontal), 12px (vertical)
 - Gap: 8px (if icon)
@@ -604,6 +653,7 @@ Type=Primary, Size=Large, State=Default
 **Component Name:** `Input/Text [inp-001]`
 
 **Description:**
+
 ```
 Input Text [inp-001]
 
@@ -614,6 +664,7 @@ States: default, focus, filled, disabled, error, success
 ```
 
 **Variants:**
+
 ```
 State=Default
 State=Focus
@@ -624,6 +675,7 @@ State=Success
 ```
 
 **Properties:**
+
 - Auto Layout: Horizontal
 - Padding: 12px
 - Height: 44px (fixed)

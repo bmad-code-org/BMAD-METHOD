@@ -21,6 +21,7 @@ Excalidraw is a free, open-source whiteboard tool that creates hand-drawn style 
 ## When to Use Excalidraw
 
 ### **Perfect For:**
+
 - Digital sketching (alternative to paper)
 - Collaborative design sessions
 - AI-generated layout variations
@@ -28,6 +29,7 @@ Excalidraw is a free, open-source whiteboard tool that creates hand-drawn style 
 - Iterative design exploration
 
 ### **Not Required If:**
+
 - You prefer paper and pen
 - You use other tools (Figma, iPad, etc.)
 - You're comfortable with your current workflow
@@ -42,17 +44,18 @@ Excalidraw is a free, open-source whiteboard tool that creates hand-drawn style 
 
 ```yaml
 sketching:
-  tool: excalidraw  # or "paper" or "figma" or "other"
+  tool: excalidraw # or "paper" or "figma" or "other"
   excalidraw:
     enabled: true
-    auto_export: false  # Auto-generate PNG/SVG on save
-    use_library: true   # Load WDS component library
-    grid_size: 20       # Snap to grid (px)
+    auto_export: false # Auto-generate PNG/SVG on save
+    use_library: true # Load WDS component library
+    grid_size: 20 # Snap to grid (px)
 ```
 
 ### **2. Install Tools**
 
 **VS Code Extension (Recommended):**
+
 ```
 1. Open Extensions (Ctrl+Shift+X)
 2. Search "Excalidraw"
@@ -60,11 +63,13 @@ sketching:
 ```
 
 **Or use web version:**
+
 - https://excalidraw.com (no installation needed)
 
 ### **3. Load WDS Library (Optional)**
 
 **If `use_library: true` in config:**
+
 ```
 1. Open Excalidraw
 2. Click library icon
@@ -77,28 +82,36 @@ sketching:
 ## Documentation
 
 ### **Setup & Configuration**
+
 → [excalidraw-setup.md](excalidraw-setup.md)
+
 - Installation options
 - VS Code configuration
 - Project settings
 - Grid and theme setup
 
 ### **Sketching Workflow**
+
 → [sketching-guide.md](sketching-guide.md)
+
 - When to sketch
 - What to sketch
 - How to sketch
 - File organization
 
 ### **Export Workflow**
+
 → [export-workflow.md](export-workflow.md)
+
 - Manual export (PNG/SVG)
 - Automated export (GitHub Actions)
 - File naming conventions
 - GitHub display
 
 ### **AI Collaboration**
+
 → [ai-collaboration.md](ai-collaboration.md)
+
 - AI-generated layouts
 - AI analysis of sketches
 - Iteration workflow
@@ -120,6 +133,7 @@ C-Scenarios/[scenario-name]/
 ```
 
 **In specifications.md:**
+
 ```markdown
 ## Design
 
@@ -137,6 +151,7 @@ C-Scenarios/[scenario-name]/
 **Step 4B-02: Sketch Interface**
 
 **If Excalidraw enabled:**
+
 ```
 Agent: "I see you've enabled Excalidraw. Would you like to:
         1. Sketch manually in Excalidraw
@@ -145,6 +160,7 @@ Agent: "I see you've enabled Excalidraw. Would you like to:
 ```
 
 **AI can:**
+
 - Generate `.excalidraw` files with layout options
 - Analyze your sketches (upload PNG)
 - Suggest improvements
@@ -155,9 +171,11 @@ Agent: "I see you've enabled Excalidraw. Would you like to:
 ## Optional Features
 
 ### **Component Library**
+
 **File:** `wds-library.excalidrawlib`
 
 Pre-built components:
+
 - Mobile/tablet/desktop frames
 - Buttons, inputs, cards
 - Navigation patterns
@@ -166,6 +184,7 @@ Pre-built components:
 **Enable:** Set `use_library: true` in config
 
 ### **Auto-Export**
+
 **GitHub Actions or pre-commit hooks**
 
 Automatically generates PNG/SVG when you save `.excalidraw` files.
@@ -181,6 +200,7 @@ See: [automation/README.md](automation/README.md)
 ### **Excalidraw vs Paper**
 
 **Excalidraw:**
+
 - ✅ Digital, shareable
 - ✅ AI can generate
 - ✅ Version controlled
@@ -188,6 +208,7 @@ See: [automation/README.md](automation/README.md)
 - ❌ Requires tool setup
 
 **Paper:**
+
 - ✅ Zero setup
 - ✅ Fast and natural
 - ✅ No distractions
@@ -197,6 +218,7 @@ See: [automation/README.md](automation/README.md)
 ### **Excalidraw vs Figma**
 
 **Excalidraw:**
+
 - ✅ Free and open-source
 - ✅ Hand-drawn aesthetic
 - ✅ AI can generate
@@ -204,6 +226,7 @@ See: [automation/README.md](automation/README.md)
 - ❌ Less precise
 
 **Figma:**
+
 - ✅ Professional tool
 - ✅ Pixel-perfect
 - ✅ Component systems
@@ -218,19 +241,22 @@ See: [automation/README.md](automation/README.md)
 **To disable after enabling:**
 
 **Edit:** `project-config.yaml`
+
 ```yaml
 sketching:
-  tool: paper  # or "figma" or "other"
+  tool: paper # or "figma" or "other"
   excalidraw:
     enabled: false
 ```
 
 **Agent will:**
+
 - Skip Excalidraw-specific prompts
 - Use generic sketching workflow
 - Not generate `.excalidraw` files
 
 **Your existing files:**
+
 - Remain in project
 - Can still be opened
 - Not automatically deleted
@@ -242,16 +268,19 @@ sketching:
 ### **Issues with Excalidraw?**
 
 **VS Code extension not working:**
+
 - Restart VS Code
 - Check extension is enabled
 - Try web version as fallback
 
 **Files won't open:**
+
 - Verify JSON is valid
 - Check file extension is `.excalidraw`
 - Try opening in web version
 
 **AI can't generate files:**
+
 - Check core helpers are loaded
 - Verify project config
 - Report issue to WDS
@@ -259,11 +288,13 @@ sketching:
 ### **Community**
 
 **Excalidraw:**
+
 - Website: https://excalidraw.com
 - GitHub: https://github.com/excalidraw/excalidraw
 - Discord: https://discord.gg/UexuTaE
 
 **WDS:**
+
 - Discord: [WDS community]
 - GitHub: [WDS issues]
 
@@ -272,12 +303,14 @@ sketching:
 ## Next Steps
 
 **If Excalidraw is enabled:**
+
 1. Install VS Code extension (or use web)
 2. Load WDS library (optional)
 3. Configure grid and theme
 4. Start sketching!
 
 **Learn more:**
+
 - [Setup Guide](excalidraw-setup.md)
 - [Sketching Guide](sketching-guide.md)
 - [AI Collaboration](ai-collaboration.md)

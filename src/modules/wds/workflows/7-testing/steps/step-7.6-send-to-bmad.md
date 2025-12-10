@@ -9,6 +9,7 @@ Send test results, issues, and test report to BMad for fixes.
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 7.5 (test report created)
 - ✅ All issues documented
 - ✅ Test report finalized
@@ -21,6 +22,7 @@ Send test results, issues, and test report to BMad for fixes.
 ### Gather All Artifacts
 
 **Checklist:**
+
 - [ ] Test report: `test-reports/TR-XXX-YYYY-MM-DD.md`
 - [ ] Issues list: `issues/issues-list.md`
 - [ ] Individual issue files: `issues/ISS-XXX-*.md`
@@ -274,11 +276,11 @@ BMad Developer
 
 ```yaml
 delivery:
-  status: "in_testing"  # Changed from "in_development"
-  tested_at: "2024-12-09T16:00:00Z"
-  test_result: "fail"
+  status: 'in_testing' # Changed from "in_development"
+  tested_at: '2024-12-09T16:00:00Z'
+  test_result: 'fail'
   issues_found: 8
-  test_report: "test-reports/TR-001-2024-12-09.md"
+  test_report: 'test-reports/TR-001-2024-12-09.md'
   retest_required: true
 ```
 
@@ -288,13 +290,13 @@ delivery:
 
 ```yaml
 delivery:
-  status: "complete"  # Changed from "in_development"
-  tested_at: "2024-12-09T16:00:00Z"
-  test_result: "pass"
+  status: 'complete' # Changed from "in_development"
+  tested_at: '2024-12-09T16:00:00Z'
+  test_result: 'pass'
   issues_found: 0
-  test_report: "test-reports/TR-001-2024-12-09.md"
-  approved_by: "[Your name]"
-  approved_at: "2024-12-09T16:00:00Z"
+  test_report: 'test-reports/TR-001-2024-12-09.md'
+  approved_by: '[Your name]'
+  approved_at: '2024-12-09T16:00:00Z'
   ready_for_production: true
 ```
 
@@ -305,21 +307,25 @@ delivery:
 ### DO ✅
 
 **Be clear:**
+
 - State result upfront (PASS/FAIL)
 - List issues by severity
 - Provide clear next steps
 
 **Be helpful:**
+
 - Offer to clarify issues
 - Provide recommendations
 - Be available for questions
 
 **Be professional:**
+
 - Objective tone
 - Data-driven feedback
 - Constructive criticism
 
 **Be appreciative:**
+
 - Acknowledge good work
 - Highlight what worked well
 - Thank for collaboration
@@ -327,19 +333,23 @@ delivery:
 ### DON'T ❌
 
 **Don't be vague:**
+
 - "Some issues found" ❌
 - "8 issues found (3 high, 3 medium, 2 low)" ✅
 
 **Don't be harsh:**
+
 - "This is terrible" ❌
 - "Found some issues that need fixing" ✅
 
 **Don't disappear:**
+
 - Send notification and stay available
 - Answer questions promptly
 - Be responsive
 
 **Don't delay:**
+
 - Send results within 24 hours of completing testing
 - Don't make BMad wait
 

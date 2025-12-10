@@ -2,12 +2,12 @@
 # Save to: test-scenarios/TS-XXX-name.yaml
 
 test_scenario:
-  id: "TS-XXX"                      # Format: TS-001, TS-002, etc.
-  name: "Feature Testing"           # Human-readable name
-  delivery_id: "DD-XXX"             # Related Design Delivery
-  type: "user_acceptance"           # user_acceptance | integration | e2e
-  status: "ready"                   # ready | in_progress | blocked
-  tester: "designer"                # designer | qa | developer
+  id: "TS-XXX" # Format: TS-001, TS-002, etc.
+  name: "Feature Testing" # Human-readable name
+  delivery_id: "DD-XXX" # Related Design Delivery
+  type: "user_acceptance" # user_acceptance | integration | e2e
+  status: "ready" # ready | in_progress | blocked
+  tester: "designer" # designer | qa | developer
   created_at: "YYYY-MM-DDTHH:MM:SSZ"
 
 test_objectives:
@@ -21,7 +21,7 @@ test_environment:
   devices:
     - "Device 1 (OS version)"
     - "Device 2 (OS version)"
-  
+
   test_data:
     - field: "value"
     - field: "value"
@@ -30,17 +30,17 @@ test_environment:
 happy_path:
   - id: "HP-001"
     name: "Main User Flow"
-    priority: "critical"            # critical | high | medium | low
-    
+    priority: "critical" # critical | high | medium | low
+
     steps:
       - action: "[User action]"
         expected: "[Expected result]"
         design_ref: "[Path to specification]#[section]"
-        
+
       - action: "[User action]"
         expected: "[Expected result]"
         design_ref: "[Path to specification]#[section]"
-    
+
     success_criteria:
       - "[Success criterion 1]"
       - "[Success criterion 2]"
@@ -51,13 +51,13 @@ error_states:
   - id: "ES-001"
     name: "Error Scenario"
     priority: "high"
-    
+
     steps:
       - action: "[Action that triggers error]"
       - expected: "[Expected error message]"
       - expected: "[Expected recovery option]"
       - design_ref: "[Path to specification]#[error-section]"
-    
+
     success_criteria:
       - "[Error handling criterion 1]"
       - "[Error handling criterion 2]"
@@ -67,12 +67,12 @@ edge_cases:
   - id: "EC-001"
     name: "Edge Case Scenario"
     priority: "medium"
-    
+
     steps:
       - action: "[Unusual action]"
       - expected: "[Expected handling]"
       - design_ref: "[Path to specification]#[edge-case-section]"
-    
+
     success_criteria:
       - "[Edge case criterion 1]"
 
@@ -94,15 +94,15 @@ accessibility:
   - id: "A11Y-001"
     name: "Screen Reader Navigation"
     priority: "high"
-    
+
     setup: "Enable screen reader (VoiceOver/TalkBack)"
-    
+
     steps:
       - action: "[Navigate with screen reader]"
       - verify:
           - "[Accessibility check 1]"
           - "[Accessibility check 2]"
-    
+
     success_criteria:
       - "[Accessibility criterion 1]"
       - "[Accessibility criterion 2]"
@@ -112,10 +112,10 @@ usability:
   - id: "UX-001"
     name: "First Impression"
     type: "observational"
-    
+
     instructions: |
       [Instructions for conducting usability test]
-    
+
     success_criteria:
       - "[Usability criterion 1]"
       - "[Usability criterion 2]"
@@ -124,11 +124,11 @@ usability:
 performance:
   - id: "PERF-001"
     name: "Performance Check"
-    
+
     verify:
       - "[Performance metric 1]"
       - "[Performance metric 2]"
-    
+
     success_criteria:
       - "[Performance target 1]"
       - "[Performance target 2]"
@@ -143,14 +143,14 @@ report_template:
         - "Device tested"
         - "Build version"
         - "Overall result (Pass/Fail/Partial)"
-    
+
     - name: "Happy Path Results"
       fields:
         - "Test ID"
         - "Result (Pass/Fail)"
         - "Notes"
         - "Screenshots"
-    
+
     - name: "Issues Found"
       fields:
         - "Issue ID"
@@ -160,13 +160,13 @@ report_template:
         - "Expected vs Actual"
         - "Screenshot/Video"
         - "Design reference violated"
-    
+
     - name: "Design System Compliance"
       fields:
         - "Component"
         - "Compliant (Yes/No)"
         - "Deviations noted"
-    
+
     - name: "Recommendations"
       fields:
         - "What worked well"
@@ -181,12 +181,12 @@ sign_off:
     - "Design system compliance > 95%"
     - "Accessibility tests pass"
     - "Usability metrics meet targets"
-  
+
   designer_approval:
     statement: |
       I confirm that the implemented feature matches the design
       specifications and meets the quality standards defined in
       this test scenario.
-    
+
     signature: "________________"
     date: "________________"

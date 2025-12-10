@@ -7,6 +7,7 @@
 ## Choose Your Journey
 
 ### Option 1: Full Immersion (Recommended)
+
 - Complete all modules in order
 - Practice exercises for each module
 - Apply to a real project as you learn
@@ -14,6 +15,7 @@
 - **Best for:** Designers who want to master the methodology
 
 ### Option 2: Quick Start
+
 - Focus on core modules (Module 01, 02, 04, 06)
 - Skip advanced topics initially
 - Get started fast, learn more later
@@ -21,6 +23,7 @@
 - **Best for:** Designers who need results quickly
 
 ### Option 3: Self-Paced
+
 - Learn one module per week
 - Deep practice between modules
 - Build multiple projects as you learn
@@ -36,21 +39,25 @@
 By the end of this course, you'll have created:
 
 **1. Complete Project Brief**
+
 - Vision and goals clearly defined
 - Stakeholders and constraints documented
 - Foundation for all design decisions
 
 **2. Trigger Map**
+
 - Target groups identified and prioritized
 - User triggers and outcomes mapped
 - Features prioritized by impact
 
 **3. Scenario Specifications**
+
 - At least one complete user scenario
 - Why-based specifications for key components
 - AI-ready documentation
 
 **4. Design System Foundation**
+
 - Design tokens extracted from your specs
 - Component patterns identified
 - Reusable architecture defined
@@ -62,12 +69,14 @@ By the end of this course, you'll have created:
 ## Course Format
 
 Each module contains:
+
 - **Inspiration** - Why this matters and what you'll gain
 - **Teaching** - How to do it with confidence and AI support
 - **Practice** - Apply it to your own project
 - **Tutorial** - Quick step-by-step guide (for practical modules)
 
 **Learning formats:**
+
 - Read as documentation
 - Generate videos/podcasts with NotebookLM
 - Use in workshops and team training

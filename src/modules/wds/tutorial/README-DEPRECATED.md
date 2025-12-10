@@ -34,17 +34,20 @@ course/
 ## Why the Change?
 
 **Benefits:**
+
 - ✅ Single learning path - everything in one place
 - ✅ Module-specific tutorials - tutorial right where you need it
 - ✅ Cleaner structure - no separate tutorial folder
 - ✅ Better organization - theory + practice together
 
 **Old approach:**
+
 - Separate tutorial folder
 - Disconnected from course content
 - Harder to navigate
 
 **New approach:**
+
 - Tutorials integrated into modules
 - Theory → Tutorial → Practice flow
 - Easier to follow

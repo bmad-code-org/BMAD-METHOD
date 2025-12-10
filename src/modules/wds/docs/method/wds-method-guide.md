@@ -45,12 +45,14 @@ Vision → Clarity → UX Design → Design System → PRD Complete
 WDS follows six phases, each producing artifacts in your project's `docs/` folder:
 
 ### Phase 1: Product Exploration (Product Brief)
+
 **Output:** `A-Product-Brief/`  
 **Agent:** Saga the Analyst
 
 Establish your strategic foundation through conversational discovery. Instead of filling out questionnaires, you have a conversation that builds understanding organically.
 
 **What you create:**
+
 - Product vision and problem statement
 - Market positioning and differentiation
 - Success criteria and metrics
@@ -59,12 +61,14 @@ Establish your strategic foundation through conversational discovery. Instead of
 ---
 
 ### Phase 2: Trigger Mapping (Trigger Map)
+
 **Output:** `B-Trigger-Map/`  
 **Agent:** Saga the Analyst
 
 Connect business goals to user psychology through Trigger Mapping. Discover not just WHO your users are, but WHY they act and WHAT triggers their decisions.
 
 **What you create:**
+
 - Business goals (Vision + SMART objectives)
 - Target groups connected to business outcomes
 - Detailed personas with psychological depth
@@ -75,12 +79,14 @@ Connect business goals to user psychology through Trigger Mapping. Discover not 
 ---
 
 ### Phase 3: PRD Platform (Technical Foundation)
+
 **Output:** `C-Requirements/`  
 **Agent:** Freyja the PM
 
 Prove your concept works technically - in parallel with design work. Validate platform decisions, create proofs of concept, and set up experimental endpoints.
 
 **What you create:**
+
 - Platform architecture decisions
 - Data model and integrations
 - Technical proofs of concept
@@ -91,6 +97,7 @@ Prove your concept works technically - in parallel with design work. Validate pl
 ---
 
 ### Phase 4: UX Design (UX-Sketches & Usage Scenarios)
+
 **Output:** `C-Scenarios/`  
 **Agent:** Baldr the UX Expert
 
@@ -99,6 +106,7 @@ Transform ideas into detailed visual specifications. Your agent helps you think 
 **The key insight:** Designs that can be logically explained without gaps are easy to develop. The specification process reveals gaps early - when they're easy to address.
 
 **What you create:**
+
 - Scenario folder structure (numbered hierarchy)
 - Page specifications with full detail
 - Component definitions with Object IDs
@@ -109,12 +117,14 @@ Transform ideas into detailed visual specifications. Your agent helps you think 
 ---
 
 ### Phase 5: Design System (Component Library)
+
 **Output:** `D-Design-System/`  
 **Agent:** Baldr the UX Expert
 
 Build your component library following atomic design principles. This phase is **optional** and runs **in parallel** with Phase 4 - as you design pages, you extract reusable components.
 
 **What you create:**
+
 - Design tokens (colors, typography, spacing)
 - Atomic components (buttons, inputs, labels)
 - Molecular components (form groups, cards)
@@ -125,12 +135,14 @@ Build your component library following atomic design principles. This phase is *
 ---
 
 ### Phase 6: PRD Finalization (Complete PRD)
+
 **Output:** Complete PRD in `C-Requirements/` + `E-UI-Roadmap/`  
 **Agent:** Freyja the PM
 
 Compile all functional requirements discovered during Phase 4 into a complete, development-ready PRD. This phase runs **continuously** - hand off as soon as you have MVP scope, then update as design progresses.
 
 **What you create:**
+
 - Complete PRD (Platform + Functional requirements)
 - Feature organization by epic/area
 - Development sequence with priorities
@@ -145,14 +157,15 @@ WDS creates an organized folder structure in your project's `docs/` folder. Duri
 
 ### Your 4 Options
 
-| Choice | Option A | Option B |
-|--------|----------|----------|
+| Choice     | Option A             | Option B                |
+| ---------- | -------------------- | ----------------------- |
 | **Prefix** | Letters (A, B, C...) | Numbers (01, 02, 03...) |
-| **Case** | Title-Case | lowercase |
+| **Case**   | Title-Case           | lowercase               |
 
 ### Examples
 
 **Letters + Title-Case** (default):
+
 ```
 docs/
 ├── A-Product-Brief/
@@ -164,6 +177,7 @@ docs/
 ```
 
 **Numbers + Title-Case**:
+
 ```
 docs/
 ├── 01-Product-Brief/
@@ -175,6 +189,7 @@ docs/
 ```
 
 **Default (Letters + Title-Case) is recommended because:**
+
 - Title-Case is easier for non-technical people to read
 - Letters create distinctive WDS branding
 - Distinguishes WDS folders from other docs
@@ -185,14 +200,14 @@ docs/
 
 Not every project needs all six phases. Select what you need based on your situation:
 
-| Project Type | Recommended Phases |
-|--------------|-------------------|
-| **Landing page** | 1, 4 |
-| **Full product (greenfield)** | All six |
-| **Feature enhancement** | 2, 4, 6 |
-| **Design system only** | 4, 5 |
-| **Strategic planning** | 1, 2 |
-| **Quick prototype** | 4 only |
+| Project Type                  | Recommended Phases |
+| ----------------------------- | ------------------ |
+| **Landing page**              | 1, 4               |
+| **Full product (greenfield)** | All six            |
+| **Feature enhancement**       | 2, 4, 6            |
+| **Design system only**        | 4, 5               |
+| **Strategic planning**        | 1, 2               |
+| **Quick prototype**           | 4 only             |
 
 Your agents will help you identify which phases fit your project.
 
@@ -203,29 +218,35 @@ Your agents will help you identify which phases fit your project.
 Three specialized agents guide you through WDS:
 
 ### Saga the Analyst 📚
-*"The one who tells your business story"*
+
+_"The one who tells your business story"_
 
 Saga guides you through discovery and research. She's curious, patient, and helps you uncover insights you might not have seen yourself.
 
 **Works with you on:**
+
 - Phase 1: Product Exploration
 - Phase 2: Trigger Mapping
 
 ### Freyja the PM ⚔️
-*"The strategic leader who sees what must be done"*
+
+_"The strategic leader who sees what must be done"_
 
 Freyja helps you define technical requirements and finalize the PRD for development. She balances passion with strategy, knowing when to be fierce and when to be patient.
 
 **Works with you on:**
+
 - Phase 3: PRD Platform
 - Phase 6: PRD Finalization
 
 ### Baldr the UX Expert ✨
-*"The one who brings light and beauty"*
+
+_"The one who brings light and beauty"_
 
 Baldr transforms your ideas into beautiful, detailed specifications. He cares deeply about craft and ensures every detail serves the user experience.
 
 **Works with you on:**
+
 - Phase 4: UX Design
 - Phase 5: Design System
 
@@ -233,11 +254,12 @@ Baldr transforms your ideas into beautiful, detailed specifications. He cares de
 
 ## How Sessions Work
 
-WDS sessions are **conversations, not interrogations**. 
+WDS sessions are **conversations, not interrogations**.
 
 ### The Rhythm
 
 A good WDS session feels like coffee with a wise mentor:
+
 - They ask something interesting
 - You share your thinking
 - They reflect it back, maybe adding a new angle
@@ -248,12 +270,14 @@ It never feels like filling out a form.
 ### What to Expect
 
 **Your agent will:**
+
 - Ask one question at a time, then listen
 - Reflect back what they heard before moving on
 - Build documents together with you, piece by piece
 - Check in to make sure they understood correctly
 
 **You'll leave with:**
+
 - Clear documentation you helped create
 - Deeper understanding of your own product
 - Ready-to-use artifacts for the next phase
@@ -293,6 +317,7 @@ npx bmad-method@alpha install
 ## The WDS Difference
 
 ### Traditional Approach
+
 - 47-question requirements spreadsheet
 - Generic persona templates
 - Designers work alone, then throw specs "over the wall"
@@ -300,6 +325,7 @@ npx bmad-method@alpha install
 - Everyone argues about what was meant
 
 ### WDS Approach
+
 - Conversations that build understanding
 - Personas with psychological depth connected to business goals
 - Collaborative workshops building shared understanding
@@ -333,6 +359,7 @@ C-Requirements/           ────►   C-Requirements/      ────►
 ### Parallel Streams
 
 Design and development can work in parallel:
+
 - Phase 3 complete → Backend/platform development can start
 - Phase 4 MVP scenarios complete → Phase 6 first handoff → Sprint 1 begins
 - Design continues → Regular Phase 6 updates → More sprints
@@ -348,4 +375,4 @@ Design and development can work in parallel:
 
 ---
 
-*Whiteport Design Studio - Part of the BMad ecosystem*
+_Whiteport Design Studio - Part of the BMad ecosystem_

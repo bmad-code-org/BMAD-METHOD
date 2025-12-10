@@ -1,4 +1,5 @@
 # Module 01: Why WDS Matters
+
 ## Lesson 1: The Problem We're Solving
 
 **Understanding the factory mindset and the AI era**
@@ -14,6 +15,7 @@ This isn't about working faster or making shinier designs. It's about becoming w
 In the AI era, designers who master WDS become linchpin designers. They connect ideas that seem unrelated, make judgment calls when there's no clear answer, and create experiences that feel right in ways that can't be reduced to a formula.
 
 **What makes an irreplaceable designer:**
+
 - Connects disparate ideas across business, psychology, and technology
 - Makes things happen when there's no instruction manual
 - Creates value that can't be commoditized or automated
@@ -30,6 +32,7 @@ By the end of this module, you'll have a completely different relationship with 
 Most importantly, you'll understand the five dimensions of thinking that only humans can navigate simultaneously - and you'll know how to use them to create designs that AI could never conceive on its own.
 
 **Your transformation:**
+
 - ✅ Understand why designers are irreplaceable in the AI era
 - ✅ Master the 5 dimensions of designer thinking
 - ✅ Recognize what AI can and cannot do
@@ -49,6 +52,7 @@ Traditional design work follows this exact pattern. You get a brief (instruction
 Here's the uncomfortable truth: AI is really, really good at factory work. If your job is to follow instructions and create predictable outputs, you're in trouble. But if you can become a linchpin - someone who connects ideas, makes judgment calls, and creates meaning - you become more valuable than ever.
 
 **The factory mindset in design:**
+
 - Creates mockups by following briefs (instructions)
 - Hands off to developers (replaceable step)
 - Hopes they understand (no real connection)
@@ -64,6 +68,7 @@ Let's be honest about what's happening. AI can now generate mockups in seconds. 
 But here's the thing: AI cannot be a linchpin. It can't walk into a messy situation and figure out what actually needs to happen. It can't sense when a client is asking for the wrong thing. It can't connect a business goal to a psychological insight to a technical constraint and come up with something nobody expected but everyone loves.
 
 **What AI does better than cogs:**
+
 - Generates mockups instantly (no creative block)
 - Follows design systems perfectly (zero deviation)
 - Iterates through hundreds of variations (no fatigue)
@@ -87,6 +92,7 @@ Linchpin designers do what AI fundamentally cannot do: they give products a soul
 The bottleneck in product development used to be coding. AI demolished that. Now the bottleneck is **products worth building** - figuring out what to create that won't be just more noise in an ocean of AI-generated mediocrity.
 
 **What makes products come alive (what only designers can do):**
+
 - Navigate 5 dimensions to find the human truth at the intersection
 - Make judgment calls that create emotional resonance, not just functionality
 - Build trust through decisions that show someone cared

@@ -7,6 +7,7 @@
 <output>**Let's bring your specification to life!**
 
 I'll create an interactive HTML prototype that:
+
 - Matches your specification exactly
 - Uses your Design System (if Phase 5 enabled)
 - Includes interactions and validation
@@ -30,25 +31,27 @@ Choice [1/2/3]:</ask>
 <action>Generate HTML prototype:
 
 **File 1: HTML** ({page}-Prototype.html)
+
 ```html
 <!DOCTYPE html>
 <html lang="{{default_language}}">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{page_title}} - Prototype</title>
-  <link rel="stylesheet" href="{{page}}-Prototype.css">
-</head>
-<body>
-  <!-- Semantic HTML matching specification -->
-  {{generate_html_from_spec}}
-  
-  <script src="{{page}}-Prototype.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{page_title}} - Prototype</title>
+    <link rel="stylesheet" href="{{page}}-Prototype.css" />
+  </head>
+  <body>
+    <!-- Semantic HTML matching specification -->
+    {{generate_html_from_spec}}
+
+    <script src="{{page}}-Prototype.js"></script>
+  </body>
 </html>
 ```
 
 **File 2: CSS** ({page}-Prototype.css)
+
 ```css
 /* Design System tokens (if Phase 5 enabled) */
 {{design_system_imports}}
@@ -64,22 +67,44 @@ Choice [1/2/3]:</ask>
 ```
 
 **File 3: JavaScript** ({page}-Prototype.js)
+
 ```javascript
 // Interaction behaviors from specification
-{{generate_interactions_from_spec}}
+{
+  {
+    generate_interactions_from_spec;
+  }
+}
 
 // Validation logic
-{{validation_logic}}
+{
+  {
+    validation_logic;
+  }
+}
 
 // State management
-{{state_management}}
+{
+  {
+    state_management;
+  }
+}
 
 // Language switching
-{{language_switching}}
+{
+  {
+    language_switching;
+  }
+}
 
 // Initialize
-{{initialization_code}}
+{
+  {
+    initialization_code;
+  }
+}
 ```
+
 </action>
 
 <action>Save files to {output_folder}/C-Scenarios/{scenario}/{page}/Prototype/</action>
@@ -87,13 +112,15 @@ Choice [1/2/3]:</ask>
 <output>✅ **Prototype created!**
 
 **Files:**
+
 - `Prototype/{page}-Prototype.html`
-- `Prototype/{page}-Prototype.css`  
+- `Prototype/{page}-Prototype.css`
 - `Prototype/{page}-Prototype.js`
 
 **Open the HTML file in your browser to test!**
 
 Try:
+
 - Clicking all interactive elements
 - Testing validation
 - Switching languages
@@ -103,6 +130,7 @@ Try:
 <ask>**After testing, what did you discover?**
 
 Common findings:
+
 - Visual adjustments needed
 - Missing states or interactions
 - Content that's too long/short
@@ -117,8 +145,8 @@ Anything to fix or refine?</ask>
   2. **Quick prototype fix** - Adjust prototype directly
   3. **Note for later** - Document but move forward
 
-  Choice [1/2/3]:</ask>
-  
+Choice [1/2/3]:</ask>
+
   <check if="choice == 1">
     <action>Return to Step 4C</action>
   </check>
@@ -156,4 +184,3 @@ Your design is validated and ready for development. Time to extract the function
 ---
 
 **Next:** Step 4E (PRD Update)
-

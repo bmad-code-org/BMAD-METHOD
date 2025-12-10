@@ -21,6 +21,7 @@ Read existing component file:
 </action>
 
 **Example:**
+
 ```yaml
 Component: Button [btn-001]
 Current Variants:
@@ -34,7 +35,8 @@ Current Variants:
 
 Current variants: 2 (primary, secondary)
 Adding new variant: navigation
-```
+
+````
 </output>
 
 ---
@@ -62,7 +64,7 @@ Different from existing:
   - Has loading state
   - Icon animation on hover
   - Purpose: navigation vs submission
-```
+````
 
 ---
 
@@ -76,6 +78,7 @@ Generate descriptive variant name:
 </action>
 
 **Examples:**
+
 ```
 Purpose-based:
 - navigation (for navigation actions)
@@ -101,7 +104,8 @@ This variant is for navigation actions (continue, next, proceed).
 
 Is this name clear and appropriate? (y/n)
 Or suggest alternative name:
-```
+
+````
 </ask>
 
 ---
@@ -120,34 +124,39 @@ Add variant to component definition:
 
 - **primary** - Main call-to-action (submit, save, continue)
 - **secondary** - Secondary actions (cancel, back)
-```
+````
 
 **After:**
+
 ```markdown
 ## Variants
 
 - **primary** - Main call-to-action (submit, save, continue)
 - **secondary** - Secondary actions (cancel, back)
-- **navigation** - Navigation actions (next, proceed, continue)  ← Added
+- **navigation** - Navigation actions (next, proceed, continue) ← Added
 ```
 
 ### Add Variant-Specific Styling
 
 **Add section:**
+
 ```markdown
 ### Variant-Specific Styling
 
 **Primary:**
+
 - Background: blue-600
 - Icon: none
 - Loading: spinner only
 
 **Secondary:**
+
 - Background: gray-200
 - Text: gray-900
 - Icon: none
 
-**Navigation:**  ← Added
+**Navigation:** ← Added
+
 - Background: blue-600
 - Icon: arrow-right
 - Loading: spinner + icon
@@ -157,10 +166,12 @@ Add variant to component definition:
 ### Update States (if variant has unique states)
 
 **If navigation variant has loading state but others don't:**
+
 ```markdown
 ## States
 
 **Shared States (all variants):**
+
 - default
 - hover
 - active
@@ -169,6 +180,7 @@ Add variant to component definition:
 **Variant-Specific States:**
 
 **Navigation:**
+
 - loading (shows spinner, disables interaction)
 ```
 
@@ -181,14 +193,16 @@ Track new variant usage:
 </action>
 
 **Add to component file:**
+
 ```markdown
 ## Variant Usage
 
 **Primary:** 5 pages
 **Secondary:** 3 pages
-**Navigation:** 1 page  ← Added
+**Navigation:** 1 page ← Added
 
 **Navigation variant used in:**
+
 - Onboarding page (continue button)
 ```
 
@@ -201,10 +215,12 @@ Add note about variant count:
 </action>
 
 **If this is 3rd+ variant:**
+
 ```markdown
 ## Notes
 
 This component now has 3 variants. Consider:
+
 - Are all variants necessary?
 - Should any variants be separate components?
 - Is the component becoming too complex?
@@ -221,6 +237,7 @@ Check for potential issues:
 </action>
 
 **Variant Explosion Check:**
+
 ```
 ⚠️ Variant Count: 3
 
@@ -230,6 +247,7 @@ Recommended maximum: 5 variants per component
 ```
 
 **Consistency Check:**
+
 ```
 ✓ New variant consistent with existing variants
 ✓ Naming convention followed
@@ -237,6 +255,7 @@ Recommended maximum: 5 variants per component
 ```
 
 **Complexity Check:**
+
 ```
 ⚠️ Navigation variant adds loading state not present in other variants.
 
@@ -256,6 +275,7 @@ Track component changes:
 </action>
 
 **Update version history:**
+
 ```markdown
 ## Version History
 
@@ -263,8 +283,9 @@ Track component changes:
 **Last Updated:** 2024-12-09
 
 **Changes:**
+
 - 2024-12-01: Created component with primary and secondary variants
-- 2024-12-09: Added navigation variant  ← Added
+- 2024-12-09: Added navigation variant ← Added
 ```
 
 ---
@@ -276,6 +297,7 @@ Generate reference for page spec:
 </action>
 
 **Output:**
+
 ```yaml
 component_reference:
   id: btn-001
@@ -297,6 +319,7 @@ New Variant: navigation
 Total Variants: 3 (primary, secondary, navigation)
 
 Component file updated:
+
 - Variant added to list
 - Variant-specific styling documented
 - Usage tracking added
@@ -305,6 +328,7 @@ Component file updated:
 Reference ready for page spec.
 
 Next: Return to Phase 4 to complete page specification
+
 ```
 </output>
 
@@ -314,25 +338,30 @@ Next: Return to Phase 4 to complete page specification
 
 <output>
 ```
+
 💡 Variant Management Tips:
 
 **Current Status:**
+
 - Component: Button [btn-001]
 - Variants: 3
 - Status: Healthy
 
 **Watch for:**
+
 - 5+ variants → Consider splitting component
 - Variants with very different purposes → Might need separate components
 - Variants rarely used together → Might indicate separate components
 
 **Best Practices:**
+
 - Keep variants related (same base purpose)
 - Use clear, semantic variant names
 - Document when to use each variant
 - Review variant list periodically
 
 You can always refactor later if needed!
+
 ```
 </output>
 
@@ -356,9 +385,11 @@ Validate variant addition:
 
 **If variant name conflicts:**
 ```
+
 ⚠️ Variant "navigation" already exists in Button [btn-001].
 
 This might mean:
+
 1. You're trying to add a duplicate
 2. The existing variant should be updated
 3. A different variant name is needed
@@ -367,38 +398,46 @@ Current navigation variant:
 [Show existing variant details]
 
 Options:
+
 1. Update existing variant
 2. Choose different name
 3. Cancel
 
 Your choice:
+
 ```
 
 **If component file not found:**
 ```
+
 ❌ Error: Component file not found.
 
 Component ID: btn-001
 Expected file: D-Design-System/components/button.md
 
 This shouldn't happen. Possible causes:
+
 - File was deleted
 - Component ID is incorrect
 - Design system structure corrupted
 
 Would you like to:
+
 1. Create component as new
 2. Specify correct component ID
 3. Cancel
 
 Your choice:
+
 ```
 
 **If variant too different:**
 ```
+
 ⚠️ Warning: High Divergence Detected
 
 The new variant is very different from existing variants:
+
 - Different core purpose
 - Different visual structure
 - Different behavioral patterns
@@ -408,11 +447,13 @@ Similarity to existing variants: 35%
 This might be better as a separate component.
 
 Options:
+
 1. Add as variant anyway
 2. Create as new component instead
 3. Review differences in detail
 
 Your choice:
+
 ```
 
 ---
@@ -425,6 +466,7 @@ After adding variant, check component health:
 
 **Component Health Check:**
 ```
+
 📊 Component Health: Button [btn-001]
 
 Variants: 3
@@ -435,11 +477,14 @@ Usage: 9 pages
 Health Status: ✅ Healthy
 
 Recommendations:
+
 - Document variant selection guidelines
 - Consider adding variant usage examples
 - Monitor for variant explosion
+
 ```
 
 ---
 
 **This operation adds a variant. Return to Phase 4 with component reference.**
+```

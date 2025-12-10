@@ -9,12 +9,14 @@
 ### **During Phase 4: UX Design**
 
 **Step 4B: Sketch Interface**
+
 - After scenario initialization
 - Before detailed specifications
 - When exploring layout options
 - When discussing with AI
 
 **Typical timing:**
+
 ```
 Scenario Init → Sketch → AI Discussion → Refine → Specify
 ```
@@ -28,6 +30,7 @@ Scenario Init → Sketch → AI Discussion → Refine → Specify
 **Purpose:** Show overall page structure
 
 **Include:**
+
 - Device frame (mobile/tablet/desktop)
 - Major sections (header, content, footer)
 - Component placement
@@ -35,6 +38,7 @@ Scenario Init → Sketch → AI Discussion → Refine → Specify
 - Spacing and alignment
 
 **Example:**
+
 ```
 [Mobile Frame 375x812]
 ┌─────────────────┐
@@ -60,12 +64,14 @@ Scenario Init → Sketch → AI Discussion → Refine → Specify
 **Purpose:** Explore different design options
 
 **Include:**
+
 - 2-3 layout alternatives
 - Different component arrangements
 - Hierarchy variations
 - Spacing options
 
 **Example:**
+
 ```
 Option A: Card-based
 Option B: List-based
@@ -77,6 +83,7 @@ Option C: Calendar-focused
 **Purpose:** Show navigation and state transitions
 
 **Include:**
+
 - Start and end points
 - Decision points
 - Actions and outcomes
@@ -84,6 +91,7 @@ Option C: Calendar-focused
 - Success paths
 
 **Example:**
+
 ```
 [Start] → [Login] → [Dashboard]
               ↓
@@ -95,6 +103,7 @@ Option C: Calendar-focused
 **Purpose:** Show component in different states
 
 **Include:**
+
 - Default state
 - Hover state
 - Active/focused state
@@ -104,6 +113,7 @@ Option C: Calendar-focused
 - Success state
 
 **Example:**
+
 ```
 Button States:
 [Default] [Hover] [Active] [Disabled] [Loading]
@@ -114,6 +124,7 @@ Button States:
 **Purpose:** Show design across breakpoints
 
 **Include:**
+
 - Mobile (375px)
 - Tablet (768px)
 - Desktop (1440px)
@@ -127,6 +138,7 @@ Button States:
 ### **Step 1: Choose Device Frame (2 min)**
 
 **From library or create:**
+
 ```
 Mobile:   375 × 812 (iPhone)
 Tablet:   768 × 1024 (iPad)
@@ -134,6 +146,7 @@ Desktop:  1440 × 900 (Laptop)
 ```
 
 **Draw rectangle:**
+
 - Use Rectangle tool (R)
 - Set dimensions
 - Label device type
@@ -142,6 +155,7 @@ Desktop:  1440 × 900 (Laptop)
 ### **Step 2: Add Major Sections (5 min)**
 
 **Divide into regions:**
+
 ```
 Header:   Top 60-80px
 Content:  Middle (flexible)
@@ -149,6 +163,7 @@ Footer:   Bottom 60-80px
 ```
 
 **Use rectangles:**
+
 - Light fill color
 - Label each section
 - Snap to 20px grid
@@ -157,6 +172,7 @@ Footer:   Bottom 60-80px
 ### **Step 3: Add Components (10 min)**
 
 **From library or draw:**
+
 - Buttons
 - Input fields
 - Cards
@@ -165,6 +181,7 @@ Footer:   Bottom 60-80px
 - Text blocks
 
 **Placement:**
+
 - Follow grid (20px)
 - Consistent spacing
 - Visual hierarchy
@@ -173,12 +190,14 @@ Footer:   Bottom 60-80px
 ### **Step 4: Add Labels (5 min)**
 
 **Label everything:**
+
 - Component names
 - Interactive elements
 - Content areas
 - Actions
 
 **Use text tool (T):**
+
 - Clear, concise labels
 - Inside or beside components
 - Consistent font size
@@ -187,12 +206,14 @@ Footer:   Bottom 60-80px
 ### **Step 5: Add Annotations (5 min)**
 
 **Document decisions:**
+
 - Why this layout?
 - Key interactions
 - Important notes
 - Questions/concerns
 
 **Use:**
+
 - Text boxes
 - Arrows pointing to elements
 - Different color for notes
@@ -201,6 +222,7 @@ Footer:   Bottom 60-80px
 ### **Step 6: Review and Refine (5 min)**
 
 **Check:**
+
 - ✓ All elements aligned to grid
 - ✓ Consistent spacing
 - ✓ Clear labels
@@ -215,6 +237,7 @@ Footer:   Bottom 60-80px
 ### **Pattern 1: Top-Down**
 
 **Start with structure, add details:**
+
 ```
 1. Device frame
 2. Major sections
@@ -229,6 +252,7 @@ Footer:   Bottom 60-80px
 ### **Pattern 2: Component-First**
 
 **Start with key component, build around:**
+
 ```
 1. Main component (e.g., task list)
 2. Supporting components
@@ -242,6 +266,7 @@ Footer:   Bottom 60-80px
 ### **Pattern 3: Flow-Based**
 
 **Follow user journey:**
+
 ```
 1. Entry point
 2. First action
@@ -259,6 +284,7 @@ Footer:   Bottom 60-80px
 ### **20px Grid System**
 
 **Everything snaps to 20px:**
+
 ```
 Position: 0, 20, 40, 60, 80, 100...
 Size:     80, 100, 120, 140, 160...
@@ -268,16 +294,19 @@ Spacing:  20, 40, 60, 80...
 ### **Common Spacing**
 
 **Tight:** 20px
+
 - Between related items
 - Inside cards
 - Form field spacing
 
 **Medium:** 40px
+
 - Between sections
 - Card margins
 - Component groups
 
 **Loose:** 60-80px
+
 - Major sections
 - Page margins
 - Visual breaks
@@ -285,15 +314,18 @@ Spacing:  20, 40, 60, 80...
 ### **Component Sizes**
 
 **Buttons:**
+
 - Small: 80 × 32
 - Medium: 120 × 40
 - Large: 160 × 48
 
 **Input Fields:**
+
 - Width: 280-320 (mobile), 400+ (desktop)
 - Height: 40-48
 
 **Cards:**
+
 - Width: 320 (mobile), 400+ (desktop)
 - Height: Variable (content-based)
 
@@ -304,6 +336,7 @@ Spacing:  20, 40, 60, 80...
 ### **Size**
 
 **Larger = More important:**
+
 ```
 Heading:  24-32px
 Body:     16-18px
@@ -313,6 +346,7 @@ Caption:  12-14px
 ### **Weight**
 
 **Bolder = More important:**
+
 ```
 Primary:   Bold/Semibold
 Secondary: Regular
@@ -322,6 +356,7 @@ Tertiary:  Light
 ### **Position**
 
 **Top/Left = More important:**
+
 ```
 Most important:    Top-left
 Secondary:         Center
@@ -331,6 +366,7 @@ Least important:   Bottom-right
 ### **Color/Contrast**
 
 **Higher contrast = More important:**
+
 ```
 Primary:   Dark on light (high contrast)
 Secondary: Medium gray
@@ -344,36 +380,42 @@ Tertiary:  Light gray
 ### **❌ DON'T:**
 
 **1. Skip the grid**
+
 ```
 ❌ Random positioning
 ✅ Snap to 20px grid
 ```
 
 **2. Inconsistent spacing**
+
 ```
 ❌ 15px, 23px, 18px...
 ✅ 20px, 40px, 60px...
 ```
 
 **3. Unlabeled elements**
+
 ```
 ❌ [Rectangle]
 ✅ [Login Button]
 ```
 
 **4. Too much detail**
+
 ```
 ❌ Pixel-perfect designs
 ✅ Rough wireframes
 ```
 
 **5. No annotations**
+
 ```
 ❌ Just shapes
 ✅ Shapes + notes about why
 ```
 
 **6. Forget device context**
+
 ```
 ❌ Generic layout
 ✅ Mobile/tablet/desktop frame
@@ -388,6 +430,7 @@ Tertiary:  Light gray
 **Pattern:** `[page-name].excalidraw`
 
 **Examples:**
+
 ```
 dashboard.excalidraw
 login-page.excalidraw
@@ -399,11 +442,13 @@ button-states.excalidraw
 ### **Location**
 
 **Always in sketches folder:**
+
 ```
 C-Scenarios/[scenario-name]/sketches/
 ```
 
 **Example:**
+
 ```
 C-Scenarios/morning-dog-care/
 ├── sketches/
@@ -418,6 +463,7 @@ C-Scenarios/morning-dog-care/
 ### **Versions**
 
 **Iterations:**
+
 ```
 dashboard-v1.excalidraw
 dashboard-v2.excalidraw
@@ -425,6 +471,7 @@ dashboard-final.excalidraw
 ```
 
 **Or use git:**
+
 ```
 dashboard.excalidraw (always latest)
 Git history shows versions
@@ -437,11 +484,13 @@ Git history shows versions
 ### **AI Can Generate Sketches**
 
 **Request:**
+
 ```
 "Create 3 dashboard layout options in Excalidraw"
 ```
 
 **AI creates:**
+
 ```
 dashboard-cards.excalidraw
 dashboard-list.excalidraw
@@ -449,6 +498,7 @@ dashboard-calendar.excalidraw
 ```
 
 **You:**
+
 - Open each option
 - Compare and choose
 - Refine the winner
@@ -456,6 +506,7 @@ dashboard-calendar.excalidraw
 ### **AI Can Analyze Your Sketches**
 
 **Process:**
+
 ```
 1. Export sketch to PNG
 2. Upload to AI
@@ -465,6 +516,7 @@ dashboard-calendar.excalidraw
 ```
 
 **Example:**
+
 ```
 You: [Upload dashboard.png]
      "What do you think?"
@@ -476,6 +528,7 @@ AI: "I see you've prioritized today's tasks at top.
 ### **AI Can Iterate**
 
 **Feedback loop:**
+
 ```
 You: "Make the cards bigger with more breathing room"
 AI:  [Generates dashboard-v2.excalidraw]
@@ -490,26 +543,31 @@ AI:  [Generates dashboard-calendar.excalidraw]
 ### **DO ✅**
 
 **Start rough:**
+
 - Quick shapes
 - Basic layout
 - Refine later
 
 **Use the grid:**
+
 - Snap everything
 - Consistent spacing
 - Professional look
 
 **Label clearly:**
+
 - Name all components
 - Describe interactions
 - Note important details
 
 **Annotate decisions:**
+
 - Why this layout?
 - What alternatives considered?
 - What questions remain?
 
 **Keep it simple:**
+
 - Wireframes, not mockups
 - Structure, not style
 - Concepts, not pixels
@@ -517,21 +575,25 @@ AI:  [Generates dashboard-calendar.excalidraw]
 ### **DON'T ❌**
 
 **Don't over-design:**
+
 - Not pixel-perfect
 - Not final styling
 - Not production-ready
 
 **Don't skip context:**
+
 - Always use device frame
 - Show realistic content
 - Include navigation
 
 **Don't forget states:**
+
 - Show hover/active
 - Show error states
 - Show loading states
 
 **Don't work in isolation:**
+
 - Share with AI
 - Get feedback
 - Iterate together
@@ -614,6 +676,7 @@ Annotations:
 ## Next Steps
 
 **After sketching:**
+
 1. ✅ Export to PNG
 2. ✅ Upload to AI for discussion
 3. ✅ Iterate based on feedback
@@ -621,6 +684,7 @@ Annotations:
 5. ✅ Create specifications
 
 **Learn more:**
+
 - [AI Collaboration](ai-collaboration.md) - Work with AI
 - [Export Workflow](export-workflow.md) - Share your work
 

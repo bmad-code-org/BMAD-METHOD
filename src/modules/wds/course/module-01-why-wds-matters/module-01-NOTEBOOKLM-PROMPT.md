@@ -51,6 +51,7 @@ The Skeptic: "Emotional labor? That sounds... soft. What does that have to do wi
 The Advocate: "Everything. For designers, emotional labor translates into something very specific: user-centric creativity. This is your irreplaceable gift. Let me break down what this actually means:"
 
 What user-centric creativity looks like:
+
 - **Understanding WHY** - Not just making things look better, but understanding why users feel frustrated
 - **Connecting goals** - Bridging business goals and human needs in ways that serve both
 - **Creating experiences that feel right** - Not just function correctly, but feel like someone cared
@@ -74,6 +75,7 @@ The Skeptic asks: "Okay, I'm listening. But what makes a designer a linchpin ins
 The Advocate explains Seth Godin's definition: "A linchpin is someone who can walk into chaos and create order. Someone who invents, connects, creates, and makes things happen. That's exactly what product design is at its core."
 
 Godin describes linchpins as people who:
+
 - **Invent** - Create solutions that didn't exist before
 - **Connect** - Bridge disparate ideas and people
 - **Create** - Make things that matter
@@ -86,18 +88,21 @@ The Advocate continues: "This is you. When you walk into a project with unclear 
 The Advocate gets specific: "Godin talks about emotional labor. For designers, this translates into three concrete gifts that AI fundamentally cannot provide:"
 
 **1. Emotional Labor (Genuine Caring)**
+
 - You genuinely care about the outcome
 - You empathize with user frustration
 - You feel the weight of your decisions
 - You provide meaning, not just features
 
 **2. User-Centric Creativity (Connecting Needs)**
+
 - You understand WHY users feel frustrated
 - You connect business goals to human needs
 - You create experiences that feel right
 - You make judgment calls that serve people
 
 **3. The Gatekeeper Role (Protecting Quality)**
+
 - You catch mistakes before they ship
 - You evaluate if solutions make logical sense
 - You ensure goals don't contradict needs
@@ -115,6 +120,7 @@ The Advocate brings it home: "Here's the transformation that Whiteport Design St
 The paradigm shift: "Design becomes specification. Specification becomes product. Your creative thinking is preserved and amplified, not diluted and lost."
 
 Your transformation:
+
 - **From:** Creating mockups hoping developers understand your intent
 - **To:** Capturing your design thinking in specifications that preserve your creative decisions
 - **Result:** From hoping it works to knowing it will - because your thinking is captured
@@ -130,6 +136,7 @@ The Skeptic asks: "This sounds great in theory. But what's the actual skill that
 The Advocate explains: "Godin says linchpins 'connect disparate ideas.' For product designers, this means navigating five different dimensions of thinking at the same time. Most people can handle one or two dimensions. Irreplaceable designers navigate all five simultaneously."
 
 The 5 dimensions:
+
 1. **Business Existence (WHY)** - Understanding purpose and value creation
 2. **Business Goals (SUCCESS)** - Connecting to metrics and impact
 3. **Product Strategy (HOW)** - Making hard choices about features
@@ -139,6 +146,7 @@ The 5 dimensions:
 **Real Example - Family Coordination App:**
 
 The Advocate uses a concrete example: "Think about designing an app that helps families coordinate tasks. You need to understand:
+
 - **WHY** - Why does this business exist? (Solving family conflict and stress)
 - **SUCCESS** - What does success look like? (Kids complete tasks without nagging)
 - **HOW** - What features serve that goal? (Visual task board, not text lists)
@@ -164,6 +172,7 @@ The Advocate gets practical: "Whiteport Design Studio guides you through a three
 The Advocate explains: "First, you learn to deeply understand both sides of the equation. Not just surface-level - but the real WHY behind business existence and user needs. You learn to ask the right questions, dig deeper, and connect the dots between what the business needs to survive and what users need to thrive."
 
 What you learn:
+
 - How to uncover the real business purpose (not just features)
 - How to understand user goals at a deep level (not just tasks)
 - How to find the intersection where both are served
@@ -178,6 +187,7 @@ The Advocate: "Exactly. You become the expert on WHY this product exists and WHO
 The Advocate continues: "Second, you learn to work directly in the IDE - your development environment. This sounds technical, but it's actually liberating. You learn to capture your design thinking in text specifications that preserve your creative intent."
 
 What you learn:
+
 - How to write specifications that capture WHY, not just WHAT
 - How to document your judgment calls and reasoning
 - How to work with AI as your creative partner
@@ -192,6 +202,7 @@ The Advocate: "Yes. You're making your emotional labor visible and actionable. Y
 The Advocate brings it home: "Third, you learn to assume leadership for the design process. Not leadership as in 'boss' - but leadership as in 'the person who makes things happen.' You become the linchpin who serves both the client and the developers with exactly what they need, in the form they need it."
 
 What you learn:
+
 - How to lead the design process (courage and curiosity, not confidence)
 - How to serve the client with clarity on business value
 - How to serve developers with specifications they can implement
@@ -210,6 +221,7 @@ The Advocate: "Exactly. Godin says linchpins make themselves indispensable by be
 The Advocate emphasizes: "This course is your guide through this transformation. Module by module, you'll build these capabilities. You'll learn the frameworks, practice the skills, and through practice, develop the confidence that comes from knowing what you can deliver."
 
 Your transformation:
+
 - **Understanding** - Business and user goals at a deep level
 - **Capability** - Working in the IDE, design as specification
 - **Leadership** - Serving client and developers with what they need
@@ -258,6 +270,7 @@ The Advocate brings it home: "The transformation continues, together. But it sta
 At the end of the podcast, The Advocate should mention these resources:
 
 **Key Concepts:**
+
 - Seth Godin's book: "Linchpin: Are You Indispensable?" (2010)
 - Bestselling author and marketing visionary Seth Godin
 - Factory mindset vs linchpin mindset
@@ -267,12 +280,14 @@ At the end of the podcast, The Advocate should mention these resources:
 - 5-dimensional thinking
 
 **Next Steps:**
+
 - Complete Module 02: Project Brief
 - Apply 5-dimensional thinking to your current project
 - Start capturing WHY in your design decisions
 - Practice being the gatekeeper between business and user needs
 
 **Community:**
+
 - BMad Discord: Share your transformation journey
 - GitHub Discussions: Ask questions about becoming a linchpin designer
 
@@ -281,6 +296,7 @@ At the end of the podcast, The Advocate should mention these resources:
 ## Instructions for NotebookLM
 
 **Tone:**
+
 - Deeply empathetic about the shame and fear designers feel
 - Honest and direct about the AI threat for factory workers
 - Empowering and inspiring about the opportunity for linchpin designers
@@ -290,6 +306,7 @@ At the end of the podcast, The Advocate should mention these resources:
 - Balance fear (replaceable) with hope (indispensable) and community (not alone)
 
 **Key messages to emphasize:**
+
 - **The linchpin question** - are you a factory worker or a linchpin designer?
 - **Emotional labor** - what linchpins provide (Seth Godin's concept from his 2010 book)
 - **User-centric creativity** - the designer's irreplaceable gift (emotional labor in action)
@@ -312,6 +329,7 @@ At the end of the podcast, The Advocate should mention these resources:
 - **Action beats perfection** - get moving and you will figure it out
 
 **Avoid:**
+
 - Being too theoretical or academic
 - Repeating doom/gloom from Getting Started module
 - Focusing too much on AI threat instead of human value
@@ -324,6 +342,7 @@ At the end of the podcast, The Advocate should mention these resources:
 ## Expected Output
 
 A natural, engaging conversation that:
+
 - **Focuses on human value** - what makes designers irreplaceable
 - **Explains the linchpin concept** clearly using Seth Godin's framework
 - **Emphasizes emotional labor** as the core of linchpin work
@@ -348,6 +367,7 @@ A natural, engaging conversation that:
 If generating video instead of audio, add these visual elements:
 
 **On-screen text:**
+
 - "Factory Worker or Linchpin Designer?"
 - Seth Godin quote: "Linchpins walk into chaos and create order"
 - "Emotional Labor: The Work of Genuinely Caring"
@@ -362,6 +382,7 @@ If generating video instead of audio, add these visual elements:
 - "Next: Module 02 - Project Brief"
 
 **B-roll suggestions:**
+
 - Designer walking into chaos, creating order
 - Linchpin connecting disparate ideas
 - Designer providing emotional labor - caring, empathizing
@@ -387,6 +408,7 @@ If generating video instead of audio, add these visual elements:
 ## Next Steps
 
 After generating Module 01 content:
+
 - Create NotebookLM prompt for Module 02: Project Brief
 - Build prompts for all remaining modules
 - Share in BMad Discord designer channel

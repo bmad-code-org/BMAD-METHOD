@@ -34,12 +34,14 @@
 ## Examples
 
 **Page File (Content Varies):**
+
 - ✅ Hero heading: "Welcome" (Home) vs "About" (About)
 - ✅ Search placeholder: "Search products..." vs "Search help..."
 - ✅ Calendar header: "Familjen Svensson: Vecka 40" (user's family)
 - ✅ Data API: `/api/families/:currentFamilyId/walks` (user-specific)
 
 **Feature File (Content Same Everywhere):**
+
 - ✅ Button text: "Submit" (always the same)
 - ✅ Error message: "Invalid email" (generic validation)
 - ✅ Tooltip: "Click to expand" (generic interaction)

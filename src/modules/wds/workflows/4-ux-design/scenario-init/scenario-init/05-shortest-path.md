@@ -7,9 +7,9 @@
 ## The Question
 
 ```
-Agent: "Let's map the shortest possible journey from 
+Agent: "Let's map the shortest possible journey from
         [starting point] to [mutual success]:
-        
+
         What's the absolute minimum path?"
 ```
 
@@ -18,6 +18,7 @@ Agent: "Let's map the shortest possible journey from
 ## Why This Matters
 
 Shortest path means:
+
 - No unnecessary steps
 - No feature bloat
 - Clear focus
@@ -33,12 +34,13 @@ Shortest path means:
 Agent: "From 'frustrated parent on Google' to 'active subscription + harmony':
         What's the minimum path?"
 
-Designer: "Google → Landing page → See how it works → 
-           Sign up → Set up family → Start using calendar → 
+Designer: "Google → Landing page → See how it works →
+           Sign up → Set up family → Start using calendar →
            First walk completed → Everyone happy"
 ```
 
 **Why this path:**
+
 - Landing: Understand solution (addresses frustration)
 - How it works: See it's simple (addresses complexity fear)
 - Sign up: Commit to trying (low friction)
@@ -74,6 +76,7 @@ Each step serves the journey. Nothing extra.
 ## Now You Can Sketch
 
 With all 5 questions answered, you have:
+
 - ✅ Core feature (what to design)
 - ✅ Entry point (where to start)
 - ✅ Mental state (how they feel)

@@ -9,6 +9,7 @@
 ## Overview
 
 **Figma MCP enables:**
+
 - Reading component specifications from Figma
 - Extracting design tokens
 - Generating WDS component specifications
@@ -46,6 +47,7 @@
 ```
 
 **Get Figma API token:**
+
 1. Go to Figma → Settings → Account
 2. Scroll to "Personal access tokens"
 3. Click "Generate new token"
@@ -60,17 +62,20 @@
 **Purpose:** Extract component data from Figma
 
 **Input:**
+
 - Figma file ID
 - Node ID
 - Or component name
 
 **Output:**
+
 - Component structure
 - Variants
 - Properties
 - Design tokens used
 
 **Example:**
+
 ```
 Agent: Read Figma component Button/Primary
 
@@ -106,15 +111,18 @@ MCP Response:
 **Purpose:** Get design token values from Figma
 
 **Input:**
+
 - Figma file ID
 - Token type (colors, typography, spacing)
 
 **Output:**
+
 - Token definitions
 - Token values
 - Token mappings
 
 **Example:**
+
 ```
 Agent: Extract color tokens from Figma
 
@@ -136,14 +144,17 @@ MCP Response:
 **Purpose:** Find Figma node ID for component
 
 **Input:**
+
 - Component name or WDS component ID
 
 **Output:**
+
 - Figma node ID
 - File ID
 - Full Figma URL
 
 **Example:**
+
 ```
 Agent: Get node ID for Button [btn-001]
 
@@ -163,15 +174,18 @@ MCP Response:
 **Purpose:** Get all components in Figma file
 
 **Input:**
+
 - Figma file ID
 - Optional: filter by type
 
 **Output:**
+
 - List of components
 - Component names
 - Node IDs
 
 **Example:**
+
 ```
 Agent: List all button components
 
@@ -203,6 +217,7 @@ MCP Response:
 **Process:**
 
 **Step 1: Detect Change**
+
 ```
 Designer updates Button/Primary in Figma
 Designer notifies WDS system
@@ -210,6 +225,7 @@ Or: Automated webhook triggers sync
 ```
 
 **Step 2: Read Component**
+
 ```
 Agent: Read Figma component Button/Primary [btn-001]
 
@@ -223,6 +239,7 @@ MCP reads:
 ```
 
 **Step 3: Parse Component Data**
+
 ```
 Agent extracts:
 - Component type: Button
@@ -234,6 +251,7 @@ Agent extracts:
 ```
 
 **Step 4: Generate WDS Specification**
+
 ```
 Agent creates/updates:
 D-Design-System/components/button.md
@@ -248,6 +266,7 @@ Filling in:
 ```
 
 **Step 5: Update Mappings**
+
 ```
 Agent updates:
 D-Design-System/figma-mappings.md
@@ -257,6 +276,7 @@ Button [btn-001] → figma://file/abc123/node/456:789
 ```
 
 **Step 6: Verify and Confirm**
+
 ```
 Agent presents generated spec to designer
 Designer reviews and confirms
@@ -272,18 +292,21 @@ Spec is committed to repository
 **Process:**
 
 **Step 1: Detect Change**
+
 ```
 WDS specification updated
 Git commit triggers notification
 ```
 
 **Step 2: Identify Figma Component**
+
 ```
 Agent reads figma-mappings.md
 Finds: Button [btn-001] → figma://file/abc123/node/456:789
 ```
 
 **Step 3: Notify Designer**
+
 ```
 Agent creates notification:
 "Button [btn-001] specification updated in WDS.
@@ -298,6 +321,7 @@ Figma component: [Link to Figma]"
 ```
 
 **Step 4: Designer Updates Figma**
+
 ```
 Designer reviews changes
 Updates Figma component
@@ -315,6 +339,7 @@ Confirms sync complete
 **Agent uses component template:**
 
 **Input:**
+
 ```
 Figma component data:
 {
@@ -331,6 +356,7 @@ Figma component data:
 **Output:** `D-Design-System/components/button.md`
 
 **Process:**
+
 1. Load component template
 2. Fill in component name and ID
 3. Extract and format variants
@@ -349,6 +375,7 @@ Figma component data:
 **Figma variables → WDS tokens:**
 
 **Agent maps:**
+
 ```
 Figma: primary/600 → WDS: color-primary-600
 Figma: spacing/4 → WDS: spacing-4
@@ -357,6 +384,7 @@ Figma: shadow/sm → WDS: shadow-sm
 ```
 
 **Mapping rules:**
+
 - Figma collection/variable → WDS category-name-value
 - Maintain semantic meaning
 - Consistent naming across systems
@@ -371,6 +399,7 @@ Figma: shadow/sm → WDS: shadow-sm
 **Error:** Figma component doesn't exist
 
 **Agent response:**
+
 ```
 ⚠️ Component not found in Figma
 
@@ -397,6 +426,7 @@ Actions:
 **Error:** Figma component has no WDS ID in description
 
 **Agent response:**
+
 ```
 ⚠️ WDS Component ID missing
 
@@ -417,6 +447,7 @@ After adding ID, re-sync component.
 **Error:** Can't map Figma variable to WDS token
 
 **Agent response:**
+
 ```
 ⚠️ Token mapping failed
 
@@ -438,6 +469,7 @@ Your choice:
 **Error:** Figma and WDS have different versions
 
 **Agent response:**
+
 ```
 ⚠️ Sync conflict detected
 
@@ -466,6 +498,7 @@ Your choice:
 ### For AI Agents
 
 **DO ✅**
+
 - Always check for WDS component ID in Figma
 - Verify token mappings before generating specs
 - Present generated specs for designer review
@@ -473,6 +506,7 @@ Your choice:
 - Document sync operations in version history
 
 **DON'T ❌**
+
 - Don't overwrite WDS specs without confirmation
 - Don't create components without designer approval
 - Don't skip token mapping validation
@@ -484,6 +518,7 @@ Your choice:
 ### For Designers
 
 **DO ✅**
+
 - Add WDS component ID to all Figma components
 - Use design tokens (variables) consistently
 - Document component changes
@@ -491,6 +526,7 @@ Your choice:
 - Review generated specs before committing
 
 **DON'T ❌**
+
 - Don't use hardcoded values
 - Don't skip component descriptions
 - Don't forget to sync after changes
@@ -504,6 +540,7 @@ Your choice:
 ### Phase 4: UX Design
 
 **When component is specified in Phase 4:**
+
 1. Designer creates sketch
 2. Agent specifies component
 3. Design system router checks for similar components
@@ -517,6 +554,7 @@ Your choice:
 ### Phase 5: Design System
 
 **When component is added to design system:**
+
 1. Component specification complete
 2. Agent checks: Figma component exists?
 3. If yes:
@@ -532,30 +570,35 @@ Your choice:
 ## Command Reference
 
 ### Read Component
+
 ```
 Agent: Read Figma component [component-name]
 MCP: Returns component data
 ```
 
 ### Extract Tokens
+
 ```
 Agent: Extract [token-type] tokens from Figma
 MCP: Returns token definitions
 ```
 
 ### Get Node ID
+
 ```
 Agent: Get Figma node ID for [component-id]
 MCP: Returns node ID and URL
 ```
 
 ### List Components
+
 ```
 Agent: List Figma components [optional: filter]
 MCP: Returns component list
 ```
 
 ### Sync Component
+
 ```
 Agent: Sync Figma component [component-name] to WDS
 MCP: Reads component, generates spec, updates mappings
@@ -568,6 +611,7 @@ MCP: Reads component, generates spec, updates mappings
 ### MCP Server Not Responding
 
 **Check:**
+
 - MCP server is running
 - Figma API token is valid
 - Network connection is active
@@ -580,6 +624,7 @@ MCP: Reads component, generates spec, updates mappings
 **Error:** 403 Forbidden
 
 **Solution:**
+
 1. Generate new Figma API token
 2. Update MCP configuration
 3. Restart MCP server
@@ -592,6 +637,7 @@ MCP: Reads component, generates spec, updates mappings
 **Error:** 429 Too Many Requests
 
 **Solution:**
+
 - Wait before retrying
 - Batch operations when possible
 - Cache component data
@@ -602,6 +648,7 @@ MCP: Reads component, generates spec, updates mappings
 ## Future Enhancements
 
 **Planned features:**
+
 - Automated sync on Figma changes (webhooks)
 - Bidirectional sync (WDS → Figma write)
 - Batch component import

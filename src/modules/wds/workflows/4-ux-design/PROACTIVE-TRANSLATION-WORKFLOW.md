@@ -7,6 +7,7 @@
 ## The Principle
 
 **Agent is proactive, not passive**
+
 - Don't just ask for translations
 - **Suggest them!**
 - Let user accept, refine, or override
@@ -18,11 +19,13 @@
 ### Example 1: Sketch Has Actual Text
 
 **Sketch shows:**
+
 ```
 Every walk. on time. Every time.
 ```
 
 **Agent says:**
+
 ```
 I found text in your sketch: "Every walk. on time. Every time."
 
@@ -46,12 +49,15 @@ Choice [1/2/3]:
 **User response options:**
 
 **Option A: Accept (Fast!)**
+
 ```
 1
 ```
+
 → Done! All translations accepted.
 
 **Option B: Adjust specific**
+
 ```
 2
 
@@ -63,9 +69,11 @@ NO: Hver tur. i tide. Hver gang.  ← Keep
 
 SE: Varje promenad. Punktligt. Varje gång.
 ```
+
 → Done! One adjusted, others kept.
 
 **Option C: Manual**
+
 ```
 3
 
@@ -73,6 +81,7 @@ EN:
 SE:
 NO:
 ```
+
 → User provides all manually.
 
 ---
@@ -80,6 +89,7 @@ NO:
 ### Example 2: No Sketch Text (Markers Only)
 
 **Sketch shows:**
+
 ```
 ─────────────────────────────────  ← Line markers
 ─────────────────────────────────  ← (no actual text)
@@ -87,6 +97,7 @@ NO:
 ```
 
 **Agent says:**
+
 ```
 Text placeholder detected:
 - 3 horizontal lines
@@ -101,11 +112,13 @@ EN:
 ```
 
 **User provides:**
+
 ```
 EN: Organize your family around dog care. Assign walks and never miss one again.
 ```
 
 **Agent immediately suggests:**
+
 ```
 Great! Here are translation suggestions:
 
@@ -128,22 +141,26 @@ Choice [1/2/3]:
 ## Benefits
 
 ### ✅ Speed
+
 - User accepts = instant completion
 - No typing all translations manually
 - Saves significant time
 
 ### ✅ Accuracy
+
 - Agent uses context for better translations
 - Considers character capacity
 - Maintains tone and style
 
 ### ✅ Flexibility
+
 - Can accept all suggestions
 - Can adjust specific ones
 - Can override completely
 - Full user control
 
 ### ✅ Consistency
+
 - Translations match style
 - Terminology stays consistent
 - Professional quality
@@ -160,15 +177,15 @@ Choice [1/2/3]:
 <check if="sketch_has_text">
   <action>Extract text: "Every walk. on time."</action>
   <action>Translate to all product_languages</action>
-  
+
   <output>
   I found text in your sketch: "{{text}}"
-  
+
   Suggested translations:
   {{#each product_languages}}
   {{this}}: {{translated_content}}
   {{/each}}
-  
+
   Do these work? [1] Use [2] Adjust [3] Manual
   </output>
 </check>
@@ -176,13 +193,13 @@ Choice [1/2/3]:
 <check if="!sketch_has_text">
   <ask>Provide content in {{primary_language}}:</ask>
   <action>After receiving, translate to remaining languages</action>
-  
+
   <output>
   Translation suggestions:
   {{#each remaining_languages}}
   {{this}}: {{translated_content}}
   {{/each}}
-  
+
   Do these work? [1] Use [2] Adjust [3] Manual
   </output>
 </check>
@@ -191,6 +208,7 @@ Choice [1/2/3]:
 ### Translation Quality
 
 **Agent considers:**
+
 - Character capacity from sketch
 - Tone and style of original
 - Context from page purpose
@@ -204,11 +222,13 @@ Choice [1/2/3]:
 ### Example: Hero Headline
 
 **Sketch:**
+
 ```
 Every walk. on time. Every time.
 ```
 
 **Agent:**
+
 ```
 Suggested content for Primary Headline:
 
@@ -219,6 +239,7 @@ Do these work? [1] Use [2] Adjust [3] Manual
 ```
 
 **User:**
+
 ```
 1
 ```
@@ -228,11 +249,13 @@ Do these work? [1] Use [2] Adjust [3] Manual
 ### Example: Button Label
 
 **Sketch:**
+
 ```
 [Get Started - Free Forever]
 ```
 
 **Agent:**
+
 ```
 Suggested content for Primary CTA:
 
@@ -243,6 +266,7 @@ Do these work? [1] Use [2] Adjust [3] Manual
 ```
 
 **User:**
+
 ```
 2
 
@@ -254,11 +278,13 @@ SE: börja planera - gratis för alltid  ← lowercase, different verb
 ### Example: Form Label
 
 **Sketch:**
+
 ```
 Email Address:
 ```
 
 **Agent:**
+
 ```
 Suggested content for Email Label:
 
@@ -269,6 +295,7 @@ Do these work? [1] Use [2] Adjust [3] Manual
 ```
 
 **User:**
+
 ```
 1
 ```
@@ -280,6 +307,7 @@ Do these work? [1] Use [2] Adjust [3] Manual
 ## Multi-Language Example (3+ Languages)
 
 **Project Config:**
+
 ```yaml
 product_languages:
   - EN
@@ -289,11 +317,13 @@ product_languages:
 ```
 
 **Sketch:**
+
 ```
 Welcome Home
 ```
 
 **Agent:**
+
 ```
 I found text in your sketch: "Welcome Home"
 
@@ -308,6 +338,7 @@ Do these work? [1] Use [2] Adjust [3] Manual
 ```
 
 **User:**
+
 ```
 1
 ```
@@ -321,6 +352,7 @@ Do these work? [1] Use [2] Adjust [3] Manual
 ### Translation Confidence
 
 **High confidence:**
+
 ```
 ✅ These translations look good!
 
@@ -328,6 +360,7 @@ Do they work? [1] Use [2] Adjust [3] Manual
 ```
 
 **Low confidence:**
+
 ```
 ⚠️ I'm less confident about these translations. Please review carefully!
 
@@ -341,6 +374,7 @@ Do they work? [1] Use [2] Adjust [3] Manual
 ### Character Capacity Warning
 
 **If translation exceeds capacity:**
+
 ```
 ⚠️ Translation length warning:
 
@@ -359,6 +393,7 @@ Use shorter version? (y/n)
 ## User Experience
 
 ### Before (Passive):
+
 ```
 EN:                           ← User types
 SE:                           ← User types
@@ -368,6 +403,7 @@ Slow, tedious, error-prone
 ```
 
 ### After (Proactive):
+
 ```
 Suggested translations:
 EN: Every walk. on time.
@@ -386,6 +422,7 @@ Fast, accurate, professional
 ### Agent Behavior
 
 **Always suggest translations:**
+
 1. Read sketch text (if present)
 2. Generate suggestions for ALL languages
 3. Present with options: Accept / Adjust / Manual
@@ -393,6 +430,7 @@ Fast, accurate, professional
 5. Warn if low confidence
 
 **Never:**
+
 - Present blank fields for translations
 - Make user type everything
 - Provide only one language at a time
@@ -407,6 +445,3 @@ Fast, accurate, professional
 ---
 
 **Proactive translation = better UX, faster workflow, higher quality!** 🌍⚡✨
-
-
-

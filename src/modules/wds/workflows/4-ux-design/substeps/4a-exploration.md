@@ -7,11 +7,13 @@
 ## When to Use This Step
 
 Use 4A when:
+
 - User has no existing sketches
 - User is unsure how to approach a feature
 - User wants to explore the concept together
 
 Skip 4A when:
+
 - User has sketches ready
 - User knows exactly what they want
 
@@ -22,6 +24,7 @@ Skip 4A when:
 <output>**Let's explore this concept together before sketching.**
 
 I'll help you think through:
+
 - What the user is trying to accomplish
 - What content and features they need
 - How psychological triggers from your Trigger Map apply
@@ -36,6 +39,7 @@ What's their goal? What brought them here?</ask>
 <ask>**What do they need to see or do to accomplish that?**
 
 Think about:
+
 - Information they need
 - Actions they can take
 - Choices they need to make</ask>
@@ -45,6 +49,7 @@ Think about:
 <ask>**Let's check your Trigger Map - what drives this user?**
 
 Looking at your personas and driving forces:
+
 - What positive goals does this page support?
 - What negative outcomes does it help them avoid?</ask>
 
@@ -54,6 +59,7 @@ Looking at your personas and driving forces:
 <ask>**How does the interaction flow?**
 
 Walk me through:
+
 1. User arrives (from where?)
 2. User sees... (what catches attention?)
 3. User does... (main actions?)
@@ -75,6 +81,7 @@ Walk me through:
 {{interaction_flow}}
 
 You're ready to sketch! Would you like to:
+
 1. **Create sketches** - Use your preferred tool, then come back for analysis (4B)
 2. **Skip sketching** - Go directly to specification (4C)
 3. **Explore more** - Refine the concept further</output>
@@ -97,4 +104,3 @@ You're ready to sketch! Would you like to:
 ---
 
 **Next:** Step 4B (Sketch Analysis) or Step 4C (Specification)
-

@@ -48,6 +48,7 @@ This isn't about learning new tools. This is about choosing your future as a des
 🔹 **Linchpin Designer Path** - Strategic thinking, walking into chaos and creating order, indispensable
 
 🔹 **Four Deliverables:**
+
 - Project Brief (strategic foundation)
 - Trigger Map (user psychology + business impact)
 - Scenario Specifications (your thinking captured for eternity)
@@ -92,7 +93,7 @@ https://github.com/bmad-code-org/BMAD-METHOD/discussions
 
 ## About Whiteport Design Studio (WDS)
 
-WDS is an AI-augmented design methodology created by Mårten Angner, UX designer and founder of Whiteport, a design and development agency from Sweden. WDS is a plugin module for the BMad Method - an open-source AI-augmented development framework. 
+WDS is an AI-augmented design methodology created by Mårten Angner, UX designer and founder of Whiteport, a design and development agency from Sweden. WDS is a plugin module for the BMad Method - an open-source AI-augmented development framework.
 
 **The Mission:** Give designers everywhere free access to AI agents specifically tailored for design work, while preserving and amplifying their creative thinking through specifications.
 

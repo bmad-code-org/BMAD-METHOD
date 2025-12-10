@@ -9,6 +9,7 @@ Gather all materials and set up your testing environment before starting validat
 ## Before You Start
 
 **Ensure you have:**
+
 - ✅ Completed step 7.1 (notification received)
 - ✅ Testing time scheduled
 - ✅ Build information verified
@@ -20,12 +21,14 @@ Gather all materials and set up your testing environment before starting validat
 ### Test Scenario
 
 **Load test scenario file:**
+
 - File: `test-scenarios/TS-XXX.yaml`
 - Review all test cases
 - Understand success criteria
 - Note any special setup needed
 
 **Print or display:**
+
 - Have test scenario visible while testing
 - Check off tests as you complete them
 - Take notes on deviations
@@ -35,6 +38,7 @@ Gather all materials and set up your testing environment before starting validat
 ### Design Delivery
 
 **Load Design Delivery file:**
+
 - File: `deliveries/DD-XXX.yaml`
 - Review user value and success criteria
 - Review acceptance criteria
@@ -45,12 +49,14 @@ Gather all materials and set up your testing environment before starting validat
 ### Scenario Specifications
 
 **Load all scenario specs:**
+
 - Directory: `C-Scenarios/`
 - Review each scenario specification
 - Note design details
 - Understand expected behavior
 
 **Example:**
+
 ```
 C-Scenarios/
 ├── 01-welcome/Frontend/specifications.md
@@ -64,12 +70,14 @@ C-Scenarios/
 ### Design System Specs
 
 **Load design system specs:**
+
 - Directory: `D-Design-System/`
 - Review component specifications
 - Review design tokens
 - Note exact colors, sizes, spacing
 
 **Example:**
+
 ```
 D-Design-System/
 ├── 02-Foundation/
@@ -89,11 +97,13 @@ D-Design-System/
 ### Access the Build
 
 **Staging environment:**
+
 - URL: [Staging URL]
 - Credentials: [Username/Password]
 - Platform: [iOS/Android/Web]
 
 **Install build (if needed):**
+
 ```bash
 # iOS TestFlight
 - Open TestFlight app
@@ -113,12 +123,14 @@ D-Design-System/
 ### Prepare Test Devices
 
 **Primary device:**
+
 - [ ] Device charged (>80%)
 - [ ] Connected to WiFi
 - [ ] Screen recording enabled
 - [ ] Screenshot tools ready
 
 **Secondary device (if needed):**
+
 - [ ] Different platform (iOS vs Android)
 - [ ] Different screen size
 - [ ] Different OS version
@@ -128,20 +140,24 @@ D-Design-System/
 ### Set Up Tools
 
 **Screen recording:**
+
 - [ ] QuickTime (Mac)
 - [ ] Built-in screen recorder (iOS/Android)
 - [ ] OBS Studio (Desktop)
 
 **Screenshot tools:**
+
 - [ ] Native screenshot (Command+Shift+4)
 - [ ] Annotate screenshots (Preview, Skitch)
 
 **Note-taking:**
+
 - [ ] Markdown editor open
 - [ ] Test tracking document ready
 - [ ] Issue template ready
 
 **Accessibility tools:**
+
 - [ ] VoiceOver (iOS) or TalkBack (Android)
 - [ ] Color contrast checker
 - [ ] Zoom/magnification
@@ -151,6 +167,7 @@ D-Design-System/
 ## Prepare Test Data
 
 **Create test accounts:**
+
 ```
 Test User 1:
 - Email: test1@example.com
@@ -169,6 +186,7 @@ Test User 3:
 ```
 
 **Prepare test data:**
+
 - [ ] Valid emails
 - [ ] Invalid emails (for error testing)
 - [ ] Strong passwords
@@ -181,6 +199,7 @@ Test User 3:
 ## Create Testing Workspace
 
 **File structure:**
+
 ```
 testing/DD-XXX/
 ├── screenshots/
@@ -195,6 +214,7 @@ testing/DD-XXX/
 ```
 
 **Create directories:**
+
 ```bash
 mkdir -p testing/DD-XXX/screenshots
 mkdir -p testing/DD-XXX/screen-recordings
@@ -209,26 +229,31 @@ touch testing/DD-XXX/issues-found.md
 **Understand what you're testing:**
 
 ### Happy Path Tests
+
 - [ ] [Number] tests defined
 - [ ] Understand each test flow
 - [ ] Know expected results
 
 ### Error State Tests
+
 - [ ] [Number] tests defined
 - [ ] Understand error scenarios
 - [ ] Know expected error messages
 
 ### Edge Case Tests
+
 - [ ] [Number] tests defined
 - [ ] Understand unusual scenarios
 - [ ] Know expected behavior
 
 ### Design System Validation
+
 - [ ] [Number] components to check
 - [ ] Know exact specifications
 - [ ] Have design tokens ready
 
 ### Accessibility Tests
+
 - [ ] Screen reader testing
 - [ ] Color contrast checking
 - [ ] Touch target verification
@@ -334,15 +359,18 @@ After preparation is complete:
 ### DO ✅
 
 **Be thorough:**
+
 - Gather everything before starting
 - Don't interrupt testing to find files
 
 **Be organized:**
+
 - Create workspace structure
 - Name files clearly
 - Take notes as you go
 
 **Be realistic:**
+
 - Estimate time accurately
 - Add buffer for issues
 - Block calendar time
@@ -350,15 +378,18 @@ After preparation is complete:
 ### DON'T ❌
 
 **Don't rush:**
+
 - Take time to prepare properly
 - Don't skip setup steps
 
 **Don't improvise:**
+
 - Follow test scenario
 - Use prepared test data
 - Stick to the plan
 
 **Don't forget tools:**
+
 - Screen recording is critical
 - Screenshots document issues
 - Notes capture details
