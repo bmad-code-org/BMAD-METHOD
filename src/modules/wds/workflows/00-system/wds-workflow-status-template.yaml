@@ -61,7 +61,7 @@ workflow_status: "{{workflow_items}}"
 #       - feature-impact-analysis.md
 #   phase_3_prd_platform:
 #     status: required
-#     agent: freyja-pm
+#     agent: idunn-wds-pm
 #     folder: C-Platform-Requirements/
 #     artifacts:
 #       - platform-architecture.md
@@ -69,19 +69,19 @@ workflow_status: "{{workflow_items}}"
 #       - proofs-of-concept/
 #   phase_4_ux_design:
 #     status: required
-#     agent: baldr-ux
+#     agent: freyja-wds-designer
 #     folder: C-Scenarios/
 #     artifacts: []  # Grows as scenarios are created
 #   phase_5_design_system:
 #     status: conditional  # or skipped
-#     agent: baldr-ux
+#     agent: freyja-wds-designer
 #     folder: D-Design-System/
 #     artifacts:
 #       - component-showcase.html
 #       - design-tokens.md
 #   phase_6_prd_finalization:
 #     status: required
-#     agent: freyja-pm
+#     agent: idunn-wds-pm
 #     folder: E-PRD-Finalization/
 #     artifacts:
 #       - complete-prd.md

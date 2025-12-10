@@ -43,11 +43,11 @@ Choice [1/2/3/4/5]:</ask>
 <action>Load `steps/step-02-define-scenario.md`</action>
 
 ### Choice 2: Phase 5 (Design System)
-<output>To start Phase 5, activate Baldr again and run the Design System workflow.</output>
+<output>To start Phase 5, activate Freyja (WDS Designer) again and run the Design System workflow.</output>
 <action>Exit this workflow</action>
 
 ### Choice 3: Phase 6 (PRD Finalization)
-<output>To start Phase 6, activate Freyja (PM) and run the PRD Finalization workflow.</output>
+<output>To start Phase 6, activate Idunn (WDS PM) and run the PRD Finalization workflow.</output>
 <action>Exit this workflow</action>
 
 ### Choice 4: Review Progress

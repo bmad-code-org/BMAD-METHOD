@@ -50,7 +50,7 @@ metrics:
 
 ### 2. Track Key Metrics
 
-**From System Update file:**
+**From Design Delivery file:**
 
 ```yaml
 metrics:

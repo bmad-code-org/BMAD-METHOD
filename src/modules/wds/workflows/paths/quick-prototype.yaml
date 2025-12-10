@@ -32,7 +32,7 @@ phases:
     workflows:
       - id: "ux-design"
         required: true
-        agent: "baldr-ux"
+        agent: "freyja-wds-designer"
         command: "ux-design"
         output: "Quick specifications and HTML prototypes"
         note: "Focus on getting something visible fast"

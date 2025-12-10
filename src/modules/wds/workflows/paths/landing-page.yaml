@@ -32,7 +32,7 @@ phases:
     workflows:
       - id: "ux-design"
         required: true
-        agent: "baldr-ux"
+        agent: "freyja-wds-designer"
         command: "ux-design"
         output: "Page specifications, prototypes"
         note: "Usually just 1-3 pages for landing page projects"
@@ -47,7 +47,7 @@ phases:
     workflows:
       - id: "design-system"
         conditional: "include_design_system"
-        agent: "baldr-ux"
+        agent: "freyja-wds-designer"
         command: "design-system"
         output: "Component documentation"
         note: "Optional - skip for truly simple one-off pages"

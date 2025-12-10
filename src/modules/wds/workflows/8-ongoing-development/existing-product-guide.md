@@ -458,14 +458,15 @@ Changes for Design Delivery DD-011 (v1.1):
 ```yaml
 delivery:
   id: "DD-010"
-  name: "System Update v1.1"
-  type: "system_update"
+  name: "Product Update v1.1"
+  type: "incremental_improvement"
+  scope: "update"
   status: "ready"
   priority: "high"
   version: "1.1"
 
 description: |
-  System update with bug fixes, refinements, and enhancements
+  Incremental improvements with bug fixes, refinements, and enhancements
   based on user feedback from v1.0 launch.
 
 changes:

@@ -14,7 +14,7 @@
 To get started, run the workflow-init:
 `/bmad:wds:workflows:workflow-init`
 
-Or activate any WDS agent (Saga, Freyja, or Baldr) and describe your project.</output>
+Or activate any WDS agent (Saga, Idunn, or Freyja) and describe your project.</output>
   <action>Exit workflow</action>
 </check>
 

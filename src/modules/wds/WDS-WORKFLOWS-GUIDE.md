@@ -13,8 +13,8 @@ wds/
 ├── _module-installer/          # Installation configuration
 ├── agents/                     # WDS specialized agents (Norse Pantheon)
 │   ├── saga-analyst.agent.yaml # Saga-Analyst - Business & Product Analyst
-│   ├── freyja-pm.agent.yaml    # Freyja-PM - Product Manager
-│   └── baldr-ux.agent.yaml     # Baldr-UX - UX/UI Designer
+│   ├── idunn-pm.agent.yaml     # Idunn-WDS-PM - Product Manager
+│   └── freyja-ux.agent.yaml    # Freyja-WDS-Designer - UX/UI Designer
 ├── workflows/                  # Phase-selectable design workflows
 ├── data/                       # Standards, frameworks, presentations
 │   └── presentations/          # Agent introduction presentations
@@ -57,8 +57,8 @@ WDS creates an alphabetized folder structure in the user's `docs/` folder:
 | Agent | File | Role | Norse Meaning |
 |-------|------|------|---------------|
 | **Saga the Analyst** | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom |
-| **Freyja the PM** | `freyja-pm.agent.yaml` | Product Manager | Goddess of love, war & strategy |
-| **Baldr the UX Expert** | `baldr-ux.agent.yaml` | UX/UI Designer | God of light & beauty |
+| **Idunn the PM** | `idunn-pm.agent.yaml` | Product Manager | Goddess of renewal & youth |
+| **Freyja the Designer** | `freyja-ux.agent.yaml` | UX/UI Designer | Goddess of beauty, magic & strategy |
 
 ## Conventions
 

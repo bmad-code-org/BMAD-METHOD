@@ -46,11 +46,11 @@ The WDS module will be located at `src/modules/wds/` and follows BMad v6 module 
 ```
 src/modules/wds/
 ├── _module-installer/          # Installation configuration
-│   └── install-config.yaml
+│   └── installer.js
 ├── agents/                     # WDS specialized agents
-│   ├── analyst.agent.yaml      # Mary - Business & Product Analyst
-│   ├── pm.agent.yaml           # Sarah - Product Manager
-│   └── designer.agent.yaml     # Sally - UX/UI Designer
+│   ├── saga-analyst.agent.yaml # Saga - WDS Analyst
+│   ├── idunn-pm.agent.yaml     # Idunn - WDS PM
+│   └── freyja-ux.agent.yaml    # Freyja - WDS Designer
 ├── workflows/                  # Phase-selectable workflows
 ├── data/                       # Standards, frameworks, presentations
 ├── docs/                       # Module documentation (xxx-guide.md)
@@ -68,12 +68,14 @@ WDS creates a distinctive **alphabetized folder structure** in the user's projec
 
 ```
 docs/
-├── A-Product-Brief/            # Phase 1: Strategic foundation & vision
-├── B-Trigger-Map/              # Phase 2: Business goals, personas, drivers
-├── C-Scenarios/                # Phase 4: Visual specifications & sketches
-├── D-PRD/                      # Phase 3: Product requirements documentation
-├── D-Design-System/            # Phase 5: Component library & design tokens
-└── E-UI-Roadmap/               # Phase 6: Development integration bridge
+├── A-Product-Brief/            # Phase 1: Product Exploration
+├── B-Trigger-Map/              # Phase 2: Trigger Mapping
+├── C-Platform-Requirements/    # Phase 3: PRD Platform (technical foundation)
+├── C-Scenarios/                # Phase 4: UX Design (scenarios & specifications)
+├── D-Design-System/            # Phase 5: Design System (component library)
+├── E-PRD/                      # Phase 6: PRD & Design Deliveries
+├── F-Testing/                  # Phase 7: Testing validation
+└── G-Product-Development/      # Phase 8: Ongoing product development
 ```
 
 **Why alphabetical?** The `A-B-C-D-E` prefix creates a clear visual namespace that:
@@ -86,16 +88,18 @@ docs/
 
 ## 🔄 The WDS Phases
 
-WDS provides **6 design phases** that can be selected based on project scale:
+WDS provides **8 design phases** that can be selected based on project scale:
 
 | Phase | Name | Output Folder | Description |
 |-------|------|---------------|-------------|
 | 1️⃣ | **Product Exploration** | `A-Product-Brief/` | Vision, positioning, ICP framework |
-| 2️⃣ | **User Research** | `B-Trigger-Map/` | Personas, business goals, driving forces |
-| 3️⃣ | **Requirements** | `D-PRD/` | Functional & technical requirements |
-| 4️⃣ | **Conceptual Design** | `C-Scenarios/` | User scenarios, sketches, specifications |
-| 5️⃣ | **Component Design** | `D-Design-System/` | Design tokens, component library |
-| 6️⃣ | **Dev Integration** | `E-UI-Roadmap/` | Handoff artifacts for development |
+| 2️⃣ | **Trigger Mapping** | `B-Trigger-Map/` | Personas, business goals, Feature Impact Analysis |
+| 3️⃣ | **PRD Platform** | `C-Platform-Requirements/` | Technical foundation (parallel with Phase 4) |
+| 4️⃣ | **UX Design** | `C-Scenarios/` | User scenarios, sketches, specifications |
+| 5️⃣ | **Design System** | `D-Design-System/` | Design tokens, component library (optional) |
+| 6️⃣ | **PRD & Design Deliveries** | `E-PRD/` | Complete PRD + packaged flows for BMM |
+| 7️⃣ | **Testing** | `F-Testing/` | Designer validation of implementation |
+| 8️⃣ | **Product Development** | `G-Product-Development/` | Ongoing improvements (existing products) |
 
 ### Phase-Selectable Workflow
 
@@ -114,9 +118,9 @@ WDS introduces **3 specialized design agents** named after Norse mythology:
 
 | Agent | Role | Norse Meaning |
 |-------|------|---------------|
-| **Saga the Analyst** | Business & Product Analyst | Goddess of stories & wisdom - uncovers your business story |
-| **Freyja the PM** | Product Manager | Goddess of love, war & strategy - leads with heart and mind |
-| **Baldr the UX Expert** | UX/UI Designer | God of light & beauty - makes everything radiant |
+| **Saga the WDS Analyst** | Business & Product Analyst | Goddess of stories & wisdom - uncovers your business story |
+| **Idunn the WDS PM** | Product Manager | Goddess of renewal & youth - keeps projects vital and thriving |
+| **Freyja the WDS Designer** | UX/UI Designer | Goddess of beauty, magic & strategy - creates experiences users love |
 
 ---
 
@@ -129,33 +133,86 @@ WDS Design Phases                    BMM Development Phases
 ─────────────────                    ─────────────────────
 A-Product-Brief/    ──────────────►  Architecture Context
 B-Trigger-Map/      ──────────────►  User Story Personas
-D-PRD/              ──────────────►  Epic Breakdown Source
+C-Platform-Requirements/ ─────────►  Technical Foundation
 C-Scenarios/        ──────────────►  Story Specifications
 D-Design-System/    ──────────────►  Component Implementation
-E-UI-Roadmap/       ──────────────►  Development Roadmap
+E-PRD/              ──────────────►  PRD + Design Deliveries
 ```
 
-The `E-UI-Roadmap/` folder serves as the **integration bridge**, containing:
+The `E-PRD/` folder serves as the **integration bridge**, containing:
+- Complete PRD (00-PRD.md) with functional requirements
+- Design Deliveries (DD-XXX.yaml) - packaged flows for BMM handoff
 - Scenario-to-epic mapping
-- Priority recommendations
-- Technical constraints
-- Component implementation notes
-- Object ID inventory for testing
+- Component references
+- Test scenarios
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+- Node.js 18+ installed
+- BMad Method CLI installed (`npm install -g @bmad/cli`)
+
+### Install WDS Module
+
+```bash
+# Clone this repository
+git clone https://github.com/whiteport-collective/whiteport-design-studio.git
+cd whiteport-design-studio
+
+# Install dependencies
+npm install
+
+# Install WDS module to your project
+cd /path/to/your/project
+bmad install wds
+```
+
+### What Gets Installed
+
+The WDS installer creates:
+- ✅ `docs/` directory structure with alphabetized folders (A-G)
+- ✅ All 8 phase folders ready for your design work
+- ✅ `.gitkeep` files to preserve empty directories
+- ✅ `E-PRD/Design-Deliveries/` subfolder for BMM handoff
+
+### Getting Started
+
+After installation, activate any WDS agent:
+
+```bash
+# Start with Product Brief
+bmad agent saga-wds-analyst
+
+# Or jump to Platform Requirements
+bmad agent idunn-wds-pm
+
+# Or begin with UX Design
+bmad agent freyja-wds-designer
+```
 
 ---
 
 ## 📋 Development Status
 
-### Current Phase: Module Structure Setup
+### ✅ Complete
 
-- [ ] Create `src/modules/wds/` folder structure
-- [ ] Create `_module-installer/install-config.yaml`
-- [ ] Convert agents to v6 YAML format (Mary, Sarah, Sally)
-- [ ] Create phase-selectable workflow initialization
-- [ ] Build core workflows for each phase
-- [ ] Create documentation (xxx-guide.md format)
-- [ ] Add example content (Dog Week patterns)
-- [ ] Test integration with BMM
+- ✅ Module folder structure (`src/modules/wds/`)
+- ✅ Installation system (`_module-installer/installer.js`)
+- ✅ All 3 agents converted to v6 YAML (Saga, Idunn, Freyja)
+- ✅ Agent presentations and personas
+- ✅ All 8 phase workflows complete
+- ✅ Team configurations
+- ✅ Complete documentation (method guides)
+- ✅ Workflow architecture (step-file system)
+
+### 🔄 Optional Enhancements
+
+- [ ] Dog Week example patterns
+- [ ] Conversation examples
+- [ ] WDS Trigger Map example
 
 ### Conventions
 

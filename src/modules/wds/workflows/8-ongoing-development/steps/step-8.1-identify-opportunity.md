@@ -389,7 +389,7 @@ Example:
 ## Next Steps
 
 1. Design inline onboarding (Step 8.3)
-2. Create System Update Delivery (Step 8.4)
+2. Create Design Delivery (Step 8.4)
 3. Hand off to BMad (Step 8.5)
 4. Validate implementation (Step 8.6)
 5. Monitor impact (Step 8.7)

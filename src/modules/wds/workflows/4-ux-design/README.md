@@ -1,6 +1,6 @@
 # Phase 4: UX Design Workflow
 
-**Baldr's domain - From sketch to specification**
+**Freyja's domain - From sketch to specification**
 
 ---
 

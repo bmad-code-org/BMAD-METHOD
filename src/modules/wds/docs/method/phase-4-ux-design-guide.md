@@ -1,13 +1,13 @@
 # Phase 4: UX Design (UX-Sketches & Usage Scenarios)
 
-**Agent:** Baldr the UX Expert  
+**Agent:** Freyja the WDS Designer  
 **Output:** `C-Scenarios/` (or your configured prefix)
 
 ---
 
 ## What This Phase Does
 
-UX Design transforms ideas into detailed visual specifications. Working with Baldr, you conceptualize, sketch, and specify every interaction until your design can be logically explained without gaps.
+UX Design transforms ideas into detailed visual specifications. Working with Freyja, you conceptualize, sketch, and specify every interaction until your design can be logically explained without gaps.
 
 **The key insight:** Designs that can be logically explained without gaps are easy to develop. The specification process reveals gaps in your thinking early - when they're easy to address.
 
@@ -27,12 +27,12 @@ For each scenario/page:
 
 ---
 
-## How Baldr the UX Expert helps you design software
+## How Freyja the WDS Designer helps you design software
 
 ### 4A: Scenario Exploration
 **When:** Discovering the Concept, the process, flow screen or component solution together, before sketching begin
 
-Baldr helps you:
+Freyja helps you:
 - Think through the user's journey
 - Explore content and feature options
 - Consider psychological triggers from your Trigger Map
@@ -41,7 +41,7 @@ Baldr helps you:
 ### 4B: UI Sketch Analysis
 **When:** You have a sketch and you need feedback on it
 
-Baldr helps you:
+Freyja helps you:
 - Analyze what the sketch shows
 - Ask clarifying questions
 - Identify all components and states
@@ -49,7 +49,7 @@ Baldr helps you:
 ### 4C: Conceptual Specification
 **When:** Design is clear, need development-ready specs
 
-Baldr helps you:
+Freyja helps you:
 - Document every detail systematically
 - Assign Object IDs for testing
 - Define all interactions and states
@@ -58,7 +58,7 @@ Baldr helps you:
 ### 4D: HTML Prototype
 **When:** Specifications complete, and we make the sketch come alive to test the concept
 
-Baldr helps you:
+Freyja helps you:
 - Create interactive prototypes
 - Test the design in browser
 - Discover gaps and issues
@@ -68,7 +68,7 @@ Baldr helps you:
 ### 4E: PRD Update
 **When:** Page design is complete, before moving to the next scenario
 
-Baldr helps you:
+Freyja helps you:
 - Identify what features this page requires
 - Add functional requirements to the PRD
 - Reference the page (e.g., "Required by: 2.1-Dog-Calendar")
@@ -262,7 +262,7 @@ Your specifications enable:
 
 ## Tips for Great Sessions
 
-**Think out loud with Baldr**
+**Think out loud with Freyja**
 - Share your reasoning
 - Explore alternatives together
 - Let the conversation reveal insights

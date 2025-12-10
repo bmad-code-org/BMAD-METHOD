@@ -207,9 +207,9 @@ src/modules/wds/
 
 | Agent | File | Role | Norse Meaning | Status |
 |-------|------|------|---------------|--------|
-| **Saga the Analyst** | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom | TO CREATE |
-| **Freyja the PM** | `freyja-pm.agent.yaml` | Product Manager | Goddess of love, war & strategy | TO CREATE |
-| **Baldr the UX Expert** | `baldr-ux.agent.yaml` | UX/UI Designer | God of light & beauty | TO CREATE |
+| **Saga the Analyst** | `saga-analyst.agent.yaml` | Business & Product Analyst | Goddess of stories & wisdom | ✅ **COMPLETE (Dec 9)** |
+| **Idunn the PM** | `idunn-pm.agent.yaml` | Product Manager | Goddess of renewal & youth | ✅ **COMPLETE (Dec 9)** |
+| **Freyja the Designer** | `freyja-ux.agent.yaml` | UX/UI Designer | Goddess of beauty, magic & strategy | ✅ **COMPLETE (Dec 9)** |
 
 **Why "Name the Function" format?**
 - Reads naturally: "Saga the Analyst"
@@ -227,13 +227,22 @@ WDS creates an alphabetized folder structure in the user's project `docs/` folde
 
 ```
 docs/
-├── A-Product-Brief/            # Phase 1 outputs
-├── B-Trigger-Map/              # Phase 2 outputs
-├── C-Scenarios/                # Phase 4 outputs
-├── D-PRD/                      # Phase 3 outputs
-├── D-Design-System/            # Phase 5 outputs
-└── E-UI-Roadmap/               # Phase 6 outputs (dev bridge)
+├── A-Product-Brief/            # Phase 1: Product Exploration outputs
+├── B-Trigger-Map/              # Phase 2: Trigger Mapping outputs
+├── C-Platform-Requirements/    # Phase 3: Technical foundation (platform, architecture, integrations)
+├── C-Scenarios/                # Phase 4: UX Design (sketches & specifications)
+├── D-Design-System/            # Phase 5: Component Library (optional, parallel)
+├── E-PRD        # Phase 6: Design-Deliveries,Packaged flows for BMM handoff
+├── F-Testing/                  # Phase 7: Testing validation and issues
+└── G-Product-Development/      # Phase 8: Ongoing product development (existing products)
 ```
+
+**Note:** 
+- **C-Platform-Requirements/** and **C-Scenarios/** both use "C" prefix because Phase 3 and 4 run in parallel
+- **Platform Requirements** (C-Platform-Requirements/) stays separate - technical foundation
+- **E-PRD/** contains both the PRD and Design Deliveries (DD-XXX.yaml packages for BMM handoff)
+- F-Testing/ contains test scenarios, validation results, and issues created during Phase 7
+- G-Product-Development/ is used for Phase 8 (ongoing improvements to existing products)
 
 ### 5.2 Why Alphabetical Prefix?
 
@@ -249,26 +258,56 @@ docs/
 
 | Phase | # | Name | Output Folder |
 |-------|---|------|---------------|
-| 1 | Product Exploration | Strategic foundation | `A-Product-Brief/` |
-| 2 | User Research | Personas, business goals | `B-Trigger-Map/` |
-| 3 | Requirements | Functional & technical | `D-PRD/` |
-| 4 | Conceptual Design | Scenarios, sketches | `C-Scenarios/` |
-| 5 | Component Design | Design system | `D-Design-System/` |
-| 6 | Dev Integration | Handoff bridge | `E-UI-Roadmap/` |
+| 1 | Product Exploration | Product Brief | `A-Product-Brief/` |
+| 2 | Trigger Mapping | User psychology & business goals | `B-Trigger-Map/` |
+| 3 | PRD Platform | Technical foundation (platform only) | `C-Platform-Requirements/` |
+| 4 | UX Design | Scenarios, sketches, specifications | `C-Scenarios/` |
+| 5 | Design System | Component library (optional, parallel) | `D-Design-System/` |
+| 6 | PRD & Design Deliveries | PRD + packaged flows for BMM handoff | `E-PRD/` |
+| 7 | Testing | Designer validation of implementation | `F-Testing/` |
+| 8 | Product Development | Ongoing improvements (existing products) | `G-Product-Development/` |
 
-### 5.4 E-UI-Roadmap Contents
+### 5.4 E-PRD Structure (PRD + Design Deliveries)
 
-The integration bridge folder contains:
+**E-PRD/ contains both the PRD and Design Deliveries:**
 
+**Phase 3: Platform Requirements (Technical Foundation)**
 ```
-E-UI-Roadmap/
-├── ui-roadmap-guide.md             # Overview
-├── priority-sequence.md            # What to build first
-├── scenario-mapping.md             # Scenarios → Dev order
-├── component-inventory.md          # All components needed
-├── technical-notes.md              # Design constraints
-└── open-questions.md               # For dev team to decide
+C-Platform-Requirements/
+├── 00-Platform-Overview.md         # Platform summary
+├── 01-Platform-Architecture.md     # Tech stack, infrastructure
+├── 02-Data-Model.md                # Core entities, relationships
+├── 03-Integration-Map.md           # External services
+├── 04-Security-Framework.md        # Auth, authorization, data protection
+└── 05-Technical-Constraints.md     # What design needs to know
 ```
+**Purpose:** Technical foundation created by WDS. Referenced by PRD but kept separate.
+
+**Phase 6: E-PRD (PRD + Design Deliveries)**
+```
+E-PRD/
+├── 00-PRD.md                       # Main PRD document
+│   ├── Reference to Platform       # Links to C-Platform-Requirements/
+│   ├── Functional Requirements     # From design deliveries
+│   ├── Feature Dependencies        # Organized by epic
+│   └── Development Sequence        # Priority order
+│
+└── Design-Deliveries/              # Packaged flows for BMM handoff
+    ├── DD-001-login-onboarding.yaml
+    ├── DD-002-booking-flow.yaml
+    ├── DD-003-profile-management.yaml
+    └── ...
+```
+
+**Each Design Delivery (DD-XXX.yaml) contains:**
+- Flow metadata (name, epic, priority)
+- Scenario references (which pages in C-Scenarios/)
+- Component references (which components in D-Design-System/)
+- Functional requirements discovered during design
+- Test scenarios (validation criteria)
+- Technical notes and constraints
+
+**Key Insight:** E-PRD/ is a **unified folder** containing both the PRD document and the design delivery packages. BMM can consume either the PRD or the individual design deliveries.
 
 ---
 
@@ -411,56 +450,82 @@ What tends to feel less collaborative:
 
 ---
 
-## 6.5 Key Methodology Refinements (Dec 3, 2025)
+## 6.5 WDS Phases & Deliverables (Aligned Dec 9, 2025)
 
-### Phase Naming Convention
-Each phase title now includes the artifact in parentheses:
-- Phase 1: Product Exploration (Product Brief)
-- Phase 2: Trigger Mapping (Trigger Map)
-- Phase 3: PRD Platform (Technical Foundation)
-- Phase 4: UX Design (UX-Sketches & Usage Scenarios)
-- Phase 5: Design System (Component Library)
-- Phase 6: PRD Finalization (Complete PRD)
+### Complete Phase Structure
 
-### Phase 2: Feature Impact Analysis
-Added a scoring system (Beta) for prioritizing features:
+**Phase 1: Product Exploration**
+- **Output Folder:** `A-Product-Brief/`
+- **Deliverable:** Product Brief with vision, positioning, ICP, success criteria
+- **Agent:** Saga WDS Analyst
+
+**Phase 2: Trigger Mapping**
+- **Output Folder:** `B-Trigger-Map/`
+- **Deliverable:** Trigger Map with business goals, personas, usage goals, Feature Impact Analysis
+- **Agent:** Saga WDS Analyst
+
+**Phase 3: PRD Platform**
+- **Output Folder:** `C-Platform-Requirements/`
+- **Deliverable:** Technical foundation (platform, architecture, data model, integrations, security)
+- **Agent:** Freyja WDS PM
+- **Note:** Runs in parallel with Phase 4
+
+**Phase 4: UX Design**
+- **Output Folder:** `C-Scenarios/`
+- **Deliverable:** Interactive prototypes, scenarios, sketches, specifications with Object IDs
+- **Agent:** Baldr WDS Designer
+- **Note:** Runs in parallel with Phase 3
+
+**Phase 5: Design System**
+- **Output Folder:** `D-Design-System/`
+- **Deliverable:** Component library (atoms, molecules, organisms) with design tokens
+- **Agent:** Baldr WDS Designer
+- **Note:** Optional, runs in parallel with Phase 4
+
+**Phase 6: PRD & Design Deliveries**
+- **Output Folder:** `E-PRD/`
+- **Deliverable:** Complete PRD (00-PRD.md) + Design Deliveries (DD-XXX.yaml packages)
+- **Agent:** Freyja WDS PM
+- **Note:** PRD references C-Platform-Requirements/, organizes functional requirements by epic
+
+**Phase 7: Testing**
+- **Output Folder:** `F-Testing/`
+- **Deliverable:** Test scenarios, validation results, issues
+- **Agent:** Baldr WDS Designer
+- **Note:** Designer validates BMM implementation
+
+**Phase 8: Product Development**
+- **Output Folder:** `G-Product-Development/`
+- **Deliverable:** Ongoing improvements to existing products (Kaizen/Brownfield)
+- **Agent:** Baldr WDS Designer
+- **Note:** Alternative entry point for existing products
+
+### Key Methodology Features
+
+**Feature Impact Analysis (Phase 2):**
+- Scoring system for prioritizing features
 - Positive drivers: +3/+2/+1 by priority
 - Negative drivers: +4/+3/+2 (higher due to loss aversion)
 - Bonuses for multi-group and multi-driver features
 - Outputs ranked feature list for MVP planning
 
-### Phase 3: PRD Platform
-Renamed from "Requirements" to emphasize:
+**Platform Requirements (Phase 3):**
 - Technical foundation work (platform, infrastructure)
 - Proofs of concept for risky features
 - Experimental endpoints that can start before design
-- Parallel with design work, not sequential
+- Runs in parallel with design work (not sequential)
 
-### Phase 4: Step 4E - PRD Update
-Added step 4E after each page design:
-- Extract functional requirements discovered during design
-- Add to PRD with page references
-- PRD grows incrementally throughout Phase 4
-- Creates traceability: page → feature → epic
+**Design System (Phase 5):**
+- Optional - chosen during project setup
+- Parallel - builds alongside Phase 4, not after
+- Unified naming for Figma/Code integration
+- Component library selection guidance
 
-### Phase 5: Optional & Parallel
-Clarified that Design System is:
-- **Optional** - chosen during project setup
-- **Parallel** - builds alongside Phase 4, not after
-- Includes unified naming for Figma/Code integration
-- Component library selection guidance added
-
-### Phase 6: PRD Finalization
-Renamed from "Dev Integration" to emphasize:
-- Compiling all functional requirements from Phase 4
-- Organizing by epic/feature area
-- Continuous handoff model (not single event)
-- First handoff at MVP, then ongoing updates
-
-### Removed from Guides
-- Duration estimates (project-dependent)
-- Inline code examples (belong in templates/examples)
-- Negative language ("expensive problems", "kills projects")
+**PRD Structure (Phase 6):**
+- E-PRD/ contains both PRD document and Design Deliveries subfolder
+- PRD references C-Platform-Requirements/ (not duplicated)
+- Design Deliveries (DD-XXX.yaml) package complete flows for BMM handoff
+- Iterative handoff model - hand off flows as they're ready
 
 ---
 
@@ -544,20 +609,23 @@ Includes:
 | 12c | Phase 3 Workflow | `workflows/3-prd-platform/` | ✅ COMPLETE |
 | 12d | **Phase 4 Workflow** | `workflows/4-ux-design/` | ✅ **COMPLETE (Dec 4)** |
 | 12e | **Phase 5 Workflow** | `workflows/5-design-system/` | ✅ **COMPLETE (Dec 9)** |
-| 12f | Phase 6 Workflow | `workflows/6-integration/` | TO CREATE |
+| 12f | **Phase 6 Workflow** | `workflows/6-design-deliveries/` | ✅ **COMPLETE** |
 
 #### Phase 4: Create Agents (The Norse Pantheon)
 | Order | Component | File | Status |
 |-------|-----------|------|--------|
-| 13 | Saga-Analyst | `agents/saga-analyst.agent.yaml` | TO CREATE |
-| 14 | Freyja-PM | `agents/freyja-pm.agent.yaml` | TO CREATE |
-| 15 | Baldr-UX | `agents/baldr-ux.agent.yaml` | TO CREATE |
+| 13 | **Saga-Analyst** | `agents/saga-analyst.agent.yaml` | ✅ COMPLETE |
+| 13b | **Saga Presentation** | `data/presentations/saga-intro.md` | ✅ COMPLETE |
+| 14 | **Idunn-PM** | `agents/idunn-pm.agent.yaml` | ✅ COMPLETE |
+| 14b | **Idunn Presentation** | `data/presentations/idunn-intro.md` | ✅ COMPLETE |
+| 15 | **Freyja-Designer** | `agents/freyja-ux.agent.yaml` | ✅ COMPLETE |
+| 15b | **Freyja Presentation** | `data/presentations/freyja-intro.md` | ✅ COMPLETE |
 
 #### Phase 5: Finalize
 | Order | Component | File | Status |
 |-------|-----------|------|--------|
-| 16 | Install Config | `_module-installer/install-config.yaml` | TO CREATE |
-| 17 | Teams | `teams/` | TO CREATE |
+| 16 | **Install Config** | `_module-installer/installer.js` | ✅ COMPLETE |
+| 17 | **Teams** | `teams/` | ✅ COMPLETE |
 
 ---
 
@@ -785,16 +853,16 @@ Our product (statement of primary differentiators)
 
 | WPS2C v4 | WDS v6 | Status |
 |----------|--------|--------|
-| Mary (whiteport-analyst.md) | Saga-Analyst (saga-analyst.agent.yaml) | 🔄 Skeleton exists |
-| Sarah (whiteport-pm.md) | Freyja-PM (freyja-pm.agent.yaml) | ⏳ To create |
-| Sally (whiteport-ux-expert.md) | Baldr-UX (baldr-ux.agent.yaml) | ⏳ To create |
+| Mary (whiteport-analyst.md) | Saga-Analyst (saga-analyst.agent.yaml) | ✅ COMPLETE |
+| Sarah (whiteport-pm.md) | Idunn-PM (idunn-pm.agent.yaml) | ✅ COMPLETE |
+| Sally (whiteport-ux-expert.md) | Freyja-Designer (freyja-ux.agent.yaml) | ✅ COMPLETE |
 | James (whiteport-dev.md) | N/A - moved to BMM | ✅ Complete |
 | Alex (whiteport-orchestrator.md) | N/A - workflow-status replaces | ✅ Complete |
 
 **Key Changes:**
 - Mary → **Saga** (Goddess of stories & wisdom)
-- Sarah → **Freyja** (Goddess of love, war & strategy)  
-- Sally → **Baldr** (God of light & beauty)
+- Sarah → **Idunn** (Goddess of renewal & youth)  
+- Sally → **Freyja** (Goddess of beauty, magic & strategy)
 - Norse Pantheon theme for unique WDS identity
 
 ### 11.2 File Format Changes
@@ -2018,7 +2086,279 @@ workflows/5-design-system/
 
 ---
 
+## 20. Session: Dec 9, 2025 - Saga-Analyst Agent Creation ✅
+
+**Created:** December 9, 2025  
+**Status:** ✅ Complete
+
+### What Was Created
+
+**1. Saga-Analyst Agent** (`saga-analyst.agent.yaml`)
+- ✅ Merged WPS2C Mary's capabilities with BMM analyst features
+- ✅ Follows BMad v6 YAML schema
+- ✅ Implements WDS design philosophy (soft language, identity-based)
+- ✅ Norse mythology theme (Saga = Goddess of stories & wisdom)
+- ✅ Comprehensive persona with working rhythm guidance
+- ✅ Full menu integration with WDS workflows
+
+**2. Saga Introduction Presentation** (`saga-intro.md`)
+- ✅ Complete agent introduction speech
+- ✅ Strategic foundation explanation with detailed folder structure
+- ✅ Team integration details (Freyja, Baldr, BMM)
+- ✅ Norse mythology connection explained
+- ✅ Deliverables and process visualization
+- ✅ Professional standards and conventions
+
+### Agent Capabilities Merged
+
+**From WPS2C Mary:**
+- Strategic foundation building (Product Brief, Trigger Map)
+- Market intelligence and competitive analysis
+- Alliterative persona naming convention
+- Absolute path usage (docs/A-Product-Brief/)
+- Quality assurance mindset
+- WDS folder structure expertise
+
+**From BMM Analyst:**
+- Requirements elicitation expertise
+- Project documentation capabilities
+- Research workflow integration
+- Brainstorming session facilitation
+- Party mode and expert chat support
+- Project context file awareness (`**/project-context.md`)
+
+**WDS-Specific Enhancements:**
+- Norse mythology identity (Saga the Analyst → Saga WDS Analyst)
+- Soft, collaborative language throughout
+- Working rhythm guidance (ask → listen → reflect → discover → structure)
+- Integration with WDS phases (1-2 focus)
+- Team coordination with Freyja and Baldr
+- Bridge to BMM development workflows
+
+### Persona Highlights
+
+**Identity:**
+```yaml
+I'm Saga, the goddess of stories and wisdom. I help you discover and articulate 
+your product's strategic narrative - transforming vague ideas into clear, 
+actionable foundations.
+
+I treat analysis like a treasure hunt - excited by every clue, thrilled when 
+patterns emerge.
+```
+
+**Communication Style:**
+```yaml
+I ask questions that spark 'aha!' moments while structuring insights with precision.
+
+My approach is collaborative - we build documents together, not through interrogation. 
+I ask one question at a time and listen deeply to your answer.
+
+Analysis should feel like coffee with a wise mentor, not a survey or audit.
+```
+
+**Working Rhythm:**
+```yaml
+When we work together:
+1. I ask something interesting
+2. You share your thinking
+3. I reflect it back to show I'm listening
+4. Together we discover something new
+5. I structure it into clear documentation
+```
+
+### Menu Structure
+
+**Primary WDS Workflows:**
+1. `workflow-status` - Initialize or check WDS project status (entry point)
+2. `project-brief` - Phase 1: Product Exploration (Product Brief)
+3. `trigger-mapping` - Phase 2: Trigger Mapping (User Psychology)
+
+**Supporting Workflows:**
+4. `brainstorm-project` - Guided brainstorming for vision exploration
+5. `research` - Market, domain, competitive, or technical research
+6. `document-project` - Document existing brownfield projects
+
+**Collaboration Features:**
+7. `party-mode` - Multi-agent collaboration
+8. `expert-chat` - Direct conversation with Saga
+
+### Design Philosophy Implementation
+
+**✅ Soft Language:**
+- No "MUST", "FORBIDDEN", "NEVER" commands
+- Identity-based guidance instead of rules
+- Collaborative framing throughout
+
+**✅ Show, Don't Tell:**
+- Working rhythm examples provided
+- Clear "what works well" vs "what feels less collaborative"
+- Concrete process visualization
+
+**✅ Norse Mythology Theme:**
+- Saga = Goddess of stories and wisdom
+- Fits perfectly with role (discovering product stories)
+- Creates memorable WDS brand identity
+- Explained in presentation for user understanding
+
+### Integration Points
+
+**With WDS Team:**
+- **Freyja (PM)**: Receives strategic foundation for PRD development
+- **Baldr (UX)**: Uses personas and trigger map for design work
+
+**With BMM (Development):**
+- Product Brief provides architecture context
+- Trigger Map personas inform user stories
+- Success metrics guide development priorities
+- E-Design-Deliveries bridges design to development
+
+**With Core BMad:**
+- Uses core brainstorming workflow
+- Uses core party-mode workflow
+- Leverages BMM research workflow
+- Respects `**/project-context.md` as bible
+
+### Files Created
+
+1. `src/modules/wds/agents/saga-analyst.agent.yaml` (102 lines)
+2. `src/modules/wds/data/presentations/saga-intro.md` (280+ lines)
+
+### Files Modified
+
+1. `WDS-V6-CONVERSION-ROADMAP.md` - Updated agent status tables, folder structure sync
+
+### Key Decisions Made
+
+**Agent Naming:**
+- **Saga WDS Analyst** (not Mary, not just "Business Analyst")
+- Norse mythology theme for unique WDS identity
+- "Saga the Analyst" format - natural reading, clear function
+
+**Capability Scope:**
+- Phases 1-2 focus (Product Brief, Trigger Map)
+- Strategic foundation and market intelligence
+- Replaces BMM analyst when WDS is chosen
+- Maintains BMM analyst capabilities (research, documentation)
+
+**Language Style:**
+- Soft, collaborative, identity-based
+- Working rhythm explicitly defined
+- "What works well" vs "what feels less collaborative" framing
+- No harsh enforcement language
+
+**Integration Strategy:**
+- Seamless with WDS workflows (phases 1-2)
+- Leverages BMM workflows (research, documentation)
+- Uses core workflows (brainstorming, party-mode)
+- Bridges to development via E-Design-Deliveries
+
+### Testing Checklist
+
+When testing Saga-Analyst:
+- [ ] Agent activates successfully
+- [ ] Presentation displays correctly
+- [ ] workflow-status initializes WDS project
+- [ ] project-brief workflow executes (Phase 1)
+- [ ] trigger-mapping workflow executes (Phase 2)
+- [ ] brainstorm-project workflow works
+- [ ] research workflow accessible
+- [ ] document-project workflow accessible
+- [ ] party-mode activates correctly
+- [ ] expert-chat responds in character
+- [ ] Absolute paths used for WDS artifacts
+- [ ] Alliterative persona names generated
+- [ ] Soft, collaborative language maintained
+- [ ] Working rhythm followed (ask → listen → reflect → discover → structure)
+
+### Next Steps
+
+**Immediate:**
+1. Create Freyja-PM agent (Product Manager - Goddess of love, war & strategy)
+2. Create Baldr-UX agent (UX/UI Designer - God of light & beauty)
+
+**After Agents Complete:**
+1. Create agent presentation files for Freyja and Baldr
+2. Create team configurations in `teams/`
+3. Create module installer config
+4. Test agent activation and workflow integration
+
+---
+
+## 11. Future Enhancement Ideas
+
+### Pitch Module (Phase 0: Consultant Pitch & Discovery)
+
+**Status:** Concept - Not yet implemented
+
+**Purpose:** Help consultants create compelling pitches to win WDS engagements
+
+**Approach:** Two-repo strategy (no complexity in client projects)
+- **Client repo:** Standard WDS phases (A-G folders)
+- **Consultant repo:** Private pitch materials (pricing, strategy, proposals)
+
+**What it would include:**
+
+```
+src/modules/wds/
+├── workflows/
+│   └── 0-pitch/              # Pitch workflow
+│       ├── workflow.md
+│       └── steps/
+│           ├── step-01-discovery.md
+│           ├── step-02-analysis.md
+│           ├── step-03-recommendation.md
+│           ├── step-04-pitch-deck.md
+│           └── step-05-proposal.md
+│
+└── reference/
+    └── pitch/                # Pitch templates
+        ├── pitch-deck-template.md
+        ├── proposal-template.md
+        ├── pricing-calculator.md
+        └── discovery-questions.md
+```
+
+**Agent:** Saga the WDS Analyst (natural fit for discovery)
+
+**Trigger:** `pitch-client` - Creates pitch materials with consultant-specified output location
+
+**Key Features:**
+- Client research and discovery
+- Phase recommendation (which WDS phases client needs)
+- Effort estimation and timeline
+- Pitch deck content generation
+- Scope proposal creation
+- Pricing/budget guidance
+
+**Security Model:**
+- Consultant controls where files are saved (their private repo)
+- No `.consultant/` folder or gitignore complexity
+- Clean separation between client and consultant materials
+- Works with any organizational system
+
+**Deliverables:**
+- Client discovery notes
+- Recommended WDS phases
+- Pitch deck content
+- Scope proposal
+- Timeline and effort estimates
+- Budget/pricing strategy
+
+**Benefits:**
+- Helps consultants win engagements
+- Standardizes pitch process
+- Ensures proper WDS scoping
+- Maintains confidentiality
+- Reusable across clients
+
+**Implementation Priority:** Low (optional enhancement after core WDS is stable)
+
+---
+
+---
+
 **End of Roadmap Document**
 
-*To continue: Phase 6 (Integration) is the final workflow to create*
+*WDS v6 Core Module: Complete ✅*
 

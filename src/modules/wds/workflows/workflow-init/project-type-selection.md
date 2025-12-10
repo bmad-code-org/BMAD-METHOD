@@ -103,7 +103,7 @@ Which type of project are you working on?
 | **Design Scope** | Complete user flows | Targeted updates |
 | **Creative Freedom** | High | Constrained |
 | **Timeline** | Months | Weeks |
-| **Deliverables** | Multiple Design Deliveries | System Update Delivery |
+| **Deliverables** | Multiple Design Deliveries | Design Deliveries (small scope) |
 
 ---
 
@@ -203,11 +203,11 @@ Phase 8.2: Existing Context
     ↓
 Phase 8.3: Critical Updates
     ↓
-Phase 8.4: System Update Delivery → [Touch Point 2]
+Phase 8.4: Design Delivery (DD-XXX) → [Touch Point 2]
     ↓
 Phase 8.5: Validation ← [Touch Point 3]
     ↓
-✅ Deploy System Update
+✅ Deploy Changes
     ↓
 (Repeat for next strategic challenge)
 ```
@@ -260,29 +260,26 @@ Phase 8.5: Validation ← [Touch Point 3]
 
 ### Existing Product Examples
 
-**Onboarding Redesign:**
+**Onboarding Flow Improvement:**
 - Type: Existing Product
-- Entry: Phase 8
 - Challenge: 60% drop-off rate
 - Scope: 4 screens
 - Timeline: 2 weeks
-- Delivery: 1 System Update
+- Delivery: 1 Design Delivery (DD-XXX, small scope)
 
 **Checkout Flow Improvement:**
 - Type: Existing Product
-- Entry: Phase 8
 - Challenge: Low conversion rate
 - Scope: 3 screens + payment flow
 - Timeline: 3 weeks
-- Delivery: 1 System Update
+- Delivery: 1 Design Delivery (DD-XXX, small scope)
 
 **New Feature Addition:**
 - Type: Existing Product
-- Entry: Phase 8
 - Challenge: Users requesting calendar view
 - Scope: New calendar feature
 - Timeline: 4 weeks
-- Delivery: 1 System Update
+- Delivery: 1 Design Delivery (DD-XXX, small scope)
 
 ---
 

@@ -232,9 +232,24 @@ The Skeptic: "So I'm not alone in this?"
 
 The Advocate: "You're not alone. The question isn't whether AI will change design - it already has. The question is: are you a factory worker or a linchpin designer? Replaceable or indispensable? And will you join us in carving out this space together?"
 
-The Skeptic: "I choose to be indispensable. And I choose community over isolation. What's next?"
+The Skeptic: "I choose to be indispensable. And I choose community over isolation. What do I do right now?"
 
-The Advocate: "Module 02: Project Brief. That's where the transformation begins - learning to understand business and user goals at a deep level. Whiteport Design Studio will guide you through the entire process, step by step. And remember - the BMad Discord is there when you need help. The transformation continues, together."
+The Advocate gets fired up: "Right now? Right now you stop hiding. This is not the time to go into hibernation and hope it all just goes away. The AI era is here. The choice is made. You need to stand up with a mindset of:"
+
+**I Can. I Do. I Will.**  
+**No matter what. No matter when. No matter how.**
+
+The Advocate continues with passion: "Listen - designers half as smart as you have already made this transition. Now it's your turn. Let yourself be known! Stop waiting for the perfect moment. Stop waiting to feel ready. Stop waiting for permission."
+
+**The Action:**
+
+The Advocate: "Download an IDE. Install BMad. Select WDS in the installation. Build something. It doesn't matter what. Get moving and you will figure it out. That's how this works. You learn by doing. You build confidence through practice. You become a linchpin by acting like one."
+
+The Skeptic: "Just... start? Even if I don't know what I'm doing?"
+
+The Advocate: "Especially if you don't know what you're doing. That's courage. That's curiosity. That's the beginning of confidence. Module 02: Project Brief will guide you. The BMad Discord will support you. But you have to take the first step. Download. Install. Build. Move."
+
+The Advocate brings it home: "The transformation continues, together. But it starts with you choosing to act. Right now. Today. Let yourself be known."
 
 ---
 
@@ -290,6 +305,11 @@ At the end of the podcast, The Advocate should mention these resources:
 - **WDS guides you** - concrete process, module by module
 - **Community support** - we're banding together as linchpin designers
 - **It's hard to be a beginner** - take the risk, the BMad community is here to help
+- **No more hiding** - this is not the time to go into hibernation
+- **I Can. I Do. I Will. No matter what, no matter when, no matter how.** - the mindset you need right now
+- **Designers half as smart have already done this** - now it's your turn
+- **Let yourself be known** - download, install, build, move
+- **Action beats perfection** - get moving and you will figure it out
 
 **Avoid:**
 - Being too theoretical or academic
@@ -316,6 +336,9 @@ A natural, engaging conversation that:
 - **Part 3:** Assuming leadership, serving client and developers
 - **Emphasizes WDS as your guide** - concrete process, step by step
 - **Builds community** - you're not alone in this journey
+- **Ends with powerful call to action** - no more hiding, time to act NOW
+- **I Can. I Do. I Will.** - the mindset shift
+- **Download. Install. Build. Move.** - concrete first steps
 - Takes 30 minutes to listen to
 
 ---
@@ -332,6 +355,10 @@ If generating video instead of audio, add these visual elements:
 - "Three Irreplaceable Gifts"
 - "The 5 Dimensions of Design Thinking"
 - "The Paradigm Shift: Design Becomes Specification"
+- "I Can. I Do. I Will."
+- "No Matter What. No Matter When. No Matter How."
+- "Let Yourself Be Known"
+- "Download. Install. Build. Move."
 - "Next: Module 02 - Project Brief"
 
 **B-roll suggestions:**

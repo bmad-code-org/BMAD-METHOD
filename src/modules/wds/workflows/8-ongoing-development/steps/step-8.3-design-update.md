@@ -199,7 +199,7 @@ Example:
 
 **ID:** [cmp-XXX]
 **Type:** [Button | Input | Card | etc.]
-**Status:** New (for Update SU-XXX)
+**Status:** New (for Update DD-XXX)
 **Version:** 1.0
 
 ---
