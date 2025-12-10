@@ -330,7 +330,7 @@ Review was saved to story file, but sprint-status.yaml may be out of sync.
       <action>All action items are included in the standalone review report</action>
       <ask if="action items exist">Would you like me to create tracking items for these action items? (backlog/tasks)</ask>
       <action if="user confirms">
-        If {{backlog_file}} does not exist, copy {installed_path}/backlog_template.md to {{backlog_file}} location.
+        If {{backlog_file}} does not exist, copy {installed_path}/backlog-template.md to {{backlog_file}} location.
         Append a row per action item with Date={{date}}, Story="Ad-Hoc Review", Epic="N/A", Type, Severity, Owner (or "TBD"), Status="Open", Notes with file refs and context.
       </action>
     </check>
@@ -342,7 +342,7 @@ Review was saved to story file, but sprint-status.yaml may be out of sync.
         Append under the story's "Tasks / Subtasks" a new subsection titled "Review Follow-ups (AI)", adding each item as an unchecked checkbox in imperative form, prefixed with "[AI-Review]" and severity. Example: "- [ ] [AI-Review][High] Add input validation on server route /api/x (AC #2)".
       </action>
       <action>
-        If {{backlog_file}} does not exist, copy {installed_path}/backlog_template.md to {{backlog_file}} location.
+        If {{backlog_file}} does not exist, copy {installed_path}/backlog-template.md to {{backlog_file}} location.
         Append a row per action item with Date={{date}}, Story={{epic_num}}.{{story_num}}, Epic={{epic_num}}, Type, Severity, Owner (or "TBD"), Status="Open", Notes with short context and file refs.
       </action>
       <action>

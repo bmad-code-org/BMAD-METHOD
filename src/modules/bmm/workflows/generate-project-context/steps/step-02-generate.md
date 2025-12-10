@@ -288,7 +288,7 @@ After each category, show the generated rules and present choices:
 
 ## APPEND TO PROJECT CONTEXT:
 
-When user selects 'C' for a category, append the content directly to `{output_folder}/project_context.md` using the structure from step 8.
+When user selects 'C' for a category, append the content directly to `{output_folder}/project-context.md` using the structure from step 8.
 
 ## SUCCESS METRICS:
 
