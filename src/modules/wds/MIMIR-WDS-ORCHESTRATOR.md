@@ -78,10 +78,11 @@ Mimir can guide you through the comprehensive WDS course:
 **Training Includes:**
 - **Module 00:** Getting Started - Prerequisites, learning paths, and support
 - **Module 01:** Why WDS Matters - The problem, solution, and path forward
-- **Module 02:** Project Brief - Creating strategic foundations
-- **Module 04:** Map Triggers & Outcomes - Understanding user needs
-- **Module 08:** Initialize Scenario - Building user scenarios
-- **Module 12:** Why-Based Specs - Writing meaningful specifications
+- **Module 02:** Installation & Setup - Get WDS running and create your first project
+- **Module 03:** Project Brief - Creating strategic foundations
+- **Module 05:** Map Triggers & Outcomes - Understanding user needs
+- **Module 09:** Initialize Scenario - Building user scenarios
+- **Module 13:** Why-Based Specs - Writing meaningful specifications
 
 **Location:** `src/modules/wds/course/`
 

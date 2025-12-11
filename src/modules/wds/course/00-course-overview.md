@@ -73,47 +73,48 @@ Each module contains:
 ### Foundation
 
 - [Module 01: Why WDS Matters](module-01-why-wds-matters/module-01-overview.md)
+- [Module 02: Installation & Setup](module-02-installation-setup/module-02-overview.md) • [Tutorial →](module-02-installation-setup/tutorial-02.md)
 
 ### Phase 1: Project Brief
 
-- [Module 02: Create Project Brief](module-02-project-brief/) • [Tutorial →](module-02-project-brief/tutorial-02.md)
+- [Module 03: Create Project Brief](module-03-project-brief/) • [Tutorial →](module-03-project-brief/tutorial-03.md)
 
 ### Phase 2: Trigger Mapping
 
-- [Module 03: Identify Target Groups](module-03-identify-target-groups/)
-- [Module 04: Map Triggers & Outcomes](module-04-map-triggers-outcomes/) • [Tutorial →](module-04-map-triggers-outcomes/tutorial-04.md)
-- [Module 05: Prioritize Features](module-05-prioritize-features/)
+- [Module 04: Identify Target Groups](module-04-identify-target-groups/)
+- [Module 05: Map Triggers & Outcomes](module-05-map-triggers-outcomes/) • [Tutorial →](module-05-map-triggers-outcomes/tutorial-05.md)
+- [Module 06: Prioritize Features](module-06-prioritize-features/)
 
 ### Phase 3: Platform Requirements
 
-- [Module 06: Platform Requirements](module-06-platform-requirements/)
-- [Module 07: Functional Requirements](module-07-functional-requirements/)
+- [Module 07: Platform Requirements](module-07-platform-requirements/)
+- [Module 08: Functional Requirements](module-08-functional-requirements/)
 
 ### Phase 4: Conceptual Design (UX Design)
 
-- [Module 08: Initialize Scenario](module-08-initialize-scenario/) • [Tutorial →](module-08-initialize-scenario/tutorial-08.md)
-- [Module 09: Sketch Interfaces](module-09-sketch-interfaces/)
-- [Module 10: Analyze with AI](module-10-analyze-with-ai/)
-- [Module 11: Decompose Components](module-11-decompose-components/)
-- [Module 12: Why-Based Specifications](module-12-why-based-specs/) • [Tutorial →](module-12-why-based-specs/tutorial-12.md)
-- [Module 13: Validate Specifications](module-13-validate-specifications/)
+- [Module 09: Initialize Scenario](module-09-initialize-scenario/) • [Tutorial →](module-09-initialize-scenario/tutorial-09.md)
+- [Module 10: Sketch Interfaces](module-10-sketch-interfaces/)
+- [Module 11: Analyze with AI](module-11-analyze-with-ai/)
+- [Module 12: Decompose Components](module-12-decompose-components/)
+- [Module 13: Why-Based Specifications](module-13-why-based-specs/) • [Tutorial →](module-13-why-based-specs/tutorial-13.md)
+- [Module 14: Validate Specifications](module-14-validate-specifications/)
 
 ### Phase 5: Design System
 
-- [Module 14: Extract Design Tokens](module-14-extract-design-tokens/)
-- [Module 15: Component Library](module-15-component-library/)
+- [Module 15: Extract Design Tokens](module-15-extract-design-tokens/)
+- [Module 16: Component Library](module-16-component-library/)
 
 ### Phase 6: Development Integration
 
-- [Module 16: UI Roadmap](module-16-ui-roadmap/)
+- [Module 17: UI Roadmap](module-17-ui-roadmap/)
 
 ---
 
 ## Learning Paths
 
-**Complete Course:** All 16 modules (~10 hours)
+**Complete Course:** All 17 modules (~12 hours)
 
-**Quick Start:** Modules 1, 4, 8, 12 (~3 hours)
+**Quick Start:** Modules 1, 2, 5, 9, 13 (~4 hours)
 
 **Phase-Specific:** Jump to any phase as needed
 
