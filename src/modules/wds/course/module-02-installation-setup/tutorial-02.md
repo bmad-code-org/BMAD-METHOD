@@ -81,28 +81,7 @@ Click the green **"Create repository"** button
 
 **✅ Checkpoint:** You see your new repository with a README file
 
-### 2.4 One Repo or Two?
-
-**Important Decision:**
-
-**Option A: Single Repository (Recommended for beginners)**
-```
-my-project/
-├── docs/              ← Your WDS specifications
-└── src/               ← Code (if building yourself)
-```
-**Pros:** Everything in one place, simpler
-**Best for:** Solo projects, learning, full ownership
-
-**Option B: Separate Repositories**
-```
-my-project-specs/      ← WDS specifications (this repo)
-my-project-code/       ← Separate code repo
-```
-**Pros:** Clean separation, easier handoff to developers
-**Best for:** Client projects, team collaboration
-
-**For this tutorial, we'll use Option A (single repo).**
+**Note:** We'll discuss single vs. separate repository structure in Step 4 before cloning!
 
 ---
 
@@ -154,7 +133,30 @@ Cursor will ask you a few questions:
 
 **Good news:** You don't need to install anything manually! Modern IDEs like Cursor handle this for you.
 
-### 4.1 Let Cursor Install Git Automatically
+### 4.1 Important Repository Decision First
+
+**Before cloning, understand your options:**
+
+**Option A: Single Repository (Recommended for beginners)**
+```
+my-project/
+├── docs/              ← Your WDS specifications
+└── src/               ← Code (if building yourself)
+```
+**Pros:** Everything in one place, simpler  
+**Best for:** Solo projects, learning, full ownership
+
+**Option B: Separate Repositories**
+```
+my-project-specs/      ← WDS specifications (this repo)
+my-project-code/       ← Separate code repo
+```
+**Pros:** Clean separation, easier handoff to developers  
+**Best for:** Client projects, team collaboration
+
+**For this tutorial, we'll use Option A (single repo).**
+
+### 4.2 Let Cursor Install Git Automatically
 
 When you try to clone a repository in Step 5, Cursor will:
 1. Check if Git is installed
@@ -164,7 +166,7 @@ When you try to clone a repository in Step 5, Cursor will:
 
 **That's it.** No command line needed.
 
-### 4.2 Alternative: GitHub Desktop (Even Easier!)
+### 4.3 Alternative: GitHub Desktop (Even Easier!)
 
 **For designers who prefer visual tools:**
 
@@ -177,7 +179,9 @@ When you try to clone a repository in Step 5, Cursor will:
 
 **This is perfectly valid!** Many professional designers use GitHub Desktop.
 
-### 4.3 Already Comfortable with Terminal?
+**Bonus:** GitHub Desktop also helps you decide between single vs separate repos visually!
+
+### 4.4 Already Comfortable with Terminal?
 
 If you want to verify Git is installed:
 
@@ -189,7 +193,7 @@ git --version
 If you see a version number → you're good!  
 If not → Continue to Step 5, Cursor will prompt you.
 
-**✅ Checkpoint:** Don't worry about this yet - continue to Step 5!
+**✅ Checkpoint:** You understand single vs separate repos, ready for Step 5!
 
 ---
 
