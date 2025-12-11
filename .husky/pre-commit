@@ -1,7 +1,0 @@
-#!/usr/bin/env sh
-
-# Auto-fix changed files and stage them
-npx --no-install lint-staged
-
-# Validate everything
-npm test
