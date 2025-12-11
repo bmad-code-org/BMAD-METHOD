@@ -377,12 +377,6 @@ Checks:
 
 Quick Spec Flow works seamlessly with all Phase 4 implementation workflows:
 
-### story-context (SM Agent)
-
-- ✅ Recognizes tech-spec.md as authoritative source
-- ✅ Extracts context from tech-spec (replaces PRD)
-- ✅ Generates XML context for complex scenarios
-
 ### create-story (SM Agent)
 
 - ✅ Can work with tech-spec.md instead of PRD
@@ -529,10 +523,6 @@ Quick Spec Flow is **fully standalone**:
 
 **A:** No problem! You can always transition to BMad Method by running workflow-init and create-prd. Your tech-spec becomes input for the PRD.
 
-### Q: Do I need story-context for every story?
-
-**A:** Usually no! Tech-spec is comprehensive enough for most Quick Flow projects. Only use story-context for complex edge cases.
-
 ### Q: Can I skip validation?
 
 **A:** No, validation always runs automatically. But it's fast and catches issues early!
@@ -564,15 +554,11 @@ Starter templates save hours of setup time. Let Quick Spec Flow find the best on
 
 When validation runs, read the scores. They tell you if your spec is production-ready.
 
-### 5. **Story Context is Optional**
-
-For single changes, try going directly to dev-story first. Only add story-context if you hit complexity.
-
-### 6. **Keep Single Changes Truly Atomic**
+### 5. **Keep Single Changes Truly Atomic**
 
 If your "single change" needs 3+ files, it might be a multi-story feature. Let the workflow guide you.
 
-### 7. **Validate Story Sequence for Multi-Story Features**
+### 6. **Validate Story Sequence for Multi-Story Features**
 
 When you get multiple stories, check the dependency validation output. Proper sequence matters!
 

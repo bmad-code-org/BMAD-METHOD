@@ -53,11 +53,9 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
   1. If any story status == in-progress → recommend `dev-story` for the first in-progress story
   2. Else if any story status == review → recommend `code-review` for the first review story
   3. Else if any story status == ready-for-dev → recommend `dev-story`
-  4. Else if any story status == drafted → recommend `story-ready`
-  5. Else if any story status == backlog → recommend `create-story`
-  6. Else if any epic status == backlog → recommend `epic-tech-context`
-  7. Else if retrospectives are optional → recommend `retrospective`
-  8. Else → All implementation items done; suggest `workflow-status` to plan next phase
+  4. Else if any story status == backlog → recommend `create-story`
+  5. Else if retrospectives are optional → recommend `retrospective`
+  6. Else → All implementation items done; suggest `workflow-status` to plan next phase
   <action>Store selected recommendation as: next_story_id, next_workflow_id, next_agent (SM/DEV as appropriate)</action>
 </step>
 

@@ -94,7 +94,7 @@ Discover and load context documents using smart discovery:
 
 **Project Context Rules (Critical for AI Agents):**
 
-1. Check for project context file: `**/project_context.md`
+1. Check for project context file: `**/project-context.md`
 2. If exists: Load COMPLETE file contents - this contains critical rules for AI agents
 3. Add to frontmatter `hasProjectContext: true` and track file path
 4. Report to user: "Found existing project context with {number_of_rules} agent rules"

@@ -152,10 +152,9 @@ Dependencies: Story 1.2 (DONE) ✅
 **Recommendation:** Run `create-story` to generate Story 1.3
 
 After create-story:
-1. Run story-context
-2. Run dev-story
-3. Run code-review
-4. Run story-done
+1. Run dev-story
+2. Run code-review
+3. Update sprint-status.yaml to mark story done
 ```
 
 See: [workflow-status instructions](../workflows/workflow-status/instructions.md)
