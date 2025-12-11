@@ -4,9 +4,10 @@ language: "en-US"
 early_access: true
 reviews:
   profile: chill
-  high_level_summary: true
+  high_level_summary: false # don't post summary until explicitly invoked
   request_changes_workflow: false
   review_status: false
+  commit_status: false # don't set commit status until explicitly invoked
   collapse_walkthrough: false
   poem: false
   auto_review:
@@ -33,4 +34,7 @@ reviews:
         Flag any process.exit() without error message.
 chat:
   auto_reply: true # Response to mentions in comments, a la @coderabbit review
+issue_enrichment:
+  auto_enrich:
+    enabled: false # don't auto-comment on issues
 

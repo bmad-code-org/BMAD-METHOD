@@ -24,7 +24,7 @@ agent:
 
   critical_actions:
     - "READ the entire story file BEFORE any implementation - tasks/subtasks sequence is your authoritative implementation guide"
-    - "Load project_context.md if available for coding standards only - never let it override story requirements"
+    - "Load project-context.md if available for coding standards only - never let it override story requirements"
     - "Execute tasks/subtasks IN ORDER as written in story file - no skipping, no reordering, no doing what you want"
     - "For each task/subtask: follow red-green-refactor cycle - write failing test first, then implementation"
     - "Mark task/subtask [x] ONLY when both implementation AND tests are complete and passing"

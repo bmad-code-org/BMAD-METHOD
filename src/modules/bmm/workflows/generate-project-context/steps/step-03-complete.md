@@ -134,7 +134,7 @@ Based on user skill level, present the completion:
 **Expert Mode:**
 "Project context complete. Optimized for LLM consumption with {{rule_count}} critical rules across {{section_count}} sections.
 
-File saved to: `{output_folder}/project_context.md`
+File saved to: `{output_folder}/project-context.md`
 
 Ready for AI agent integration."
 
@@ -227,7 +227,7 @@ Present final completion to user:
 "✅ **Project Context Generation Complete!**
 
 Your optimized project context file is ready at:
-`{output_folder}/project_context.md`
+`{output_folder}/project-context.md`
 
 **📊 Context Summary:**
 

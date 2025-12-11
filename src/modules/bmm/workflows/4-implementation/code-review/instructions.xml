@@ -217,7 +217,7 @@
       **Issues Fixed:** {{fixed_count}}
       **Action Items Created:** {{action_count}}
 
-      {{#if new_status == "done"}}Story is ready for next work!{{else}}Address the action items and continue development.{{/if}}
+      {{#if new_status == "done"}}Code review complete!{{else}}Address the action items and continue development.{{/if}}
     </output>
   </step>
 

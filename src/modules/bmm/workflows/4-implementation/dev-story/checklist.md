@@ -35,7 +35,7 @@ validation-rules:
 - [ ] **Acceptance Criteria Satisfaction:** Implementation satisfies EVERY Acceptance Criterion in the story
 - [ ] **No Ambiguous Implementation:** Clear, unambiguous implementation that meets story requirements
 - [ ] **Edge Cases Handled:** Error conditions and edge cases appropriately addressed
-- [ ] **Dependencies Within Scope:** Only uses dependencies specified in story or project_context.md
+- [ ] **Dependencies Within Scope:** Only uses dependencies specified in story or project-context.md
 
 ## 🧪 Testing & Quality Assurance
 

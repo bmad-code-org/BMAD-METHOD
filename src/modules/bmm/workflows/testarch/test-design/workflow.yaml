@@ -24,8 +24,14 @@ variables:
 
 # Output configuration
 # Note: Actual output file determined dynamically based on mode detection
-# - System-Level (Phase 3): {output_folder}/test-design-system.md
-# - Epic-Level (Phase 4): {output_folder}/test-design-epic-{epic_num}.md
+# Declared outputs for new workflow format
+outputs:
+  - id: system-level
+    description: "System-level testability review (Phase 3)"
+    path: "{output_folder}/test-design-system.md"
+  - id: epic-level
+    description: "Epic-level test plan (Phase 4)"
+    path: "{output_folder}/test-design-epic-{epic_num}.md"
 default_output_file: "{output_folder}/test-design-epic-{epic_num}.md"
 
 # Required tools
