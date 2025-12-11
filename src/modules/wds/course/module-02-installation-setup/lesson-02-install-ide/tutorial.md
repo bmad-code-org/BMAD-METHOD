@@ -180,7 +180,7 @@ This is important for upcoming steps!
 
 Your IDE is ready! Now let's understand Git and how your IDE handles it automatically.
 
-**[Continue to Lesson 04: Git Setup →](../lesson-04-git-setup/tutorial.md)**
+**[Continue to Lesson 03: Git Setup →](../lesson-03-git-setup/tutorial.md)**
 
 ---
 

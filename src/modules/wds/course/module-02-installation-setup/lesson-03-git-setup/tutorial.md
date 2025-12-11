@@ -150,7 +150,7 @@ No problem! Continue to Lesson 05, Cursor will prompt you.
 
 Git will be ready when you need it! Now it's time to clone your repository and add WDS to your workspace.
 
-**[Continue to Lesson 05: Clone & Add WDS →](../lesson-05-clone-and-wds/tutorial.md)**
+**[Continue to Lesson 04: Clone & Add WDS →](../lesson-04-clone-and-wds/tutorial.md)**
 
 ---
 

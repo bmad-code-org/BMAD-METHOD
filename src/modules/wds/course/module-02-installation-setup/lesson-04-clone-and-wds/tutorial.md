@@ -203,7 +203,7 @@ Your Computer/
 
 Everything is set up! Now let's activate Mimir and begin your WDS journey.
 
-**[Continue to Lesson 06: Initiate Mimir →](../lesson-06-initiate-mimir/tutorial.md)**
+**[Continue to Lesson 05: Initiate Mimir →](../lesson-05-initiate-mimir/tutorial.md)**
 
 ---
 

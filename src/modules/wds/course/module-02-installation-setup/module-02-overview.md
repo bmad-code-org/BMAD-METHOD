@@ -16,42 +16,35 @@ This module takes you from having nothing to being fully set up with WDS, even i
 
 ## Lessons
 
-### [Lesson 01: Create GitHub Account](lesson-01-github-account/tutorial.md)
-**5-10 minutes**
+### [Lesson 01: Setting Up GitHub](lesson-01-setting-up-github/tutorial.md)
+**15-20 minutes**
 
-Sign up for GitHub, choose a professional username, verify your account.
-
----
-
-### [Lesson 02: Create Repository](lesson-02-create-repository/tutorial.md)
-**10-15 minutes**
-
-Create your project repository or join an existing one. Learn single vs separate repo structure.
+Create GitHub account, choose username, create or join repository. Learn single vs separate repo structure.
 
 ---
 
-### [Lesson 03: Install IDE](lesson-03-install-ide/tutorial.md)
+### [Lesson 02: Install IDE](lesson-02-install-ide/tutorial.md)
 **10 minutes**
 
 Install Cursor or VS Code and do first-launch setup.
 
 ---
 
-### [Lesson 04: Git Setup](lesson-04-git-setup/tutorial.md)
+### [Lesson 03: Git Setup](lesson-03-git-setup/tutorial.md)
 **5 minutes**
 
 Let your IDE handle Git automatically or use GitHub Desktop.
 
 ---
 
-### [Lesson 05: Clone & Add WDS](lesson-05-clone-and-wds/tutorial.md)
+### [Lesson 04: Clone & Add WDS](lesson-04-clone-and-wds/tutorial.md)
 **15-20 minutes**
 
 Clone your repository, add WDS to workspace, create docs structure.
 
 ---
 
-### [Lesson 06: Initiate Mimir](lesson-06-initiate-mimir/tutorial.md)
+### [Lesson 05: Initiate Mimir](lesson-05-initiate-mimir/tutorial.md)
 **5 minutes**
 
 Drag Mimir file to AI chat and begin your guided journey.
@@ -62,7 +55,7 @@ Drag Mimir file to AI chat and begin your guided journey.
 
 **Want to dive right in?**
 
-Follow lessons in order: [Start with Lesson 01 →](lesson-01-github-account/tutorial.md)
+Follow lessons in order: [Start with Lesson 01 →](lesson-01-setting-up-github/tutorial.md)
 
 ---
 
