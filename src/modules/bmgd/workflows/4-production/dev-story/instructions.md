@@ -1,7 +1,7 @@
 # Develop Story - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
@@ -232,7 +232,7 @@ Story is marked Ready for Review in file, but sprint-status.yaml may be out of s
   </step>
 
   <step n="7" goal="Completion communication and user support">
-    <action>Optionally run the workflow validation task against the story using {project-root}/{bmad_folder}/core/tasks/validate-workflow.xml</action>
+    <action>Optionally run the workflow validation task against the story using {project-root}/.bmad/core/tasks/validate-workflow.xml</action>
     <action>Prepare a concise summary in Dev Agent Record → Completion Notes</action>
 
     <action>Communicate to {user_name} that story implementation is complete and ready for review</action>

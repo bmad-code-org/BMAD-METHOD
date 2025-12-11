@@ -273,7 +273,7 @@ function installAgent(agentInfo, answers, targetPath, options = {}) {
     // Resolve path variables
     const resolvedSidecarFolder = agentSidecarFolder
       .replaceAll('{project-root}', options.projectRoot || process.cwd())
-      .replaceAll('{bmad_folder}', options.bmadFolder || '.bmad');
+      .replaceAll('.bmad', options.bmadFolder || '.bmad');
 
     // Create sidecar directory for this agent
     const agentSidecarDir = path.join(resolvedSidecarFolder, agentFolderName);
@@ -407,7 +407,7 @@ function detectBmadProject(targetPath) {
 
   // Walk up directory tree looking for BMAD installation
   while (checkPath !== root) {
-    const possibleNames = ['.bmad', 'bmad'];
+    const possibleNames = ['.bmad'];
     for (const name of possibleNames) {
       const bmadFolder = path.join(checkPath, name);
       const cfgFolder = path.join(bmadFolder, '_cfg');

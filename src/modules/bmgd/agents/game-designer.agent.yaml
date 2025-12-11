@@ -2,7 +2,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/bmgd/agents/game-designer.md"
+    id: ".bmad/bmgd/agents/game-designer.md"
     name: Samus Shepard
     title: Game Designer
     icon: 🎲
@@ -16,25 +16,25 @@ agent:
 
   menu:
     - trigger: brainstorm-game
-      workflow: "{project-root}/{bmad_folder}/bmgd/workflows/1-preproduction/brainstorm-game/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmgd/workflows/1-preproduction/brainstorm-game/workflow.yaml"
       description: 1. Guide me through Game Brainstorming
 
     - trigger: create-game-brief
-      workflow: "{project-root}/{bmad_folder}/bmgd/workflows/1-preproduction/game-brief/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmgd/workflows/1-preproduction/game-brief/workflow.yaml"
       description: 3. Create Game Brief
 
     - trigger: create-gdd
-      workflow: "{project-root}/{bmad_folder}/bmgd/workflows/2-design/gdd/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmgd/workflows/2-design/gdd/workflow.yaml"
       description: 4. Create Game Design Document (GDD)
 
     - trigger: narrative
-      workflow: "{project-root}/{bmad_folder}/bmgd/workflows/2-design/narrative/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmgd/workflows/2-design/narrative/workflow.yaml"
       description: 5. Create Narrative Design Document (story-driven games)
 
     - trigger: party-mode
-      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
+      exec: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
       description: Consult with other expert agents from the party
 
     - trigger: advanced-elicitation
-      exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
+      exec: "{project-root}/.bmad/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results

@@ -3,7 +3,7 @@ name: 'step-06-complete'
 description: 'Complete the product brief workflow, update status files, and suggest next steps for the project'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief'
+workflow_path: '{project-root}/.bmad/bmm/workflows/1-analysis/product-brief'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-06-complete.md'
@@ -119,7 +119,10 @@ Provide guidance on logical next workflows:
    - Success metrics become specific acceptance criteria
    - MVP scope becomes detailed feature specifications
 
-**Other Potential Next Steps:** 2. `workflow create-ux-design` - UX research and design 3. `workflow create-architecture` - Technical architecture planning 4. `workflow domain-research` - Deep market or domain research (if needed)
+**Other Potential Next Steps:**
+
+2. `workflow create-ux-design` - UX research and design (can run parallel with PRD)
+3. `workflow domain-research` - Deep market or domain research (if needed)
 
 **Strategic Considerations:**
 
@@ -145,7 +148,6 @@ The brief captures everything needed to guide subsequent product development:
 
 - PRD workflow for detailed requirements?
 - UX design workflow for user experience planning?
-- Architecture workflow for technical design?
 
 **Product Brief Complete**"
 

@@ -6,7 +6,7 @@ reviews:
   profile: chill
   high_level_summary: true
   request_changes_workflow: false
-  review_status: true
+  review_status: false
   collapse_walkthrough: false
   poem: false
   auto_review:

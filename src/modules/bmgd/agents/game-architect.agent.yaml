@@ -2,7 +2,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/bmgd/agents/game-architect.md"
+    id: ".bmad/bmgd/agents/game-architect.md"
     name: Cloud Dragonborn
     title: Game Architect
     icon: 🏛️
@@ -16,18 +16,18 @@ agent:
 
   menu:
     - trigger: correct-course
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml"
-      workflow-install: "{project-root}/{bmad_folder}/bmgd/workflows/4-production/correct-course/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
+      workflow-install: "{project-root}/.bmad/bmgd/workflows/4-production/correct-course/workflow.yaml"
       description: Course Correction Analysis
 
     - trigger: create-architecture
-      workflow: "{project-root}/{bmad_folder}/bmgd/workflows/3-technical/game-architecture/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmgd/workflows/3-technical/game-architecture/workflow.yaml"
       description: Produce a Scale Adaptive Game Architecture
 
     - trigger: party-mode
-      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
+      exec: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
       description: Consult with other expert agents from the party
 
     - trigger: advanced-elicitation
-      exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
+      exec: "{project-root}/.bmad/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results

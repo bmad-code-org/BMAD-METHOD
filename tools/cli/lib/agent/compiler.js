@@ -59,7 +59,7 @@ function buildSimpleActivation(criticalActions = [], menuItems = [], deploymentT
 
   // Standard steps
   activation += `  <step n="${stepNum++}">Load persona from this current agent file (already in context)</step>\n`;
-  activation += `  <step n="${stepNum++}">Load and read {project-root}/{bmad_folder}/core/config.yaml to get {user_name}, {communication_language}, {output_folder}</step>\n`;
+  activation += `  <step n="${stepNum++}">Load and read {project-root}/.bmad/core/config.yaml to get {user_name}, {communication_language}, {output_folder}</step>\n`;
   activation += `  <step n="${stepNum++}">Remember: user's name is {user_name}</step>\n`;
 
   // Agent-specific steps from critical_actions
@@ -119,7 +119,7 @@ function buildSimpleActivation(criticalActions = [], menuItems = [], deploymentT
     if (usedHandlers.has('workflow')) {
       activation += `      <handler type="workflow">
         When menu item has: workflow="path/to/workflow.yaml"
-        1. CRITICAL: Always LOAD {project-root}/{bmad_folder}/core/tasks/workflow.xml
+        1. CRITICAL: Always LOAD {project-root}/.bmad/core/tasks/workflow.xml
         2. Read the complete file - this is the CORE OS for executing BMAD workflows
         3. Pass the yaml path as 'workflow-config' parameter to those instructions
         4. Execute workflow.xml instructions precisely following all steps
@@ -150,7 +150,7 @@ function buildSimpleActivation(criticalActions = [], menuItems = [], deploymentT
     if (usedHandlers.has('validate-workflow')) {
       activation += `      <handler type="validate-workflow">
         When menu item has: validate-workflow="path/to/workflow.yaml"
-        1. CRITICAL: Always LOAD {project-root}/{bmad_folder}/core/tasks/validate-workflow.xml
+        1. CRITICAL: Always LOAD {project-root}/.bmad/core/tasks/validate-workflow.xml
         2. Read the complete file - this is the CORE OS for validating BMAD workflows
         3. Pass the workflow.yaml path as 'workflow' parameter to those instructions
         4. Pass any checklist.md from the workflow location as 'checklist' parameter if available

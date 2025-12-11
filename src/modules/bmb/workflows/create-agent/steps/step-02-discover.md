@@ -3,14 +3,14 @@ name: 'step-02-discover'
 description: 'Discover the agent purpose and type through natural conversation'
 
 # Path Definitions
-workflow_path: '{project-root}/src/modules/bmb/workflows/create-agent'
+workflow_path: '{project-root}/bmb/workflows/create-agent/create-agent'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-02-discover.md'
 nextStepFile: '{workflow_path}/steps/step-03-persona.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/agent-purpose-{project_name}.md'
-agentTypesGuide: '{project-root}/{bmad_folder}/bmb/docs/agents/understanding-agent-types.md'
+agentTypesGuide: '{project-root}/.bmad/bmb/docs/agents/understanding-agent-types.md'
 simpleExamples: '{workflow_path}/data/reference/agents/simple-examples/'
 expertExamples: '{workflow_path}/data/reference/agents/expert-examples/'
 moduleExamples: '{workflow_path}/data/reference/agents/module-examples/'
@@ -19,8 +19,8 @@ moduleExamples: '{workflow_path}/data/reference/agents/module-examples/'
 agentPurposeTemplate: '{workflow_path}/templates/agent-purpose-and-type.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 2: Discover Agent Purpose and Type

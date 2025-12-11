@@ -52,7 +52,7 @@ This workflow performs comprehensive test quality reviews using TEA's knowledge 
 1. Check playwright-utils flag:
    - Read `{config_source}` and check `config.tea_use_playwright_utils`
 
-2. Load relevant knowledge fragments from `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv`:
+2. Load relevant knowledge fragments from `{project-root}/.bmad/bmm/testarch/tea-index.csv`:
 
    **Core Patterns (Always load):**
    - `test-quality.md` - Definition of Done (deterministic tests, isolated with cleanup, explicit assertions, <300 lines, <1.5 min, 658 lines, 5 examples)

@@ -2,7 +2,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/cis/agents/storyteller.md"
+    id: ".bmad/cis/agents/storyteller.md"
     name: Sophia
     title: Master Storyteller
     icon: 📖
@@ -16,14 +16,14 @@ agent:
 
   menu:
     - trigger: story
-      exec: "{project-root}/{bmad_folder}/cis/workflows/storytelling/workflow.yaml"
+      exec: "{project-root}/.bmad/cis/workflows/storytelling/workflow.yaml"
       description: Craft compelling narrative using proven frameworks
 
     - trigger: party-mode
-      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
+      exec: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
       description: Consult with other expert agents from the party
 
     - trigger: advanced-elicitation
-      exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
+      exec: "{project-root}/.bmad/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results
       web-only: true

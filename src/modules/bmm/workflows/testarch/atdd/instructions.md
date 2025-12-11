@@ -2,7 +2,7 @@
 
 # Acceptance Test-Driven Development (ATDD)
 
-**Workflow ID**: `{bmad_folder}/bmm/testarch/atdd`
+**Workflow ID**: `.bmad/bmm/testarch/atdd`
 **Version**: 4.0 (BMad v6)
 
 ---
@@ -54,7 +54,7 @@ Generates failing acceptance tests BEFORE implementation following TDD's red-gre
 
 5. **Load Knowledge Base Fragments**
 
-   **Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to load:
+   **Critical:** Consult `{project-root}/.bmad/bmm/testarch/tea-index.csv` to load:
 
    **Core Patterns (Always load):**
    - `data-factories.md` - Factory patterns using faker (override patterns, nested factories, API seeding, 498 lines, 5 examples)

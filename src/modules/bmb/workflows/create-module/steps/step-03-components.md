@@ -1,10 +1,10 @@
 ---
-installed_path: '{project-root}/{bmad_folder}/bmb/workflows/create-module'
+installed_path: '{project-root}/.bmad/bmb/workflows/create-module'
 nextStepFile: '{installed_path}/steps/step-04-structure.md'
 modulePlanFile: '{custom_module_location}/{module_name}/module-plan-{module_name}.md'
-agent_examples_path: '{project-root}/src/modules/bmb/reference/agents/module-examples'
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+agent_examples_path: '{project-root}/bmb/reference/agents/module-examples'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 3: Plan Module Components

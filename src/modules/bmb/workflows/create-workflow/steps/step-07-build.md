@@ -3,7 +3,7 @@ name: 'step-07-build'
 description: 'Generate all workflow files based on the approved plan'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-07-build.md'
@@ -14,10 +14,10 @@ targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Template References
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
-stepInitContinuableTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-01-init-continuable-template.md'
-step1bTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-1b-template.md'
+workflowTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md'
+stepTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md'
+stepInitContinuableTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/step-01-init-continuable-template.md'
+step1bTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/step-1b-template.md'
 # No content templates needed - will create content as needed during build
 # No build summary template needed - will append summary directly to workflow plan
 ---
@@ -68,11 +68,11 @@ To generate all the workflow files (workflow.md, step files, templates, and supp
 
 ## BUILD REFERENCE MATERIALS:
 
-- When building each step file, you must follow template `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md`
-- When building continuable step-01-init.md files, use template `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-01-init-continuable-template.md`
-- When building continuation steps, use template `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-1b-template.md`
-- When building the main workflow.md file, you must follow template `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md`
-- Example step files from {project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition/workflow.md for patterns
+- When building each step file, you must follow template `{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md`
+- When building continuable step-01-init.md files, use template `{project-root}/.bmad/bmb/docs/workflows/templates/step-01-init-continuable-template.md`
+- When building continuation steps, use template `{project-root}/.bmad/bmb/docs/workflows/templates/step-1b-template.md`
+- When building the main workflow.md file, you must follow template `{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md`
+- Example step files from {project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md for patterns
 
 ## FILE GENERATION SEQUENCE:
 
@@ -108,7 +108,7 @@ Create the workflow folder structure in the target location:
     └── [as needed]
 ```
 
-For bmb module, this will be: `{bmad_folder}/custom/src/workflows/{workflow_name}/`
+For bmb module, this will be: `.bmad/custom/src/workflows/{workflow_name}/`
 For other modules, check their module.yaml for custom_workflow_location
 
 ### 3. Generate workflow.md
@@ -117,7 +117,7 @@ Load and follow {workflowTemplate}:
 
 - Create workflow.md using template structure
 - Insert workflow name and description
-- Configure all path variables ({project-root}, {_bmad_folder_}, {workflow_path})
+- Configure all path variables ({project-root}, .bmad, {workflow_path})
 - Set web_bundle flag to true unless user has indicated otherwise
 - Define role and goal
 - Include initialization path to step-01

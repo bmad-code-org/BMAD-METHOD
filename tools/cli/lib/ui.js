@@ -136,7 +136,7 @@ class UI {
       // Create the bmad directory based on core config
       const path = require('node:path');
       const fs = require('fs-extra');
-      const bmadFolderName = coreConfig.bmad_folder || 'bmad';
+      const bmadFolderName = '.bmad';
       const bmadDir = path.join(confirmedDirectory, bmadFolderName);
 
       await fs.ensureDir(bmadDir);
@@ -810,103 +810,108 @@ class UI {
    */
   async promptCustomContentLocation() {
     try {
-      CLIUtils.displaySection('Custom Content', 'Optional: Add custom agents, workflows, and modules');
-
-      const { hasCustomContent } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'hasCustomContent',
-          message: 'Do you have custom content to install?',
-          choices: [
-            { name: 'No (skip custom content)', value: 'none' },
-            { name: 'Enter a directory path', value: 'directory' },
-            { name: 'Enter a URL', value: 'url' },
-          ],
-          default: 'none',
-        },
-      ]);
-
-      if (hasCustomContent === 'none') {
-        return { hasCustomContent: false };
-      }
-
-      if (hasCustomContent === 'url') {
-        console.log(chalk.yellow('\nURL-based custom content installation is coming soon!'));
-        console.log(chalk.cyan('For now, please download your custom content and choose "Enter a directory path".\n'));
-        return { hasCustomContent: false };
-      }
-
-      if (hasCustomContent === 'directory') {
-        let customPath;
-        while (!customPath) {
-          let expandedPath;
-          const { directory } = await inquirer.prompt([
-            {
-              type: 'input',
-              name: 'directory',
-              message: 'Enter directory to search for custom content (will scan subfolders):',
-              default: process.cwd(), // Use actual current working directory
-              validate: async (input) => {
-                if (!input || input.trim() === '') {
-                  return 'Please enter a directory path';
-                }
-
-                try {
-                  expandedPath = this.expandUserPath(input.trim());
-                } catch (error) {
-                  return error.message;
-                }
-
-                // Check if the path exists
-                const pathExists = await fs.pathExists(expandedPath);
-                if (!pathExists) {
-                  return 'Directory does not exist';
-                }
-
-                return true;
-              },
-            },
-          ]);
-
-          // Now expand the path for use after the prompt
-          expandedPath = this.expandUserPath(directory.trim());
-
-          // Check if directory has custom content
-          const customHandler = new CustomHandler();
-          const customFiles = await customHandler.findCustomContent(expandedPath);
-
-          if (customFiles.length === 0) {
-            console.log(chalk.yellow(`\nNo custom content found in ${expandedPath}`));
-
-            const { tryAgain } = await inquirer.prompt([
-              {
-                type: 'confirm',
-                name: 'tryAgain',
-                message: 'Try a different directory?',
-                default: true,
-              },
-            ]);
-
-            if (tryAgain) {
-              continue;
-            } else {
-              return { hasCustomContent: false };
-            }
-          }
-
-          customPath = expandedPath;
-          console.log(chalk.green(`\n✓ Found ${customFiles.length} custom content item(s):`));
-          for (const file of customFiles) {
-            const relativePath = path.relative(expandedPath, path.dirname(file));
-            const folderName = path.dirname(file).split(path.sep).pop();
-            console.log(chalk.dim(`  • ${folderName} ${chalk.gray(`(${relativePath})`)}`));
-          }
-        }
-
-        return { hasCustomContent: true, customPath };
-      }
-
+      // Skip custom content installation - always return false
       return { hasCustomContent: false };
+
+      // TODO: Custom content installation temporarily disabled
+      // CLIUtils.displaySection('Custom Content', 'Optional: Add custom agents, workflows, and modules');
+
+      // const { hasCustomContent } = await inquirer.prompt([
+      //   {
+      //     type: 'list',
+      //     name: 'hasCustomContent',
+      //     message: 'Do you have custom content to install?',
+      //     choices: [
+      //       { name: 'No (skip custom content)', value: 'none' },
+      //       { name: 'Enter a directory path', value: 'directory' },
+      //       { name: 'Enter a URL', value: 'url' },
+      //     ],
+      //     default: 'none',
+      //   },
+      // ]);
+
+      // if (hasCustomContent === 'none') {
+      //   return { hasCustomContent: false };
+      // }
+
+      // TODO: Custom content installation temporarily disabled
+      // if (hasCustomContent === 'url') {
+      //   console.log(chalk.yellow('\nURL-based custom content installation is coming soon!'));
+      //   console.log(chalk.cyan('For now, please download your custom content and choose "Enter a directory path".\n'));
+      //   return { hasCustomContent: false };
+      // }
+
+      // if (hasCustomContent === 'directory') {
+      //   let customPath;
+      //   while (!customPath) {
+      //     let expandedPath;
+      //     const { directory } = await inquirer.prompt([
+      //       {
+      //         type: 'input',
+      //         name: 'directory',
+      //         message: 'Enter directory to search for custom content (will scan subfolders):',
+      //         default: process.cwd(), // Use actual current working directory
+      //         validate: async (input) => {
+      //           if (!input || input.trim() === '') {
+      //             return 'Please enter a directory path';
+      //           }
+
+      //           try {
+      //             expandedPath = this.expandUserPath(input.trim());
+      //           } catch (error) {
+      //             return error.message;
+      //           }
+
+      //           // Check if the path exists
+      //           const pathExists = await fs.pathExists(expandedPath);
+      //           if (!pathExists) {
+      //             return 'Directory does not exist';
+      //           }
+
+      //           return true;
+      //         },
+      //       },
+      //     ]);
+
+      //     // Now expand the path for use after the prompt
+      //     expandedPath = this.expandUserPath(directory.trim());
+
+      //     // Check if directory has custom content
+      //     const customHandler = new CustomHandler();
+      //     const customFiles = await customHandler.findCustomContent(expandedPath);
+
+      //     if (customFiles.length === 0) {
+      //       console.log(chalk.yellow(`\nNo custom content found in ${expandedPath}`));
+
+      //       const { tryAgain } = await inquirer.prompt([
+      //         {
+      //           type: 'confirm',
+      //           name: 'tryAgain',
+      //           message: 'Try a different directory?',
+      //           default: true,
+      //         },
+      //       ]);
+
+      //       if (tryAgain) {
+      //         continue;
+      //       } else {
+      //         return { hasCustomContent: false };
+      //       }
+      //     }
+
+      //     customPath = expandedPath;
+      //     console.log(chalk.green(`\n✓ Found ${customFiles.length} custom content item(s):`));
+      //     for (const file of customFiles) {
+      //       const relativePath = path.relative(expandedPath, path.dirname(file));
+      //       const folderName = path.dirname(file).split(path.sep).pop();
+      //       console.log(chalk.dim(`  • ${folderName} ${chalk.gray(`(${relativePath})`)}`));
+      //     }
+      //   }
+
+      //   return { hasCustomContent: true, customPath };
+      // }
+
+      // return { hasCustomContent: false };
     } catch (error) {
       console.error(chalk.red('Error in custom content prompt:'), error);
       return { hasCustomContent: false };
@@ -1077,7 +1082,7 @@ class UI {
    * @calls checkAgentVibesInstalled(), inquirer.prompt(), chalk.green/yellow/dim()
    *
    * AI NOTE: This prompt is strategically positioned in installation flow:
-   * - AFTER core config (bmad_folder, user_name, etc)
+   * - AFTER core config (user_name, etc)
    * - BEFORE IDE selection (which can hang on Windows/PowerShell)
    *
    * Flow Logic:
@@ -1205,129 +1210,134 @@ class UI {
    */
   async promptCustomContentForExisting() {
     try {
-      CLIUtils.displaySection('Custom Content', 'Add new custom agents, workflows, or modules to your installation');
+      // Skip custom content installation - always return false
+      return { hasCustomContent: false };
 
-      const { hasCustomContent } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'hasCustomContent',
-          message: 'Do you want to add or update custom content?',
-          choices: [
-            {
-              name: 'No, continue with current installation only',
-              value: false,
-            },
-            {
-              name: 'Yes, I have custom content to add or update',
-              value: true,
-            },
-          ],
-          default: false,
-        },
-      ]);
+      // TODO: Custom content installation temporarily disabled
+      // CLIUtils.displaySection('Custom Content', 'Add new custom agents, workflows, or modules to your installation');
 
-      if (!hasCustomContent) {
-        return { hasCustomContent: false };
-      }
+      // const { hasCustomContent } = await inquirer.prompt([
+      //   {
+      //     type: 'list',
+      //     name: 'hasCustomContent',
+      //     message: 'Do you want to add or update custom content?',
+      //     choices: [
+      //       {
+      //         name: 'No, continue with current installation only',
+      //         value: false,
+      //       },
+      //       {
+      //         name: 'Yes, I have custom content to add or update',
+      //         value: true,
+      //       },
+      //     ],
+      //     default: false,
+      //   },
+      // ]);
 
-      // Get directory path
-      const { customPath } = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'customPath',
-          message: 'Enter directory to search for custom content (will scan subfolders):',
-          default: process.cwd(),
-          validate: async (input) => {
-            if (!input || input.trim() === '') {
-              return 'Please enter a directory path';
-            }
+      // if (!hasCustomContent) {
+      //   return { hasCustomContent: false };
+      // }
 
-            // Normalize and check if path exists
-            const expandedPath = CLIUtils.expandPath(input.trim());
-            const pathExists = await fs.pathExists(expandedPath);
-            if (!pathExists) {
-              return 'Directory does not exist';
-            }
+      // TODO: Custom content installation temporarily disabled
+      // // Get directory path
+      // const { customPath } = await inquirer.prompt([
+      //   {
+      //     type: 'input',
+      //     name: 'customPath',
+      //     message: 'Enter directory to search for custom content (will scan subfolders):',
+      //     default: process.cwd(),
+      //     validate: async (input) => {
+      //       if (!input || input.trim() === '') {
+      //         return 'Please enter a directory path';
+      //       }
 
-            // Check if it's actually a directory
-            const stats = await fs.stat(expandedPath);
-            if (!stats.isDirectory()) {
-              return 'Path must be a directory';
-            }
+      //       // Normalize and check if path exists
+      //       const expandedPath = CLIUtils.expandPath(input.trim());
+      //       const pathExists = await fs.pathExists(expandedPath);
+      //       if (!pathExists) {
+      //         return 'Directory does not exist';
+      //       }
 
-            return true;
-          },
-          transformer: (input) => {
-            return CLIUtils.expandPath(input);
-          },
-        },
-      ]);
+      //       // Check if it's actually a directory
+      //       const stats = await fs.stat(expandedPath);
+      //       if (!stats.isDirectory()) {
+      //         return 'Path must be a directory';
+      //       }
 
-      const resolvedPath = CLIUtils.expandPath(customPath);
+      //       return true;
+      //     },
+      //     transformer: (input) => {
+      //       return CLIUtils.expandPath(input);
+      //     },
+      //   },
+      // ]);
 
-      // Find custom content
-      const customHandler = new CustomHandler();
-      const customFiles = await customHandler.findCustomContent(resolvedPath);
+      // const resolvedPath = CLIUtils.expandPath(customPath);
 
-      if (customFiles.length === 0) {
-        console.log(chalk.yellow(`\nNo custom content found in ${resolvedPath}`));
+      // // Find custom content
+      // const customHandler = new CustomHandler();
+      // const customFiles = await customHandler.findCustomContent(resolvedPath);
 
-        const { tryDifferent } = await inquirer.prompt([
-          {
-            type: 'confirm',
-            name: 'tryDifferent',
-            message: 'Try a different directory?',
-            default: true,
-          },
-        ]);
+      // if (customFiles.length === 0) {
+      //   console.log(chalk.yellow(`\nNo custom content found in ${resolvedPath}`));
 
-        if (tryDifferent) {
-          return await this.promptCustomContentForExisting();
-        }
+      //   const { tryDifferent } = await inquirer.prompt([
+      //     {
+      //       type: 'confirm',
+      //       name: 'tryDifferent',
+      //       message: 'Try a different directory?',
+      //       default: true,
+      //     },
+      //   ]);
 
-        return { hasCustomContent: false };
-      }
+      //   if (tryDifferent) {
+      //     return await this.promptCustomContentForExisting();
+      //   }
 
-      // Display found items
-      console.log(chalk.cyan(`\nFound ${customFiles.length} custom content file(s):`));
-      const customContentItems = [];
+      //   return { hasCustomContent: false };
+      // }
 
-      for (const customFile of customFiles) {
-        const customInfo = await customHandler.getCustomInfo(customFile);
-        if (customInfo) {
-          customContentItems.push({
-            name: `${chalk.cyan('✓')} ${customInfo.name} ${chalk.gray(`(${customInfo.relativePath})`)}`,
-            value: `__CUSTOM_CONTENT__${customFile}`,
-            checked: true,
-          });
-        }
-      }
+      // // Display found items
+      // console.log(chalk.cyan(`\nFound ${customFiles.length} custom content file(s):`));
+      // const customContentItems = [];
 
-      // Add option to keep existing custom content
-      console.log(chalk.yellow('\nExisting custom modules will be preserved unless you remove them'));
+      // for (const customFile of customFiles) {
+      //   const customInfo = await customHandler.getCustomInfo(customFile);
+      //   if (customInfo) {
+      //     customContentItems.push({
+      //       name: `${chalk.cyan('✓')} ${customInfo.name} ${chalk.gray(`(${customInfo.relativePath})`)}`,
+      //       value: `__CUSTOM_CONTENT__${customFile}`,
+      //       checked: true,
+      //     });
+      //   }
+      // }
 
-      const { selectedFiles } = await inquirer.prompt([
-        {
-          type: 'checkbox',
-          name: 'selectedFiles',
-          message: 'Select custom content to add:',
-          choices: customContentItems,
-          pageSize: 15,
-          validate: (answer) => {
-            if (answer.length === 0) {
-              return 'You must select at least one item';
-            }
-            return true;
-          },
-        },
-      ]);
+      // // Add option to keep existing custom content
+      // console.log(chalk.yellow('\nExisting custom modules will be preserved unless you remove them'));
 
-      return {
-        hasCustomContent: true,
-        customPath: resolvedPath,
-        selected: true,
-        selectedFiles: selectedFiles,
-      };
+      // const { selectedFiles } = await inquirer.prompt([
+      //   {
+      //     type: 'checkbox',
+      //     name: 'selectedFiles',
+      //     message: 'Select custom content to add:',
+      //     choices: customContentItems,
+      //     pageSize: 15,
+      //     validate: (answer) => {
+      //       if (answer.length === 0) {
+      //         return 'You must select at least one item';
+      //       }
+      //       return true;
+      //     },
+      //   },
+      // ]);
+
+      // return {
+      //   hasCustomContent: true,
+      //   customPath: resolvedPath,
+      //   selected: true,
+      //   selectedFiles: selectedFiles,
+      // };
     } catch (error) {
       console.error(chalk.red('Error configuring custom content:'), error);
       return { hasCustomContent: false };

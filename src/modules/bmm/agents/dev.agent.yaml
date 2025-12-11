@@ -3,7 +3,7 @@
 agent:
   webskip: true
   metadata:
-    id: "{bmad_folder}/bmm/agents/dev.md"
+    id: ".bmad/bmm/agents/dev.md"
     name: Amelia
     title: Developer Agent
     icon: 💻
@@ -36,9 +36,9 @@ agent:
 
   menu:
     - trigger: develop-story
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/dev-story/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: "Execute Dev Story workflow (full BMM path with sprint-status)"
 
     - trigger: code-review
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/code-review/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
       description: "Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"

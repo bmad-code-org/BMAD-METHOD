@@ -3,7 +3,7 @@ name: 'step-01-init'
 description: 'Initialize the nutrition plan workflow by detecting continuation state and creating output document'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition'
+workflow_path: '{project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-init.md'

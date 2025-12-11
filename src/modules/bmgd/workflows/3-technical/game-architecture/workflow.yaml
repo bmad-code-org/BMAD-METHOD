@@ -4,7 +4,7 @@ description: "Collaborative game architecture workflow for AI-agent consistency.
 author: "BMad"
 
 # Critical variables
-config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
+config_source: "{project-root}/.bmad/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -39,7 +39,7 @@ input_file_patterns:
     load_strategy: "INDEX_GUIDED"
 
 # Module path and component files
-installed_path: "{project-root}/{bmad_folder}/bmgd/workflows/3-technical/game-architecture"
+installed_path: "{project-root}/.bmad/bmgd/workflows/3-technical/game-architecture"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 template: "{installed_path}/architecture-template.md"

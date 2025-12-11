@@ -398,7 +398,7 @@ MCP provides additional capabilities on top of TEA's default AI-based approach:
 }
 ```
 
-**To disable**: Set `tea_use_mcp_enhancements: false` in `{bmad_folder}/bmm/config.yaml` OR remove MCPs from IDE config.
+**To disable**: Set `tea_use_mcp_enhancements: false` in `.bmad/bmm/config.yaml` OR remove MCPs from IDE config.
 
 </details>
 
@@ -440,9 +440,9 @@ Provides fixture-based utilities that integrate into TEA's test generation and r
 
 **Utilities available** (11 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
 
-**Enable during BMAD installation** by answering "Yes" when prompted, or manually set `tea_use_playwright_utils: true` in `{bmad_folder}/bmm/config.yaml`.
+**Enable during BMAD installation** by answering "Yes" when prompted, or manually set `tea_use_playwright_utils: true` in `.bmad/bmm/config.yaml`.
 
-**To disable**: Set `tea_use_playwright_utils: false` in `{bmad_folder}/bmm/config.yaml`.
+**To disable**: Set `tea_use_playwright_utils: false` in `.bmad/bmm/config.yaml`.
 
 </details>
 

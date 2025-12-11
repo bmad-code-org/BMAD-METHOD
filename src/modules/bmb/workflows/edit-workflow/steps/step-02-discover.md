@@ -3,7 +3,7 @@ name: 'step-02-discover'
 description: 'Discover improvement goals collaboratively'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/edit-workflow'
+workflow_path: '{project-root}/.bmad/bmb/workflows/edit-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-02-discover.md'
@@ -12,8 +12,8 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/workflow-edit-{target_workflow_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 
 # Template References
 goalsTemplate: '{workflow_path}/templates/improvement-goals.md'

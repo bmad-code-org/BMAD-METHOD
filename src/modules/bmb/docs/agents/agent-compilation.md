@@ -35,7 +35,7 @@ rex.agent.yaml           ← Persona name (users might rename to "Max")
 **Pattern:**
 
 - Filename: `{role-or-function}.agent.yaml` (kebab-case)
-- Metadata ID: `{bmad_folder}/{module}/agents/{role-or-function}.md`
+- Metadata ID: `.bmad/{module}/agents/{role-or-function}.md`
 - Persona Name: User-customizable in metadata or customize.yaml
 
 **Example:**
@@ -44,7 +44,7 @@ rex.agent.yaml           ← Persona name (users might rename to "Max")
 # File: presentation-master.agent.yaml
 agent:
   metadata:
-    id: '{bmad_folder}/cis/agents/presentation-master.md'
+    id: '.bmad/cis/agents/presentation-master.md'
     name: Caravaggio # ← Users can change this to "Pablo" or "Vince"
     title: Visual Communication & Presentation Expert
 ```

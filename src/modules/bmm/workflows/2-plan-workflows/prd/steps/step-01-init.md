@@ -3,7 +3,7 @@ name: 'step-01-init'
 description: 'Initialize the PRD workflow by detecting continuation state and setting up the document'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+workflow_path: '{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-init.md'

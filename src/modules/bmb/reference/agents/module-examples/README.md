@@ -7,7 +7,7 @@ Reference examples for module-integrated agents.
 Module agents integrate with BMAD module workflows (BMM, CIS, BMB). They:
 
 - Orchestrate multi-step workflows
-- Use `{bmad_folder}` path variables
+- Use `.bmad` path variables
 - Have fixed professional personas (no install_config)
 - Reference module-specific configurations
 

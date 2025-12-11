@@ -199,24 +199,11 @@ PRDs are for Level 2-4 projects with multiple features requiring product-level c
 
 ### Q: How do I mark a story as done?
 
-**A:** You have two options:
+**A:** After dev-story completes and code-review passes:
 
-**Option 1: Use story-done workflow (Recommended)**
-
-1. Load SM agent
-2. Run `story-done` workflow
-3. Workflow automatically updates `sprint-status.yaml` (created by sprint-planning at Phase 4 start)
-4. Moves story from current status → `DONE`
-5. Advances the story queue
-
-**Option 2: Manual update**
-
-1. After dev-story completes and code-review passes
-2. Open `sprint-status.yaml` (created by sprint-planning)
-3. Change the story status from `review` to `done`
-4. Save the file
-
-The story-done workflow is faster and ensures proper status file updates.
+1. Open `sprint-status.yaml` (created by sprint-planning)
+2. Change the story status from `review` to `done`
+3. Save the file
 
 ### Q: Can I work on multiple stories at once?
 
@@ -371,7 +358,7 @@ See [IDE Setup Guides](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/do
 
 ### Q: Can I customize agents?
 
-**A:** Yes! Agents are installed as markdown files with XML-style content (optimized for LLMs, readable by any model). Create customization files in `{bmad_folder}/_cfg/agents/[agent-name].customize.yaml` to override default behaviors while keeping core functionality intact. See agent documentation for customization options.
+**A:** Yes! Agents are installed as markdown files with XML-style content (optimized for LLMs, readable by any model). Create customization files in `.bmad/_cfg/agents/[agent-name].customize.yaml` to override default behaviors while keeping core functionality intact. See agent documentation for customization options.
 
 **Note:** While source agents in this repo are YAML, they install as `.md` files with XML-style tags - a format any LLM can read and follow.
 
