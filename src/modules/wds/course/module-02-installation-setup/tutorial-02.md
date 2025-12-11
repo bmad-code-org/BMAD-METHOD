@@ -57,10 +57,65 @@ By the end of this tutorial:
 
 ### 2.2 Repository Settings
 
+**IMPORTANT: Your naming choice determines your structure!**
+
+### Single Repo or Separate Specs Repo?
+
+**Option A: Single Repository**
+
+**Name it simply:**
+- `dog-walker-app`
+- `recipe-platform`
+- `fitness-tracker`
+
+**Structure:**
+```
+dog-walker-app/
+├── docs/              ← Your WDS specifications
+└── src/               ← Code
+```
+
+**Use when:**
+- ✅ You're close to the development team
+- ✅ You want simple, direct communication
+- ✅ You're building the whole project yourself
+- ✅ Working closely with other designers
+- ✅ Small team with full ownership
+- ✅ Rapid iteration and feedback
+
+**Option B: Separate Specifications Repository**
+
+**Name with `-specs` suffix:**
+- `dog-walker-app-specs`
+- `recipe-platform-specs`
+- `fitness-tracker-specs`
+
+**Structure:**
+```
+dog-walker-app-specs/     ← This repo (specifications only)
+dog-walker-app/           ← Separate code repo
+```
+
+**Use when:**
+- ✅ Corporate or enterprise environment
+- ✅ Specifications serve multiple products/platforms
+- ✅ Development team has many developers
+- ✅ Extensive or complex codebase
+- ✅ Clear handoff boundaries needed
+- ✅ Design and dev have separate workflows
+
+**For this tutorial:**
+- Beginners: Use **Option A** (single repo like `dog-walker-app`)
+- Corporate/Enterprise: Use **Option B** (separate like `dog-walker-app-specs`)
+
+**Choose your name now based on your situation!**
+
+---
+
 **Repository Name:**
 - Use lowercase with hyphens
 - Descriptive and specific
-- Examples: `dog-walker-app`, `recipe-sharing-platform`, `fitness-tracker-specs`
+- Examples: `dog-walker-app` OR `dog-walker-app-specs`
 
 **Description:**
 - Short one-liner about your project
@@ -81,7 +136,9 @@ Click the green **"Create repository"** button
 
 **✅ Checkpoint:** You see your new repository with a README file
 
-**Note:** We'll discuss single vs. separate repository structure in Step 4 before cloning!
+**Remember your choice:**
+- Single repo (`my-project`)? Specs and code together
+- Separate repo (`my-project-specs`)? You'll create a second repo for code later
 
 ---
 
@@ -133,28 +190,24 @@ Cursor will ask you a few questions:
 
 **Good news:** You don't need to install anything manually! Modern IDEs like Cursor handle this for you.
 
-### 4.1 Important Repository Decision First
+### 4.1 Recap: Your Repository Structure
 
-**Before cloning, understand your options:**
+**You already decided this in Step 2 when naming your repo!**
 
-**Option A: Single Repository (Recommended for beginners)**
+**Single repo (named `my-project`):**
 ```
 my-project/
 ├── docs/              ← Your WDS specifications
-└── src/               ← Code (if building yourself)
+└── src/               ← Code lives here too
 ```
-**Pros:** Everything in one place, simpler  
-**Best for:** Solo projects, learning, full ownership
 
-**Option B: Separate Repositories**
+**Separate repo (named `my-project-specs`):**
 ```
-my-project-specs/      ← WDS specifications (this repo)
-my-project-code/       ← Separate code repo
+my-project-specs/      ← This repo (specifications only)
+                       ← Create separate code repo later
 ```
-**Pros:** Clean separation, easier handoff to developers  
-**Best for:** Client projects, team collaboration
 
-**For this tutorial, we'll use Option A (single repo).**
+**For this tutorial, we assume single repo** (`dog-walker-app`)
 
 ### 4.2 Let Cursor Install Git Automatically
 
@@ -193,7 +246,7 @@ git --version
 If you see a version number → you're good!  
 If not → Continue to Step 5, Cursor will prompt you.
 
-**✅ Checkpoint:** You understand single vs separate repos, ready for Step 5!
+**✅ Checkpoint:** Ready to clone your repository in Step 5!
 
 ---
 
