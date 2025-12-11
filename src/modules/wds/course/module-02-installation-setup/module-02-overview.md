@@ -16,43 +16,35 @@ This module takes you from having nothing to being fully set up with WDS, even i
 
 ## Lessons
 
-### [Lesson 01: GitHub & IDE Setup](lesson-01-github-and-ide-setup/)
-**25-30 minutes**
+### [Lesson 01: Git Setup](lesson-01-git-setup/)
+**15-20 minutes** | Create GitHub account and repository
 
-Create GitHub account, repository, and install your IDE.
-
-- **[01 - Quick Checklist](lesson-01-github-and-ide-setup/01-quick-checklist.md)** - Just the steps
-- **[02 - Full Lesson](lesson-01-github-and-ide-setup/02-full-lesson.md)** - Detailed explanation
+- **[01 - Quick Checklist](lesson-01-git-setup/01-quick-checklist.md)** - Action list
+- **[02 - Full Lesson](lesson-01-git-setup/02-full-lesson.md)** - With explanations
 
 ---
 
-### [Lesson 02: Git Configuration](lesson-02-git-configuration/)
-**5 minutes**
+### [Lesson 02: IDE Installation](lesson-02-ide-installation/)
+**10 minutes** | Install Cursor or VS Code
 
-Let your IDE handle Git automatically or use GitHub Desktop.
-
-- **[01 - Quick Checklist](lesson-02-git-configuration/01-quick-checklist.md)** - Just the steps
-- **[02 - Full Lesson](lesson-02-git-configuration/02-full-lesson.md)** - Detailed explanation
+- **[01 - Quick Checklist](lesson-02-ide-installation/01-quick-checklist.md)** - Action list
+- **[02 - Full Lesson](lesson-02-ide-installation/02-full-lesson.md)** - With explanations
 
 ---
 
-### [Lesson 03: Repository Cloning & WDS Integration](lesson-03-clone-and-wds/)
-**15-20 minutes**
+### [Lesson 03: Git Repository Cloning](lesson-03-git-cloning/)
+**10 minutes** | Clone your project to your computer
 
-Clone your repository, add WDS to workspace, create docs structure.
-
-- **[01 - Quick Checklist](lesson-03-clone-and-wds/01-quick-checklist.md)** - Just the steps
-- **[02 - Full Lesson](lesson-03-clone-and-wds/02-full-lesson.md)** - Detailed explanation
+- **[01 - Quick Checklist](lesson-03-git-cloning/01-quick-checklist.md)** - Action list
+- **[02 - Full Lesson](lesson-03-git-cloning/02-full-lesson.md)** - With explanations
 
 ---
 
-### [Lesson 04: Mimir Activation](lesson-04-initiate-mimir/)
-**5 minutes**
+### [Lesson 04: WDS Project Initialization](lesson-04-wds-initialization/)
+**15-20 minutes** | Add WDS, create docs structure, activate Mimir
 
-Drag Mimir file to AI chat and begin your guided journey.
-
-- **[01 - Quick Checklist](lesson-04-initiate-mimir/01-quick-checklist.md)** - Just the steps
-- **[02 - Full Lesson](lesson-04-initiate-mimir/02-full-lesson.md)** - Detailed explanation
+- **[01 - Quick Checklist](lesson-04-wds-initialization/01-quick-checklist.md)** - Action list
+- **[02 - Full Lesson](lesson-04-wds-initialization/02-full-lesson.md)** - With explanations
 
 ---
 
@@ -60,17 +52,15 @@ Drag Mimir file to AI chat and begin your guided journey.
 
 **Want the fastest path?**
 
-Follow the checklists in order: [Start with Lesson 01 Checklist →](lesson-01-github-and-ide-setup/01-quick-checklist.md)
+Follow the checklists: [Start with Lesson 01 Checklist →](lesson-01-git-setup/01-quick-checklist.md)
 
 **Want detailed explanations?**
 
-Follow the full lessons: [Start with Lesson 01 Full Lesson →](lesson-01-github-and-ide-setup/02-full-lesson.md)
+Follow the full lessons: [Start with Lesson 01 Full Lesson →](lesson-01-git-setup/02-full-lesson.md)
 
 ---
 
 ## After This Module
-
-Once complete, you'll have:
 
 - ✅ GitHub account and repository
 - ✅ IDE installed and configured
