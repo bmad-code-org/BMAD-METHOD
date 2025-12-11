@@ -314,7 +314,7 @@ The workflow will collaborate with you to create an optimized `project_context.m
 
 **Execute the Generate Project Context workflow:**
 
-- Load and execute: `{project-root}/{bmad_folder}/bmm/workflows/generate-project-context/workflow.md`
+- Load and execute: `{project-root}/.bmad/bmm/workflows/generate-project-context/workflow.md`
 - The workflow will handle discovery, generation, and completion of the project context file
 - After completion, return here for final handoff
 

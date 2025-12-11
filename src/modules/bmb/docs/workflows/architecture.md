@@ -69,7 +69,7 @@ workflow-folder/
 Standard variables in step files:
 
 ```yaml
-workflow_path: '{project-root}/{*bmad_folder*}/bmb/reference/workflows/[workflow-name]'
+workflow_path: '{project-root}/.bmad/bmb/reference/workflows/[workflow-name]'
 thisStepFile: '{workflow_path}/steps/step-[N]-[name].md'
 nextStepFile: '{workflow_path}/steps/step-[N+1]-[name].md'
 workflowFile: '{workflow_path}/workflow.md'

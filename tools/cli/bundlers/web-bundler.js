@@ -29,7 +29,7 @@ class WebBundler {
 
     // Temporary directory for generated manifests
     this.tempDir = path.join(process.cwd(), '.bundler-temp');
-    this.tempManifestDir = path.join(this.tempDir, 'bmad', '_cfg');
+    this.tempManifestDir = path.join(this.tempDir, '.bmad', '_cfg');
 
     // Bundle statistics
     this.stats = {
@@ -531,9 +531,9 @@ class WebBundler {
         }
 
         // Parse paths to extract module and workflow location
-        // Support both {project-root}/bmad/... and {project-root}/{bmad_folder}/... patterns
-        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
-        const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
+        // Support both {project-root}/bmad/... and {project-root}/.bmad/... patterns
+        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:\.?bmad)\/([^/]+)\/workflows\/(.+)/);
+        const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:\.?bmad)\/([^/]+)\/workflows\/(.+)/);
 
         if (!sourceMatch || !installMatch) {
           continue;
@@ -584,9 +584,9 @@ class WebBundler {
     let yamlContent = await fs.readFile(workflowYamlPath, 'utf8');
 
     // Replace config_source with new module reference
-    // Support both old format (bmad) and new format ({bmad_folder})
-    const configSourcePattern = /config_source:\s*["']?\{project-root\}\/(?:\{bmad_folder\}|bmad)\/[^/]+\/config\.yaml["']?/g;
-    const newConfigSource = `config_source: "{project-root}/{bmad_folder}/${newModuleName}/config.yaml"`;
+    // Support both old format (bmad) and new format (.bmad)
+    const configSourcePattern = /config_source:\s*["']?\{project-root\}\/(?:\.?bmad)\/[^/]+\/config\.yaml["']?/g;
+    const newConfigSource = `config_source: "{project-root}/.bmad/${newModuleName}/config.yaml"`;
 
     const updatedYaml = yamlContent.replaceAll(configSourcePattern, newConfigSource);
     await fs.writeFile(workflowYamlPath, updatedYaml, 'utf8');
@@ -723,7 +723,7 @@ class WebBundler {
       /tools="([^"]+)"/g,
       /knowledge="([^"]+)"/g,
       /{project-root}\/([^"'\s<>]+)/g, // Legacy {project-root} paths
-      /\bbmad\/([^"'\s<>]+)/g, // Direct bmad/ paths (after {bmad_folder} replacement)
+      /\bbmad\/([^"'\s<>]+)/g, // Direct bmad/ paths (after .bmad replacement)
     ];
 
     for (const pattern of patterns) {
@@ -733,8 +733,8 @@ class WebBundler {
         let filePath = match[1];
         // Remove {project-root} prefix if present
         filePath = filePath.replace(/^{project-root}\//, '');
-        // Remove {bmad_folder} prefix if present (should be rare, mostly replaced already)
-        filePath = filePath.replace(/^{bmad_folder}\//, 'bmad/');
+        // Remove .bmad prefix if present (should be rare, mostly replaced already)
+        filePath = filePath.replace(/^.bmad\//, 'bmad/');
 
         // For bmad/ pattern, prepend 'bmad/' since it was captured without it
         if (pattern.source.includes(String.raw`\bbmad\/`)) {
@@ -760,8 +760,8 @@ class WebBundler {
       while ((match = pattern.exec(xml)) !== null) {
         let workflowPath = match[1];
         workflowPath = workflowPath.replace(/^{project-root}\//, '');
-        // Remove {bmad_folder} prefix if present and replace with bmad
-        workflowPath = workflowPath.replace(/^{bmad_folder}\//, 'bmad/');
+        // Remove .bmad prefix if present and replace with bmad
+        workflowPath = workflowPath.replace(/^.bmad\//, 'bmad/');
 
         // Skip obvious placeholder/example paths
         if (workflowPath && workflowPath.endsWith('.yaml') && !workflowPath.includes('path/to/') && !workflowPath.includes('example')) {
@@ -851,7 +851,7 @@ class WebBundler {
         if (deps) {
           for (const dep of deps) {
             let depPath = dep.replaceAll(/['"]/g, '').replace(/^{project-root}\//, '');
-            depPath = depPath.replace(/^{bmad_folder}\//, 'bmad/');
+            depPath = depPath.replace(/^.bmad\//, 'bmad/');
             if (depPath && !processed.has(depPath)) {
               await this.processFileDependency(depPath, dependencies, processed, moduleName, warnings);
             }
@@ -865,7 +865,7 @@ class WebBundler {
         if (templates) {
           for (const template of templates) {
             let templatePath = template.replaceAll(/['"]/g, '').replace(/^{project-root}\//, '');
-            templatePath = templatePath.replace(/^{bmad_folder}\//, 'bmad/');
+            templatePath = templatePath.replace(/^.bmad\//, 'bmad/');
             if (templatePath && !processed.has(templatePath)) {
               await this.processFileDependency(templatePath, dependencies, processed, moduleName, warnings);
             }
@@ -1053,13 +1053,13 @@ class WebBundler {
       bundleYamlContent = yamlContent;
     }
 
-    // Process {project-root} and {bmad_folder} references in the YAML content
+    // Process {project-root} and .bmad references in the YAML content
     bundleYamlContent = this.processProjectRootReferences(bundleYamlContent);
 
     // Include the YAML file with only web_bundle content, wrapped in XML
     // Process the workflow path to create a clean ID
     let yamlId = workflowPath.replace(/^{project-root}\//, '');
-    yamlId = yamlId.replace(/^{bmad_folder}\//, 'bmad/');
+    yamlId = yamlId.replace(/^.bmad\//, 'bmad/');
     const wrappedYaml = this.wrapContentInXml(bundleYamlContent, yamlId, 'yaml');
     dependencies.set(yamlId, wrappedYaml);
 
@@ -1078,7 +1078,7 @@ class WebBundler {
       for (const bundleFilePath of bundleFiles) {
         // Process the file path to create a clean ID for checking if already processed
         let cleanFilePath = bundleFilePath.replace(/^{project-root}\//, '');
-        cleanFilePath = cleanFilePath.replace(/^{bmad_folder}\//, 'bmad/');
+        cleanFilePath = cleanFilePath.replace(/^.bmad\//, 'bmad/');
 
         if (processed.has(cleanFilePath)) {
           continue;
@@ -1087,7 +1087,7 @@ class WebBundler {
         const bundleActualPath = this.resolveFilePath(bundleFilePath, moduleName);
 
         if (!bundleActualPath || !(await fs.pathExists(bundleActualPath))) {
-          // Use the cleaned path in warnings (with {bmad_folder} replaced)
+          // Use the cleaned path in warnings (with .bmad replaced)
           warnings.push(cleanFilePath);
           continue;
         }
@@ -1136,7 +1136,7 @@ class WebBundler {
     }
 
     let fileContent = await fs.readFile(actualPath, 'utf8');
-    // Process {project-root} and {bmad_folder} references
+    // Process {project-root} and .bmad references
     fileContent = this.processProjectRootReferences(fileContent);
     const wrappedContent = this.wrapContentInXml(fileContent, coreWorkflowPath, 'xml');
     dependencies.set(coreWorkflowPath, wrappedContent);
@@ -1162,7 +1162,7 @@ class WebBundler {
       }
 
       let fileContent = await fs.readFile(actualPath, 'utf8');
-      // Process {project-root} and {bmad_folder} references
+      // Process {project-root} and .bmad references
       fileContent = this.processProjectRootReferences(fileContent);
       const fileExt = path.extname(actualPath).toLowerCase().replace('.', '');
       const wrappedContent = this.wrapContentInXml(fileContent, filePath, fileExt);
@@ -1196,8 +1196,8 @@ class WebBundler {
   async processWildcardDependency(pattern, dependencies, processed, moduleName, warnings = []) {
     // Remove {project-root} prefix
     pattern = pattern.replace(/^{project-root}\//, '');
-    // Replace {bmad_folder} with bmad
-    pattern = pattern.replace(/^{bmad_folder}\//, 'bmad/');
+    // Replace .bmad with bmad
+    pattern = pattern.replace(/^.bmad\//, 'bmad/');
 
     // Get directory and file pattern
     const lastSlash = pattern.lastIndexOf('/');
@@ -1265,9 +1265,6 @@ class WebBundler {
   resolveFilePath(filePath, moduleName) {
     // Remove {project-root} prefix
     filePath = filePath.replace(/^{project-root}\//, '');
-    // Replace {bmad_folder} with bmad
-    filePath = filePath.replace(/^{bmad_folder}\//, 'bmad/');
-    filePath = filePath.replace(/^{bmad_folder}$/, 'bmad');
 
     // Check temp directory first for _cfg files
     if (filePath.startsWith('bmad/_cfg/')) {
@@ -1277,11 +1274,6 @@ class WebBundler {
         return tempPath;
       }
     }
-
-    // Handle different path patterns for bmad files
-    // bmad/cis/tasks/brain-session.md -> src/modules/cis/tasks/brain-session.md
-    // bmad/core/tasks/create-doc.md -> src/core/tasks/create-doc.md
-    // bmad/bmm/templates/brief.md -> src/modules/bmm/templates/brief.md
 
     let actualPath = filePath;
 
@@ -1334,15 +1326,13 @@ class WebBundler {
   }
 
   /**
-   * Process and remove {project-root} references and replace {bmad_folder} with bmad
+   * Process and remove {project-root} references
    */
   processProjectRootReferences(content) {
     // Remove {project-root}/ prefix (with slash)
     content = content.replaceAll('{project-root}/', '');
     // Also remove {project-root} without slash
     content = content.replaceAll('{project-root}', '');
-    // Replace {bmad_folder} with bmad
-    content = content.replaceAll('{bmad_folder}', 'bmad');
     return content;
   }
 

@@ -65,11 +65,11 @@ For module agents orchestrating multi-step processes.
 ```yaml
 menu:
   - trigger: create-prd
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/prd/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/prd/workflow.yaml'
     description: 'Create Product Requirements Document'
 
   - trigger: brainstorm
-    workflow: '{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.yaml'
+    workflow: '{project-root}/.bmad/core/workflows/brainstorming/workflow.yaml'
     description: 'Guided brainstorming session'
 
   # Placeholder for unimplemented workflows
@@ -92,11 +92,11 @@ For executing tasks directly.
 ```yaml
 menu:
   - trigger: validate
-    exec: '{project-root}/{bmad_folder}/core/tasks/validate-workflow.xml'
+    exec: '{project-root}/.bmad/core/tasks/validate-workflow.xml'
     description: 'Validate document structure'
 
   - trigger: advanced-elicitation
-    exec: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+    exec: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
     description: 'Advanced elicitation techniques'
 ```
 
@@ -113,8 +113,8 @@ For document generation with templates.
 ```yaml
 menu:
   - trigger: create-brief
-    exec: '{project-root}/{bmad_folder}/core/tasks/create-doc.xml'
-    tmpl: '{project-root}/{bmad_folder}/bmm/templates/brief.md'
+    exec: '{project-root}/.bmad/core/tasks/create-doc.xml'
+    tmpl: '{project-root}/.bmad/bmm/templates/brief.md'
     description: 'Create a Product Brief'
 ```
 
@@ -131,8 +131,8 @@ Universal attribute for supplementary information.
 ```yaml
 menu:
   - trigger: team-standup
-    exec: '{project-root}/{bmad_folder}/bmm/tasks/standup.xml'
-    data: '{project-root}/{bmad_folder}/_cfg/agent-manifest.csv'
+    exec: '{project-root}/.bmad/bmm/tasks/standup.xml'
+    data: '{project-root}/.bmad/_cfg/agent-manifest.csv'
     description: 'Run team standup'
 
   - trigger: analyze-metrics
@@ -154,12 +154,12 @@ Control visibility based on deployment target:
 ```yaml
 menu:
   - trigger: git-flow
-    exec: '{project-root}/{bmad_folder}/bmm/tasks/git-flow.xml'
+    exec: '{project-root}/.bmad/bmm/tasks/git-flow.xml'
     description: 'Git workflow operations'
     ide-only: true # Only in IDE environments
 
   - trigger: advanced-elicitation
-    exec: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
+    exec: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
     description: 'Advanced elicitation'
     web-only: true # Only in web bundles
 ```
@@ -251,20 +251,20 @@ menu:
 menu:
   # Analysis Phase
   - trigger: brainstorm
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/1-analysis/brainstorm/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/1-analysis/brainstorm/workflow.yaml'
     description: 'Brainstorm ideas'
 
   - trigger: research
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/1-analysis/research/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/1-analysis/research/workflow.yaml'
     description: 'Conduct research'
 
   # Planning Phase
   - trigger: prd
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/2-planning/prd/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/2-planning/prd/workflow.yaml'
     description: 'Create PRD'
 
   - trigger: architecture
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/2-planning/architecture/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/2-planning/architecture/workflow.yaml'
     description: 'Design architecture'
 ```
 
@@ -362,8 +362,8 @@ prompts:
 
 ```yaml
 # GOOD - Portable paths
-workflow: "{project-root}/{bmad_folder}/bmm/workflows/prd/workflow.yaml"
-exec: "{project-root}/{bmad_folder}/core/tasks/validate.xml"
+workflow: "{project-root}/.bmad/bmm/workflows/prd/workflow.yaml"
+exec: "{project-root}/.bmad/core/tasks/validate.xml"
 data: "{project-root}/_data/metrics.csv"
 
 # BAD - Hardcoded paths
@@ -374,7 +374,7 @@ exec: "../../../core/tasks/validate.xml"
 ### Available Variables
 
 - `{project-root}` - Project root directory
-- `{bmad_folder}` - BMAD installation folder
+- `.bmad` - BMAD installation folder
 - `{agent_sidecar_folder}` - Agent installation directory (Expert agents)
 - `{output_folder}` - Document output location
 - `{user_name}` - User's name from config
@@ -444,23 +444,23 @@ menu:
 ```yaml
 menu:
   - trigger: workflow-init
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/workflow-status/init/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/workflow-status/init/workflow.yaml'
     description: 'Initialize workflow path (START HERE)'
 
   - trigger: brainstorm
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/1-analysis/brainstorm/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/1-analysis/brainstorm/workflow.yaml'
     description: 'Guided brainstorming'
 
   - trigger: prd
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/2-planning/prd/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/2-planning/prd/workflow.yaml'
     description: 'Create PRD'
 
   - trigger: architecture
-    workflow: '{project-root}/{bmad_folder}/bmm/workflows/2-planning/architecture/workflow.yaml'
+    workflow: '{project-root}/.bmad/bmm/workflows/2-planning/architecture/workflow.yaml'
     description: 'Design architecture'
 
   - trigger: party-mode
-    workflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml'
+    workflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.yaml'
     description: 'Multi-agent discussion'
 ```
 

@@ -4,7 +4,7 @@ description: "Narrative design workflow for story-driven games and applications.
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
+config_source: "{project-root}/.bmad/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -13,7 +13,7 @@ game_dev_experience: "{config_source}:game_dev_experience"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/{bmad_folder}/bmgd/workflows/2-design/narrative"
+installed_path: "{project-root}/.bmad/bmgd/workflows/2-design/narrative"
 instructions: "{installed_path}/instructions-narrative.md"
 template: "{installed_path}/narrative-template.md"
 
@@ -26,7 +26,7 @@ web_bundle:
   name: "narrative"
   description: "Narrative design workflow for story-driven games and applications. Creates comprehensive narrative documentation including story structure, character arcs, dialogue systems, and narrative implementation guidance."
   author: "BMad"
-  instructions: "{bmad_folder}/bmgd/workflows/2-design/narrative/instructions-narrative.md"
+  instructions: ".bmad/bmgd/workflows/2-design/narrative/instructions-narrative.md"
   web_bundle_files:
-    - "{bmad_folder}/bmgd/workflows/2-design/narrative/instructions-narrative.md"
-    - "{bmad_folder}/bmgd/workflows/2-design/narrative/narrative-template.md"
+    - ".bmad/bmgd/workflows/2-design/narrative/instructions-narrative.md"
+    - ".bmad/bmgd/workflows/2-design/narrative/narrative-template.md"

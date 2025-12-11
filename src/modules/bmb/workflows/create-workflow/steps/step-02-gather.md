@@ -3,7 +3,7 @@ name: 'step-02-gather'
 description: 'Gather comprehensive requirements for the workflow being created'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-02-gather.md'
@@ -13,8 +13,8 @@ targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 # Template References
 # No template needed - will append requirements directly to workflow plan
 ---
@@ -90,7 +90,7 @@ Let's load some examples to help you decide the workflow pattern:
 Load and reference the Meal Prep & Nutrition Plan workflow as an example:
 
 ```
-Read: {project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition/workflow.md
+Read: {project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md
 ```
 
 This shows a linear workflow structure. Now let's explore your desired pattern:
@@ -104,7 +104,7 @@ This shows a linear workflow structure. Now let's explore your desired pattern:
 **Based on our reference examples:**
 
 - **Linear**: Like Meal Prep Plan (Init → Profile → Assessment → Strategy → Shopping → Prep)
-  - See: `{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition/`
+  - See: `{project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition/`
 - **Looping**: User Story Generator (Generate → Review → Refine → Generate more... until done)
 - **Branching**: Architecture Decision (Analyze → Choose pattern → Implement based on choice)
 - **Iterative**: Document Review (Load → Analyze → Suggest changes → Implement → Repeat until approved)

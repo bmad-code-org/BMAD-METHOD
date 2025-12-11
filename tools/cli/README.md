@@ -105,7 +105,7 @@ The installer is a multi-stage system that handles agent compilation, IDE integr
    - Resolve module dependencies (4-pass system)
 
 3. Install Core + Modules
-   - Copy files to {target}/{bmad_folder}/
+   - Copy files to {target}/.bmad/
    - Compile agents: YAML → Markdown/XML (forWebBundle: false)
    - Merge customize.yaml files if they exist
    - Inject activation blocks based on agent capabilities
@@ -131,7 +131,7 @@ The installer is a multi-stage system that handles agent compilation, IDE integr
 
 ```
 {target}/
-├── {bmad_folder}/
+├── .bmad/
 │   ├── core/              # Always installed
 │   ├── {module}/          # Selected modules
 │   │   ├── agents/        # Compiled .md files
@@ -239,7 +239,7 @@ Platform specifics are **IDE+module combination hooks** that execute custom logi
 
 ### Manifest System
 
-The installer generates **5 manifest files** in `{target}/{bmad_folder}/_cfg/`:
+The installer generates **5 manifest files** in `{target}/.bmad/_cfg/`:
 
 **1. Installation Manifest** (`manifest.yaml`)
 
@@ -428,7 +428,7 @@ agent:
     identity: 'You are an experienced PM...'
   menu:
     - trigger: '*create-brief'
-      workflow: '{project-root}/{bmad_folder}/bmm/workflows/.../workflow.yaml'
+      workflow: '{project-root}/.bmad/bmm/workflows/.../workflow.yaml'
 ```
 
 ### Output: IDE (Markdown with XML)
@@ -441,7 +441,7 @@ agent:
 ```xml
 <agent id="..." name="PM">
   <activation critical="MANDATORY">
-    <step n="2">Load {project-root}/{bmad_folder}/bmm/config.yaml at runtime</step>
+    <step n="2">Load {project-root}/.bmad/bmm/config.yaml at runtime</step>
     ...
   </activation>
   <persona>...</persona>
@@ -533,20 +533,20 @@ src/utility/models/fragments/
 
 ## Key Differences: Installation vs Bundling
 
-| Aspect                  | Installation (IDE)                   | Bundling (Web)                    |
-| ----------------------- | ------------------------------------ | --------------------------------- |
-| **Trigger**             | `npm run install:bmad`               | `npm run bundle`                  |
-| **Entry Point**         | `commands/install.js`                | `bundlers/bundle-web.js`          |
-| **Compiler Flag**       | `forWebBundle: false`                | `forWebBundle: true`              |
-| **Output Format**       | Markdown `.md`                       | Standalone XML `.xml`             |
-| **Output Location**     | `{target}/{bmad_folder}/` + IDE dirs | `web-bundles/`                    |
-| **Customization**       | Merges `customize.yaml`              | Base agents only                  |
-| **Dependencies**        | Referenced by path                   | Bundled inline (CDATA)            |
-| **Activation Fragment** | `activation-steps.xml`               | `web-bundle-activation-steps.xml` |
-| **Filesystem Access**   | Required                             | Not needed                        |
-| **Build Metadata**      | Included (hash)                      | Excluded                          |
-| **Path Format**         | `{project-root}` placeholders        | Stripped, wrapped as `<file>`     |
-| **Use Case**            | Local IDE development                | Web deployment                    |
+| Aspect                  | Installation (IDE)            | Bundling (Web)                    |
+| ----------------------- | ----------------------------- | --------------------------------- |
+| **Trigger**             | `npm run install:bmad`        | `npm run bundle`                  |
+| **Entry Point**         | `commands/install.js`         | `bundlers/bundle-web.js`          |
+| **Compiler Flag**       | `forWebBundle: false`         | `forWebBundle: true`              |
+| **Output Format**       | Markdown `.md`                | Standalone XML `.xml`             |
+| **Output Location**     | `{target}/.bmad/` + IDE dirs  | `web-bundles/`                    |
+| **Customization**       | Merges `customize.yaml`       | Base agents only                  |
+| **Dependencies**        | Referenced by path            | Bundled inline (CDATA)            |
+| **Activation Fragment** | `activation-steps.xml`        | `web-bundle-activation-steps.xml` |
+| **Filesystem Access**   | Required                      | Not needed                        |
+| **Build Metadata**      | Included (hash)               | Excluded                          |
+| **Path Format**         | `{project-root}` placeholders | Stripped, wrapped as `<file>`     |
+| **Use Case**            | Local IDE development         | Web deployment                    |
 
 **Activation Differences**:
 

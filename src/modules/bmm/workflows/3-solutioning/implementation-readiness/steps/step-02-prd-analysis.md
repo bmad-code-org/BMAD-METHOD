@@ -3,7 +3,7 @@ name: 'step-02-prd-analysis'
 description: 'Read and analyze PRD to extract all FRs and NFRs for coverage validation'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness'
+workflow_path: '{project-root}/.bmad/bmm/workflows/3-solutioning/implementation-readiness'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-02-prd-analysis.md'

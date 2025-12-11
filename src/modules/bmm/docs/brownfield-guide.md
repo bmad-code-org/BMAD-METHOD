@@ -137,7 +137,7 @@ If you have documentation but files are huge (>500 lines, 10+ level 2 sections):
 
    ```bash
    # Load BMad Master or any agent
-   {bmad_folder}/core/tools/shard-doc.xml --input docs/massive-doc.md
+   .bmad/core/tools/shard-doc.xml --input docs/massive-doc.md
    ```
 
    - Splits on level 2 sections by default
@@ -147,7 +147,7 @@ If you have documentation but files are huge (>500 lines, 10+ level 2 sections):
 2. **Then:** Run `index-docs` task to create navigation:
 
    ```bash
-   {bmad_folder}/core/tasks/index-docs.xml --directory ./docs
+   .bmad/core/tasks/index-docs.xml --directory ./docs
    ```
 
 3. **Finally:** Validate quality - if sharded docs still seem incomplete/outdated → Run `document-project`
@@ -210,7 +210,7 @@ If you have **good, current documentation** but it's in massive files:
 
 ```bash
 # For each massive doc (>500 lines or 10+ level 2 sections)
-{bmad_folder}/core/tools/shard-doc.xml \
+.bmad/core/tools/shard-doc.xml \
   --input docs/api-documentation.md \
   --output docs/api/ \
   --level 2  # Split on ## headers (default)
@@ -219,7 +219,7 @@ If you have **good, current documentation** but it's in massive files:
 **Step 2: Generate index**
 
 ```bash
-{bmad_folder}/core/tasks/index-docs.xml --directory ./docs
+.bmad/core/tasks/index-docs.xml --directory ./docs
 ```
 
 **Step 3: Validate**

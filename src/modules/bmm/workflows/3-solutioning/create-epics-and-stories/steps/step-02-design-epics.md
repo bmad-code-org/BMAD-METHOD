@@ -3,7 +3,7 @@ name: 'step-02-design-epics'
 description: 'Design and approve the epics_list that will organize all requirements into user-value-focused epics'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories'
+workflow_path: '{project-root}/.bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-02-design-epics.md'

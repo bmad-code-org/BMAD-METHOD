@@ -3,7 +3,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/bmm/agents/pm.md"
+    id: ".bmad/bmm/agents/pm.md"
     name: John
     title: Product Manager
     icon: 📋
@@ -20,31 +20,31 @@ agent:
 
   menu:
     - trigger: workflow-status
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Get workflow status or initialize a workflow if not already done (optional)
 
     - trigger: create-prd
-      exec: "{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/workflow.md"
+      exec: "{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd/workflow.md"
       description: Create Product Requirements Document (PRD) (Required for BMad Method flow)
 
     - trigger: create-epics-and-stories
-      exec: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md"
+      exec: "{project-root}/.bmad/bmm/workflows/3-solutioning/create-epics-and-stories/workflow.md"
       description: Create Epics and User Stories from PRD (Required for BMad Method flow AFTER the Architecture is completed)
 
     - trigger: implementation-readiness
-      exec: "{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness/workflow.md"
+      exec: "{project-root}/.bmad/bmm/workflows/3-solutioning/implementation-readiness/workflow.md"
       description: Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)
 
     - trigger: correct-course
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/correct-course/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml"
       description: Course Correction Analysis (optional during implementation when things go off track)
       ide-only: true
 
     - trigger: party-mode
-      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
+      exec: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
       description: Bring the whole team in to chat with other expert agents from the party
 
     - trigger: advanced-elicitation
-      exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
+      exec: "{project-root}/.bmad/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results
       web-only: true

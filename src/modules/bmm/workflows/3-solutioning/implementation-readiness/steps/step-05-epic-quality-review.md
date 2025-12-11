@@ -3,14 +3,14 @@ name: 'step-05-epic-quality-review'
 description: 'Validate epics and stories against create-epics-and-stories best practices'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness'
+workflow_path: '{project-root}/.bmad/bmm/workflows/3-solutioning/implementation-readiness'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-05-epic-quality-review.md'
 nextStepFile: '{workflow_path}/steps/step-06-final-assessment.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/implementation-readiness-report-{{date}}.md'
-epicsBestPractices: '{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories'
+epicsBestPractices: '{project-root}/.bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
 ---
 
 # Step 5: Epic Quality Review

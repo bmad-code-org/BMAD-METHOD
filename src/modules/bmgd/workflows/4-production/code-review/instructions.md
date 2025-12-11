@@ -1,7 +1,7 @@
 # Senior Developer Review - Workflow Instructions
 
 ````xml
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
@@ -354,7 +354,7 @@ Review was saved to story file, but sprint-status.yaml may be out of sync.
   </step>
 
   <step n="10" goal="Validation and completion">
-    <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/{bmad_folder}/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Run validation checklist at {installed_path}/checklist.md using {project-root}/.bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Report workflow completion.</action>
 
     <check if="ad_hoc_review_mode == true">

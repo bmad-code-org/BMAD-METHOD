@@ -3,7 +3,7 @@ name: 'step-06-design'
 description: 'Design the workflow structure and step sequence based on gathered requirements, tools configuration, and output format'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-06-design.md'
@@ -14,8 +14,8 @@ targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 # Template References
 # No template needed - will append design details directly to workflow plan
 ---
@@ -70,11 +70,11 @@ To collaboratively design the workflow structure, step sequence, and interaction
 
 When designing, you may load these documents as needed:
 
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md` - Step file structure
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-01-init-continuable-template.md` - Continuable init step template
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-1b-template.md` - Continuation step template
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md` - Workflow configuration
-- `{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition/workflow.md` - Complete example
+- `{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md` - Step file structure
+- `{project-root}/.bmad/bmb/docs/workflows/templates/step-01-init-continuable-template.md` - Continuable init step template
+- `{project-root}/.bmad/bmb/docs/workflows/templates/step-1b-template.md` - Continuation step template
+- `{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md` - Workflow configuration
+- `{project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md` - Complete example
 
 ## WORKFLOW DESIGN PROCESS:
 
@@ -85,13 +85,13 @@ Let's reference our step creation documentation for best practices:
 Load and reference step-file architecture guide:
 
 ```
-Read: {project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md
+Read: {project-root}/.bmad/bmb/docs/workflows/templates/step-template.md
 ```
 
 This shows the standard structure for step files. Also reference:
 
 ```
-Read: {project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-1b-template.md
+Read: {project-root}/.bmad/bmb/docs/workflows/templates/step-1b-template.md
 ```
 
 This shows the continuation step pattern for workflows that might take multiple sessions.

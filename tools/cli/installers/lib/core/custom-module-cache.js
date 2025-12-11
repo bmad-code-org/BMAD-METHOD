@@ -51,7 +51,19 @@ class CustomModuleCache {
   }
 
   /**
-   * Calculate hash of a file or directory
+   * Stream a file into the hash to avoid loading entire file into memory
+   */
+  async hashFileStream(filePath, hash) {
+    return new Promise((resolve, reject) => {
+      const stream = require('node:fs').createReadStream(filePath);
+      stream.on('data', (chunk) => hash.update(chunk));
+      stream.on('end', resolve);
+      stream.on('error', reject);
+    });
+  }
+
+  /**
+   * Calculate hash of a file or directory using streaming to minimize memory usage
    */
   async calculateHash(sourcePath) {
     const hash = crypto.createHash('sha256');
@@ -76,14 +88,14 @@ class CustomModuleCache {
       files.sort(); // Ensure consistent order
 
       for (const file of files) {
-        const content = await fs.readFile(file);
         const relativePath = path.relative(sourcePath, file);
-        hash.update(relativePath + '|' + content.toString('base64'));
+        // Hash the path first, then stream file contents
+        hash.update(relativePath + '|');
+        await this.hashFileStream(file, hash);
       }
     } else {
-      // For single files
-      const content = await fs.readFile(sourcePath);
-      hash.update(content);
+      // For single files, stream directly into hash
+      await this.hashFileStream(sourcePath, hash);
     }
 
     return hash.digest('hex');

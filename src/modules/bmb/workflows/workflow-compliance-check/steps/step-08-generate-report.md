@@ -3,7 +3,7 @@ name: 'step-08-generate-report'
 description: 'Generate comprehensive compliance report with fix recommendations'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/workflow-compliance-check'
+workflow_path: '{project-root}/.bmad/bmb/workflows/workflow-compliance-check'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-08-generate-report.md'
@@ -15,8 +15,8 @@ targetWorkflowFile: '{target_workflow_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
+stepTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md'
 ---
 
 # Step 8: Comprehensive Compliance Report Generation

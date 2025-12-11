@@ -12,7 +12,7 @@ const chalk = require('chalk');
  * Find BMAD directory in project
  */
 function findBmadDir(projectDir = process.cwd()) {
-  const possibleNames = ['bmad', '.bmad'];
+  const possibleNames = ['.bmad'];
 
   for (const name of possibleNames) {
     const bmadDir = path.join(projectDir, name);

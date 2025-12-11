@@ -28,7 +28,7 @@ This uses **micro-file architecture** for disciplined execution:
 
 ### Configuration Loading
 
-Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
+Load config from `{project-root}/.bmad/bmm/config.yaml` and resolve:
 
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
@@ -36,7 +36,7 @@ Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/architecture`
+- `installed_path` = `{project-root}/.bmad/bmm/workflows/3-solutioning/architecture`
 - `template_path` = `{installed_path}/architecture-decision-template.md`
 - `data_files_path` = `{installed_path}/data/`
 

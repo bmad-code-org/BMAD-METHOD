@@ -24,13 +24,13 @@ Specialized tools and workflows for creating, customizing, and extending BMad co
 
 **Active Workflows** (Step-File Architecture)
 
-- Location: `src/modules/bmb/workflows/`
+- Location: `bmb/workflows/create-agent/`
 - 5 core workflows with 41 step files total
 - Template-based execution with JIT loading
 
 **Legacy Workflows** (Being Migrated)
 
-- Location: `src/modules/bmb/workflows-legacy/`
+- Location: `bmb/workflows/create-agent-legacy/`
 - Module-specific workflows pending conversion to step-file architecture
 
 ### 📚 Documentation

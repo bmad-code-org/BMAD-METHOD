@@ -3,7 +3,7 @@ name: 'step-01-validate-goal'
 description: 'Confirm workflow path and validation goals before proceeding'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/workflow-compliance-check'
+workflow_path: '{project-root}/.bmad/bmb/workflows/workflow-compliance-check'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-validate-goal.md'
@@ -15,8 +15,8 @@ complianceReportFile: '{output_folder}/workflow-compliance-report-{workflow_name
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
+stepTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md'
 ---
 
 # Step 1: Goal Confirmation and Workflow Target

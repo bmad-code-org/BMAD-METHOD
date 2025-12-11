@@ -1,4 +1,4 @@
-<tool id="{bmad_folder}/core/tasks/shard-doc" name="Shard Document"
+<tool id=".bmad/core/tasks/shard-doc" name="Shard Document"
   description="Splits large markdown documents into smaller, organized files based on level 2 (default) sections" webskip="true"
   standalone="true">
   <objective>Split large markdown documents into smaller, organized files based on level 2 sections using @kayvan/markdown-tree-parser tool</objective>

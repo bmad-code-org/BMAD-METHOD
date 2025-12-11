@@ -7,7 +7,7 @@ ALL agent types can:
 - ✓ Write to {output_folder}, {project-root}, or anywhere on system
 - ✓ Update artifacts and files
 - ✓ Execute bash commands
-- ✓ Use core variables ({bmad_folder}, {output_folder}, etc.)
+- ✓ Use core variables (.bmad, {output_folder}, etc.)
 - ✓ Have complex prompts and logic
 - ✓ Invoke external tools
 
@@ -98,11 +98,11 @@ agent:
 
   menu:
     - trigger: implement-story
-      workflow: '{bmad_folder}/bmm/workflows/dev-story/workflow.yaml'
+      workflow: '.bmad/bmm/workflows/dev-story/workflow.yaml'
       description: Implement user story
 
     - trigger: refactor
-      workflow: '{bmad_folder}/bmm/workflows/refactor/workflow.yaml'
+      workflow: '.bmad/bmm/workflows/refactor/workflow.yaml'
       description: Refactor codebase
 ```
 

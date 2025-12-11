@@ -3,7 +3,7 @@ name: 'step-06-final-assessment'
 description: 'Compile final assessment and polish the readiness report'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness'
+workflow_path: '{project-root}/.bmad/bmm/workflows/3-solutioning/implementation-readiness'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-06-final-assessment.md'

@@ -3,7 +3,7 @@ name: 'step-04-journeys'
 description: 'Map ALL user types that interact with the system with narrative story-based journeys'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+workflow_path: '{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-04-journeys.md'
@@ -12,8 +12,8 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/prd.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 4: User Journey Mapping
@@ -49,8 +49,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -222,7 +222,7 @@ Show the generated journey content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current journey content
+- Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml with the current journey content
 - Process the enhanced journey insights that come back
 - Ask user: "Accept these improvements to the user journeys? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -230,7 +230,7 @@ Show the generated journey content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current journeys
+- Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md with the current journeys
 - Process the collaborative journey improvements and additions
 - Ask user: "Accept these changes to the user journeys? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -240,7 +240,7 @@ Show the generated journey content and present choices:
 
 - Append the final content to `{output_folder}/prd.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4]`
-- Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-05-domain.md` (or determine if step is optional based on domain complexity)
+- Load `{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd/steps/step-05-domain.md` (or determine if step is optional based on domain complexity)
 
 ## APPEND TO DOCUMENT:
 

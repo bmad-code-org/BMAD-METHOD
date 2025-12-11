@@ -696,15 +696,6 @@ class ConfigCollector {
       }
     }
 
-    // Special handling for bmad_folder: detect existing folder name
-    if (moduleName === 'core' && key === 'bmad_folder' && !existingValue && this.currentProjectDir) {
-      // Try to detect the existing BMAD folder name
-      const detectedFolder = await this.detectExistingBmadFolder(this.currentProjectDir);
-      if (detectedFolder) {
-        existingValue = detectedFolder;
-      }
-    }
-
     // Special handling for user_name: default to system user
     if (moduleName === 'core' && key === 'user_name' && !existingValue) {
       item.default = this.getDefaultUsername();

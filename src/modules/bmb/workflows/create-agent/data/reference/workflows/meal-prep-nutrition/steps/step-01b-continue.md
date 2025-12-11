@@ -3,7 +3,7 @@ name: 'step-01b-continue'
 description: 'Handle workflow continuation from previous session'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition'
+workflow_path: '{project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01b-continue.md'

@@ -4,7 +4,7 @@
 agent:
   webskip: true
   metadata:
-    id: "{bmad_folder}/bmb/agents/bmad-builder.md"
+    id: ".bmad/bmb/agents/bmad-builder.md"
     name: BMad Builder
     title: BMad Builder
     icon: 🧙
@@ -24,26 +24,26 @@ agent:
 
   discussion: true
   conversational_knowledge:
-    - agents: "{project-root}/{bmad_folder}/bmb/docs/agents/kb.csv"
-    - workflows: "{project-root}/{bmad_folder}/bmb/docs/workflows/kb.csv"
-    - modules: "{project-root}/{bmad_folder}/bmb/docs/modules/kb.csv"
+    - agents: "{project-root}/.bmad/bmb/docs/agents/kb.csv"
+    - workflows: "{project-root}/.bmad/bmb/docs/workflows/kb.csv"
+    - modules: "{project-root}/.bmad/bmb/docs/modules/kb.csv"
 
   menu:
     - multi: "[CA] Create, [EA] Edit, or [VA] Validate with Compliance CheckBMAD agents with best practices"
       triggers:
         - create-agent:
             - input: CA or fuzzy match create agent
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/create-agent/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/create-agent/workflow.md"
             - data: null
             - type: exec
         - edit-agent:
             - input: EA or fuzzy match edit agent
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/edit-agent/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/edit-agent/workflow.md"
             - data: null
             - type: exec
         - run-agent-compliance-check:
             - input: VA or fuzzy match validate agent
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/agent-compliance-check/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/agent-compliance-check/workflow.md"
             - data: null
             - type: exec
 
@@ -51,17 +51,17 @@ agent:
       triggers:
         - create-workflow:
             - input: CW or fuzzy match create workflow
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/create-workflow/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/create-workflow/workflow.md"
             - data: null
             - type: exec
         - edit-workflow:
             - input: EW or fuzzy match edit workflow
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/edit-workflow/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/edit-workflow/workflow.md"
             - data: null
             - type: exec
         - run-workflow-compliance-check:
             - input: VW or fuzzy match validate workflow
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/workflow-compliance-check/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/workflow-compliance-check/workflow.md"
             - data: null
             - type: exec
 
@@ -69,26 +69,26 @@ agent:
       triggers:
         - brainstorm-module:
             - input: BM or fuzzy match brainstorm module
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/brainstorm-module/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/brainstorm-module/workflow.md"
             - data: null
             - type: exec
         - product-brief-module:
             - input: PBM or fuzzy match product brief module
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/product-brief-module/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/product-brief-module/workflow.md"
             - data: null
             - type: exec
         - create-module:
             - input: CM or fuzzy match create module
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/create-module/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/create-module/workflow.md"
             - data: null
             - type: exec
         - edit-module:
             - input: EM or fuzzy match edit module
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/edit-module/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/edit-module/workflow.md"
             - data: null
             - type: exec
         - run-module-compliance-check:
             - input: VM or fuzzy match validate module
-            - route: "{project-root}/{bmad_folder}/bmb/workflows/module-compliance-check/workflow.md"
+            - route: "{project-root}/.bmad/bmb/workflows/module-compliance-check/workflow.md"
             - data: null
             - type: exec

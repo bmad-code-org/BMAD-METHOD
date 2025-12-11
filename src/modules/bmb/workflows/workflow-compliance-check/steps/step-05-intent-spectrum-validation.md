@@ -3,7 +3,7 @@ name: 'step-05-intent-spectrum-validation'
 description: 'Dedicated analysis and validation of intent vs prescriptive spectrum positioning'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/workflow-compliance-check'
+workflow_path: '{project-root}/.bmad/bmb/workflows/workflow-compliance-check'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-05-intent-spectrum-validation.md'
@@ -16,9 +16,9 @@ targetWorkflowPath: '{target_workflow_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
-intentSpectrum: '{project-root}/{bmad_folder}/bmb/docs/workflows/intent-vs-prescriptive-spectrum.md'
+stepTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md'
+intentSpectrum: '{project-root}/.bmad/bmb/docs/workflows/intent-vs-prescriptive-spectrum.md'
 ---
 
 # Step 5: Intent vs Prescriptive Spectrum Validation

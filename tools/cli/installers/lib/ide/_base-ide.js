@@ -527,26 +527,26 @@ class BaseIdeSetup {
   }
 
   /**
-   * Write file with content (replaces {bmad_folder} placeholder)
+   * Write file with content (replaces .bmad placeholder)
    * @param {string} filePath - File path
    * @param {string} content - File content
    */
   async writeFile(filePath, content) {
-    // Replace {bmad_folder} placeholder if present
-    if (typeof content === 'string' && content.includes('{bmad_folder}')) {
-      content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
+    // Replace .bmad placeholder if present
+    if (typeof content === 'string' && content.includes('.bmad')) {
+      content = content.replaceAll('.bmad', this.bmadFolderName);
     }
 
-    // Replace escape sequence {*bmad_folder*} with literal {bmad_folder}
-    if (typeof content === 'string' && content.includes('{*bmad_folder*}')) {
-      content = content.replaceAll('{*bmad_folder*}', '{bmad_folder}');
+    // Replace escape sequence .bmad with literal .bmad
+    if (typeof content === 'string' && content.includes('.bmad')) {
+      content = content.replaceAll('.bmad', '.bmad');
     }
     await this.ensureDir(path.dirname(filePath));
     await fs.writeFile(filePath, content, 'utf8');
   }
 
   /**
-   * Copy file from source to destination (replaces {bmad_folder} placeholder in text files)
+   * Copy file from source to destination (replaces .bmad placeholder in text files)
    * @param {string} source - Source file path
    * @param {string} dest - Destination file path
    */
@@ -563,14 +563,14 @@ class BaseIdeSetup {
         // Read the file content
         let content = await fs.readFile(source, 'utf8');
 
-        // Replace {bmad_folder} placeholder with actual folder name
-        if (content.includes('{bmad_folder}')) {
-          content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
+        // Replace .bmad placeholder with actual folder name
+        if (content.includes('.bmad')) {
+          content = content.replaceAll('.bmad', this.bmadFolderName);
         }
 
-        // Replace escape sequence {*bmad_folder*} with literal {bmad_folder}
-        if (content.includes('{*bmad_folder*}')) {
-          content = content.replaceAll('{*bmad_folder*}', '{bmad_folder}');
+        // Replace escape sequence .bmad with literal .bmad
+        if (content.includes('.bmad')) {
+          content = content.replaceAll('.bmad', '.bmad');
         }
 
         // Write to dest with replaced content

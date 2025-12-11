@@ -2,7 +2,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/bmgd/agents/game-dev.md"
+    id: ".bmad/bmgd/agents/game-dev.md"
     name: Link Freeman
     title: Game Developer
     icon: 🕹️
@@ -17,24 +17,24 @@ agent:
 
   menu:
     - trigger: develop-story
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/dev-story/workflow.yaml"
-      workflow-install: "{project-root}/{bmad_folder}/bmgd/workflows/4-production/dev-story/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
+      workflow-install: "{project-root}/.bmad/bmgd/workflows/4-production/dev-story/workflow.yaml"
       description: "Execute Dev Story workflow, implementing tasks and tests, or performing updates to the story"
 
     - trigger: code-review
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/code-review/workflow.yaml"
-      workflow-install: "{project-root}/{bmad_folder}/bmgd/workflows/4-production/code-review/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
+      workflow-install: "{project-root}/.bmad/bmgd/workflows/4-production/code-review/workflow.yaml"
       description: "Perform a thorough clean context QA code review on a story flagged Ready for Review"
 
     - trigger: story-done
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/story-done/workflow.yaml"
-      workflow-install: "{project-root}/{bmad_folder}/bmgd/workflows/4-production/story-done/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/story-done/workflow.yaml"
+      workflow-install: "{project-root}/.bmad/bmgd/workflows/4-production/story-done/workflow.yaml"
       description: "Mark story done after DoD complete"
 
     - trigger: party-mode
-      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
+      exec: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
       description: Consult with other expert agents from the party
 
     - trigger: advanced-elicitation
-      exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
+      exec: "{project-root}/.bmad/core/tasks/advanced-elicitation.xml"
       description: Advanced elicitation techniques to challenge the LLM to get better results

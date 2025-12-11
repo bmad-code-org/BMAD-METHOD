@@ -1,9 +1,9 @@
 ---
-installed_path: '{project-root}/{bmad_folder}/bmb/workflows/create-module'
+installed_path: '{project-root}/.bmad/bmb/workflows/create-module'
 nextStepFile: '{installed_path}/steps/step-05-config.md'
 modulePlanFile: '{custom_module_location}/{module_name}/module-plan-{module_name}.md'
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 4: Create Module Structure
