@@ -21,8 +21,8 @@ This module takes you from having nothing to being fully set up with WDS, even i
 
 Create GitHub account, repository, and install your IDE.
 
-- **[Quick Checklist](lesson-01-github-and-ide-setup/checklist.md)** - Just the steps
-- **[Full Lesson](lesson-01-github-and-ide-setup/lesson.md)** - Detailed explanation
+- **[01 - Quick Checklist](lesson-01-github-and-ide-setup/01-quick-checklist.md)** - Just the steps
+- **[02 - Full Lesson](lesson-01-github-and-ide-setup/02-full-lesson.md)** - Detailed explanation
 
 ---
 
@@ -31,8 +31,8 @@ Create GitHub account, repository, and install your IDE.
 
 Let your IDE handle Git automatically or use GitHub Desktop.
 
-- **[Quick Checklist](lesson-02-git-configuration/checklist.md)** - Just the steps
-- **[Full Lesson](lesson-02-git-configuration/lesson.md)** - Detailed explanation
+- **[01 - Quick Checklist](lesson-02-git-configuration/01-quick-checklist.md)** - Just the steps
+- **[02 - Full Lesson](lesson-02-git-configuration/02-full-lesson.md)** - Detailed explanation
 
 ---
 
@@ -41,8 +41,8 @@ Let your IDE handle Git automatically or use GitHub Desktop.
 
 Clone your repository, add WDS to workspace, create docs structure.
 
-- **[Quick Checklist](lesson-03-clone-and-wds/checklist.md)** - Just the steps
-- **[Full Lesson](lesson-03-clone-and-wds/lesson.md)** - Detailed explanation
+- **[01 - Quick Checklist](lesson-03-clone-and-wds/01-quick-checklist.md)** - Just the steps
+- **[02 - Full Lesson](lesson-03-clone-and-wds/02-full-lesson.md)** - Detailed explanation
 
 ---
 
@@ -51,8 +51,8 @@ Clone your repository, add WDS to workspace, create docs structure.
 
 Drag Mimir file to AI chat and begin your guided journey.
 
-- **[Quick Checklist](lesson-04-initiate-mimir/checklist.md)** - Just the steps
-- **[Full Lesson](lesson-04-initiate-mimir/lesson.md)** - Detailed explanation
+- **[01 - Quick Checklist](lesson-04-initiate-mimir/01-quick-checklist.md)** - Just the steps
+- **[02 - Full Lesson](lesson-04-initiate-mimir/02-full-lesson.md)** - Detailed explanation
 
 ---
 
@@ -60,11 +60,11 @@ Drag Mimir file to AI chat and begin your guided journey.
 
 **Want the fastest path?**
 
-Follow the checklists in order: [Start with Lesson 01 Checklist →](lesson-01-github-and-ide-setup/checklist.md)
+Follow the checklists in order: [Start with Lesson 01 Checklist →](lesson-01-github-and-ide-setup/01-quick-checklist.md)
 
 **Want detailed explanations?**
 
-Follow the full lessons: [Start with Lesson 01 Full Lesson →](lesson-01-github-and-ide-setup/lesson.md)
+Follow the full lessons: [Start with Lesson 01 Full Lesson →](lesson-01-github-and-ide-setup/02-full-lesson.md)
 
 ---
 
