@@ -1,4 +1,4 @@
-# Lesson 03: Git Configuration - Quick Checklist
+# Lesson 02: Git Configuration - Quick Checklist
 
 **⏱️ 5 minutes**
 
@@ -6,9 +6,8 @@
 
 ## Choose Approach
 
-- [ ] **Option 1:** Let Cursor handle Git (easiest - do nothing now!)
+- [ ] **Option 1:** Let Cursor handle Git (do nothing - easiest!)
 - [ ] **Option 2:** Use GitHub Desktop (visual) → https://desktop.github.com
-- [ ] **Option 3:** Check terminal: `git --version`
 
 ---
 
@@ -17,13 +16,13 @@
 - [ ] Download from https://desktop.github.com
 - [ ] Install
 - [ ] Sign in with GitHub account
-- [ ] ✅ Ready to clone visually
+- [ ] ✅ Ready for visual cloning
 
 ---
 
-## Recap Your Repo Structure
+## Recap Repository Structure
 
-You decided in Lesson 01:
+From Lesson 01:
 - [ ] Single repo: `my-project` (specs + code together)
 - [ ] Separate repo: `my-project-specs` (specs only)
 
@@ -31,9 +30,9 @@ You decided in Lesson 01:
 
 ## Next Step
 
-✅ Git configured!
+✅ Git ready!
 
-**[→ Lesson 04: Repository Cloning & WDS Integration](../lesson-04-clone-and-wds/checklist.md)**
+**[→ Lesson 03: Repository Cloning & WDS Integration](../lesson-03-clone-and-wds/checklist.md)**
 
 ---
 
