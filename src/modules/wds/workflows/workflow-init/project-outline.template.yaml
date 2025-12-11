@@ -1,0 +1,437 @@
+# WDS Project Outline
+# SINGLE SOURCE OF TRUTH for all WDS agents
+# Created during Project Initiation - guides all design and development work
+# ALL AGENTS should read this on activation and update as work progresses
+
+project:
+  name: "{{PROJECT_NAME}}"
+  description: "{{PROJECT_DESCRIPTION}}"
+  wds_version: "6.0"
+  created: "{{DATE}}"
+  path: "{{PATH_ID}}" # full-product | landing-page | design-system-only | feature-enhancement | quick-prototype
+
+# Methodology Configuration
+# Determines which workflow structure and phase naming to use
+methodology:
+  type: "wds-v6" # wds-v6 | wps2c-v4 | custom
+  
+  # Methodology-specific instructions:
+  # - wds-v6: Modern numbered phases (1-project-brief, 2-trigger-mapping, etc.)
+  #   Instructions: src/modules/wds/workflows/workflow-init/methodology-instructions/wds-v6-instructions.md
+  #
+  # - wps2c-v4: Legacy letter phases (A-Product-Brief, B-Trigger-Map, etc.)
+  #   Instructions: src/modules/wds/workflows/workflow-init/methodology-instructions/wps2c-v4-instructions.md
+  #
+  # - custom: Your own methodology (copy custom-methodology-template.md)
+  #   Instructions: Specify path to your custom file below
+  
+  custom_instructions_file: null
+  # Only used if type: "custom"
+  # Example: "docs/.custom-methodology.md"
+  # Template: src/modules/wds/workflows/workflow-init/methodology-instructions/custom-methodology-template.md
+
+# Active Phases Configuration
+# During project initiation, Saga asks about each phase:
+# "What are your intentions for [Phase Name]? Do you want to include this phase?"
+phases:
+  phase_1_project_brief:
+    active: true
+    required: true
+    name: "Project Brief"
+    folder: "1-project-brief" # or "A-Product-Brief" for v4
+    brief_level: "complete" # complete | simplified
+    agent: "saga-analyst"
+    status: "not_started" # not_started | in_progress | complete
+    started_date: null
+    completed_date: null
+    completed_by: null # Agent name who completed this phase
+    intent: |
+      Define project vision, positioning, goals, and success criteria.
+      Establish foundation for all subsequent work.
+      
+      User's intentions for this phase:
+      {{USER_INTENT_PHASE_1}}
+    artifacts: [] # Files created in this phase
+    
+  phase_2_trigger_mapping:
+    active: true # Set to FALSE for internal tools, technical products
+    required: false
+    name: "Trigger Mapping"
+    folder: "2-trigger-mapping" # or "B-Trigger-Map" for v4
+    agent: "saga-analyst"
+    status: "not_started"
+    started_date: null
+    completed_date: null
+    completed_by: null
+    intent: |
+      Identify target users, personas, business goals, and triggers.
+      Critical for customer-facing products. Optional for internal tools.
+      
+      User's intentions for this phase:
+      {{USER_INTENT_PHASE_2}}
+    skip_reason: "" # e.g., "Internal tool - no external users"
+    artifacts: []
+    
+  phase_3_prd_platform:
+    active: true
+    required: true
+    name: "PRD Platform"
+    folder: "3-prd-platform" # or "C-Platform-Requirements" for v4
+    agent: "idunn-pm"
+    status: "not_started"
+    started_date: null
+    completed_date: null
+    completed_by: null
+    intent: |
+      Define technical architecture, data model, infrastructure.
+      Foundation for implementation planning.
+      
+      User's intentions for this phase:
+      {{USER_INTENT_PHASE_3}}
+    artifacts: []
+    
+  phase_4_ux_design:
+    active: true
+    required: true
+    name: "UX Design"
+    folder: "4-ux-design" # or "C-Scenarios" for v4
+    agent: "freyja-designer"
+    status: "not_started"
+    started_date: null
+    completed_date: null
+    completed_by: null
+    intent: |
+      Create page specifications, interactive prototypes, user flows.
+      Core design work - defines what gets built.
+      
+      User's intentions for this phase:
+      {{USER_INTENT_PHASE_4}}
+    
+    # Scenario-level tracking
+    scenarios:
+      # Example structure - populated as scenarios are created:
+      # - id: "01-customer-onboarding"
+      #   name: "Customer Onboarding"
+      #   status: "complete" # not_started | in_progress | complete
+      #   pages_planned: 9
+      #   pages_specified: 9
+      #   pages_implemented: 5
+      #   started_date: "2024-12-01"
+      #   completed_date: "2024-12-08"
+      #   intent: "Onboard new users from landing page to active family"
+      #   artifacts:
+      #     - "docs/4-ux-design/01-customer-onboarding/00-scenario-overview.md"
+      #     - "docs/4-ux-design/01-customer-onboarding/1.1-start-page.md"
+      #     - "docs/4-ux-design/01-customer-onboarding/sketches/*.excalidraw"
+    
+    scenarios_planned: 0 # Total number of scenarios planned
+    scenarios_complete: 0 # Number fully specified
+    current_scenario: null # Currently working on
+    artifacts: []
+    
+  phase_5_design_system:
+    active: false # Often skipped for MVP, one-off pages, using component library
+    required: false
+    name: "Design System"
+    folder: "5-design-system" # or "D-Design-System" for v4
+    agent: "freyja-designer"
+    status: "not_started"
+    started_date: null
+    completed_date: null
+    completed_by: null
+    intent: |
+      Extract and document reusable components from scenarios.
+      Optional - only needed for multi-product design consistency.
+      
+      User's intentions for this phase:
+      {{USER_INTENT_PHASE_5}}
+    skip_reason: "" # e.g., "Using shadcn/ui component library"
+    artifacts: []
+    
+  phase_6_design_deliveries:
+    active: true
+    required: false
+    name: "Design Deliveries"
+    folder: "6-design-deliveries"
+    agent: "idunn-pm"
+    status: "not_started"
+    started_date: null
+    completed_date: null
+    completed_by: null
+    intent: |
+      Package design work for handoff to development team.
+      Creates PRD, roadmap, and implementation guide.
+      
+      User's intentions for this phase:
+      {{USER_INTENT_PHASE_6}}
+    artifacts: []
+    
+  phase_7_testing:
+    active: true
+    required: false
+    name: "Testing"
+    folder: "7-testing"
+    agent: "freyja-designer"
+    status: "not_started"
+    started_date: null
+    completed_date: null
+    completed_by: null
+    intent: |
+      Validate implementation matches design specifications.
+      Compare built product to prototypes and specs.
+      
+      User's intentions for this phase:
+      {{USER_INTENT_PHASE_7}}
+    artifacts: []
+    
+  phase_8_ongoing_development:
+    active: false # Only active for existing products
+    required: false
+    name: "Ongoing Development"
+    folder: "8-ongoing-development"
+    agent: "idunn-pm"
+    status: "not_started"
+    started_date: null
+    completed_date: null
+    completed_by: null
+    intent: |
+      Iterative improvements to existing products.
+      Feature enhancements, optimization, evolution.
+      
+      User's intentions for this phase:
+      {{USER_INTENT_PHASE_8}}
+    skip_reason: "" # e.g., "New product - not yet in maintenance phase"
+    artifacts: []
+
+# Project Type Configuration
+project_type:
+  category: "{{CATEGORY}}" # web-app | mobile-app | landing-page | design-system | internal-tool
+  complexity: "{{COMPLEXITY}}" # simple | moderate | complex
+  stage: "{{STAGE}}" # new-product | existing-product | redesign | feature-addition
+  
+  # Customer-facing or internal?
+  customer_facing: true # Set to FALSE to skip phase 2 by default
+  
+  # Design system approach
+  design_system_approach: "{{APPROACH}}" # none | library | custom
+  design_library: "{{LIBRARY}}" # e.g., "shadcn/ui", "MUI", "custom"
+
+# Technology Stack (optional - helps agents understand context)
+tech_stack:
+  framework: "{{FRAMEWORK}}" # Next.js | React | Vue | etc.
+  language: "{{LANGUAGE}}" # TypeScript | JavaScript
+  styling: "{{STYLING}}" # Tailwind | CSS Modules | Styled Components
+  backend: "{{BACKEND}}" # Supabase | Firebase | Custom API
+
+# Agent Initialization Behavior
+agent_behavior:
+  # When Freyja activates, should she:
+  skip_inactive_phases: true # Don't report on phases marked active: false
+  focus_on_current_phase: true # Emphasize the next active phase
+  suggest_phase_handoffs: true # Recommend switching to specialized agents
+  
+  # Status reporting style
+  show_completion_percentage: false # Overall project % complete
+  show_phase_estimates: false # Time estimates per phase
+  show_next_actions: true # Always show 2-4 next steps
+
+# Project-Specific Notes
+notes: |
+  {{PROJECT_NOTES}}
+  
+  Example notes:
+  - This is an internal tool, so we're skipping Trigger Mapping (Phase 2)
+  - Using shadcn/ui library, so Design System (Phase 5) is minimal
+  - MVP focus - Testing (Phase 7) will happen post-launch
+  
+# Version Control & Update Log
+version: 1
+last_updated: "{{DATE}}"
+updated_by: "{{AGENT_NAME}}"
+
+# Update History (agents add entries when making significant changes)
+update_history:
+  - date: "{{DATE}}"
+    agent: "{{AGENT_NAME}}"
+    action: "created"
+    changes: "Initial project outline created"
+  # Example updates:
+  # - date: "2025-12-11"
+  #   agent: "saga-analyst"
+  #   action: "completed"
+  #   phase: "phase_1_project_brief"
+  #   changes: "Completed Product Brief with stakeholder interviews"
+  # - date: "2025-12-12"
+  #   agent: "freyja-designer"
+  #   action: "started"
+  #   phase: "phase_4_ux_design"
+  #   changes: "Started Scenario 01: Customer Onboarding"
+
+---
+
+# AGENT INSTRUCTIONS FOR USING THIS FILE
+
+## During Project Initiation (Saga WDS Analyst Agent):
+
+**When creating the Product Brief**, walk through each phase and ask about user intentions:
+
+### Phase 1: Project Brief (Always included)
+*No question - this is where we are now!*
+
+### Phase 2: Trigger Mapping
+**Ask**: "What are your intentions for Trigger Mapping? This phase helps us identify target users, personas, and business goals. 
+
+Is this a customer-facing product where understanding user triggers is critical? Or an internal tool where we might skip this phase?"
+
+**Capture**: User's answer → `{{USER_INTENT_PHASE_2}}`
+**Decision**: Set `active: true` or `active: false` based on answer
+
+### Phase 3: PRD Platform
+**Ask**: "What are your intentions for the technical foundation? Do you already have a tech stack in mind, or do you need help defining the architecture, data model, and infrastructure requirements?"
+
+**Capture**: User's answer → `{{USER_INTENT_PHASE_3}}`
+
+### Phase 4: UX Design
+**Ask**: "What are your intentions for UX Design? How many user scenarios or flows do you envision? Are you thinking MVP-focused (2-3 core scenarios) or comprehensive (5+ scenarios)?"
+
+**Capture**: User's answer → `{{USER_INTENT_PHASE_4}}`
+**Note**: Also capture estimated `scenarios_planned` number
+
+### Phase 5: Design System
+**Ask**: "What are your intentions for a Design System? Are you:
+- Using an existing component library (shadcn/ui, MUI)?
+- Building custom components?
+- Creating a multi-product design system?
+- Skipping this for MVP?"
+
+**Capture**: User's answer → `{{USER_INTENT_PHASE_5}}`
+**Decision**: Set `active: false` if skipping, add `skip_reason`
+
+### Phase 6: Design Deliveries
+**Ask**: "What are your intentions for design deliveries? Will you be handing off to a development team, or implementing directly from specifications?"
+
+**Capture**: User's answer → `{{USER_INTENT_PHASE_6}}`
+
+### Phase 7: Testing
+**Ask**: "What are your intentions for testing? Do you want to validate the implementation against design specs, or handle testing separately?"
+
+**Capture**: User's answer → `{{USER_INTENT_PHASE_7}}`
+
+### Phase 8: Ongoing Development
+**Ask**: "Is this a new product or an existing product needing improvements?"
+
+**Capture**: User's answer → `{{USER_INTENT_PHASE_8}}`
+**Decision**: Set `active: false` for new products
+
+---
+
+## On Agent Activation (ALL WDS Agents):
+
+1. **CHECK** if `.wds-project-outline.yaml` exists in docs/ or project root
+2. **READ** the outline to understand:
+   - Which phases are active
+   - User's intentions for each phase
+   - Current status of each phase
+   - What work has been completed
+   - What work is next
+3. **SKIP** analysis of inactive phases (active: false)
+4. **REPORT** status based on outline (much faster than folder scanning)
+
+---
+
+## When Starting Scenario Work (Freyja WDS Designer Agent):
+
+Add new scenario to the outline:
+
+```yaml
+scenarios:
+  - id: "01-customer-onboarding"
+    name: "Customer Onboarding"
+    status: "in_progress"
+    pages_planned: 9
+    pages_specified: 0
+    pages_implemented: 0
+    started_date: "2024-12-10"
+    completed_date: null
+    intent: "Onboard new users from landing page to active family"
+    artifacts: []
+```
+
+---
+
+## When Completing Scenario Work (Freyja WDS Designer Agent):
+
+Update scenario status:
+
+```yaml
+  - id: "01-customer-onboarding"
+    name: "Customer Onboarding"
+    status: "complete"
+    pages_planned: 9
+    pages_specified: 9
+    pages_implemented: 5
+    started_date: "2024-12-01"
+    completed_date: "2024-12-08"
+    intent: "Onboard new users from landing page to active family"
+    artifacts:
+      - "docs/4-ux-design/01-customer-onboarding/00-scenario-overview.md"
+      - "docs/4-ux-design/01-customer-onboarding/1.1-start-page.md"
+      - "docs/4-ux-design/01-customer-onboarding/sketches/*.excalidraw"
+```
+
+Update phase-level counters:
+```yaml
+scenarios_complete: 1  # Increment
+```
+
+---
+
+## When Starting/Completing Phase Work (ALL Agents):
+
+**Starting:**
+```yaml
+status: "in_progress"
+started_date: "2024-12-10"
+```
+
+**Completing:**
+```yaml
+status: "complete"
+completed_date: "2024-12-10"
+completed_by: "Freyja WDS Designer Agent"
+artifacts:
+  - "docs/4-ux-design/01-onboarding/*.md"
+```
+
+Add update history entry:
+```yaml
+update_history:
+  - date: "2024-12-10"
+    agent: "freyja-designer"
+    action: "completed"
+    phase: "phase_4_ux_design"
+    changes: "Completed Scenario 01: 9 pages specified with prototypes"
+```
+
+---
+
+## Benefits:
+
+✅ **User-driven planning** - captures intentions upfront during project initiation
+✅ **5x faster agent activation** - no folder scanning needed
+✅ **Scenario-level tracking** - granular progress visibility within UX Design phase
+✅ **Always up to date** - agents update as they work
+✅ **Clear intent** - explains WHY phases are skipped AND user's goals for each phase
+✅ **Project memory** - tracks who did what and when
+✅ **Better recommendations** - agents know exactly what's next
+
+---
+
+## File Location:
+
+- Preferred: `docs/.wds-project-outline.yaml`
+- Fallback: `.wds-project-outline.yaml` (project root)
+- Created by: Saga WDS Analyst Agent during Project Brief phase
+- Updated by: ALL WDS agents as work progresses
+
+
