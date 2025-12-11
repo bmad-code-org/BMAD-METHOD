@@ -58,9 +58,9 @@ your-project/
 │           │   ├── idunn-pm.agent.yaml
 │           │   └── saga-analyst.agent.yaml
 │           ├── workflows/
-│           │   ├── 1-strategy/
-│           │   ├── 2-analysis/
-│           │   ├── 3-specification/
+│           │   ├── 1-project-brief/
+│           │   ├── 2-trigger-mapping/
+│           │   ├── 3-prd-platform/
 │           │   ├── 4-ux-design/
 │           │   └── 00-system/
 │           ├── getting-started/
@@ -185,9 +185,9 @@ Choose a workflow to start:
 
 **Solution:** Verify all workflow folders are present:
 ```
-.cursor/rules/wds/workflows/1-strategy/
-.cursor/rules/wds/workflows/2-analysis/
-.cursor/rules/wds/workflows/3-specification/
+.cursor/rules/wds/workflows/1-project-brief/
+.cursor/rules/wds/workflows/2-trigger-mapping/
+.cursor/rules/wds/workflows/3-prd-platform/
 .cursor/rules/wds/workflows/4-ux-design/
 .cursor/rules/wds/workflows/00-system/
 ```
