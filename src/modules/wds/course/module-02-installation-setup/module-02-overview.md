@@ -1,6 +1,6 @@
 # Module 02: Installation & Setup
 
-**Get WDS running and create your first project structure**
+**From zero to WDS-ready in one session - even if you've never used GitHub or an IDE before**
 
 ---
 
@@ -8,13 +8,17 @@
 
 In this module, you'll:
 
-1. **Install WDS** - Clone the repository and verify it's working
-2. **Understand the Structure** - Learn how WDS organizes your work
-3. **Create Your Project** - Set up your first WDS project folder
-4. **Meet the Agents** - Get introduced to Freyja, Saga, and Idunn
+1. **Create Your GitHub Account** - Set up your professional home for projects
+2. **Create Your Project Repository** - Decide on naming and structure
+3. **Install Your IDE** - Get Cursor or VS Code running
+4. **Clone Your Project** - Bring your repository to your computer
+5. **Install WDS** - Add the methodology to your workspace
+6. **Initiate with Mimir** - Drag the starter file and begin
 
-**Time investment:** 30 minutes  
-**Result:** WDS installed and your first project ready to go
+**Time investment:** 45-60 minutes (first time)  
+**Result:** Complete professional setup, ready to design
+
+**Target audience:** Complete beginners welcome! No prior experience needed.
 
 ---
 
@@ -93,14 +97,20 @@ Once you've completed Module 02:
 
 ## Prerequisites
 
-Before starting this module:
+**Absolute minimum to start this module:**
 
-- ✅ Basic command line familiarity (copy-paste level)
-- ✅ Code editor installed (VS Code, Cursor, or similar)
-- ✅ Git installed on your system
-- ✅ Node.js 18+ installed
+- ✅ A computer (Windows, Mac, or Linux)
+- ✅ Internet connection
+- ✅ Email address for GitHub account
+- ✅ Willingness to learn (we'll guide you through everything else!)
 
-**New to command line?** No problem! We provide exact commands to copy and paste.
+**You DON'T need:**
+- ❌ Prior GitHub experience
+- ❌ Command line knowledge
+- ❌ Technical background
+- ❌ Coding skills
+
+**New to all of this?** Perfect! This module is designed for you.
 
 ---
 
