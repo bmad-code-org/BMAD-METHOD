@@ -1,154 +1,85 @@
 # Module 02: Installation & Setup
 
-**From zero to WDS-ready in one session - even if you've never used GitHub or an IDE before**
+**From zero to WDS-ready - complete beginner friendly**
 
 ---
 
-## What You'll Learn
+## Overview
 
-In this module, you'll:
+This module takes you from having nothing to being fully set up with WDS, even if you've never used GitHub or an IDE before.
 
-1. **Create Your GitHub Account** - Set up your professional home for projects
-2. **Create Your Project Repository** - Decide on naming and structure
-3. **Install Your IDE** - Get Cursor or VS Code running
-4. **Clone Your Project** - Bring your repository to your computer
-5. **Install WDS** - Add the methodology to your workspace
-6. **Initiate with Mimir** - Drag the starter file and begin
-
-**Time investment:** 45-60 minutes (first time)  
-**Result:** Complete professional setup, ready to design
-
-**Target audience:** Complete beginners welcome! No prior experience needed.
+**Time:** 45-60 minutes total  
+**Difficulty:** Beginner  
+**Prerequisites:** Computer + Internet + Email
 
 ---
 
-## Why This Matters
+## Lessons
 
-Before you can design with WDS, you need a solid foundation:
+### [Lesson 01: Create GitHub Account](lesson-01-github-account/tutorial.md)
+**5-10 minutes**
 
-- **Proper installation** ensures everything works smoothly
-- **Understanding the structure** helps you navigate with confidence
-- **Project setup** creates the right folders and files
-- **Agent familiarity** prepares you for guided workflows
-
-**This module removes all friction so you can focus on designing.**
+Sign up for GitHub, choose a professional username, verify your account.
 
 ---
 
-## Module Contents
+### [Lesson 02: Create Repository](lesson-02-create-repository/tutorial.md)
+**10-15 minutes**
 
-### Lesson 1: Create Your GitHub Account
-**Reading time:** 5 minutes
-
-- Why GitHub for designers
-- Creating your account
-- Choosing a username
-- Setting up your profile
-
-### Lesson 2: Create Your Project Repository
-**Reading time:** 10 minutes
-
-- Three scenarios: New project, joining existing, or learning only
-- Repository naming conventions (determines structure!)
-- One repo vs. separate repos (specs + code)
-- Public vs. private repositories
-- Joining existing repositories: Request access and understand structure
-- Initial repository setup
-- README basics
-
-### Lesson 3: Install Your IDE
-**Reading time:** 5 minutes
-
-- Cursor vs. VS Code - which to choose
-- Download and installation
-- Basic IDE orientation
-- Essential settings for designers
-
-### Lesson 4: Clone Your Project (Git Handled Automatically!)
-**Reading time:** 10 minutes
-
-- Understanding "cloning"
-- The IDE handles Git installation for you
-- Visual alternative: GitHub Desktop
-- Clone your project repository
-- Add WDS to your workspace
-- Create docs folder structure
-
-### Lesson 5: Initiate with Mimir
-**Reading time:** 5 minutes
-
-- The Mimir orchestrator file
-- Drag-to-chat initialization
-- What Mimir will ask you
-- Your first guided session
+Create your project repository or join an existing one. Learn single vs separate repo structure.
 
 ---
 
-## Tutorial: Complete Beginner Setup
+### [Lesson 03: Install IDE](lesson-03-install-ide/tutorial.md)
+**10 minutes**
 
-**For hands-on learners who want step-by-step instructions:**
+Install Cursor or VS Code and do first-launch setup.
 
-[→ Tutorial 02: Complete Beginner Setup](tutorial-02.md)
+---
 
-**8 detailed steps** from GitHub account creation to Mimir activation, with screenshots-worthy instructions and platform-specific commands.
+### [Lesson 04: Git Setup](lesson-04-git-setup/tutorial.md)
+**5 minutes**
+
+Let your IDE handle Git automatically or use GitHub Desktop.
+
+---
+
+### [Lesson 05: Clone & Add WDS](lesson-05-clone-and-wds/tutorial.md)
+**15-20 minutes**
+
+Clone your repository, add WDS to workspace, create docs structure.
+
+---
+
+### [Lesson 06: Initiate Mimir](lesson-06-initiate-mimir/tutorial.md)
+**5 minutes**
+
+Drag Mimir file to AI chat and begin your guided journey.
+
+---
+
+## Quick Start
+
+**Want to dive right in?**
+
+Follow lessons in order: [Start with Lesson 01 →](lesson-01-github-account/tutorial.md)
 
 ---
 
 ## After This Module
 
-Once you've completed Module 02:
+Once complete, you'll have:
 
-- ✅ GitHub account created and repository set up
-- ✅ IDE installed (Cursor or VS Code)
-- ✅ Your project cloned to your computer
-- ✅ WDS added to your workspace
+- ✅ GitHub account and repository
+- ✅ IDE installed and configured
+- ✅ Project cloned to your computer
+- ✅ WDS integrated in workspace
 - ✅ Docs folder structure created
-- ✅ Mimir activated and ready to guide you
+- ✅ Mimir activated and ready
 
 **Next:** [Module 03: Create Project Brief](../module-03-project-brief/module-03-overview.md)
 
 ---
 
-## Prerequisites
-
-**Absolute minimum to start this module:**
-
-- ✅ A computer (Windows, Mac, or Linux)
-- ✅ Internet connection
-- ✅ Email address for GitHub account
-- ✅ Willingness to learn (we'll guide you through everything else!)
-
-**You DON'T need:**
-- ❌ Prior GitHub experience
-- ❌ Command line knowledge
-- ❌ Technical background
-- ❌ Coding skills
-
-**New to all of this?** Perfect! This module is designed for you.
-
----
-
-## Learning Options
-
-**🎧 Audio Learning:**  
-Generate an audio podcast using NotebookLM ([see guide](../00-getting-started/00-getting-started-NOTEBOOKLM-PROMPT.md))
-
-**📖 Reading:**  
-Follow the lessons in order for comprehensive understanding
-
-**⚡ Quick Start:**  
-Jump straight to the tutorial for immediate hands-on experience
-
----
-
-## Ready to Install?
-
-**[Start with Lesson 1: Installing WDS →](lesson-01-installing-wds.md)**
-
-Or jump to: **[Tutorial 02 →](tutorial-02.md)**
-
----
-
 *Part of the WDS Course: From Designer to Linchpin*  
 *[← Back to Course Overview](../00-course-overview.md)*
-
