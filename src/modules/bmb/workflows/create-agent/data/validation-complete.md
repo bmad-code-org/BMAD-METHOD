@@ -2,8 +2,8 @@
 
 ## Migration Summary
 
-**Legacy Workflow:** `src/modules/bmb/workflows-legacy/create-agent/workflow.yaml` + `instructions.md`
-**New Workflow:** `src/modules/bmb/workflows/create-agent/workflow.md` + 11 step files
+**Legacy Workflow:** `bmb/workflows/create-agent-legacy/create-agent/workflow.yaml` + `instructions.md`
+**New Workflow:** `bmb/workflows/create-agent/create-agent/workflow.md` + 11 step files
 **Migration Date:** 2025-11-30T06:32:21.248Z
 **Migration Status:** ✅ COMPLETE
 
@@ -81,10 +81,10 @@
 
 **Agent Documentation References**
 
-- Agent compilation guide: `{project-root}/{bmad_folder}/bmb/docs/agents/agent-compilation.md`
-- Agent types guide: `{project-root}/{bmad_folder}/bmb/docs/agents/understanding-agent-types.md`
+- Agent compilation guide: `{project-root}/.bmad/bmb/docs/agents/agent-compilation.md`
+- Agent types guide: `{project-root}/.bmad/bmb/docs/agents/understanding-agent-types.md`
 - Architecture docs: simple, expert, module agent architectures
-- Menu patterns guide: `{project-root}/{bmad_folder}/bmb/docs/agents/agent-menu-patterns.md`
+- Menu patterns guide: `{project-root}/.bmad/bmb/docs/agents/agent-menu-patterns.md`
 - Status: ✅ ALL REFERENCES PRESERVED
 
 **Communication Presets**

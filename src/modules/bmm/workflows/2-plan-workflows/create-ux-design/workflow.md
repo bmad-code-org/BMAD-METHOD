@@ -25,7 +25,7 @@ This uses **micro-file architecture** for disciplined execution:
 
 ### Configuration Loading
 
-Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
+Load config from `{project-root}/.bmad/bmm/config.yaml` and resolve:
 
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
@@ -33,7 +33,7 @@ Load config from `{project-root}/{bmad_folder}/bmm/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/create-ux-design`
+- `installed_path` = `{project-root}/.bmad/bmm/workflows/2-plan-workflows/create-ux-design`
 - `template_path` = `{installed_path}/ux-design-template.md`
 - `default_output_file` = `{output_folder}/ux-design-specification.md`
 

@@ -3,22 +3,22 @@ name: 'step-07-validate'
 description: 'Quality check with personality and technical validation'
 
 # Path Definitions
-workflow_path: '{project-root}/src/modules/bmb/workflows/create-agent'
+workflow_path: '{project-root}/bmb/workflows/create-agent/create-agent'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-07-validate.md'
 nextStepFile: '{workflow_path}/steps/step-08-setup.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/agent-validation-{project_name}.md'
-agentValidationChecklist: '{project-root}/{bmad_folder}/bmb/workflows/create-agent/agent-validation-checklist.md'
+agentValidationChecklist: '{project-root}/.bmad/bmb/workflows/create-agent/agent-validation-checklist.md'
 agentFile: '{{output_file_path}}'
 
 # Template References
 validationTemplate: '{workflow_path}/templates/validation-results.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 7: Quality Check and Validation

@@ -3,7 +3,7 @@ name: 'step-03-create-stories'
 description: 'Generate all epics with their stories following the template structure'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/create-epics-and-stories'
+workflow_path: '{project-root}/.bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-03-create-stories.md'

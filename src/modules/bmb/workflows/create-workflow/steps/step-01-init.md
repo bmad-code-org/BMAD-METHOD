@@ -3,7 +3,7 @@ name: 'step-01-init'
 description: 'Initialize workflow creation session by gathering project information and setting up unique workflow folder'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-init.md'
@@ -97,7 +97,7 @@ After getting the workflow name:
 
 Based on the module selection, confirm the target location:
 
-- For bmb module: `{custom_workflow_location}` (defaults to `{bmad_folder}/custom/src/workflows`)
+- For bmb module: `{custom_workflow_location}` (defaults to `.bmad/custom/src/workflows`)
 - For other modules: Check their module.yaml for custom workflow locations
 - Confirm the exact folder path where the workflow will be created
 - Store the confirmed path as `{targetWorkflowPath}`

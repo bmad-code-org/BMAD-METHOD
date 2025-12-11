@@ -3,7 +3,7 @@ name: 'step-08-scoping'
 description: 'Define MVP boundaries and prioritize features across development phases'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+workflow_path: '{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-08-scoping.md'
@@ -12,8 +12,8 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/prd.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 8: Scoping Exercise - MVP & Future Features
@@ -50,8 +50,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
@@ -243,7 +243,7 @@ Show the scoping decisions and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with current scoping analysis
+- Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml with current scoping analysis
 - Process enhanced scoping insights that come back
 - Ask user: "Accept these improvements to the scoping decisions? (y/n)"
 - If yes: Update content, then return to A/P/C menu
@@ -251,7 +251,7 @@ Show the scoping decisions and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with scoping context
+- Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md with scoping context
 - Process collaborative insights on MVP and roadmap decisions
 - Ask user: "Accept these changes to the scoping decisions? (y/n)"
 - If yes: Update content, then return to A/P/C menu

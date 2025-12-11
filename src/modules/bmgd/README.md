@@ -136,7 +136,7 @@ bmgd/
 
 ## Configuration
 
-After installation, configure the module in `{bmad_folder}/bmgd/config.yaml`
+After installation, configure the module in `.bmad/bmgd/config.yaml`
 
 Key settings:
 

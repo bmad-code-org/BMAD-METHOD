@@ -14,7 +14,7 @@
  * @architecture Orchestrator pattern - coordinates Detector, ModuleManager, IdeManager, and file operations to build complete BMAD installation
  * @dependencies fs-extra, ora, chalk, detector.js, module-manager.js, ide-manager.js, config.js
  * @entrypoints Called by install.js command via installer.install(config)
- * @patterns Injection point processing (AgentVibes), placeholder replacement ({bmad_folder}), module dependency resolution
+ * @patterns Injection point processing (AgentVibes), placeholder replacement (.bmad), module dependency resolution
  * @related GitHub AgentVibes#34 (injection points), ui.js (user prompts), copyFileWithPlaceholderReplacement()
  */
 
@@ -67,7 +67,7 @@ class Installer {
     // Check if project directory exists
     if (!(await fs.pathExists(projectDir))) {
       // Project doesn't exist yet, return default
-      return path.join(projectDir, 'bmad');
+      return path.join(projectDir, '.bmad');
     }
 
     // V6+ strategy: Look for ANY directory with _cfg/manifest.yaml
@@ -89,13 +89,13 @@ class Installer {
 
     // No V6+ installation found, return default
     // This will be used for new installations
-    return path.join(projectDir, 'bmad');
+    return path.join(projectDir, '.bmad');
   }
 
   /**
    * @function copyFileWithPlaceholderReplacement
    * @intent Copy files from BMAD source to installation directory with dynamic content transformation
-   * @why Enables installation-time customization: {bmad_folder} replacement + optional AgentVibes TTS injection
+   * @why Enables installation-time customization: .bmad replacement + optional AgentVibes TTS injection
    * @param {string} sourcePath - Absolute path to source file in BMAD repository
    * @param {string} targetPath - Absolute path to destination file in user's project
    * @param {string} bmadFolderName - User's chosen bmad folder name (default: 'bmad')
@@ -104,11 +104,6 @@ class Installer {
    * @edgecases Binary files bypass transformation, falls back to raw copy if UTF-8 read fails
    * @calledby installCore(), installModule(), IDE installers during file vendoring
    * @calls processTTSInjectionPoints(), fs.readFile(), fs.writeFile(), fs.copy()
-   *
-   * AI NOTE: This is the core transformation pipeline for ALL BMAD installation file copies.
-   * It performs two transformations in sequence:
-   * 1. {bmad_folder} → user's custom folder name (e.g., ".bmad" or "bmad")
-   * 2. <!-- TTS_INJECTION:* --> → TTS bash calls (if enabled) OR stripped (if disabled)
    *
    * The injection point processing enables loose coupling between BMAD and TTS providers:
    * - BMAD source contains injection markers (not actual TTS code)
@@ -139,16 +134,6 @@ class Installer {
       try {
         // Read the file content
         let content = await fs.readFile(sourcePath, 'utf8');
-
-        // Replace {bmad_folder} placeholder with actual folder name
-        if (content.includes('{bmad_folder}')) {
-          content = content.replaceAll('{bmad_folder}', bmadFolderName);
-        }
-
-        // Replace escape sequence {*bmad_folder*} with literal {bmad_folder}
-        if (content.includes('{*bmad_folder*}')) {
-          content = content.replaceAll('{*bmad_folder*}', '{bmad_folder}');
-        }
 
         // Process AgentVibes injection points (pass targetPath for tracking)
         content = this.processTTSInjectionPoints(content, targetPath);
@@ -487,8 +472,8 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       });
     }
 
-    // Get bmad_folder from config (default to 'bmad' for backwards compatibility)
-    const bmadFolderName = moduleConfigs.core && moduleConfigs.core.bmad_folder ? moduleConfigs.core.bmad_folder : 'bmad';
+    // Always use .bmad as the folder name
+    const bmadFolderName = '.bmad';
     this.bmadFolderName = bmadFolderName; // Store for use in other methods
 
     // Store AgentVibes configuration for injection point processing
@@ -507,61 +492,12 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       // Resolve target directory (path.resolve handles platform differences)
       const projectDir = path.resolve(config.directory);
 
-      // Check if bmad_folder has changed from existing installation (only if project dir exists)
       let existingBmadDir = null;
       let existingBmadFolderName = null;
 
       if (await fs.pathExists(projectDir)) {
         existingBmadDir = await this.findBmadDir(projectDir);
         existingBmadFolderName = path.basename(existingBmadDir);
-      }
-
-      const targetBmadDir = path.join(projectDir, bmadFolderName);
-
-      // If bmad_folder changed during update/upgrade, back up old folder and do fresh install
-      if (existingBmadDir && (await fs.pathExists(existingBmadDir)) && existingBmadFolderName !== bmadFolderName) {
-        spinner.stop();
-        console.log(chalk.yellow(`\n⚠️  bmad_folder has changed: ${existingBmadFolderName} → ${bmadFolderName}`));
-        console.log(chalk.yellow('This will result in a fresh installation to the new folder.'));
-
-        const inquirer = require('inquirer');
-        const { confirmFreshInstall } = await inquirer.prompt([
-          {
-            type: 'confirm',
-            name: 'confirmFreshInstall',
-            message: chalk.cyan('Proceed with fresh install? (Your old folder will be backed up)'),
-            default: true,
-          },
-        ]);
-
-        if (!confirmFreshInstall) {
-          console.log(chalk.yellow('Installation cancelled.'));
-          return { success: false, cancelled: true };
-        }
-
-        spinner.start('Backing up existing installation...');
-
-        // Find a unique backup name
-        let backupDir = `${existingBmadDir}-bak`;
-        let counter = 1;
-        while (await fs.pathExists(backupDir)) {
-          backupDir = `${existingBmadDir}-bak-${counter}`;
-          counter++;
-        }
-
-        // Rename the old folder to backup
-        await fs.move(existingBmadDir, backupDir);
-
-        spinner.succeed(`Backed up ${existingBmadFolderName} → ${path.basename(backupDir)}`);
-        console.log(chalk.cyan('\n📋 Important:'));
-        console.log(chalk.dim(`  - Your old installation has been backed up to: ${path.basename(backupDir)}`));
-        console.log(chalk.dim(`  - If you had custom agents or configurations, copy them from:`));
-        console.log(chalk.dim(`    ${path.basename(backupDir)}/_cfg/`));
-        console.log(chalk.dim(`  - To the new location:`));
-        console.log(chalk.dim(`    ${bmadFolderName}/_cfg/`));
-        console.log('');
-
-        spinner.start('Starting fresh installation...');
       }
 
       // Create a project directory if it doesn't exist (user already confirmed)
@@ -1932,8 +1868,8 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
         // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
 
-        // Replace {bmad_folder} with actual folder name
-        xmlContent = xmlContent.replaceAll('{bmad_folder}', this.bmadFolderName || 'bmad');
+        // Replace .bmad with actual folder name
+        xmlContent = xmlContent.replaceAll('.bmad', this.bmadFolderName || 'bmad');
 
         // Replace {agent_sidecar_folder} if configured
         const coreConfig = this.configCollector.collectedConfig.core || {};
@@ -1980,7 +1916,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
           // Resolve path variables
           const resolvedSidecarFolder = agentSidecarFolder
             .replaceAll('{project-root}', projectDir)
-            .replaceAll('{bmad_folder}', this.bmadFolderName || 'bmad');
+            .replaceAll('.bmad', this.bmadFolderName || 'bmad');
 
           // Create sidecar directory for this agent
           const agentSidecarDir = path.join(resolvedSidecarFolder, agentName);
@@ -2674,7 +2610,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         lastModified: new Date().toISOString(),
       };
 
-      // Check if bmad_folder has changed
       const existingBmadFolderName = path.basename(bmadDir);
       const newBmadFolderName = this.configCollector.collectedConfig.core?.bmad_folder || existingBmadFolderName;
 
@@ -3272,7 +3207,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
             const agentSidecarFolder = config.coreConfig?.agent_sidecar_folder;
 
             // Resolve path variables
-            const resolvedSidecarFolder = agentSidecarFolder.replaceAll('{project-root}', projectDir).replaceAll('{bmad_folder}', bmadDir);
+            const resolvedSidecarFolder = agentSidecarFolder.replaceAll('{project-root}', projectDir).replaceAll('.bmad', bmadDir);
 
             // Create sidecar directory for this agent
             const agentSidecarDir = path.join(resolvedSidecarFolder, finalAgentName);

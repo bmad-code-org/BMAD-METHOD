@@ -1,7 +1,7 @@
 # Create Wireframe - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/.bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow creates website or app wireframes in Excalidraw format.</critical>
 

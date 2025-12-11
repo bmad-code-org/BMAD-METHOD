@@ -28,7 +28,7 @@ This uses **micro-file architecture** for disciplined execution:
 
 ### Configuration Loading
 
-Load config from `{project-root}/{bmad_folder}/core/config.yaml` and resolve:
+Load config from `{project-root}/.bmad/core/config.yaml` and resolve:
 
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
@@ -36,7 +36,7 @@ Load config from `{project-root}/{bmad_folder}/core/config.yaml` and resolve:
 
 ### Paths
 
-- `installed_path` = `{project-root}/{bmad_folder}/core/workflows/brainstorming`
+- `installed_path` = `{project-root}/.bmad/core/workflows/brainstorming`
 - `template_path` = `{installed_path}/template.md`
 - `brain_techniques_path` = `{installed_path}/brain-methods.csv`
 - `default_output_file` = `{output_folder}/analysis/brainstorming-session-{{date}}.md`

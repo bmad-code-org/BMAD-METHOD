@@ -53,7 +53,7 @@ web_bundle: [true/false] # Set to true for inclusion in web bundle builds
 
 ### 1. Module Configuration Loading
 
-Load and read full config from {project-root}/{_bmad_folder_}/[MODULE FOLDER]/config.yaml and resolve:
+Load and read full config from {project-root}/.bmad/[MODULE FOLDER]/config.yaml and resolve:
 
 - `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`, [MODULE VARS]
 
@@ -101,4 +101,4 @@ Example: Load, read the full file and then execute `{workflow_path}/steps/step-0
 
 ### NOTE: You can View a real example of a perfect workflow.md file that was created from this template
 
-`{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition/workflow.md`
+`{project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition/workflow.md`

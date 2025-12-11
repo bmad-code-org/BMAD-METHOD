@@ -3,7 +3,7 @@ name: 'step-03-assessment'
 description: 'Analyze nutritional requirements, identify restrictions, and calculate target macros'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition'
+workflow_path: '{project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-03-assessment.md'
@@ -12,8 +12,8 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 
 # Data References
 dietaryRestrictionsDB: '{workflow_path}/data/dietary-restrictions.csv'

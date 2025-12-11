@@ -3,7 +3,7 @@ name: 'step-04-ux-alignment'
 description: 'Check for UX document and validate alignment with PRD and Architecture'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/3-solutioning/implementation-readiness'
+workflow_path: '{project-root}/.bmad/bmm/workflows/3-solutioning/implementation-readiness'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-04-ux-alignment.md'

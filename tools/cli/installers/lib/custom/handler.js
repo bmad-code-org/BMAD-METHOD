@@ -255,7 +255,6 @@ class CustomHandler {
               let content = await fs.readFile(sourcePath, 'utf8');
 
               // Replace placeholders
-              content = content.replaceAll('{bmad_folder}', config.bmad_folder || 'bmad');
               content = content.replaceAll('{user_name}', config.user_name || 'User');
               content = content.replaceAll('{communication_language}', config.communication_language || 'English');
               content = content.replaceAll('{output_folder}', config.output_folder || 'docs');
@@ -321,7 +320,6 @@ class CustomHandler {
           if (await fs.pathExists(genericTemplatePath)) {
             // Copy with placeholder replacement
             let templateContent = await fs.readFile(genericTemplatePath, 'utf8');
-            templateContent = templateContent.replaceAll('{bmad_folder}', config.bmad_folder || 'bmad');
             await fs.writeFile(customizePath, templateContent, 'utf8');
             console.log(chalk.dim(`  Created customize: custom-${agentName}.customize.yaml`));
           }
@@ -332,7 +330,6 @@ class CustomHandler {
 
         // Replace placeholders in the compiled content
         let processedXml = xml;
-        processedXml = processedXml.replaceAll('{bmad_folder}', config.bmad_folder || 'bmad');
         processedXml = processedXml.replaceAll('{user_name}', config.user_name || 'User');
         processedXml = processedXml.replaceAll('{communication_language}', config.communication_language || 'English');
         processedXml = processedXml.replaceAll('{output_folder}', config.output_folder || 'docs');
@@ -358,7 +355,7 @@ class CustomHandler {
           const projectDir = path.dirname(bmadDir);
           const resolvedSidecarFolder = config.agent_sidecar_folder
             .replaceAll('{project-root}', projectDir)
-            .replaceAll('{bmad_folder}', path.basename(bmadDir));
+            .replaceAll('.bmad', path.basename(bmadDir));
 
           // Create sidecar directory for this agent
           const agentSidecarDir = path.join(resolvedSidecarFolder, agentName);

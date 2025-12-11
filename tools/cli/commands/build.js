@@ -80,7 +80,7 @@ module.exports = {
  */
 async function buildAgent(projectDir, agentName) {
   // First check standalone agents in bmad/agents/{agentname}/
-  const standaloneAgentDir = path.join(projectDir, 'bmad', 'agents', agentName);
+  const standaloneAgentDir = path.join(projectDir, '.bmad', 'agents', agentName);
   let standaloneYamlPath = path.join(standaloneAgentDir, `${agentName}.agent.yaml`);
 
   // If exact match doesn't exist, look for any .agent.yaml file in the directory
@@ -99,7 +99,7 @@ async function buildAgent(projectDir, agentName) {
     // Build the standalone agent
     console.log(chalk.cyan(`  Building standalone agent ${agentName}...`));
 
-    const customizePath = path.join(projectDir, 'bmad', '_cfg', 'agents', `${agentName}.customize.yaml`);
+    const customizePath = path.join(projectDir, '.bmad', '_cfg', 'agents', `${agentName}.customize.yaml`);
     const customizeExists = await fs.pathExists(customizePath);
 
     await builder.buildAgent(standaloneYamlPath, customizeExists ? customizePath : null, outputPath, { includeMetadata: true });
@@ -109,7 +109,7 @@ async function buildAgent(projectDir, agentName) {
   }
 
   // Find the agent YAML file in .claude/commands/bmad/
-  const bmadCommandsDir = path.join(projectDir, '.claude', 'commands', 'bmad');
+  const bmadCommandsDir = path.join(projectDir, '.claude', 'commands', '.bmad');
 
   // Search all module directories for the agent
   const modules = await fs.readdir(bmadCommandsDir);
@@ -149,7 +149,7 @@ async function buildAllAgents(projectDir) {
   let builtCount = 0;
 
   // First, build standalone agents in bmad/agents/
-  const standaloneAgentsDir = path.join(projectDir, 'bmad', 'agents');
+  const standaloneAgentsDir = path.join(projectDir, '.bmad', 'agents');
   if (await fs.pathExists(standaloneAgentsDir)) {
     console.log(chalk.cyan('\nBuilding standalone agents...'));
     const agentDirs = await fs.readdir(standaloneAgentsDir);
@@ -177,7 +177,7 @@ async function buildAllAgents(projectDir) {
 
       console.log(chalk.cyan(`  Building standalone agent ${agentName}...`));
 
-      const customizePath = path.join(projectDir, 'bmad', '_cfg', 'agents', `${agentName}.customize.yaml`);
+      const customizePath = path.join(projectDir, '.bmad', '_cfg', 'agents', `${agentName}.customize.yaml`);
       const customizeExists = await fs.pathExists(customizePath);
 
       await builder.buildAgent(agentYamlPath, customizeExists ? customizePath : null, outputPath, { includeMetadata: true });

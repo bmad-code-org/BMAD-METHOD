@@ -223,7 +223,7 @@ Same as simple agents, PLUS:
 
 ## Reference Example
 
-See: `src/modules/bmb/reference/agents/expert-examples/journal-keeper/`
+See: `bmb/reference/agents/expert-examples/journal-keeper/`
 
 Features demonstrated:
 

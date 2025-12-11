@@ -18,7 +18,7 @@ Comprehensive guides for each agent type (choose based on use case):
 
 ## Reference Examples
 
-Production-ready examples in `/src/modules/bmb/reference/agents/`:
+Production-ready examples in `/bmb/reference/agents/`:
 
 **Simple Agents** (`simple-examples/`)
 

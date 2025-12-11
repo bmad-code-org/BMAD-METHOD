@@ -10,7 +10,7 @@
 
 agent:
   metadata:
-    id: "{*bmad_folder*}/bmm/agents/security-engineer.md"
+    id: ".bmad/bmm/agents/security-engineer.md"
     name: "Sam"
     title: "Security Engineer"
     icon: "🔐"
@@ -32,11 +32,11 @@ agent:
   menu:
     # NOTE: These workflows are hypothetical examples assuming add to a module called bmm - not implemented
     - trigger: threat-model
-      exec: "{project-root}/{*bmad_folder*}/bmm/workflows/threat-model/workflow.md"
+      exec: "{project-root}/.bmad/bmm/workflows/threat-model/workflow.md"
       description: "Create STRIDE threat model for architecture"
 
     - trigger: security-review
-      exec: "{project-root}/{*bmad_folder*}/bmm/workflows/security-review/workflow.md"
+      exec: "{project-root}/.bmad/bmm/workflows/security-review/workflow.md"
       description: "Review code/design for security issues"
 
     - trigger: owasp-check
@@ -44,10 +44,10 @@ agent:
       description: "Check against OWASP Top 10"
 
     - trigger: compliance
-      exec: "{project-root}/{*bmad_folder*}/bmm/workflows/compliance-check/workflow.md"
+      exec: "{project-root}/.bmad/bmm/workflows/compliance-check/workflow.md"
       description: "Verify compliance requirements (SOC2, GDPR, etc.)"
 
     # Core workflow that exists
     - trigger: party-mode
-      exec: "{project-root}/{*bmad_folder*}/core/workflows/party-mode/workflow.md"
+      exec: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
       description: "Multi-agent security discussion"

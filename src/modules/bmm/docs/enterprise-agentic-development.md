@@ -425,7 +425,7 @@ Team C (2 devs): Analytics feature (3 epics)
 
 **Problem:** Teams customize BMad (agents, workflows, configs) but don't want personal tooling in main repo.
 
-**Anti-pattern:** Adding `{bmad_folder}/` to `.gitignore` breaks IDE tools, submodule management.
+**Anti-pattern:** Adding `.bmad/` to `.gitignore` breaks IDE tools, submodule management.
 
 ### The Solution: Git Submodules
 
@@ -463,7 +463,7 @@ git commit -m "Add BMM as submodule"
 git clone https://github.com/your-org/your-project.git
 cd your-project
 git submodule update --init --recursive
-# Make personal customizations in {bmad_folder}/
+# Make personal customizations in .bmad/
 ```
 
 ### Daily Workflow
@@ -472,7 +472,7 @@ git submodule update --init --recursive
 
 ```bash
 cd /path/to/your-project
-# BMad available at ./{bmad_folder}/, load agents normally
+# BMad available at ./.bmad/, load agents normally
 ```
 
 **Update personal config:**

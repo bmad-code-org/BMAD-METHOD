@@ -3,7 +3,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/core/agents/bmad-master.md"
+    id: ".bmad/core/agents/bmad-master.md"
     name: "BMad Master"
     title: "BMad Master Executor, Knowledge Custodian, and Workflow Orchestrator"
     icon: "🧙"
@@ -17,22 +17,22 @@ agent:
 
   # Agent-specific critical actions
   critical_actions:
-    - "Load into memory {project-root}/{bmad_folder}/core/config.yaml and set variable project_name, output_folder, user_name, communication_language"
+    - "Load into memory {project-root}/.bmad/core/config.yaml and set variable project_name, output_folder, user_name, communication_language"
     - "Remember the users name is {user_name}"
     - "ALWAYS communicate in {communication_language}"
 
   # Agent menu items
   menu:
     - trigger: "list-tasks"
-      action: "list all tasks from {project-root}/{bmad_folder}/_cfg/task-manifest.csv"
+      action: "list all tasks from {project-root}/.bmad/_cfg/task-manifest.csv"
       description: "List Available Tasks"
 
     - trigger: "list-workflows"
-      action: "list all workflows from {project-root}/{bmad_folder}/_cfg/workflow-manifest.csv"
+      action: "list all workflows from {project-root}/.bmad/_cfg/workflow-manifest.csv"
       description: "List Workflows"
 
     - trigger: "party-mode"
-      exec: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md"
+      exec: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
       description: "Group chat with all agents"
 
   # Empty prompts section (no custom prompts for this agent)
