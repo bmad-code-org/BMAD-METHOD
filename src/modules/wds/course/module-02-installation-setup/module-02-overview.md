@@ -48,9 +48,11 @@ Before you can design with WDS, you need a solid foundation:
 ### Lesson 2: Create Your Project Repository
 **Reading time:** 10 minutes
 
-- Repository naming conventions
+- Three scenarios: New project, joining existing, or learning only
+- Repository naming conventions (determines structure!)
 - One repo vs. separate repos (specs + code)
 - Public vs. private repositories
+- Joining existing repositories: Request access and understand structure
 - Initial repository setup
 - README basics
 

@@ -49,13 +49,36 @@ By the end of this tutorial:
 
 **What is a repository?** A folder that GitHub tracks. Every change you make is saved, and you can always go back.
 
-### 2.1 Navigate to Repositories
+### 2.1 Three Scenarios
+
+**Before creating a repository, determine which scenario applies to you:**
+
+**Scenario A: Starting a New Project** (Continue to 2.2 below)
+- You're starting fresh
+- No existing repository
+- You control the setup
+
+**Scenario B: Joining an Existing Project** (Skip to 2.6 below)
+- Team project already exists
+- Client has existing repository
+- Contributing to ongoing work
+
+**Scenario C: Using WDS as a Reference Only** (Skip to Step 3)
+- You're just learning WDS methodology
+- Not starting a project yet
+- Following along with tutorial
+
+**Most beginners: Use Scenario A (start new project)**
+
+---
+
+### 2.2 Navigate to Repositories (Scenario A: New Project)
 
 1. After logging in, click your **profile icon** (top right)
 2. Click **"Your repositories"**
 3. Click the green **"New"** button
 
-### 2.2 Repository Settings
+### 2.3 Repository Settings (Scenario A continued)
 
 **IMPORTANT: Your naming choice determines your structure!**
 
@@ -130,7 +153,7 @@ dog-walker-app/           ← Separate code repo
 
 **DO NOT** add .gitignore or license yet (we'll do this later)
 
-### 2.3 Create Repository
+### 2.4 Create Repository (Scenario A continued)
 
 Click the green **"Create repository"** button
 
@@ -139,6 +162,61 @@ Click the green **"Create repository"** button
 **Remember your choice:**
 - Single repo (`my-project`)? Specs and code together
 - Separate repo (`my-project-specs`)? You'll create a second repo for code later
+
+**Now skip to Step 3: Install Your IDE**
+
+---
+
+### 2.6 Joining an Existing Repository (Scenario B)
+
+**If you're joining a team project or client repository:**
+
+#### 2.6.1 Request Repository Access
+
+**Ask the repository owner or team lead:**
+
+```
+Hi [Name],
+
+I'd like to contribute to [project-name] using WDS methodology. 
+Could you add me as a collaborator to the repository?
+
+My GitHub username: [your-username]
+
+Thank you!
+```
+
+**They will:**
+1. Go to repository settings
+2. Click "Collaborators"
+3. Add your GitHub username
+4. You'll receive an email invitation
+
+#### 2.6.2 Accept the Invitation
+
+1. Check your email for GitHub invitation
+2. Click **"Accept invitation"**
+3. Or go to the repository URL directly
+4. You'll see an invitation banner → Click **"Accept"**
+
+#### 2.6.3 Understand the Existing Structure
+
+**Before cloning, check what structure they're using:**
+
+Look at the repository name:
+- `project-name` → Likely single repo (specs + code together)
+- `project-name-specs` → Separate specs repo (code elsewhere)
+
+Browse the repository:
+- Has `docs/` folder? → Probably already using WDS!
+- Has `src/` or `app/` folder? → Code lives here too (single repo)
+- Only documentation? → Separate specs repo
+
+**Ask the team lead if unsure!**
+
+**✅ Checkpoint:** Invitation accepted, you understand the structure
+
+**Now continue to Step 3: Install Your IDE**
 
 ---
 
