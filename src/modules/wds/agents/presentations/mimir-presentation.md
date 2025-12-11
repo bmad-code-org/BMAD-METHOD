@@ -102,6 +102,12 @@ Whether you're taking your very first steps with AI assistants, starting a new p
 @wds-mimir [your question]
 ```
 
+**New to WDS? Consider going through the training:**
+
+```
+@wds-mimir Take me through the WDS training
+```
+
 **I'm always here to guide you back to the path.** 🌊
 
 ---
