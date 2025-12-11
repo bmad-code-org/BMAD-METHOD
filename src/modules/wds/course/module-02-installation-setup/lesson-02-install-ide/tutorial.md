@@ -1,4 +1,4 @@
-# Lesson 03: Install Your IDE
+# Lesson 02: IDE Installation
 
 **Get your workspace set up with Cursor or VS Code**
 

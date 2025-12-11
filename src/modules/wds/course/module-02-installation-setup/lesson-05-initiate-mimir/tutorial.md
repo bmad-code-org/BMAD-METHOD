@@ -1,4 +1,4 @@
-# Lesson 06: Initiate Mimir
+# Lesson 05: Mimir Activation
 
 **Activate your WDS guide and begin your journey**
 

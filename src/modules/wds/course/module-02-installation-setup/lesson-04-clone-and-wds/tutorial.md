@@ -1,4 +1,4 @@
-# Lesson 05: Clone Your Project & Add WDS
+# Lesson 04: Repository Cloning & WDS Integration
 
 **Get your project and WDS onto your computer**
 

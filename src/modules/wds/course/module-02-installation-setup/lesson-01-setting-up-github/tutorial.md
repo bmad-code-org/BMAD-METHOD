@@ -1,4 +1,4 @@
-# Lesson 01: Setting Up GitHub
+# Lesson 01: GitHub Setup
 
 **Create your GitHub account and project repository**
 

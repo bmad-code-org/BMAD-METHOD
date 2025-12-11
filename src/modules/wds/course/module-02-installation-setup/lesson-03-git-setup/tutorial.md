@@ -1,4 +1,4 @@
-# Lesson 04: Git Setup
+# Lesson 03: Git Configuration
 
 **Let your IDE handle Git automatically**
 
