@@ -19,18 +19,13 @@
 
 **Git** is the behind-the-scenes tool that syncs your computer with GitHub.
 
-**Think of it as:**
-- The sync engine between your computer and GitHub
-- Like Dropbox, but smarter (tracks every change)
-- Built into most modern IDEs
-
-**Good news:** You don't need to install it manually!
+**Good news:** You don't need to install it manually! Modern IDEs like Cursor handle this for you.
 
 ---
 
-## Recap: Your Repository Structure
+## Step 1: Recap Your Repository Structure
 
-**You already decided this in Lesson 02 when naming your repo!**
+**You already decided this in Lesson 01 when naming your repo!**
 
 ### Single Repo (named `my-project`)
 ```
@@ -45,13 +40,17 @@ my-project-specs/      ← This repo (specifications only)
                        ← Code repo created separately
 ```
 
+**For this tutorial, we assume single repo** (`dog-walker-app`)
+
 ---
 
-## Option 1: Let Cursor Handle It (Recommended)
+## Step 2: Choose Your Git Approach
+
+### Option 1: Let Cursor Handle It (Recommended)
 
 **The easiest way:** Do nothing!
 
-When you try to clone a repository in Lesson 05, Cursor will:
+When you try to clone a repository in Lesson 04, Cursor will:
 
 1. Check if Git is installed
 2. If not, **automatically prompt you**: "Install Git?"
@@ -64,11 +63,11 @@ When you try to clone a repository in Lesson 05, Cursor will:
 
 ---
 
-## Option 2: GitHub Desktop (Visual Alternative)
+### Option 2: GitHub Desktop (Visual Alternative)
 
 **For designers who prefer visual tools:**
 
-### Why GitHub Desktop?
+#### Why GitHub Desktop?
 
 - ✅ No terminal commands needed
 - ✅ Visual interface for everything
@@ -76,7 +75,7 @@ When you try to clone a repository in Lesson 05, Cursor will:
 - ✅ Many professional designers use it
 - ✅ Works perfectly with Cursor
 
-### Install GitHub Desktop
+#### Install GitHub Desktop
 
 1. Download from **https://desktop.github.com**
 2. Install it (follow standard installer)
@@ -84,7 +83,7 @@ When you try to clone a repository in Lesson 05, Cursor will:
 4. Sign in with your GitHub account
 5. Done!
 
-### How it Works
+#### How it Works
 
 - Use GitHub Desktop to **clone** repositories
 - Use GitHub Desktop to **commit** and **push** changes
@@ -93,9 +92,11 @@ When you try to clone a repository in Lesson 05, Cursor will:
 
 **This is a perfectly valid professional workflow.**
 
+**Bonus:** GitHub Desktop also helps you decide between single vs separate repos visually!
+
 ---
 
-## Option 3: Already Comfortable with Terminal?
+### Option 3: Already Comfortable with Terminal?
 
 **Optional check for those who want to know:**
 
@@ -112,7 +113,7 @@ git version 2.x.x
 ✅ Git is installed!
 
 **If you see "command not found":**
-No problem! Continue to Lesson 05, Cursor will prompt you.
+No problem! Continue to Lesson 04, Cursor will prompt you.
 
 ---
 
@@ -121,7 +122,7 @@ No problem! Continue to Lesson 05, Cursor will prompt you.
 **Choose Option 1 (Let Cursor Handle It) if:**
 - You're a complete beginner
 - You want the simplest path
-- You're comfortable with terminal appearing in Lesson 05
+- You're comfortable with terminal appearing in Lesson 04
 
 **Choose Option 2 (GitHub Desktop) if:**
 - You prefer visual interfaces
@@ -150,10 +151,9 @@ No problem! Continue to Lesson 05, Cursor will prompt you.
 
 Git will be ready when you need it! Now it's time to clone your repository and add WDS to your workspace.
 
-**[Continue to Lesson 04: Clone & Add WDS →](../lesson-04-clone-and-wds/tutorial.md)**
+**[Continue to Lesson 04: Repository Cloning & WDS Integration →](../lesson-04-clone-and-wds/tutorial.md)**
 
 ---
 
 *Part of Module 02: Installation & Setup*  
 *[← Back to Module Overview](../module-02-overview.md)*
-

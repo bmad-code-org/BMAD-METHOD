@@ -61,6 +61,12 @@ In Cursor:
 
 **You should see the file attached to your message!**
 
+**Alternative method:**
+Type in chat:
+```
+@MIMIR-WDS-ORCHESTRATOR.md
+```
+
 ---
 
 ## Step 4: Send Your First Message
@@ -130,34 +136,6 @@ If you're confused → Mimir will slow down
 
 ---
 
-## Alternative: Type Instead of Drag
-
-**If dragging doesn't work:**
-
-In the AI chat, type:
-
-```
-@MIMIR-WDS-ORCHESTRATOR.md
-
-Hello Mimir! I just completed the installation setup and I'm ready to start.
-```
-
-This references the file and sends your message.
-
----
-
-## What Happens Next?
-
-**After your conversation with Mimir, you'll either:**
-
-1. **Start WDS Training** - If you want to learn methodology first
-2. **Begin Project Brief** - If you're ready to dive into your project
-3. **Meet Specialist Agents** - Freyja (UX), Saga (Analyst), or Idunn (PM)
-
-**Mimir will guide you to the right path based on your situation.**
-
----
-
 ## Whenever You Need Help
 
 **Remember this simple command:**
@@ -179,7 +157,7 @@ This references the file and sends your message.
 ## Troubleshooting
 
 **Issue:** Can't find MIMIR file  
-**Solution:** Make sure you added `whiteport-design-studio` to workspace (Lesson 05, Step 5)
+**Solution:** Make sure you added `whiteport-design-studio` to workspace (Lesson 04, Step 5)
 
 **Issue:** Drag doesn't work  
 **Solution:** Use `@MIMIR-WDS-ORCHESTRATOR.md` instead
@@ -221,6 +199,35 @@ You've completed the entire Module 02: Installation & Setup!
 
 ---
 
+## Pro Tips for Beginners
+
+**Tip 1: Commit Often**
+Every time you make meaningful progress, save to GitHub:
+```bash
+git add .
+git commit -m "Describe what you did"
+git push
+```
+
+**Tip 2: Keep WDS Updated**
+Once a month, update WDS to get new features:
+```bash
+cd ~/Projects/whiteport-design-studio
+git pull
+```
+
+**Tip 3: When in Doubt, Ask Mimir**
+```
+@wds-mimir [your question]
+```
+No question is too small!
+
+**Tip 4: Save Your Workspace**
+In Cursor: **File** → **Save Workspace As** → `my-project.code-workspace`
+Next time, just open this file!
+
+---
+
 ## Remember
 
 **Whenever in doubt:**
@@ -235,4 +242,3 @@ You've completed the entire Module 02: Installation & Setup!
 
 *Part of Module 02: Installation & Setup*  
 *[← Back to Module Overview](../module-02-overview.md)*
-

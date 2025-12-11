@@ -15,20 +15,13 @@
 
 ---
 
-## Part 1: Create Your GitHub Account
+## Step 1: Create Your GitHub Account
 
 ### What is GitHub?
 
-Think of GitHub as:
-- **Professional cloud storage** for your project files
-- **Time machine** - every change saved, can go back to any version
-- **Collaboration tool** - work with others seamlessly
+Think of GitHub as a professional cloud storage + time machine for your project files. Every change is saved, you can go back to any version, and you can work with others.
 
-**For designers:** GitHub is where your WDS specifications will live, backed up and version-controlled.
-
----
-
-### Step 1: Sign Up
+### 1.1 Sign Up
 
 1. Go to **https://github.com**
 2. Click the green **"Sign up"** button (top right)
@@ -37,70 +30,61 @@ Think of GitHub as:
 5. Choose a username
 
 **Username Tips:**
-
-✅ **Professional** - You might share this with clients  
-✅ **Simple** - Easy to remember and spell  
-✅ **Memorable** - Represents you or your work
-
-**Good Examples:**
-- `john-designer`
-- `sarahux`
-- `mike-creates`
-- `[yourname]-design`
+- Professional (you might share this with clients)
+- Simple and memorable
+- Examples: `john-designer`, `sarahux`, `mike-creates`
 
 6. Verify you're human (solve the puzzle)
 7. Check your email and click the verification link
 
-**✅ Checkpoint:** You can log in to GitHub!
+**✅ Checkpoint:** You can log in to GitHub
 
 ---
 
-## Part 2: Create Your Project Repository
+## Step 2: Create Your Project Repository
 
 ### What is a Repository?
 
-A **repository** is a folder that GitHub tracks. Every change you make is saved, and you can always go back to any version.
+A folder that GitHub tracks. Every change you make is saved, and you can always go back.
 
----
+### 2.1 Three Scenarios
 
-### Step 2: Choose Your Scenario
+**Before creating a repository, determine which scenario applies to you:**
 
-**Which situation applies to you?**
-
-**Scenario A: Starting a New Project** (Continue to Step 3 below)
+**Scenario A: Starting a New Project** (Continue to 2.2 below)
 - You're starting fresh
 - No existing repository
 - You control the setup
 
-**Scenario B: Joining an Existing Project** (Skip to Step 7 below)
+**Scenario B: Joining an Existing Project** (Skip to 2.6 below)
 - Team project already exists
 - Client has existing repository
 - Contributing to ongoing work
 
-**Scenario C: Just Learning WDS** (Skip this lesson)
+**Scenario C: Using WDS as a Reference Only** (Skip this lesson)
 - You're just learning WDS methodology
 - Not starting a project yet
-- **→ [Continue to Lesson 02: Install IDE](../lesson-02-install-ide/tutorial.md)**
+- **→ [Continue to Lesson 02: IDE Installation](../lesson-02-install-ide/tutorial.md)**
 
-**Most beginners: Use Scenario A**
+**Most beginners: Use Scenario A (start new project)**
 
 ---
 
 ## Scenario A: Create New Repository
 
-### Step 3: Navigate to Repositories
+### 2.2 Navigate to Repositories
 
 1. After logging in, click your **profile icon** (top right)
 2. Click **"Your repositories"**
 3. Click the green **"New"** button
 
----
-
-### Step 4: Choose Repository Structure
+### 2.3 Repository Settings
 
 **IMPORTANT: Your naming choice determines your structure!**
 
-#### Option A: Single Repository
+#### Single Repo or Separate Specs Repo?
+
+**Option A: Single Repository**
 
 **Name it simply:**
 - `dog-walker-app`
@@ -122,9 +106,7 @@ dog-walker-app/
 - ✅ Small team with full ownership
 - ✅ Rapid iteration and feedback
 
----
-
-#### Option B: Separate Specifications Repository
+**Option B: Separate Specifications Repository**
 
 **Name with `-specs` suffix:**
 - `dog-walker-app-specs`
@@ -134,7 +116,7 @@ dog-walker-app/
 **Structure:**
 ```
 dog-walker-app-specs/     ← This repo (specifications only)
-dog-walker-app/           ← Separate code repo (create later)
+dog-walker-app/           ← Separate code repo
 ```
 
 **Use when:**
@@ -145,9 +127,13 @@ dog-walker-app/           ← Separate code repo (create later)
 - ✅ Clear handoff boundaries needed
 - ✅ Design and dev have separate workflows
 
----
+**For this tutorial:**
+- Beginners: Use **Option A** (single repo like `dog-walker-app`)
+- Corporate/Enterprise: Use **Option B** (separate like `dog-walker-app-specs`)
 
-### Step 5: Repository Settings
+**Choose your name now based on your situation!**
+
+---
 
 **Repository Name:**
 - Use lowercase with hyphens
@@ -167,9 +153,7 @@ dog-walker-app/           ← Separate code repo (create later)
 
 **DO NOT** add .gitignore or license yet (we'll do this later)
 
----
-
-### Step 6: Create Repository
+### 2.4 Create Repository
 
 Click the green **"Create repository"** button
 
@@ -179,15 +163,17 @@ Click the green **"Create repository"** button
 - Single repo (`my-project`)? Specs and code together
 - Separate repo (`my-project-specs`)? You'll create a second repo for code later
 
-**[Continue to Lesson 02: Install IDE →](../lesson-02-install-ide/tutorial.md)**
+**[Continue to Lesson 02: IDE Installation →](../lesson-02-install-ide/tutorial.md)**
 
 ---
 
 ## Scenario B: Joining Existing Repository
 
-### Step 7: Request Repository Access
+### 2.6 Request Repository Access
 
-**Email template for repository owner or team lead:**
+**If you're joining a team project or client repository:**
+
+**Ask the repository owner or team lead:**
 
 ```
 Hi [Name],
@@ -206,35 +192,31 @@ Thank you!
 3. Add your GitHub username
 4. You'll receive an email invitation
 
----
-
-### Step 8: Accept the Invitation
+### 2.7 Accept the Invitation
 
 1. Check your email for GitHub invitation
 2. Click **"Accept invitation"**
 3. Or go to the repository URL directly
 4. You'll see an invitation banner → Click **"Accept"**
 
----
-
-### Step 9: Understand the Existing Structure
+### 2.8 Understand the Existing Structure
 
 **Before cloning, check what structure they're using:**
 
-**Look at the repository name:**
+Look at the repository name:
 - `project-name` → Likely single repo (specs + code together)
 - `project-name-specs` → Separate specs repo (code elsewhere)
 
-**Browse the repository:**
+Browse the repository:
 - Has `docs/` folder? → Probably already using WDS!
 - Has `src/` or `app/` folder? → Code lives here too (single repo)
 - Only documentation? → Separate specs repo
 
-**When in doubt:** Ask the team lead!
+**Ask the team lead if unsure!**
 
 **✅ Checkpoint:** Invitation accepted, you understand the structure
 
-**[Continue to Lesson 02: Install IDE →](../lesson-02-install-ide/tutorial.md)**
+**[Continue to Lesson 02: IDE Installation →](../lesson-02-install-ide/tutorial.md)**
 
 ---
 
@@ -261,10 +243,9 @@ Thank you!
 
 GitHub is set up and your repository is ready! Now let's install your IDE.
 
-**[Continue to Lesson 02: Install IDE →](../lesson-02-install-ide/tutorial.md)**
+**[Continue to Lesson 02: IDE Installation →](../lesson-02-install-ide/tutorial.md)**
 
 ---
 
 *Part of Module 02: Installation & Setup*  
 *[← Back to Module Overview](../module-02-overview.md)*
-

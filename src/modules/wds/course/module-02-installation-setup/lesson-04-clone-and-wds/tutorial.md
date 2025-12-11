@@ -41,7 +41,9 @@ cd ~/Projects
 
 ## Step 2: Clone Your Project Repository
 
-### Get Your Repository URL
+**What is cloning?** Copying your GitHub repository to your computer so you can work on it.
+
+### 2.1 Get Your Repository URL
 
 1. Go to your repository on GitHub
 2. Click the green **"Code"** button
@@ -50,7 +52,7 @@ cd ~/Projects
 
 **Your URL looks like:** `https://github.com/your-username/your-project.git`
 
-### Clone the Repository
+### 2.2 Clone the Repository
 
 In Cursor terminal:
 
@@ -81,6 +83,8 @@ git clone https://github.com/john-designer/dog-walker-app.git
 ---
 
 ## Step 4: Clone WDS Repository
+
+**What is WDS?** The methodology files that contain agents, workflows, and training.
 
 **WDS lives separately from your project.**
 
@@ -113,6 +117,8 @@ git clone https://github.com/whiteport-collective/whiteport-design-studio.git
 ---
 
 ## Step 6: Create Docs Folder Structure
+
+**What is the docs folder?** Where all your WDS specifications will live. This is your design source of truth.
 
 **Navigate to YOUR project (not WDS):**
 
@@ -192,7 +198,7 @@ Your Computer/
 **Solution:** Make sure you're signed into GitHub in Cursor
 
 **Issue:** "Can't find MIMIR file"  
-**Solution:** Make sure you added `whiteport-design-studio` folder to workspace
+**Solution:** Make sure you added `whiteport-design-studio` folder to workspace (Step 5)
 
 **Issue:** "mkdir: cannot create directory"  
 **Solution:** Make sure you're in your project folder: `cd ~/Projects/your-project`
@@ -203,10 +209,9 @@ Your Computer/
 
 Everything is set up! Now let's activate Mimir and begin your WDS journey.
 
-**[Continue to Lesson 05: Initiate Mimir →](../lesson-05-initiate-mimir/tutorial.md)**
+**[Continue to Lesson 05: Mimir Activation →](../lesson-05-initiate-mimir/tutorial.md)**
 
 ---
 
 *Part of Module 02: Installation & Setup*  
 *[← Back to Module Overview](../module-02-overview.md)*
-

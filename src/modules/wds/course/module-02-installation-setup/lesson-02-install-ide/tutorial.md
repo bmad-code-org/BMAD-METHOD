@@ -19,104 +19,73 @@
 
 **IDE = Integrated Development Environment**
 
-Think of it as your workspace for creating specifications. Like Microsoft Word, but designed for:
-- Writing markdown specifications
-- Managing project files
-- Working with AI assistants
-- Version control integration
+Your workspace for creating specifications. Like Microsoft Word, but for design files.
 
 ---
 
-## Choose Your IDE
+## Step 1: Choose Your IDE
 
-### Cursor (Recommended for WDS)
+### Cursor (Recommended)
 
 **Why Cursor:**
-- ✅ Built specifically for AI-augmented work
-- ✅ Modern, clean interface
-- ✅ Perfect for WDS methodology
-- ✅ Excellent AI chat integration
+- Built for AI assistance
+- Modern interface
+- Perfect for WDS
+- **Download:** https://cursor.sh
 
-**Download:** https://cursor.sh
-
----
-
-### VS Code (Solid Alternative)
+### VS Code (Alternative)
 
 **Why VS Code:**
-- ✅ Industry standard
-- ✅ Huge extension marketplace
-- ✅ Works great with WDS
-- ✅ What many developers use
+- Industry standard
+- More extensions
+- Works great with WDS too
+- **Download:** https://code.visualstudio.com
 
-**Download:** https://code.visualstudio.com
-
----
-
-**For complete beginners:** Choose **Cursor**. It's designed for the way you'll work with WDS.
+**For beginners:** Choose Cursor. It's designed for AI-augmented work.
 
 ---
 
-## Install Cursor
+## Step 2: Install Cursor
 
-### Step 1: Download
+### 2.1 Download
 
 1. Go to **https://cursor.sh**
-2. Click the download button for your platform
-3. Wait for download to complete
+2. Click download button for your platform
+3. Wait for download
 
-### Step 2: Install
+### 2.2 Install
 
 **Windows:**
 1. Double-click the `.exe` file
 2. Follow installer prompts
-3. Use default settings (just click "Next")
+3. Use default settings
 4. Click "Finish"
 
 **Mac:**
-1. Open the `.dmg` file
+1. Open the download
 2. Drag Cursor to Applications folder
 3. Open Applications folder
 4. Double-click Cursor to launch
 
 **Linux:**
-1. Follow the installation instructions for your distribution
-2. Usually involves extracting and running an installer
+1. Follow installation instructions for your distribution
 
 ---
 
-### Step 3: First Launch
+## Step 3: First Launch Setup
 
 1. Open Cursor for the first time
-2. Choose your theme:
-   - **Light** - Bright background
-   - **Dark** - Dark background (easier on eyes)
-   - You can change this later!
+2. Choose your theme (Light or Dark - you can change this later)
 
----
+### 3.1 Setup Wizard
 
-### Step 4: Sign In with GitHub
+Cursor will ask you a few questions:
 
-**This is important!** Signing in makes cloning repositories much easier.
+- **"Import settings from VS Code?"** → Skip (unless you already use VS Code)
+- **"Sign in with GitHub?"** → Yes! (makes cloning easier)
+- **"Install recommended extensions?"** → Yes
 
-1. Cursor will prompt: **"Sign in with GitHub?"**
-2. Click **"Yes"** or **"Sign in"**
-3. Your browser will open
-4. Click **"Authorize Cursor"**
-5. Return to Cursor (should be signed in)
-
-**✅ Checkpoint:** Cursor is open, you're signed into GitHub
-
----
-
-### Step 5: Install Recommended Extensions (Optional)
-
-Cursor may ask: **"Install recommended extensions?"**
-
-**Click "Yes"** - These extensions are helpful for:
-- Markdown previews
-- File icons
-- Git integration
+**✅ Checkpoint:** Cursor is open and ready
 
 ---
 
@@ -124,21 +93,13 @@ Cursor may ask: **"Install recommended extensions?"**
 
 If you chose VS Code instead:
 
-### Step 1: Download
+### Download and Install
 
 1. Go to **https://code.visualstudio.com**
 2. Download for your platform
-3. Wait for download
-
-### Step 2: Install
-
-Follow the same installation steps as Cursor above.
-
-### Step 3: First Launch & Setup
-
-1. Choose theme (Light/Dark)
-2. Sign in with GitHub when prompted
-3. Install recommended extensions
+3. Follow same installation steps as Cursor above
+4. Complete first-launch setup
+5. Sign in with GitHub when prompted
 
 ---
 
@@ -146,7 +107,7 @@ Follow the same installation steps as Cursor above.
 
 ### Open the Terminal
 
-This is important for upcoming steps!
+This is important for upcoming lessons!
 
 **Windows / Linux:**
 - Press **Ctrl + `** (backtick key, usually above Tab)
@@ -172,7 +133,7 @@ This is important for upcoming steps!
 **Solution:** View menu → Terminal → New Terminal
 
 **Issue:** GitHub sign-in fails  
-**Solution:** You can skip for now, we'll handle it in Lesson 05
+**Solution:** You can skip for now, we'll handle it later
 
 ---
 
@@ -180,10 +141,9 @@ This is important for upcoming steps!
 
 Your IDE is ready! Now let's understand Git and how your IDE handles it automatically.
 
-**[Continue to Lesson 03: Git Setup →](../lesson-03-git-setup/tutorial.md)**
+**[Continue to Lesson 03: Git Configuration →](../lesson-03-git-setup/tutorial.md)**
 
 ---
 
 *Part of Module 02: Installation & Setup*  
 *[← Back to Module Overview](../module-02-overview.md)*
-
