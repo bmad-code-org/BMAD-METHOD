@@ -148,57 +148,48 @@ Cursor will ask you a few questions:
 
 ---
 
-## Step 4: Install Git 🔧
+## Step 4: Let the IDE Handle Git 🔧
 
 **What is Git?** The behind-the-scenes tool that syncs your computer with GitHub.
 
-### 4.1 Check if Git is Already Installed
+**Good news:** You don't need to install anything manually! Modern IDEs like Cursor handle this for you.
 
-In Cursor:
-1. Press **Ctrl+`** (Windows/Linux) or **Cmd+`** (Mac) to open terminal
-2. Type: `git --version`
-3. Press Enter
+### 4.1 Let Cursor Install Git Automatically
 
-**If you see a version number (like `git version 2.x.x`):**  
-✅ Git is installed! Skip to Step 5.
+When you try to clone a repository in Step 5, Cursor will:
+1. Check if Git is installed
+2. If not, **automatically prompt you to install it**
+3. Click "Install" when prompted
+4. Done!
 
-**If you see "command not found":**  
-Continue to 4.2 below.
+**That's it.** No command line needed.
 
-### 4.2 Install Git
+### 4.2 Alternative: GitHub Desktop (Even Easier!)
 
-**Windows:**
-1. Download from **https://git-scm.com/download/win**
-2. Run the installer
-3. Use all default settings (just keep clicking "Next")
-4. Restart Cursor after installation
+**For designers who prefer visual tools:**
 
-**Mac:**
-1. In Cursor terminal, type: `git --version`
-2. Mac will prompt you to install developer tools
-3. Click "Install" and wait for it to complete
+1. Download **GitHub Desktop** from **https://desktop.github.com**
+2. Install it
+3. Sign in with your GitHub account
+4. Use it to clone repositories (visual interface, no commands!)
 
-**Linux:**
+**Then** open the cloned folder in Cursor.
+
+**This is perfectly valid!** Many professional designers use GitHub Desktop.
+
+### 4.3 Already Comfortable with Terminal?
+
+If you want to verify Git is installed:
+
+In Cursor terminal (press **Ctrl+`** or **Cmd+`**):
 ```bash
-# Ubuntu/Debian
-sudo apt-get install git
-
-# Fedora
-sudo dnf install git
+git --version
 ```
 
-### 4.3 Configure Git (First Time Only)
+If you see a version number → you're good!  
+If not → Continue to Step 5, Cursor will prompt you.
 
-In Cursor terminal, type these commands (replace with YOUR info):
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-```
-
-**Use the same email you used for GitHub!**
-
-**✅ Checkpoint:** `git --version` shows a version number
+**✅ Checkpoint:** Don't worry about this yet - continue to Step 5!
 
 ---
 

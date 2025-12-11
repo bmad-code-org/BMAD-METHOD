@@ -37,48 +37,58 @@ Before you can design with WDS, you need a solid foundation:
 
 ## Module Contents
 
-### Lesson 1: Installing WDS
+### Lesson 1: Create Your GitHub Account
 **Reading time:** 5 minutes
 
-- System prerequisites
-- Clone and install
-- Verify installation
-- Troubleshooting common issues
+- Why GitHub for designers
+- Creating your account
+- Choosing a username
+- Setting up your profile
 
-### Lesson 2: Understanding WDS Structure
+### Lesson 2: Create Your Project Repository
 **Reading time:** 10 minutes
 
-- The `docs/` folder philosophy
-- 8-phase folder structure
-- How WDS organizes your thinking
-- Where AI agents look for information
+- Repository naming conventions
+- One repo vs. separate repos (specs + code)
+- Public vs. private repositories
+- Initial repository setup
+- README basics
 
-### Lesson 3: Creating Your First Project
+### Lesson 3: Install Your IDE
 **Reading time:** 5 minutes
 
-- Project folder setup
-- Initial configuration
-- Workspace organization
-- Best practices
+- Cursor vs. VS Code - which to choose
+- Download and installation
+- Basic IDE orientation
+- Essential settings for designers
 
-### Lesson 4: Meet Your WDS Agents
+### Lesson 4: Clone Your Project (Git Handled Automatically!)
 **Reading time:** 10 minutes
 
-- Mimir: Your guide and orchestrator
-- Freyja: The UX designer
-- Saga: The strategic analyst
-- Idunn: The PM and coordinator
-- When to use each agent
+- Understanding "cloning"
+- The IDE handles Git installation for you
+- Visual alternative: GitHub Desktop
+- Clone your project repository
+- Add WDS to your workspace
+- Create docs folder structure
+
+### Lesson 5: Initiate with Mimir
+**Reading time:** 5 minutes
+
+- The Mimir orchestrator file
+- Drag-to-chat initialization
+- What Mimir will ask you
+- Your first guided session
 
 ---
 
-## Tutorial: Quick Installation
+## Tutorial: Complete Beginner Setup
 
-**For hands-on learners who want to dive right in:**
+**For hands-on learners who want step-by-step instructions:**
 
-[→ Tutorial 02: Install WDS in 5 Minutes](tutorial-02.md)
+[→ Tutorial 02: Complete Beginner Setup](tutorial-02.md)
 
-Step-by-step guide with copy-paste commands and verification checkpoints.
+**8 detailed steps** from GitHub account creation to Mimir activation, with screenshots-worthy instructions and platform-specific commands.
 
 ---
 
@@ -86,10 +96,12 @@ Step-by-step guide with copy-paste commands and verification checkpoints.
 
 Once you've completed Module 02:
 
-- ✅ WDS is installed and verified
-- ✅ You understand the folder structure
-- ✅ Your first project is set up
-- ✅ You know which agents to call
+- ✅ GitHub account created and repository set up
+- ✅ IDE installed (Cursor or VS Code)
+- ✅ Your project cloned to your computer
+- ✅ WDS added to your workspace
+- ✅ Docs folder structure created
+- ✅ Mimir activated and ready to guide you
 
 **Next:** [Module 03: Create Project Brief](../module-03-project-brief/module-03-overview.md)
 
