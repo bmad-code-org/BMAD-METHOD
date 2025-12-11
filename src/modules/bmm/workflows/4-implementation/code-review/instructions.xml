@@ -5,6 +5,19 @@
   <critical>Generate all documents in {document_output_language}</critical>
 
   <!-- ================================================================ -->
+  <!-- CLAUDE CODE CLEANUP - KILL LINGERING EXTERNAL AGENT PROCESSES   -->
+  <!-- ================================================================ -->
+  <!-- If BMAD is running as Claude Code (not the external agent), clean up
+       any terminal processes from previous external agent code reviews.
+       This prevents context pollution from stale review sessions. -->
+  <check if="BMAD is running as Claude Code (detected via KillShell tool availability or CLAUDE_CODE env)">
+    <action>Check for any running background shells/terminals from previous external agent reviews</action>
+    <action>If any `claude -p` or similar external agent processes are found running, use KillShell to terminate them</action>
+    <action>This ensures a clean slate for the new code review session</action>
+    <output>🧹 Cleaned up previous external agent review processes (if any)</output>
+  </check>
+
+  <!-- ================================================================ -->
   <!-- EXTERNAL AGENT MANDATE - THIS IS THE MOST IMPORTANT RULE        -->
   <!-- ================================================================ -->
   <critical>🚨 MANDATORY EXTERNAL AGENT RULE - NO EXCEPTIONS 🚨</critical>
