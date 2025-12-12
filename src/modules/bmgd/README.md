@@ -129,13 +129,14 @@ bmgd/
 │       (Uses BMM workflows via cross-module references)
 ├── templates/
 ├── data/
+├── module.yaml
 └── _module-installer/
-    └── install-config.yaml
+    └── installer.js (optional)
 ```
 
 ## Configuration
 
-After installation, configure the module in `{bmad_folder}/bmgd/config.yaml`
+After installation, configure the module in `.bmad/bmgd/config.yaml`
 
 Key settings:
 

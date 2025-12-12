@@ -35,7 +35,7 @@ _Complete visual flowchart showing all phases, workflows, agents (color-coded), 
 npx bmad-method@alpha install
 ```
 
-The interactive installer will guide you through setup and create a `{bmad_folder}/` folder with all agents and workflows.
+The interactive installer will guide you through setup and create a `.bmad/` folder with all agents and workflows.
 
 ---
 
@@ -200,35 +200,21 @@ Once planning and architecture are complete, you'll move to Phase 4. **Important
 3. Tell the agent: "Run sprint-planning"
 4. This creates your `sprint-status.yaml` file that tracks all epics and stories
 
-#### 3.2 Create Epic Context (Optional but Recommended)
-
-1. **Start a new chat** with the **SM agent**
-2. Wait for the menu
-3. Tell the agent: "Run epic-tech-context"
-4. This creates technical context for the current epic before drafting stories
-
-#### 3.3 Draft Your First Story
+#### 3.2 Create Your First Story
 
 1. **Start a new chat** with the **SM agent**
 2. Wait for the menu
 3. Tell the agent: "Run create-story"
-4. This drafts the story file from the epic
+4. This creates the story file from the epic
 
-#### 3.4 Add Story Context (Optional but Recommended)
-
-1. **Start a new chat** with the **SM agent**
-2. Wait for the menu
-3. Tell the agent: "Run story-context"
-4. This creates implementation-specific technical context for the story
-
-#### 3.5 Implement the Story
+#### 3.3 Implement the Story
 
 1. **Start a new chat** with the **DEV agent**
 2. Wait for the menu
 3. Tell the agent: "Run dev-story"
 4. The DEV agent will implement the story and update the sprint status
 
-#### 3.6 Review the Code (Optional but Recommended)
+#### 3.4 Review the Code (Optional but Recommended)
 
 1. **Start a new chat** with the **DEV agent**
 2. Wait for the menu
@@ -240,9 +226,8 @@ Once planning and architecture are complete, you'll move to Phase 4. **Important
 For each subsequent story, repeat the cycle using **fresh chats** for each workflow:
 
 1. **New chat** → SM agent → "Run create-story"
-2. **New chat** → SM agent → "Run story-context"
-3. **New chat** → DEV agent → "Run dev-story"
-4. **New chat** → DEV agent → "Run code-review" (optional but recommended)
+2. **New chat** → DEV agent → "Run dev-story"
+3. **New chat** → DEV agent → "Run code-review" (optional but recommended)
 
 After completing all stories in an epic:
 
@@ -328,11 +313,10 @@ flowchart LR
         direction TB
         D1[Per Epic:<br/>epic context]
         D2[Per Story:<br/>create-story]
-        D3[story-context]
-        D4[dev-story]
-        D5[code-review]
-        D6[SM, DEV]
-        D1 ~~~ D2 ~~~ D3 ~~~ D4 ~~~ D5 ~~~ D6
+        D3[dev-story]
+        D4[code-review]
+        D5[SM, DEV]
+        D1 ~~~ D2 ~~~ D3 ~~~ D4 ~~~ D5
     end
 
     P1 --> P2

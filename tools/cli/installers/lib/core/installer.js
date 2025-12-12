@@ -1,7 +1,28 @@
+/**
+ * File: tools/cli/installers/lib/core/installer.js
+ *
+ * BMAD Method - Business Model Agile Development Method
+ * Repository: https://github.com/paulpreibisch/BMAD-METHOD
+ *
+ * Copyright (c) 2025 Paul Preibisch
+ * Licensed under the Apache License, Version 2.0
+ *
+ * ---
+ *
+ * @fileoverview Core BMAD installation orchestrator with AgentVibes injection point support
+ * @context Manages complete BMAD installation flow including core agents, modules, IDE configs, and optional TTS integration
+ * @architecture Orchestrator pattern - coordinates Detector, ModuleManager, IdeManager, and file operations to build complete BMAD installation
+ * @dependencies fs-extra, ora, chalk, detector.js, module-manager.js, ide-manager.js, config.js
+ * @entrypoints Called by install.js command via installer.install(config)
+ * @patterns Injection point processing (AgentVibes), placeholder replacement (.bmad), module dependency resolution
+ * @related GitHub AgentVibes#34 (injection points), ui.js (user prompts), copyFileWithPlaceholderReplacement()
+ */
+
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const ora = require('ora');
+const inquirer = require('inquirer');
 const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
 const { ModuleManager } = require('../modules/manager');
@@ -17,6 +38,8 @@ const { AgentPartyGenerator } = require('../../../lib/agent-party-generator');
 const { CLIUtils } = require('../../../lib/cli-utils');
 const { ManifestGenerator } = require('./manifest-generator');
 const { IdeConfigManager } = require('./ide-config-manager');
+const { replaceAgentSidecarFolders } = require('./post-install-sidecar-replacement');
+const { CustomHandler } = require('../custom/handler');
 
 class Installer {
   constructor() {
@@ -31,6 +54,7 @@ class Installer {
     this.configCollector = new ConfigCollector();
     this.ideConfigManager = new IdeConfigManager();
     this.installedFiles = []; // Track all installed files
+    this.ttsInjectedFiles = []; // Track files with TTS injection applied
   }
 
   /**
@@ -43,7 +67,7 @@ class Installer {
     // Check if project directory exists
     if (!(await fs.pathExists(projectDir))) {
       // Project doesn't exist yet, return default
-      return path.join(projectDir, 'bmad');
+      return path.join(projectDir, '.bmad');
     }
 
     // V6+ strategy: Look for ANY directory with _cfg/manifest.yaml
@@ -65,18 +89,44 @@ class Installer {
 
     // No V6+ installation found, return default
     // This will be used for new installations
-    return path.join(projectDir, 'bmad');
+    return path.join(projectDir, '.bmad');
   }
 
   /**
-   * Copy a file and replace {bmad_folder} placeholder with actual folder name
-   * @param {string} sourcePath - Source file path
-   * @param {string} targetPath - Target file path
-   * @param {string} bmadFolderName - The bmad folder name to use for replacement
+   * @function copyFileWithPlaceholderReplacement
+   * @intent Copy files from BMAD source to installation directory with dynamic content transformation
+   * @why Enables installation-time customization: .bmad replacement + optional AgentVibes TTS injection
+   * @param {string} sourcePath - Absolute path to source file in BMAD repository
+   * @param {string} targetPath - Absolute path to destination file in user's project
+   * @param {string} bmadFolderName - User's chosen bmad folder name (default: 'bmad')
+   * @returns {Promise<void>} Resolves when file copy and transformation complete
+   * @sideeffects Writes transformed file to targetPath, creates parent directories if needed
+   * @edgecases Binary files bypass transformation, falls back to raw copy if UTF-8 read fails
+   * @calledby installCore(), installModule(), IDE installers during file vendoring
+   * @calls processTTSInjectionPoints(), fs.readFile(), fs.writeFile(), fs.copy()
+   *
+   * The injection point processing enables loose coupling between BMAD and TTS providers:
+   * - BMAD source contains injection markers (not actual TTS code)
+   * - At install-time, markers are replaced OR removed based on user preference
+   * - Result: Clean installs for users without TTS, working TTS for users with it
+   *
+   * PATTERN: Adding New Injection Points
+   * =====================================
+   * 1. Add HTML comment marker in BMAD source file:
+   *    <!-- TTS_INJECTION:feature-name -->
+   *
+   * 2. Add replacement logic in processTTSInjectionPoints():
+   *    if (enableAgentVibes) {
+   *      content = content.replace(/<!-- TTS_INJECTION:feature-name -->/g, 'actual code');
+   *    } else {
+   *      content = content.replace(/<!-- TTS_INJECTION:feature-name -->\n?/g, '');
+   *    }
+   *
+   * 3. Document marker in instructions.md (if applicable)
    */
   async copyFileWithPlaceholderReplacement(sourcePath, targetPath, bmadFolderName) {
     // List of text file extensions that should have placeholder replacement
-    const textExtensions = ['.md', '.yaml', '.yml', '.txt', '.json', '.js', '.ts', '.html', '.css', '.sh', '.bat', '.csv'];
+    const textExtensions = ['.md', '.yaml', '.yml', '.txt', '.json', '.js', '.ts', '.html', '.css', '.sh', '.bat', '.csv', '.xml'];
     const ext = path.extname(sourcePath).toLowerCase();
 
     // Check if this is a text file that might contain placeholders
@@ -85,10 +135,8 @@ class Installer {
         // Read the file content
         let content = await fs.readFile(sourcePath, 'utf8');
 
-        // Replace {bmad_folder} placeholder with actual folder name
-        if (content.includes('{bmad_folder}')) {
-          content = content.replaceAll('{bmad_folder}', bmadFolderName);
-        }
+        // Process AgentVibes injection points (pass targetPath for tracking)
+        content = this.processTTSInjectionPoints(content, targetPath);
 
         // Write to target with replaced content
         await fs.ensureDir(path.dirname(targetPath));
@@ -101,6 +149,116 @@ class Installer {
       // Binary file or other file type - just copy directly
       await fs.copy(sourcePath, targetPath, { overwrite: true });
     }
+  }
+
+  /**
+   * @function processTTSInjectionPoints
+   * @intent Transform TTS injection markers based on user's installation choice
+   * @why Enables optional TTS integration without tight coupling between BMAD and TTS providers
+   * @param {string} content - Raw file content containing potential injection markers
+   * @returns {string} Transformed content with markers replaced (if enabled) or stripped (if disabled)
+   * @sideeffects None - pure transformation function
+   * @edgecases Returns content unchanged if no markers present, safe to call on all files
+   * @calledby copyFileWithPlaceholderReplacement() during every file copy operation
+   * @calls String.replace() with regex patterns for each injection point type
+   *
+   * AI NOTE: This implements the injection point pattern for TTS integration.
+   * Key architectural decisions:
+   *
+   * 1. **Why Injection Points vs Direct Integration?**
+   *    - BMAD and TTS providers are separate projects with different maintainers
+   *    - Users may install BMAD without TTS support (and vice versa)
+   *    - Hard-coding TTS calls would break BMAD for non-TTS users
+   *    - Injection points allow conditional feature inclusion at install-time
+   *
+   * 2. **How It Works:**
+   *    - BMAD source contains markers: <!-- TTS_INJECTION:feature-name -->
+   *    - During installation, user is prompted: "Enable AgentVibes TTS?"
+   *    - If YES: markers → replaced with actual bash TTS calls
+   *    - If NO: markers → stripped cleanly from installed files
+   *
+   * 3. **State Management:**
+   *    - this.enableAgentVibes set in install() method from config.enableAgentVibes
+   *    - config.enableAgentVibes comes from ui.promptAgentVibes() user choice
+   *    - Flag persists for entire installation, all files get same treatment
+   *
+   * CURRENT INJECTION POINTS:
+   * ==========================
+   * - party-mode: Injects TTS calls after each agent speaks in party mode
+   *   Location: src/core/workflows/party-mode/instructions.md
+   *   Marker: <!-- TTS_INJECTION:party-mode -->
+   *   Replacement: Bash call to .claude/hooks/bmad-speak.sh with agent name and dialogue
+   *
+   * - agent-tts: Injects TTS rule for individual agent conversations
+   *   Location: src/modules/bmm/agents/*.md (all agent files)
+   *   Marker: <!-- TTS_INJECTION:agent-tts -->
+   *   Replacement: Rule instructing agent to call bmad-speak.sh with agent ID and response
+   *
+   * ADDING NEW INJECTION POINTS:
+   * =============================
+   * 1. Add new case in this function:
+   *    content = content.replace(
+   *      /<!-- TTS_INJECTION:new-feature -->/g,
+   *      `code to inject when enabled`
+   *    );
+   *
+   * 2. Add marker to BMAD source file at injection location
+   *
+   * 3. Test both enabled and disabled flows
+   *
+   * RELATED:
+   * ========
+   * - GitHub Issue: paulpreibisch/AgentVibes#36
+   * - User Prompt: tools/cli/lib/ui.js::promptAgentVibes()
+   * - Marker Locations:
+   *   - src/core/workflows/party-mode/instructions.md:101
+   *   - src/modules/bmm/agents/*.md (rules sections)
+   * - TTS Hook: .claude/hooks/bmad-speak.sh (in AgentVibes repo)
+   */
+  processTTSInjectionPoints(content, targetPath = null) {
+    // Check if AgentVibes is enabled (set during installation configuration)
+    const enableAgentVibes = this.enableAgentVibes || false;
+
+    // Check if content contains any TTS injection markers
+    const hasPartyMode = content.includes('<!-- TTS_INJECTION:party-mode -->');
+    const hasAgentTTS = content.includes('<!-- TTS_INJECTION:agent-tts -->');
+
+    if (enableAgentVibes) {
+      // Replace party-mode injection marker with actual TTS call
+      // Use single quotes to prevent shell expansion of special chars like !
+      content = content.replaceAll(
+        '<!-- TTS_INJECTION:party-mode -->',
+        `<critical>IMPORTANT: Always use PROJECT hooks (.claude/hooks/), NEVER global hooks (~/.claude/hooks/)</critical>
+
+If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
+         - Use Bash tool: \`.claude/hooks/bmad-speak.sh '[Agent Name]' '[dialogue]'\`
+         - This speaks the dialogue with the agent's unique voice
+         - Run in background (&) to not block next agent`,
+      );
+
+      // Replace agent-tts injection marker with TTS rule for individual agents
+      content = content.replaceAll(
+        '<!-- TTS_INJECTION:agent-tts -->',
+        `- When responding to user messages, speak your responses using TTS:
+   Call: \`.claude/hooks/bmad-speak.sh '{agent-id}' '{response-text}'\` after each response
+   Replace {agent-id} with YOUR agent ID from <agent id="..."> tag at top of this file
+   Replace {response-text} with the text you just output to the user
+   IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
+   Run in background (&) to avoid blocking`,
+      );
+
+      // Track files that had TTS injection applied
+      if (targetPath && (hasPartyMode || hasAgentTTS)) {
+        const injectionType = hasPartyMode ? 'party-mode' : 'agent-tts';
+        this.ttsInjectedFiles.push({ path: targetPath, type: injectionType });
+      }
+    } else {
+      // Strip injection markers cleanly when AgentVibes is disabled
+      content = content.replaceAll(/<!-- TTS_INJECTION:party-mode -->\n?/g, '');
+      content = content.replaceAll(/<!-- TTS_INJECTION:agent-tts -->\n?/g, '');
+    }
+
+    return content;
   }
 
   /**
@@ -166,7 +324,9 @@ class Installer {
 
         for (const ide of newlySelectedIdes) {
           // List of IDEs that have interactive prompts
-          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini'].includes(ide);
+          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini', 'rovo-dev'].includes(
+            ide,
+          );
 
           if (needsPrompts) {
             // Get IDE handler and collect configuration
@@ -233,7 +393,10 @@ class Installer {
    * @param {string[]} config.ides - IDEs to configure
    * @param {boolean} config.skipIde - Skip IDE configuration
    */
-  async install(config) {
+  async install(originalConfig) {
+    // Clone config to avoid mutating the caller's object
+    const config = { ...originalConfig };
+
     // Display BMAD logo
     CLIUtils.displayLogo();
 
@@ -261,16 +424,64 @@ class Installer {
       // Quick update already collected all configs, use them directly
       moduleConfigs = this.configCollector.collectedConfig;
     } else {
+      // Build custom module paths map from customContent
+      const customModulePaths = new Map();
+
+      // Handle selectedFiles (from existing install path or manual directory input)
+      if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
+        const customHandler = new CustomHandler();
+        for (const customFile of config.customContent.selectedFiles) {
+          const customInfo = await customHandler.getCustomInfo(customFile, path.resolve(config.directory));
+          if (customInfo && customInfo.id) {
+            customModulePaths.set(customInfo.id, customInfo.path);
+          }
+        }
+      }
+
+      // Handle cachedModules (from new install path where modules are cached)
+      // Only include modules that were actually selected for installation
+      if (config.customContent && config.customContent.cachedModules) {
+        // Get selected cached module IDs (if available)
+        const selectedCachedIds = config.customContent.selectedCachedModules || [];
+        // If no selection info, include all cached modules (for backward compatibility)
+        const shouldIncludeAll = selectedCachedIds.length === 0 && config.customContent.selected;
+
+        for (const cachedModule of config.customContent.cachedModules) {
+          // For cached modules, the path is the cachePath which contains the module.yaml
+          if (
+            cachedModule.id &&
+            cachedModule.cachePath && // Include if selected or if we should include all
+            (shouldIncludeAll || selectedCachedIds.includes(cachedModule.id))
+          ) {
+            customModulePaths.set(cachedModule.id, cachedModule.cachePath);
+          }
+        }
+      }
+
+      // Get list of all modules including custom modules
+      const allModulesForConfig = [...(config.modules || [])];
+      for (const [moduleId] of customModulePaths) {
+        if (!allModulesForConfig.includes(moduleId)) {
+          allModulesForConfig.push(moduleId);
+        }
+      }
+
       // Regular install - collect configurations (core was already collected in UI.promptInstall if interactive)
-      moduleConfigs = await this.configCollector.collectAllConfigurations(config.modules || [], path.resolve(config.directory));
+      moduleConfigs = await this.configCollector.collectAllConfigurations(allModulesForConfig, path.resolve(config.directory), {
+        customModulePaths,
+      });
     }
 
-    // Get bmad_folder from config (default to 'bmad' for backwards compatibility)
-    const bmadFolderName = moduleConfigs.core && moduleConfigs.core.bmad_folder ? moduleConfigs.core.bmad_folder : 'bmad';
+    // Always use .bmad as the folder name
+    const bmadFolderName = '.bmad';
     this.bmadFolderName = bmadFolderName; // Store for use in other methods
+
+    // Store AgentVibes configuration for injection point processing
+    this.enableAgentVibes = config.enableAgentVibes || false;
 
     // Set bmad folder name on module manager and IDE manager for placeholder replacement
     this.moduleManager.setBmadFolderName(bmadFolderName);
+    this.moduleManager.setCoreConfig(moduleConfigs.core || {});
     this.ideManager.setBmadFolderName(bmadFolderName);
 
     // Tool selection will be collected after we determine if it's a reinstall/update/new install
@@ -281,61 +492,12 @@ class Installer {
       // Resolve target directory (path.resolve handles platform differences)
       const projectDir = path.resolve(config.directory);
 
-      // Check if bmad_folder has changed from existing installation (only if project dir exists)
       let existingBmadDir = null;
       let existingBmadFolderName = null;
 
       if (await fs.pathExists(projectDir)) {
         existingBmadDir = await this.findBmadDir(projectDir);
         existingBmadFolderName = path.basename(existingBmadDir);
-      }
-
-      const targetBmadDir = path.join(projectDir, bmadFolderName);
-
-      // If bmad_folder changed during update/upgrade, back up old folder and do fresh install
-      if (existingBmadDir && (await fs.pathExists(existingBmadDir)) && existingBmadFolderName !== bmadFolderName) {
-        spinner.stop();
-        console.log(chalk.yellow(`\n⚠️  bmad_folder has changed: ${existingBmadFolderName} → ${bmadFolderName}`));
-        console.log(chalk.yellow('This will result in a fresh installation to the new folder.'));
-
-        const inquirer = require('inquirer');
-        const { confirmFreshInstall } = await inquirer.prompt([
-          {
-            type: 'confirm',
-            name: 'confirmFreshInstall',
-            message: chalk.cyan('Proceed with fresh install? (Your old folder will be backed up)'),
-            default: true,
-          },
-        ]);
-
-        if (!confirmFreshInstall) {
-          console.log(chalk.yellow('Installation cancelled.'));
-          return { success: false, cancelled: true };
-        }
-
-        spinner.start('Backing up existing installation...');
-
-        // Find a unique backup name
-        let backupDir = `${existingBmadDir}-bak`;
-        let counter = 1;
-        while (await fs.pathExists(backupDir)) {
-          backupDir = `${existingBmadDir}-bak-${counter}`;
-          counter++;
-        }
-
-        // Rename the old folder to backup
-        await fs.move(existingBmadDir, backupDir);
-
-        spinner.succeed(`Backed up ${existingBmadFolderName} → ${path.basename(backupDir)}`);
-        console.log(chalk.cyan('\n📋 Important:'));
-        console.log(chalk.dim(`  - Your old installation has been backed up to: ${path.basename(backupDir)}`));
-        console.log(chalk.dim(`  - If you had custom agents or configurations, copy them from:`));
-        console.log(chalk.dim(`    ${path.basename(backupDir)}/_cfg/`));
-        console.log(chalk.dim(`  - To the new location:`));
-        console.log(chalk.dim(`    ${bmadFolderName}/_cfg/`));
-        console.log('');
-
-        spinner.start('Starting fresh installation...');
       }
 
       // Create a project directory if it doesn't exist (user already confirmed)
@@ -573,13 +735,80 @@ class Installer {
       spinner.text = 'Creating directory structure...';
       await this.createDirectoryStructure(bmadDir);
 
-      // Resolve dependencies for selected modules
-      spinner.text = 'Resolving dependencies...';
+      // Get project root
       const projectRoot = getProjectRoot();
-      const modulesToInstall = config.installCore ? ['core', ...config.modules] : config.modules;
+
+      // Step 1: Install core module first (if requested)
+      if (config.installCore) {
+        spinner.start('Installing BMAD core...');
+        await this.installCoreWithDependencies(bmadDir, { core: {} });
+        spinner.succeed('Core installed');
+
+        // Generate core config file
+        await this.generateModuleConfigs(bmadDir, { core: config.coreConfig || {} });
+      }
+
+      // Custom content is already handled in UI before module selection
+      let finalCustomContent = config.customContent;
+
+      // Step 3: Prepare modules list including cached custom modules
+      let allModules = [...(config.modules || [])];
+
+      // During quick update, we might have custom module sources from the manifest
+      if (config._customModuleSources) {
+        // Add custom modules from stored sources
+        for (const [moduleId, customInfo] of config._customModuleSources) {
+          if (!allModules.includes(moduleId) && (await fs.pathExists(customInfo.sourcePath))) {
+            allModules.push(moduleId);
+          }
+        }
+      }
+
+      // Add cached custom modules
+      if (finalCustomContent && finalCustomContent.cachedModules) {
+        for (const cachedModule of finalCustomContent.cachedModules) {
+          if (!allModules.includes(cachedModule.id)) {
+            allModules.push(cachedModule.id);
+          }
+        }
+      }
+
+      // Regular custom content from user input (non-cached)
+      if (finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
+        // Add custom modules to the installation list
+        const customHandler = new CustomHandler();
+        for (const customFile of finalCustomContent.selectedFiles) {
+          const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
+          if (customInfo && customInfo.id) {
+            allModules.push(customInfo.id);
+          }
+        }
+      }
+
+      // Don't include core again if already installed
+      if (config.installCore) {
+        allModules = allModules.filter((m) => m !== 'core');
+      }
+
+      const modulesToInstall = allModules;
 
       // For dependency resolution, we need to pass the project root
-      const resolution = await this.dependencyResolver.resolve(projectRoot, config.modules || [], { verbose: config.verbose });
+      // Create a temporary module manager that knows about custom content locations
+      const tempModuleManager = new ModuleManager({
+        scanProjectForModules: true,
+        bmadDir: bmadDir, // Pass bmadDir so we can check cache
+      });
+
+      // Make sure custom modules are discoverable
+      if (config.customContent && config.customContent.selected && config.customContent.selectedFiles) {
+        // The dependency resolver needs to know about these modules
+        // We'll handle custom modules separately in the installation loop
+      }
+
+      const resolution = await this.dependencyResolver.resolve(projectRoot, allModules, {
+        verbose: config.verbose,
+        moduleManager: tempModuleManager,
+      });
 
       if (config.verbose) {
         spinner.succeed('Dependencies resolved');
@@ -587,24 +816,182 @@ class Installer {
         spinner.succeed('Dependencies resolved');
       }
 
-      // Install core if requested or if dependencies require it
-      if (config.installCore || resolution.byModule.core) {
-        spinner.start('Installing BMAD core...');
-        await this.installCoreWithDependencies(bmadDir, resolution.byModule.core);
-        spinner.succeed('Core installed');
-      }
+      // Core is already installed above, skip if included in resolution
 
       // Install modules with their dependencies
-      if (config.modules && config.modules.length > 0) {
-        for (const moduleName of config.modules) {
+      if (allModules && allModules.length > 0) {
+        const installedModuleNames = new Set();
+
+        for (const moduleName of allModules) {
+          // Skip if already installed
+          if (installedModuleNames.has(moduleName)) {
+            continue;
+          }
+          installedModuleNames.add(moduleName);
+
           spinner.start(`Installing module: ${moduleName}...`);
-          await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
+
+          // Check if this is a custom module
+          let isCustomModule = false;
+          let customInfo = null;
+          let useCache = false;
+
+          // First check if we have a cached version
+          if (finalCustomContent && finalCustomContent.cachedModules) {
+            const cachedModule = finalCustomContent.cachedModules.find((m) => m.id === moduleName);
+            if (cachedModule) {
+              isCustomModule = true;
+              customInfo = {
+                id: moduleName,
+                path: cachedModule.cachePath,
+                config: {},
+              };
+              useCache = true;
+            }
+          }
+
+          // Then check if we have custom module sources from the manifest (for quick update)
+          if (!isCustomModule && config._customModuleSources && config._customModuleSources.has(moduleName)) {
+            customInfo = config._customModuleSources.get(moduleName);
+            isCustomModule = true;
+
+            // Check if this is a cached module (source path starts with _cfg)
+            if (customInfo.sourcePath && (customInfo.sourcePath.startsWith('_cfg') || customInfo.sourcePath.includes('_cfg/custom'))) {
+              useCache = true;
+              // Make sure we have the right path structure
+              if (!customInfo.path) {
+                customInfo.path = customInfo.sourcePath;
+              }
+            }
+          }
+
+          // Finally check regular custom content
+          if (!isCustomModule && finalCustomContent && finalCustomContent.selected && finalCustomContent.selectedFiles) {
+            const customHandler = new CustomHandler();
+            for (const customFile of finalCustomContent.selectedFiles) {
+              const info = await customHandler.getCustomInfo(customFile, projectDir);
+              if (info && info.id === moduleName) {
+                isCustomModule = true;
+                customInfo = info;
+                break;
+              }
+            }
+          }
+
+          if (isCustomModule && customInfo) {
+            // Install custom module using CustomHandler but as a proper module
+            const customHandler = new CustomHandler();
+
+            // Install to module directory instead of custom directory
+            const moduleTargetPath = path.join(bmadDir, moduleName);
+            await fs.ensureDir(moduleTargetPath);
+
+            // Get collected config for this custom module (from module.yaml prompts)
+            const collectedModuleConfig = moduleConfigs[moduleName] || {};
+
+            const result = await customHandler.install(
+              customInfo.path,
+              path.join(bmadDir, 'temp-custom'),
+              { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig, _bmadDir: bmadDir },
+              (filePath) => {
+                // Track installed files with correct path
+                const relativePath = path.relative(path.join(bmadDir, 'temp-custom'), filePath);
+                const finalPath = path.join(moduleTargetPath, relativePath);
+                this.installedFiles.push(finalPath);
+              },
+            );
+
+            // Move from temp-custom to actual module directory
+            const tempCustomPath = path.join(bmadDir, 'temp-custom');
+            if (await fs.pathExists(tempCustomPath)) {
+              const customDir = path.join(tempCustomPath, 'custom');
+              if (await fs.pathExists(customDir)) {
+                // Move contents to module directory
+                const items = await fs.readdir(customDir);
+                const movedItems = [];
+                try {
+                  for (const item of items) {
+                    const srcPath = path.join(customDir, item);
+                    const destPath = path.join(moduleTargetPath, item);
+
+                    // If destination exists, remove it first (or we could merge)
+                    if (await fs.pathExists(destPath)) {
+                      await fs.remove(destPath);
+                    }
+
+                    await fs.move(srcPath, destPath);
+                    movedItems.push({ src: srcPath, dest: destPath });
+                  }
+                } catch (moveError) {
+                  // Rollback: restore any successfully moved items
+                  for (const moved of movedItems) {
+                    try {
+                      await fs.move(moved.dest, moved.src);
+                    } catch {
+                      // Best-effort rollback - log if it fails
+                      console.error(`Failed to rollback ${moved.dest} during cleanup`);
+                    }
+                  }
+                  throw new Error(`Failed to move custom module files: ${moveError.message}`);
+                }
+              }
+              try {
+                await fs.remove(tempCustomPath);
+              } catch (cleanupError) {
+                // Non-fatal: temp directory cleanup failed but files were moved successfully
+                console.warn(`Warning: Could not clean up temp directory: ${cleanupError.message}`);
+              }
+            }
+
+            // Create module config (include collected config from module.yaml prompts)
+            await this.generateModuleConfigs(bmadDir, {
+              [moduleName]: { ...config.coreConfig, ...customInfo.config, ...collectedModuleConfig },
+            });
+
+            // Store custom module info for later manifest update
+            if (!config._customModulesToTrack) {
+              config._customModulesToTrack = [];
+            }
+
+            // For cached modules, use appropriate path handling
+            let sourcePath;
+            if (useCache) {
+              // Check if we have cached modules info (from initial install)
+              if (finalCustomContent && finalCustomContent.cachedModules) {
+                sourcePath = finalCustomContent.cachedModules.find((m) => m.id === moduleName)?.relativePath;
+              } else {
+                // During update, the sourcePath is already cache-relative if it starts with _cfg
+                sourcePath =
+                  customInfo.sourcePath && customInfo.sourcePath.startsWith('_cfg')
+                    ? customInfo.sourcePath
+                    : path.relative(bmadDir, customInfo.path || customInfo.sourcePath);
+              }
+            } else {
+              sourcePath = path.resolve(customInfo.path || customInfo.sourcePath);
+            }
+
+            config._customModulesToTrack.push({
+              id: customInfo.id,
+              name: customInfo.name,
+              sourcePath: sourcePath,
+              installDate: new Date().toISOString(),
+            });
+          } else {
+            // Regular module installation
+            // Special case for core module
+            if (moduleName === 'core') {
+              await this.installCoreWithDependencies(bmadDir, resolution.byModule[moduleName]);
+            } else {
+              await this.installModuleWithDependencies(moduleName, bmadDir, resolution.byModule[moduleName]);
+            }
+          }
+
           spinner.succeed(`Module installed: ${moduleName}`);
         }
 
         // Install partial modules (only dependencies)
         for (const [module, files] of Object.entries(resolution.byModule)) {
-          if (!config.modules.includes(module) && module !== 'core') {
+          if (!allModules.includes(module) && module !== 'core') {
             const totalFiles =
               files.agents.length +
               files.tasks.length +
@@ -619,6 +1006,70 @@ class Installer {
             }
           }
         }
+      }
+
+      // Install custom content if provided AND selected
+      // Process custom content that wasn't installed as modules
+      // This is now handled in the module installation loop above
+      // This section is kept for backward compatibility with any custom content
+      // that doesn't have a module structure
+      const remainingCustomContent = [];
+      if (
+        config.customContent &&
+        config.customContent.hasCustomContent &&
+        config.customContent.customPath &&
+        config.customContent.selected &&
+        config.customContent.selectedFiles
+      ) {
+        // Filter out custom modules that were already installed
+        const customHandler = new CustomHandler();
+        for (const customFile of config.customContent.selectedFiles) {
+          const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
+
+          // Skip if this was installed as a module
+          if (!customInfo || !customInfo.id || !allModules.includes(customInfo.id)) {
+            remainingCustomContent.push(customFile);
+          }
+        }
+      }
+
+      if (remainingCustomContent.length > 0) {
+        spinner.start('Installing remaining custom content...');
+        const customHandler = new CustomHandler();
+
+        // Use the remaining files
+        const customFiles = remainingCustomContent;
+
+        if (customFiles.length > 0) {
+          console.log(chalk.cyan(`\n  Found ${customFiles.length} custom content file(s):`));
+          for (const customFile of customFiles) {
+            const customInfo = await customHandler.getCustomInfo(customFile, projectDir);
+            if (customInfo) {
+              console.log(chalk.dim(`    • ${customInfo.name} (${customInfo.relativePath})`));
+
+              // Install the custom content
+              const result = await customHandler.install(
+                customInfo.path,
+                bmadDir,
+                { ...config.coreConfig, ...customInfo.config },
+                (filePath) => {
+                  // Track installed files
+                  this.installedFiles.push(filePath);
+                },
+              );
+
+              if (result.errors.length > 0) {
+                console.log(chalk.yellow(`    ⚠️  ${result.errors.length} error(s) occurred`));
+                for (const error of result.errors) {
+                  console.log(chalk.dim(`      - ${error}`));
+                }
+              } else {
+                console.log(chalk.green(`    ✓ Installed ${result.agentsInstalled} agents, ${result.workflowsInstalled} workflows`));
+              }
+            }
+          }
+        }
+        spinner.succeed('Custom content installed');
       }
 
       // Generate clean config.yaml files for each installed module
@@ -643,13 +1094,36 @@ class Installer {
       spinner.start('Generating workflow and agent manifests...');
       const manifestGen = new ManifestGenerator();
 
-      // Include preserved modules (from quick update) in the manifest
-      const allModulesToList = config._preserveModules ? [...(config.modules || []), ...config._preserveModules] : config.modules || [];
+      // For quick update, we need ALL installed modules in the manifest
+      // Not just the ones being updated
+      const allModulesForManifest = config._quickUpdate
+        ? config._existingModules || allModules || []
+        : config._preserveModules
+          ? [...allModules, ...config._preserveModules]
+          : allModules || [];
 
-      const manifestStats = await manifestGen.generateManifests(bmadDir, config.modules || [], this.installedFiles, {
+      // For regular installs (including when called from quick update), use what we have
+      let modulesForCsvPreserve;
+      if (config._quickUpdate) {
+        // Quick update - use existing modules or fall back to modules being updated
+        modulesForCsvPreserve = config._existingModules || allModules || [];
+      } else {
+        // Regular install - use the modules we're installing plus any preserved ones
+        modulesForCsvPreserve = config._preserveModules ? [...allModules, ...config._preserveModules] : allModules;
+      }
+
+      const manifestStats = await manifestGen.generateManifests(bmadDir, allModulesForManifest, this.installedFiles, {
         ides: config.ides || [],
-        preservedModules: config._preserveModules || [], // Scan these from installed bmad/ dir
+        preservedModules: modulesForCsvPreserve, // Scan these from installed bmad/ dir
       });
+
+      // Add custom modules to manifest (now that it exists)
+      if (config._customModulesToTrack && config._customModulesToTrack.length > 0) {
+        spinner.text = 'Storing custom module sources...';
+        for (const customModule of config._customModulesToTrack) {
+          await this.manifest.addCustomModule(bmadDir, customModule);
+        }
+      }
 
       spinner.succeed(
         `Manifests generated: ${manifestStats.workflows} workflows, ${manifestStats.agents} agents, ${manifestStats.tasks} tasks, ${manifestStats.tools} tools, ${manifestStats.files} files`,
@@ -735,6 +1209,7 @@ class Installer {
         await this.moduleManager.runModuleInstaller('core', bmadDir, {
           installedIDEs: config.ides || [],
           moduleConfig: moduleConfigs.core || {},
+          coreConfig: moduleConfigs.core || {},
           logger: {
             log: (msg) => console.log(msg),
             error: (msg) => console.error(msg),
@@ -752,6 +1227,7 @@ class Installer {
           await this.moduleManager.runModuleInstaller(moduleName, bmadDir, {
             installedIDEs: config.ides || [],
             moduleConfig: moduleConfigs[moduleName] || {},
+            coreConfig: moduleConfigs.core || {},
             logger: {
               log: (msg) => console.log(msg),
               error: (msg) => console.error(msg),
@@ -849,6 +1325,20 @@ class Installer {
         }
       }
 
+      // Replace {agent_sidecar_folder} placeholders in all agent files
+      console.log(chalk.dim('\n  Configuring agent sidecar folders...'));
+      const sidecarResults = await replaceAgentSidecarFolders(bmadDir);
+
+      if (sidecarResults.filesReplaced > 0) {
+        console.log(
+          chalk.green(
+            `  ✓ Updated ${sidecarResults.filesReplaced} agent file(s) with ${sidecarResults.totalReplacements} sidecar reference(s)`,
+          ),
+        );
+      } else {
+        console.log(chalk.dim('  No agent sidecar references found'));
+      }
+
       // Display completion message
       const { UI } = require('../../../lib/ui');
       const ui = new UI();
@@ -857,9 +1347,18 @@ class Installer {
         modules: config.modules,
         ides: config.ides,
         customFiles: customFiles.length > 0 ? customFiles : undefined,
+        ttsInjectedFiles: this.enableAgentVibes && this.ttsInjectedFiles.length > 0 ? this.ttsInjectedFiles : undefined,
+        agentVibesEnabled: this.enableAgentVibes || false,
       });
 
-      return { success: true, path: bmadDir, modules: config.modules, ides: config.ides };
+      return {
+        success: true,
+        path: bmadDir,
+        modules: config.modules,
+        ides: config.ides,
+        needsAgentVibes: this.enableAgentVibes && !config.agentVibesInstalled,
+        projectDir: projectDir,
+      };
     } catch (error) {
       spinner.fail('Installation failed');
       throw error;
@@ -887,6 +1386,30 @@ class Installer {
       // Compare versions and determine what needs updating
       const currentVersion = existingInstall.version;
       const newVersion = require(path.join(getProjectRoot(), 'package.json')).version;
+
+      // Check for custom modules with missing sources before update
+      const customModuleSources = new Map();
+      if (existingInstall.customModules) {
+        for (const customModule of existingInstall.customModules) {
+          customModuleSources.set(customModule.id, customModule);
+        }
+      }
+
+      if (customModuleSources.size > 0) {
+        spinner.stop();
+        console.log(chalk.yellow('\nChecking custom module sources before update...'));
+
+        const projectRoot = getProjectRoot();
+        await this.handleMissingCustomSources(
+          customModuleSources,
+          bmadDir,
+          projectRoot,
+          'update',
+          existingInstall.modules.map((m) => m.id),
+        );
+
+        spinner.start('Preparing update...');
+      }
 
       if (config.dryRun) {
         spinner.stop();
@@ -1338,22 +1861,86 @@ class Installer {
 
         // Build YAML + customize to .md
         const customizeExists = await fs.pathExists(customizePath);
-        const xmlContent = await this.xmlHandler.buildFromYaml(yamlPath, customizeExists ? customizePath : null, {
+        let xmlContent = await this.xmlHandler.buildFromYaml(yamlPath, customizeExists ? customizePath : null, {
           includeMetadata: true,
         });
 
         // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
         // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
 
+        // Replace .bmad with actual folder name
+        xmlContent = xmlContent.replaceAll('.bmad', this.bmadFolderName || 'bmad');
+
+        // Replace {agent_sidecar_folder} if configured
+        const coreConfig = this.configCollector.collectedConfig.core || {};
+        if (coreConfig.agent_sidecar_folder && xmlContent.includes('{agent_sidecar_folder}')) {
+          xmlContent = xmlContent.replaceAll('{agent_sidecar_folder}', coreConfig.agent_sidecar_folder);
+        }
+
+        // Process TTS injection points (pass targetPath for tracking)
+        xmlContent = this.processTTSInjectionPoints(xmlContent, mdPath);
+
+        // Check if agent has sidecar and copy it
+        let agentYamlContent = null;
+        let hasSidecar = false;
+
+        try {
+          agentYamlContent = await fs.readFile(yamlPath, 'utf8');
+          const yamlLib = require('yaml');
+          const agentYaml = yamlLib.parse(agentYamlContent);
+          hasSidecar = agentYaml?.agent?.metadata?.hasSidecar === true;
+        } catch {
+          // Continue without sidecar processing
+        }
+
         // Write the built .md file to bmad/{module}/agents/ with POSIX-compliant final newline
         const content = xmlContent.endsWith('\n') ? xmlContent : xmlContent + '\n';
         await fs.writeFile(mdPath, content, 'utf8');
         this.installedFiles.push(mdPath);
 
+        // Copy sidecar files if agent has hasSidecar flag
+        if (hasSidecar) {
+          const { copyAgentSidecarFiles } = require('../../../lib/agent/installer');
+
+          // Get agent sidecar folder from core config
+          const coreConfigPath = path.join(bmadDir, 'bmb', 'config.yaml');
+          let agentSidecarFolder;
+
+          if (await fs.pathExists(coreConfigPath)) {
+            const yamlLib = require('yaml');
+            const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
+            const coreConfig = yamlLib.parse(coreConfigContent);
+            agentSidecarFolder = coreConfig.agent_sidecar_folder || agentSidecarFolder;
+          }
+
+          // Resolve path variables
+          const resolvedSidecarFolder = agentSidecarFolder
+            .replaceAll('{project-root}', projectDir)
+            .replaceAll('.bmad', this.bmadFolderName || 'bmad');
+
+          // Create sidecar directory for this agent
+          const agentSidecarDir = path.join(resolvedSidecarFolder, agentName);
+          await fs.ensureDir(agentSidecarDir);
+
+          // Find and copy sidecar folder from source module
+          const sourceModulePath = getSourcePath(`modules/${moduleName}`);
+          const sourceAgentPath = path.join(sourceModulePath, 'agents');
+
+          // Copy sidecar files (preserve existing, add new)
+          const sidecarResult = copyAgentSidecarFiles(sourceAgentPath, agentSidecarDir, yamlPath);
+
+          if (sidecarResult.copied.length > 0) {
+            console.log(chalk.dim(`  Copied ${sidecarResult.copied.length} new sidecar file(s) to: ${agentSidecarDir}`));
+          }
+          if (sidecarResult.preserved.length > 0) {
+            console.log(chalk.dim(`  Preserved ${sidecarResult.preserved.length} existing sidecar file(s)`));
+          }
+        }
+
         // Remove the source YAML file - we can regenerate from installer source if needed
         await fs.remove(yamlPath);
 
-        console.log(chalk.dim(`  Built agent: ${agentName}.md`));
+        console.log(chalk.dim(`  Built agent: ${agentName}.md${hasSidecar ? ' (with sidecar)' : ''}`));
       }
       // Handle legacy .md agents - inject activation if needed
       else if (agentFile.endsWith('.md')) {
@@ -1440,12 +2027,15 @@ class Installer {
       }
 
       // Build YAML to XML .md
-      const xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
+      let xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
         includeMetadata: true,
       });
 
       // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
       // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+      // Process TTS injection points (pass targetPath for tracking)
+      xmlContent = this.processTTSInjectionPoints(xmlContent, targetMdPath);
 
       // Write the built .md file with POSIX-compliant final newline
       const content = xmlContent.endsWith('\n') ? xmlContent : xmlContent + '\n';
@@ -1534,12 +2124,30 @@ class Installer {
         }
 
         // Build YAML + customize to .md
-        const xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
+        let xmlContent = await this.xmlHandler.buildFromYaml(sourceYamlPath, customizeExists ? customizePath : null, {
           includeMetadata: true,
         });
 
         // DO NOT replace {project-root} - LLMs understand this placeholder at runtime
         // const processedContent = xmlContent.replaceAll('{project-root}', projectDir);
+
+        // Replace {agent_sidecar_folder} if configured
+        const coreConfigPath = path.join(bmadDir, 'bmb', 'config.yaml');
+        let agentSidecarFolder = null;
+
+        if (await fs.pathExists(coreConfigPath)) {
+          const yamlLib = require('yaml');
+          const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
+          const coreConfig = yamlLib.parse(coreConfigContent);
+          agentSidecarFolder = coreConfig.agent_sidecar_folder;
+        }
+
+        if (agentSidecarFolder && xmlContent.includes('{agent_sidecar_folder}')) {
+          xmlContent = xmlContent.replaceAll('{agent_sidecar_folder}', agentSidecarFolder);
+        }
+
+        // Process TTS injection points (pass targetPath for tracking)
+        xmlContent = this.processTTSInjectionPoints(xmlContent, targetMdPath);
 
         // Write the rebuilt .md file with POSIX-compliant final newline
         const content = xmlContent.endsWith('\n') ? xmlContent : xmlContent + '\n';
@@ -1572,6 +2180,24 @@ class Installer {
       if (!(await fs.pathExists(bmadDir))) {
         spinner.fail('No BMAD installation found');
         throw new Error(`BMAD not installed at ${bmadDir}`);
+      }
+
+      // Check for custom modules with missing sources
+      const manifest = await this.manifest.read(bmadDir);
+      if (manifest && manifest.customModules && manifest.customModules.length > 0) {
+        spinner.stop();
+        console.log(chalk.yellow('\nChecking custom module sources before compilation...'));
+
+        const customModuleSources = new Map();
+        for (const customModule of manifest.customModules) {
+          customModuleSources.set(customModule.id, customModule);
+        }
+
+        const projectRoot = getProjectRoot();
+        const installedModules = manifest.modules || [];
+        await this.handleMissingCustomSources(customModuleSources, bmadDir, projectRoot, 'compile-agents', installedModules);
+
+        spinner.start('Rebuilding agent files...');
       }
 
       let agentCount = 0;
@@ -1619,14 +2245,19 @@ class Installer {
         }
       }
 
-      // Regenerate manifests after compilation
-      spinner.start('Regenerating manifests...');
-      const installedModules = entries
-        .filter((e) => e.isDirectory() && e.name !== '_cfg' && e.name !== 'docs' && e.name !== 'agents' && e.name !== 'core')
-        .map((e) => e.name);
-      const manifestGen = new ManifestGenerator();
+      // Reinstall custom agents from _cfg/custom/agents/ sources
+      spinner.start('Rebuilding custom agents...');
+      const customAgentResults = await this.reinstallCustomAgents(projectDir, bmadDir);
+      if (customAgentResults.count > 0) {
+        spinner.succeed(`Rebuilt ${customAgentResults.count} custom agent${customAgentResults.count > 1 ? 's' : ''}`);
+        agentCount += customAgentResults.count;
+      } else {
+        spinner.succeed('No custom agents found to rebuild');
+      }
 
-      // Get existing IDE list from manifest
+      // Skip full manifest regeneration during compileAgents to preserve custom agents
+      // Custom agents are already added to manifests during individual installation
+      // Only regenerate YAML manifest for IDE updates if needed
       const existingManifestPath = path.join(bmadDir, '_cfg', 'manifest.yaml');
       let existingIdes = [];
       if (await fs.pathExists(existingManifestPath)) {
@@ -1635,11 +2266,6 @@ class Installer {
         const manifest = yaml.load(manifestContent);
         existingIdes = manifest.ides || [];
       }
-
-      await manifestGen.generateManifests(bmadDir, installedModules, [], {
-        ides: existingIdes,
-      });
-      spinner.succeed('Manifests regenerated');
 
       // Update IDE configurations using the existing IDE list from manifest
       if (existingIdes && existingIdes.length > 0) {
@@ -1718,17 +2344,234 @@ class Installer {
       const existingInstall = await this.detector.detect(bmadDir);
       const installedModules = existingInstall.modules.map((m) => m.id);
       const configuredIdes = existingInstall.ides || [];
+      const projectRoot = path.dirname(bmadDir);
+
+      // Get custom module sources from manifest
+      const customModuleSources = new Map();
+      if (existingInstall.customModules) {
+        for (const customModule of existingInstall.customModules) {
+          // Ensure we have an absolute sourcePath
+          let absoluteSourcePath = customModule.sourcePath;
+
+          // Check if sourcePath is a cache-relative path (starts with _cfg/)
+          if (absoluteSourcePath && absoluteSourcePath.startsWith('_cfg')) {
+            // Convert cache-relative path to absolute path
+            absoluteSourcePath = path.join(bmadDir, absoluteSourcePath);
+          }
+          // If no sourcePath but we have relativePath, convert it
+          else if (!absoluteSourcePath && customModule.relativePath) {
+            // relativePath is relative to the project root (parent of bmad dir)
+            absoluteSourcePath = path.resolve(projectRoot, customModule.relativePath);
+          }
+          // Ensure sourcePath is absolute for anything else
+          else if (absoluteSourcePath && !path.isAbsolute(absoluteSourcePath)) {
+            absoluteSourcePath = path.resolve(absoluteSourcePath);
+          }
+
+          // Update the custom module object with the absolute path
+          const updatedModule = {
+            ...customModule,
+            sourcePath: absoluteSourcePath,
+          };
+
+          customModuleSources.set(customModule.id, updatedModule);
+        }
+      }
 
       // Load saved IDE configurations
       const savedIdeConfigs = await this.ideConfigManager.loadAllIdeConfigs(bmadDir);
 
       // Get available modules (what we have source for)
-      const availableModules = await this.moduleManager.listAvailable();
-      const availableModuleIds = new Set(availableModules.map((m) => m.id));
+      const availableModulesData = await this.moduleManager.listAvailable();
+      const availableModules = [...availableModulesData.modules, ...availableModulesData.customModules];
+
+      // Add custom modules from manifest if their sources exist
+      for (const [moduleId, customModule] of customModuleSources) {
+        // Use the absolute sourcePath
+        const sourcePath = customModule.sourcePath;
+
+        // Check if source exists at the recorded path
+        if (
+          sourcePath &&
+          (await fs.pathExists(sourcePath)) && // Add to available modules if not already there
+          !availableModules.some((m) => m.id === moduleId)
+        ) {
+          availableModules.push({
+            id: moduleId,
+            name: customModule.name || moduleId,
+            path: sourcePath,
+            isCustom: true,
+            fromManifest: true,
+          });
+        }
+      }
+
+      // Check for untracked custom modules (installed but not in manifest)
+      const untrackedCustomModules = [];
+      for (const installedModule of installedModules) {
+        // Skip standard modules and core
+        const standardModuleIds = ['bmb', 'bmgd', 'bmm', 'cis', 'core'];
+        if (standardModuleIds.includes(installedModule)) {
+          continue;
+        }
+
+        // Check if this installed module is not tracked in customModules
+        if (!customModuleSources.has(installedModule)) {
+          const modulePath = path.join(bmadDir, installedModule);
+          if (await fs.pathExists(modulePath)) {
+            untrackedCustomModules.push({
+              id: installedModule,
+              name: installedModule, // We don't have the original name
+              path: modulePath,
+              untracked: true,
+            });
+          }
+        }
+      }
+
+      // If we found untracked custom modules, offer to track them
+      if (untrackedCustomModules.length > 0) {
+        spinner.stop();
+        console.log(chalk.yellow(`\n⚠️  Found ${untrackedCustomModules.length} custom module(s) not tracked in manifest:`));
+
+        for (const untracked of untrackedCustomModules) {
+          console.log(chalk.dim(`  • ${untracked.id} (installed at ${path.relative(projectRoot, untracked.path)})`));
+        }
+
+        const { trackModules } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'trackModules',
+            message: chalk.cyan('Would you like to scan for their source locations?'),
+            default: true,
+          },
+        ]);
+
+        if (trackModules) {
+          const { scanDirectory } = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'scanDirectory',
+              message: 'Enter directory to scan for custom module sources (or leave blank to skip):',
+              default: projectRoot,
+              validate: async (input) => {
+                if (input && input.trim() !== '') {
+                  const expandedPath = path.resolve(input.trim());
+                  if (!(await fs.pathExists(expandedPath))) {
+                    return 'Directory does not exist';
+                  }
+                  const stats = await fs.stat(expandedPath);
+                  if (!stats.isDirectory()) {
+                    return 'Path must be a directory';
+                  }
+                }
+                return true;
+              },
+            },
+          ]);
+
+          if (scanDirectory && scanDirectory.trim() !== '') {
+            console.log(chalk.dim('\nScanning for custom module sources...'));
+
+            // Scan for all module.yaml files
+            const allModulePaths = await this.moduleManager.findModulesInProject(scanDirectory);
+            const { ModuleManager } = require('../modules/manager');
+            const mm = new ModuleManager({ scanProjectForModules: true });
+
+            for (const untracked of untrackedCustomModules) {
+              let foundSource = null;
+
+              // Try to find by module ID
+              for (const modulePath of allModulePaths) {
+                try {
+                  const moduleInfo = await mm.getModuleInfo(modulePath);
+                  if (moduleInfo && moduleInfo.id === untracked.id) {
+                    foundSource = {
+                      path: modulePath,
+                      info: moduleInfo,
+                    };
+                    break;
+                  }
+                } catch {
+                  // Continue searching
+                }
+              }
+
+              if (foundSource) {
+                console.log(chalk.green(`  ✓ Found source for ${untracked.id}: ${path.relative(projectRoot, foundSource.path)}`));
+
+                // Add to manifest
+                await this.manifest.addCustomModule(bmadDir, {
+                  id: untracked.id,
+                  name: foundSource.info.name || untracked.name,
+                  sourcePath: path.resolve(foundSource.path),
+                  installDate: new Date().toISOString(),
+                  tracked: true,
+                });
+
+                // Add to customModuleSources for processing
+                customModuleSources.set(untracked.id, {
+                  id: untracked.id,
+                  name: foundSource.info.name || untracked.name,
+                  sourcePath: path.resolve(foundSource.path),
+                });
+              } else {
+                console.log(chalk.yellow(`  ⚠ Could not find source for ${untracked.id}`));
+              }
+            }
+          }
+        }
+
+        console.log(chalk.dim('\nUntracked custom modules will remain installed but cannot be updated without their source.'));
+        spinner.start('Preparing update...');
+      }
+
+      // Handle missing custom module sources using shared method
+      const customModuleResult = await this.handleMissingCustomSources(
+        customModuleSources,
+        bmadDir,
+        projectRoot,
+        'update',
+        installedModules,
+      );
+
+      const { validCustomModules, keptModulesWithoutSources } = customModuleResult;
+
+      const customModulesFromManifest = validCustomModules.map((m) => ({
+        ...m,
+        isCustom: true,
+        hasUpdate: true,
+      }));
+
+      // Add untracked modules to the update list but mark them as untrackable
+      for (const untracked of untrackedCustomModules) {
+        if (!customModuleSources.has(untracked.id)) {
+          customModulesFromManifest.push({
+            ...untracked,
+            isCustom: true,
+            hasUpdate: false, // Can't update without source
+            untracked: true,
+          });
+        }
+      }
+
+      const allAvailableModules = [...availableModules, ...customModulesFromManifest];
+      const availableModuleIds = new Set(allAvailableModules.map((m) => m.id));
+
+      // Core module is special - never include it in update flow
+      const nonCoreInstalledModules = installedModules.filter((id) => id !== 'core');
 
       // Only update modules that are BOTH installed AND available (we have source for)
-      const modulesToUpdate = installedModules.filter((id) => availableModuleIds.has(id));
-      const skippedModules = installedModules.filter((id) => !availableModuleIds.has(id));
+      const modulesToUpdate = nonCoreInstalledModules.filter((id) => availableModuleIds.has(id));
+      const skippedModules = nonCoreInstalledModules.filter((id) => !availableModuleIds.has(id));
+
+      // Add custom modules that were kept without sources to the skipped modules
+      // This ensures their agents are preserved in the manifest
+      for (const keptModule of keptModulesWithoutSources) {
+        if (!skippedModules.includes(keptModule)) {
+          skippedModules.push(keptModule);
+        }
+      }
 
       spinner.succeed(`Found ${modulesToUpdate.length} module(s) to update and ${configuredIdes.length} configured tool(s)`);
 
@@ -1767,13 +2610,12 @@ class Installer {
         lastModified: new Date().toISOString(),
       };
 
-      // Check if bmad_folder has changed
       const existingBmadFolderName = path.basename(bmadDir);
       const newBmadFolderName = this.configCollector.collectedConfig.core?.bmad_folder || existingBmadFolderName;
 
       if (existingBmadFolderName === newBmadFolderName) {
         // Normal quick update - start the spinner
-        spinner.start('Updating BMAD installation...');
+        console.log(chalk.cyan('Updating BMAD installation...'));
       } else {
         // Folder name has changed - stop spinner and let install() handle it
         spinner.stop();
@@ -1793,6 +2635,8 @@ class Installer {
         _quickUpdate: true, // Flag to skip certain prompts
         _preserveModules: skippedModules, // Preserve these in manifest even though we didn't update them
         _savedIdeConfigs: savedIdeConfigs, // Pass saved IDE configs to installer
+        _customModuleSources: customModuleSources, // Pass custom module sources for updates
+        _existingModules: installedModules, // Pass all installed modules for manifest generation
       };
 
       // Call the standard install method
@@ -2000,8 +2844,9 @@ class Installer {
     const installedFilesMap = new Map();
     for (const fileEntry of existingFilesManifest) {
       if (fileEntry.path) {
-        // Files in manifest are stored as relative paths starting with 'bmad/'
-        // Convert to absolute path
+        // Paths are relative to bmadDir. Legacy manifests incorrectly prefixed 'bmad/' -
+        // strip it if present. This is safe because no real path inside bmadDir would
+        // start with 'bmad/' (you'd never have .bmad/bmad/... as an actual structure).
         const relativePath = fileEntry.path.startsWith('bmad/') ? fileEntry.path.slice(5) : fileEntry.path;
         const absolutePath = path.join(bmadDir, relativePath);
         installedFilesMap.set(path.normalize(absolutePath), {
@@ -2255,45 +3100,58 @@ class Installer {
   }
 
   /**
-   * Reinstall custom agents from _cfg/custom/agents/ sources
+   * Reinstall custom agents from backup and source locations
    * This preserves custom agents across quick updates/reinstalls
    * @param {string} projectDir - Project directory
    * @param {string} bmadDir - BMAD installation directory
    * @returns {Object} Result with count and agent names
    */
   async reinstallCustomAgents(projectDir, bmadDir) {
-    const customAgentsCfgDir = path.join(bmadDir, '_cfg', 'custom', 'agents');
+    const {
+      discoverAgents,
+      loadAgentConfig,
+      extractManifestData,
+      addToManifest,
+      createIdeSlashCommands,
+      updateManifestYaml,
+    } = require('../../../lib/agent/installer');
+    const { compileAgent } = require('../../../lib/agent/compiler');
+
     const results = { count: 0, agents: [] };
 
-    if (!(await fs.pathExists(customAgentsCfgDir))) {
+    // Check multiple locations for custom agents
+    const sourceLocations = [
+      path.join(bmadDir, '_cfg', 'custom', 'agents'), // Backup location
+      path.join(bmadDir, 'custom', 'src', 'agents'), // BMAD folder source location
+      path.join(projectDir, 'custom', 'src', 'agents'), // Project root source location
+    ];
+
+    let foundAgents = [];
+    let processedAgents = new Set(); // Track to avoid duplicates
+
+    // Discover agents from all locations
+    for (const location of sourceLocations) {
+      if (await fs.pathExists(location)) {
+        const agents = discoverAgents(location);
+        // Only add agents we haven't processed yet
+        const newAgents = agents.filter((agent) => !processedAgents.has(agent.name));
+        foundAgents.push(...newAgents);
+        for (const agent of newAgents) processedAgents.add(agent.name);
+      }
+    }
+
+    if (foundAgents.length === 0) {
       return results;
     }
 
     try {
-      const {
-        discoverAgents,
-        loadAgentConfig,
-        extractManifestData,
-        addToManifest,
-        createIdeSlashCommands,
-        updateManifestYaml,
-      } = require('../../../lib/agent/installer');
-      const { compileAgent } = require('../../../lib/agent/compiler');
-
-      // Discover custom agents in _cfg/custom/agents/
-      const agents = discoverAgents(customAgentsCfgDir);
-
-      if (agents.length === 0) {
-        return results;
-      }
-
       const customAgentsDir = path.join(bmadDir, 'custom', 'agents');
       await fs.ensureDir(customAgentsDir);
 
       const manifestFile = path.join(bmadDir, '_cfg', 'agent-manifest.csv');
       const manifestYamlFile = path.join(bmadDir, '_cfg', 'manifest.yaml');
 
-      for (const agent of agents) {
+      for (const agent of foundAgents) {
         try {
           const agentConfig = loadAgentConfig(agent.yamlFile);
           const finalAgentName = agent.name; // Already named correctly from save
@@ -2308,8 +3166,10 @@ class Installer {
             agentType = parts.slice(-2).join('-'); // Take last 2 parts as type
           }
 
-          // Create target directory
-          const agentTargetDir = path.join(customAgentsDir, finalAgentName);
+          // Create target directory - use relative path if agent is in a subdirectory
+          const agentTargetDir = agent.relativePath
+            ? path.join(customAgentsDir, agent.relativePath)
+            : path.join(customAgentsDir, finalAgentName);
           await fs.ensureDir(agentTargetDir);
 
           // Calculate paths
@@ -2323,22 +3183,56 @@ class Installer {
             agentConfig.defaults || {},
             finalAgentName,
             relativePath,
+            { config: config.coreConfig },
           );
 
           // Write compiled agent
           await fs.writeFile(compiledPath, xml, 'utf8');
 
-          // Copy sidecar files if expert agent
-          if (agent.hasSidecar && agent.type === 'expert') {
-            const { copySidecarFiles } = require('../../../lib/agent/installer');
-            copySidecarFiles(agent.path, agentTargetDir, agent.yamlFile);
+          // Backup source YAML to _cfg/custom/agents if not already there
+          const cfgAgentsBackupDir = path.join(bmadDir, '_cfg', 'custom', 'agents');
+          await fs.ensureDir(cfgAgentsBackupDir);
+          const backupYamlPath = path.join(cfgAgentsBackupDir, `${finalAgentName}.agent.yaml`);
+
+          // Only backup if source is not already in backup location
+          if (agent.yamlFile !== backupYamlPath) {
+            await fs.copy(agent.yamlFile, backupYamlPath);
+          }
+
+          // Copy sidecar files for agents with hasSidecar flag
+          if (agentConfig.hasSidecar === true && agent.type === 'expert') {
+            const { copyAgentSidecarFiles } = require('../../../lib/agent/installer');
+
+            // Get agent sidecar folder from config or use default
+            const agentSidecarFolder = config.coreConfig?.agent_sidecar_folder;
+
+            // Resolve path variables
+            const resolvedSidecarFolder = agentSidecarFolder.replaceAll('{project-root}', projectDir).replaceAll('.bmad', bmadDir);
+
+            // Create sidecar directory for this agent
+            const agentSidecarDir = path.join(resolvedSidecarFolder, finalAgentName);
+            await fs.ensureDir(agentSidecarDir);
+
+            // Copy sidecar files (preserve existing, add new)
+            const sidecarResult = copyAgentSidecarFiles(agent.path, agentSidecarDir, agent.yamlFile);
+
+            if (sidecarResult.copied.length > 0 || sidecarResult.preserved.length > 0) {
+              console.log(chalk.dim(`  Sidecar: ${sidecarResult.copied.length} new, ${sidecarResult.preserved.length} preserved`));
+            }
           }
 
           // Update manifest CSV
           if (await fs.pathExists(manifestFile)) {
-            const manifestData = extractManifestData(xml, { ...metadata, name: finalAgentName }, relativePath, 'custom');
-            manifestData.name = finalAgentName;
-            manifestData.displayName = metadata.name || finalAgentName;
+            // Preserve YAML metadata for persona name, but override id for filename
+            const manifestMetadata = {
+              ...metadata,
+              id: relativePath, // Use the compiled agent path for id
+              name: metadata.name || finalAgentName, // Use YAML metadata.name (persona name) or fallback
+              title: metadata.title, // Use YAML title
+              icon: metadata.icon, // Use YAML icon
+            };
+            const manifestData = extractManifestData(xml, manifestMetadata, relativePath, 'custom');
+            manifestData.name = finalAgentName; // Use filename for the name field
             manifestData.path = relativePath;
             addToManifest(manifestFile, manifestData);
           }
@@ -2381,6 +3275,233 @@ class Installer {
         await this.copyFileWithPlaceholderReplacement(sourceDocPath, targetDocPath, this.bmadFolderName || 'bmad');
       }
     }
+  }
+
+  /**
+   * Handle missing custom module sources interactively
+   * @param {Map} customModuleSources - Map of custom module ID to info
+   * @param {string} bmadDir - BMAD directory
+   * @param {string} projectRoot - Project root directory
+   * @param {string} operation - Current operation ('update', 'compile', etc.)
+   * @param {Array} installedModules - Array of installed module IDs (will be modified)
+   * @returns {Object} Object with validCustomModules array and keptModulesWithoutSources array
+   */
+  async handleMissingCustomSources(customModuleSources, bmadDir, projectRoot, operation, installedModules) {
+    const validCustomModules = [];
+    const keptModulesWithoutSources = []; // Track modules kept without sources
+    const customModulesWithMissingSources = [];
+
+    // Check which sources exist
+    for (const [moduleId, customInfo] of customModuleSources) {
+      if (await fs.pathExists(customInfo.sourcePath)) {
+        validCustomModules.push({
+          id: moduleId,
+          name: customInfo.name,
+          path: customInfo.sourcePath,
+          info: customInfo,
+        });
+      } else {
+        customModulesWithMissingSources.push({
+          id: moduleId,
+          name: customInfo.name,
+          sourcePath: customInfo.sourcePath,
+          relativePath: customInfo.relativePath,
+          info: customInfo,
+        });
+      }
+    }
+
+    // If no missing sources, return immediately
+    if (customModulesWithMissingSources.length === 0) {
+      return {
+        validCustomModules,
+        keptModulesWithoutSources: [],
+      };
+    }
+
+    // Stop any spinner for interactive prompts
+    const currentSpinner = ora();
+    if (currentSpinner.isSpinning) {
+      currentSpinner.stop();
+    }
+
+    console.log(chalk.yellow(`\n⚠️  Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`));
+
+    const inquirer = require('inquirer');
+    let keptCount = 0;
+    let updatedCount = 0;
+    let removedCount = 0;
+
+    for (const missing of customModulesWithMissingSources) {
+      console.log(chalk.dim(`  • ${missing.name} (${missing.id})`));
+      console.log(chalk.dim(`    Original source: ${missing.relativePath}`));
+      console.log(chalk.dim(`    Full path: ${missing.sourcePath}`));
+
+      const choices = [
+        {
+          name: 'Keep installed (will not be processed)',
+          value: 'keep',
+          short: 'Keep',
+        },
+        {
+          name: 'Specify new source location',
+          value: 'update',
+          short: 'Update',
+        },
+      ];
+
+      // Only add remove option if not just compiling agents
+      if (operation !== 'compile-agents') {
+        choices.push({
+          name: '⚠️  REMOVE module completely (destructive!)',
+          value: 'remove',
+          short: 'Remove',
+        });
+      }
+
+      const { action } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'action',
+          message: `How would you like to handle "${missing.name}"?`,
+          choices,
+        },
+      ]);
+
+      switch (action) {
+        case 'update': {
+          const { newSourcePath } = await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'newSourcePath',
+              message: 'Enter the new path to the custom module:',
+              default: missing.sourcePath,
+              validate: async (input) => {
+                if (!input || input.trim() === '') {
+                  return 'Please enter a path';
+                }
+                const expandedPath = path.resolve(input.trim());
+                if (!(await fs.pathExists(expandedPath))) {
+                  return 'Path does not exist';
+                }
+                // Check if it looks like a valid module
+                const moduleYamlPath = path.join(expandedPath, 'module.yaml');
+                const agentsPath = path.join(expandedPath, 'agents');
+                const workflowsPath = path.join(expandedPath, 'workflows');
+
+                if (!(await fs.pathExists(moduleYamlPath)) && !(await fs.pathExists(agentsPath)) && !(await fs.pathExists(workflowsPath))) {
+                  return 'Path does not appear to contain a valid custom module';
+                }
+                return true;
+              },
+            },
+          ]);
+
+          // Update the source in manifest
+          const resolvedPath = path.resolve(newSourcePath.trim());
+          missing.info.sourcePath = resolvedPath;
+          // Remove relativePath - we only store absolute sourcePath now
+          delete missing.info.relativePath;
+          await this.manifest.addCustomModule(bmadDir, missing.info);
+
+          validCustomModules.push({
+            id: moduleId,
+            name: missing.name,
+            path: resolvedPath,
+            info: missing.info,
+          });
+
+          updatedCount++;
+          console.log(chalk.green(`✓ Updated source location`));
+
+          break;
+        }
+        case 'remove': {
+          // Extra confirmation for destructive remove
+          console.log(chalk.red.bold(`\n⚠️  WARNING: This will PERMANENTLY DELETE "${missing.name}" and all its files!`));
+          console.log(chalk.red(`  Module location: ${path.join(bmadDir, moduleId)}`));
+
+          const { confirm } = await inquirer.prompt([
+            {
+              type: 'confirm',
+              name: 'confirm',
+              message: chalk.red.bold('Are you absolutely sure you want to delete this module?'),
+              default: false,
+            },
+          ]);
+
+          if (confirm) {
+            const { typedConfirm } = await inquirer.prompt([
+              {
+                type: 'input',
+                name: 'typedConfirm',
+                message: chalk.red.bold('Type "DELETE" to confirm permanent deletion:'),
+                validate: (input) => {
+                  if (input !== 'DELETE') {
+                    return chalk.red('You must type "DELETE" exactly to proceed');
+                  }
+                  return true;
+                },
+              },
+            ]);
+
+            if (typedConfirm === 'DELETE') {
+              // Remove the module from filesystem and manifest
+              const modulePath = path.join(bmadDir, moduleId);
+              if (await fs.pathExists(modulePath)) {
+                const fsExtra = require('fs-extra');
+                await fsExtra.remove(modulePath);
+                console.log(chalk.yellow(`  ✓ Deleted module directory: ${path.relative(projectRoot, modulePath)}`));
+              }
+
+              await this.manifest.removeModule(bmadDir, moduleId);
+              await this.manifest.removeCustomModule(bmadDir, moduleId);
+              console.log(chalk.yellow(`  ✓ Removed from manifest`));
+
+              // Also remove from installedModules list
+              if (installedModules && installedModules.includes(moduleId)) {
+                const index = installedModules.indexOf(moduleId);
+                if (index !== -1) {
+                  installedModules.splice(index, 1);
+                }
+              }
+
+              removedCount++;
+              console.log(chalk.red.bold(`✓ "${missing.name}" has been permanently removed`));
+            } else {
+              console.log(chalk.dim('  Removal cancelled - module will be kept'));
+              keptCount++;
+            }
+          } else {
+            console.log(chalk.dim('  Removal cancelled - module will be kept'));
+            keptCount++;
+          }
+
+          break;
+        }
+        case 'keep': {
+          keptCount++;
+          keptModulesWithoutSources.push(moduleId);
+          console.log(chalk.dim(`  Module will be kept as-is`));
+
+          break;
+        }
+        // No default
+      }
+    }
+
+    // Show summary
+    if (keptCount > 0 || updatedCount > 0 || removedCount > 0) {
+      console.log(chalk.dim(`\nSummary for custom modules with missing sources:`));
+      if (keptCount > 0) console.log(chalk.dim(`  • ${keptCount} module(s) kept as-is`));
+      if (updatedCount > 0) console.log(chalk.dim(`  • ${updatedCount} module(s) updated with new sources`));
+      if (removedCount > 0) console.log(chalk.red(`  • ${removedCount} module(s) permanently deleted`));
+    }
+
+    return {
+      validCustomModules,
+      keptModulesWithoutSources,
+    };
   }
 }
 

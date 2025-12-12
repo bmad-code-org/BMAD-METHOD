@@ -1,0 +1,36 @@
+# Module Brief Workflow Configuration
+name: module-brief
+description: "Create a comprehensive Module Brief that serves as the blueprint for building new BMAD modules using strategic analysis and creative vision"
+author: "BMad Builder"
+
+# Critical variables
+config_source: "{project-root}/.bmad/bmb/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Reference examples and documentation
+existing_modules_dir: "{project-root}/.bmad/"
+module_structure_guide: "{project-root}/.bmad/bmb/workflows/create-module/module-structure.md"
+
+# Optional user inputs - discovered if they exist
+input_file_patterns:
+  brainstorming:
+    description: "Brainstorming session outputs (optional)"
+    whole: "{output_folder}/brainstorming-*.md"
+    load_strategy: "FULL_LOAD"
+
+# Module path and component files
+installed_path: "{project-root}/.bmad/bmb/workflows/module-brief"
+template: "{installed_path}/template.md"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Output configuration
+default_output_file: "{output_folder}/module-brief-{{module_code}}-{{date}}.md"
+
+standalone: true
+
+# Web bundle configuration
+web_bundle: false # BMB workflows run locally in BMAD-METHOD project

@@ -83,7 +83,7 @@ Master storyteller with 50+ years crafting compelling narratives across multiple
 All CIS agents are **Module Agents** with:
 
 - Integration with CIS module configuration
-- Access to workflow invocation via `run-workflow` or `exec` attributes
+- Access to workflow invocation via `workflow` or `exec` attributes
 - Standard critical actions for config loading and user context
 - Simple command structure focused on workflow facilitation
 
@@ -96,7 +96,7 @@ Every CIS agent includes:
 
 ## Configuration
 
-All agents load configuration from `/{bmad_folder}/cis/config.yaml`:
+All agents load configuration from `/.bmad/cis/config.yaml`:
 
 - `project_name` - Project identification
 - `output_folder` - Where workflow results are saved

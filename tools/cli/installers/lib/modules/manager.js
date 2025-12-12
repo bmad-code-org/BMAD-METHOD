@@ -22,11 +22,12 @@ const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/p
  * await manager.install('core-module', '/path/to/bmad');
  */
 class ModuleManager {
-  constructor() {
+  constructor(options = {}) {
     // Path to source modules directory
     this.modulesSourcePath = getSourcePath('modules');
     this.xmlHandler = new XmlHandler();
     this.bmadFolderName = 'bmad'; // Default, can be overridden
+    this.scanProjectForModules = options.scanProjectForModules !== false; // Default to true for backward compatibility
   }
 
   /**
@@ -38,7 +39,15 @@ class ModuleManager {
   }
 
   /**
-   * Copy a file and replace {bmad_folder} placeholder with actual folder name
+   * Set the core configuration for access during module installation
+   * @param {Object} coreConfig - Core configuration object
+   */
+  setCoreConfig(coreConfig) {
+    this.coreConfig = coreConfig;
+  }
+
+  /**
+   * Copy a file and replace .bmad placeholder with actual folder name
    * @param {string} sourcePath - Source file path
    * @param {string} targetPath - Target file path
    */
@@ -53,9 +62,14 @@ class ModuleManager {
         // Read the file content
         let content = await fs.readFile(sourcePath, 'utf8');
 
-        // Replace {bmad_folder} placeholder with actual folder name
-        if (content.includes('{bmad_folder}')) {
-          content = content.replaceAll('{bmad_folder}', this.bmadFolderName);
+        // Replace escape sequence .bmad with literal .bmad
+        if (content.includes('.bmad')) {
+          content = content.replaceAll('.bmad', '.bmad');
+        }
+
+        // Replace .bmad placeholder with actual folder name
+        if (content.includes('.bmad')) {
+          content = content.replaceAll('.bmad', this.bmadFolderName);
         }
 
         // Write to target with replaced content
@@ -93,62 +107,297 @@ class ModuleManager {
   }
 
   /**
-   * List all available modules
-   * @returns {Array} List of available modules with metadata
+   * Find all modules in the project by searching for module.yaml files
+   * @returns {Array} List of module paths
    */
-  async listAvailable() {
-    const modules = [];
+  async findModulesInProject() {
+    const projectRoot = getProjectRoot();
+    const modulePaths = new Set();
 
-    if (!(await fs.pathExists(this.modulesSourcePath))) {
-      console.warn(chalk.yellow('Warning: src/modules directory not found'));
-      return modules;
-    }
+    // Helper function to recursively scan directories
+    async function scanDirectory(dir, excludePaths = []) {
+      try {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
 
-    const entries = await fs.readdir(this.modulesSourcePath, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
 
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        const modulePath = path.join(this.modulesSourcePath, entry.name);
-        // Check for new structure first
-        const installerConfigPath = path.join(modulePath, '_module-installer', 'install-config.yaml');
-        // Fallback to old structure
-        const configPath = path.join(modulePath, 'config.yaml');
+          // Skip hidden directories, node_modules, and literal placeholder directories
+          if (
+            entry.name.startsWith('.') ||
+            entry.name === 'node_modules' ||
+            entry.name === 'dist' ||
+            entry.name === 'build' ||
+            entry.name === '{project-root}'
+          ) {
+            continue;
+          }
 
-        const moduleInfo = {
-          id: entry.name,
-          path: modulePath,
-          name: entry.name.toUpperCase(),
-          description: 'BMAD Module',
-          version: '5.0.0',
-        };
+          // Skip excluded paths
+          if (excludePaths.some((exclude) => fullPath.startsWith(exclude))) {
+            continue;
+          }
 
-        // Try to read module config for metadata (prefer new location)
-        const configToRead = (await fs.pathExists(installerConfigPath)) ? installerConfigPath : configPath;
-        if (await fs.pathExists(configToRead)) {
-          try {
-            const configContent = await fs.readFile(configToRead, 'utf8');
-            const config = yaml.load(configContent);
-
-            // Use the code property as the id if available
-            if (config.code) {
-              moduleInfo.id = config.code;
+          if (entry.isDirectory()) {
+            // Skip core module - it's always installed first and not selectable
+            if (entry.name === 'core') {
+              continue;
             }
 
-            moduleInfo.name = config.name || moduleInfo.name;
-            moduleInfo.description = config.description || moduleInfo.description;
-            moduleInfo.version = config.version || moduleInfo.version;
-            moduleInfo.dependencies = config.dependencies || [];
-            moduleInfo.defaultSelected = config.default_selected === undefined ? false : config.default_selected;
-          } catch (error) {
-            console.warn(`Failed to read config for ${entry.name}:`, error.message);
+            // Check if this directory contains a module (module.yaml OR custom.yaml)
+            const moduleConfigPath = path.join(fullPath, 'module.yaml');
+            const installerConfigPath = path.join(fullPath, '_module-installer', 'module.yaml');
+            const customConfigPath = path.join(fullPath, '_module-installer', 'custom.yaml');
+            const rootCustomConfigPath = path.join(fullPath, 'custom.yaml');
+
+            if (
+              (await fs.pathExists(moduleConfigPath)) ||
+              (await fs.pathExists(installerConfigPath)) ||
+              (await fs.pathExists(customConfigPath)) ||
+              (await fs.pathExists(rootCustomConfigPath))
+            ) {
+              modulePaths.add(fullPath);
+              // Don't scan inside modules - they might have their own nested structures
+              continue;
+            }
+
+            // Recursively scan subdirectories
+            await scanDirectory(fullPath, excludePaths);
           }
         }
-
-        modules.push(moduleInfo);
+      } catch {
+        // Ignore errors (e.g., permission denied)
       }
     }
 
-    return modules;
+    // Scan the entire project, but exclude src/modules since we handle it separately
+    await scanDirectory(projectRoot, [this.modulesSourcePath]);
+
+    return [...modulePaths];
+  }
+
+  /**
+   * List all available modules (excluding core which is always installed)
+   * @returns {Object} Object with modules array and customModules array
+   */
+  async listAvailable() {
+    const modules = [];
+    const customModules = [];
+
+    // First, scan src/modules (the standard location)
+    if (await fs.pathExists(this.modulesSourcePath)) {
+      const entries = await fs.readdir(this.modulesSourcePath, { withFileTypes: true });
+
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          const modulePath = path.join(this.modulesSourcePath, entry.name);
+          // Check for module structure (module.yaml OR custom.yaml)
+          const moduleConfigPath = path.join(modulePath, 'module.yaml');
+          const installerConfigPath = path.join(modulePath, '_module-installer', 'module.yaml');
+          const customConfigPath = path.join(modulePath, '_module-installer', 'custom.yaml');
+
+          // Skip if this doesn't look like a module
+          if (
+            !(await fs.pathExists(moduleConfigPath)) &&
+            !(await fs.pathExists(installerConfigPath)) &&
+            !(await fs.pathExists(customConfigPath))
+          ) {
+            continue;
+          }
+
+          // Skip core module - it's always installed first and not selectable
+          if (entry.name === 'core') {
+            continue;
+          }
+
+          const moduleInfo = await this.getModuleInfo(modulePath, entry.name, 'src/modules');
+          if (moduleInfo) {
+            modules.push(moduleInfo);
+          }
+        }
+      }
+    }
+
+    // Then, find all other modules in the project (only if scanning is enabled)
+    if (this.scanProjectForModules) {
+      const otherModulePaths = await this.findModulesInProject();
+      for (const modulePath of otherModulePaths) {
+        const moduleName = path.basename(modulePath);
+        const relativePath = path.relative(getProjectRoot(), modulePath);
+
+        // Skip core module - it's always installed first and not selectable
+        if (moduleName === 'core') {
+          continue;
+        }
+
+        const moduleInfo = await this.getModuleInfo(modulePath, moduleName, relativePath);
+        if (moduleInfo && !modules.some((m) => m.id === moduleInfo.id) && !customModules.some((m) => m.id === moduleInfo.id)) {
+          // Avoid duplicates - skip if we already have this module ID
+          if (moduleInfo.isCustom) {
+            customModules.push(moduleInfo);
+          } else {
+            modules.push(moduleInfo);
+          }
+        }
+      }
+
+      // Also check for cached custom modules in _cfg/custom/
+      if (this.bmadDir) {
+        const customCacheDir = path.join(this.bmadDir, '_cfg', 'custom');
+        if (await fs.pathExists(customCacheDir)) {
+          const cacheEntries = await fs.readdir(customCacheDir, { withFileTypes: true });
+          for (const entry of cacheEntries) {
+            if (entry.isDirectory()) {
+              const cachePath = path.join(customCacheDir, entry.name);
+              const moduleInfo = await this.getModuleInfo(cachePath, entry.name, '_cfg/custom');
+              if (moduleInfo && !modules.some((m) => m.id === moduleInfo.id) && !customModules.some((m) => m.id === moduleInfo.id)) {
+                moduleInfo.isCustom = true;
+                moduleInfo.fromCache = true;
+                customModules.push(moduleInfo);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return { modules, customModules };
+  }
+
+  /**
+   * Get module information from a module path
+   * @param {string} modulePath - Path to the module directory
+   * @param {string} defaultName - Default name for the module
+   * @param {string} sourceDescription - Description of where the module was found
+   * @returns {Object|null} Module info or null if not a valid module
+   */
+  async getModuleInfo(modulePath, defaultName, sourceDescription) {
+    // Check for module structure (module.yaml OR custom.yaml)
+    const moduleConfigPath = path.join(modulePath, 'module.yaml');
+    const installerConfigPath = path.join(modulePath, '_module-installer', 'module.yaml');
+    const customConfigPath = path.join(modulePath, '_module-installer', 'custom.yaml');
+    const rootCustomConfigPath = path.join(modulePath, 'custom.yaml');
+    let configPath = null;
+
+    if (await fs.pathExists(moduleConfigPath)) {
+      configPath = moduleConfigPath;
+    } else if (await fs.pathExists(installerConfigPath)) {
+      configPath = installerConfigPath;
+    } else if (await fs.pathExists(customConfigPath)) {
+      configPath = customConfigPath;
+    } else if (await fs.pathExists(rootCustomConfigPath)) {
+      configPath = rootCustomConfigPath;
+    }
+
+    // Skip if this doesn't look like a module
+    if (!configPath) {
+      return null;
+    }
+
+    // Mark as custom if it's using custom.yaml OR if it's outside src/modules
+    const isCustomSource = sourceDescription !== 'src/modules';
+    const moduleInfo = {
+      id: defaultName,
+      path: modulePath,
+      name: defaultName
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' '),
+      description: 'BMAD Module',
+      version: '5.0.0',
+      source: sourceDescription,
+      isCustom: configPath === customConfigPath || configPath === rootCustomConfigPath || isCustomSource,
+    };
+
+    // Read module config for metadata
+    try {
+      const configContent = await fs.readFile(configPath, 'utf8');
+      const config = yaml.load(configContent);
+
+      // Use the code property as the id if available
+      if (config.code) {
+        moduleInfo.id = config.code;
+      }
+
+      moduleInfo.name = config.name || moduleInfo.name;
+      moduleInfo.description = config.description || moduleInfo.description;
+      moduleInfo.version = config.version || moduleInfo.version;
+      moduleInfo.dependencies = config.dependencies || [];
+      moduleInfo.defaultSelected = config.default_selected === undefined ? false : config.default_selected;
+    } catch (error) {
+      console.warn(`Failed to read config for ${defaultName}:`, error.message);
+    }
+
+    return moduleInfo;
+  }
+
+  /**
+   * Find the source path for a module by searching all possible locations
+   * @param {string} moduleName - Name of the module to find
+   * @returns {string|null} Path to the module source or null if not found
+   */
+  async findModuleSource(moduleName) {
+    const projectRoot = getProjectRoot();
+
+    // First, check src/modules
+    const srcModulePath = path.join(this.modulesSourcePath, moduleName);
+    if (await fs.pathExists(srcModulePath)) {
+      // Check if this looks like a module (has module.yaml)
+      const moduleConfigPath = path.join(srcModulePath, 'module.yaml');
+      const installerConfigPath = path.join(srcModulePath, '_module-installer', 'module.yaml');
+
+      if ((await fs.pathExists(moduleConfigPath)) || (await fs.pathExists(installerConfigPath))) {
+        return srcModulePath;
+      }
+
+      // Also check for custom.yaml in src/modules/_module-installer
+      const customConfigPath = path.join(srcModulePath, '_module-installer', 'custom.yaml');
+      if (await fs.pathExists(customConfigPath)) {
+        return srcModulePath;
+      }
+    }
+
+    // If not found in src/modules, search the entire project
+    const allModulePaths = await this.findModulesInProject();
+    for (const modulePath of allModulePaths) {
+      if (path.basename(modulePath) === moduleName) {
+        return modulePath;
+      }
+    }
+
+    // Also check by module ID (not just folder name)
+    // Need to read configs to match by ID
+    for (const modulePath of allModulePaths) {
+      const moduleConfigPath = path.join(modulePath, 'module.yaml');
+      const installerConfigPath = path.join(modulePath, '_module-installer', 'module.yaml');
+      const customConfigPath = path.join(modulePath, '_module-installer', 'custom.yaml');
+      const rootCustomConfigPath = path.join(modulePath, 'custom.yaml');
+
+      let configPath = null;
+      if (await fs.pathExists(moduleConfigPath)) {
+        configPath = moduleConfigPath;
+      } else if (await fs.pathExists(installerConfigPath)) {
+        configPath = installerConfigPath;
+      } else if (await fs.pathExists(customConfigPath)) {
+        configPath = customConfigPath;
+      } else if (await fs.pathExists(rootCustomConfigPath)) {
+        configPath = rootCustomConfigPath;
+      }
+
+      if (configPath) {
+        try {
+          const configContent = await fs.readFile(configPath, 'utf8');
+          const config = yaml.load(configContent);
+          if (config.code === moduleName) {
+            return modulePath;
+          }
+        } catch (error) {
+          throw new Error(`Failed to parse module.yaml at ${configPath}: ${error.message}`);
+        }
+      }
+    }
+
+    return null;
   }
 
   /**
@@ -162,12 +411,41 @@ class ModuleManager {
    * @param {Object} options.logger - Logger instance for output
    */
   async install(moduleName, bmadDir, fileTrackingCallback = null, options = {}) {
-    const sourcePath = path.join(this.modulesSourcePath, moduleName);
+    const sourcePath = await this.findModuleSource(moduleName);
     const targetPath = path.join(bmadDir, moduleName);
 
     // Check if source module exists
-    if (!(await fs.pathExists(sourcePath))) {
-      throw new Error(`Module '${moduleName}' not found in ${this.modulesSourcePath}`);
+    if (!sourcePath) {
+      throw new Error(`Module '${moduleName}' not found in any source location`);
+    }
+
+    // Check if this is a custom module and read its custom.yaml values
+    let customConfig = null;
+    const rootCustomConfigPath = path.join(sourcePath, 'custom.yaml');
+    const moduleInstallerCustomPath = path.join(sourcePath, '_module-installer', 'custom.yaml');
+
+    if (await fs.pathExists(rootCustomConfigPath)) {
+      try {
+        const customContent = await fs.readFile(rootCustomConfigPath, 'utf8');
+        customConfig = yaml.load(customContent);
+      } catch (error) {
+        console.warn(chalk.yellow(`Warning: Failed to read custom.yaml for ${moduleName}:`, error.message));
+      }
+    } else if (await fs.pathExists(moduleInstallerCustomPath)) {
+      try {
+        const customContent = await fs.readFile(moduleInstallerCustomPath, 'utf8');
+        customConfig = yaml.load(customContent);
+      } catch (error) {
+        console.warn(chalk.yellow(`Warning: Failed to read custom.yaml for ${moduleName}:`, error.message));
+      }
+    }
+
+    // If this is a custom module, merge its values into the module config
+    if (customConfig) {
+      options.moduleConfig = { ...options.moduleConfig, ...customConfig };
+      if (options.logger) {
+        options.logger.log(chalk.cyan(`  Merged custom configuration for ${moduleName}`));
+      }
     }
 
     // Check if already installed
@@ -182,6 +460,9 @@ class ModuleManager {
 
     // Copy module files with filtering
     await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
+
+    // Compile any .agent.yaml files to .md format
+    await this.compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir);
 
     // Process agent files to inject activation block
     await this.processAgentFiles(targetPath, moduleName);
@@ -205,12 +486,12 @@ class ModuleManager {
    * @param {boolean} force - Force update (overwrite modifications)
    */
   async update(moduleName, bmadDir, force = false) {
-    const sourcePath = path.join(this.modulesSourcePath, moduleName);
+    const sourcePath = await this.findModuleSource(moduleName);
     const targetPath = path.join(bmadDir, moduleName);
 
     // Check if source module exists
-    if (!(await fs.pathExists(sourcePath))) {
-      throw new Error(`Module '${moduleName}' not found in source`);
+    if (!sourcePath) {
+      throw new Error(`Module '${moduleName}' not found in any source location`);
     }
 
     // Check if module is installed
@@ -325,13 +606,29 @@ class ModuleManager {
         continue;
       }
 
+      // Skip sidecar directories - they are handled separately during agent compilation
+      if (
+        path
+          .dirname(file)
+          .split('/')
+          .some((dir) => dir.toLowerCase().includes('sidecar'))
+      ) {
+        continue;
+      }
+
       // Skip _module-installer directory - it's only needed at install time
-      if (file.startsWith('_module-installer/')) {
+      if (file.startsWith('_module-installer/') || file === 'module.yaml') {
         continue;
       }
 
       // Skip config.yaml templates - we'll generate clean ones with actual values
-      if (file === 'config.yaml' || file.endsWith('/config.yaml')) {
+      // Also skip custom.yaml files - their values will be merged into core config
+      if (file === 'config.yaml' || file.endsWith('/config.yaml') || file === 'custom.yaml' || file.endsWith('/custom.yaml')) {
+        continue;
+      }
+
+      // Skip .agent.yaml files - they will be compiled separately
+      if (file.endsWith('.agent.yaml')) {
         continue;
       }
 
@@ -396,9 +693,10 @@ class ModuleManager {
     // Read the source YAML file
     let yamlContent = await fs.readFile(sourceFile, 'utf8');
 
-    // IMPORTANT: Replace {bmad_folder} BEFORE parsing YAML
+    // IMPORTANT: Replace escape sequence and placeholder BEFORE parsing YAML
     // Otherwise parsing will fail on the placeholder
-    yamlContent = yamlContent.replaceAll('{bmad_folder}', this.bmadFolderName);
+    yamlContent = yamlContent.replaceAll('.bmad', '.bmad');
+    yamlContent = yamlContent.replaceAll('.bmad', this.bmadFolderName);
 
     try {
       // First check if web_bundle exists by parsing
@@ -477,6 +775,157 @@ class ModuleManager {
   }
 
   /**
+   * Compile .agent.yaml files to .md format in modules
+   * @param {string} sourcePath - Source module path
+   * @param {string} targetPath - Target module path
+   * @param {string} moduleName - Module name
+   * @param {string} bmadDir - BMAD installation directory
+   */
+  async compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir) {
+    const sourceAgentsPath = path.join(sourcePath, 'agents');
+    const targetAgentsPath = path.join(targetPath, 'agents');
+    const cfgAgentsDir = path.join(bmadDir, '_cfg', 'agents');
+
+    // Check if agents directory exists in source
+    if (!(await fs.pathExists(sourceAgentsPath))) {
+      return; // No agents to compile
+    }
+
+    // Get all agent YAML files recursively
+    const agentFiles = await this.findAgentFiles(sourceAgentsPath);
+
+    for (const agentFile of agentFiles) {
+      if (!agentFile.endsWith('.agent.yaml')) continue;
+
+      const relativePath = path.relative(sourceAgentsPath, agentFile);
+      const targetDir = path.join(targetAgentsPath, path.dirname(relativePath));
+
+      await fs.ensureDir(targetDir);
+
+      const agentName = path.basename(agentFile, '.agent.yaml');
+      const sourceYamlPath = agentFile;
+      const targetMdPath = path.join(targetDir, `${agentName}.md`);
+      const customizePath = path.join(cfgAgentsDir, `${moduleName}-${agentName}.customize.yaml`);
+
+      // Read and compile the YAML
+      try {
+        const yamlContent = await fs.readFile(sourceYamlPath, 'utf8');
+        const { compileAgent } = require('../../../lib/agent/compiler');
+
+        // Create customize template if it doesn't exist
+        if (!(await fs.pathExists(customizePath))) {
+          const { getSourcePath } = require('../../../lib/project-root');
+          const genericTemplatePath = getSourcePath('utility', 'templates', 'agent.customize.template.yaml');
+          if (await fs.pathExists(genericTemplatePath)) {
+            await this.copyFileWithPlaceholderReplacement(genericTemplatePath, customizePath);
+            console.log(chalk.dim(`  Created customize: ${moduleName}-${agentName}.customize.yaml`));
+          }
+        }
+
+        // Check for customizations
+        let customizedFields = [];
+        if (await fs.pathExists(customizePath)) {
+          const customizeContent = await fs.readFile(customizePath, 'utf8');
+          const customizeData = yaml.load(customizeContent);
+          customizedFields = customizeData.customized_fields || [];
+        }
+
+        // Load core config to get agent_sidecar_folder
+        const coreConfigPath = path.join(bmadDir, 'bmb', 'config.yaml');
+        let coreConfig = {};
+
+        if (await fs.pathExists(coreConfigPath)) {
+          const yamlLib = require('yaml');
+          const coreConfigContent = await fs.readFile(coreConfigPath, 'utf8');
+          coreConfig = yamlLib.parse(coreConfigContent);
+        }
+
+        // Check if agent has sidecar
+        let hasSidecar = false;
+        try {
+          const yamlLib = require('yaml');
+          const agentYaml = yamlLib.parse(yamlContent);
+          hasSidecar = agentYaml?.agent?.metadata?.hasSidecar === true;
+        } catch {
+          // Continue without sidecar processing
+        }
+
+        // Compile with customizations if any
+        const { xml } = compileAgent(yamlContent, {}, agentName, relativePath, { config: this.coreConfig });
+
+        // Replace .bmad placeholder if needed
+        if (xml.includes('.bmad') && this.bmadFolderName) {
+          const processedXml = xml.replaceAll('.bmad', this.bmadFolderName);
+          await fs.writeFile(targetMdPath, processedXml, 'utf8');
+        } else {
+          await fs.writeFile(targetMdPath, xml, 'utf8');
+        }
+
+        // Copy sidecar files if agent has hasSidecar flag
+        if (hasSidecar) {
+          const { copyAgentSidecarFiles } = require('../../../lib/agent/installer');
+
+          // Get agent sidecar folder from core config (should always be set)
+          const agentSidecarFolder = this.coreConfig?.agent_sidecar_folder;
+
+          // Resolve path variables
+          const projectDir = path.dirname(bmadDir);
+          const resolvedSidecarFolder = agentSidecarFolder
+            .replaceAll('{project-root}', projectDir)
+            .replaceAll('.bmad', path.basename(bmadDir));
+
+          // Create sidecar directory for this agent
+          const agentSidecarDir = path.join(resolvedSidecarFolder, agentName);
+          await fs.ensureDir(agentSidecarDir);
+
+          // Copy sidecar files (preserve existing, add new)
+          const sidecarResult = copyAgentSidecarFiles(path.dirname(sourceYamlPath), agentSidecarDir, sourceYamlPath);
+          const totalFiles = sidecarResult.copied.length + sidecarResult.preserved.length;
+
+          if (sidecarResult.copied.length > 0) {
+            console.log(chalk.dim(`    Copied ${sidecarResult.copied.length} new sidecar file(s) to: ${agentSidecarDir}`));
+          }
+          if (sidecarResult.preserved.length > 0) {
+            console.log(chalk.dim(`    Preserved ${sidecarResult.preserved.length} existing sidecar file(s)`));
+          }
+        }
+
+        console.log(
+          chalk.dim(`    Compiled agent: ${agentName} -> ${path.relative(targetPath, targetMdPath)}${hasSidecar ? ' (with sidecar)' : ''}`),
+        );
+      } catch (error) {
+        console.warn(chalk.yellow(`    Failed to compile agent ${agentName}:`, error.message));
+      }
+    }
+  }
+
+  /**
+   * Find all .agent.yaml files recursively in a directory
+   * @param {string} dir - Directory to search
+   * @returns {Array} List of .agent.yaml file paths
+   */
+  async findAgentFiles(dir) {
+    const agentFiles = [];
+
+    async function searchDirectory(searchDir) {
+      const entries = await fs.readdir(searchDir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = path.join(searchDir, entry.name);
+
+        if (entry.isFile() && entry.name.endsWith('.agent.yaml')) {
+          agentFiles.push(fullPath);
+        } else if (entry.isDirectory()) {
+          await searchDirectory(fullPath);
+        }
+      }
+    }
+
+    await searchDirectory(dir);
+    return agentFiles;
+  }
+
+  /**
    * Process agent files to inject activation block
    * @param {string} modulePath - Path to installed module
    * @param {string} moduleName - Module name
@@ -489,22 +938,47 @@ class ModuleManager {
       return; // No agents to process
     }
 
-    // Get all agent files
-    const agentFiles = await fs.readdir(agentsPath);
+    // Get all agent MD files recursively
+    const agentFiles = await this.findAgentMdFiles(agentsPath);
 
     for (const agentFile of agentFiles) {
       if (!agentFile.endsWith('.md')) continue;
 
-      const agentPath = path.join(agentsPath, agentFile);
-      let content = await fs.readFile(agentPath, 'utf8');
+      let content = await fs.readFile(agentFile, 'utf8');
 
       // Check if content has agent XML and no activation block
       if (content.includes('<agent') && !content.includes('<activation')) {
         // Inject the activation block using XML handler
         content = this.xmlHandler.injectActivationSimple(content);
-        await fs.writeFile(agentPath, content, 'utf8');
+        await fs.writeFile(agentFile, content, 'utf8');
       }
     }
+  }
+
+  /**
+   * Find all .md agent files recursively in a directory
+   * @param {string} dir - Directory to search
+   * @returns {Array} List of .md agent file paths
+   */
+  async findAgentMdFiles(dir) {
+    const agentFiles = [];
+
+    async function searchDirectory(searchDir) {
+      const entries = await fs.readdir(searchDir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        const fullPath = path.join(searchDir, entry.name);
+
+        if (entry.isFile() && entry.name.endsWith('.md')) {
+          agentFiles.push(fullPath);
+        } else if (entry.isDirectory()) {
+          await searchDirectory(fullPath);
+        }
+      }
+    }
+
+    await searchDirectory(dir);
+    return agentFiles;
   }
 
   /**
@@ -556,10 +1030,10 @@ class ModuleManager {
         const installWorkflowPath = item['workflow-install']; // Where to copy TO
 
         // Parse SOURCE workflow path
-        // Handle both {bmad_folder} placeholder and hardcoded 'bmad'
-        // Example: {project-root}/{bmad_folder}/bmm/workflows/4-implementation/create-story/workflow.yaml
+        // Handle both .bmad placeholder and hardcoded 'bmad'
+        // Example: {project-root}/.bmad/bmm/workflows/4-implementation/create-story/workflow.yaml
         // Or: {project-root}/bmad/bmm/workflows/4-implementation/create-story/workflow.yaml
-        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
+        const sourceMatch = sourceWorkflowPath.match(/\{project-root\}\/(?:\.bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!sourceMatch) {
           console.warn(chalk.yellow(`      Could not parse workflow path: ${sourceWorkflowPath}`));
           continue;
@@ -568,9 +1042,9 @@ class ModuleManager {
         const [, sourceModule, sourceWorkflowSubPath] = sourceMatch;
 
         // Parse INSTALL workflow path
-        // Handle both {bmad_folder} placeholder and hardcoded 'bmad'
-        // Example: {project-root}/{bmad_folder}/bmgd/workflows/4-production/create-story/workflow.yaml
-        const installMatch = installWorkflowPath.match(/\{project-root\}\/(?:\{bmad_folder\}|bmad)\/([^/]+)\/workflows\/(.+)/);
+        // Handle.bmad
+        // Example: {project-root}/.bmad/bmgd/workflows/4-production/create-story/workflow.yaml
+        const installMatch = installWorkflowPath.match(/\{project-root\}\/(\.bmad)\/([^/]+)\/workflows\/(.+)/);
         if (!installMatch) {
           console.warn(chalk.yellow(`      Could not parse workflow-install path: ${installWorkflowPath}`));
           continue;
@@ -622,9 +1096,9 @@ class ModuleManager {
   async updateWorkflowConfigSource(workflowYamlPath, newModuleName) {
     let yamlContent = await fs.readFile(workflowYamlPath, 'utf8');
 
-    // Replace config_source: "{project-root}/{bmad_folder}/OLD_MODULE/config.yaml"
-    // with config_source: "{project-root}/{bmad_folder}/NEW_MODULE/config.yaml"
-    // Note: At this point {bmad_folder} has already been replaced with actual folder name
+    // Replace config_source: "{project-root}/.bmad/OLD_MODULE/config.yaml"
+    // with config_source: "{project-root}/.bmad/NEW_MODULE/config.yaml"
+    // Note: At this point .bmad has already been replaced with actual folder name
     const configSourcePattern = /config_source:\s*["']?\{project-root\}\/[^/]+\/[^/]+\/config\.yaml["']?/g;
     const newConfigSource = `config_source: "{project-root}/${this.bmadFolderName}/${newModuleName}/config.yaml"`;
 
@@ -648,7 +1122,11 @@ class ModuleManager {
     if (moduleName === 'core') {
       sourcePath = getSourcePath('core');
     } else {
-      sourcePath = path.join(this.modulesSourcePath, moduleName);
+      sourcePath = await this.findModuleSource(moduleName);
+      if (!sourcePath) {
+        // No source found, skip module installer
+        return;
+      }
     }
 
     const installerPath = path.join(sourcePath, '_module-installer', 'installer.js');
@@ -677,6 +1155,7 @@ class ModuleManager {
         const result = await moduleInstaller.install({
           projectRoot,
           config: options.moduleConfig || {},
+          coreConfig: options.coreConfig || {},
           installedIDEs: options.installedIDEs || [],
           logger,
         });

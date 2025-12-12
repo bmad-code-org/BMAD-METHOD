@@ -1,0 +1,33 @@
+# Quick-Flow: Quick-Dev
+name: quick-dev
+description: "Flexible development - execute tech-specs OR direct instructions with optional planning."
+author: "BMad"
+
+# Config
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+date: system-generated
+
+# Project context
+project_context: "**/project-context.md"
+
+# Workflow components
+installed_path: "{project-root}/.bmad/bmm/workflows/bmad-quick-flow/quick-dev"
+instructions: "{installed_path}/instructions.md"
+checklist: "{installed_path}/checklist.md"
+
+# Related workflows
+create_tech_spec_workflow: "{project-root}/.bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml"
+party_mode_exec: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
+advanced_elicitation: "{project-root}/.bmad/core/tasks/advanced-elicitation.xml"
+
+# Routing resources (lazy-loaded)
+project_levels: "{project-root}/.bmad/bmm/workflows/workflow-status/project-levels.yaml"
+workflow_init: "{project-root}/.bmad/bmm/workflows/workflow-status/init/workflow.yaml"
+
+standalone: true
+web_bundle: false

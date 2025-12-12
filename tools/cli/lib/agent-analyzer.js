@@ -29,24 +29,52 @@ class AgentAnalyzer {
       // Track the menu item
       profile.menuItems.push(item);
 
-      // Check for each possible attribute
-      if (item.workflow) {
-        profile.usedAttributes.add('workflow');
-      }
-      if (item['validate-workflow']) {
-        profile.usedAttributes.add('validate-workflow');
-      }
-      if (item.exec) {
-        profile.usedAttributes.add('exec');
-      }
-      if (item.tmpl) {
-        profile.usedAttributes.add('tmpl');
-      }
-      if (item.data) {
-        profile.usedAttributes.add('data');
-      }
-      if (item.action) {
-        profile.usedAttributes.add('action');
+      // Check for multi format items
+      if (item.multi && item.triggers) {
+        profile.usedAttributes.add('multi');
+
+        // Also check attributes in nested handlers
+        for (const triggerGroup of item.triggers) {
+          for (const [triggerName, execArray] of Object.entries(triggerGroup)) {
+            if (Array.isArray(execArray)) {
+              for (const exec of execArray) {
+                if (exec.route) {
+                  // Check if route is a workflow or exec
+                  if (exec.route.endsWith('.yaml') || exec.route.endsWith('.yml')) {
+                    profile.usedAttributes.add('workflow');
+                  } else {
+                    profile.usedAttributes.add('exec');
+                  }
+                }
+                if (exec.workflow) profile.usedAttributes.add('workflow');
+                if (exec.action) profile.usedAttributes.add('action');
+                if (exec.type && ['exec', 'action', 'workflow'].includes(exec.type)) {
+                  profile.usedAttributes.add(exec.type);
+                }
+              }
+            }
+          }
+        }
+      } else {
+        // Check for each possible attribute in legacy items
+        if (item.workflow) {
+          profile.usedAttributes.add('workflow');
+        }
+        if (item['validate-workflow']) {
+          profile.usedAttributes.add('validate-workflow');
+        }
+        if (item.exec) {
+          profile.usedAttributes.add('exec');
+        }
+        if (item.tmpl) {
+          profile.usedAttributes.add('tmpl');
+        }
+        if (item.data) {
+          profile.usedAttributes.add('data');
+        }
+        if (item.action) {
+          profile.usedAttributes.add('action');
+        }
       }
     }
 

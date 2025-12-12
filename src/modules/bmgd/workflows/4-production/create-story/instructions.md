@@ -1,7 +1,7 @@
 # Create Story - Workflow Instructions (Spec-compliant, non-interactive by default)
 
 ````xml
-<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/.bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Generate all documents in {document_output_language}</critical>
 <critical>This workflow creates or updates the next user story from epics/PRD and architecture context, saving to the configured stories directory and optionally invoking Story Context.</critical>
@@ -213,7 +213,7 @@ Will update existing story file rather than creating new one.
   </step>
 
   <step n="8" goal="Validate, save, and mark story drafted" tag="sprint-status">
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {bmad_folder}/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using .bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Save document unconditionally (non-interactive default). In interactive mode, allow user confirmation.</action>
 
     <!-- Mark story as drafted in sprint status -->

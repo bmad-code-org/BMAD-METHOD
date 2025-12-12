@@ -1,0 +1,53 @@
+# BMAD™ Method Core Configuration
+
+code: bmm
+name: "BMM: BMad Method Agile-AI Driven-Development"
+default_selected: true # This module will be selected by default for new installations
+
+header: "BMad Method™: Breakthrough Method of Agile-Ai Driven-Dev"
+subheader: "Agent and Workflow Configuration for this module"
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## install_user_docs
+## kb_install
+
+project_name:
+  prompt: "What is the title of your project you will be working on?"
+  default: "{directory_name}"
+  result: "{value}"
+
+user_skill_level:
+  prompt:
+    - "What is your technical experience level?"
+    - "This affects how agents explain concepts to you (NOT document content)."
+    - "Documents are always concise for LLM efficiency."
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - New to development, explain concepts clearly"
+    - value: "intermediate"
+      label: "Intermediate - Familiar with development, balance explanation with efficiency"
+    - value: "expert"
+      label: "Expert - Deep technical knowledge, be direct and technical"
+
+sprint_artifacts:
+  prompt: "Where should Sprint Artifacts be stored (sprint status, stories, story context, temp context, etc...)?"
+  default: "{output_folder}/sprint-artifacts"
+  result: "{project-root}/{value}"
+
+tea_use_mcp_enhancements:
+  prompt: "Enable Test Architect Playwright MCP capabilities (healing, exploratory, verification)? You have to setup your MCPs yourself; refer to test-architecture.md for hints."
+  default: false
+  result: "{value}"
+
+tea_use_playwright_utils:
+  prompt:
+    - "Are you using playwright-utils (@seontechnologies/playwright-utils) in your project?"
+    - "This adds fixture-based utilities for auth, API requests, network recording, polling, intercept, recurse, logging, file download handling, and burn-in."
+    - "You must install packages yourself, or use test architect's *framework command."
+  default: false
+  result: "{value}"

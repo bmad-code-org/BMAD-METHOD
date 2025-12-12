@@ -90,7 +90,7 @@ When in doubt, start smaller. You can always run create-prd later if needed.
 
 ### Q: Do I always need architecture for Level 2?
 
-**A:** No, architecture is **optional** for Level 2. Only create architecture if you need system-level design. Many Level 2 projects work fine with just PRD + epic-tech-context created during implementation.
+**A:** No, architecture is **optional** for Level 2. Only create architecture if you need system-level design. Many Level 2 projects work fine with just PRD created during planning.
 
 ### Q: What's the difference between Level 1 and Level 2?
 
@@ -147,7 +147,7 @@ If status file exists, use workflow-status. If not, use workflow-init.
 
 ### Q: How do I know when Phase 3 is complete and I can start Phase 4?
 
-**A:** For Level 3-4, run the implementation-readiness workflow. It validates that PRD (FRs/NFRs), architecture, epics+stories, and UX (if applicable) are cohesive before implementation. Pass the gate check = ready for Phase 4.
+**A:** For Level 3-4, run the implementation-readiness workflow. It validates PRD + Architecture + Epics + UX (optional) are aligned before implementation. Pass the gate check = ready for Phase 4.
 
 ### Q: Can I run workflows in parallel or do they have to be sequential?
 
@@ -162,15 +162,6 @@ If status file exists, use workflow-status. If not, use workflow-init.
 
 ## Planning Documents
 
-### Q: What's the difference between tech-spec and epic-tech-context?
-
-**A:**
-
-- **Tech-spec (Level 0-1):** Created upfront in Planning Phase, serves as primary/only planning document, a combination of enough technical and planning information to drive a single or multiple files
-- **Epic-tech-context (Level 2-4):** Created during Implementation Phase per epic, supplements PRD + Architecture
-
-Think of it as: tech-spec is for small projects (replaces PRD and architecture), epic-tech-context is for large projects (supplements PRD).
-
 ### Q: Why no tech-spec at Level 2+?
 
 **A:** Level 2+ projects need product-level planning (PRD) and system-level design (Architecture), which tech-spec doesn't provide. Tech-spec is too narrow for coordinating multiple features. Instead, Level 2-4 uses:
@@ -178,13 +169,6 @@ Think of it as: tech-spec is for small projects (replaces PRD and architecture),
 - PRD (product vision, functional requirements, non-functional requirements)
 - Architecture (system design)
 - Epics+Stories (created AFTER architecture is complete)
-- Epic-tech-context (detailed implementation per epic, created just-in-time)
-
-### Q: When do I create epic-tech-context?
-
-**A:** In Phase 4, right before implementing each epic. Don't create all epic-tech-context upfront - that's over-planning. Create them just-in-time using the epic-tech-context workflow as you're about to start working on that epic.
-
-**Why just-in-time?** You'll learn from earlier epics, and those learnings improve later epic-tech-context.
 
 ### Q: Do I need a PRD for a bug fix?
 
@@ -209,47 +193,17 @@ PRDs are for Level 2-4 projects with multiple features requiring product-level c
 
 ## Implementation
 
-### Q: Do I need story-context for every story?
+### Q: Does create-story include implementation context?
 
-**A:** Technically no, but it's recommended. story-context provides implementation-specific guidance, references existing patterns, and injects expertise. Skip it only if:
-
-- Very simple story (self-explanatory)
-- You're already expert in the area
-- Time is extremely limited
-
-For Level 0-1 using tech-spec, story-context is less critical because tech-spec is already comprehensive.
-
-### Q: What if I don't create epic-tech-context before drafting stories?
-
-**A:** You can proceed without it, but you'll miss:
-
-- Epic-level technical direction
-- Architecture guidance for this epic
-- Integration strategy with other epics
-- Common patterns to follow across stories
-
-epic-tech-context helps ensure stories within an epic are cohesive.
+**A:** Yes! The create-story workflow generates story files that include implementation-specific guidance, references existing patterns from your documentation, and provides technical context. The workflow loads your architecture, PRD, and existing project documentation to create comprehensive stories. For Quick Flow projects using tech-spec, the tech-spec itself is already comprehensive, so stories can be simpler.
 
 ### Q: How do I mark a story as done?
 
-**A:** You have two options:
+**A:** After dev-story completes and code-review passes:
 
-**Option 1: Use story-done workflow (Recommended)**
-
-1. Load SM agent
-2. Run `story-done` workflow
-3. Workflow automatically updates `sprint-status.yaml` (created by sprint-planning at Phase 4 start)
-4. Moves story from current status → `DONE`
-5. Advances the story queue
-
-**Option 2: Manual update**
-
-1. After dev-story completes and code-review passes
-2. Open `sprint-status.yaml` (created by sprint-planning)
-3. Change the story status from `review` to `done`
-4. Save the file
-
-The story-done workflow is faster and ensures proper status file updates.
+1. Open `sprint-status.yaml` (created by sprint-planning)
+2. Change the story status from `review` to `done`
+3. Save the file
 
 ### Q: Can I work on multiple stories at once?
 
@@ -271,7 +225,7 @@ The story-done workflow is faster and ensures proper status file updates.
 - What went well
 - What could improve
 - Technical insights
-- Input for next epic-tech-context
+- Learnings for future epics
 
 Don't wait until project end - run after each epic for continuous improvement.
 
@@ -404,7 +358,7 @@ See [IDE Setup Guides](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/do
 
 ### Q: Can I customize agents?
 
-**A:** Yes! Agents are installed as markdown files with XML-style content (optimized for LLMs, readable by any model). Create customization files in `{bmad_folder}/_cfg/agents/[agent-name].customize.yaml` to override default behaviors while keeping core functionality intact. See agent documentation for customization options.
+**A:** Yes! Agents are installed as markdown files with XML-style content (optimized for LLMs, readable by any model). Create customization files in `.bmad/_cfg/agents/[agent-name].customize.yaml` to override default behaviors while keeping core functionality intact. See agent documentation for customization options.
 
 **Note:** While source agents in this repo are YAML, they install as `.md` files with XML-style tags - a format any LLM can read and follow.
 
@@ -565,7 +519,7 @@ Trust your expertise - BMM supports your decisions.
 
 ### Q: How do I report a bug or request a feature?
 
-**A:** Open a GitHub issue at: https://github.com/bmad-code-org/BMAD-METHOD/issues
+**A:** Open a GitHub issue at: <https://github.com/bmad-code-org/BMAD-METHOD/issues>
 
 Please include:
 

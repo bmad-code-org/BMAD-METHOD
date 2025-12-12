@@ -20,7 +20,7 @@
 
 {{#if has_api_routes}}
 
-### API Routes ({{api_route_count}} endpoints found)
+## API Routes ({{api_route_count}} endpoints found)
 
 {{#each api_route_groups}}
 {{group_index}}. {{group_name}} - {{endpoint_count}} endpoints in `{{path}}`
@@ -29,7 +29,7 @@
 
 {{#if has_feature_modules}}
 
-### Feature Modules ({{feature_count}} features)
+## Feature Modules ({{feature_count}} features)
 
 {{#each feature_modules}}
 {{module_index}}. {{module_name}} - {{file_count}} files in `{{path}}`

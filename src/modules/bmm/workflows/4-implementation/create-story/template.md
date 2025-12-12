@@ -1,6 +1,8 @@
 # Story {{epic_num}}.{{story_num}}: {{story_title}}
 
-Status: drafted
+Status: ready-for-dev
+
+<!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
 ## Story
 
@@ -35,10 +37,6 @@ so that {{benefit}}.
 - Cite all technical details with source paths and sections, e.g. [Source: docs/<file>.md#Section]
 
 ## Dev Agent Record
-
-### Context Reference
-
-<!-- Path(s) to story context XML will be added here by context workflow -->
 
 ### Agent Model Used
 

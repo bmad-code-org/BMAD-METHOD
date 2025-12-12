@@ -1,7 +1,7 @@
 # Create Flowchart - Workflow Instructions
 
 ```xml
-<critical>The workflow execution engine is governed by: {project_root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/.bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>This workflow creates a flowchart visualization in Excalidraw format for processes, pipelines, or logic flows.</critical>
 
@@ -234,7 +234,7 @@
   </step>
 
   <step n="9" goal="Validate Content">
-    <invoke-task>Validate against checklist at {{validation}} using {{bmad_folder}}/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against checklist at {{validation}} using {.bmad}/core/tasks/validate-workflow.xml</invoke-task>
   </step>
 
 </workflow>

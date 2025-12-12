@@ -1,7 +1,5 @@
 # BMM Planning Workflows (Phase 2)
 
-**Reading Time:** ~10 minutes
-
 ## Overview
 
 Phase 2 (Planning) workflows are **required** for all projects. They transform strategic vision into actionable requirements using a **scale-adaptive system** that automatically selects the right planning depth based on project complexity.
@@ -12,101 +10,46 @@ Phase 2 (Planning) workflows are **required** for all projects. They transform s
 
 ---
 
-## Phase 2 Planning Workflow Map
+## Phase 2 Planning Workflow Overview
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#fff','primaryTextColor':'#000','primaryBorderColor':'#000','lineColor':'#000','fontSize':'16px','fontFamily':'arial'}}}%%
-graph TB
-    Start["<b>START: workflow-init</b><br/>Discovery + routing"]
+Phase 2 Planning uses a scale-adaptive system with three tracks:
 
-    subgraph QuickFlow["<b>QUICK FLOW (Simple Planning)</b>"]
-        direction TB
-        TechSpec["<b>PM: tech-spec</b><br/>Technical document<br/>→ Story or Epic+Stories<br/>1-15 stories typically"]
-    end
+### Quick Flow (Simple Planning)
 
-    subgraph BMadMethod["<b>BMAD METHOD (Recommended)</b>"]
-        direction TB
-        PRD["<b>PM: prd</b><br/>Strategic PRD with FRs/NFRs"]
-        GDD["<b>Game Designer: gdd</b><br/>Game design doc"]
-        Narrative["<b>Game Designer: narrative</b><br/>Story-driven design"]
+- Entry: `workflow-init` routes based on project complexity
+- Workflow: `tech-spec`
+- Output: Technical document with story/epic structure
+- Story count: 1-15 (typical)
+- Next: Phase 4 (Implementation) - skips Phase 3
 
-        UXDesign["<b>UX Designer: create-ux-design</b><br/>Optional UX specification"]
-    end
+### BMad Method (Recommended)
 
-    subgraph Solutioning["<b>PHASE 3: SOLUTIONING</b>"]
-        direction TB
-        Architecture["<b>Architect: architecture</b><br/>System design + decisions"]
-        Epics["<b>PM: create-epics-and-stories</b><br/>Epic+Stories breakdown<br/>(10-50+ stories typically)"]
-    end
+- Entry: `workflow-init` routes based on project complexity
+- Workflows: `prd` → (optional) `create-ux-design`
+- Output: PRD with FRs/NFRs
+- Story count: 10-50+ (typical)
+- Next: Phase 3 (Solutioning) → Phase 4
 
-    subgraph Enterprise["<b>ENTERPRISE METHOD</b>"]
-        direction TB
-        EntNote["<b>Uses BMad Method Planning</b><br/>+<br/>Extended Phase 3 workflows<br/>(Architecture + Security + DevOps)<br/>30+ stories typically"]
-    end
+### Enterprise Method
 
-    subgraph Updates["<b>MID-STREAM UPDATES (Anytime)</b>"]
-        direction LR
-        CorrectCourse["<b>PM/SM: correct-course</b><br/>Update requirements/stories"]
-    end
+- Planning: Same as BMad Method (`prd` workflow)
+- Solutioning: Extended Phase 3 workflows (Architecture + Security + DevOps)
+- Story count: 30+ (typical)
+- Next: Phase 4
 
-    Start -->|Bug fix, simple| QuickFlow
-    Start -->|Software product| PRD
-    Start -->|Game project| GDD
-    Start -->|Story-driven| Narrative
-    Start -->|Enterprise needs| Enterprise
-
-    PRD -.->|Optional| UXDesign
-    GDD -.->|Optional| UXDesign
-    Narrative -.->|Optional| UXDesign
-    PRD --> Architecture
-    GDD --> Architecture
-    Narrative --> Architecture
-    UXDesign --> Architecture
-    Architecture --> Epics
-
-    QuickFlow --> Phase4["<b>Phase 4: Implementation</b>"]
-    Epics --> ReadinessCheck["<b>Architect: implementation-readiness</b><br/>Gate check"]
-    Enterprise -.->|Uses BMad planning| Architecture
-    Enterprise --> Phase3Ext["<b>Phase 3: Extended</b><br/>(Arch + Sec + DevOps)"]
-    ReadinessCheck --> Phase4
-    Phase3Ext --> Phase4
-
-    Phase4 -.->|Significant changes| CorrectCourse
-    CorrectCourse -.->|Updates| Epics
-
-    style Start fill:#fff9c4,stroke:#f57f17,stroke-width:3px,color:#000
-    style QuickFlow fill:#c5e1a5,stroke:#33691e,stroke-width:3px,color:#000
-    style BMadMethod fill:#e1bee7,stroke:#6a1b9a,stroke-width:3px,color:#000
-    style Enterprise fill:#ffcdd2,stroke:#c62828,stroke-width:3px,color:#000
-    style Updates fill:#ffecb3,stroke:#ff6f00,stroke-width:3px,color:#000
-    style Phase3 fill:#90caf9,stroke:#0d47a1,stroke-width:2px,color:#000
-    style Phase4 fill:#ffcc80,stroke:#e65100,stroke-width:2px,color:#000
-
-    style TechSpec fill:#aed581,stroke:#1b5e20,stroke-width:2px,color:#000
-    style PRD fill:#ce93d8,stroke:#4a148c,stroke-width:2px,color:#000
-    style GDD fill:#ce93d8,stroke:#4a148c,stroke-width:2px,color:#000
-    style Narrative fill:#ce93d8,stroke:#4a148c,stroke-width:2px,color:#000
-    style UXDesign fill:#ce93d8,stroke:#4a148c,stroke-width:2px,color:#000
-    style Epics fill:#ba68c8,stroke:#6a1b9a,stroke-width:3px,color:#000
-    style EntNote fill:#ef9a9a,stroke:#c62828,stroke-width:2px,color:#000
-    style Phase3Ext fill:#ef5350,stroke:#c62828,stroke-width:2px,color:#000
-    style CorrectCourse fill:#ffb74d,stroke:#ff6f00,stroke-width:2px,color:#000
-```
+The `correct-course` workflow can be used anytime for significant requirement changes.
 
 ---
 
 ## Quick Reference
 
-| Workflow                     | Agent         | Track       | Purpose                                                   | Typical Stories |
-| ---------------------------- | ------------- | ----------- | --------------------------------------------------------- | --------------- |
-| **workflow-init**            | PM/Analyst    | All         | Entry point: discovery + routing                          | N/A             |
-| **tech-spec**                | PM            | Quick Flow  | Technical document → Story or Epic+Stories                | 1-15            |
-| **prd**                      | PM            | BMad Method | Strategic PRD with FRs/NFRs (no epic breakdown)           | 10-50+          |
-| **gdd**                      | Game Designer | BMad Method | Game Design Document with requirements                    | 10-50+          |
-| **narrative**                | Game Designer | BMad Method | Story-driven game/experience design                       | 10-50+          |
-| **create-ux-design**         | UX Designer   | BMad Method | Optional UX specification (after PRD)                     | N/A             |
-| **create-epics-and-stories** | PM            | BMad Method | Break requirements into Epic+Stories (AFTER architecture) | N/A             |
-| **correct-course**           | PM/SM         | All         | Mid-stream requirement changes                            | N/A             |
+| Workflow             | Agent       | Track                   | Purpose                                         | Typical Stories |
+| -------------------- | ----------- | ----------------------- | ----------------------------------------------- | --------------- |
+| **workflow-init**    | PM/Analyst  | All                     | Entry point: discovery + routing                | N/A             |
+| **tech-spec**        | PM          | Quick Flow              | Technical document → Story or Epic+Stories      | 1-15            |
+| **prd**              | PM          | BMad Method, Enterprise | Strategic PRD with FRs/NFRs (no epic breakdown) | 10-50+          |
+| **create-ux-design** | UX Designer | BMad Method, Enterprise | Optional UX specification (after PRD)           | N/A             |
+| **correct-course**   | PM/SM       | All                     | Mid-stream requirement changes                  | N/A             |
 
 **Note:** Story counts are guidance. V6 improvement: Epic+Stories are created AFTER architecture for better quality.
 
@@ -195,7 +138,7 @@ The system guides but never forces. You can override recommendations.
 
 **Agent:** PM (orchestrates others as needed)
 
-**Always Use:** This is your planning starting point. Don't call prd/gdd/tech-spec directly unless skipping discovery.
+**Always Use:** This is your planning starting point. Don't call prd/tech-spec directly unless skipping discovery.
 
 **Process:**
 
@@ -268,70 +211,7 @@ The system guides but never forces. You can override recommendations.
 
 ---
 
-### gdd (Game Design Document)
-
-**Purpose:** Complete game design document for game projects (BMad Method track).
-
-**Agent:** Game Designer
-
-**When to Use:**
-
-- Designing any game (any genre)
-- Need comprehensive design documentation
-- Team needs shared vision
-- Publisher/stakeholder communication
-
-**BMM GDD vs Traditional:**
-
-- Scale-adaptive detail (not waterfall)
-- Agile epic structure
-- Direct handoff to implementation
-- Integrated with testing workflows
-
-**Key Outputs:**
-
-- GDD.md (complete game design)
-- Epic breakdown (Core Loop, Content, Progression, Polish)
-
-**Integration:** Feeds into Architecture (Phase 3)
-
-**Example:** Roguelike card game → Core concept (Slay the Spire meets Hades), 3 characters, 120 cards, 50 enemies, Epic breakdown with 26 stories.
-
----
-
-### narrative (Narrative Design)
-
-**Purpose:** Story-driven design workflow for games/experiences where narrative is central (BMad Method track).
-
-**Agent:** Game Designer (Narrative Designer persona) + Creative Problem Solver (CIS)
-
-**When to Use:**
-
-- Story is central to experience
-- Branching narrative with player choices
-- Character-driven games
-- Visual novels, adventure games, RPGs
-
-**Combine with GDD:**
-
-1. Run `narrative` first (story structure)
-2. Then run `gdd` (integrate story with gameplay)
-
-**Key Outputs:**
-
-- narrative-design.md (complete narrative spec)
-- Story structure (acts, beats, branching)
-- Characters (profiles, arcs, relationships)
-- Dialogue system design
-- Implementation guide
-
-**Integration:** Combine with GDD, then feeds into Architecture (Phase 3)
-
-**Example:** Choice-driven RPG → 3 acts, 12 chapters, 5 choice points, 3 endings, 60K words, 40 narrative scenes.
-
----
-
-### ux (UX-First Design)
+### create-ux-design (UX Design)
 
 **Purpose:** UX specification for projects where user experience is the primary differentiator (BMad Method track).
 
@@ -364,31 +244,6 @@ The system guides but never forces. You can override recommendations.
 **Integration:** Feeds PRD or updates epics, then Architecture (Phase 3)
 
 **Example:** Dashboard redesign → Card-based layout with split-pane toggle, 5 card components, 12 color tokens, responsive grid, 3 epics (Layout, Visualization, Accessibility).
-
----
-
-### create-epics-and-stories
-
-**Purpose:** Break requirements into bite-sized stories organized in epics (BMad Method track).
-
-**Agent:** PM
-
-**When to Use:**
-
-- **REQUIRED:** After Architecture workflow is complete (Phase 3)
-- After PRD defines FRs/NFRs and Architecture defines HOW to build
-- Optional: Can also run earlier (after PRD, after UX) for basic structure, then refined after Architecture
-
-**Key Outputs:**
-
-- epics.md (all epics with story breakdown)
-- Epic files (epic-1-\*.md, etc.)
-
-**V6 Improvement:** Epics+Stories are now created AFTER architecture for better quality:
-
-- Architecture decisions inform story breakdown (tech choices affect implementation)
-- Stories have full context (PRD + UX + Architecture)
-- Better sequencing with technical dependencies considered
 
 ---
 
@@ -426,9 +281,7 @@ The system guides but never forces. You can override recommendations.
 
 - **Bug fix or single change** → `tech-spec` (Quick Flow)
 - **Software product** → `prd` (BMad Method)
-- **Game (gameplay-first)** → `gdd` (BMad Method)
-- **Game (story-first)** → `narrative` + `gdd` (BMad Method)
-- **UX innovation project** → `ux` + `prd` (BMad Method)
+- **UX innovation project** → `create-ux-design` + `prd` (BMad Method)
 - **Enterprise with compliance** → Choose track in `workflow-init` → Enterprise Method
 
 ---
@@ -437,14 +290,12 @@ The system guides but never forces. You can override recommendations.
 
 Planning outputs feed into Solutioning:
 
-| Planning Output     | Solutioning Input                    | Track Decision               |
-| ------------------- | ------------------------------------ | ---------------------------- |
-| tech-spec.md        | Skip Phase 3 → Phase 4 directly      | Quick Flow (no architecture) |
-| PRD.md              | **architecture** (Level 3-4)         | BMad Method (recommended)    |
-| GDD.md              | **architecture** (game tech)         | BMad Method (recommended)    |
-| narrative-design.md | **architecture** (narrative systems) | BMad Method                  |
-| ux-spec.md          | **architecture** (frontend design)   | BMad Method                  |
-| Enterprise docs     | **architecture** + security/ops      | Enterprise Method (required) |
+| Planning Output | Solutioning Input                  | Track Decision               |
+| --------------- | ---------------------------------- | ---------------------------- |
+| tech-spec.md    | Skip Phase 3 → Phase 4 directly    | Quick Flow (no architecture) |
+| PRD.md          | **architecture** (Level 3-4)       | BMad Method (recommended)    |
+| ux-spec.md      | **architecture** (frontend design) | BMad Method                  |
+| Enterprise docs | **architecture** + security/ops    | Enterprise Method (required) |
 
 **Key Decision Points:**
 
@@ -468,11 +319,11 @@ If `workflow-init` suggests BMad Method, there's likely complexity you haven't c
 
 ### 3. Iterate on Requirements
 
-Planning documents are living. Refine PRDs/GDDs as you learn during Solutioning and Implementation.
+Planning documents are living. Refine PRDs as you learn during Solutioning and Implementation.
 
 ### 4. Involve Stakeholders Early
 
-Review PRDs/GDDs with stakeholders before Solutioning. Catch misalignment early.
+Review PRDs with stakeholders before Solutioning. Catch misalignment early.
 
 ### 5. Focus on "What" Not "How"
 
@@ -492,9 +343,8 @@ Always run `document-project` before planning brownfield projects. AI agents nee
 1. (Optional) Analysis: product-brief, research
 2. workflow-init → routes to prd
 3. PM: prd workflow
-4. (Optional) UX Designer: ux workflow
-5. PM: create-epics-and-stories (may be automatic)
-6. → Phase 3: architecture
+4. (Optional) UX Designer: create-ux-design workflow
+5. → Phase 3: architecture
 ```
 
 ### Brownfield Software (BMad Method)
@@ -503,26 +353,15 @@ Always run `document-project` before planning brownfield projects. AI agents nee
 1. Technical Writer or Analyst: document-project
 2. workflow-init → routes to prd
 3. PM: prd workflow
-4. PM: create-epics-and-stories
-5. → Phase 3: architecture (recommended for focused solution design)
+4. → Phase 3: architecture (recommended for focused solution design)
 ```
 
 ### Bug Fix (Quick Flow)
 
 ```
 1. workflow-init → routes to tech-spec
-2. Architect: tech-spec workflow
+2. PM: tech-spec workflow
 3. → Phase 4: Implementation (skip Phase 3)
-```
-
-### Game Project (BMad Method)
-
-```
-1. (Optional) Analysis: game-brief, research
-2. workflow-init → routes to gdd
-3. Game Designer: gdd workflow (or narrative + gdd if story-first)
-4. Game Designer creates epic breakdown
-5. → Phase 3: architecture (game systems)
 ```
 
 ### Enterprise Project (Enterprise Method)
@@ -602,7 +441,7 @@ A: Run `correct-course` workflow. It analyzes impact and updates planning artifa
 A: Recommended! Architecture distills massive codebase into focused solution design for your specific project.
 
 **Q: When do I run create-epics-and-stories?**
-A: Usually automatic during PRD/GDD. Can also run standalone later to regenerate epics.
+A: In Phase 3 (Solutioning), after architecture is complete.
 
 **Q: Should I use product-brief before PRD?**
 A: Optional but recommended for greenfield. Helps strategic thinking. `workflow-init` offers it based on context.

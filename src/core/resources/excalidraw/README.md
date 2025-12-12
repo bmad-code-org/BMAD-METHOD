@@ -72,8 +72,8 @@ Provides the **HOW** (universal knowledge) while agents provide the **WHAT** (do
 
 ```yaml
 # workflows/diagrams/create-flowchart/workflow.yaml
-helpers: '{project-root}/{bmad_folder}/core/resources/excalidraw/excalidraw-helpers.md'
-json_validation: '{project-root}/{bmad_folder}/core/resources/excalidraw/validate-json-instructions.md'
+helpers: '{project-root}/.bmad/core/resources/excalidraw/excalidraw-helpers.md'
+json_validation: '{project-root}/.bmad/core/resources/excalidraw/validate-json-instructions.md'
 ```
 
 **Domain-specific additions:**
@@ -99,8 +99,8 @@ flowchart:
 
 ```yaml
 # workflows/create-visual-metaphor/workflow.yaml
-helpers: '{project-root}/{bmad_folder}/core/resources/excalidraw/excalidraw-helpers.md'
-json_validation: '{project-root}/{bmad_folder}/core/resources/excalidraw/validate-json-instructions.md'
+helpers: '{project-root}/.bmad/core/resources/excalidraw/excalidraw-helpers.md'
+json_validation: '{project-root}/.bmad/core/resources/excalidraw/validate-json-instructions.md'
 ```
 
 **Domain-specific additions:**

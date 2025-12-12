@@ -1,7 +1,7 @@
 <!-- BMAD BMM Story Context Assembly Instructions (v6) -->
 
 ```xml
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
@@ -156,7 +156,7 @@
   <step n="6" goal="Validate and save">
     <anchor id="validation_step" />
     <action>Validate output context file structure and content</action>
-    <invoke-task>Validate against checklist at {installed_path}/checklist.md using {bmad_folder}/core/tasks/validate-workflow.xml</invoke-task>
+    <invoke-task>Validate against checklist at {installed_path}/checklist.md using .bmad/core/tasks/validate-workflow.xml</invoke-task>
   </step>
 
   <step n="7" goal="Update story file and mark ready for dev" tag="sprint-status">

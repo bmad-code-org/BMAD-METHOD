@@ -1,0 +1,25 @@
+# BMAD™ Method Core Configuration
+
+code: bmb
+name: "BMB: BMad Builder - Agent, Workflow and Module Builder"
+default_selected: false # This module will not be selected by default for new installations
+
+header: "BMad Optimized Builder (BoMB) Module Configuration"
+subheader: "Configure the settings for the BoMB Factory!\nThe agent, workflow and module builder for BMAD™"
+
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## install_user_docs
+## kb_install
+
+custom_stand_alone_location:
+  prompt: "Where do custom agents and workflows get stored?"
+  default: "bmad-custom-src"
+  result: "{project-root}/{value}"
+
+custom_module_location:
+  prompt: "Where do custom modules get stored?"
+  default: "bmad-custom-modules-src"
+  result: "{project-root}/{value}"

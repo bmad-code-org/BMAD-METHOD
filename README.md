@@ -8,7 +8,9 @@
 
 ## AI-Driven Agile Development That Scales From Bug Fixes to Enterprise
 
-**Build More, Architect Dreams** (BMAD) with **19 specialized AI agents** and **50+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms.
+**Build More, Architect Dreams** (BMAD) with **21 specialized AI agents** across 4 official modules, and **50+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms, and new step file workflows that allow for incredibly long workflows to stay on the rails longer than ever before!
+
+Additionally - when we say 'Build More, Architect Dreams' - we mean it! The BMad Builder has landed, and now as of Alpha.15 is fully supported in the installation flow via NPX - custom stand along agents, workflows and the modules of your dreams! The community forge will soon open, endless possibility awaits!
 
 > **🚀 v6 is a MASSIVE upgrade from v4!** Complete architectural overhaul, scale-adaptive intelligence, visual workflows, and the powerful BMad Core framework. v4 users: this changes everything. [See what's new →](#whats-new-in-v6)
 
@@ -154,6 +156,7 @@ Each agent brings deep expertise and can be customized to match your team's styl
 - **[GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)** - Report bugs, request features
 - **[YouTube Channel](https://www.youtube.com/@BMadCode)** - Video tutorials and demos
 - **[Web Bundles](https://bmad-code-org.github.io/bmad-bundles/)** - Pre-built agent bundles
+- **[Code of Conduct](.github/CODE_OF_CONDUCT.md)** - Community guidelines
 
 ## 🛠️ Development
 

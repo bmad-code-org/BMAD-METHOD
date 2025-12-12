@@ -1,0 +1,15 @@
+# BMAD™ Creative Intelligence Suite Configuration
+
+code: cis
+name: "CIS: Creative Innovation Suite"
+default_selected: false # This module will not be selected by default for new installations
+
+header: "Creative Innovation Suite (CIS) Module"
+subheader: "No Configuration needed - uses Core Config only."
+# Variables from Core Config inserted:
+## user_name
+## communication_language
+## output_folder
+## install_user_docs
+## kb_install
+

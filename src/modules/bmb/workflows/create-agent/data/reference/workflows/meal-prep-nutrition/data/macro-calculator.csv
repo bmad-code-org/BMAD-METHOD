@@ -1,0 +1,16 @@
+goal,activity_level,multiplier,protein_ratio,protein_min,protein_max,fat_ratio,carb_ratio
+weight_loss,sedentary,1.2,0.3,1.6,2.2,0.35,0.35
+weight_loss,light,1.375,0.35,1.8,2.5,0.30,0.35
+weight_loss,moderate,1.55,0.4,2.0,2.8,0.30,0.30
+weight_loss,active,1.725,0.4,2.2,3.0,0.25,0.35
+weight_loss,very_active,1.9,0.45,2.5,3.3,0.25,0.30
+maintenance,sedentary,1.2,0.25,0.8,1.2,0.35,0.40
+maintenance,light,1.375,0.25,1.0,1.4,0.35,0.40
+maintenance,moderate,1.55,0.3,1.2,1.6,0.35,0.35
+maintenance,active,1.725,0.3,1.4,1.8,0.30,0.40
+maintenance,very_active,1.9,0.35,1.6,2.2,0.30,0.35
+muscle_gain,sedentary,1.2,0.35,1.8,2.5,0.30,0.35
+muscle_gain,light,1.375,0.4,2.0,2.8,0.30,0.30
+muscle_gain,moderate,1.55,0.4,2.2,3.0,0.25,0.35
+muscle_gain,active,1.725,0.45,2.5,3.3,0.25,0.30
+muscle_gain,very_active,1.9,0.45,2.8,3.5,0.25,0.30
