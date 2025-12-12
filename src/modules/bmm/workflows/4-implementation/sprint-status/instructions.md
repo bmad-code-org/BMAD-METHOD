@@ -1,7 +1,7 @@
 # Sprint Status - Multi-Mode Service
 
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/4-implementation/sprint-status/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/.bmad/bmm/workflows/4-implementation/sprint-status/workflow.yaml</critical>
 <critical>Modes: interactive (default), validate, data</critical>
 <critical>⚠️ ABSOLUTELY NO TIME ESTIMATES. Do NOT mention hours, days, weeks, or timelines.</critical>
 
@@ -40,12 +40,14 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
   - Epics: keys starting with "epic-" (and not ending with "-retrospective")
   - Retrospectives: keys ending with "-retrospective"
   - Stories: everything else (e.g., 1-2-login-form)
-  <action>Count story statuses: backlog, drafted, ready-for-dev, in-progress, review, done</action>
+  <action>If any story has status `drafted`, treat as `ready-for-dev` (legacy status)</action>
+  <action>Count story statuses: backlog, ready-for-dev, in-progress, review, done</action>
   <action>Count epic statuses: backlog, contexted</action>
   <action>Detect risks:</action>
   - Stories in review but no reviewer assigned context → suggest `/bmad:bmm:workflows:code-review`
   - Stories in in-progress with no ready-for-dev items behind them → keep focus on the active story
-  - All epics backlog/contexted but no stories drafted → prompt to run `/bmad:bmm:workflows:create-story`
+  - All epics backlog/contexted but no stories ready-for-dev → prompt to run `/bmad:bmm:workflows:create-story`
+  - Stories in ready-for-dev may be unvalidated → suggest `/bmad:bmm:workflows:validate-create-story` before `dev-story` for quality check
 </step>
 
 <step n="3" goal="Select next action recommendation">
@@ -53,11 +55,9 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
   1. If any story status == in-progress → recommend `dev-story` for the first in-progress story
   2. Else if any story status == review → recommend `code-review` for the first review story
   3. Else if any story status == ready-for-dev → recommend `dev-story`
-  4. Else if any story status == drafted → recommend `story-ready`
-  5. Else if any story status == backlog → recommend `create-story`
-  6. Else if any epic status == backlog → recommend `epic-tech-context`
-  7. Else if retrospectives are optional → recommend `retrospective`
-  8. Else → All implementation items done; suggest `workflow-status` to plan next phase
+  4. Else if any story status == backlog → recommend `create-story`
+  5. Else if retrospectives are optional → recommend `retrospective`
+  6. Else → All implementation items done; suggest `workflow-status` to plan next phase
   <action>Store selected recommendation as: next_story_id, next_workflow_id, next_agent (SM/DEV as appropriate)</action>
 </step>
 
@@ -69,7 +69,7 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
 - Tracking: {{tracking_system}}
 - Status file: {sprint_status_file}
 
-**Stories:** backlog {{count_backlog}}, drafted {{count_drafted}}, ready-for-dev {{count_ready}}, in-progress {{count_in_progress}}, review {{count_review}}, done {{count_done}}
+**Stories:** backlog {{count_backlog}}, ready-for-dev {{count_ready}}, in-progress {{count_in_progress}}, review {{count_review}}, done {{count_done}}
 
 **Epics:** backlog {{epic_backlog}}, contexted {{epic_contexted}}
 
@@ -87,7 +87,7 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
 **Per Epic:**
 {{#each by_epic}}
 
-- {{epic_id}}: context={{context_status}}, stories → backlog {{backlog}}, drafted {{drafted}}, ready {{ready_for_dev}}, in-progress {{in_progress}}, review {{review}}, done {{done}}
+- {{epic_id}}: context={{context_status}}, stories → backlog {{backlog}}, ready {{ready_for_dev}}, in-progress {{in_progress}}, review {{review}}, done {{done}}
   {{/each}}
   {{/if}}
   </output>
@@ -112,7 +112,6 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
 - In Progress: {{stories_in_progress}}
 - Review: {{stories_in_review}}
 - Ready for Dev: {{stories_ready_for_dev}}
-- Drafted: {{stories_drafted}}
 - Backlog: {{stories_backlog}}
 - Done: {{stories_done}}
     </output>
@@ -137,7 +136,6 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
   <template-output>next_workflow_id = {{next_workflow_id}}</template-output>
   <template-output>next_story_id = {{next_story_id}}</template-output>
   <template-output>count_backlog = {{count_backlog}}</template-output>
-  <template-output>count_drafted = {{count_drafted}}</template-output>
   <template-output>count_ready = {{count_ready}}</template-output>
   <template-output>count_in_progress = {{count_in_progress}}</template-output>
   <template-output>count_review = {{count_review}}</template-output>

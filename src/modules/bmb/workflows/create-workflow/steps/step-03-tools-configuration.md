@@ -3,7 +3,7 @@ name: 'step-03-tools-configuration'
 description: 'Configure all required tools (core, memory, external) and installation requirements in one comprehensive step'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-03-tools-configuration.md'
@@ -13,11 +13,11 @@ targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Documentation References
-commonToolsCsv: '{project-root}/{bmad_folder}/bmb/docs/workflows/common-workflow-tools.csv'
+commonToolsCsv: '{project-root}/.bmad/bmb/docs/workflows/common-workflow-tools.csv'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 # Template References
 # No template needed - will append tools configuration directly to workflow plan
 ---

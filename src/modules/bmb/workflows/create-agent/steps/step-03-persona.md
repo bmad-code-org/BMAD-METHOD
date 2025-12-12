@@ -3,7 +3,7 @@ name: 'step-03-persona'
 description: 'Shape the agent personality through collaborative discovery'
 
 # Path Definitions
-workflow_path: '{project-root}/src/modules/bmb/workflows/create-agent'
+workflow_path: '{project-root}/bmb/workflows/create-agent/create-agent'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-03-persona.md'
@@ -11,14 +11,14 @@ nextStepFile: '{workflow_path}/steps/step-04-commands.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/agent-persona-{project_name}.md'
 communicationPresets: '{workflow_path}/data/communication-presets.csv'
-agentMenuPatterns: '{project-root}/{bmad_folder}/bmb/docs/agents/agent-menu-patterns.md'
+agentMenuPatterns: '{project-root}/.bmad/bmb/docs/agents/agent-menu-patterns.md'
 
 # Template References
 personaTemplate: '{workflow_path}/templates/agent-persona.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 3: Shape Agent's Personality

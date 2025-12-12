@@ -1,10 +1,10 @@
 ---
-installed_path: '{project-root}/{bmad_folder}/bmb/workflows/create-module'
+installed_path: '{project-root}/.bmad/bmb/workflows/create-module'
 nextStepFile: '{installed_path}/steps/step-11-validate.md'
 modulePlanFile: '{custom_module_location}/{module_name}/module-plan-{module_name}.md'
 moduleTodoFile: '{custom_module_location}/{module_name}/TODO.md'
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 10: Generate Development Roadmap

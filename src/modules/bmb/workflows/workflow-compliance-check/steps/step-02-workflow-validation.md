@@ -3,7 +3,7 @@ name: 'step-02-workflow-validation'
 description: 'Validate workflow.md against workflow-template.md standards'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/workflow-compliance-check'
+workflow_path: '{project-root}/.bmad/bmb/workflows/workflow-compliance-check'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-02-workflow-validation.md'
@@ -16,8 +16,8 @@ targetWorkflowFile: '{target_workflow_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
+stepTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md'
 ---
 
 # Step 2: Workflow.md Validation
@@ -132,10 +132,10 @@ For each deviation:
 
 "**Initialization Validation:**"
 
-- Configuration Loading uses correct path format: `{project-root}/{*bmad_folder*}/[module]/config.yaml` (variable substitution pattern)
+- Configuration Loading uses correct path format: `{project-root}/.bmad/[module]/config.yaml` (variable substitution pattern)
 - First step follows pattern: `step-01-init.md` OR documented deviation
 - Required config variables properly listed
-- Variables use proper substitution pattern: {project-root}, {_bmad_folder_}, {workflow_path}, etc.
+- Variables use proper substitution pattern: {project-root}, .bmad, {workflow_path}, etc.
 
 For violations:
 

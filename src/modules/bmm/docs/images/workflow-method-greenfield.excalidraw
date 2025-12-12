@@ -2934,7 +2934,7 @@
         "gap": 1
       },
       "endBinding": {
-        "elementId": "proc-story-done",
+        "elementId": "proc-code-review",
         "focus": 0.04241833499478815,
         "gap": 1.3466869862454587
       },
@@ -3189,7 +3189,7 @@
       "lineHeight": 1.25
     },
     {
-      "id": "proc-story-done",
+      "id": "proc-code-review",
       "type": "rectangle",
       "x": 1169.3991588878014,
       "y": 947.2529662369525,
@@ -3207,12 +3207,12 @@
         "value": 8
       },
       "groupIds": [
-        "proc-story-done-group"
+        "proc-code-review-group"
       ],
       "boundElements": [
         {
           "type": "text",
-          "id": "proc-story-done-text"
+          "id": "proc-code-review-text"
         },
         {
           "type": "arrow",
@@ -3235,7 +3235,7 @@
       "link": null
     },
     {
-      "id": "proc-story-done-text",
+      "id": "proc-code-review-text",
       "type": "text",
       "x": 1187.9272045420983,
       "y": 972.2529662369525,
@@ -3249,14 +3249,14 @@
       "roughness": 0,
       "opacity": 100,
       "groupIds": [
-        "proc-story-done-group"
+        "proc-code-review-group"
       ],
       "fontSize": 16,
       "fontFamily": 1,
       "text": "Code Review\n<<use different\nLLM>>",
       "textAlign": "center",
       "verticalAlign": "middle",
-      "containerId": "proc-story-done",
+      "containerId": "proc-code-review",
       "locked": false,
       "version": 502,
       "versionNonce": 1242095014,
@@ -3289,7 +3289,7 @@
       "opacity": 100,
       "groupIds": [],
       "startBinding": {
-        "elementId": "proc-story-done",
+        "elementId": "proc-code-review",
         "focus": 0.014488632877232727,
         "gap": 8.284295421831303
       },

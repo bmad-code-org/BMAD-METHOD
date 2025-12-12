@@ -179,7 +179,7 @@ The workflow uses a single comprehensive CSV file:
 
 **documentation-requirements.csv** - Complete project analysis guide
 
-- Location: `/{bmad_folder}/bmm/workflows/document-project/documentation-requirements.csv`
+- Location: `/.bmad/bmm/workflows/document-project/documentation-requirements.csv`
 - 12 project types (web, mobile, backend, cli, library, desktop, game, data, extension, infra, embedded)
 - 24 columns combining:
   - **Detection columns**: `project_type_id`, `key_file_patterns` (identifies project type from codebase)

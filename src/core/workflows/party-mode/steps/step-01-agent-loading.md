@@ -18,7 +18,7 @@
 
 ## CONTEXT BOUNDARIES:
 
-- Agent manifest CSV is available at `{project-root}/{bmad_folder}/_cfg/agent-manifest.csv`
+- Agent manifest CSV is available at `{project-root}/.bmad/_cfg/agent-manifest.csv`
 - User configuration from config.yaml is loaded and resolved
 - Party mode is standalone interactive workflow
 - All agent data is available for conversation orchestration
@@ -37,7 +37,7 @@ Begin agent loading process:
 
 **Agent Manifest Loading:**"
 
-Load and parse the agent manifest CSV from `{project-root}/{bmad_folder}/_cfg/agent-manifest.csv`
+Load and parse the agent manifest CSV from `{project-root}/.bmad/_cfg/agent-manifest.csv`
 
 ### 2. Extract Agent Data
 

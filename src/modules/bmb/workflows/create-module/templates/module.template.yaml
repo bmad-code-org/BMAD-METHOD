@@ -50,4 +50,4 @@ prompt:
 
 # STATIC path:
 # data_path:
-#   result: "{project-root}/{bmad_folder}/{module_name}/data"
+#   result: "{project-root}/.bmad/{module_name}/data"

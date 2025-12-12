@@ -1,5 +1,36 @@
 # Changelog
 
+## [6.0.0-alpha.16]
+
+**Release: December 10, 2025**
+
+### 🔧 Temporary Changes & Fixes
+
+**Installation Improvements:**
+
+- **Temporary Custom Content Installation Disable**: Custom content installation temporarily disabled to improve stability
+- **BMB Workflow Path Fixes**: Fixed numerous path references in BMB workflows to ensure proper step file resolution
+- **Package Updates**: Updated dependencies for improved security and performance
+
+**Path Resolution Improvements:**
+
+- **BMB Agent Builder Fixes**: Corrected path references in step files and documentation
+- **Workflow Path Standardization**: Ensured consistent path handling across all BMB workflows
+- **Documentation References**: Updated internal documentation links and references
+
+**Cleanup Changes:**
+
+- **Example Modules Removal**: Temporarily removed example modules to prevent accidental installation
+- **Hardcoded Path Cleanup**: Continued removal of hardcoded `.bmad` folder references from demo content
+- **Memory Management**: Improved sidecar file handling for custom modules
+
+### 📊 Statistics
+
+- **336 files changed** with path fixes and improvements
+- **4 commits** since alpha.15
+
+---
+
 ## [6.0.0-alpha.15]
 
 **Release: December 7, 2025**
@@ -145,7 +176,7 @@
 - Fixed version reading from package.json instead of hardcoded fallback
 - Removed hardcoded years from WebSearch queries
 - Removed broken build caching mechanism
-- Fixed hardcoded 'bmad' prefix from files-manifest.csv paths
+- Fixed hardcoded '.bmad' prefix from files-manifest.csv paths
 - Enhanced TTS injection summary with tracking and documentation
 - Fixed CI nvmrc configuration issues
 

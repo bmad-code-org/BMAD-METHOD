@@ -3,7 +3,7 @@ name: 'step-03-step-validation'
 description: 'Validate each step file against step-template.md standards'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/workflow-compliance-check'
+workflow_path: '{project-root}/.bmad/bmb/workflows/workflow-compliance-check'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-03-step-validation.md'
@@ -16,8 +16,8 @@ targetWorkflowStepsPath: '{target_workflow_steps_path}'
 complianceReportTemplate: '{workflow_path}/templates/compliance-report.md'
 
 # Documentation References
-stepTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md'
-workflowTemplate: '{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md'
+stepTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md'
+workflowTemplate: '{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md'
 ---
 
 # Step 3: Step-by-Step Validation
@@ -138,8 +138,8 @@ Check for proper references:
 
 ```yaml
 # Task References
-advancedElicitationTask: '{project-root}/{*bmad_folder*}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{*bmad_folder*}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ```
 
 **Violations to document:**
@@ -186,7 +186,7 @@ For each step:
 
 "**Path Variable Validation:**"
 
-- Check format: `{project-root}/{*bmad_folder*}/bmb/...` vs `{project-root}/src/modules/bmb/...`
+- Check format: `{project-root}/.bmad/bmb/...` vs `{project-root}/bmb/...`
 - Ensure consistent variable usage across all step files
 - Validate relative vs absolute path usage
 

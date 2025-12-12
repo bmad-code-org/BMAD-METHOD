@@ -3,19 +3,19 @@ name: 'step-05-validate'
 description: 'Validate that changes work correctly'
 
 # Path Definitions
-workflow_path: '{project-root}/src/modules/bmb/workflows/edit-agent'
+workflow_path: '{project-root}/bmb/workflows/create-agent/edit-agent'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-05-validate.md'
 agentFile: '{{agent_path}}'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 
 # Documentation References (load JIT)
-validation: '{project-root}/{bmad_folder}/bmb/workflows/create-agent/data/agent-validation-checklist.md'
-agent_compilation: '{project-root}/{bmad_folder}/bmb/docs/agents/agent-compilation.md'
+validation: '{project-root}/.bmad/bmb/workflows/create-agent/data/agent-validation-checklist.md'
+agent_compilation: '{project-root}/.bmad/bmb/docs/agents/agent-compilation.md'
 ---
 
 # Step 5: Validate Changes

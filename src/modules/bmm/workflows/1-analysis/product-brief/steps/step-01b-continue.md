@@ -3,7 +3,7 @@ name: 'step-01b-continue'
 description: 'Resume the product brief workflow from where it was left off, ensuring smooth continuation'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief'
+workflow_path: '{project-root}/.bmad/bmm/workflows/1-analysis/product-brief'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01b-continue.md'

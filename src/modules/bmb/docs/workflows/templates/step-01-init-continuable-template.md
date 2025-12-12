@@ -13,7 +13,7 @@ description: 'Initialize the [workflow-type] workflow by detecting continuation 
 
 <!-- Path Definitions -->
 
-workflow*path: '{project-root}/{\_bmad_folder*}/[module-path]/workflows/[workflow-name]'
+workflow\*path: '{project-root}/.bmad/[module-path]/workflows/[workflow-name]'
 
 # File References (all use {variable} format in file)
 

@@ -3,7 +3,7 @@ name: 'step-11-celebrate'
 description: 'Celebrate completion and guide next steps for using the agent'
 
 # Path Definitions
-workflow_path: '{project-root}/src/modules/bmb/workflows/create-agent'
+workflow_path: '{project-root}/bmb/workflows/create-agent/create-agent'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-11-celebrate.md'
@@ -16,8 +16,8 @@ compiledAgentFile: '{{compiled_agent_path}}'
 completionTemplate: '{workflow_path}/templates/completion-summary.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 11: Celebration and Next Steps

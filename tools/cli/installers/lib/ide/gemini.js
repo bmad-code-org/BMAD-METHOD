@@ -174,8 +174,8 @@ ${contentWithoutFrontmatter}
     // Note: {user_name} and other {config_values} are left as-is for runtime substitution by Gemini
     const tomlContent = template
       .replaceAll('{{title}}', title)
-      .replaceAll('{{*bmad_folder*}}', '{bmad_folder}')
-      .replaceAll('{{bmad_folder}}', this.bmadFolderName)
+      .replaceAll('{.bmad}', '.bmad')
+      .replaceAll('{.bmad}', this.bmadFolderName)
       .replaceAll('{{module}}', agent.module)
       .replaceAll('{{name}}', agent.name);
 
@@ -196,8 +196,8 @@ ${contentWithoutFrontmatter}
     // Replace template variables
     const tomlContent = template
       .replaceAll('{{taskName}}', taskName)
-      .replaceAll('{{*bmad_folder*}}', '{bmad_folder}')
-      .replaceAll('{{bmad_folder}}', this.bmadFolderName)
+      .replaceAll('{.bmad}', '.bmad')
+      .replaceAll('{.bmad}', this.bmadFolderName)
       .replaceAll('{{module}}', task.module)
       .replaceAll('{{filename}}', task.filename);
 

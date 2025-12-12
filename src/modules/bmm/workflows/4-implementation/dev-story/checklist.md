@@ -35,7 +35,7 @@ validation-rules:
 - [ ] **Acceptance Criteria Satisfaction:** Implementation satisfies EVERY Acceptance Criterion in the story
 - [ ] **No Ambiguous Implementation:** Clear, unambiguous implementation that meets story requirements
 - [ ] **Edge Cases Handled:** Error conditions and edge cases appropriately addressed
-- [ ] **Dependencies Within Scope:** Only uses dependencies specified in story or project_context.md
+- [ ] **Dependencies Within Scope:** Only uses dependencies specified in story or project-context.md
 
 ## 🧪 Testing & Quality Assurance
 
@@ -57,7 +57,7 @@ validation-rules:
 
 ## 🔚 Final Status Verification
 
-- [ ] **Story Status Updated:** Story Status set to "Ready for Review"
+- [ ] **Story Status Updated:** Story Status set to "review"
 - [ ] **Sprint Status Updated:** Sprint status updated to "review" (when sprint tracking is used)
 - [ ] **Quality Gates Passed:** All quality checks and validations completed successfully
 - [ ] **No HALT Conditions:** No blocking issues or incomplete work remaining

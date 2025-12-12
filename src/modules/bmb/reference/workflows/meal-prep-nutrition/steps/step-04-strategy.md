@@ -3,7 +3,7 @@ name: 'step-04-strategy'
 description: 'Design a personalized meal strategy that meets nutritional needs and fits lifestyle'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/reference/workflows/meal-prep-nutrition'
+workflow_path: '{project-root}/.bmad/bmb/reference/workflows/meal-prep-nutrition'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-04-strategy.md'
@@ -13,8 +13,8 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 
 # Data References
 recipeDatabase: '{workflow_path}/data/recipe-database.csv'
@@ -167,8 +167,8 @@ Display: **Select an Option:** [A] Meal Variety Optimization [P] Chef & Dietitia
 #### Menu Handling Logic:
 
 - HALT and AWAIT ANSWER
-- IF A: Execute `{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml`
-- IF P: Execute `{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md` with a chef and dietitian expert also as part of the party
+- IF A: Execute `{project-root}/.bmad/core/tasks/advanced-elicitation.xml`
+- IF P: Execute `{project-root}/.bmad/core/workflows/party-mode/workflow.md` with a chef and dietitian expert also as part of the party
 - IF C: Save content to nutrition-plan.md, update frontmatter `stepsCompleted` to add 4 at the end of the array before loading next step, check cooking frequency:
   - IF cooking frequency > 2x/week: load, read entire file, then execute `{workflow_path}/step-05-shopping.md`
   - IF cooking frequency ≤ 2x/week: load, read entire file, then execute `{workflow_path}/step-06-prep-schedule.md`

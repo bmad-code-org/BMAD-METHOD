@@ -17,8 +17,7 @@
 #
 # Story Status:
 #   - backlog: Story only exists in epic file
-#   - drafted: Story file created in stories folder
-#   - ready-for-dev: Draft approved, ready for development
+#   - ready-for-dev: Story file created, ready for development
 #   - in-progress: Developer actively working on implementation
 #   - review: Implementation complete, ready for review
 #   - done: Story completed
@@ -30,7 +29,7 @@
 # WORKFLOW NOTES:
 # ===============
 # - Mark epic as 'in-progress' when starting work on its first story
-# - SM typically drafts next story ONLY after previous one is 'done' to incorporate learnings
+# - SM typically creates next story ONLY after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
@@ -44,7 +43,7 @@ story_location: "{story_location}"
 development_status:
   epic-1: backlog
   1-1-user-authentication: done
-  1-2-account-management: drafted
+  1-2-account-management: ready-for-dev
   1-3-plant-data-model: backlog
   1-4-add-plant-manual: backlog
   epic-1-retrospective: optional

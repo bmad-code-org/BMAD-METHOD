@@ -33,7 +33,7 @@ Discover the project's technology stack, existing patterns, and critical impleme
 
 First, check if project context already exists:
 
-- Look for file at `{output_folder}/project_context.md`
+- Look for file at `{output_folder}/project-context.md`
 - If exists: Read complete file to understand existing rules
 - Present to user: "Found existing project context with {number_of_sections} sections. Would you like to update this or create a new one?"
 
@@ -122,7 +122,7 @@ Based on discovery, create or update the context document:
 
 #### A. Fresh Document Setup (if no existing context)
 
-Copy template from `{installed_path}/project-context-template.md` to `{output_folder}/project_context.md`
+Copy template from `{installed_path}/project-context-template.md` to `{output_folder}/project-context.md`
 Initialize frontmatter with:
 
 ```yaml

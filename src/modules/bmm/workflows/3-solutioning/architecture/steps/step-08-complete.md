@@ -280,7 +280,7 @@ Your architecture will ensure consistent, high-quality implementation across all
 
 **💡 Optional Enhancement: Project Context File**
 
-Would you like to create a `project_context.md` file? This is a concise, optimized guide for AI agents that captures:
+Would you like to create a `project-context.md` file? This is a concise, optimized guide for AI agents that captures:
 
 - Critical language and framework rules they might miss
 - Specific patterns and conventions for your project
@@ -310,11 +310,11 @@ This will help ensure consistent implementation by capturing:
 - Testing and quality standards
 - Anti-patterns to avoid
 
-The workflow will collaborate with you to create an optimized `project_context.md` file that AI agents will read before implementing any code."
+The workflow will collaborate with you to create an optimized `project-context.md` file that AI agents will read before implementing any code."
 
 **Execute the Generate Project Context workflow:**
 
-- Load and execute: `{project-root}/{bmad_folder}/bmm/workflows/generate-project-context/workflow.md`
+- Load and execute: `{project-root}/.bmad/bmm/workflows/generate-project-context/workflow.md`
 - The workflow will handle discovery, generation, and completion of the project context file
 - After completion, return here for final handoff
 

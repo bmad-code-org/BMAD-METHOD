@@ -196,7 +196,7 @@ workflow-init asks: "Is this work in progress or previous effort?"
 2. Verify agent has workflow:
    - PM agent: prd, tech-spec
    - Architect agent: create-architecture, validate-architecture
-   - SM agent: sprint-planning, create-story, story-context
+   - SM agent: sprint-planning, create-story
 3. Try menu number instead of name
 4. Check you're using correct agent for workflow
 
@@ -218,23 +218,6 @@ workflow-init asks: "Is this work in progress or previous effort?"
    - Epic headers should be clear (## Epic Name)
 3. **Run in Phase 4 only** - Ensure Phase 2/3 complete first
 4. **Check file paths** - Epic files should be in correct output folder
-
-### Problem: story-context generates empty or wrong context
-
-**Symptoms:**
-
-- Context file created but has no useful content
-- Context doesn't reference existing code
-- Missing technical guidance
-
-**Solution:**
-
-1. **Run epic-tech-context first** - story-context builds on epic context
-2. **Check story file exists** - Verify story was created by create-story
-3. **For brownfield**:
-   - Ensure document-project was run
-   - Verify docs/index.md exists with codebase context
-4. **Try regenerating** - Sometimes needs fresh attempt with more specific story details
 
 ---
 
@@ -362,7 +345,7 @@ For most brownfield projects, **Deep scan is sufficient**.
 1. **For brownfield**:
    - Ensure document-project captured existing architecture
    - Review architecture docs before implementing
-2. **Check story-context** - Should document integration points
+2. **Check story file** - Should document integration points
 3. **In tech-spec/architecture** - Explicitly document:
    - Which existing modules to modify
    - What APIs/services to integrate with
@@ -384,7 +367,7 @@ For most brownfield projects, **Deep scan is sufficient**.
    - Should detect existing patterns
    - Asks for confirmation before proceeding
 2. **Review documentation** - Ensure document-project captured patterns
-3. **Use story-context** - Injects pattern guidance per story
+3. **Use comprehensive story files** - Include pattern guidance in story
 4. **Add to code-review checklist**:
    - Pattern adherence
    - Convention consistency
@@ -459,9 +442,7 @@ To change locations, edit config.yaml then re-run workflows.
    ```
 2. **Some workflows auto-update**:
    - sprint-planning creates file
-   - epic-tech-context changes epic to "contexted"
-   - create-story changes story to "drafted"
-   - story-context changes to "ready-for-dev"
+   - create-story changes story to "ready-for-dev"
    - dev-story may auto-update (check workflow)
 3. **Re-run sprint-planning** to resync if needed
 
@@ -657,8 +638,8 @@ If your issue isn't covered here:
 
 ### "Context generation failed"
 
-**Cause:** Missing prerequisites (epic context, story file, or docs)
-**Fix:** Verify epic-tech-context run, story file exists, docs present
+**Cause:** Missing prerequisites (story file or docs)
+**Fix:** Verify story file exists, docs present
 
 ---
 

@@ -3,24 +3,24 @@ name: 'step-04-commands'
 description: 'Build capabilities through natural progression and refine commands'
 
 # Path Definitions
-workflow_path: '{project-root}/src/modules/bmb/workflows/create-agent'
+workflow_path: '{project-root}/bmb/workflows/create-agent/create-agent'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-04-commands.md'
 nextStepFile: '{workflow_path}/steps/step-05-name.md'
 workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/agent-commands-{project_name}.md'
-agentMenuPatterns: '{project-root}/{bmad_folder}/bmb/docs/agents/agent-menu-patterns.md'
-simpleArchitecture: '{project-root}/{bmad_folder}/bmb/docs/agents/simple-agent-architecture.md'
-expertArchitecture: '{project-root}/{bmad_folder}/bmb/docs/agents/expert-agent-architecture.md'
-moduleArchitecture: '{project-root}/{bmad_folder}/bmb/docs/agents/module-agent-architecture.md'
+agentMenuPatterns: '{project-root}/.bmad/bmb/docs/agents/agent-menu-patterns.md'
+simpleArchitecture: '{project-root}/.bmad/bmb/docs/agents/simple-agent-architecture.md'
+expertArchitecture: '{project-root}/.bmad/bmb/docs/agents/expert-agent-architecture.md'
+moduleArchitecture: '{project-root}/.bmad/bmb/docs/agents/module-agent-architecture.md'
 
 # Template References
 commandsTemplate: '{workflow_path}/templates/agent-commands.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 4: Build Capabilities and Commands

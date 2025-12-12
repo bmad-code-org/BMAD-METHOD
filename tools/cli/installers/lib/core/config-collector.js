@@ -248,14 +248,21 @@ class ConfigCollector {
     const configKeys = Object.keys(moduleConfig).filter((key) => key !== 'prompt');
     const existingKeys = this.existingConfig && this.existingConfig[moduleName] ? Object.keys(this.existingConfig[moduleName]) : [];
 
+    // Find new interactive fields (with prompt)
     const newKeys = configKeys.filter((key) => {
       const item = moduleConfig[key];
       // Check if it's a config item and doesn't exist in existing config
       return item && typeof item === 'object' && item.prompt && !existingKeys.includes(key);
     });
 
-    // If in silent mode and no new keys, use existing config and skip prompts
-    if (silentMode && newKeys.length === 0) {
+    // Find new static fields (without prompt, just result)
+    const newStaticKeys = configKeys.filter((key) => {
+      const item = moduleConfig[key];
+      return item && typeof item === 'object' && !item.prompt && item.result && !existingKeys.includes(key);
+    });
+
+    // If in silent mode and no new keys (neither interactive nor static), use existing config and skip prompts
+    if (silentMode && newKeys.length === 0 && newStaticKeys.length === 0) {
       if (this.existingConfig && this.existingConfig[moduleName]) {
         if (!this.collectedConfig[moduleName]) {
           this.collectedConfig[moduleName] = {};
@@ -294,9 +301,12 @@ class ConfigCollector {
       return false; // No new fields
     }
 
-    // If we have new fields, build questions first
-    if (newKeys.length > 0) {
+    // If we have new fields (interactive or static), process them
+    if (newKeys.length > 0 || newStaticKeys.length > 0) {
       const questions = [];
+      const staticAnswers = {};
+
+      // Build questions for interactive fields
       for (const key of newKeys) {
         const item = moduleConfig[key];
         const question = await this.buildQuestion(moduleName, key, item, moduleConfig);
@@ -305,38 +315,49 @@ class ConfigCollector {
         }
       }
 
+      // Prepare static answers (no prompt, just result)
+      for (const key of newStaticKeys) {
+        staticAnswers[`${moduleName}_${key}`] = undefined;
+      }
+
+      // Collect all answers (static + prompted)
+      let allAnswers = { ...staticAnswers };
+
       if (questions.length > 0) {
         // Only show header if we actually have questions
         CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
         console.log(); // Line break before questions
-        const answers = await inquirer.prompt(questions);
+        const promptedAnswers = await inquirer.prompt(questions);
 
-        // Store answers for cross-referencing
-        Object.assign(this.allAnswers, answers);
-
-        // Process answers and build result values
-        for (const key of Object.keys(answers)) {
-          const originalKey = key.replace(`${moduleName}_`, '');
-          const item = moduleConfig[originalKey];
-          const value = answers[key];
-
-          let result;
-          if (Array.isArray(value)) {
-            result = value;
-          } else if (item.result) {
-            result = this.processResultTemplate(item.result, value);
-          } else {
-            result = value;
-          }
-
-          if (!this.collectedConfig[moduleName]) {
-            this.collectedConfig[moduleName] = {};
-          }
-          this.collectedConfig[moduleName][originalKey] = result;
-        }
-      } else {
-        // New keys exist but no questions generated - show no config message
+        // Merge prompted answers with static answers
+        Object.assign(allAnswers, promptedAnswers);
+      } else if (newStaticKeys.length > 0) {
+        // Only static fields, no questions - show no config message
         CLIUtils.displayModuleNoConfig(moduleName, moduleConfig.header, moduleConfig.subheader);
+      }
+
+      // Store all answers for cross-referencing
+      Object.assign(this.allAnswers, allAnswers);
+
+      // Process all answers (both static and prompted)
+      for (const key of Object.keys(allAnswers)) {
+        const originalKey = key.replace(`${moduleName}_`, '');
+        const item = moduleConfig[originalKey];
+        const value = allAnswers[key];
+
+        let result;
+        if (Array.isArray(value)) {
+          result = value;
+        } else if (item.result) {
+          result = this.processResultTemplate(item.result, value);
+        } else {
+          result = value;
+        }
+
+        if (!this.collectedConfig[moduleName]) {
+          this.collectedConfig[moduleName] = {};
+        }
+        this.collectedConfig[moduleName][originalKey] = result;
       }
     }
 
@@ -353,7 +374,7 @@ class ConfigCollector {
       }
     }
 
-    return newKeys.length > 0; // Return true if we prompted for new fields
+    return newKeys.length > 0 || newStaticKeys.length > 0; // Return true if we had any new fields (interactive or static)
   }
 
   /**
@@ -501,30 +522,52 @@ class ConfigCollector {
 
     // Process each config item
     const questions = [];
+    const staticAnswers = {};
     const configKeys = Object.keys(moduleConfig).filter((key) => key !== 'prompt');
 
     for (const key of configKeys) {
       const item = moduleConfig[key];
 
       // Skip if not a config object
-      if (!item || typeof item !== 'object' || !item.prompt) {
+      if (!item || typeof item !== 'object') {
         continue;
       }
 
-      const question = await this.buildQuestion(moduleName, key, item, moduleConfig);
-      if (question) {
-        questions.push(question);
+      // Handle static values (no prompt, just result)
+      if (!item.prompt && item.result) {
+        // Add to static answers with a marker value
+        staticAnswers[`${moduleName}_${key}`] = undefined;
+        continue;
+      }
+
+      // Handle interactive values (with prompt)
+      if (item.prompt) {
+        const question = await this.buildQuestion(moduleName, key, item, moduleConfig);
+        if (question) {
+          questions.push(question);
+        }
       }
     }
+
+    // Collect all answers (static + prompted)
+    let allAnswers = { ...staticAnswers };
 
     // Display appropriate header based on whether there are questions
     if (questions.length > 0) {
       CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
       console.log(); // Line break before questions
-      const answers = await inquirer.prompt(questions);
+      const promptedAnswers = await inquirer.prompt(questions);
 
-      // Store answers for cross-referencing
-      Object.assign(this.allAnswers, answers);
+      // Merge prompted answers with static answers
+      Object.assign(allAnswers, promptedAnswers);
+    }
+
+    // Store all answers for cross-referencing
+    Object.assign(this.allAnswers, allAnswers);
+
+    // Process all answers (both static and prompted)
+    if (Object.keys(allAnswers).length > 0) {
+      const answers = allAnswers;
 
       // Process answers and build result values
       for (const key of Object.keys(answers)) {
@@ -693,15 +736,6 @@ class ConfigCollector {
       // This prevents duplication when the result template adds it back
       if (typeof existingValue === 'string' && existingValue.startsWith('{project-root}/')) {
         existingValue = existingValue.replace('{project-root}/', '');
-      }
-    }
-
-    // Special handling for bmad_folder: detect existing folder name
-    if (moduleName === 'core' && key === 'bmad_folder' && !existingValue && this.currentProjectDir) {
-      // Try to detect the existing BMAD folder name
-      const detectedFolder = await this.detectExistingBmadFolder(this.currentProjectDir);
-      if (detectedFolder) {
-        existingValue = detectedFolder;
       }
     }
 

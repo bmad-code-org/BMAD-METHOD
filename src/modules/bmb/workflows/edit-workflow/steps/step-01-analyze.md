@@ -3,7 +3,7 @@ name: 'step-01-analyze'
 description: 'Load and deeply understand the target workflow'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmb/workflows/edit-workflow'
+workflow_path: '{project-root}/.bmad/bmb/workflows/edit-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-analyze.md'
@@ -129,9 +129,9 @@ Based on what the user wants to edit:
 
 Load reference documentation as needed:
 
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/architecture.md`
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/step-template.md`
-- `{project-root}/{bmad_folder}/bmb/docs/workflows/templates/workflow-template.md`
+- `{project-root}/.bmad/bmb/docs/workflows/architecture.md`
+- `{project-root}/.bmad/bmb/docs/workflows/templates/step-template.md`
+- `{project-root}/.bmad/bmb/docs/workflows/templates/workflow-template.md`
 
 Check against best practices:
 

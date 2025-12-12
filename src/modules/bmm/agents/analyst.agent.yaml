@@ -2,7 +2,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/bmm/agents/analyst.md"
+    id: ".bmad/bmm/agents/analyst.md"
     name: Mary
     title: Business Analyst
     icon: 📊
@@ -19,31 +19,31 @@ agent:
 
   menu:
     - trigger: workflow-status
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/workflow-status/workflow.yaml"
       description: Get workflow status or initialize a workflow if not already done (optional)
 
     - trigger: brainstorm-project
-      exec: "{project-root}/{bmad_folder}/core/workflows/brainstorming/workflow.md"
-      data: "{project-root}/{bmad_folder}/bmm/data/project-context-template.md"
+      exec: "{project-root}/.bmad/core/workflows/brainstorming/workflow.md"
+      data: "{project-root}/.bmad/bmm/data/project-context-template.md"
       description: Guided Project Brainstorming session with final report (optional)
 
     - trigger: research
-      exec: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/research/workflow.md"
+      exec: "{project-root}/.bmad/bmm/workflows/1-analysis/research/workflow.md"
       description: Guided Research scoped to market, domain, competitive analysis, or technical research (optional)
 
     - trigger: product-brief
-      exec: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief/workflow.md"
+      exec: "{project-root}/.bmad/bmm/workflows/1-analysis/product-brief/workflow.md"
       description: Create a Product Brief (recommended input for PRD)
 
     - trigger: document-project
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/document-project/workflow.yaml"
+      workflow: "{project-root}/.bmad/bmm/workflows/document-project/workflow.yaml"
       description: Document your existing project (optional, but recommended for existing brownfield project efforts)
 
     - multi: "[SPM] Start Party Mode (optionally suggest attendees and topic), [CH] Chat"
       triggers:
         - party-mode:
             - input: SPM or fuzzy match start party mode
-            - route: "{project-root}/{bmad_folder}/core/workflows/edit-agent/workflow.md"
+            - route: "{project-root}/.bmad/core/workflows/edit-agent/workflow.md"
             - data: what is being discussed or suggested with the command, along with custom party custom agents if specified
             - type: exec
         - expert-chat:

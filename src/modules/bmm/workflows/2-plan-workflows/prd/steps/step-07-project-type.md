@@ -3,7 +3,7 @@ name: 'step-07-project-type'
 description: 'Conduct project-type specific discovery using CSV-driven guidance'
 
 # Path Definitions
-workflow_path: '{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd'
+workflow_path: '{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-07-project-type.md'
@@ -15,8 +15,8 @@ outputFile: '{output_folder}/prd.md'
 projectTypesCSV: '{workflow_path}/project-types.csv'
 
 # Task References
-advancedElicitationTask: '{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 7: Project-Type Deep Dive
@@ -52,8 +52,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -74,7 +74,7 @@ Conduct project-type specific discovery using CSV-driven guidance to define tech
 
 Load project-type specific configuration:
 
-- Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/project-types.csv` completely
+- Load `{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd/project-types.csv` completely
 - Find the row where `project_type` matches detected type from step-02
 - Extract these columns:
   - `key_questions` (semicolon-separated list of discovery questions)
@@ -182,7 +182,7 @@ Show the generated project-type content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml with the current project-type content
+- Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml with the current project-type content
 - Process the enhanced technical insights that come back
 - Ask user: "Accept these improvements to the technical requirements? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -190,7 +190,7 @@ Show the generated project-type content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/{bmad_folder}/core/workflows/party-mode/workflow.md with the current project-type requirements
+- Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md with the current project-type requirements
 - Process the collaborative technical expertise and validation
 - Ask user: "Accept these changes to the technical requirements? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -200,7 +200,7 @@ Show the generated project-type content and present choices:
 
 - Append the final content to `{output_folder}/prd.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]`
-- Load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md`
+- Load `{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md`
 
 ## APPEND TO DOCUMENT:
 
@@ -252,6 +252,6 @@ When user selects 'C', append the content directly to the document using the str
 
 ## NEXT STEP:
 
-After user selects 'C' and content is saved to document, load `{project-root}/{bmad_folder}/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md` to define project scope.
+After user selects 'C' and content is saved to document, load `{project-root}/.bmad/bmm/workflows/2-plan-workflows/prd/steps/step-08-scoping.md` to define project scope.
 
 Remember: Do NOT proceed to step-08 (Scoping) until user explicitly selects 'C' from the A/P/C menu and content is saved!
