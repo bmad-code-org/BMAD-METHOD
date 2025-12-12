@@ -55,4 +55,6 @@ Load and read full config from {project-root}/{bmad_folder}/wds/config.yaml and 
 
 ### 2. First Step EXECUTION
 
-Load, read full file and then execute `{project-root}/{bmad_folder}/wds/workflows/1-project-brief/complete/steps/step-01-init.md` to begin workflow.
+Load, read full file and then execute `{project-root}/{bmad_folder}/wds/workflows/1-project-brief/complete/steps/step-00-pitch.md` to begin workflow.
+
+**Note:** The pitch (step-00) establishes the foundational case for why the project matters and should be built. This is a prerequisite before proceeding to detailed strategic planning (step-01 and beyond).

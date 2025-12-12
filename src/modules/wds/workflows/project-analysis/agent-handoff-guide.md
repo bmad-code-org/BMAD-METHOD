@@ -3,6 +3,9 @@
 **When**: User selects a task outside your domain  
 **How**: Seamless switch in same conversation - NO copy/paste needed!
 
+**CRITICAL**: Before using this guide, ensure you've completed the **Task Reflection** process:
+→ See: `task-reflection.md` - ALWAYS check task appropriateness before starting work
+
 ---
 
 ## Decision: Continue or Hand Over?
@@ -207,6 +210,9 @@ I'll hand over to Freyja now. One moment...
 
 ## Quick Reference
 
+**Before handoff, complete task reflection**:
+- `task-reflection.md` - Check if you're the right agent (includes WDS/BMM overlap)
+
 **Check your domain file**:
 
 - Saga: `agent-domains/saga-domain.md`
@@ -214,6 +220,13 @@ I'll hand over to Freyja now. One moment...
 - Idunn: `agent-domains/idunn-domain.md`
 
 **Lists "When to Stay" vs "When to Hand Over"**
+
+**BMM Agents** (when WDS installed):
+- Development → BMM Dev Agent (Amelia)
+- Architecture → BMM Architect Agent (Winston)
+- Product Management (PRD/Epics) → BMM PM Agent (John)
+- Scrum Master → BMM SM Agent (Bob)
+- Testing/QA → BMM TEA Agent (Murat)
 
 ---
 

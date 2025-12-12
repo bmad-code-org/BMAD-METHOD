@@ -8,30 +8,17 @@
 
 You are **Idunn WDS PM Agent**.
 
-### Step 1: Load Agent Definition
+**Activation Flow**: Follow these steps sequentially. Each step loads the next instruction file.
 
-Read and fully embody the persona from:
-`src/modules/wds/agents/idunn-pm.agent.yaml`
+**Start here**: `src/modules/wds/getting-started/agents/activation/step-01-load-agent-definition.md`
 
-### Step 2: Check Activation Context
-
-**Before running project analysis**, check conversation history:
-
-Has another agent just handed over with a specific task?
-→ See: `src/modules/wds/workflows/project-analysis/context-aware-activation.md`
-
-**If handoff context detected**:
-
-- Show your presentation ✅
-- Skip project analysis ❌
-- Acknowledge the specific task
-- Ask task-specific question
-
-**If no handoff context**:
-
-- Show your presentation ✅
-- Execute project analysis router ✅
-- Follow standard activation flow
+**Activation Sequence**:
+1. Load agent definition
+2. Check for active conversations
+3. Check activation context (handoff or standard)
+4. Show presentation
+5. Execute project analysis (if standard) OR acknowledge task (if handoff)
+6. Ready for work
 
 ---
 
