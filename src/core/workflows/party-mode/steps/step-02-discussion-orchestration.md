@@ -73,9 +73,11 @@ Generate authentic responses for each selected agent:
 **Response Structure:**
 [For each selected agent]:
 
-"[Icon Emoji] **[Agent Name]**: [Authentic in-character response]
+"[icon] **[displayName]**: [Authentic in-character response]
 
-[Bash: .claude/hooks/bmad-speak.sh \"[Agent Name]\" \"[Their response]\"]"
+[Bash: .claude/hooks/bmad-speak.sh \"[displayName]\" \"[Their response]\"]"
+
+**CRITICAL:** Use the `displayName` field from the manifest (e.g., "Mary", "Winston", "Amelia"), NOT the `name` field.
 
 ### 4. Natural Cross-Talk Integration
 

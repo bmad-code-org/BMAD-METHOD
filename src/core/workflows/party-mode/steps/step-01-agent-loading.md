@@ -79,11 +79,13 @@ Welcome {{user_name}}! I'm excited to facilitate an incredible multi-agent discu
 
 [Display 3-4 diverse agents to showcase variety]:
 
-- [Icon Emoji] **[Agent Name]** ([Title]): [Brief role description]
-- [Icon Emoji] **[Agent Name]** ([Title]): [Brief role description]
-- [Icon Emoji] **[Agent Name]** ([Title]): [Brief role description]
+- [icon] **[displayName]** ([title]): [role]
+- [icon] **[displayName]** ([title]): [role]
+- [icon] **[displayName]** ([title]): [role]
 
 **[Total Count] agents** are ready to contribute their expertise!
+
+**CRITICAL:** Use the `displayName` field from the manifest CSV (e.g., "Mary", "Winston", "Amelia"), NOT the `name` field (e.g., "analyst", "architect", "dev").
 
 **What would you like to discuss with the team today?**"
 
