@@ -10,7 +10,7 @@
     <step n="1" title="Project Context Discovery">
       <action>Check for stories folder at {project-root}{output_folder}/stories/</action>
       <action>Find current story by identifying highest numbered story file</action>
-      <action>Read story status (In Progress, Ready for Review, etc.)</action>
+      <action>Read story status (in-progress, review, etc.)</action>
       <action>Extract agent notes from Dev Agent Record, TEA Results, PO Notes sections</action>
       <action>Check for next story references from epics</action>
       <action>Identify blockers from story sections</action>

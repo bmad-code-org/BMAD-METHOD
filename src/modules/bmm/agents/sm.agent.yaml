@@ -30,11 +30,11 @@ agent:
 
     - trigger: create-story
       workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
-      description: Create a Draft Story (Required to prepare stories for development)
+      description: Create Story (Required to prepare stories for development)
 
     - trigger: validate-create-story
       validate-workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
-      description: Validate Story Draft (Highly Recommended, use fresh context and different LLM for best results)
+      description: Validate Story (Highly Recommended, use fresh context and different LLM for best results)
 
     - trigger: epic-retrospective
       workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml"

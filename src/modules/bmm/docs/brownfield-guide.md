@@ -340,7 +340,7 @@ flowchart TD
 **Status Progression:**
 
 - Epic: `backlog → in-progress → done`
-- Story: `backlog → drafted → ready-for-dev → in-progress → review → done`
+- Story: `backlog → ready-for-dev → in-progress → review → done`
 
 **Brownfield-Specific Implementation Tips:**
 
@@ -397,7 +397,7 @@ Document in tech-spec/architecture:
 ### 8. Use Sprint Planning Effectively
 
 - Run `sprint-planning` at Phase 4 start
-- Context epics before drafting stories
+- Context epics before creating stories
 - Update `sprint-status.yaml` as work progresses
 
 ### 9. Learn Continuously

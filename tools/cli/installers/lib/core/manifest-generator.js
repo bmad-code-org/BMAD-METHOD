@@ -581,6 +581,11 @@ class ManifestGenerator {
    */
   async writeWorkflowManifest(cfgDir) {
     const csvPath = path.join(cfgDir, 'workflow-manifest.csv');
+    const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+    const parseCsvLine = (line) => {
+      const columns = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+      return columns.map((c) => c.replaceAll(/^"|"$/g, ''));
+    };
 
     // Read existing manifest to preserve entries
     const existingEntries = new Map();
@@ -592,18 +597,21 @@ class ManifestGenerator {
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
         if (line) {
-          // Parse CSV (simple parsing assuming no commas in quoted fields)
-          const parts = line.split('","');
+          const parts = parseCsvLine(line);
           if (parts.length >= 4) {
-            const name = parts[0].replace(/^"/, '');
-            const module = parts[2];
-            existingEntries.set(`${module}:${name}`, line);
+            const [name, description, module, workflowPath] = parts;
+            existingEntries.set(`${module}:${name}`, {
+              name,
+              description,
+              module,
+              path: workflowPath,
+            });
           }
         }
       }
     }
 
-    // Create CSV header - removed standalone column as ALL workflows now generate commands
+    // Create CSV header - standalone column removed, everything is canonicalized to 4 columns
     let csv = 'name,description,module,path\n';
 
     // Combine existing and new workflows
@@ -617,12 +625,18 @@ class ManifestGenerator {
     // Add/update new workflows
     for (const workflow of this.workflows) {
       const key = `${workflow.module}:${workflow.name}`;
-      allWorkflows.set(key, `"${workflow.name}","${workflow.description}","${workflow.module}","${workflow.path}"`);
+      allWorkflows.set(key, {
+        name: workflow.name,
+        description: workflow.description,
+        module: workflow.module,
+        path: workflow.path,
+      });
     }
 
     // Write all workflows
     for (const [, value] of allWorkflows) {
-      csv += value + '\n';
+      const row = [escapeCsv(value.name), escapeCsv(value.description), escapeCsv(value.module), escapeCsv(value.path)].join(',');
+      csv += row + '\n';
     }
 
     await fs.writeFile(csvPath, csv);
