@@ -123,6 +123,9 @@ class KiloSetup extends BaseIdeSetup {
     modeEntry += `   groups:\n`;
     modeEntry += `    - read\n`;
     modeEntry += `    - edit\n`;
+    modeEntry += `    - browser\n`;
+    modeEntry += `    - command\n`;
+    modeEntry += `    - mcp\n`;
 
     return modeEntry;
   }

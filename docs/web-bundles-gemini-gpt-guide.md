@@ -73,7 +73,7 @@ web-bundles/
 
 **Create a Gem:**
 
-1. Go to [Google AI Studio](https://aistudio.google.com/)
+1. Go to [Gemini Gem manager](https://gemini.google.com/gems/view)
 2. Click "New Gem" or "Create Gem"
 3. Give your Gem a name (e.g., "BMad PM Agent")
 4. **Enable "Code execution" for best results with document generation**
@@ -336,7 +336,7 @@ Agents adapt their menus based on project phase and available workflows.
 
 Customize agents using the [Agent Customization Guide](./agent-customization-guide.md):
 
-1. Edit `{bmad_folder}/_cfg/agents/<agent>.customize.yaml`
+1. Edit `.bmad/_cfg/agents/<agent>.customize.yaml`
 2. Rebuild: `npx bmad-method build <agent-name>`
 3. Generate bundles: `npm run bundle`
 

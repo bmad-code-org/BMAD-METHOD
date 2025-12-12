@@ -2,7 +2,7 @@
 
 agent:
   metadata:
-    id: "{bmad_folder}/bmm/agents/analyst.md"
+    id: ".bmad/bmm/agents/analyst.md"
     name: Mary
     title: Business Analyst
     icon: 📊
@@ -18,27 +18,35 @@ agent:
       - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/.bmad/bmm/workflows/workflow-status/workflow.yaml"
+      description: Get workflow status or initialize a workflow if not already done (optional)
+
     - trigger: brainstorm-project
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/brainstorm-project/workflow.yaml"
-      description: Guided Brainstorming scoped to product development ideation and problem discovery
+      exec: "{project-root}/.bmad/core/workflows/brainstorming/workflow.md"
+      data: "{project-root}/.bmad/bmm/data/project-context-template.md"
+      description: Guided Project Brainstorming session with final report (optional)
 
     - trigger: research
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/research/workflow.yaml"
-      description: Guided Research scoped to market and competitive analysis of a product or feature
+      exec: "{project-root}/.bmad/bmm/workflows/1-analysis/research/workflow.md"
+      description: Guided Research scoped to market, domain, competitive analysis, or technical research (optional)
 
     - trigger: product-brief
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/1-analysis/product-brief/workflow.yaml"
-      description: Create a Product Brief, a great input to then drive a PRD
+      exec: "{project-root}/.bmad/bmm/workflows/1-analysis/product-brief/workflow.md"
+      description: Create a Product Brief (recommended input for PRD)
 
     - trigger: document-project
-      workflow: "{project-root}/{bmad_folder}/bmm/workflows/document-project/workflow.yaml"
-      description: Generate comprehensive documentation of an existing codebase, including architecture, data flows, and API contracts, and other details to aid project understanding.
+      workflow: "{project-root}/.bmad/bmm/workflows/document-project/workflow.yaml"
+      description: Document your existing project (optional, but recommended for existing brownfield project efforts)
 
-    - trigger: party-mode
-      workflow: "{project-root}/{bmad_folder}/core/workflows/party-mode/workflow.yaml"
-      description: Bring the whole team in to chat with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/{bmad_folder}/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+    - multi: "[SPM] Start Party Mode (optionally suggest attendees and topic), [CH] Chat"
+      triggers:
+        - party-mode:
+            - input: SPM or fuzzy match start party mode
+            - route: "{project-root}/.bmad/core/workflows/edit-agent/workflow.md"
+            - data: what is being discussed or suggested with the command, along with custom party custom agents if specified
+            - type: exec
+        - expert-chat:
+            - input: CH or fuzzy match validate agent
+            - action: agent responds as expert based on its personal to converse
+            - type: action

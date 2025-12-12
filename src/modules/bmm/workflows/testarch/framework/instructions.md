@@ -2,7 +2,7 @@
 
 # Test Framework Setup
 
-**Workflow ID**: `{bmad_folder}/bmm/testarch/framework`
+**Workflow ID**: `.bmad/bmm/testarch/framework`
 **Version**: 4.0 (BMad v6)
 
 ---
@@ -355,7 +355,7 @@ Read `{config_source}` and check `config.tea_use_playwright_utils`.
 
 **If `config.tea_use_playwright_utils: true` (Playwright Utils Integration):**
 
-Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` and load:
+Consult `{project-root}/.bmad/bmm/testarch/tea-index.csv` and load:
 
 - `overview.md` - Playwright utils installation and design principles
 - `fixtures-composition.md` - mergeTests composition with playwright-utils
@@ -375,7 +375,7 @@ Recommend adding burn-in and network-error-monitor to merged fixtures for enhanc
 
 **If `config.tea_use_playwright_utils: false` (Traditional Patterns):**
 
-Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` and load:
+Consult `{project-root}/.bmad/bmm/testarch/tea-index.csv` and load:
 
 - `fixture-architecture.md` - Pure function → fixture → `mergeTests` composition with auto-cleanup (406 lines, 5 examples)
 - `data-factories.md` - Faker-based factories with overrides, nested factories, API seeding, auto-cleanup (498 lines, 5 examples)

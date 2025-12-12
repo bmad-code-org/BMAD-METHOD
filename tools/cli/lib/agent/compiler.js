@@ -59,7 +59,7 @@ function buildSimpleActivation(criticalActions = [], menuItems = [], deploymentT
 
   // Standard steps
   activation += `  <step n="${stepNum++}">Load persona from this current agent file (already in context)</step>\n`;
-  activation += `  <step n="${stepNum++}">Load and read {project-root}/{bmad_folder}/core/config.yaml to get {user_name}, {communication_language}, {output_folder}</step>\n`;
+  activation += `  <step n="${stepNum++}">Load and read {project-root}/.bmad/core/config.yaml to get {user_name}, {communication_language}, {output_folder}</step>\n`;
   activation += `  <step n="${stepNum++}">Remember: user's name is {user_name}</step>\n`;
 
   // Agent-specific steps from critical_actions
@@ -119,7 +119,7 @@ function buildSimpleActivation(criticalActions = [], menuItems = [], deploymentT
     if (usedHandlers.has('workflow')) {
       activation += `      <handler type="workflow">
         When menu item has: workflow="path/to/workflow.yaml"
-        1. CRITICAL: Always LOAD {project-root}/{bmad_folder}/core/tasks/workflow.xml
+        1. CRITICAL: Always LOAD {project-root}/.bmad/core/tasks/workflow.xml
         2. Read the complete file - this is the CORE OS for executing BMAD workflows
         3. Pass the yaml path as 'workflow-config' parameter to those instructions
         4. Execute workflow.xml instructions precisely following all steps
@@ -150,7 +150,7 @@ function buildSimpleActivation(criticalActions = [], menuItems = [], deploymentT
     if (usedHandlers.has('validate-workflow')) {
       activation += `      <handler type="validate-workflow">
         When menu item has: validate-workflow="path/to/workflow.yaml"
-        1. CRITICAL: Always LOAD {project-root}/{bmad_folder}/core/tasks/validate-workflow.xml
+        1. CRITICAL: Always LOAD {project-root}/.bmad/core/tasks/validate-workflow.xml
         2. Read the complete file - this is the CORE OS for validating BMAD workflows
         3. Pass the workflow.yaml path as 'workflow' parameter to those instructions
         4. Pass any checklist.md from the workflow location as 'checklist' parameter if available
@@ -243,42 +243,141 @@ function buildPromptsXml(prompts) {
 
 /**
  * Build menu XML section
+ * Supports both legacy and multi format menu items
+ * Multi items display as a single menu item with nested handlers
  * @param {Array} menuItems - Menu items
  * @returns {string} Menu XML
  */
 function buildMenuXml(menuItems) {
   let xml = '  <menu>\n';
 
-  // Always inject *help first
-  xml += `    <item cmd="*help">Show numbered menu</item>\n`;
+  // Always inject menu display option first
+  xml += `    <item cmd="*menu">[M] Redisplay Menu Options</item>\n`;
 
   // Add user-defined menu items
   if (menuItems && menuItems.length > 0) {
     for (const item of menuItems) {
-      let trigger = item.trigger || '';
-      if (!trigger.startsWith('*')) {
-        trigger = '*' + trigger;
+      // Handle multi format menu items with nested handlers
+      if (item.multi && item.triggers && Array.isArray(item.triggers)) {
+        xml += `    <item type="multi">${escapeXml(item.multi)}\n`;
+        xml += buildNestedHandlers(item.triggers);
+        xml += `    </item>\n`;
       }
+      // Handle legacy format menu items
+      else if (item.trigger) {
+        // For legacy items, keep using cmd with *<trigger> format
+        let trigger = item.trigger || '';
+        if (!trigger.startsWith('*')) {
+          trigger = '*' + trigger;
+        }
 
-      const attrs = [`cmd="${trigger}"`];
+        const attrs = [`cmd="${trigger}"`];
 
-      // Add handler attributes
-      if (item.workflow) attrs.push(`workflow="${item.workflow}"`);
-      if (item.exec) attrs.push(`exec="${item.exec}"`);
-      if (item.tmpl) attrs.push(`tmpl="${item.tmpl}"`);
-      if (item.data) attrs.push(`data="${item.data}"`);
-      if (item.action) attrs.push(`action="${item.action}"`);
+        // Add handler attributes
+        if (item.workflow) attrs.push(`workflow="${item.workflow}"`);
+        if (item.exec) attrs.push(`exec="${item.exec}"`);
+        if (item.tmpl) attrs.push(`tmpl="${item.tmpl}"`);
+        if (item.data) attrs.push(`data="${item.data}"`);
+        if (item.action) attrs.push(`action="${item.action}"`);
 
-      xml += `    <item ${attrs.join(' ')}>${escapeXml(item.description || '')}</item>\n`;
+        xml += `    <item ${attrs.join(' ')}>${escapeXml(item.description || '')}</item>\n`;
+      }
     }
   }
 
-  // Always inject *exit last
-  xml += `    <item cmd="*exit">Exit with confirmation</item>\n`;
+  // Always inject dismiss last
+  xml += `    <item cmd="*dismiss">[D] Dismiss Agent</item>\n`;
 
   xml += '  </menu>\n';
 
   return xml;
+}
+
+/**
+ * Build nested handlers for multi format menu items
+ * @param {Array} triggers - Triggers array from multi format
+ * @returns {string} Handler XML
+ */
+function buildNestedHandlers(triggers) {
+  let xml = '';
+
+  for (const triggerGroup of triggers) {
+    for (const [triggerName, execArray] of Object.entries(triggerGroup)) {
+      // Build trigger with * prefix
+      let trigger = triggerName.startsWith('*') ? triggerName : '*' + triggerName;
+
+      // Extract the relevant execution data
+      const execData = processExecArray(execArray);
+
+      // For nested handlers in multi items, we use match attribute for fuzzy matching
+      const attrs = [`match="${escapeXml(execData.description || '')}"`];
+
+      // Add handler attributes based on exec data
+      if (execData.route) attrs.push(`exec="${execData.route}"`);
+      if (execData.workflow) attrs.push(`workflow="${execData.workflow}"`);
+      if (execData['validate-workflow']) attrs.push(`validate-workflow="${execData['validate-workflow']}"`);
+      if (execData.action) attrs.push(`action="${execData.action}"`);
+      if (execData.data) attrs.push(`data="${execData.data}"`);
+      if (execData.tmpl) attrs.push(`tmpl="${execData.tmpl}"`);
+      // Only add type if it's not 'exec' (exec is already implied by the exec attribute)
+      if (execData.type && execData.type !== 'exec') attrs.push(`type="${execData.type}"`);
+
+      xml += `      <handler ${attrs.join(' ')}></handler>\n`;
+    }
+  }
+
+  return xml;
+}
+
+/**
+ * Process the execution array from multi format triggers
+ * Extracts relevant data for XML attributes
+ * @param {Array} execArray - Array of execution objects
+ * @returns {Object} Processed execution data
+ */
+function processExecArray(execArray) {
+  const result = {
+    description: '',
+    route: null,
+    workflow: null,
+    data: null,
+    action: null,
+    type: null,
+  };
+
+  if (!Array.isArray(execArray)) {
+    return result;
+  }
+
+  for (const exec of execArray) {
+    if (exec.input) {
+      // Use input as description if no explicit description is provided
+      result.description = exec.input;
+    }
+
+    if (exec.route) {
+      // Determine if it's a workflow or exec based on file extension or context
+      if (exec.route.endsWith('.yaml') || exec.route.endsWith('.yml')) {
+        result.workflow = exec.route;
+      } else {
+        result.route = exec.route;
+      }
+    }
+
+    if (exec.data !== null && exec.data !== undefined) {
+      result.data = exec.data;
+    }
+
+    if (exec.action) {
+      result.action = exec.action;
+    }
+
+    if (exec.type) {
+      result.type = exec.type;
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -339,23 +438,16 @@ function compileToXml(agentYaml, agentName = '', targetPath = '') {
  * @param {Object} answers - Answers from install_config questions (or defaults)
  * @param {string} agentName - Optional final agent name (user's custom persona name)
  * @param {string} targetPath - Optional target path for agent ID
+ * @param {Object} options - Additional options including config
  * @returns {Object} { xml: string, metadata: Object }
  */
-function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = '') {
+function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = '', options = {}) {
   // Parse YAML
   const agentYaml = yaml.parse(yamlContent);
 
-  // Inject custom agent name into metadata.name if provided
-  // This is the user's chosen persona name (e.g., "Fred" instead of "Inkwell Von Comitizen")
-  if (agentName && agentYaml.agent && agentYaml.agent.metadata) {
-    // Convert kebab-case to title case for the name field
-    // e.g., "fred-commit-poet" → "Fred Commit Poet"
-    const titleCaseName = agentName
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-    agentYaml.agent.metadata.name = titleCaseName;
-  }
+  // Note: agentName parameter is for UI display only, not for modifying the YAML
+  // The persona name (metadata.name) should always come from the YAML file
+  // We should NEVER modify metadata.name as it's part of the agent's identity
 
   // Extract install_config
   const installConfig = extractInstallConfig(agentYaml);
@@ -367,14 +459,22 @@ function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = ''
     finalAnswers = { ...defaults, ...answers };
   }
 
+  // Add agent_sidecar_folder to answers if provided in config
+  if (options.config && options.config.agent_sidecar_folder) {
+    finalAnswers.agent_sidecar_folder = options.config.agent_sidecar_folder;
+  }
+
   // Process templates with answers
   const processedYaml = processAgentYaml(agentYaml, finalAnswers);
 
   // Strip install_config from output
   const cleanYaml = stripInstallConfig(processedYaml);
 
-  // Compile to XML
-  const xml = compileToXml(cleanYaml, agentName, targetPath);
+  // Replace {agent_sidecar_folder} in XML content
+  let xml = compileToXml(cleanYaml, agentName, targetPath);
+  if (finalAnswers.agent_sidecar_folder) {
+    xml = xml.replaceAll('{agent_sidecar_folder}', finalAnswers.agent_sidecar_folder);
+  }
 
   return {
     xml,
@@ -384,9 +484,38 @@ function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = ''
 }
 
 /**
+ * Process TTS injection markers in content
+ * @param {string} content - Content to process
+ * @param {boolean} enableAgentVibes - Whether AgentVibes is enabled
+ * @returns {Object} { content: string, hadInjection: boolean }
+ */
+function processTTSInjectionPoints(content, enableAgentVibes) {
+  const hasAgentTTS = content.includes('<!-- TTS_INJECTION:agent-tts -->');
+
+  if (enableAgentVibes && hasAgentTTS) {
+    // Replace agent-tts injection marker with TTS rule
+    content = content.replaceAll(
+      '<!-- TTS_INJECTION:agent-tts -->',
+      `- When responding to user messages, speak your responses using TTS:
+   Call: \`.claude/hooks/bmad-speak.sh '{agent-id}' '{response-text}'\` after each response
+   Replace {agent-id} with YOUR agent ID from <agent id="..."> tag at top of this file
+   Replace {response-text} with the text you just output to the user
+   IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
+   Run in background (&) to avoid blocking`,
+    );
+    return { content, hadInjection: true };
+  } else if (!enableAgentVibes && hasAgentTTS) {
+    // Strip injection markers when disabled
+    content = content.replaceAll(/<!-- TTS_INJECTION:agent-tts -->\n?/g, '');
+  }
+
+  return { content, hadInjection: false };
+}
+
+/**
  * Compile agent file to .md
  * @param {string} yamlPath - Path to agent YAML file
- * @param {Object} options - { answers: {}, outputPath: string }
+ * @param {Object} options - { answers: {}, outputPath: string, enableAgentVibes: boolean }
  * @returns {Object} Compilation result
  */
 function compileAgentFile(yamlPath, options = {}) {
@@ -402,13 +531,24 @@ function compileAgentFile(yamlPath, options = {}) {
     outputPath = path.join(dir, `${basename}.md`);
   }
 
+  // Process TTS injection points if enableAgentVibes option is provided
+  let xml = result.xml;
+  let ttsInjected = false;
+  if (options.enableAgentVibes !== undefined) {
+    const ttsResult = processTTSInjectionPoints(xml, options.enableAgentVibes);
+    xml = ttsResult.content;
+    ttsInjected = ttsResult.hadInjection;
+  }
+
   // Write compiled XML
-  fs.writeFileSync(outputPath, result.xml, 'utf8');
+  fs.writeFileSync(outputPath, xml, 'utf8');
 
   return {
     ...result,
+    xml,
     outputPath,
     sourcePath: yamlPath,
+    ttsInjected,
   };
 }
 

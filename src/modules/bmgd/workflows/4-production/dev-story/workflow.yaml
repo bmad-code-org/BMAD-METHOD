@@ -3,7 +3,7 @@ description: "Execute a story by implementing tasks/subtasks, writing tests, val
 author: "BMad"
 
 # Critical variables from config
-config_source: "{project-root}/{bmad_folder}/bmgd/config.yaml"
+config_source: "{project-root}/.bmad/bmgd/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -49,7 +49,7 @@ input_file_patterns:
     load_strategy: "INDEX_GUIDED"
 
 # Workflow components
-installed_path: "{project-root}/{bmad_folder}/bmm/workflows/4-implementation/dev-story"
+installed_path: "{project-root}/.bmad/bmm/workflows/4-implementation/dev-story"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 

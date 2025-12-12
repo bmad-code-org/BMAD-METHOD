@@ -1,0 +1,53 @@
+# BMad Game Dev Module Configuration
+
+code: bmgd
+name: "BMGD: BMad Game Development"
+default_selected: false
+
+header: "BMad Game Development Module"
+subheader: "Configure the settings for the BMad Game Development module"
+
+# Core config values automatically inherited:
+## user_name
+## communication_language
+## document_output_language
+## output_folder
+## install_user_docs
+## kb_install
+
+game_project_name:
+  prompt: "What is the name of your game project?"
+  default: "{directory_name}"
+  result: "{value}"
+
+sprint_artifacts:
+  prompt: "Where should Sprint Artifacts be stored (stories, epics, temp context, etc...)?"
+  default: "{output_folder}/sprint-artifacts"
+  result: "{project-root}/{value}"
+
+game_dev_experience:
+  prompt: "What is your game development experience level?"
+  default: "intermediate"
+  result: "{value}"
+  single-select:
+    - value: "beginner"
+      label: "Beginner - New to game development, provide detailed guidance"
+    - value: "intermediate"
+      label: "Intermediate - Familiar with game dev concepts, balanced approach"
+    - value: "expert"
+      label: "Expert - Experienced game developer, be direct and technical"
+
+primary_platform:
+  prompt: "Which game development framework or engine do you want to install support for?"
+  default: ["unity", "unreal", "godot", "other"]
+  required: true
+  result: "{value}"
+  multi-select:
+    - value: "unity"
+      label: "Unity"
+    - value: "unreal"
+      label: "Unreal Engine"
+    - value: "godot"
+      label: "Godot"
+    - value: "other"
+      label: "Custom / Other"

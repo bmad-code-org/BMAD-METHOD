@@ -18,6 +18,20 @@ export default [
       'test/fixtures/**/*.yaml',
       '.bmad/**',
       '.bmad*/**',
+      // Gitignored patterns
+      'z*/**', // z-samples, z1, z2, etc.
+      '.claude/**',
+      '.codex/**',
+      '.github/chatmodes/**',
+      '.agent/**',
+      '.agentvibes/**',
+      '.kiro/**',
+      '.roo/**',
+      'test-project-install/**',
+      'sample-project/**',
+      'tools/template-test-generator/test-scenarios/**',
+      'src/modules/*/sub-modules/**',
+      '.bundler-temp/**',
     ],
   },
 

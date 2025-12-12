@@ -262,7 +262,7 @@ import { apiRequest } from '@seontechnologies/playwright-utils/api-request'; // 
 
 The official `@seontechnologies/playwright-utils` repository provides working examples of all patterns described in these fragments.
 
-**Repository:** https://github.com/seontechnologies/playwright-utils
+**Repository:** <https://github.com/seontechnologies/playwright-utils>
 
 **Key resources:**
 

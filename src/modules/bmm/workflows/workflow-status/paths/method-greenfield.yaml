@@ -17,6 +17,7 @@ phases:
         agent: "analyst"
         command: "brainstorm-project"
         included_by: "user_choice"
+        note: "Uses core brainstorming workflow with project context template"
 
       - id: "research"
         optional: true
@@ -41,12 +42,6 @@ phases:
         agent: "pm"
         command: "prd"
         output: "Product Requirements Document with FRs and NFRs"
-
-      - id: "validate-prd"
-        optional: true
-        agent: "pm"
-        command: "validate-prd"
-        note: "Quality check for PRD completeness"
 
       - id: "create-ux-design"
         conditional: "if_has_ui"
@@ -88,7 +83,7 @@ phases:
         required: true
         agent: "architect"
         command: "implementation-readiness"
-        note: "Validates PRD + UX + Architecture + Epics + Testability cohesion before implementation"
+        note: "Validates PRD + Architecture + Epics + UX (optional)"
 
   - phase: 3
     name: "Implementation"

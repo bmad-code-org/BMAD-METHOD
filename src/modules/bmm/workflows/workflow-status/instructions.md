@@ -1,7 +1,7 @@
 # Workflow Status Check - Multi-Mode Service
 
-<critical>The workflow execution engine is governed by: {project-root}/{bmad_folder}/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/{bmad_folder}/bmm/workflows/workflow-status/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/.bmad/bmm/workflows/workflow-status/workflow.yaml</critical>
 <critical>This workflow operates in multiple modes: interactive (default), validate, data, init-check, update</critical>
 <critical>Other workflows can call this as a service to avoid duplicating status logic</critical>
 <critical>⚠️ ABSOLUTELY NO TIME ESTIMATES - NEVER mention hours, days, weeks, months, or ANY time-based predictions. AI has fundamentally changed development speed - what once took teams weeks/months can now be done by one person in hours. DO NOT give ANY time estimates whatsoever.</critical>
@@ -37,12 +37,19 @@
 <action>Search {output_folder}/ for file: bmm-workflow-status.yaml</action>
 
 <check if="no status file found">
-  <output>No workflow status found. To get started:
+  <output>No workflow status found.</output>
+  <ask>Would you like to run Workflow Init now? (y/n)</ask>
 
-Load analyst agent and run: `workflow-init`
+  <check if="response == y OR response == yes">
+    <action>Launching workflow-init to set up your project tracking...</action>
+    <invoke-workflow path="{project-root}/.bmad/bmm/workflows/workflow-status/init/workflow.yaml"></invoke-workflow>
+    <action>Exit workflow and let workflow-init take over</action>
+  </check>
 
-This will guide you through project setup and create your workflow path.</output>
-<action>Exit workflow</action>
+  <check if="else">
+    <output>No workflow status file. Run workflow-init when ready to enable progress tracking.</output>
+    <action>Exit workflow</action>
+  </check>
 </check>
 
 <check if="status file found">

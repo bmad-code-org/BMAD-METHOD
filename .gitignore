@@ -62,7 +62,7 @@ src/modules/bmm/sub-modules/
 src/modules/bmb/sub-modules/
 src/modules/cis/sub-modules/
 src/modules/bmgd/sub-modules/
-
+shared-modules
 z*/
 
 .bmad
@@ -70,3 +70,8 @@ z*/
 .codex
 .github/chatmodes
 .agent
+.agentvibes/
+.kiro/
+.roo
+
+bmad-custom-src/

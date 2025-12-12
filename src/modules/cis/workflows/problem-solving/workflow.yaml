@@ -4,7 +4,7 @@ description: "Apply systematic problem-solving methodologies to crack complex ch
 author: "BMad"
 
 # Critical variables load from config_source
-config_source: "{project-root}/{bmad_folder}/cis/config.yaml"
+config_source: "{project-root}/.bmad/cis/config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -14,7 +14,7 @@ date: system-generated
 # Example: data="{path}/problem-brief.md" provides context
 
 # Module path and component files
-installed_path: "{project-root}/{bmad_folder}/cis/workflows/problem-solving"
+installed_path: "{project-root}/.bmad/cis/workflows/problem-solving"
 template: "{installed_path}/template.md"
 instructions: "{installed_path}/instructions.md"
 
@@ -30,9 +30,9 @@ web_bundle:
   name: "problem-solving"
   description: "Apply systematic problem-solving methodologies to crack complex challenges. This workflow guides through problem diagnosis, root cause analysis, creative solution generation, evaluation, and implementation planning using proven frameworks."
   author: "BMad"
-  instructions: "{bmad_folder}/cis/workflows/problem-solving/instructions.md"
-  template: "{bmad_folder}/cis/workflows/problem-solving/template.md"
+  instructions: ".bmad/cis/workflows/problem-solving/instructions.md"
+  template: ".bmad/cis/workflows/problem-solving/template.md"
   web_bundle_files:
-    - "{bmad_folder}/cis/workflows/problem-solving/instructions.md"
-    - "{bmad_folder}/cis/workflows/problem-solving/template.md"
-    - "{bmad_folder}/cis/workflows/problem-solving/solving-methods.csv"
+    - ".bmad/cis/workflows/problem-solving/instructions.md"
+    - ".bmad/cis/workflows/problem-solving/template.md"
+    - ".bmad/cis/workflows/problem-solving/solving-methods.csv"

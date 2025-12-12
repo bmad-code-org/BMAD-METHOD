@@ -49,28 +49,82 @@ function agentSchema(options = {}) {
 
         let index = 0;
         for (const item of value.agent.menu) {
-          const triggerValue = item.trigger;
+          // Handle legacy format with trigger field
+          if (item.trigger) {
+            const triggerValue = item.trigger;
 
-          if (!TRIGGER_PATTERN.test(triggerValue)) {
-            ctx.addIssue({
-              code: 'custom',
-              path: ['agent', 'menu', index, 'trigger'],
-              message: 'agent.menu[].trigger must be kebab-case (lowercase words separated by hyphen)',
-            });
-            return;
+            if (!TRIGGER_PATTERN.test(triggerValue)) {
+              ctx.addIssue({
+                code: 'custom',
+                path: ['agent', 'menu', index, 'trigger'],
+                message: 'agent.menu[].trigger must be kebab-case (lowercase words separated by hyphen)',
+              });
+              return;
+            }
+
+            if (seenTriggers.has(triggerValue)) {
+              ctx.addIssue({
+                code: 'custom',
+                path: ['agent', 'menu', index, 'trigger'],
+                message: `agent.menu[].trigger duplicates "${triggerValue}" within the same agent`,
+              });
+              return;
+            }
+
+            seenTriggers.add(triggerValue);
+          }
+          // Handle multi format with triggers array (new format)
+          else if (item.triggers && Array.isArray(item.triggers)) {
+            for (const [triggerIndex, triggerItem] of item.triggers.entries()) {
+              let triggerName = null;
+
+              // Extract trigger name from all three formats
+              if (triggerItem.trigger) {
+                // Format 1: Simple flat format with trigger field
+                triggerName = triggerItem.trigger;
+              } else {
+                // Format 2a or 2b: Object-key format
+                const keys = Object.keys(triggerItem);
+                if (keys.length === 1 && keys[0] !== 'trigger') {
+                  triggerName = keys[0];
+                }
+              }
+
+              if (triggerName) {
+                if (!TRIGGER_PATTERN.test(triggerName)) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    path: ['agent', 'menu', index, 'triggers', triggerIndex],
+                    message: `agent.menu[].triggers[] must be kebab-case (lowercase words separated by hyphen) - got "${triggerName}"`,
+                  });
+                  return;
+                }
+
+                if (seenTriggers.has(triggerName)) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    path: ['agent', 'menu', index, 'triggers', triggerIndex],
+                    message: `agent.menu[].triggers[] duplicates "${triggerName}" within the same agent`,
+                  });
+                  return;
+                }
+
+                seenTriggers.add(triggerName);
+              }
+            }
           }
 
-          if (seenTriggers.has(triggerValue)) {
-            ctx.addIssue({
-              code: 'custom',
-              path: ['agent', 'menu', index, 'trigger'],
-              message: `agent.menu[].trigger duplicates "${triggerValue}" within the same agent`,
-            });
-            return;
-          }
-
-          seenTriggers.add(triggerValue);
           index += 1;
+        }
+      })
+      // Refinement: suggest conversational_knowledge when discussion is true
+      .superRefine((value, ctx) => {
+        if (value.agent.discussion === true && !value.agent.conversational_knowledge) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['agent', 'conversational_knowledge'],
+            message: 'It is recommended to include conversational_knowledge when discussion is true',
+          });
         }
       })
   );
@@ -89,6 +143,8 @@ function buildAgentSchema(expectedModule) {
       menu: z.array(buildMenuItemSchema()).min(1, { message: 'agent.menu must include at least one entry' }),
       prompts: z.array(buildPromptSchema()).optional(),
       webskip: z.boolean().optional(),
+      discussion: z.boolean().optional(),
+      conversational_knowledge: z.array(z.object({}).passthrough()).min(1).optional(),
     })
     .strict();
 }
@@ -167,9 +223,11 @@ function buildPromptSchema() {
 
 /**
  * Schema for individual menu entries ensuring they are actionable.
+ * Supports both legacy format and new multi format.
  */
 function buildMenuItemSchema() {
-  return z
+  // Legacy menu item format
+  const legacyMenuItemSchema = z
     .object({
       trigger: createNonEmptyString('agent.menu[].trigger'),
       description: createNonEmptyString('agent.menu[].description'),
@@ -179,11 +237,12 @@ function buildMenuItemSchema() {
       exec: createNonEmptyString('agent.menu[].exec').optional(),
       action: createNonEmptyString('agent.menu[].action').optional(),
       tmpl: createNonEmptyString('agent.menu[].tmpl').optional(),
-      data: createNonEmptyString('agent.menu[].data').optional(),
+      data: z.string().optional(),
       checklist: createNonEmptyString('agent.menu[].checklist').optional(),
       document: createNonEmptyString('agent.menu[].document').optional(),
       'ide-only': z.boolean().optional(),
       'web-only': z.boolean().optional(),
+      discussion: z.boolean().optional(),
     })
     .strict()
     .superRefine((value, ctx) => {
@@ -199,6 +258,157 @@ function buildMenuItemSchema() {
         });
       }
     });
+
+  // Multi menu item format
+  const multiMenuItemSchema = z
+    .object({
+      multi: createNonEmptyString('agent.menu[].multi'),
+      triggers: z
+        .array(
+          z.union([
+            // Format 1: Simple flat format (has trigger field)
+            z
+              .object({
+                trigger: z.string(),
+                input: createNonEmptyString('agent.menu[].triggers[].input'),
+                route: createNonEmptyString('agent.menu[].triggers[].route').optional(),
+                action: createNonEmptyString('agent.menu[].triggers[].action').optional(),
+                data: z.string().optional(),
+                type: z.enum(['exec', 'action', 'workflow']).optional(),
+              })
+              .strict()
+              .refine((data) => data.trigger, { message: 'Must have trigger field' })
+              .superRefine((value, ctx) => {
+                // Must have either route or action (or both)
+                if (!value.route && !value.action) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: 'agent.menu[].triggers[] must have either route or action (or both)',
+                  });
+                }
+              }),
+            // Format 2a: Object with array format (like bmad-builder.agent.yaml)
+            z
+              .object({})
+              .passthrough()
+              .refine(
+                (value) => {
+                  const keys = Object.keys(value);
+                  if (keys.length !== 1) return false;
+                  const triggerItems = value[keys[0]];
+                  return Array.isArray(triggerItems);
+                },
+                { message: 'Must be object with single key pointing to array' },
+              )
+              .superRefine((value, ctx) => {
+                const triggerName = Object.keys(value)[0];
+                const triggerItems = value[triggerName];
+
+                if (!Array.isArray(triggerItems)) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must be an array of items`,
+                  });
+                  return;
+                }
+
+                // Check required fields in the array
+                const hasInput = triggerItems.some((item) => 'input' in item);
+                const hasRouteOrAction = triggerItems.some((item) => 'route' in item || 'action' in item);
+
+                if (!hasInput) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must have an input field`,
+                  });
+                }
+
+                if (!hasRouteOrAction) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must have a route or action field`,
+                  });
+                }
+              }),
+            // Format 2b: Object with direct fields (like analyst.agent.yaml)
+            z
+              .object({})
+              .passthrough()
+              .refine(
+                (value) => {
+                  const keys = Object.keys(value);
+                  if (keys.length !== 1) return false;
+                  const triggerFields = value[keys[0]];
+                  return !Array.isArray(triggerFields) && typeof triggerFields === 'object';
+                },
+                { message: 'Must be object with single key pointing to object' },
+              )
+              .superRefine((value, ctx) => {
+                const triggerName = Object.keys(value)[0];
+                const triggerFields = value[triggerName];
+
+                // Check required fields
+                if (!triggerFields.input || typeof triggerFields.input !== 'string') {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must have an input field`,
+                  });
+                }
+
+                if (!triggerFields.route && !triggerFields.action) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    message: `Trigger "${triggerName}" must have a route or action field`,
+                  });
+                }
+              }),
+          ]),
+        )
+        .min(1, { message: 'agent.menu[].triggers must have at least one trigger' }),
+      discussion: z.boolean().optional(),
+    })
+    .strict()
+    .superRefine((value, ctx) => {
+      // Check for duplicate trigger names
+      const seenTriggers = new Set();
+      for (const [index, triggerItem] of value.triggers.entries()) {
+        let triggerName = null;
+
+        // Extract trigger name from either format
+        if (triggerItem.trigger) {
+          // Format 1
+          triggerName = triggerItem.trigger;
+        } else {
+          // Format 2
+          const keys = Object.keys(triggerItem);
+          if (keys.length === 1) {
+            triggerName = keys[0];
+          }
+        }
+
+        if (triggerName) {
+          if (seenTriggers.has(triggerName)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['agent', 'menu', 'triggers', index],
+              message: `Trigger name "${triggerName}" is duplicated`,
+            });
+          }
+          seenTriggers.add(triggerName);
+
+          // Validate trigger name format
+          if (!TRIGGER_PATTERN.test(triggerName)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['agent', 'menu', 'triggers', index],
+              message: `Trigger name "${triggerName}" must be kebab-case (lowercase words separated by hyphen)`,
+            });
+          }
+        }
+      }
+    });
+
+  return z.union([legacyMenuItemSchema, multiMenuItemSchema]);
 }
 
 /**

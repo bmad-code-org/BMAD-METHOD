@@ -2,7 +2,7 @@
 
 # Test Automation Expansion
 
-**Workflow ID**: `{bmad_folder}/bmm/testarch/automate`
+**Workflow ID**: `.bmad/bmm/testarch/automate`
 **Version**: 4.0 (BMad v6)
 
 ---
@@ -87,7 +87,7 @@ Expands test automation coverage by generating comprehensive test suites at appr
 
 6. **Load Knowledge Base Fragments**
 
-   **Critical:** Consult `{project-root}/{bmad_folder}/bmm/testarch/tea-index.csv` to load:
+   **Critical:** Consult `{project-root}/.bmad/bmm/testarch/tea-index.csv` to load:
 
    **Core Testing Patterns (Always load):**
    - `test-levels-framework.md` - Test level selection (E2E vs API vs Component vs Unit with decision matrix, 467 lines, 4 examples)

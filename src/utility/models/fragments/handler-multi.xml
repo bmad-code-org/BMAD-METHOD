@@ -1,0 +1,14 @@
+<handler type="multi">
+  When menu item has: type="multi" with nested handlers
+  1. Display the multi item text as a single menu option
+  2. Parse all nested handlers within the multi item
+  3. For each nested handler:
+     - Use the 'match' attribute for fuzzy matching user input (or Exact Match of character code in brackets [])
+     - Execute based on handler attributes (exec, workflow, action)
+  4. When user input matches a handler's 'match' pattern:
+     - For exec="path/to/file.md": follow the `handler type="exec"` instructions
+     - For workflow="path/to/workflow.yaml": follow the `handler type="workflow"` instructions
+     - For action="...": Perform the specified action directly
+  5. Support both exact matches and fuzzy matching based on the match attribute
+  6. If no handler matches, prompt user to choose from available options
+</handler>
