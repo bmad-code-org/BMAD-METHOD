@@ -7,11 +7,11 @@ reviews:
   high_level_summary: false # don't post summary until explicitly invoked
   request_changes_workflow: false
   review_status: false
-  commit_status: false # don't set commit status until explicitly invoked
-  collapse_walkthrough: false
+  commit_status: false
+  walkthrough: false
   poem: false
   auto_review:
-    enabled: false # must be manually triggered with @coderabbit review
+    enabled: false
     drafts: true # Can review drafts. Since it's manually triggered, it's fine.
     auto_incremental_review: false # always review the whole PR, not just new commits
     base_branches:
