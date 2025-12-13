@@ -30,7 +30,7 @@
       <output>
         **Required Options:**
         1. Run `sprint-planning` to initialize sprint tracking (recommended)
-        2. Provide specific epic-story number to draft (e.g., "1-2-user-auth")
+        2. Provide specific epic-story number to create (e.g., "1-2-user-auth")
         3. Provide path to story documents if sprint status doesn't exist yet
       </output>
       <ask>Choose option [1], provide epic-story number, path to story docs, or [q] to quit:</ask>
@@ -72,7 +72,7 @@
       <check if="no backlog story found">
         <output>📋 No backlog stories found in sprint-status.yaml
 
-          All stories are either already drafted, in progress, or done.
+          All stories are either already created, in progress, or done.
 
           **Options:**
           1. Run sprint-planning to refresh story tracking
@@ -129,7 +129,7 @@
     <check if="no backlog story found">
       <output>📋 No backlog stories found in sprint-status.yaml
 
-        All stories are either already drafted, in progress, or done.
+        All stories are either already created, in progress, or done.
 
         **Options:**
         1. Run sprint-planning to refresh story tracking

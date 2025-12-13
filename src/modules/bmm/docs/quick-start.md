@@ -200,12 +200,12 @@ Once planning and architecture are complete, you'll move to Phase 4. **Important
 3. Tell the agent: "Run sprint-planning"
 4. This creates your `sprint-status.yaml` file that tracks all epics and stories
 
-#### 3.2 Draft Your First Story
+#### 3.2 Create Your First Story
 
 1. **Start a new chat** with the **SM agent**
 2. Wait for the menu
 3. Tell the agent: "Run create-story"
-4. This drafts the story file from the epic
+4. This creates the story file from the epic
 
 #### 3.3 Implement the Story
 

@@ -57,7 +57,7 @@ validation-rules:
 
 ## 🔚 Final Status Verification
 
-- [ ] **Story Status Updated:** Story Status set to "Ready for Review"
+- [ ] **Story Status Updated:** Story Status set to "review"
 - [ ] **Sprint Status Updated:** Sprint status updated to "review" (when sprint tracking is used)
 - [ ] **Quality Gates Passed:** All quality checks and validations completed successfully
 - [ ] **No HALT Conditions:** No blocking issues or incomplete work remaining

@@ -1396,7 +1396,7 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
   {{else}}
 
 4. **Begin Epic {{next_epic_num}} when ready**
-   - Start drafting stories with SM agent's `create-story`
+   - Start creating stories with SM agent's `create-story`
    - Epic will be marked as `in-progress` automatically when first story is created
    - Ensure all critical path items are done first
      {{/if}}

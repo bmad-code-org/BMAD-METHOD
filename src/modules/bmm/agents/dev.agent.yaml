@@ -35,7 +35,7 @@ agent:
     - "NEVER lie about tests being written or passing - tests must actually exist and pass 100%"
 
   menu:
-    - trigger: develop-story
+    - trigger: dev-story
       workflow: "{project-root}/.bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: "Execute Dev Story workflow (full BMM path with sprint-status)"
 

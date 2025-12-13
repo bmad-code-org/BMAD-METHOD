@@ -73,22 +73,17 @@ development_status:
 **Story file detection:**
 
 - Check: `{story_location_absolute}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
-- If exists → upgrade status to at least `drafted`
-
-**Story context detection:**
-
-- Check: `{story_location_absolute}/{story-key}-context.md` (e.g., `stories/1-1-user-authentication-context.md`)
 - If exists → upgrade status to at least `ready-for-dev`
 
 **Preservation rule:**
 
 - If existing `{status_file}` exists and has more advanced status, preserve it
-- Never downgrade status (e.g., don't change `done` to `drafted`)
+- Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
 
 **Status Flow Reference:**
 
 - Epic: `backlog` → `in-progress` → `done`
-- Story: `backlog` → `drafted` → `ready-for-dev` → `in-progress` → `review` → `done`
+- Story: `backlog` → `ready-for-dev` → `in-progress` → `review` → `done`
 - Retrospective: `optional` ↔ `completed`
   </step>
 
@@ -117,8 +112,7 @@ development_status:
 #
 # Story Status:
 #   - backlog: Story only exists in epic file
-#   - drafted: Story file created in stories folder
-#   - ready-for-dev: Draft approved and story context created
+#   - ready-for-dev: Story file created in stories folder
 #   - in-progress: Developer actively working on implementation
 #   - review: Ready for code review (via Dev's code-review workflow)
 #   - done: Story completed
@@ -131,7 +125,7 @@ development_status:
 # ===============
 # - Epic transitions to 'in-progress' automatically when first story is created
 # - Stories can be worked in parallel if team capacity allows
-# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: { date }
@@ -198,18 +192,17 @@ backlog → in-progress → done
 ```
 
 - **backlog**: Epic not yet started
-- **in-progress**: Epic actively being worked on (stories being drafted/implemented)
+- **in-progress**: Epic actively being worked on (stories being created/implemented)
 - **done**: All stories in epic completed
 
 **Story Status Flow:**
 
 ```
-backlog → drafted → ready-for-dev → in-progress → review → done
+backlog → ready-for-dev → in-progress → review → done
 ```
 
 - **backlog**: Story only exists in epic file
-- **drafted**: Story file created (e.g., `stories/1-3-plant-naming.md`)
-- **ready-for-dev**: Draft approved + story context created
+- **ready-for-dev**: Story file created (e.g., `stories/1-3-plant-naming.md`)
 - **in-progress**: Developer actively working
 - **review**: Ready for code review (via Dev's code-review workflow)
 - **done**: Completed
@@ -229,4 +222,4 @@ optional ↔ completed
 2. **Sequential Default**: Stories are typically worked in order, but parallel work is supported
 3. **Parallel Work Supported**: Multiple stories can be `in-progress` if team capacity allows
 4. **Review Before Done**: Stories should pass through `review` before `done`
-5. **Learning Transfer**: SM typically drafts next story after previous one is `done` to incorporate learnings
+5. **Learning Transfer**: SM typically creates next story after previous one is `done` to incorporate learnings
