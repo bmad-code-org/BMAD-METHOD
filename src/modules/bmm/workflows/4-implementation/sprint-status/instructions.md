@@ -46,40 +46,44 @@ Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-stat
   <action>Count epic statuses: backlog, in-progress, done</action>
   <action>Count retrospective statuses: optional, completed</action>
 
-  <action>Validate all statuses against known values:</action>
-  - Valid story statuses: backlog, ready-for-dev, in-progress, review, done, drafted (legacy)
-  - Valid epic statuses: backlog, in-progress, done, contexted (legacy)
-  - Valid retrospective statuses: optional, completed
+<action>Validate all statuses against known values:</action>
+
+- Valid story statuses: backlog, ready-for-dev, in-progress, review, done, drafted (legacy)
+- Valid epic statuses: backlog, in-progress, done, contexted (legacy)
+- Valid retrospective statuses: optional, completed
 
   <check if="any status is unrecognized">
     <output>
 ⚠️ **Unknown status detected:**
 {{#each invalid_entries}}
+
 - `{{key}}`: "{{status}}" (not recognized)
-{{/each}}
+  {{/each}}
 
 **Valid statuses:**
+
 - Stories: backlog, ready-for-dev, in-progress, review, done
 - Epics: backlog, in-progress, done
 - Retrospectives: optional, completed
-    </output>
-    <ask>How should these be corrected?
-{{#each invalid_entries}}
-{{@index}}. {{key}}: "{{status}}" → [select valid status]
-{{/each}}
+  </output>
+  <ask>How should these be corrected?
+  {{#each invalid_entries}}
+  {{@index}}. {{key}}: "{{status}}" → [select valid status]
+  {{/each}}
 
 Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue without fixing:</ask>
-    <check if="user provided corrections">
-      <action>Update sprint-status.yaml with corrected values</action>
-      <action>Re-parse the file with corrected statuses</action>
-    </check>
-  </check>
+<check if="user provided corrections">
+<action>Update sprint-status.yaml with corrected values</action>
+<action>Re-parse the file with corrected statuses</action>
+</check>
+</check>
 
-  <action>Detect risks:</action>
-  - IF any story has status "review": suggest `/bmad:bmm:workflows:code-review`
-  - IF any story has status "in-progress" AND no stories have status "ready-for-dev": recommend staying focused on active story
-  - IF all epics have status "backlog" AND no stories have status "ready-for-dev": prompt `/bmad:bmm:workflows:create-story`
-</step>
+<action>Detect risks:</action>
+
+- IF any story has status "review": suggest `/bmad:bmm:workflows:code-review`
+- IF any story has status "in-progress" AND no stories have status "ready-for-dev": recommend staying focused on active story
+- IF all epics have status "backlog" AND no stories have status "ready-for-dev": prompt `/bmad:bmm:workflows:create-story`
+  </step>
 
 <step n="3" goal="Select next action recommendation">
   <action>Pick the next recommended workflow using priority:</action>
