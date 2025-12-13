@@ -57,3 +57,4 @@ input_file_patterns:
     load_strategy: "INDEX_GUIDED"
 
 standalone: true
+web_bundle: false

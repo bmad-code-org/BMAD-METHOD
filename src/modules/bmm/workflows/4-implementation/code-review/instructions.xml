@@ -5,7 +5,7 @@
   <critical>Generate all documents in {document_output_language}</critical>
 
   <!-- ================================================================ -->
-  <!-- CLAUDE CODE CLEANUP - MANDATORY KILL OF ALL BACKGROUND SHELLS   -->
+  <!-- SHELL CLEANUP - MANDATORY KILL OF ALL BACKGROUND SHELLS         -->
   <!-- ================================================================ -->
   <!-- CRITICAL: Stale external agent processes cause context pollution.
        You MUST kill ALL background shells BEFORE doing ANYTHING else.
@@ -203,19 +203,18 @@
 
       <!-- External agent prompt is loaded from external-agent-prompt.md -->
       <set-var name="external_prompt_file" value="{installed_path}/external-agent-prompt.md" />
-      <action>Load {{external_prompt_file}} content into {{external_prompt}}</action>
 
       <check if="{{external_agent_cmd}} == 'codex'">
         <critical>CODEX: Use codex exec with read-only sandbox and full-auto</critical>
-        <invoke-bash cmd="codex exec --sandbox read-only --full-auto &quot;$(cat '{{external_prompt_file}}')&quot;" timeout="300000" />
+        <invoke-bash cmd="codex exec --sandbox read-only --full-auto &quot;$(cat '{{external_prompt_file}}')&quot;" timeout="600000" />
       </check>
       <check if="{{external_agent_cmd}} == 'gemini'">
         <critical>GEMINI: Use gemini -p with prompt from file and --yolo</critical>
-        <invoke-bash cmd="gemini -p &quot;$(cat '{{external_prompt_file}}')&quot; --yolo" timeout="300000" />
+        <invoke-bash cmd="gemini -p &quot;$(cat '{{external_prompt_file}}')&quot; --yolo" timeout="600000" />
       </check>
       <check if="{{external_agent_cmd}} == 'claude'">
         <critical>CLAUDE: Use claude -p with prompt from file</critical>
-        <invoke-bash cmd="claude -p &quot;$(cat '{{external_prompt_file}}')&quot; --dangerously-skip-permissions" timeout="300000" />
+        <invoke-bash cmd="claude -p &quot;$(cat '{{external_prompt_file}}')&quot; --dangerously-skip-permissions" timeout="600000" />
       </check>
 
       <check if="{{bash_exit_code}} != 0 OR {{bash_stdout}} is empty">
@@ -297,7 +296,7 @@
     <output>**🔥 CODE REVIEW FINDINGS, {user_name}!**
 
       **Story:** {{story_file}}
-      **Review Method:** {{external_agent_cmd}} OR built-in
+      **Review Method:** {{#if external_agent_cmd}}{{external_agent_cmd}} CLI{{else}}built-in{{/if}}
       **Git vs Story Discrepancies:** {{git_discrepancy_count}} found
       **Issues Found:** {{high_count}} High, {{medium_count}} Medium, {{low_count}} Low
 
