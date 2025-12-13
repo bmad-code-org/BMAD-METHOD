@@ -2222,6 +2222,12 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
     } else {
       // Selective update - preserve user modifications
       await this.fileOps.syncDirectory(sourcePath, targetPath);
+
+      // Recompile agents (#1133)
+      const { ModuleManager } = require('../modules/manager');
+      const moduleManager = new ModuleManager();
+      await moduleManager.compileModuleAgents(sourcePath, targetPath, 'core', bmadDir);
+      await this.processAgentFiles(targetPath, 'core');
     }
   }
 
