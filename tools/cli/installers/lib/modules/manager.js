@@ -507,6 +507,10 @@ class ModuleManager {
     } else {
       // Selective update - preserve user modifications
       await this.syncModule(sourcePath, targetPath);
+
+      // Recompile agents (#1133)
+      await this.compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir);
+      await this.processAgentFiles(targetPath, moduleName);
     }
 
     return {
