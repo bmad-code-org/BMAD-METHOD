@@ -4,16 +4,56 @@
   <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
   <critical>Generate all documents in {document_output_language}</critical>
 
-  <critical>🔥 YOU ARE AN ADVERSARIAL CODE REVIEWER - Find what's wrong or missing! 🔥</critical>
+  <!-- ================================================================ -->
+  <!-- SHELL CLEANUP - MANDATORY KILL OF ALL BACKGROUND SHELLS         -->
+  <!-- ================================================================ -->
+  <!-- CRITICAL: Stale external agent processes cause context pollution.
+       You MUST kill ALL background shells BEFORE doing ANYTHING else.
+       DO NOT read their output. DO NOT check what they're doing.
+       Just KILL them unconditionally. -->
+  <critical>🚨 FIRST ACTION REQUIRED: Kill all background shells 🚨</critical>
+  <critical>Before ANY other workflow step, you MUST terminate all background processes.</critical>
+  <critical>DO NOT use BashOutput to read from stale shells - this causes context pollution.</critical>
+  <critical>DO NOT try to "check what they're doing" - just kill them.</critical>
+
+  <check if="BMAD is running as Claude Code (KillShell tool is available)">
+    <action>IMMEDIATELY use KillShell to terminate ALL background shells - no exceptions</action>
+    <action>Do NOT read output from these shells first - kill them blind</action>
+    <action>Do NOT rationalize keeping them alive - they contain stale data</action>
+    <action>If multiple shells exist, kill ALL of them one by one</action>
+    <output>🔪 Killed all background shells to prevent stale data contamination</output>
+  </check>
+  <critical>Only proceed to Step 1 AFTER all background shells are terminated.</critical>
+
+  <!-- ================================================================ -->
+  <!-- EXTERNAL AGENT MANDATE - THIS IS THE MOST IMPORTANT RULE        -->
+  <!-- ================================================================ -->
+  <critical>🚨 MANDATORY EXTERNAL AGENT RULE - NO EXCEPTIONS 🚨</critical>
+  <critical>If an external agent CLI (codex, gemini, or claude) is detected as available, you MUST delegate the code review to that agent.</critical>
+  <critical>You are FORBIDDEN from performing your own code review analysis if an external agent is available.</critical>
+  <critical>The external agent provides an independent, unbiased review. Your job is to INVOKE it, not replace it.</critical>
+  <critical>Only perform built-in review if ALL external agents fail detection OR the CLI invocation actually fails with a non-zero exit code.</critical>
+  <critical>DO NOT SKIP the invoke-bash commands for detection and invocation - they are MANDATORY.</critical>
+
+  <!-- PROHIBITED EXCUSES - DO NOT USE THESE TO SKIP EXTERNAL AGENT -->
+  <critical>🚫 PROHIBITED RATIONALIZATIONS - You may NOT skip the external agent for ANY of these reasons:</critical>
+  <critical>❌ "The prompt is too long" - Long prompts are expected and supported. Invoke anyway.</critical>
+  <critical>❌ "CLI is meant for simple operations" - FALSE. The CLI handles complex prompts. Invoke anyway.</critical>
+  <critical>❌ "This is a re-review" - Re-reviews MUST use external agent. No exception.</critical>
+  <critical>❌ "I can do this myself" - You are FORBIDDEN from self-review when external agent is available.</critical>
+  <critical>❌ "It would be faster/better if I do it" - Irrelevant. External agent is MANDATORY.</critical>
+  <critical>❌ "The context is too complex" - The external agent handles complexity. Invoke anyway.</critical>
+  <critical>If you find yourself rationalizing why to skip the external agent, STOP and invoke it anyway.</critical>
+
+  <critical>🔥 ADVERSARIAL CODE REVIEW REQUIREMENTS 🔥</critical>
   <critical>Your purpose: Validate story file claims against actual implementation</critical>
   <critical>Challenge everything: Are tasks marked [x] actually done? Are ACs really implemented?</critical>
-  <critical>Find 3-10 specific issues in every review minimum - no lazy "looks good" reviews - YOU are so much better than the dev agent
-    that wrote this slop</critical>
+  <critical>Find 3-10 specific issues in every review minimum - no lazy "looks good" reviews</critical>
   <critical>Read EVERY file in the File List - verify implementation against story requirements</critical>
   <critical>Tasks marked complete but not done = CRITICAL finding</critical>
   <critical>Acceptance Criteria not implemented = HIGH severity finding</critical>
 
-  <step n="1" goal="Load story and discover changes">
+  <step n="1" goal="Load story and detect external agents">
     <action>Use provided {{story_path}} or ask user which story file to review</action>
     <action>Read COMPLETE story file</action>
     <action>Set {{story_key}} = extracted key from filename (e.g., "1-2-user-authentication.md" → "1-2-user-authentication") or story
@@ -39,6 +79,86 @@
 
     <invoke-protocol name="discover_inputs" />
     <action>Load {project_context} for coding standards (if exists)</action>
+
+    <!-- ============================================================== -->
+    <!-- EXTERNAL AGENT DETECTION - CHECK CONFIG FIRST, THEN DETECT     -->
+    <!-- ============================================================== -->
+    <set-var name="use_external_agent" value="false" />
+    <set-var name="external_agent_cmd" value="" />
+    <set-var name="codex_available" value="false" />
+    <set-var name="gemini_available" value="false" />
+    <set-var name="claude_available" value="false" />
+    <set-var name="external_agent_failed" value="false" />
+    <set-var name="preferred_agent" value="{external_review_agent}" />
+
+    <!-- Check if user has disabled external agents -->
+    <check if="{{preferred_agent}} == 'none'">
+      <output>📋 External agent disabled in config - will use built-in adversarial review</output>
+    </check>
+
+    <!-- Only detect and use external agents if not set to "none" -->
+    <check if="{{preferred_agent}} != 'none'">
+      <output>🔍 Detecting external agent availability...</output>
+
+      <!-- Detect Codex CLI availability -->
+      <invoke-bash cmd="command -v codex &amp;&amp; codex --version 2>/dev/null || echo 'NOT_FOUND'" />
+      <check if="{{bash_exit_code}} == 0 AND {{bash_stdout}} does not contain 'NOT_FOUND'">
+        <set-var name="codex_available" value="true" />
+        <output>✓ Codex CLI detected</output>
+      </check>
+
+      <!-- Detect Gemini CLI availability -->
+      <invoke-bash cmd="command -v gemini &amp;&amp; gemini --version 2>/dev/null || echo 'NOT_FOUND'" />
+      <check if="{{bash_exit_code}} == 0 AND {{bash_stdout}} does not contain 'NOT_FOUND'">
+        <set-var name="gemini_available" value="true" />
+        <output>✓ Gemini CLI detected</output>
+      </check>
+
+      <!-- Detect Claude CLI availability -->
+      <invoke-bash cmd="command -v claude &amp;&amp; claude --version 2>/dev/null || echo 'NOT_FOUND'" />
+      <check if="{{bash_exit_code}} == 0 AND {{bash_stdout}} does not contain 'NOT_FOUND'">
+        <set-var name="claude_available" value="true" />
+        <output>✓ Claude CLI detected</output>
+      </check>
+
+      <!-- Select which external agent to use based on availability and preference -->
+      <check if="{{preferred_agent}} == 'codex' AND {{codex_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="codex" />
+      </check>
+      <check if="{{preferred_agent}} == 'gemini' AND {{gemini_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="gemini" />
+      </check>
+      <check if="{{preferred_agent}} == 'claude' AND {{claude_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="claude" />
+      </check>
+
+      <!-- Fallback selection if preferred agent not available -->
+      <check if="{{use_external_agent}} == false AND {{codex_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="codex" />
+        <output>⚠️ Preferred agent ({{preferred_agent}}) not available, falling back to Codex</output>
+      </check>
+      <check if="{{use_external_agent}} == false AND {{gemini_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="gemini" />
+        <output>⚠️ Preferred agent ({{preferred_agent}}) not available, falling back to Gemini</output>
+      </check>
+      <check if="{{use_external_agent}} == false AND {{claude_available}} == true">
+        <set-var name="use_external_agent" value="true" />
+        <set-var name="external_agent_cmd" value="claude" />
+        <output>⚠️ Preferred agent ({{preferred_agent}}) not available, falling back to Claude</output>
+      </check>
+
+      <check if="{{use_external_agent}} == true">
+        <output>🤖 External agent selected: {{external_agent_cmd}} - will delegate code review</output>
+      </check>
+      <check if="{{use_external_agent}} == false">
+        <output>📋 No external agent available - will use built-in adversarial review</output>
+      </check>
+    </check>
   </step>
 
   <step n="2" goal="Build review attack plan">
@@ -57,41 +177,104 @@
   <step n="3" goal="Execute adversarial review">
     <critical>VALIDATE EVERY CLAIM - Check git reality vs story claims</critical>
 
-    <!-- Git vs Story Discrepancies -->
+    <!-- Git vs Story Discrepancies - ALWAYS runs -->
     <action>Review git vs story File List discrepancies:
       1. **Files changed but not in story File List** → MEDIUM finding (incomplete documentation)
       2. **Story lists files but no git changes** → HIGH finding (false claims)
       3. **Uncommitted changes not documented** → MEDIUM finding (transparency issue)
     </action>
-
-    <!-- Use combined file list: story File List + git discovered files -->
     <action>Create comprehensive review file list from story File List and git changes</action>
+    <action>Store git discrepancy findings in {{git_findings}}</action>
 
-    <!-- AC Validation -->
-    <action>For EACH Acceptance Criterion:
-      1. Read the AC requirement
-      2. Search implementation files for evidence
-      3. Determine: IMPLEMENTED, PARTIAL, or MISSING
-      4. If MISSING/PARTIAL → HIGH SEVERITY finding
-    </action>
+    <!-- ============================================================== -->
+    <!-- MANDATORY: INVOKE EXTERNAL AGENT IF AVAILABLE                  -->
+    <!-- ============================================================== -->
+    <critical>If {{use_external_agent}} == true, you MUST invoke the external agent via CLI.</critical>
+    <critical>DO NOT perform your own code review - delegate to the external agent.</critical>
 
-    <!-- Task Completion Audit -->
-    <action>For EACH task marked [x]:
-      1. Read the task description
-      2. Search files for evidence it was actually done
-      3. **CRITICAL**: If marked [x] but NOT DONE → CRITICAL finding
-      4. Record specific proof (file:line)
-    </action>
+    <check if="{{use_external_agent}} == true">
+      <output>🔄 Invoking {{external_agent_cmd}} CLI for adversarial code review...</output>
 
-    <!-- Code Quality Deep Dive -->
-    <action>For EACH file in comprehensive review list:
-      1. **Security**: Look for injection risks, missing validation, auth issues
-      2. **Performance**: N+1 queries, inefficient loops, missing caching
-      3. **Error Handling**: Missing try/catch, poor error messages
-      4. **Code Quality**: Complex functions, magic numbers, poor naming
-      5. **Test Quality**: Are tests real assertions or placeholders?
-    </action>
+      <!-- ============================================================== -->
+      <!-- INVOKE EXTERNAL AGENT - USE EXACT COMMANDS AS WRITTEN          -->
+      <!-- ============================================================== -->
+      <critical>🚨 USE EXACT COMMAND SYNTAX - DO NOT MODIFY OR SIMPLIFY 🚨</critical>
+      <critical>Copy the invoke-bash cmd attribute EXACTLY as written below.</critical>
+      <critical>DO NOT remove flags, reorder arguments, or "improve" the command.</critical>
 
+      <!-- External agent prompt is loaded from external-agent-prompt.md -->
+      <set-var name="external_prompt_file" value="{installed_path}/external-agent-prompt.md" />
+
+      <check if="{{external_agent_cmd}} == 'codex'">
+        <critical>CODEX: Use codex exec with read-only sandbox and full-auto</critical>
+        <invoke-bash cmd="codex exec --sandbox read-only --full-auto &quot;$(cat '{{external_prompt_file}}')&quot;" timeout="600000" />
+      </check>
+      <check if="{{external_agent_cmd}} == 'gemini'">
+        <critical>GEMINI: Use gemini -p with prompt from file and --yolo</critical>
+        <invoke-bash cmd="gemini -p &quot;$(cat '{{external_prompt_file}}')&quot; --yolo" timeout="600000" />
+      </check>
+      <check if="{{external_agent_cmd}} == 'claude'">
+        <critical>CLAUDE: Use claude -p with prompt from file</critical>
+        <invoke-bash cmd="claude -p &quot;$(cat '{{external_prompt_file}}')&quot; --dangerously-skip-permissions" timeout="600000" />
+      </check>
+
+      <check if="{{bash_exit_code}} != 0 OR {{bash_stdout}} is empty">
+        <output>⚠️ External agent CLI failed (exit code: {{bash_exit_code}}), falling back to built-in review</output>
+        <output>Error: {{bash_stderr}}</output>
+        <set-var name="use_external_agent" value="false" />
+        <set-var name="external_agent_failed" value="true" />
+      </check>
+
+      <check if="{{bash_exit_code}} == 0 AND {{bash_stdout}} is not empty">
+        <set-var name="external_findings" value="{{bash_stdout}}" />
+        <action>Parse {{external_findings}} into structured HIGH/MEDIUM/LOW lists</action>
+        <action>Merge {{git_findings}} with {{external_findings}} into {{all_findings}}</action>
+        <output>✅ External review complete - {{external_agent_cmd}} CLI findings received</output>
+      </check>
+    </check>
+
+    <!-- Fallback to built-in if external agent failed -->
+    <check if="{{external_agent_failed}} == true">
+      <set-var name="use_external_agent" value="false" />
+    </check>
+
+    <check if="{{use_external_agent}} == false">
+      <!-- ============================================================== -->
+      <!-- FALLBACK ONLY: Built-in Review (when NO external agent works)  -->
+      <!-- ============================================================== -->
+      <critical>This section should ONLY execute if ALL external agents failed detection or invocation.</critical>
+      <critical>If you are here but an external agent was available, you have violated the workflow rules.</critical>
+      <output>⚠️ No external agent available - performing built-in adversarial review</output>
+
+      <!-- AC Validation -->
+      <action>For EACH Acceptance Criterion:
+        1. Read the AC requirement
+        2. Search implementation files for evidence
+        3. Determine: IMPLEMENTED, PARTIAL, or MISSING
+        4. If MISSING/PARTIAL → HIGH SEVERITY finding
+      </action>
+
+      <!-- Task Completion Audit -->
+      <action>For EACH task marked [x]:
+        1. Read the task description
+        2. Search files for evidence it was actually done
+        3. **CRITICAL**: If marked [x] but NOT DONE → CRITICAL finding
+        4. Record specific proof (file:line)
+      </action>
+
+      <!-- Code Quality Deep Dive -->
+      <action>For EACH file in comprehensive review list:
+        1. **Security**: Look for injection risks, missing validation, auth issues
+        2. **Performance**: N+1 queries, inefficient loops, missing caching
+        3. **Error Handling**: Missing try/catch, poor error messages
+        4. **Code Quality**: Complex functions, magic numbers, poor naming
+        5. **Test Quality**: Are tests real assertions or placeholders?
+      </action>
+
+      <action>Merge {{git_findings}} with built-in findings into {{all_findings}}</action>
+    </check>
+
+    <!-- Minimum issue check - applies to both paths -->
     <check if="total_issues_found lt 3">
       <critical>NOT LOOKING HARD ENOUGH - Find more problems!</critical>
       <action>Re-examine code for:
@@ -114,6 +297,7 @@
     <output>**🔥 CODE REVIEW FINDINGS, {user_name}!**
 
       **Story:** {{story_file}}
+      **Review Method:** {{#if external_agent_cmd}}{{external_agent_cmd}} CLI{{else}}built-in{{/if}}
       **Git vs Story Discrepancies:** {{git_discrepancy_count}} found
       **Issues Found:** {{high_count}} High, {{medium_count}} Medium, {{low_count}} Low
 
@@ -186,7 +370,7 @@
       <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
     </check>
 
-    <!-- Sync sprint-status.yaml when story status changes (only if sprint tracking enabled) -->
+    <!-- Sync sprint-status.yaml when story status changes -->
     <check if="{{current_sprint_status}} != 'no-sprint-tracking'">
       <action>Load the FULL file: {sprint_status}</action>
       <action>Find development_status key matching {{story_key}}</action>

@@ -55,3 +55,23 @@ tea_use_playwright_utils:
     - "Are you using playwright-utils (@seontechnologies/playwright-utils) in your project?\nYou must install packages yourself, or use test architect's *framework command."
   default: false
   result: "{value}"
+
+# External Code Review Agent Selection
+# Allows delegating code reviews to an external AI agent CLI for independent, unbiased reviews
+# Useful when using a different AI as primary IDE agent (e.g., Codex/Gemini users can use Claude for reviews)
+external_review_agent:
+  prompt:
+    - "Which external agent should perform code reviews?"
+    - "External agents provide independent, unbiased reviews separate from your primary IDE agent."
+    - "The selected CLI must be installed and configured on your system."
+  default: "none"
+  result: "{value}"
+  single-select:
+    - value: "codex"
+      label: "Codex (OpenAI) - Code review using OpenAI Codex CLI"
+    - value: "gemini"
+      label: "Gemini (Google) - Code review using Google Gemini CLI"
+    - value: "claude"
+      label: "Claude Code (Anthropic) - Code review using Claude Code CLI"
+    - value: "none"
+      label: "None - Use built-in review (no external agent)"

@@ -63,6 +63,8 @@
           <tag>invoke-workflow xml tag → Execute another workflow with given inputs and the workflow.xml runner</tag>
           <tag>invoke-task xml tag → Execute specified task</tag>
           <tag>invoke-protocol name="protocol_name" xml tag → Execute reusable protocol from protocols section</tag>
+          <tag>invoke-bash cmd="command" → Execute shell command, capture stdout/stderr, set {{bash_exit_code}}, {{bash_stdout}}, {{bash_stderr}}</tag>
+          <tag>set-var name="varname" value="..." → Set runtime variable {{varname}} to specified value (supports expressions)</tag>
           <tag>goto step="x" → Jump to specified step</tag>
         </execute-tags>
       </substep>
@@ -126,6 +128,8 @@
       <tag>invoke-workflow - Call another workflow</tag>
       <tag>invoke-task - Call a task</tag>
       <tag>invoke-protocol - Execute a reusable protocol (e.g., discover_inputs)</tag>
+      <tag>invoke-bash cmd="..." - Execute shell command, results in {{bash_exit_code}}, {{bash_stdout}}, {{bash_stderr}}</tag>
+      <tag>set-var name="..." value="..." - Set runtime variable dynamically</tag>
     </execution>
     <output>
       <tag>template-output - Save content checkpoint</tag>
