@@ -288,38 +288,135 @@
     </check>
   </step>
 
-  <step n="4" goal="Present findings and fix them">
-    <action>Categorize findings: HIGH (must fix), MEDIUM (should fix), LOW (nice to fix)</action>
+  <!-- ================================================================ -->
+  <!-- STEP 4: TRIAGE FINDINGS - SEPARATE SIGNAL FROM NOISE            -->
+  <!-- ================================================================ -->
+  <!-- This step evaluates external agent findings with project context.
+       External agents find ALL possible issues - but not all matter.
+       A symlink bypass is critical for a web API, irrelevant for a game.
+       The orchestrating agent applies pragmatic judgment here. -->
+
+  <step n="4" goal="Triage findings - separate signal from noise">
+    <critical>External agents are adversarial by design - they find EVERYTHING.</critical>
+    <critical>Your job: Apply project context to determine what ACTUALLY matters.</critical>
+    <critical>Do NOT blindly accept all findings. Do NOT dismiss valid concerns.</critical>
+
+    <action>For EACH finding from {{all_findings}}, evaluate against these criteria:</action>
+
+    <!-- Evaluation Framework -->
+    <action>**ACTUALLY IMPORTANT** (always fix):
+      - AC violations: Story claims something works but it doesn't
+      - Task fraud: Checkbox marked [x] but code doesn't exist
+      - Contract violations: Method signature doesn't match documented behavior
+      - Real bugs: Code will fail at runtime in normal usage
+      - Security issues for the ACTUAL threat model (game loading own files ≠ public API)
+    </action>
+
+    <action>**CONTEXT-DEPENDENT** (ask user):
+      - Performance: Does it matter at this scale? Game data vs. million-record DB
+      - Validation strictness: Nice-to-have vs. actually needed
+      - Edge cases: Will they ever happen in practice?
+      - Thread safety: Is this actually multi-threaded?
+    </action>
+
+    <action>**THEORETICAL/NITPICKING** (skip unless user insists):
+      - "Could be exploited if attacker controls X" when attacker never controls X
+      - Micro-optimizations that save nanoseconds
+      - Style preferences disguised as bugs
+      - "Best practice" violations that don't cause problems
+      - DoS concerns for trusted internal data
+    </action>
+
+    <!-- Build categorized lists -->
+    <set-var name="important_findings" value="[]" />
+    <set-var name="contextual_findings" value="[]" />
+    <set-var name="theoretical_findings" value="[]" />
+
+    <action>Categorize each finding into one of the three lists with brief reasoning</action>
+
+    <!-- Present triage to user via AskUserQuestion -->
+    <output>**🔍 FINDINGS TRIAGE**
+
+I've reviewed {{external_agent_cmd}}'s findings against your project context.
+Here's what I think actually matters vs. theoretical concerns:
+    </output>
+
+    <!-- Important findings - recommend fixing -->
+    <check if="{{important_findings}} is not empty">
+      <output>
+## ✅ ACTUALLY IMPORTANT (Recommend Fix)
+These are real issues that affect correctness or violate documented contracts:
+
+{{#each important_findings}}
+- **{{this.id}}**: {{this.summary}}
+  - *Why it matters*: {{this.reasoning}}
+{{/each}}
+      </output>
+    </check>
+
+    <!-- Context-dependent - ask user -->
+    <check if="{{contextual_findings}} is not empty">
+      <ask questions="[
+        {
+          'question': 'Which context-dependent issues should we address?',
+          'header': 'Fix these?',
+          'multiSelect': true,
+          'options': [
+            {{#each contextual_findings}}
+            {
+              'label': '{{this.id}}: {{this.short_summary}}',
+              'description': '{{this.reasoning}}'
+            },
+            {{/each}}
+            {
+              'label': 'None of these',
+              'description': 'Skip all context-dependent issues'
+            }
+          ]
+        }
+      ]" />
+      <action>Add user-selected contextual findings to {{important_findings}}</action>
+    </check>
+
+    <!-- Theoretical findings - inform user but don't push -->
+    <check if="{{theoretical_findings}} is not empty">
+      <output>
+## ⏭️ SKIPPING (Theoretical/Nitpicking)
+These findings are technically valid but don't matter for your use case:
+
+{{#each theoretical_findings}}
+- **{{this.id}}**: {{this.summary}} — *{{this.reasoning}}*
+{{/each}}
+
+*(Say "fix all" if you want these addressed anyway)*
+      </output>
+    </check>
+
+    <!-- Final confirmation -->
+    <set-var name="final_fix_list" value="{{important_findings}}" />
+    <output>
+**📋 FINAL FIX LIST: {{final_fix_list.length}} issues**
+    </output>
+  </step>
+
+  <step n="5" goal="Present findings and fix them">
     <action>Set {{fixed_count}} = 0</action>
     <action>Set {{action_count}} = 0</action>
 
-    <output>**🔥 CODE REVIEW FINDINGS, {user_name}!**
+    <output>**🔥 CODE REVIEW SUMMARY, {user_name}!**
 
       **Story:** {{story_file}}
       **Review Method:** {{#if external_agent_cmd}}{{external_agent_cmd}} CLI{{else}}built-in{{/if}}
-      **Git vs Story Discrepancies:** {{git_discrepancy_count}} found
-      **Issues Found:** {{high_count}} High, {{medium_count}} Medium, {{low_count}} Low
+      **Raw Findings:** {{all_findings.length}} total
+      **After Triage:** {{final_fix_list.length}} to address, {{theoretical_findings.length}} skipped
 
-      ## 🔴 CRITICAL ISSUES
-      - Tasks marked [x] but not actually implemented
-      - Acceptance Criteria not implemented
-      - Story claims files changed but no git evidence
-      - Security vulnerabilities
-
-      ## 🟡 MEDIUM ISSUES
-      - Files changed but not documented in story File List
-      - Uncommitted changes not tracked
-      - Performance problems
-      - Poor test coverage/quality
-      - Code maintainability issues
-
-      ## 🟢 LOW ISSUES
-      - Code style improvements
-      - Documentation gaps
-      - Git commit message quality
+      ## Issues to Fix
+      {{#each final_fix_list}}
+      - [{{this.severity}}] {{this.id}}: {{this.summary}}
+      {{/each}}
     </output>
 
-    <ask>What should I do with these issues?
+    <ask>What should I do with these {{final_fix_list.length}} issues?
 
       1. **Fix them automatically** - I'll update the code and tests
       2. **Create action items** - Add to story Tasks/Subtasks for later
@@ -349,7 +446,7 @@
     </check>
   </step>
 
-  <step n="5" goal="Update story status and sync sprint tracking">
+  <step n="6" goal="Update story status and sync sprint tracking">
     <!-- Determine new status based on review outcome -->
     <check if="all HIGH and MEDIUM issues fixed AND all ACs implemented">
       <action>Set {{new_status}} = "done"</action>
