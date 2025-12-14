@@ -15,6 +15,8 @@
 
 <step n="1" goal="Load project context and determine execution mode">
 
+<action>Record current HEAD as baseline for later review. Run `git rev-parse HEAD` and store the result as {baseline_commit}.</action>
+
 <action>Check if {project_context} exists. If yes, load it - this is your foundational reference for ALL implementation decisions (patterns, conventions, architecture).</action>
 
 <action>Parse user input:
@@ -170,7 +172,7 @@ Use holistic judgment, not mechanical keyword matching.</action>
 
 </step>
 
-<step n="4" goal="Verify and complete">
+<step n="4" goal="Verify and transition to review">
 
 <action>Verify: all tasks [x], tests passing, AC satisfied, patterns followed</action>
 
@@ -185,17 +187,89 @@ Use holistic judgment, not mechanical keyword matching.</action>
 **Tests:** {{test_summary}}
 **AC Status:** {{ac_status}}
 
----
+Running adversarial code review...
+</output>
 
-**Before committing (Recommended): Copy this code review prompt to a different LLM**
+<action>Proceed immediately to step 5</action>
 
+</step>
+
+<step n="5" goal="Adversarial code review (automatic)">
+
+<action>Construct diff of all changes since workflow started and capture as {diff_output}:
+
+**Tracked file changes:**
+
+```bash
+git diff {baseline_commit}
 ```
-You are a cynical, jaded code reviewer with zero patience for sloppy work. These uncommitted changes were submitted by a clueless weasel and you expect to find problems. Find at least five issues to fix or improve in it. Number them. Be skeptical of everything.
-```
+
+**New files created by this workflow:**
+Only include untracked files that YOU actually created during steps 2-4. Do not include pre-existing untracked files. For each new file you created, include its full content as a "new file" addition.
+
+Combine both into {diff_output} for review. Do NOT `git add` anything - this is read-only inspection.</action>
+
+<action>Execute adversarial review using this hierarchy (try in order until one succeeds):
+
+1. **Spawn subagent** (preferred) - pass the diff output along with this prompt:
+
+   ```
+   You are a cynical, jaded code reviewer with zero patience for sloppy work. This diff was submitted by a clueless weasel and you expect to find problems. Find at least five issues to fix or improve. Number them. Be skeptical of everything.
+
+   <diff>
+   {diff_output}
+   </diff>
+   ```
+
+2. **CLI fallback** - pipe diff to `claude --print` with same prompt
+
+3. **Inline self-review** - Review the diff output yourself using the cynical reviewer persona above
+   </action>
+
+<check if="zero findings returned">
+  <action>HALT - Zero findings is suspicious. Adversarial review should always find something. Request user guidance.</action>
+</check>
+
+<action>Process findings:
+
+- Assign IDs: F1, F2, F3...
+- Assign severity: 🔴 Critical | 🟠 High | 🟡 Medium | 🟢 Low
+- Classify each: **real** (confirmed issue) | **noise** (false positive) | **uncertain** (needs discussion)
+  </action>
+
+<output>**Adversarial Review Findings**
+
+| ID  | Severity | Classification | Finding |
+| --- | -------- | -------------- | ------- |
+| F1  | 🟠       | real           | ...     |
+| F2  | 🟡       | noise          | ...     |
+| ... |
 
 </output>
 
-<action>You must explain what was implemented based on {user_skill_level}</action>
+<ask>How would you like to handle these findings?
+
+**[1] Walk through** - Discuss each finding individually
+**[2] Auto-fix** - Automatically fix issues classified as "real"
+**[3] Skip** - Acknowledge and proceed to commit</ask>
+
+<check if="1">
+  <action>Present each finding one by one. For each, ask: fix now / skip / discuss</action>
+  <action>Apply fixes as approved</action>
+</check>
+
+<check if="2">
+  <action>Automatically fix all findings classified as "real"</action>
+  <action>Report what was fixed</action>
+</check>
+
+<check if="3">
+  <action>Acknowledge findings were reviewed and user chose to skip</action>
+</check>
+
+<output>**Review complete. Ready to commit.**</output>
+
+<action>Explain what was implemented based on {user_skill_level}</action>
 
 </step>
 
