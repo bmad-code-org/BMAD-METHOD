@@ -53,9 +53,8 @@ jobs:
       - name: Bump version
         run: |
           case "${{ github.event.inputs.version_bump }}" in
-            alpha) npm version prerelease --no-git-tag-version --preid=alpha ;;
-            beta)  npm version prerelease --no-git-tag-version --preid=beta ;;
-            *)     npm version ${{ github.event.inputs.version_bump }} --no-git-tag-version ;;
+            alpha|beta) npm version prerelease --no-git-tag-version --preid=${{ github.event.inputs.version_bump }} ;;
+            *)          npm version ${{ github.event.inputs.version_bump }} --no-git-tag-version ;;
           esac
 
       - name: Get new version and previous tag
