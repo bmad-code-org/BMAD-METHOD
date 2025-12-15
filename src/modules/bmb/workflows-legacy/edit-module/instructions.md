@@ -54,7 +54,7 @@ Be conversational and insightful. Help {user_name} see their module through your
 </action>
 
 <ask>Does this match your understanding of what this module should provide?</ask>
-<template-output>module_understanding</template-output>
+<output>module_understanding</output>
 </step>
 
 <step n="2" goal="Discover improvement goals collaboratively">
@@ -105,7 +105,7 @@ Don't just list options - discuss them:
 Let the conversation flow naturally. Build a shared vision of what "better" looks like.
 </action>
 
-<template-output>improvement_goals</template-output>
+<output>improvement_goals</output>
 </step>
 
 <step n="3" goal="Facilitate improvements collaboratively" repeat="until-user-satisfied">
@@ -230,7 +230,7 @@ Connect improvements to broader BMAD principles without being preachy.
 - "How does this change affect users of the module?"
   </ask>
 
-<template-output>improvement_implementation</template-output>
+<output>improvement_implementation</output>
 </step>
 
 <step n="4" goal="Validate improvements holistically">
@@ -281,7 +281,7 @@ Your module is in great shape."
 </action>
 </check>
 
-<template-output>validation_results</template-output>
+<output>validation_results</output>
 </step>
 
 <step n="5" goal="Review improvements and guide next steps">
@@ -334,7 +334,7 @@ Be a helpful guide to what comes next, not just a task completer.
 - Work on a different module
   </ask>
 
-<template-output>completion_summary</template-output>
+<output>completion_summary</output>
 </step>
 
 </workflow>

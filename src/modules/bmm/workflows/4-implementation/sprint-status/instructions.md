@@ -168,17 +168,17 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
 <step n="20" goal="Data mode output">
   <action>Load and parse {sprint_status_file} same as Step 2</action>
   <action>Compute recommendation same as Step 3</action>
-  <template-output>next_workflow_id = {{next_workflow_id}}</template-output>
-  <template-output>next_story_id = {{next_story_id}}</template-output>
-  <template-output>count_backlog = {{count_backlog}}</template-output>
-  <template-output>count_ready = {{count_ready}}</template-output>
-  <template-output>count_in_progress = {{count_in_progress}}</template-output>
-  <template-output>count_review = {{count_review}}</template-output>
-  <template-output>count_done = {{count_done}}</template-output>
-  <template-output>epic_backlog = {{epic_backlog}}</template-output>
-  <template-output>epic_in_progress = {{epic_in_progress}}</template-output>
-  <template-output>epic_done = {{epic_done}}</template-output>
-  <template-output>risks = {{risks}}</template-output>
+  <output>next_workflow_id = {{next_workflow_id}}</output>
+  <output>next_story_id = {{next_story_id}}</output>
+  <output>count_backlog = {{count_backlog}}</output>
+  <output>count_ready = {{count_ready}}</output>
+  <output>count_in_progress = {{count_in_progress}}</output>
+  <output>count_review = {{count_review}}</output>
+  <output>count_done = {{count_done}}</output>
+  <output>epic_backlog = {{epic_backlog}}</output>
+  <output>epic_in_progress = {{epic_in_progress}}</output>
+  <output>epic_done = {{epic_done}}</output>
+  <output>risks = {{risks}}</output>
   <action>Return to caller</action>
 </step>
 
@@ -189,20 +189,20 @@ If the command targets a story, set `story_key={{next_story_id}}` when prompted.
 <step n="30" goal="Validate sprint-status file">
   <action>Check that {sprint_status_file} exists</action>
   <check if="missing">
-    <template-output>is_valid = false</template-output>
-    <template-output>error = "sprint-status.yaml missing"</template-output>
-    <template-output>suggestion = "Run sprint-planning to create it"</template-output>
+    <output>is_valid = false</output>
+    <output>error = "sprint-status.yaml missing"</output>
+    <output>suggestion = "Run sprint-planning to create it"</output>
     <action>Return</action>
   </check>
   <action>Read file and verify it has a development_status section with at least one entry</action>
   <check if="validation fails">
-    <template-output>is_valid = false</template-output>
-    <template-output>error = "development_status missing or empty"</template-output>
-    <template-output>suggestion = "Re-run sprint-planning or repair the file manually"</template-output>
+    <output>is_valid = false</output>
+    <output>error = "development_status missing or empty"</output>
+    <output>suggestion = "Re-run sprint-planning or repair the file manually"</output>
     <action>Return</action>
   </check>
-  <template-output>is_valid = true</template-output>
-  <template-output>message = "sprint-status.yaml present and parsable"</template-output>
+  <output>is_valid = true</output>
+  <output>message = "sprint-status.yaml present and parsable"</output>
 </step>
 
 </workflow>

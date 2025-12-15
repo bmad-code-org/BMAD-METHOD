@@ -35,7 +35,7 @@ If they're stuck, offer creative prompts:
 - "What repetitive tasks could be automated with agents?"
 - "What domain expertise could be captured in workflows?"
 
-<template-output>module_vision</template-output>
+<output>module_vision</output>
 </step>
 
 <step n="3" goal="Define module identity">
@@ -63,7 +63,7 @@ Based on the vision, work with user to define:
 - Should the module have a consistent personality across agents?
 - Star Trek crew? Fantasy party? Corporate team? Reality show cast?
 
-<template-output>module_identity</template-output>
+<output>module_identity</output>
 </step>
 
 <step n="4" goal="Agent architecture planning">
@@ -84,7 +84,7 @@ Suggest agent archetypes based on module type:
 - The Creator (generates content)
 - The Analyzer (processes and evaluates)
 
-<template-output>agent_architecture</template-output>
+<output>agent_architecture</output>
 </step>
 
 <step n="5" goal="Workflow ecosystem design">
@@ -113,7 +113,7 @@ For each workflow, define:
 - Input → Process → Output
 - Complexity (simple/standard/complex)
 
-<template-output>workflow_ecosystem</template-output>
+<output>workflow_ecosystem</output>
 </step>
 
 <step n="6" goal="User journey and scenarios">
@@ -131,7 +131,7 @@ Then walk through how they'd use the module:
 
 This validates the module makes sense end-to-end.
 
-<template-output>user_scenarios</template-output>
+<output>user_scenarios</output>
 </step>
 
 <step n="7" goal="Technical and resource planning">
@@ -155,7 +155,7 @@ Assess technical requirements:
 - Standard (some integrations, moderate complexity)
 - Complex (multiple systems, advanced features)
 
-<template-output>technical_planning</template-output>
+<output>technical_planning</output>
 </step>
 
 <step n="8" goal="Success metrics and validation">
@@ -173,7 +173,7 @@ Define what success looks like:
 - Reliability requirements
 - User experience goals
 
-<template-output>success_metrics</template-output>
+<output>success_metrics</output>
 </step>
 
 <step n="9" goal="Development roadmap">
@@ -197,7 +197,7 @@ Create a phased approach:
 - Optimizations
 - Nice-to-haves
 
-<template-output>development_roadmap</template-output>
+<output>development_roadmap</output>
 </step>
 
 <step n="10" goal="Creative flourishes and special features" optional="true">
@@ -220,7 +220,7 @@ Create a phased approach:
 - Thematic elements
 - Consistent universe
 
-<template-output>creative_features</template-output>
+<output>creative_features</output>
 </step>
 
 <step n="11" goal="Risk assessment and mitigation">
@@ -246,7 +246,7 @@ Identify potential challenges:
 
 For each risk, note mitigation strategy.
 
-<template-output>risk_assessment</template-output>
+<output>risk_assessment</output>
 </step>
 
 <step n="12" goal="Final review and export readiness">
@@ -262,7 +262,7 @@ For each risk, note mitigation strategy.
 
 <action>Inform {user_name} in {communication_language} that this brief can be fed directly into create-module workflow</action>
 
-<template-output>final_brief</template-output>
+<output>final_brief</output>
 </step>
 
 </workflow>

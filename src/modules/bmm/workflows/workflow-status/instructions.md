@@ -200,10 +200,10 @@ Your choice:</ask>
 <action>Read {output_folder}/bmm-workflow-status.yaml if exists</action>
 
 <check if="status file not found">
-  <template-output>status_exists = false</template-output>
-  <template-output>should_proceed = true</template-output>
-  <template-output>warning = "No status file found. Running without progress tracking."</template-output>
-  <template-output>suggestion = "Consider running workflow-init first for progress tracking"</template-output>
+  <output>status_exists = false</output>
+  <output>should_proceed = true</output>
+  <output>warning = "No status file found. Running without progress tracking."</output>
+  <output>suggestion = "Consider running workflow-init first for progress tracking"</output>
   <action>Return to calling workflow</action>
 </check>
 
@@ -213,48 +213,48 @@ Your choice:</ask>
   <action>Find first non-completed workflow in workflow_status (next workflow)</action>
   <action>Check if {{calling_workflow}} matches next workflow or is in the workflow list</action>
 
-<template-output>status_exists = true</template-output>
-<template-output>project_level = {{project_level}}</template-output>
-<template-output>project_type = {{project_type}}</template-output>
-<template-output>field_type = {{field_type}}</template-output>
-<template-output>next_workflow = {{next_workflow_id}}</template-output>
+<output>status_exists = true</output>
+<output>project_level = {{project_level}}</output>
+<output>project_type = {{project_type}}</output>
+<output>field_type = {{field_type}}</output>
+<output>next_workflow = {{next_workflow_id}}</output>
 
   <check if="calling_workflow == next_workflow">
-    <template-output>should_proceed = true</template-output>
-    <template-output>warning = ""</template-output>
-    <template-output>suggestion = "Proceeding with planned next step"</template-output>
+    <output>should_proceed = true</output>
+    <output>warning = ""</output>
+    <output>suggestion = "Proceeding with planned next step"</output>
   </check>
 
   <check if="calling_workflow in workflow_status list">
     <action>Check the status of calling_workflow in YAML</action>
 
     <check if="status is file path">
-      <template-output>should_proceed = true</template-output>
-      <template-output>warning = "⚠️ Workflow already completed: {{calling_workflow}}"</template-output>
-      <template-output>suggestion = "This workflow was already completed. Re-running will overwrite: {{status}}"</template-output>
+      <output>should_proceed = true</output>
+      <output>warning = "⚠️ Workflow already completed: {{calling_workflow}}"</output>
+      <output>suggestion = "This workflow was already completed. Re-running will overwrite: {{status}}"</output>
     </check>
 
     <check if="status is optional/recommended">
-      <template-output>should_proceed = true</template-output>
-      <template-output>warning = "Running optional workflow {{calling_workflow}}"</template-output>
-      <template-output>suggestion = "This is optional. Expected next: {{next_workflow}}"</template-output>
+      <output>should_proceed = true</output>
+      <output>warning = "Running optional workflow {{calling_workflow}}"</output>
+      <output>suggestion = "This is optional. Expected next: {{next_workflow}}"</output>
     </check>
 
     <check if="status is required but not next">
-      <template-output>should_proceed = true</template-output>
-      <template-output>warning = "⚠️ Out of sequence: Expected {{next_workflow}}, running {{calling_workflow}}"</template-output>
-      <template-output>suggestion = "Consider running {{next_workflow}} instead, or continue if intentional"</template-output>
+      <output>should_proceed = true</output>
+      <output>warning = "⚠️ Out of sequence: Expected {{next_workflow}}, running {{calling_workflow}}"</output>
+      <output>suggestion = "Consider running {{next_workflow}} instead, or continue if intentional"</output>
     </check>
 
   </check>
 
   <check if="calling_workflow NOT in workflow_status list">
-    <template-output>should_proceed = true</template-output>
-    <template-output>warning = "⚠️ Unknown workflow: {{calling_workflow}} not in workflow path"</template-output>
-    <template-output>suggestion = "This workflow is not part of the defined path for this project"</template-output>
+    <output>should_proceed = true</output>
+    <output>warning = "⚠️ Unknown workflow: {{calling_workflow}} not in workflow path"</output>
+    <output>suggestion = "This workflow is not part of the defined path for this project"</output>
   </check>
 
-<template-output>status_file_path = {{path to bmm-workflow-status.yaml}}</template-output>
+<output>status_file_path = {{path to bmm-workflow-status.yaml}}</output>
 </check>
 
 <action>Return control to calling workflow with all template outputs</action>
@@ -264,45 +264,45 @@ Your choice:</ask>
 <action>Read {output_folder}/bmm-workflow-status.yaml if exists</action>
 
 <check if="status file not found">
-  <template-output>status_exists = false</template-output>
-  <template-output>error = "No status file to extract data from"</template-output>
+  <output>status_exists = false</output>
+  <output>error = "No status file to extract data from"</output>
   <action>Return to calling workflow</action>
 </check>
 
 <check if="status file found">
   <action>Parse YAML file completely</action>
-  <template-output>status_exists = true</template-output>
+  <output>status_exists = true</output>
 
   <check if="data_request == project_config">
-    <template-output>project_name = {{project}}</template-output>
-    <template-output>project_type = {{project_type}}</template-output>
-    <template-output>project_level = {{project_level}}</template-output>
-    <template-output>field_type = {{field_type}}</template-output>
-    <template-output>workflow_path = {{workflow_path}}</template-output>
+    <output>project_name = {{project}}</output>
+    <output>project_type = {{project_type}}</output>
+    <output>project_level = {{project_level}}</output>
+    <output>field_type = {{field_type}}</output>
+    <output>workflow_path = {{workflow_path}}</output>
   </check>
 
   <check if="data_request == workflow_status">
     <action>Parse workflow_status section and return all workflow: status pairs</action>
-    <template-output>workflow_status = {{workflow_status_object}}</template-output>
+    <output>workflow_status = {{workflow_status_object}}</output>
     <action>Calculate completion stats:</action>
-    <template-output>total_workflows = {{count all workflows}}</template-output>
-    <template-output>completed_workflows = {{count file path statuses}}</template-output>
-    <template-output>pending_workflows = {{count required/optional/etc}}</template-output>
-    <template-output>skipped_workflows = {{count skipped}}</template-output>
+    <output>total_workflows = {{count all workflows}}</output>
+    <output>completed_workflows = {{count file path statuses}}</output>
+    <output>pending_workflows = {{count required/optional/etc}}</output>
+    <output>skipped_workflows = {{count skipped}}</output>
   </check>
 
   <check if="data_request == all">
     <action>Return all parsed fields as template outputs</action>
-    <template-output>project = {{project}}</template-output>
-    <template-output>project_type = {{project_type}}</template-output>
-    <template-output>project_level = {{project_level}}</template-output>
-    <template-output>field_type = {{field_type}}</template-output>
-    <template-output>workflow_path = {{workflow_path}}</template-output>
-    <template-output>workflow_status = {{workflow_status_object}}</template-output>
-    <template-output>generated = {{generated}}</template-output>
+    <output>project = {{project}}</output>
+    <output>project_type = {{project_type}}</output>
+    <output>project_level = {{project_level}}</output>
+    <output>field_type = {{field_type}}</output>
+    <output>workflow_path = {{workflow_path}}</output>
+    <output>workflow_status = {{workflow_status_object}}</output>
+    <output>generated = {{generated}}</output>
   </check>
 
-<template-output>status_file_path = {{path to bmm-workflow-status.yaml}}</template-output>
+<output>status_file_path = {{path to bmm-workflow-status.yaml}}</output>
 </check>
 
 <action>Return control to calling workflow with requested data</action>
@@ -312,13 +312,13 @@ Your choice:</ask>
 <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
 
 <check if="exists">
-  <template-output>status_exists = true</template-output>
-  <template-output>suggestion = "Status file found. Ready to proceed."</template-output>
+  <output>status_exists = true</output>
+  <output>suggestion = "Status file found. Ready to proceed."</output>
 </check>
 
 <check if="not exists">
-  <template-output>status_exists = false</template-output>
-  <template-output>suggestion = "No status file. Run workflow-init to create one (optional for progress tracking)"</template-output>
+  <output>status_exists = false</output>
+  <output>suggestion = "No status file. Run workflow-init to create one (optional for progress tracking)"</output>
 </check>
 
 <action>Return immediately to calling workflow</action>
@@ -328,8 +328,8 @@ Your choice:</ask>
 <action>Read {output_folder}/bmm-workflow-status.yaml</action>
 
 <check if="status file not found">
-  <template-output>success = false</template-output>
-  <template-output>error = "No status file found. Cannot update."</template-output>
+  <output>success = false</output>
+  <output>error = "No status file found. Cannot update."</output>
   <action>Return to calling workflow</action>
 </check>
 
@@ -355,11 +355,11 @@ Your choice:</ask>
 
     <action>Save updated YAML file preserving ALL structure and comments</action>
 
-    <template-output>success = true</template-output>
-    <template-output>next_workflow = {{determined next workflow}}</template-output>
-    <template-output>next_agent = {{determined next agent from path file}}</template-output>
-    <template-output>completed_workflow = {{workflow_id}}</template-output>
-    <template-output>output_file = {{output_file}}</template-output>
+    <output>success = true</output>
+    <output>next_workflow = {{determined next workflow}}</output>
+    <output>next_agent = {{determined next agent from path file}}</output>
+    <output>completed_workflow = {{workflow_id}}</output>
+    <output>output_file = {{output_file}}</output>
 
   </check>
 
@@ -374,8 +374,8 @@ Your choice:</ask>
 
     <action>Save updated YAML file</action>
 
-    <template-output>success = true</template-output>
-    <template-output>skipped_workflow = {{workflow_id}}</template-output>
+    <output>success = true</output>
+    <output>skipped_workflow = {{workflow_id}}</output>
 
   </check>
 
@@ -383,8 +383,8 @@ Your choice:</ask>
   <!-- Unknown action -->
   <!-- ============================================= -->
   <check if="action not recognized">
-    <template-output>success = false</template-output>
-    <template-output>error = "Unknown action: {{action}}. Valid actions: complete_workflow, skip_workflow"</template-output>
+    <output>success = false</output>
+    <output>error = "Unknown action: {{action}}. Valid actions: complete_workflow, skip_workflow"</output>
   </check>
 
 </check>

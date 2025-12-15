@@ -142,7 +142,7 @@ This will read EVERY file in this area. Proceed? [y/n]
   - Constants: `CONSTANT_NAME: Type` - Description - **Imports/Dependencies:** What it uses and why - **Used By:** Files that import this (dependents) - **Key Implementation Details:** Important logic, algorithms, patterns - **State Management:** If applicable (Redux, Context, local state) - **Side Effects:** API calls, database queries, file I/O, external services - **Error Handling:** Try/catch blocks, error boundaries, validation - **Testing:** Associated test files and coverage - **Comments/TODOs:** Any inline documentation or planned work
     </action>
 
-<template-output>comprehensive_file_inventory</template-output>
+<output>comprehensive_file_inventory</output>
 </step>
 
 <step n="13c" goal="Analyze relationships and data flow">
@@ -160,9 +160,9 @@ This will read EVERY file in this area. Proceed? [y/n]
 <action>Identify integration points: - External APIs consumed - Internal APIs/services called - Shared state accessed - Events published/subscribed - Database tables accessed
 </action>
 
-<template-output>dependency_graph</template-output>
-<template-output>data_flow_analysis</template-output>
-<template-output>integration_points</template-output>
+<output>dependency_graph</output>
+<output>data_flow_analysis</output>
+<output>integration_points</output>
 </step>
 
 <step n="13d" goal="Find related code and similar patterns">
@@ -180,8 +180,8 @@ This will read EVERY file in this area. Proceed? [y/n]
 <action>Find reference implementations: - Similar features in other parts of codebase - Established patterns to follow - Testing approaches used elsewhere
 </action>
 
-<template-output>related_code_references</template-output>
-<template-output>reuse_opportunities</template-output>
+<output>related_code_references</output>
+<output>reuse_opportunities</output>
 </step>
 
 <step n="13e" goal="Generate comprehensive deep-dive documentation">
@@ -197,7 +197,7 @@ This will read EVERY file in this area. Proceed? [y/n]
 <action>Write filled template to: {output_folder}/deep-dive-{{sanitized_target_name}}.md</action>
 <action>Validate deep-dive document completeness</action>
 
-<template-output>deep_dive_documentation</template-output>
+<output>deep_dive_documentation</output>
 
 <action>Update state file: - Add to deep_dive_targets array: {"target_name": "{{target_name}}", "target_path": "{{target_path}}", "files_analyzed": {{file_count}}, "output_file": "deep-dive-{{sanitized_target_name}}.md", "timestamp": "{{now}}"} - Add output to outputs_generated - Update last_updated timestamp
 </action>
@@ -231,7 +231,7 @@ Detailed exhaustive analysis of specific areas:
 
   <action>Save updated index.md</action>
 
-  <template-output>updated_index</template-output>
+  <output>updated_index</output>
   </step>
 
 <step n="13g" goal="Offer to continue or complete">

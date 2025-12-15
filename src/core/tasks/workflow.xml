@@ -5,7 +5,7 @@
     <mandate>Always read COMPLETE files - NEVER use offset/limit when reading any workflow related files</mandate>
     <mandate>Instructions are MANDATORY - either as file path, steps or embedded list in YAML, XML or markdown</mandate>
     <mandate>Execute ALL steps in instructions IN EXACT ORDER</mandate>
-    <mandate>Save to template output file after EVERY "template-output" tag</mandate>
+    <mandate>Save to template output file after EVERY "template-output" tag with file= attribute</mandate>
     <mandate>NEVER skip a step - YOU are responsible for every steps execution without fail or excuse</mandate>
   </llm>
 
@@ -91,6 +91,13 @@
         </if>
       </substep>
 
+      <substep n="2c-data" title="Handle output Tags">
+        <if tag="output">
+          <action>Record the key=value data as workflow output</action>
+          <action>Continue to next instruction without pausing</action>
+        </if>
+      </substep>
+
       <substep n="2d" title="Step Completion">
         <check>If no special tags and NOT #yolo:</check>
         <ask>Continue to next step? (y/n/edit)</ask>
@@ -128,7 +135,8 @@
       <tag>invoke-protocol - Execute a reusable protocol (e.g., discover_inputs)</tag>
     </execution>
     <output>
-      <tag>template-output - Save content checkpoint</tag>
+      <tag>template-output file="path" - Save content to template file (pauses for user)</tag>
+      <tag>output - Emit key=value data (no file, no pause)</tag>
       <tag>critical - Cannot be skipped</tag>
       <tag>example - Show example output</tag>
     </output>

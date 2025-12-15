@@ -29,7 +29,7 @@
 
 <ask>What's your project called? {{#if project_name}}(Config shows: {{project_name}}){{/if}}</ask>
 <action>Store project_name</action>
-<template-output>project_name</template-output>
+<output>project_name</output>
 </step>
 
 <step n="2" goal="Choose setup path">
@@ -119,8 +119,8 @@ Choice [1/2]:</ask>
 <output>🚀 **For Quick Flow (minimal planning, straight to code):**
 Load the **quick-flow-solo-dev** agent instead - use Quick Flow agent for faster development</output>
 
-<template-output>field_type</template-output>
-<template-output>selected_track</template-output>
+<output>field_type</output>
+<output>selected_track</output>
 <action>Jump to step 6 (discovery options)</action>
 </step>
 
@@ -161,8 +161,8 @@ Continue with software workflows? (y/n)</output>
 <action if="n">Exit workflow</action>
 </check>
 
-<template-output>user_description</template-output>
-<template-output>field_type</template-output>
+<output>user_description</output>
+<output>field_type</output>
 <action>Continue to step 5</action>
 </step>
 
@@ -227,7 +227,7 @@ Happy coding! 🚀</output>
 </check>
 
 <action>Map choice to selected_track</action>
-<template-output>selected_track</template-output>
+<output>selected_track</output>
 </step>
 
 <step n="6" goal="Discovery workflows selection (unified)">
@@ -264,9 +264,9 @@ Enter numbers (e.g., "1,2" or "none"): </ask>
 - product_brief_requested (if applicable)
   </action>
 
-<template-output>brainstorm_requested</template-output>
-<template-output>research_requested</template-output>
-<template-output>product_brief_requested</template-output>
+<output>brainstorm_requested</output>
+<output>research_requested</output>
+<output>product_brief_requested</output>
 
 <check if="brownfield">
   <output>💡 **Note:** For brownfield projects, run document-project workflow first to analyze your codebase.</output>
@@ -292,7 +292,7 @@ Enter numbers (e.g., "1,2" or "none"): </ask>
 Choice:</ask>
 
 <action>Set selected_track</action>
-<template-output>selected_track</template-output>
+<output>selected_track</output>
 </step>
 
 <step n="8" goal="Generate workflow path">
@@ -301,9 +301,9 @@ Choice:</ask>
 <action>Scan for existing completed work and update statuses</action>
 <action>Set generated date</action>
 
-<template-output>generated</template-output>
-<template-output>workflow_path_file</template-output>
-<template-output>workflow_items</template-output>
+<output>generated</output>
+<output>workflow_path_file</output>
+<output>workflow_items</output>
 </step>
 
 <step n="9" goal="Create tracking file">

@@ -197,8 +197,8 @@ Is this correct? Should I document each part separately? [y/n]
 Does this look correct? [y/n/edit]
 </ask>
 
-<template-output>project_structure</template-output>
-<template-output>project_parts_metadata</template-output>
+<output>project_structure</output>
+<output>project_parts_metadata</output>
 
 <action>IMMEDIATELY update state file with step completion:
 
@@ -239,8 +239,8 @@ Are there any other important documents or key areas I should focus on while ana
 
 <action>Store user guidance as {{user_context}}</action>
 
-<template-output>existing_documentation_inventory</template-output>
-<template-output>user_provided_context</template-output>
+<output>existing_documentation_inventory</output>
+<output>user_provided_context</output>
 
 <action>Update state file:
 
@@ -269,8 +269,8 @@ Are there any other important documents or key areas I should focus on while ana
 - Store as {{architecture_pattern}} for each part
   </action>
 
-<template-output>technology_stack</template-output>
-<template-output>architecture_patterns</template-output>
+<output>technology_stack</output>
+<output>architecture_patterns</output>
 
 <action>Update state file:
 
@@ -329,7 +329,7 @@ findings.batches_completed: [
 <action>Validate document has all required sections</action>
 <action>Update state file with output generated</action>
 <action>PURGE detailed API data, keep only: "{{api_count}} endpoints documented"</action>
-<template-output>api_contracts\*{part_id}</template-output>
+<output>api_contracts\*{part_id}</output>
 </check>
 
 <check if="requires_data_models == true">
@@ -350,14 +350,14 @@ findings.batches_completed: [
 <action>Validate document completeness</action>
 <action>Update state file with output generated</action>
 <action>PURGE detailed schema data, keep only: "{{table_count}} tables documented"</action>
-<template-output>data_models\*{part_id}</template-output>
+<output>data_models\*{part_id}</output>
 </check>
 
 <check if="requires_state_management == true">
   <action>Analyze state management patterns</action>
   <action>Look for: Redux, Context API, MobX, Vuex, Pinia, Provider patterns</action>
   <action>Identify: stores, reducers, actions, state structure</action>
-  <template-output>state_management_patterns_{part_id}</template-output>
+  <output>state_management_patterns_{part_id}</output>
 </check>
 
 <check if="requires_ui_components == true">
@@ -365,7 +365,7 @@ findings.batches_completed: [
   <action>Scan: components/, ui/, widgets/, views/ folders</action>
   <action>Categorize: Layout, Form, Display, Navigation, etc.</action>
   <action>Identify: Design system, component patterns, reusable elements</action>
-  <template-output>ui_component_inventory_{part_id}</template-output>
+  <output>ui_component_inventory_{part_id}</output>
 </check>
 
 <check if="requires_hardware_docs == true">
@@ -379,14 +379,14 @@ findings.batches_completed: [
 If yes, please provide paths or links. [Provide paths or type 'none']
 </ask>
 <action>Store hardware docs references</action>
-<template-output>hardware*documentation*{part_id}</template-output>
+<output>hardware*documentation*{part_id}</output>
 </check>
 
 <check if="requires_asset_inventory == true">
   <action>Scan and catalog assets using asset_patterns</action>
   <action>Categorize by: Images, Audio, 3D Models, Sprites, Textures, etc.</action>
   <action>Calculate: Total size, file counts, formats used</action>
-  <template-output>asset_inventory_{part_id}</template-output>
+  <output>asset_inventory_{part_id}</output>
 </check>
 
 <action>Scan for additional patterns based on doc requirements:
@@ -402,7 +402,7 @@ If yes, please provide paths or links. [Provide paths or type 'none']
 
 <action>Apply scan_level strategy to each pattern scan (quick=glob only, deep/exhaustive=read files)</action>
 
-<template-output>comprehensive*analysis*{part_id}</template-output>
+<output>comprehensive*analysis*{part_id}</output>
 
 <action>Update state file:
 
@@ -451,8 +451,8 @@ project-root/
 
 </action>
 
-<template-output>source_tree_analysis</template-output>
-<template-output>critical_folders_summary</template-output>
+<output>source_tree_analysis</output>
+<output>critical_folders_summary</output>
 
 <action>IMMEDIATELY write source-tree-analysis.md to disk</action>
 <action>Validate document structure</action>
@@ -493,9 +493,9 @@ project-root/
   </action>
 </action>
 
-<template-output>development_instructions</template-output>
-<template-output>deployment_configuration</template-output>
-<template-output>contribution_guidelines</template-output>
+<output>development_instructions</output>
+<output>deployment_configuration</output>
+<output>contribution_guidelines</output>
 
 <action>Update state file:
 
@@ -524,7 +524,7 @@ project-root/
 <action>IMMEDIATELY write integration-architecture.md to disk</action>
 <action>Validate document completeness</action>
 
-<template-output>integration_architecture</template-output>
+<output>integration_architecture</output>
 
 <action>Update state file:
 
@@ -566,7 +566,7 @@ project-root/
 - PURGE detailed architecture from context, keep only: "Architecture for {{part_id}} written"
   </action>
 
-<template-output>architecture_document</template-output>
+<output>architecture_document</output>
 
 <action>Update state file:
 
@@ -680,7 +680,7 @@ project-root/
 <action>IMMEDIATELY write to disk</action>
 </action>
 
-<template-output>supporting_documentation</template-output>
+<output>supporting_documentation</output>
 
 <action>Update state file:
 
@@ -791,7 +791,7 @@ When a document SHOULD be generated but wasn't (due to quick scan, missing data,
 <action>IMMEDIATELY write index.md to disk with appropriate _(To be generated)_ markers for missing files</action>
 <action>Validate index has all required sections and links are valid</action>
 
-<template-output>index</template-output>
+<output>index</output>
 
 <action>Update state file:
 
