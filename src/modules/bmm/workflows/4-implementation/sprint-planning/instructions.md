@@ -213,8 +213,8 @@ backlog → ready-for-dev → in-progress → review → done
 optional ↔ done
 ```
 
-- **optional**: Can be done but not required
-- **done**: Retrospective has been completed
+- **optional**: Ready to be conducted but not required
+- **done**: Finished
 
 ### Guidelines
 
