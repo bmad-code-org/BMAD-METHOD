@@ -84,7 +84,7 @@ development_status:
 
 - Epic: `backlog` → `in-progress` → `done`
 - Story: `backlog` → `ready-for-dev` → `in-progress` → `review` → `done`
-- Retrospective: `optional` ↔ `completed`
+- Retrospective: `optional` ↔ `done`
   </step>
 
 <step n="4" goal="Generate sprint status file">
@@ -119,7 +119,7 @@ development_status:
 #
 # Retrospective Status:
 #   - optional: Can be completed but not required
-#   - completed: Retrospective has been done
+#   - done: Retrospective has been completed
 #
 # WORKFLOW NOTES:
 # ===============
@@ -210,11 +210,11 @@ backlog → ready-for-dev → in-progress → review → done
 **Retrospective Status:**
 
 ```
-optional ↔ completed
+optional ↔ done
 ```
 
 - **optional**: Can be done but not required
-- **completed**: Retrospective has been completed
+- **done**: Retrospective has been completed
 
 ### Guidelines
 
