@@ -23,19 +23,19 @@ agent:
       description: Get workflow status or initialize a workflow if not already done (optional)
 
     - trigger: create-architecture
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/architecture/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/workflow.md"
       description: Create an Architecture Document to Guide Development of a PRD (required for BMad Method projects)
 
     - trigger: implementation-readiness
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/implementation-readiness/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md"
       description: Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)
 
     - trigger: create-excalidraw-diagram
-      workflow: "{project-root}/_bmad/bmm/workflows/diagrams/create-diagram/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-diagram/workflow.yaml"
       description: Create system architecture or technical diagram (Excalidraw) (Use any time you need a diagram)
 
     - trigger: create-excalidraw-dataflow
-      workflow: "{project-root}/_bmad/bmm/workflows/diagrams/create-dataflow/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-dataflow/workflow.yaml"
       description: Create data flow diagram (Excalidraw) (Use any time you need a diagram)
 
     - trigger: party-mode

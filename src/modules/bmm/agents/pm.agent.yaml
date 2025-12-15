@@ -32,7 +32,7 @@ agent:
       description: Create Epics and User Stories from PRD (Required for BMad Method flow AFTER the Architecture is completed)
 
     - trigger: implementation-readiness
-      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/implementation-readiness/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md"
       description: Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)
 
     - trigger: correct-course

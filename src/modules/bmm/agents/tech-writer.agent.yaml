@@ -30,15 +30,15 @@ agent:
       description: Generate Mermaid diagrams (architecture, sequence, flow, ER, class, state)
 
     - trigger: create-excalidraw-flowchart
-      workflow: "{project-root}/_bmad/bmm/workflows/diagrams/create-flowchart/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-flowchart/workflow.yaml"
       description: Create Excalidraw flowchart for processes and logic flows
 
     - trigger: create-excalidraw-diagram
-      workflow: "{project-root}/_bmad/bmm/workflows/diagrams/create-diagram/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-diagram/workflow.yaml"
       description: Create Excalidraw system architecture or technical diagram
 
     - trigger: create-excalidraw-dataflow
-      workflow: "{project-root}/_bmad/bmm/workflows/diagrams/create-dataflow/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-dataflow/workflow.yaml"
       description: Create Excalidraw data flow diagram
 
     - trigger: validate-doc

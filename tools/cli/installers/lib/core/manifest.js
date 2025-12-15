@@ -28,7 +28,10 @@ class Manifest {
     };
 
     // Write YAML manifest
-    const yamlContent = yaml.stringify(manifestData, {
+    // Clean the manifest data to remove any non-serializable values
+    const cleanManifestData = structuredClone(manifestData);
+
+    const yamlContent = yaml.stringify(cleanManifestData, {
       indent: 2,
       lineWidth: 0,
       sortKeys: false,
@@ -59,8 +62,8 @@ class Manifest {
           version: manifestData.installation?.version,
           installDate: manifestData.installation?.installDate,
           lastUpdated: manifestData.installation?.lastUpdated,
-          modules: manifestData.modules || [],
-          customModules: manifestData.customModules || [],
+          modules: manifestData.modules || [], // All modules (standard and custom)
+          customModules: manifestData.customModules || [], // Keep for backward compatibility
           ides: manifestData.ides || [],
         };
       } catch (error) {
@@ -92,15 +95,17 @@ class Manifest {
         installDate: manifest.installDate,
         lastUpdated: manifest.lastUpdated,
       },
-      modules: manifest.modules || [],
-      customModules: manifest.customModules || [],
+      modules: manifest.modules || [], // All modules (standard and custom)
       ides: manifest.ides || [],
     };
 
     const manifestPath = path.join(bmadDir, '_config', 'manifest.yaml');
     await fs.ensureDir(path.dirname(manifestPath));
 
-    const yamlContent = yaml.stringify(manifestData, {
+    // Clean the manifest data to remove any non-serializable values
+    const cleanManifestData = structuredClone(manifestData);
+
+    const yamlContent = yaml.stringify(cleanManifestData, {
       indent: 2,
       lineWidth: 0,
       sortKeys: false,

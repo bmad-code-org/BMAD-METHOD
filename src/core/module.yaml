@@ -1,8 +1,8 @@
 code: core
-name: "BMAD™ Core Module"
+name: "BMad™  Core Module"
 
-header: "BMAD™ Core Configuration"
-subheader: "Configure the core settings for your BMAD™ installation.\nThese settings will be used across all modules and agents."
+header: "BMad™  Core Configuration"
+subheader: "Configure the core settings for your BMad™  installation.\nThese settings will be used across all modules and agents."
 
 user_name:
   prompt: "What shall the agents call you (TIP: Use a team name if using with a group)?"
@@ -16,7 +16,7 @@ communication_language:
 
 document_output_language:
   prompt: "Preferred document output language?"
-  default: "{communication_language}"
+  default: "English"
   result: "{value}"
 
 output_folder:

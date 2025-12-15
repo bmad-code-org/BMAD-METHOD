@@ -9,7 +9,9 @@ module.exports = {
   options: [],
   action: async () => {
     try {
-      const modules = await installer.getAvailableModules();
+      const result = await installer.getAvailableModules();
+      const { modules, customModules } = result;
+
       console.log(chalk.cyan('\n📦 Available BMAD Modules:\n'));
 
       for (const module of modules) {
@@ -17,6 +19,16 @@ module.exports = {
         console.log(chalk.dim(`    ${module.description}`));
         console.log(chalk.dim(`    Version: ${module.version}`));
         console.log();
+      }
+
+      if (customModules && customModules.length > 0) {
+        console.log(chalk.cyan('\n🔧 Custom Modules:\n'));
+        for (const module of customModules) {
+          console.log(chalk.bold(`  ${module.id}`));
+          console.log(chalk.dim(`    ${module.description}`));
+          console.log(chalk.dim(`    Version: ${module.version}`));
+          console.log();
+        }
       }
 
       process.exit(0);

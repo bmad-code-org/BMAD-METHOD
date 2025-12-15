@@ -32,7 +32,7 @@ agent:
       description: Validate UX Specification and Design Artifacts
 
     - trigger: create-excalidraw-wireframe
-      workflow: "{project-root}/_bmad/bmm/workflows/diagrams/create-wireframe/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-wireframe/workflow.yaml"
       description: Create website or app wireframe (Excalidraw)
 
     - trigger: party-mode

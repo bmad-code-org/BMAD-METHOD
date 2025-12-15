@@ -40,7 +40,10 @@ class CustomModuleCache {
    */
   async updateCacheManifest(manifest) {
     const yaml = require('yaml');
-    const content = yaml.stringify(manifest, {
+    // Clean the manifest to remove any non-serializable values
+    const cleanManifest = structuredClone(manifest);
+
+    const content = yaml.stringify(cleanManifest, {
       indent: 2,
       lineWidth: 0,
       sortKeys: false,
@@ -144,12 +147,18 @@ class CustomModuleCache {
     const sourceHash = await this.calculateHash(sourcePath);
     const cacheHash = await this.calculateHash(cacheDir);
 
-    // Update manifest - don't store originalPath for source control friendliness
+    // Update manifest - don't store absolute paths for portability
+    // Clean metadata to remove absolute paths
+    const cleanMetadata = { ...metadata };
+    if (cleanMetadata.sourcePath) {
+      delete cleanMetadata.sourcePath;
+    }
+
     cacheManifest[moduleId] = {
       originalHash: sourceHash,
       cacheHash: cacheHash,
       cachedAt: new Date().toISOString(),
-      ...metadata,
+      ...cleanMetadata,
     };
 
     await this.updateCacheManifest(cacheManifest);

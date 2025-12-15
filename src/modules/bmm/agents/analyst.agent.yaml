@@ -32,7 +32,7 @@ agent:
       description: Guided Research scoped to market, domain, competitive analysis, or technical research (optional)
 
     - trigger: product-brief
-      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/product-brief/workflow.md"
+      exec: "{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md"
       description: Create a Product Brief (recommended input for PRD)
 
     - trigger: document-project

@@ -346,6 +346,12 @@ async function compileAgent(yamlContent, answers = {}, agentName = '', targetPat
 
   // Replace {bmad_memory} in XML content
   let xml = await compileToXml(cleanYaml, agentName, targetPath);
+
+  // Ensure xml is a string before attempting replaceAll
+  if (typeof xml !== 'string') {
+    throw new TypeError('compileToXml did not return a string');
+  }
+
   if (finalAnswers.bmad_memory) {
     xml = xml.replaceAll('{bmad_memory}', finalAnswers.bmad_memory);
   }

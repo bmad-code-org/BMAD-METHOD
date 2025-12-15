@@ -34,7 +34,7 @@ class BaseIdeSetup {
    * @returns {string} The activation header text
    */
   async getAgentCommandHeader() {
-    const headerPath = path.join(getSourcePath(), 'src', 'utility', 'agent-components', 'agent-command-header.md');
+    const headerPath = getSourcePath('utility', 'agent-components', 'agent-command-header.md');
     return await fs.readFile(headerPath, 'utf8');
   }
 

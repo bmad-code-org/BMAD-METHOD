@@ -202,7 +202,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full development guidelines.
 
 MIT License - See [LICENSE](LICENSE) for details.
 
-**Trademarks:** BMAD™ and BMAD-METHOD™ are trademarks of BMad Code, LLC.
+**Trademarks:** BMad™ and BMAD-METHOD™ are trademarks of BMad Code, LLC.
 
 ---
 

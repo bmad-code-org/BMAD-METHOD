@@ -1,5 +1,5 @@
-name: create-excalidraw-flowchart
-description: "Create a flowchart visualization in Excalidraw format for processes, pipelines, or logic flows"
+name: create-excalidraw-diagram
+description: "Create system architecture diagrams, ERDs, UML diagrams, or general technical diagrams in Excalidraw format"
 author: "BMad"
 
 # Config values
@@ -7,8 +7,8 @@ config_source: "{project-root}/_bmad/bmm/config.yaml"
 output_folder: "{config_source}:output_folder"
 
 # Workflow components
-installed_path: "{project-root}/_bmad/bmm/workflows/diagrams/create-flowchart"
-shared_path: "{project-root}/_bmad/bmm/workflows/diagrams/_shared"
+installed_path: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-diagram"
+shared_path: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/_shared"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 
@@ -21,7 +21,7 @@ templates: "{shared_path}/excalidraw-templates.yaml"
 library: "{shared_path}/excalidraw-library.json"
 
 # Output file (respects user's configured output_folder)
-default_output_file: "{output_folder}/diagrams/flowchart-{timestamp}.excalidraw"
+default_output_file: "{output_folder}/excalidraw-diagrams/diagram-{timestamp}.excalidraw"
 
 standalone: true
 web_bundle: false

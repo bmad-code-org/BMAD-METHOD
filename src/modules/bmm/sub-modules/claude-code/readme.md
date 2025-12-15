@@ -84,4 +84,4 @@ To test subagent installation:
 2. Select BMM module and Claude Code
 3. Verify prompts appear for subagent selection
 4. Check `.claude/agents/` for installed subagents
-5. Verify injection points are replaced in `.claude/commands/{bmad_folder}/` and the various tasks and templates under `{bmad_folder}/...`
+5. Verify injection points are replaced in `.claude/commands/_bmad/` and the various tasks and templates under `_bmad/...`

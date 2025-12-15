@@ -1,5 +1,5 @@
 ---
-name: brainstorming-session
+name: brainstorming
 description: Facilitate interactive brainstorming sessions using diverse creative techniques and ideation methods
 context_file: '' # Optional context file path for project-specific guidance
 ---

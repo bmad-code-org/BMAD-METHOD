@@ -61,7 +61,10 @@ class IdeConfigManager {
       configuration: configuration || {},
     };
 
-    const yamlContent = yaml.stringify(configData, {
+    // Clean the config to remove any non-serializable values (like functions)
+    const cleanConfig = structuredClone(configData);
+
+    const yamlContent = yaml.stringify(cleanConfig, {
       indent: 2,
       lineWidth: 0,
       sortKeys: false,

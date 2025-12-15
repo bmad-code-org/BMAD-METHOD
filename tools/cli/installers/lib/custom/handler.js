@@ -320,7 +320,10 @@ class CustomHandler {
           if (await fs.pathExists(genericTemplatePath)) {
             let templateContent = await fs.readFile(genericTemplatePath, 'utf8');
             await fs.writeFile(customizePath, templateContent, 'utf8');
-            console.log(chalk.dim(`  Created customize: custom-${agentName}.customize.yaml`));
+            // Only show customize creation in verbose mode
+            if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+              console.log(chalk.dim(`  Created customize: custom-${agentName}.customize.yaml`));
+            }
           }
         }
 
@@ -341,11 +344,14 @@ class CustomHandler {
           fileTrackingCallback(targetMdPath);
         }
 
-        console.log(
-          chalk.dim(
-            `    Compiled agent: ${agentName} -> ${path.relative(targetAgentsPath, targetMdPath)}${hasSidecar ? ' (with sidecar)' : ''}`,
-          ),
-        );
+        // Only show compilation details in verbose mode
+        if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+          console.log(
+            chalk.dim(
+              `    Compiled agent: ${agentName} -> ${path.relative(targetAgentsPath, targetMdPath)}${hasSidecar ? ' (with sidecar)' : ''}`,
+            ),
+          );
+        }
       } catch (error) {
         console.warn(chalk.yellow(`    Failed to compile agent ${agentName}:`, error.message));
         results.errors.push(`Failed to compile agent ${agentName}: ${error.message}`);

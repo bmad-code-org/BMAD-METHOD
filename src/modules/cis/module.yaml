@@ -1,7 +1,7 @@
 code: cis
 name: "CIS: Creative Innovation Suite"
 header: "Creative Innovation Suite (CIS) Module"
-subheader: "No Configuration needed - uses Core Config only."
+subheader: "No custom configuration required - uses Core settings only"
 default_selected: false # This module will not be selected by default for new installations
 
 # Variables from Core Config inserted:

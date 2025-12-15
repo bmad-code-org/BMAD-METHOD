@@ -45,12 +45,22 @@ class RooSetup extends BaseIdeSetup {
         continue;
       }
 
-      // Read the actual agent file from _bmad for metadata extraction (installed agents are .md files)
-      const agentPath = path.join(bmadDir, artifact.module, 'agents', `${artifact.name}.md`);
-      const content = await this.readFile(agentPath);
+      // artifact.sourcePath contains the full path to the agent file
+      if (!artifact.sourcePath) {
+        console.error(`Error: Missing sourcePath for artifact ${artifact.name} from module ${artifact.module}`);
+        console.error(`Artifact object:`, artifact);
+        throw new Error(`Missing sourcePath for agent: ${artifact.name}`);
+      }
+
+      const content = await this.readFile(artifact.sourcePath);
 
       // Create command file that references the actual _bmad agent
-      await this.createCommandFile({ module: artifact.module, name: artifact.name, path: agentPath }, content, commandPath, projectDir);
+      await this.createCommandFile(
+        { module: artifact.module, name: artifact.name, path: artifact.sourcePath },
+        content,
+        commandPath,
+        projectDir,
+      );
 
       addedCount++;
       console.log(chalk.green(`  ✓ Added command: ${commandName}`));
