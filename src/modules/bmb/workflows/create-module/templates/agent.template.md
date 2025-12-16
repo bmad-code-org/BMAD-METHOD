@@ -27,9 +27,8 @@ agent:
 
   # Optional: Only include if agent needs memory/persistence
   critical_actions:
-    - 'Load COMPLETE file [bmad_memory]/[agent-name]-sidecar/memories.md and integrate all past interactions'
-    - 'Load COMPLETE file [bmad_memory]/[agent-name]-sidecar/instructions.md and follow ALL protocols'
-    - 'ONLY read/write files in [bmad_memory]/[agent-name]-sidecar/* - this is our private workspace'
+    - 'Load COMPLETE file [project-root]/_bmad/_memory/[agent-name]-sidecar/memories.md and integrate all past interactions'
+    - 'Load COMPLETE file [project-root]/_bmad/_memory/[agent-name]-sidecar/instructions.md and follow ALL protocols'
 
   # Optional: Embedded prompts for common interactions
   prompts:
@@ -167,16 +166,15 @@ Expert agents support three types of menu actions:
 
 1. **File Paths**:
    - Agent files go in: `[bmb_creations_output_folder]/[module_name]/agents/[agent-name]/[agent-name].yaml`
-   - Sidecar folders go in: `[bmb_creations_output_folder]/[module_name]/agents/[agent-name]/[agent-name]-sidecar/`
+   - Sidecar files go in folder: `[bmb_creations_output_folder]/[module_name]/agents/[agent-name]/[agent-name]-sidecar/`
 
 2. **Variable Usage**:
-   - `bmad_memory` resolves to the agents sidecar folder destination after installation
    - `module` is your module code/name
 
 3. **Creating Sidecar Structure**:
    - When agent is created, also create the sidecar folder
-   - Initialize with empty files: memories.md, instructions.md
-   - Create sessions/ subfolder
+   - Initialize with empty files: memories.md, instructions.md and any other files the agent will need to have special knowledge or files to record information to
+   - Create sessions/ subfolder if interactions will result in new sessions
    - These files are automatically loaded due to critical_actions
 
 4. **Choosing Menu Actions**:

@@ -18,45 +18,44 @@ Specialized tools and workflows for creating, customizing, and extending BMad co
 
 **BMad Builder** - Master builder agent orchestrating all creation workflows with deep knowledge of BMad architecture and conventions.
 
-- Location: `_bmad/bmb/agents/bmad-builder.md`
+- Install Location: `_bmad/bmb/agents/bmad-builder.md`
 
 ### 📋 Workflows
 
 ### 📚 Documentation
 
-- Location: `./docs/`
-- Comprehensive guides for agents and workflows
+- Comprehensive guides for agents, workflows, and modules
 - Architecture patterns and best practices
 
 ### 🔍 Reference Materials
 
-- Location: `./reference/`
-- Working examples of agents and workflows
+- Location: `../reference/`
+- Working examples of custom stand alone agents and workflows
 - Template patterns and implementation guides
 
 ## Documentation
 
 ### 📖 Agent Documentation
 
-- **[Agent Index](./docs/agents/index.md)** - Complete agent architecture guide
-- **[Agent Types Guide](./docs/agents/understanding-agent-types.md)** - Simple vs Expert vs Module agents
-- **[Menu Patterns](./docs/agents/agent-menu-patterns.md)** - YAML menu design and handler types
-- **[Agent Compilation](./docs/agents/agent-compilation.md)** - Auto-injection rules and compilation process
+- **[Agent Index](./agents/index.md)** - Complete agent architecture guide
+- **[Agent Types Guide](./agents/understanding-agent-types.md)** - Simple vs Expert vs Module agents
+- **[Menu Patterns](./agents/agent-menu-patterns.md)** - YAML menu design and handler types
+- **[Agent Compilation](./agents/agent-compilation.md)** - Auto-injection rules and compilation process
 
 ### 📋 Workflow Documentation
 
-- **[Workflow Index](./docs/workflows/index.md)** - Core workflow system overview
-- **[Architecture Guide](./docs/workflows/architecture.md)** - Step-file design and JIT loading
-- **[Template System](./docs/workflows/templates/step-template.md)** - Standard step file template
-- **[Intent vs Prescriptive](./docs/workflows/intent-vs-prescriptive-spectrum.md)** - Design philosophy
+- **[Workflow Index](./workflows/index.md)** - Core workflow system overview
+- **[Architecture Guide](./workflows/architecture.md)** - Step-file design and JIT loading
+- **[Template System](./workflows/templates/step-template.md)** - Standard step file template
+- **[Intent vs Prescriptive](./workflows/intent-vs-prescriptive-spectrum.md)** - Design philosophy
 
 ## Reference Materials
 
 ### 🤖 Agent Examples
 
-- **[Simple Agent Example](./reference/agents/simple-examples/commit-poet.agent.yaml)** - Self-contained agent
-- **[Expert Agent Example](./reference/agents/expert-examples/journal-keeper/)** - Agent with persistent memory
-- **[Module Agent Examples](./reference/agents/module-examples/)** - Integration patterns (BMM, CIS)
+- **[Simple Agent Example](../reference/agents/simple-examples/commit-poet.agent.yaml)** - Self-contained agent
+- **[Expert Agent Example](../reference/agents/expert-examples/journal-keeper/journal-keeper.agent.yaml)** - Agent with persistent memory
+- **[Module Add On Agent Examples](../reference/agents/module-examples/security-engineer.agent.yaml)** - Integration patterns (BMM, CIS)
 
 ### 📋 Workflow Examples
 

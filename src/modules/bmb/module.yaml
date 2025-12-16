@@ -9,7 +9,6 @@ default_selected: false # This module will not be selected by default for new in
 ## communication_language
 ## document_output_language
 ## output_folder
-## bmad_memory
 
 bmb_creations_output_folder:
   prompt: "Where should BoMB generated agents, workflows and modules SOURCE be saved?"

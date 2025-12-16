@@ -6,6 +6,33 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da?logo=discord&logoColor=white)](https://discord.gg/gk8jAdXWmj)
 
+---
+
+<div align="center">
+
+## 🎉 NEW: BMAD V6 Installer - Create & Share Custom Content!
+
+The completely revamped **BMAD V6 installer** now includes built-in support for creating, installing, and sharing custom modules, agents, workflows, templates, and tools! Build your own AI solutions or share them with your team - and real soon, with the whole BMad Community througha verified community sharing portal!
+
+**✨ What's New:**
+
+- 📦 **Streamlined Custom Module Installation** - Package your custom content as installable modules
+- 🤖 **Agent & Workflow Sharing** - Distribute standalone agents and workflows
+- 🔄 **Unitary Module Support** - Install individual components without full modules
+- ⚙️ **Dependency Management** - Automatic handling of module dependencies
+- 🛡️ **Update-Safe Customization** - Your custom content persists through updates
+
+**📚 Learn More:**
+
+- [**Custom Content Overview**](./docs/custom-content.md) - Discover all supported content types
+- [**Installation Guide**](./docs/custom-content-installation.md) - Learn to create and install custom content
+- [**Detail Content Docs**](./src/modules/bmb/docs/README.md) - Reference details for agents, modules, workflows and the bmad builder
+- [**2 Very simple Custom Modules of questionable quality**](./docs/sample-custom-modules/README.md) - if you want to download and try to install a custom shared module, get an idea of how to bundle and share your own, or create your own personal agents, workflows and modules.
+
+</div>
+
+---
+
 ## AI-Driven Agile Development That Scales From Bug Fixes to Enterprise
 
 **Build More, Architect Dreams** (BMAD) with **21 specialized AI agents** across 4 official modules, and **50+ guided workflows** that adapt to your project's complexity—from quick bug fixes to enterprise platforms, and new step file workflows that allow for incredibly long workflows to stay on the rails longer than ever before!
@@ -120,7 +147,7 @@ Each agent brings deep expertise and can be customized to match your team's styl
 - **BMad Builder (BMB)** - Create custom agents and workflows
   - Build anything from simple agents to complex modules
   - Create domain-specific solutions (legal, medical, finance, education)
-  - Share your creations in the upcoming community marketplace
+  - [→ Builder Guide](src/modules/bmb/docs/README.md) marketplace
   - [→ Builder Guide](./src/modules/bmb/README.md)
 
 - **Creative Intelligence Suite (CIS)** - Innovation & problem-solving

@@ -9,7 +9,6 @@ default_selected: false
 ## communication_language
 ## document_output_language
 ## output_folder
-## bmad_memory
 
 game_project_name:
   prompt: "What is the name of your game project?"

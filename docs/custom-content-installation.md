@@ -1,245 +1,149 @@
 # Custom Content Installation
 
-This guide explains how to create and install custom BMAD content including agents, workflows, and modules. Custom content allows you to extend BMAD's functionality with your own specialized tools and workflows that can be shared across projects or teams.
+This guide explains how to create and install custom BMAD content including agents, workflows, and modules. Custom content extends BMAD's functionality with specialized tools and workflows that can be shared across projects or teams.
 
-## Types of Custom Content
+For detailed information about the different types of custom content available, see [Custom Content](./custom-content.md).
 
-### 1. Custom Agents and Workflows (Standalone)
+If you download either of the folders within the [Sample Custom Modules](./sample-custom-modules/readme.md) folder
 
-Custom agents and workflows are standalone content packages that can be installed without being part of a full module. These are perfect for:
+## Content Types Overview
 
-- Sharing specialized agents across projects
-- Building a personal Agent powered Notebook vault
-- Distributing workflow templates
-- Creating agent libraries for specific domains
+BMAD Core supports several categories of custom content:
 
-#### Structure
+- Custom Stand Alone Modules
+- Custom Add On Modules
+- Custom Global Modules
+- Custom Agents
+- Custom Workflows
 
-A custom agents and workflows package follows this structure:
+## Making Custom Content Installable
 
-```
-my-custom-agents/
-├── module.yaml          # Package configuration
-├── agents/              # Agent definitions
-│   └── my-agent/
-│       └── agent.md
-└── workflows/           # Workflow definitions
-    └── my-workflow/
-        └── workflow.md
-```
+### Custom Modules
 
-#### Configuration
+To create an installable custom module:
 
-Create a `module.yaml` file in your package root:
+1. **Folder Structure**
+   - Create a folder with a short, abbreviated name (e.g., `cis` for Creative Intelligence Suite)
+   - The folder name serves as the module code
 
-```yaml
-code: my-custom-agents
-name: 'My Custom Agents and Workflows'
-default_selected: true
-```
+2. **Required Files**
+   - Include a `module.yaml` file in the root folder
+   - This file drives the installation process when used by the BMAD installer
+   - Reference existing modules or the BMad Builder for configuration examples
 
-#### Example
+3. **Folder Organization**
+   Follow these conventions for optimal compatibility:
 
-See `/example-custom-content` for a working example of a folder with multiple random custom agents and workflows. Technically its also just a module, but you will be able to further pick and choose from this folders contents of what you do and do not want to include in a destination folder. This way, you can store all custom content source in one location and easily install it to different locations.
+   ```
+   module-code/
+     module.yaml
+     agents/
+     workflows/
+     tools/
+     templates/
+     ...
+   ```
 
-### 2. Custom Modules
+   - `agents/` - Agent definitions
+   - `workflows/` - Workflow definitions
+   - Additional custom folders are supported but following conventions is recommended for agent and workflow discovery
 
-Custom modules are complete BMAD modules that can include their own configuration, documentation, along with agents and workflows that all compliment each other. Additionally they will have their own installation scripts, data, and potentially other tools. Modules can be used for:
+**Note:** Full documentation for global modules and add-on modules will be available as support is finalized.
 
-- Domain-specific functionality (e.g., industry-specific workflows, entertainment, education and training, medical, etc...)
-- Integration with external systems
-- Specialized agent collections
-- Custom tooling and utilities
+### Standalone Content (Agents, Workflows, Tasks, Tools, Templates, Prompts)
 
-#### Structure
+For standalone content that isn't part of a cohesive module collection, follow this structure:
 
-A custom module follows this structure:
+1. **Module Configuration**
+   - Create a folder with a `module.yaml` file (similar to custom modules)
+   - Add the property `unitary: true` to the module.yaml
+   - The `unitary: true` property indicates this is a collection of potentially unrelated items that don't depend on each other
 
-```
-my-module/
-├── _module-installer/
-│   ├── installer.js           # optional, when it exists it will run with module installation
-├── module.yaml                # Module installation configuration with custom question and answer capture
-├── docs/                      # Module documentation
-├── agents/                    # Module-specific agents
-├── workflows/                 # Module-specific workflows
-├── data/                      # csv or other content to power agent intelligence or workflows
-├── tools/                     # Custom tools, hooks, mcp
-└── sub-modules/               # IDE-specific customizations
-    ├── vscode/
-    └── cursor/
-```
+2. **Folder Structure**
+   Organize content in specific named folders:
 
-#### Module Configuration
+   ```
+   module-name/
+     module.yaml        # Contains unitary: true
+     agents/
+     workflows/
+     templates/
+     tools/
+     tasks/
+     prompts/
+   ```
 
-The `module.yaml` file defines how your module is installed:
+3. **Individual Item Organization**
+   Each item should have its own subfolder:
+   ```text
+   my-custom-stuff/
+     module.yaml
+     agents/
+       larry/larry.agent.md
+       curly/curly.agent.md
+       moe/moe.agent.md
+       moe/moe-sidecar/memories.csv
+   ```
 
-```yaml
-# Module metadata
-code: my-module
-name: 'My Custom Module'
-default_selected: false
+**Future Feature:** Unitary modules will support selective installation, allowing users to pick and choose which specific items to install.
 
-header: 'My Custom Module'
-subheader: 'Description of what this module does'
-
-# Configuration prompts
-my_setting:
-  prompt: 'Configure your module setting'
-  default: 'default-value'
-  result: '{value}'
-```
-
-#### Example
-
-See `/example-custom-module` for a complete example:
+**Note:** Documentation explaining the distinctions between these content types and their specific use cases will be available soon.
 
 ## Installation Process
 
-### Step 1: Running the Installer
+### Prerequisites
 
-When you run the existing normal BMAD installer - either from the cloned repo, OR via NPX, it will ask about custom content:
+Ensure your content follows the proper conventions and includes a `module.yaml` file (only one per top-level folder).
 
-```
-? Do you have custom content to install?
-❯ No (skip custom content)
-  Enter a directory path
-  Enter a URL [Coming soon]
-```
+### New Project Installation
 
-### Step 2: Providing Custom Content Path
+When setting up a new BMAD project:
 
-If you select "Enter a directory path", the installer will prompt for the location:
+1. The installer will prompt: `Would you like to install a local custom module (this includes custom agents and workflows also)? (y/N)`
+2. Select 'y' to specify the path to your module folder containing `module.yaml`
 
-```
-? Enter the path to your custom content directory: /path/to/folder/containing/content/folder
-```
+### Existing Project Modification
 
-The installer will:
+To add custom content to an existing BMAD project:
 
-- Scan for `module.yaml` files (modules)
-- Display an indication of how many installable folders it has found. Note that a project with stand along agents and workflows all under a single folder like the example will just list the count as 1 for that directory.
+1. Run the installer against your project location
+2. Select `Modify BMAD Installation`
+3. Choose the option to add, modify, or update custom modules
 
-### Step 3: Selecting Content
+### Upcoming Features
 
-The installer presents a unified selection interface:
+- **Unitary Module Selection:** For modules with `type: unitary` (instead of `type: module`), you'll be able to select specific items to install
+- **Add-on Module Dependencies:** The installer will verify and install dependencies for add-on modules automatically
 
-```
-? Select modules and custom content to install:
-[── Custom Content ──]
- ◉ My Custom Agents and Workflows (/path/to/custom)
-[── Official Content ──]
- ◯ BMM: Business Method & Management
- ◯ CIS: Creativity & Innovation Suite
-```
+## Quick Updates
 
-## Agent Sidecar Support
+When updates to BMAD Core or core modules (BMM, CIS, etc.) become available, the quick update process will:
 
-Agents with sidecar content can store personal data, memories, and working files outside of the `_bmad` directory. This separation keeps personal content separate from BMAD's core files.
+1. Apply available updates to core modules
+2. Recompile all agents with customizations from the `_config/agents` folder
+3. Retain your custom content from a cached location
+4. Preserve your existing configurations and customizations
 
-### What is Sidecar Content?
+This means you don't need to keep the source module files locally. When updates are available, simply point to the updated module location during the update process.
 
-Sidecar content includes:
+## Important Considerations
 
-- Agent memories and learning data
-- Personal working files
-- Temporary data
-- User-specific configurations
+### Module Naming Conflicts
 
-### Sidecar Configuration
+When installing unofficial modules, ensure unique identification to avoid conflicts:
 
-The sidecar folder location is configured during BMAD core installation:
+1. **Module Codes:** Each module must have a unique code (e.g., don't use `bmm` for custom modules)
+2. **Module Names:** Avoid using names that conflict with existing modules
+3. **Multiple Custom Modules:** If creating multiple custom modules, use distinct codes for each
 
-```
-? Where should users' agent sidecar memory folders be stored?
-❯ _bmad-user-memory
-```
+**Examples of conflicts to avoid:**
 
-### How It Works
-
-1. **Agent Declaration**: Agents declare `hasSidecar: true` in their metadata
-2. **Sidecar Detection**: The installer automatically detects folders with "sidecar" in the name
-3. **Installation**: Sidecar content is copied to the configured location
-4. **Path Replacement**: The `{bmad_memory}` placeholder in agent configurations is replaced with the actual path to the installed instance of the sidecar folder. Now when you use the agent, depending on its design, will use the content in sidecar to record interactions, remember things you tell it, or serve a host of many other issues.
-
-### Example Structure
-
-```
-my-agent/
-├── agent.md              # Agent definition
-└── my-agent-sidecar/     # Sidecar content folder
-    ├── memories/
-    ├── working/
-    └── config/
-```
-
-### Git Integration
-
-Since sidecar content is stored outside the `_bmad` directory (and typically outside version control), users can:
-
-- Add the sidecar folder to `.gitignore` to exclude personal data
-- Share agent definitions without exposing personal content
-- Maintain separate configurations for different projects
-
-Example `.gitignore` entry:
-
-```
-# Exclude agent personal data
-_bmad-user-memory/
-```
-
-## Creating Custom Content with BMAD Builder
-
-The BMAD Builder provides workflows that will guide you to produce your own custom content:
-
-1. **Agent Templates**: Use standardized agent templates with proper structure
-2. **Workflow Templates**: Create workflows using proven patterns
-3. **Validation Tools**: Validate your content before distribution
-4. **Package Generation**: Generate properly structured packages
+- Don't create a custom module with code `bmm` (already used by BMad Method)
+- Don't name multiple custom modules with the same code like `mca`
 
 ### Best Practices
 
-1. **Use Clear Naming**: Make your content codes and names descriptive
-2. **Provide Documentation**: Include clear setup and usage instructions
-3. **Test Installation**: Test your content in a clean environment
-4. **Version Management**: Use semantic versioning for updates
-5. **Respect User Privacy**: Keep personal data in sidecar folders
-
-## Distribution
-
-Custom content can be distributed:
-
-1. **File System**: Copy folders directly to users
-2. **Git Repositories**: Clone or download from version control
-3. **Package Managers**: [Coming soon] npm package support
-4. **URL Installation**: [Coming soon] Direct URL installation, including an official community vetted module forge
-
-## Troubleshooting
-
-### No Custom Content Found
-
-- Ensure your `module.yaml` files are properly named
-- Check file permissions
-- Verify the directory path is correct
-
-### Installation Errors
-
-- Run the installer with verbose logging
-- Check for syntax errors in YAML configuration files
-- Verify all required files are present
-
-### Sidecar Issues
-
-- Ensure the agent has `hasSidecar: true` in metadata
-- Check that sidecar folders contain "sidecar" in the name
-- Verify the bmad_memory configuration
-- Ensure the custom agent has proper language in it to actually use the sidecar content, including loading memories on agent load.
-
-## Support
-
-For help with custom content creation or installation:
-
-1. Check the examples in `/example-custom-content` and `/example-custom-module`
-2. Review the BMAD documentation
-3. Create an issue in the BMAD repository
-4. Join the BMAD community discussions on discord
+- Use descriptive, unique codes for your modules
+- Document any dependencies your custom modules have
+- Test custom modules in isolation before sharing
+- Consider version numbering for your custom content to track updates

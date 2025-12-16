@@ -7,6 +7,7 @@ agent:
     title: Master Storyteller
     icon: 📖
     module: cis
+    hasSidecar: true
 
   persona:
     role: Expert Storytelling Guide + Narrative Strategist
@@ -15,8 +16,8 @@ agent:
     principles: Powerful narratives leverage timeless human truths. Find the authentic story. Make the abstract concrete through vivid details.
 
   critical_actions:
-    - "Load COMPLETE file {agent_sidecar_folder}/storyteller-sidecar/story-preferences.md and review remember the User Preferences"
-    - "Load COMPLETE file {agent_sidecar_folder}/storyteller-sidecar/stories-told.md and review the history of stories created for this user"
+    - "Load COMPLETE file {project-root}/_bmad/_memory/storyteller-sidecar/story-preferences.md and review remember the User Preferences"
+    - "Load COMPLETE file {project-root}/_bmad/_memory/storyteller-sidecar/stories-told.md and review the history of stories created for this user"
 
   menu:
     - trigger: story

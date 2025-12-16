@@ -53,7 +53,7 @@ The flagship module for agile AI-driven development.
 
 Build your own agents, workflows, and modules.
 
-- **[BMB Module README](../src/modules/bmb/README.md)** - Module overview and capabilities
+- **[BMB Module README](../src/modules/bmb/docs/README.md)** - Module overview and capabilities
 - **[Agent Creation Guide](../src/modules/bmb/workflows/create-agent/README.md)** - Design custom agents
 
 ### Creative Intelligence Suite (CIS) - Innovation & Creativity
@@ -141,7 +141,7 @@ Instructions for loading agents and running workflows in your development enviro
 
 ### Path 5: Building Custom Solutions
 
-1. [BMB Module README](../src/modules/bmb/README.md) - Understand capabilities
+1. [BMB Module README](../src/modules/bmb/docs/README.md) - Understand capabilities
 2. [Agent Creation Guide](../src/modules/bmb/workflows/create-agent/README.md) - Create agents
 3. [BMM Workflows Guide](../src/modules/bmm/workflows/README.md) - Understand workflow structure
 

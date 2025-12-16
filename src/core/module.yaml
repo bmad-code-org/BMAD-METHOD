@@ -23,8 +23,3 @@ output_folder:
   prompt: "Where should default output files be saved unless specified in other modules?"
   default: "_bmad-output"
   result: "{project-root}/{value}"
-
-bmad_memory:
-  prompt: "Some agents will record their own memories and history. Where should these be stored?"
-  default: "_bmad/_memory"
-  result: "{project-root}/{value}"

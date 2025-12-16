@@ -9,7 +9,6 @@ default_selected: true # This module will be selected by default for new install
 ## communication_language
 ## document_output_language
 ## output_folder
-## bmad_memory
 
 project_name:
   prompt: "What is the title of your project you will be working on?"

@@ -204,14 +204,6 @@ critical_actions:
 - **Memory integration** - Past context becomes part of current session
 - **Protocol adherence** - Ensures consistent behavior
 
-### {bmad_memory} Variable
-
-Special variable resolved during installation:
-
-- Points to the agent's installation directory
-- Used to reference sidecar files
-- Example: `_bmad/custom/agents/journal-keeper/`
-
 ## What Gets Injected at Compile Time
 
 Same as simple agents, PLUS:
@@ -321,7 +313,7 @@ critical_actions:
 
 1. **Load sidecar files in critical_actions** - Must be explicit and MANDATORY
 2. **Enforce domain restrictions** - Clear boundaries prevent scope creep
-3. **Use {bmad_memory} paths** - Portable across installations
+3. **Use \_bmad/\_memory/[agentname]-sidcar/ paths** - For reference to any sidecar content
 4. **Design for memory growth** - Structure sidecar files for accumulation
 5. **Reference past naturally** - Don't dump memory, weave it into conversation
 6. **Separate concerns** - Memories, instructions, knowledge in distinct files
@@ -364,8 +356,8 @@ identity: |
 - [ ] Sidecar folder structure created and populated
 - [ ] memories.md has clear section structure
 - [ ] instructions.md contains core directives
-- [ ] Menu actions reference {bmad_memory} correctly
-- [ ] File paths use {bmad_memory} variable
+- [ ] Menu actions reference \_bmad/\_memory/[agentname]-sidcar/ correctly if needing sidecar content reference
+- [ ] File paths use \_bmad/\_memory/[agentname]-sidcar/ to reference where the file will be after sidecar content is installed
 - [ ] Install config personalizes sidecar references
 - [ ] Agent folder named consistently: `{agent-name}/`
 - [ ] YAML file named: `{agent-name}.agent.yaml`

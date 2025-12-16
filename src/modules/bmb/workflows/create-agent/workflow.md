@@ -51,7 +51,7 @@ This uses **step-file architecture** for disciplined execution:
 
 Load and read full config from `{project-root}/_bmad/bmb/config.yaml`:
 
-- `project_name`, `user_name`, `bmad_memory`, `communication_language`, `document_output_language`, `bmb_creations_output_folder`
+- `project_name`, `user_name`, `communication_language`, `document_output_language`, `bmb_creations_output_folder`
 
 ### 2. First Step EXECUTION
 

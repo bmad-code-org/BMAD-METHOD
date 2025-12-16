@@ -10,8 +10,6 @@ const { CustomHandler } = require('../installers/lib/custom/handler');
  * UI utilities for the installer
  */
 class UI {
-  constructor() {}
-
   /**
    * Prompt for installation configuration
    * @returns {Object} Installation configuration
@@ -161,14 +159,8 @@ class UI {
       }
     }
 
-    // Always ask for custom content, but we'll handle it differently for new installs
     let customContentConfig = { hasCustomContent: false };
-    if (hasExistingInstall) {
-      // Existing installation - prompt to add/update custom content
-      customContentConfig = await this.promptCustomContentForExisting();
-    } else {
-      // New installation - we'll prompt after creating the directory structure
-      // For now, set a flag to indicate we should ask later
+    if (!hasExistingInstall) {
       customContentConfig._shouldAsk = true;
     }
 
@@ -1138,146 +1130,6 @@ class UI {
     const bmadResult = await installer.findBmadDir(directory);
     const existingInstall = await detector.detect(bmadResult.bmadDir);
     return existingInstall.ides || [];
-  }
-
-  /**
-   * Prompt for custom content for existing installations
-   * @returns {Object} Custom content configuration
-   */
-  async promptCustomContentForExisting() {
-    try {
-      // Skip custom content installation - always return false
-      return { hasCustomContent: false };
-
-      // TODO: Custom content installation temporarily disabled
-      // CLIUtils.displaySection('Custom Content', 'Add new custom agents, workflows, or modules to your installation');
-
-      // const { hasCustomContent } = await inquirer.prompt([
-      //   {
-      //     type: 'list',
-      //     name: 'hasCustomContent',
-      //     message: 'Do you want to add or update custom content?',
-      //     choices: [
-      //       {
-      //         name: 'No, continue with current installation only',
-      //         value: false,
-      //       },
-      //       {
-      //         name: 'Yes, I have custom content to add or update',
-      //         value: true,
-      //       },
-      //     ],
-      //     default: false,
-      //   },
-      // ]);
-
-      // if (!hasCustomContent) {
-      //   return { hasCustomContent: false };
-      // }
-
-      // TODO: Custom content installation temporarily disabled
-      // // Get directory path
-      // const { customPath } = await inquirer.prompt([
-      //   {
-      //     type: 'input',
-      //     name: 'customPath',
-      //     message: 'Enter directory to search for custom content (will scan subfolders):',
-      //     default: process.cwd(),
-      //     validate: async (input) => {
-      //       if (!input || input.trim() === '') {
-      //         return 'Please enter a directory path';
-      //       }
-
-      //       // Normalize and check if path exists
-      //       const expandedPath = CLIUtils.expandPath(input.trim());
-      //       const pathExists = await fs.pathExists(expandedPath);
-      //       if (!pathExists) {
-      //         return 'Directory does not exist';
-      //       }
-
-      //       // Check if it's actually a directory
-      //       const stats = await fs.stat(expandedPath);
-      //       if (!stats.isDirectory()) {
-      //         return 'Path must be a directory';
-      //       }
-
-      //       return true;
-      //     },
-      //     transformer: (input) => {
-      //       return CLIUtils.expandPath(input);
-      //     },
-      //   },
-      // ]);
-
-      // const resolvedPath = CLIUtils.expandPath(customPath);
-
-      // // Find custom content
-      // const customHandler = new CustomHandler();
-      // const customFiles = await customHandler.findCustomContent(resolvedPath);
-
-      // if (customFiles.length === 0) {
-      //   console.log(chalk.yellow(`\nNo custom content found in ${resolvedPath}`));
-
-      //   const { tryDifferent } = await inquirer.prompt([
-      //     {
-      //       type: 'confirm',
-      //       name: 'tryDifferent',
-      //       message: 'Try a different directory?',
-      //       default: true,
-      //     },
-      //   ]);
-
-      //   if (tryDifferent) {
-      //     return await this.promptCustomContentForExisting();
-      //   }
-
-      //   return { hasCustomContent: false };
-      // }
-
-      // // Display found items
-      // console.log(chalk.cyan(`\nFound ${customFiles.length} custom content file(s):`));
-      // const customContentItems = [];
-
-      // for (const customFile of customFiles) {
-      //   const customInfo = await customHandler.getCustomInfo(customFile);
-      //   if (customInfo) {
-      //     customContentItems.push({
-      //       name: `${chalk.cyan('✓')} ${customInfo.name} ${chalk.gray(`(${customInfo.relativePath})`)}`,
-      //       value: `__CUSTOM_CONTENT__${customFile}`,
-      //       checked: true,
-      //     });
-      //   }
-      // }
-
-      // // Add option to keep existing custom content
-      // console.log(chalk.yellow('\nExisting custom modules will be preserved unless you remove them'));
-
-      // const { selectedFiles } = await inquirer.prompt([
-      //   {
-      //     type: 'checkbox',
-      //     name: 'selectedFiles',
-      //     message: 'Select custom content to add:',
-      //     choices: customContentItems,
-      //     pageSize: 15,
-      //     validate: (answer) => {
-      //       if (answer.length === 0) {
-      //         return 'You must select at least one item';
-      //       }
-      //       return true;
-      //     },
-      //   },
-      // ]);
-
-      // return {
-      //   hasCustomContent: true,
-      //   customPath: resolvedPath,
-      //   selected: true,
-      //   selectedFiles: selectedFiles,
-      // };
-    } catch (error) {
-      console.error(chalk.red('Error configuring custom content:'), error);
-      return { hasCustomContent: false };
-    }
   }
 
   /**

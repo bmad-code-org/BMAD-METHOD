@@ -50,7 +50,6 @@ class Installer {
       return { bmadDir: path.join(projectDir, '_bmad'), hasLegacyCfg: false };
     }
 
-    // V6+ strategy: Look for ANY directory with _config/manifest.yaml or legacy _cfg/manifest.yaml
     let bmadDir = null;
     let hasLegacyCfg = false;
 
@@ -76,7 +75,7 @@ class Installer {
         }
       }
     } catch {
-      // Ignore errors, fall through to default
+      console.log(chalk.red('Error reading project directory for BMAD installation detection'));
     }
 
     // If we found a bmad directory (with or without legacy _cfg)
@@ -321,6 +320,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
 
         for (const ide of newlySelectedIdes) {
           // List of IDEs that have interactive prompts
+          //TODO: Why is this here, hardcoding this list here is bad, fix me!
           const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini', 'rovo-dev'].includes(
             ide,
           );
@@ -344,7 +344,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
               } else if (ideModule.default) {
                 SetupClass = ideModule.default;
               } else {
-                // Skip if no setup class found
                 continue;
               }
 
@@ -398,10 +397,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
     const hasCoreConfig = config.coreConfig && Object.keys(config.coreConfig).length > 0;
 
     // Only display logo if core config wasn't already collected (meaning we're not continuing from UI)
-    if (hasCoreConfig) {
-      // Core config was already collected in UI, show smooth continuation
-      // Don't clear screen, just continue flow
-    } else {
+    if (!hasCoreConfig) {
       // Display BMAD logo
       CLIUtils.displayLogo();
 
@@ -797,7 +793,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       config.skipIde = toolSelection.skipIde;
       const ideConfigurations = toolSelection.configurations;
 
-      // Check if spinner is already running (e.g., from folder name change scenario)
       if (spinner.isSpinning) {
         spinner.text = 'Continuing installation...';
       } else {
@@ -828,7 +823,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
         spinner.succeed('Custom modules cached');
       }
 
-      // Get project root
       const projectRoot = getProjectRoot();
 
       // Step 1: Install core module first (if requested)
@@ -985,7 +979,6 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
               this.moduleManager.setCustomModulePaths(customModulePaths);
             }
 
-            // Get collected config for this custom module (from module.yaml prompts)
             const collectedModuleConfig = moduleConfigs[moduleName] || {};
 
             // Use ModuleManager to install the custom module
@@ -999,10 +992,9 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
                 isCustom: true,
                 moduleConfig: collectedModuleConfig,
                 isQuickUpdate: config._quickUpdate || false,
+                installer: this,
               },
             );
-
-            // ModuleManager installs directly to the target directory, no need to move files
 
             // Create module config (include collected config from module.yaml prompts)
             await this.generateModuleConfigs(bmadDir, {
@@ -1558,14 +1550,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
   async installCoreWithDependencies(bmadDir, coreFiles) {
     const sourcePath = getModulePath('core');
     const targetPath = path.join(bmadDir, 'core');
-
-    // Install full core
     await this.installCore(bmadDir);
-
-    // If there are specific dependency files, ensure they're included
-    if (coreFiles) {
-      // Already handled by installCore for core module
-    }
   }
 
   /**
@@ -1589,6 +1574,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       {
         skipModuleInstaller: true, // We'll run it later after IDE setup
         moduleConfig: moduleConfig, // Pass module config for conditional filtering
+        installer: this,
       },
     );
 
@@ -1711,7 +1697,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
     // Compile agents using the same compiler as modules
     const { ModuleManager } = require('../modules/manager');
     const moduleManager = new ModuleManager();
-    await moduleManager.compileModuleAgents(sourcePath, targetPath, 'core', bmadDir);
+    await moduleManager.compileModuleAgents(sourcePath, targetPath, 'core', bmadDir, this);
 
     // Process agent files to inject activation block
     await this.processAgentFiles(targetPath, 'core');
@@ -2060,8 +2046,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
           answers.memories = customizeData.memories;
         }
 
-        // Get core config for bmad_memory
-        const coreConfigPath = path.join(bmadDir, 'bmb', 'config.yaml');
+        const coreConfigPath = path.join(bmadDir, 'core', 'config.yaml');
         let coreConfig = {};
         if (await fs.pathExists(coreConfigPath)) {
           const yaml = require('yaml');
@@ -2216,7 +2201,7 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
       // Recompile agents (#1133)
       const { ModuleManager } = require('../modules/manager');
       const moduleManager = new ModuleManager();
-      await moduleManager.compileModuleAgents(sourcePath, targetPath, 'core', bmadDir);
+      await moduleManager.compileModuleAgents(sourcePath, targetPath, 'core', bmadDir, this);
       await this.processAgentFiles(targetPath, 'core');
     }
   }
@@ -2587,6 +2572,9 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
     const customFiles = [];
     const modifiedFiles = [];
 
+    // Memory is always in _bmad/_memory
+    const bmadMemoryPath = '_memory';
+
     // Check if the manifest has hashes - if not, we can't detect modifications
     let manifestHasHashes = false;
     if (existingFilesManifest && existingFilesManifest.length > 0) {
@@ -2648,6 +2636,10 @@ If AgentVibes party mode is enabled, immediately trigger TTS with agent's voice:
                   }
                 }
               }
+              continue;
+            }
+
+            if (relativePath.startsWith(bmadMemoryPath + '/') && path.dirname(relativePath).includes('-sidecar')) {
               continue;
             }
 
