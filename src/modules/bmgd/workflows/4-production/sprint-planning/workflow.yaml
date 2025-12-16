@@ -11,7 +11,7 @@ date: system-generated
 sprint_artifacts: "{config_source}:sprint_artifacts"
 
 # Workflow components
-installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/sprint-planning"
+installed_path: "{project-root}/_bmad/bmgd/workflows/4-production/sprint-planning"
 instructions: "{installed_path}/instructions.md"
 template: "{installed_path}/sprint-status-template.yaml"
 validation: "{installed_path}/checklist.md"
@@ -37,6 +37,11 @@ variables:
 # Priority: Whole document first, then sharded version
 # Strategy: FULL LOAD - sprint planning needs ALL epics to build complete status
 input_file_patterns:
+  gdd:
+    description: "Game Design Document"
+    whole: "{output_folder}/*gdd*.md"
+    sharded: "{output_folder}/*gdd*/*.md"
+    load_strategy: "FULL_LOAD"
   epics:
     description: "All epics with user stories"
     whole: "{output_folder}/*epic*.md"

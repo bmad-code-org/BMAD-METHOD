@@ -12,14 +12,14 @@ document_output_language: "{config_source}:document_output_language"
 game_dev_experience: "{config_source}:game_dev_experience"
 date: system-generated
 
-# Workflow components
+# Workflow components - Step-file architecture
 installed_path: "{project-root}/_bmad/bmgd/workflows/2-design/gdd"
-instructions: "{installed_path}/instructions-gdd.md"
-template: "{installed_path}/gdd-template.md"
+instructions: "{installed_path}/workflow.md"
+template: "{installed_path}/templates/gdd-template.md"
 game_types_csv: "{installed_path}/game-types.csv"
 
 # Output configuration
-default_output_file: "{output_folder}/GDD.md"
+default_output_file: "{output_folder}/gdd.md"
 
 # Game type references (loaded based on game type selection)
 game_type_guides: "{installed_path}/game-types/"
@@ -50,11 +50,31 @@ web_bundle:
   name: "gdd"
   description: "Game Design Document workflow for all game project levels - from small prototypes to full AAA games. Generates comprehensive GDD with game mechanics, systems, progression, and implementation guidance."
   author: "BMad"
-  instructions: "_bmad/bmgd/workflows/2-design/gdd/instructions-gdd.md"
+  instructions: "_bmad/bmgd/workflows/2-design/gdd/workflow.md"
   web_bundle_files:
-    - "_bmad/bmgd/workflows/2-design/gdd/instructions-gdd.md"
-    - "_bmad/bmgd/workflows/2-design/gdd/gdd-template.md"
+    # Main workflow file
+    - "_bmad/bmgd/workflows/2-design/gdd/workflow.md"
+    # Step files
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-01-init.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-01b-continue.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-02-context.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-03-platforms.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-04-vision.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-05-core-gameplay.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-06-mechanics.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-07-game-type.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-08-progression.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-09-levels.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-10-art-audio.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-11-technical.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-12-epics.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-13-metrics.md"
+    - "_bmad/bmgd/workflows/2-design/gdd/steps/step-14-complete.md"
+    # Template
+    - "_bmad/bmgd/workflows/2-design/gdd/templates/gdd-template.md"
+    # Data files
     - "_bmad/bmgd/workflows/2-design/gdd/game-types.csv"
+    # Game type guides
     - "_bmad/bmgd/workflows/2-design/gdd/game-types/action-platformer.md"
     - "_bmad/bmgd/workflows/2-design/gdd/game-types/adventure.md"
     - "_bmad/bmgd/workflows/2-design/gdd/game-types/card-game.md"

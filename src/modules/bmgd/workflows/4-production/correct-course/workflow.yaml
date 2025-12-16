@@ -17,10 +17,15 @@ sprint_status: "{sprint_artifacts}/sprint-status.yaml || {output_folder}/sprint-
 # Priority: Whole document first, then sharded version
 # Strategy: Load project context for impact analysis
 input_file_patterns:
-  prd:
-    description: "Product requirements (optional)"
-    whole: "{output_folder}/*prd*.md"
-    sharded: "{output_folder}/*prd*/*.md"
+  gdd:
+    description: "Game Design Document"
+    whole: "{output_folder}/*gdd*.md"
+    sharded: "{output_folder}/*gdd*/*.md"
+    load_strategy: "FULL_LOAD"
+  narrative:
+    description: "Narrative Design Document (if story-driven)"
+    whole: "{output_folder}/*narrative*.md"
+    sharded: "{output_folder}/*narrative*/*.md"
     load_strategy: "FULL_LOAD"
   epics:
     description: "All epics with user stories"
@@ -28,7 +33,7 @@ input_file_patterns:
     sharded: "{output_folder}/*epic*/*.md"
     load_strategy: "FULL_LOAD"
   architecture:
-    description: "System architecture and decisions"
+    description: "Game architecture and technical decisions"
     whole: "{output_folder}/*architecture*.md"
     sharded: "{output_folder}/*architecture*/*.md"
     load_strategy: "FULL_LOAD"
@@ -46,7 +51,7 @@ input_file_patterns:
     sharded: "{output_folder}/index.md"
     load_strategy: "INDEX_GUIDED"
 
-installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/correct-course"
+installed_path: "{project-root}/_bmad/bmgd/workflows/4-production/correct-course"
 template: false
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"

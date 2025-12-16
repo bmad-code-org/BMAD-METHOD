@@ -1,0 +1,50 @@
+# Game QA workflow: automate
+name: gametest-automate
+description: "Generate automated game tests for Unity, Unreal, or Godot based on test design scenarios"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmgd/workflows/gametest/automate"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+
+# Variables and inputs
+variables:
+  test_dir: "{project-root}/tests"
+  source_dir: "{project-root}/src"
+  coverage_target: "critical-paths" # critical-paths, comprehensive, selective
+  game_engine: "auto" # auto, unity, unreal, godot
+
+# Output configuration
+default_output_file: "{output_folder}/automation-summary.md"
+
+# Required tools
+required_tools:
+  - read_file
+  - write_file
+  - create_directory
+  - list_files
+  - search_repo
+  - glob
+
+tags:
+  - qa
+  - automation
+  - game-testing
+  - regression
+  - coverage
+
+execution_hints:
+  interactive: false
+  autonomous: true
+  iterative: true
+
+web_bundle: false
