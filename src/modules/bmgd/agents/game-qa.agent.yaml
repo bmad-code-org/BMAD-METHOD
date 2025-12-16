@@ -28,7 +28,7 @@ agent:
 
   menu:
     - trigger: workflow-status
-      workflow: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmgd/workflows/workflow-status/workflow.yaml"
       description: Get workflow status or check current project state
 
     - trigger: test-framework

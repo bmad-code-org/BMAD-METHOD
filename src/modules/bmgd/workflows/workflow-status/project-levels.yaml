@@ -1,0 +1,63 @@
+# BMGD Game Project Scale Levels - Source of Truth
+
+levels:
+  0:
+    name: "Level 0"
+    title: "Game Jam / Prototype"
+    stories: "1-5 stories"
+    description: "48-72 hour game jam, mechanic prototype, proof of concept"
+    documentation: "Minimal - quick GDD notes only"
+    architecture: false
+
+  1:
+    name: "Level 1"
+    title: "Mini Game"
+    stories: "5-15 stories"
+    description: "Small complete game, single mechanic focus, mobile hypercasual"
+    documentation: "Game Brief + Light GDD"
+    architecture: false
+
+  2:
+    name: "Level 2"
+    title: "Indie Game"
+    stories: "15-40 stories"
+    description: "Full indie title, multiple systems, polished experience"
+    documentation: "Game Brief + GDD + Architecture"
+    architecture: true
+
+  3:
+    name: "Level 3"
+    title: "AA Game"
+    stories: "40-100 stories"
+    description: "Mid-size production, team coordination, multiple platforms"
+    documentation: "Full GDD + Architecture + Narrative Design"
+    architecture: true
+
+  4:
+    name: "Level 4"
+    title: "AAA Game"
+    stories: "100+ stories"
+    description: "Large-scale production, multiple teams, live service potential"
+    documentation: "Full documentation suite + production pipelines"
+    architecture: true
+
+# Quick detection hints for workflow-init
+detection_hints:
+  keywords:
+    level_0: ["jam", "prototype", "poc", "test", "experiment", "48 hour", "weekend"]
+    level_1: ["simple", "mini", "casual", "hypercasual", "mobile", "small game"]
+    level_2: ["indie", "steam", "itch", "complete game", "full game"]
+    level_3: ["aa", "mid-size", "production", "team", "publisher"]
+    level_4: ["aaa", "large", "enterprise", "live service", "multiple teams"]
+
+  story_counts:
+    level_0: [1, 5]
+    level_1: [5, 15]
+    level_2: [15, 40]
+    level_3: [40, 100]
+    level_4: [100, 999]
+
+# Game-specific indicators
+game_indicators:
+  engine_keywords: ["unity", "unreal", "godot", "gamemaker", "construct", "rpgmaker"]
+  genre_keywords: ["platformer", "rpg", "roguelike", "shooter", "puzzle", "adventure", "strategy", "simulation"]

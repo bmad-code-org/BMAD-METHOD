@@ -32,7 +32,7 @@ agent:
       description: Implement features end-to-end solo with game-specific considerations
 
     - trigger: create-tech-spec
-      workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/create-tech-spec/workflow.yaml"
       description: Architect a technical spec with implementation-ready stories
 
     - trigger: code-review

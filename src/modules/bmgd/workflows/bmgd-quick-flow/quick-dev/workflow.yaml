@@ -26,7 +26,7 @@ party_mode_exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
 advanced_elicitation: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
 
 # Routing resources (lazy-loaded)
-workflow_init: "{project-root}/_bmad/bmm/workflows/workflow-status/init/workflow.yaml"
+workflow_init: "{project-root}/_bmad/bmgd/workflows/workflow-status/init/workflow.yaml"
 
 # Game-specific input patterns
 input_file_patterns:

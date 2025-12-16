@@ -1,0 +1,71 @@
+# BMGD Game Development - Greenfield
+# Full game design and development methodology for new game projects
+
+method_name: "BMGD Game Development"
+track: "gamedev"
+field_type: "greenfield"
+description: "Complete game design and development methodology for greenfield projects"
+
+phases:
+  - phase: 0
+    name: "Pre-production (Optional)"
+    optional: true
+    note: "User-selected during workflow-init"
+    workflows:
+      - id: "brainstorm-game"
+        optional: true
+        agent: "game-designer"
+        command: "brainstorm-game"
+        included_by: "user_choice"
+        note: "Creative exploration and ideation for game concepts"
+
+      - id: "game-brief"
+        optional: true
+        agent: "game-designer"
+        command: "create-game-brief"
+        included_by: "user_choice"
+        note: "Recommended for greenfield game projects"
+
+  - phase: 1
+    name: "Design"
+    required: true
+    workflows:
+      - id: "gdd"
+        required: true
+        agent: "game-designer"
+        command: "create-gdd"
+        output: "Game Design Document with mechanics, systems, and content"
+
+      - id: "narrative"
+        conditional: "if_narrative_focused"
+        agent: "game-designer"
+        command: "narrative"
+        note: "For story-driven games - determined after GDD"
+
+  - phase: 2
+    name: "Technical"
+    required: true
+    workflows:
+      - id: "game-architecture"
+        required: true
+        agent: "game-architect"
+        command: "create-architecture"
+        output: "Game architecture document with systems and patterns"
+        note: "Complete technical design for game systems"
+
+      - id: "test-framework"
+        recommended: true
+        agent: "game-qa"
+        command: "test-framework"
+        output: "Game testing framework setup"
+        note: "Set up automated testing early"
+
+  - phase: 3
+    name: "Production"
+    required: true
+    workflows:
+      - id: "sprint-planning"
+        required: true
+        agent: "game-scrum-master"
+        command: "sprint-planning"
+        note: "Creates sprint plan - subsequent work tracked in sprint-status.yaml"
