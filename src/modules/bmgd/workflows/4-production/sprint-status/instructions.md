@@ -27,7 +27,7 @@
   <action>Try {sprint_status_file}</action>
   <check if="file not found">
     <output>❌ sprint-status.yaml not found.
-Run `/bmad:bmm:workflows:sprint-planning` to generate it, then rerun sprint-status.</output>
+Run `/bmad:bmgd:workflows:sprint-planning` to generate it, then rerun sprint-status.</output>
     <action>Exit workflow</action>
   </check>
   <action>Continue to Step 2</action>
@@ -80,9 +80,9 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 
 <action>Detect risks:</action>
 
-- IF any story has status "review": suggest `/bmad:bmm:workflows:code-review`
+- IF any story has status "review": suggest `/bmad:bmgd:workflows:code-review`
 - IF any story has status "in-progress" AND no stories have status "ready-for-dev": recommend staying focused on active story
-- IF all epics have status "backlog" AND no stories have status "ready-for-dev": prompt `/bmad:bmm:workflows:create-story`
+- IF all epics have status "backlog" AND no stories have status "ready-for-dev": prompt `/bmad:bmgd:workflows:create-story`
 - IF `generated` timestamp is more than 7 days old: warn "sprint-status.yaml may be stale"
 - IF any story key doesn't match an epic pattern (e.g., story "5-1-..." but no "epic-5"): warn "orphaned story detected"
 - IF any epic has status in-progress but has no associated stories: warn "in-progress epic has no stories"
@@ -112,7 +112,7 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 
 **Epics:** backlog {{epic_backlog}}, in-progress {{epic_in_progress}}, done {{epic_done}}
 
-**Next Recommendation:** /bmad:bmm:workflows:{{next_workflow_id}} ({{next_story_id}})
+**Next Recommendation:** /bmad:bmgd:workflows:{{next_workflow_id}} ({{next_story_id}})
 
 {{#if risks}}
 **Risks:**
@@ -134,7 +134,7 @@ Enter corrections (e.g., "1=in-progress, 2=backlog") or "skip" to continue witho
 Choice:</ask>
 
   <check if="choice == 1">
-    <output>Run `/bmad:bmm:workflows:{{next_workflow_id}}`.
+    <output>Run `/bmad:bmgd:workflows:{{next_workflow_id}}`.
 If the command targets a story, set `story_key={{next_story_id}}` when prompted.</output>
   </check>
 
