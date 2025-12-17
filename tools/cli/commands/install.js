@@ -68,6 +68,15 @@ Available Profiles: minimal, full, solo-dev, team`,
         return;
       }
 
+      // Handle compile agents separately
+      if (config.actionType === 'compile-agents') {
+        const result = await installer.compileAgents(config);
+        console.log(chalk.green('\n✨ Agent recompilation complete!'));
+        console.log(chalk.cyan(`Recompiled ${result.agentCount} agents with customizations applied`));
+        process.exit(0);
+        return;
+      }
+
       // Regular install/update flow
       const result = await installer.install(config);
 

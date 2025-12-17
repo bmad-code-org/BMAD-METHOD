@@ -1075,9 +1075,6 @@ class Installer {
       const manifestStats = await manifestGen.generateManifests(bmadDir, allModulesForManifest, [...this.installedFiles], {
         ides: config.ides || [],
         preservedModules: modulesForCsvPreserve, // Scan these from installed bmad/ dir
-        selectedAgents: config.cliOptions?.agents || null,
-        selectedWorkflows: config.cliOptions?.workflows || null,
-        installMode: config.cliOptions ? 'non-interactive' : 'interactive',
       });
 
       // Custom modules are now included in the main modules list - no separate tracking needed
@@ -1104,7 +1101,7 @@ class Installer {
           // Temporarily suppress console output if not verbose
           const originalLog = console.log;
           if (!config.verbose) {
-            console.log = () => {};
+            console.log = () => { };
           }
 
           for (const ide of validIdes) {
@@ -2086,6 +2083,108 @@ class Installer {
   }
 
   /**
+   * Compile/rebuild all agents and tasks for quick updates
+   * @param {Object} config - Compilation configuration
+   * @returns {Object} Compilation results
+   */
+  async compileAgents(config) {
+    try {
+      const projectDir = path.resolve(config.directory);
+      const { bmadDir } = await this.findBmadDir(projectDir);
+
+      // Check if bmad directory exists
+      if (!(await fs.pathExists(bmadDir))) {
+        throw new Error(`BMAD not installed at ${bmadDir}`);
+      }
+
+      // Get installed modules from manifest
+      const manifestPath = path.join(bmadDir, '_config', 'manifest.yaml');
+      let installedModules = [];
+      let manifest = null;
+      if (await fs.pathExists(manifestPath)) {
+        const manifestContent = await fs.readFile(manifestPath, 'utf8');
+        const yaml = require('yaml');
+        manifest = yaml.parse(manifestContent);
+        installedModules = manifest.modules || [];
+      }
+
+      // Check for custom modules with missing sources
+      if (manifest && manifest.customModules && manifest.customModules.length > 0) {
+        console.log(chalk.yellow('\nChecking custom module sources before compilation...'));
+
+        const customModuleSources = new Map();
+        for (const customModule of manifest.customModules) {
+          customModuleSources.set(customModule.id, customModule);
+        }
+
+        const projectRoot = getProjectRoot();
+        await this.handleMissingCustomSources(customModuleSources, bmadDir, projectRoot, 'compile-agents', installedModules);
+      }
+
+      let agentCount = 0;
+      let taskCount = 0;
+
+      // Process all modules in bmad directory
+      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        if (entry.isDirectory() && entry.name !== '_config' && entry.name !== 'docs') {
+          const modulePath = path.join(bmadDir, entry.name);
+
+          // Special handling for standalone agents in bmad/agents/ directory
+          if (entry.name === 'agents') {
+            await this.buildStandaloneAgents(bmadDir, projectDir);
+
+            // Count standalone agents
+            const standaloneAgentsPath = path.join(bmadDir, 'agents');
+            const standaloneAgentDirs = await fs.readdir(standaloneAgentsPath, { withFileTypes: true });
+            for (const agentDir of standaloneAgentDirs) {
+              if (agentDir.isDirectory()) {
+                const agentDirPath = path.join(standaloneAgentsPath, agentDir.name);
+                const agentFiles = await fs.readdir(agentDirPath);
+                agentCount += agentFiles.filter((f) => f.endsWith('.md') && !f.endsWith('.agent.yaml')).length;
+              }
+            }
+          } else {
+            // Rebuild module agents from installer source
+            const agentsPath = path.join(modulePath, 'agents');
+            if (await fs.pathExists(agentsPath)) {
+              await this.rebuildAgentFiles(modulePath, entry.name);
+              const agentFiles = await fs.readdir(agentsPath);
+              agentCount += agentFiles.filter((f) => f.endsWith('.md')).length;
+            }
+
+            // Count tasks (already built)
+            const tasksPath = path.join(modulePath, 'tasks');
+            if (await fs.pathExists(tasksPath)) {
+              const taskFiles = await fs.readdir(tasksPath);
+              taskCount += taskFiles.filter((f) => f.endsWith('.md')).length;
+            }
+          }
+        }
+      }
+
+      // Update IDE configurations using the existing IDE list from manifest
+      if (manifest && manifest.ides && manifest.ides.length > 0) {
+        for (const ide of manifest.ides) {
+          await this.ideManager.setup(ide, projectDir, bmadDir, {
+            selectedModules: installedModules,
+            skipModuleInstall: true, // Skip module installation, just update IDE files
+            verbose: config.verbose,
+            preCollectedConfig: { _alreadyConfigured: true }, // Skip all interactive prompts during compile
+          });
+        }
+        console.log(chalk.green('✓ IDE configurations updated'));
+      } else {
+        console.log(chalk.yellow('⚠️  No IDEs configured. Skipping IDE update.'));
+      }
+      return { agentCount, taskCount };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * Private: Update core
    */
   async updateCore(bmadDir, force = false) {
@@ -2389,7 +2488,7 @@ class Installer {
         const agentsPath = path.join(targetPath, 'agents');
         if (await fs.pathExists(agentsPath)) {
           const agentFiles = await fs.readdir(agentsPath);
-          const agentCount = agentFiles.filter((f) => f.endsWith('.md')).length;
+          const agentCount = agentFiles.filter(f => f.endsWith('.md')).length;
           totalAgentCount += agentCount;
         }
       }

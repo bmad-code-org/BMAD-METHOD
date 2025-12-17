@@ -1,5 +1,102 @@
 # Changelog
 
+## [6.0.0-alpha.18]
+
+**Release: December 18, 2025**
+
+### 🎮 BMGD Module - Complete Game Development Module Updated
+
+**Massive BMGD Overhaul:**
+
+- **New Game QA Agent (GLaDOS)**: Elite Game QA Architect with test automation specialization
+  - Engine-specific expertise: Unity, Unreal, Godot testing frameworks
+  - Comprehensive knowledge base with 15+ testing topics
+  - Complete testing workflows: test-framework, test-design, automate, playtest-plan, performance-test, test-review
+
+- **New Game Solo Dev Agent (Indie)**: Rapid prototyping and iteration specialist
+  - Quick-flow workflows optimized for solo/small team development
+  - Streamlined development process for indie game creators
+
+- **Production Workflow Alignment**: BMGD 4-production now fully aligned with BMM 4-implementation
+  - Removed obsolete workflows: story-done, story-ready, story-context, epic-tech-context
+  - Added sprint-status workflow for project tracking
+  - All workflows updated as standalone with proper XML instructions
+
+**Game Testing Architecture:**
+
+- **Complete Testing Knowledge Base**: 15 comprehensive testing guides covering:
+  - Engine-specific: Unity (TF 1.6.0), Unreal, Godot testing
+  - Game-specific: Playtesting, balance, save systems, multiplayer
+  - Platform: Certification (TRC/XR), localization, input systems
+  - QA Fundamentals: Automation, performance, regression, smoke testing
+
+**New Workflows & Features:**
+
+- **workflow-status**: Multi-mode status checker for game projects
+  - Game-specific project levels (Game Jam → AAA)
+  - Support for gamedev and quickflow paths
+  - Project initialization workflow
+
+- **create-tech-spec**: Game-focused technical specification workflow
+  - Engine-aware (Unity/Unreal/Godot) specifications
+  - Performance and gameplay feel considerations
+
+- **Enhanced Documentation**: Complete documentation suite with 9 guides
+  - agents-guide.md: Reference for all 6 agents
+  - workflows-guide.md: Complete workflow documentation
+  - game-types-guide.md: 24 game type templates
+  - quick-flow-guide.md: Rapid development guide
+  - Comprehensive troubleshooting and glossary
+
+### 🤖 Agent Management Improved
+
+**Agent Recompile Feature:**
+
+- **New Menu Item**: Added "Recompile Agents" option to the installer menu
+- **Selective Compilation**: Recompile only agents without full module upgrade
+- **Faster Updates**: Quick agent updates without complete reinstallation
+- **Customization Integration**: Automatically applies customizations during recompile
+
+**Agent Customization Enhancement:**
+
+- **Complete Field Support**: ALL fields from agent customization YAML are now properly injected
+- **Deep Merge Implementation**: Customizations now properly override all agent properties
+- **Persistent Customizations**: Custom settings survive updates and recompiles
+- **Enhanced Flexibility**: Support for customizing metadata, persona, menu items, and workflows
+
+### 🔧 Installation & Module Management
+
+**Custom Module Installation:**
+
+- **Enhanced Module Addition**: Modify install now supports adding custom modules even if none were originally installed
+- **Flexible Module Management**: Easy addition and removal of custom modules post-installation
+- **Improved Manifest Tracking**: Better tracking of custom vs core modules
+
+**Quality Improvements:**
+
+- **Comprehensive Code Review**: Fixed 20+ issues identified in PR review
+- **Type Validation**: Added proper type checking for configuration values
+- **Path Security**: Enhanced path traversal validation for better security
+- **Documentation Updates**: All documentation updated to reflect new features
+
+### 📊 Statistics
+
+- **178 files changed** with massive BMGD expansion
+- **28,350+ lines added** across testing documentation and workflows
+- **2 new agents** added to BMGD module
+- **15 comprehensive testing guides** created
+- **Complete alignment** between BMGD and BMM production workflows
+
+### 🌟 Key Highlights
+
+1. **BMGD Module Revolution**: Complete overhaul with professional game development workflows
+2. **Game Testing Excellence**: Comprehensive testing architecture for all major game engines
+3. **Agent Management**: New recompile feature allows quick agent updates without full reinstall
+4. **Full Customization Support**: All agent fields now customizable via YAML
+5. **Industry-Ready Documentation**: Professional-grade guides for game development teams
+
+---
+
 ## [6.0.0-alpha.17]
 
 **Release: December 16, 2025**

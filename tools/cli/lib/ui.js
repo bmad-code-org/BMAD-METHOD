@@ -195,6 +195,14 @@ class UI {
         });
       }
 
+      // Add custom agent compilation option
+      if (installedVersion !== 'unknown') {
+        choices.push({
+          name: 'Recompile Agents (apply customizations only)',
+          value: 'compile-agents',
+        });
+      }
+
       // Common actions
       choices.push({ name: 'Modify BMAD Installation', value: 'update' });
 
@@ -216,6 +224,16 @@ class UI {
         // Quick update doesn't install custom content - just updates existing modules
         return {
           actionType: 'quick-update',
+          directory: confirmedDirectory,
+          customContent: { hasCustomContent: false },
+        };
+      }
+
+      // Handle compile agents separately
+      if (actionType === 'compile-agents') {
+        // Only recompile agents with customizations, don't update any files
+        return {
+          actionType: 'compile-agents',
           directory: confirmedDirectory,
           customContent: { hasCustomContent: false },
         };

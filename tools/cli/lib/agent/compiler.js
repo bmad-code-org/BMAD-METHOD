@@ -99,6 +99,25 @@ function buildPromptsXml(prompts) {
 }
 
 /**
+ * Build memories XML section
+ * @param {Array} memories - Memories array
+ * @returns {string} Memories XML
+ */
+function buildMemoriesXml(memories) {
+  if (!memories || memories.length === 0) return '';
+
+  let xml = '  <memories>\n';
+
+  for (const memory of memories) {
+    xml += `    <memory>${escapeXml(String(memory))}</memory>\n`;
+  }
+
+  xml += '  </memories>\n';
+
+  return xml;
+}
+
+/**
  * Build menu XML section
  * Supports both legacy and multi format menu items
  * Multi items display as a single menu item with nested handlers
@@ -285,6 +304,11 @@ async function compileToXml(agentYaml, agentName = '', targetPath = '') {
     xml += buildPromptsXml(agent.prompts);
   }
 
+  // Memories section (if present)
+  if (agent.memories && agent.memories.length > 0) {
+    xml += buildMemoriesXml(agent.memories);
+  }
+
   // Menu section
   xml += buildMenuXml(agent.menu || []);
 
@@ -322,6 +346,80 @@ async function compileAgent(yamlContent, answers = {}, agentName = '', targetPat
     const { metadata, ...templateAnswers } = answers;
     answers = templateAnswers;
   }
+
+  // Handle other customization properties
+  // These should be merged into the agent structure, not processed as template variables
+  const customizationKeys = ['persona', 'critical_actions', 'memories', 'menu', 'prompts'];
+  const customizations = {};
+  const remainingAnswers = { ...answers };
+
+  for (const key of customizationKeys) {
+    if (answers[key]) {
+      let filtered;
+
+      // Handle different data types
+      if (Array.isArray(answers[key])) {
+        // For arrays, filter out empty/null/undefined values
+        filtered = answers[key].filter((item) => item !== null && item !== undefined && item !== '');
+      } else {
+        // For objects, use filterCustomizationData
+        filtered = filterCustomizationData(answers[key]);
+      }
+
+      // Check if we have valid content
+      const hasContent = Array.isArray(filtered) ? filtered.length > 0 : Object.keys(filtered).length > 0;
+
+      if (hasContent) {
+        customizations[key] = filtered;
+      }
+      delete remainingAnswers[key];
+    }
+  }
+
+  // Merge customizations into agentYaml
+  if (Object.keys(customizations).length > 0) {
+    // For persona: replace entire section
+    if (customizations.persona) {
+      agentYaml.agent.persona = customizations.persona;
+    }
+
+    // For critical_actions: append to existing or create new
+    if (customizations.critical_actions) {
+      const existing = agentYaml.agent.critical_actions || [];
+      agentYaml.agent.critical_actions = [...existing, ...customizations.critical_actions];
+    }
+
+    // For memories: append to existing or create new
+    if (customizations.memories) {
+      const existing = agentYaml.agent.memories || [];
+      agentYaml.agent.memories = [...existing, ...customizations.memories];
+    }
+
+    // For menu: append to existing or create new
+    if (customizations.menu) {
+      const existing = agentYaml.agent.menu || [];
+      agentYaml.agent.menu = [...existing, ...customizations.menu];
+    }
+
+    // For prompts: append to existing or create new (by id)
+    if (customizations.prompts) {
+      const existing = agentYaml.agent.prompts || [];
+      // Merge by id, with customizations taking precedence
+      const mergedPrompts = [...existing];
+      for (const customPrompt of customizations.prompts) {
+        const existingIndex = mergedPrompts.findIndex((p) => p.id === customPrompt.id);
+        if (existingIndex === -1) {
+          mergedPrompts.push(customPrompt);
+        } else {
+          mergedPrompts[existingIndex] = customPrompt;
+        }
+      }
+      agentYaml.agent.prompts = mergedPrompts;
+    }
+  }
+
+  // Use remaining answers for template processing
+  answers = remainingAnswers;
 
   // Extract install_config
   const installConfig = extractInstallConfig(agentYaml);
@@ -460,6 +558,7 @@ module.exports = {
   buildFrontmatter,
   buildPersonaXml,
   buildPromptsXml,
+  buildMemoriesXml,
   buildMenuXml,
   filterCustomizationData,
 };
