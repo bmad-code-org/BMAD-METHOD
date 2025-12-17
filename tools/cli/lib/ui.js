@@ -12,9 +12,15 @@ const { CustomHandler } = require('../installers/lib/custom/handler');
 class UI {
   /**
    * Prompt for installation configuration
+   * @param {Object} cliOptions - CLI options for non-interactive mode
    * @returns {Object} Installation configuration
    */
-  async promptInstall() {
+  async promptInstall(cliOptions = {}) {
+    // Handle non-interactive mode
+    if (cliOptions.nonInteractive) {
+      return await this.buildNonInteractiveConfig(cliOptions);
+    }
+
     CLIUtils.displayLogo();
 
     // Display changelog link
@@ -1438,6 +1444,139 @@ class UI {
     }
 
     return result;
+  }
+
+  /**
+   * Build non-interactive installation configuration
+   * @param {Object} cliOptions - CLI options
+   * @returns {Object} Installation configuration
+   */
+  async buildNonInteractiveConfig(cliOptions) {
+    const { parseOptions } = require('../installers/lib/core/options-parser');
+    const { expandTeam, applyTeamModifiers } = require('../installers/lib/teams/team-loader');
+    const { getProjectRoot } = require('./project-root');
+    const { getEnvironmentDefaults } = require('../installers/lib/core/env-resolver');
+
+    console.log(chalk.cyan('🤖 Running non-interactive installation...\n'));
+
+    // Parse and normalize options
+    const options = parseOptions(cliOptions);
+    const envDefaults = getEnvironmentDefaults();
+
+    // Determine directory
+    const directory = process.cwd();
+
+    // Check for existing installation
+    const { Installer } = require('../installers/lib/core/installer');
+    const installer = new Installer();
+    const { bmadDir, hasExistingInstall } = await installer.findBmadDir(directory);
+    const actionType = hasExistingInstall ? 'update' : 'install';
+
+    console.log(chalk.dim(`  Directory: ${directory}`));
+    console.log(chalk.dim(`  Action: ${actionType === 'install' ? 'New installation' : 'Update existing installation'}\n`));
+
+    // Determine modules to install
+    let selectedModules = [];
+
+    if (options.team) {
+      // Team-based installation
+      console.log(chalk.cyan(`📦 Loading team: ${options.team}...`));
+      try {
+        const projectRoot = getProjectRoot();
+        let teamExpansion = await expandTeam(options.team, projectRoot);
+
+        // Apply modifiers if present
+        if (options.agents || options.workflows) {
+          const { separateModifiers } = require('../installers/lib/core/options-parser');
+          const agentMods = options.agents ? separateModifiers(options.agents) : { base: [], add: [], remove: [] };
+          const workflowMods = options.workflows ? separateModifiers(options.workflows) : { base: [], add: [], remove: [] };
+
+          // If base is provided, replace team selections completely
+          if (agentMods.base.length > 0) {
+            teamExpansion.agents = agentMods.base;
+          }
+          if (workflowMods.base.length > 0) {
+            teamExpansion.workflows = workflowMods.base;
+          }
+
+          // Apply modifiers
+          teamExpansion = applyTeamModifiers(
+            teamExpansion,
+            [...agentMods.add.map((a) => `+${a}`), ...agentMods.remove.map((a) => `-${a}`)],
+            [...workflowMods.add.map((w) => `+${w}`), ...workflowMods.remove.map((w) => `-${w}`)],
+          );
+        }
+
+        options.agents = teamExpansion.agents;
+        options.workflows = teamExpansion.workflows;
+
+        // Determine module from team
+        if (teamExpansion.module && !selectedModules.includes(teamExpansion.module)) {
+          selectedModules.push(teamExpansion.module);
+        }
+
+        console.log(chalk.green(`  ✓ Team loaded: ${options.team}`));
+        console.log(chalk.dim(`    Agents: ${teamExpansion.agents.join(', ')}`));
+        if (teamExpansion.workflows && teamExpansion.workflows.length > 0) {
+          console.log(chalk.dim(`    Workflows: ${teamExpansion.workflows.join(', ')}`));
+        }
+        console.log('');
+      } catch (error) {
+        console.error(chalk.red(`  ✗ Failed to load team: ${error.message}`));
+        process.exit(1);
+      }
+    } else if (options.modules) {
+      // Module-based installation
+      if (options.modules === 'all') {
+        selectedModules = ['bmm', 'bmbb', 'cis', 'bmgd'];
+      } else if (Array.isArray(options.modules)) {
+        selectedModules = options.modules.filter((m) => m !== 'core');
+      }
+    } else if (options.profile) {
+      // Profile-based installation
+      const { getProfile } = require('../installers/lib/profiles/definitions');
+      const profile = getProfile(options.profile);
+      if (profile.modules === 'all') {
+        selectedModules = ['bmm', 'bmbb', 'cis', 'bmgd'];
+      } else if (Array.isArray(profile.modules)) {
+        selectedModules = profile.modules.filter((m) => m !== 'core');
+      }
+    } else {
+      // Default: install bmm
+      selectedModules = ['bmm'];
+    }
+
+    console.log(chalk.cyan(`📦 Modules: ${selectedModules.length > 0 ? selectedModules.join(', ') : 'core only'}\n`));
+
+    // Build core configuration
+    const coreConfig = {
+      user_name: options.userName || envDefaults.userName,
+      user_skill_level: options.skillLevel || 'intermediate',
+      communication_language: options.communicationLanguage || envDefaults.communicationLanguage,
+      document_output_language: options.documentLanguage || envDefaults.documentLanguage,
+      output_folder: options.outputFolder || '_bmad-output',
+    };
+
+    console.log(chalk.cyan('⚙️  Configuration:'));
+    console.log(chalk.dim(`  User: ${coreConfig.user_name}`));
+    console.log(chalk.dim(`  Skill Level: ${coreConfig.user_skill_level}`));
+    console.log(chalk.dim(`  Language: ${coreConfig.communication_language}\n`));
+
+    // Return installation configuration
+    return {
+      actionType,
+      directory,
+      installCore: true,
+      modules: selectedModules,
+      ides: ['claude-code'], // Default to Claude Code for non-interactive
+      skipIde: false,
+      coreConfig,
+      customContent: { hasCustomContent: false },
+      enableAgentVibes: false,
+      agentVibesInstalled: false,
+      // Pass through CLI options for downstream use
+      cliOptions: options,
+    };
   }
 }
 

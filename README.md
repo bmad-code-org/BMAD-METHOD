@@ -79,6 +79,8 @@ With **BMad Builder**, you can architect both simple agents and vastly complex d
 
 ### 1. Install BMad Method
 
+#### Interactive Installation (Default)
+
 ```bash
 # Install v6 Alpha (recommended)
 npx bmad-method@alpha install
@@ -86,6 +88,65 @@ npx bmad-method@alpha install
 # Or stable v4 for production
 npx bmad-method install
 ```
+
+#### Non-Interactive Installation (CI/CD, Automation)
+
+For automated deployments and CI/CD pipelines:
+
+```bash
+# Minimal installation with defaults
+npx bmad-method@alpha install -y
+
+# Custom configuration
+npx bmad-method@alpha install -y \
+  --user-name=Alice \
+  --skill-level=advanced \
+  --output-folder=.bmad-output
+
+# Team-based installation (fullstack team)
+npx bmad-method@alpha install -y --team=fullstack
+
+# Team with modifications
+npx bmad-method@alpha install -y --team=fullstack --agents=+dev
+
+# Selective agents and workflows
+npx bmad-method@alpha install -y \
+  --agents=dev,architect,pm \
+  --workflows=create-prd,create-tech-spec,dev-story
+
+# Profile-based installation
+npx bmad-method@alpha install -y --profile=minimal
+npx bmad-method@alpha install -y --profile=solo-dev
+```
+
+**Available Options:**
+
+- `-y, --non-interactive` - Skip all prompts, use defaults
+- `--user-name <name>` - User name for configuration
+- `--skill-level <level>` - beginner, intermediate, advanced
+- `--output-folder <path>` - Output folder for BMAD artifacts
+- `--modules <list>` - Comma-separated module list
+- `--agents <list>` - Comma-separated agent list or 'all', 'none'
+- `--workflows <list>` - Comma-separated workflow list or 'all', 'none'
+- `--team <name>` - Install predefined team (fullstack, gamedev)
+- `--profile <name>` - Installation profile (minimal, full, solo-dev, team)
+
+**Modifiers:**
+
+- `--agents=+dev` - Add agent to team/profile selection
+- `--agents=-dev` - Remove agent from team/profile selection
+
+**Available Teams:**
+
+- `fullstack` - analyst, architect, pm, sm, ux-designer
+- `gamedev` - game-designer, game-dev, game-architect, game-scrum-master
+
+**Available Profiles:**
+
+- `minimal` - Core + dev agent + essential workflows
+- `full` - Everything (all modules, agents, workflows)
+- `solo-dev` - Single developer setup
+- `team` - Team collaboration setup
 
 ### 2. Initialize Your Project
 

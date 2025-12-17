@@ -5,6 +5,7 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const { getProjectRoot, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
+const { getEnvironmentDefaults, resolveValue } = require('./env-resolver');
 
 class ConfigCollector {
   constructor() {
@@ -790,6 +791,180 @@ class ConfigCollector {
         }
       }
     }
+  }
+
+  /**
+   * Collect configuration for a module in non-interactive mode
+   * @param {string} moduleName - Module name
+   * @param {string} projectDir - Target project directory
+   * @param {Object} cliOptions - CLI options passed by user
+   * @returns {Object} Collected config for the module
+   */
+  async collectModuleConfigNonInteractive(moduleName, projectDir, cliOptions = {}) {
+    this.currentProjectDir = projectDir;
+
+    // Load existing config if not already loaded
+    if (!this.existingConfig) {
+      await this.loadExistingConfig(projectDir);
+    }
+
+    // Initialize allAnswers if not already initialized
+    if (!this.allAnswers) {
+      this.allAnswers = {};
+    }
+
+    // Get environment defaults
+    const envDefaults = getEnvironmentDefaults();
+
+    // Try to load module config schema
+    let installerConfigPath = null;
+    let moduleConfigPath = null;
+
+    if (this.customModulePaths && this.customModulePaths.has(moduleName)) {
+      const customPath = this.customModulePaths.get(moduleName);
+      installerConfigPath = path.join(customPath, '_module-installer', 'module.yaml');
+      moduleConfigPath = path.join(customPath, 'module.yaml');
+    } else {
+      installerConfigPath = path.join(getModulePath(moduleName), '_module-installer', 'module.yaml');
+      moduleConfigPath = path.join(getModulePath(moduleName), 'module.yaml');
+    }
+
+    // If not found, try to find via module manager
+    if (!(await fs.pathExists(installerConfigPath)) && !(await fs.pathExists(moduleConfigPath))) {
+      const { ModuleManager } = require('../modules/manager');
+      const moduleManager = new ModuleManager();
+      const moduleSourcePath = await moduleManager.findModuleSource(moduleName);
+
+      if (moduleSourcePath) {
+        installerConfigPath = path.join(moduleSourcePath, '_module-installer', 'module.yaml');
+        moduleConfigPath = path.join(moduleSourcePath, 'module.yaml');
+      }
+    }
+
+    let configPath = null;
+    if (await fs.pathExists(moduleConfigPath)) {
+      configPath = moduleConfigPath;
+    } else if (await fs.pathExists(installerConfigPath)) {
+      configPath = installerConfigPath;
+    } else {
+      // No config for this module - use existing if available
+      if (this.existingConfig && this.existingConfig[moduleName]) {
+        this.collectedConfig[moduleName] = { ...this.existingConfig[moduleName] };
+      } else {
+        this.collectedConfig[moduleName] = {};
+      }
+      return this.collectedConfig[moduleName];
+    }
+
+    const configContent = await fs.readFile(configPath, 'utf8');
+    const moduleConfig = yaml.parse(configContent);
+
+    if (!moduleConfig) {
+      this.collectedConfig[moduleName] = {};
+      return this.collectedConfig[moduleName];
+    }
+
+    // Initialize module config
+    if (!this.collectedConfig[moduleName]) {
+      this.collectedConfig[moduleName] = {};
+    }
+
+    // Process each config item
+    const configKeys = Object.keys(moduleConfig).filter((key) => key !== 'prompt');
+
+    for (const key of configKeys) {
+      const item = moduleConfig[key];
+
+      // Skip if not a config object
+      if (!item || typeof item !== 'object') {
+        continue;
+      }
+
+      let value = null;
+
+      // Resolution order: CLI → ENV → existing → default → hardcoded
+      if (moduleName === 'core') {
+        // Core module has special mappings
+        if (key === 'user_name') {
+          value = resolveValue(cliOptions.userName, null, envDefaults.userName);
+        } else if (key === 'user_skill_level') {
+          value = resolveValue(cliOptions.skillLevel, null, item.default || 'intermediate');
+        } else if (key === 'communication_language') {
+          value = resolveValue(
+            cliOptions.communicationLanguage,
+            null,
+            envDefaults.communicationLanguage,
+          );
+        } else if (key === 'document_output_language') {
+          value = resolveValue(cliOptions.documentLanguage, null, envDefaults.documentLanguage);
+        } else if (key === 'output_folder') {
+          value = resolveValue(cliOptions.outputFolder, null, item.default);
+        } else if (item.default !== undefined) {
+          value = item.default;
+        }
+      } else {
+        // For other modules, use defaults
+        if (item.default !== undefined) {
+          value = item.default;
+        } else if (this.existingConfig && this.existingConfig[moduleName]) {
+          value = this.existingConfig[moduleName][key];
+        }
+      }
+
+      // Process result template if present
+      let result;
+      if (item.result && typeof item.result === 'string') {
+        result = item.result;
+        if (typeof value === 'string') {
+          result = result.replace('{value}', value);
+        } else if (value !== undefined && value !== null) {
+          result = result.replace('{value}', String(value));
+        }
+
+        // Replace references to other config values
+        result = result.replaceAll(/{([^}]+)}/g, (match, configKey) => {
+          if (configKey === 'project-root' || configKey === 'value') {
+            return match;
+          }
+
+          // Look in collected config
+          let configValue = this.collectedConfig[moduleName]?.[configKey];
+          if (!configValue) {
+            for (const mod of Object.keys(this.collectedConfig)) {
+              if (mod !== '_meta' && this.collectedConfig[mod]?.[configKey]) {
+                configValue = this.collectedConfig[mod][configKey];
+                if (typeof configValue === 'string' && configValue.includes('{project-root}/')) {
+                  configValue = configValue.replace('{project-root}/', '');
+                }
+                break;
+              }
+            }
+          }
+
+          return configValue || match;
+        });
+      } else if (item.result) {
+        result = value;
+      } else {
+        result = value;
+      }
+
+      // Store the result
+      this.collectedConfig[moduleName][key] = result;
+      this.allAnswers[`${moduleName}_${key}`] = result;
+    }
+
+    // Copy existing values for fields not in schema
+    if (this.existingConfig && this.existingConfig[moduleName]) {
+      for (const [key, value] of Object.entries(this.existingConfig[moduleName])) {
+        if (this.collectedConfig[moduleName][key] === undefined) {
+          this.collectedConfig[moduleName][key] = value;
+          this.allAnswers[`${moduleName}_${key}`] = value;
+        }
+      }
+    }
+
+    return this.collectedConfig[moduleName];
   }
 
   /**

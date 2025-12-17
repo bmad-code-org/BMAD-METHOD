@@ -8,11 +8,44 @@ const ui = new UI();
 
 module.exports = {
   command: 'install',
-  description: 'Install BMAD Core agents and tools',
-  options: [],
+  description: `Install BMAD Core agents and tools
+
+Examples:
+  bmad install                                          # Interactive installation
+  bmad install -y                                       # Non-interactive with defaults
+  bmad install -y --user-name=Alice --skill-level=advanced
+  bmad install -y --team=fullstack                      # Install fullstack team
+  bmad install -y --team=fullstack --agents=+dev        # Add dev to fullstack team
+  bmad install -y --agents=dev,architect,pm             # Selective agents
+  bmad install -y --profile=minimal                     # Minimal profile
+  bmad install -y --workflows=create-prd,dev-story      # Selective workflows
+
+Special Values:
+  --agents=all, --agents=none, --agents=minimal
+  --workflows=all, --workflows=none, --workflows=minimal
+
+Modifiers:
+  --agents=+dev       Add agent to team/profile selection
+  --agents=-dev       Remove agent from team/profile selection
+
+Available Teams: fullstack, gamedev
+Available Profiles: minimal, full, solo-dev, team`,
+  options: [
+    ['-y, --non-interactive', 'Run without prompts, use defaults'],
+    ['--user-name <name>', 'User name for configuration'],
+    ['--skill-level <level>', 'User skill level (beginner, intermediate, advanced)'],
+    ['--output-folder <path>', 'Output folder path for BMAD artifacts'],
+    ['--modules <list>', 'Comma-separated list of modules to install (e.g., core,bmm)'],
+    ['--agents <list>', 'Comma-separated list of agents to install (e.g., dev,architect,pm)'],
+    ['--workflows <list>', 'Comma-separated list of workflows to install'],
+    ['--team <name>', 'Install predefined team bundle (e.g., fullstack, gamedev)'],
+    ['--profile <name>', 'Installation profile (minimal, full, solo-dev)'],
+    ['--communication-language <lang>', 'Language for agent communication (default: English)'],
+    ['--document-language <lang>', 'Language for generated documents (default: English)'],
+  ],
   action: async (options) => {
     try {
-      const config = await ui.promptInstall();
+      const config = await ui.promptInstall(options);
 
       // Handle cancel
       if (config.actionType === 'cancel') {

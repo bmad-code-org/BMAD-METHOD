@@ -65,11 +65,20 @@ class ManifestGenerator {
     // Filter out any undefined/null values from IDE list
     this.selectedIdes = resolvedIdes.filter((ide) => ide && typeof ide === 'string');
 
+    // Get filtering options from options
+    const selectedAgents = options.selectedAgents || null;
+    const selectedWorkflows = options.selectedWorkflows || null;
+
+    // Store installation mode and options for manifest
+    this.installMode = options.installMode || 'interactive';
+    this.selectedAgentsList = selectedAgents;
+    this.selectedWorkflowsList = selectedWorkflows;
+
     // Collect workflow data
-    await this.collectWorkflows(selectedModules);
+    await this.collectWorkflows(selectedModules, selectedWorkflows);
 
     // Collect agent data - use updatedModules which includes all installed modules
-    await this.collectAgents(this.updatedModules);
+    await this.collectAgents(this.updatedModules, selectedAgents);
 
     // Collect task data
     await this.collectTasks(this.updatedModules);
@@ -100,8 +109,10 @@ class ManifestGenerator {
   /**
    * Collect all workflows from core and selected modules
    * Scans the INSTALLED bmad directory, not the source
+   * @param {Array} selectedModules - Modules to scan for workflows
+   * @param {Array|null} selectedWorkflows - Optional array of workflow names to filter by
    */
-  async collectWorkflows(selectedModules) {
+  async collectWorkflows(selectedModules, selectedWorkflows = null) {
     this.workflows = [];
 
     // Use updatedModules which already includes deduplicated 'core' + selectedModules
@@ -113,6 +124,50 @@ class ManifestGenerator {
         this.workflows.push(...moduleWorkflows);
       }
     }
+
+    // Apply filtering if selectedWorkflows is provided
+    if (selectedWorkflows && Array.isArray(selectedWorkflows) && selectedWorkflows.length > 0) {
+      this.workflows = this.filterWorkflows(this.workflows, selectedWorkflows);
+    }
+  }
+
+  /**
+   * Filter workflows by name matching (supports wildcards)
+   * @param {Array} workflows - Array of workflow objects
+   * @param {Array} selectedWorkflows - Array of workflow names to filter by (supports * wildcard)
+   * @returns {Array} Filtered workflows
+   */
+  filterWorkflows(workflows, selectedWorkflows) {
+    if (!selectedWorkflows || selectedWorkflows.length === 0) {
+      return workflows;
+    }
+
+    // Check for special values
+    if (selectedWorkflows.includes('all')) {
+      return workflows;
+    }
+    if (selectedWorkflows.includes('none')) {
+      return [];
+    }
+
+    return workflows.filter((workflow) => {
+      const workflowName = workflow.name;
+
+      return selectedWorkflows.some((pattern) => {
+        // Exact match
+        if (pattern === workflowName) {
+          return true;
+        }
+
+        // Wildcard matching: create-* matches create-prd, create-tech-spec, etc.
+        if (pattern.includes('*')) {
+          const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+          return regex.test(workflowName);
+        }
+
+        return false;
+      });
+    });
   }
 
   /**
@@ -197,8 +252,10 @@ class ManifestGenerator {
   /**
    * Collect all agents from core and selected modules
    * Scans the INSTALLED bmad directory, not the source
+   * @param {Array} selectedModules - Modules to scan for agents
+   * @param {Array|null} selectedAgents - Optional array of agent names to filter by
    */
-  async collectAgents(selectedModules) {
+  async collectAgents(selectedModules, selectedAgents = null) {
     this.agents = [];
 
     // Use updatedModules which already includes deduplicated 'core' + selectedModules
@@ -224,6 +281,50 @@ class ManifestGenerator {
         this.agents.push(...standaloneAgents);
       }
     }
+
+    // Apply filtering if selectedAgents is provided
+    if (selectedAgents && Array.isArray(selectedAgents) && selectedAgents.length > 0) {
+      this.agents = this.filterAgents(this.agents, selectedAgents);
+    }
+  }
+
+  /**
+   * Filter agents by name matching (supports wildcards)
+   * @param {Array} agents - Array of agent objects
+   * @param {Array} selectedAgents - Array of agent names to filter by (supports * wildcard)
+   * @returns {Array} Filtered agents
+   */
+  filterAgents(agents, selectedAgents) {
+    if (!selectedAgents || selectedAgents.length === 0) {
+      return agents;
+    }
+
+    // Check for special values
+    if (selectedAgents.includes('all')) {
+      return agents;
+    }
+    if (selectedAgents.includes('none')) {
+      return [];
+    }
+
+    return agents.filter((agent) => {
+      const agentName = agent.name;
+
+      return selectedAgents.some((pattern) => {
+        // Exact match
+        if (pattern === agentName) {
+          return true;
+        }
+
+        // Wildcard matching: dev* matches dev, dev-story, etc.
+        if (pattern.includes('*')) {
+          const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+          return regex.test(agentName);
+        }
+
+        return false;
+      });
+    });
   }
 
   /**
@@ -462,10 +563,19 @@ class ManifestGenerator {
         version: packageJson.version,
         installDate: new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
+        installMode: this.installMode || 'interactive',
       },
       modules: this.modules, // Include ALL modules (standard and custom)
       ides: this.selectedIdes,
     };
+
+    // Add selective installation info if filters were applied
+    if (this.selectedAgentsList && this.selectedAgentsList.length > 0) {
+      manifest.selectedAgents = this.selectedAgentsList;
+    }
+    if (this.selectedWorkflowsList && this.selectedWorkflowsList.length > 0) {
+      manifest.selectedWorkflows = this.selectedWorkflowsList;
+    }
 
     // Clean the manifest to remove any non-serializable values
     const cleanManifest = structuredClone(manifest);
