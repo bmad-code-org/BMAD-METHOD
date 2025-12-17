@@ -26,21 +26,24 @@ agent:
       workflow: "{project-root}/_bmad/bmgd/workflows/workflow-status/workflow.yaml"
       description: Get workflow status or initialize a workflow if not already done
 
-    - trigger: brainstorm-game
-      workflow: "{project-root}/_bmad/bmgd/workflows/1-preproduction/brainstorm-game/workflow.yaml"
-      description: Guide me through Game Brainstorming
-
-    - trigger: create-game-brief
-      workflow: "{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief/workflow.yaml"
-      description: Create Game Brief
-
-    - trigger: create-gdd
-      workflow: "{project-root}/_bmad/bmgd/workflows/2-design/gdd/workflow.yaml"
-      description: Create Game Design Document (GDD)
-
-    - trigger: narrative
-      workflow: "{project-root}/_bmad/bmgd/workflows/2-design/narrative/workflow.yaml"
-      description: Create Narrative Design Document (story-driven games)
+    - multi: "[BG] Brainstorm Game, [GB] Create Game Brief, [GDD] Create GDD, [ND] Narrative Design"
+      triggers:
+        - brainstorm-game:
+            - input: BG or fuzzy match brainstorm game
+            - route: "{project-root}/_bmad/bmgd/workflows/1-preproduction/brainstorm-game/workflow.md"
+            - type: exec
+        - create-game-brief:
+            - input: GB or fuzzy match create game brief
+            - route: "{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief/workflow.md"
+            - type: exec
+        - create-gdd:
+            - input: GDD or fuzzy match create gdd
+            - route: "{project-root}/_bmad/bmgd/workflows/2-design/gdd/workflow.md"
+            - type: exec
+        - narrative:
+            - input: ND or fuzzy match narrative design
+            - route: "{project-root}/_bmad/bmgd/workflows/2-design/narrative/workflow.md"
+            - type: exec
 
     - trigger: quick-prototype
       workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype/workflow.yaml"

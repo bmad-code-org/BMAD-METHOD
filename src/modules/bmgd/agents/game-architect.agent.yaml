@@ -30,7 +30,7 @@ agent:
       description: Get workflow status or initialize a workflow if not already done
 
     - trigger: create-architecture
-      workflow: "{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture/workflow.yaml"
+      exec: "{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture/workflow.md"
       description: Produce a Scale Adaptive Game Architecture
 
     - trigger: correct-course
