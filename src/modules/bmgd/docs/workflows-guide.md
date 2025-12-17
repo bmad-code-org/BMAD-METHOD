@@ -439,20 +439,19 @@ Deep exploration techniques to challenge assumptions and surface hidden requirem
 
 ---
 
-## Workflow Inheritance
+## Standalone BMGD Workflows
 
-BMGD Phase 4 workflows use a `workflow-install` pattern to inherit from BMM:
+BMGD Phase 4 workflows are standalone implementations tailored for game development:
 
 ```yaml
 workflow: '{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml'
-workflow-install: '{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml'
 ```
 
 This means:
 
-1. Core workflow logic comes from BMM
-2. BMGD overrides provide game-specific templates and checklists
-3. Updates to BMM flow automatically to BMGD
+1. BMGD workflows are self-contained with game-specific logic
+2. Game-focused templates, checklists, and instructions
+3. No dependency on BMM workflow files
 
 ---
 

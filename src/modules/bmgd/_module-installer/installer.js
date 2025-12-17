@@ -4,6 +4,18 @@ const chalk = require('chalk');
 const platformCodes = require(path.join(__dirname, '../../../../tools/cli/lib/platform-codes'));
 
 /**
+ * Validate that a resolved path is within the project root (prevents path traversal)
+ * @param {string} resolvedPath - The fully resolved absolute path
+ * @param {string} projectRoot - The project root directory
+ * @returns {boolean} - True if path is within project root
+ */
+function isWithinProjectRoot(resolvedPath, projectRoot) {
+  const normalizedResolved = path.normalize(resolvedPath);
+  const normalizedRoot = path.normalize(projectRoot);
+  return normalizedResolved.startsWith(normalizedRoot + path.sep) || normalizedResolved === normalizedRoot;
+}
+
+/**
  * BMGD Module Installer
  * Standard module installer function that executes after IDE installations
  *
@@ -21,10 +33,13 @@ async function install(options) {
     logger.log(chalk.blue('🎮 Installing BMGD Module...'));
 
     // Create planning artifacts directory (for GDDs, game briefs, architecture)
-    if (config['planning_artifacts']) {
-      const planningConfig = config['planning_artifacts'].replace('{project-root}/', '');
+    if (config['planning_artifacts'] && typeof config['planning_artifacts'] === 'string') {
+      // Strip project-root prefix variations
+      const planningConfig = config['planning_artifacts'].replace(/^\{project-root\}\/?/, '');
       const planningPath = path.join(projectRoot, planningConfig);
-      if (!(await fs.pathExists(planningPath))) {
+      if (!isWithinProjectRoot(planningPath, projectRoot)) {
+        logger.warn(chalk.yellow(`Warning: planning_artifacts path escapes project root, skipping: ${planningConfig}`));
+      } else if (!(await fs.pathExists(planningPath))) {
         logger.log(chalk.yellow(`Creating game planning artifacts directory: ${planningConfig}`));
         await fs.ensureDir(planningPath);
       }
@@ -33,20 +48,26 @@ async function install(options) {
     // Create implementation artifacts directory (sprint status, stories, reviews)
     // Check both implementation_artifacts and sprint_artifacts for compatibility
     const implConfig = config['implementation_artifacts'] || config['sprint_artifacts'];
-    if (implConfig) {
-      const implConfigClean = implConfig.replace('{project-root}/', '');
+    if (implConfig && typeof implConfig === 'string') {
+      // Strip project-root prefix variations
+      const implConfigClean = implConfig.replace(/^\{project-root\}\/?/, '');
       const implPath = path.join(projectRoot, implConfigClean);
-      if (!(await fs.pathExists(implPath))) {
+      if (!isWithinProjectRoot(implPath, projectRoot)) {
+        logger.warn(chalk.yellow(`Warning: implementation_artifacts path escapes project root, skipping: ${implConfigClean}`));
+      } else if (!(await fs.pathExists(implPath))) {
         logger.log(chalk.yellow(`Creating implementation artifacts directory: ${implConfigClean}`));
         await fs.ensureDir(implPath);
       }
     }
 
     // Create project knowledge directory
-    if (config['project_knowledge']) {
-      const knowledgeConfig = config['project_knowledge'].replace('{project-root}/', '');
+    if (config['project_knowledge'] && typeof config['project_knowledge'] === 'string') {
+      // Strip project-root prefix variations
+      const knowledgeConfig = config['project_knowledge'].replace(/^\{project-root\}\/?/, '');
       const knowledgePath = path.join(projectRoot, knowledgeConfig);
-      if (!(await fs.pathExists(knowledgePath))) {
+      if (!isWithinProjectRoot(knowledgePath, projectRoot)) {
+        logger.warn(chalk.yellow(`Warning: project_knowledge path escapes project root, skipping: ${knowledgeConfig}`));
+      } else if (!(await fs.pathExists(knowledgePath))) {
         logger.log(chalk.yellow(`Creating project knowledge directory: ${knowledgeConfig}`));
         await fs.ensureDir(knowledgePath);
       }
@@ -117,12 +138,15 @@ async function configureForIDE(ide, projectRoot, config, logger) {
       const platformHandler = require(platformSpecificPath);
 
       if (typeof platformHandler.install === 'function') {
-        await platformHandler.install({
+        const success = await platformHandler.install({
           projectRoot,
           config,
           logger,
           platformInfo: platformCodes.getPlatform(ide),
         });
+        if (!success) {
+          logger.warn(chalk.yellow(`  Warning: BMGD platform handler for ${platformName} returned failure`));
+        }
       }
     } else {
       // No platform-specific handler for this IDE

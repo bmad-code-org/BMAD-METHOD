@@ -16,7 +16,7 @@ workflows:
   - game-brief
   - gdd
   - narrative
-  - create-architecture
+  - game-architecture
   - sprint-planning
   - sprint-status
   - create-story

@@ -131,11 +131,11 @@ REQUIREMENT: Save Data Portability (PS4→PS5)
 ### Xbox (XR)
 
 | Requirement | Description                   | Priority    |
-| ----------- | ----------------------------- | ----------- | --- |
+| ----------- | ----------------------------- | ----------- |
 | XR-015      | Title timeout handling        | Critical    |
 | XR-045      | User sign-out handling        | Critical    |
 | XR-067      | Active user requirement       | Critical    |
-| XR-074      | Quick Resume support          | Series X    | S   |
+| XR-074      | Quick Resume support          | Series X/S  |
 | XR-115      | Xbox Accessibility Guidelines | Recommended |
 
 ### Nintendo Switch

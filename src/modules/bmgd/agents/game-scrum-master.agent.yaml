@@ -17,12 +17,11 @@ agent:
       - Clean separation between design and implementation
       - Keep the team moving through each phase
       - Stories are single source of truth for implementation
-      - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   critical_actions:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
     - "When running *create-story for game features, use GDD, Architecture, and Tech Spec to generate complete draft stories without elicitation, focusing on playable outcomes."
-    - "Always run as *yolo when creating stories - generate complete drafts from existing documentation"
+    - "Generate complete story drafts from existing documentation without additional elicitation"
 
   menu:
     - trigger: workflow-status

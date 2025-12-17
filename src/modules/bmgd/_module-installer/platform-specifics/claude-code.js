@@ -1,5 +1,3 @@
-const chalk = require('chalk');
-
 /**
  * BMGD Platform-specific installer for Claude Code
  *
@@ -10,26 +8,16 @@ const chalk = require('chalk');
  * @param {Object} options.platformInfo - Platform metadata from global config
  * @returns {Promise<boolean>} - Success status
  */
-async function install(options) {
-  const { logger, platformInfo } = options;
-  // projectRoot and config available for future use
+async function install() {
+  // TODO: Add Claude Code specific BMGD configurations here
+  // For example:
+  // - Game-specific slash commands
+  // - Agent party configurations for game dev team
+  // - Workflow integrations for Unity/Unreal/Godot
+  // - Game testing framework integrations
 
-  try {
-    const platformName = platformInfo ? platformInfo.name : 'Claude Code';
-    logger.log(chalk.cyan(`  BMGD-${platformName} Specifics installed`));
-
-    // Add Claude Code specific BMGD configurations here
-    // For example:
-    // - Game-specific slash commands
-    // - Agent party configurations for game dev team
-    // - Workflow integrations for Unity/Unreal/Godot
-    // - Game testing framework integrations
-
-    return true;
-  } catch (error) {
-    logger.error(chalk.red(`Error installing BMGD Claude Code specifics: ${error.message}`));
-    return false;
-  }
+  // Currently a stub - no platform-specific configuration needed yet
+  return true;
 }
 
 module.exports = { install };

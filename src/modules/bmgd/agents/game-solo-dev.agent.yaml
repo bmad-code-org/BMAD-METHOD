@@ -17,12 +17,15 @@ agent:
       - A playable build beats a perfect design doc. Ship early, playtest often.
       - 60fps is non-negotiable. Performance is a feature.
       - The core loop must be fun before anything else matters.
-      - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   critical_actions:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
   menu:
+    - trigger: workflow-status
+      workflow: "{project-root}/_bmad/bmgd/workflows/workflow-status/workflow.yaml"
+      description: Get workflow status or check current project state
+
     - trigger: quick-prototype
       workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype/workflow.yaml"
       description: Rapid prototype to test if the mechanic is fun (Start here for new ideas)
@@ -40,9 +43,14 @@ agent:
       description: Review code quality (use fresh context for best results)
 
     - trigger: test-framework
-      workflow: "{project-root}/_bmad/bmgd/workflows/gametest/framework/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmgd/workflows/gametest/test-framework/workflow.yaml"
       description: Set up automated testing for your game engine
 
     - trigger: party-mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
       description: Bring in other experts when specialized backup is needed
+
+    - trigger: advanced-elicitation
+      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

@@ -312,7 +312,7 @@ bool FMemoryLeakTest::RunTest(const FString& Parameters)
     {
         UObject* Obj = NewObject<UMyObject>();
         // ... use object
-        Obj->MarkPendingKill();
+        Obj->MarkAsGarbage();  // UE5 API (was MarkPendingKill in UE4)
     }
 
     CollectGarbage(GARBAGE_COLLECTION_KEEPFLAGS);
@@ -331,16 +331,18 @@ bool FMemoryLeakTest::RunTest(const FString& Parameters)
 ### Command Line
 
 ```bash
-# Run all tests
-UE4Editor.exe MyGame -ExecCmds="Automation RunTests Now" -unattended -nopause
+# Run all tests (UE5)
+UnrealEditor.exe MyGame -ExecCmds="Automation RunTests Now" -unattended -nopause
 
 # Run specific test
-UE4Editor.exe MyGame -ExecCmds="Automation RunTests MyGame.Combat" -unattended
+UnrealEditor.exe MyGame -ExecCmds="Automation RunTests MyGame.Combat" -unattended
 
 # Run with report
-UE4Editor.exe MyGame \
+UnrealEditor.exe MyGame \
   -ExecCmds="Automation RunTests Now; Automation ReportResults" \
   -ReportOutputPath=TestResults.xml
+
+# Note: For UE4, use UE4Editor.exe instead of UnrealEditor.exe
 ```
 
 ### GitHub Actions
@@ -351,7 +353,8 @@ test:
   steps:
     - name: Run Tests
       run: |
-        & "$env:UE_ROOT/Engine/Binaries/Win64/UE4Editor-Cmd.exe" `
+        # UE5: UnrealEditor-Cmd.exe, UE4: UE4Editor-Cmd.exe
+        & "$env:UE_ROOT/Engine/Binaries/Win64/UnrealEditor-Cmd.exe" `
           "${{ github.workspace }}/MyGame.uproject" `
           -ExecCmds="Automation RunTests Now" `
           -unattended -nopause -nullrhi

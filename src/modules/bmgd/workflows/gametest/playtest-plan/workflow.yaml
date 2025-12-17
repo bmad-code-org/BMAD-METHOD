@@ -23,6 +23,18 @@ variables:
   session_duration: 60 # minutes
   participant_count: 5
 
+# Smart input file references - for understanding game mechanics to test
+input_file_patterns:
+  gdd:
+    description: "Game Design Document for mechanics to validate"
+    whole: "{output_folder}/*gdd*.md"
+    sharded: "{output_folder}/*gdd*/*.md"
+    load_strategy: "FULL_LOAD"
+  game_brief:
+    description: "Game Brief for understanding core pillars"
+    whole: "{output_folder}/*brief*.md"
+    load_strategy: "FULL_LOAD"
+
 # Output configuration
 default_output_file: "{output_folder}/playtest-plan.md"
 

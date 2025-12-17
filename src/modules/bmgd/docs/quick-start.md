@@ -76,11 +76,11 @@ BMGD follows four game development phases:
 **Workflows:**
 
 - `sprint-planning` - Plan and track sprints
-- `create-story-draft` - Create implementable stories
+- `sprint-status` - View progress and get recommendations
+- `create-story` - Create implementable stories
 - `dev-story` - Implement stories
 - `code-review` - Quality assurance
-- `story-done` - Complete stories
-- `epic-retrospective` - Learn and improve
+- `retrospective` - Learn and improve after epics
 
 **Output:** Working game code
 
@@ -154,7 +154,7 @@ Agent: [Sets up sprint tracking and epic management]
 
 ## Choosing Your Agent
 
-BMGD provides four specialized agents:
+BMGD provides six specialized agents:
 
 | Agent                 | Icon | When to Use                               |
 | --------------------- | ---- | ----------------------------------------- |
@@ -162,6 +162,8 @@ BMGD provides four specialized agents:
 | **Game Architect**    | 🏛️   | Architecture, technical decisions         |
 | **Game Developer**    | 🕹️   | Implementation, code reviews              |
 | **Game Scrum Master** | 🎯   | Sprint planning, story management         |
+| **Game QA**           | 🧪   | Test framework, test design, automation   |
+| **Game Solo Dev**     | 🎮   | Quick prototyping, indie development      |
 
 ### Typical Flow
 
@@ -191,13 +193,12 @@ BMGD provides four specialized agents:
 ### Phase 4: Production
 
 - `sprint-planning` - Plan sprints
-- `epic-tech-context` - Create Epic Tech Spec
+- `sprint-status` - View progress and recommendations
 - `create-story` - Create story
-- `story-context` - Generate story context
 - `dev-story` - Implement story
 - `code-review` - Review code
-- `story-done` - Complete story
-- `epic-retrospective` - Team retrospective
+- `retrospective` - Team retrospective
+- `correct-course` - Handle sprint changes
 
 ### Quick-Flow (Fast-Track)
 

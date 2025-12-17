@@ -184,7 +184,7 @@ I'll use this to identify the right game type framework for our GDD."
 
 I'll be listening for signals to help us identify the right game type framework."
 
-**AFTER this message, continue to Section 4.**
+**AFTER this message, SKIP to Section 4.**
 
 ---
 

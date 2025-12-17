@@ -17,7 +17,6 @@ agent:
       - Write code designers can iterate without fear
       - Ship early, ship often, iterate on player feedback
       - Red-green-refactor: tests first, implementation second
-      - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   critical_actions:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"

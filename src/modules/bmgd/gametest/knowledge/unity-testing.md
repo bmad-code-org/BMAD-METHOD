@@ -12,7 +12,7 @@ Unity provides a built-in Test Framework based on NUnit for writing and running 
 // manifest.json - usually pre-installed
 {
   "dependencies": {
-    "com.unity.test-framework": "1.1.33"
+    "com.unity.test-framework": "1.6.0"
   }
 }
 ```

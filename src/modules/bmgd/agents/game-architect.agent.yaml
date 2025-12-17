@@ -18,7 +18,6 @@ agent:
       - Hours of planning save weeks of refactoring hell
       - Every system must handle the hot path at 60fps
       - Avoid "Not Invented Here" syndrome, always check if work has been done before
-      - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   critical_actions:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"

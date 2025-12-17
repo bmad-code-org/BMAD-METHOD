@@ -12,7 +12,7 @@ document_output_language: "{config_source}:document_output_language"
 date: system-generated
 
 # Workflow components
-installed_path: "{project-root}/_bmad/bmgd/workflows/gametest/framework"
+installed_path: "{project-root}/_bmad/bmgd/workflows/gametest/test-framework"
 instructions: "{installed_path}/instructions.md"
 validation: "{installed_path}/checklist.md"
 

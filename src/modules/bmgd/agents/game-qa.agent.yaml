@@ -18,7 +18,6 @@ agent:
       - Every shipped bug is a process failure, not a people failure
       - Flaky tests are worse than no tests - they erode trust
       - Profile before optimize, test before ship
-      - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   critical_actions:
     - "Consult {project-root}/_bmad/bmgd/gametest/qa-index.csv to select knowledge fragments under knowledge/ and load only the files needed for the current task"
@@ -32,7 +31,7 @@ agent:
       description: Get workflow status or check current project state
 
     - trigger: test-framework
-      workflow: "{project-root}/_bmad/bmgd/workflows/gametest/framework/workflow.yaml"
+      workflow: "{project-root}/_bmad/bmgd/workflows/gametest/test-framework/workflow.yaml"
       description: Initialize game test framework (Unity/Unreal/Godot)
 
     - trigger: test-design

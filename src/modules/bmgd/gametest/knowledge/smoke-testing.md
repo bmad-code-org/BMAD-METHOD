@@ -125,6 +125,8 @@ TEST: Settings Persist
 ```csharp
 using System.Collections;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.TestTools;
 using UnityEngine.SceneManagement;
 
@@ -256,6 +258,7 @@ bool FPlayerMovementTest::RunTest(const FString& Parameters)
 
     // Wait for physics
     ADD_LATENT_AUTOMATION_COMMAND(FWaitForSeconds(0.5f));
+    // Note: FVerifyPlayerMoved is a custom latent command - implement to verify player position changed
     ADD_LATENT_AUTOMATION_COMMAND(FVerifyPlayerMoved(StartPos));
 
     return true;

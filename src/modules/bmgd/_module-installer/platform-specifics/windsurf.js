@@ -1,5 +1,3 @@
-const chalk = require('chalk');
-
 /**
  * BMGD Platform-specific installer for Windsurf
  *
@@ -10,21 +8,11 @@ const chalk = require('chalk');
  * @param {Object} options.platformInfo - Platform metadata from global config
  * @returns {Promise<boolean>} - Success status
  */
-async function install(options) {
-  const { logger, platformInfo } = options;
-  // projectRoot and config available for future use
+async function install() {
+  // TODO: Add Windsurf specific BMGD configurations here
 
-  try {
-    const platformName = platformInfo ? platformInfo.name : 'Windsurf';
-    logger.log(chalk.cyan(`  BMGD-${platformName} Specifics installed`));
-
-    // Add Windsurf specific BMGD configurations here
-
-    return true;
-  } catch (error) {
-    logger.error(chalk.red(`Error installing BMGD Windsurf specifics: ${error.message}`));
-    return false;
-  }
+  // Currently a stub - no platform-specific configuration needed yet
+  return true;
 }
 
 module.exports = { install };

@@ -15,7 +15,7 @@ project_name:
   default: "{directory_name}"
   result: "{value}"
 
-user_skill_level:
+game_dev_experience:
   prompt:
     - "What is your game development experience level?"
     - "This affects how agents explain concepts in chat."

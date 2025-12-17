@@ -56,7 +56,7 @@ Validate workflow readiness, check for existing narrative document, load GDD con
 
 **Search for workflow status file:**
 
-Check if `{output_folder}/bmm-workflow-status.yaml` exists.
+Check if `{output_folder}/bmgd-workflow-status.yaml` exists.
 
 **If status file found:**
 
