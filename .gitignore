@@ -29,6 +29,7 @@ Thumbs.db
 .prettierrc
 
 # IDE and editor configs
+.idea/
 .windsurf/
 .trae/
 _bmad*/.cursor/
