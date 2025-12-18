@@ -1545,7 +1545,7 @@ class UI {
       }
     } else if (options.modules) {
       // Module-based installation
-      if (options.modules === 'all') {
+      if (options.modules === 'all' || (Array.isArray(options.modules) && options.modules.includes('all'))) {
         selectedModules = ['bmm', 'bmbb', 'cis', 'bmgd'];
       } else if (Array.isArray(options.modules)) {
         selectedModules = options.modules.filter((m) => m !== 'core');
@@ -1554,7 +1554,7 @@ class UI {
       // Profile-based installation
       const { getProfile } = require('../installers/lib/profiles/definitions');
       const profile = getProfile(options.profile);
-      if (profile.modules === 'all') {
+      if (profile.modules === 'all' || (Array.isArray(profile.modules) && profile.modules.includes('all'))) {
         selectedModules = ['bmm', 'bmbb', 'cis', 'bmgd'];
       } else if (Array.isArray(profile.modules)) {
         selectedModules = profile.modules.filter((m) => m !== 'core');
