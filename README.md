@@ -231,6 +231,8 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 **Trademarks:** BMad™ and BMAD-METHOD™ are trademarks of BMad Code, LLC.
 
+Supported by:&nbsp;&nbsp;<a href="https://m.do.co/c/00f11bd932bb"><img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" height="24" alt="DigitalOcean" style="vertical-align: middle;"></a>
+
 ---
 
 <p align="center">
