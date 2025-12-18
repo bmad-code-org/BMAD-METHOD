@@ -121,12 +121,7 @@ function parseOptions(cliOptions) {
       throw new Error(`Unknown profile: ${normalized.profile}. Valid profiles: minimal, full, solo-dev, team`);
     }
 
-    // Profile provides defaults, but CLI options override
-    normalized.profileModules = profile.modules;
-    normalized.profileAgents = profile.agents;
-    normalized.profileWorkflows = profile.workflows;
-
-    // If no explicit modules/agents/workflows, use profile values
+    // Use profile values as defaults when CLI options not provided
     // Ensure strings like 'all' are wrapped in arrays for consistency
     if (!normalized.modules) {
       normalized.modules = Array.isArray(profile.modules) ? profile.modules : [profile.modules];
