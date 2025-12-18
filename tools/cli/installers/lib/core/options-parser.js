@@ -127,14 +127,15 @@ function parseOptions(cliOptions) {
     normalized.profileWorkflows = profile.workflows;
 
     // If no explicit modules/agents/workflows, use profile values
+    // Ensure strings like 'all' are wrapped in arrays for consistency
     if (!normalized.modules) {
-      normalized.modules = profile.modules;
+      normalized.modules = Array.isArray(profile.modules) ? profile.modules : [profile.modules];
     }
     if (!normalized.agents) {
-      normalized.agents = profile.agents;
+      normalized.agents = Array.isArray(profile.agents) ? profile.agents : [profile.agents];
     }
     if (!normalized.workflows) {
-      normalized.workflows = profile.workflows;
+      normalized.workflows = Array.isArray(profile.workflows) ? profile.workflows : [profile.workflows];
     }
   }
 
