@@ -885,22 +885,37 @@ class ConfigCollector {
       // Resolution order: CLI → ENV → existing → default → hardcoded
       if (moduleName === 'core') {
         // Core module has special mappings
-        if (key === 'user_name') {
-          value = resolveValue(cliOptions.userName, null, envDefaults.userName);
-        } else if (key === 'user_skill_level') {
-          value = resolveValue(cliOptions.skillLevel, null, item.default || 'intermediate');
-        } else if (key === 'communication_language') {
-          value = resolveValue(
-            cliOptions.communicationLanguage,
-            null,
-            envDefaults.communicationLanguage,
-          );
-        } else if (key === 'document_output_language') {
-          value = resolveValue(cliOptions.documentLanguage, null, envDefaults.documentLanguage);
-        } else if (key === 'output_folder') {
-          value = resolveValue(cliOptions.outputFolder, null, item.default);
-        } else if (item.default !== undefined) {
-          value = item.default;
+        switch (key) {
+          case 'user_name': {
+            value = resolveValue(cliOptions.userName, null, envDefaults.userName);
+
+            break;
+          }
+          case 'user_skill_level': {
+            value = resolveValue(cliOptions.skillLevel, null, item.default || 'intermediate');
+
+            break;
+          }
+          case 'communication_language': {
+            value = resolveValue(cliOptions.communicationLanguage, null, envDefaults.communicationLanguage);
+
+            break;
+          }
+          case 'document_output_language': {
+            value = resolveValue(cliOptions.documentLanguage, null, envDefaults.documentLanguage);
+
+            break;
+          }
+          case 'output_folder': {
+            value = resolveValue(cliOptions.outputFolder, null, item.default);
+
+            break;
+          }
+          default: {
+            if (item.default !== undefined) {
+              value = item.default;
+            }
+          }
         }
       } else {
         // For other modules, use defaults

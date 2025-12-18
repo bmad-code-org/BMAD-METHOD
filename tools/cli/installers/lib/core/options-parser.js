@@ -58,9 +58,9 @@ function separateModifiers(list) {
 
   for (const item of list) {
     if (item.startsWith('+')) {
-      result.add.push(item.substring(1));
+      result.add.push(item.slice(1));
     } else if (item.startsWith('-')) {
-      result.remove.push(item.substring(1));
+      result.remove.push(item.slice(1));
     } else {
       result.base.push(item);
     }
@@ -118,9 +118,7 @@ function parseOptions(cliOptions) {
   if (normalized.profile) {
     const profile = getProfile(normalized.profile);
     if (!profile) {
-      throw new Error(
-        `Unknown profile: ${normalized.profile}. Valid profiles: minimal, full, solo-dev, team`,
-      );
+      throw new Error(`Unknown profile: ${normalized.profile}. Valid profiles: minimal, full, solo-dev, team`);
     }
 
     // Profile provides defaults, but CLI options override
@@ -136,9 +134,7 @@ function parseOptions(cliOptions) {
       normalized.agents = Array.isArray(profile.agents) ? profile.agents : profile.agents;
     }
     if (!normalized.workflows) {
-      normalized.workflows = Array.isArray(profile.workflows)
-        ? profile.workflows
-        : profile.workflows;
+      normalized.workflows = Array.isArray(profile.workflows) ? profile.workflows : profile.workflows;
     }
   }
 
@@ -157,9 +153,7 @@ function validateOptions(options) {
   if (options.skillLevel) {
     const validLevels = ['beginner', 'intermediate', 'advanced'];
     if (!validLevels.includes(options.skillLevel.toLowerCase())) {
-      errors.push(
-        `Invalid skill level: ${options.skillLevel}. Valid values: beginner, intermediate, advanced`,
-      );
+      errors.push(`Invalid skill level: ${options.skillLevel}. Valid values: beginner, intermediate, advanced`);
     }
   }
 
@@ -167,9 +161,7 @@ function validateOptions(options) {
   if (options.profile) {
     const validProfiles = ['minimal', 'full', 'solo-dev', 'team'];
     if (!validProfiles.includes(options.profile.toLowerCase())) {
-      errors.push(
-        `Invalid profile: ${options.profile}. Valid values: minimal, full, solo-dev, team`,
-      );
+      errors.push(`Invalid profile: ${options.profile}. Valid values: minimal, full, solo-dev, team`);
     }
   }
 

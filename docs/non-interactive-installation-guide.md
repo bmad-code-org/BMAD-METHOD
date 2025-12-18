@@ -21,6 +21,7 @@ npx bmad-method@alpha install -y
 ```
 
 This installs BMAD with:
+
 - Default user name from system (USER environment variable)
 - Intermediate skill level
 - Default output folder (`_bmad-output`)
@@ -49,10 +50,11 @@ cat _bmad/bmm/config.yaml
 ```
 
 Example output:
+
 ```yaml
 user_name: Alice
 user_skill_level: intermediate
-output_folder: "{project-root}/_bmad-output"
+output_folder: '{project-root}/_bmad-output'
 communication_language: English
 ```
 
@@ -169,29 +171,29 @@ npx bmad-method@alpha install -y \
 
 ### Core Options
 
-| Option | Description | Default | Example |
-|--------|-------------|---------|---------|
-| `-y, --non-interactive` | Skip all prompts | `false` | `install -y` |
-| `--user-name <name>` | User name | System user | `--user-name=Alice` |
-| `--skill-level <level>` | Skill level | `intermediate` | `--skill-level=advanced` |
-| `--output-folder <path>` | Output folder | `_bmad-output` | `--output-folder=.artifacts` |
-| `--communication-language <lang>` | Communication language | `English` | `--communication-language=Spanish` |
-| `--document-language <lang>` | Document language | `English` | `--document-language=French` |
+| Option                            | Description            | Default        | Example                            |
+| --------------------------------- | ---------------------- | -------------- | ---------------------------------- |
+| `-y, --non-interactive`           | Skip all prompts       | `false`        | `install -y`                       |
+| `--user-name <name>`              | User name              | System user    | `--user-name=Alice`                |
+| `--skill-level <level>`           | Skill level            | `intermediate` | `--skill-level=advanced`           |
+| `--output-folder <path>`          | Output folder          | `_bmad-output` | `--output-folder=.artifacts`       |
+| `--communication-language <lang>` | Communication language | `English`      | `--communication-language=Spanish` |
+| `--document-language <lang>`      | Document language      | `English`      | `--document-language=French`       |
 
 ### Module & Selection Options
 
-| Option | Description | Example |
-|--------|-------------|---------|
-| `--modules <list>` | Comma-separated modules | `--modules=core,bmm,bmbb` |
-| `--agents <list>` | Comma-separated agents | `--agents=dev,architect,pm` |
+| Option               | Description               | Example                            |
+| -------------------- | ------------------------- | ---------------------------------- |
+| `--modules <list>`   | Comma-separated modules   | `--modules=core,bmm,bmbb`          |
+| `--agents <list>`    | Comma-separated agents    | `--agents=dev,architect,pm`        |
 | `--workflows <list>` | Comma-separated workflows | `--workflows=create-prd,dev-story` |
 
 ### Team & Profile Options
 
-| Option | Description | Example |
-|--------|-------------|---------|
-| `--team <name>` | Install predefined team | `--team=fullstack` |
-| `--profile <name>` | Installation profile | `--profile=minimal` |
+| Option             | Description             | Example             |
+| ------------------ | ----------------------- | ------------------- |
+| `--team <name>`    | Install predefined team | `--team=fullstack`  |
+| `--profile <name>` | Installation profile    | `--profile=minimal` |
 
 ## Team-Based Installation
 
@@ -206,6 +208,7 @@ npx bmad-method@alpha install -y --team=fullstack
 ```
 
 **Includes:**
+
 - Agents: analyst, architect, pm, sm, ux-designer
 - Module: BMM
 
@@ -218,6 +221,7 @@ npx bmad-method@alpha install -y --team=gamedev
 ```
 
 **Includes:**
+
 - Agents: game-designer, game-dev, game-architect, game-scrum-master
 - Workflows: brainstorm-game, game-brief, gdd, narrative
 - Module: BMGD (Game Development)
@@ -252,6 +256,7 @@ npx bmad-method@alpha install -y --profile=minimal
 ```
 
 **Includes:**
+
 - Modules: core
 - Agents: dev
 - Workflows: create-tech-spec, quick-dev
@@ -265,6 +270,7 @@ npx bmad-method@alpha install -y --profile=solo-dev
 ```
 
 **Includes:**
+
 - Modules: core, bmm
 - Agents: dev, architect, analyst, tech-writer
 - Workflows: create-tech-spec, quick-dev, dev-story, code-review, create-prd, create-architecture
@@ -278,6 +284,7 @@ npx bmad-method@alpha install -y --profile=full
 ```
 
 **Includes:**
+
 - All modules
 - All agents
 - All workflows
@@ -291,6 +298,7 @@ npx bmad-method@alpha install -y --profile=team
 ```
 
 **Includes:**
+
 - Modules: core, bmm
 - Agents: dev, architect, pm, sm, analyst, ux-designer
 - Workflows: create-product-brief, create-prd, create-architecture, create-epics-and-stories, sprint-planning, create-story, dev-story, code-review, workflow-init
@@ -437,4 +445,4 @@ fi
 ## Feedback
 
 Found an issue or have a suggestion? Please report it at:
-https://github.com/bmad-code-org/BMAD-METHOD/issues
+<https://github.com/bmad-code-org/BMAD-METHOD/issues>

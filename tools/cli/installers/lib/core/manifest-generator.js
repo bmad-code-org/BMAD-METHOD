@@ -161,7 +161,7 @@ class ManifestGenerator {
 
         // Wildcard matching: create-* matches create-prd, create-tech-spec, etc.
         if (pattern.includes('*')) {
-          const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+          const regex = new RegExp('^' + pattern.replaceAll('*', '.*') + '$');
           return regex.test(workflowName);
         }
 
@@ -318,7 +318,7 @@ class ManifestGenerator {
 
         // Wildcard matching: dev* matches dev, dev-story, etc.
         if (pattern.includes('*')) {
-          const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+          const regex = new RegExp('^' + pattern.replaceAll('*', '.*') + '$');
           return regex.test(agentName);
         }
 

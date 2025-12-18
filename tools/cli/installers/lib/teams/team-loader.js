@@ -49,7 +49,7 @@ async function discoverTeams(projectRoot) {
     }
 
     return teams;
-  } catch (error) {
+  } catch {
     // If glob fails, return empty array
     return [];
   }
@@ -75,9 +75,7 @@ async function loadTeam(teamName, projectRoot) {
   if (!team) {
     // Provide helpful error with suggestions
     const availableTeams = teams.map((t) => t.name).join(', ');
-    throw new Error(
-      `Team '${teamName}' not found. Available teams: ${availableTeams || 'none'}`,
-    );
+    throw new Error(`Team '${teamName}' not found. Available teams: ${availableTeams || 'none'}`);
   }
 
   // Load full team definition
@@ -130,12 +128,12 @@ function applyTeamModifiers(team, agentModifiers = [], workflowModifiers = []) {
   // Parse and apply agent modifiers
   for (const modifier of agentModifiers) {
     if (modifier.startsWith('+')) {
-      const agent = modifier.substring(1);
+      const agent = modifier.slice(1);
       if (!result.agents.includes(agent)) {
         result.agents.push(agent);
       }
     } else if (modifier.startsWith('-')) {
-      const agent = modifier.substring(1);
+      const agent = modifier.slice(1);
       result.agents = result.agents.filter((a) => a !== agent);
     }
   }
@@ -143,12 +141,12 @@ function applyTeamModifiers(team, agentModifiers = [], workflowModifiers = []) {
   // Parse and apply workflow modifiers
   for (const modifier of workflowModifiers) {
     if (modifier.startsWith('+')) {
-      const workflow = modifier.substring(1);
+      const workflow = modifier.slice(1);
       if (!result.workflows.includes(workflow)) {
         result.workflows.push(workflow);
       }
     } else if (modifier.startsWith('-')) {
-      const workflow = modifier.substring(1);
+      const workflow = modifier.slice(1);
       result.workflows = result.workflows.filter((w) => w !== workflow);
     }
   }

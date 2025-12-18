@@ -28,14 +28,7 @@ const PROFILES = {
     description: 'Single developer setup - dev tools and planning workflows',
     modules: ['core', 'bmm'],
     agents: ['dev', 'architect', 'analyst', 'tech-writer'],
-    workflows: [
-      'create-tech-spec',
-      'quick-dev',
-      'dev-story',
-      'code-review',
-      'create-prd',
-      'create-architecture',
-    ],
+    workflows: ['create-tech-spec', 'quick-dev', 'dev-story', 'code-review', 'create-prd', 'create-architecture'],
   },
 
   team: {

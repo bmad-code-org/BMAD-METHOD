@@ -26,7 +26,7 @@ function getUserName() {
     if (userInfo.username) {
       return userInfo.username;
     }
-  } catch (error) {
+  } catch {
     // os.userInfo() can fail in some environments
   }
 
