@@ -131,7 +131,17 @@ platform: '{{platform}}'
 ---
 ````
 
-### 4. Present Completion Summary
+### 4. Update Workflow Status
+
+**If not in standalone mode:**
+
+Load `{output_folder}/bmgd-workflow-status.yaml` and:
+
+- Update `create-architecture` status to the output file path
+- Preserve all comments and structure
+- Determine next workflow in sequence
+
+### 5. Present Completion Summary
 
 "**Architecture Complete!**
 
@@ -160,7 +170,7 @@ platform: '{{platform}}'
 
 Do you want to review or adjust anything before we finalize?"
 
-### 5. Handle Review Requests
+### 6. Handle Review Requests
 
 **If user wants to review:**
 
@@ -179,7 +189,7 @@ Or type 'all' to see the complete document."
 
 **Show requested section and allow edits.**
 
-### 6. Present Next Steps Menu
+### 7. Present Next Steps Menu
 
 **After user confirms completion:**
 
@@ -204,7 +214,7 @@ Or type 'all' to see the complete document."
 2. Proceed to Epic creation workflow
 3. Exit workflow"
 
-### 7. Handle User Selection
+### 8. Handle User Selection
 
 Based on user choice:
 
@@ -224,7 +234,7 @@ Based on user choice:
 - Confirm document is saved and complete
 - Exit workflow gracefully
 
-### 8. Provide Handoff Guidance
+### 9. Provide Handoff Guidance
 
 **For Epic Creation handoff:**
 
@@ -270,6 +280,7 @@ This is the final step. Ensure:
 - Development setup is complete
 - Document status updated to 'complete'
 - Frontmatter shows all steps completed
+- Workflow status updated (if tracking)
 - User has clear next steps
 - Document saved and ready for AI agent consumption
 
@@ -278,6 +289,7 @@ This is the final step. Ensure:
 - Missing executive summary
 - Incomplete development setup
 - Frontmatter not updated
+- Status not updated when tracking
 - No clear next steps provided
 - User left without actionable guidance
 
