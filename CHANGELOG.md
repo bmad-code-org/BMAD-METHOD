@@ -1,5 +1,25 @@
 # Changelog
 
+## [6.0.0-alpha.19]
+
+**Release: December 18, 2025**
+
+### 🐛 Bug Fixes
+
+**Installer Stability:**
+
+- **Fixed \_bmad Folder Stutter**: Resolved issue with duplicate \_bmad folder creation when applying agent custom files
+- **Cleaner Installation**: Removed unnecessary backup file that was causing bloat in the installer
+- **Streamlined Agent Customization**: Fixed path handling for agent custom files to prevent folder duplication
+
+### 📊 Statistics
+
+- **3 files changed** with critical fix
+- **3,688 lines removed** by eliminating backup files
+- **Improved installer performance** and stability
+
+---
+
 ## [6.0.0-alpha.18]
 
 **Release: December 18, 2025**

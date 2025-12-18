@@ -12,6 +12,7 @@ outputFile: '{output_folder}/game-architecture.md'
 
 # Handoff References
 epicWorkflow: '{project-root}/_bmad/bmgd/workflows/4-production/epic-workflow/workflow.yaml'
+projectContextWorkflow: '{project-root}/_bmad/bmgd/workflows/3-technical/generate-project-context/workflow.md'
 ---
 
 # Step 9: Completion
@@ -131,7 +132,17 @@ platform: '{{platform}}'
 ---
 ````
 
-### 4. Present Completion Summary
+### 4. Update Workflow Status
+
+**If not in standalone mode:**
+
+Load `{output_folder}/bmgd-workflow-status.yaml` and:
+
+- Update `create-architecture` status to the output file path
+- Preserve all comments and structure
+- Determine next workflow in sequence
+
+### 5. Present Completion Summary
 
 "**Architecture Complete!**
 
@@ -158,9 +169,50 @@ platform: '{{platform}}'
 
 **Document saved to:** `{outputFile}`
 
-Do you want to review or adjust anything before we finalize?"
+Do you want to review or adjust anything before we finalize?
 
-### 5. Handle Review Requests
+**Optional Enhancement: Project Context File**
+
+Would you like to create a `project-context.md` file? This is a concise, optimized guide for AI agents that captures:
+
+- Critical engine-specific rules they might miss
+- Specific patterns and conventions for your game project
+- Performance and optimization requirements
+- Anti-patterns and edge cases to avoid
+
+{if_existing_project_context}
+I noticed you already have a project context file. Would you like to update it with your new architectural decisions?
+{else}
+This file helps ensure AI agents implement game code consistently with your project's unique requirements and patterns.
+{/if_existing_project_context}
+
+**Create/Update project context?** [Y/N]"
+
+### 6. Handle Project Context Creation Choice
+
+If user responds 'Y' or 'yes' to creating/updating project context:
+
+"Excellent choice! Let me launch the Generate Project Context workflow to create a comprehensive guide for AI agents.
+
+This will help ensure consistent implementation by capturing:
+
+- Engine-specific patterns and rules
+- Performance and optimization conventions from your architecture
+- Testing and quality standards
+- Anti-patterns to avoid
+
+The workflow will collaborate with you to create an optimized `project-context.md` file that AI agents will read before implementing any game code."
+
+**Execute the Generate Project Context workflow:**
+
+- Load and execute: `{projectContextWorkflow}`
+- The workflow will handle discovery, generation, and completion of the project context file
+- After completion, return here for final handoff
+
+If user responds 'N' or 'no':
+"Understood! Your architecture is complete and ready for implementation. You can always create a project context file later using the Generate Project Context workflow if needed."
+
+### 7. Handle Review Requests
 
 **If user wants to review:**
 
@@ -179,7 +231,7 @@ Or type 'all' to see the complete document."
 
 **Show requested section and allow edits.**
 
-### 6. Present Next Steps Menu
+### 8. Present Next Steps Menu
 
 **After user confirms completion:**
 
@@ -204,7 +256,7 @@ Or type 'all' to see the complete document."
 2. Proceed to Epic creation workflow
 3. Exit workflow"
 
-### 7. Handle User Selection
+### 9. Handle User Selection
 
 Based on user choice:
 
@@ -224,7 +276,7 @@ Based on user choice:
 - Confirm document is saved and complete
 - Exit workflow gracefully
 
-### 8. Provide Handoff Guidance
+### 10. Provide Handoff Guidance
 
 **For Epic Creation handoff:**
 
@@ -270,6 +322,7 @@ This is the final step. Ensure:
 - Development setup is complete
 - Document status updated to 'complete'
 - Frontmatter shows all steps completed
+- Workflow status updated (if tracking)
 - User has clear next steps
 - Document saved and ready for AI agent consumption
 
@@ -278,6 +331,7 @@ This is the final step. Ensure:
 - Missing executive summary
 - Incomplete development setup
 - Frontmatter not updated
+- Status not updated when tracking
 - No clear next steps provided
 - User left without actionable guidance
 

@@ -731,7 +731,7 @@ class ModuleManager {
   async compileModuleAgents(sourcePath, targetPath, moduleName, bmadDir, installer = null) {
     const sourceAgentsPath = path.join(sourcePath, 'agents');
     const targetAgentsPath = path.join(targetPath, 'agents');
-    const cfgAgentsDir = path.join(bmadDir, '_bmad', '_config', 'agents');
+    const cfgAgentsDir = path.join(bmadDir, '_config', 'agents');
 
     // Check if agents directory exists in source
     if (!(await fs.pathExists(sourceAgentsPath))) {
