@@ -33,6 +33,10 @@ agent:
       exec: "{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture/workflow.md"
       description: Produce a Scale Adaptive Game Architecture
 
+    - trigger: generate-project-context
+      exec: "{project-root}/_bmad/bmgd/workflows/3-technical/generate-project-context/workflow.md"
+      description: Create optimized project-context.md for AI agent consistency
+
     - trigger: correct-course
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/correct-course/workflow.yaml"
       description: Course Correction Analysis (when implementation is off-track)
