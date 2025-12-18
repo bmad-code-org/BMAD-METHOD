@@ -46,17 +46,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ---
 
-## CHECKPOINT HANDLERS
-
-At any checkpoint throughout this workflow, the following options are available:
-
-- **[a] Advanced Elicitation** - Invoke `{advanced_elicitation}` for deeper analysis using First Principles, Pre-mortem, or other techniques
-- **[p] Party Mode** - Invoke `{party_mode_exec}` to bring in multiple agent perspectives for complex decisions
-
-These are optional power tools - use when stuck, facing ambiguity, or wanting diverse input.
-
----
-
 ## EXECUTION
 
 Load and execute `steps/step-01-mode-detection.md` to begin the workflow.
