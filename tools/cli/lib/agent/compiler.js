@@ -29,20 +29,44 @@ function escapeXml(text) {
  * Build frontmatter for agent
  * @param {Object} metadata - Agent metadata
  * @param {string} agentName - Final agent name
+ * @param {Object} ttsData - TTS data (intro and voices)
  * @returns {string} YAML frontmatter
  */
-function buildFrontmatter(metadata, agentName) {
+function buildFrontmatter(metadata, agentName, ttsData = null) {
   const nameFromFile = agentName.replaceAll('-', ' ');
   const description = metadata.title || 'BMAD Agent';
 
-  return `---
+  let frontmatter = `---
 name: "${nameFromFile}"
-description: "${description}"
----
+description: "${description}"`;
+
+  // Include TTS data if available
+  if (ttsData) {
+    frontmatter += `\ntts:`;
+
+    if (ttsData.intro) {
+      // Escape double quotes in intro
+      const escapedIntro = ttsData.intro.replaceAll('"', String.raw`\"`);
+      frontmatter += `\n  intro: "${escapedIntro}"`;
+    }
+
+    if (ttsData.voices && Array.isArray(ttsData.voices)) {
+      frontmatter += `\n  voices:`;
+      for (const voice of ttsData.voices) {
+        frontmatter += `\n    -`;
+        if (voice.piper) frontmatter += ` piper: "${voice.piper}"`;
+        if (voice.mac) frontmatter += ` mac: "${voice.mac}"`;
+      }
+    }
+  }
+
+  frontmatter += `\n---
 
 You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
 
 `;
+
+  return frontmatter;
 }
 
 /**
@@ -393,8 +417,11 @@ function compileToXml(agentYaml, agentName = '', targetPath = '') {
 
   let xml = '';
 
-  // Build frontmatter
-  xml += buildFrontmatter(meta, agentName || meta.name || 'agent');
+  // Extract TTS data from root level or agent level
+  const ttsData = agentYaml.tts || agent.tts || null;
+
+  // Build frontmatter with TTS data
+  xml += buildFrontmatter(meta, agentName || meta.name || 'agent', ttsData);
 
   // Start code fence
   xml += '```xml\n';
