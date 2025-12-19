@@ -43,7 +43,7 @@ agent:
       triggers:
         - party-mode:
             - input: SPM or fuzzy match start party mode
-            - route: "{project-root}/_bmad/core/workflows/edit-agent/workflow.md"
+            - route: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
             - data: what is being discussed or suggested with the command, along with custom party custom agents if specified
             - type: exec
         - expert-chat:

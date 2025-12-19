@@ -334,18 +334,8 @@
 
       **Next Steps:**
       1. Review the comprehensive story in {{story_file}}
-      2. **Optional Quality Competition:** Run the scrum masters `*validate-create-story` to have a fresh LLM systematically review and
-      improve the story context
-      3. Run dev agents `dev-story` for optimized implementation
-      4. Run `code-review` when complete (auto-marks done)
-
-      **Quality Competition Option:** The `*validate-create-story` command runs the story context through an independent LLM in fresh
-      context that will:
-      - Systematically re-analyze all source documents
-      - Identify any misses, omissions, or improvements
-      - Compete to create a more comprehensive story context
-      - Present findings interactively for your approval
-      - Apply improvements to create the ultimate developer implementation guide
+      2. Run dev agents `dev-story` for optimized implementation
+      3. Run `code-review` when complete (auto-marks done)
 
       **The developer now has everything needed for flawless implementation!**
     </output>

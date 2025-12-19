@@ -17,7 +17,7 @@
       <action>Use {{story_path}} directly</action>
       <action>Read COMPLETE story file</action>
       <action>Extract story_key from filename or metadata</action>
-      <goto> anchor with id task_check</goto>
+      <goto anchor="task_check" />
     </check>
 
     <!-- Sprint-based story discovery -->
