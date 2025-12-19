@@ -197,7 +197,7 @@ Choose a workflow to start:
 ## What's Next?
 
 ### 🎓 **Learn WDS Concepts**
-[Tutorial Guide](../01-tutorial/00-TUTORIAL-GUIDE.md) - Deep dive into why-based design
+[Course](../course/00-course-overview.md) - Deep dive into WDS methodology
 
 ### 🚀 **Start Your First Project**
 [Quick Start](quick-start.md) - 5-minute walkthrough

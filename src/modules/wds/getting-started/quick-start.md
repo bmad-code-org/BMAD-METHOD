@@ -110,7 +110,7 @@ You created **why-based specifications** in 5 minutes:
 
 ### Learn the Concepts
 
-[Tutorial](../01-tutorial/00-TUTORIAL-GUIDE.md) - Deep dive into WDS philosophy
+[Course](../course/00-course-overview.md) - Deep dive into WDS methodology
 
 ### Start Your Project
 

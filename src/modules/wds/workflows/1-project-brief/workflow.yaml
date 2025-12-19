@@ -26,12 +26,12 @@ installed_path: "{project-root}/{bmad_folder}/wds/workflows/1-project-brief"
 # Route to appropriate workflow based on brief_level
 workflows:
   simplified:
-    instructions: "{installed_path}/simplified/instructions.md"
-    template: "{installed_path}/simplified/simplified-brief.template.md"
+    instructions: "{installed_path}/project-brief/simplified/instructions.md"
+    template: "{installed_path}/project-brief/simplified/simplified-brief.template.md"
   complete:
-    instructions: "{installed_path}/complete/workflow.md"
-    template: "{installed_path}/complete/project-brief.template.md"
-    steps: "{installed_path}/complete/steps"
+    instructions: "{installed_path}/project-brief/complete/workflow.md"
+    template: "{installed_path}/project-brief/complete/project-brief.template.md"
+    steps: "{installed_path}/project-brief/complete/steps"
 
 # Output configuration
 output_file: "{output_folder}/A-Product-Brief/project-brief.md"

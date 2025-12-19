@@ -55,6 +55,6 @@ Load and read full config from {project-root}/{bmad_folder}/wds/config.yaml and 
 
 ### 2. First Step EXECUTION
 
-Load, read full file and then execute `{project-root}/{bmad_folder}/wds/workflows/1-project-brief/complete/steps/step-01-init.md` to begin workflow.
+Load, read full file and then execute `{project-root}/{bmad_folder}/wds/workflows/1-project-brief/project-brief/complete/steps/step-01-init.md` to begin workflow.
 
 **Note:** Alignment & Signoff is now a separate, optional workflow. If you need stakeholder approval before starting, use the alignment & signoff workflow first: `{project-root}/{bmad_folder}/wds/workflows/1-project-brief/alignment-signoff/workflow.md`

@@ -8,7 +8,7 @@
 
 ### 🎓 Learn the Concepts (Recommended First)
 
-**[Tutorial](../01-tutorial/00-TUTORIAL-GUIDE.md)**
+**[Course](../course/00-course-overview.md)**
 
 Deep dive into:
 
@@ -101,14 +101,14 @@ Join the WDS community for:
 
 ## Quick Links
 
-- [Tutorial](../01-tutorial/00-TUTORIAL-GUIDE.md)
+- [Course](../course/00-course-overview.md)
 - [Workflows](../WDS-WORKFLOWS-GUIDE.md)
 - [Modular Architecture](../workflows/4-ux-design/modular-architecture/00-MODULAR-ARCHITECTURE-GUIDE.md)
 - [Why-Based Specifications](../workflows/4-ux-design/WHY-BASED-SPECIFICATIONS.md)
 
 ---
 
-**Ready to dive deeper? Start with the [Tutorial](../01-tutorial/00-TUTORIAL-GUIDE.md)!**
+**Ready to dive deeper? Start with the [Course](../course/00-course-overview.md)!**
 
 ---
 

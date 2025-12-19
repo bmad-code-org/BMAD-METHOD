@@ -7,9 +7,34 @@
 
 ---
 
+## Project Initiation Overview
+
+**Project Initiation consists of**:
+1. **Alignment & Signoff** (optional) - Get stakeholder alignment and secure commitment before starting
+   - Location: `src/modules/wds/workflows/1-project-brief/alignment-signoff/workflow.md`
+   - After alignment acceptance → **Project Initiation Complete** ✅
+   - **Output**: `docs/1-project-brief/pitch.md` (alignment document) - Contains work plan and approach
+2. **Product Brief** - Strategic foundation
+3. **Project Outline** - Plan which phases to include (this workflow)
+
+---
+
 ## Overview
 
 After completing the Product Brief, capture the user's intentions for each WDS phase through individual, focused questions. Each phase gets its own micro-step conversation.
+
+**Important**: If a pitch was created, **reference it** during this conversation. The pitch contains:
+- Work plan (which phases will be used)
+- Practical workflow approach
+- Level of detail needed
+- Handoff approach
+
+**Use the pitch to inform**:
+- Which phases are needed (from Work Plan section)
+- What deliveries are required (from Work Plan and Investment sections)
+- Timeline and approach (from Work Plan section)
+
+**Note**: If a pitch was created and approved, project initiation is already complete. This outline conversation happens after the Product Brief to plan the detailed phases, but should reference the pitch for context.
 
 **Important**:
 
@@ -24,6 +49,16 @@ After completing the Product Brief, capture the user's intentions for each WDS p
 
 **Goal**: Let user know you'll ask about their intentions for different project phases.
 
+**Before starting**: Check if pitch document exists at `docs/1-project-brief/pitch.md`
+
+**If pitch exists**:
+- Read the Work Plan section from the pitch
+- Use it to inform your questions
+- Reference it: "I see in your pitch that you mentioned [work plan details]. Let's use that as a starting point..."
+
+**If no pitch exists**:
+- Proceed with standard questions
+
 **Outcome to capture**: User understands and is ready to continue.
 
 **What NOT to do**:
@@ -31,6 +66,7 @@ After completing the Product Brief, capture the user's intentions for each WDS p
 - Don't ask about methodology (v6 is default)
 - Don't show long lists of options
 - Keep it brief and warm
+- Don't ignore the pitch if it exists - use it as context
 
 ---
 
@@ -38,16 +74,34 @@ After completing the Product Brief, capture the user's intentions for each WDS p
 
 **Goal**: Determine if user needs Trigger Mapping phase.
 
+**Before asking**: Check pitch document for Work Plan section - does it mention Trigger Mapping or user research?
+
 **Context for agent**:
 
 - Critical for customer-facing products
 - Can be skipped for: internal tools, technical products, known users
+- **Focus**: Define value chains that connect business goals to user needs
+
+**What Trigger Mapping defines**:
+
+- **One main value chain** (required):
+  - One business goal
+  - One main user group
+  - A primary user goal
+  - User fear the solution will add value to
+- **Secondary value chains** (optional):
+  - Additional business goals, user groups, user goals, and fears
 
 **Questions to understand**:
 
 - Is this customer-facing or internal?
 - Do you already know your target users?
-- Do you need help defining personas?
+- Do you need help defining value chains (business goals → user groups → user goals → user fears)?
+- Can you identify the main value chain, or do you need help exploring it?
+
+**If pitch mentions work plan**:
+- Reference it: "In your pitch, you mentioned [work plan detail about user research/trigger mapping]. Does that still align with your thinking?"
+- Use pitch context to inform questions
 
 **Outcome to capture**:
 
@@ -56,13 +110,15 @@ phase_2_trigger_mapping:
   active: true/false
   intent: "[User's exact words about this phase]"
   skip_reason: '[If skipping, capture why]'
+  value_chains_approach: 'Main value chain + optional secondary chains'
 ```
 
 **Examples of user answers**:
 
 - "This is an internal tool, we know our users" → active: false
-- "Yes, I need help understanding my customers" → active: true
-- "I have personas already, just need to document them" → active: true
+- "Yes, I need help understanding my customers and defining value chains" → active: true
+- "I have personas already, just need to document the value chains" → active: true
+- "I know the main value chain but want to explore secondary ones" → active: true
 
 ---
 
@@ -178,17 +234,28 @@ phase_5_design_system:
 
 **Goal**: Understand handoff/documentation needs.
 
+**Before asking**: Check pitch document for:
+- Work Plan section (handoff approach)
+- Investment Required section (what resources are needed)
+- Recommended Solution (what's being delivered)
+
 **Context for agent**:
 
 - Idunn WDS PM Agent handles this
 - Packages design for handoff
 - Creates PRD, epics, stories
+- **Pitch defines what deliveries are needed** - use it as foundation
 
 **Questions to understand**:
 
 - Handing off to developers?
 - Implementing yourself?
 - Need organized backlog?
+- What deliverables are needed? (Reference pitch Work Plan if available)
+
+**If pitch exists**:
+- Reference the Work Plan: "Your pitch mentioned [handoff approach]. Let's confirm what deliverables you'll need..."
+- Use pitch to understand delivery requirements
 
 **Outcome to capture**:
 
@@ -303,11 +370,18 @@ phase_8_ongoing_development:
 - Skip reasons
 - Current date and timestamps
 - Initial status: phase_1 = "in_progress", others = "not_started"
+- **Reference to pitch**: If pitch exists, add reference: `pitch_document: "docs/1-project-brief/pitch.md"`
+
+**If pitch document exists**:
+- Reference it in the outline: "This outline is informed by the project pitch"
+- The pitch's Work Plan section should align with the phases marked active
+- Use pitch to validate phase selections and delivery requirements
 
 **After creating file**:
 
 - Confirm to user: "Project outline created"
 - Explain: "Other agents will read this to understand your goals"
+- If pitch exists: "This outline aligns with the work plan from your pitch"
 
 ---
 

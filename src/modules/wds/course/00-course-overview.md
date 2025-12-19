@@ -75,9 +75,14 @@ Each module contains:
 - [Module 01: Why WDS Matters](module-01-why-wds-matters/module-01-overview.md)
 - [Module 02: Installation & Setup](module-02-installation-setup/module-02-overview.md) • [Tutorial →](module-02-installation-setup/tutorial-02.md)
 
+### Pre-Phase 1: Alignment & Signoff (Optional)
+
+- [Module 03: Alignment & Signoff](module-03-alignment-signoff/module-03-overview.md) • [Tutorial →](module-03-alignment-signoff/tutorial-03.md)  
+  *Skip if doing it yourself - go straight to Project Brief*
+
 ### Phase 1: Project Brief
 
-- [Module 03: Create Project Brief](module-03-project-brief/) • [Tutorial →](module-03-project-brief/tutorial-03.md)
+- [Module 04: Create Project Brief](module-04-project-brief/) • [Tutorial →](module-04-project-brief/tutorial-04.md)
 
 ### Phase 2: Trigger Mapping
 

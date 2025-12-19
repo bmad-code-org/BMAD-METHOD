@@ -44,7 +44,7 @@ You should see:
 ## Next Steps
 
 - [Quick Start Guide](quick-start.md) - Your first 5 minutes
-- [Tutorial](../01-tutorial/00-TUTORIAL-GUIDE.md) - Learn the concepts deeply
+- [Course](../course/00-course-overview.md) - Learn the concepts deeply
 
 ---
 
