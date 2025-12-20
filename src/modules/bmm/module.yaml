@@ -39,6 +39,10 @@ implementation_artifacts: # Phase 4 artifacts and quick-dev flow output
   default: "{output_folder}/implementation-artifacts"
   result: "{project-root}/{value}"
 
+# Alias for workflow compatibility
+sprint_artifacts:
+  inherit: "implementation_artifacts"
+
 project_knowledge: # Artifacts from research, document-project output, other long lived accurate knowledge
   prompt: "Where should non-ephemeral project knowledge be searched for and stored\n(docs, research, references)?"
   default: "docs"
