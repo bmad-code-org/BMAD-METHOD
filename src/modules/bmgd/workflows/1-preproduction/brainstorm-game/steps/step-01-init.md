@@ -58,7 +58,7 @@ Validate workflow readiness, check for workflow status tracking, and prepare for
 
 **Search for workflow status file:**
 
-Check if `{output_folder}/bmm-workflow-status.yaml` exists.
+Check if `{output_folder}/bmgd-workflow-status.yaml` exists.
 
 **If status file NOT found:**
 

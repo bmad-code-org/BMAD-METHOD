@@ -12,7 +12,7 @@
 <critical>⚠️ CHECKPOINT PROTOCOL: After EVERY <template-output> tag, you MUST follow workflow.xml substep 2c: SAVE content to file immediately → SHOW checkpoint separator (━━━━━━━━━━━━━━━━━━━━━━━) → DISPLAY generated content → PRESENT options [a]Advanced Elicitation/[c]Continue/[p]Party-Mode/[y]YOLO → WAIT for user response. Never batch saves or skip checkpoints.</critical>
 
 <step n="0" goal="Check for workflow status" tag="workflow-status">
-<action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
+<action>Check if {output_folder}/bmgd-workflow-status.yaml exists</action>
 
 <check if="status file not found">
   <output>No workflow status file found. Narrative workflow is optional - you can continue without status tracking.</output>
@@ -20,7 +20,7 @@
 </check>
 
 <check if="status file found">
-  <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
+  <action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>
   <action>Parse workflow_status section</action>
   <action>Check status of "narrative" workflow</action>
   <action>Get project_level from YAML metadata</action>
@@ -558,7 +558,7 @@ Which would you like?</ask>
 <step n="17" goal="Update status if tracking enabled" tag="workflow-status">
 
 <check if="standalone_mode != true">
-  <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
+  <action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>
   <action>Find workflow_status key "narrative"</action>
   <critical>ONLY write the file path as the status value - no other text, notes, or metadata</critical>
   <action>Update workflow_status["narrative"] = "{output_folder}/bmm-narrative-{{game_name}}-{{date}}.md"</action>

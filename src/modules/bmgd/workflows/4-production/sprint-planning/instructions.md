@@ -177,6 +177,15 @@ development_status:
 3. Agents will update statuses as they work
 4. Re-run this workflow to refresh auto-detected statuses
 
+<action>Update workflow status upon completion</action>
+<check if="standalone_mode != true">
+<action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>
+<action>Find workflow_status key "sprint-planning"</action>
+<critical>ONLY write the file path as the status value - no other text, notes, or metadata</critical>
+<action>Update workflow_status["sprint-planning"] = "{status_file}"</action>
+<action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
+</check>
+
 </step>
 
 </workflow>

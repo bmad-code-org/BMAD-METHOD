@@ -160,7 +160,7 @@ narrativeComplexity: '{{complexity}}'
 
 **If not in standalone mode:**
 
-Load `{output_folder}/bmm-workflow-status.yaml` and:
+Load `{output_folder}/bmgd-workflow-status.yaml` and:
 
 - Update `narrative` status to the output file path
 - Preserve all comments and structure

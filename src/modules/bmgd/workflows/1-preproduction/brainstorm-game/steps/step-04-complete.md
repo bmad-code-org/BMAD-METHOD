@@ -123,7 +123,7 @@ Or type 'all' to see the complete document."
 
 **If not in standalone mode:**
 
-Load `{output_folder}/bmm-workflow-status.yaml` and:
+Load `{output_folder}/bmgd-workflow-status.yaml` and:
 
 - Update `brainstorm-game` status to the output file path
 - Preserve all comments and structure
