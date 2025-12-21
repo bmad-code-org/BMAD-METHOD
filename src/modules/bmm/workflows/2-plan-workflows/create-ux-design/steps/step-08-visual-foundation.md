@@ -29,8 +29,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -54,6 +54,103 @@ Check for existing brand requirements:
 
 If yes, I'll extract and document your brand colors and create semantic color mappings.
 If no, I'll generate theme options based on your project's personality and emotional goals from our earlier discussion."
+
+### 1.5 Knowledge Base Integration (Auto)
+
+Before generating design options, automatically query the UI/UX Pro Max knowledge base for professional recommendations.
+
+#### Prerequisite: Extract Variables from Frontmatter
+
+Before executing searches, extract the following from the current document's frontmatter or previous step context:
+
+- `{industry}` - From frontmatter field `industry` or `productType` (e.g., "SaaS", "E-commerce")
+- `{style_keywords}` - From frontmatter field `style`, `visualStyle`, or `emotionalGoals` (e.g., "modern minimal")
+
+**If variables are not available:**
+- Use project name or product description as fallback search terms
+- Or ask user: "What industry/style keywords should I use for design recommendations?"
+
+#### Color Palette Search
+
+Execute the following command using extracted context:
+
+```bash
+python {project-root}/../.shared/ui-ux-pro-max/scripts/search.py "{industry} {style_keywords}" --domain color --json
+```
+
+> **Note:** Path assumes standard BMAD BMM structure. If `.shared` is elsewhere, please update path in search command.
+
+**Parse JSON Output Fields:**
+- `Primary (Hex)` - Primary brand color
+- `Secondary (Hex)` - Secondary accent color
+- `CTA (Hex)` - Call-to-action button color
+- `Background (Hex)` - Background color recommendation
+- `Text (Hex)` - Text color for readability
+- `Border (Hex)` - Border/divider color
+
+**Present to User:**
+"🎨 **Knowledge Base Color Recommendations:**
+
+Based on your project's industry ({industry}) and style ({style_keywords}), here are professional color palette suggestions:
+
+| Role | Hex Code | Preview |
+|------|----------|---------|
+| Primary | {Primary (Hex)} | ██████ |
+| Secondary | {Secondary (Hex)} | ██████ |
+| CTA | {CTA (Hex)} | ██████ |
+| Background | {Background (Hex)} | ██████ |
+| Text | {Text (Hex)} | ██████ |
+| Border | {Border (Hex)} | ██████ |
+
+**What would you like to do with these recommendations?**
+[1] Accept - Use these as the starting point
+[2] Modify - Adjust these colors to your preference
+[3] Skip - Generate fresh options without these suggestions"
+
+#### Typography Search
+
+After color recommendations, execute typography search:
+
+```bash
+python {project-root}/../.shared/ui-ux-pro-max/scripts/search.py "{style_keywords}" --domain typography --json
+```
+
+**Parse JSON Output Fields:**
+- `Font Pairing Name` - Name of the font pairing (e.g., "Geometric Modern")
+- `Google Fonts URL` - Ready-to-use Google Fonts import link
+- `CSS Import` - CSS @import statement
+- `Tailwind Config` - Tailwind CSS configuration snippet
+- `Notes` - Additional usage notes
+
+**Present to User:**
+"📝 **Knowledge Base Typography Recommendations:**
+
+**{Font Pairing Name}**
+
+| Property | Value |
+|----------|-------|
+| Google Fonts | {Google Fonts URL} |
+| CSS Import | `{CSS Import}` |
+| Tailwind Config | ```{Tailwind Config}``` |
+
+*{Notes}*
+
+**What would you like to do with these recommendations?**
+[1] Accept - Use these font recommendations
+[2] Modify - Adjust font choices
+[3] Skip - Define typography from scratch"
+
+#### Fallback Handling
+
+If the search command fails, returns no results, or variables are unavailable:
+
+"ℹ️ **Note:** Knowledge base search returned no specific recommendations for your criteria. Proceeding with standard design exploration.
+
+This is normal for unique combinations - we'll create custom options tailored to your needs."
+
+**Then proceed to Generate Color Theme Options normally.**
+
+---
 
 ### 2. Generate Color Theme Options (If no brand guidelines)
 
@@ -168,7 +265,7 @@ Show the generated visual foundation content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current visual foundation content
+- Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml with the current visual foundation content
 - Process the enhanced visual insights that come back
 - Ask user: "Accept these improvements to the visual foundation? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -176,7 +273,7 @@ Show the generated visual foundation content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current visual foundation
+- Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md with the current visual foundation
 - Process the collaborative visual insights that come back
 - Ask user: "Accept these changes to the visual foundation? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -195,6 +292,8 @@ When user selects 'C', append the content directly to the document using the str
 ## SUCCESS METRICS:
 
 ✅ Brand guidelines assessed and incorporated if available
+✅ Knowledge base integration executed before color generation
+✅ User presented with Accept/Modify/Skip choices for KB recommendations
 ✅ Color system established with accessibility consideration
 ✅ Typography system defined with appropriate hierarchy
 ✅ Spacing and layout foundation created

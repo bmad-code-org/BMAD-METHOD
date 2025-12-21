@@ -29,8 +29,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -46,6 +46,137 @@ This step will generate content and present choices:
 Establish UX consistency patterns for common situations like buttons, forms, navigation, and feedback.
 
 ## UX PATTERNS SEQUENCE:
+
+### 0.5 Knowledge Base Integration (Auto)
+
+Before defining patterns, automatically query the UI/UX Pro Max knowledge base for UX best practices and accessibility guidelines.
+
+#### Prerequisite: Extract Variables from Context
+
+Extract the following from frontmatter or previous step context:
+
+- `{product_type}` - From frontmatter field `productCategory` OR `projectType` OR `industry` (e.g., "Dashboard", "E-commerce", "Mobile App")
+- `{pattern_focus}` - From user journey analysis in step 10 (e.g., "forms", "navigation", "checkout")
+
+**Variable Extraction Priority:**
+1. Check frontmatter for `productCategory` → use if exists
+2. Check frontmatter for `projectType` → use if exists
+3. Check frontmatter for `industry` → use if exists
+4. If none found → ask user: "What type of product is this? (e.g., Dashboard, E-commerce, SaaS)"
+
+#### General UX Best Practices Search
+
+Execute the following command for universal UX guidelines:
+
+```bash
+python {project-root}/../.shared/ui-ux-pro-max/scripts/search.py "animation accessibility" --domain ux --json
+```
+
+> **Note:** Path assumes standard BMAD BMM structure. If `.shared` is elsewhere, please update path in search command.
+
+**Parse JSON Output Fields:**
+- `Category` - Pattern category (e.g., "Animation", "Forms", "Navigation")
+- `Issue` - Specific issue being addressed
+- `Platform` - Target platform (Web, iOS, Android, All)
+- `Description` - Detailed explanation of the issue
+- `Do` - Recommended practice
+- `Don't` - Anti-pattern to avoid
+- `Severity` - Priority level (High, Medium, Low)
+- `Code Example Good` - Example of correct implementation
+- `Code Example Bad` - Example of incorrect implementation
+
+**Sorting Algorithm (MUST follow exactly):**
+1. Parse all items from JSON `results` array
+2. Assign numeric priority: High=1, Medium=2, Low=3
+3. Sort by numeric priority (ascending = High first)
+4. Within same severity, maintain original JSON order
+5. Present sorted results in table
+
+**Present to User:**
+"📋 **Knowledge Base UX Best Practices:**
+
+Based on universal UX and accessibility guidelines, here are recommendations to consider:
+
+| Severity | Platform | Category | Issue | Description | ✅ Do | ❌ Don't |
+|----------|----------|----------|-------|-------------|-------|---------|
+| 🔴 High | {Platform} | {Category} | {Issue} | {Description} | {Do} | {Don't} |
+| 🟡 Medium | {Platform} | {Category} | {Issue} | {Description} | {Do} | {Don't} |
+| 🟢 Low | {Platform} | {Category} | {Issue} | {Description} | {Do} | {Don't} |
+
+**Code Examples:**
+```
+✅ Good: {Code Example Good}
+❌ Bad: {Code Example Bad}
+```
+
+**What would you like to do with these recommendations?**
+[1] Accept all - Include these in our pattern definitions
+[2] Select specific - Choose which recommendations to include
+[3] Skip - Define patterns without these suggestions"
+
+**Handle User Selection:**
+
+- **If user selects [1] Accept all:**
+  - Store ALL Do/Don't pairs as reference for pattern definition
+  - Prefix each subsequent pattern with: "(KB: {Issue})" to show origin
+  - Proceed to Product-Specific Search
+
+- **If user selects [2] Select specific:**
+  - Ask: "Enter recommendation numbers to include (e.g., 1,3,5):"
+  - Store only selected recommendations
+  - Proceed to Product-Specific Search
+
+- **If user selects [3] Skip:**
+  - Do not store KB recommendations
+  - Proceed to Product-Specific Search
+
+#### Product-Specific UX Search
+
+After general guidelines, search for product-specific patterns:
+
+```bash
+python {project-root}/../.shared/ui-ux-pro-max/scripts/search.py "{product_type}" --domain ux --json
+```
+
+**Present to User:**
+"🎯 **Product-Specific UX Recommendations ({product_type}):**
+
+| Severity | Platform | Issue | Description | ✅ Do | ❌ Don't |
+|----------|----------|-------|-------------|-------|---------|
+| {Severity} | {Platform} | {Issue} | {Description} | {Do} | {Don't} |
+
+These recommendations are tailored for {product_type} applications.
+
+**Include these in our pattern definitions?**
+[1] Yes, include all
+[2] Select specific ones
+[3] Skip"
+
+**Handle User Selection:**
+
+- **If user selects [1] Yes, include all:**
+  - Merge with previously accepted recommendations
+  - Proceed to Identify Pattern Categories
+
+- **If user selects [2] Select specific ones:**
+  - Ask: "Enter recommendation numbers to include (e.g., 1,2):"
+  - Merge selected with previously accepted recommendations
+  - Proceed to Identify Pattern Categories
+
+- **If user selects [3] Skip:**
+  - Proceed to Identify Pattern Categories with only general recommendations (if any)
+
+#### Fallback Handling
+
+If the search command fails or returns no results:
+
+"ℹ️ **Note:** Knowledge base search returned no specific recommendations for your criteria. Proceeding with collaborative pattern definition.
+
+We'll define patterns based on your product's unique needs."
+
+**Then proceed to Identify Pattern Categories normally.**
+
+---
 
 ### 1. Identify Pattern Categories
 
@@ -181,7 +312,7 @@ Show the generated UX patterns content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current UX patterns content
+- Execute {project-root}/.bmad/core/tasks/advanced-elicitation.xml with the current UX patterns content
 - Process the enhanced pattern insights that come back
 - Ask user: "Accept these improvements to the UX patterns? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -189,7 +320,7 @@ Show the generated UX patterns content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current UX patterns
+- Execute {project-root}/.bmad/core/workflows/party-mode/workflow.md with the current UX patterns
 - Process the collaborative pattern insights that come back
 - Ask user: "Accept these changes to the UX patterns? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -207,6 +338,9 @@ When user selects 'C', append the content directly to the document using the str
 
 ## SUCCESS METRICS:
 
+✅ Knowledge base queried for general UX and accessibility guidelines
+✅ Product-specific UX recommendations presented (sorted by severity)
+✅ User given choice to accept/select/skip KB recommendations
 ✅ Critical pattern categories identified and prioritized
 ✅ Consistency patterns clearly defined and documented
 ✅ Patterns integrated with chosen design system
@@ -224,6 +358,11 @@ When user selects 'C', append the content directly to the document using the str
 ❌ Not considering mobile differences
 ❌ Not presenting A/P/C menu after content generation
 ❌ Appending content without user selecting 'C'
+
+❌ **KB INTEGRATION**: Not querying knowledge base before pattern definition
+❌ **KB INTEGRATION**: Ignoring user's Accept/Select/Skip choice
+❌ **KB INTEGRATION**: Not sorting results by severity (High → Medium → Low)
+❌ **KB INTEGRATION**: Missing Platform or Description fields in output table
 
 ❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
