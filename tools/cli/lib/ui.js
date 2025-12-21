@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const inquirer = require('inquirer');
+const inquirer = require('inquirer').default || require('inquirer');
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
