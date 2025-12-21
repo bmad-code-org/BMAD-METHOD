@@ -3,7 +3,7 @@ name: 'step-05-scope'
 description: 'Define MVP scope with clear boundaries and outline future vision while managing scope creep'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/product-brief'
+workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-05-scope.md'

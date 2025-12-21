@@ -54,7 +54,7 @@ agent:
       description: Create clear technical explanations with examples
 
     - trigger: standards-guide
-      action: "Display the complete documentation standards from {project-root}/_bmadbmm/data/documentation-standards.md in a clear, formatted way for the user."
+      action: "Display the complete documentation standards from {project-root}/_bmad/bmm/data/documentation-standards.md in a clear, formatted way for the user."
       description: Show BMAD documentation standards reference (CommonMark, Mermaid, OpenAPI)
 
     - trigger: party-mode

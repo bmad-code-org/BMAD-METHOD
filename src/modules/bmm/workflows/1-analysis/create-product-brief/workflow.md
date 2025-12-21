@@ -55,4 +55,4 @@ Load and read full config from {project-root}/\_bmad/bmm/config.yaml and resolve
 
 ### 2. First Step EXECUTION
 
-Load, read the full file and then execute `{project-root}/_bmad/bmm/workflows/1-analysis/product-brief/steps/step-01-init.md` to begin the workflow.
+Load, read the full file and then execute `{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/steps/step-01-init.md` to begin the workflow.

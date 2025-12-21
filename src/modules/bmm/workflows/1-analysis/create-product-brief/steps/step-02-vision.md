@@ -3,7 +3,7 @@ name: 'step-02-vision'
 description: 'Discover and define the core product vision, problem statement, and unique value proposition'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/product-brief'
+workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-02-vision.md'

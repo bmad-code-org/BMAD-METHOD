@@ -3,7 +3,7 @@ name: 'step-04-metrics'
 description: 'Define comprehensive success metrics that include user success, business objectives, and key performance indicators'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/product-brief'
+workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-04-metrics.md'

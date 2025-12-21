@@ -3,7 +3,7 @@ name: 'step-01-init'
 description: 'Initialize the product brief workflow by detecting continuation state and setting up the document'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/product-brief'
+workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-init.md'

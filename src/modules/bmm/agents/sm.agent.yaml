@@ -32,9 +32,12 @@ agent:
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
       description: Create Story (Required to prepare stories for development)
 
-    - trigger: validate-create-story
-      validate-workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
-      description: Validate Story (Highly Recommended, use fresh context and different LLM for best results)
+    # TODO: validate-create-story is not yet implemented
+    # The validate-workflow: handler type is not recognized by the workflow engine
+    # See: https://github.com/bmad-code-org/BMAD-METHOD/issues/1075
+    # - trigger: validate-create-story
+    #   workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story/validate-workflow.yaml"
+    #   description: Validate Story (Highly Recommended, use fresh context and different LLM for best results)
 
     - trigger: epic-retrospective
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml"

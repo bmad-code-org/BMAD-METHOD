@@ -3,7 +3,7 @@ name: 'step-06-complete'
 description: 'Complete the product brief workflow, update status files, and suggest next steps for the project'
 
 # Path Definitions
-workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/product-brief'
+workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-06-complete.md'
