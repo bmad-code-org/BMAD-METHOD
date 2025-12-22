@@ -1,0 +1,55 @@
+description = "BMAD BMGD Workflow: narrative"
+prompt = """
+# Narrative Design Workflow
+name: narrative
+description: "Narrative design workflow for story-driven games. Creates comprehensive narrative documentation including story structure, character arcs, world-building, dialogue systems, and production planning."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+game_dev_experience: "{config_source}:game_dev_experience"
+date: system-generated
+
+# Workflow components - Step-file architecture
+installed_path: "{project-root}/_bmad/bmgd/workflows/2-design/narrative"
+instructions: "{installed_path}/workflow.md"
+template: "{installed_path}/templates/narrative-template.md"
+validation: "{installed_path}/checklist.md"
+
+# Smart input file references
+input_file_patterns:
+  gdd:
+    description: "Game Design Document with mechanics and systems"
+    whole: "{output_folder}/*gdd*.md"
+    sharded: "{output_folder}/*gdd*/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+  brief:
+    description: "Game Brief with vision (optional)"
+    whole: "{output_folder}/*brief*.md"
+    sharded: "{output_folder}/*brief*/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+# Output configuration
+default_output_file: "{output_folder}/narrative-design.md"
+
+# Workflow metadata
+version: "2.0.0"
+paradigm: "step-file-architecture"
+features:
+  - "Step-file architecture for modular execution"
+  - "Narrative complexity assessment"
+  - "Character development facilitation"
+  - "World-building guidance"
+  - "Dialogue system design"
+  - "Environmental storytelling planning"
+  - "Production scope estimation"
+  - "State tracking via frontmatter"
+
+standalone: true
+
+"""

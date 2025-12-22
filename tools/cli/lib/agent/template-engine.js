@@ -140,6 +140,36 @@ function getDefaultValues(installConfig) {
   return defaults;
 }
 
+/**
+ * Filter out empty/null/undefined values from customization data
+ * @param {Object} data - Data to filter
+ * @returns {Object} Filtered data
+ */
+function filterCustomizationData(data) {
+  const filtered = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value === null || value === undefined || value === '') {
+      continue; // Skip null/undefined/empty values
+    }
+
+    if (Array.isArray(value)) {
+      if (value.length > 0) {
+        filtered[key] = value;
+      }
+    } else if (typeof value === 'object') {
+      const nested = filterCustomizationData(value);
+      if (Object.keys(nested).length > 0) {
+        filtered[key] = nested;
+      }
+    } else {
+      filtered[key] = value;
+    }
+  }
+
+  return filtered;
+}
+
 module.exports = {
   processTemplate,
   processConditionals,
@@ -149,4 +179,5 @@ module.exports = {
   processAgentYaml,
   getDefaultValues,
   cleanupEmptyLines,
+  filterCustomizationData,
 };

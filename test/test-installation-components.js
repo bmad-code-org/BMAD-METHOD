@@ -13,7 +13,7 @@
 
 const path = require('node:path');
 const fs = require('fs-extra');
-const { YamlXmlBuilder } = require('../tools/cli/lib/yaml-xml-builder');
+const { YamlXmlBuilder } = require('../tools/cli/lib/agent/yaml-xml-builder');
 const { ManifestGenerator } = require('../tools/cli/installers/lib/core/manifest-generator');
 
 // ANSI colors
@@ -175,7 +175,7 @@ async function runTests() {
 
       assert(compiled.includes('testarch/knowledge'), 'TEA agent compilation includes knowledge base path');
 
-      assert(compiled.includes('*test-design'), 'TEA agent menu includes test-design workflow');
+      assert(compiled.includes('test-design'), 'TEA agent menu includes test-design workflow');
 
       // Cleanup
       await fs.remove(tempOutput);

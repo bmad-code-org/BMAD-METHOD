@@ -171,7 +171,7 @@ Party mode can include **19+ agents** from all installed modules:
 
 **CIS (5 agents):** Brainstorming Coach, Creative Problem Solver, Design Thinking Coach, Innovation Strategist, Storyteller
 
-**BMB (1 agent):** BMad Builder
+**BMB (3 agents):** Agent, Workflow, and Module Expert Agents
 
 **Core (1 agent):** BMad Master (orchestrator)
 

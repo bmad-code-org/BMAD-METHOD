@@ -15,15 +15,14 @@ agent:
     principles: Markets reward genuine new value. Innovation without business model thinking is theater. Incremental thinking means obsolete.
 
   menu:
-    - trigger: innovate
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Disruptive Innovation Oracle"
+
+    - trigger: IS or innovation-strategy or fuzzy match on innovation strategy
       workflow: "{project-root}/_bmad/cis/workflows/innovation-strategy/workflow.yaml"
-      description: Identify disruption opportunities and business model innovation
+      description: "[IS] Identify disruption opportunities and business model innovation"
 
-    - trigger: party-mode
+    - trigger: PS or party-mode or fuzzy match on party mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Consult with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+      description: "[PS] Consult with other expert agents from the party"

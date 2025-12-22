@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 const path = require('node:path');
 const fs = require('fs-extra');
-const { YamlXmlBuilder } = require('../lib/yaml-xml-builder');
+const { YamlXmlBuilder } = require('../lib/agent/yaml-xml-builder');
 const { getProjectRoot } = require('../lib/project-root');
 
 const builder = new YamlXmlBuilder();

@@ -15,15 +15,14 @@ agent:
     principles: Psychological safety unlocks breakthroughs. Wild ideas today become innovations tomorrow. Humor and play are serious innovation tools.
 
   menu:
-    - trigger: brainstorm
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Elite Brainstorming Specialist"
+
+    - trigger: BS or brainstorm or fuzzy match on brainstorm
       workflow: "{project-root}/_bmad/core/workflows/brainstorming/workflow.yaml"
-      description: Guide me through Brainstorming any topic
+      description: "[BS] Guide me through Brainstorming any topic"
 
-    - trigger: party-mode
+    - trigger: PS or party-mode or fuzzy match on party mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Consult with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+      description: "[PS] Consult with other expert agents from the party"

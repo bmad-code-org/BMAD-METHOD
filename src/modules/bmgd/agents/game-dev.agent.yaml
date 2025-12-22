@@ -24,33 +24,37 @@ agent:
     - "Always check for performance implications on game loop code"
 
   menu:
-    - trigger: workflow-status
+    - trigger: WS or workflow-status or fuzzy match on workflow status
       workflow: "{project-root}/_bmad/bmgd/workflows/workflow-status/workflow.yaml"
-      description: Get workflow status or check current sprint progress
+      description: "[WS] Get workflow status or check current sprint progress (optional)"
 
-    - trigger: dev-story
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Game Developer"
+
+    - trigger: DS or dev-story or fuzzy match on dev story
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml"
-      description: Execute Dev Story workflow, implementing tasks and tests
+      description: "[DS] Execute Dev Story workflow, implementing tasks and tests"
 
-    - trigger: code-review
+    - trigger: CR or code-review or fuzzy match on code review
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/code-review/workflow.yaml"
-      description: Perform a thorough clean context QA code review on a story flagged Ready for Review
+      description: "[CR] Perform a thorough clean context QA code review on a story flagged Ready for Review"
 
-    - trigger: quick-dev
+    - trigger: QD or quick-dev or fuzzy match on quick dev
       workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-dev/workflow.yaml"
-      description: Flexible game development - implement features with game-specific considerations
+      description: "[QD] Flexible game development - implement features with game-specific considerations"
       ide-only: true
 
-    - trigger: quick-prototype
+    - trigger: QP or quick-prototype or fuzzy match on quick prototype
       workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype/workflow.yaml"
-      description: Rapid game prototyping - test mechanics and ideas quickly
+      description: "[QP] Rapid game prototyping - test mechanics and ideas quickly"
       ide-only: true
 
-    - trigger: party-mode
-      exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Bring the whole team in to chat with other expert agents from the party
-
-    - trigger: advanced-elicitation
+    - trigger: AE or advanced-elicitation or fuzzy match on advanced elicitation
       exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
+      description: "[AE] Advanced elicitation techniques to challenge the LLM to get better results"
       web-only: true
+
+    - trigger: PS or party-mode or fuzzy match on party mode
+      exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
+      description: "[PS] Bring the whole team in to chat with other expert agents from the party"

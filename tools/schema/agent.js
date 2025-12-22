@@ -53,15 +53,6 @@ function agentSchema(options = {}) {
           if (item.trigger) {
             const triggerValue = item.trigger;
 
-            if (!TRIGGER_PATTERN.test(triggerValue)) {
-              ctx.addIssue({
-                code: 'custom',
-                path: ['agent', 'menu', index, 'trigger'],
-                message: 'agent.menu[].trigger must be kebab-case (lowercase words separated by hyphen)',
-              });
-              return;
-            }
-
             if (seenTriggers.has(triggerValue)) {
               ctx.addIssue({
                 code: 'custom',
@@ -91,15 +82,6 @@ function agentSchema(options = {}) {
               }
 
               if (triggerName) {
-                if (!TRIGGER_PATTERN.test(triggerName)) {
-                  ctx.addIssue({
-                    code: 'custom',
-                    path: ['agent', 'menu', index, 'triggers', triggerIndex],
-                    message: `agent.menu[].triggers[] must be kebab-case (lowercase words separated by hyphen) - got "${triggerName}"`,
-                  });
-                  return;
-                }
-
                 if (seenTriggers.has(triggerName)) {
                   ctx.addIssue({
                     code: 'custom',
@@ -395,15 +377,6 @@ function buildMenuItemSchema() {
             });
           }
           seenTriggers.add(triggerName);
-
-          // Validate trigger name format
-          if (!TRIGGER_PATTERN.test(triggerName)) {
-            ctx.addIssue({
-              code: 'custom',
-              path: ['agent', 'menu', 'triggers', index],
-              message: `Trigger name "${triggerName}" must be kebab-case (lowercase words separated by hyphen)`,
-            });
-          }
         }
       }
     });

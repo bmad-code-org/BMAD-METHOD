@@ -1,0 +1,74 @@
+description = "BMAD BMGD Workflow: game-architecture"
+prompt = """
+# Game Architecture Workflow Configuration
+name: game-architecture
+description: "Collaborative game architecture workflow for AI-agent consistency. Intelligent, adaptive conversation that produces a decision-focused game architecture document covering engine, systems, networking, and technical design optimized for game development."
+author: "BMad"
+
+# Critical variables
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+game_dev_experience: "{config_source}:game_dev_experience"
+date: system-generated
+
+# Workflow components - Step-file architecture
+installed_path: "{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture"
+instructions: "{installed_path}/workflow.md"
+validation: "{installed_path}/checklist.md"
+template: "{installed_path}/templates/architecture-template.md"
+
+# Knowledge bases for intelligent decision making
+decision_catalog: "{installed_path}/decision-catalog.yaml"
+architecture_patterns: "{installed_path}/architecture-patterns.yaml"
+pattern_categories: "{installed_path}/pattern-categories.csv"
+
+# Smart input file references - handles both whole docs and sharded docs
+input_file_patterns:
+  gdd:
+    description: "Game Design Document with mechanics and systems"
+    whole: "{output_folder}/*gdd*.md"
+    sharded: "{output_folder}/*gdd*/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+  epics:
+    description: "Epic definitions with user stories"
+    whole: "{output_folder}/*epic*.md"
+    sharded: "{output_folder}/*epic*/index.md"
+    load_strategy: "FULL_LOAD"
+
+  brief:
+    description: "Game Brief with vision and scope (optional)"
+    whole: "{output_folder}/*brief*.md"
+    sharded: "{output_folder}/*brief*/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+  narrative:
+    description: "Narrative design with story and characters (optional)"
+    whole: "{output_folder}/*narrative*.md"
+    sharded: "{output_folder}/*narrative*/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+# Output configuration
+default_output_file: "{output_folder}/game-architecture.md"
+
+# Workflow metadata
+version: "2.0.0"
+replaces: "architecture"
+paradigm: "step-file-architecture"
+features:
+  - "Step-file architecture for modular execution"
+  - "Starter template discovery and integration"
+  - "Dynamic version verification via web search"
+  - "Adaptive facilitation by skill level"
+  - "Decision-focused architecture"
+  - "Novel pattern design for unique concepts"
+  - "Intelligent pattern identification"
+  - "Implementation patterns for agent consistency"
+  - "State tracking via frontmatter"
+
+standalone: true
+
+"""

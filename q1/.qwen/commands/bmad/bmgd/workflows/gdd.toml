@@ -1,0 +1,51 @@
+description = "BMAD BMGD Workflow: gdd"
+prompt = """
+# Game Design Document (GDD) Workflow
+name: gdd
+description: "Game Design Document workflow for all game project levels - from small prototypes to full AAA games. Generates comprehensive GDD with game mechanics, systems, progression, and implementation guidance."
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+game_dev_experience: "{config_source}:game_dev_experience"
+date: system-generated
+
+# Workflow components - Step-file architecture
+installed_path: "{project-root}/_bmad/bmgd/workflows/2-design/gdd"
+instructions: "{installed_path}/workflow.md"
+template: "{installed_path}/templates/gdd-template.md"
+game_types_csv: "{installed_path}/game-types.csv"
+
+# Output configuration
+default_output_file: "{output_folder}/gdd.md"
+
+# Game type references (loaded based on game type selection)
+game_type_guides: "{installed_path}/game-types/"
+
+# Smart input file references - handles both whole docs and sharded docs
+# Priority: Whole document first, then sharded version
+input_file_patterns:
+  game_brief:
+    description: "Game vision and core concept (optional)"
+    whole: "{output_folder}/*game-brief*.md"
+    sharded: "{output_folder}/*game-brief*/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+  research:
+    description: "Market or domain research (optional)"
+    whole: "{output_folder}/*research*.md"
+    sharded: "{output_folder}/*research*/index.md"
+    load_strategy: "FULL_LOAD"
+
+  document_project:
+    description: "Brownfield project documentation (optional)"
+    sharded: "{output_folder}/index.md"
+    load_strategy: "INDEX_GUIDED"
+
+standalone: true
+
+"""

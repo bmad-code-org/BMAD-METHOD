@@ -49,8 +49,7 @@
 - @/tools/cli/lib/xml-handler.js - XML processing
 - @/tools/cli/lib/yaml-format.js - YAML formatting
 - @/tools/cli/lib/file-ops.js - File operations
-- @/tools/cli/lib/agent/compiler.js - Agent YAML to XML compilation
-- @/tools/cli/lib/agent/installer.js - Agent installation
+- @/tools/cli/lib/agent/yaml-xml-builder.js - Agent YAML to XML compilation
 - @/tools/cli/lib/agent/template-engine.js - Template processing
 
 ## IDE Handler Registry (16 IDEs)

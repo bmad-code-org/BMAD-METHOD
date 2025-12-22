@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const inquirer = require('inquirer');
+const inquirer = require('inquirer').default || require('inquirer');
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('fs-extra');
@@ -18,7 +18,7 @@ class UI {
     CLIUtils.displayLogo();
 
     // Display changelog link
-    console.log(chalk.cyan('\n📋 Read the latest updates: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md\n'));
+    console.log(chalk.cyan('\nRead the latest updates: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md\n'));
 
     const confirmedDirectory = await this.getConfirmedDirectory();
 

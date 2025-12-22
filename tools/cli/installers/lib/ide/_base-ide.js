@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
-const { XmlHandler } = require('../../../lib/xml-handler');
+const { XmlHandler } = require('../../../lib/agent/xml-handler');
 const { getSourcePath } = require('../../../lib/project-root');
 
 /**
@@ -492,11 +492,6 @@ class BaseIdeSetup {
   processContent(content, metadata = {}, projectDir = null) {
     // Replace placeholders
     let processed = content;
-
-    // Inject activation block for agent files FIRST (before replacements)
-    if (metadata.name && content.includes('<agent')) {
-      processed = this.xmlHandler.injectActivationSimple(processed, metadata);
-    }
 
     // Only replace {project-root} if a specific projectDir is provided
     // Otherwise leave the placeholder intact

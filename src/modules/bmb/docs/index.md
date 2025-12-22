@@ -16,9 +16,7 @@ Specialized tools and workflows for creating, customizing, and extending BMad co
 
 ### 🤖 Agents
 
-**BMad Builder** - Master builder agent orchestrating all creation workflows with deep knowledge of BMad architecture and conventions.
-
-- Install Location: `_bmad/bmb/agents/bmad-builder.md`
+There is a dedicated Agent expert, a Workflow Expert, and a Module Expert agent available!
 
 ### 📋 Workflows
 
@@ -135,21 +133,12 @@ BMB creates three agent architectures:
 
 ## Quick Start
 
-### Using BMad Builder Agent
+### Using BMad Builder Agents
 
-1. **Load BMad Builder agent** in your IDE:
+1. **Load BMad Builder agents** in your IDE:
    ```
-   /bmad:bmb:agents:bmad-builder
+   /bmad:bmb:agents:agent-builder|module-builder|workflow-builder
    ```
-2. **Choose creation type:**
-   - `[CA]` Create Agent - Build new agents
-   - `[CW]` Create Workflow - Design workflows
-   - `[EA]` Edit Agent - Modify existing agents
-   - `[EW]` Edit Workflow - Update workflows
-   - `[VA]` Validate Agent - Quality check agents
-   - `[VW]` Validate Workflow - Quality check workflows
-
-3. **Follow interactive prompts** for step-by-step guidance
 
 ### Example: Creating an Agent
 

@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
+const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');

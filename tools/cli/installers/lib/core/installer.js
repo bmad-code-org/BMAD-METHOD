@@ -2,14 +2,14 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const ora = require('ora');
-const inquirer = require('inquirer');
+const inquirer = require('inquirer').default || require('inquirer');
 const { Detector } = require('./detector');
 const { Manifest } = require('./manifest');
 const { ModuleManager } = require('../modules/manager');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../../../lib/file-ops');
 const { Config } = require('../../../lib/config');
-const { XmlHandler } = require('../../../lib/xml-handler');
+const { XmlHandler } = require('../../../lib/agent/xml-handler');
 const { DependencyResolver } = require('./dependency-resolver');
 const { ConfigCollector } = require('./config-collector');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
@@ -297,49 +297,41 @@ class Installer {
         console.log('\n'); // Add spacing before IDE questions
 
         for (const ide of newlySelectedIdes) {
-          // List of IDEs that have interactive prompts
-          //TODO: Why is this here, hardcoding this list here is bad, fix me!
-          const needsPrompts = ['claude-code', 'github-copilot', 'roo', 'cline', 'auggie', 'codex', 'qwen', 'gemini', 'rovo-dev'].includes(
-            ide,
-          );
+          // Get IDE handler and check if it needs interactive configuration
+          try {
+            // Dynamically load the IDE setup module
+            const ideModule = require(`../ide/${ide}`);
 
-          if (needsPrompts) {
-            // Get IDE handler and collect configuration
-            try {
-              // Dynamically load the IDE setup module
-              const ideModule = require(`../ide/${ide}`);
+            // Get the setup class (handle different export formats)
+            let SetupClass;
+            const className =
+              ide
+                .split('-')
+                .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                .join('') + 'Setup';
 
-              // Get the setup class (handle different export formats)
-              let SetupClass;
-              const className =
-                ide
-                  .split('-')
-                  .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-                  .join('') + 'Setup';
-
-              if (ideModule[className]) {
-                SetupClass = ideModule[className];
-              } else if (ideModule.default) {
-                SetupClass = ideModule.default;
-              } else {
-                continue;
-              }
-
-              const ideSetup = new SetupClass();
-
-              // Check if this IDE has a collectConfiguration method
-              if (typeof ideSetup.collectConfiguration === 'function') {
-                console.log(chalk.cyan(`\nConfiguring ${ide}...`));
-                ideConfigurations[ide] = await ideSetup.collectConfiguration({
-                  selectedModules: selectedModules || [],
-                  projectDir,
-                  bmadDir,
-                });
-              }
-            } catch {
-              // IDE doesn't have a setup file or collectConfiguration method
-              console.warn(chalk.yellow(`Warning: Could not load configuration for ${ide}`));
+            if (ideModule[className]) {
+              SetupClass = ideModule[className];
+            } else if (ideModule.default) {
+              SetupClass = ideModule.default;
+            } else {
+              continue;
             }
+
+            const ideSetup = new SetupClass();
+
+            // Check if this IDE has a collectConfiguration method (no hardcoding needed!)
+            if (typeof ideSetup.collectConfiguration === 'function') {
+              console.log(chalk.cyan(`\nConfiguring ${ide}...`));
+              ideConfigurations[ide] = await ideSetup.collectConfiguration({
+                selectedModules: selectedModules || [],
+                projectDir,
+                bmadDir,
+              });
+            }
+          } catch {
+            // IDE doesn't have a setup file or collectConfiguration method
+            console.warn(chalk.yellow(`Warning: Could not load configuration for ${ide}`));
           }
         }
       }
@@ -843,8 +835,6 @@ class Installer {
         allModules = allModules.filter((m) => m !== 'core');
       }
 
-      const modulesToInstall = allModules;
-
       // For dependency resolution, we only need regular modules (not custom modules)
       // Custom modules are already installed in _bmad and don't need dependency resolution from source
       const regularModulesForResolution = allModules.filter((module) => {
@@ -1223,17 +1213,19 @@ class Installer {
         console.log(chalk.dim('Remove these .bak files it no longer needed\n'));
       }
 
-      // Display completion message
-      const { UI } = require('../../../lib/ui');
-      const ui = new UI();
-      ui.showInstallSummary({
-        path: bmadDir,
-        modules: config.modules,
-        ides: config.ides,
-        customFiles: customFiles.length > 0 ? customFiles : undefined,
-        ttsInjectedFiles: this.enableAgentVibes && this.ttsInjectedFiles.length > 0 ? this.ttsInjectedFiles : undefined,
-        agentVibesEnabled: this.enableAgentVibes || false,
-      });
+      // Display completion message (skip if requested, e.g., for quick updates)
+      if (!config._skipCompletion) {
+        const { UI } = require('../../../lib/ui');
+        const ui = new UI();
+        ui.showInstallSummary({
+          path: bmadDir,
+          modules: config.modules,
+          ides: config.ides,
+          customFiles: customFiles.length > 0 ? customFiles : undefined,
+          ttsInjectedFiles: this.enableAgentVibes && this.ttsInjectedFiles.length > 0 ? this.ttsInjectedFiles : undefined,
+          agentVibesEnabled: this.enableAgentVibes || false,
+        });
+      }
 
       return {
         success: true,
@@ -1513,9 +1505,7 @@ class Installer {
    * @param {string} bmadDir - BMAD installation directory
    * @param {Object} coreFiles - Core files to install
    */
-  async installCoreWithDependencies(bmadDir, coreFiles) {
-    const sourcePath = getModulePath('core');
-    const targetPath = path.join(bmadDir, 'core');
+  async installCoreWithDependencies(bmadDir) {
     await this.installCore(bmadDir);
   }
 
@@ -1525,7 +1515,7 @@ class Installer {
    * @param {string} bmadDir - BMAD installation directory
    * @param {Object} moduleFiles - Module files to install
    */
-  async installModuleWithDependencies(moduleName, bmadDir, moduleFiles) {
+  async installModuleWithDependencies(moduleName, bmadDir) {
     // Get module configuration for conditional installation
     const moduleConfig = this.configCollector.collectedConfig[moduleName] || {};
 
@@ -1797,7 +1787,6 @@ class Installer {
       }
 
       const agentName = agentFile.replace('.md', '');
-      const mdPath = path.join(agentsPath, agentFile);
       const customizePath = path.join(cfgAgentsDir, `${moduleName}-${agentName}.customize.yaml`);
 
       // For .md files that are already compiled, we don't need to do much
@@ -2011,8 +2000,9 @@ class Installer {
         _existingModules: installedModules, // Pass all installed modules for manifest generation
       };
 
-      // Call the standard install method
-      const result = await this.install(installConfig);
+      // Call the standard install method, but skip UI completion for quick updates
+      installConfig._skipCompletion = true;
+      await this.install(installConfig);
 
       // Only succeed the spinner if it's still spinning
       // (install method might have stopped it if folder name changed)
@@ -2140,7 +2130,7 @@ class Installer {
    * Private: Prompt for update action
    */
   async promptUpdateAction() {
-    const inquirer = require('inquirer');
+    const inquirer = require('inquirer').default || require('inquirer');
     return await inquirer.prompt([
       {
         type: 'list',
@@ -2170,7 +2160,7 @@ class Installer {
       return !name.startsWith('_bmad'); // Everything else is manual cleanup
     });
 
-    const inquirer = require('inquirer');
+    const inquirer = require('inquirer').default || require('inquirer');
 
     // Show warning for other offending paths FIRST
     if (otherOffenders.length > 0) {
@@ -2469,7 +2459,7 @@ class Installer {
 
     console.log(chalk.yellow(`\n⚠️  Found ${customModulesWithMissingSources.length} custom module(s) with missing sources:`));
 
-    const inquirer = require('inquirer');
+    const inquirer = require('inquirer').default || require('inquirer');
     let keptCount = 0;
     let updatedCount = 0;
     let removedCount = 0;

@@ -1,0 +1,48 @@
+description = "BMAD BMGD Workflow: game-brief"
+prompt = """
+# Game Brief - Interactive Workflow Configuration
+name: game-brief
+description: "Interactive game brief creation workflow that guides users through defining their game vision with multiple input sources and conversational collaboration"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+game_dev_experience: "{config_source}:game_dev_experience"
+date: system-generated
+
+# Workflow components - Step-file architecture
+installed_path: "{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief"
+instructions: "{installed_path}/workflow.md"
+template: "{installed_path}/templates/game-brief-template.md"
+validation: "{installed_path}/checklist.md"
+
+# Smart input file references - handles brainstorming/research docs
+input_file_patterns:
+  brainstorm:
+    description: "Brainstorming or ideation documents (optional)"
+    whole: "{output_folder}/*brainstorm*.md"
+    sharded: "{output_folder}/*brainstorm*/index.md"
+    load_strategy: "FULL_LOAD"
+
+  research:
+    description: "Market or domain research (optional)"
+    whole: "{output_folder}/*research*.md"
+    sharded: "{output_folder}/*research*/index.md"
+    load_strategy: "FULL_LOAD"
+
+  inspiration:
+    description: "Inspiration or reference documents (optional)"
+    whole: "{output_folder}/*inspiration*.md"
+    sharded: "{output_folder}/*inspiration*/index.md"
+    load_strategy: "FULL_LOAD"
+
+# Output configuration
+default_output_file: "{output_folder}/game-brief.md"
+
+standalone: true
+
+"""

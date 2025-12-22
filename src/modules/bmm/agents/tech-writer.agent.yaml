@@ -21,47 +21,42 @@ agent:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
   menu:
-    - trigger: document-project
+    - trigger: WS or workflow-status or fuzzy match on workflow status
+      workflow: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml"
+      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
+
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Technical Writer"
+
+    - trigger: DP or document-project or fuzzy match on document project
       workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
-      description: Comprehensive project documentation (brownfield analysis, architecture scanning)
+      description: "[DP] Comprehensive project documentation (brownfield analysis, architecture scanning)"
 
-    - trigger: generate-mermaid
+    - trigger: MG or mermaid-gen or fuzzy match on mermaid
       action: "Create a Mermaid diagram based on user description. Ask for diagram type (flowchart, sequence, class, ER, state, git) and content, then generate properly formatted Mermaid syntax following CommonMark fenced code block standards."
-      description: Generate Mermaid diagrams (architecture, sequence, flow, ER, class, state)
+      description: "[MG] Generate Mermaid diagrams (architecture, sequence, flow, ER, class, state)"
 
-    - trigger: create-excalidraw-flowchart
+    - trigger: EF or excalidraw-flowchart or fuzzy match on excalidraw flowchart
       workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-flowchart/workflow.yaml"
-      description: Create Excalidraw flowchart for processes and logic flows
+      description: "[EF] Create Excalidraw flowchart for processes and logic flows"
 
-    - trigger: create-excalidraw-diagram
+    - trigger: ED or excalidraw-diagram or fuzzy match on excalidraw diagram
       workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-diagram/workflow.yaml"
-      description: Create Excalidraw system architecture or technical diagram
+      description: "[ED] Create Excalidraw system architecture or technical diagram"
 
-    - trigger: create-excalidraw-dataflow
+    - trigger: DF or dataflow or fuzzy match on dataflow
       workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-dataflow/workflow.yaml"
-      description: Create Excalidraw data flow diagram
+      description: "[DF] Create Excalidraw data flow diagram"
 
-    - trigger: validate-doc
+    - trigger: VD or validate-doc or fuzzy match on validate doc
       action: "Review the specified document against CommonMark standards, technical writing best practices, and style guide compliance. Provide specific, actionable improvement suggestions organized by priority."
-      description: Validate documentation against standards and best practices
+      description: "[VD] Validate documentation against standards and best practices"
 
-    - trigger: improve-readme
-      action: "Analyze the current README file and suggest improvements for clarity, completeness, and structure. Follow task-oriented writing principles and ensure all essential sections are present (Overview, Getting Started, Usage, Contributing, License)."
-      description: Review and improve README files
-
-    - trigger: explain-concept
+    - trigger: EC or explain-concept or fuzzy match on explain concept
       action: "Create a clear technical explanation with examples and diagrams for a complex concept. Break it down into digestible sections using task-oriented approach. Include code examples and Mermaid diagrams where helpful."
-      description: Create clear technical explanations with examples
+      description: "[EC] Create clear technical explanations with examples"
 
-    - trigger: standards-guide
-      action: "Display the complete documentation standards from {project-root}/_bmad/bmm/data/documentation-standards.md in a clear, formatted way for the user."
-      description: Show BMAD documentation standards reference (CommonMark, Mermaid, OpenAPI)
-
-    - trigger: party-mode
+    - trigger: PS or party-mode or fuzzy match on party mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Bring the whole team in to chat with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+      description: "[PS] Bring the whole team in to chat with other expert agents from the party"

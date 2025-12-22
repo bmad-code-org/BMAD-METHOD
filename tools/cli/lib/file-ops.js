@@ -201,4 +201,64 @@ class FileOps {
   }
 }
 
-module.exports = { FileOps };
+/**
+ * Path utilities for common IDE path patterns
+ */
+const PathUtils = {
+  /**
+   * Get IDE configuration directory path
+   * @param {string} projectDir - Project directory
+   * @param {string} configDir - IDE-specific config directory
+   * @returns {string} Full path to IDE config directory
+   */
+  getConfigDir(projectDir, configDir) {
+    return path.join(projectDir, configDir);
+  },
+
+  /**
+   * Get IDE subdirectory path (e.g., workflows, agents, commands)
+   * @param {string} projectDir - Project directory
+   * @param {string} configDir - IDE-specific config directory
+   * @param {string} subDir - Subdirectory name
+   * @param {...string} additionalDirs - Additional directory levels
+   * @returns {string} Full path to IDE subdirectory
+   */
+  getIdeSubDir(projectDir, configDir, subDir, ...additionalDirs) {
+    const parts = [projectDir, configDir, subDir, ...additionalDirs].filter(Boolean);
+    return path.join(...parts);
+  },
+
+  /**
+   * Get BMAD subdirectory path
+   * @param {string} projectDir - Project directory
+   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} subDir - Subdirectory name
+   * @param {...string} additionalDirs - Additional directory levels
+   * @returns {string} Full path to BMAD subdirectory
+   */
+  getBmadSubDir(projectDir, bmadDir, subDir, ...additionalDirs) {
+    const parts = [projectDir, bmadDir, subDir, ...additionalDirs].filter(Boolean);
+    return path.join(...parts);
+  },
+
+  /**
+   * Get path relative to a base directory
+   * @param {string} baseDir - Base directory
+   * @param {...string} pathParts - Path parts
+   * @returns {string} Full path
+   */
+  relativeTo(baseDir, ...pathParts) {
+    return path.join(baseDir, ...pathParts.filter(Boolean));
+  },
+
+  /**
+   * Join multiple path parts safely (filters out null/undefined/empty)
+   * @param {...string} pathParts - Path parts
+   * @returns {string} Joined path
+   */
+  joinSafe(...pathParts) {
+    return path.join(...pathParts.filter(Boolean));
+  },
+};
+
+module.exports = { FileOps, PathUtils };

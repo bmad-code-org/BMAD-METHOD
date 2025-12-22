@@ -18,35 +18,31 @@ agent:
       - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   menu:
-    - trigger: workflow-status
+    - trigger: WS or workflow-status or fuzzy match on workflow status
       workflow: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml"
-      description: Get workflow status or initialize a workflow if not already done (optional)
+      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
 
-    - trigger: brainstorm-project
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Business Analyst"
+
+    - trigger: BP or brainstorm-project or fuzzy match on brainstorm
       exec: "{project-root}/_bmad/core/workflows/brainstorming/workflow.md"
       data: "{project-root}/_bmad/bmm/data/project-context-template.md"
-      description: Guided Project Brainstorming session with final report (optional)
+      description: "[BP] Guided Project Brainstorming session with final report (optional)"
 
-    - trigger: research
+    - trigger: RS or research or fuzzy match on research
       exec: "{project-root}/_bmad/bmm/workflows/1-analysis/research/workflow.md"
-      description: Guided Research scoped to market, domain, competitive analysis, or technical research (optional)
+      description: "[RS] Guided Research scoped to market, domain, competitive analysis, or technical research (optional)"
 
-    - trigger: product-brief
+    - trigger: PB or product-brief or fuzzy match on product brief
       exec: "{project-root}/_bmad/bmm/workflows/1-analysis/create-product-brief/workflow.md"
-      description: Create a Product Brief (recommended input for PRD)
+      description: "[PB] Create a Product Brief (recommended input for PRD)"
 
-    - trigger: document-project
+    - trigger: DP or document-project or fuzzy match on document project
       workflow: "{project-root}/_bmad/bmm/workflows/document-project/workflow.yaml"
-      description: Document your existing project (optional, but recommended for existing brownfield project efforts)
+      description: "[DP] Document your existing project (optional, but recommended for existing brownfield project efforts)"
 
-    - multi: "[SPM] Start Party Mode (optionally suggest attendees and topic), [CH] Chat"
-      triggers:
-        - party-mode:
-            - input: SPM or fuzzy match start party mode
-            - route: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-            - data: what is being discussed or suggested with the command, along with custom party custom agents if specified
-            - type: exec
-        - expert-chat:
-            - input: CH or fuzzy match validate agent
-            - action: agent responds as expert based on its persona to converse
-            - type: action
+    - trigger: PS or party-mode or fuzzy match on party mode
+      exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
+      description: "[PS] Bring the whole team in to chat with other expert agents from the party"

@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**

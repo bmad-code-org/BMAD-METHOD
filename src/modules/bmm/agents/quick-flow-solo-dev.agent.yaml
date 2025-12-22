@@ -18,14 +18,10 @@ agent:
       - If `**/project-context.md` exists, follow it. If absent, proceed without.
 
   menu:
-    - trigger: create-tech-spec
+    - trigger: TS or tech-spec or fuzzy match on tech spec
       workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml"
-      description: Architect a technical spec with implementation-ready stories (Required first step)
+      description: "[TS] Architect a technical spec with implementation-ready stories (Required first step)"
 
-    - trigger: quick-dev
+    - trigger: QD or quick-dev or fuzzy match on quick dev
       workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml"
-      description: Implement the tech spec end-to-end solo (Core of Quick Flow)
-
-    - trigger: party-mode
-      exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Bring in other experts when I need specialized backup
+      description: "[QD] Implement the tech spec end-to-end solo (Core of Quick Flow)"

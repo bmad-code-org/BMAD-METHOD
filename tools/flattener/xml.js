@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const { escapeXml } = require('../lib/xml-utils');
+const { escapeXml } = require('../cli/lib/xml-utils');
 
 function indentFileContent(content) {
   if (typeof content !== 'string') {

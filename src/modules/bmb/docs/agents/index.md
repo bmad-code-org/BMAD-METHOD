@@ -52,4 +52,4 @@ Agents are authored in YAML with Handlebars templating. The compiler auto-inject
 
 **Critical:** See [Agent Compilation](./agent-compilation.md) to avoid duplicating auto-injected content.
 
-Source: `tools/cli/lib/agent/compiler.js`
+Source: `tools/cli/lib/agent/yaml-xml-builder.js`

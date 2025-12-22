@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 
@@ -26,8 +27,8 @@ class CrushSetup extends BaseIdeSetup {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
     // Create .crush/commands/bmad directory structure
-    const crushDir = path.join(projectDir, this.configDir);
-    const commandsDir = path.join(crushDir, this.commandsDir, 'bmad');
+    const crushDir = PathUtils.getConfigDir(projectDir, this.configDir);
+    const commandsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.commandsDir, 'bmad');
 
     await this.ensureDir(commandsDir);
 
@@ -242,9 +243,9 @@ Part of the BMAD ${workflow.module.toUpperCase()} module.
    */
   async cleanup(projectDir) {
     const fs = require('fs-extra');
-    const bmadCommandsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad');
+    const bmadCommandsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.commandsDir, 'bmad');
 
-    if (await fs.pathExists(bmadCommandsDir)) {
+    if (await this.exists(bmadCommandsDir)) {
       await fs.remove(bmadCommandsDir);
       console.log(chalk.dim(`Removed BMAD commands from Crush`));
     }
@@ -259,8 +260,8 @@ Part of the BMAD ${workflow.module.toUpperCase()} module.
    * @returns {Object} Installation result
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const crushDir = path.join(projectDir, this.configDir);
-    const bmadCommandsDir = path.join(crushDir, this.commandsDir, 'bmad');
+    const crushDir = PathUtils.getConfigDir(projectDir, this.configDir);
+    const bmadCommandsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.commandsDir, 'bmad');
 
     // Create .crush/commands/bmad directory if it doesn't exist
     await fs.ensureDir(bmadCommandsDir);
@@ -286,7 +287,7 @@ The agent will follow the persona and instructions from the main agent file.
     const launcherPath = path.join(bmadCommandsDir, fileName);
 
     // Write the launcher file
-    await fs.writeFile(launcherPath, launcherContent, 'utf8');
+    await this.writeFile(launcherPath, launcherContent);
 
     return {
       ide: 'crush',

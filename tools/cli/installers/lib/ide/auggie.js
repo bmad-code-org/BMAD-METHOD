@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
+const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 
@@ -25,7 +26,7 @@ class AuggieSetup extends BaseIdeSetup {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
     // Always use project directory
-    const location = path.join(projectDir, '.augment', 'commands');
+    const location = PathUtils.getIdeSubDir(projectDir, '.augment', 'commands');
 
     // Clean up old BMAD installation first
     await this.cleanup(projectDir);
@@ -52,11 +53,11 @@ class AuggieSetup extends BaseIdeSetup {
         content: artifact.content,
       }));
 
-    const bmadCommandsDir = path.join(location, 'bmad');
-    const agentsDir = path.join(bmadCommandsDir, 'agents');
-    const tasksDir = path.join(bmadCommandsDir, 'tasks');
-    const toolsDir = path.join(bmadCommandsDir, 'tools');
-    const workflowsDir = path.join(bmadCommandsDir, 'workflows');
+    const bmadCommandsDir = PathUtils.getIdeSubDir(location, 'bmad');
+    const agentsDir = PathUtils.getIdeSubDir(bmadCommandsDir, 'agents');
+    const tasksDir = PathUtils.getIdeSubDir(bmadCommandsDir, 'tasks');
+    const toolsDir = PathUtils.getIdeSubDir(bmadCommandsDir, 'tools');
+    const workflowsDir = PathUtils.getIdeSubDir(bmadCommandsDir, 'workflows');
 
     await this.ensureDir(agentsDir);
     await this.ensureDir(tasksDir);
@@ -179,10 +180,10 @@ BMAD ${workflow.module.toUpperCase()} module
     const fs = require('fs-extra');
 
     // Only clean up project directory
-    const location = path.join(projectDir, '.augment', 'commands');
+    const location = PathUtils.getIdeSubDir(projectDir, '.augment', 'commands');
     const bmadDir = path.join(location, 'bmad');
 
-    if (await fs.pathExists(bmadDir)) {
+    if (await this.exists(bmadDir)) {
       await fs.remove(bmadDir);
       console.log(chalk.dim(`  Removed old BMAD commands`));
     }
@@ -198,12 +199,12 @@ BMAD ${workflow.module.toUpperCase()} module
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
     // Auggie uses .augment/commands directory
-    const location = path.join(projectDir, '.augment', 'commands');
-    const bmadCommandsDir = path.join(location, 'bmad');
-    const agentsDir = path.join(bmadCommandsDir, 'agents');
+    const location = PathUtils.getIdeSubDir(projectDir, '.augment', 'commands');
+    const bmadCommandsDir = PathUtils.getIdeSubDir(location, 'bmad');
+    const agentsDir = PathUtils.getIdeSubDir(bmadCommandsDir, 'agents');
 
     // Create .augment/commands/bmad/agents directory if it doesn't exist
-    await fs.ensureDir(agentsDir);
+    await this.ensureDir(agentsDir);
 
     // Create custom agent launcher
     const launcherContent = `---
@@ -230,7 +231,7 @@ BMAD Custom agent
     const launcherPath = path.join(agentsDir, fileName);
 
     // Write the launcher file
-    await fs.writeFile(launcherPath, launcherContent, 'utf8');
+    await this.writeFile(launcherPath, launcherContent);
 
     return {
       ide: 'auggie',
