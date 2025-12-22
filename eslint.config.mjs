@@ -18,6 +18,10 @@ export default [
       'test/fixtures/**/*.yaml',
       '_bmad/**',
       '_bmad*/**',
+      // Docusaurus build artifacts
+      '.docusaurus/**',
+      'build/**',
+      'website/**',
       // Gitignored patterns
       'z*/**', // z-samples, z1, z2, etc.
       '.claude/**',
@@ -77,9 +81,9 @@ export default [
     },
   },
 
-  // CLI/CommonJS scripts under tools/** and test/**
+  // CLI scripts under tools/** and test/**
   {
-    files: ['tools/**/*.js', 'test/**/*.js'],
+    files: ['tools/**/*.js', 'tools/**/*.mjs', 'test/**/*.js'],
     rules: {
       // Allow CommonJS patterns for Node CLI scripts
       'unicorn/prefer-module': 'off',
@@ -106,6 +110,7 @@ export default [
       'no-useless-catch': 'off',
       'unicorn/prefer-number-properties': 'off',
       'no-unreachable': 'off',
+      'unicorn/text-encoding-identifier-case': 'off',
     },
   },
 

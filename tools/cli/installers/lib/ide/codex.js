@@ -3,7 +3,6 @@ const fs = require('fs-extra');
 const os = require('node:os');
 const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
-const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { getTasksFromBmad } = require('./shared/bmad-artifacts');
@@ -22,7 +21,7 @@ class CodexSetup extends BaseIdeSetup {
    * @returns {Object} Collected configuration
    */
   async collectConfiguration(options = {}) {
-    const inquirer = require('inquirer').default || require('inquirer');
+    const inquirer = require('inquirer');
 
     let confirmed = false;
     let installLocation = 'global';
@@ -131,7 +130,7 @@ class CodexSetup extends BaseIdeSetup {
     const projectSpecificDir = this.getCodexPromptDir(projectDir_local, 'project');
 
     // Check global location
-    if (await this.exists(globalDir)) {
+    if (await fs.pathExists(globalDir)) {
       const entries = await fs.readdir(globalDir);
       if (entries.some((entry) => entry.startsWith('bmad-'))) {
         return true;
@@ -139,7 +138,7 @@ class CodexSetup extends BaseIdeSetup {
     }
 
     // Check project-specific location
-    if (await this.exists(projectSpecificDir)) {
+    if (await fs.pathExists(projectSpecificDir)) {
       const entries = await fs.readdir(projectSpecificDir);
       if (entries.some((entry) => entry.startsWith('bmad-'))) {
         return true;
@@ -208,7 +207,7 @@ class CodexSetup extends BaseIdeSetup {
 
   getCodexPromptDir(projectDir = null, location = 'global') {
     if (location === 'project' && projectDir) {
-      return PathUtils.getIdeSubDir(projectDir, '.codex', 'prompts');
+      return path.join(projectDir, '.codex', 'prompts');
     }
     return path.join(os.homedir(), '.codex', 'prompts');
   }
@@ -219,7 +218,7 @@ class CodexSetup extends BaseIdeSetup {
     for (const artifact of artifacts) {
       const flattenedName = this.flattenFilename(artifact.relativePath);
       const targetPath = path.join(destDir, flattenedName);
-      await this.writeFile(targetPath, artifact.content);
+      await fs.writeFile(targetPath, artifact.content);
       written++;
     }
 
@@ -227,7 +226,7 @@ class CodexSetup extends BaseIdeSetup {
   }
 
   async clearOldBmadFiles(destDir) {
-    if (!(await this.exists(destDir))) {
+    if (!(await fs.pathExists(destDir))) {
       return;
     }
 
@@ -249,7 +248,7 @@ class CodexSetup extends BaseIdeSetup {
   }
 
   async readAndProcessWithProject(filePath, metadata, projectDir) {
-    const content = await this.readFile(filePath);
+    const content = await fs.readFile(filePath, 'utf8');
     return super.processContent(content, metadata, projectDir);
   }
 
@@ -377,7 +376,7 @@ You must fully embody this agent's persona and follow all activation instruction
 
     const fileName = `bmad-custom-agents-${agentName}.md`;
     const launcherPath = path.join(destDir, fileName);
-    await this.writeFile(launcherPath, launcherContent);
+    await fs.writeFile(launcherPath, launcherContent, 'utf8');
 
     return {
       path: path.relative(projectDir, launcherPath),

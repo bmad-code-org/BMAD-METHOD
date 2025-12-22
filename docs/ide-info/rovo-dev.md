@@ -350,7 +350,6 @@ For example:
 
 - [Rovo Dev Official Documentation](https://www.atlassian.com/rovo-dev)
 - [BMAD-METHOD Installation Guide](./installation.md)
-- [IDE Handler Architecture](./ide-handlers.md)
 - [Rovo Dev Configuration Reference](https://www.atlassian.com/rovo-dev/configuration)
 
 ## Examples
@@ -384,5 +383,4 @@ Subagent output: Detailed architecture proposal with implementation plan
 For issues or questions about:
 
 - **Rovo Dev**: See [Atlassian Rovo Dev Documentation](https://www.atlassian.com/rovo-dev)
-- **BMAD-METHOD**: See [BMAD-METHOD README](../README.md)
-- **IDE Integration**: See [IDE Handler Guide](./ide-handlers.md)
+- **BMAD-METHOD**: See [BMAD-METHOD README](./project-readme)

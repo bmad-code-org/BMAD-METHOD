@@ -1,0 +1,52 @@
+/**
+ * BMAD Documentation Custom Styles
+ */
+
+:root {
+  --ifm-color-primary: #0d9488;
+  --ifm-color-primary-dark: #0b847a;
+  --ifm-color-primary-darker: #0a7d73;
+  --ifm-color-primary-darkest: #08665f;
+  --ifm-color-primary-light: #0fa596;
+  --ifm-color-primary-lighter: #10ac9d;
+  --ifm-color-primary-lightest: #14c9b8;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #2dd4bf;
+  --ifm-color-primary-dark: #1bc4af;
+  --ifm-color-primary-darker: #1ab9a5;
+  --ifm-color-primary-darkest: #159888;
+  --ifm-color-primary-light: #4adcc9;
+  --ifm-color-primary-lighter: #55dece;
+  --ifm-color-primary-lightest: #7de7db;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Navbar styling */
+.navbar {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Footer styling */
+.footer {
+  background-color: var(--ifm-color-primary-darkest);
+}
+
+/* Code block improvements */
+.prism-code {
+  font-size: 0.9rem;
+}
+
+/* Table improvements */
+table {
+  display: table;
+  width: 100%;
+}
+
+/* Admonition improvements */
+.admonition {
+  margin-bottom: 1.5rem;
+}

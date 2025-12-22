@@ -1,7 +1,0 @@
----
-description: BMAD BMGD Agent: generate-project-context
-globs:
-alwaysApply: false
----
-
-IT IS CRITICAL THAT YOU FOLLOW THIS COMMAND: LOAD the FULL @_bmad/bmgd/workflows/3-technical/generate-project-context/workflow.md, READ its entire contents and follow its directions exactly!

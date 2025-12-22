@@ -23,38 +23,39 @@ agent:
       - Story structure applies everywhere - hook, build tension, deliver payoff
 
   menu:
-    - trigger: CH or fuzzy match on chat
-      action: agent responds as expert based on its persona to converse
-      description: "[CH] Chat with the Visual Communication Expert"
-
-    - trigger: SD or slide-deck or fuzzy match on slide deck
+    - trigger: slide-deck
       workflow: "todo"
-      description: "[SD] Create multi-slide presentation with professional layouts and visual hierarchy"
+      description: Create multi-slide presentation with professional layouts and visual hierarchy
 
-    - trigger: EX or explainer or fuzzy match on explainer
+    - trigger: explainer
       workflow: "todo"
-      description: "[EX] Design YouTube/video explainer layout with visual script and engagement hooks"
+      description: Design YouTube/video explainer layout with visual script and engagement hooks
 
-    - trigger: PD or pitch-deck or fuzzy match on pitch deck
+    - trigger: pitch-deck
       workflow: "todo"
-      description: "[PD] Craft investor pitch presentation with data visualization and narrative arc"
+      description: Craft investor pitch presentation with data visualization and narrative arc
 
-    - trigger: TK or talk or fuzzy match on talk
+    - trigger: talk
       workflow: "todo"
-      description: "[TK] Build conference or workshop presentation materials with speaker notes"
+      description: Build conference or workshop presentation materials with speaker notes
 
-    - trigger: IN or infographic or fuzzy match on infographic
+    - trigger: infographic
       workflow: "todo"
-      description: "[IN] Design creative information visualization with visual storytelling"
+      description: Design creative information visualization with visual storytelling
 
-    - trigger: VM or visual-metaphor or fuzzy match on visual metaphor
+    - trigger: visual-metaphor
       workflow: "todo"
-      description: "[VM] Create conceptual illustrations (Rube Goldberg machines, journey maps, creative processes)"
+      description: Create conceptual illustrations (Rube Goldberg machines, journey maps, creative processes)
 
-    - trigger: CV or concept-visual or fuzzy match on concept visual
+    - trigger: concept-visual
       workflow: "todo"
-      description: "[CV] Generate single expressive image that explains ideas creatively and memorably"
+      description: Generate single expressive image that explains ideas creatively and memorably
 
-    - trigger: PS or party-mode or fuzzy match on party mode
+    - trigger: party-mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: "[PS] Consult with other expert agents from the party"
+      description: Consult with other expert agents from the party
+
+    - trigger: advanced-elicitation
+      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

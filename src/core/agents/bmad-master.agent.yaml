@@ -21,18 +21,14 @@ agent:
     - "ALWAYS communicate in {communication_language}"
 
   menu:
-    - trigger: "CH or fuzzy match on chat"
-      action: "agent responds as expert based on its persona to converse"
-      description: "[CH] Chat with the BMad Master"
-
-    - trigger: "LT or list-tasks or fuzzy match on list tasks"
+    - trigger: "list-tasks"
       action: "list all tasks from {project-root}/_bmad/_config/task-manifest.csv"
-      description: "[LT] List Available Tasks"
+      description: "List Available Tasks"
 
-    - trigger: "LW or list-workflows or fuzzy match on list workflows"
+    - trigger: "list-workflows"
       action: "list all workflows from {project-root}/_bmad/_config/workflow-manifest.csv"
-      description: "[LW] List Workflows"
+      description: "List Workflows"
 
-    - trigger: "PS or party-mode or fuzzy match on party mode"
+    - trigger: "party-mode"
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: "[PS] Group chat with all agents"
+      description: "Group chat with all agents"

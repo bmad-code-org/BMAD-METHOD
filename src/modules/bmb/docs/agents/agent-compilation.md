@@ -8,7 +8,7 @@ What the compiler auto-injects. **DO NOT duplicate these in your YAML.**
 agent.yaml → Handlebars processing → XML generation → frontmatter.md
 ```
 
-Source: `tools/cli/lib/agent/yaml-xml-builder.js`
+Source: `tools/cli/lib/agent/compiler.js`
 
 ## File Naming Convention
 
