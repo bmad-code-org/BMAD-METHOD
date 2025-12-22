@@ -104,52 +104,104 @@
       </action>
       <action>Find at least 3 more specific, actionable issues</action>
     </check>
+
+    <!-- Store context-aware findings for later consolidation -->
+    <action>Set {{context_aware_findings}} = all issues found in this step (numbered list with file:line locations)</action>
   </step>
 
-  <step n="4" goal="Present findings and fix them">
-    <action>Categorize findings: HIGH (must fix), MEDIUM (should fix), LOW (nice to fix)</action>
+  <step n="4" goal="Run information-asymmetric adversarial review">
+    <critical>Reviewer has FULL repo access but NO knowledge of WHY changes were made</critical>
+    <critical>DO NOT include story file in prompt - asymmetry is about intent, not visibility</critical>
+    <critical>Reviewer can explore codebase to understand impact, but judges changes on merit alone</critical>
+
+    <!-- Construct diff of story-related changes -->
+    <action>Construct the diff of story-related changes:
+      - Uncommitted changes: `git diff` + `git diff --cached`
+      - Committed changes (if story spans commits): `git log --oneline` to find relevant commits, then `git diff base..HEAD`
+      - Exclude story file from diff: `git diff -- . ':!{{story_path}}'`
+    </action>
+    <action>Set {{asymmetric_target}} = the diff output (reviewer can explore repo but is prompted to review this diff)</action>
+
+    <!-- Execution hierarchy: cleanest context first -->
+    <check if="Task tool available (can spawn subagent)">
+      <action>Launch general-purpose subagent with adversarial prompt:
+        "You are a cynical, jaded code reviewer with zero patience for sloppy work.
+        A clueless weasel submitted the following changes and you expect to find problems.
+        Find at least ten findings to fix or improve. Look for what's missing, not just what's wrong.
+        Number each finding (1., 2., 3., ...). Be skeptical of everything.
+
+        Changes to review:
+        {{asymmetric_target}}"
+      </action>
+      <action>Collect numbered findings into {{asymmetric_findings}}</action>
+    </check>
+
+    <check if="no Task tool BUT can use Bash to invoke CLI for fresh context">
+      <action>Execute adversarial review via CLI (e.g., claude --print) in fresh context with same prompt</action>
+      <action>Collect numbered findings into {{asymmetric_findings}}</action>
+    </check>
+
+    <check if="cannot create clean slate agent by any means (fallback)">
+      <action>Execute adversarial prompt inline in main context</action>
+      <action>Note: Has context pollution but cynical reviewer persona still adds significant value</action>
+      <action>Collect numbered findings into {{asymmetric_findings}}</action>
+    </check>
+  </step>
+
+  <step n="5" goal="Consolidate findings and present to user">
+    <critical>Merge findings from BOTH context-aware review (step 3) AND asymmetric review (step 4)</critical>
+
+    <action>Combine {{context_aware_findings}} from step 3 with {{asymmetric_findings}} from step 4</action>
+
+    <action>Deduplicate findings:
+      - Identify findings that describe the same underlying issue
+      - Keep the more detailed/actionable version
+      - Note when both reviews caught the same issue (validates severity)
+    </action>
+
+    <action>Assess each finding:
+      - Is this a real issue or noise/false positive?
+      - Assign severity: 🔴 CRITICAL, 🟠 HIGH, 🟡 MEDIUM, 🟢 LOW
+    </action>
+
+    <action>Filter out non-issues:
+      - Remove false positives
+      - Remove nitpicks that do not warrant action
+      - Keep anything that could cause problems in production
+    </action>
+
+    <action>Sort by severity (CRITICAL → HIGH → MEDIUM → LOW)</action>
+
     <action>Set {{fixed_count}} = 0</action>
     <action>Set {{action_count}} = 0</action>
 
     <output>**🔥 CODE REVIEW FINDINGS, {user_name}!**
 
-      **Story:** {{story_file}}
+      **Story:** {{story_path}}
       **Git vs Story Discrepancies:** {{git_discrepancy_count}} found
-      **Issues Found:** {{high_count}} High, {{medium_count}} Medium, {{low_count}} Low
+      **Issues Found:** {{critical_count}} Critical, {{high_count}} High, {{medium_count}} Medium, {{low_count}} Low
 
-      ## 🔴 CRITICAL ISSUES
-      - Tasks marked [x] but not actually implemented
-      - Acceptance Criteria not implemented
-      - Story claims files changed but no git evidence
-      - Security vulnerabilities
+      | # | Severity | Summary | Location |
+      |---|----------|---------|----------|
+      {{findings_table}}
 
-      ## 🟡 MEDIUM ISSUES
-      - Files changed but not documented in story File List
-      - Uncommitted changes not tracked
-      - Performance problems
-      - Poor test coverage/quality
-      - Code maintainability issues
-
-      ## 🟢 LOW ISSUES
-      - Code style improvements
-      - Documentation gaps
-      - Git commit message quality
+      **{{total_count}} issues found** ({{critical_count}} critical, {{high_count}} high, {{medium_count}} medium, {{low_count}} low)
     </output>
 
     <ask>What should I do with these issues?
 
-      1. **Fix them automatically** - I'll update the code and tests
+      1. **Fix them automatically** - I'll fix all HIGH and CRITICAL, you approve each
       2. **Create action items** - Add to story Tasks/Subtasks for later
-      3. **Show me details** - Deep dive into specific issues
+      3. **Details on #N** - Explain specific issue
 
       Choose [1], [2], or specify which issue to examine:</ask>
 
     <check if="user chooses 1">
-      <action>Fix all HIGH and MEDIUM issues in the code</action>
+      <action>Fix all CRITICAL and HIGH issues in the code</action>
       <action>Add/update tests as needed</action>
       <action>Update File List in story if files changed</action>
       <action>Update story Dev Agent Record with fixes applied</action>
-      <action>Set {{fixed_count}} = number of HIGH and MEDIUM issues fixed</action>
+      <action>Set {{fixed_count}} = number of CRITICAL and HIGH issues fixed</action>
       <action>Set {{action_count}} = 0</action>
     </check>
 
@@ -166,13 +218,13 @@
     </check>
   </step>
 
-  <step n="5" goal="Update story status and sync sprint tracking">
+  <step n="6" goal="Update story status and sync sprint tracking">
     <!-- Determine new status based on review outcome -->
-    <check if="all HIGH and MEDIUM issues fixed AND all ACs implemented">
+    <check if="all CRITICAL and HIGH issues fixed AND all ACs implemented">
       <action>Set {{new_status}} = "done"</action>
       <action>Update story Status field to "done"</action>
     </check>
-    <check if="HIGH or MEDIUM issues remain OR ACs not fully implemented">
+    <check if="CRITICAL or HIGH issues remain OR ACs not fully implemented">
       <action>Set {{new_status}} = "in-progress"</action>
       <action>Update story Status field to "in-progress"</action>
     </check>
