@@ -228,6 +228,9 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 - Use `*atdd` before coding when the team can adopt ATDD; share its checklist with the dev agent.
 - Post-implementation, keep `*trace` current, expand coverage with `*automate`, optionally review test quality with `*test-review`. For release gate, run `*trace` with Phase 2 enabled to get deployment decision.
 - Use `*test-review` after `*atdd` to validate generated tests, after `*automate` to ensure regression quality, or before gate for final audit.
+- Clarification: `*test-review` is optional and only audits existing tests; run it after `*atdd` or `*automate` when you want a quality review, not as a required step.
+- Clarification: `*atdd` outputs are not auto-consumed; share the ATDD doc/tests with the dev workflow. `*trace` does not run `*atdd`—it evaluates existing artifacts for coverage and gate readiness.
+- Clarification: `*ci` is a one-time setup; recommended early (Phase 3 or before feature work), but it can be done later if it was skipped.
 
 </details>
 
