@@ -250,8 +250,8 @@
 
 ## Follow-on Workflows (Manual)
 
-- Run `atdd` to generate failing P0 tests (separate workflow; not auto-run).
-- Run `automate` for broader coverage once implementation exists.
+- Run `*atdd` to generate failing P0 tests (separate workflow; not auto-run).
+- Run `*automate` for broader coverage once implementation exists.
 
 ---
 

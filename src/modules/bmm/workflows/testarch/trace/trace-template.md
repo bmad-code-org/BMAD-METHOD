@@ -6,7 +6,7 @@
 
 ---
 
-Note: This workflow does not generate tests. If gaps exist, run `atdd` or `automate` to create coverage.
+Note: This workflow does not generate tests. If gaps exist, run `*atdd` or `*automate` to create coverage.
 
 ## PHASE 1: REQUIREMENTS TRACEABILITY
 
