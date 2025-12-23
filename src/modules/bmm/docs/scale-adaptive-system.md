@@ -611,7 +611,7 @@ Run `workflow-init` on existing projects to migrate to new tracking system. It d
 - **[Brownfield Guide](./brownfield-guide.md)** - Existing codebase workflows
 - **[Glossary](./glossary.md)** - Complete terminology
 - **[FAQ](./faq.md)** - Common questions
-- **[Workflows Guide](./README.md#-workflow-guides)** - Complete workflow reference
+- **[Workflows Guide](./index.md#-workflow-guides)** - Complete workflow reference
 
 ---
 

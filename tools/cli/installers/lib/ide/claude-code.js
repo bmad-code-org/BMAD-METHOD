@@ -2,7 +2,6 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
-const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
@@ -49,7 +48,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
         try {
           // Load injection configuration
-          const configContent = await this.readFile(injectionConfigPath);
+          const configContent = await fs.readFile(injectionConfigPath, 'utf8');
           const injectionConfig = yaml.parse(configContent);
 
           // Ask about subagents if they exist and we haven't asked yet
@@ -58,7 +57,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
             if (config.subagentChoices.install !== 'none') {
               // Ask for installation location
-              const inquirer = require('inquirer').default || require('inquirer');
+              const inquirer = require('inquirer');
               const locationAnswer = await inquirer.prompt([
                 {
                   type: 'list',
@@ -88,9 +87,9 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir) {
-    const bmadCommandsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.commandsDir, 'bmad');
+    const bmadCommandsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad');
 
-    if (await this.exists(bmadCommandsDir)) {
+    if (await fs.pathExists(bmadCommandsDir)) {
       await fs.remove(bmadCommandsDir);
       console.log(chalk.dim(`  Removed old BMAD commands from ${this.name}`));
     }
@@ -112,9 +111,9 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     await this.cleanup(projectDir);
 
     // Create .claude/commands directory structure
-    const claudeDir = PathUtils.getConfigDir(projectDir, this.configDir);
-    const commandsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.commandsDir);
-    const bmadCommandsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.commandsDir, 'bmad');
+    const claudeDir = path.join(projectDir, this.configDir);
+    const commandsDir = path.join(claudeDir, this.commandsDir);
+    const bmadCommandsDir = path.join(commandsDir, 'bmad');
 
     await this.ensureDir(bmadCommandsDir);
 
@@ -160,7 +159,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     let workflowCommandCount = 0;
     for (const artifact of workflowArtifacts) {
       if (artifact.type === 'workflow-command') {
-        const moduleWorkflowsDir = PathUtils.getIdeSubDir(bmadCommandsDir, artifact.module, 'workflows');
+        const moduleWorkflowsDir = path.join(bmadCommandsDir, artifact.module, 'workflows');
         await this.ensureDir(moduleWorkflowsDir);
         const commandPath = path.join(moduleWorkflowsDir, path.basename(artifact.relativePath));
         await this.writeFile(commandPath, artifact.content);
@@ -199,7 +198,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * Read and process file content
    */
   async readAndProcess(filePath, metadata) {
-    const content = await this.readFile(filePath);
+    const content = await fs.readFile(filePath, 'utf8');
     return this.processContent(content, metadata);
   }
 
@@ -219,7 +218,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
     // Add core agents
     const corePath = getModulePath('core');
-    if (await this.exists(path.join(corePath, 'agents'))) {
+    if (await fs.pathExists(path.join(corePath, 'agents'))) {
       const coreAgents = await getAgentsFromDir(path.join(corePath, 'agents'), 'core');
       agents.push(...coreAgents);
     }
@@ -229,7 +228,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
       const modulePath = path.join(sourceDir, moduleName);
       const agentsPath = path.join(modulePath, 'agents');
 
-      if (await this.exists(agentsPath)) {
+      if (await fs.pathExists(agentsPath)) {
         const moduleAgents = await getAgentsFromDir(agentsPath, moduleName);
         agents.push(...moduleAgents);
       }
@@ -306,7 +305,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         choices = await this.promptSubagentInstallation(config.subagents);
 
         if (choices.install !== 'none') {
-          const inquirer = require('inquirer').default || require('inquirer');
+          const inquirer = require('inquirer');
           const locationAnswer = await inquirer.prompt([
             {
               type: 'list',
@@ -343,7 +342,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * Prompt user for subagent installation preferences
    */
   async promptSubagentInstallation(subagentConfig) {
-    const inquirer = require('inquirer').default || require('inquirer');
+    const inquirer = require('inquirer');
 
     // First ask if they want to install subagents
     const { install } = await inquirer.prompt([
@@ -396,7 +395,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     const targetPath = path.join(projectDir, injection.file);
 
     if (await this.exists(targetPath)) {
-      let content = await this.readFile(targetPath);
+      let content = await fs.readFile(targetPath, 'utf8');
       const marker = `<!-- IDE-INJECT-POINT: ${injection.point} -->`;
 
       if (content.includes(marker)) {
@@ -408,7 +407,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         }
 
         content = content.replace(marker, injectionContent);
-        await this.writeFile(targetPath, content);
+        await fs.writeFile(targetPath, content);
         console.log(chalk.dim(`    Injected: ${injection.point} → ${injection.file}`));
       }
     }
@@ -426,7 +425,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
       targetDir = path.join(os.homedir(), '.claude', 'agents');
       console.log(chalk.dim(`  Installing subagents globally to: ~/.claude/agents/`));
     } else {
-      targetDir = PathUtils.getIdeSubDir(projectDir, '.claude', 'agents');
+      targetDir = path.join(projectDir, '.claude', 'agents');
       console.log(chalk.dim(`  Installing subagents to project: .claude/agents/`));
     }
 
@@ -472,7 +471,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * @returns {Object|null} Info about created command
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const customAgentsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.commandsDir, 'bmad', 'custom', 'agents');
+    const customAgentsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad', 'custom', 'agents');
 
     if (!(await this.exists(path.join(projectDir, this.configDir)))) {
       return null; // IDE not configured for this project

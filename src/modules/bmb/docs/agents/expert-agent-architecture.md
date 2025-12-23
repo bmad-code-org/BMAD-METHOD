@@ -223,7 +223,7 @@ Same as simple agents, PLUS:
 
 ## Reference Example
 
-See: `bmb/reference/agents/expert-examples/journal-keeper/`
+See: [journal-keeper/](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/expert-examples/journal-keeper)
 
 Features demonstrated:
 

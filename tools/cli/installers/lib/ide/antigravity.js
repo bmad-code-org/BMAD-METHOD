@@ -2,7 +2,6 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
-const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
@@ -59,7 +58,7 @@ class AntigravitySetup extends BaseIdeSetup {
 
             if (config.subagentChoices.install !== 'none') {
               // Ask for installation location
-              const inquirer = require('inquirer').default || require('inquirer');
+              const inquirer = require('inquirer');
               const locationAnswer = await inquirer.prompt([
                 {
                   type: 'list',
@@ -89,9 +88,9 @@ class AntigravitySetup extends BaseIdeSetup {
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir) {
-    const bmadWorkflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir, 'bmad');
+    const bmadWorkflowsDir = path.join(projectDir, this.configDir, this.workflowsDir, 'bmad');
 
-    if (await this.exists(bmadWorkflowsDir)) {
+    if (await fs.pathExists(bmadWorkflowsDir)) {
       await fs.remove(bmadWorkflowsDir);
       console.log(chalk.dim(`  Removed old BMAD workflows from ${this.name}`));
     }
@@ -113,9 +112,9 @@ class AntigravitySetup extends BaseIdeSetup {
     await this.cleanup(projectDir);
 
     // Create .agent/workflows directory structure
-    const agentDir = PathUtils.getConfigDir(projectDir, this.configDir);
-    const workflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir);
-    const bmadWorkflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir, 'bmad');
+    const agentDir = path.join(projectDir, this.configDir);
+    const workflowsDir = path.join(agentDir, this.workflowsDir);
+    const bmadWorkflowsDir = path.join(workflowsDir, 'bmad');
 
     await this.ensureDir(bmadWorkflowsDir);
 
@@ -191,7 +190,7 @@ class AntigravitySetup extends BaseIdeSetup {
    * Read and process file content
    */
   async readAndProcess(filePath, metadata) {
-    const content = await this.readFile(filePath);
+    const content = await fs.readFile(filePath, 'utf8');
     return this.processContent(content, metadata);
   }
 
@@ -211,7 +210,7 @@ class AntigravitySetup extends BaseIdeSetup {
 
     // Add core agents
     const corePath = getModulePath('core');
-    if (await this.exists(path.join(corePath, 'agents'))) {
+    if (await fs.pathExists(path.join(corePath, 'agents'))) {
       const coreAgents = await getAgentsFromDir(path.join(corePath, 'agents'), 'core');
       agents.push(...coreAgents);
     }
@@ -221,7 +220,7 @@ class AntigravitySetup extends BaseIdeSetup {
       const modulePath = path.join(sourceDir, moduleName);
       const agentsPath = path.join(modulePath, 'agents');
 
-      if (await this.exists(agentsPath)) {
+      if (await fs.pathExists(agentsPath)) {
         const moduleAgents = await getAgentsFromDir(agentsPath, moduleName);
         agents.push(...moduleAgents);
       }
@@ -298,7 +297,7 @@ class AntigravitySetup extends BaseIdeSetup {
         choices = await this.promptSubagentInstallation(config.subagents);
 
         if (choices.install !== 'none') {
-          const inquirer = require('inquirer').default || require('inquirer');
+          const inquirer = require('inquirer');
           const locationAnswer = await inquirer.prompt([
             {
               type: 'list',
@@ -335,7 +334,7 @@ class AntigravitySetup extends BaseIdeSetup {
    * Prompt user for subagent installation preferences
    */
   async promptSubagentInstallation(subagentConfig) {
-    const inquirer = require('inquirer').default || require('inquirer');
+    const inquirer = require('inquirer');
 
     // First ask if they want to install subagents
     const { install } = await inquirer.prompt([
@@ -388,7 +387,7 @@ class AntigravitySetup extends BaseIdeSetup {
     const targetPath = path.join(projectDir, injection.file);
 
     if (await this.exists(targetPath)) {
-      let content = await this.readFile(targetPath);
+      let content = await fs.readFile(targetPath, 'utf8');
       const marker = `<!-- IDE-INJECT-POINT: ${injection.point} -->`;
 
       if (content.includes(marker)) {
@@ -400,7 +399,7 @@ class AntigravitySetup extends BaseIdeSetup {
         }
 
         content = content.replace(marker, injectionContent);
-        await this.writeFile(targetPath, content);
+        await fs.writeFile(targetPath, content);
         console.log(chalk.dim(`    Injected: ${injection.point} → ${injection.file}`));
       }
     }
@@ -418,7 +417,7 @@ class AntigravitySetup extends BaseIdeSetup {
       targetDir = path.join(os.homedir(), '.agent', 'agents');
       console.log(chalk.dim(`  Installing subagents globally to: ~/.agent/agents/`));
     } else {
-      targetDir = PathUtils.getIdeSubDir(projectDir, '.agent', 'agents');
+      targetDir = path.join(projectDir, '.agent', 'agents');
       console.log(chalk.dim(`  Installing subagents to project: .agent/agents/`));
     }
 
@@ -465,11 +464,11 @@ class AntigravitySetup extends BaseIdeSetup {
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
     // Create .agent/workflows/bmad directory structure (same as regular agents)
-    const agentDir = PathUtils.getConfigDir(projectDir, this.configDir);
-    const workflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir);
-    const bmadWorkflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir, 'bmad');
+    const agentDir = path.join(projectDir, this.configDir);
+    const workflowsDir = path.join(agentDir, this.workflowsDir);
+    const bmadWorkflowsDir = path.join(workflowsDir, 'bmad');
 
-    await this.ensureDir(bmadWorkflowsDir);
+    await fs.ensureDir(bmadWorkflowsDir);
 
     // Create custom agent launcher with same pattern as regular agents
     const launcherContent = `name: '${agentName}'
@@ -494,7 +493,7 @@ usage: |
     const launcherPath = path.join(bmadWorkflowsDir, fileName);
 
     // Write the launcher file
-    await this.writeFile(launcherPath, launcherContent);
+    await fs.writeFile(launcherPath, launcherContent, 'utf8');
 
     return {
       ide: 'antigravity',

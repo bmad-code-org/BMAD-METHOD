@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('node:path');
-const { getSourcePath } = require('../project-root');
+const { getSourcePath } = require('./project-root');
 
 /**
  * Builds activation blocks from fragments based on agent profile

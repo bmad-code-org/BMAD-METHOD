@@ -2,7 +2,6 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
-const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { getAgentsFromBmad, getTasksFromBmad } = require('./shared/bmad-artifacts');
@@ -27,8 +26,9 @@ class ClineSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Create .clinerules/workflows directory using shared utilities
-    const workflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir);
+    // Create .clinerules/workflows directory
+    const clineDir = path.join(projectDir, this.configDir);
+    const workflowsDir = path.join(clineDir, this.workflowsDir);
 
     await this.ensureDir(workflowsDir);
 
@@ -72,9 +72,9 @@ class ClineSetup extends BaseIdeSetup {
    * Detect Cline installation by checking for .clinerules/workflows directory
    */
   async detect(projectDir) {
-    const workflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir);
+    const workflowsDir = path.join(projectDir, this.configDir, this.workflowsDir);
 
-    if (!(await this.exists(workflowsDir))) {
+    if (!(await fs.pathExists(workflowsDir))) {
       return false;
     }
 
@@ -159,8 +159,8 @@ class ClineSetup extends BaseIdeSetup {
 
     for (const artifact of artifacts) {
       const flattenedName = this.flattenFilename(artifact.relativePath);
-      const targetPath = PathUtils.joinSafe(destDir, flattenedName);
-      await this.writeFile(targetPath, artifact.content);
+      const targetPath = path.join(destDir, flattenedName);
+      await fs.writeFile(targetPath, artifact.content);
       written++;
     }
 
@@ -204,7 +204,7 @@ class ClineSetup extends BaseIdeSetup {
    * Cleanup Cline configuration
    */
   async cleanup(projectDir) {
-    const workflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir);
+    const workflowsDir = path.join(projectDir, this.configDir, this.workflowsDir);
     await this.clearOldBmadFiles(workflowsDir);
     console.log(chalk.dim(`Removed ${this.name} BMAD configuration`));
   }
@@ -218,10 +218,11 @@ class ClineSetup extends BaseIdeSetup {
    * @returns {Object} Installation result
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const workflowsDir = PathUtils.getIdeSubDir(projectDir, this.configDir, this.workflowsDir);
+    const clineDir = path.join(projectDir, this.configDir);
+    const workflowsDir = path.join(clineDir, this.workflowsDir);
 
     // Create .clinerules/workflows directory if it doesn't exist
-    await this.ensureDir(workflowsDir);
+    await fs.ensureDir(workflowsDir);
 
     // Create custom agent launcher workflow
     const launcherContent = `name: ${agentName}

@@ -28,46 +28,43 @@ agent:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
   menu:
-    - trigger: WS or workflow-status or fuzzy match on workflow status
-      workflow: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml"
-      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
-
-    - trigger: CH or fuzzy match on chat
-      action: agent responds as expert based on its persona to converse
-      description: "[CH] Chat with the Master Test Architect"
-
-    - trigger: TF or test-framework or fuzzy match on test framework
+    - trigger: framework
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/framework/workflow.yaml"
-      description: "[TF] Initialize production-ready test framework architecture"
+      description: Initialize production-ready test framework architecture
 
-    - trigger: AT or atdd or fuzzy match on atdd
+    - trigger: atdd
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/atdd/workflow.yaml"
-      description: "[AT] Generate E2E tests first, before starting implementation"
+      description: Generate E2E tests first, before starting implementation
 
-    - trigger: TA or test-automate or fuzzy match on test automate
+    - trigger: automate
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/automate/workflow.yaml"
-      description: "[TA] Generate comprehensive test automation"
+      description: Generate comprehensive test automation
 
-    - trigger: TD or test-design or fuzzy match on test design
+    - trigger: test-design
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/test-design/workflow.yaml"
-      description: "[TD] Create comprehensive test scenarios"
+      description: Create comprehensive test scenarios
 
-    - trigger: TR or test-trace or fuzzy match on test trace
+    - trigger: trace
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/trace/workflow.yaml"
-      description: "[TR] Map requirements to tests (Phase 1) and make quality gate decision (Phase 2)"
+      description: Map requirements to tests (Phase 1) and make quality gate decision (Phase 2)
 
-    - trigger: NR or nfr-assess or fuzzy match on nfr assess
+    - trigger: nfr-assess
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/nfr-assess/workflow.yaml"
-      description: "[NR] Validate non-functional requirements"
+      description: Validate non-functional requirements
 
-    - trigger: CI or ci or fuzzy match on ci
+    - trigger: ci
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/ci/workflow.yaml"
-      description: "[CI] Scaffold CI/CD quality pipeline"
+      description: Scaffold CI/CD quality pipeline
 
-    - trigger: RV or test-review or fuzzy match on test review
+    - trigger: test-review
       workflow: "{project-root}/_bmad/bmm/workflows/testarch/test-review/workflow.yaml"
-      description: "[RV] Review test quality using comprehensive knowledge base and best practices"
+      description: Review test quality using comprehensive knowledge base and best practices
 
-    - trigger: PS or party-mode or fuzzy match on party mode
+    - trigger: party-mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: "[PS] Bring the whole team in to chat with other expert agents from the party"
+      description: Bring the whole team in to chat with other expert agents from the party
+
+    - trigger: advanced-elicitation
+      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

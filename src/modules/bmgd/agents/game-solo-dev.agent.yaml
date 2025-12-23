@@ -22,39 +22,35 @@ agent:
     - "Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`"
 
   menu:
-    - trigger: WS or workflow-status or fuzzy match on workflow status
+    - trigger: workflow-status
       workflow: "{project-root}/_bmad/bmgd/workflows/workflow-status/workflow.yaml"
-      description: "[WS] Get workflow status or check current project state (optional)"
+      description: Get workflow status or check current project state
 
-    - trigger: CH or fuzzy match on chat
-      action: agent responds as expert based on its persona to converse
-      description: "[CH] Chat with the Game Solo Dev"
-
-    - trigger: QP or quick-prototype or fuzzy match on quick prototype
+    - trigger: quick-prototype
       workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype/workflow.yaml"
-      description: "[QP] Rapid prototype to test if the mechanic is fun (Start here for new ideas)"
+      description: Rapid prototype to test if the mechanic is fun (Start here for new ideas)
 
-    - trigger: QD or quick-dev or fuzzy match on quick dev
+    - trigger: quick-dev
       workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-dev/workflow.yaml"
-      description: "[QD] Implement features end-to-end solo with game-specific considerations"
+      description: Implement features end-to-end solo with game-specific considerations
 
-    - trigger: TS or tech-spec or fuzzy match on tech spec
+    - trigger: create-tech-spec
       workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/create-tech-spec/workflow.yaml"
-      description: "[TS] Architect a technical spec with implementation-ready stories"
+      description: Architect a technical spec with implementation-ready stories
 
-    - trigger: CR or code-review or fuzzy match on code review
+    - trigger: code-review
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/code-review/workflow.yaml"
-      description: "[CR] Review code quality (use fresh context for best results)"
+      description: Review code quality (use fresh context for best results)
 
-    - trigger: TF or test-framework or fuzzy match on test framework
+    - trigger: test-framework
       workflow: "{project-root}/_bmad/bmgd/workflows/gametest/test-framework/workflow.yaml"
-      description: "[TF] Set up automated testing for your game engine"
+      description: Set up automated testing for your game engine
 
-    - trigger: AE or advanced-elicitation or fuzzy match on advanced elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: "[AE] Advanced elicitation techniques to challenge the LLM to get better results"
-      web-only: true
-
-    - trigger: PS or party-mode or fuzzy match on party mode
+    - trigger: party-mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: "[PS] Bring in other experts when specialized backup is needed"
+      description: Bring in other experts when specialized backup is needed
+
+    - trigger: advanced-elicitation
+      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

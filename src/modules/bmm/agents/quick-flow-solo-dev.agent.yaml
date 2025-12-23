@@ -25,7 +25,3 @@ agent:
     - trigger: QD or quick-dev or fuzzy match on quick dev
       workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml"
       description: "[QD] Implement the tech spec end-to-end solo (Core of Quick Flow)"
-
-    - trigger: CR or code-review or fuzzy match on code review
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
-      description: "[CR] Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"

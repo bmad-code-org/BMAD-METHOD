@@ -12,27 +12,27 @@ Essential terminology and concepts for understanding BMAD workflows.
 
 The micro-file architecture, JIT step loading, state management, and collaboration patterns that make BMAD workflows optimal for AI execution.
 
-### [Writing Workflows](./writing-workflows.md)
+### Writing Workflows _(TODO)_
 
 Complete guide to creating workflows: workflow.md control files, step files, CSV data integration, and frontmatter design.
 
-### [Step Files & Dialog Patterns](./step-files.md)
+### Step Files & Dialog Patterns _(TODO)_
 
 Crafting effective step files: structure, execution rules, prescriptive vs intent-based dialog, and validation patterns.
 
-### [Templates & Content Generation](./templates.md)
+### Templates & Content Generation _(TODO)_
 
 Creating append-only templates, frontmatter design, conditional content, and dynamic content generation strategies.
 
-### [Workflow Patterns](./patterns.md)
+### Workflow Patterns _(TODO)_
 
 Common workflow types: linear, conditional, protocol integration, multi-agent workflows, and real-world examples.
 
-### [Migration Guide](./migration.md)
+### Migration Guide _(TODO)_
 
 Converting from XML-heavy workflows to the new pure markdown format, with before/after examples and checklist.
 
-### [Best Practices & Reference](./best-practices.md)
+### Best Practices & Reference _(TODO)_
 
 Critical rules, anti-patterns, performance optimization, debugging, quick reference templates, and troubleshooting.
 

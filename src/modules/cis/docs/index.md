@@ -17,8 +17,6 @@ CIS provides structured creative methodologies through distinctive agent persona
 
 ## Specialized Agents
 
-[View detailed agent descriptions →](./agents/README.md)
-
 - **Carson** - Brainstorming Specialist (energetic facilitator)
 - **Maya** - Design Thinking Maestro (jazz-like improviser)
 - **Dr. Quinn** - Problem Solver (detective-scientist hybrid)
@@ -27,7 +25,7 @@ CIS provides structured creative methodologies through distinctive agent persona
 
 ## Interactive Workflows
 
-[View all workflows →](./workflows/README.md)
+[View all workflows →](../workflows/README.md)
 
 **5 Workflows** with **150+ Creative Techniques:**
 
@@ -144,9 +142,7 @@ CIS workflows integrate with:
 
 ## Related Documentation
 
-- **[Workflow Guide](./workflows/README.md)** - Detailed workflow instructions
-- **[Agent Personas](./agents/README.md)** - Full agent descriptions
-- **[BMM Integration](../bmm/README.md)** - Development workflow connection
+- **[BMM Documentation](../../bmm/docs/index.md)** - Core BMad Method documentation
 
 ---
 

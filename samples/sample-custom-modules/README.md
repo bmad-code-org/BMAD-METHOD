@@ -4,7 +4,7 @@ These are quickly put together examples of both a stand alone somewhat cohesive 
 
 To try these out, download either or both folders to your local machine, and run the normal bmad installer, and when asked about custom local content, say yes, and give the path to one of these two folders. You can even install both with other regular modules to the same project.
 
-Note - a project is just a folder with .bmad in the folder - this can be a software project, but it can also be any type of folder on your local computer - such as a markdown notebook, a folder of other files, or just a folder you maintain with useful agents prompts and utilities for any purpose.
+Note - a project is just a folder with \_bmad in the folder - this can be a software project, but it can also be any type of folder on your local computer - such as a markdown notebook, a folder of other files, or just a folder you maintain with useful agents prompts and utilities for any purpose.
 
 Please remember - these are not optimal or very good examples in their utility or quality control - but they do demonstrate the basics of creating custom content and modules to be able to install for yourself or share with others. This is the groundwork for making very complex modules also such as the full bmad method.
 
