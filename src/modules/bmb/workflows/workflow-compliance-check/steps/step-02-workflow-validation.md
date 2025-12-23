@@ -135,7 +135,7 @@ For each deviation:
 - Configuration Loading uses correct path format: `{project-root}/_bmad/[module]/config.yaml` (variable substitution pattern)
 - First step follows pattern: `step-01-init.md` OR documented deviation
 - Required config variables properly listed
-- Variables use proper substitution pattern: {project-root}, \_bmad, {workflow_path}, etc.
+- Variables use proper substitution pattern: {project-root}, _bmad, {workflow_path}, etc.
 
 For violations:
 

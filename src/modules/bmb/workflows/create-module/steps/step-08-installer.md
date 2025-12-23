@@ -71,8 +71,8 @@ From step 5, we planned these configuration fields:
 
 ### 2. Create Installer Directory
 
-Ensure \_module-installer directory exists
-Directory: {bmb_creations_output_folder}/{module_name}/\_module-installer/
+Ensure _module-installer directory exists
+Directory: {bmb_creations_output_folder}/{module_name}/_module-installer/
 
 ### 3. Create module.yaml
 
@@ -95,7 +95,7 @@ Does your module need any special setup during installation? For example:
 
 "I'll create an installer.js file for custom logic."
 
-Create file: {bmb_creations_output_folder}/{module_name}/\_module-installer/installer.js from {installerTemplate}
+Create file: {bmb_creations_output_folder}/{module_name}/_module-installer/installer.js from {installerTemplate}
 
 Update installer.js with module-specific logic
 
@@ -105,7 +105,7 @@ Update installer.js with module-specific logic
 
 If your module needs to copy files during installation (templates, examples, documentation), we can add them to the assets directory."
 
-Create directory: \_module-installer/assets/
+Create directory: _module-installer/assets/
 Add note about what assets to include
 
 ### 6. Document Installer Setup
@@ -131,7 +131,7 @@ Update module-plan.md with installer section:
 
 1. User runs: `bmad install {module_name}`
 2. Installer asks: [list of questions]
-3. Creates: \_bmad/{module_name}/
+3. Creates: _bmad/{module_name}/
 4. Generates: config.yaml with user settings
 
 ### Validation

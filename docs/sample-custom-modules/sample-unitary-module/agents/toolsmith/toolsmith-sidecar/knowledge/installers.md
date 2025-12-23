@@ -30,7 +30,7 @@
 ### IDE Manager & Base
 
 - @/tools/cli/installers/lib/ide/manager.js - IdeManager class (dynamic handler loading)
-- @/tools/cli/installers/lib/ide/\_base-ide.js - BaseIdeSetup class (all handlers extend this)
+- @/tools/cli/installers/lib/ide/_base-ide.js - BaseIdeSetup class (all handlers extend this)
 
 ### Shared Utilities
 
@@ -116,7 +116,7 @@ Contains:
 
 - Add new IDE handler: Create file in /tools/cli/installers/lib/ide/, extend BaseIdeSetup
 - Fix installer bug: Check installer.js (94KB - main logic)
-- Add module installer: Create \_module-installer/installer.js if custom installer logic needed
+- Add module installer: Create _module-installer/installer.js if custom installer logic needed
 - Update shared generators: Modify files in /shared/ directory
 
 ## Relationships

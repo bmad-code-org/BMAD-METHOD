@@ -13,16 +13,16 @@ description: 'Initialize the [workflow-type] workflow by detecting continuation 
 
 <!-- Path Definitions -->
 
-workflow\*path: '{project-root}/\_bmad/[module-path]/workflows/[workflow-name]'
+workflow\*path: `{project-root}/_bmad/[module-path]/workflows/[workflow-name]`
 
 # File References (all use {variable} format in file)
 
-thisStepFile: '{workflow_path}/steps/step-01-init.md'
-nextStepFile: '{workflow_path}/steps/step-02-[step-name].md'
-workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/[output-file-name]-{project_name}.md'
-continueFile: '{workflow_path}/steps/step-01b-continue.md'
-templateFile: '{workflow_path}/templates/[main-template].md'
+thisStepFile: `{workflow_path}/steps/step-01-init.md`
+nextStepFile: `{workflow_path}/steps/step-02-[step-name].md`
+workflowFile: `{workflow_path}/workflow.md`
+outputFile: `{output_folder}/[output-file-name]-{project_name}.md`
+continueFile: `{workflow_path}/steps/step-01b-continue.md`
+templateFile: `{workflow_path}/templates/[main-template].md`
 
 # Template References
 

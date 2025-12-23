@@ -355,8 +355,8 @@ identity: |
 - [ ] Sidecar folder structure created and populated
 - [ ] memories.md has clear section structure
 - [ ] instructions.md contains core directives
-- [ ] Menu actions reference \_bmad/\_memory correctly
-- [ ] File paths use \_bmad/\_memory/[agentname]-sidecar/ to reference sidecar content
+- [ ] Menu actions reference _bmad/_memory correctly
+- [ ] File paths use _bmad/_memory/[agentname]-sidecar/ to reference sidecar content
 - [ ] Install config personalizes sidecar references
 - [ ] Agent folder named consistently: `{agent-name}/`
 - [ ] YAML file named: `{agent-name}.agent.yaml`

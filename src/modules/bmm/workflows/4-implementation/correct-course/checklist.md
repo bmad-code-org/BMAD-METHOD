@@ -1,6 +1,6 @@
 # Change Navigation Checklist
 
-<critical>This checklist is executed as part of: {project-root}/\_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml</critical>
+<critical>This checklist is executed as part of: {project-root}/_bmad/bmm/workflows/4-implementation/correct-course/workflow.yaml</critical>
 <critical>Work through each section systematically with the user, recording findings and impacts</critical>
 
 <checklist>

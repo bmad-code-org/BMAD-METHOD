@@ -129,7 +129,7 @@ Create all directories in {bmb_creations_output_folder}/{module_name}/:
 3. **tasks/** - For task files (if tasks planned)
 4. **templates/** - For shared templates
 5. **data/** - For module data
-6. **\_module-installer/** - For installation configuration
+6. **_module-installer/** - For installation configuration
 
 ### 4. Create Placeholder README
 

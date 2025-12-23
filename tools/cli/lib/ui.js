@@ -17,7 +17,10 @@ class UI {
   async promptInstall() {
     CLIUtils.displayLogo();
 
-    console.log(chalk.cyan('\nRead the latest updates: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md\n'));
+    // Display version-specific start message from install-messages.yaml
+    const { MessageLoader } = require('../installers/lib/message-loader');
+    const messageLoader = new MessageLoader();
+    messageLoader.displayStartMessage();
 
     const confirmedDirectory = await this.getConfirmedDirectory();
 

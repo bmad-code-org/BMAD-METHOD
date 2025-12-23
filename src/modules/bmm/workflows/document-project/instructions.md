@@ -1,7 +1,7 @@
 # Document Project Workflow Router
 
-<critical>The workflow execution engine is governed by: {project-root}/\_bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/\_bmad/bmm/workflows/document-project/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/document-project/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 
 <workflow>

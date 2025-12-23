@@ -58,14 +58,14 @@ Discover and load context documents using smart discovery:
 
 **PRD Document (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check analysis folders: {output*folder} and {planning_artifacts} for a \_prd*.md
+1. Check analysis folders: {output_folder} and {planning_artifacts} for a `*prd*.md`
 2. If no main files: Check for sharded PRD folder: `**/*prd*/**/*.md`
 3. If sharded folder exists: Load EVERY file in that folder completely
 4. Add discovered files to `inputDocuments` frontmatter
 
 **Epics/Stories Document (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check folders: {output*folder} and {planning_artifacts} for a \_epic*.md
+1. Check folders: {output_folder} and {planning_artifacts} for a `*epic*.md`
 2. If no analysis files: Try main folder: `{output_folder}/*epic*.md`
 3. If no main files: Check for sharded epics folder: `{output_folder}/*epic*/**/*.md`
 4. If sharded folder exists: Load EVERY file in that folder completely
@@ -73,14 +73,14 @@ Discover and load context documents using smart discovery:
 
 **UX Design Specification (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check folders: {output*folder} and {planning_artifacts} for a \_ux*.md
+1. Check folders: {output_folder} and {planning_artifacts} for a `*ux*.md`
 2. If no main files: Check for sharded UX folder: `{output_folder}/*ux*/**/*.md`
 3. If sharded folder exists: Load EVERY file in that folder completely
 4. Add discovered files to `inputDocuments` frontmatter
 
 **Research Documents (Priority: Analysis → Main):**
 
-1. Check folders {output*folder} and {planning_artifacts} for /research/\_research*.md
+1. Check folders {output_folder} and {planning_artifacts} for `/research/*research*.md`
 2. If no files: Try folder: `{output_folder}/*research*.md`
 3. Add discovered files to `inputDocuments` frontmatter
 

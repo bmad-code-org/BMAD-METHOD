@@ -142,7 +142,7 @@ Defined in @/tools/cli/lib/platform-codes.js
 
 ## Common Tasks
 
-- Create new module installer: Add \_module-installer/installer.js
+- Create new module installer: Add _module-installer/installer.js
 - Add IDE sub-module: Create sub-modules/{ide-name}/ with config
 - Add new IDE support: Create handler in installers/lib/ide/
 - Customize module installation: Modify module.yaml

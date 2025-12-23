@@ -46,7 +46,7 @@ installed_path: '{project-root}/_bmad/bmb/workflows/create-module'
 
 ### 1. Module Configuration Loading
 
-Load and read full config from {project-root}/\_bmad/bmb/config.yaml and resolve:
+Load and read full config from {project-root}/_bmad/bmb/config.yaml and resolve:
 
 - `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`, `bmb_creations_output_folder`
 

@@ -31,8 +31,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
 
@@ -304,7 +304,7 @@ Show the generated patterns content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with current patterns
+- Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml with current patterns
 - Process enhanced consistency rules that come back
 - Ask user: "Accept these additional pattern refinements? (y/n)"
 - If yes: Update content, then return to A/P/C menu
@@ -312,7 +312,7 @@ Show the generated patterns content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with implementation patterns context
+- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with implementation patterns context
 - Process collaborative insights about potential conflicts
 - Ask user: "Accept these changes to the implementation patterns? (y/n)"
 - If yes: Update content, then return to A/P/C menu

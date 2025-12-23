@@ -45,7 +45,7 @@ web_bundle: false
 
 ### 1. Module Configuration Loading
 
-Load and read full config from {project-root}/\_bmad/bmm/config.yaml and resolve:
+Load and read full config from {project-root}/_bmad/bmm/config.yaml and resolve:
 
 - `project_name`, `output_folder`, `planning_artifacts`, `user_name`, `communication_language`, `document_output_language`
 

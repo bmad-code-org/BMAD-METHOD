@@ -66,7 +66,7 @@ To set up the quiz game by selecting game mode, choosing a category, and prepari
 
 ### 1. Welcome and Configuration Loading
 
-Load config from {project-root}/\_bmad/bmb/config.yaml to get user_name.
+Load config from {project-root}/_bmad/bmb/config.yaml to get user_name.
 
 Present dramatic welcome:
 "🎺 _DRAMATIC MUSIC PLAYS_ 🎺

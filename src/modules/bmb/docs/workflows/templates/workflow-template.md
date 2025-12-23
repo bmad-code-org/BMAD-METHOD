@@ -53,7 +53,7 @@ web_bundle: [true/false] # Set to true for inclusion in web bundle builds
 
 ### 1. Module Configuration Loading
 
-Load and read full config from {project-root}/\_bmad/[MODULE FOLDER]/config.yaml and resolve:
+Load and read full config from {project-root}/_bmad/[MODULE FOLDER]/config.yaml and resolve:
 
 - `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`, [MODULE VARS]
 
