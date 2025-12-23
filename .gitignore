@@ -29,6 +29,7 @@ Thumbs.db
 .prettierrc
 
 # IDE and editor configs
+.idea/
 .windsurf/
 .trae/
 _bmad*/.cursor/
@@ -66,6 +67,7 @@ shared-modules
 z*/
 
 _bmad
+_bmad-output/
 .claude
 .codex
 .github/chatmodes

@@ -1031,6 +1031,9 @@ class Installer {
       const manifestStats = await manifestGen.generateManifests(bmadDir, allModulesForManifest, [...this.installedFiles], {
         ides: config.ides || [],
         preservedModules: modulesForCsvPreserve, // Scan these from installed bmad/ dir
+        selectedAgents: config.cliOptions?.agents || null,
+        selectedWorkflows: config.cliOptions?.workflows || null,
+        installMode: config.cliOptions ? 'non-interactive' : 'interactive',
       });
 
       // Custom modules are now included in the main modules list - no separate tracking needed
