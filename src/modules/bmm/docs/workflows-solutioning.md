@@ -363,7 +363,7 @@ Planning (prd by PM - FRs/NFRs only)
   → Phase 4 (Implementation)
 ```
 
-**Note on TEA (Test Architect):** TEA is fully operational with 8 workflows across all phases. TEA validates architecture testability during Phase 3 reviews but does not have a dedicated solutioning workflow. TEA's primary setup occurs in Phase 2 (`*framework`, `*ci`, `*test-design`) and testing execution in Phase 4 (`*atdd`, `*automate`, `*test-review`, `*trace`, `*nfr-assess`).
+**Note on TEA (Test Architect):** TEA is fully operational with 8 workflows across all phases. TEA validates architecture testability during Phase 3 reviews but does not have a dedicated solutioning workflow. TEA's primary setup occurs after architecture in Phase 3 (`*framework`, `*ci`, system-level `*test-design`), with optional Phase 2 baseline `*trace`. Testing execution happens in Phase 4 (`*atdd`, `*automate`, `*test-review`, `*trace`, `*nfr-assess`).
 
 **Note:** Enterprise uses the same planning and architecture as BMad Method. The only difference is optional extended workflows added AFTER architecture but BEFORE create-epics-and-stories.
 

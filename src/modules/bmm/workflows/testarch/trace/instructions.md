@@ -52,6 +52,8 @@ This workflow operates in two sequential phases to validate test coverage and de
 - If acceptance criteria are completely missing, halt and request them
 - If Phase 2 enabled but test execution results missing, warn and skip gate decision
 
+Note: `*trace` never runs `*atdd` automatically; it only recommends running it when tests are missing.
+
 ---
 
 ## PHASE 1: REQUIREMENTS TRACEABILITY

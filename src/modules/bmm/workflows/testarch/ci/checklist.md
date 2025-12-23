@@ -9,6 +9,8 @@
 - [ ] Team agrees on CI platform
 - [ ] Access to CI platform settings (if updating)
 
+Note: CI setup is typically a one-time task per repo and can be run any time after the test framework is configured.
+
 ## Process Steps
 
 ### Step 1: Preflight Checks
