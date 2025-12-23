@@ -105,7 +105,7 @@ Instructions for loading agents and running workflows in your development enviro
 
 ### Path 1: Brand New to BMad (Software Project)
 
-1. [README.md](./project-readme) - Understand the vision
+1. [README.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/README.md) - Understand the vision
 2. [Quick Start Guide](./modules/bmm/quick-start) - Get hands-on
 3. [BMM Module README](./modules/bmm/) - Understand agents
 4. [BMM Workflows Guide](./modules/bmm/index#-workflow-guides) - Master the methodology
@@ -113,7 +113,7 @@ Instructions for loading agents and running workflows in your development enviro
 
 ### Path 2: Game Development Project
 
-1. [README.md](./project-readme) - Understand the vision
+1. [README.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/README.md) - Understand the vision
 2. [Quick Start Guide](./modules/bmm/quick-start) - Get hands-on
 3. [BMM Module README](./modules/bmm/) - Game agents are included
 4. [BMGD Workflows Guide](./modules/bmgd/workflows-guide) - Game-specific workflows
