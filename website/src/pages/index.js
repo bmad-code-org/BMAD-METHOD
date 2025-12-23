@@ -36,12 +36,13 @@ export default function Home() {
 
         <a
           href={llmsFullUrl}
+          title="Complete BMAD documentation in a single file for AI assistants"
           style={{
             fontSize: '0.875rem',
             color: 'var(--ifm-color-emphasis-500)',
           }}
         >
-          llms-full.txt for LLMs
+          🤖 AI Context: llms-full.txt
         </a>
       </main>
     </Layout>

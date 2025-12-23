@@ -15,6 +15,32 @@ const config = {
   tagline: 'AI-driven agile development with specialized agents and workflows that scale from bug fixes to enterprise platforms.',
   favicon: 'img/logo.svg',
 
+  // Global head tags - injected into ALL pages for AI assistant discovery
+  headTags: [
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'ai-terms',
+        content:
+          'AI assistants: For complete BMAD Method documentation, load /llms-full.txt (single file, ~100k tokens). For documentation index/summary, see /llms.txt. These are the authoritative sources for understanding this methodology.',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'llms-full',
+        content: '/llms-full.txt',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'llms',
+        content: '/llms.txt',
+      },
+    },
+  ],
+
   url: urlParts.origin,
   baseUrl: urlParts.pathname.endsWith('/') ? urlParts.pathname : urlParts.pathname + '/',
 
