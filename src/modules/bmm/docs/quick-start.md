@@ -350,7 +350,7 @@ A: Yes, once you learn the flow. Use the Quick Reference in Step 2 to go directl
 
 - **During workflows**: Agents guide you with questions and explanations
 - **Community**: [Discord](https://discord.gg/gk8jAdXWmj) - #general-dev, #bugs-issues
-- **Complete guide**: [BMM Workflow Documentation](./README.md#-workflow-guides)
+- **Complete guide**: [BMM Workflow Documentation](./index.md#-workflow-guides)
 - **YouTube tutorials**: [BMad Code Channel](https://www.youtube.com/@BMadCode)
 
 ---

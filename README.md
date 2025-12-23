@@ -26,8 +26,8 @@ The completely revamped **BMAD V6 installer** now includes built-in support for 
 
 - [**Custom Content Overview**](./docs/custom-content.md) - Discover all supported content types
 - [**Installation Guide**](./docs/custom-content-installation.md) - Learn to create and install custom content
-- [**Detail Content Docs**](./src/modules/bmb/docs/README.md) - Reference details for agents, modules, workflows and the bmad builder
-- [**2 Very simple Custom Modules of questionable quality**](./docs/sample-custom-modules/README.md) - if you want to download and try to install a custom shared module, get an idea of how to bundle and share your own, or create your own personal agents, workflows and modules.
+- [**Detail Content Docs**](./src/modules/bmb/docs/index.md) - Reference details for agents, modules, workflows and the bmad builder
+- [**2 Very simple Custom Modules of questionable quality**](./samples/sample-custom-modules/README.md) - if you want to download and try to install a custom shared module, get an idea of how to bundle and share your own, or create your own personal agents, workflows and modules.
 
 </div>
 
@@ -142,18 +142,17 @@ Each agent brings deep expertise and can be customized to match your team's styl
   - 12 specialized agents
   - 34 workflows across 4 phases
   - Scale-adaptive planning
-  - [→ Documentation Hub](./src/modules/bmm/docs/README.md)
+  - [→ Documentation Hub](./src/modules/bmm/docs/index.md)
 
 - **BMad Builder (BMB)** - Create custom agents and workflows
   - Build anything from simple agents to complex modules
   - Create domain-specific solutions (legal, medical, finance, education)
-  - [→ Builder Guide](src/modules/bmb/docs/README.md) marketplace
-  - [→ Builder Guide](./src/modules/bmb/README.md)
+  - [→ Builder Guide](./src/modules/bmb/docs/index.md)
 
 - **Creative Intelligence Suite (CIS)** - Innovation & problem-solving
   - Brainstorming, design thinking, storytelling
   - 5 creative facilitation workflows
-  - [→ Creative Workflows](src/modules/cis/docs/README.md)
+  - [→ Creative Workflows](./src/modules/cis/docs/index.md)
 
 ### Key Features
 
@@ -168,7 +167,7 @@ Each agent brings deep expertise and can be customized to match your team's styl
 ### Quick Links
 
 - **[Quick Start Guide](./src/modules/bmm/docs/quick-start.md)** - 15-minute introduction
-- **[Complete BMM Documentation](./src/modules/bmm/docs/README.md)** - All guides and references
+- **[Complete BMM Documentation](./src/modules/bmm/docs/index.md)** - All guides and references
 - **[Agent Customization](./docs/agent-customization-guide.md)** - Personalize your agents
 - **[All Documentation](./docs/index.md)** - Complete documentation index
 

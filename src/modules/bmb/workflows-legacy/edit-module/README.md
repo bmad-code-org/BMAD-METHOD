@@ -154,7 +154,7 @@ Workflow: Analyzes BMM → You choose option 8 (add new workflow)
 
 ## Activation
 
-Invoke via BMad Module Builder agent:
+Invoke via BMad Builder agent:
 
 ```
 /bmad:bmb:agents:bmad-builder

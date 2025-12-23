@@ -726,7 +726,7 @@ flowchart TD
 - **[Glossary](./glossary.md)** - Key terminology
 - **[FAQ](./faq.md)** - Common questions
 - **[Troubleshooting](./troubleshooting.md)** - Problem resolution
-- **[Workflow Documentation](./README.md#-workflow-guides)** - Complete workflow reference
+- **[Workflow Documentation](./index.md#-workflow-guides)** - Complete workflow reference
 
 ---
 

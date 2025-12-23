@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const chalk = require('chalk');
 const yaml = require('yaml');
 const { FileOps } = require('../../../lib/file-ops');
-const { XmlHandler } = require('../../../lib/agent/xml-handler');
+const { XmlHandler } = require('../../../lib/xml-handler');
 
 /**
  * Handler for custom content (custom.yaml)
@@ -311,7 +311,7 @@ class CustomHandler {
       // Read and compile the YAML
       try {
         const yamlContent = await fs.readFile(agentFile, 'utf8');
-        const { compileAgent } = require('../../../lib/agent/yaml-xml-builder');
+        const { compileAgent } = require('../../../lib/agent/compiler');
 
         // Create customize template if it doesn't exist
         if (!(await fs.pathExists(customizePath))) {

@@ -24,44 +24,40 @@ agent:
     - "Generate complete story drafts from existing documentation without additional elicitation"
 
   menu:
-    - trigger: WS or workflow-status or fuzzy match on workflow status
+    - trigger: workflow-status
       workflow: "{project-root}/_bmad/bmgd/workflows/workflow-status/workflow.yaml"
-      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
+      description: Get workflow status or initialize a workflow if not already done
 
-    - trigger: CH or fuzzy match on chat
-      action: agent responds as expert based on its persona to converse
-      description: "[CH] Chat with the Game Dev Scrum Master"
-
-    - trigger: SP or sprint-planning or fuzzy match on sprint planning
+    - trigger: sprint-planning
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/sprint-planning/workflow.yaml"
-      description: "[SP] Generate or update sprint-status.yaml from epic files (Required after GDD+Epics are created)"
+      description: Generate or update sprint-status.yaml from epic files (Required after GDD+Epics are created)
 
-    - trigger: SS or sprint-status or fuzzy match on sprint status
+    - trigger: sprint-status
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/sprint-status/workflow.yaml"
-      description: "[SS] View sprint progress, surface risks, and get next action recommendation"
+      description: View sprint progress, surface risks, and get next action recommendation
 
-    - trigger: CS or create-story or fuzzy match on create story
+    - trigger: create-story
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.yaml"
-      description: "[CS] Create Story with direct ready-for-dev marking (Required to prepare stories for development)"
+      description: Create Story with direct ready-for-dev marking (Required to prepare stories for development)
 
-    - trigger: VS or validate-story or fuzzy match on validate story
+    - trigger: validate-create-story
       validate-workflow: "{project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.yaml"
-      description: "[VS] Validate Story Draft with Independent Review (Highly Recommended)"
+      description: Validate Story Draft with Independent Review (Highly Recommended)
 
-    - trigger: ER or epic-retrospective or fuzzy match on epic retrospective
+    - trigger: epic-retrospective
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/retrospective/workflow.yaml"
       data: "{project-root}/_bmad/_config/agent-manifest.csv"
-      description: "[ER] Facilitate team retrospective after a game development epic is completed"
+      description: Facilitate team retrospective after a game development epic is completed
 
-    - trigger: CC or correct-course or fuzzy match on correct course
+    - trigger: correct-course
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/correct-course/workflow.yaml"
-      description: "[CC] Navigate significant changes during game dev sprint (When implementation is off-track)"
+      description: Navigate significant changes during game dev sprint (When implementation is off-track)
 
-    - trigger: AE or advanced-elicitation or fuzzy match on advanced elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: "[AE] Advanced elicitation techniques to challenge the LLM to get better results"
-      web-only: true
-
-    - trigger: PS or party-mode or fuzzy match on party mode
+    - trigger: party-mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: "[PS] Bring the whole team in to chat with other expert agents from the party"
+      description: Bring the whole team in to chat with other expert agents from the party
+
+    - trigger: advanced-elicitation
+      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

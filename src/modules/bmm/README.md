@@ -6,7 +6,7 @@ Core orchestration system for AI-driven agile development, providing comprehensi
 
 ## 📚 Complete Documentation
 
-👉 **[BMM Documentation Hub](./docs/README.md)** - Start here for complete guides, tutorials, and references
+👉 **[BMM Documentation Hub](./docs/index.md)** - Start here for complete guides, tutorials, and references
 
 **Quick Links:**
 
@@ -48,7 +48,7 @@ bmm/
 **Phase 3:** Solutioning (required) - 3 workflows
 **Phase 4:** Implementation (iterative) - 7 workflows
 
-👉 **[Workflow Guides](./docs/README.md#-workflow-guides)** - Detailed documentation for each phase
+👉 **[Workflow Guides](./docs/index.md#-workflow-guides)** - Detailed documentation for each phase
 
 ---
 

@@ -4,6 +4,56 @@ const { z } = require('zod');
 
 const COMMAND_TARGET_KEYS = ['workflow', 'validate-workflow', 'exec', 'action', 'tmpl', 'data'];
 const TRIGGER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const COMPOUND_TRIGGER_PATTERN = /^([A-Z]{1,2}) or ([a-z0-9]+(?:-[a-z0-9]+)*) or fuzzy match on ([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+
+/**
+ * Derive the expected shortcut from a kebab-case trigger.
+ * - Single word: first letter (e.g., "help" → "H")
+ * - Multi-word: first letter of first two words (e.g., "tech-spec" → "TS")
+ * @param {string} kebabTrigger The kebab-case trigger name.
+ * @returns {string} The expected uppercase shortcut.
+ */
+function deriveShortcutFromKebab(kebabTrigger) {
+  const words = kebabTrigger.split('-');
+  if (words.length === 1) {
+    return words[0][0].toUpperCase();
+  }
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+/**
+ * Parse and validate a compound trigger string.
+ * Format: "<SHORTCUT> or <kebab-case> or fuzzy match on <kebab-case>"
+ * @param {string} triggerValue The trigger string to parse.
+ * @returns {{ valid: boolean, kebabTrigger?: string, error?: string }}
+ */
+function parseCompoundTrigger(triggerValue) {
+  const match = COMPOUND_TRIGGER_PATTERN.exec(triggerValue);
+  if (!match) {
+    return { valid: false, error: 'invalid compound trigger format' };
+  }
+
+  const [, shortcut, kebabTrigger, fuzzyKebab] = match;
+
+  // Validate both kebab instances are identical
+  if (kebabTrigger !== fuzzyKebab) {
+    return {
+      valid: false,
+      error: `kebab-case trigger mismatch: "${kebabTrigger}" vs "${fuzzyKebab}"`,
+    };
+  }
+
+  // Validate shortcut matches derived value
+  const expectedShortcut = deriveShortcutFromKebab(kebabTrigger);
+  if (shortcut !== expectedShortcut) {
+    return {
+      valid: false,
+      error: `shortcut "${shortcut}" does not match expected "${expectedShortcut}" for "${kebabTrigger}"`,
+    };
+  }
+
+  return { valid: true, kebabTrigger };
+}
 
 // Public API ---------------------------------------------------------------
 
@@ -52,17 +102,39 @@ function agentSchema(options = {}) {
           // Handle legacy format with trigger field
           if (item.trigger) {
             const triggerValue = item.trigger;
+            let canonicalTrigger = triggerValue;
 
-            if (seenTriggers.has(triggerValue)) {
+            // Check if it's a compound trigger (contains " or ")
+            if (triggerValue.includes(' or ')) {
+              const result = parseCompoundTrigger(triggerValue);
+              if (!result.valid) {
+                ctx.addIssue({
+                  code: 'custom',
+                  path: ['agent', 'menu', index, 'trigger'],
+                  message: `agent.menu[].trigger compound format error: ${result.error}`,
+                });
+                return;
+              }
+              canonicalTrigger = result.kebabTrigger;
+            } else if (!TRIGGER_PATTERN.test(triggerValue)) {
               ctx.addIssue({
                 code: 'custom',
                 path: ['agent', 'menu', index, 'trigger'],
-                message: `agent.menu[].trigger duplicates "${triggerValue}" within the same agent`,
+                message: 'agent.menu[].trigger must be kebab-case (lowercase words separated by hyphen)',
               });
               return;
             }
 
-            seenTriggers.add(triggerValue);
+            if (seenTriggers.has(canonicalTrigger)) {
+              ctx.addIssue({
+                code: 'custom',
+                path: ['agent', 'menu', index, 'trigger'],
+                message: `agent.menu[].trigger duplicates "${canonicalTrigger}" within the same agent`,
+              });
+              return;
+            }
+
+            seenTriggers.add(canonicalTrigger);
           }
           // Handle multi format with triggers array (new format)
           else if (item.triggers && Array.isArray(item.triggers)) {
@@ -82,6 +154,15 @@ function agentSchema(options = {}) {
               }
 
               if (triggerName) {
+                if (!TRIGGER_PATTERN.test(triggerName)) {
+                  ctx.addIssue({
+                    code: 'custom',
+                    path: ['agent', 'menu', index, 'triggers', triggerIndex],
+                    message: `agent.menu[].triggers[] must be kebab-case (lowercase words separated by hyphen) - got "${triggerName}"`,
+                  });
+                  return;
+                }
+
                 if (seenTriggers.has(triggerName)) {
                   ctx.addIssue({
                     code: 'custom',
@@ -377,6 +458,15 @@ function buildMenuItemSchema() {
             });
           }
           seenTriggers.add(triggerName);
+
+          // Validate trigger name format
+          if (!TRIGGER_PATTERN.test(triggerName)) {
+            ctx.addIssue({
+              code: 'custom',
+              path: ['agent', 'menu', 'triggers', index],
+              message: `Trigger name "${triggerName}" must be kebab-case (lowercase words separated by hyphen)`,
+            });
+          }
         }
       }
     });

@@ -163,8 +163,8 @@ BMGD Documentation
 
 ### Related Documentation
 
-- **[BMM Documentation](../../bmm/docs/README.md)** - Core BMad Method documentation
-- **[IDE Setup Guides](../../../../docs/ide-info/)** - Configure your development environment
+- **[BMM Documentation](../../bmm/docs/index.md)** - Core BMad Method documentation
+- **[IDE Guides](../../ide-info/)** - Configure your development environment
 
 ---
 

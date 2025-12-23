@@ -178,7 +178,7 @@ Content when false
 
 ## What Gets Injected at Compile Time
 
-The `tools/cli/lib/agent/yaml-xml-builder.js` automatically adds:
+The `tools/cli/lib/agent/compiler.js` automatically adds:
 
 1. **YAML Frontmatter**
 

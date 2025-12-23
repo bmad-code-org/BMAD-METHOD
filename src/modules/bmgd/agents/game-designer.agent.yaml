@@ -22,35 +22,39 @@ agent:
     - "When creating GDDs, always validate against game pillars and core loop"
 
   menu:
-    - trigger: WS or workflow-status or fuzzy match on workflow status
+    - trigger: workflow-status
       workflow: "{project-root}/_bmad/bmgd/workflows/workflow-status/workflow.yaml"
-      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
+      description: Get workflow status or initialize a workflow if not already done
 
-    - trigger: CH or fuzzy match on chat
-      action: agent responds as expert based on its persona to converse
-      description: "[CH] Chat with the Game Designer"
+    - multi: "[BG] Brainstorm Game, [GB] Create Game Brief, [GDD] Create GDD, [ND] Narrative Design"
+      triggers:
+        - brainstorm-game:
+            - input: BG or fuzzy match brainstorm game
+            - route: "{project-root}/_bmad/bmgd/workflows/1-preproduction/brainstorm-game/workflow.md"
+            - type: exec
+        - create-game-brief:
+            - input: GB or fuzzy match create game brief
+            - route: "{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief/workflow.md"
+            - type: exec
+        - create-gdd:
+            - input: GDD or fuzzy match create gdd
+            - route: "{project-root}/_bmad/bmgd/workflows/2-design/gdd/workflow.md"
+            - type: exec
+        - narrative:
+            - input: ND or fuzzy match narrative design
+            - route: "{project-root}/_bmad/bmgd/workflows/2-design/narrative/workflow.md"
+            - type: exec
 
-    - trigger: BG or brainstorm-game or fuzzy match on brainstorm game
-      exec: "{project-root}/_bmad/bmgd/workflows/1-preproduction/brainstorm-game/workflow.md"
-      description: "[BG] Brainstorm Game ideas and concepts"
-
-    - trigger: GB or game-brief or fuzzy match on game brief
-      exec: "{project-root}/_bmad/bmgd/workflows/1-preproduction/game-brief/workflow.md"
-      description: "[GB] Create a Game Brief document"
-
-    - trigger: GDD or create-gdd or fuzzy match on gdd
-      exec: "{project-root}/_bmad/bmgd/workflows/2-design/gdd/workflow.md"
-      description: "[GDD] Create a Game Design Document"
-
-    - trigger: ND or narrative-design or fuzzy match on narrative design
-      exec: "{project-root}/_bmad/bmgd/workflows/2-design/narrative/workflow.md"
-      description: "[ND] Design narrative elements and story"
-
-    - trigger: QP or quick-prototype or fuzzy match on quick prototype
+    - trigger: quick-prototype
       workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype/workflow.yaml"
-      description: "[QP] Rapid game prototyping - test mechanics and ideas quickly"
+      description: Rapid game prototyping - test mechanics and ideas quickly
       ide-only: true
 
-    - trigger: PS or party-mode or fuzzy match on party mode
+    - trigger: party-mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: "[PS] Bring the whole team in to chat with other expert agents from the party"
+      description: Bring the whole team in to chat with other expert agents from the party
+
+    - trigger: advanced-elicitation
+      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      description: Advanced elicitation techniques to challenge the LLM to get better results
+      web-only: true

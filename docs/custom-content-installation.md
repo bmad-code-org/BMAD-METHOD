@@ -4,7 +4,7 @@ This guide explains how to create and install custom BMAD content including agen
 
 For detailed information about the different types of custom content available, see [Custom Content](./custom-content.md).
 
-If you download either of the folders within the [Sample Custom Modules](./sample-custom-modules/readme.md) folder
+You can find example custom modules in the `samples/sample-custom-modules/` folder of the repository. Download either of the sample folders to try them out.
 
 ## Content Types Overview
 

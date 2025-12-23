@@ -4,7 +4,6 @@ const os = require('node:os');
 const chalk = require('chalk');
 const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
-const { FileOps, PathUtils } = require('../../../lib/file-ops');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');

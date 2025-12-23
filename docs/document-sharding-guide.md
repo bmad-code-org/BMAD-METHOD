@@ -441,8 +441,8 @@ input_file_patterns:
 ## Related Documentation
 
 - [shard-doc Tool](../src/core/tools/shard-doc.xml) - Tool implementation
-- [BMM Workflows Guide](../src/modules/bmm/workflows/README.md) - Workflow overview
-- [Workflow Creation Guide](../src/modules/bmb/workflows/create-workflow/workflow-creation-guide.md) - Custom workflow patterns
+- [BMM Workflows Guide](./modules/bmm/index.md#-workflow-guides) - Workflow overview
+- [Workflow Creation Guide](./modules/bmb/workflows/index) - Custom workflow patterns
 
 ---
 

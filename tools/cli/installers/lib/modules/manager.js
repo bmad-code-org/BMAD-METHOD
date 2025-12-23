@@ -2,9 +2,9 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
 const chalk = require('chalk');
-const { XmlHandler } = require('../../../lib/agent/xml-handler');
+const { XmlHandler } = require('../../../lib/xml-handler');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../../../lib/project-root');
-const { filterCustomizationData } = require('../../../lib/agent/yaml-xml-builder');
+const { filterCustomizationData } = require('../../../lib/agent/compiler');
 
 /**
  * Manages the installation, updating, and removal of BMAD modules.
@@ -757,7 +757,7 @@ class ModuleManager {
       // Read and compile the YAML
       try {
         const yamlContent = await fs.readFile(sourceYamlPath, 'utf8');
-        const { compileAgent } = require('../../../lib/agent/yaml-xml-builder');
+        const { compileAgent } = require('../../../lib/agent/compiler');
 
         // Create customize template if it doesn't exist
         if (!(await fs.pathExists(customizePath))) {
@@ -952,7 +952,7 @@ class ModuleManager {
     //   // Check if content has agent XML and no activation block
     //   if (content.includes('<agent') && !content.includes('<activation')) {
     //     // Inject the activation block using XML handler
-    //     // TODO: Reimplement activation injection if needed
+    //     content = this.xmlHandler.injectActivationSimple(content);
     //     await fs.writeFile(agentFile, content, 'utf8');
     //   }
     // }

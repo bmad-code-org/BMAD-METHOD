@@ -35,14 +35,14 @@ agent:
     - "NEVER lie about tests being written or passing - tests must actually exist and pass 100%"
 
   menu:
-    - trigger: DS or dev-story or fuzzy match on dev story
+    - trigger: DS or dev-story or fuzzy match on dev-story
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: "[DS] Execute Dev Story workflow (full BMM path with sprint-status)"
 
-    - trigger: CR or code-review or fuzzy match on code review
+    - trigger: CR or code-review or fuzzy match on code-review
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
       description: "[CR] Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"
 
-    - trigger: PS or party-mode or fuzzy match on party mode
+    - trigger: PM or party-mode or fuzzy match on party-mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: "[PS] Bring the whole team in to chat with other expert agents from the party"
+      description: "[PM] Bring the whole team in to chat with other expert agents from the party"

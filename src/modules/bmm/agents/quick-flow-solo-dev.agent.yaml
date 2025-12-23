@@ -18,14 +18,10 @@ agent:
       - If `**/project-context.md` exists, follow it. If absent, proceed without.
 
   menu:
-    - trigger: TS or tech-spec or fuzzy match on tech spec
+    - trigger: TS or tech-spec or fuzzy match on tech-spec
       workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml"
       description: "[TS] Architect a technical spec with implementation-ready stories (Required first step)"
 
-    - trigger: QD or quick-dev or fuzzy match on quick dev
+    - trigger: QD or quick-dev or fuzzy match on quick-dev
       workflow: "{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml"
       description: "[QD] Implement the tech spec end-to-end solo (Core of Quick Flow)"
-
-    - trigger: CR or code-review or fuzzy match on code review
-      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
-      description: "[CR] Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"
