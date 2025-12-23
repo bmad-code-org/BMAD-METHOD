@@ -36,8 +36,8 @@ Initialize the Architecture workflow by detecting continuation state, discoverin
 
 First, check if the output document already exists:
 
-- Look for file at `{output_folder}/architecture.md`
-- If exists, read the complete file including frontmatter
+- Look for existing {output_folder}||{planning_artifacts} architecture.md or \*\*/architecture/
+- If exists, read the complete file(s) including frontmatter
 - If not exists, this is a fresh workflow
 
 ### 2. Handle Continuation (If Document Exists)
@@ -58,14 +58,14 @@ Discover and load context documents using smart discovery:
 
 **PRD Document (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check analysis folder: `{output_folder}/*prd*.md`
-2. If no main files: Check for sharded PRD folder: `{output_folder}/*prd*/**/*.md`
+1. Check analysis folders: {output_folder} and {planning_artifacts} for a `*prd*.md`
+2. If no main files: Check for sharded PRD folder: `**/*prd*/**/*.md`
 3. If sharded folder exists: Load EVERY file in that folder completely
 4. Add discovered files to `inputDocuments` frontmatter
 
 **Epics/Stories Document (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check analysis folder: `{output_folder}/analysis/*epic*.md`
+1. Check folders: {output_folder} and {planning_artifacts} for a `*epic*.md`
 2. If no analysis files: Try main folder: `{output_folder}/*epic*.md`
 3. If no main files: Check for sharded epics folder: `{output_folder}/*epic*/**/*.md`
 4. If sharded folder exists: Load EVERY file in that folder completely
@@ -73,24 +73,25 @@ Discover and load context documents using smart discovery:
 
 **UX Design Specification (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check folder: `{output_folder}/*ux*.md`
+1. Check folders: {output_folder} and {planning_artifacts} for a `*ux*.md`
 2. If no main files: Check for sharded UX folder: `{output_folder}/*ux*/**/*.md`
 3. If sharded folder exists: Load EVERY file in that folder completely
 4. Add discovered files to `inputDocuments` frontmatter
 
 **Research Documents (Priority: Analysis → Main):**
 
-1. Check folder: `{output_folder}/research/*research*.md`
+1. Check folders {output_folder} and {planning_artifacts} for `/research/*research*.md`
 2. If no files: Try folder: `{output_folder}/*research*.md`
 3. Add discovered files to `inputDocuments` frontmatter
 
 **Project Documentation (Existing Projects):**
 
-1. Look for index file: `{output_folder/index.md`
+1. Look for index file: `{project_knowledge}/index.md`
 2. CRITICAL: Load index.md to understand what project files are available
 3. Read available files from index to understand existing project context
 4. This provides essential context for extending existing project with new architecture
 5. Add discovered files to `inputDocuments` frontmatter
+6. IF no index.md, ask user which files from the folder to include
 
 **Project Context Rules (Critical for AI Agents):**
 
@@ -123,19 +124,6 @@ Before proceeding, verify we have the essential inputs:
 #### C. Create Initial Document
 
 Copy the template from `{installed_path}/architecture-decision-template.md` to `{output_folder}/architecture.md`
-Initialize frontmatter with:
-
-```yaml
----
-stepsCompleted: []
-inputDocuments: []
-workflowType: 'architecture'
-lastStep: 0
-project_name: '{{project_name}}'
-user_name: '{{user_name}}'
-date: '{{date}}'
----
-```
 
 #### D. Complete Initialization and Report
 

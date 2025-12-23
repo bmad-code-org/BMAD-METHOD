@@ -17,8 +17,10 @@ class UI {
   async promptInstall() {
     CLIUtils.displayLogo();
 
-    // Display changelog link
-    console.log(chalk.cyan('\n📋 Read the latest updates: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md\n'));
+    // Display version-specific start message from install-messages.yaml
+    const { MessageLoader } = require('../installers/lib/message-loader');
+    const messageLoader = new MessageLoader();
+    messageLoader.displayStartMessage();
 
     const confirmedDirectory = await this.getConfirmedDirectory();
 
@@ -43,7 +45,7 @@ class UI {
     if (await fs.pathExists(confirmedDirectory)) {
       const entries = await fs.readdir(confirmedDirectory, { withFileTypes: true });
       for (const entry of entries) {
-        if (entry.isDirectory() && entry.name === '.bmad') {
+        if (entry.isDirectory() && (entry.name === '.bmad' || entry.name === 'bmad')) {
           hasLegacyBmadFolder = true;
           legacyBmadPath = path.join(confirmedDirectory, '.bmad');
           bmadDir = legacyBmadPath;
@@ -58,53 +60,85 @@ class UI {
       }
     }
 
-    // If no .bmad found, check for current installations
+    // If no .bmad or bmad found, check for current installations _bmad
     if (!hasLegacyBmadFolder) {
       const bmadResult = await installer.findBmadDir(confirmedDirectory);
       bmadDir = bmadResult.bmadDir;
       hasLegacyCfg = bmadResult.hasLegacyCfg;
     }
 
+    // Handle legacy .bmad or _cfg folder - these are very old (more than 2 versions behind)
+    // Show version warning instead of offering conversion
     if (hasLegacyBmadFolder || hasLegacyCfg) {
-      console.log(chalk.yellow('\n⚠️  Legacy folder structure detected'));
+      console.log('');
+      console.log(chalk.yellow.bold('⚠️  LEGACY INSTALLATION DETECTED'));
+      console.log(chalk.yellow('─'.repeat(80)));
+      console.log(
+        chalk.yellow(
+          'Found a ".bmad"/"bmad" folder, or a legacy "_cfg" folder under the bmad folder - this is from a old BMAD version that is out of date for automatic upgrade, manual intervention required.',
+        ),
+      );
+      console.log(chalk.yellow('This version is more than 2 alpha versions behind current.'));
+      console.log('');
+      console.log(chalk.dim('For stability, we only support updates from the previous 2 alpha versions.'));
+      console.log(chalk.dim('Legacy installations may have compatibility issues.'));
+      console.log('');
+      console.log(chalk.dim('For the best experience, we strongly recommend:'));
+      console.log(chalk.dim('  1. Delete your current BMAD installation folder (.bmad or bmad)'));
+      console.log(
+        chalk.dim(
+          '  2. Run a fresh installation\n\nIf you do not want to start fresh, you can attempt to proceed beyond this point IF you have ensured the bmad folder is named _bmad, and under it there is a _config folder. If you have a folder under your bmad folder named _cfg, you would need to rename it _config, and then restart the installer.',
+        ),
+      );
+      console.log('');
+      console.log(chalk.dim('Benefits of a fresh install:'));
+      console.log(chalk.dim('  • Cleaner configuration without legacy artifacts'));
+      console.log(chalk.dim('  • All new features properly configured'));
+      console.log(chalk.dim('  • Fewer potential conflicts'));
+      console.log(chalk.dim(''));
+      console.log(
+        chalk.dim(
+          'If you have already produced output from an earlier alpha version, you can still retain those artifacts. After installation, ensure you configured during install the proper file locations for artifacts depending on the module you are using, or move the files to the proper locations.',
+        ),
+      );
+      console.log(chalk.yellow('─'.repeat(80)));
+      console.log('');
 
-      let message = 'The following folders need to be renamed:\n';
-      if (hasLegacyBmadFolder) {
-        message += chalk.dim(`  • ".bmad" → "_bmad"\n`);
-      }
-      if (hasLegacyCfg) {
-        message += chalk.dim(`  • "_cfg" → "_config"\n`);
-      }
-      console.log(message);
-
-      const { shouldRename } = await inquirer.prompt([
+      const { proceed } = await inquirer.prompt([
         {
-          type: 'confirm',
-          name: 'shouldRename',
-          message: 'Would you like the installer to rename these folders for you?',
-          default: true,
+          type: 'list',
+          name: 'proceed',
+          message: 'What would you like to do?',
+          choices: [
+            {
+              name: 'Cancel and do a fresh install (recommended)',
+              value: 'cancel',
+              short: 'Cancel installation',
+            },
+            {
+              name: 'Proceed anyway (will attempt update, potentially may fail or have unstable behavior)',
+              value: 'proceed',
+              short: 'Proceed with update',
+            },
+          ],
+          default: 'cancel',
         },
       ]);
 
-      if (!shouldRename) {
-        console.log(chalk.red('\n❌ Installation cancelled'));
-        console.log(chalk.dim('You must manually rename the folders before proceeding:'));
-        if (hasLegacyBmadFolder) {
-          console.log(chalk.dim(`  • Rename ".bmad" to "_bmad"`));
-        }
-        if (hasLegacyCfg) {
-          console.log(chalk.dim(`  • Rename "_cfg" to "_config"`));
-        }
+      if (proceed === 'cancel') {
+        console.log('');
+        console.log(chalk.cyan('To do a fresh install:'));
+        console.log(chalk.dim('  1. Delete the existing bmad folder in your project'));
+        console.log(chalk.dim("  2. Run 'bmad install' again"));
+        console.log('');
         process.exit(0);
         return;
       }
 
-      // Perform the renames
       const ora = require('ora');
       const spinner = ora('Updating folder structure...').start();
-
       try {
-        // First rename .bmad to _bmad if needed
+        // Handle .bmad folder
         if (hasLegacyBmadFolder) {
           const newBmadPath = path.join(confirmedDirectory, '_bmad');
           await fs.move(legacyBmadPath, newBmadPath);
@@ -112,16 +146,14 @@ class UI {
           spinner.succeed('Renamed ".bmad" to "_bmad"');
         }
 
-        // Then rename _cfg to _config if needed
-        if (hasLegacyCfg) {
+        // Handle _cfg folder (either from .bmad or standalone)
+        const cfgPath = path.join(bmadDir, '_cfg');
+        if (await fs.pathExists(cfgPath)) {
           spinner.start('Renaming configuration folder...');
-          const oldCfgPath = path.join(bmadDir, '_cfg');
           const newCfgPath = path.join(bmadDir, '_config');
-          await fs.move(oldCfgPath, newCfgPath);
+          await fs.move(cfgPath, newCfgPath);
           spinner.succeed('Renamed "_cfg" to "_config"');
         }
-
-        spinner.succeed('Folder structure updated successfully');
       } catch (error) {
         spinner.fail('Failed to update folder structure');
         console.error(chalk.red(`Error: ${error.message}`));
@@ -173,10 +205,19 @@ class UI {
     // Only show action menu if there's an existing installation
     if (hasExistingInstall) {
       // Get version information
-      const { existingInstall } = await this.getExistingInstallation(confirmedDirectory);
+      const { existingInstall, bmadDir } = await this.getExistingInstallation(confirmedDirectory);
       const packageJsonPath = path.join(__dirname, '../../../package.json');
       const currentVersion = require(packageJsonPath).version;
       const installedVersion = existingInstall.version || 'unknown';
+
+      // Check if version is too old and warn user
+      const shouldProceed = await this.showOldAlphaVersionWarning(installedVersion, currentVersion, path.basename(bmadDir));
+
+      // If user chose to cancel, exit the installer
+      if (!shouldProceed) {
+        process.exit(0);
+        return;
+      }
 
       // Build menu choices dynamically
       const choices = [];
@@ -662,7 +703,7 @@ class UI {
   /**
    * Get existing installation info and installed modules
    * @param {string} directory - Installation directory
-   * @returns {Object} Object with existingInstall and installedModuleIds
+   * @returns {Object} Object with existingInstall, installedModuleIds, and bmadDir
    */
   async getExistingInstallation(directory) {
     const { Detector } = require('../installers/lib/core/detector');
@@ -670,10 +711,11 @@ class UI {
     const detector = new Detector();
     const installer = new Installer();
     const bmadDirResult = await installer.findBmadDir(directory);
-    const existingInstall = await detector.detect(bmadDirResult.bmadDir);
+    const bmadDir = bmadDirResult.bmadDir;
+    const existingInstall = await detector.detect(bmadDir);
     const installedModuleIds = new Set(existingInstall.modules.map((mod) => mod.id));
 
-    return { existingInstall, installedModuleIds };
+    return { existingInstall, installedModuleIds, bmadDir };
   }
 
   /**
@@ -1456,6 +1498,144 @@ class UI {
     }
 
     return result;
+  }
+
+  /**
+   * Parse alpha version string (e.g., "6.0.0-Alpha.20")
+   * @param {string} version - Version string
+   * @returns {Object|null} Object with alphaNumber and fullVersion, or null if invalid
+   */
+  parseAlphaVersion(version) {
+    if (!version || version === 'unknown') {
+      return null;
+    }
+
+    // Remove 'v' prefix if present
+    const cleanVersion = version.toString().replace(/^v/i, '');
+
+    // Match alpha version pattern: X.Y.Z-Alpha.N (case-insensitive)
+    const match = cleanVersion.match(/[\d.]+-Alpha\.(\d+)/i);
+
+    if (!match) {
+      return null;
+    }
+
+    return {
+      alphaNumber: parseInt(match[1], 10),
+      fullVersion: cleanVersion,
+    };
+  }
+
+  /**
+   * Check if installed version is more than 2 alpha versions behind current
+   * @param {string} installedVersion - The installed version
+   * @param {string} currentVersion - The current version
+   * @returns {Object} Object with { isOldVersion, versionDiff, shouldWarn, installed, current }
+   */
+  checkAlphaVersionAge(installedVersion, currentVersion) {
+    const installed = this.parseAlphaVersion(installedVersion);
+    const current = this.parseAlphaVersion(currentVersion);
+
+    // If we can't parse either version, don't warn
+    if (!installed || !current) {
+      return { isOldVersion: false, versionDiff: 0, shouldWarn: false };
+    }
+
+    // Calculate alpha version difference
+    const versionDiff = current.alphaNumber - installed.alphaNumber;
+
+    // Consider it old if more than 2 versions behind
+    const isOldVersion = versionDiff > 2;
+
+    return {
+      isOldVersion,
+      versionDiff,
+      shouldWarn: isOldVersion,
+      installed: installed.fullVersion,
+      current: current.fullVersion,
+      installedAlpha: installed.alphaNumber,
+      currentAlpha: current.alphaNumber,
+    };
+  }
+
+  /**
+   * Show warning for old alpha version and ask if user wants to proceed
+   * @param {string} installedVersion - The installed version
+   * @param {string} currentVersion - The current version
+   * @param {string} bmadFolderName - Name of the BMAD folder
+   * @returns {Promise<boolean>} True if user wants to proceed, false if they cancel
+   */
+  async showOldAlphaVersionWarning(installedVersion, currentVersion, bmadFolderName) {
+    const versionInfo = this.checkAlphaVersionAge(installedVersion, currentVersion);
+
+    // Also warn if version is unknown or can't be parsed (legacy/unsupported)
+    const isUnknownVersion = installedVersion === 'unknown' || !versionInfo.installed;
+
+    if (!versionInfo.shouldWarn && !isUnknownVersion) {
+      return true; // Not old, proceed
+    }
+
+    console.log('');
+    console.log(chalk.yellow.bold('⚠️  VERSION WARNING'));
+    console.log(chalk.yellow('─'.repeat(80)));
+
+    if (isUnknownVersion) {
+      console.log(chalk.yellow('Unable to detect your installed BMAD version.'));
+      console.log(chalk.yellow('This appears to be a legacy or unsupported installation.'));
+      console.log('');
+      console.log(chalk.dim('For stability, we only support updates from the previous 2 alpha versions.'));
+      console.log(chalk.dim('Legacy installations may have compatibility issues.'));
+    } else {
+      console.log(chalk.yellow(`You are updating from ${versionInfo.installed} to ${versionInfo.current}.`));
+      console.log(chalk.yellow(`This is ${versionInfo.versionDiff} alpha versions behind.`));
+      console.log('');
+      console.log(chalk.dim(`For stability, we only support updates from the previous 2 alpha versions`));
+      console.log(chalk.dim(`(Alpha.${versionInfo.currentAlpha - 2} through Alpha.${versionInfo.currentAlpha - 1}).`));
+    }
+
+    console.log('');
+    console.log(chalk.dim('For the best experience, we recommend:'));
+    console.log(chalk.dim('  1. Delete your current BMAD installation folder'));
+    console.log(chalk.dim(`     (the "${bmadFolderName}/" folder in your project)`));
+    console.log(chalk.dim('  2. Run a fresh installation'));
+    console.log('');
+    console.log(chalk.dim('Benefits of a fresh install:'));
+    console.log(chalk.dim('  • Cleaner configuration without legacy artifacts'));
+    console.log(chalk.dim('  • All new features properly configured'));
+    console.log(chalk.dim('  • Fewer potential conflicts'));
+    console.log(chalk.yellow('─'.repeat(80)));
+    console.log('');
+
+    const { proceed } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'proceed',
+        message: 'What would you like to do?',
+        choices: [
+          {
+            name: 'Proceed with update anyway (may have issues)',
+            value: 'proceed',
+            short: 'Proceed with update',
+          },
+          {
+            name: 'Cancel (recommended - do a fresh install instead)',
+            value: 'cancel',
+            short: 'Cancel installation',
+          },
+        ],
+        default: 'cancel',
+      },
+    ]);
+
+    if (proceed === 'cancel') {
+      console.log('');
+      console.log(chalk.cyan('To do a fresh install:'));
+      console.log(chalk.dim(`  1. Delete the "${bmadFolderName}/" folder in your project`));
+      console.log(chalk.dim("  2. Run 'bmad install' again"));
+      console.log('');
+    }
+
+    return proceed === 'proceed';
   }
 }
 

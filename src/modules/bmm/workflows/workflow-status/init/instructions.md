@@ -1,6 +1,6 @@
 # Workflow Init - Project Setup Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/\_bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow-init/workflow.yaml</critical>
 <critical>Communicate in {communication_language} with {user_name}</critical>
 <critical>This workflow handles BOTH new projects AND legacy projects following the BMad Method</critical>
@@ -15,7 +15,7 @@
 - BMM artifacts: PRD, epics, architecture, UX, brief, research, brainstorm
 - Implementation: stories, sprint-status, workflow-status
 - Codebase: source directories, package files, git repo
-- Check both {output_folder} and {sprint_artifacts} locations
+- Check both {output_folder} and {implementation_artifacts} locations
   </action>
 
 <action>Categorize into one of these states:

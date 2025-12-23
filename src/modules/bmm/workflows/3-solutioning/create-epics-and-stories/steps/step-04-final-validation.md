@@ -8,7 +8,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-an
 # File References
 thisStepFile: '{workflow_path}/steps/step-04-final-validation.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/epics.md'
+outputFile: '{planning_artifacts}/epics.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'

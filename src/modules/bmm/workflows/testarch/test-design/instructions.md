@@ -764,7 +764,7 @@ After completing this workflow, provide a summary:
 
 1. Review risk assessment with team
 2. Prioritize mitigation for high-risk items (score ≥6)
-3. Run `atdd` workflow to generate failing tests for P0 scenarios
+3. Run `*atdd` to generate failing tests for P0 scenarios (separate workflow; not auto-run by `*test-design`)
 4. Allocate resources per effort estimates
 5. Set up test data factories and fixtures
 ```

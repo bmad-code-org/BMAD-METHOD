@@ -678,7 +678,7 @@ PMs write BMad PRDs → Stories auto-fed to cloud AI agents → Parallel impleme
 - [FAQ](./faq.md) - Common questions
 - [Scale Adaptive System](./scale-adaptive-system.md) - Project levels explained
 - [Quick Start Guide](./quick-start.md) - Getting started
-- [Workflow Documentation](./README.md#-workflow-guides) - Complete workflow reference
+- [Workflow Documentation](./index.md#-workflow-guides) - Complete workflow reference
 - [Agents Guide](./agents-guide.md) - Understanding BMad agents
 
 ---

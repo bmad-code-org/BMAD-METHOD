@@ -9,7 +9,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-an
 thisStepFile: '{workflow_path}/steps/step-01-validate-prerequisites.md'
 nextStepFile: '{workflow_path}/steps/step-02-design-epics.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/epics.md'
+outputFile: '{planning_artifacts}/epics.md'
 epicsTemplate: '{workflow_path}/templates/epics-template.md'
 
 # Task References
@@ -77,20 +77,20 @@ Search for required documents using these patterns (sharded means a large docume
 
 **PRD Document Search Priority:**
 
-1. `{output_folder}/*prd*.md` (whole document)
-2. `{output_folder}/*prd*/index.md` (sharded version)
+1. `{planning_artifacts}/*prd*.md` (whole document)
+2. `{planning_artifacts}/*prd*/index.md` (sharded version)
 
 **Architecture Document Search Priority:**
 
-1. `{output_folder}/*architecture*.md` (whole document)
-2. `{output_folder}/*architecture*/index.md` (sharded version)
+1. `{planning_artifacts}/*architecture*.md` (whole document)
+2. `{planning_artifacts}/*architecture*/index.md` (sharded version)
 
 **UX Design Document Search (Optional):**
 
-1. `{output_folder}/*ux*.md` (whole document)
-2. `{output_folder}/*ux*/index.md` (sharded version)
+1. `{planning_artifacts}/*ux*.md` (whole document)
+2. `{planning_artifacts}/*ux*/index.md` (sharded version)
 
-Ask the user if there are any other documents, or if what you have found is all there is [Yes/No]. Wait for user confirmation. Once confirmed, create the {outputFile} from the {epicsTemplate} and in the front matter list the files in the array of `inputDocuments: []`.
+Before proceeding, Ask the user if there are any other documents, or if what you have found is all there is [Yes/No]. Wait for user confirmation. Once confirmed, create the {outputFile} from the {epicsTemplate} and in the front matter list the files in the array of `inputDocuments: []`.
 
 ### 3. Extract Functional Requirements (FRs)
 

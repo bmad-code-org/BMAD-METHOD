@@ -75,3 +75,7 @@ _bmad
 .roo
 
 bmad-custom-src/
+
+# Docusaurus / Documentation Build
+.docusaurus/
+build/

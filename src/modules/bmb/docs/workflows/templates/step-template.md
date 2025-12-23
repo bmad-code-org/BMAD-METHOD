@@ -11,7 +11,7 @@ description: '[Brief description of what this step accomplishes]'
 
 <!-- Path Definitions -->
 
-workflow\*path: '{project-root}/\_bmad/[module]/reference/workflows/[workflow-name]' # the folder the workflow.md file is in
+workflow\*path: '{project-root}/_bmad/[module]/reference/workflows/[workflow-name]' # the folder the workflow.md file is in
 
 # File References (all use {variable} format in file)
 
@@ -23,8 +23,8 @@ outputFile: '{output_folder}/[output-file-name]-{project_name}.md'
 
 # Task References (IF THE workflow uses and it makes sense in this step to have these )
 
-advancedElicitationTask: '{project-root}/\_bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/\_bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Template References (if this step uses a specific templates)
 
@@ -243,7 +243,7 @@ Display: "**Select an Option:** [A] [Continue to Step Foo] [A] [Continue to Step
 
 ### Initialization Step Example
 
-See [step-01-init.md](../reference/workflows/meal-prep-nutrition/steps/step-01-init.md) for an example of:
+See [step-01-init.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/workflows/meal-prep-nutrition/steps/step-01-init.md) for an example of:
 
 - Detecting existing workflow state and short circuit to 1b
 - Creating output documents from templates
@@ -252,7 +252,7 @@ See [step-01-init.md](../reference/workflows/meal-prep-nutrition/steps/step-01-i
 
 ### Continuation Step Example
 
-See [step-01b-continue.md](../reference/workflows/meal-prep-nutrition/steps/step-01b-continue.md) for an example of:
+See [step-01b-continue.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/workflows/meal-prep-nutrition/steps/step-01b-continue.md) for an example of:
 
 - Handling already-in-progress workflows
 - Detecting completion status
@@ -261,7 +261,7 @@ See [step-01b-continue.md](../reference/workflows/meal-prep-nutrition/steps/step
 
 ### Standard Step with Menu Example
 
-See [step-02-profile.md](../reference/workflows/meal-prep-nutrition/steps/step-02-profile.md) for an example of:
+See [step-02-profile.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/workflows/meal-prep-nutrition/steps/step-02-profile.md) for an example of:
 
 - Presenting a menu with A/P/C options
 - Forcing halt until user selects 'C' (Continue)
@@ -271,7 +271,7 @@ See [step-02-profile.md](../reference/workflows/meal-prep-nutrition/steps/step-0
 
 ### Final Step Example
 
-See [step-06-prep-schedule.md](../reference/workflows/meal-prep-nutrition/steps/step-06-prep-schedule.md) for an example of:
+See [step-06-prep-schedule.md](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/workflows/meal-prep-nutrition/steps/step-06-prep-schedule.md) for an example of:
 
 - Completing workflow deliverables
 - Marking workflow as complete in frontmatter

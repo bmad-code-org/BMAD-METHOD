@@ -8,7 +8,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/implementation-
 # File References
 thisStepFile: '{workflow_path}/steps/step-06-final-assessment.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/implementation-readiness-report-{{date}}.md'
+outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 ---
 
 # Step 6: Final Assessment

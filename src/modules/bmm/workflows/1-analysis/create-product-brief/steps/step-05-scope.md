@@ -9,7 +9,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-bri
 thisStepFile: '{workflow_path}/steps/step-05-scope.md'
 nextStepFile: '{workflow_path}/steps/step-06-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
+outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'

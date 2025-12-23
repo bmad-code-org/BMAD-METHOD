@@ -49,8 +49,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -228,7 +228,7 @@ Show the generated content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current success criteria content
+- Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml with the current success criteria content
 - Process the enhanced success metrics that come back
 - Ask user: "Accept these improvements to the success criteria? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -236,7 +236,7 @@ Show the generated content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current success criteria
+- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current success criteria
 - Process the collaborative improvements to metrics and scope
 - Ask user: "Accept these changes to the success criteria? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu

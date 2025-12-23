@@ -223,7 +223,7 @@ Same as simple agents, PLUS:
 
 ## Reference Example
 
-See: `bmb/reference/agents/expert-examples/journal-keeper/`
+See: [journal-keeper/](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/expert-examples/journal-keeper)
 
 Features demonstrated:
 
@@ -355,8 +355,8 @@ identity: |
 - [ ] Sidecar folder structure created and populated
 - [ ] memories.md has clear section structure
 - [ ] instructions.md contains core directives
-- [ ] Menu actions reference \_bmad/\_memory correctly
-- [ ] File paths use \_bmad/\_memory/[agentname]-sidecar/ to reference sidecar content
+- [ ] Menu actions reference _bmad/_memory correctly
+- [ ] File paths use _bmad/_memory/[agentname]-sidecar/ to reference sidecar content
 - [ ] Install config personalizes sidecar references
 - [ ] Agent folder named consistently: `{agent-name}/`
 - [ ] YAML file named: `{agent-name}.agent.yaml`

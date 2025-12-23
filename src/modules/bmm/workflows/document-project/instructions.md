@@ -1,7 +1,7 @@
 # Document Project Workflow Router
 
-<critical>The workflow execution engine is governed by: {project-root}/\_bmad/core/tasks/workflow.xml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/\_bmad/bmm/workflows/document-project/workflow.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/_bmad/bmm/workflows/document-project/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 
 <workflow>
@@ -83,40 +83,39 @@ Would you like to:
 Your choice [1/2/3]:
 </ask>
 
-    <check if="user selects 1">
-      <action>Set resume_mode = true</action>
-      <action>Set workflow_mode = {{mode}}</action>
-      <action>Load findings summaries from state file</action>
-      <action>Load cached project_type_id(s) from state file</action>
+  <check if="user selects 1">
+    <action>Set resume_mode = true</action>
+    <action>Set workflow_mode = {{mode}}</action>
+    <action>Load findings summaries from state file</action>
+    <action>Load cached project_type_id(s) from state file</action>
 
-      <critical>CONDITIONAL CSV LOADING FOR RESUME:</critical>
-      <action>For each cached project_type_id, load ONLY the corresponding row from: {documentation_requirements_csv}</action>
-      <action>Skip loading project-types.csv and architecture_registry.csv (not needed on resume)</action>
-      <action>Store loaded doc requirements for use in remaining steps</action>
+    <critical>CONDITIONAL CSV LOADING FOR RESUME:</critical>
+    <action>For each cached project_type_id, load ONLY the corresponding row from: {documentation_requirements_csv}</action>
+    <action>Skip loading project-types.csv and architecture_registry.csv (not needed on resume)</action>
+    <action>Store loaded doc requirements for use in remaining steps</action>
 
-      <action>Display: "Resuming {{workflow_mode}} from {{current_step}} with cached project type(s): {{cached_project_types}}"</action>
+    <action>Display: "Resuming {{workflow_mode}} from {{current_step}} with cached project type(s): {{cached_project_types}}"</action>
 
-      <check if="workflow_mode == deep_dive">
-        <action>Load and execute: {installed_path}/workflows/deep-dive-instructions.md with resume context</action>
-      </check>
-
-      <check if="workflow_mode == initial_scan OR workflow_mode == full_rescan">
-        <action>Load and execute: {installed_path}/workflows/full-scan-instructions.md with resume context</action>
-      </check>
+    <check if="workflow_mode == deep_dive">
+      <action>Load and execute: {installed_path}/workflows/deep-dive-instructions.md with resume context</action>
     </check>
 
-    <check if="user selects 2">
-      <action>Create archive directory: {output_folder}/.archive/</action>
-      <action>Move old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
-      <action>Set resume_mode = false</action>
-      <action>Continue to Step 0.5</action>
+    <check if="workflow_mode == initial_scan OR workflow_mode == full_rescan">
+      <action>Load and execute: {installed_path}/workflows/full-scan-instructions.md with resume context</action>
     </check>
 
-    <check if="user selects 3">
-      <action>Display: "Exiting workflow without changes."</action>
-      <action>Exit workflow</action>
-    </check>
+  </check>
 
+  <check if="user selects 2">
+    <action>Create archive directory: {output_folder}/.archive/</action>
+    <action>Move old state file to: {output_folder}/.archive/project-scan-report-{{timestamp}}.json</action>
+    <action>Set resume_mode = false</action>
+    <action>Continue to Step 0.5</action>
+  </check>
+
+  <check if="user selects 3">
+    <action>Display: "Exiting workflow without changes."</action>
+    <action>Exit workflow</action>
   </check>
 
   <check if="state file age >= 24 hours">

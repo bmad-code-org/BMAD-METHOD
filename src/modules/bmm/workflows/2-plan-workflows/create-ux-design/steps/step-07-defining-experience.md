@@ -29,8 +29,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -198,7 +198,7 @@ Show the generated defining experience content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current defining experience content
+- Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml with the current defining experience content
 - Process the enhanced experience insights that come back
 - Ask user: "Accept these improvements to the defining experience? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -206,7 +206,7 @@ Show the generated defining experience content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current defining experience
+- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current defining experience
 - Process the collaborative experience insights that come back
 - Ask user: "Accept these changes to the defining experience? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -214,7 +214,7 @@ Show the generated defining experience content and present choices:
 
 #### If 'C' (Continue):
 
-- Append the final content to `{output_folder}/ux-design-specification.md`
+- Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7]`
 - Load `./step-08-visual-foundation.md`
 

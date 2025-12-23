@@ -29,8 +29,8 @@ This step will generate content and present choices:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml
-- When 'P' selected: Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md
+- When 'A' selected: Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml
+- When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to this step's A/P/C menu
 - User accepts/rejects protocol changes before proceeding
 
@@ -168,7 +168,7 @@ Show the generated visual foundation content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/\_bmad/core/tasks/advanced-elicitation.xml with the current visual foundation content
+- Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml with the current visual foundation content
 - Process the enhanced visual insights that come back
 - Ask user: "Accept these improvements to the visual foundation? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -176,7 +176,7 @@ Show the generated visual foundation content and present choices:
 
 #### If 'P' (Party Mode):
 
-- Execute {project-root}/\_bmad/core/workflows/party-mode/workflow.md with the current visual foundation
+- Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md with the current visual foundation
 - Process the collaborative visual insights that come back
 - Ask user: "Accept these changes to the visual foundation? (y/n)"
 - If yes: Update content with improvements, then return to A/P/C menu
@@ -184,7 +184,7 @@ Show the generated visual foundation content and present choices:
 
 #### If 'C' (Continue):
 
-- Append the final content to `{output_folder}/ux-design-specification.md`
+- Append the final content to `{planning_artifacts}/ux-design-specification.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]`
 - Load `./step-09-design-directions.md`
 

@@ -8,9 +8,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-bri
 # File References
 thisStepFile: '{workflow_path}/steps/step-06-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
-# Task References
-# (No task references used in this completion step)
+outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 ---
 
 # Step 6: Product Brief Completion
@@ -84,9 +82,8 @@ This brief serves as the foundation for all subsequent product development activ
 **Status File Management:**
 Update the main workflow status file:
 
-- Check if `{output_folder}/bmm-workflow-status.yaml` exists
-- If not, create it with basic structure
-- Update workflow_status["product-brief"] = `{outputFile}`
+- Check if `{output_folder} or {planning_artifacts}/bmm-workflow-status.yaml` exists
+- If so, update workflow_status["product-brief"] = `{outputFile}`
 - Add completion timestamp and metadata
 - Save file, preserving all comments and structure
 
@@ -113,7 +110,7 @@ Perform final validation of the product brief:
 **Recommended Next Workflow:**
 Provide guidance on logical next workflows:
 
-1. `workflow prd` - Create detailed Product Requirements Document
+1. `create-prd` - Create detailed Product Requirements Document
    - Brief provides foundation for detailed requirements
    - User personas inform journey mapping
    - Success metrics become specific acceptance criteria
@@ -121,8 +118,8 @@ Provide guidance on logical next workflows:
 
 **Other Potential Next Steps:**
 
-2. `workflow create-ux-design` - UX research and design (can run parallel with PRD)
-3. `workflow domain-research` - Deep market or domain research (if needed)
+1. `create-ux-design` - UX research and design (can run parallel with PRD)
+2. `domain-research` - Deep market or domain research (if needed)
 
 **Strategic Considerations:**
 

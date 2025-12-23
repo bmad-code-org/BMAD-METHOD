@@ -16,6 +16,7 @@ This checklist covers **two sequential phases**:
 
 - [ ] Acceptance criteria are available (from story file OR inline)
 - [ ] Test suite exists (or gaps are acknowledged and documented)
+- [ ] If tests are missing, recommend `*atdd` (trace does not run it automatically)
 - [ ] Test directory path is correct (`test_dir` variable)
 - [ ] Story file is accessible (if using BMad mode)
 - [ ] Knowledge base is loaded (test-priorities, traceability, risk-governance)

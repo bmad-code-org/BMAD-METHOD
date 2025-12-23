@@ -772,6 +772,7 @@ After completing this workflow, provide a summary:
 5. Share progress in daily standup
 
 **Output File**: {output_file}
+**Manual Handoff**: Share `{output_file}` and failing tests with the dev workflow (not auto-consumed).
 
 **Knowledge Base References Applied**:
 

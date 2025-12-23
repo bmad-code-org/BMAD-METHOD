@@ -11,11 +11,11 @@ This document provides the validation criteria used in step-11-validate.md to en
 - [ ] tasks/ - Task files (if needed)
 - [ ] templates/ - Shared templates
 - [ ] data/ - Module data
-- [ ] \_module-installer/ - Installation config
+- [ ] _module-installer/ - Installation config
 - [ ] README.md - Module documentation
 - [ ] module.yaml - module config file
 
-### Optional File in \_module-installer/
+### Optional File in _module-installer/
 
 - [ ] installer.js - Custom logic (if needed)
 

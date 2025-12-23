@@ -126,7 +126,7 @@ Use this checklist to validate module edits meet BMAD Core standards.
 
 - [ ] Web bundles configured in workflow.yaml files
 - [ ] All referenced files included in web_bundle_files
-- [ ] Paths are \_bmad/-relative (not project-root)
+- [ ] Paths are _bmad/-relative (not project-root)
 - [ ] No config_source references in web bundles
 - [ ] Invoked workflows included in dependencies
 

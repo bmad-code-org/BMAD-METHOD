@@ -46,8 +46,8 @@ async function install(options) {
     }
 
     // Create implementation artifacts directory (sprint status, stories, reviews)
-    // Check both implementation_artifacts and sprint_artifacts for compatibility
-    const implConfig = config['implementation_artifacts'] || config['sprint_artifacts'];
+    // Check both implementation_artifacts and implementation_artifacts for compatibility
+    const implConfig = config['implementation_artifacts'] || config['implementation_artifacts'];
     if (implConfig && typeof implConfig === 'string') {
       // Strip project-root prefix variations
       const implConfigClean = implConfig.replace(/^\{project-root\}\/?/, '');

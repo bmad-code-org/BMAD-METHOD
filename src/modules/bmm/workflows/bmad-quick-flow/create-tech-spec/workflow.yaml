@@ -5,8 +5,10 @@ author: "BMad"
 
 # Config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
-output_folder: "{config_source}:output_folder"
-sprint_artifacts: "{config_source}:sprint_artifacts"
+implementation_artifacts: "{config_source}:implementation_artifacts"
+planning_artifacts: "{config_source}:planning_artifacts"
+project_knowledge: "{config_source}:project_knowledge"
+output_folder: "{implementation_artifacts}"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 document_output_language: "{config_source}:document_output_language"

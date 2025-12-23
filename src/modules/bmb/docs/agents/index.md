@@ -9,7 +9,7 @@ Comprehensive guides for each agent type (choose based on use case):
 - [Understanding Agent Types](./understanding-agent-types.md) - **START HERE** - Architecture vs capability, "The Same Agent, Three Ways"
 - [Simple Agent Architecture](./simple-agent-architecture.md) - Self-contained, optimized, personality-driven
 - [Expert Agent Architecture](./expert-agent-architecture.md) - Memory, sidecar files, domain restrictions
-- [Module Agent Architecture](./module-agent-architecture.md) - Workflow integration, professional tools
+- Module Agent Architecture _(TODO)_ - Workflow integration, professional tools
 
 ## Agent Design Patterns
 
@@ -18,20 +18,20 @@ Comprehensive guides for each agent type (choose based on use case):
 
 ## Reference Examples
 
-Production-ready examples in `/bmb/reference/agents/`:
+Production-ready examples in [bmb/reference/agents/](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents):
 
-**Simple Agents** (`simple-examples/`)
+**Simple Agents** ([simple-examples/](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/simple-examples))
 
-- `commit-poet.agent.yaml` - Commit message artisan with style customization
+- [commit-poet.agent.yaml](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/agents/simple-examples/commit-poet.agent.yaml) - Commit message artisan with style customization
 
-**Expert Agents** (`expert-examples/`)
+**Expert Agents** ([expert-examples/](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/expert-examples))
 
-- `journal-keeper/` - Personal journal companion with memory and pattern recognition
+- [journal-keeper/](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/expert-examples/journal-keeper) - Personal journal companion with memory and pattern recognition
 
-**Module Agents** (`module-examples/`)
+**Module Agents** ([module-examples/](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/src/modules/bmb/reference/agents/module-examples))
 
-- `security-engineer.agent.yaml` - BMM security specialist with threat modeling
-- `trend-analyst.agent.yaml` - CIS trend intelligence expert
+- [security-engineer.agent.yaml](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/agents/module-examples/security-engineer.agent.yaml) - BMM security specialist with threat modeling
+- [trend-analyst.agent.yaml](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/agents/module-examples/trend-analyst.agent.yaml) - CIS trend intelligence expert
 
 ## Installation Guide
 

@@ -8,15 +8,16 @@
 
 ## Overview
 
-BMAD Quick Flow is the fastest path from idea to production in the BMAD Method ecosystem. It's a streamlined 3-step process designed for rapid development without sacrificing quality. Perfect for experienced teams who need to move fast or for smaller features that don't require extensive planning.
+BMAD Quick Flow is the fastest path from idea to production in the BMAD Method ecosystem. It's a streamlined 3-step process designed for rapid spec driven development without sacrificing quality. Perfect for experienced teams who need to move fast or for smaller features or 1 off efforts that don't require extensive planning.
 
 ### When to Use Quick Flow
 
 **Perfect For:**
 
 - Bug fixes and patches
-- Small feature additions (1-3 days of work)
+- Small feature additions
 - Proof of concepts and prototypes
+- Mid course corrections or additions of something missed in BMM full planning
 - Performance optimizations
 - API endpoint additions
 - UI component enhancements
@@ -31,42 +32,19 @@ BMAD Quick Flow is the fastest path from idea to production in the BMAD Method e
 - Projects requiring extensive UX design
 - Enterprise-wide initiatives
 - Mission-critical systems with compliance requirements
+- Ideas with many 'moving pieces'
 
 ---
 
 ## The Quick Flow Process
 
-```mermaid
-flowchart TD
-    START[Idea/Requirement] --> DECIDE{Planning Needed?}
+Utilizing the Quick Flow Solo Dev, this one agent can do it all!
 
-    DECIDE -->|Yes| CREATE[create-tech-spec]
-    DECIDE -->|No| DIRECT[Direct Development]
+1. Create an (option) Technical Specification
+2. Develop with Tests
+3. AI Driven Code Review
 
-    CREATE --> SPEC[Technical Specification]
-    SPEC --> DEV[quick-dev]
-    DIRECT --> DEV
-
-    DEV --> COMPLETE{Implementation Complete}
-
-    COMPLETE -->|Success| REVIEW{Code Review?}
-    COMPLETE -->|Issues| DEBUG[Debug & Fix]
-    DEBUG --> DEV
-
-    REVIEW -->|Yes| CODE_REVIEW[code-review]
-    REVIEW -->|No| DONE[Production Ready]
-
-    CODE_REVIEW --> FIXES{Fixes Needed?}
-    FIXES -->|Yes| DEBUG
-    FIXES -->|No| DONE
-
-    style START fill:#e1f5fe
-    style CREATE fill:#f3e5f5
-    style SPEC fill:#e8f5e9
-    style DEV fill:#fff3e0
-    style CODE_REVIEW fill:#f1f8e9
-    style DONE fill:#e0f2f1
-```
+That's it! Lets look at each step in more detail though.
 
 ### Step 1: Optional Technical Specification
 
@@ -103,7 +81,7 @@ The `create-tech-spec` workflow transforms requirements into implementation-read
    - Make adjustments as needed
    - Save to sprint artifacts
 
-**Output:** `{sprint_artifacts}/tech-spec-{slug}.md`
+**Output:** `{implementation_artifacts}/tech-spec-{slug}.md`
 
 ### Step 2: Development
 

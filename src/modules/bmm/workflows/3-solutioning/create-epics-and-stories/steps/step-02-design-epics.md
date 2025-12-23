@@ -9,7 +9,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-an
 thisStepFile: '{workflow_path}/steps/step-02-design-epics.md'
 nextStepFile: '{workflow_path}/steps/step-03-create-stories.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/epics.md'
+outputFile: '{planning_artifacts}/epics.md'
 
 # Task References
 advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'

@@ -35,7 +35,7 @@ Initialize the UX design workflow by detecting continuation state and setting up
 
 First, check if the output document already exists:
 
-- Look for file at `{output_folder}/ux-design-specification.md`
+- Look for file at `{planning_artifacts}/ux-design-specification.md`
 - If exists, read the complete file including frontmatter
 - If not exists, this is a fresh workflow
 
@@ -57,23 +57,23 @@ Discover and load context documents using smart discovery:
 
 **PRD (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check analysis folder: `{output_folder}/analysis/*prd*.md`
-2. If no analysis files: Try main folder: `{output_folder}/*prd*.md`
-3. If no main files: Check for sharded PRD folder: `{output_folder}/*prd*/**/*.md`
+1. Check analysis folder: `{planning_artifacts}/*prd*.md`
+2. If no files: Try main folder: `{output_folder}/*prd*.md`
+3. If no main files: Check for sharded PRD folder: `**/*prd*/**/*.md`
 4. If sharded folder exists: Load EVERY file in that folder completely for UX context
 5. Add discovered files to `inputDocuments` frontmatter
 
 **Product Brief (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check analysis folder: `{output_folder}/analysis/*brief*.md`
+1. Check analysis folder: `{planning_artifacts}/*brief*.md`
 2. If no analysis files: Try main folder: `{output_folder}/*brief*.md`
-3. If no main files: Check for sharded brief folder: `{output_folder}/*brief*/**/*.md`
+3. If no main files: Check for sharded brief folder: `**/*brief*/**/*.md`
 4. If sharded folder exists: Load EVERY file in that folder completely
 5. Add discovered files to `inputDocuments` frontmatter
 
 **Research Documents (Priority: Analysis → Main → Sharded → Whole):**
 
-1. Check analysis folder: `{output_folder}/analysis/research/*research*.md`
+1. Check analysis folder: `{planning_artifacts}/research/*research*.md`
 2. If no analysis files: Try main folder: `{output_folder}/*research*.md`
 3. If no main files: Check for sharded research folder: `{output_folder}/*research*/**/*.md`
 4. Load useful research files completely
@@ -92,7 +92,7 @@ Discover and load context documents using smart discovery:
 
 #### B. Create Initial Document
 
-Copy the template from `{installed_path}/ux-design-template.md` to `{output_folder}/ux-design-specification.md`
+Copy the template from `{installed_path}/ux-design-template.md` to `{planning_artifacts}/ux-design-specification.md`
 Initialize frontmatter with:
 
 ```yaml
@@ -113,7 +113,7 @@ Complete setup and report to user:
 
 **Document Setup:**
 
-- Created: `{output_folder}/ux-design-specification.md` from template
+- Created: `{planning_artifacts}/ux-design-specification.md` from template
 - Initialized frontmatter with workflow state
 
 **Input Documents Discovered:**
@@ -131,6 +131,12 @@ Report what was found:
 Do you have any other documents you'd like me to include, or shall we continue to the next step?
 
 [C] Continue to UX discovery"
+
+## NEXT STEP:
+
+After user selects [C] to continue, load `./step-02-discovery.md` to begin the UX discovery phase.
+
+Remember: Do NOT proceed to step-02 until output file has been updated and user explicitly selects [C] to continue!
 
 ## SUCCESS METRICS:
 
@@ -151,9 +157,3 @@ Do you have any other documents you'd like me to include, or shall we continue t
 ❌ **CRITICAL**: Reading only partial step file - leads to incomplete understanding and poor decisions
 ❌ **CRITICAL**: Proceeding with 'C' without fully reading and understanding the next step file
 ❌ **CRITICAL**: Making decisions without complete understanding of step requirements and protocols
-
-## NEXT STEP:
-
-After user selects [C] to continue, load `./step-02-discovery.md` to begin the UX discovery phase.
-
-Remember: Do NOT proceed to step-02 until user explicitly selects [C] to continue!

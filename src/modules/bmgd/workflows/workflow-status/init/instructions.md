@@ -1,6 +1,6 @@
 # Workflow Init - Game Project Setup Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/\_bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: workflow-init/workflow.yaml</critical>
 <critical>Communicate in {communication_language} with {user_name}</critical>
 <critical>This workflow handles BOTH new game projects AND existing game projects</critical>
@@ -15,7 +15,7 @@
 - BMGD artifacts: GDD, game brief, architecture, narrative design
 - Implementation: stories, sprint-status, workflow-status
 - Game project: engine files (Unity, Unreal, Godot), source directories
-- Check both {output_folder} and {sprint_artifacts} locations
+- Check both {output_folder} and {implementation_artifacts} locations
   </action>
 
 <action>Categorize into one of these states:

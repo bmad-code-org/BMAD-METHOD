@@ -206,7 +206,7 @@ The `tools/cli/lib/agent/compiler.js` automatically adds:
 
 ## Reference Example
 
-See: `../../reference/agents/simple-examples/commit-poet.agent.yaml`
+See: [commit-poet.agent.yaml](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/src/modules/bmb/reference/agents/simple-examples/commit-poet.agent.yaml)
 
 Features demonstrated:
 

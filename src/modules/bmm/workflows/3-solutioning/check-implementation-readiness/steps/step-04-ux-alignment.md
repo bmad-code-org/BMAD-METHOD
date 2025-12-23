@@ -9,7 +9,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/implementation-
 thisStepFile: '{workflow_path}/steps/step-04-ux-alignment.md'
 nextStepFile: '{workflow_path}/steps/step-05-epic-quality-review.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/implementation-readiness-report-{{date}}.md'
+outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 ---
 
 # Step 4: UX Alignment

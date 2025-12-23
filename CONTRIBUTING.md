@@ -236,10 +236,8 @@ Each commit should represent one logical change:
 3. **Don't paste code in issues** - create a proper PR instead
 4. **Don't submit your whole project** - contribute specific improvements
 
-## Code Style
+## Prompt & Agent Guidelines
 
-- Follow the existing code style and conventions
-- Write clear comments for complex logic
 - Keep dev agents lean - they need context for coding, not documentation
 - Web/planning agents can be larger with more complex tasks
 - Everything is natural language (markdown) - no code in core framework

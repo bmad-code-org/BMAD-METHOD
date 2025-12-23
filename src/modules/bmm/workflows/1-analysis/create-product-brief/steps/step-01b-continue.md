@@ -8,9 +8,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/1-analysis/create-product-bri
 # File References
 thisStepFile: '{workflow_path}/steps/step-01b-continue.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/analysis/product-brief-{{project_name}}-{{date}}.md'
-# Task References
-# (No task references used in this continuation step)
+outputFile: '{planning_artifacts}/product-brief-{{project_name}}-{{date}}.md'
 ---
 
 # Step 1B: Product Brief Continuation

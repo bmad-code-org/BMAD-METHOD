@@ -33,7 +33,7 @@ Discover the project's technology stack, existing patterns, and critical impleme
 
 First, check if project context already exists:
 
-- Look for file at `{output_folder}/project-context.md`
+- Look for file at `{project_knowledge}/project-context.md or {project-root}/**/project-context.md`
 - If exists: Read complete file to understand existing rules
 - Present to user: "Found existing project context with {number_of_sections} sections. Would you like to update this or create a new one?"
 
@@ -43,7 +43,7 @@ Load and analyze project files to identify technologies:
 
 **Architecture Document:**
 
-- Look for `{output_folder}/architecture.md`
+- Look for `{planning_artifacts}/architecture.md`
 - Extract technology choices with specific versions
 - Note architectural decisions that affect implementation
 
@@ -55,7 +55,7 @@ Load and analyze project files to identify technologies:
 
 **Configuration Files:**
 
-- Look for TypeScript config (`tsconfig.json`)
+- Look for project language specific configs ( example: `tsconfig.json`)
 - Build tool configs (webpack, vite, next.config.js, etc.)
 - Linting and formatting configs (.eslintrc, .prettierrc, etc.)
 - Testing configurations (jest.config.js, vitest.config.ts, etc.)
@@ -123,17 +123,7 @@ Based on discovery, create or update the context document:
 #### A. Fresh Document Setup (if no existing context)
 
 Copy template from `{installed_path}/project-context-template.md` to `{output_folder}/project-context.md`
-Initialize frontmatter with:
-
-```yaml
----
-project_name: '{{project_name}}'
-user_name: '{{user_name}}'
-date: '{{date}}'
-sections_completed: ['technology_stack']
-existing_patterns_found: { { number_of_patterns_discovered } }
----
-```
+Initialize frontmatter fields.
 
 #### B. Existing Document Update
 
@@ -190,4 +180,4 @@ Ready to create/update your project context. This will help AI agents implement 
 
 After user selects [C] to continue, load `./step-02-generate.md` to collaboratively generate the specific project context rules.
 
-Remember: Do NOT proceed to step-02 until user explicitly selects [C] from the menu and discovery is confirmed!
+Remember: Do NOT proceed to step-02 until user explicitly selects [C] from the menu and discovery is confirmed and the initial file has been written as directed in this discovery step!

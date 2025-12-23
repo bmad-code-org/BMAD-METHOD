@@ -92,6 +92,3 @@ jobs:
 
       - name: Test agent compilation components
         run: npm run test:install
-
-      - name: Validate web bundles
-        run: npm run validate:bundles

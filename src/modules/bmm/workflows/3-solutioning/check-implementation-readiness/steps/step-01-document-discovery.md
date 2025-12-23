@@ -9,7 +9,7 @@ workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/implementation-
 thisStepFile: '{workflow_path}/steps/step-01-document-discovery.md'
 nextStepFile: '{workflow_path}/steps/step-02-prd-analysis.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/implementation-readiness-report-{{date}}.md'
+outputFile: '{planning_artifacts}/implementation-readiness-report-{{date}}.md'
 templateFile: '{workflow_path}/templates/readiness-report-template.md'
 ---
 

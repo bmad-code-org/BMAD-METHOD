@@ -7,7 +7,7 @@ ALL agent types can:
 - ✓ Write to {output_folder}, {project-root}, or anywhere on system
 - ✓ Update artifacts and files
 - ✓ Execute bash commands
-- ✓ Use core variables (\_bmad, {output_folder}, etc.)
+- ✓ Use core variables (_bmad, {output_folder}, etc.)
 - ✓ Have complex prompts and logic
 - ✓ Invoke external tools
 

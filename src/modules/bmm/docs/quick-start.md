@@ -6,12 +6,12 @@ Get started with BMad Method v6 for your new greenfield project. This guide walk
 
 1. **Install**: `npx bmad-method@alpha install`
 2. **Initialize**: Load Analyst agent → Run "workflow-init"
-3. **Plan**: Load PM agent → Run "prd" (or "tech-spec" for small projects)
-4. **Architect**: Load Architect agent → Run "create-architecture" (10+ stories only)
-5. **Build**: Load SM agent → Run workflows for each story → Load DEV agent → Implement
-6. **Always use fresh chats** for each workflow to avoid hallucinations
-
----
+3. **Plan**: Load PM agent to create a PRD
+4. **Plan UX**: Load UX Expert to create a UX-Design if your application will have a UX/UI element
+5. **Architect**: Load Architect agent → Run "create-architecture"
+6. **Epic Plan**: The PM steps back in to help run the create-epics-and-stories
+7. **Build**: Load SM agent → Run workflows for each story → Load DEV agent → Implement
+8. **Always use fresh chats** for each workflow to avoid context issues
 
 ## What is BMad Method?
 
@@ -350,7 +350,7 @@ A: Yes, once you learn the flow. Use the Quick Reference in Step 2 to go directl
 
 - **During workflows**: Agents guide you with questions and explanations
 - **Community**: [Discord](https://discord.gg/gk8jAdXWmj) - #general-dev, #bugs-issues
-- **Complete guide**: [BMM Workflow Documentation](./README.md#-workflow-guides)
+- **Complete guide**: [BMM Workflow Documentation](./index.md#-workflow-guides)
 - **YouTube tutorials**: [BMad Code Channel](https://www.youtube.com/@BMadCode)
 
 ---
