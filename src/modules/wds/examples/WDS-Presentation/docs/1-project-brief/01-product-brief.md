@@ -268,6 +268,10 @@ Using Action Mapping model to identify user actions and required information for
 
 ### SECTION 1: HERO SECTION
 
+**Reference Sketch:**
+
+![Hero Section Concept](../Resources/HeroSection.jpg)
+
 **User Action Goal:** Understand what WDS is and decide to explore further
 
 **What Users Need to Learn:**
@@ -283,6 +287,12 @@ Using Action Mapping model to identify user actions and required information for
 - Value statement: Why this matters (responsibility, excellence, results)
 - Primary CTA: "Explore on GitHub" (link to repository)
 - Secondary CTA: "Read WDS Articles" (link to filtered blog posts)
+
+**Visual Elements (from sketch):**
+- Hero illustration showing designer working with specifications/documentation
+- Deep blue background (consistent with current template)
+- Clear visual hierarchy: Headline → Description → CTAs
+- Right-side illustration area (person with device/documentation)
 
 **Success Metric:** User understands WDS concept and clicks through to GitHub or continues reading
 
