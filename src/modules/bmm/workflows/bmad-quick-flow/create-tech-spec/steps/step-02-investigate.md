@@ -20,8 +20,8 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 ## CONTEXT:
 
-- Requires `{wipFile}` from Step 1 with the "Requirement Delta" defined.
-- Focus: Map the requirement delta to specific anchor points in the codebase.
+- Requires `{wipFile}` from Step 1 with the "Problem Statement" defined.
+- Focus: Map the problem statement to specific anchor points in the codebase.
 - Output: Exact files to touch, classes/patterns to extend, and technical constraints identified.
 - Objective: Provide the implementation-ready ground truth for the plan.
 
