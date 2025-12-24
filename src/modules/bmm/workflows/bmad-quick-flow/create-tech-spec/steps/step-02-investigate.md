@@ -38,6 +38,8 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 
 **Universal Code Investigation:**
 
+_Isolate deep exploration in sub-agents/tasks where available. Return distilled summaries only to prevent context snowballing._
+
 a) **Build on Step 1's Quick Scan**
 
 Review what was found in Step 1's orient scan. Then ask:
@@ -60,7 +62,6 @@ For each file/directory provided:
 - Identify standard project utilities or boilerplate that SHOULD be used.
 - Document this as "Confirmed Clean Slate" - establishing that no legacy constraints exist.
 
-_Isolate deep exploration in sub-agents/tasks where available. Return distilled summaries only to prevent context snowballing._
 
 c) **Document Technical Context**
 
