@@ -79,7 +79,7 @@ Evaluate severity (Critical, High, Medium, Low) and validity (real, noise, undec
 DO NOT exclude findings based on severity or validity unless explicitly asked to do so.
 Order findings by severity.
 Number the ordered findings (F1, F2, F3, etc.).
-If WriteTodos or similar tool is available, turn each finding into a TODO, include ID, severity, validity, and description in the todo; otherwise present findings as a table with columns: ID, Severity, Validity, Description
+If TodoWrite or similar tool is available, turn each finding into a TODO, include ID, severity, validity, and description in the TODO; otherwise present findings as a table with columns: ID, Severity, Validity, Description
 
 ---
 
