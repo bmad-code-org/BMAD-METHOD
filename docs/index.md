@@ -45,7 +45,7 @@ The flagship module for agile AI-driven development.
   - [Scale Adaptive System](./modules/bmm/scale-adaptive-system) - Understanding the 5-level system
   - [Brownfield Guide](./modules/bmm/brownfield-guide) - Working with existing codebases
 - **[BMM Workflows Guide](./modules/bmm/index#-workflow-guides)** - **ESSENTIAL READING**
-- **[Test Architect Guide](./modules/bmm/test-architecture)** - Testing strategy and quality assurance
+- **[Test Architect Guide](../src/modules/bmm/docs/test-architecture.md)** - Testing strategy and quality assurance
 
 ### BMad Builder (BMB) - Create Custom Solutions
 
