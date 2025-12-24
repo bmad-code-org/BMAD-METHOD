@@ -23,7 +23,7 @@ wipFile: '{implementation_artifacts}/tech-spec-wip.md'
 ## CONTEXT:
 
 - Variables from `workflow.md` are available in memory.
-- Focus: Define the technical requirement delta, scope, and "is_brownfield" status.
+- Focus: Define the technical requirement delta and scope.
 - Investigation: Perform surface-level code scans ONLY to verify the delta. Reserve deep dives into implementation consequences for Step 2.
 - Objective: Establish a verifiable delta between current state and target state.
 
