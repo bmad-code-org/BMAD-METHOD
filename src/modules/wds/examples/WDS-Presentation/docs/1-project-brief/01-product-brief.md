@@ -14,7 +14,7 @@ Create the official WDS presentation page for Whiteport.com that serves as the e
 **Primary Audience:** Designers (UX, product, visual)  
 **Secondary Audience:** Entrepreneurs, system owners, clients
 
-**Core Message:** WDS is an end-to-end design methodology that makes designers indispensable by delivering value through structured, actionable specifications—not through speed, but through responsibility and excellence.
+**Core Message:** WDS is an end-to-end design methodology that makes designers indispensable by delivering value through structured, actionable specifications, through responsibility and excellence.
 
 ---
 
@@ -26,15 +26,15 @@ This page must address multiple complex positioning challenges simultaneously:
 
 **For Designers - The Paradigm Shift:**
 
-The fundamental challenge is that WDS represents a complete shift in how designers work. It's not an incremental improvement to existing tools—it's a transformation of the designer's role itself.
+WDS represents an evolution in how designers work—expanding the designer's role from creator to strategic leader who owns the complete product journey.
 
-- **Not a tool, but a methodology:** Most designers look for tools that solve a fraction of their process (prototyping, wireframing, handoff). WDS is an end-to-end solution covering the entire journey from idea to maintenance. We must help designers see this isn't about adding another tool to their stack—it's about changing how they approach their entire craft.
+- **A methodology, not just a tool:** While most AI tools on the market cover a fraction of the modern design process (prototyping, wireframing, handoff), WDS gives you the complete journey from idea to maintenance. This isn't about adding another tool to your stack—it's about elevating how you approach your entire craft and the value you deliver.
 
-- **Moving into the codebase:** Traditional design happens in visual tools (Figma, Sketch, Adobe). WDS requires designers to "move into" the codebase itself—working in IDEs and GitHub where their work lives alongside code. This is counterintuitive and requires a mindset shift. We must acknowledge this challenge while showing why it's worth it.
+- **Moving into the codebase:** Traditional design happens in visual tools (Figma, Sketch, Adobe). WDS invites designers to "move into" the codebase itself—working in IDEs and GitHub where your work lives alongside code. This puts you at the center of the action, where design decisions have immediate impact. While this represents a shift from familiar visual tools, it positions you as a true partner in the development process.
 
-- **Text-based interfaces:** The workflow requires working in text-based environments. This feels counterintuitive for designers who are naturally drawn to visual software and "touching and feeling" their designs. We must be honest about this, not pretend it's simple.
+- **Text-based power:** Working in text-based environments unlocks remarkable capabilities: version control, collaboration at scale, AI assistance, and specifications that travel directly from your mind to implementation. Yes, it's different from visual software where you "touch and feel" designs, but it's powerful precisely because it removes barriers between your thinking and the final product. We embrace this honestly—it's a skill worth learning because of what it enables.
 
-- **The call to adventure, not ease:** We're not positioning WDS as "simple and intuitive." Instead, we're calling designers to the adventure of taking responsibility for product success. The right designers will appreciate going "pro" and serving as linchpin actors who bridge business and user goals.
+- **The call to leadership:** We're not positioning WDS as "simple and intuitive." Instead, we're inviting designers to step into leadership—taking ownership of product success from vision to delivery. The right designers will embrace this opportunity to go "pro," serving as linchpin actors who bridge business goals and user needs. This is where design becomes indispensable.
 
 **The Designer Profile We Seek:**
 
@@ -44,44 +44,44 @@ We're looking for designers who:
 - Wish to serve clients and teams by becoming linchpin actors
 - Are willing to stand up and take responsibility for product success
 - Understand that sometimes fast stands in the way of what matters
-- Want to deliver real value, not just quick iterations
+- Aiming at delivering real value, not ust quick fixes
 
-**Key Message:** "WDS is for people and services that mean business."
+**Key Message:** "WDS is for people who means business."
 
-**For Entrepreneurs/Clients - Counter to "Vibe Coding":**
+**For Entrepreneurs/Clients - The Path to Real Success:**
 
-Entrepreneurs and clients are falling for cheap, unrealistic proposals from "vibe coding" tools that promise quick results without depth.
+Entrepreneurs and clients are discovering that lasting product success comes from structured, detail-focused approaches.
 
-- **The uncomfortable truth:** It's an uncomfortable position to be the realist in the room, but it's the right position. Fast is shallow. Real takes effort. Services that actually work need to function, not just look nice—this is a magnitude more complicated than rapid prototyping.
+- **The foundation of success:** Services that truly work deliver both function and beauty—depth and attention to detail from the start create products that fly. Screen by screen, interaction by interaction, you build something that works reliably and delights users.
 
-- **The vibe coding problem:** Today's vibe coding tools don't want users to be successful—they want users to keep burning tokens. "Done" is not their goal; "feeling like you're getting there" is what they aim at.
+- **The designer as strategic partner:** When you're navigating complex product decisions, a skilled designer serves as your strategic guide. The designer's process provides clarity and direction, using craft perfected through decades and amplified by AI capabilities.
 
-- **The alternative narrative:** Attention to detail from the start will get you there. Screen by screen, interaction by interaction. You'll get a result that works and flies, not just looks nice. Having a skilled designer in the ride is your best chance to get there.
+- **WDS as your foundation:** Think of WDS as your strategic foundation—structured, nutritious, exactly what your project needs. It delivers excellence through proven best practices, ensuring every element serves your business goals and user needs.
 
-- **The designer as guide:** The designer is your guide on dark waters. When you don't know where you're going or what to do, the designer's process leads the way. Not through glamorous prototypes that sound shallow, but through craft perfected through decades and supercharged by AI.
+- **Attention to detail creates results:** Starting with clear structure and specifications means you build once, build right. You get products that work, that scale, that succeed in the market.
 
-**Key Message:** "WDS is an insurance plan and a healthy meal plan. It's nutritious and healthy with no extra calories that will clog your arteries. Just what your project needs. Not glamorous, not a promise of quick fix. But through excellence and best practices."
+**Key Message:** "WDS delivers the structured excellence that drives real product success."
 
-### Why This Positioning is Difficult
+### Our Positioning Approach
 
-We must balance seemingly contradictory messages:
-- Acknowledge challenges WITHOUT discouraging people
-- Be realistic about effort WITHOUT making it seem impossible
-- Counter "vibe coding" WITHOUT directly criticizing competitors
-- Call to responsibility WITHOUT sounding preachy
-- Show depth and seriousness WITHOUT overwhelming beginners
-- Serve both audiences (designers + entrepreneurs) WITHOUT diluting message
+We balance important messages to serve both audiences effectively:
+- Acknowledge the learning curve while highlighting the empowerment it brings
+- Be realistic about effort while showing the structure that makes it achievable  
+- Focus on WDS benefits while respecting that different approaches serve different needs
+- Invite to responsibility while celebrating the leadership opportunity
+- Show depth and capability while providing clear entry points for beginners
+- Serve both audiences (designers + entrepreneurs) with messages that reinforce each other
 
-### Our Approach
+### Our Communication Strategy
 
 **No Criticism of Other Technologies:**
-We will not criticize other tools or techniques directly. Instead, we focus entirely on WDS benefits and challenges, breaking challenges into clear, structured steps.
+We focus entirely on WDS benefits and what it enables. Every tool has its place; WDS serves those ready for end-to-end structured design.
 
-**Focus on Value:**
-The power comes from being IDE-based with agents that can be molded and enhanced for each project or organization. This flexibility and depth is our strength.
+**Lead with Value:**
+The power comes from being IDE-based with agents that can be molded and enhanced for each project or organization. This flexibility and depth creates remarkable possibilities.
 
-**Truth in Positioning:**
-We acknowledge this isn't easy or simple. But we show the value is worth the effort, and we provide clear structure to make it achievable.
+**Truth with Optimism:**
+We're honest that this represents growth and learning. But we emphasize the value, show the clear path forward, and celebrate what becomes possible when designers take this step.
 
 ---
 
@@ -208,17 +208,17 @@ The current page (shown above) is built on WordPress and serves as a template fo
 4. **Session Listings:** Can be adapted for course modules with YouTube embeds
 5. **Footer Contact:** Good for Mårten bio and Whiteport information
 
-**Creative Solutions Needed:**
+**Creative Solutions We'll Use:**
 
-1. **Course Modules in Tables:** We can use WordPress table formatting within the left column to present course modules with YouTube embeds, descriptions, and GitHub links
+1. **Course Modules in Tables:** WordPress table formatting within the left column presents course modules with YouTube embeds, descriptions, and GitHub links in an organized, accessible way
 
-2. **Agent Presentations:** Can use heading hierarchy + formatted text in left column to introduce each agent with personality and role
+2. **Agent Presentations:** Heading hierarchy + formatted text in left column introduces each agent with personality and role, making them relatable and approachable
 
-3. **Installation Checklist:** Can use WordPress checklist or ordered list formatting with links to Module 02 lessons
+3. **Installation Checklist:** WordPress checklist or ordered list formatting with links to Module 02 lessons breaks down setup into manageable steps
 
-4. **Testimonials:** Can adapt the three-column section or create new section using WordPress column blocks
+4. **Testimonials:** Adapt the three-column section or create new section using WordPress column blocks to showcase user experiences
 
-5. **BMad Method Subsection:** Can use nested headings and formatted text to explain foundation
+5. **BMad Method Subsection:** Nested headings and formatted text explain the solid foundation WDS is built upon
 
 ### Deliverable Requirements
 
@@ -246,17 +246,17 @@ To work within these constraints, our specifications must include:
    - Button text and links
    - Color usage (within existing palette)
 
-### Success Criteria Considering Constraints
+### Success Criteria Considering Our Approach
 
-The page is successful if we:
+The page succeeds when:
 
-1. **Communicate WDS Value** within template structure limitations
-2. **Present Course Modules** effectively in session listing format
-3. **Explain Methodology** clearly in left column content area
-4. **Maintain Visual Consistency** with existing Whiteport design language
-5. **Provide Paste-Ready Code** that works immediately in WordPress
-6. **Deliver Quickly** by reusing template (low cost, fast deployment)
-7. **Allow Future Updates** as more course modules complete
+1. **Communicates WDS Value** clearly within template structure, showing what becomes possible
+2. **Presents Course Modules** effectively in session listing format, making learning accessible
+3. **Explains Methodology** engagingly in left column content area, inviting exploration
+4. **Maintains Visual Consistency** with existing Whiteport design language, feeling cohesive
+5. **Provides Paste-Ready Code** that works immediately in WordPress, enabling quick deployment
+6. **Delivers Efficiently** by reusing template (smart use of resources)
+7. **Allows Future Growth** as more course modules complete and community expands
 
 ---
 
