@@ -22,8 +22,7 @@
       <action>Load and read {{methods}} and {{agent-party}}</action>
 
       <csv-structure>
-        <i>type: Cognitive function for programmatic selection (collaborative, analytical, creative, meta-level, anti-bias, paradox, meta, sanity)</i>
-        <i>category: Method grouping (core, collaboration, risk, verification, etc.)</i>
+        <i>category: Task purpose (brainstorm, reason, stress-test, architect, ideate, research, risk, analyze, reflect, debias, challenge, meta-check, sanity)</i>
         <i>method_name: Display name for the method</i>
         <i>description: Rich explanation of what the method does, when to use it, and why it's valuable</i>
         <i>output_pattern: Flexible flow guide using → arrows (e.g., "analysis → insights → action")</i>
