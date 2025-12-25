@@ -260,13 +260,13 @@ The page succeeds when:
 
 ---
 
-## Page Structure & Information Architecture
+## Content Concepts & Information Architecture
 
-Using Action Mapping model to identify user actions and required information for each section.
+Using Action Mapping model to identify user actions and required information for each content concept. These concepts can be organized and sequenced during the design phase.
 
 ---
 
-### SECTION 1: HERO SECTION
+### CONCEPT: INITIAL ORIENTATION
 
 **Reference Sketch:**
 
@@ -278,27 +278,27 @@ Using Action Mapping model to identify user actions and required information for
 - What WDS is (in one clear statement)
 - Who should care about it
 - Why it matters (value proposition)
-- Where to go next (GitHub repository)
+- Where to go next
 
 **Information to Provide:**
-- Headline: Clear statement of what WDS is
-- Subheadline: Who it's for (designers, entrepreneurs)
-- Description: The paradigm shift (design → specification → product)
+- Clear statement of what WDS is
+- Who it's for (designers, entrepreneurs)
+- The paradigm shift (design → specification → product)
 - Value statement: Why this matters (responsibility, excellence, results)
-- Primary CTA: "Explore on GitHub" (link to repository)
-- Secondary CTA: "Read WDS Articles" (link to filtered blog posts)
+- Primary path: GitHub repository
+- Secondary path: WDS articles and resources
 
 **Visual Elements (from sketch):**
-- Hero illustration showing designer working with specifications/documentation
-- Deep blue background (consistent with current template)
-- Clear visual hierarchy: Headline → Description → CTAs
-- Right-side illustration area (person with device/documentation)
+- Illustration showing designer working with specifications/documentation
+- Deep blue background
+- Clear visual hierarchy
+- Right-side illustration area
 
-**Success Metric:** User understands WDS concept and clicks through to GitHub or continues reading
+**Success Metric:** User understands WDS concept and chooses to explore GitHub or continue reading
 
 ---
 
-### SECTION 2: WHAT IS WDS
+### CONCEPT: WDS METHODOLOGY EXPLANATION
 
 **User Action Goal:** Understand the WDS methodology and its foundation
 
@@ -310,40 +310,31 @@ Using Action Mapping model to identify user actions and required information for
 
 **Information to Provide:**
 
-#### Main Explanation
-- **The Paradigm Shift:**
-  - The design becomes the specification
-  - The specification becomes the product
-  - The code is just the printout
+#### The Paradigm Shift
+- The design becomes the specification
+- The specification becomes the product
+- The code is just the printout
 
-- **What WDS Delivers:**
-  - End-to-end solution (idea → maintenance)
-  - Conceptual specifications (100% actionable)
-  - Designer as linchpin (bridge business + user needs)
-  - Why-based specifications (WHAT + WHY + WHAT NOT TO DO)
+#### What WDS Delivers
+- End-to-end solution (idea → maintenance)
+- Conceptual specifications (100% actionable)
+- Designer as linchpin (bridge business + user needs)
+- Why-based specifications (WHAT + WHY + WHAT NOT TO DO)
 
-#### Subsection: "Standing on the Shoulders of Giants"
-
-**User Action Goal:** Trust that WDS is credible and proven
-
-**What Users Need to Learn:**
+#### Built on Solid Foundation
 - WDS is built on BMad Method (established development methodology)
 - Mårten's 25 years of design experience added to proven framework
 - In v6: BMM module handles development, WDS handles design
 - The integration is seamless and complete
-
-**Information to Provide:**
 - Brief explanation of BMad Method (AI-augmented development framework)
-- Open-source, proven, not "BS Mårten cooked up"
-- WDS as design module within larger ecosystem
-- v6 architecture: WDS (design) → BMM (development)
+- Open-source, proven, serious methodology
 - Link to BMad Method documentation
 
 **Success Metric:** User trusts WDS credibility and understands the ecosystem
 
 ---
 
-### SECTION 3: THE WDS DIFFERENCE
+### CONCEPT: KEY BENEFITS
 
 **User Action Goal:** Quickly grasp the three key benefits
 
@@ -353,28 +344,27 @@ Using Action Mapping model to identify user actions and required information for
 - Designers become strategic leaders (linchpins)
 
 **Information to Provide:**
-Three columns with icons/visuals:
 
-1. **End-to-End Solution**
-   - Not rapid prototyping or single-purpose tool
-   - Full journey: idea → specification → development → maintenance
-   - Designers work in codebase, not separate from it
+**Benefit 1: End-to-End Solution**
+- Not rapid prototyping or single-purpose tool
+- Full journey: idea → specification → development → maintenance
+- Designers work in codebase, not separate from it
 
-2. **100% Actionable Specifications**
-   - Conceptual specifications ready for AI or human teams
-   - No interpretation needed
-   - Unified IDs, error states, multi-language content included
+**Benefit 2: 100% Actionable Specifications**
+- Conceptual specifications ready for AI or human teams
+- No interpretation needed
+- Unified IDs, error states, multi-language content included
 
-3. **Designer as Linchpin**
-   - Bridge business goals and user needs
-   - Responsibility for product success
-   - Serve team as strategic guide
+**Benefit 3: Designer as Linchpin**
+- Bridge business goals and user needs
+- Ownership of product success
+- Serve team as strategic guide
 
 **Success Metric:** User sees unique value and wants to learn more
 
 ---
 
-### SECTION 4: MEET THE WDS AGENTS
+### CONCEPT: THE AGENTS
 
 **User Action Goal:** Understand how agents guide through phases and relate to them as teammates
 
@@ -386,122 +376,84 @@ Three columns with icons/visuals:
 
 **Information to Provide:**
 
-Each agent presented with:
-- Agent name + icon + tagline
+Each agent needs:
+- Name + icon + tagline
 - Role/personality description (relatable, human)
 - Phases they guide
 - What you create together
+- Why this agent matters
 
 #### Saga the Analyst 📚
 _"The one who tells your product's strategic story"_
 
-**Role:** Business Analyst + Product Discovery Expert
-
-**Phases Guided:**
-- Phase 1: Product Brief
-- Phase 2: Trigger Mapping
-
-**What You Create:**
-- Strategic foundation
-- Target users and personas
-- Business goals connected to user needs
-- Trigger maps showing psychological drivers
-
-**Why Saga Matters:** Helps uncover the story of why your product exists and who needs it
-
----
+- **Role:** Business Analyst + Product Discovery Expert
+- **Phases:** Product Brief, Trigger Mapping
+- **Creates:** Strategic foundation, target users and personas, business goals connected to user needs, trigger maps
+- **Why Saga:** Helps uncover the story of why your product exists and who needs it
 
 #### Freyja the Designer ✨
 _"The one who brings clarity through design"_
 
-**Role:** UX Designer + Design System Expert
-
-**Phases Guided:**
-- Phase 4: UX Design (Scenarios)
-- Phase 5: Design System (optional)
-
-**What You Create:**
-- Page specifications with object IDs
-- Interactive prototypes
-- Component libraries
-- Visual specifications that guide development
-
-**Why Freyja Matters:** Transforms ideas into detailed, beautiful specifications that developers can implement perfectly
-
----
+- **Role:** UX Designer + Design System Expert
+- **Phases:** UX Design (Scenarios), Design System (optional)
+- **Creates:** Page specifications with object IDs, interactive prototypes, component libraries, visual specifications
+- **Why Freyja:** Transforms ideas into detailed, beautiful specifications that developers can implement perfectly
 
 #### Idunn the PM ⚔️
 _"The strategic leader who plans the path forward"_
 
-**Role:** Product Manager + Technical Planner
-
-**Phases Guided:**
-- Phase 3: Platform Requirements
-- Phase 6: PRD Finalization
-
-**What You Create:**
-- Technical architecture decisions
-- Complete PRD (Product Requirements Document)
-- Implementation roadmap
-- Handoff packages for development
-
-**Why Idunn Matters:** Ensures technical feasibility and organizes design work for smooth development
-
----
+- **Role:** Product Manager + Technical Planner
+- **Phases:** Platform Requirements, PRD Finalization
+- **Creates:** Technical architecture decisions, complete PRD, implementation roadmap, handoff packages
+- **Why Idunn:** Ensures technical feasibility and organizes design work for smooth development
 
 #### Mimir the Orchestrator 🧙
 _"The wise one who coordinates the whole journey"_
 
-**Role:** Project Orchestrator + Workflow Guide
+- **Role:** Project Orchestrator + Workflow Guide
+- **Does:** Guides through WDS workflow, routes to appropriate agents, keeps project status, helps choose phases
+- **Why Mimir:** Your entry point and guide through the entire WDS process
 
-**What Mimir Does:**
-- Guides you through WDS workflow
-- Routes you to appropriate agents
-- Keeps project status and progress
-- Helps choose which phases you need
-
-**Why Mimir Matters:** Your entry point and guide through the entire WDS process
-
-**Success Metric:** User understands agent roles and sees them as helpful guides, not technical systems
+**Success Metric:** User understands agent roles and sees them as helpful guides
 
 ---
 
-### SECTION 5: FROM DESIGN TO DEVELOPMENT
+### CONCEPT: DESIGN TO DEVELOPMENT JOURNEY
 
 **User Action Goal:** Understand how design deliveries transition to implementation
 
 **What Users Need to Learn:**
-- Design work doesn't stop at handoff
+- Design work flows seamlessly into development
 - BMM agents handle breakdown, development, testing
-- The transition is seamless because specifications are complete
+- The transition works because specifications are complete
 - WDS + BMM = complete product journey
 
 **Information to Provide:**
 
-**The Journey:**
+**The Complete Journey:**
 1. WDS agents guide design phases
 2. Design deliveries created (PRD, specifications, prototypes)
 3. BMM agents take over for development
 4. BMM handles: epic breakdown, story creation, implementation, testing
-5. Continuous feedback loop between design and development
+5. Continuous collaboration between design and development
 
 **BMM Agents (Brief Introduction):**
 - Dev agents: Break down PRD into implementable stories
 - Development agents: Write code based on specifications
 - QA agents: Test against design specifications
-- [Link to BMad Method documentation for full details]
+- Link to BMad Method documentation for details
 
 **Why This Matters:**
 - Designers remain in control of creative vision
-- Specifications are so clear, implementation is straightforward
-- No "lost in translation" between design and development
+- Specifications are clear, implementation is straightforward
+- No "lost in translation"
 - AI can implement perfectly because intent is captured
 
-**Success Metric:** User understands complete workflow and sees how WDS fits into larger process
+**Success Metric:** User understands complete workflow and sees how WDS fits
 
 ---
 
-### SECTION 6: COURSE MODULES
+### CONCEPT: LEARNING RESOURCES (COURSE MODULES)
 
 **User Action Goal:** Access learning resources and start learning WDS
 
@@ -513,40 +465,29 @@ _"The wise one who coordinates the whole journey"_
 
 **Information to Provide:**
 
-**Table Format with Columns:**
-- Module Number/Name
+**For Each Module:**
+- Module number/name
 - Status (Complete / In Progress / Coming Soon)
-- YouTube Video Embed (if available)
-- Brief Description
+- YouTube video (if available)
+- Brief description
+- Topics covered
 - Links (GitHub lessons, NotebookLM resources)
 
 **Completed Modules:**
 
-#### Module 01: Why WDS Matters
-- **Status:** ✅ Complete
-- **Video:** [YouTube embed]
-- **Description:** Learn why designers are indispensable in the AI era. Understand the paradigm shift from prototyping to specification-driven design.
-- **Topics:** Factory mindset vs linchpin mindset, AI threats and opportunities, becoming irreplaceable
-- **Links:** [GitHub Module 01] | [NotebookLM Resources]
+**Module 01: Why WDS Matters**
+- Status: Complete
+- Description: Learn why designers are indispensable in the AI era. Understand the paradigm shift.
+- Topics: Factory vs linchpin mindset, AI threats and opportunities, becoming irreplaceable
+- Links to GitHub and NotebookLM resources
 
-#### Module 02: Installation & Setup
-- **Status:** ✅ Complete
-- **Video:** [YouTube embed]
-- **Description:** Get WDS running on your machine. Step-by-step guide to GitHub, IDE setup, and agent activation.
-- **Topics:** GitHub setup, IDE installation, cloning repository, initializing WDS, activating Mimir
-- **Links:** [GitHub Module 02] | [Quick Checklist]
+**Module 02: Installation & Setup**
+- Status: Complete
+- Description: Get WDS running. Step-by-step guide to GitHub, IDE setup, and agent activation.
+- Topics: GitHub setup, IDE installation, cloning repository, initializing WDS, activating Mimir
+- Quick checklist available
 
-**In Development:**
-
-#### Module 03: Alignment & Signoff
-- **Status:** 🔄 In Development
-- **Description:** Learn to create alignment documents and secure stakeholder commitment before starting design work.
-
-#### Module 04: Project Brief
-- **Status:** 🔄 In Development
-- **Description:** Create strategic foundation through conversational discovery with Saga.
-
-[Continue listing remaining modules with "Coming Soon" status]
+**In Development:** Modules 03-17 (list with brief descriptions and "coming soon" status)
 
 **Note:** "We're developing these modules in collaboration with designers like you. More modules added regularly."
 
@@ -554,55 +495,46 @@ _"The wise one who coordinates the whole journey"_
 
 ---
 
-### SECTION 7: QUICK START INSTALLATION
+### CONCEPT: GETTING STARTED (INSTALLATION)
 
 **User Action Goal:** Get WDS installed and ready to use
 
 **What Users Need to Learn:**
 - The 5 essential steps to get started
 - Each step has detailed instructions available
-- It's achievable (not overwhelming)
+- It's achievable and well-supported
 
 **Information to Provide:**
 
-**Installation Checklist:**
-(Each item links to detailed Module 02 lesson)
+**The 5 Steps:**
+(Each links to detailed Module 02 lesson)
 
-□ **Step 1: Set Up GitHub Account**
-   → [Detailed Guide: GitHub Setup]
+1. Set Up GitHub Account → Detailed guide available
+2. Install IDE (Cursor Recommended) → Detailed guide available
+3. Clone WDS Repository → Detailed guide available
+4. Initialize WDS in Your Project → Detailed guide available
+5. Activate Mimir Orchestrator → Detailed guide available
 
-□ **Step 2: Install IDE (Cursor Recommended)**
-   → [Detailed Guide: IDE Installation]
-
-□ **Step 3: Clone WDS Repository**
-   → [Detailed Guide: Git Cloning]
-
-□ **Step 4: Initialize WDS in Your Project**
-   → [Detailed Guide: WDS Initialization]
-
-□ **Step 5: Activate Mimir Orchestrator**
-   → [Detailed Guide: Agent Activation]
-
-**Time Required:** ~30 minutes for complete setup
-
-**Support Available:** [Link to Discord/Community] | [Troubleshooting Guide]
+**Additional Info:**
+- Time required: ~30 minutes for complete setup
+- Support available: Discord/Community link, troubleshooting guide
 
 **Success Metric:** User completes setup or bookmarks checklist for later
 
 ---
 
-### SECTION 8: WHAT OUR USERS SAY
+### CONCEPT: SOCIAL PROOF (TESTIMONIALS)
 
 **User Action Goal:** Build trust through social proof
 
 **What Users Need to Learn:**
 - Real designers use and value WDS
-- Results are tangible (quotes will show specific benefits)
+- Results are tangible
 - Community exists
 
 **Information to Provide:**
 
-**Testimonial Carousel Structure:**
+**Testimonial Structure:**
 (Ready for quotes to be added)
 
 - Profile photo (circular)
@@ -614,15 +546,15 @@ _"The wise one who coordinates the whole journey"_
 **Placeholder Content:**
 "Testimonials from designers and teams using WDS will appear here. If you've tried WDS, we'd love to hear your story!"
 
-[Link to: Share Your WDS Story]
+Link to: Share Your WDS Story
 
-**Success Metric:** User gains confidence in WDS through peer validation
+**Success Metric:** User gains confidence through peer validation
 
 ---
 
-### SECTION 9: GET STARTED NOW
+### CONCEPT: CALL TO ACTION
 
-**User Action Goal:** Take immediate action (GitHub, course, or community)
+**User Action Goal:** Take immediate action
 
 **What Users Need to Learn:**
 - Multiple entry points available
@@ -630,36 +562,33 @@ _"The wise one who coordinates the whole journey"_
 
 **Information to Provide:**
 
-**Three Clear CTAs:**
+**Three Primary Paths:**
 
 1. **Explore WDS on GitHub**
-   - "Browse the repository, read documentation, and clone WDS"
-   - [Button: View on GitHub]
+   - Browse repository, read documentation, clone WDS
 
 2. **Start the Course**
-   - "Learn WDS methodology through guided modules"
-   - [Button: Begin Module 01]
+   - Learn WDS methodology through guided modules
 
 3. **Join the Community**
-   - "Get help, share work, connect with other designers"
-   - [Button: Join Discord/Community]
+   - Get help, share work, connect with designers
 
 **Additional Resources:**
-- [WDS Workflows Guide]
-- [Example Projects]
-- [FAQs]
+- WDS Workflows Guide
+- Example Projects
+- FAQs
 
 **Success Metric:** User takes action through one of the three paths
 
 ---
 
-### SECTION 10: FOOTER
+### CONCEPT: ABOUT & CONTACT
 
 **User Action Goal:** Find additional information or contact
 
 **Information to Provide:**
 
-**About Section:**
+**About:**
 - Brief bio of Mårten Angner (creator)
 - Whiteport agency information
 - Mission statement: "Free and open-source for designers everywhere"
@@ -672,14 +601,10 @@ _"The wise one who coordinates the whole journey"_
 - Contact
 
 **Social Media:**
-- LinkedIn
-- Twitter/X
-- YouTube
-- Discord
+- LinkedIn, Twitter/X, YouTube, Discord
 
 **Legal:**
 - Open-source license information
-- Privacy (if applicable)
 
 **Success Metric:** User finds needed information or contact method
 
