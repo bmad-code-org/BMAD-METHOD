@@ -25,28 +25,27 @@ agent:
     - "Always document performance budgets and critical path decisions"
 
   menu:
-    - trigger: workflow-status
+    - trigger: WS or workflow-status or fuzzy match on workflow status
       workflow: "{project-root}/_bmad/bmgd/workflows/workflow-status/workflow.yaml"
-      description: Get workflow status or initialize a workflow if not already done
+      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
 
-    - trigger: create-architecture
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Game Architect"
+
+    - trigger: GA or game-architecture or fuzzy match on game architecture
       exec: "{project-root}/_bmad/bmgd/workflows/3-technical/game-architecture/workflow.md"
-      description: Produce a Scale Adaptive Game Architecture
+      description: "[GA] Produce a Scale Adaptive Game Architecture"
 
-    - trigger: generate-project-context
+    - trigger: PC or project-context or fuzzy match on project context
       exec: "{project-root}/_bmad/bmgd/workflows/3-technical/generate-project-context/workflow.md"
-      description: Create optimized project-context.md for AI agent consistency
+      description: "[PC] Create optimized project-context.md for AI agent consistency"
 
-    - trigger: correct-course
+    - trigger: CC or correct-course or fuzzy match on correct course
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/correct-course/workflow.yaml"
-      description: Course Correction Analysis (when implementation is off-track)
+      description: "[CC] Course Correction Analysis (when implementation is off-track)"
       ide-only: true
 
-    - trigger: party-mode
+    - trigger: PS or party-mode or fuzzy match on party mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Bring the whole team in to chat with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+      description: "[PS] Bring the whole team in to chat with other expert agents from the party"

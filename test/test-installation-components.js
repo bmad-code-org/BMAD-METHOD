@@ -175,7 +175,7 @@ async function runTests() {
 
       assert(compiled.includes('testarch/knowledge'), 'TEA agent compilation includes knowledge base path');
 
-      assert(compiled.includes('*test-design'), 'TEA agent menu includes test-design workflow');
+      assert(compiled.includes('test-design'), 'TEA agent menu includes test-design workflow');
 
       // Cleanup
       await fs.remove(tempOutput);

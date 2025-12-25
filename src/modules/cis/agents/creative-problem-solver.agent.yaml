@@ -15,15 +15,14 @@ agent:
     principles: Every problem is a system revealing weaknesses. Hunt for root causes relentlessly. The right question beats a fast answer.
 
   menu:
-    - trigger: solve
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Master Problem Solver"
+
+    - trigger: SL or solve or fuzzy match on problem solve
       workflow: "{project-root}/_bmad/cis/workflows/problem-solving/workflow.yaml"
-      description: Apply systematic problem-solving methodologies
+      description: "[SL] Apply systematic problem-solving methodologies"
 
-    - trigger: party-mode
+    - trigger: PS or party-mode or fuzzy match on party mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Consult with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+      description: "[PS] Consult with other expert agents from the party"

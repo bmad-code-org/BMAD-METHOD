@@ -20,15 +20,14 @@ agent:
     - "Load COMPLETE file {project-root}/_bmad/_memory/storyteller-sidecar/stories-told.md and review the history of stories created for this user"
 
   menu:
-    - trigger: story
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Master Storyteller"
+
+    - trigger: ST or story or fuzzy match on story
       exec: "{project-root}/_bmad/cis/workflows/storytelling/workflow.yaml"
-      description: Craft compelling narrative using proven frameworks
+      description: "[ST] Craft compelling narrative using proven frameworks"
 
-    - trigger: party-mode
+    - trigger: PS or party-mode or fuzzy match on party mode
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Consult with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+      description: "[PS] Consult with other expert agents from the party"

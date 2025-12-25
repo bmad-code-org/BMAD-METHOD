@@ -18,31 +18,22 @@ agent:
       - Find if this exists, if it does, always treat it as the bible I plan and execute against: `**/project-context.md`
 
   menu:
-    - trigger: workflow-status
+    - trigger: WS or workflow-status or fuzzy match on workflow status
       workflow: "{project-root}/_bmad/bmm/workflows/workflow-status/workflow.yaml"
-      description: Get workflow status or initialize a workflow if not already done (optional)
+      description: "[WS] Get workflow status or initialize a workflow if not already done (optional)"
 
-    - trigger: create-architecture
+    - trigger: CH or fuzzy match on chat
+      action: agent responds as expert based on its persona to converse
+      description: "[CH] Chat with the Architect Agent"
+
+    - trigger: CA or create-architecture or fuzzy match on create architecture
       exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/create-architecture/workflow.md"
-      description: Create an Architecture Document to Guide Development of a PRD (required for BMad Method projects)
+      description: "[CA] Create an Architecture Document"
 
-    - trigger: implementation-readiness
+    - trigger: IR or implementation-readiness or fuzzy match on implementation readiness
       exec: "{project-root}/_bmad/bmm/workflows/3-solutioning/check-implementation-readiness/workflow.md"
-      description: Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)
+      description: "[IR] Validate PRD, UX, Architecture, Epics and stories aligned (Optional but recommended before development)"
 
-    - trigger: create-excalidraw-diagram
-      workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-diagram/workflow.yaml"
-      description: Create system architecture or technical diagram (Excalidraw) (Use any time you need a diagram)
-
-    - trigger: create-excalidraw-dataflow
-      workflow: "{project-root}/_bmad/bmm/workflows/excalidraw-diagrams/create-dataflow/workflow.yaml"
-      description: Create data flow diagram (Excalidraw) (Use any time you need a diagram)
-
-    - trigger: party-mode
+    - trigger: PS or party-mode or fuzzy match on party mode start
       exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-      description: Bring the whole team in to chat with other expert agents from the party
-
-    - trigger: advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
-      description: Advanced elicitation techniques to challenge the LLM to get better results
-      web-only: true
+      description: "[PS] Bring the whole team in to chat with other expert agents from the party"
