@@ -165,19 +165,26 @@ The current page (shown above) is built on WordPress and serves as a template fo
 
 **Design Constraints:**
 
-1. **Existing Visual Language**
+1. **Fixed Layout Elements**
+   - Header section (top) - Fixed
+   - Three-column benefits/values section (below header) - Fixed
+   - Two-column main content area:
+     - Right column: Fixed structure for lists (course modules, artifacts, steps, etc.)
+     - Left column: Flexible content area for main explanation and concepts
+
+2. **Existing Visual Language**
    - Deep blue hero background
    - Pink/purple accent colors for icons
    - Illustration style (person with tablet)
    - Blue CTA buttons
    - Circular profile photos
 
-2. **Layout Patterns**
+3. **Layout Patterns**
    - Hero with right-side illustration
-   - Three-column benefit cards
-   - Two-column main content area
-   - Stacked session/module listings with icons
-   - Pricing/CTA section
+   - Three-column benefit cards (fixed position)
+   - Two-column main content area (right column lists, left column flexible)
+   - Stacked module/item listings with icons (right column)
+   - Pricing/CTA section (to be adapted)
    - Footer contact section
 
 **Content Constraints:**
@@ -200,13 +207,19 @@ The current page (shown above) is built on WordPress and serves as a template fo
 
 ### Opportunities Within Constraints
 
-**What Works Well:**
+**Fixed Elements Working for Us:**
 
-1. **Hero Section:** Perfect for WDS positioning message
-2. **Three-Column Benefits:** Ideal for "The WDS Difference" section
-3. **Two-Column Layout:** Left column can contain full methodology explanation, agents section, and installation guide
-4. **Session Listings:** Can be adapted for course modules with YouTube embeds
+1. **Header Section:** Perfect for WDS positioning message and primary navigation
+2. **Three-Column Benefits:** Ideal for "The WDS Difference" key benefits (fixed, prominent position)
+3. **Right Column Lists:** Can present course modules, WDS phases/artifacts, installation steps, or other structured content
+4. **Left Column:** Flexible space for methodology explanation, agents, BMad foundation, man-in-the-loop concept, etc.
 5. **Footer Contact:** Good for Mårten bio and Whiteport information
+
+**Flexibility Within Structure:**
+
+- Left column content can be organized in any sequence
+- Right column can showcase different types of lists depending on what serves users best
+- We can adapt the pricing/CTA section for multiple "Get Started" paths
 
 **Creative Solutions We'll Use:**
 
@@ -312,14 +325,22 @@ Using Action Mapping model to identify user actions and required information for
 
 #### The Paradigm Shift
 - The design becomes the specification
-- The specification becomes the product
-- The code is just the printout
+- The specification becomes the super-prompt
+- The code is just the execution
 
 #### What WDS Delivers
 - End-to-end solution (idea → maintenance)
-- Conceptual specifications (100% actionable)
+- Design and specifications that become super-prompts AI can execute perfectly
 - Designer as linchpin (bridge business + user needs)
-- Why-based specifications (WHAT + WHY + WHAT NOT TO DO)
+- Why-based design instructions (WHAT + WHY + WHAT NOT TO DO)
+
+**How AI Amplifies Your Expertise:**
+
+Even experienced consultants with decades of design knowledge benefit at this stage:
+- **You define the vision** - AI helps structure and document it systematically
+- **You make strategic calls** - AI ensures nothing gets lost in translation
+- **You bring wisdom** - Your design and specifications become executable super-prompts
+- Your years of experience become amplified - do what used to take weeks in hours
 
 #### Built on Solid Foundation
 - WDS is built on BMad Method (established development methodology)
@@ -350,10 +371,11 @@ Using Action Mapping model to identify user actions and required information for
 - Full journey: idea → specification → development → maintenance
 - Designers work in codebase, not separate from it
 
-**Benefit 2: 100% Actionable Specifications**
-- Conceptual specifications ready for AI or human teams
-- No interpretation needed
+**Benefit 2: Design + Specifications = Super-Prompts**
+- Your design and specifications become instructions AI can execute perfectly
+- No interpretation needed - your intent is preserved
 - Unified IDs, error states, multi-language content included
+- Years of design wisdom translated into executable super-prompts
 
 **Benefit 3: Designer as Linchpin**
 - Bridge business goals and user needs
@@ -389,23 +411,46 @@ _"The one who tells your product's strategic story"_
 - **Role:** Business Analyst + Product Discovery Expert
 - **Phases:** Product Brief, Trigger Mapping
 - **Creates:** Strategic foundation, target users and personas, business goals connected to user needs, trigger maps
-- **Why Saga:** Helps uncover the story of why your product exists and who needs it
+
+**How AI Amplifies Your Strategic Thinking:**
+
+Even with years of consulting experience:
+- **You bring insights** from deep user research knowledge
+- **Saga structures** those insights systematically
+- **You guide** discovery with strategic wisdom
+- **AI ensures** nothing gets lost in translation
+- Your expertise creates richer analysis, delivered faster
 
 #### Freyja the Designer ✨
 _"The one who brings clarity through design"_
 
 - **Role:** UX Designer + Design System Expert
 - **Phases:** UX Design (Scenarios), Design System (optional)
-- **Creates:** Page specifications with object IDs, interactive prototypes, component libraries, visual specifications
-- **Why Freyja:** Transforms ideas into detailed, beautiful specifications that developers can implement perfectly
+- **Creates:** Page designs with unified IDs, interactive prototypes, specifications that become super-prompts AI can implement
+
+**How AI Scales Design Excellence:**
+
+Experienced designers benefit from:
+- **You sketch and conceptualize** - Freyja analyzes and structures
+- **You make creative decisions** - AI documents them as detailed specifications
+- **You define interactions** - Your design + specifications become implementation-ready super-prompts
+- **You bring design intuition** - AI scales it into comprehensive documentation
+- Decades of UX wisdom becomes executable by AI
 
 #### Idunn the PM ⚔️
 _"The strategic leader who plans the path forward"_
 
 - **Role:** Product Manager + Technical Planner
 - **Phases:** Platform Requirements, PRD Finalization
-- **Creates:** Technical architecture decisions, complete PRD, implementation roadmap, handoff packages
-- **Why Idunn:** Ensures technical feasibility and organizes design work for smooth development
+- **Creates:** Technical architecture, complete PRD (super-prompt for teams), implementation roadmap
+
+**How AI Enhances PM Expertise:**
+
+Your technical judgment amplified:
+- **You make platform decisions** - Idunn organizes systematically
+- **You define requirements** - AI structures for implementation
+- **You prioritize features** - AI creates actionable sequences
+- Your years of PM experience becomes scalable documentation
 
 #### Mimir the Orchestrator 🧙
 _"The wise one who coordinates the whole journey"_
@@ -431,23 +476,24 @@ _"The wise one who coordinates the whole journey"_
 **Information to Provide:**
 
 **The Complete Journey:**
-1. WDS agents guide design phases
-2. Design deliveries created (PRD, specifications, prototypes)
-3. BMM agents take over for development
+1. WDS agents guide design phases (you lead, AI supports)
+2. Design + specifications created that become super-prompts (executable by AI or humans)
+3. BMM agents take over for development (your super-prompts guide implementation)
 4. BMM handles: epic breakdown, story creation, implementation, testing
-5. Continuous collaboration between design and development
+5. Continuous collaboration (your expertise guides, AI scales execution)
 
 **BMM Agents (Brief Introduction):**
-- Dev agents: Break down PRD into implementable stories
-- Development agents: Write code based on specifications
-- QA agents: Test against design specifications
+- Dev agents: Break down your design and specifications into implementable stories
+- Development agents: Execute your super-prompts into working code
+- QA agents: Test against your design intent
 - Link to BMad Method documentation for details
 
 **Why This Matters:**
-- Designers remain in control of creative vision
-- Specifications are clear, implementation is straightforward
-- No "lost in translation"
-- AI can implement perfectly because intent is captured
+- You maintain creative control throughout
+- Your design and specifications become executable super-prompts
+- No "lost in translation" - your intent is preserved
+- AI implements perfectly because you defined the "why"
+- Experienced designers deliver more value, faster
 
 **Success Metric:** User understands complete workflow and sees how WDS fits
 
