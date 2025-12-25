@@ -1,0 +1,1347 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language}, tailored to {user_skill_level}, and generate all documents in {document_output_language}</critical>
+
+  <critical>CRITICAL MISSION: You are the Design System Generator. You bridge the gap between UX Design and Implementation.</critical>
+  <critical>Your purpose is to translate human-readable UX specifications into machine-readable DEV artifacts.</critical>
+  <critical>Strictly follow the Single Source of Truth (SSOT) principle: Design Tokens drive everything.</critical>
+
+  <step n="1" goal="Load Input Documents">
+    <!-- AC #1: File discovery and location - invoke discover_inputs protocol -->
+    <invoke-protocol name="discover_inputs" />
+
+    <!-- Set KB query domain -->
+    <action>Initialize missing_list to empty</action>
+    <action>Set domain to "ui-ux" for KB queries</action>
+
+    <!-- AC #2: Required file validation - ux-design-specification.md -->
+    <check if="ux_spec_content is empty">
+      <output>??UX Design Specification not found.</output>
+      <output>Please run the UX design workflow first to generate ux-design-specification.md</output>
+      <output>Expected location: {output_folder}/ux-design-specification.md</output>
+      <action>HALT</action>
+    </check>
+    <action if="ux_spec_content exists">Set ux_file_path to discovered path</action>
+    <action if="ux_spec_content exists">Set ux_spec to ux_spec_content</action>
+
+    <!-- AC #2: Optional file handling - architecture.md -->
+    <check if="architecture_content is empty">
+      <output>Architecture document not found.</output>
+      <output>Proceeding with defaults: Tailwind CSS + React</output>
+      <action>Set arch_file_path to null</action>
+      <action>Set default_framework to "tailwind"</action>
+      <action>Set default_component_lib to "react"</action>
+    </check>
+    <action if="architecture_content exists">Set arch_file_path to discovered path</action>
+    <action if="architecture_content exists">Set architecture to architecture_content</action>
+
+    <!-- AC #1: Validate KB path -->
+    <action>Set kb_path to {kb_path}</action>
+    <check if="kb_path is empty">
+      <action>Set kb_path to "{project-root}/resources/ui-ux-pro-max"</action>
+    </check>
+    <check if="kb_path directory exists">
+      <output>??UI/UX Pro Max Knowledge Base located at {kb_path}</output>
+    </check>
+    <check if="kb_path directory not exists">
+      <output>Knowledge Base not found at {kb_path}</output>
+      <output>KB replenishment will be unavailable - manual input may be required for missing tokens.</output>
+    </check>
+
+    <!-- Load Project Context (optional) -->
+    <check if="project_context found">
+      <action>Load project context from {project_context}</action>
+    </check>
+    <check if="project_context not found">
+      <output>Project context not found; proceeding without project-level constraints.</output>
+    </check>
+
+    <!-- Output discovery summary -->
+    <output>?? Input Discovery Complete:</output>
+    <output>  - UX Specification: {ux_file_path}</output>
+    <output>  - Architecture: {arch_file_path}</output>
+    <output>  - Knowledge Base: {kb_path}</output>
+  </step>
+
+
+  <step n="2" goal="Parse Design Decisions and Build Token Structure">
+    <!-- 
+            Story 2.3: Extract Design Decisions
+            AC #1: Visual Foundation extraction
+            AC #2: Spacing &amp; Layout extraction
+            AC #3: Shadow &amp; Animation extraction
+            AC #4: Data structure and validation        -->
+
+    <!-- ===== Initialize extracted_tokens object ===== -->
+    <action>Initialize extracted_tokens object with the following W3C Design Token structure:</action>
+    <output>
+```json
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "colors": {},
+  "typography": { "fontFamily": {}, "fontSize": {}, "fontWeight": {}, "lineHeight": {} },
+  "spacing": {},
+  "borderRadius": {},
+  "shadow": {},
+  "animation": { "duration": {}, "easing": {} },
+  "breakpoints": {}
+}
+```
+    </output>
+
+    <!-- ===== AC #1: Visual Foundation parsing ===== -->
+    <action>?? PARSE VISUAL FOUNDATION from {ux_spec}:</action>
+
+    <!-- Color extraction - detailed process -->
+    <action>Extract Color Palette:</action>
+    <action>  1. Search for sections matching: "Color Palette", "Colors", "Color", "Palette"</action>
+    <action>  2. Identify parsing format:</action>
+    <action>     FORMAT A - Markdown table:</action>
+    <output>
+        | Role | Color | Usage |
+        |------|-------|-------|
+        | Primary | #0ea5e9 | Primary button |
+    </output>
+    <action>     ??Parse: role=first column, value=second column</action>
+    <action>     FORMAT B - List format:</action>
+    <output>
+        - Primary: #0ea5e9
+        - Secondary: hsl(217, 91%, 60%)
+    </output>
+    <action>     ??Parse: regex pattern `^[-*]\s*(\w+):\s*(#[0-9a-fA-F]{3,8}|hsl\([^)]+\)|rgb\([^)]+\))`</action>
+    <action>     FORMAT C - Inline definition:</action>
+    <output>Primary color is #0ea5e9 (Sky Blue)</output>
+    <action>     ??Parse: regex pattern `(primary|secondary|accent|neutral|success|warning|error)\s*(color)?\s*(is|:)?\s*(#[0-9a-fA-F]{3,8}|hsl\([^)]+\))`</action>
+    <action>  3. For each color role found (primary, secondary, accent, neutral, success, warning, error):</action>
+    <action>     - Normalize value to HEX format if HSL/RGB provided</action>
+    <action>     - If scale provided (50-900), store all values</action>
+    <action>     - If only base color, store as "500" and mark 50/100/900 as MISSING</action>
+    <action>     - Store with structure: { "value": "#...", "type": "color", "source": "ux-spec" }</action>
+    <action>  4. EDGE CASE: No color section found ??Add all required colors to missing_list</action>
+
+    <!-- Typography extraction - detailed process -->
+    <action>Extract Typography:</action>
+    <action>  1. Search for sections matching: "Typography", "Font", "Typeface"</action>
+    <action>  2. Parse font families:</action>
+    <action>     - Look for: "Heading font:", "Heading typeface:", "heading:", "h1-h6"</action>
+    <action>     - Look for: "Body font:", "Body typeface:", "body:", "paragraph"</action>
+    <action>     - Look for: "Mono font:", "Code font:", "Monospace font:", "mono:"</action>
+    <action>     - Extract font-stack string (e.g., "'Inter', sans-serif")</action>
+    <action>     - Store: { "value": "'Inter', sans-serif", "type": "fontFamily", "source": "ux-spec" }</action>
+    <action>  3. Parse font sizes (if explicitly defined):</action>
+    <action>     - Look for scale definitions: xs, sm, base, lg, xl, 2xl, 3xl, 4xl</action>
+    <action>     - Accept rem, em, or px values (normalize to rem)</action>
+    <action>  4. Parse font weights and line heights if found</action>
+    <action>  5. EDGE CASE: Only "Inter" mentioned without stack ??Use "'Inter', system-ui, sans-serif"</action>
+    <action>  6. EDGE CASE: No typography section ??Add fontFamily.heading, fontFamily.body to missing_list</action>
+
+    <!-- ===== AC #2: Spacing &amp; Layout parsing ===== -->
+    <action>?? PARSE SPACING AND LAYOUT from {ux_spec}:</action>
+
+    <!-- Spacing system -->
+    <action>?? Extract Spacing Scale:</action>
+    <action>  1. Search for: "Spacing", "Space scale", "Layout"</action>
+    <action>  2. Identify base unit:</action>
+    <action>     - Look for patterns: "4px base", "base unit: 4px", "0.25rem", "4pt grid"</action>
+    <action>     - Default base: 4px (0.25rem) if not specified</action>
+    <action>  3. Parse scale values:</action>
+    <action>     - Standard scale: 0, 1, 2, 3, 4, 6, 8, 12, 16</action>
+    <action>     - Calculate: value * base_unit (e.g., 4 * 4px = 16px = 1rem)</action>
+    <action>     - Store: { "value": "1rem", "type": "spacing", "source": "ux-spec" }</action>
+    <action>  4. EDGE CASE: No spacing defined ??Use default scale with base=4px, mark source as "default"</action>
+
+    <!-- Breakpoint definitions -->
+    <action>Extract Breakpoints:</action>
+    <action>  1. Search for: "Breakpoints", "Responsive", "Media queries"</action>
+    <action>  2. Parse breakpoint values:</action>
+    <action>     - sm: usually 640px</action>
+    <action>     - md: usually 768px</action>
+    <action>     - lg: usually 1024px</action>
+    <action>     - xl: usually 1280px</action>
+    <action>     - 2xl: usually 1536px</action>
+    <action>  3. Store: { "value": "768px", "type": "dimension", "source": "ux-spec" }</action>
+    <action>  4. EDGE CASE: No breakpoints ??Use Tailwind defaults, mark source as "default"</action>
+
+    <!-- Border radius definitions -->
+    <action>Extract Border Radius:</action>
+    <action>  1. Search for: "Border Radius", "Radius", "Corners"</action>
+    <action>  2. Parse values: none, sm, md, lg, xl, full</action>
+    <action>  3. Accept rem, px values (normalize to rem)</action>
+    <action>  4. Store: { "value": "0.375rem", "type": "borderRadius", "source": "ux-spec" }</action>
+    <action>  5. EDGE CASE: No radius defined ??Add sm, md, lg to missing_list</action>
+
+    <!-- ===== AC #3: Shadow &amp; Animation parsing ===== -->
+    <action>PARSE EFFECTS AND ANIMATION from {ux_spec}:</action>
+
+    <!-- Shadow definitions -->
+    <action>?? Extract Shadow Definitions:</action>
+    <action>  1. Search for: "Shadow", "Elevation", "Box shadow"</action>
+    <action>  2. Parse shadow levels: sm, md, lg, xl</action>
+    <action>  3. Extract full box-shadow syntax if provided:</action>
+    <action>     Example: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"</action>
+    <action>  4. Store: { "value": "0 4px 6px -1px rgba(0, 0, 0, 0.1)", "type": "boxShadow", "source": "ux-spec" }</action>
+    <action>  5. EDGE CASE: No shadow defined ??Add sm, md to missing_list</action>
+
+    <!-- Animation settings -->
+    <action>??Extract Animation Settings:</action>
+    <action>  1. Search for: "Animation", "Motion", "Transitions"</action>
+    <action>  2. Parse duration values:</action>
+    <action>     - fast: typically 150ms</action>
+    <action>     - normal: typically 300ms</action>
+    <action>     - slow: typically 500ms</action>
+    <action>  3. Parse easing functions:</action>
+    <action>     - default: cubic-bezier(0.4, 0, 0.2, 1)</action>
+    <action>     - in, out, bounce variations</action>
+    <action>  4. Store duration: { "value": "150ms", "type": "duration", "source": "ux-spec" }</action>
+    <action>  5. Store easing: { "value": "cubic-bezier(0.4, 0, 0.2, 1)", "type": "cubicBezier", "source": "ux-spec" }</action>
+    <action>  6. EDGE CASE: No animation defined ??Add duration.fast, duration.normal, easing.default to missing_list</action>
+
+    <!-- ===== Architecture tech stack parsing ===== -->
+    <check if="architecture exists">
+      <action>Extract Tech Stack from {architecture}:</action>
+      <action>  1. CSS Framework: search for "Tailwind", "CSS Modules", "Vanilla CSS", "SCSS", "styled-components"</action>
+      <action>  2. Component Library: search for "shadcn/ui", "Chakra", "MUI", "Radix", "Headless UI"</action>
+      <action>  3. Target Platform: search for "React", "Vue", "Next.js", "React Native", "Electron"</action>
+      <action>  4. Store tech_stack object with source: "architecture"</action>
+    </check>
+    <check if="architecture not found">
+      <output>Architecture document not found; using defaults:</output>
+      <output>  - CSS Framework: Tailwind CSS</output>
+      <output>  - Component Library: shadcn/ui</output>
+      <action>Set tech_stack = { framework: "tailwind", componentLib: "react", source: "default" }</action>
+    </check>
+
+    <!-- ===== AC #4: Output extracted_tokens structure ===== -->
+    <action>FINALIZE extracted_tokens structure:</action>
+    <output>
+Complete extracted_tokens object should follow this W3C Design Token format:
+```json
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "colors": {
+    "primary": {
+      "50": { "value": "#f0f9ff", "type": "color", "source": "ux-spec" },
+      "500": { "value": "#0ea5e9", "type": "color", "source": "ux-spec" },
+      "900": { "value": "#0c4a6e", "type": "color", "source": "ux-spec" }
+    },
+    "secondary": { "...": "..." },
+    "neutral": { "...": "..." }
+  },
+  "typography": {
+    "fontFamily": {
+      "heading": { "value": "'Inter', sans-serif", "type": "fontFamily", "source": "ux-spec" },
+      "body": { "value": "'Inter', sans-serif", "type": "fontFamily", "source": "ux-spec" }
+    },
+    "fontSize": {
+      "base": { "value": "1rem", "type": "fontSize", "source": "ux-spec" }
+    }
+  },
+  "spacing": {
+    "0": { "value": "0", "type": "spacing", "source": "ux-spec" },
+    "1": { "value": "0.25rem", "type": "spacing", "source": "ux-spec" },
+    "4": { "value": "1rem", "type": "spacing", "source": "ux-spec" }
+  },
+  "borderRadius": {
+    "sm": { "value": "0.125rem", "type": "borderRadius", "source": "ux-spec" },
+    "md": { "value": "0.375rem", "type": "borderRadius", "source": "ux-spec" }
+  },
+  "shadow": {
+    "sm": { "value": "0 1px 2px 0 rgba(0,0,0,0.05)", "type": "boxShadow", "source": "ux-spec" },
+    "md": { "value": "0 4px 6px -1px rgba(0,0,0,0.1)", "type": "boxShadow", "source": "ux-spec" }
+  },
+  "animation": {
+    "duration": {
+      "fast": { "value": "150ms", "type": "duration", "source": "ux-spec" },
+      "normal": { "value": "300ms", "type": "duration", "source": "ux-spec" }
+    },
+    "easing": {
+      "default": { "value": "cubic-bezier(0.4, 0, 0.2, 1)", "type": "cubicBezier", "source": "ux-spec" }
+    }
+  },
+  "breakpoints": {
+    "sm": { "value": "640px", "type": "dimension", "source": "ux-spec" },
+    "md": { "value": "768px", "type": "dimension", "source": "ux-spec" },
+    "lg": { "value": "1024px", "type": "dimension", "source": "ux-spec" }
+  }
+}
+```
+    </output>
+
+    <output>?? Token Extraction Summary:</output>
+    <output>  - Colors: {count extracted_tokens.colors} role(s) found</output>
+    <output>  - Typography: {count extracted_tokens.typography} setting(s) found</output>
+    <output>  - Spacing: {count extracted_tokens.spacing} value(s) found</output>
+    <output>  - Border Radius: {count extracted_tokens.borderRadius} value(s) found</output>
+    <output>  - Shadows: {count extracted_tokens.shadow} level(s) found</output>
+    <output>  - Animation: {count extracted_tokens.animation} setting(s) found</output>
+    <output>  - Breakpoints: {count extracted_tokens.breakpoints} breakpoint(s) found</output>
+  </step>
+
+  <step n="3" goal="Validate Completeness and Build Missing List">
+    <!-- 
+            Story 2.3: AC #4 - Data structure and validation; based on design-system-generator-spec.md Section 4.2 required token list
+        -->
+
+    <action>?? VALIDATE extracted_tokens against required token checklist:</action>
+    <action>Initialize validation_errors = [] and missing_list = []</action>
+
+    <!-- ===== Validation helper definition ===== -->
+    <action>Define validation helper: isValidToken(token) =</action>
+    <action>  - token !== null</action>
+    <action>  - token !== undefined</action>
+    <action>  - token.value !== null &amp;&amp; token.value !== ""</action>
+    <action>  - token.type exists</action>
+    <action>  - Return true if all conditions pass</action>
+
+    <!-- ===== Color validation (REQUIRED) - per spec 4.2 ===== -->
+    <action>VALIDATE Colors (REQUIRED per spec 4.2):</action>
+    <action>  CHECK: extracted_tokens.colors exists and is not empty object</action>
+
+    <!-- Primary: requires 50, 100, 500, 600, 700, 900 -->
+    <action>  For role = "primary":</action>
+    <action>    - CHECK: colors.primary exists as object</action>
+    <action>    - For each required scale in [50, 100, 500, 600, 700, 900]:</action>
+    <action>      - CHECK: colors.primary.{scale} exists and isValidToken()</action>
+    <action>      - IF MISSING: Add { category: "colors", key: "primary.{scale}", priority: "required" }</action>
+
+    <!-- Secondary, Accent, Neutral, Success, Warning, Error: each requires 500, 600, 700 -->
+    <action>  For each required role in [secondary, accent, neutral, success, warning, error]:</action>
+    <action>    - CHECK: colors.{role} exists as object</action>
+    <action>    - For each required scale in [500, 600, 700]:</action>
+    <action>      - CHECK: colors.{role}.{scale} exists and isValidToken()</action>
+    <action>      - IF MISSING: Add { category: "colors", key: "{role}.{scale}", priority: "required" }</action>
+
+    <!-- ===== Typography validation (REQUIRED) ===== -->
+    <action>VALIDATE Typography (REQUIRED):</action>
+    <action>  CHECK: extracted_tokens.typography exists</action>
+    <action>  Required checks:</action>
+    <action>    1. typography.fontFamily.heading:</action>
+    <action>       - IF null/undefined/empty: Add to missing_list</action>
+    <output>
+      { "category": "typography", "key": "fontFamily.heading", "priority": "required" }
+    </output>
+    <action>    2. typography.fontFamily.body:</action>
+    <action>       - IF null/undefined/empty: Add to missing_list</action>
+    <output>
+      { "category": "typography", "key": "fontFamily.body", "priority": "required" }
+    </output>
+    <action>    3. typography.fontSize.base:</action>
+    <action>       - IF null/undefined/empty: Add to missing_list</action>
+    <output>
+      { "category": "typography", "key": "fontSize.base", "priority": "required" }
+    </output>
+
+    <!-- ===== Spacing validation (REQUIRED) - per spec 4.2 ===== -->
+    <action>VALIDATE Spacing (REQUIRED per spec 4.2):</action>
+    <action>  CHECK: extracted_tokens.spacing exists</action>
+    <action>  For each required key in [0, 1, 2, 3, 4, 6, 8, 12, 16]:</action>
+    <action>    - CHECK: spacing[key] exists and isValidToken()</action>
+    <action>    - IF MISSING: Add { category: "spacing", key: "{key}", priority: "required" }</action>
+
+    <!-- ===== Border Radius validation (REQUIRED) - per spec 4.2 ===== -->
+    <action>VALIDATE Border Radius (REQUIRED per spec 4.2):</action>
+    <action>  CHECK: extracted_tokens.borderRadius exists</action>
+    <action>  For each required key in [none, sm, md, lg, xl, full]:</action>
+    <action>    - CHECK: borderRadius[key] exists and isValidToken()</action>
+    <action>    - IF MISSING: Add { category: "borderRadius", key: "{key}", priority: "required" }</action>
+
+    <!-- ===== Shadow validation (REQUIRED) - per spec 4.2 ===== -->
+    <action>VALIDATE Shadow (REQUIRED per spec 4.2):</action>
+    <action>  CHECK: extracted_tokens.shadow exists</action>
+    <action>  For each required key in [sm, md, lg, xl]:</action>
+    <action>    - CHECK: shadow[key] exists and isValidToken()</action>
+    <action>    - CHECK: shadow[key].value contains valid box-shadow syntax</action>
+    <action>    - IF MISSING: Add { category: "shadow", key: "{key}", priority: "required" }</action>
+
+    <!-- ===== Animation validation (REQUIRED) ===== -->
+    <action>??VALIDATE Animation (REQUIRED):</action>
+    <action>  CHECK: extracted_tokens.animation exists</action>
+    <action>  Required checks:</action>
+    <action>    1. animation.duration.fast:</action>
+    <action>       - CHECK: exists and value matches pattern /^\d+m?s$/</action>
+    <action>       - IF MISSING: Add { category: "animation", key: "duration.fast", priority: "required" }</action>
+    <action>    2. animation.duration.normal:</action>
+    <action>       - CHECK: exists and value matches pattern /^\d+m?s$/</action>
+    <action>       - IF MISSING: Add { category: "animation", key: "duration.normal", priority: "required" }</action>
+    <action>    3. animation.easing.default:</action>
+    <action>       - CHECK: exists and value contains "cubic-bezier" or valid keyword</action>
+    <action>       - IF MISSING: Add { category: "animation", key: "easing.default", priority: "required" }</action>
+
+    <!-- ===== Breakpoint validation (REQUIRED) - per spec 4.2 ===== -->
+    <action>VALIDATE Breakpoints (REQUIRED per spec 4.2):</action>
+    <action>  CHECK: extracted_tokens.breakpoints exists</action>
+    <action>  For each required key in [sm, md, lg, xl, 2xl]:</action>
+    <action>    - CHECK: breakpoints[key] exists and value matches /^\d+px$/</action>
+    <action>    - IF MISSING: Add { category: "breakpoints", key: "{key}", priority: "required" }</action>
+
+    <!-- ===== Validation result output ===== -->
+    <action>?? Generate Validation Report:</action>
+    <action>Set required_missing = missing_list.filter(item =&gt; item.priority === "required")</action>
+    <action>Set recommended_missing = missing_list.filter(item =&gt; item.priority === "recommended")</action>
+
+    <check if="required_missing.length === 0">
+      <output>??All REQUIRED tokens validated successfully!</output>
+      <action>Set validation_status = "complete"</action>
+    </check>
+    <check if="required_missing.length > 0">
+      <output>??VALIDATION FAILED: {required_missing.length} required token(s) missing:</output>
+      <output>
+```
+Required Missing Tokens:
+{required_missing.map(m => `  - [${m.category}] ${m.key}`).join('\n')}
+```
+      </output>
+      <action>Set validation_status = "incomplete"</action>
+    </check>
+
+    <check if="recommended_missing.length > 0">
+      <output>{recommended_missing.length} recommended token(s) missing (will use defaults):</output>
+      <output>
+```
+Recommended Missing:
+{recommended_missing.map(m => `  - [${m.category}] ${m.key}`).join('\n')}
+```
+      </output>
+    </check>
+
+    <action>Store missing_list for Step 4 KB replenishment</action>
+  </step>
+
+  <step n="4" goal="Replenish Missing Info with KB and User Input">
+    <!-- 
+            Story 2.4: Fill Missing with KB
+            AC #1: KB auto-replenishment
+            AC #2: User input replenishment
+            AC #3: Replenishment summary confirmation
+        -->
+
+    <action>Initialize replenished_items = []</action>
+    <action>Initialize kb_query_executed = false</action>
+    <action>Initialize kb_query_failed = false</action>
+
+    <!-- ===== Step 4.1: Extract style keywords (AC #1 prerequisite) ===== -->
+    <action>EXTRACT STYLE KEYWORDS from {ux_spec} for KB queries:</action>
+    <action>  1. Search for sections: "Design Philosophy", "Design Principles", "Style", "Visual Direction"</action>
+    <action>  2. Extract style keywords using patterns:</action>
+    <action>     - Look for adjectives: modern, minimalist, playful, professional, bold, elegant, etc.</action>
+    <action>     - Look for style references: Bauhaus, Material, Apple-like, etc.</action>
+    <action>     - Look for industry hints: SaaS, e-commerce, portfolio, dashboard, etc.</action>
+    <action>  3. Build {style} variable from found keywords (fallback: "modern professional")</action>
+    <action>  4. Store {industry} from project context or infer from ux_spec content</action>
+    <action>  5. Store {product_type} from project context or infer from ux_spec content</action>
+
+    <check if="style keywords not found">
+      <action>Set {style} = "modern professional"</action>
+      <output>No explicit style keywords found in UX Spec; using fallback: "modern professional"</output>
+    </check>
+    <check if="industry not found">
+      <action>Set {industry} = "general"</action>
+      <output>No industry context found; using fallback: "general"</output>
+    </check>
+    <output>?? Style Context for KB Queries:</output>
+    <output>  - Style: {style}</output>
+    <output>  - Industry: {industry}</output>
+    <output>  - Product Type: {product_type}</output>
+
+    <!-- ===== MED-04 fix: define getDefaultSuggestion helper ===== -->
+    <action>Define helper function getDefaultSuggestion(item):</action>
+    <action>  switch(item.category):</action>
+    <action>    case "colors": return "#0ea5e9" (or appropriate scale value for role)</action>
+    <action>    case "typography": return "'Inter', system-ui, sans-serif"</action>
+    <action>    case "spacing": return "{item.key * 0.25}rem" (4px base grid)</action>
+    <action>    case "borderRadius": return sm=0.125rem, md=0.375rem, lg=0.5rem</action>
+    <action>    case "shadow": return Tailwind default shadows</action>
+    <action>    case "animation": return fast=150ms, normal=300ms, default easing</action>
+    <action>    case "breakpoints": return Tailwind defaults (sm=640px, md=768px, etc.)</action>
+    <action>  End function definition</action>
+
+    <!-- ===== HIGH-02 fix: define setNestedToken helper for dot-path keys ===== -->
+    <action>Define helper function setNestedToken(obj, keyPath, tokenValue):</action>
+    <action>  1. Split keyPath by "." (e.g., "fontFamily.heading" ??["fontFamily", "heading"])</action>
+    <action>  2. Traverse obj, creating nested objects as needed</action>
+    <action>  3. Set final key to tokenValue</action>
+    <action>  Example: setNestedToken(typography, "fontFamily.heading", {value, type, source})</action>
+    <action>           ??typography.fontFamily.heading = {value, type, source}</action>
+    <action>  End function definition</action>
+
+    <!-- ===== Step 4.2: Categorized KB queries (AC #1) ===== -->
+    <check if="missing_list not empty">
+      <action>CATEGORIZE missing_list by token type:</action>
+      <action>  - color_missing = missing_list.filter(m => m.category === "colors")</action>
+      <action>  - typography_missing = missing_list.filter(m => m.category === "typography")</action>
+      <action>  - spacing_missing = missing_list.filter(m => m.category === "spacing" || m.category === "borderRadius")</action>
+      <action>  - shadow_missing = missing_list.filter(m => m.category === "shadow")</action>
+      <action>  - animation_missing = missing_list.filter(m => m.category === "animation")</action>
+      <action>  - breakpoints_missing = missing_list.filter(m => m.category === "breakpoints")</action>
+
+      <!-- ===== Color KB queries (MED-01, MED-02 fixes) ===== -->
+      <check if="color_missing.length > 0 AND kb_path directory exists">
+        <output>Searching KB for colors...</output>
+        <action>Set kb_query_executed = true</action>
+        <action>Execute query: python {kb_path}/scripts/search.py "{style} {industry} color palette" --domain color --json</action>
+
+        <!-- MED-01 fix: error handling - remove reference to undefined remaining_missing -->
+        <check if="script execution fails OR returns non-zero exit code">
+          <action>Set kb_query_failed = true</action>
+          <output>KB search script failed - colors will remain in color_missing for CSV fallback</output>
+          <action>Log error details for debugging</action>
+          <action>Skip KB color processing, proceed to next category</action>
+        </check>
+        <check if="JSON parse fails OR results is empty">
+          <output>No color suggestions found in KB for "{style}" style</output>
+          <action>Continue without KB color suggestions</action>
+        </check>
+
+        <action>Parse JSON result with structure:</action>
+        <output>
+```json
+{
+  "results": [
+    { "role": "primary", "value": "#0ea5e9", "scale": { "50": "...", "500": "...", "900": "..." } },
+    { "role": "secondary", "value": "#6366f1" }
+  ]
+}
+```
+        </output>
+        <action>For each color found in KB results:</action>
+        <!-- Color format conversion -->
+        <action>  - Normalize value to HEX format:</action>
+        <action>      If HSL: hsl(h, s%, l%) ??Convert using: R,G,B = hslToRgb(h/360, s/100, l/100), then #RRGGBB</action>
+        <action>      If RGB: rgb(r, g, b) ??Convert to #RRGGBB using hex encoding</action>
+        <action>      If already HEX: validate format #RGB or #RRGGBB or #RRGGBBAA</action>
+        <!-- HIGH-01 fix: write color tokens into nested structure -->
+        <action>  - Store with proper nesting:</action>
+        <action>  - Ensure extracted_tokens.colors[role] exists as an object</action>
+        <action>      If scale provided: extracted_tokens.colors[role][scaleKey] = { value, type: "color", source: "kb-suggestion" }</action>
+        <action>      If single value: extracted_tokens.colors[role]["500"] = { value, type: "color", source: "kb-suggestion" }</action>
+        <action>  - Remove from color_missing list</action>
+        <action>  - Append to replenished_items with source: "kb-suggestion"</action>
+        <output>  ??Filled {count} color tokens from KB</output>
+      </check>
+
+      <!-- ===== Typography KB queries (LOW-01 fix: standardize query string) ===== -->
+      <check if="typography_missing.length > 0 AND kb_path directory exists">
+        <output>Searching KB for typography...</output>
+        <!-- LOW-01 fix: standardize Execute query format -->
+        <action>Set kb_query_executed = true</action>
+        <action>Execute: python {kb_path}/scripts/search.py "{style} typography" --domain typography --json</action>
+        <check if="script execution fails OR JSON parse fails">
+          <action>Set kb_query_failed = true</action>
+          <output>KB search script failed - typography will remain in typography_missing for CSV fallback</output>
+        </check>
+        <action>Parse JSON result:</action>
+        <output>
+```json
+{
+  "results": [
+    { "role": "heading", "fontFamily": "'Inter', sans-serif" },
+    { "role": "body", "fontFamily": "'Inter', sans-serif" }
+  ]
+}
+```
+        </output>
+        <action>For each typography setting found:</action>
+        <action>  - Store: extracted_tokens.typography.fontFamily[role] = { value, type: "fontFamily", source: "kb-suggestion" }</action>
+        <action>  - Remove from typography_missing list</action>
+        <action>  - Append to replenished_items with source: "kb-suggestion"</action>
+        <output>  ??Filled {count} typography tokens from KB</output>
+      </check>
+
+      <!-- ===== Spacing/Radius KB queries ===== -->
+      <check if="spacing_missing.length > 0 AND kb_path directory exists">
+        <output>?? Searching KB for spacing and radius...</output>
+        <action>Set kb_query_executed = true</action>
+        <action>Execute: python {kb_path}/scripts/search.py "{style} spacing system" --domain spacing --json</action>
+        <check if="script execution fails OR JSON parse fails">
+          <action>Set kb_query_failed = true</action>
+          <output>KB search script failed - spacing/radius will remain in spacing_missing for CSV fallback</output>
+        </check>
+        <action>Parse JSON result and apply Tailwind-compatible scale if found</action>
+        <action>For spacing values: store with type: "spacing", source: "kb-suggestion"</action>
+        <action>For borderRadius values: store with type: "borderRadius", source: "kb-suggestion"</action>
+        <action>Remove filled items from spacing_missing list</action>
+        <action>Append filled spacing/radius items to replenished_items with source: "kb-suggestion"</action>
+        <output>  ??Filled {count} spacing/radius tokens from KB</output>
+      </check>
+
+      <!-- ===== Shadow KB queries ===== -->
+      <check if="shadow_missing.length > 0 AND kb_path directory exists">
+        <output>?? Searching KB for shadows...</output>
+        <action>Set kb_query_executed = true</action>
+        <action>Execute: python {kb_path}/scripts/search.py "{style} elevation shadow" --domain elevation --json</action>
+        <check if="script execution fails OR JSON parse fails">
+          <action>Set kb_query_failed = true</action>
+          <output>KB search script failed - shadows will remain in shadow_missing for CSV fallback</output>
+        </check>
+        <action>Parse JSON result with box-shadow syntax</action>
+        <action>For each shadow found:</action>
+        <action>  - Store: extracted_tokens.shadow[level] = { value: "box-shadow-syntax", type: "boxShadow", source: "kb-suggestion" }</action>
+        <action>  - Remove from shadow_missing list</action>
+        <action>  - Append to replenished_items with source: "kb-suggestion"</action>
+        <output>  ??Filled {count} shadow tokens from KB</output>
+      </check>
+
+      <!-- ===== Animation KB queries ===== -->
+      <check if="animation_missing.length > 0 AND kb_path directory exists">
+        <output>??Searching KB for animation settings...</output>
+        <action>Set kb_query_executed = true</action>
+        <action>Execute: python {kb_path}/scripts/search.py "{style} motion animation" --domain animation --json</action>
+        <check if="script execution fails OR JSON parse fails">
+          <action>Set kb_query_failed = true</action>
+          <output>KB search script failed - animation will remain in animation_missing for CSV fallback</output>
+        </check>
+        <action>Parse JSON result for duration and easing values</action>
+        <action>For duration values: store with type: "duration", source: "kb-suggestion"</action>
+        <action>For easing values: store with type: "cubicBezier", source: "kb-suggestion"</action>
+        <action>Remove filled items from animation_missing list</action>
+        <action>Append filled animation items to replenished_items with source: "kb-suggestion"</action>
+        <output>  ??Filled {count} animation tokens from KB</output>
+      </check>
+
+      <!-- ===== MED-03 fix: Breakpoints KB queries ===== -->
+      <check if="breakpoints_missing.length > 0 AND kb_path directory exists">
+        <output>Searching KB for breakpoints...</output>
+        <action>Set kb_query_executed = true</action>
+        <action>Execute: python {kb_path}/scripts/search.py "{style} responsive breakpoints" --domain layout --json</action>
+
+        <check if="script execution fails OR JSON parse fails">
+          <action>Set kb_query_failed = true</action>
+          <output>No breakpoint suggestions found in KB - using Tailwind defaults</output>
+          <action>Apply Tailwind default breakpoints: sm=640px, md=768px, lg=1024px, xl=1280px, 2xl=1536px</action>
+          <action>Mark source as "default" for these values</action>
+        </check>
+
+        <action>Parse JSON result for breakpoint values</action>
+        <action>For each breakpoint found:</action>
+        <action>  - Validate format matches /^\d+px$/</action>
+        <action>  - Store: extracted_tokens.breakpoints[key] = { value, type: "dimension", source: "kb-suggestion" }</action>
+        <action>  - Remove from breakpoints_missing list</action>
+        <action>  - Append to replenished_items with source: "kb-suggestion"</action>
+        <output>  ??Filled {count} breakpoint tokens from KB</output>
+      </check>
+
+      <!-- ===== If KB queries are unavailable, use user input and defaults ===== -->
+      <check if="kb_path directory not exists">
+        <output>Knowledge Base not found at {kb_path}</output>
+        <output>  KB replenishment unavailable - will proceed with user input and defaults.</output>
+      </check>
+    </check>
+
+    <check if="kb_query_failed == true">
+      <output>KB search failed. Choose a recovery option before continuing:</output>
+      <output>  [1] Retry KB search</output>
+      <output>  [2] Update kb_path and retry</output>
+      <output>  [3] Proceed with direct CSV lookup (requires explicit approval)</output>
+      <output>CSV fallback note (minimal):</output>
+      <output>  - Reason: KB error summary</output>
+      <output>  - CSV used: file + keyword</output>
+      <output>  - Hit: row id + fields used</output>
+      <output>  - Tokens: affected token list</output>
+      <action>HALT</action>
+    </check>
+
+    <check if="missing_list not empty AND kb_path directory exists AND kb_query_executed != true">
+      <output>KB search was not executed even though missing tokens exist and KB path is available.</output>
+      <output>Do not proceed with manual CSV lookup. Execute search.py for KB replenishment.</output>
+      <action>HALT</action>
+    </check>
+
+    <!-- ===== Step 4.3: User input replenishment (AC #2) ===== -->
+    <!-- MED-02 fix: initialize remaining_missing explicitly -->
+    <action>Initialize remaining_missing = []</action>
+    <action>Rebuild remaining_missing by concatenating all category lists after KB queries:</action>
+    <action>  remaining_missing = [...color_missing, ...typography_missing, ...spacing_missing, ...shadow_missing, ...animation_missing, ...breakpoints_missing]</action>
+    <action>Filter remaining_missing by priority: required items first, then recommended</action>
+
+    <check if="remaining_missing.length > 0">
+      <output>The following design decisions require your input:</output>
+      <output>
+| # | Category | Item | Suggested Value | Priority |
+|---|------|------|--------|--------|
+{remaining_missing.map((m, i) => `| ${i+1} | ${m.category} | ${m.key} | ${getDefaultSuggestion(m)} | ${m.priority} |`).join('\n')}
+      </output>
+      <output>
+Input instructions:
+- Provide values in order (comma or newline separated); enter "d" for default, "s" to skip (not recommended for required items), "d-all" for defaults.      </output>
+
+      <ask>Please enter values or commands:</ask>
+
+      <!-- Validate user input -->
+      <action>For EACH user input value, validate format:</action>
+      <action>  COLOR validation: /^#[0-9a-fA-F]{3,8}$/ OR /^hsl\([^)]+\)$/ OR /^rgb\([^)]+\)$/</action>
+      <action>  FONT validation: non-empty string (any font family name accepted)</action>
+      <action>  DIMENSION validation: /^\d+(\.\d+)?(px|rem|em)$/</action>
+      <action>  DURATION validation: /^\d+(ms|s)$/</action>
+      <action>  EASING validation: /^cubic-bezier\([^)]+\)$/ OR keywords (ease, ease-in, ease-out, linear)</action>
+
+      <check if="validation fails for any input">
+        <output>Format error:</output>
+        <output>  Item: {item.key}</output>
+        <output>  Input: {user_input}</output>
+        <output>  Expected format: {expected_format}</output>
+        <output>
+Options:
+    [r] Re-enter this item  [d] Use default  [s] Skip this item        </output>
+        <ask>Please choose [r/d/s]:</ask>
+        <action>Handle user choice accordingly</action>
+      </check>
+
+      <check if="validation passes">
+        <!-- HIGH-02 fix: use setNestedToken to handle dot-path keys -->
+        <action>Use setNestedToken(extracted_tokens[category], key, { value: user_input, type: token_type, source: "user-input" })</action>
+        <action>  This handles keys like "fontFamily.heading" ??typography.fontFamily.heading</action>
+        <action>Remove item from remaining_missing</action>
+        <action>Append to replenished_items with source: "user-input"</action>
+      </check>
+
+      <check if="user chooses 'd' or 'd-all'">
+        <action>Apply default values with source: "default"</action>
+        <action>Default values reference:</action>
+        <action>  - colors.primary.500: "#0ea5e9" (Sky Blue)</action>
+        <action>  - colors.secondary.500: "#6366f1" (Indigo)</action>
+        <action>  - colors.neutral.500: "#64748b" (Slate)</action>
+        <action>  - typography.fontFamily.heading: "'Inter', system-ui, sans-serif"</action>
+        <action>  - typography.fontFamily.body: "'Inter', system-ui, sans-serif"</action>
+        <action>  - typography.fontSize.base: "1rem"</action>
+        <action>  - spacing.{n}: "{n * 0.25}rem" (4px base)</action>
+        <action>  - borderRadius.sm: "0.125rem", md: "0.375rem", lg: "0.5rem"</action>
+        <action>  - shadow.sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)"</action>
+        <action>  - shadow.md: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"</action>
+        <action>  - animation.duration.fast: "150ms", normal: "300ms", slow: "500ms"</action>
+        <action>  - animation.easing.default: "cubic-bezier(0.4, 0, 0.2, 1)"</action>
+        <action>  - breakpoints: sm=640px, md=768px, lg=1024px, xl=1280px</action>
+        <action>Append default-filled items to replenished_items with source: "default"</action>
+      </check>
+
+      <check if="user chooses 's' (skip)">
+        <check if="item.priority === 'required'">
+          <output>Warning: skipping required item [{item.key}] may lead to incomplete output</output>
+          <ask>Confirm skip? [y/n]</ask>
+        </check>
+        <action>If confirmed skip: mark item as skipped, proceed without value</action>
+      </check>
+    </check>
+
+    <!-- ===== Step 4.4: Source statistics summary (AC #3) ===== -->
+    <action>CALCULATE source statistics:</action>
+    <action>  - Count tokens where source === "ux-spec" ??store as ux_count</action>
+    <action>  - Count tokens where source === "architecture" ??store as arch_count</action>
+    <action>  - Count tokens where source === "kb-suggestion" ??store as kb_count</action>
+    <action>  - Count tokens where source === "user-input" ??store as user_count</action>
+    <action>  - Count tokens where source === "default" ??store as default_count</action>
+    <action>  - Calculate total_count = ux_count + arch_count + kb_count + user_count + default_count</action>
+    <output>
+**Token Source Statistics:**
+
+| Source | Count | Percentage |
+|------|------|--------|
+| UX Spec | {ux_count} | {(ux_count/total_count*100).toFixed(1)}% |
+| Architecture | {arch_count} | {(arch_count/total_count*100).toFixed(1)}% |
+| KB Suggestion | {kb_count} | {(kb_count/total_count*100).toFixed(1)}% |
+| User Input | {user_count} | {(user_count/total_count*100).toFixed(1)}% |
+| Default | {default_count} | {(default_count/total_count*100).toFixed(1)}% |
+| **Total** | **{total_count}** | **100%** |
+    </output>
+
+    <!-- Category summary -->
+    <output>
+**Token Category Summary:**
+
+| Category | Filled | Source Distribution |
+|------|--------|----------|
+| Colors | {colors_count} | {colors_sources} |
+| Typography | {typography_count} | {typography_sources} |
+| Spacing | {spacing_count} | {spacing_sources} |
+| Border Radius | {radius_count} | {radius_sources} |
+| Shadow | {shadow_count} | {shadow_sources} |
+| Animation | {animation_count} | {animation_sources} |
+| Breakpoints | {breakpoints_count} | {breakpoints_sources} |
+    </output>
+    <check if="replenished_items.length > 0">
+      <output>
+**Replenished Item List:**
+{replenished_items.map(i => `- [${i.source}] ${i.category}.${i.key}`).join('\n')}
+      </output>
+    </check>
+
+    <check if="kb_count > 0">
+      <output>
+**KB Suggestion Notes:**
+{kb_count} token values were filled from KB suggestions based on "{style}" style search results. You can adjust these values during Step 5 confirmation.      </output>
+    </check>
+
+    <check if="default_count > total_count * 0.5">
+      <output>
+**Note:** More than 50% of tokens use default values. Consider improving the UX design spec for more precise design system output.      </output>
+    </check>
+
+    <!-- ===== H-02/H-03 Fix: KB tracking variables for Step 7 validation ===== -->
+    <action>FINALIZE KB TRACKING STATE for Step 7 validation:</action>
+    <action>  Set kb_query_executed = true if ANY KB query was attempted in Step 4</action>
+    <action>  Set kb_hits_found = true if ANY KB query returned non-empty results</action>
+    <action>  Build kb_hits_for_item = {} tracking per-item KB hit status:</action>
+    <action>    For each item in original missing_list:</action>
+    <action>      kb_hits_for_item[item.category + "." + item.key] = (KB had hit for this item)</action>
+    <action>  Calculate missing_with_kb_hits = count of items where kb_hits_for_item[key] === true</action>
+    <action>  Store these variables for Step 7 KB reference rate calculation</action>
+    <output>
+KB Tracking State:
+  - kb_query_executed: {kb_query_executed}
+  - kb_hits_found: {kb_hits_found}
+  - missing_with_kb_hits: {missing_with_kb_hits}
+    </output>
+  </step>
+
+  <step n="5" goal="Confirm Design Decisions">
+    <check if="missing_list not empty">
+      <output>Missing foundational design inputs detected: {missing_list}</output>
+      <output>These gaps can limit output quality. Please consider adding the following web design foundations to help DEV succeed:</output>
+      <output>- Color palette (primary/secondary/neutral scales)</output>
+      <output>- Typography (font families, sizes, line heights, weights)</output>
+      <output>- Spacing system (base unit and scale)</output>
+      <output>- Layout rules (grid, breakpoints, container widths)</output>
+      <output>- Component states (hover/active/disabled/focus)</output>
+    </check>
+    <output>?? Design System Summary</output>
+    <output>Provide a concise summary of extracted tokens and component specs.</output>
+    <ask>Proceed with file generation? [Y/n]</ask>
+    <check if="User says no">
+      <action>HALT</action>
+    </check>
+  </step>
+
+  <step n="6" goal="Generate Output Files">
+    <!-- ===== 6.1 design-tokens.json (AC #1) ===== -->
+    <action>Build design_tokens_json from extracted_tokens using W3C Design Token format</action>
+    <action>Ensure "$schema" is set to "https://design-tokens.github.io/community-group/format/"</action>
+    <action>Preserve source field on every token (ux-spec/architecture/kb-suggestion/user-input/default)</action>
+    <action>Write file: {output_folder}/design-tokens.json</action>
+
+    <!-- ===== 6.2 theme.css (AC #2) ===== -->
+    <action>Generate theme.css from design_tokens_json</action>
+    <action>Map tokens to CSS Custom Properties using naming rules:</action>
+    <action>  - colors: --color-{role}-{scale}</action>
+    <action>  - typography: --font-family-*, --font-size-*, --font-weight-*, --line-height-*</action>
+    <action>  - spacing: --spacing-{key}</action>
+    <action>  - borderRadius: --radius-{key}</action>
+    <action>  - shadow: --shadow-{key}</action>
+    <action>  - animation: --duration-*, --easing-*</action>
+    <action>  - breakpoints: --breakpoint-*</action>
+    <action>Group variables by section with readable comments</action>
+    <action>Add [data-theme="dark"] overrides for background/surface/text/text-muted if available</action>
+    <action>Write file: {output_folder}/theme.css</action>
+
+    <!-- ===== 6.3 globals.css (AC #3) ===== -->
+    <action>Generate globals.css with Modern Reset, Base Typography, and Layout Utilities</action>
+    <action>Ensure all values reference CSS variables from theme.css (SSOT)</action>
+    <action>Include :focus-visible and prefers-reduced-motion rules</action>
+    <action>Write file: {output_folder}/globals.css</action>
+
+    <!-- ===== 6.4 component-specs.json (AC #4) ===== -->
+    <action>Determine componentLibrary from tech_stack.componentLib (default: "react")</action>
+    <action>Determine effectsLibrary (default: "framer-motion", or "none" if not used)</action>
+    <action>Include "$schema" only if component-specs.schema.json is available (optional)</action>
+    <action>Build component-specs.json with meta and component definitions:</action>
+    <action>  - Button: variants (primary/secondary/outline/ghost), sizes (sm/md/lg), states (disabled/loading), animation (hover/tap)</action>
+    <action>  - Card: base + variants (elevated/outlined)</action>
+    <action>  - Input: base + states (focus/error/disabled)</action>
+    <action>Write file: {output_folder}/component-specs.json</action>
+  </step>
+
+  <step n="7" goal="Validate Outputs">
+    <!-- 
+        Story 2.7: Validation Mechanism
+        AC #1: Format Validation (JSON/CSS)
+        AC #2: Completeness Validation (spec 4.2)
+        AC #3: KB Reference Validation (conditional)
+        AC #4: Fallback Allowance
+        AC #5: Error Reporting
+        AC #6: Content Consistency
+        
+        Risk Control Mapping:
+        - P0: KB not referenced @ AC #3, #4
+        - P1: Incomplete output @ AC #2
+        - P3: Invalid format @ AC #1
+    -->
+
+    <action>Initialize validation_report = { errors: [], warnings: [], metrics: {} }</action>
+    <action>Initialize format_errors = [], completeness_errors = [], kb_errors = [], consistency_errors = []</action>
+
+    <!-- ===== 7.1 JSON Syntax Validation (AC #1) ===== -->
+    <action>📋 VALIDATE JSON SYNTAX:</action>
+
+    <!-- design-tokens.json validation -->
+    <action>Attempt to parse design-tokens.json as JSON:</action>
+    <check if="JSON.parse(design_tokens_content) throws error">
+      <action>Extract error line number and message from parse error</action>
+      <action>Add to format_errors:</action>
+      <output>
+{
+  "type": "SYNTAX",
+  "file": "design-tokens.json",
+  "location": "line {error_line}",
+  "error": "{error_message}",
+  "suggestion": "Check for missing commas, brackets, or invalid characters at the specified location"
+}
+      </output>
+    </check>
+    <check if="JSON.parse succeeds">
+      <action>Set design_tokens_json_valid = true</action>
+      <output>✅ design-tokens.json: JSON syntax valid</output>
+    </check>
+
+    <!-- component-specs.json validation -->
+    <action>Attempt to parse component-specs.json as JSON:</action>
+    <check if="JSON.parse(component_specs_content) throws error">
+      <action>Extract error line number and message from parse error</action>
+      <action>Add to format_errors:</action>
+      <output>
+{
+  "type": "SYNTAX",
+  "file": "component-specs.json",
+  "location": "line {error_line}",
+  "error": "{error_message}",
+  "suggestion": "Check for missing commas, brackets, or invalid characters at the specified location"
+}
+      </output>
+    </check>
+    <check if="JSON.parse succeeds">
+      <action>Set component_specs_json_valid = true</action>
+      <output>✅ component-specs.json: JSON syntax valid</output>
+    </check>
+
+    <!-- ===== 7.2 CSS Syntax Validation (AC #1) ===== -->
+    <action>📋 VALIDATE CSS SYNTAX:</action>
+
+    <!-- theme.css validation -->
+    <action>Validate theme.css CSS syntax:</action>
+    <action>  1. Check bracket balance: count of '{' must equal count of '}'</action>
+    <action>  2. Check property format: each line inside {} should match pattern /^\s*[\w-]+:\s*.+;?\s*$/ or be a comment</action>
+    <action>  3. Check for unclosed comments: /* must have matching */</action>
+    <action>  4. Check for invalid selectors: selectors should not contain unescaped special characters</action>
+    <check if="bracket count mismatch">
+      <action>Add to format_errors:</action>
+      <output>
+{
+  "type": "SYNTAX",
+  "file": "theme.css",
+  "location": "file-level",
+  "error": "Unbalanced brackets: {open_count} opening vs {close_count} closing",
+  "suggestion": "Check for missing or extra braces"
+}
+      </output>
+    </check>
+    <check if="invalid property format detected">
+      <action>Add to format_errors:</action>
+      <output>
+{
+  "type": "SYNTAX",
+  "file": "theme.css",
+  "location": "line {line_number}",
+  "error": "Invalid CSS property format: '{invalid_line}'",
+  "suggestion": "Ensure format is 'property: value;'"
+}
+      </output>
+    </check>
+    <check if="theme.css syntax valid">
+      <action>Set theme_css_valid = true</action>
+      <output>✅ theme.css: CSS syntax valid</output>
+    </check>
+
+    <!-- globals.css validation (M-02 fix: detailed error reporting with line numbers) -->
+    <action>Validate globals.css CSS syntax with detailed location tracking:</action>
+    <action>  1. Initialize globals_line_number = 0</action>
+    <action>  2. For each line in globals.css:</action>
+    <action>       globals_line_number++</action>
+    <action>       Track bracket_depth: '{' increases, '}' decreases</action>
+    <action>  3. Bracket balance check: if final bracket_depth != 0, report unbalanced</action>
+    <action>  4. Property format check: validate each property line matches /^\s*[\w-]+:\s*.+;?\s*$/</action>
+    <action>  5. Comment closure check: verify /* has matching */</action>
+    <check if="globals.css bracket imbalance">
+      <action>Add to format_errors:</action>
+      <output>
+{
+  "type": "SYNTAX",
+  "file": "globals.css",
+  "location": "file-level",
+  "error": "Unbalanced brackets: {open_count} opening vs {close_count} closing",
+  "suggestion": "Check for missing or extra braces"
+}
+      </output>
+    </check>
+    <check if="globals.css invalid property format detected">
+      <action>Add to format_errors:</action>
+      <output>
+{
+  "type": "SYNTAX",
+  "file": "globals.css",
+  "location": "line {globals_line_number}",
+  "error": "Invalid CSS property format: '{invalid_line}'",
+  "suggestion": "Ensure format is 'property: value;'"
+}
+      </output>
+    </check>
+    <check if="globals.css syntax valid">
+      <action>Set globals_css_valid = true</action>
+      <output>globals.css: CSS syntax valid</output>
+    </check>
+
+    <!-- ===== 7.3 Completeness Validation (AC #2) ===== -->
+    <action>📋 VALIDATE COMPLETENESS (per spec 4.2):</action>
+    <action>Define required_tokens checklist from design-system-generator-spec.md Section 4.2:</action>
+    <output>
+Required Token Categories:
+- colors: primary (50/100/500/600/700/900), secondary/accent/neutral/success/warning/error (each 500/600/700)
+- typography: fontFamily (heading/body/mono), fontSize (xs~4xl), fontWeight (normal/medium/semibold/bold), lineHeight (tight/normal/relaxed)
+- spacing: 0/1/2/3/4/6/8/12/16
+- borderRadius: none/sm/md/lg/xl/full
+- shadow: sm/md/lg/xl
+- animation: duration (fast/normal/slow), easing (default/in/out/bounce)
+- breakpoints: sm/md/lg/xl/2xl
+    </output>
+
+    <!-- Color completeness check -->
+    <action>CHECK colors completeness:</action>
+    <action>  For primary: verify 50, 100, 500, 600, 700, 900 exist</action>
+    <action>  For secondary, accent, neutral, success, warning, error: verify 500, 600, 700 exist</action>
+    <check if="any required color scale missing">
+      <action>Add to completeness_errors:</action>
+      <output>
+{
+  "type": "COMPLETENESS",
+  "category": "colors",
+  "missing": ["{list of missing color scales}"],
+  "suggestion": "Add missing color values or run KB replenishment"
+}
+      </output>
+    </check>
+
+    <!-- Typography completeness check -->
+    <action>CHECK typography completeness:</action>
+    <action>  fontFamily: heading, body, mono</action>
+    <action>  fontSize: xs, sm, base, lg, xl, 2xl, 3xl, 4xl</action>
+    <action>  fontWeight: normal, medium, semibold, bold</action>
+    <action>  lineHeight: tight, normal, relaxed</action>
+    <check if="any required typography token missing">
+      <action>Add missing items to completeness_errors with category: "typography"</action>
+    </check>
+
+    <!-- Spacing completeness check -->
+    <action>CHECK spacing completeness: 0, 1, 2, 3, 4, 6, 8, 12, 16</action>
+    <check if="any required spacing value missing">
+      <action>Add missing items to completeness_errors with category: "spacing"</action>
+    </check>
+
+    <!-- Border radius completeness check -->
+    <action>CHECK borderRadius completeness: none, sm, md, lg, xl, full</action>
+    <check if="any required borderRadius value missing">
+      <action>Add missing items to completeness_errors with category: "borderRadius"</action>
+    </check>
+
+    <!-- Shadow completeness check -->
+    <action>CHECK shadow completeness: sm, md, lg, xl</action>
+    <check if="any required shadow value missing">
+      <action>Add missing items to completeness_errors with category: "shadow"</action>
+    </check>
+
+    <!-- Animation completeness check -->
+    <action>CHECK animation completeness:</action>
+    <action>  duration: fast, normal, slow</action>
+    <action>  easing: default, in, out, bounce</action>
+    <check if="any required animation value missing">
+      <action>Add missing items to completeness_errors with category: "animation"</action>
+    </check>
+
+    <!-- Breakpoints completeness check -->
+    <action>CHECK breakpoints completeness: sm, md, lg, xl, 2xl</action>
+    <check if="any required breakpoint missing">
+      <action>Add missing items to completeness_errors with category: "breakpoints"</action>
+    </check>
+
+    <!-- Calculate completeness metrics (M-01 fix: token-level calculation) -->
+    <action>CALCULATE completeness metrics at TOKEN-LEVEL:</action>
+    <action>  Define total_required_tokens = 73 per spec 4.2:</action>
+    <action>    - colors: 6 (primary) + 3*6 (secondary~error) = 24</action>
+    <action>    - typography: 3 (fontFamily) + 8 (fontSize) + 4 (fontWeight) + 3 (lineHeight) = 18</action>
+    <action>    - spacing: 9 (0,1,2,3,4,6,8,12,16)</action>
+    <action>    - borderRadius: 6 (none,sm,md,lg,xl,full)</action>
+    <action>    - shadow: 4 (sm,md,lg,xl)</action>
+    <action>    - animation: 3 (duration) + 4 (easing) = 7</action>
+    <action>    - breakpoints: 5 (sm,md,lg,xl,2xl)</action>
+    <action>  Count missing_tokens_count by iterating all required token paths and checking existence</action>
+    <action>  found_tokens = 73 - missing_tokens_count</action>
+    <action>  completeness_rate = (found_tokens / 73) * 100</action>
+    <action>  Store in validation_report.metrics.completeness_rate</action>
+    <output>Completeness Rate: {completeness_rate}% ({found_tokens}/73 tokens)</output>
+    <check if="completeness_rate < 100">
+      <output>?? COMPLETENESS WARNING: {missing_tokens_count} required tokens missing</output>
+      <output>Missing tokens by category:</output>
+      <output>{completeness_errors.map(e => `  - [${e.category}] ${e.missing.join(', ')}`).join('\n')}</output>
+      <output>Suggestion: Add missing token paths with source (ux-spec/kb-suggestion/user-input/default)</output>
+    </check>
+
+    <!-- ===== 7.4 KB Reference Validation (AC #3, #4) ===== -->
+    <action>📋 VALIDATE KB REFERENCE (P0 Risk Control):</action>
+
+    <!-- Track KB query execution state -->
+    <action>Retrieve kb_query_executed and kb_hits_found from Step 4 execution state</action>
+    <action>Count tokens with source === "kb-suggestion" as kb_sourced_count</action>
+    <action>Count tokens from missing_list that had KB hits as missing_with_kb_hits</action>
+
+    <!-- Conditional validation logic (AC #3) -->
+    <check if="kb_hits_found === true AND kb_sourced_count === 0">
+      <action>Add to kb_errors:</action>
+      <output>
+{
+  "type": "KB_REFERENCE",
+  "error": "KB had hits but no tokens use source: kb-suggestion",
+  "detail": "KB query returned results for style '{style}' but output tokens do not reflect KB suggestions",
+  "suggestion": "Review Step 4 KB replenishment logic - KB hits should be applied to extracted_tokens"
+}
+      </output>
+      <output>❌ KB REFERENCE ERROR: KB had hits but no tokens use source: kb-suggestion</output>
+    </check>
+
+    <!-- Fallback allowance (AC #4) -->
+    <check if="kb_hits_found === false">
+      <output>ℹ️ KB Query: No hits found for style '{style}' - fallback sources allowed</output>
+      <action>No KB reference error - user-input and default sources are permitted</action>
+    </check>
+
+    <!-- Calculate KB reference rate -->
+    <action>CALCULATE KB reference rate:</action>
+    <check if="missing_with_kb_hits > 0">
+      <action>kb_reference_rate = (kb_sourced_count / missing_with_kb_hits) * 100</action>
+      <action>Store in validation_report.metrics.kb_reference_rate</action>
+      <output>📊 KB Reference Rate: {kb_reference_rate}% ({kb_sourced_count}/{missing_with_kb_hits} tokens from KB)</output>
+
+      <check if="kb_reference_rate < 70">
+        <output>⚠️ KB Reference Rate below target (70%)</output>
+        <action>Add warning to validation_report.warnings</action>
+      </check>
+    </check>
+    <check if="missing_with_kb_hits === 0">
+      <output>ℹ️ KB Reference Rate: N/A (no tokens required KB replenishment or KB had no hits)</output>
+      <action>Set kb_reference_rate = "N/A" in validation_report.metrics</action>
+    </check>
+
+    <!-- ===== 7.5 Content Consistency Validation (AC #6) ===== -->
+    <action>📋 VALIDATE CONTENT CONSISTENCY:</action>
+
+    <!-- theme.css vs design-tokens.json consistency -->
+    <action>CHECK theme.css custom properties match design-tokens.json:</action>
+    <action>  1. Extract all CSS custom properties from theme.css (--color-*, --font-*, --spacing-*, etc.)</action>
+    <action>  2. For each custom property, verify corresponding token exists in design-tokens.json</action>
+    <action>  3. Verify values are consistent (allow for format differences like #hex vs rgb)</action>
+    <check if="custom property not found in tokens">
+      <action>Add to consistency_errors:</action>
+      <output>
+{
+  "type": "CONTENT_CONSISTENCY",
+  "file": "theme.css",
+  "error": "Custom property '{property_name}' not found in design-tokens.json",
+  "suggestion": "Add corresponding token or remove orphan custom property"
+}
+      </output>
+    </check>
+
+    <!-- M-03 fix: Reverse check - tokens must have corresponding CSS custom properties -->
+    <action>CHECK design-tokens.json tokens have corresponding CSS custom properties (reverse check):</action>
+    <action>  1. For each token in design-tokens.json:</action>
+    <action>     - Build expected CSS property name using naming convention:</action>
+    <action>       * colors.{role}.{scale} -> --color-{role}-{scale}</action>
+    <action>       * typography.fontFamily.{key} -> --font-family-{key}</action>
+    <action>       * typography.fontSize.{key} -> --font-size-{key}</action>
+    <action>       * spacing.{key} -> --spacing-{key}</action>
+    <action>       * borderRadius.{key} -> --radius-{key}</action>
+    <action>       * shadow.{key} -> --shadow-{key}</action>
+    <action>       * animation.duration.{key} -> --duration-{key}</action>
+    <action>       * animation.easing.{key} -> --easing-{key}</action>
+    <action>       * breakpoints.{key} -> --breakpoint-{key}</action>
+    <action>  2. Verify the expected CSS property exists in theme.css</action>
+    <check if="token has no corresponding CSS custom property">
+      <action>Add to consistency_errors:</action>
+      <output>
+{
+  "type": "CONTENT_CONSISTENCY",
+  "file": "theme.css",
+  "error": "Token '{token_path}' has no corresponding CSS custom property '{expected_css_property}'",
+  "suggestion": "Add CSS custom property '{expected_css_property}' to theme.css :root selector"
+}
+      </output>
+    </check>
+
+    <!-- Dark theme variant check -->
+    <action>CHECK theme.css contains dark theme variant:</action>
+    <action>  Search for [data-theme="dark"] or .dark or @media (prefers-color-scheme: dark)</action>
+    <check if="no dark theme variant found">
+      <action>Add to consistency_errors:</action>
+      <output>
+{
+  "type": "CONTENT_CONSISTENCY",
+  "file": "theme.css",
+  "error": "Dark theme variant not found",
+  "suggestion": "Add [data-theme=\"dark\"] section with color overrides"
+}
+      </output>
+    </check>
+    <check if="dark theme variant found">
+      <output>✅ theme.css: Dark theme variant present</output>
+    </check>
+
+    <!-- globals.css required content check -->
+    <action>CHECK globals.css contains required content:</action>
+
+    <!-- CSS Reset check -->
+    <action>  1. CSS Reset: search for "box-sizing: border-box" and "margin: 0"</action>
+    <check if="CSS reset not found">
+      <action>Add to consistency_errors:</action>
+      <output>
+{
+  "type": "CONTENT_CONSISTENCY",
+  "file": "globals.css",
+  "error": "CSS reset not found",
+  "suggestion": "Add modern CSS reset (box-sizing, margin reset)"
+}
+      </output>
+    </check>
+
+    <!-- Focus styles check -->
+    <action>  2. Focus styles: search for ":focus-visible" or ":focus"</action>
+    <check if="focus styles not found">
+      <action>Add to consistency_errors:</action>
+      <output>
+{
+  "type": "CONTENT_CONSISTENCY",
+  "file": "globals.css",
+  "error": "Focus styles for accessibility not found",
+  "suggestion": "Add :focus-visible styles for keyboard navigation accessibility"
+}
+      </output>
+    </check>
+
+    <!-- Reduced motion check -->
+    <action>  3. Reduced motion: search for "prefers-reduced-motion"</action>
+    <check if="reduced motion styles not found">
+      <action>Add to consistency_errors:</action>
+      <output>
+{
+  "type": "CONTENT_CONSISTENCY",
+  "file": "globals.css",
+  "error": "Reduced motion media query not found",
+  "suggestion": "Add @media (prefers-reduced-motion: reduce) for accessibility"
+}
+      </output>
+    </check>
+    <check if="all accessibility styles present">
+      <output>✅ globals.css: CSS reset and accessibility styles present</output>
+    </check>
+
+    <!-- component-specs.json coverage check -->
+    <action>CHECK component-specs.json covers core components:</action>
+    <action>  Required components: Button, Card, Input</action>
+    <check if="any required component missing from component-specs.json">
+      <action>Add to consistency_errors:</action>
+      <output>
+{
+  "type": "CONTENT_CONSISTENCY",
+  "file": "component-specs.json",
+  "error": "Required component '{component_name}' not found",
+  "suggestion": "Add {component_name} component specification with base styles and variants"
+}
+      </output>
+    </check>
+    <check if="all required components present">
+      <output>✅ component-specs.json: All core components (Button, Card, Input) present</output>
+    </check>
+
+    <!-- ===== 7.6 Error Report and Success Criteria Summary (AC #5) ===== -->
+    <action>📋 GENERATE VALIDATION REPORT:</action>
+
+    <!-- Aggregate all errors -->
+    <action>Combine all error arrays: all_errors = [...format_errors, ...completeness_errors, ...kb_errors, ...consistency_errors]</action>
+
+    <!-- Calculate format correctness rate -->
+    <action>format_correct_count = (design_tokens_json_valid ? 1 : 0) + (component_specs_json_valid ? 1 : 0) + (theme_css_valid ? 1 : 0) + (globals_css_valid ? 1 : 0)</action>
+    <action>format_correctness_rate = (format_correct_count / 4) * 100</action>
+    <action>Store in validation_report.metrics.format_correctness_rate</action>
+
+    <!-- Output error details if any -->
+    <check if="all_errors.length > 0">
+      <output>
+❌ VALIDATION ERRORS FOUND: {all_errors.length} issue(s)
+
+Error Details:
+      </output>
+      <action>For each error in all_errors:</action>
+      <output>
+---
+Type: {error.type}
+File: {error.file || 'N/A'}
+Location: {error.location || 'N/A'}
+Error: {error.error}
+Suggestion: {error.suggestion}
+---
+      </output>
+    </check>
+
+    <!-- Success Criteria Summary Table -->
+    <output>
+===============================================================
+                    VALIDATION REPORT SUMMARY ===============================================================
+
+| Metric              | Target  | Actual              | Status |
+|---------------------|---------|---------------------|--------|
+| KB Reference Rate   | > 70%   | {kb_reference_rate}%| {kb_reference_rate === 'N/A' ? '⬜ N/A' : (kb_reference_rate >= 70 ? '✅ PASS' : '⚠️ BELOW')} |
+| Completeness        | 100%    | {completeness_rate}%| {completeness_rate === 100 ? '✅ PASS' : '❌ FAIL'} |
+| Format Correctness  | 100%    | {format_correctness_rate}%| {format_correctness_rate === 100 ? '✅ PASS' : '❌ FAIL'} |
+| Content Consistency | 100%    | {consistency_errors.length === 0 ? '100%' : 'Issues'}| {consistency_errors.length === 0 ? '✅ PASS' : '⚠️ ISSUES'} | ===============================================================
+    </output>
+
+    <!-- Dev Usability Assessment -->
+    <action>ASSESS Dev Usability (composite metric):</action>
+    <action>  1. Output file coverage: 4/4 files generated?</action>
+    <action>  2. JSON/CSS lint: format_correctness_rate === 100?</action>
+    <action>  3. No blocking errors: format_errors.length === 0?</action>
+
+    <check if="format_correctness_rate === 100 AND completeness_rate === 100 AND format_errors.length === 0">
+      <output>
+✅ DEV USABILITY: READY
+   All output files are valid and complete. Dev Agent can proceed with implementation.
+      </output>
+      <action>Set validation_report.dev_usability = "READY"</action>
+    </check>
+    <check if="format_correctness_rate < 100 OR format_errors.length > 0">
+      <output>
+❌ DEV USABILITY: BLOCKED
+   Output files have syntax errors that must be fixed before use.
+   See error details above for specific issues and suggestions.
+      </output>
+      <action>Set validation_report.dev_usability = "BLOCKED"</action>
+    </check>
+    <check if="format_correctness_rate === 100 AND completeness_rate < 100">
+      <output>
+⚠️ DEV USABILITY: USABLE WITH GAPS
+   Output files are syntactically valid but incomplete.
+   Dev Agent may need to add missing tokens during implementation.
+   Consider running KB replenishment or providing missing values.
+      </output>
+      <action>Set validation_report.dev_usability = "USABLE_WITH_GAPS"</action>
+    </check>
+
+    <!-- Invoke checklist validation -->
+    <invoke-task>Validate against checklist at {validation} using {project-root}/_bmad/core/tasks/validate-workflow.xml</invoke-task>
+  </step>
+
+  <step n="8" goal="Final Report">
+    <output>??Design System Generation Complete!</output>
+    <output>Generated files in: {output_folder}</output>
+    <output>1. design-tokens.json (SSOT)</output>
+    <output>2. theme.css (Variables)</output>
+    <output>3. globals.css (Global Styles)</output>
+    <output>4. component-specs.json (Component Definitions)</output>
+    <action>Report completion</action>
+  </step>
+
+</workflow>

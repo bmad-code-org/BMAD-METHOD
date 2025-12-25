@@ -1,0 +1,535 @@
+{
+    "$metadata": {
+        "generator": "BMAD Design System Generator v1.0",
+        "source": "ux-design-specification.md",
+        "project": "AquaFlow SaaS",
+        "generatedAt": "2025-12-25T12:44:30+08:00"
+    },
+    "components": {
+        "TaskCard": {
+            "name": "TaskCard",
+            "description": "看板上的可拖曳任務卡片",
+            "category": "business",
+            "status": "design-ready",
+            "props": {
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "title": {
+                    "type": "string",
+                    "required": true
+                },
+                "labels": {
+                    "type": "Label[]",
+                    "required": false,
+                    "default": "[]"
+                },
+                "assignee": {
+                    "type": "User | null",
+                    "required": false
+                },
+                "dueDate": {
+                    "type": "Date | null",
+                    "required": false
+                },
+                "priority": {
+                    "type": "'low' | 'medium' | 'high' | 'urgent'",
+                    "required": false,
+                    "default": "'medium'"
+                },
+                "isDragging": {
+                    "type": "boolean",
+                    "required": false,
+                    "default": "false"
+                },
+                "isSelected": {
+                    "type": "boolean",
+                    "required": false,
+                    "default": "false"
+                }
+            },
+            "states": {
+                "default": {
+                    "background": "var(--bg-card)",
+                    "borderRadius": "var(--radius-md)",
+                    "boxShadow": "var(--shadow-sm)",
+                    "padding": "var(--space-3)"
+                },
+                "hover": {
+                    "background": "var(--color-neutral-50)",
+                    "cursor": "pointer",
+                    "transition": "background-color var(--duration-fast) var(--easing-default)"
+                },
+                "dragging": {
+                    "boxShadow": "var(--shadow-lg)",
+                    "transform": "rotate(3deg)",
+                    "opacity": "0.9",
+                    "cursor": "grabbing"
+                },
+                "selected": {
+                    "outline": "2px solid var(--color-primary-500)",
+                    "outlineOffset": "2px"
+                },
+                "loading": {
+                    "opacity": "0.6",
+                    "pointerEvents": "none"
+                }
+            },
+            "accessibility": {
+                "role": "listitem",
+                "ariaGrabbed": "boolean (when dragging)",
+                "focusRing": "var(--focus-ring-width) solid var(--focus-ring-color)",
+                "keyboardNav": "Tab to focus, Space/Enter to select, Arrow keys to move"
+            },
+            "kbReferences": [
+                "#28 Focus States",
+                "#29 Hover States",
+                "#30 Active States",
+                "#84 Truncation",
+                "#40 ARIA Labels"
+            ]
+        },
+        "KanbanColumn": {
+            "name": "KanbanColumn",
+            "description": "任務狀態欄（待辦/進行中/完成）",
+            "category": "business",
+            "status": "design-ready",
+            "props": {
+                "id": {
+                    "type": "string",
+                    "required": true
+                },
+                "title": {
+                    "type": "string",
+                    "required": true
+                },
+                "tasks": {
+                    "type": "Task[]",
+                    "required": true
+                },
+                "taskCount": {
+                    "type": "number",
+                    "required": false
+                },
+                "isDropTarget": {
+                    "type": "boolean",
+                    "required": false,
+                    "default": "false"
+                },
+                "isEmpty": {
+                    "type": "boolean",
+                    "required": false,
+                    "default": "false"
+                }
+            },
+            "states": {
+                "default": {
+                    "background": "var(--color-neutral-100)",
+                    "borderRadius": "var(--radius-lg)",
+                    "padding": "var(--space-3)",
+                    "minHeight": "200px"
+                },
+                "dropTargetActive": {
+                    "background": "var(--color-primary-50)",
+                    "outline": "2px dashed var(--color-primary-500)",
+                    "outlineOffset": "-2px"
+                },
+                "empty": {
+                    "display": "flex",
+                    "alignItems": "center",
+                    "justifyContent": "center",
+                    "color": "var(--text-muted)",
+                    "fontSize": "var(--font-size-sm)"
+                }
+            },
+            "emptyState": {
+                "message": "尚無任務，拖曳或點擊新增",
+                "icon": "plus-circle"
+            },
+            "accessibility": {
+                "role": "list",
+                "ariaLabel": "dynamic: {title} 欄位，共 {taskCount} 項任務"
+            },
+            "kbReferences": [
+                "#80 Empty States",
+                "#10 Loading States"
+            ]
+        },
+        "CommandPalette": {
+            "name": "CommandPalette",
+            "description": "Cmd+K 全域搜尋/快捷指令面板",
+            "category": "navigation",
+            "status": "design-ready",
+            "props": {
+                "isOpen": {
+                    "type": "boolean",
+                    "required": true
+                },
+                "searchQuery": {
+                    "type": "string",
+                    "required": false,
+                    "default": "''"
+                },
+                "results": {
+                    "type": "SearchResult[]",
+                    "required": false,
+                    "default": "[]"
+                },
+                "recentItems": {
+                    "type": "SearchResult[]",
+                    "required": false,
+                    "default": "[]"
+                },
+                "onClose": {
+                    "type": "() => void",
+                    "required": true
+                },
+                "onSelect": {
+                    "type": "(item: SearchResult) => void",
+                    "required": true
+                }
+            },
+            "states": {
+                "open": {
+                    "position": "fixed",
+                    "top": "20%",
+                    "left": "50%",
+                    "transform": "translateX(-50%)",
+                    "width": "min(600px, 90vw)",
+                    "maxHeight": "400px",
+                    "background": "var(--bg-card)",
+                    "borderRadius": "var(--radius-lg)",
+                    "boxShadow": "var(--shadow-xl)",
+                    "zIndex": "9999"
+                },
+                "searching": {
+                    "showSpinner": true
+                },
+                "results": {
+                    "overflow": "auto"
+                },
+                "empty": {
+                    "message": "找不到符合的結果",
+                    "showRecentItems": true
+                }
+            },
+            "keyboard": {
+                "trigger": "Cmd+K / Ctrl+K",
+                "navigate": "Arrow Up/Down",
+                "select": "Enter",
+                "close": "Escape"
+            },
+            "accessibility": {
+                "role": "dialog",
+                "ariaModal": true,
+                "ariaLabel": "快速搜尋",
+                "focusTrap": true
+            },
+            "kbReferences": [
+                "#41 Keyboard Navigation",
+                "#28 Focus States",
+                "#89 Search Autocomplete"
+            ]
+        },
+        "ProgressRing": {
+            "name": "ProgressRing",
+            "description": "視覺化任務完成進度環",
+            "category": "feedback",
+            "status": "design-ready",
+            "props": {
+                "value": {
+                    "type": "number",
+                    "required": true,
+                    "description": "0-100 百分比"
+                },
+                "size": {
+                    "type": "'sm' | 'md' | 'lg'",
+                    "required": false,
+                    "default": "'md'"
+                },
+                "showLabel": {
+                    "type": "boolean",
+                    "required": false,
+                    "default": "true"
+                },
+                "color": {
+                    "type": "string",
+                    "required": false,
+                    "default": "var(--color-primary-500)"
+                }
+            },
+            "sizes": {
+                "sm": {
+                    "diameter": "24px",
+                    "strokeWidth": "3px",
+                    "fontSize": "var(--font-size-xs)"
+                },
+                "md": {
+                    "diameter": "32px",
+                    "strokeWidth": "4px",
+                    "fontSize": "var(--font-size-sm)"
+                },
+                "lg": {
+                    "diameter": "48px",
+                    "strokeWidth": "5px",
+                    "fontSize": "var(--font-size-base)"
+                }
+            },
+            "animation": {
+                "duration": "var(--duration-normal)",
+                "easing": "var(--easing-out)",
+                "respectsReducedMotion": true
+            },
+            "accessibility": {
+                "role": "progressbar",
+                "ariaValueNow": "dynamic: {value}",
+                "ariaValueMin": "0",
+                "ariaValueMax": "100",
+                "ariaLabel": "任務完成進度"
+            },
+            "kbReferences": [
+                "#8 Duration Timing",
+                "#9 Reduced Motion"
+            ]
+        },
+        "Button": {
+            "name": "Button",
+            "description": "通用按鈕組件",
+            "category": "primitive",
+            "status": "design-ready",
+            "props": {
+                "variant": {
+                    "type": "'primary' | 'secondary' | 'ghost' | 'danger'",
+                    "required": false,
+                    "default": "'primary'"
+                },
+                "size": {
+                    "type": "'sm' | 'md' | 'lg'",
+                    "required": false,
+                    "default": "'md'"
+                },
+                "isLoading": {
+                    "type": "boolean",
+                    "required": false,
+                    "default": "false"
+                },
+                "isDisabled": {
+                    "type": "boolean",
+                    "required": false,
+                    "default": "false"
+                },
+                "leftIcon": {
+                    "type": "ReactNode",
+                    "required": false
+                },
+                "rightIcon": {
+                    "type": "ReactNode",
+                    "required": false
+                },
+                "children": {
+                    "type": "ReactNode",
+                    "required": true
+                }
+            },
+            "variants": {
+                "primary": {
+                    "background": "var(--color-primary-500)",
+                    "color": "white",
+                    "hoverBackground": "var(--color-primary-700)"
+                },
+                "secondary": {
+                    "background": "transparent",
+                    "color": "var(--color-primary-500)",
+                    "border": "1px solid var(--color-primary-500)",
+                    "hoverBackground": "var(--color-primary-50)"
+                },
+                "ghost": {
+                    "background": "transparent",
+                    "color": "var(--text-secondary)",
+                    "hoverBackground": "var(--color-neutral-100)"
+                },
+                "danger": {
+                    "background": "var(--color-error-500)",
+                    "color": "white",
+                    "hoverBackground": "var(--color-error-700)"
+                }
+            },
+            "sizes": {
+                "sm": {
+                    "padding": "var(--space-1) var(--space-2)",
+                    "fontSize": "var(--font-size-sm)",
+                    "minHeight": "32px"
+                },
+                "md": {
+                    "padding": "var(--space-2) var(--space-4)",
+                    "fontSize": "var(--font-size-base)",
+                    "minHeight": "44px"
+                },
+                "lg": {
+                    "padding": "var(--space-3) var(--space-6)",
+                    "fontSize": "var(--font-size-lg)",
+                    "minHeight": "52px"
+                }
+            },
+            "states": {
+                "hover": {
+                    "filter": "brightness(1.1)"
+                },
+                "active": {
+                    "transform": "scale(0.98)"
+                },
+                "disabled": {
+                    "opacity": "0.5",
+                    "cursor": "not-allowed"
+                },
+                "loading": {
+                    "opacity": "0.8",
+                    "cursor": "wait"
+                }
+            },
+            "accessibility": {
+                "minTouchTarget": "44x44px",
+                "focusRing": "var(--focus-ring-width) solid var(--focus-ring-color)"
+            }
+        },
+        "Toast": {
+            "name": "Toast",
+            "description": "通知訊息組件",
+            "category": "feedback",
+            "status": "design-ready",
+            "props": {
+                "type": {
+                    "type": "'success' | 'error' | 'warning' | 'info'",
+                    "required": true
+                },
+                "message": {
+                    "type": "string",
+                    "required": true
+                },
+                "duration": {
+                    "type": "number",
+                    "required": false,
+                    "default": "3000",
+                    "description": "ms, 0 for persistent"
+                },
+                "onDismiss": {
+                    "type": "() => void",
+                    "required": false
+                }
+            },
+            "types": {
+                "success": {
+                    "icon": "check-circle",
+                    "color": "var(--color-success-500)",
+                    "duration": "3000"
+                },
+                "error": {
+                    "icon": "x-circle",
+                    "color": "var(--color-error-500)",
+                    "duration": "0"
+                },
+                "warning": {
+                    "icon": "alert-triangle",
+                    "color": "var(--color-warning-500)",
+                    "duration": "5000"
+                },
+                "info": {
+                    "icon": "info",
+                    "color": "var(--color-primary-500)",
+                    "duration": "5000"
+                }
+            },
+            "animation": {
+                "enter": "slideIn from right",
+                "exit": "fadeOut",
+                "duration": "var(--duration-normal)"
+            },
+            "accessibility": {
+                "role": "alert",
+                "ariaLive": "polite"
+            }
+        }
+    },
+    "patterns": {
+        "interactiveElement": {
+            "description": "所有互動元素的通用狀態規範",
+            "states": {
+                "focus": "ring-2 ring-blue-500 ring-offset-2",
+                "hover": "bg-gray-50 transition-colors",
+                "active": "scale-[0.98]",
+                "disabled": "opacity-50 cursor-not-allowed"
+            },
+            "touchTarget": "min-h-[44px] min-w-[44px]",
+            "transition": "all var(--duration-normal) var(--easing-default)"
+        },
+        "formField": {
+            "description": "表單欄位通用規範",
+            "label": {
+                "position": "above",
+                "required": "標示 *",
+                "fontSize": "var(--font-size-sm)",
+                "fontWeight": "var(--font-weight-medium)"
+            },
+            "input": {
+                "minHeight": "44px",
+                "borderRadius": "var(--radius-md)",
+                "borderColor": "var(--border-color)"
+            },
+            "error": {
+                "position": "below",
+                "color": "var(--color-error-500)",
+                "fontSize": "var(--font-size-sm)"
+            },
+            "validation": "onBlur"
+        },
+        "modal": {
+            "description": "對話框通用規範",
+            "backdrop": "rgba(0, 0, 0, 0.5)",
+            "borderRadius": "var(--radius-lg)",
+            "closeOptions": [
+                "button",
+                "Esc",
+                "click outside"
+            ],
+            "focusTrap": true,
+            "animation": {
+                "enter": "fadeIn + scaleUp",
+                "exit": "fadeOut + scaleDown"
+            }
+        }
+    },
+    "implementationRoadmap": {
+        "phase1": {
+            "name": "Core Components",
+            "priority": "P0",
+            "components": [
+                "TaskCard",
+                "KanbanColumn",
+                "Button"
+            ],
+            "dependencies": [
+                "@dnd-kit/core",
+                "@dnd-kit/sortable"
+            ]
+        },
+        "phase2": {
+            "name": "Navigation & Feedback",
+            "priority": "P1",
+            "components": [
+                "CommandPalette",
+                "ProgressRing",
+                "Toast"
+            ]
+        },
+        "phase3": {
+            "name": "Extended Components",
+            "priority": "P2",
+            "components": [
+                "ActivityFeed",
+                "UserAvatar",
+                "ProjectCard"
+            ]
+        }
+    }
+}

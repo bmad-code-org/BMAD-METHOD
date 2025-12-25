@@ -1,0 +1,448 @@
+{
+    "$metadata": {
+        "generator": "BMAD Design System Generator v1.0",
+        "source": "ux-design-specification.md",
+        "project": "AquaFlow SaaS",
+        "generatedAt": "2025-12-25T12:44:30+08:00"
+    },
+    "colors": {
+        "primary": {
+            "50": {
+                "value": "#EFF6FF",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "100": {
+                "value": "#DBEAFE",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "500": {
+                "value": "#2563EB",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "600": {
+                "value": "#2563EB",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "700": {
+                "value": "#1D4ED8",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "900": {
+                "value": "#1E3A8A",
+                "type": "color",
+                "source": "kb-suggestion"
+            }
+        },
+        "secondary": {
+            "500": {
+                "value": "#3B82F6",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "600": {
+                "value": "#2563EB",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "700": {
+                "value": "#1D4ED8",
+                "type": "color",
+                "source": "kb-suggestion"
+            }
+        },
+        "accent": {
+            "500": {
+                "value": "#F97316",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "600": {
+                "value": "#EA580C",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "700": {
+                "value": "#C2410C",
+                "type": "color",
+                "source": "kb-suggestion"
+            }
+        },
+        "neutral": {
+            "50": {
+                "value": "#F8FAFC",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "100": {
+                "value": "#F1F5F9",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "200": {
+                "value": "#E2E8F0",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "500": {
+                "value": "#64748B",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "600": {
+                "value": "#475569",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "700": {
+                "value": "#334155",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "800": {
+                "value": "#1E293B",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "900": {
+                "value": "#0F172A",
+                "type": "color",
+                "source": "kb-suggestion"
+            }
+        },
+        "success": {
+            "500": {
+                "value": "#22C55E",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "600": {
+                "value": "#16A34A",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "700": {
+                "value": "#15803D",
+                "type": "color",
+                "source": "kb-suggestion"
+            }
+        },
+        "warning": {
+            "500": {
+                "value": "#EAB308",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "600": {
+                "value": "#CA8A04",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "700": {
+                "value": "#A16207",
+                "type": "color",
+                "source": "kb-suggestion"
+            }
+        },
+        "error": {
+            "500": {
+                "value": "#EF4444",
+                "type": "color",
+                "source": "ux-spec"
+            },
+            "600": {
+                "value": "#DC2626",
+                "type": "color",
+                "source": "kb-suggestion"
+            },
+            "700": {
+                "value": "#B91C1C",
+                "type": "color",
+                "source": "kb-suggestion"
+            }
+        }
+    },
+    "typography": {
+        "fontFamily": {
+            "heading": {
+                "value": "'Inter', system-ui, sans-serif",
+                "type": "fontFamily",
+                "source": "ux-spec"
+            },
+            "body": {
+                "value": "'Inter', system-ui, sans-serif",
+                "type": "fontFamily",
+                "source": "ux-spec"
+            },
+            "mono": {
+                "value": "'JetBrains Mono', 'Fira Code', monospace",
+                "type": "fontFamily",
+                "source": "default"
+            }
+        },
+        "fontSize": {
+            "xs": {
+                "value": "0.75rem",
+                "type": "fontSize",
+                "source": "ux-spec"
+            },
+            "sm": {
+                "value": "0.875rem",
+                "type": "fontSize",
+                "source": "ux-spec"
+            },
+            "base": {
+                "value": "1rem",
+                "type": "fontSize",
+                "source": "ux-spec"
+            },
+            "lg": {
+                "value": "1.25rem",
+                "type": "fontSize",
+                "source": "ux-spec"
+            },
+            "xl": {
+                "value": "1.5rem",
+                "type": "fontSize",
+                "source": "ux-spec"
+            },
+            "2xl": {
+                "value": "2rem",
+                "type": "fontSize",
+                "source": "ux-spec"
+            },
+            "3xl": {
+                "value": "2.5rem",
+                "type": "fontSize",
+                "source": "default"
+            },
+            "4xl": {
+                "value": "3rem",
+                "type": "fontSize",
+                "source": "default"
+            }
+        },
+        "fontWeight": {
+            "normal": {
+                "value": "400",
+                "type": "fontWeight",
+                "source": "ux-spec"
+            },
+            "medium": {
+                "value": "500",
+                "type": "fontWeight",
+                "source": "ux-spec"
+            },
+            "semibold": {
+                "value": "600",
+                "type": "fontWeight",
+                "source": "ux-spec"
+            },
+            "bold": {
+                "value": "700",
+                "type": "fontWeight",
+                "source": "ux-spec"
+            }
+        },
+        "lineHeight": {
+            "tight": {
+                "value": "1.2",
+                "type": "lineHeight",
+                "source": "ux-spec"
+            },
+            "snug": {
+                "value": "1.3",
+                "type": "lineHeight",
+                "source": "ux-spec"
+            },
+            "normal": {
+                "value": "1.5",
+                "type": "lineHeight",
+                "source": "ux-spec"
+            },
+            "relaxed": {
+                "value": "1.6",
+                "type": "lineHeight",
+                "source": "default"
+            }
+        }
+    },
+    "spacing": {
+        "0": {
+            "value": "0",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "1": {
+            "value": "0.25rem",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "2": {
+            "value": "0.5rem",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "3": {
+            "value": "0.75rem",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "4": {
+            "value": "1rem",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "6": {
+            "value": "1.5rem",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "8": {
+            "value": "2rem",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "10": {
+            "value": "2.5rem",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "12": {
+            "value": "3rem",
+            "type": "spacing",
+            "source": "ux-spec"
+        },
+        "16": {
+            "value": "4rem",
+            "type": "spacing",
+            "source": "default"
+        }
+    },
+    "borderRadius": {
+        "none": {
+            "value": "0",
+            "type": "borderRadius",
+            "source": "default"
+        },
+        "sm": {
+            "value": "0.25rem",
+            "type": "borderRadius",
+            "source": "ux-spec"
+        },
+        "md": {
+            "value": "0.5rem",
+            "type": "borderRadius",
+            "source": "ux-spec"
+        },
+        "lg": {
+            "value": "1rem",
+            "type": "borderRadius",
+            "source": "ux-spec"
+        },
+        "xl": {
+            "value": "1.5rem",
+            "type": "borderRadius",
+            "source": "default"
+        },
+        "full": {
+            "value": "9999px",
+            "type": "borderRadius",
+            "source": "default"
+        }
+    },
+    "shadow": {
+        "sm": {
+            "value": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+            "type": "boxShadow",
+            "source": "kb-suggestion"
+        },
+        "md": {
+            "value": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+            "type": "boxShadow",
+            "source": "kb-suggestion"
+        },
+        "lg": {
+            "value": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+            "type": "boxShadow",
+            "source": "kb-suggestion"
+        },
+        "xl": {
+            "value": "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+            "type": "boxShadow",
+            "source": "kb-suggestion"
+        }
+    },
+    "animation": {
+        "duration": {
+            "fast": {
+                "value": "150ms",
+                "type": "duration",
+                "source": "default"
+            },
+            "normal": {
+                "value": "200ms",
+                "type": "duration",
+                "source": "ux-spec"
+            },
+            "slow": {
+                "value": "300ms",
+                "type": "duration",
+                "source": "default"
+            }
+        },
+        "easing": {
+            "default": {
+                "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+                "type": "cubicBezier",
+                "source": "default"
+            },
+            "in": {
+                "value": "cubic-bezier(0.4, 0, 1, 1)",
+                "type": "cubicBezier",
+                "source": "default"
+            },
+            "out": {
+                "value": "cubic-bezier(0, 0, 0.2, 1)",
+                "type": "cubicBezier",
+                "source": "default"
+            },
+            "inOut": {
+                "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+                "type": "cubicBezier",
+                "source": "default"
+            }
+        }
+    },
+    "breakpoints": {
+        "sm": {
+            "value": "320px",
+            "type": "dimension",
+            "source": "ux-spec"
+        },
+        "md": {
+            "value": "768px",
+            "type": "dimension",
+            "source": "ux-spec"
+        },
+        "lg": {
+            "value": "1024px",
+            "type": "dimension",
+            "source": "ux-spec"
+        },
+        "xl": {
+            "value": "1440px",
+            "type": "dimension",
+            "source": "ux-spec"
+        },
+        "2xl": {
+            "value": "1536px",
+            "type": "dimension",
+            "source": "default"
+        }
+    }
+}

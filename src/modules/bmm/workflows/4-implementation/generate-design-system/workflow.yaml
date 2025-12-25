@@ -1,0 +1,53 @@
+id: generate-design-system
+name: generate-design-system
+description: "Generate DEV-Ready design system files from UX Design Specification"
+author: "BMad"
+version: "1.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/generate-design-system"
+instructions: "{installed_path}/instructions.xml"
+validation: "{installed_path}/checklist.md"
+
+# Project context
+project_context: "**/project-context.md"
+
+# Knowledge base path (configurable per environment)
+kb_path: "{config_source}:kb_path"
+
+# Input file patterns
+input_file_patterns:
+  ux_spec:
+    description: "UX Design Specification"
+    whole: "{output_folder}/*ux-design*.md"
+    sharded: "{output_folder}/*ux*/*.md"
+    load_strategy: "FULL_LOAD"
+  architecture:
+    description: "Architecture document for tech stack"
+    whole: "{output_folder}/*architecture*.md"
+    sharded: "{output_folder}/*architecture*/*.md"
+    load_strategy: "SELECTIVE_LOAD"
+  project_context:
+    description: "Project context for coding standards"
+    whole: "**/project-context.md"
+    load_strategy: "OPTIONAL"
+
+# Output files
+outputs:
+  - design-tokens.json
+  - theme.css
+  - globals.css
+  - component-specs.json
+
+standalone: true
+
+web_bundle: false
