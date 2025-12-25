@@ -27,10 +27,10 @@ agent:
     - agents: "{project-root}/_bmad/bmb/docs/agents/kb.csv"
 
   menu:
-    - trigger: CA or create-agent or fuzzy match on create agent
+    - trigger: CA or create-agent or fuzzy match on create-agent
       exec: "{project-root}/_bmad/bmb/workflows/create-agent/workflow.md"
       description: "[CA] Create a new BMAD agent with best practices and compliance"
 
-    - trigger: EA or edit-agent or fuzzy match on edit agent
+    - trigger: EA or edit-agent or fuzzy match on edit-agent
       exec: "{project-root}/_bmad/bmb/workflows/edit-agent/workflow.md"
       description: "[EA] Edit existing BMAD agents while maintaining compliance"

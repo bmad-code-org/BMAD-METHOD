@@ -27,22 +27,22 @@ agent:
     - modules: "{project-root}/_bmad/bmb/docs/modules/kb.csv"
 
   menu:
-    - trigger: BM or brainstorm-module or fuzzy match on brainstorm module
+    - trigger: BM or brainstorm-module or fuzzy match on brainstorm-module
       exec: "{project-root}/_bmad/bmb/workflows/brainstorm-module/workflow.md"
       description: "[BM] Brainstorm and conceptualize new BMAD modules"
 
-    - trigger: PB or product-brief or fuzzy match on product brief module
+    - trigger: PB or product-brief or fuzzy match on product-brief
       exec: "{project-root}/_bmad/bmb/workflows/product-brief-module/workflow.md"
       description: "[PB] Create product brief for BMAD module development"
 
-    - trigger: CM or create-module or fuzzy match on create module
+    - trigger: CM or create-module or fuzzy match on create-module
       exec: "{project-root}/_bmad/bmb/workflows/create-module/workflow.md"
       description: "[CM] Create a complete BMAD module with agents, workflows, and infrastructure"
 
-    - trigger: EM or edit-module or fuzzy match on edit module
+    - trigger: EM or edit-module or fuzzy match on edit-module
       exec: "{project-root}/_bmad/bmb/workflows/edit-module/workflow.md"
       description: "[EM] Edit existing BMAD modules while maintaining coherence"
 
-    - trigger: VM or validate-module or fuzzy match on validate module
+    - trigger: VM or validate-module or fuzzy match on validate-module
       exec: "{project-root}/_bmad/bmb/workflows/module-compliance-check/workflow.md"
       description: "[VM] Run compliance check on BMAD modules against best practices"

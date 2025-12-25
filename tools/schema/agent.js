@@ -4,7 +4,7 @@ const { z } = require('zod');
 
 const COMMAND_TARGET_KEYS = ['workflow', 'validate-workflow', 'exec', 'action', 'tmpl', 'data'];
 const TRIGGER_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const COMPOUND_TRIGGER_PATTERN = /^([A-Z]{1,2}) or ([a-z0-9]+(?:-[a-z0-9]+)*) or fuzzy match on ([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+const COMPOUND_TRIGGER_PATTERN = /^([A-Z]{1,3}) or ([a-z0-9]+(?:-[a-z0-9]+)*) or fuzzy match on ([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 
 /**
  * Derive the expected shortcut from a kebab-case trigger.
@@ -43,14 +43,9 @@ function parseCompoundTrigger(triggerValue) {
     };
   }
 
-  // Validate shortcut matches derived value
-  const expectedShortcut = deriveShortcutFromKebab(kebabTrigger);
-  if (shortcut !== expectedShortcut) {
-    return {
-      valid: false,
-      error: `shortcut "${shortcut}" does not match expected "${expectedShortcut}" for "${kebabTrigger}"`,
-    };
-  }
+  // Note: We intentionally don't validate that shortcut matches derived value
+  // because shortcuts are often semantic (e.g., PS="party start", UX="user experience")
+  // rather than derived from kebab-case (PM, UD)
 
   return { valid: true, kebabTrigger };
 }
