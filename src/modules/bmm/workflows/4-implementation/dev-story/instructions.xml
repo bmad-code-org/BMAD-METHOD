@@ -134,6 +134,164 @@
     <action if="incomplete task or subtask requirements ambiguous">ASK user to clarify or HALT</action>
   </step>
 
+  <step n="1.5" goal="Gap analysis and task refinement">
+    <critical>🔍 MANDATORY GAP ANALYSIS - Validate draft tasks against actual codebase reality!</critical>
+    <note>This step ensures tasks reflect current codebase state, preventing duplicate implementations and missed dependencies.</note>
+
+    <!-- Extract story context for gap analysis -->
+    <action>Extract story requirements, acceptance criteria, and draft tasks from story file</action>
+    <action>Identify technical areas mentioned in tasks (files, classes, functions, services, components)</action>
+
+    <!-- SCAN PHASE: Analyze actual codebase -->
+    <action>Determine scan targets from task descriptions:</action>
+    <action>- For file creation tasks: Check if files already exist</action>
+    <action>- For feature implementation tasks: Search for related code patterns</action>
+    <action>- For integration tasks: Verify dependencies exist</action>
+
+    <action>Use Glob to find relevant files matching patterns from tasks (e.g., **/*.ts, **/*.tsx, **/*.test.ts, **/*.service.ts)</action>
+    <action>Use Grep to search for specific classes, functions, or components mentioned in tasks</action>
+    <action>Use Read to verify implementation details and functionality in key discovered files</action>
+
+    <!-- ANALYSIS PHASE: Document findings -->
+    <action>Document scan results:</action>
+
+    **CODEBASE REALITY:**
+    <action>✅ What Exists:
+      - List verified files, classes, functions, services found
+      - Note implementation completeness (partial vs full)
+      - Identify reusable code that tasks should leverage
+    </action>
+
+    <action>❌ What's Missing:
+      - List requirements mentioned in tasks but not found in codebase
+      - Identify missing dependencies that tasks assume exist
+      - Note gaps that need addressing
+    </action>
+
+    <!-- TASK REFINEMENT PHASE: Generate updated tasks -->
+    <action>Compare draft tasks to codebase reality:</action>
+    <action>For each draft task, determine:</action>
+    <action>- KEEP AS-IS: Task matches reality (nothing exists, creation needed)</action>
+    <action>- MODIFY: Task needs adjustment (file/feature exists, should extend/modify instead of create)</action>
+    <action>- REMOVE: Task already complete (feature fully implemented, tests pass)</action>
+    <action>- ADD: New prerequisite discovered (missing dependency needs creating first)</action>
+
+    <action>Generate refined task list with clear reasoning for each change</action>
+
+    <!-- PRESENTATION PHASE: Show findings and get approval -->
+    <output>
+      📊 **Gap Analysis Complete**
+
+      **Codebase Scan Results:**
+
+      ✅ **What Exists:**
+      {{list_of_existing_files_features_with_details}}
+
+      ❌ **What's Missing:**
+      {{list_of_missing_elements_from_requirements}}
+
+      ---
+
+      📝 **Proposed Task Updates:**
+
+      {{if_any_added_tasks}}
+      **ADDED TASKS** (new prerequisites discovered):
+      {{list_added_tasks_with_reasoning}}
+      {{endif}}
+
+      {{if_any_modified_tasks}}
+      **MODIFIED TASKS** (adjusted for codebase reality):
+      {{list_modified_tasks_showing_before_and_after}}
+      {{endif}}
+
+      {{if_any_removed_tasks}}
+      **REMOVED TASKS** (already complete):
+      {{list_removed_tasks_with_verification}}
+      {{endif}}
+
+      {{if_no_changes}}
+      **NO CHANGES NEEDED** - Draft tasks accurately reflect current codebase state.
+      {{endif}}
+
+      ---
+
+    </output>
+
+    <ask>**Approve these task updates?**
+
+      Options:
+      [Y] Yes - Update story file with refined tasks and proceed with implementation
+      [A] Auto-accept - Apply changes and auto-accept all future task refinements this session
+      [n] No - Keep original draft tasks as-is (not recommended - risk of duplicate code)
+      [e] Edit - Let me manually adjust the proposed tasks
+      [s] Skip - Something looks wrong, skip this story
+      [r] Review - Show me more details about specific findings before deciding
+    </ask>
+
+    <!-- Store user preference for auto-accept -->
+    <action>Initialize {{gap_analysis_auto_accept}} = false</action>
+
+    <!-- USER DECISION HANDLING -->
+    <check if="user approves with Y">
+      <action>Update story file with refined tasks in Tasks/Subtasks section</action>
+      <action>Add new "Gap Analysis" section to story file with findings:
+        - Scan timestamp
+        - What Exists summary
+        - What's Missing summary
+        - Task changes applied
+      </action>
+      <action>Add Change Log entry: "Tasks refined based on codebase gap analysis ({{date}})"</action>
+      <output>✅ Story updated with refined tasks. Proceeding to implementation...</output>
+      <action>Continue to step 2</action>
+    </check>
+
+    <check if="user chooses auto-accept with A">
+      <action>Set {{gap_analysis_auto_accept}} = true</action>
+      <action>Update story file with refined tasks in Tasks/Subtasks section</action>
+      <action>Add new "Gap Analysis" section to story file with findings</action>
+      <action>Add Change Log entry: "Tasks refined based on codebase gap analysis ({{date}})"</action>
+      <output>✅ Story updated with refined tasks. Auto-accept enabled for this session.</output>
+      <action>Continue to step 2</action>
+    </check>
+
+    <check if="user says no with n">
+      <output>⚠️ **Warning:** Proceeding with original draft tasks without validation.</output>
+      <output>Risk: Tasks may create duplicate code or miss existing implementations.</output>
+      <action>Add note to Dev Agent Record: "Gap analysis performed but user chose to keep draft tasks"</action>
+      <action>Continue to step 2 with original draft tasks</action>
+    </check>
+
+    <check if="user wants to edit with e">
+      <ask>Please describe how you want to adjust the proposed tasks, or provide your own task list:</ask>
+      <action>Allow user to refine proposed tasks interactively</action>
+      <action>Update story file with user's adjusted task list</action>
+      <action>Add Gap Analysis section documenting user's custom refinements</action>
+      <action>Add Change Log entry: "Tasks manually refined after gap analysis ({{date}})"</action>
+      <output>✅ Story updated with your custom tasks. Proceeding to implementation...</output>
+      <action>Continue to step 2</action>
+    </check>
+
+    <check if="user chooses skip with s">
+      <output>🛑 Story skipped - review findings and story manually before re-attempting.</output>
+      <action>Add note to Dev Agent Record: "Development halted - gap analysis revealed issues requiring manual review"</action>
+      <action>HALT - do not proceed with implementation</action>
+    </check>
+
+    <check if="user wants review with r">
+      <ask>Which findings would you like more details about? (specify file names, tasks, or areas of concern)</ask>
+      <action>Provide detailed analysis of requested areas using Read tool for deeper inspection</action>
+      <action>After review, re-present the approval options</action>
+      <action>Continue based on user's subsequent choice</action>
+    </check>
+
+    <!-- If no task changes needed, proceed smoothly -->
+    <check if="no task changes proposed AND user not yet responded">
+      <output>✅ Draft tasks accurately reflect codebase state - no refinement needed. Proceeding...</output>
+      <action>Add Gap Analysis section to story documenting verification performed</action>
+      <action>Continue to step 2</action>
+    </check>
+  </step>
+
   <step n="2" goal="Load project context and story information">
     <critical>Load all available context to inform implementation</critical>
 
