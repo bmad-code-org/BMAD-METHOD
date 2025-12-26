@@ -1,0 +1,362 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+  <critical>Generate all documents in {document_output_language}</critical>
+  <critical>🚀 SUPER-DEV MODE: Enhanced quality workflow with post-implementation validation and automated code review</critical>
+  <critical>This workflow ensures stories are TRULY complete through multi-stage validation before marking done</critical>
+  <critical>⚙️ EXECUTION FLOW: First execute ALL dev-story steps (1-8), then continue with super-dev enhancements (9.5-9.6)</critical>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEPS 1-8: STANDARD DEV-STORY WORKFLOW                          -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <critical>🎯 EXECUTE DEV-STORY STEPS 1-8 FIRST</critical>
+  <critical>Follow all instructions in: {project-root}/_bmad/bmgd/workflows/4-production/dev-story/instructions.xml</critical>
+  <critical>Complete Steps 1 through 8 exactly as specified in dev-story workflow</critical>
+  <critical>After Step 8 completes (all tasks checked), return here and continue with Step 9.5 below</critical>
+
+  <note>⚙️ Super-dev-story includes ALL standard dev-story steps (1-8):
+    - Step 1: Find and load story
+    - Step 1.5: Pre-dev gap analysis and task refinement
+    - Step 2: Load project context
+    - Step 3: Detect review continuation
+    - Step 4: Mark story in-progress
+    - Step 5: Implement task (red-green-refactor)
+    - Step 6: Author comprehensive tests
+    - Step 7: Run validations and tests
+    - Step 8: Validate and mark task complete
+
+    See dev-story/instructions.xml for complete details of these steps.
+  </note>
+
+  <!-- SUPER-DEV ENHANCEMENTS START HERE -->
+
+  <step n="9.5" goal="Post-development gap analysis">
+    <critical>🔍 POST-DEV VALIDATION - Verify all work actually completed!</critical>
+    <note>This catches incomplete implementations that were prematurely marked done</note>
+
+    <output>
+      🔎 **Post-Development Gap Analysis**
+
+      All tasks marked complete. Verifying against codebase reality...
+    </output>
+
+    <!-- Re-scan codebase with fresh eyes -->
+    <action>Re-read story requirements and acceptance criteria</action>
+    <action>Extract all tasks and subtasks that are marked [x] complete</action>
+    <action>For each completed task, identify what should exist in codebase</action>
+
+    <!-- SCAN PHASE -->
+    <action>Use Glob to find files that should have been created</action>
+    <action>Use Grep to search for functions/classes that should exist</action>
+    <action>Use Read to verify implementation completeness (not just existence)</action>
+    <action>Run tests to verify claimed test coverage actually exists and passes</action>
+
+    <!-- ANALYSIS PHASE -->
+    <action>Compare claimed work vs actual implementation:</action>
+
+    **POST-DEV VERIFICATION:**
+    <action>✅ Verified Complete:
+      - List tasks where code fully exists and works
+      - Confirm tests exist and pass
+      - Verify implementation matches requirements
+    </action>
+
+    <action>❌ False Positives Detected:
+      - List tasks marked [x] but code missing or incomplete
+      - Identify claimed tests that don't exist or fail
+      - Note partial implementations marked as complete
+    </action>
+
+    <action>⚠️ Quality Issues:
+      - Implementations that exist but don't meet requirements
+      - Tests that exist but have poor coverage
+      - Code that works but violates architecture patterns
+    </action>
+
+    <!-- DECISION PHASE -->
+    <check if="false positives found OR quality issues found">
+      <output>
+        ⚠️ **Post-Dev Gaps Detected!**
+
+        **False Positives (marked done but not complete):**
+        {{list_false_positives_with_details}}
+
+        **Quality Issues:**
+        {{list_quality_issues_with_details}}
+
+        **Proposed Actions:**
+        {{list_tasks_to_add_for_missing_work}}
+
+        ---
+
+        These issues must be addressed before story can be marked complete.
+      </output>
+
+      <action>Uncheck false positive tasks in story file</action>
+      <action>Add new tasks for missing work to Tasks/Subtasks section</action>
+      <action>Add note to Dev Agent Record: "Post-dev gap analysis found incomplete work - continuing implementation"</action>
+      <action>Update Gap Analysis section with post-dev findings</action>
+      <action>Set {{fix_iteration_count}} = {{fix_iteration_count}} + 1</action>
+
+      <check if="{{fix_iteration_count}} > {{max_fix_iterations}}">
+        <output>🛑 **Maximum Fix Iterations Reached**
+
+          Attempted {{fix_iteration_count}} fix cycles.
+          Manual intervention required.
+
+          Issues remaining:
+          {{list_remaining_issues}}
+        </output>
+        <action>Add to Dev Agent Record: "HALTED - exceeded max fix iterations, manual review needed"</action>
+        <action>HALT - require user intervention</action>
+      </check>
+
+      <output>🔄 Adding missing work to task list and continuing implementation...</output>
+      <goto step="5">Continue implementation with added tasks</goto>
+    </check>
+
+    <check if="no gaps found">
+      <output>✅ **Post-Dev Validation Passed**
+
+        All tasks verified complete against codebase.
+        Proceeding to code review...
+      </output>
+      <action>Update Gap Analysis section with post-dev verification results</action>
+      <action>Continue to Step 9.6</action>
+    </check>
+  </step>
+
+  <step n="9.6" goal="Automated code review">
+    <critical>👀 AUTO CODE REVIEW - Independent quality validation</critical>
+    <note>Fresh perspective catches issues the dev agent might miss</note>
+
+    <output>
+      🔍 **Running Automated Code Review**
+
+      Analyzing implementation for issues...
+    </output>
+
+    <!-- Identify files to review -->
+    <action>Extract File List from Dev Agent Record</action>
+    <action>Identify all files created or modified during implementation</action>
+
+    <!-- REVIEW PHASE: Use code-review workflow logic -->
+    <action>Perform comprehensive code review checking:</action>
+    <action>- **Correctness:** Logic errors, edge cases, error handling</action>
+    <action>- **Architecture:** Compliance with patterns and standards</action>
+    <action>- **Security:** Vulnerabilities, input validation, authentication</action>
+    <action>- **Performance:** Inefficiencies, N+1 queries, memory leaks</action>
+    <action>- **Testing:** Test coverage, edge cases, test quality</action>
+    <action>- **Code Quality:** Readability, maintainability, documentation</action>
+
+    <!-- CATEGORIZE FINDINGS -->
+    <action>Categorize all findings by severity:</action>
+    <action>- CRITICAL: Security vulnerabilities, data loss, broken functionality</action>
+    <action>- HIGH: Logic errors, missing error handling, test gaps</action>
+    <action>- MEDIUM: Code quality issues, minor bugs, performance concerns</action>
+    <action>- LOW: Style issues, documentation improvements, minor refactoring</action>
+
+    <!-- DECISION PHASE -->
+    <check if="CRITICAL or HIGH severity issues found">
+      <output>
+        🚨 **Code Review Found Issues Requiring Fixes**
+
+        **Critical Issues ({{critical_count}}):**
+        {{list_critical_issues}}
+
+        **High Priority Issues ({{high_count}}):**
+        {{list_high_issues}}
+
+        {{if_medium_or_low_exist}}
+        **Medium/Low Issues ({{med_low_count}}):**
+        {{list_medium_low_issues}}
+        {{endif}}
+
+        ---
+
+        **These issues must be fixed before story completion.**
+      </output>
+
+      <action>Add "Code Review Findings" section to story file</action>
+      <action>Add review findings as new tasks in Tasks/Subtasks with [AI-Review] prefix</action>
+      <action>Add to Dev Agent Record: "Code review found {{total_issue_count}} issues - continuing with fixes"</action>
+      <action>Set {{fix_iteration_count}} = {{fix_iteration_count}} + 1</action>
+
+      <check if="{{fix_iteration_count}} > {{max_fix_iterations}}">
+        <output>🛑 **Maximum Fix Iterations Reached**
+
+          Code review found issues on iteration {{fix_iteration_count}}.
+          Manual review recommended.
+
+          Issues found:
+          {{list_all_issues}}
+        </output>
+        <action>Add to Dev Agent Record: "HALTED - code review issues after max iterations, manual review needed"</action>
+        <action>HALT - require user intervention</action>
+      </check>
+
+      <output>🔧 Adding review findings to task list and implementing fixes...</output>
+      <goto step="5">Implement fixes</goto>
+    </check>
+
+    <check if="only MEDIUM or LOW severity issues found">
+      <output>
+        ℹ️ **Code Review Found Minor Issues**
+
+        **Medium Issues ({{medium_count}}):**
+        {{list_medium_issues}}
+
+        **Low Priority Issues ({{low_count}}):**
+        {{list_low_issues}}
+
+        ---
+      </output>
+
+      <ask>Auto-fix these minor issues?
+
+        Options:
+        [Y] Yes - Add to task list and fix now
+        [n] No - Document in story but don't fix (can address later)
+        [s] Skip - Ignore these findings
+      </ask>
+
+      <check if="user approves Y">
+        <action>Add review findings as tasks with [AI-Review] prefix</action>
+        <action>Add to Dev Agent Record: "Addressing {{issue_count}} minor code review findings"</action>
+        <output>🔧 Implementing minor fixes...</output>
+        <goto step="5">Implement fixes</goto>
+      </check>
+
+      <check if="user says n">
+        <action>Add "Code Review Findings" section documenting issues</action>
+        <action>Add to Dev Agent Record: "Code review found {{issue_count}} minor issues - documented for future work"</action>
+        <output>ℹ️ Issues documented in story. Proceeding to completion...</output>
+        <action>Continue to Step 9</action>
+      </check>
+
+      <check if="user says s">
+        <output>⚠️ Skipping minor issues. Proceeding to completion...</output>
+        <action>Continue to Step 9</action>
+      </check>
+    </check>
+
+    <check if="no issues found">
+      <output>✅ **Code Review Passed**
+
+        No issues found. Implementation meets quality standards.
+      </output>
+      <action>Add to Dev Agent Record: "Code review completed - no issues found"</action>
+      <action>Continue to Step 9</action>
+    </check>
+  </step>
+
+  <step n="9" goal="Story completion and mark for review" tag="sprint-status">
+    <critical>🎯 FINAL VALIDATION - All quality gates must pass!</critical>
+
+    <action>Verify ALL tasks and subtasks are marked [x] (re-scan the story document now)</action>
+    <action>Run the full regression suite (do not skip)</action>
+    <action>Confirm File List includes every changed file</action>
+    <action>Execute enhanced definition-of-done validation</action>
+
+    <!-- Enhanced Definition of Done for Super-Dev -->
+    <action>Validate super-dev quality gates:
+      - ✅ Pre-dev gap analysis completed and approved
+      - ✅ All tasks/subtasks marked complete with [x]
+      - ✅ Implementation satisfies every Acceptance Criterion
+      - ✅ All tests pass (no regressions, new tests successful)
+      - ✅ Post-dev gap analysis passed (no false positives)
+      - ✅ Code review completed (critical/high issues resolved)
+      - ✅ File List includes every new/modified/deleted file
+      - ✅ Dev Agent Record contains implementation notes
+      - ✅ Change Log includes summary of changes
+    </action>
+
+    <action>Update the story Status to: "review"</action>
+
+    <!-- Mark story ready for review - sprint status conditional -->
+    <check if="{sprint_status} file exists AND {{current_sprint_status}} != 'no-sprint-tracking'">
+      <action>Load the FULL file: {sprint_status}</action>
+      <action>Find development_status key matching {{story_key}}</action>
+      <action>Verify current status is "in-progress" (expected previous state)</action>
+      <action>Update development_status[{{story_key}}] = "review"</action>
+      <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
+      <output>✅ Story status updated to "review" in sprint-status.yaml</output>
+    </check>
+
+    <check if="{sprint_status} file does NOT exist OR {{current_sprint_status}} == 'no-sprint-tracking'">
+      <output>ℹ️ Story status updated to "review" in story file (no sprint tracking configured)</output>
+    </check>
+
+    <!-- Final validation gates -->
+    <action if="any task is incomplete">HALT - Complete remaining tasks before marking ready for review</action>
+    <action if="regression failures exist">HALT - Fix regression issues before completing</action>
+    <action if="File List is incomplete">HALT - Update File List with all changed files</action>
+    <action if="post-dev gap analysis not completed">HALT - Run post-dev validation before completing</action>
+    <action if="code review not completed">HALT - Run code review before completing</action>
+  </step>
+
+  <step n="10" goal="Super-dev completion communication">
+    <action>Prepare comprehensive summary in Dev Agent Record → Completion Notes</action>
+
+    <output>🎉 **SUPER-DEV STORY COMPLETE, {user_name}!**
+
+      **Story:** {{story_key}} - {{story_title}}
+      **Status:** review (ready for human review)
+
+      ---
+
+      **Quality Gates Passed:**
+      ✅ Pre-dev gap analysis - Tasks validated before work started
+      ✅ Development - All tasks completed with TDD
+      ✅ Post-dev gap analysis - Implementation verified complete
+      ✅ Code review - {{total_issues_found}} issues found and resolved
+      ✅ All tests passing - No regressions
+
+      **Implementation Summary:**
+      - Files changed: {{file_count}}
+      - Tests added: {{test_count}}
+      - Issues fixed: {{review_issues_fixed}}
+      - Fix iterations: {{fix_iteration_count}}/{{max_fix_iterations}}
+
+      **Story File:** {{story_file}}
+
+      ---
+
+      **What Super-Dev Validated:**
+      1. 🔍 Tasks matched codebase reality before starting
+      2. 💻 Implementation completed per requirements
+      3. ✅ No false positive completions (all work verified)
+      4. 👀 Code quality and security validated
+      5. 🧪 Comprehensive test coverage achieved
+
+      **Next Steps:**
+      - Review the completed story
+      - Verify business requirements met
+      - Merge when approved
+
+      **Note:** This story went through enhanced quality validation.
+      It should require minimal human review.
+    </output>
+
+    <action>Based on {user_skill_level}, ask if user needs any explanations about:
+      - What was implemented and how it works
+      - Why certain technical decisions were made
+      - Gap analysis or code review findings
+      - Any patterns, libraries, or approaches used
+    </action>
+
+    <check if="user asks for explanations">
+      <action>Provide clear, contextual explanations tailored to {user_skill_level}</action>
+      <action>Use examples and references to specific code when helpful</action>
+    </check>
+
+    <output>💡 **Tip:** This story was developed with super-dev-story for enhanced quality.
+
+      For faster development (fewer validations), use standard `dev-story` workflow.
+      For maximum quality and fewer review cycles, continue using `super-dev-story`.
+    </output>
+  </step>
+
+</workflow>

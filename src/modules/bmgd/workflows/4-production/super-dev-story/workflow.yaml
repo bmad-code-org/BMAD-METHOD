@@ -1,0 +1,34 @@
+name: super-dev-story
+description: "Enhanced story development with post-implementation validation and automated code review - ensures stories are truly complete before marking done"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmgd/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+user_skill_level: "{config_source}:user_skill_level"
+document_output_language: "{config_source}:document_output_language"
+story_dir: "{config_source}:implementation_artifacts"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmgd/workflows/4-production/super-dev-story"
+instructions: "{installed_path}/instructions.xml"
+validation: "{installed_path}/checklist.md"
+
+story_file: "" # Explicit story path; auto-discovered if empty
+implementation_artifacts: "{config_source}:implementation_artifacts"
+sprint_status: "{implementation_artifacts}/sprint-status.yaml"
+project_context: "**/project-context.md"
+
+# Super-dev specific settings
+super_dev_settings:
+  post_dev_gap_analysis: true
+  auto_code_review: true
+  fail_on_critical_issues: true
+  max_fix_iterations: 3
+
+standalone: true
+
+web_bundle: false
