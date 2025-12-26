@@ -1,10 +1,14 @@
 const path = require('node:path');
+const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
+const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { getTasksFromBmad } = require('./shared/bmad-artifacts');
 
 /**
  * Windsurf IDE setup handler
+ * Installs BMAD artifacts to .windsurf/workflows with flattened naming
  */
 class WindsurfSetup extends BaseIdeSetup {
   constructor() {
@@ -22,188 +26,186 @@ class WindsurfSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Create .windsurf/workflows/bmad directory structure
+    // Create .windsurf/workflows directory
     const windsurfDir = path.join(projectDir, this.configDir);
     const workflowsDir = path.join(windsurfDir, this.workflowsDir);
-    const bmadWorkflowsDir = path.join(workflowsDir, 'bmad');
 
-    await this.ensureDir(bmadWorkflowsDir);
+    await this.ensureDir(workflowsDir);
 
-    // Clean up any existing BMAD workflows before reinstalling
-    await this.cleanup(projectDir);
+    // Clear old BMAD files
+    await this.clearBmadPrefixedFiles(workflowsDir);
 
-    // Generate agent launchers
-    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
-    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+    // Collect all artifacts
+    const { artifacts, counts } = await this.collectWindsurfArtifacts(projectDir, bmadDir, options);
 
-    // Convert artifacts to agent format for module organization
-    const agents = agentArtifacts.map((a) => ({ module: a.module, name: a.name }));
-
-    // Get tasks, tools, and workflows (standalone only)
-    const tasks = await this.getTasks(bmadDir, true);
-    const tools = await this.getTools(bmadDir, true);
-    const workflows = await this.getWorkflows(bmadDir, true);
-
-    // Create directories for each module under bmad/
-    const modules = new Set();
-    for (const item of [...agents, ...tasks, ...tools, ...workflows]) modules.add(item.module);
-
-    for (const module of modules) {
-      await this.ensureDir(path.join(bmadWorkflowsDir, module));
-      await this.ensureDir(path.join(bmadWorkflowsDir, module, 'agents'));
-      await this.ensureDir(path.join(bmadWorkflowsDir, module, 'tasks'));
-      await this.ensureDir(path.join(bmadWorkflowsDir, module, 'tools'));
-      await this.ensureDir(path.join(bmadWorkflowsDir, module, 'workflows'));
-    }
-
-    // Process agent launchers as workflows with organized structure
-    let agentCount = 0;
-    for (const artifact of agentArtifacts) {
-      const processedContent = this.createWorkflowContent({ module: artifact.module, name: artifact.name }, artifact.content);
-
-      // Organized path: bmad/module/agents/agent-name.md
-      const targetPath = path.join(bmadWorkflowsDir, artifact.module, 'agents', `${artifact.name}.md`);
-      await this.writeFile(targetPath, processedContent);
-      agentCount++;
-    }
-
-    // Process tasks as workflows with organized structure
-    let taskCount = 0;
-    for (const task of tasks) {
-      const content = await this.readFile(task.path);
-      const processedContent = this.createTaskWorkflowContent(task, content);
-
-      // Organized path: bmad/module/tasks/task-name.md
-      const targetPath = path.join(bmadWorkflowsDir, task.module, 'tasks', `${task.name}.md`);
-      await this.writeFile(targetPath, processedContent);
-      taskCount++;
-    }
-
-    // Process tools as workflows with organized structure
-    let toolCount = 0;
-    for (const tool of tools) {
-      const content = await this.readFile(tool.path);
-      const processedContent = this.createToolWorkflowContent(tool, content);
-
-      // Organized path: bmad/module/tools/tool-name.md
-      const targetPath = path.join(bmadWorkflowsDir, tool.module, 'tools', `${tool.name}.md`);
-      await this.writeFile(targetPath, processedContent);
-      toolCount++;
-    }
-
-    // Process workflows with organized structure
-    let workflowCount = 0;
-    for (const workflow of workflows) {
-      const content = await this.readFile(workflow.path);
-      const processedContent = this.createWorkflowWorkflowContent(workflow, content);
-
-      // Organized path: bmad/module/workflows/workflow-name.md
-      const targetPath = path.join(bmadWorkflowsDir, workflow.module, 'workflows', `${workflow.name}.md`);
-      await this.writeFile(targetPath, processedContent);
-      workflowCount++;
-    }
+    // Write flattened files
+    const written = await this.writeFlattenedArtifacts(artifacts, workflowsDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${agentCount} agents installed`));
-    console.log(chalk.dim(`  - ${taskCount} tasks installed`));
-    console.log(chalk.dim(`  - ${toolCount} tools installed`));
-    console.log(chalk.dim(`  - ${workflowCount} workflows installed`));
-    console.log(chalk.dim(`  - Organized in modules: ${[...modules].join(', ')}`));
-    console.log(chalk.dim(`  - Workflows directory: ${path.relative(projectDir, workflowsDir)}`));
+    console.log(chalk.dim(`  - ${counts.agents} agents installed`));
+    console.log(chalk.dim(`  - ${counts.tasks} tasks installed`));
+    console.log(chalk.dim(`  - ${counts.workflows} workflow commands installed`));
+    if (counts.workflowLaunchers > 0) {
+      console.log(chalk.dim(`  - ${counts.workflowLaunchers} workflow launchers installed`));
+    }
+    console.log(chalk.dim(`  - ${written} files written to ${path.relative(projectDir, workflowsDir)}`));
+
+    // Usage instructions
+    console.log(chalk.yellow('\n  ⚠️  How to Use Windsurf Workflows'));
+    console.log(chalk.cyan('  BMAD workflows are available as slash commands in Windsurf'));
+    console.log(chalk.dim('  Usage:'));
+    console.log(chalk.dim('    - Type / to see available commands'));
+    console.log(chalk.dim('    - All BMAD items start with "bmad-"'));
+    console.log(chalk.dim('    - Example: /bmad-bmm-agents-pm'));
 
     // Provide additional configuration hints
     if (options.showHints !== false) {
       console.log(chalk.dim('\n  Windsurf workflow settings:'));
-      console.log(chalk.dim('  - auto_execution_mode: 3 (recommended for agents)'));
-      console.log(chalk.dim('  - auto_execution_mode: 2 (recommended for tasks/tools)'));
-      console.log(chalk.dim('  - auto_execution_mode: 1 (recommended for workflows)'));
-      console.log(chalk.dim('  - Workflows can be triggered via the Windsurf menu'));
+      console.log(chalk.dim('  - auto_execution_mode: 3 (for agents)'));
+      console.log(chalk.dim('  - auto_execution_mode: 2 (for tasks)'));
+      console.log(chalk.dim('  - auto_execution_mode: 1 (for workflows)'));
     }
 
     return {
       success: true,
-      agents: agentCount,
-      tasks: taskCount,
-      tools: toolCount,
-      workflows: workflowCount,
+      agents: counts.agents,
+      tasks: counts.tasks,
+      workflows: counts.workflows,
+      workflowLaunchers: counts.workflowLaunchers,
+      written,
     };
   }
 
   /**
-   * Create workflow content for an agent
+   * Detect Windsurf installation by checking for .windsurf/workflows directory
    */
-  createWorkflowContent(agent, content) {
-    // Strip existing frontmatter from launcher
+  async detect(projectDir) {
+    const workflowsDir = path.join(projectDir, this.configDir, this.workflowsDir);
+
+    if (!(await fs.pathExists(workflowsDir))) {
+      return false;
+    }
+
+    const entries = await fs.readdir(workflowsDir);
+    return entries.some((entry) => entry.startsWith('bmad-'));
+  }
+
+  /**
+   * Collect all artifacts for Windsurf export
+   */
+  async collectWindsurfArtifacts(projectDir, bmadDir, options = {}) {
+    const selectedModules = options.selectedModules || [];
+    const artifacts = [];
+
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
+
+    // Process agent launchers with Windsurf frontmatter
+    for (const agentArtifact of agentArtifacts) {
+      const content = this.addWindsurfFrontmatter(agentArtifact.content, agentArtifact.name, 'agent');
+
+      artifacts.push({
+        type: 'agent',
+        module: agentArtifact.module,
+        sourcePath: agentArtifact.sourcePath,
+        relativePath: agentArtifact.relativePath,
+        content,
+      });
+    }
+
+    // Get tasks
+    const tasks = await getTasksFromBmad(bmadDir, selectedModules);
+    for (const task of tasks) {
+      const rawContent = await this.readFile(task.path);
+      const content = this.addWindsurfFrontmatter(rawContent, `task-${task.name}`, 'task');
+
+      artifacts.push({
+        type: 'task',
+        module: task.module,
+        sourcePath: task.path,
+        relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
+        content,
+      });
+    }
+
+    // Get workflows
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+
+    // Process workflow artifacts with Windsurf frontmatter
+    for (const artifact of workflowArtifacts) {
+      const content = this.addWindsurfFrontmatter(
+        artifact.content,
+        artifact.name || path.basename(artifact.relativePath, '.md'),
+        'workflow',
+      );
+
+      artifacts.push({
+        ...artifact,
+        content,
+      });
+    }
+
+    return {
+      artifacts,
+      counts: {
+        agents: agentArtifacts.length,
+        tasks: tasks.length,
+        workflows: workflowCounts.commands,
+        workflowLaunchers: workflowCounts.launchers,
+      },
+    };
+  }
+
+  /**
+   * Add Windsurf-specific frontmatter with auto_execution_mode
+   * @param {string} content - Original content
+   * @param {string} name - Artifact name for description
+   * @param {string} type - Artifact type (agent, task, workflow)
+   * @returns {string} Content with Windsurf frontmatter
+   */
+  addWindsurfFrontmatter(content, name, type) {
+    // Strip existing frontmatter
     const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
     const contentWithoutFrontmatter = content.replace(frontmatterRegex, '');
 
-    // Create simple Windsurf frontmatter matching original format
-    let workflowContent = `---
-description: ${agent.name}
-auto_execution_mode: 3
+    // Determine auto_execution_mode based on type
+    let mode;
+    switch (type) {
+      case 'agent': {
+        mode = 3;
+        break;
+      }
+      case 'task': {
+        mode = 2;
+        break;
+      }
+      default: {
+        mode = 1;
+        break;
+      }
+    }
+
+    // Create Windsurf frontmatter
+    return `---
+description: ${name}
+auto_execution_mode: ${mode}
 ---
 
 ${contentWithoutFrontmatter}`;
-
-    return workflowContent;
   }
 
-  /**
-   * Create workflow content for a task
-   */
-  createTaskWorkflowContent(task, content) {
-    // Create simple Windsurf frontmatter matching original format
-    let workflowContent = `---
-description: task-${task.name}
-auto_execution_mode: 2
----
-
-${content}`;
-
-    return workflowContent;
-  }
+  // Uses inherited flattenFilename(), writeFlattenedArtifacts(), and clearBmadPrefixedFiles() from BaseIdeSetup
 
   /**
-   * Create workflow content for a tool
-   */
-  createToolWorkflowContent(tool, content) {
-    // Create simple Windsurf frontmatter matching original format
-    let workflowContent = `---
-description: tool-${tool.name}
-auto_execution_mode: 2
----
-
-${content}`;
-
-    return workflowContent;
-  }
-
-  /**
-   * Create workflow content for a workflow
-   */
-  createWorkflowWorkflowContent(workflow, content) {
-    // Create simple Windsurf frontmatter matching original format
-    let workflowContent = `---
-description: ${workflow.name}
-auto_execution_mode: 1
----
-
-${content}`;
-
-    return workflowContent;
-  }
-
-  /**
-   * Cleanup Windsurf configuration - surgically remove only BMAD files
+   * Cleanup Windsurf configuration
    */
   async cleanup(projectDir) {
-    const fs = require('fs-extra');
-    const bmadPath = path.join(projectDir, this.configDir, this.workflowsDir, 'bmad');
-
-    if (await fs.pathExists(bmadPath)) {
-      // Remove the entire bmad folder - this is our territory
-      await fs.remove(bmadPath);
-      console.log(chalk.dim(`  Cleaned up existing BMAD workflows`));
+    const workflowsDir = path.join(projectDir, this.configDir, this.workflowsDir);
+    const removedCount = await this.clearBmadPrefixedFiles(workflowsDir);
+    if (removedCount > 0) {
+      console.log(chalk.dim(`  Removed ${removedCount} old BMAD items from ${this.name}`));
     }
   }
 
@@ -216,14 +218,13 @@ ${content}`;
    * @returns {Object|null} Info about created command
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const fs = require('fs-extra');
-    const customAgentsDir = path.join(projectDir, this.configDir, this.workflowsDir, 'bmad', 'custom', 'agents');
+    const workflowsDir = path.join(projectDir, this.configDir, this.workflowsDir);
 
     if (!(await this.exists(path.join(projectDir, this.configDir)))) {
       return null; // IDE not configured for this project
     }
 
-    await this.ensureDir(customAgentsDir);
+    await this.ensureDir(workflowsDir);
 
     const launcherContent = `You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
 
@@ -245,12 +246,15 @@ auto_execution_mode: 3
 
 ${launcherContent}`;
 
-    const launcherPath = path.join(customAgentsDir, `${agentName}.md`);
+    const fileName = `bmad-custom-agents-${agentName}.md`;
+    const launcherPath = path.join(workflowsDir, fileName);
     await fs.writeFile(launcherPath, workflowContent);
 
     return {
-      path: launcherPath,
-      command: `bmad/custom/agents/${agentName}`,
+      ide: 'windsurf',
+      path: path.relative(projectDir, launcherPath),
+      command: `bmad-custom-agents-${agentName}`,
+      type: 'custom-agent-launcher',
     };
   }
 }

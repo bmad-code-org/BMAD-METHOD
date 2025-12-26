@@ -4,10 +4,11 @@ const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { getTasksFromBmad, getToolsFromBmad } = require('./shared/bmad-artifacts');
 
 /**
  * Crush IDE setup handler
- * Creates commands in .crush/commands/ directory structure
+ * Installs BMAD artifacts to .crush/commands with flattened naming
  */
 class CrushSetup extends BaseIdeSetup {
   constructor() {
@@ -25,123 +26,131 @@ class CrushSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Create .crush/commands/bmad directory structure
+    // Create .crush/commands directory
     const crushDir = path.join(projectDir, this.configDir);
-    const commandsDir = path.join(crushDir, this.commandsDir, 'bmad');
+    const commandsDir = path.join(crushDir, this.commandsDir);
 
     await this.ensureDir(commandsDir);
 
-    // Generate agent launchers
-    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
-    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+    // Clear old BMAD files
+    await this.clearBmadPrefixedFiles(commandsDir);
 
-    // Get tasks, tools, and workflows (ALL workflows now generate commands)
-    const tasks = await this.getTasks(bmadDir, true);
-    const tools = await this.getTools(bmadDir, true);
+    // Collect all artifacts
+    const { artifacts, counts } = await this.collectCrushArtifacts(projectDir, bmadDir, options);
 
-    // Get ALL workflows using the new workflow command generator
-    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
-    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
-
-    // Convert workflow artifacts to expected format for organizeByModule
-    const workflows = workflowArtifacts
-      .filter((artifact) => artifact.type === 'workflow-command')
-      .map((artifact) => ({
-        module: artifact.module,
-        name: path.basename(artifact.relativePath, '.md'),
-        path: artifact.sourcePath,
-        content: artifact.content,
-      }));
-
-    // Organize by module
-    const agentCount = await this.organizeByModule(commandsDir, agentArtifacts, tasks, tools, workflows, projectDir);
+    // Write flattened files
+    const written = await this.writeFlattenedArtifacts(artifacts, commandsDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${agentCount.agents} agent commands created`));
-    console.log(chalk.dim(`  - ${agentCount.tasks} task commands created`));
-    console.log(chalk.dim(`  - ${agentCount.tools} tool commands created`));
-    console.log(chalk.dim(`  - ${agentCount.workflows} workflow commands created`));
-    console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, commandsDir)}`));
-    console.log(chalk.dim('\n  Commands can be accessed via Crush command palette'));
+    console.log(chalk.dim(`  - ${counts.agents} agent commands created`));
+    console.log(chalk.dim(`  - ${counts.tasks} task commands created`));
+    console.log(chalk.dim(`  - ${counts.tools} tool commands created`));
+    console.log(chalk.dim(`  - ${counts.workflows} workflow commands created`));
+    if (counts.workflowLaunchers > 0) {
+      console.log(chalk.dim(`  - ${counts.workflowLaunchers} workflow launchers created`));
+    }
+    console.log(chalk.dim(`  - ${written} files written to ${path.relative(projectDir, commandsDir)}`));
+
+    // Usage instructions
+    console.log(chalk.yellow('\n  ⚠️  How to Use Crush Commands'));
+    console.log(chalk.cyan('  BMAD commands are available via the Crush command palette'));
+    console.log(chalk.dim('  Usage:'));
+    console.log(chalk.dim('    - All BMAD items start with "bmad-"'));
+    console.log(chalk.dim('    - Example: /bmad-bmm-agents-pm'));
 
     return {
       success: true,
-      ...agentCount,
+      agents: counts.agents,
+      tasks: counts.tasks,
+      tools: counts.tools,
+      workflows: counts.workflows,
+      workflowLaunchers: counts.workflowLaunchers,
+      written,
     };
   }
 
   /**
-   * Organize commands by module
+   * Detect Crush installation by checking for .crush/commands directory
    */
-  async organizeByModule(commandsDir, agentArtifacts, tasks, tools, workflows, projectDir) {
-    // Get unique modules
-    const modules = new Set();
-    for (const artifact of agentArtifacts) modules.add(artifact.module);
-    for (const task of tasks) modules.add(task.module);
-    for (const tool of tools) modules.add(tool.module);
-    for (const workflow of workflows) modules.add(workflow.module);
+  async detect(projectDir) {
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
-    let agentCount = 0;
-    let taskCount = 0;
-    let toolCount = 0;
-    let workflowCount = 0;
-
-    // Create module directories
-    for (const module of modules) {
-      const moduleDir = path.join(commandsDir, module);
-      const moduleAgentsDir = path.join(moduleDir, 'agents');
-      const moduleTasksDir = path.join(moduleDir, 'tasks');
-      const moduleToolsDir = path.join(moduleDir, 'tools');
-      const moduleWorkflowsDir = path.join(moduleDir, 'workflows');
-
-      await this.ensureDir(moduleAgentsDir);
-      await this.ensureDir(moduleTasksDir);
-      await this.ensureDir(moduleToolsDir);
-      await this.ensureDir(moduleWorkflowsDir);
-
-      // Write module-specific agent launchers
-      const moduleAgents = agentArtifacts.filter((a) => a.module === module);
-      for (const artifact of moduleAgents) {
-        const targetPath = path.join(moduleAgentsDir, `${artifact.name}.md`);
-        await this.writeFile(targetPath, artifact.content);
-        agentCount++;
-      }
-
-      // Copy module-specific tasks
-      const moduleTasks = tasks.filter((t) => t.module === module);
-      for (const task of moduleTasks) {
-        const content = await this.readFile(task.path);
-        const commandContent = this.createTaskCommand(task, content);
-        const targetPath = path.join(moduleTasksDir, `${task.name}.md`);
-        await this.writeFile(targetPath, commandContent);
-        taskCount++;
-      }
-
-      // Copy module-specific tools
-      const moduleTools = tools.filter((t) => t.module === module);
-      for (const tool of moduleTools) {
-        const content = await this.readFile(tool.path);
-        const commandContent = this.createToolCommand(tool, content);
-        const targetPath = path.join(moduleToolsDir, `${tool.name}.md`);
-        await this.writeFile(targetPath, commandContent);
-        toolCount++;
-      }
-
-      // Copy module-specific workflow commands (already generated)
-      const moduleWorkflows = workflows.filter((w) => w.module === module);
-      for (const workflow of moduleWorkflows) {
-        // Use the pre-generated workflow command content
-        const targetPath = path.join(moduleWorkflowsDir, `${workflow.name}.md`);
-        await this.writeFile(targetPath, workflow.content);
-        workflowCount++;
-      }
+    if (!(await fs.pathExists(commandsDir))) {
+      return false;
     }
 
+    const entries = await fs.readdir(commandsDir);
+    return entries.some((entry) => entry.startsWith('bmad-'));
+  }
+
+  /**
+   * Collect all artifacts for Crush export
+   */
+  async collectCrushArtifacts(projectDir, bmadDir, options = {}) {
+    const selectedModules = options.selectedModules || [];
+    const artifacts = [];
+
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
+
+    // Process agent launchers
+    for (const agentArtifact of agentArtifacts) {
+      artifacts.push({
+        type: 'agent',
+        module: agentArtifact.module,
+        sourcePath: agentArtifact.sourcePath,
+        relativePath: agentArtifact.relativePath,
+        content: agentArtifact.content,
+      });
+    }
+
+    // Get tasks
+    const tasks = await getTasksFromBmad(bmadDir, selectedModules);
+    for (const task of tasks) {
+      const rawContent = await this.readFile(task.path);
+      const content = this.createTaskCommand(task, rawContent);
+
+      artifacts.push({
+        type: 'task',
+        module: task.module,
+        sourcePath: task.path,
+        relativePath: path.join(task.module, 'tasks', `${task.name}.md`),
+        content,
+      });
+    }
+
+    // Get tools
+    const tools = await getToolsFromBmad(bmadDir, selectedModules);
+    for (const tool of tools) {
+      const rawContent = await this.readFile(tool.path);
+      const content = this.createToolCommand(tool, rawContent);
+
+      artifacts.push({
+        type: 'tool',
+        module: tool.module,
+        sourcePath: tool.path,
+        relativePath: path.join(tool.module, 'tools', `${tool.name}.md`),
+        content,
+      });
+    }
+
+    // Get workflows
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+
+    // Add workflow artifacts
+    artifacts.push(...workflowArtifacts);
+
     return {
-      agents: agentCount,
-      tasks: taskCount,
-      tools: toolCount,
-      workflows: workflowCount,
+      artifacts,
+      counts: {
+        agents: agentArtifacts.length,
+        tasks: tasks.length,
+        tools: tools.length,
+        workflows: workflowCounts.commands,
+        workflowLaunchers: workflowCounts.launchers,
+      },
     };
   }
 
@@ -153,7 +162,7 @@ class CrushSetup extends BaseIdeSetup {
     const nameMatch = content.match(/name="([^"]+)"/);
     const taskName = nameMatch ? nameMatch[1] : this.formatTitle(task.name);
 
-    let commandContent = `# /task-${task.name} Command
+    return `# /task-${task.name} Command
 
 When this command is used, execute the following task:
 
@@ -169,8 +178,6 @@ This command executes the ${taskName} task from the BMAD ${task.module.toUpperCa
 
 Part of the BMAD ${task.module.toUpperCase()} module.
 `;
-
-    return commandContent;
   }
 
   /**
@@ -181,7 +188,7 @@ Part of the BMAD ${task.module.toUpperCase()} module.
     const nameMatch = content.match(/name="([^"]+)"/);
     const toolName = nameMatch ? nameMatch[1] : this.formatTitle(tool.name);
 
-    let commandContent = `# /tool-${tool.name} Command
+    return `# /tool-${tool.name} Command
 
 When this command is used, execute the following tool:
 
@@ -197,56 +204,18 @@ This command executes the ${toolName} tool from the BMAD ${tool.module.toUpperCa
 
 Part of the BMAD ${tool.module.toUpperCase()} module.
 `;
-
-    return commandContent;
   }
 
-  /**
-   * Create workflow command content
-   */
-  createWorkflowCommand(workflow, content) {
-    const workflowName = workflow.name ? this.formatTitle(workflow.name) : 'Workflow';
-
-    let commandContent = `# /${workflow.name} Command
-
-When this command is used, execute the following workflow:
-
-## ${workflowName} Workflow
-
-${content}
-
-## Command Usage
-
-This command executes the ${workflowName} workflow from the BMAD ${workflow.module.toUpperCase()} module.
-
-## Module
-
-Part of the BMAD ${workflow.module.toUpperCase()} module.
-`;
-
-    return commandContent;
-  }
-
-  /**
-   * Format name as title
-   */
-  formatTitle(name) {
-    return name
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
+  // Uses inherited flattenFilename(), writeFlattenedArtifacts(), and clearBmadPrefixedFiles() from BaseIdeSetup
 
   /**
    * Cleanup Crush configuration
    */
   async cleanup(projectDir) {
-    const fs = require('fs-extra');
-    const bmadCommandsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad');
-
-    if (await fs.pathExists(bmadCommandsDir)) {
-      await fs.remove(bmadCommandsDir);
-      console.log(chalk.dim(`Removed BMAD commands from Crush`));
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
+    const removedCount = await this.clearBmadPrefixedFiles(commandsDir);
+    if (removedCount > 0) {
+      console.log(chalk.dim(`  Removed ${removedCount} old BMAD items from ${this.name}`));
     }
   }
 
@@ -259,11 +228,13 @@ Part of the BMAD ${workflow.module.toUpperCase()} module.
    * @returns {Object} Installation result
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const crushDir = path.join(projectDir, this.configDir);
-    const bmadCommandsDir = path.join(crushDir, this.commandsDir, 'bmad');
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
-    // Create .crush/commands/bmad directory if it doesn't exist
-    await fs.ensureDir(bmadCommandsDir);
+    if (!(await this.exists(path.join(projectDir, this.configDir)))) {
+      return null; // IDE not configured for this project
+    }
+
+    await this.ensureDir(commandsDir);
 
     // Create custom agent launcher
     const launcherContent = `# ${agentName} Custom Agent
@@ -282,8 +253,8 @@ The agent will follow the persona and instructions from the main agent file.
 
 *Generated by BMAD Method*`;
 
-    const fileName = `custom-${agentName.toLowerCase()}.md`;
-    const launcherPath = path.join(bmadCommandsDir, fileName);
+    const fileName = `bmad-custom-agents-${agentName.toLowerCase()}.md`;
+    const launcherPath = path.join(commandsDir, fileName);
 
     // Write the launcher file
     await fs.writeFile(launcherPath, launcherContent, 'utf8');
@@ -291,7 +262,7 @@ The agent will follow the persona and instructions from the main agent file.
     return {
       ide: 'crush',
       path: path.relative(projectDir, launcherPath),
-      command: agentName,
+      command: `bmad-custom-agents-${agentName}`,
       type: 'custom-agent-launcher',
     };
   }
