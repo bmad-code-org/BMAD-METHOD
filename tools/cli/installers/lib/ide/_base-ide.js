@@ -630,6 +630,58 @@ class BaseIdeSetup {
   }
 
   /**
+   * Clear old BMAD files from a directory (prefix-based cleanup)
+   * Removes files and directories starting with 'bmad-' or named 'bmad'
+   * Used by IDEs with flat slash command structure (Antigravity, Codex)
+   * @param {string} dir - Directory to clean
+   * @returns {number} Number of items removed
+   */
+  async clearBmadPrefixedFiles(dir) {
+    if (!(await fs.pathExists(dir))) {
+      return 0;
+    }
+
+    const entries = await fs.readdir(dir);
+    let removedCount = 0;
+
+    for (const entry of entries) {
+      if (!entry.startsWith('bmad-') && entry !== 'bmad') {
+        continue;
+      }
+
+      const entryPath = path.join(dir, entry);
+      const stat = await fs.stat(entryPath);
+      if (stat.isFile() || stat.isDirectory()) {
+        await fs.remove(entryPath);
+        removedCount++;
+      }
+    }
+
+    return removedCount;
+  }
+
+  /**
+   * Write artifacts with flattened naming to a directory
+   * Used by IDEs with flat slash command structure (Antigravity, Codex)
+   * @param {Array} artifacts - Array of artifact objects with relativePath and content
+   * @param {string} destDir - Destination directory
+   * @returns {number} Number of files written
+   */
+  async writeFlattenedArtifacts(artifacts, destDir) {
+    await this.ensureDir(destDir);
+    let written = 0;
+
+    for (const artifact of artifacts) {
+      const flattenedName = this.flattenFilename(artifact.relativePath);
+      const targetPath = path.join(destDir, flattenedName);
+      await this.writeFile(targetPath, artifact.content);
+      written++;
+    }
+
+    return written;
+  }
+
+  /**
    * Create agent configuration file
    * @param {string} bmadDir - BMAD installation directory
    * @param {Object} agent - Agent information
