@@ -53,3 +53,6 @@ project_knowledge: # Artifacts from research, document-project output, other lon
 #     - "Are you using playwright-utils (@seontechnologies/playwright-utils) in your project?\nYou must install packages yourself, or use test architect's *framework command."
 #   default: false
 #   result: "{value}"
+
+# NOTE: Design System Generator resources (UI/UX Pro Max KB) are automatically
+# installed to _bmad/resources/ by the BMM module installer

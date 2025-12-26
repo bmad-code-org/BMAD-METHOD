@@ -29,6 +29,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `project_name`, `output_folder`, `user_name`
 - `communication_language`, `document_output_language`, `user_skill_level`
+- `kb_path`
 - `date` as system-generated current datetime
 
 ### Paths

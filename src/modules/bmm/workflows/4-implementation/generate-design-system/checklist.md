@@ -13,6 +13,8 @@
 ## Output Validation
 - [ ] design-tokens.json syntax is valid
 - [ ] theme.css syntax is valid
-- [ ] globals.css syntax is valid
+- [ ] globals.css or globals.scss syntax is valid (based on strategy)
+- [ ] Tailwind strategy: tailwind.config.ts is generated and valid (if applicable)
+- [ ] SCSS strategy: _tokens.scss is generated (if applicable)
 - [ ] component-specs.json syntax is valid
 - [ ] All CSS values reference design tokens

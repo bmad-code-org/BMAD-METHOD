@@ -35,6 +35,10 @@ agent:
     - "NEVER lie about tests being written or passing - tests must actually exist and pass 100%"
 
   menu:
+    - trigger: generate-design-system
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/generate-design-system/workflow.yaml"
+      description: "Generate DEV-Ready design system files from UX specification"
+
     - trigger: dev-story
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml"
       description: "Execute Dev Story workflow (full BMM path with sprint-status)"

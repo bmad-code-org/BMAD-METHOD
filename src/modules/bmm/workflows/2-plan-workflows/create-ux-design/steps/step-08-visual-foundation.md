@@ -75,10 +75,10 @@ Before executing searches, extract the following from the current document's fro
 Execute the following command using extracted context:
 
 ```bash
-python {project-root}/../.shared/ui-ux-pro-max/scripts/search.py "{industry} {style_keywords}" --domain color --json
+python {kb_path}/scripts/search.py "{industry} {style_keywords}" --domain color --json
 ```
 
-> **Note:** Path assumes standard BMAD BMM structure. If `.shared` is elsewhere, please update path in search command.
+> **Note:** Path uses `kb_path` from config. Update `kb_path` if the KB location changes.
 
 **Parse JSON Output Fields:**
 - `Primary (Hex)` - Primary brand color
@@ -112,7 +112,7 @@ Based on your project's industry ({industry}) and style ({style_keywords}), here
 After color recommendations, execute typography search:
 
 ```bash
-python {project-root}/../.shared/ui-ux-pro-max/scripts/search.py "{style_keywords}" --domain typography --json
+python {kb_path}/scripts/search.py "{style_keywords}" --domain typography --json
 ```
 
 **Parse JSON Output Fields:**

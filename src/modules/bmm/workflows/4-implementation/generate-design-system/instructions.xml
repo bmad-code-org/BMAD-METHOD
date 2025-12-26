@@ -200,16 +200,23 @@
     <!-- ===== Architecture tech stack parsing ===== -->
     <check if="architecture exists">
       <action>Extract Tech Stack from {architecture}:</action>
-      <action>  1. CSS Framework: search for "Tailwind", "CSS Modules", "Vanilla CSS", "SCSS", "styled-components"</action>
-      <action>  2. Component Library: search for "shadcn/ui", "Chakra", "MUI", "Radix", "Headless UI"</action>
-      <action>  3. Target Platform: search for "React", "Vue", "Next.js", "React Native", "Electron"</action>
-      <action>  4. Store tech_stack object with source: "architecture"</action>
+      <action>  1. UI Framework: search for "React", "Vue", "Next.js", "Nuxt", "Svelte", "Angular"</action>
+      <action>  2. CSS Framework: search for "Tailwind", "Bootstrap", "Bulma", "Foundation"</action>
+      <action>  3. Preprocessor: search for "SCSS", "Sass", "Less", "Stylus"</action>
+      <action>  4. Component Library: search for "shadcn/ui", "Chakra", "MUI", "Radix", "Headless UI"</action>
+      <action>  5. Store tech_stack object with keys: uiFramework, cssFramework, preprocessor, componentLib, source: "architecture"</action>
+      <action>  6. Normalize tech_stack values:</action>
+      <action>     - Lowercase uiFramework, cssFramework, preprocessor, componentLib</action>
+      <action>     - If any value missing/empty, set to "none"</action>
+      <output>Normalized tech_stack: {tech_stack}</output>
     </check>
     <check if="architecture not found">
       <output>Architecture document not found; using defaults:</output>
+      <output>  - UI Framework: React</output>
       <output>  - CSS Framework: Tailwind CSS</output>
+      <output>  - Preprocessor: none</output>
       <output>  - Component Library: shadcn/ui</output>
-      <action>Set tech_stack = { framework: "tailwind", componentLib: "react", source: "default" }</action>
+      <action>Set tech_stack = { uiFramework: "react", cssFramework: "tailwind", preprocessor: "none", componentLib: "shadcn", source: "default" }</action>
     </check>
 
     <!-- ===== AC #4: Output extracted_tokens structure ===== -->
@@ -811,14 +818,24 @@ KB Tracking State:
     </check>
   </step>
 
-  <step n="6" goal="Generate Output Files">
-    <!-- ===== 6.1 design-tokens.json (AC #1) ===== -->
+  <step n="6" goal="Generate Output Files (Universal Adapter Strategy)">
+    <!--
+        Universal Adapter Strategy:
+        This step dynamically adapts output based on tech_stack detected in Step 2.
+        - 6.1 & 6.2: Framework-agnostic SSOT (always generated)
+        - 6.3: Framework Configuration Adapter (Tailwind / SCSS / Generic based on tech_stack)
+        - 6.4: Dynamic Global Styles (Tailwind directives / SCSS reset / vanilla CSS reset)
+        - 6.5: Component Specs (framework-aware)
+    -->
+
+    <!-- ===== 6.1 design-tokens.json (SSOT - Framework Agnostic) ===== -->
     <action>Build design_tokens_json from extracted_tokens using W3C Design Token format</action>
     <action>Ensure "$schema" is set to "https://design-tokens.github.io/community-group/format/"</action>
     <action>Preserve source field on every token (ux-spec/architecture/kb-suggestion/user-input/default)</action>
     <action>Write file: {output_folder}/design-tokens.json</action>
+    <output>Created design-tokens.json (SSOT)</output>
 
-    <!-- ===== 6.2 theme.css (AC #2) ===== -->
+    <!-- ===== 6.2 theme.css (SSOT - Framework Agnostic CSS Variables) ===== -->
     <action>Generate theme.css from design_tokens_json</action>
     <action>Map tokens to CSS Custom Properties using naming rules:</action>
     <action>  - colors: --color-{role}-{scale}</action>
@@ -827,19 +844,317 @@ KB Tracking State:
     <action>  - borderRadius: --radius-{key}</action>
     <action>  - shadow: --shadow-{key}</action>
     <action>  - animation: --duration-*, --easing-*</action>
-    <action>  - breakpoints: --breakpoint-*</action>
+    <action>  - breakpoints: --breakpoint-{key}</action>
     <action>Group variables by section with readable comments</action>
     <action>Add [data-theme="dark"] overrides for background/surface/text/text-muted if available</action>
     <action>Write file: {output_folder}/theme.css</action>
+    <output>Created theme.css (CSS Custom Properties)</output>
 
-    <!-- ===== 6.3 globals.css (AC #3) ===== -->
-    <action>Generate globals.css with Modern Reset, Base Typography, and Layout Utilities</action>
+    <!-- ===== 6.3 Framework Configuration Adapter ===== -->
+    <action>DETECT framework strategy from tech_stack (mutually exclusive):</action>
+    <action>  If tech_stack.cssFramework includes "tailwind": set strategy = "tailwind"</action>
+    <action>  Else if tech_stack.preprocessor includes "scss" OR "sass": set strategy = "scss"</action>
+    <action>  Else: set strategy = "generic"</action>
+    <action>  Set is_tailwind = (strategy === "tailwind")</action>
+    <action>  Set is_scss = (strategy === "scss")</action>
+    <action>  Set is_vanilla = (strategy === "generic")</action>
+    <output>Framework Detection: Strategy={strategy}, Tailwind={is_tailwind}, SCSS={is_scss}, Vanilla={is_vanilla}</output>
+
+    <!-- Strategy A: Tailwind Configuration -->
+    <check if="is_tailwind === true">
+      <output>Generating Tailwind configuration...</output>
+      <action>Generate tailwind.config.ts with theme.extend mapping:</action>
+      <action>  1. Import type { Config } from 'tailwindcss'</action>
+      <action>  2. Map colors using hsl(var(--color-{role}-{scale})) syntax for opacity modifier support:</action>
+      <output>
+```typescript
+// tailwind.config.ts - Auto-generated by Design System Generator
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: 'hsl(var(--color-primary-50))',
+          100: 'hsl(var(--color-primary-100))',
+          500: 'hsl(var(--color-primary-500))',
+          600: 'hsl(var(--color-primary-600))',
+          700: 'hsl(var(--color-primary-700))',
+          900: 'hsl(var(--color-primary-900))',
+          DEFAULT: 'hsl(var(--color-primary-500))',
+        },
+        // ... map all color roles from design-tokens.json
+      },
+      fontFamily: {
+        heading: 'var(--font-family-heading)',
+        body: 'var(--font-family-body)',
+        mono: 'var(--font-family-mono)',
+      },
+      fontSize: {
+        // Map from --font-size-* variables
+      },
+      spacing: {
+        // Map from --spacing-* variables
+      },
+      borderRadius: {
+        // Map from --radius-* variables
+      },
+      boxShadow: {
+        // Map from --shadow-* variables
+      },
+      transitionDuration: {
+        fast: 'var(--duration-fast)',
+        normal: 'var(--duration-normal)',
+        slow: 'var(--duration-slow)',
+      },
+      transitionTimingFunction: {
+        default: 'var(--easing-default)',
+      },
+    },
+  },
+  plugins: [],
+}
+
+export default config
+```
+      </output>
+      <action>  CRITICAL: Use hsl(var(--color-name)) syntax to enable Tailwind opacity modifiers like bg-primary/50</action>
+      <action>  For this to work, theme.css must store colors as HSL values without the hsl() wrapper:</action>
+      <action>    --color-primary-500: 199 89% 48%; /* HSL values only, no hsl() */</action>
+      <action>  If theme.css uses hex values, convert to HSL space-separated format in tailwind.config.ts generation</action>
+      <action>Write file: {output_folder}/tailwind.config.ts</action>
+      <output>Created tailwind.config.ts (Tailwind theme extension)</output>
+    </check>
+
+    <!-- Strategy B: SCSS/Sass Configuration -->
+    <check if="is_scss === true">
+      <output>Generating SCSS tokens...</output>
+      <action>Generate _tokens.scss with SCSS variable mappings:</action>
+      <output>
+```scss
+// _tokens.scss - Auto-generated by Design System Generator
+// Import this file in your main SCSS file: @use 'tokens' as *;
+
+// ===== Colors =====
+$color-primary-50: var(--color-primary-50);
+$color-primary-500: var(--color-primary-500);
+// ... map all color scales
+
+// ===== Typography =====
+$font-family-heading: var(--font-family-heading);
+$font-family-body: var(--font-family-body);
+$font-family-mono: var(--font-family-mono);
+
+// ===== Spacing =====
+$spacing-0: var(--spacing-0);
+$spacing-1: var(--spacing-1);
+// ... map all spacing values
+
+// ===== Border Radius =====
+$radius-sm: var(--radius-sm);
+$radius-md: var(--radius-md);
+$radius-lg: var(--radius-lg);
+
+// ===== Shadows =====
+$shadow-sm: var(--shadow-sm);
+$shadow-md: var(--shadow-md);
+$shadow-lg: var(--shadow-lg);
+
+// ===== Animation =====
+$duration-fast: var(--duration-fast);
+$duration-normal: var(--duration-normal);
+$easing-default: var(--easing-default);
+
+// ===== Mixins =====
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == sm { @media (min-width: 640px) { @content; } }
+  @else if $breakpoint == md { @media (min-width: 768px) { @content; } }
+  @else if $breakpoint == lg { @media (min-width: 1024px) { @content; } }
+  @else if $breakpoint == xl { @media (min-width: 1280px) { @content; } }
+}
+```
+      </output>
+      <action>Write file: {output_folder}/_tokens.scss</action>
+      <output>Created _tokens.scss (SCSS variables and mixins)</output>
+    </check>
+
+    <!-- Strategy C: Vanilla CSS (no additional framework config needed) -->
+    <check if="is_vanilla === true">
+      <output>Vanilla CSS detected - no framework configuration file needed</output>
+      <output>theme.css provides all CSS Custom Properties for direct use</output>
+    </check>
+
+    <!-- ===== 6.4 Dynamic Global Styles ===== -->
+    <action>Generate global styles with framework-appropriate content:</action>
+
+    <check if="is_tailwind === true">
+      <output>Generating Tailwind-compatible globals.css...</output>
+      <action>Generate globals.css with Tailwind directives:</action>
+      <output>
+```css
+/* globals.css - Tailwind Integration */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import theme variables */
+@import './theme.css';
+
+/* ===== Base Layer Customizations ===== */
+@layer base {
+  html {
+    font-family: var(--font-family-body);
+    line-height: var(--line-height-normal);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary-500);
+    outline-offset: 2px;
+  }
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+      </output>
+    </check>
+
+    <check if="is_scss === true">
+      <output>Generating SCSS globals.scss with reset...</output>
+      <action>Generate globals.scss with Modern CSS Reset and base typography:</action>
+      <output>
+```scss
+/* globals.scss - SCSS with Modern Reset */
+@import './theme.css';
+
+/* ===== Modern CSS Reset ===== */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+html {
+  font-family: var(--font-family-body);
+  line-height: var(--line-height-normal);
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select { font: inherit; }
+p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+
+/* ===== Typography ===== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== Focus Styles (Accessibility) ===== */
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+      </output>
+    </check>
+
+    <check if="is_vanilla === true">
+      <output>Generating vanilla CSS globals.css with reset...</output>
+      <action>Generate globals.css with Modern CSS Reset and base typography:</action>
+      <output>
+```css
+/* globals.css - Vanilla CSS with Modern Reset */
+@import './theme.css';
+
+/* ===== Modern CSS Reset ===== */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; padding: 0; }
+
+html {
+  font-family: var(--font-family-body);
+  line-height: var(--line-height-normal);
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select { font: inherit; }
+p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+
+/* ===== Typography ===== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ===== Focus Styles (Accessibility) ===== */
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+      </output>
+    </check>
+
     <action>Ensure all values reference CSS variables from theme.css (SSOT)</action>
-    <action>Include :focus-visible and prefers-reduced-motion rules</action>
-    <action>Write file: {output_folder}/globals.css</action>
+    <check if="is_scss === true">
+      <action>Write file: {output_folder}/globals.scss</action>
+      <output>Created globals.scss (Global Styles)</output>
+    </check>
+    <check if="is_scss === false">
+      <action>Write file: {output_folder}/globals.css</action>
+      <output>Created globals.css (Global Styles)</output>
+    </check>
 
-    <!-- ===== 6.4 component-specs.json (AC #4) ===== -->
-    <action>Determine componentLibrary from tech_stack.componentLib (default: "react")</action>
+    <!-- ===== 6.5 component-specs.json ===== -->
+    <action>Determine componentLibrary from tech_stack.componentLib (default: "shadcn")</action>
     <action>Determine effectsLibrary (default: "framer-motion", or "none" if not used)</action>
     <action>Include "$schema" only if component-specs.schema.json is available (optional)</action>
     <action>Build component-specs.json with meta and component definitions:</action>
@@ -847,6 +1162,14 @@ KB Tracking State:
     <action>  - Card: base + variants (elevated/outlined)</action>
     <action>  - Input: base + states (focus/error/disabled)</action>
     <action>Write file: {output_folder}/component-specs.json</action>
+    <output>Created component-specs.json (Component Definitions)</output>
+
+    <!-- ===== 6.6 Generation Summary ===== -->
+    <output>
+=== Step 6 Generation Summary ===
+Framework Strategy: {strategy}
+Generated Files: {strategy === 'tailwind' ? 'design-tokens.json, theme.css, tailwind.config.ts, globals.css, component-specs.json' : (strategy === 'scss' ? 'design-tokens.json, theme.css, _tokens.scss, globals.scss, component-specs.json' : 'design-tokens.json, theme.css, globals.css, component-specs.json')}
+    </output>
   </step>
 
   <step n="7" goal="Validate Outputs">
@@ -949,42 +1272,43 @@ KB Tracking State:
       <output>✅ theme.css: CSS syntax valid</output>
     </check>
 
-    <!-- globals.css validation (M-02 fix: detailed error reporting with line numbers) -->
-    <action>Validate globals.css CSS syntax with detailed location tracking:</action>
+    <!-- global styles validation (M-02 fix: detailed error reporting with line numbers) -->
+    <action>Validate global styles syntax with detailed location tracking:</action>
     <action>  1. Initialize globals_line_number = 0</action>
-    <action>  2. For each line in globals.css:</action>
+    <action>  2. For each line in {strategy === 'scss' ? 'globals.scss' : 'globals.css'}:</action>
     <action>       globals_line_number++</action>
     <action>       Track bracket_depth: '{' increases, '}' decreases</action>
     <action>  3. Bracket balance check: if final bracket_depth != 0, report unbalanced</action>
-    <action>  4. Property format check: validate each property line matches /^\s*[\w-]+:\s*.+;?\s*$/</action>
-    <action>  5. Comment closure check: verify /* has matching */</action>
-    <check if="globals.css bracket imbalance">
+    <action>  4. Comment closure check: verify /* has matching */</action>
+    <action>  5. If strategy === "scss": skip strict property format checks (allow SCSS variables/nesting)</action>
+    <action>  6. If strategy !== "scss": validate each property line matches /^\s*[\w-]+:\s*.+;?\s*$/</action>
+    <check if="globals file bracket imbalance">
       <action>Add to format_errors:</action>
       <output>
 {
   "type": "SYNTAX",
-  "file": "globals.css",
+  "file": "{strategy === 'scss' ? 'globals.scss' : 'globals.css'}",
   "location": "file-level",
   "error": "Unbalanced brackets: {open_count} opening vs {close_count} closing",
   "suggestion": "Check for missing or extra braces"
 }
       </output>
     </check>
-    <check if="globals.css invalid property format detected">
+    <check if="globals file invalid property format detected">
       <action>Add to format_errors:</action>
       <output>
 {
   "type": "SYNTAX",
-  "file": "globals.css",
+  "file": "{strategy === 'scss' ? 'globals.scss' : 'globals.css'}",
   "location": "line {globals_line_number}",
   "error": "Invalid CSS property format: '{invalid_line}'",
   "suggestion": "Ensure format is 'property: value;'"
 }
       </output>
     </check>
-    <check if="globals.css syntax valid">
+    <check if="globals file syntax valid">
       <action>Set globals_css_valid = true</action>
-      <output>globals.css: CSS syntax valid</output>
+      <output>{strategy === 'scss' ? 'globals.scss' : 'globals.css'}: CSS syntax valid</output>
     </check>
 
     <!-- ===== 7.3 Completeness Validation (AC #2) ===== -->
@@ -1190,8 +1514,8 @@ Required Token Categories:
       <output>✅ theme.css: Dark theme variant present</output>
     </check>
 
-    <!-- globals.css required content check -->
-    <action>CHECK globals.css contains required content:</action>
+    <!-- global styles required content check -->
+    <action>CHECK global styles file contains required content:</action>
 
     <!-- CSS Reset check -->
     <action>  1. CSS Reset: search for "box-sizing: border-box" and "margin: 0"</action>
@@ -1200,7 +1524,7 @@ Required Token Categories:
       <output>
 {
   "type": "CONTENT_CONSISTENCY",
-  "file": "globals.css",
+  "file": "{strategy === 'scss' ? 'globals.scss' : 'globals.css'}",
   "error": "CSS reset not found",
   "suggestion": "Add modern CSS reset (box-sizing, margin reset)"
 }
@@ -1214,7 +1538,7 @@ Required Token Categories:
       <output>
 {
   "type": "CONTENT_CONSISTENCY",
-  "file": "globals.css",
+  "file": "{strategy === 'scss' ? 'globals.scss' : 'globals.css'}",
   "error": "Focus styles for accessibility not found",
   "suggestion": "Add :focus-visible styles for keyboard navigation accessibility"
 }
@@ -1228,14 +1552,14 @@ Required Token Categories:
       <output>
 {
   "type": "CONTENT_CONSISTENCY",
-  "file": "globals.css",
+  "file": "{strategy === 'scss' ? 'globals.scss' : 'globals.css'}",
   "error": "Reduced motion media query not found",
   "suggestion": "Add @media (prefers-reduced-motion: reduce) for accessibility"
 }
       </output>
     </check>
     <check if="all accessibility styles present">
-      <output>✅ globals.css: CSS reset and accessibility styles present</output>
+      <output>{strategy === 'scss' ? 'globals.scss' : 'globals.css'}: CSS reset and accessibility styles present</output>
     </check>
 
     <!-- component-specs.json coverage check -->
@@ -1337,10 +1661,26 @@ Suggestion: {error.suggestion}
   <step n="8" goal="Final Report">
     <output>??Design System Generation Complete!</output>
     <output>Generated files in: {output_folder}</output>
-    <output>1. design-tokens.json (SSOT)</output>
-    <output>2. theme.css (Variables)</output>
-    <output>3. globals.css (Global Styles)</output>
-    <output>4. component-specs.json (Component Definitions)</output>
+    <check if="strategy === 'tailwind'">
+      <output>1. design-tokens.json (SSOT)</output>
+      <output>2. theme.css (Variables)</output>
+      <output>3. tailwind.config.ts (Tailwind theme extension)</output>
+      <output>4. globals.css (Global Styles)</output>
+      <output>5. component-specs.json (Component Definitions)</output>
+    </check>
+    <check if="strategy === 'scss'">
+      <output>1. design-tokens.json (SSOT)</output>
+      <output>2. theme.css (Variables)</output>
+      <output>3. _tokens.scss (SCSS variables and mixins)</output>
+      <output>4. globals.scss (Global Styles)</output>
+      <output>5. component-specs.json (Component Definitions)</output>
+    </check>
+    <check if="strategy === 'generic'">
+      <output>1. design-tokens.json (SSOT)</output>
+      <output>2. theme.css (Variables)</output>
+      <output>3. globals.css (Global Styles)</output>
+      <output>4. component-specs.json (Component Definitions)</output>
+    </check>
     <action>Report completion</action>
   </step>
 

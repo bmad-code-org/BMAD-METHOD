@@ -69,10 +69,10 @@ Extract the following from frontmatter or previous step context:
 Execute the following command for universal UX guidelines:
 
 ```bash
-python {project-root}/../.shared/ui-ux-pro-max/scripts/search.py "animation accessibility" --domain ux --json
+python {kb_path}/scripts/search.py "animation accessibility" --domain ux --json
 ```
 
-> **Note:** Path assumes standard BMAD BMM structure. If `.shared` is elsewhere, please update path in search command.
+> **Note:** Path uses `kb_path` from config. Update `kb_path` if the KB location changes.
 
 **Parse JSON Output Fields:**
 - `Category` - Pattern category (e.g., "Animation", "Forms", "Navigation")
@@ -135,7 +135,7 @@ Based on universal UX and accessibility guidelines, here are recommendations to 
 After general guidelines, search for product-specific patterns:
 
 ```bash
-python {project-root}/../.shared/ui-ux-pro-max/scripts/search.py "{product_type}" --domain ux --json
+python {kb_path}/scripts/search.py "{product_type}" --domain ux --json
 ```
 
 **Present to User:**

@@ -47,6 +47,15 @@ outputs:
   - theme.css
   - globals.css
   - component-specs.json
+outputs_by_strategy:
+  tailwind:
+    - tailwind.config.ts
+    - globals.css
+  scss:
+    - _tokens.scss
+    - globals.scss
+  generic:
+    - globals.css
 
 standalone: true
 

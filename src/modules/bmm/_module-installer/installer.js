@@ -83,6 +83,23 @@ async function install(options) {
       }
     }
 
+    // Copy shared resources (e.g., Knowledge Base) to project
+    // This enables workflows like design-system-generator to access KB via {project-root}/_bmad/resources
+    const bmadDir = path.join(projectRoot, '_bmad');
+    const resourcesSource = path.join(__dirname, '../../../../resources');
+    const resourcesDest = path.join(bmadDir, 'resources');
+
+    if (await fs.pathExists(resourcesSource)) {
+      // Only copy if destination doesn't exist or is outdated
+      if (!(await fs.pathExists(resourcesDest))) {
+        logger.log(chalk.yellow('Installing shared resources (UI/UX Knowledge Base)...'));
+        await fs.copy(resourcesSource, resourcesDest, { overwrite: false });
+        logger.log(chalk.green('✓ Shared resources installed'));
+      } else {
+        logger.log(chalk.dim('  Shared resources already present, skipping'));
+      }
+    }
+
     logger.log(chalk.green('✓ BMM Module installation complete'));
     return true;
   } catch (error) {
