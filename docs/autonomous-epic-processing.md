@@ -154,16 +154,37 @@ Ready to merge!
 
 ## Implementation Status
 
-- 🚧 **Planned** for BMAD v6.1.0
-- Requires: Super-dev mode (v6.0.0-alpha.23)
-- Depends on: Robust error handling, progress tracking
+- ✅ **IMPLEMENTED** in BMAD v6.0.0-alpha.22+
+- Available as: `/autonomous-epic` workflow
+- Requires: Gap analysis and super-dev-story workflows
+- Status: Ready for testing and feedback
+
+## Usage
+
+```bash
+# Load any BMAD agent (PM, Dev, SM)
+/autonomous-epic
+
+# Or specify epic number directly:
+/autonomous-epic 2
+```
+
+See [autonomous-epic workflow README](../src/modules/bmm/workflows/4-implementation/autonomous-epic/README.md) for complete documentation.
+
+## Real-World Usage
+
+**This is production-ready but experimental.** We recommend:
+1. Test with small epics first (3-5 stories)
+2. Monitor token usage and quality
+3. Review completion reports thoroughly
+4. Provide feedback to improve the feature
 
 ## Contributing
 
-Want to help build autonomous epic processing?
+Found issues or have improvements?
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md)
 
 ---
 
-**The future: Tell BMAD what you want built, come back when it's done** ✨
+**The future is NOW: Tell BMAD "Do Epic 4" and come back when it's done** ✨
