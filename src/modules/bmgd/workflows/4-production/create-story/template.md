@@ -16,10 +16,18 @@ so that {{benefit}}.
 
 ## Tasks / Subtasks
 
+⚠️ **DRAFT TASKS** - Generated from requirements analysis. Will be validated and refined against actual codebase when dev-story runs.
+
 - [ ] Task 1 (AC: #)
   - [ ] Subtask 1.1
 - [ ] Task 2 (AC: #)
   - [ ] Subtask 2.1
+
+## Gap Analysis
+
+_This section will be populated by dev-story when gap analysis runs._
+
+---
 
 ## Dev Notes
 
