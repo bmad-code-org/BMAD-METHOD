@@ -250,14 +250,36 @@
           Time: {{elapsed_time}}
         </output>
 
-        <!-- CREATE GIT COMMIT -->
-        <check if="{{create_commits}} is true">
-          <action>Create git commit for this story:
-            Message: "feat(epic-{{epic_num}}): complete story {{current_story.key}} - {{story_title}}"
-            Include: All files changed during story development
-          </action>
-          <output>📝 Committed: {{commit_hash}}</output>
-        </check>
+        <!-- RUN PUSH-ALL WORKFLOW -->
+        <output>📝 Running push-all to commit and push story changes...</output>
+
+        <try>
+          <action>Run push-all workflow with auto-accept mode:</action>
+          <action>- Safety checks run automatically</action>
+          <action>- Generate commit message based on story</action>
+          <action>- Commit with message: "feat(epic-{{epic_num}}): complete story {{current_story.key}} - {{story_title}}"</action>
+          <action>- Push to remote automatically</action>
+
+          <output>✅ Pushed to remote: {{commit_hash}}</output>
+        </try>
+
+        <catch>
+          <output>⚠️ Push-all failed for story {{current_story.key}}
+
+            Error: {{push_error}}
+
+            Story is complete but not pushed to remote yet.
+            You can push manually later.
+          </output>
+
+          <check if="{{halt_on_error}} is true">
+            <output>🛑 Halting due to push error (halt_on_error=true)</output>
+            <action>Update progress file with failure</action>
+            <action>HALT</action>
+          </check>
+
+          <action>Note: Story complete locally, push failed - continuing...</action>
+        </catch>
 
         <action>Increment {{success_count}}</action>
         <action>Add to progress file completed_stories list</action>
