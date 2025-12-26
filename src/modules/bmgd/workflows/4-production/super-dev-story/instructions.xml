@@ -4,43 +4,60 @@
   <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
   <critical>Generate all documents in {document_output_language}</critical>
   <critical>🚀 SUPER-DEV MODE: Enhanced quality workflow with post-implementation validation and automated code review</critical>
-  <critical>This workflow ensures stories are TRULY complete through multi-stage validation before marking done</critical>
-  <critical>⚙️ EXECUTION FLOW: First execute ALL dev-story steps (1-8), then continue with super-dev enhancements (9.5-9.6)</critical>
+  <critical>This workflow orchestrates existing workflows with additional validation steps</critical>
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <!-- STEPS 1-8: STANDARD DEV-STORY WORKFLOW                          -->
+  <!-- STEP 1: INVOKE STANDARD DEV-STORY WORKFLOW                      -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
 
-  <critical>🎯 EXECUTE DEV-STORY STEPS 1-8 FIRST</critical>
-  <critical>Follow all instructions in: {project-root}/_bmad/bmgd/workflows/4-production/dev-story/instructions.xml</critical>
-  <critical>Complete Steps 1 through 8 exactly as specified in dev-story workflow</critical>
-  <critical>After Step 8 completes (all tasks checked), return here and continue with Step 9.5 below</critical>
+  <step n="1" goal="Execute standard dev-story workflow">
+    <critical>🎯 RUN DEV-STORY - Complete all standard development steps</critical>
+    <note>This includes: story loading, pre-dev gap analysis, development, testing, and task completion</note>
 
-  <note>⚙️ Super-dev-story includes ALL standard dev-story steps (1-8):
+    <output>🚀 **Super-Dev-Story: Enhanced Quality Workflow**
 
-    **Standard Development Flow:**
-    - Step 1: Find and load story (sprint-status or user-provided path)
-    - Step 1.5: ✅ PRE-DEV GAP ANALYSIS - Validate tasks against codebase
-    - Step 2: Load project context and story information
-    - Step 3: Detect review continuation (if resuming after code-review)
-    - Step 4: Mark story in-progress in sprint-status
-    - Step 5: Implement task following red-green-refactor cycle (TDD)
-    - Step 6: Author comprehensive tests (unit, integration, e2e)
-    - Step 7: Run validations and tests (regression suite)
-    - Step 8: Validate and mark task complete (strict gates)
+      Running standard dev-story workflow (Steps 1-8)...
 
-    After completing Steps 1-8, super-dev mode adds ADDITIONAL quality validation below.
+      This includes:
+      ✅ Story loading and validation
+      ✅ Pre-dev gap analysis
+      ✅ TDD implementation cycle
+      ✅ Comprehensive testing
+      ✅ Task completion validation
 
-    **For complete details of Steps 1-8, see:** {project-root}/_bmad/bmgd/workflows/4-production/dev-story/instructions.xml
-  </note>
+      After dev-story completes, super-dev will add:
+      ✅ Post-dev gap analysis
+      ✅ Automated code review
+      ✅ Auto push-all
+    </output>
+
+    <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml">
+      <input name="story_file" value="{{story_file}}" />
+      <note>Pass through any user-provided story file path</note>
+    </invoke-workflow>
+
+    <check if="dev-story completed successfully">
+      <output>✅ Dev-story complete - all tasks implemented and tested
+
+        Proceeding to super-dev enhancements...
+      </output>
+    </check>
+
+    <check if="dev-story failed or halted">
+      <output>❌ Dev-story did not complete successfully
+
+        Cannot proceed with super-dev enhancements.
+        Fix issues and retry.
+      </output>
+      <action>HALT - dev-story must complete first</action>
+    </check>
+  </step>
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <!-- SUPER-DEV ENHANCEMENTS: POST-IMPLEMENTATION VALIDATION          -->
+  <!-- STEP 2: POST-DEV GAP ANALYSIS                                   -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
 
-  <!-- SUPER-DEV ENHANCEMENTS START HERE -->
-
-  <step n="9.5" goal="Post-development gap analysis">
+  <step n="2" goal="Post-development gap analysis">
     <critical>🔍 POST-DEV VALIDATION - Verify all work actually completed!</critical>
     <note>This catches incomplete implementations that were prematurely marked done</note>
 
@@ -51,8 +68,8 @@
     </output>
 
     <!-- Re-scan codebase with fresh eyes -->
-    <action>Re-read story requirements and acceptance criteria</action>
-    <action>Extract all tasks and subtasks that are marked [x] complete</action>
+    <action>Re-read story file to get requirements and tasks</action>
+    <action>Extract all tasks marked [x] complete</action>
     <action>For each completed task, identify what should exist in codebase</action>
 
     <!-- SCAN PHASE -->
@@ -77,52 +94,29 @@
       - Note partial implementations marked as complete
     </action>
 
-    <action>⚠️ Quality Issues:
-      - Implementations that exist but don't meet requirements
-      - Tests that exist but have poor coverage
-      - Code that works but violates architecture patterns
-    </action>
-
     <!-- DECISION PHASE -->
-    <check if="false positives found OR quality issues found">
+    <check if="false positives found">
       <output>
         ⚠️ **Post-Dev Gaps Detected!**
 
-        **False Positives (marked done but not complete):**
+        **Tasks marked complete but implementation incomplete:**
         {{list_false_positives_with_details}}
-
-        **Quality Issues:**
-        {{list_quality_issues_with_details}}
-
-        **Proposed Actions:**
-        {{list_tasks_to_add_for_missing_work}}
-
-        ---
 
         These issues must be addressed before story can be marked complete.
       </output>
 
       <action>Uncheck false positive tasks in story file</action>
-      <action>Add new tasks for missing work to Tasks/Subtasks section</action>
-      <action>Add note to Dev Agent Record: "Post-dev gap analysis found incomplete work - continuing implementation"</action>
+      <action>Add new tasks for missing work</action>
       <action>Update Gap Analysis section with post-dev findings</action>
-      <action>Set {{fix_iteration_count}} = {{fix_iteration_count}} + 1</action>
 
-      <check if="{{fix_iteration_count}} > {{max_fix_iterations}}">
-        <output>🛑 **Maximum Fix Iterations Reached**
+      <output>🔄 Re-invoking dev-story to complete missing work...</output>
 
-          Attempted {{fix_iteration_count}} fix cycles.
-          Manual intervention required.
+      <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml">
+        <input name="story_file" value="{{story_file}}" />
+        <note>Resume with added tasks for missing work</note>
+      </invoke-workflow>
 
-          Issues remaining:
-          {{list_remaining_issues}}
-        </output>
-        <action>Add to Dev Agent Record: "HALTED - exceeded max fix iterations, manual review needed"</action>
-        <action>HALT - require user intervention</action>
-      </check>
-
-      <output>🔄 Adding missing work to task list and continuing implementation...</output>
-      <goto step="5">Continue implementation with added tasks</goto>
+      <output>✅ Missing work completed. Proceeding to code review...</output>
     </check>
 
     <check if="no gaps found">
@@ -132,13 +126,15 @@
         Proceeding to code review...
       </output>
       <action>Update Gap Analysis section with post-dev verification results</action>
-      <action>Continue to Step 9.6</action>
     </check>
   </step>
 
-  <step n="9.6" goal="Automated code review">
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEP 3: AUTOMATED CODE REVIEW                                   -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <step n="3" goal="Automated code review">
     <critical>👀 AUTO CODE REVIEW - Independent quality validation</critical>
-    <note>Fresh perspective catches issues the dev agent might miss</note>
 
     <output>
       🔍 **Running Automated Code Review**
@@ -146,107 +142,56 @@
       Analyzing implementation for issues...
     </output>
 
-    <!-- Identify files to review -->
-    <action>Extract File List from Dev Agent Record</action>
-    <action>Identify all files created or modified during implementation</action>
+    <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/code-review/workflow.yaml">
+      <input name="story_file" value="{{story_file}}" />
+      <note>Run code review on completed story</note>
+    </invoke-workflow>
 
-    <!-- REVIEW PHASE: Use code-review workflow logic -->
-    <action>Perform comprehensive code review checking:</action>
-    <action>- **Correctness:** Logic errors, edge cases, error handling</action>
-    <action>- **Architecture:** Compliance with patterns and standards</action>
-    <action>- **Security:** Vulnerabilities, input validation, authentication</action>
-    <action>- **Performance:** Inefficiencies, N+1 queries, memory leaks</action>
-    <action>- **Testing:** Test coverage, edge cases, test quality</action>
-    <action>- **Code Quality:** Readability, maintainability, documentation</action>
+    <action>Parse code review results from story file "Code Review" section</action>
+    <action>Extract issues by severity (Critical, High, Medium, Low)</action>
+    <action>Count total issues found</action>
 
-    <!-- CATEGORIZE FINDINGS -->
-    <action>Categorize all findings by severity:</action>
-    <action>- CRITICAL: Security vulnerabilities, data loss, broken functionality</action>
-    <action>- HIGH: Logic errors, missing error handling, test gaps</action>
-    <action>- MEDIUM: Code quality issues, minor bugs, performance concerns</action>
-    <action>- LOW: Style issues, documentation improvements, minor refactoring</action>
+    <check if="critical or high severity issues found">
+      <output>🚨 **Code Review Found Issues Requiring Fixes**
 
-    <!-- DECISION PHASE -->
-    <check if="CRITICAL or HIGH severity issues found">
-      <output>
-        🚨 **Code Review Found Issues Requiring Fixes**
+        Issues found: {{total_issue_count}}
+        - Critical: {{critical_count}}
+        - High: {{high_count}}
+        - Medium: {{medium_count}}
+        - Low: {{low_count}}
 
-        **Critical Issues ({{critical_count}}):**
-        {{list_critical_issues}}
-
-        **High Priority Issues ({{high_count}}):**
-        {{list_high_issues}}
-
-        {{if_medium_or_low_exist}}
-        **Medium/Low Issues ({{med_low_count}}):**
-        {{list_medium_low_issues}}
-        {{endif}}
-
-        ---
-
-        **These issues must be fixed before story completion.**
+        Adding review findings to story tasks and re-running dev-story...
       </output>
 
-      <action>Add "Code Review Findings" section to story file</action>
-      <action>Add review findings as new tasks in Tasks/Subtasks with [AI-Review] prefix</action>
-      <action>Add to Dev Agent Record: "Code review found {{total_issue_count}} issues - continuing with fixes"</action>
-      <action>Set {{fix_iteration_count}} = {{fix_iteration_count}} + 1</action>
+      <action>Add code review findings as tasks in story file</action>
 
-      <check if="{{fix_iteration_count}} > {{max_fix_iterations}}">
-        <output>🛑 **Maximum Fix Iterations Reached**
+      <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml">
+        <input name="story_file" value="{{story_file}}" />
+        <note>Fix code review issues</note>
+      </invoke-workflow>
 
-          Code review found issues on iteration {{fix_iteration_count}}.
-          Manual review recommended.
-
-          Issues found:
-          {{list_all_issues}}
-        </output>
-        <action>Add to Dev Agent Record: "HALTED - code review issues after max iterations, manual review needed"</action>
-        <action>HALT - require user intervention</action>
-      </check>
-
-      <output>🔧 Adding review findings to task list and implementing fixes...</output>
-      <goto step="5">Implement fixes</goto>
+      <output>✅ Code review issues resolved. Proceeding to push...</output>
     </check>
 
-    <check if="only MEDIUM or LOW severity issues found">
-      <output>
-        ℹ️ **Code Review Found Minor Issues**
+    <check if="only medium or low issues found">
+      <output>ℹ️ **Code Review Found Minor Issues**
 
-        **Medium Issues ({{medium_count}}):**
-        {{list_medium_issues}}
-
-        **Low Priority Issues ({{low_count}}):**
-        {{list_low_issues}}
-
-        ---
+        - Medium: {{medium_count}}
+        - Low: {{low_count}}
       </output>
 
-      <ask>Auto-fix these minor issues?
-
-        Options:
-        [Y] Yes - Add to task list and fix now
-        [n] No - Document in story but don't fix (can address later)
-        [s] Skip - Ignore these findings
-      </ask>
+      <ask>Auto-fix these minor issues? [Y/n/skip]:</ask>
 
       <check if="user approves Y">
-        <action>Add review findings as tasks with [AI-Review] prefix</action>
-        <action>Add to Dev Agent Record: "Addressing {{issue_count}} minor code review findings"</action>
-        <output>🔧 Implementing minor fixes...</output>
-        <goto step="5">Implement fixes</goto>
+        <action>Add review findings as tasks</action>
+        <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml">
+          <input name="story_file" value="{{story_file}}" />
+        </invoke-workflow>
       </check>
 
-      <check if="user says n">
-        <action>Add "Code Review Findings" section documenting issues</action>
-        <action>Add to Dev Agent Record: "Code review found {{issue_count}} minor issues - documented for future work"</action>
-        <output>ℹ️ Issues documented in story. Proceeding to completion...</output>
-        <action>Continue to Step 9</action>
-      </check>
-
-      <check if="user says s">
-        <output>⚠️ Skipping minor issues. Proceeding to completion...</output>
-        <action>Continue to Step 9</action>
+      <check if="user says skip">
+        <action>Document issues in story file</action>
+        <output>ℹ️ Minor issues documented. Proceeding to push...</output>
       </check>
     </check>
 
@@ -254,81 +199,55 @@
       <output>✅ **Code Review Passed**
 
         No issues found. Implementation meets quality standards.
+        Proceeding to push...
       </output>
-      <action>Add to Dev Agent Record: "Code review completed - no issues found"</action>
-      <action>Continue to Step 9</action>
     </check>
   </step>
 
-  <step n="9" goal="Story completion and mark for review" tag="sprint-status">
-    <critical>🎯 FINAL VALIDATION - All quality gates must pass!</critical>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEP 4: PUSH ALL CHANGES                                        -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
 
-    <action>Verify ALL tasks and subtasks are marked [x] (re-scan the story document now)</action>
-    <action>Run the full regression suite (do not skip)</action>
-    <action>Confirm File List includes every changed file</action>
-    <action>Execute enhanced definition-of-done validation</action>
+  <step n="4" goal="Commit and push all changes">
+    <critical>📝 PUSH-ALL - Stage, commit, and push with safety validation</critical>
 
-    <!-- Enhanced Definition of Done for Super-Dev -->
-    <action>Validate super-dev quality gates:
-      - ✅ Pre-dev gap analysis completed and approved
-      - ✅ All tasks/subtasks marked complete with [x]
-      - ✅ Implementation satisfies every Acceptance Criterion
-      - ✅ All tests pass (no regressions, new tests successful)
-      - ✅ Post-dev gap analysis passed (no false positives)
-      - ✅ Code review completed (critical/high issues resolved)
-      - ✅ File List includes every new/modified/deleted file
-      - ✅ Dev Agent Record contains implementation notes
-      - ✅ Change Log includes summary of changes
-    </action>
+    <output>📝 **Committing and Pushing Story Changes**
 
-    <action>Update the story Status to: "review"</action>
+      Running push-all workflow with safety checks...
+    </output>
 
-    <!-- Mark story ready for review - sprint status conditional -->
-    <check if="{sprint_status} file exists AND {{current_sprint_status}} != 'no-sprint-tracking'">
-      <action>Load the FULL file: {sprint_status}</action>
-      <action>Find development_status key matching {{story_key}}</action>
-      <action>Verify current status is "in-progress" (expected previous state)</action>
-      <action>Update development_status[{{story_key}}] = "review"</action>
-      <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
-      <output>✅ Story status updated to "review" in sprint-status.yaml</output>
+    <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/push-all/workflow.yaml">
+      <note>Commit and push all story changes</note>
+    </invoke-workflow>
+
+    <check if="push-all succeeded">
+      <output>✅ Changes pushed to remote successfully</output>
     </check>
 
-    <check if="{sprint_status} file does NOT exist OR {{current_sprint_status}} == 'no-sprint-tracking'">
-      <output>ℹ️ Story status updated to "review" in story file (no sprint tracking configured)</output>
-    </check>
+    <check if="push-all failed">
+      <output>⚠️ Push failed but story is complete locally
 
-    <!-- Final validation gates -->
-    <action if="any task is incomplete">HALT - Complete remaining tasks before marking ready for review</action>
-    <action if="regression failures exist">HALT - Fix regression issues before completing</action>
-    <action if="File List is incomplete">HALT - Update File List with all changed files</action>
-    <action if="post-dev gap analysis not completed">HALT - Run post-dev validation before completing</action>
-    <action if="code review not completed">HALT - Run code review before completing</action>
+        You can push manually when ready.
+      </output>
+    </check>
   </step>
 
-  <step n="10" goal="Super-dev completion communication">
-    <action>Prepare comprehensive summary in Dev Agent Record → Completion Notes</action>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEP 5: COMPLETION                                              -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
 
+  <step n="5" goal="Super-dev completion summary">
     <output>🎉 **SUPER-DEV STORY COMPLETE, {user_name}!**
 
-      **Story:** {{story_key}} - {{story_title}}
-      **Status:** review (ready for human review)
-
-      ---
-
       **Quality Gates Passed:**
-      ✅ Pre-dev gap analysis - Tasks validated before work started
+      ✅ Pre-dev gap analysis - Tasks validated before work
       ✅ Development - All tasks completed with TDD
-      ✅ Post-dev gap analysis - Implementation verified complete
-      ✅ Code review - {{total_issues_found}} issues found and resolved
-      ✅ All tests passing - No regressions
-
-      **Implementation Summary:**
-      - Files changed: {{file_count}}
-      - Tests added: {{test_count}}
-      - Issues fixed: {{review_issues_fixed}}
-      - Fix iterations: {{fix_iteration_count}}/{{max_fix_iterations}}
+      ✅ Post-dev gap analysis - Implementation verified
+      ✅ Code review - Quality and security validated
+      ✅ Pushed to remote - Changes backed up
 
       **Story File:** {{story_file}}
+      **Status:** review (ready for human review)
 
       ---
 
@@ -337,7 +256,7 @@
       2. 💻 Implementation completed per requirements
       3. ✅ No false positive completions (all work verified)
       4. 👀 Code quality and security validated
-      5. 🧪 Comprehensive test coverage achieved
+      5. 📝 Changes committed and pushed to remote
 
       **Next Steps:**
       - Review the completed story
@@ -348,343 +267,17 @@
       It should require minimal human review.
     </output>
 
-    <action>Based on {user_skill_level}, ask if user needs any explanations about:
-      - What was implemented and how it works
-      - Why certain technical decisions were made
-      - Gap analysis or code review findings
-      - Any patterns, libraries, or approaches used
-    </action>
+    <action>Based on {user_skill_level}, ask if user needs explanations about implementation, decisions, or findings</action>
 
     <check if="user asks for explanations">
-      <action>Provide clear, contextual explanations tailored to {user_skill_level}</action>
-      <action>Use examples and references to specific code when helpful</action>
+      <action>Provide clear, contextual explanations</action>
     </check>
 
     <output>💡 **Tip:** This story was developed with super-dev-story for enhanced quality.
 
-      For faster development (fewer validations), use standard `dev-story` workflow.
-      For maximum quality and fewer review cycles, continue using `super-dev-story`.
+      For faster development, use standard `dev-story` workflow.
+      For maximum quality, continue using `super-dev-story`.
     </output>
-  </step>
-
-  <step n="11" goal="Commit and push all changes">
-    <critical>📝 PUSH-ALL - Stage, commit, and push all changes with safety validation</critical>
-    <note>⚠️ Use with caution - commits ALL changes in repository</note>
-
-    <output>🔄 **Analyzing Repository Changes**
-
-      Scanning for changes to commit and push...
-    </output>
-
-    <!-- ANALYZE CHANGES PHASE -->
-    <action>Run git commands in parallel:</action>
-    <action>- git status - Show modified/added/deleted/untracked files</action>
-    <action>- git diff --stat - Show change statistics</action>
-    <action>- git log -1 --oneline - Show recent commit for message style</action>
-    <action>- git branch --show-current - Confirm current branch</action>
-
-    <action>Parse git status output to identify:
-      - Modified files
-      - Added files
-      - Deleted files
-      - Untracked files
-      - Total insertion/deletion counts
-    </action>
-
-    <!-- SAFETY CHECKS PHASE -->
-    <critical>🔒 SAFETY VALIDATION - Check for secrets, large files, and unwanted artifacts</critical>
-
-    <action>Scan all changed files for dangerous patterns:</action>
-
-    **Secret Detection:**
-    <action>Check for files matching secret patterns:
-      - .env*, *.key, *.pem, credentials.json, secrets.yaml
-      - id_rsa, *.p12, *.pfx, *.cer
-      - Any file containing: _API_KEY=, _SECRET=, _TOKEN= with real values
-    </action>
-
-    <action>Validate API keys are placeholders only:</action>
-    <action>✅ Acceptable: API_KEY=your-api-key-here, SECRET=placeholder, TOKEN=xxx, API_KEY=${'{YOUR_KEY}'}</action>
-    <action>❌ BLOCK: OPENAI_API_KEY=sk-proj-*, AWS_SECRET_KEY=AKIA*, STRIPE_API_KEY=sk_live_*</action>
-
-    **File Size Check:**
-    <action>Check for files >10MB without Git LFS</action>
-
-    **Build Artifacts:**
-    <action>Check for unwanted directories/files:
-      - node_modules/, dist/, build/, __pycache__/, *.pyc, .venv/
-      - .DS_Store, thumbs.db, *.swp, *.tmp
-    </action>
-
-    **Git State:**
-    <action>Verify:
-      - .gitignore properly configured
-      - No merge conflicts
-      - Repository initialized
-    </action>
-
-    <!-- SAFETY DECISION -->
-    <check if="secrets detected OR real API keys found">
-      <output>🚨 **DANGER: Secrets Detected!**
-
-        The following sensitive data was found:
-        {{list_detected_secrets}}
-
-        ❌ **BLOCKED:** Cannot commit secrets to version control.
-
-        **Actions Required:**
-        1. Move secrets to .env file
-        2. Add .env to .gitignore
-        3. Use environment variables in code
-        4. Remove secrets from tracked files
-
-        Halting push-all workflow.
-      </output>
-      <action>HALT - Cannot proceed with secrets in changeset</action>
-    </check>
-
-    <check if="large files detected without Git LFS">
-      <output>⚠️ **Warning: Large Files Detected**
-
-        Files >10MB found:
-        {{list_large_files}}
-
-        **Recommendation:** Use Git LFS for large files
-
-        Continue anyway? [y/n]:
-      </output>
-
-      <ask>Proceed with large files? [y/n]:</ask>
-
-      <check if="user says n">
-        <output>Halting push-all. Please set up Git LFS for large files.</output>
-        <action>HALT</action>
-      </check>
-    </check>
-
-    <check if="build artifacts detected">
-      <output>⚠️ **Warning: Build Artifacts Detected**
-
-        Should not be committed:
-        {{list_build_artifacts}}
-
-        **These should be in .gitignore**
-
-        Continue anyway? [y/n]:
-      </output>
-
-      <ask>Proceed despite build artifacts? [y/n]:</ask>
-
-      <check if="user says n">
-        <output>Halting push-all. Update .gitignore to exclude build artifacts.</output>
-        <action>HALT</action>
-      </check>
-    </check>
-
-    <check if="current branch is main or master">
-      <output>⚠️ **Warning: Pushing to {{branch_name}}**
-
-        You're on the main/master branch. Consider:
-        - Creating a feature branch
-        - Opening a PR for review
-
-        Continue pushing to {{branch_name}}? [y/n]:
-      </output>
-
-      <ask>Push directly to {{branch_name}}? [y/n]:</ask>
-
-      <check if="user says n">
-        <output>Halting push-all. Create a feature branch instead.</output>
-        <action>HALT</action>
-      </check>
-    </check>
-
-    <!-- PRESENT SUMMARY AND GET CONFIRMATION -->
-    <output>
-      📊 **Changes Summary**
-
-      **Files:**
-      - Modified: {{modified_count}}
-      - Added: {{added_count}}
-      - Deleted: {{deleted_count}}
-      - Untracked: {{untracked_count}}
-
-      **Changes:**
-      - Insertions: +{{insertion_count}}
-      - Deletions: -{{deletion_count}}
-
-      **Safety Checks:**
-      {{if_all_safe}}
-      ✅ No secrets detected
-      ✅ No large files
-      ✅ No build artifacts
-      ✅ .gitignore configured
-      {{endif}}
-
-      {{if_warnings}}
-      ⚠️ {{warning_list}}
-      {{endif}}
-
-      **Git:**
-      - Branch: {{current_branch}} → origin/{{current_branch}}
-      - Last commit: {{last_commit}}
-
-      ---
-
-      **I will execute:**
-      1. git add .
-      2. git commit -m "[generated message]"
-      3. git push
-
-    </output>
-
-    <ask>**Proceed with commit and push?**
-
-      Type 'yes' to proceed, 'no' to cancel, or 'review' to see detailed diff:
-    </ask>
-
-    <check if="user says review">
-      <action>Run: git diff --stat</action>
-      <action>Show detailed file changes</action>
-      <ask>Still proceed with commit and push? [yes/no]:</ask>
-    </check>
-
-    <check if="user says no">
-      <output>❌ Push-all cancelled. Changes remain unstaged.
-
-        You can commit manually when ready.
-      </output>
-      <action>HALT - User cancelled</action>
-    </check>
-
-    <check if="user says yes">
-      <!-- STAGE ALL CHANGES -->
-      <action>Execute: git add .</action>
-      <action>Execute: git status</action>
-      <output>✅ All changes staged</output>
-
-      <!-- GENERATE COMMIT MESSAGE -->
-      <action>Analyze changes to determine commit type and scope:</action>
-      <action>- feat: New feature implementation</action>
-      <action>- fix: Bug fixes</action>
-      <action>- docs: Documentation updates</action>
-      <action>- refactor: Code restructuring</action>
-      <action>- test: Test additions/updates</action>
-      <action>- chore: Tooling, configs, dependencies</action>
-
-      <action>Generate commit message in conventional commit format:</action>
-      <action>Format:
-        [type](optional scope): Brief summary (max 72 chars)
-
-        - Key change 1
-        - Key change 2
-        - Key change 3
-      </action>
-
-      <action>Base message on:
-        - Story title and key
-        - Files changed
-        - Acceptance criteria met
-        - Recent commit style
-      </action>
-
-      <output>📝 **Generated Commit Message:**
-
-        ```
-        {{generated_commit_message}}
-        ```
-      </output>
-
-      <ask>Use this commit message? [yes/edit/cancel]:</ask>
-
-      <check if="user says edit">
-        <ask>Enter your commit message:</ask>
-        <action>Use user-provided message as {{commit_message}}</action>
-      </check>
-
-      <check if="user says cancel">
-        <output>❌ Push-all cancelled. Changes remain staged.
-
-          Run: git reset to unstage
-        </output>
-        <action>HALT</action>
-      </check>
-
-      <check if="user says yes">
-        <action>Set {{commit_message}} = {{generated_commit_message}}</action>
-      </check>
-
-      <!-- COMMIT CHANGES -->
-      <action>Execute git commit with message:
-        git commit -m "$(cat &lt;&lt;'EOF'
-        {{commit_message}}
-        EOF
-        )"
-      </action>
-
-      <check if="commit fails">
-        <output>❌ Commit failed
-
-          Error: {{commit_error}}
-
-          Common issues:
-          - Pre-commit hooks failing
-          - Missing git config (user.name/email)
-          - Locked files
-
-          Fix the issue and try again.
-        </output>
-        <action>HALT - Fix errors before proceeding</action>
-      </check>
-
-      <output>✅ Commit created: {{commit_hash}}</output>
-
-      <!-- PUSH CHANGES -->
-      <action>Execute: git push</action>
-
-      <check if="push fails with non-fast-forward">
-        <output>⚠️ Push rejected - remote has changes
-
-          Attempting: git pull --rebase && git push
-        </output>
-        <action>Execute: git pull --rebase</action>
-        <action>Execute: git push</action>
-      </check>
-
-      <check if="push fails with no upstream branch">
-        <output>ℹ️ No upstream branch set
-
-          Executing: git push -u origin {{current_branch}}
-        </output>
-        <action>Execute: git push -u origin {{current_branch}}</action>
-      </check>
-
-      <check if="push fails with other error">
-        <output>❌ Push failed
-
-          Error: {{push_error}}
-
-          Your changes are committed locally but not pushed.
-          You can push manually later with: git push
-        </output>
-        <action>HALT - Manual push required</action>
-      </check>
-
-      <!-- SUCCESS -->
-      <output>✅ **Successfully Pushed to Remote!**
-
-        **Commit:** {{commit_hash}} - {{commit_subject}}
-        **Branch:** {{current_branch}} → origin/{{current_branch}}
-        **Files changed:** {{file_count}} (+{{insertions}}, -{{deletions}})
-
-        **Story work is now on remote and ready for team review.**
-      </output>
-
-      <action>Execute: git log -1 --oneline --decorate</action>
-      <output>
-        Final commit: {{git_log_output}}
-      </output>
-    </check>
   </step>
 
 </workflow>

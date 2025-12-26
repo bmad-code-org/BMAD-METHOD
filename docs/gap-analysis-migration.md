@@ -162,7 +162,7 @@ git checkout v6.0.0-alpha.21 -- src/modules/bmm/workflows/4-implementation/
 git checkout v6.0.0-alpha.21 -- src/modules/bmgd/workflows/4-production/
 
 # Reinstall in your project
-cd ~/git/ai/platform
+cd ~/git/your-project
 rm -rf _bmad
 npx bmad-method@alpha install
 ```

@@ -3,15 +3,15 @@
   <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
   <critical>Communicate all responses in {communication_language}</critical>
   <critical>🤖 AUTONOMOUS EPIC PROCESSING - Full automation of epic completion!</critical>
-  <critical>This workflow creates and develops ALL stories in an epic with minimal human intervention</critical>
+  <critical>This workflow orchestrates create-story and super-dev-story for each story in an epic</critical>
 
-  <step n="1" goal="Initialize autonomous epic processing">
+  <step n="1" goal="Initialize and validate epic">
     <output>🤖 **Autonomous Epic Processing**
 
       This workflow will automatically:
-      1. Create all stories in the epic (just-in-time planning)
-      2. Develop each story with comprehensive validation
-      3. Commit changes after each story
+      1. Create each story just-in-time (using create-story)
+      2. Develop each story (using super-dev-story or dev-story)
+      3. Commit and push after each story (integrated in super-dev)
       4. Generate epic completion report
 
       **Time Estimate:** Varies by epic size
@@ -20,22 +20,17 @@
       - Large epic (11+ stories): 12-24 hours
 
       **Token Usage:** ~100K-150K per story
-      - Uses super-dev-story by default (highest quality)
-      - Auto-accepts gap analysis (minimal prompts)
-
-      ---
     </output>
 
-    <check if="{{epic_num}} provided by user">
+    <check if="{{epic_num}} provided">
       <action>Use provided epic number</action>
       <goto anchor="validate_epic" />
     </check>
 
-    <ask>Enter epic number to process (e.g., "2", "epic-3"), or [q] to quit:</ask>
+    <ask>Enter epic number to process (e.g., "2" or "epic-3"), or [q] to quit:</ask>
 
     <check if="user provides epic number">
-      <action>Parse epic number from input (handle "2", "epic-2", "Epic 2" formats)</action>
-      <action>Set {{epic_num}} to parsed number</action>
+      <action>Parse epic number from input</action>
       <goto anchor="validate_epic" />
     </check>
 
@@ -47,37 +42,8 @@
     <anchor id="validate_epic" />
 
     <action>Load {{sprint_status}} file</action>
-    <action>Find epic-{{epic_num}} entry in development_status</action>
-
-    <check if="epic not found in sprint status">
-      <output>❌ Epic {{epic_num}} not found in sprint-status.yaml
-
-        Available epics:
-        {{list_available_epics}}
-
-        Run sprint-planning to initialize sprint tracking.
-      </output>
-      <action>HALT</action>
-    </check>
-
-    <action>Get epic status from sprint-status</action>
-
-    <check if="epic status is 'done'">
-      <output>✅ Epic {{epic_num}} is already complete!
-
-        All stories marked done. Nothing to process.
-      </output>
-      <action>HALT</action>
-    </check>
-
-    <action>Count stories in epic (pattern: {{epic_num}}-*)</action>
-    <action>Count stories by status:
-      - backlog: Not yet created
-      - ready-for-dev: Created but not developed
-      - in-progress: Partially developed
-      - review: Developed, pending review
-      - done: Fully complete
-    </action>
+    <action>Find epic-{{epic_num}} entry</action>
+    <action>Count stories by status (backlog, ready-for-dev, in-progress, review, done)</action>
 
     <output>
       📊 **Epic {{epic_num}} Status**
@@ -86,294 +52,145 @@
       - Backlog: {{backlog_count}} (will create + develop)
       - Ready-for-dev: {{ready_count}} (will develop)
       - In-progress: {{inprogress_count}} (will resume)
-      - Review: {{review_count}} (will skip - needs human review)
-      - Done: {{done_count}} (will skip - already complete)
+      - Review/Done: {{done_count}} (will skip)
 
-      **Work Remaining:** {{backlog_count + ready_count + inprogress_count}} stories
+      **Work Remaining:** {{work_count}} stories
       **Estimated Time:** {{estimated_hours}} hours
       **Estimated Tokens:** ~{{estimated_tokens}}K
     </output>
-  </step>
 
-  <step n="2" goal="Get user confirmation and settings">
     <ask>**Proceed with autonomous processing?**
 
-      This will:
-      - Process {{work_count}} stories automatically
-      - Use {{dev_workflow}} for development (super-dev-story or dev-story)
-      - Create git commits after each story
-      - Take approximately {{estimated_hours}} hours
-      - Use approximately {{estimated_tokens}}K tokens
-
-      Options:
-      [Y] Yes - Start autonomous processing with default settings
-      [C] Custom - Let me configure settings first
-      [n] No - Cancel autonomous processing
+      [Y] Yes - Use super-dev-story (comprehensive validation)
+      [D] Dev-story - Faster, less validation
+      [n] No - Cancel
     </ask>
 
-    <check if="user approves with Y">
-      <action>Use default autonomous_settings from workflow.yaml</action>
-      <output>✅ Starting autonomous epic processing with defaults...</output>
-      <goto anchor="create_branch" />
+    <check if="user says Y">
+      <action>Set {{dev_workflow}} = "super-dev-story"</action>
     </check>
 
-    <check if="user chooses Custom with C">
-      <ask>Use super-dev-story (comprehensive validation) or dev-story (faster)? [super/dev]:</ask>
-      <action>Store user choice as {{dev_workflow}}</action>
-
-      <ask>Auto-accept gap analysis refinements? [Y/n]:</ask>
-      <action>Store user choice as {{auto_accept_gap}}</action>
-
-      <ask>Create git commits after each story? [Y/n]:</ask>
-      <action>Store user choice as {{create_commits}}</action>
-
-      <ask>Halt on first error or continue? [halt/continue]:</ask>
-      <action>Store user choice as {{error_handling}}</action>
-
-      <output>✅ Custom settings configured. Starting autonomous processing...</output>
-      <goto anchor="create_branch" />
+    <check if="user says D">
+      <action>Set {{dev_workflow}} = "dev-story"</action>
     </check>
 
-    <check if="user says no with n">
-      <output>❌ Autonomous epic processing cancelled.</output>
+    <check if="user says n">
+      <output>❌ Cancelled</output>
       <action>HALT</action>
     </check>
-
-    <anchor id="create_branch" />
   </step>
 
-  <step n="3" goal="Create git branch and initialize progress tracking">
-    <check if="{{create_commits}} is true">
-      <action>Check current git branch</action>
-      <action>Create new branch: {{git_branch_prefix}}{{epic_num}}</action>
-      <output>📝 Created git branch: {{git_branch_prefix}}{{epic_num}}</output>
-    </check>
+  <step n="2" goal="Create git branch and initialize tracking">
+    <action>Get current branch name</action>
+    <action>Create new branch: auto-epic-{{epic_num}}</action>
+    <output>📝 Created branch: auto-epic-{{epic_num}}</output>
 
-    <!-- Initialize progress tracking -->
-    <action>Create progress file: {{progress_file}}</action>
-    <action>Write initial progress state:
-      epic_num: {{epic_num}}
-      started: {{date}}
-      total_stories: {{total_story_count}}
-      completed_stories: []
-      failed_stories: []
-      current_story: null
-      status: running
+    <action>Initialize progress tracking file:
+      - epic_num
+      - started timestamp
+      - total_stories
+      - completed_stories: []
+      - current_story: null
+      - status: running
     </action>
-
-    <output>🚀 **Autonomous Epic Processing Started**
-
-      Epic: {{epic_num}}
-      Branch: {{git_branch_name}}
-      Progress tracking: {{progress_file}}
-
-      Processing {{work_count}} stories...
-    </output>
   </step>
 
-  <step n="4" goal="Process all stories in epic">
-    <critical>🔄 STORY PROCESSING LOOP - Just-in-time planning + development</critical>
+  <step n="3" goal="Process all stories in epic">
+    <critical>🔄 STORY LOOP - Create and develop each story</critical>
 
-    <action>Load {{sprint_status}} file</action>
-    <action>Find all stories in epic {{epic_num}} (pattern: {{epic_num}}-*)</action>
-    <action>Sort stories by story number (ascending order)</action>
-    <action>Filter to stories needing work (backlog, ready-for-dev, in-progress statuses)</action>
-
-    <action>Initialize {{story_counter}} = 0</action>
-    <action>Initialize {{success_count}} = 0</action>
-    <action>Initialize {{failure_count}} = 0</action>
+    <action>Find all stories in epic {{epic_num}} needing work</action>
+    <action>Sort by story number (ascending)</action>
+    <action>Initialize counters: success=0, failure=0</action>
 
     <!-- STORY LOOP -->
     <loop foreach="{{stories_needing_work}}">
-      <action>Set {{current_story}} = current story from loop</action>
-      <action>Increment {{story_counter}}</action>
-      <action>Update progress file with current_story</action>
+      <action>Set {{current_story}}</action>
 
       <output>
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        Story {{story_counter}}/{{work_count}}: {{current_story.key}}
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        Status: {{current_story.status}}
-        Started: {{current_time}}
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Story {{counter}}/{{work_count}}: {{current_story.key}}
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       </output>
 
       <!-- CREATE STORY IF NEEDED -->
-      <check if="current_story.status == 'backlog'">
-        <output>📝 Creating story {{current_story.key}}...</output>
+      <check if="status == 'backlog'">
+        <output>📝 Creating story...</output>
 
         <try>
-          <action>Run create-story workflow for this story</action>
-          <action>Wait for story file to be created</action>
-          <output>✅ Story created: {{story_file}}</output>
+          <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/create-story/workflow.yaml">
+            <note>Create story just-in-time</note>
+          </invoke-workflow>
+
+          <output>✅ Story created</output>
         </try>
 
         <catch>
-          <output>❌ Failed to create story {{current_story.key}}
-
-            Error: {{error_message}}
-          </output>
-
-          <check if="{{halt_on_error}} is true">
-            <action>Update progress file with failure</action>
-            <output>🛑 Halting due to error (halt_on_error=true)</output>
-            <action>HALT</action>
-          </check>
-
-          <check if="{{halt_on_error}} is false">
-            <action>Add to {{failed_stories}} list</action>
-            <action>Increment {{failure_count}}</action>
-            <output>⏭️ Skipping to next story...</output>
-            <continue>Next story in loop</continue>
-          </check>
+          <output>❌ Failed to create story: {{error}}</output>
+          <action>Add to failed_stories, continue to next</action>
+          <continue />
         </catch>
       </check>
 
       <!-- DEVELOP STORY -->
-      <output>💻 Developing story {{current_story.key}} using {{dev_workflow}}...</output>
+      <output>💻 Developing with {{dev_workflow}}...</output>
 
       <try>
         <check if="{{dev_workflow}} == 'super-dev-story'">
-          <action>Run super-dev-story workflow with auto-accept mode enabled</action>
+          <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/super-dev-story/workflow.yaml">
+            <input name="story_file" value="{{current_story_file}}" />
+            <note>Includes: dev + post-gap + review + push-all</note>
+          </invoke-workflow>
         </check>
 
         <check if="{{dev_workflow}} == 'dev-story'">
-          <action>Run dev-story workflow with auto-accept mode enabled</action>
+          <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml">
+            <input name="story_file" value="{{current_story_file}}" />
+          </invoke-workflow>
+
+          <!-- Push after dev-story -->
+          <invoke-workflow path="{project-root}/_bmad/bmgd/workflows/4-production/push-all/workflow.yaml">
+            <note>Commit and push story changes</note>
+          </invoke-workflow>
         </check>
 
-        <action>Wait for story to be marked "review"</action>
-
-        <output>✅ Story {{current_story.key}} completed
-
-          Status: review
-          Tasks completed: {{task_count}}
-          Files changed: {{file_count}}
-          Time: {{elapsed_time}}
-        </output>
-
-        <!-- RUN PUSH-ALL WORKFLOW -->
-        <output>📝 Running push-all to commit and push story changes...</output>
-
-        <try>
-          <action>Run push-all workflow with auto-accept mode:</action>
-          <action>- Safety checks run automatically</action>
-          <action>- Generate commit message based on story</action>
-          <action>- Commit with message: "feat(epic-{{epic_num}}): complete story {{current_story.key}} - {{story_title}}"</action>
-          <action>- Push to remote automatically</action>
-
-          <output>✅ Pushed to remote: {{commit_hash}}</output>
-        </try>
-
-        <catch>
-          <output>⚠️ Push-all failed for story {{current_story.key}}
-
-            Error: {{push_error}}
-
-            Story is complete but not pushed to remote yet.
-            You can push manually later.
-          </output>
-
-          <check if="{{halt_on_error}} is true">
-            <output>🛑 Halting due to push error (halt_on_error=true)</output>
-            <action>Update progress file with failure</action>
-            <action>HALT</action>
-          </check>
-
-          <action>Note: Story complete locally, push failed - continuing...</action>
-        </catch>
-
-        <action>Increment {{success_count}}</action>
-        <action>Add to progress file completed_stories list</action>
-        <action>Update progress file with success</action>
-
+        <output>✅ Story complete and pushed</output>
+        <action>Increment success_count</action>
+        <action>Update progress file</action>
       </try>
 
       <catch>
-        <output>❌ Failed to develop story {{current_story.key}}
-
-          Error: {{error_message}}
-          Attempt: {{retry_count}}/{{max_retry_per_story}}
-        </output>
-
-        <check if="{{retry_count}} < {{max_retry_per_story}}">
-          <output>🔄 Retrying story {{current_story.key}}...</output>
-          <action>Increment {{retry_count}}</action>
-          <retry>Retry this story</retry>
-        </check>
-
-        <check if="{{retry_count}} >= {{max_retry_per_story}}">
-          <output>⚠️ Max retries reached for story {{current_story.key}}</output>
-
-          <check if="{{halt_on_error}} is true">
-            <action>Update progress file with failure and halt</action>
-            <output>🛑 Halting due to repeated errors (halt_on_error=true)</output>
-            <action>HALT</action>
-          </check>
-
-          <check if="{{halt_on_error}} is false">
-            <action>Add to {{failed_stories}} list</action>
-            <action>Increment {{failure_count}}</action>
-            <output>⏭️ Skipping to next story...</output>
-            <continue>Next story in loop</continue>
-          </check>
-        </check>
+        <output>❌ Story failed: {{error}}</output>
+        <action>Add to failed_stories, continue</action>
+        <action>Increment failure_count</action>
       </catch>
 
-      <!-- Progress update -->
-      <output>
-        Progress: {{success_count}} ✅ | {{failure_count}} ❌ | {{remaining_count}} pending
-      </output>
-
+      <output>Progress: {{success_count}} ✅ | {{failure_count}} ❌ | {{remaining}} pending</output>
     </loop>
 
-    <!-- After all stories processed -->
     <action>Update progress file status: complete</action>
   </step>
 
-  <step n="5" goal="Epic completion and reporting">
-    <critical>📊 EPIC COMPLETE - Generate completion report</critical>
-
-    <action>Load all completed story files from this epic</action>
-    <action>Aggregate statistics:
-      - Total files created/modified
-      - Total test coverage
-      - Total code review issues found and fixed
-      - Total development time
-      - Success rate
-    </action>
-
-    <action>Generate epic completion report: {{story_dir}}/epic-{{epic_num}}-completion-report.md</action>
-
+  <step n="4" goal="Epic completion and reporting">
     <output>
-      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      🎉 EPIC {{epic_num}} AUTONOMOUS PROCESSING COMPLETE!
-      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      🎉 EPIC {{epic_num}} COMPLETE!
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
       **Results:**
-      ✅ Stories completed: {{success_count}}/{{total_story_count}}
-      {{if_failures}}
-      ❌ Stories failed: {{failure_count}}
-        {{list_failed_stories_with_reasons}}
+      ✅ Stories completed: {{success_count}}/{{total_count}}
+      {{if_failures}}❌ Stories failed: {{failure_count}}{{endif}}
+
+      **Branch:** auto-epic-{{epic_num}}
+      **All changes pushed to remote**
+
+      {{if_all_success}}
+      **Epic {{epic_num}} marked complete in sprint-status.yaml**
       {{endif}}
 
-      **Statistics:**
-      - Total development time: {{total_time}}
-      - Files created/modified: {{total_files}}
-      - Test coverage achieved: {{avg_coverage}}%
-      - Code review issues found: {{total_issues}}
-      - Code review issues fixed: {{total_fixes}}
-
-      **Git Branch:** {{git_branch_name}}
-      **Commits:** {{commit_count}}
-
-      **Completion Report:** {{report_file}}
-
-      ---
-
       **Next Steps:**
-      1. Review the completion report
-      2. Manually review/fix any failed stories
-      3. Run human code review on the branch
-      4. Merge {{git_branch_name}} when approved
+      1. Review the work on branch auto-epic-{{epic_num}}
+      2. Run human code review
+      3. Merge when approved
 
       {{if_failures}}
       **Failed Stories Need Attention:**
@@ -381,61 +198,11 @@
       {{endif}}
     </output>
 
-    <!-- Update sprint status -->
-    <check if="{{success_count}} == {{total_story_count}}">
-      <action>Load {{sprint_status}} file</action>
-      <action>Update epic-{{epic_num}} status to "done"</action>
-      <output>✅ Epic {{epic_num}} marked complete in sprint-status.yaml</output>
+    <check if="{{success_count}} == {{total_count}}">
+      <action>Update sprint-status: epic-{{epic_num}} = "done"</action>
     </check>
 
-    <check if="{{failure_count}} > 0">
-      <output>ℹ️ Epic {{epic_num}} partially complete - some stories failed.
-        Epic status remains "in-progress" until failed stories resolved.
-      </output>
-    </check>
-
-    <!-- Final git operations -->
-    <check if="{{create_commits}} is true">
-      <output>📝 All changes committed to branch: {{git_branch_name}}
-
-        To merge:
-        git checkout main
-        git merge {{git_branch_name}}
-
-        Or create PR:
-        gh pr create --base main --head {{git_branch_name}}
-      </output>
-    </check>
-  </step>
-
-  <step n="6" goal="Cleanup and user support">
-    <action>Remove progress file (no longer needed)</action>
-
-    <ask>Would you like explanations about:
-      - How autonomous processing works
-      - What was implemented in this epic
-      - Why any stories failed
-      - How to review and merge the work
-      - Anything else?
-
-      [Enter topic or 'n' to skip]
-    </ask>
-
-    <check if="user asks for explanations">
-      <action>Provide clear explanations about requested topics</action>
-      <action>Reference specific stories, code, or decisions</action>
-    </check>
-
-    <output>💡 **Tips for Future Autonomous Processing:**
-
-      - Use super-dev-story for critical epics (higher quality, more tokens)
-      - Use dev-story for experimental epics (faster, fewer tokens)
-      - Review completion report for patterns and improvements
-      - Failed stories often indicate unclear requirements
-      - Monitor token usage and adjust epic size accordingly
-
-      **Epic {{epic_num}} processing complete, {user_name}!**
-    </output>
+    <action>Remove progress file</action>
   </step>
 
 </workflow>

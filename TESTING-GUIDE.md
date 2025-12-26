@@ -2,10 +2,10 @@
 
 ## Setup Complete ✅
 
-Your platform project (`~/git/ai/platform`) is configured to use the dev version via symlink:
+Your project (`~/git/your-project`) is configured to use the dev version via symlink:
 
 ```
-~/git/ai/platform/_bmad/bmm → ~/git/ai/BMAD-METHOD/src/modules/bmm
+~/git/your-project/_bmad/bmm → ~/git/BMAD-METHOD/src/modules/bmm
 ```
 
 All changes from `feature/gap-analysis-dev-time` branch are **live and testable**.
@@ -19,7 +19,7 @@ All changes from `feature/gap-analysis-dev-time` branch are **live and testable*
 **Goal:** Verify gap analysis runs and proposes task updates
 
 ```bash
-cd ~/git/ai/platform
+cd ~/git/your-project
 
 # Load PM or Dev agent
 # Run:
@@ -247,7 +247,7 @@ Track these metrics:
 ## Rollback (If Issues Found)
 
 ```bash
-cd ~/git/ai/platform/_bmad
+cd ~/git/your-project/_bmad
 rm bmm
 mv bmm.backup bmm
 
