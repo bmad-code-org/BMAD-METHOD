@@ -36,6 +36,14 @@ agent:
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml"
       description: "[CS] Create Story (Required to prepare stories for development)"
 
+    - trigger: GA or fuzzy match on gap-analysis
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/gap-analysis/workflow.yaml"
+      description: "[GA] Run Gap Analysis - audit story tasks against codebase (useful for sprint health checks)"
+
+    - trigger: AEP or fuzzy match on autonomous-epic
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/autonomous-epic/workflow.yaml"
+      description: "[AEP] Autonomous Epic Processing - create and develop all stories in an epic automatically"
+
     - trigger: ER or fuzzy match on epic-retrospective
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/retrospective/workflow.yaml"
       data: "{project-root}/_bmad/_config/agent-manifest.csv"

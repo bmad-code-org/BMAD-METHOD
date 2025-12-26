@@ -32,6 +32,18 @@ agent:
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/dev-story/workflow.yaml"
       description: "[DS] Execute Dev Story workflow, implementing tasks and tests"
 
+    - trigger: SDS or fuzzy match on super-dev-story
+      workflow: "{project-root}/_bmad/bmgd/workflows/4-production/super-dev-story/workflow.yaml"
+      description: "[SDS] Execute Super-Dev Story workflow (enhanced quality with post-dev validation + auto code review)"
+
+    - trigger: GA or fuzzy match on gap-analysis
+      workflow: "{project-root}/_bmad/bmgd/workflows/4-production/gap-analysis/workflow.yaml"
+      description: "[GA] Run Gap Analysis - audit story tasks against codebase without starting development"
+
+    - trigger: AEP or fuzzy match on autonomous-epic
+      workflow: "{project-root}/_bmad/bmgd/workflows/4-production/autonomous-epic/workflow.yaml"
+      description: "[AEP] Autonomous Epic Processing - create and develop all stories in an epic automatically"
+
     - trigger: CR or fuzzy match on code-review
       workflow: "{project-root}/_bmad/bmgd/workflows/4-production/code-review/workflow.yaml"
       description: "[CR] Perform a thorough clean context QA code review on a story flagged Ready for Review"
