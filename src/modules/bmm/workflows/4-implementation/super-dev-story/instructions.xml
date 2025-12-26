@@ -367,4 +367,324 @@
     </output>
   </step>
 
+  <step n="11" goal="Commit and push all changes">
+    <critical>📝 PUSH-ALL - Stage, commit, and push all changes with safety validation</critical>
+    <note>⚠️ Use with caution - commits ALL changes in repository</note>
+
+    <output>🔄 **Analyzing Repository Changes**
+
+      Scanning for changes to commit and push...
+    </output>
+
+    <!-- ANALYZE CHANGES PHASE -->
+    <action>Run git commands in parallel:</action>
+    <action>- git status - Show modified/added/deleted/untracked files</action>
+    <action>- git diff --stat - Show change statistics</action>
+    <action>- git log -1 --oneline - Show recent commit for message style</action>
+    <action>- git branch --show-current - Confirm current branch</action>
+
+    <action>Parse git status output to identify:
+      - Modified files
+      - Added files
+      - Deleted files
+      - Untracked files
+      - Total insertion/deletion counts
+    </action>
+
+    <!-- SAFETY CHECKS PHASE -->
+    <critical>🔒 SAFETY VALIDATION - Check for secrets, large files, and unwanted artifacts</critical>
+
+    <action>Scan all changed files for dangerous patterns:</action>
+
+    **Secret Detection:**
+    <action>Check for files matching secret patterns:
+      - .env*, *.key, *.pem, credentials.json, secrets.yaml
+      - id_rsa, *.p12, *.pfx, *.cer
+      - Any file containing: _API_KEY=, _SECRET=, _TOKEN= with real values
+    </action>
+
+    <action>Validate API keys are placeholders only:</action>
+    <action>✅ Acceptable: API_KEY=your-api-key-here, SECRET=placeholder, TOKEN=xxx, API_KEY=${'{YOUR_KEY}'}</action>
+    <action>❌ BLOCK: OPENAI_API_KEY=sk-proj-*, AWS_SECRET_KEY=AKIA*, STRIPE_API_KEY=sk_live_*</action>
+
+    **File Size Check:**
+    <action>Check for files >10MB without Git LFS</action>
+
+    **Build Artifacts:**
+    <action>Check for unwanted directories/files:
+      - node_modules/, dist/, build/, __pycache__/, *.pyc, .venv/
+      - .DS_Store, thumbs.db, *.swp, *.tmp
+    </action>
+
+    **Git State:**
+    <action>Verify:
+      - .gitignore properly configured
+      - No merge conflicts
+      - Repository initialized
+    </action>
+
+    <!-- SAFETY DECISION -->
+    <check if="secrets detected OR real API keys found">
+      <output>🚨 **DANGER: Secrets Detected!**
+
+        The following sensitive data was found:
+        {{list_detected_secrets}}
+
+        ❌ **BLOCKED:** Cannot commit secrets to version control.
+
+        **Actions Required:**
+        1. Move secrets to .env file
+        2. Add .env to .gitignore
+        3. Use environment variables in code
+        4. Remove secrets from tracked files
+
+        Halting push-all workflow.
+      </output>
+      <action>HALT - Cannot proceed with secrets in changeset</action>
+    </check>
+
+    <check if="large files detected without Git LFS">
+      <output>⚠️ **Warning: Large Files Detected**
+
+        Files >10MB found:
+        {{list_large_files}}
+
+        **Recommendation:** Use Git LFS for large files
+
+        Continue anyway? [y/n]:
+      </output>
+
+      <ask>Proceed with large files? [y/n]:</ask>
+
+      <check if="user says n">
+        <output>Halting push-all. Please set up Git LFS for large files.</output>
+        <action>HALT</action>
+      </check>
+    </check>
+
+    <check if="build artifacts detected">
+      <output>⚠️ **Warning: Build Artifacts Detected**
+
+        Should not be committed:
+        {{list_build_artifacts}}
+
+        **These should be in .gitignore**
+
+        Continue anyway? [y/n]:
+      </output>
+
+      <ask>Proceed despite build artifacts? [y/n]:</ask>
+
+      <check if="user says n">
+        <output>Halting push-all. Update .gitignore to exclude build artifacts.</output>
+        <action>HALT</action>
+      </check>
+    </check>
+
+    <check if="current branch is main or master">
+      <output>⚠️ **Warning: Pushing to {{branch_name}}**
+
+        You're on the main/master branch. Consider:
+        - Creating a feature branch
+        - Opening a PR for review
+
+        Continue pushing to {{branch_name}}? [y/n]:
+      </output>
+
+      <ask>Push directly to {{branch_name}}? [y/n]:</ask>
+
+      <check if="user says n">
+        <output>Halting push-all. Create a feature branch instead.</output>
+        <action>HALT</action>
+      </check>
+    </check>
+
+    <!-- PRESENT SUMMARY AND GET CONFIRMATION -->
+    <output>
+      📊 **Changes Summary**
+
+      **Files:**
+      - Modified: {{modified_count}}
+      - Added: {{added_count}}
+      - Deleted: {{deleted_count}}
+      - Untracked: {{untracked_count}}
+
+      **Changes:**
+      - Insertions: +{{insertion_count}}
+      - Deletions: -{{deletion_count}}
+
+      **Safety Checks:**
+      {{if_all_safe}}
+      ✅ No secrets detected
+      ✅ No large files
+      ✅ No build artifacts
+      ✅ .gitignore configured
+      {{endif}}
+
+      {{if_warnings}}
+      ⚠️ {{warning_list}}
+      {{endif}}
+
+      **Git:**
+      - Branch: {{current_branch}} → origin/{{current_branch}}
+      - Last commit: {{last_commit}}
+
+      ---
+
+      **I will execute:**
+      1. git add .
+      2. git commit -m "[generated message]"
+      3. git push
+
+    </output>
+
+    <ask>**Proceed with commit and push?**
+
+      Type 'yes' to proceed, 'no' to cancel, or 'review' to see detailed diff:
+    </ask>
+
+    <check if="user says review">
+      <action>Run: git diff --stat</action>
+      <action>Show detailed file changes</action>
+      <ask>Still proceed with commit and push? [yes/no]:</ask>
+    </check>
+
+    <check if="user says no">
+      <output>❌ Push-all cancelled. Changes remain unstaged.
+
+        You can commit manually when ready.
+      </output>
+      <action>HALT - User cancelled</action>
+    </check>
+
+    <check if="user says yes">
+      <!-- STAGE ALL CHANGES -->
+      <action>Execute: git add .</action>
+      <action>Execute: git status</action>
+      <output>✅ All changes staged</output>
+
+      <!-- GENERATE COMMIT MESSAGE -->
+      <action>Analyze changes to determine commit type and scope:</action>
+      <action>- feat: New feature implementation</action>
+      <action>- fix: Bug fixes</action>
+      <action>- docs: Documentation updates</action>
+      <action>- refactor: Code restructuring</action>
+      <action>- test: Test additions/updates</action>
+      <action>- chore: Tooling, configs, dependencies</action>
+
+      <action>Generate commit message in conventional commit format:</action>
+      <action>Format:
+        [type](optional scope): Brief summary (max 72 chars)
+
+        - Key change 1
+        - Key change 2
+        - Key change 3
+      </action>
+
+      <action>Base message on:
+        - Story title and key
+        - Files changed
+        - Acceptance criteria met
+        - Recent commit style
+      </action>
+
+      <output>📝 **Generated Commit Message:**
+
+        ```
+        {{generated_commit_message}}
+        ```
+      </output>
+
+      <ask>Use this commit message? [yes/edit/cancel]:</ask>
+
+      <check if="user says edit">
+        <ask>Enter your commit message:</ask>
+        <action>Use user-provided message as {{commit_message}}</action>
+      </check>
+
+      <check if="user says cancel">
+        <output>❌ Push-all cancelled. Changes remain staged.
+
+          Run: git reset to unstage
+        </output>
+        <action>HALT</action>
+      </check>
+
+      <check if="user says yes">
+        <action>Set {{commit_message}} = {{generated_commit_message}}</action>
+      </check>
+
+      <!-- COMMIT CHANGES -->
+      <action>Execute git commit with message:
+        git commit -m "$(cat &lt;&lt;'EOF'
+        {{commit_message}}
+        EOF
+        )"
+      </action>
+
+      <check if="commit fails">
+        <output>❌ Commit failed
+
+          Error: {{commit_error}}
+
+          Common issues:
+          - Pre-commit hooks failing
+          - Missing git config (user.name/email)
+          - Locked files
+
+          Fix the issue and try again.
+        </output>
+        <action>HALT - Fix errors before proceeding</action>
+      </check>
+
+      <output>✅ Commit created: {{commit_hash}}</output>
+
+      <!-- PUSH CHANGES -->
+      <action>Execute: git push</action>
+
+      <check if="push fails with non-fast-forward">
+        <output>⚠️ Push rejected - remote has changes
+
+          Attempting: git pull --rebase && git push
+        </output>
+        <action>Execute: git pull --rebase</action>
+        <action>Execute: git push</action>
+      </check>
+
+      <check if="push fails with no upstream branch">
+        <output>ℹ️ No upstream branch set
+
+          Executing: git push -u origin {{current_branch}}
+        </output>
+        <action>Execute: git push -u origin {{current_branch}}</action>
+      </check>
+
+      <check if="push fails with other error">
+        <output>❌ Push failed
+
+          Error: {{push_error}}
+
+          Your changes are committed locally but not pushed.
+          You can push manually later with: git push
+        </output>
+        <action>HALT - Manual push required</action>
+      </check>
+
+      <!-- SUCCESS -->
+      <output>✅ **Successfully Pushed to Remote!**
+
+        **Commit:** {{commit_hash}} - {{commit_subject}}
+        **Branch:** {{current_branch}} → origin/{{current_branch}}
+        **Files changed:** {{file_count}} (+{{insertions}}, -{{deletions}})
+
+        **Story work is now on remote and ready for team review.**
+      </output>
+
+      <action>Execute: git log -1 --oneline --decorate</action>
+      <output>
+        Final commit: {{git_log_output}}
+      </output>
+    </check>
+  </step>
+
 </workflow>
