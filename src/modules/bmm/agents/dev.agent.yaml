@@ -51,6 +51,10 @@ agent:
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/autonomous-epic/workflow.yaml"
       description: "[AE] Autonomous Epic Processing - create and develop all stories in an epic automatically"
 
+    - trigger: PA or fuzzy match on push-all
+      workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/push-all/workflow.yaml"
+      description: "[PA] Push-All - stage, commit, and push all changes with safety validation"
+
     - trigger: CR or fuzzy match on code-review
       workflow: "{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml"
       description: "[CR] Perform a thorough clean context code review (Highly Recommended, use fresh context and different LLM)"

@@ -1,0 +1,16 @@
+name: push-all
+description: "Stage all changes, create commit with safety checks, and push to remote - use with caution"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+
+# Workflow components
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/push-all"
+instructions: "{installed_path}/instructions.xml"
+
+standalone: true
+
+web_bundle: false
