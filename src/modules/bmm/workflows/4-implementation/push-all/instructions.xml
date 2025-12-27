@@ -2,8 +2,19 @@
   <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
   <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
   <critical>Communicate all responses in {communication_language}</critical>
-  <critical>📝 PUSH-ALL - Stage, commit, and push all changes with comprehensive safety validation</critical>
-  <critical>⚠️ Use with caution - commits ALL repository changes</critical>
+  <critical>📝 PUSH-ALL - Stage, commit, and push changes with comprehensive safety validation</critical>
+
+  <!-- TARGETED vs ALL FILES MODE -->
+  <critical>⚡ PARALLEL AGENT MODE: When {{target_files}} is provided:
+    - ONLY stage and commit the specified files
+    - Do NOT use `git add .` or `git add -A`
+    - Use `git add [specific files]` instead
+    - This prevents committing work from other parallel agents
+  </critical>
+  <critical>📋 ALL FILES MODE: When {{target_files}} is empty:
+    - Stage ALL changes with `git add .`
+    - Original behavior for single-agent execution
+  </critical>
 
   <step n="1" goal="Analyze repository changes">
     <output>🔄 **Analyzing Repository Changes**
@@ -257,14 +268,34 @@
   </step>
 
   <step n="4" goal="Stage changes">
-    <action>Execute: git add .</action>
-    <action>Execute: git status</action>
+    <!-- TARGETED MODE: Only stage specified files -->
+    <check if="{{target_files}} is provided and not empty">
+      <output>📎 **Targeted Commit Mode** (parallel agent safe)
 
-    <output>✅ **All Changes Staged**
+        Staging only files from this story/task:
+        {{target_files}}
+      </output>
+      <action>Execute: git add {{target_files}}</action>
+      <action>Execute: git status</action>
+      <output>✅ **Targeted Files Staged**
 
-      Ready for commit:
-      {{list_staged_files}}
-    </output>
+        Ready for commit ({{target_file_count}} files):
+        {{list_staged_files}}
+
+        Note: Other uncommitted changes in repo are NOT included.
+      </output>
+    </check>
+
+    <!-- ALL FILES MODE: Original behavior -->
+    <check if="{{target_files}} is empty or not provided">
+      <action>Execute: git add .</action>
+      <action>Execute: git status</action>
+      <output>✅ **All Changes Staged**
+
+        Ready for commit:
+        {{list_staged_files}}
+      </output>
+    </check>
   </step>
 
   <step n="5" goal="Generate commit message">

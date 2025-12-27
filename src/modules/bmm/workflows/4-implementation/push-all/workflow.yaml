@@ -1,5 +1,5 @@
 name: push-all
-description: "Stage all changes, create commit with safety checks, and push to remote - use with caution"
+description: "Stage changes, create commit with safety checks, and push to remote"
 author: "BMad"
 
 # Critical variables from config
@@ -10,6 +10,12 @@ communication_language: "{config_source}:communication_language"
 # Workflow components
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/push-all"
 instructions: "{installed_path}/instructions.xml"
+
+# Target files to commit (for parallel agent execution)
+# When empty/not provided: commits ALL changes (original behavior)
+# When provided: only commits the specified files (safe for parallel agents)
+target_files: "" # Space-separated list of file paths, or empty for all
+story_key: "" # Optional: story identifier for commit message context
 
 standalone: true
 

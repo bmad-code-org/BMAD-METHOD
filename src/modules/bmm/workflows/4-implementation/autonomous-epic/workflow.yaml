@@ -26,7 +26,29 @@ autonomous_settings:
   halt_on_error: false # Continue even if story fails
   max_retry_per_story: 2 # Retry failed stories
   create_git_commits: true # Commit after each story
-  git_branch_prefix: "auto-epic-" # Branch name format: auto-epic-{epic_num}
+  create_epic_branch: false # When false, stay on current branch (good for parallel epics)
+  git_branch_prefix: "auto-epic-" # Branch name format: auto-epic-{epic_num} (only used if create_epic_branch=true)
+
+# TASK-BASED COMPLETION SETTINGS (NEW)
+# These settings ensure stories are truly complete, not just marked as such
+completion_verification:
+  # Use task-based completion instead of status-based
+  # A story is ONLY complete when it has ZERO unchecked tasks (- [ ])
+  task_based_completion: true
+
+  # Include stories in "review" status if they have unchecked tasks
+  # This catches code review findings that were added but not implemented
+  process_review_with_unchecked: true
+
+  # Include stories in "done" status if they have unchecked tasks
+  # This catches stories incorrectly marked done
+  process_done_with_unchecked: true
+
+  # Verify completion after each story by re-scanning for unchecked tasks
+  verify_after_development: true
+
+  # Only mark epic as "done" if ALL stories have ZERO unchecked tasks
+  strict_epic_completion: true
 
 standalone: true
 

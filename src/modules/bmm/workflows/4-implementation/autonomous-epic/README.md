@@ -96,6 +96,40 @@ autonomous_settings:
   max_retry_per_story: 2           # Retry failed stories
   create_git_commits: true         # Commit after each story
   git_branch_prefix: "auto-epic-"  # Branch: auto-epic-{epic_num}
+
+# Task-based completion verification (NEW)
+completion_verification:
+  task_based_completion: true       # Check actual tasks, not just status
+  process_review_with_unchecked: true  # Process "review" stories with unchecked tasks
+  process_done_with_unchecked: true    # Process "done" stories if tasks remain
+  verify_after_development: true    # Re-check after each story
+  strict_epic_completion: true      # Epic only done when ALL tasks complete
+```
+
+### Task-Based Completion (Important!)
+
+**The autonomous epic workflow now uses TASK-BASED completion**, not just status-based:
+
+| What Changed | Old Behavior | New Behavior |
+|--------------|--------------|--------------|
+| "review" status | ⏭️ Skipped | ✅ Processed if unchecked tasks exist |
+| "done" status | ⏭️ Skipped | ✅ Verified, processed if tasks remain |
+| Completion check | Status-based | Task-based (count `- [ ]`) |
+| Epic marked done | When all stories "done" | When ALL tasks `- [x]` |
+
+**Why this matters:** Code reviews often add new tasks (CR-1, CR-2, etc.) that need implementation. The old workflow would skip these stories because they were marked "review". Now we scan for actual unchecked tasks.
+
+```
+📊 Epic 4 Status (Task-Based Analysis)
+
+By Actual Task Completion:
+- ✅ Truly Done: 0 (all tasks checked, will skip)
+- 🔧 Needs Work: 7 (has unchecked tasks)
+    4-1: 6 unchecked (CR tasks)
+    4-2: 4 unchecked (original work)
+    4-3: 7 unchecked (CR tasks)
+    ...
+- 📝 Backlog: 0 (will create + develop)
 ```
 
 ### Per-Epic Override

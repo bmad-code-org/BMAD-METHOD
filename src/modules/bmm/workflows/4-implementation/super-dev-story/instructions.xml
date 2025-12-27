@@ -33,7 +33,8 @@
 
     <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
       <input name="story_file" value="{{story_file}}" />
-      <note>Pass through any user-provided story file path</note>
+      <input name="auto_accept_gap_analysis" value="{{auto_accept_gap_analysis}}" />
+      <note>Pass through any user-provided story file path and auto-accept setting</note>
     </invoke-workflow>
 
     <check if="dev-story completed successfully">
@@ -113,6 +114,7 @@
 
       <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
         <input name="story_file" value="{{story_file}}" />
+        <input name="auto_accept_gap_analysis" value="{{auto_accept_gap_analysis}}" />
         <note>Resume with added tasks for missing work</note>
       </invoke-workflow>
 
@@ -167,6 +169,7 @@
 
       <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
         <input name="story_file" value="{{story_file}}" />
+        <input name="auto_accept_gap_analysis" value="{{auto_accept_gap_analysis}}" />
         <note>Fix code review issues</note>
       </invoke-workflow>
 
@@ -186,6 +189,7 @@
         <action>Add review findings as tasks</action>
         <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
           <input name="story_file" value="{{story_file}}" />
+          <input name="auto_accept_gap_analysis" value="{{auto_accept_gap_analysis}}" />
         </invoke-workflow>
       </check>
 
@@ -208,16 +212,28 @@
   <!-- STEP 4: PUSH ALL CHANGES (Super-Dev Enhancement)                -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
 
-  <step n="4" goal="Commit and push all changes">
+  <step n="4" goal="Commit and push story changes">
     <critical>📝 PUSH-ALL - Stage, commit, and push with safety validation</critical>
+    <critical>⚡ TARGETED COMMIT: Only commit files from THIS story's File List (safe for parallel agents)</critical>
 
-    <output>📝 **Committing and Pushing Story Changes**
+    <!-- Extract File List from story file -->
+    <action>Read story file and extract the "File List" section</action>
+    <action>Parse all file paths listed (relative to repo root)</action>
+    <action>Also include the story file itself in the list</action>
+    <action>Store as {{story_files}} - space-separated list of all files</action>
 
-      Running push-all workflow with safety checks...
+    <output>📝 **Committing Story Changes**
+
+      Files from this story:
+      {{story_files}}
+
+      Running push-all with targeted file list (parallel-agent safe)...
     </output>
 
     <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/push-all/workflow.yaml">
-      <note>Commit and push all story changes</note>
+      <input name="target_files" value="{{story_files}}" />
+      <input name="story_key" value="{{story_key}}" />
+      <note>Only commit files changed by this story</note>
     </invoke-workflow>
 
     <check if="push-all succeeded">

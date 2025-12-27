@@ -217,6 +217,20 @@
 
     </output>
 
+    <!-- CHECK FOR AUTONOMOUS MODE - Skip prompt if auto_accept_gap_analysis is true -->
+    <check if="{{auto_accept_gap_analysis}} == true">
+      <output>⚡ **Auto-accepting gap analysis refinements** (autonomous mode)</output>
+      <action>Update story file with refined tasks in Tasks/Subtasks section</action>
+      <action>Add new "Gap Analysis" section to story file with findings:
+        - Scan timestamp
+        - What Exists summary
+        - What's Missing summary
+        - Task changes applied
+      </action>
+      <action>Add Change Log entry: "Tasks refined based on codebase gap analysis - auto-accepted ({{date}})"</action>
+      <goto step="2" />
+    </check>
+
     <ask>**Approve these task updates?**
 
       Options:
