@@ -84,14 +84,15 @@ class ClaudeCodeSetup extends BaseIdeSetup {
 
   /**
    * Cleanup old BMAD installation before reinstalling
+   * Removes files and directories starting with 'bmad-' or named 'bmad' from commands dir
    * @param {string} projectDir - Project directory
    */
   async cleanup(projectDir) {
-    const bmadCommandsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad');
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
+    const removedCount = await this.clearBmadPrefixedFiles(commandsDir);
 
-    if (await fs.pathExists(bmadCommandsDir)) {
-      await fs.remove(bmadCommandsDir);
-      console.log(chalk.dim(`  Removed old BMAD commands from ${this.name}`));
+    if (removedCount > 0) {
+      console.log(chalk.dim(`  Removed ${removedCount} old BMAD items from ${this.name}`));
     }
   }
 
@@ -113,28 +114,15 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     // Create .claude/commands directory structure
     const claudeDir = path.join(projectDir, this.configDir);
     const commandsDir = path.join(claudeDir, this.commandsDir);
-    const bmadCommandsDir = path.join(commandsDir, 'bmad');
 
-    await this.ensureDir(bmadCommandsDir);
+    await this.ensureDir(commandsDir);
 
     // Generate agent launchers using AgentCommandGenerator
-    // This creates small launcher files that reference the actual agents in _bmad/
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
-    const { artifacts: agentArtifacts, counts: agentCounts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 
-    // Create directories for each module
-    const modules = new Set();
-    for (const artifact of agentArtifacts) {
-      modules.add(artifact.module);
-    }
-
-    for (const module of modules) {
-      await this.ensureDir(path.join(bmadCommandsDir, module));
-      await this.ensureDir(path.join(bmadCommandsDir, module, 'agents'));
-    }
-
-    // Write agent launcher files
-    const agentCount = await agentGen.writeAgentLaunchers(bmadCommandsDir, agentArtifacts);
+    // Write agent launcher files with flattened naming directly to commands dir
+    const agentCount = await this.writeFlattenedArtifacts(agentArtifacts, commandsDir);
 
     // Process Claude Code specific injections for installed modules
     // Use pre-collected configuration if available, or skip if already configured
@@ -148,25 +136,13 @@ class ClaudeCodeSetup extends BaseIdeSetup {
       await this.processModuleInjections(projectDir, bmadDir, options);
     }
 
-    // Skip CLAUDE.md creation - let user manage their own CLAUDE.md file
-    // await this.createClaudeConfig(projectDir, modules);
-
     // Generate workflow commands from manifest (if it exists)
     const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
 
-    // Write only workflow-command artifacts, skip workflow-launcher READMEs
-    let workflowCommandCount = 0;
-    for (const artifact of workflowArtifacts) {
-      if (artifact.type === 'workflow-command') {
-        const moduleWorkflowsDir = path.join(bmadCommandsDir, artifact.module, 'workflows');
-        await this.ensureDir(moduleWorkflowsDir);
-        const commandPath = path.join(moduleWorkflowsDir, path.basename(artifact.relativePath));
-        await this.writeFile(commandPath, artifact.content);
-        workflowCommandCount++;
-      }
-      // Skip workflow-launcher READMEs as they would be treated as slash commands
-    }
+    // Filter to workflow-command type and write with flattened naming
+    const workflowCommands = workflowArtifacts.filter((a) => a.type === 'workflow-command');
+    const workflowCommandCount = await this.writeFlattenedArtifacts(workflowCommands, commandsDir);
 
     // Generate task and tool commands from manifests (if they exist)
     const taskToolGen = new TaskToolCommandGenerator();
@@ -184,7 +160,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
         ),
       );
     }
-    console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, bmadCommandsDir)}`));
+    console.log(chalk.dim(`  - Commands directory: ${path.relative(projectDir, commandsDir)}`));
 
     return {
       success: true,
@@ -471,13 +447,13 @@ class ClaudeCodeSetup extends BaseIdeSetup {
    * @returns {Object|null} Info about created command
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const customAgentsDir = path.join(projectDir, this.configDir, this.commandsDir, 'bmad', 'custom', 'agents');
+    const commandsDir = path.join(projectDir, this.configDir, this.commandsDir);
 
     if (!(await this.exists(path.join(projectDir, this.configDir)))) {
       return null; // IDE not configured for this project
     }
 
-    await this.ensureDir(customAgentsDir);
+    await this.ensureDir(commandsDir);
 
     const launcherContent = `---
 name: '${agentName}'
@@ -496,12 +472,13 @@ You must fully embody this agent's persona and follow all activation instruction
 </agent-activation>
 `;
 
-    const launcherPath = path.join(customAgentsDir, `${agentName}.md`);
+    const fileName = `bmad-custom-agents-${agentName}.md`;
+    const launcherPath = path.join(commandsDir, fileName);
     await this.writeFile(launcherPath, launcherContent);
 
     return {
       path: launcherPath,
-      command: `/bmad:custom:agents:${agentName}`,
+      command: `/bmad-custom-agents-${agentName}`,
     };
   }
 }

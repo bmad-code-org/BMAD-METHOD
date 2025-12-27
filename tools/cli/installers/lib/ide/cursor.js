@@ -1,31 +1,20 @@
 const path = require('node:path');
+const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
+const { getTasksFromBmad, getToolsFromBmad } = require('./shared/bmad-artifacts');
 
 /**
  * Cursor IDE setup handler
+ * Installs BMAD artifacts to .cursor/rules with flattened naming and MDC format
  */
 class CursorSetup extends BaseIdeSetup {
   constructor() {
     super('cursor', 'Cursor', true); // preferred IDE
     this.configDir = '.cursor';
     this.rulesDir = 'rules';
-  }
-
-  /**
-   * Cleanup old BMAD installation before reinstalling
-   * @param {string} projectDir - Project directory
-   */
-  async cleanup(projectDir) {
-    const fs = require('fs-extra');
-    const bmadRulesDir = path.join(projectDir, this.configDir, this.rulesDir, 'bmad');
-
-    if (await fs.pathExists(bmadRulesDir)) {
-      await fs.remove(bmadRulesDir);
-      console.log(chalk.dim(`  Removed old BMAD rules from ${this.name}`));
-    }
   }
 
   /**
@@ -37,138 +26,216 @@ class CursorSetup extends BaseIdeSetup {
   async setup(projectDir, bmadDir, options = {}) {
     console.log(chalk.cyan(`Setting up ${this.name}...`));
 
-    // Clean up old BMAD installation first
-    await this.cleanup(projectDir);
-
-    // Create .cursor/rules directory structure
+    // Create .cursor/rules directory
     const cursorDir = path.join(projectDir, this.configDir);
     const rulesDir = path.join(cursorDir, this.rulesDir);
-    const bmadRulesDir = path.join(rulesDir, 'bmad');
 
-    await this.ensureDir(bmadRulesDir);
+    await this.ensureDir(rulesDir);
 
-    // Generate agent launchers first
-    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
-    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+    // Clear old BMAD files
+    await this.clearBmadPrefixedFiles(rulesDir);
 
-    // Convert artifacts to agent format for index creation
-    const agents = agentArtifacts.map((a) => ({ module: a.module, name: a.name }));
+    // Collect all artifacts
+    const { artifacts, counts } = await this.collectCursorArtifacts(projectDir, bmadDir, options);
 
-    // Get tasks, tools, and workflows (ALL workflows now generate commands)
-    const tasks = await this.getTasks(bmadDir, true);
-    const tools = await this.getTools(bmadDir, true);
+    // Write flattened files
+    const written = await this.writeFlattenedArtifacts(artifacts, rulesDir);
 
-    // Get ALL workflows using the new workflow command generator
-    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
-    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
-
-    // Convert artifacts to workflow objects for directory creation
-    const workflows = workflowArtifacts
-      .filter((artifact) => artifact.type === 'workflow-command')
-      .map((artifact) => ({
-        module: artifact.module,
-        name: path.basename(artifact.relativePath, '.md'),
-        path: artifact.sourcePath,
-      }));
-
-    // Create directories for each module
-    const modules = new Set();
-    for (const item of [...agents, ...tasks, ...tools, ...workflows]) modules.add(item.module);
-
-    for (const module of modules) {
-      await this.ensureDir(path.join(bmadRulesDir, module));
-      await this.ensureDir(path.join(bmadRulesDir, module, 'agents'));
-      await this.ensureDir(path.join(bmadRulesDir, module, 'tasks'));
-      await this.ensureDir(path.join(bmadRulesDir, module, 'tools'));
-      await this.ensureDir(path.join(bmadRulesDir, module, 'workflows'));
-    }
-
-    // Process and write agent launchers with MDC format
-    let agentCount = 0;
-    for (const artifact of agentArtifacts) {
-      // Add MDC metadata header to launcher (but don't call processContent which adds activation headers)
-      const content = this.wrapLauncherWithMDC(artifact.content, {
-        module: artifact.module,
-        name: artifact.name,
-      });
-
-      const targetPath = path.join(bmadRulesDir, artifact.module, 'agents', `${artifact.name}.mdc`);
-
-      await this.writeFile(targetPath, content);
-      agentCount++;
-    }
-
-    // Process and copy tasks
-    let taskCount = 0;
-    for (const task of tasks) {
-      const content = await this.readAndProcess(task.path, {
-        module: task.module,
-        name: task.name,
-      });
-
-      const targetPath = path.join(bmadRulesDir, task.module, 'tasks', `${task.name}.mdc`);
-
-      await this.writeFile(targetPath, content);
-      taskCount++;
-    }
-
-    // Process and copy tools
-    let toolCount = 0;
-    for (const tool of tools) {
-      const content = await this.readAndProcess(tool.path, {
-        module: tool.module,
-        name: tool.name,
-      });
-
-      const targetPath = path.join(bmadRulesDir, tool.module, 'tools', `${tool.name}.mdc`);
-
-      await this.writeFile(targetPath, content);
-      toolCount++;
-    }
-
-    // Process and copy workflow commands (generated, not raw workflows)
-    let workflowCount = 0;
-    for (const artifact of workflowArtifacts) {
-      if (artifact.type === 'workflow-command') {
-        // Add MDC metadata header to workflow command
-        const content = this.wrapLauncherWithMDC(artifact.content, {
-          module: artifact.module,
-          name: path.basename(artifact.relativePath, '.md'),
-        });
-
-        const targetPath = path.join(bmadRulesDir, artifact.module, 'workflows', `${path.basename(artifact.relativePath, '.md')}.mdc`);
-
-        await this.writeFile(targetPath, content);
-        workflowCount++;
-      }
-    }
-
-    // Create BMAD index file (but NOT .cursorrules - user manages that)
-    await this.createBMADIndex(bmadRulesDir, agents, tasks, tools, workflows, modules);
+    // Create BMAD index file
+    await this.createBMADIndex(rulesDir, counts);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${agentCount} agents installed`));
-    console.log(chalk.dim(`  - ${taskCount} tasks installed`));
-    console.log(chalk.dim(`  - ${toolCount} tools installed`));
-    console.log(chalk.dim(`  - ${workflowCount} workflows installed`));
-    console.log(chalk.dim(`  - Rules directory: ${path.relative(projectDir, bmadRulesDir)}`));
+    console.log(chalk.dim(`  - ${counts.agents} agents installed`));
+    console.log(chalk.dim(`  - ${counts.tasks} tasks installed`));
+    console.log(chalk.dim(`  - ${counts.tools} tools installed`));
+    console.log(chalk.dim(`  - ${counts.workflows} workflow commands installed`));
+    if (counts.workflowLaunchers > 0) {
+      console.log(chalk.dim(`  - ${counts.workflowLaunchers} workflow launchers installed`));
+    }
+    console.log(chalk.dim(`  - ${written} files written to ${path.relative(projectDir, rulesDir)}`));
+
+    // Usage instructions
+    console.log(chalk.yellow('\n  ⚠️  How to Use Cursor Rules'));
+    console.log(chalk.cyan('  BMAD rules are available as @ references in Cursor'));
+    console.log(chalk.dim('  Usage:'));
+    console.log(chalk.dim('    - Reference rules with @bmad-{module}-{type}-{name}'));
+    console.log(chalk.dim('    - All BMAD items start with "bmad-"'));
+    console.log(chalk.dim('    - Example: @bmad-bmm-agents-pm'));
 
     return {
       success: true,
-      agents: agentCount,
-      tasks: taskCount,
-      tools: toolCount,
-      workflows: workflowCount,
+      agents: counts.agents,
+      tasks: counts.tasks,
+      tools: counts.tools,
+      workflows: counts.workflows,
+      workflowLaunchers: counts.workflowLaunchers,
+      written,
     };
+  }
+
+  /**
+   * Detect Cursor installation by checking for .cursor/rules directory
+   */
+  async detect(projectDir) {
+    const rulesDir = path.join(projectDir, this.configDir, this.rulesDir);
+
+    if (!(await fs.pathExists(rulesDir))) {
+      return false;
+    }
+
+    const entries = await fs.readdir(rulesDir);
+    return entries.some((entry) => entry.startsWith('bmad-'));
+  }
+
+  /**
+   * Collect all artifacts for Cursor export
+   */
+  async collectCursorArtifacts(projectDir, bmadDir, options = {}) {
+    const selectedModules = options.selectedModules || [];
+    const artifacts = [];
+
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
+
+    // Process agent launchers with Cursor MDC frontmatter
+    for (const agentArtifact of agentArtifacts) {
+      const content = this.addCursorMDCFrontmatter(agentArtifact.content, {
+        module: agentArtifact.module,
+        name: agentArtifact.name,
+        type: 'agent',
+      });
+
+      artifacts.push({
+        type: 'agent',
+        module: agentArtifact.module,
+        sourcePath: agentArtifact.sourcePath,
+        relativePath: agentArtifact.relativePath.replace(/\.md$/, '.mdc'),
+        content,
+      });
+    }
+
+    // Get tasks
+    const tasks = await getTasksFromBmad(bmadDir, selectedModules);
+    for (const task of tasks) {
+      const rawContent = await this.readFile(task.path);
+      const content = this.addCursorMDCFrontmatter(rawContent, {
+        module: task.module,
+        name: task.name,
+        type: 'task',
+      });
+
+      artifacts.push({
+        type: 'task',
+        module: task.module,
+        sourcePath: task.path,
+        relativePath: path.join(task.module, 'tasks', `${task.name}.mdc`),
+        content,
+      });
+    }
+
+    // Get tools
+    const tools = await getToolsFromBmad(bmadDir, selectedModules);
+    for (const tool of tools) {
+      const rawContent = await this.readFile(tool.path);
+      const content = this.addCursorMDCFrontmatter(rawContent, {
+        module: tool.module,
+        name: tool.name,
+        type: 'tool',
+      });
+
+      artifacts.push({
+        type: 'tool',
+        module: tool.module,
+        sourcePath: tool.path,
+        relativePath: path.join(tool.module, 'tools', `${tool.name}.mdc`),
+        content,
+      });
+    }
+
+    // Get workflows
+    const workflowGenerator = new WorkflowCommandGenerator(this.bmadFolderName);
+    const { artifacts: workflowArtifacts, counts: workflowCounts } = await workflowGenerator.collectWorkflowArtifacts(bmadDir);
+
+    // Process workflow artifacts with Cursor MDC frontmatter
+    for (const artifact of workflowArtifacts) {
+      const content = this.addCursorMDCFrontmatter(artifact.content, {
+        module: artifact.module,
+        name: artifact.name || path.basename(artifact.relativePath, '.md'),
+        type: 'workflow',
+      });
+
+      artifacts.push({
+        ...artifact,
+        relativePath: artifact.relativePath.replace(/\.md$/, '.mdc'),
+        content,
+      });
+    }
+
+    return {
+      artifacts,
+      counts: {
+        agents: agentArtifacts.length,
+        tasks: tasks.length,
+        tools: tools.length,
+        workflows: workflowCounts.commands,
+        workflowLaunchers: workflowCounts.launchers,
+      },
+    };
+  }
+
+  /**
+   * Add Cursor-specific MDC frontmatter
+   * @param {string} content - Original content
+   * @param {Object} metadata - Artifact metadata (module, name, type)
+   * @returns {string} Content with MDC frontmatter
+   */
+  addCursorMDCFrontmatter(content, metadata) {
+    // Strip existing frontmatter
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = content.replace(frontmatterRegex, '');
+
+    // Build description based on type
+    let description;
+    switch (metadata.type) {
+      case 'agent': {
+        description = `BMAD ${metadata.module.toUpperCase()} Agent: ${this.formatTitle(metadata.name)}`;
+        break;
+      }
+      case 'task': {
+        description = `BMAD ${metadata.module.toUpperCase()} Task: ${this.formatTitle(metadata.name)}`;
+        break;
+      }
+      case 'tool': {
+        description = `BMAD ${metadata.module.toUpperCase()} Tool: ${this.formatTitle(metadata.name)}`;
+        break;
+      }
+      case 'workflow': {
+        description = `BMAD ${metadata.module.toUpperCase()} Workflow: ${this.formatTitle(metadata.name)}`;
+        break;
+      }
+      default: {
+        description = `BMAD ${metadata.module.toUpperCase()}: ${this.formatTitle(metadata.name)}`;
+      }
+    }
+
+    // Create MDC frontmatter
+    return `---
+description: ${description}
+globs:
+alwaysApply: false
+---
+
+${contentWithoutFrontmatter}`;
   }
 
   /**
    * Create BMAD index file for easy navigation
    */
-  async createBMADIndex(bmadRulesDir, agents, tasks, tools, workflows, modules) {
-    const indexPath = path.join(bmadRulesDir, 'index.mdc');
+  async createBMADIndex(rulesDir, counts) {
+    const indexPath = path.join(rulesDir, 'bmad-index.mdc');
 
-    let content = `---
+    const content = `---
 description: BMAD Method - Master Index
 globs:
 alwaysApply: true
@@ -180,68 +247,25 @@ This is the master index for all BMAD agents, tasks, tools, and workflows availa
 
 ## Installation Complete!
 
-BMAD rules have been installed to: \`.cursor/rules/bmad/\`
+BMAD rules have been installed to: \`.cursor/rules/\` with flattened naming.
 
 **Note:** BMAD does not modify your \`.cursorrules\` file. You manage that separately.
 
 ## How to Use
 
-- Reference specific agents: @bmad/{module}/agents/{agent-name}
-- Reference specific tasks: @bmad/{module}/tasks/{task-name}
-- Reference specific tools: @bmad/{module}/tools/{tool-name}
-- Reference specific workflows: @bmad/{module}/workflows/{workflow-name}
-- Reference entire modules: @bmad/{module}
-- Reference this index: @bmad/index
+- Reference specific rules: @bmad-{module}-{type}-{name}
+- Examples:
+  - @bmad-bmm-agents-pm
+  - @bmad-core-tasks-workflow
+  - @bmad-bmm-workflows-create-prd
 
-## Available Modules
+## Statistics
 
-`;
+- **${counts.agents}** agents installed
+- **${counts.tasks}** tasks installed
+- **${counts.tools}** tools installed
+- **${counts.workflows}** workflow commands installed
 
-    for (const module of modules) {
-      content += `### ${module.toUpperCase()}\n\n`;
-
-      // List agents for this module
-      const moduleAgents = agents.filter((a) => a.module === module);
-      if (moduleAgents.length > 0) {
-        content += `**Agents:**\n`;
-        for (const agent of moduleAgents) {
-          content += `- @bmad/${module}/agents/${agent.name} - ${agent.name}\n`;
-        }
-        content += '\n';
-      }
-
-      // List tasks for this module
-      const moduleTasks = tasks.filter((t) => t.module === module);
-      if (moduleTasks.length > 0) {
-        content += `**Tasks:**\n`;
-        for (const task of moduleTasks) {
-          content += `- @bmad/${module}/tasks/${task.name} - ${task.name}\n`;
-        }
-        content += '\n';
-      }
-
-      // List tools for this module
-      const moduleTools = tools.filter((t) => t.module === module);
-      if (moduleTools.length > 0) {
-        content += `**Tools:**\n`;
-        for (const tool of moduleTools) {
-          content += `- @bmad/${module}/tools/${tool.name} - ${tool.name}\n`;
-        }
-        content += '\n';
-      }
-
-      // List workflows for this module
-      const moduleWorkflows = workflows.filter((w) => w.module === module);
-      if (moduleWorkflows.length > 0) {
-        content += `**Workflows:**\n`;
-        for (const workflow of moduleWorkflows) {
-          content += `- @bmad/${module}/workflows/${workflow.name} - ${workflow.name}\n`;
-        }
-        content += '\n';
-      }
-    }
-
-    content += `
 ## Quick Reference
 
 - All BMAD rules are Manual type - reference them explicitly when needed
@@ -261,107 +285,17 @@ specific agent expertise, task workflows, tools, or guided workflows.
     await this.writeFile(indexPath, content);
   }
 
-  /**
-   * Read and process file content
-   */
-  async readAndProcess(filePath, metadata) {
-    const fs = require('fs-extra');
-    const content = await fs.readFile(filePath, 'utf8');
-    return this.processContent(content, metadata);
-  }
+  // Uses inherited flattenFilename(), writeFlattenedArtifacts(), and clearBmadPrefixedFiles() from BaseIdeSetup
 
   /**
-   * Override processContent to add MDC metadata header for Cursor
-   * @param {string} content - File content
-   * @param {Object} metadata - File metadata
-   * @returns {string} Processed content with MDC header
+   * Cleanup Cursor configuration
    */
-  processContent(content, metadata = {}) {
-    // First apply base processing (includes activation injection for agents)
-    let processed = super.processContent(content, metadata);
-
-    // Strip any existing frontmatter from the processed content
-    // This prevents duplicate frontmatter blocks
-    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
-    if (frontmatterRegex.test(processed)) {
-      processed = processed.replace(frontmatterRegex, '');
+  async cleanup(projectDir) {
+    const rulesDir = path.join(projectDir, this.configDir, this.rulesDir);
+    const removedCount = await this.clearBmadPrefixedFiles(rulesDir);
+    if (removedCount > 0) {
+      console.log(chalk.dim(`  Removed ${removedCount} old BMAD items from ${this.name}`));
     }
-
-    // Determine the type and description based on content
-    const isAgent = content.includes('<agent');
-    const isTask = content.includes('<task');
-    const isTool = content.includes('<tool');
-    const isWorkflow = content.includes('workflow:') || content.includes('name:');
-
-    let description = '';
-    let globs = '';
-
-    if (isAgent) {
-      // Extract agent title if available
-      const titleMatch = content.match(/title="([^"]+)"/);
-      const title = titleMatch ? titleMatch[1] : metadata.name;
-      description = `BMAD ${metadata.module.toUpperCase()} Agent: ${title}`;
-      globs = '';
-    } else if (isTask) {
-      // Extract task name if available
-      const nameMatch = content.match(/name="([^"]+)"/);
-      const taskName = nameMatch ? nameMatch[1] : metadata.name;
-      description = `BMAD ${metadata.module.toUpperCase()} Task: ${taskName}`;
-      globs = '';
-    } else if (isTool) {
-      // Extract tool name if available
-      const nameMatch = content.match(/name="([^"]+)"/);
-      const toolName = nameMatch ? nameMatch[1] : metadata.name;
-      description = `BMAD ${metadata.module.toUpperCase()} Tool: ${toolName}`;
-      globs = '';
-    } else if (isWorkflow) {
-      // Workflow
-      description = `BMAD ${metadata.module.toUpperCase()} Workflow: ${metadata.name}`;
-      globs = '';
-    } else {
-      description = `BMAD ${metadata.module.toUpperCase()}: ${metadata.name}`;
-      globs = '';
-    }
-
-    // Create MDC metadata header
-    const mdcHeader = `---
-description: ${description}
-globs: ${globs}
-alwaysApply: false
----
-
-`;
-
-    // Add the MDC header to the processed content
-    return mdcHeader + processed;
-  }
-
-  /**
-   * Wrap launcher content with MDC metadata (without base processing)
-   * Launchers are already complete and should not have activation headers injected
-   */
-  wrapLauncherWithMDC(launcherContent, metadata = {}) {
-    // Strip the launcher's frontmatter - we'll replace it with MDC frontmatter
-    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
-    const contentWithoutFrontmatter = launcherContent.replace(frontmatterRegex, '');
-
-    // Extract metadata from launcher frontmatter for MDC description
-    const nameMatch = launcherContent.match(/name:\s*"([^"]+)"/);
-    const name = nameMatch ? nameMatch[1] : metadata.name;
-
-    const description = `BMAD ${metadata.module.toUpperCase()} Agent: ${name}`;
-
-    // Create MDC metadata header
-    const mdcHeader = `---
-description: ${description}
-globs:
-alwaysApply: false
----
-
-`;
-
-    // Return MDC header + launcher content (without its original frontmatter)
-    return mdcHeader + contentWithoutFrontmatter;
   }
 
   /**
@@ -373,13 +307,13 @@ alwaysApply: false
    * @returns {Object|null} Info about created command
    */
   async installCustomAgentLauncher(projectDir, agentName, agentPath, metadata) {
-    const customAgentsDir = path.join(projectDir, this.configDir, this.rulesDir, 'bmad', 'custom', 'agents');
+    const rulesDir = path.join(projectDir, this.configDir, this.rulesDir);
 
     if (!(await this.exists(path.join(projectDir, this.configDir)))) {
       return null; // IDE not configured for this project
     }
 
-    await this.ensureDir(customAgentsDir);
+    await this.ensureDir(rulesDir);
 
     const launcherContent = `You must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.
 
@@ -403,12 +337,15 @@ alwaysApply: false
 ${launcherContent}
 `;
 
-    const launcherPath = path.join(customAgentsDir, `${agentName}.mdc`);
-    await this.writeFile(launcherPath, mdcContent);
+    const fileName = `bmad-custom-agents-${agentName}.mdc`;
+    const launcherPath = path.join(rulesDir, fileName);
+    await fs.writeFile(launcherPath, mdcContent);
 
     return {
-      path: launcherPath,
-      command: `@${agentName}`,
+      ide: 'cursor',
+      path: path.relative(projectDir, launcherPath),
+      command: `@bmad-custom-agents-${agentName}`,
+      type: 'custom-agent-launcher',
     };
   }
 }

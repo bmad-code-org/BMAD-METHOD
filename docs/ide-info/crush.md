@@ -2,29 +2,27 @@
 
 ## Activating Agents
 
-BMAD agents are installed as commands in `.crush/commands/bmad/`.
+BMAD agents are installed as commands in `.crush/commands/` with flattened
+`bmad-*.md` naming.
 
 ### How to Use
 
 1. **Open Command Palette**: Use Crush command interface
-2. **Navigate**: Browse to `_bmad/{module}/agents/`
-3. **Select Agent**: Choose the agent command
+2. **Type Command**: Start with `/bmad-` to filter BMAD commands
+3. **Select Command**: Choose from the available options
 4. **Execute**: Run to activate agent persona
 
-### Command Structure
+### Examples
 
 ```
-.crush/commands/bmad/
-├── agents/          # All agents
-├── tasks/           # All tasks
-├── core/            # Core module
-│   ├── agents/
-│   └── tasks/
-└── {module}/        # Other modules
+/bmad-bmm-agents-pm - Activate PM agent
+/bmad-bmm-agents-architect - Activate architect agent
+/bmad-bmm-workflows-create-prd - Execute create-prd workflow
+/bmad-core-tasks-workflow - Execute workflow task
 ```
 
 ### Notes
 
-- Commands organized by module
-- Can browse hierarchically
+- All BMAD commands start with `bmad-`
+- Commands include agents, tasks, tools, and workflows
 - Agent activates for session

@@ -1,9 +1,9 @@
-# BMAD Method - Cline Instructions
+# BMAD Method - Google Antigravity Instructions
 
 ## Activating Agents
 
-BMAD agents are installed as slash commands in `.clinerules/workflows/` with
-flattened `bmad-*.md` naming.
+BMAD agents are installed as slash commands in `.agent/workflows/` with flattened
+`bmad-*.md` naming.
 
 ### How to Use
 

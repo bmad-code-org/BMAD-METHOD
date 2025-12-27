@@ -33,13 +33,13 @@ class ClineSetup extends BaseIdeSetup {
     await this.ensureDir(workflowsDir);
 
     // Clear old BMAD files
-    await this.clearOldBmadFiles(workflowsDir);
+    await this.clearBmadPrefixedFiles(workflowsDir);
 
     // Collect all artifacts
     const { artifacts, counts } = await this.collectClineArtifacts(projectDir, bmadDir, options);
 
     // Write flattened files
-    const written = await this.flattenAndWriteArtifacts(artifacts, workflowsDir);
+    const written = await this.writeFlattenedArtifacts(artifacts, workflowsDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${counts.agents} agents installed`));
@@ -143,54 +143,7 @@ class ClineSetup extends BaseIdeSetup {
     };
   }
 
-  /**
-   * Flatten file path to bmad-module-type-name.md format
-   */
-  flattenFilename(relativePath) {
-    const sanitized = relativePath.replaceAll(/[\\/]/g, '-');
-    return `bmad-${sanitized}`;
-  }
-
-  /**
-   * Write all artifacts with flattened names
-   */
-  async flattenAndWriteArtifacts(artifacts, destDir) {
-    let written = 0;
-
-    for (const artifact of artifacts) {
-      const flattenedName = this.flattenFilename(artifact.relativePath);
-      const targetPath = path.join(destDir, flattenedName);
-      await fs.writeFile(targetPath, artifact.content);
-      written++;
-    }
-
-    return written;
-  }
-
-  /**
-   * Clear old BMAD files from the workflows directory
-   */
-  async clearOldBmadFiles(destDir) {
-    if (!(await fs.pathExists(destDir))) {
-      return;
-    }
-
-    const entries = await fs.readdir(destDir);
-
-    for (const entry of entries) {
-      if (!entry.startsWith('bmad-')) {
-        continue;
-      }
-
-      const entryPath = path.join(destDir, entry);
-      const stat = await fs.stat(entryPath);
-      if (stat.isFile()) {
-        await fs.remove(entryPath);
-      } else if (stat.isDirectory()) {
-        await fs.remove(entryPath);
-      }
-    }
-  }
+  // Uses inherited flattenFilename(), writeFlattenedArtifacts(), and clearBmadPrefixedFiles() from BaseIdeSetup
 
   /**
    * Read and process file with project-specific paths
@@ -205,8 +158,10 @@ class ClineSetup extends BaseIdeSetup {
    */
   async cleanup(projectDir) {
     const workflowsDir = path.join(projectDir, this.configDir, this.workflowsDir);
-    await this.clearOldBmadFiles(workflowsDir);
-    console.log(chalk.dim(`Removed ${this.name} BMAD configuration`));
+    const removedCount = await this.clearBmadPrefixedFiles(workflowsDir);
+    if (removedCount > 0) {
+      console.log(chalk.dim(`  Removed ${removedCount} old BMAD items from ${this.name}`));
+    }
   }
 
   /**
@@ -256,13 +211,6 @@ The agent will follow the persona and instructions from the main agent file.
       command: agentName,
       type: 'custom-agent-launcher',
     };
-  }
-
-  /**
-   * Utility: Ensure directory exists
-   */
-  async ensureDir(dirPath) {
-    await fs.ensureDir(dirPath);
   }
 }
 

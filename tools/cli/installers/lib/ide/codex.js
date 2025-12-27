@@ -95,8 +95,8 @@ class CodexSetup extends BaseIdeSetup {
 
     const destDir = this.getCodexPromptDir(projectDir, installLocation);
     await fs.ensureDir(destDir);
-    await this.clearOldBmadFiles(destDir);
-    const written = await this.flattenAndWriteArtifacts(artifacts, destDir);
+    await this.clearBmadPrefixedFiles(destDir);
+    const written = await this.writeFlattenedArtifacts(artifacts, destDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - Mode: CLI`));
@@ -212,40 +212,7 @@ class CodexSetup extends BaseIdeSetup {
     return path.join(os.homedir(), '.codex', 'prompts');
   }
 
-  async flattenAndWriteArtifacts(artifacts, destDir) {
-    let written = 0;
-
-    for (const artifact of artifacts) {
-      const flattenedName = this.flattenFilename(artifact.relativePath);
-      const targetPath = path.join(destDir, flattenedName);
-      await fs.writeFile(targetPath, artifact.content);
-      written++;
-    }
-
-    return written;
-  }
-
-  async clearOldBmadFiles(destDir) {
-    if (!(await fs.pathExists(destDir))) {
-      return;
-    }
-
-    const entries = await fs.readdir(destDir);
-
-    for (const entry of entries) {
-      if (!entry.startsWith('bmad-')) {
-        continue;
-      }
-
-      const entryPath = path.join(destDir, entry);
-      const stat = await fs.stat(entryPath);
-      if (stat.isFile()) {
-        await fs.remove(entryPath);
-      } else if (stat.isDirectory()) {
-        await fs.remove(entryPath);
-      }
-    }
-  }
+  // Uses inherited writeFlattenedArtifacts() and clearBmadPrefixedFiles() from BaseIdeSetup
 
   async readAndProcessWithProject(filePath, metadata, projectDir) {
     const content = await fs.readFile(filePath, 'utf8');
@@ -337,11 +304,11 @@ class CodexSetup extends BaseIdeSetup {
   async cleanup(projectDir = null) {
     // Clean both global and project-specific locations
     const globalDir = this.getCodexPromptDir(null, 'global');
-    await this.clearOldBmadFiles(globalDir);
+    await this.clearBmadPrefixedFiles(globalDir);
 
     if (projectDir) {
       const projectSpecificDir = this.getCodexPromptDir(projectDir, 'project');
-      await this.clearOldBmadFiles(projectSpecificDir);
+      await this.clearBmadPrefixedFiles(projectSpecificDir);
     }
   }
 

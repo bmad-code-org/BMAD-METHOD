@@ -1,4 +1,5 @@
 const path = require('node:path');
+const fs = require('fs-extra');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const inquirer = require('inquirer').default || require('inquirer');
@@ -6,7 +7,7 @@ const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 
 /**
  * GitHub Copilot setup handler
- * Creates agents in .github/agents/ and configures VS Code settings
+ * Installs BMAD artifacts to .github/agents with flattened naming
  */
 class GitHubCopilotSetup extends BaseIdeSetup {
   constructor() {
@@ -103,45 +104,132 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     const agentsDir = path.join(githubDir, this.agentsDir);
     await this.ensureDir(agentsDir);
 
-    // Clean up any existing BMAD files before reinstalling
-    await this.cleanup(projectDir);
+    // Clear old BMAD files
+    await this.clearBmadPrefixedFiles(agentsDir);
 
-    // Generate agent launchers
-    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
-    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
+    // Collect all artifacts
+    const { artifacts, counts } = await this.collectCopilotArtifacts(projectDir, bmadDir, options);
 
-    // Create agent files with bmd- prefix
-    let agentCount = 0;
-    for (const artifact of agentArtifacts) {
-      const content = artifact.content;
-      const agentContent = await this.createAgentContent({ module: artifact.module, name: artifact.name }, content);
-
-      // Use bmd- prefix: bmd-custom-{module}-{name}.agent.md
-      const targetPath = path.join(agentsDir, `bmd-custom-${artifact.module}-${artifact.name}.agent.md`);
-      await this.writeFile(targetPath, agentContent);
-      agentCount++;
-
-      console.log(chalk.green(`  ✓ Created agent: bmd-custom-${artifact.module}-${artifact.name}`));
-    }
+    // Write flattened files
+    const written = await this.writeFlattenedArtifacts(artifacts, agentsDir);
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
-    console.log(chalk.dim(`  - ${agentCount} agents created`));
-    console.log(chalk.dim(`  - Agents directory: ${path.relative(projectDir, agentsDir)}`));
+    console.log(chalk.dim(`  - ${counts.agents} agents created`));
+    console.log(chalk.dim(`  - ${written} files written to ${path.relative(projectDir, agentsDir)}`));
     console.log(chalk.dim(`  - VS Code settings configured`));
-    console.log(chalk.dim('\n  Agents available in VS Code Chat view'));
+
+    // Usage instructions
+    console.log(chalk.yellow('\n  ⚠️  How to Use GitHub Copilot Agents'));
+    console.log(chalk.cyan('  BMAD agents are available in VS Code Chat view'));
+    console.log(chalk.dim('  Usage:'));
+    console.log(chalk.dim('    - All BMAD items start with "bmad-"'));
+    console.log(chalk.dim('    - Example: @bmad-bmm-agents-pm'));
 
     return {
       success: true,
-      agents: agentCount,
+      agents: counts.agents,
       settings: true,
+      written,
     };
+  }
+
+  /**
+   * Detect GitHub Copilot installation by checking for .github/agents directory
+   */
+  async detect(projectDir) {
+    const agentsDir = path.join(projectDir, this.configDir, this.agentsDir);
+
+    if (!(await fs.pathExists(agentsDir))) {
+      return false;
+    }
+
+    const entries = await fs.readdir(agentsDir);
+    return entries.some((entry) => entry.startsWith('bmad-'));
+  }
+
+  /**
+   * Collect all artifacts for GitHub Copilot export
+   */
+  async collectCopilotArtifacts(projectDir, bmadDir, options = {}) {
+    const selectedModules = options.selectedModules || [];
+    const artifacts = [];
+
+    // Generate agent launchers
+    const agentGen = new AgentCommandGenerator(this.bmadFolderName);
+    const { artifacts: agentArtifacts } = await agentGen.collectAgentArtifacts(bmadDir, selectedModules);
+
+    // Process agent launchers with GitHub Copilot frontmatter (tools array)
+    for (const agentArtifact of agentArtifacts) {
+      const content = this.addCopilotFrontmatter(agentArtifact.content, {
+        module: agentArtifact.module,
+        name: agentArtifact.name,
+      });
+
+      artifacts.push({
+        type: 'agent',
+        module: agentArtifact.module,
+        sourcePath: agentArtifact.sourcePath,
+        relativePath: agentArtifact.relativePath.replace(/\.md$/, '.agent.md'),
+        content,
+      });
+    }
+
+    return {
+      artifacts,
+      counts: {
+        agents: agentArtifacts.length,
+      },
+    };
+  }
+
+  /**
+   * Add GitHub Copilot-specific frontmatter with tools array
+   * @param {string} content - Original content
+   * @param {Object} metadata - Artifact metadata (module, name)
+   * @returns {string} Content with Copilot frontmatter
+   */
+  addCopilotFrontmatter(content, metadata) {
+    // Strip existing frontmatter
+    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
+    const contentWithoutFrontmatter = content.replace(frontmatterRegex, '').trim();
+
+    const title = this.formatTitle(metadata.name);
+    const description = `Activates the ${title} agent persona.`;
+
+    // Available GitHub Copilot tools (November 2025 - Official VS Code Documentation)
+    // Reference: https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features#_chat-tools
+    const tools = [
+      'changes', // List of source control changes
+      'edit', // Edit files in your workspace including: createFile, createDirectory, editNotebook, newJupyterNotebook and editFiles
+      'fetch', // Fetch content from web page
+      'githubRepo', // Perform code search in GitHub repo
+      'problems', // Add workspace issues from Problems panel
+      'runCommands', // Runs commands in the terminal including: getTerminalOutput, terminalSelection, terminalLastCommand and runInTerminal
+      'runTasks', // Runs tasks and gets their output for your workspace
+      'runTests', // Run unit tests in workspace
+      'search', // Search and read files in your workspace, including:fileSearch, textSearch, listDirectory, readFile, codebase and searchResults
+      'runSubagent', // Runs a task within an isolated subagent context. Enables efficient organization of tasks and context window management.
+      'testFailure', // Get unit test failure information
+      'todos', // Tool for managing and tracking todo items for task planning
+      'usages', // Find references and navigate definitions
+    ];
+
+    return `---
+description: "${description.replaceAll('"', String.raw`\"`)}"
+tools: ${JSON.stringify(tools)}
+---
+
+# ${title} Agent
+
+${contentWithoutFrontmatter}
+
+`;
   }
 
   /**
    * Configure VS Code settings for GitHub Copilot
    */
   async configureVsCodeSettings(projectDir, options) {
-    const fs = require('fs-extra');
     const vscodeDir = path.join(projectDir, this.vscodeDir);
     const settingsPath = path.join(vscodeDir, 'settings.json');
 
@@ -207,72 +295,15 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     console.log(chalk.green('  ✓ VS Code settings configured'));
   }
 
-  /**
-   * Create agent content
-   */
-  async createAgentContent(agent, content) {
-    // Extract metadata from launcher frontmatter if present
-    const descMatch = content.match(/description:\s*"([^"]+)"/);
-    const title = descMatch ? descMatch[1] : this.formatTitle(agent.name);
-
-    const description = `Activates the ${title} agent persona.`;
-
-    // Strip any existing frontmatter from the content
-    const frontmatterRegex = /^---\s*\n[\s\S]*?\n---\s*\n/;
-    let cleanContent = content;
-    if (frontmatterRegex.test(content)) {
-      cleanContent = content.replace(frontmatterRegex, '').trim();
-    }
-
-    // Available GitHub Copilot tools (November 2025 - Official VS Code Documentation)
-    // Reference: https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features#_chat-tools
-    const tools = [
-      'changes', // List of source control changes
-      'edit', // Edit files in your workspace including: createFile, createDirectory, editNotebook, newJupyterNotebook and editFiles
-      'fetch', // Fetch content from web page
-      'githubRepo', // Perform code search in GitHub repo
-      'problems', // Add workspace issues from Problems panel
-      'runCommands', // Runs commands in the terminal including: getTerminalOutput, terminalSelection, terminalLastCommand and runInTerminal
-      'runTasks', // Runs tasks and gets their output for your workspace
-      'runTests', // Run unit tests in workspace
-      'search', // Search and read files in your workspace, including:fileSearch, textSearch, listDirectory, readFile, codebase and searchResults
-      'runSubagent', // Runs a task within an isolated subagent context. Enables efficient organization of tasks and context window management.
-      'testFailure', // Get unit test failure information
-      'todos', // Tool for managing and tracking todo items for task planning
-      'usages', // Find references and navigate definitions
-    ];
-
-    let agentContent = `---
-description: "${description.replaceAll('"', String.raw`\"`)}"
-tools: ${JSON.stringify(tools)}
----
-
-# ${title} Agent
-
-${cleanContent}
-
-`;
-
-    return agentContent;
-  }
-
-  /**
-   * Format name as title
-   */
-  formatTitle(name) {
-    return name
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
+  // Uses inherited flattenFilename(), writeFlattenedArtifacts(), and clearBmadPrefixedFiles() from BaseIdeSetup
 
   /**
    * Cleanup GitHub Copilot configuration - surgically remove only BMAD files
    */
   async cleanup(projectDir) {
-    const fs = require('fs-extra');
+    const agentsDir = path.join(projectDir, this.configDir, this.agentsDir);
 
-    // Clean up old chatmodes directory
+    // Clean up old chatmodes directory (legacy)
     const chatmodesDir = path.join(projectDir, this.configDir, 'chatmodes');
     if (await fs.pathExists(chatmodesDir)) {
       const files = await fs.readdir(chatmodesDir);
@@ -291,21 +322,9 @@ ${cleanContent}
     }
 
     // Clean up new agents directory
-    const agentsDir = path.join(projectDir, this.configDir, this.agentsDir);
-    if (await fs.pathExists(agentsDir)) {
-      const files = await fs.readdir(agentsDir);
-      let removed = 0;
-
-      for (const file of files) {
-        if (file.startsWith('bmd-') && file.endsWith('.agent.md')) {
-          await fs.remove(path.join(agentsDir, file));
-          removed++;
-        }
-      }
-
-      if (removed > 0) {
-        console.log(chalk.dim(`  Cleaned up ${removed} existing BMAD agents`));
-      }
+    const removedCount = await this.clearBmadPrefixedFiles(agentsDir);
+    if (removedCount > 0) {
+      console.log(chalk.dim(`  Cleaned up ${removedCount} existing BMAD agents`));
     }
   }
 
@@ -374,12 +393,15 @@ tools: ${JSON.stringify(copilotTools)}
 ${launcherContent}
 `;
 
-    const agentFilePath = path.join(agentsDir, `bmd-custom-${agentName}.agent.md`);
-    await this.writeFile(agentFilePath, agentContent);
+    const fileName = `bmad-custom-agents-${agentName}.agent.md`;
+    const agentFilePath = path.join(agentsDir, fileName);
+    await fs.writeFile(agentFilePath, agentContent);
 
     return {
-      path: agentFilePath,
-      command: `bmd-custom-${agentName}`,
+      ide: 'github-copilot',
+      path: path.relative(projectDir, agentFilePath),
+      command: `@bmad-custom-agents-${agentName}`,
+      type: 'custom-agent-launcher',
     };
   }
 }
