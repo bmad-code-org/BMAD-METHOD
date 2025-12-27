@@ -16,7 +16,7 @@ flowchart LR
     %% Business Goals (Left)
     BG0["<br/>⭐ PRIMARY GOAL: 50 EVANGELISTS<br/><br/>THE ENGINE<br/>50 hardcore believers and advocates<br/>Completed course + built real project<br/>Actively sharing and teaching others<br/>Timeline: 12 months<br/><br/>"]
     BG1["<br/>🚀 WDS ADOPTION GOALS<br/><br/>1,000 designers using WDS<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/>250 active community members<br/>Timeline: 24 months<br/><br/>"]
-    BG2["<br/>🌟 COMMUNITY OPPORTUNITIES<br/><br/>10 speaking engagements (members)<br/>20 case studies published (members)<br/>50 testimonials (members)<br/>Client project opportunities (members)<br/>Timeline: 24 months<br/><br/>"]
+    BG2["<br/>🌟 COMMUNITY OPPORTUNITIES<br/><br/>10 speaking engagements<br/>20 case studies published<br/>50 testimonials<br/>Client project opportunities<br/>Timeline: 24 months<br/><br/>"]
     
     %% Central Platform
     PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
@@ -257,7 +257,7 @@ flowchart LR
     %% Business Goals (Left)
     BG0["<br/>⭐ PRIMARY GOAL: 50 EVANGELISTS<br/><br/>THE ENGINE<br/>50 hardcore believers and advocates<br/>Completed course + built real project<br/>Actively sharing and teaching others<br/>Timeline: 12 months<br/><br/>"]
     BG1["<br/>🚀 WDS ADOPTION GOALS<br/><br/>1,000 designers using WDS<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/>250 active community members<br/>Timeline: 24 months<br/><br/>"]
-    BG2["<br/>🌟 COMMUNITY OPPORTUNITIES<br/><br/>10 speaking engagements (members)<br/>20 case studies published (members)<br/>50 testimonials (members)<br/>Client project opportunities (members)<br/>Timeline: 24 months<br/><br/>"]
+    BG2["<br/>🌟 COMMUNITY OPPORTUNITIES<br/><br/>10 speaking engagements<br/>20 case studies published<br/>50 testimonials<br/>Client project opportunities<br/>Timeline: 24 months<br/><br/>"]
     
     %% Central Platform
     PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
