@@ -59,7 +59,7 @@ PLATFORM["<br/>🎨 PLATFORM NAME<br/><br/>Tagline or category<br/><br/>Transfor
 - Single node ID: PLATFORM
 - Include platform emoji
 - Show tagline/category
-- Include transformation statement (the "battle cry")
+- Include transformation/value statement
 - Break long text into multiple lines
 
 ### 6. Target Group Nodes

@@ -38,8 +38,8 @@
 
 **Across ALL documents:**
 
-- [ ] Battle cry appears in hub (00) and appropriate persona docs
 - [ ] PRIMARY GOAL consistently labeled as "THE ENGINE"
+- [ ] Transformation journey clearly described
 - [ ] Timeline numbers match across documents
 - [ ] Target numbers (50 champions, 5000 users, etc.) are consistent
 - [ ] Persona names spelled consistently
@@ -114,7 +114,7 @@
 
 **Verify hub has on-page summaries for:**
 
-- [ ] Battle cry displayed prominently
+- [ ] Transformation clearly stated
 - [ ] Flywheel explained (3 tiers)
 - [ ] Business Strategy section with key points
 - [ ] Each persona with profile + drivers visible
@@ -235,9 +235,7 @@ Once all checks pass, output:
 ✅ Language is empowering and organic
 ✅ All 6 driving forces have Product Promises/Answers
 ✅ Priority tiers consistent throughout
-✅ Battle cry present in appropriate docs
-
-**Battle Cry:** "[Insert battle cry]"
+✅ Transformation journey clearly described
 
 **Primary Target:** [Primary Persona Name]  
 **THE ENGINE:** [PRIMARY GOAL statement]

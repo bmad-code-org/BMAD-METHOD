@@ -195,7 +195,7 @@ Remember: negative drivers often have more weight (loss aversion).</ask>
 
 This focus means saying "not yet" to some things. That's the power of prioritization.
 
-Next, we'll analyze which features best serve these priorities.</output>
+Next, we'll optionally analyze which features best serve these priorities.</output>
 
 <action>Store prioritized_groups, prioritized_drivers, focus_statement</action>
 </step>

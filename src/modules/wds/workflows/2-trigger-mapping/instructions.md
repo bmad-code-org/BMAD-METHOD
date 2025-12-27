@@ -15,13 +15,15 @@ Trigger Mapping connects your business goals to user psychology. It answers:
 - **What** do they want to avoid (negative drivers)?
 - **Which** features matter most?
 
-We'll work through 5 focused workshops:
+We'll work through 4 core workshops, plus 1 optional workshop:
 
 1. **Business Goals** - Vision → SMART objectives
 2. **Target Groups** - Who are your key users?
 3. **Driving Forces** - What motivates and concerns them?
 4. **Prioritization** - What matters most?
-5. **Documentation** - Create comprehensive trigger map structure
+5. **Feature Impact** (Optional) - Which features serve priorities best?
+
+After workshops, I'll create comprehensive documentation with a visual trigger map.
 
 Each workshop builds on the previous. You can run them all together (60-90 min) or spread across sessions.
 
@@ -29,7 +31,7 @@ Ready to begin? 🎯</output>
 
 <ask>Would you like to:
 
-1. **Full session** - All 5 workshops now
+1. **Full session** - All 4 core workshops now (Feature Impact optional at end)
 2. **Workshop by workshop** - Start with Business Goals, continue later
 3. **Jump to specific workshop** - If you've done some already</ask>
 
@@ -47,7 +49,7 @@ Ready to begin? 🎯</output>
   2. Target Groups
   3. Driving Forces
   4. Prioritization
-  5. Documentation</ask>
+  5. Feature Impact</ask>
   <action>Jump to selected workshop</action>
 </check>
 </step>
@@ -69,48 +71,30 @@ Ready to begin? 🎯</output>
 
 <step n="5" goal="Run Workshop 4: Prioritization">
 <action>Load and execute: workshops/4-prioritization/instructions.md</action>
-<action>Store outputs: prioritized_groups, prioritized_drivers, battle_cry</action>
+<action>Store outputs: prioritized_groups, prioritized_drivers, focus_statement</action>
 </step>
 
-<step n="6" goal="Generate Trigger Map Documentation">
-<output>Excellent! Now I'll create your comprehensive Trigger Map documentation structure.
+<step n="5.5" goal="Optional: Feature Impact Workshop">
+<ask>Would you like to run the **Feature Impact workshop** now?
 
-This follows the WDS standard structure:
-- **00-trigger-map.md** - Navigation hub with diagram and summaries
-- **01-Business-Goals.md** - Detailed objectives and flywheel
-- **02-XX-Persona.md** - Individual detailed persona documents  
-- **0X-Key-Insights.md** - Strategic implications
+This is optional but valuable - it analyzes which features best serve your prioritized personas and goals, creating a scored priority list for design and development.</ask>
 
-Let me generate all documents now...</output>
+<check if="yes">
+  <action>Load and execute: workshops/5-feature-impact/instructions.md</action>
+  <action>Store feature_impact_analysis</action>
+</check>
 
-<action>Load and execute: document-generation/instructions.md</action>
+<check if="no">
+  <output>No problem! You can run Feature Impact later if needed. Proceeding to handover...</output>
+</check>
+</step>
 
-<output>✅ **Trigger Map Documentation Complete!**
+<step n="6" goal="Handover to UX Design Phase">
+<output>**All Workshops Complete!** 🎉
 
-**Created Structure:**
+Now let me prepare the handover to Phase 4: UX Design...</output>
 
-```
-2-trigger-map/
-├── 00-trigger-map.md          (Hub with Mermaid diagram & navigation)
-├── 01-Business-Goals.md        (Vision, objectives, flywheel)
-├── 02-[Primary Persona].md    (Detailed primary persona)
-├── 03-[Secondary Persona].md  (Detailed secondary persona)
-├── 04-[Tertiary Persona].md   (Detailed tertiary persona - if applicable)
-└── 05-Key-Insights.md         (Design implications & success factors)
-```
-
-**Key Features:**
-- ✅ Professional Mermaid diagram with light gray styling
-- ✅ Gold highlighting for PRIMARY GOAL
-- ✅ On-page summaries in trigger map hub
-- ✅ Detailed persona profiles with driving forces
-- ✅ Strategic relationships and flywheel
-- ✅ Design implications and success criteria
-- ✅ Cross-linked navigation
-
-**Your Battle Cry:** {{battle_cry}}
-
-Ready for Phase 3: Platform Requirements or Phase 4: UX Design! 🚀</output>
+<action>Load and execute: handover/instructions.md</action>
 </step>
 
 </workflow>

@@ -412,15 +412,24 @@ For EACH persona (Primary, Secondary, Tertiary), create a comprehensive document
 
 ---
 
-### 12. The Battle Cry (PRIMARY especially)
+### 12. Transformation Journey (PRIMARY persona especially)
 
 ```markdown
-## The Battle Cry (For [Persona Name])
+## Transformation Journey
 
-**"[Insert battle cry from workshop]"**
+**Current State:** [Current challenges and limitations]
 
-This is [Persona]'s transformation: From [before] to [after].
+**With [Product]:** [How the product enables change]
+
+**Desired State:** [Outcome and new capabilities]
+
+**What Makes This Possible:**
+- [Enabler 1]
+- [Enabler 2]
+- [Enabler 3]
 ```
+
+This is especially important for the PRIMARY persona.
 
 ---
 

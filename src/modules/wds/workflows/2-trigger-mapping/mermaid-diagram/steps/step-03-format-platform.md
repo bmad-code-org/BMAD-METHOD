@@ -22,7 +22,7 @@ PLATFORM["<br/>EMOJI PRODUCT NAME<br/><br/>Category or tagline<br/><br/>Transfor
 3. Blank line (`<br/><br/>`)
 4. Category or tagline
 5. Blank line (`<br/><br/>`)
-6. Transformation statement (the "battle cry") - break across multiple lines
+6. Transformation/value statement - break across multiple lines
 7. End with `<br/><br/>` (bottom padding)
 
 ---
@@ -46,11 +46,11 @@ PLATFORM["<br/>EMOJI PRODUCT NAME<br/><br/>Category or tagline<br/><br/>Transfor
 - Be emotionally compelling
 - Be specific about the transformation
 - Span 3-5 lines for readability
-- Connect to the battle cry
+- Connect to the strategic vision and transformation goals
 
 **Example:**
 ```
-Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden
+Transform users from frustrated<br/>manual processors into confident<br/>automated workflow managers<br/>who scale without stress
 ```
 
 ---
