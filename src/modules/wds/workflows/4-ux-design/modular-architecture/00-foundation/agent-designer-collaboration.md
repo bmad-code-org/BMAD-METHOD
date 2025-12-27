@@ -479,7 +479,7 @@ Agent: "Perfect! Documenting:
 
 ## Related Concepts
 
-### [Why-Based Specifications](../WHY-BASED-SPECIFICATIONS.md)
+### [Conceptual Specifications](../CONCEPTUAL-SPECIFICATIONS.md)
 
 How capturing WHY (not just WHAT) makes AI implementation correct
 

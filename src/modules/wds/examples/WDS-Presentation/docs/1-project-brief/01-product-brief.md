@@ -348,7 +348,7 @@ Entrepreneurs, startup founders, and product owners who:
 
 WDS is the **only end-to-end design methodology** that:
 - Provides complete journey (vision → specifications → handoff)
-- Preserves design thinking through why-based specifications
+- Preserves design thinking through conceptual specifications
 - Makes designers strategic linchpins (not replaceable executors)
 - Built on proven 25-year methodology (BMad Method)
 - Free and open-source (no cost barriers)
@@ -391,7 +391,7 @@ Most tools solve **fragments** of the design challenge:
 
 4. **Complete Integration (Not Fragmented)**
    - Only solution that covers idea → maintenance
-   - Why-based specifications unique approach
+   - Conceptual specifications unique approach
    - Design system + scenario design + PRD all connected
    - Seamless handoff to development (BMM agents)
 

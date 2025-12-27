@@ -12,7 +12,7 @@
 >
 > **— Sarah K., Product Designer**
 
-> "The 5x speed increase is real. But what surprised me most was how much clearer my thinking became. Writing why-based specifications forced me to understand the 'why' at a deeper level."
+> "The 5x speed increase is real. But what surprised me most was how much clearer my thinking became. Writing conceptual specifications forced me to understand the 'why' at a deeper level."
 >
 > **— Marcus L., UX Lead**
 

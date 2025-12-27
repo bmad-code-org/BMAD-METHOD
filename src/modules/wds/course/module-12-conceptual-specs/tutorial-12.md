@@ -1,4 +1,4 @@
-# Tutorial 12: Write Why-Based Specifications
+# Tutorial 12: Write Conceptual Specifications
 
 **Hands-on guide to documenting WHAT + WHY + WHAT NOT TO DO**
 
@@ -10,7 +10,7 @@ This tutorial teaches you how to transform sketches into specifications that pre
 
 **Time:** 60-90 minutes  
 **Prerequisites:** Sketches completed and analyzed  
-**What you'll create:** Complete why-based specifications for a page
+**What you'll create:** Complete conceptual specifications for a page
 
 ---
 
@@ -658,7 +658,7 @@ Agent: "Your design brilliance is captured beautifully! Let me verify:
 
 ---
 
-## The Power of Why-Based Specs
+## The Power of Conceptual Specs
 
 **Traditional approach:**
 

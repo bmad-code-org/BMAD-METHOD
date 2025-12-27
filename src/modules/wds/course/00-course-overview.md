@@ -101,7 +101,7 @@ Each module contains:
 - [Module 10: Sketch Interfaces](module-10-sketch-interfaces/)
 - [Module 11: Analyze with AI](module-11-analyze-with-ai/)
 - [Module 12: Decompose Components](module-12-decompose-components/)
-- [Module 13: Why-Based Specifications](module-13-why-based-specs/) • [Tutorial →](module-13-why-based-specs/tutorial-13.md)
+- [Module 13: Conceptual Specifications](module-13-conceptual-specs/) • [Tutorial →](module-13-conceptual-specs/tutorial-13.md)
 - [Module 14: Validate Specifications](module-14-validate-specifications/)
 
 ### Phase 5: Design System

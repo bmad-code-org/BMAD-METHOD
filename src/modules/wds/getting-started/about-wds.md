@@ -30,7 +30,7 @@ WDS solves this by preserving design thinking through AI-ready specifications.
 
 **The problem:** AI can generate code perfectly, but only if you can clearly define what you want. Unclear specifications lead to AI hallucinations and failed projects.
 
-**The solution:** WDS teaches designers to create why-based specifications that capture intent, not just appearance.
+**The solution:** WDS teaches designers to create conceptual specifications that capture intent, not just appearance.
 
 **The result:** Designers become 5x more productive while maintaining creative control.
 
@@ -41,7 +41,7 @@ WDS solves this by preserving design thinking through AI-ready specifications.
 WDS provides:
 
 - A systematic workflow from product brief to AI-ready specifications
-- Why-based specifications (WHAT + WHY + WHAT NOT TO DO)
+- Conceptual specifications (WHAT + WHY + WHAT NOT TO DO)
 - AI agents specifically tailored for design work
 - Integration with BMad Method for seamless design-to-development handoff
 

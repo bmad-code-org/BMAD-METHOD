@@ -53,7 +53,7 @@ By the end of this course, you'll have created:
 **3. Scenario Specifications**
 
 - At least one complete user scenario
-- Why-based specifications for key components
+- Conceptual specifications for key components
 - AI-ready documentation
 
 **4. Design System Foundation**

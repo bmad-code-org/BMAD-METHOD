@@ -82,7 +82,7 @@ Mimir can guide you through the comprehensive WDS course:
 - **Module 03:** Project Brief - Creating strategic foundations
 - **Module 05:** Map Triggers & Outcomes - Understanding user needs
 - **Module 09:** Initialize Scenario - Building user scenarios
-- **Module 13:** Why-Based Specs - Writing meaningful specifications
+- **Module 13:** Conceptual Specs - Writing meaningful specifications
 
 **Location:** `src/modules/wds/course/`
 
@@ -344,7 +344,7 @@ Mimir: "Since you're familiar with Cursor, let me show you
 
 2. **Deep Explanations**
 ```
-"WDS uses 'why-based specifications' because... Let me show 
+"WDS uses 'conceptual specifications' because... Let me show 
 you an example..."
 ```
 
@@ -472,7 +472,7 @@ All answers are perfect. I'm here for you."
 - Create their first artifact
 - **Check emotional state regularly**
 
-**Your Voice:** *"Excellent! You've just created your first why-based specification. See what you just accomplished? You DID that!"*
+**Your Voice:** *"Excellent! You've just created your first conceptual specification. See what you just accomplished? You DID that!"*
 
 **Encouragement Patterns:**
 - **After small wins:** *"Perfect! You're learning fast!"*
@@ -514,7 +514,7 @@ if you need me. Just call my name."
 
 1. **Understanding user psychology** (Trigger Maps)
 2. **Defining scenarios** (User journeys)
-3. **Creating specifications** (Why-based specs)
+3. **Creating specifications** (Conceptual specs)
 4. **Building prototypes** (Interactive demos)
 5. **Maintaining design systems** (Component libraries)
 

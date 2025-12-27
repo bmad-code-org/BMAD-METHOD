@@ -240,7 +240,7 @@ You've successfully initialized WDS manually! 🎉
 **You can now:**
 ✅ Reference WDS agents in Cursor  
 ✅ Run WDS workflows  
-✅ Create why-based specifications  
+✅ Create conceptual specifications  
 ✅ Build interactive prototypes  
 
 **Next:** Try the [Quick Start Guide](quick-start.md) to create your first Trigger Map!

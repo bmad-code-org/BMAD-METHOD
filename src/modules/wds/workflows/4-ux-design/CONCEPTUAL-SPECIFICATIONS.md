@@ -1,4 +1,4 @@
-# Why-Based Specifications
+# Conceptual Specifications
 
 **The critical difference between prompt-and-run vs. thoughtful specification**
 
@@ -91,7 +91,7 @@ Result: Generic calendar, missing the point
 
 ---
 
-## The Solution: Why-Based Specifications
+## The Solution: Conceptual Specifications
 
 ### Traditional Specification (WHAT)
 
@@ -121,7 +121,7 @@ Result: Generic calendar, missing the point
 
 ---
 
-### Why-Based Specification (WHY + WHAT)
+### Conceptual Specification (WHY + WHAT)
 
 ```markdown
 ## Calendar Component
@@ -269,7 +269,7 @@ Agent: "Got it! Documenting:
 
 ---
 
-## Structure of Why-Based Specs
+## Structure of Conceptual Specs
 
 ### For Each Component/Feature:
 
@@ -327,7 +327,7 @@ Agent: "Got it! Documenting:
 
 ---
 
-### Why-Based Spec
+### Conceptual Spec
 
 ```markdown
 ## Book Walk Button
@@ -388,7 +388,7 @@ AI: *Tries again, still generic*
 Designer: *Gives up or over-specifies every detail*
 ```
 
-### v6 WDS (Why-Based Specifications)
+### v6 WDS (Conceptual Specifications)
 
 ```
 Designer: "I need a booking calendar"
@@ -402,7 +402,7 @@ Designer: "Gentle urgency, not nagging..."
 Agent: "Documenting all the WHYs. This will help AI implement
         correctly and prevent 'helpful' mistakes."
 
-*Generates why-based specification*
+*Generates conceptual specification*
 
 AI: *Implements exactly right, skips "improvements" that would break intent*
 Designer: ✅ Perfect first time
@@ -412,7 +412,7 @@ Designer: ✅ Perfect first time
 
 ## The Meta-Benefit
 
-**Why-based specifications are:**
+**Conceptual specifications are:**
 
 ✅ **Better for AI implementation**
 
@@ -444,7 +444,7 @@ Designer: ✅ Perfect first time
 
 **Traditional specs answer: "What should we build?"**
 
-**Why-based specs answer:**
+**Conceptual specs answer:**
 
 - What should we build?
 - Why should we build it this way?
@@ -461,7 +461,7 @@ Designer: ✅ Perfect first time
 **This is the difference between:**
 
 - Prompt-and-run (fast but wrong)
-- Why-based specification (thoughtful and right)
+- Conceptual specification (thoughtful and right)
 
 ---
 
@@ -514,7 +514,7 @@ Designer: ✅ Perfect first time
 
 **Traditional specs answer: "What should we build?"**
 
-**Why-based specs answer:**
+**Conceptual specs answer:**
 
 - What should we build?
 - Why should we build it this way?
@@ -538,7 +538,7 @@ Designer: ✅ Perfect first time
 **This is the difference between:**
 
 - Prompt-and-run (fast but wrong)
-- Why-based specification (thoughtful and right)
+- Conceptual specification (thoughtful and right)
 
 ---
 
@@ -546,7 +546,7 @@ Designer: ✅ Perfect first time
 
 **Socratic questioning reveals WHY.**
 
-**Why-based specifications capture WHY.**
+**Conceptual specifications capture WHY.**
 
 **AI implementation preserves WHY.**
 

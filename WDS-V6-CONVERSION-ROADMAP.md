@@ -1344,7 +1344,7 @@ Each module contains:
 - Module 09: Sketch Interfaces ⏳ TO CREATE
 - Module 10: Analyze with AI ⏳ TO CREATE
 - Module 11: Decompose Components ⏳ TO CREATE
-- Module 12: Why-Based Specifications ⏳ TO CREATE
+- Module 12: Conceptual Specifications ⏳ TO CREATE
 - Module 13: Validate Specifications ⏳ TO CREATE
 
 #### Phase 5: Design System
@@ -1473,7 +1473,7 @@ Create Module 02: Project Brief as template for remaining modules
    - Module 02: Project Brief
    - Module 04: Map Triggers & Outcomes
    - Module 08: Initialize Scenario
-   - Module 12: Why-Based Specifications
+   - Module 12: Conceptual Specifications
 
 2. **Option 2: Create Module Templates**
    - Template structure for each module type
@@ -2075,7 +2075,7 @@ workflows/5-design-system/
 - `course/module-02-project-brief/tutorial-02.md` - Create Project Brief
 - `course/module-04-map-triggers-outcomes/tutorial-04.md` - Map Triggers & Outcomes
 - `course/module-08-initialize-scenario/tutorial-08.md` - Initialize Scenario
-- `course/module-12-why-based-specs/tutorial-12.md` - Why-Based Specifications
+- `course/module-12-conceptual-specs/tutorial-12.md` - Conceptual Specifications
 
 **Excalidraw Integration (Dec 9 AM):**
 

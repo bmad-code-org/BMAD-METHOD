@@ -187,16 +187,15 @@ flowchart LR
 **[06-Feature-Impact.md](06-Feature-Impact.md)** - Prioritized features for UX and development (Optional Design Brief)
 
 **Top Priority Features (Must Have MVP):**
-1. BMad Method Integration (Score: 11) - All personas benefit from seamless design-to-dev
-2. Complete End-to-End Workflow (Score: 9) - Core differentiation from fragmented tools
-3. Why-Based Specifications (Score: 9) - Makes Stina indispensable, Felix happy
-4. Example Projects/Case Studies (Score: 8) - Proof that overcomes "wasting time" fear
-5. Testimonials & Social Proof (Score: 8) - Peer validation from designers and entrepreneurs
+1. Testimonials & Social Proof (Score: 11) 🏆 - ONLY feature scoring HIGH across all three personas
+1. BMad Method Integration (Score: 11) 🏆 - All personas benefit from seamless design-to-dev
+3. End-to-End Workflow Through Agents (Score: 9) - Complete journey told through expert guides (Saga, Freyja, Idunn, Mimir)
+3. Conceptual Specifications (Score: 9) - Specs that capture concept + reasoning, making Stina indispensable and Felix happy
+5. Example Projects/Case Studies (Score: 8) - Proof that overcomes "wasting time" fear
 6. Course Modules (Score: 6) - Hand-holding builds Stina's confidence
 7. Installation Documentation (Score: 5) - Removes barrier to entry
-8. WDS Agents (Score: 5) - The methodology in practice
 
-**Key Insight:** Testimonials complement case studies - case studies prove methodology works, testimonials prove it's worth the effort through peer validation.
+**Key Insight:** Agents merged into workflow story - maintains strategic score (9) while creating more engaging, memorable presentation. Characters make abstract methodology human and approachable.
 
 ---
 

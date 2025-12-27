@@ -50,8 +50,8 @@ Document technical constraints, integrations, and infrastructure needs.
 → [Workflows Guide](../WDS-WORKFLOWS-GUIDE.md)
 
 **Phase 4: UX Design**  
-Transform ideas into why-based specifications that preserve your design intent. AI agents help you think through solutions, then capture your brilliance in specifications that give your designs eternal life.  
-→ [Tutorial: Initialize Scenario](../course/module-08-initialize-scenario/tutorial-08.md) | [Tutorial: Why-Based Specs](../course/module-12-why-based-specs/tutorial-12.md)
+Transform ideas into conceptual specifications that preserve your design intent. AI agents help you think through solutions, then capture your brilliance in specifications that give your designs eternal life.  
+→ [Tutorial: Initialize Scenario](../course/module-08-initialize-scenario/tutorial-08.md) | [Tutorial: Conceptual Specs](../course/module-12-conceptual-specs/tutorial-12.md)
 
 **Phase 5: Design System**  
 Extract design tokens, create reusable components, and generate interactive HTML catalog.  
@@ -126,7 +126,7 @@ Join the WDS community for:
 - [Course](../course/00-course-overview.md)
 - [Workflows](../WDS-WORKFLOWS-GUIDE.md)
 - [Modular Architecture](../workflows/4-ux-design/modular-architecture/00-MODULAR-ARCHITECTURE-GUIDE.md)
-- [Why-Based Specifications](../workflows/4-ux-design/WHY-BASED-SPECIFICATIONS.md)
+- [Conceptual Specifications](../workflows/4-ux-design/CONCEPTUAL-SPECIFICATIONS.md)
 
 ---
 

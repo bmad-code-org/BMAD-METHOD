@@ -82,7 +82,7 @@ By the end of this getting started guide, you'll know:
 ✅ What WDS is and why it matters  
 ✅ How to install and set up WDS  
 ✅ How to create your first Trigger Map  
-✅ How to generate why-based specifications  
+✅ How to generate conceptual specifications  
 ✅ Where to go next in your WDS journey  
 
 ---

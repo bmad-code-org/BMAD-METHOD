@@ -97,12 +97,12 @@ You: "Perfect!"
 
 ## What Just Happened?
 
-You created **why-based specifications** in 5 minutes:
+You created **conceptual specifications** in 5 minutes:
 
 - Connected to user psychology (Trigger Map)
 - Grounded in real context (Scenario Init)
 - Generated with AI assistance (Agent collaboration)
-- Preserved your thinking (Why-based specs)
+- Preserved your thinking (Conceptual specs)
 
 ---
 
