@@ -8,6 +8,77 @@
 
 ---
 
+## Strategic Visualization
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'fontFamily':'Inter, system-ui, sans-serif', 'fontSize':'14px'}}}%%
+flowchart LR
+    %% Business Goals (Left)
+    BG0["<br/>🌟 WDS VISION<br/><br/>Guiding light for designers worldwide<br/>Empowering designers in AI era<br/>Delivering exceptional value<br/>Making designers indispensable<br/><br/>"]
+    BG1["<br/>📊 CORE OBJECTIVES<br/><br/>1,000 designers using WDS<br/>50 hardcore evangelists ⭐<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/><br/>"]
+    BG2["<br/>🚀 COMMUNITY GROWTH<br/><br/>250 active community members<br/>10 speaking engagements<br/>20 case studies<br/>50 testimonials<br/><br/>"]
+    
+    %% Central Platform
+    PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
+    
+    %% Target Groups (Right)
+    TG0["<br/>🎯 STINA THE STRATEGIST<br/>PRIMARY TARGET<br/><br/>Designer - Psychology background<br/>Job hunting - Overwhelmed<br/>AI curious but lacks confidence<br/><br/>"]
+    TG1["<br/>💼 LARS THE LEADER<br/>SECONDARY TARGET<br/><br/>Entrepreneur - Employee #3<br/>Non-tech founder role<br/>Designer on maternity leave<br/><br/>"]
+    TG2["<br/>💻 FELIX THE FULL-STACK<br/>TERTIARY TARGET<br/><br/>Developer - Software engineer<br/>Loves structure - Hates UI<br/>Respects design craft<br/><br/>"]
+    
+    %% Driving Forces (Far Right)
+    DF0["<br/>🎯 STINA'S DRIVERS<br/><br/>WANTS<br/>✅ Be strategic expert<br/>✅ Make real impact<br/>✅ Use AI confidently<br/><br/>FEARS<br/>❌ Being replaced by AI<br/>❌ Wasting time/energy<br/>❌ Being sidelined<br/><br/>"]
+    
+    DF1["<br/>💼 LARS'S DRIVERS<br/><br/>WANTS<br/>✅ Happy & productive team<br/>✅ Smooth transition<br/>✅ Quality work<br/><br/>FEARS<br/>❌ Quality dropping<br/>❌ Being taken advantage<br/>❌ Team embarrassment<br/><br/>"]
+    
+    DF2["<br/>💻 FELIX'S DRIVERS<br/><br/>WANTS<br/>✅ Clear specifications<br/>✅ Logical thinking<br/>✅ Enlightened day<br/><br/>FEARS<br/>❌ Illogical designs<br/>❌ Vague specs<br/>❌ Forced UI work<br/><br/>"]
+    
+    %% Connections
+    BG0 --> PLATFORM
+    BG1 --> PLATFORM
+    BG2 --> PLATFORM
+    PLATFORM --> TG0
+    PLATFORM --> TG1
+    PLATFORM --> TG2
+    TG0 --> DF0
+    TG1 --> DF1
+    TG2 --> DF2
+
+    %% Light Gray Styling with Dark Text
+    classDef businessGoal fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
+    classDef platform fill:#e5e7eb,color:#111827,stroke:#9ca3af,stroke-width:3px
+    classDef targetGroup fill:#f9fafb,color:#1f2937,stroke:#d1d5db,stroke-width:2px
+    classDef drivingForces fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
+    
+    class BG0,BG1,BG2 businessGoal
+    class PLATFORM platform
+    class TG0,TG1,TG2 targetGroup
+    class DF0,DF1,DF2 drivingForces
+```
+
+## How to Read This Diagram
+
+### **System Overview (Center)**
+The central node represents **Whiteport Design Studio** - an end-to-end design methodology that transforms designers from overwhelmed task-doers into empowered strategic leaders.
+
+### **Business Goals (Left Branch)**
+Three strategic goals drive the project:
+- **🌟 WDS Vision**: Becoming the guiding light for designers worldwide
+- **📊 Core Objectives**: Measurable adoption targets (1,000 designers, 50 evangelists, 100 entrepreneurs, 100 developers)
+- **🚀 Community Growth**: Building engaged community and thought leadership
+
+### **Target User Groups (Right Branch)**
+Three prioritized personas with distinct needs:
+- **🎯 Stina the Strategist**: Primary target, designer seeking strategic leadership role
+- **💼 Lars the Leader**: Secondary target, entrepreneur needing quality design process
+- **💻 Felix the Full-Stack**: Tertiary target, developer wanting better specifications
+
+### **Usage Goals Legend**
+- **✅ Green Checkmarks**: Positive goals - what users want to achieve
+- **❌ Red X Marks**: Negative goals - what users want to avoid
+
+---
+
 ## Strategic Documents
 
 This is the visual overview. For detailed documentation, see:
@@ -129,48 +200,106 @@ This is the visual overview. For detailed documentation, see:
 
 ---
 
-## Trigger Map Visualization
+## Strategic Visualization
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              VISION                                          │
-│    WDS becomes the guiding light for designers and clients worldwide        │
-│      Empowering designers to thrive while delivering exceptional value      │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            OBJECTIVES                                        │
-│  • 1,000 designers using WDS                                                 │
-│  • 50 hardcore evangelists (12 months) ⭐ THE ENGINE                        │
-│  • 100 entrepreneurs embracing WDS                                           │
-│  • 100 developers benefiting                                                 │
-│  • 250 active community members                                              │
-│  • 10 speaking engagements, 20 case studies, 50 testimonials                │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-        ┌───────────────────────────┼───────────────────────────┐
-        ▼                           ▼                           ▼
-┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐
-│  1. STINA         │    │  2. LARS          │    │  3. FELIX         │
-│  The Strategist   │    │  The Leader       │    │  The Full-Stack   │
-│  (Designer)       │    │  (Entrepreneur)   │    │  (Developer)      │
-│  PRIMARY 🎯       │    │  SECONDARY 💼     │    │  TERTIARY 💻      │
-└───────────────────┘    └───────────────────┘    └───────────────────┘
-        │                           │                           │
-        ▼                           ▼                           ▼
-   [Drivers]                   [Drivers]                   [Drivers]
-   
-✅ WANTS:                    ✅ WANTS:                    ✅ WANTS:
-• Be strategic expert       • Happy & productive team    • Clear specs
-• Make real impact          • Smooth transition          • Logical thinking
-• Use AI confidently        • Quality work               • Enlightened day
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'fontFamily':'Inter, system-ui, sans-serif', 'fontSize':'14px'}}}%%
+flowchart LR
+    %% Business Goals (Left)
+    BG0["<br/>🌟 WDS VISION<br/><br/>Guiding light for designers worldwide<br/>Empowering designers in AI era<br/>Delivering exceptional value<br/>Making designers indispensable<br/><br/>"]
+    BG1["<br/>📊 CORE OBJECTIVES<br/><br/>1,000 designers using WDS<br/>50 hardcore evangelists ⭐<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/><br/>"]
+    BG2["<br/>🚀 COMMUNITY GROWTH<br/><br/>250 active community members<br/>10 speaking engagements<br/>20 case studies<br/>50 testimonials<br/><br/>"]
+    
+    %% Central Platform
+    PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
+    
+    %% Target Groups (Right)
+    TG0["<br/>🎯 STINA THE STRATEGIST<br/>PRIMARY TARGET<br/><br/>Designer - Psychology background<br/>Job hunting - Overwhelmed<br/>AI curious but lacks confidence<br/><br/>"]
+    TG1["<br/>💼 LARS THE LEADER<br/>SECONDARY TARGET<br/><br/>Entrepreneur - Employee #3<br/>Non-tech founder role<br/>Designer on maternity leave<br/><br/>"]
+    TG2["<br/>💻 FELIX THE FULL-STACK<br/>TERTIARY TARGET<br/><br/>Developer - Software engineer<br/>Loves structure - Hates UI<br/>Respects design craft<br/><br/>"]
+    
+    %% Driving Forces (Far Right)
+    DF0["<br/>🎯 STINA'S DRIVERS<br/><br/>WANTS<br/>✅ Be strategic expert<br/>✅ Make real impact<br/>✅ Use AI confidently<br/><br/>FEARS<br/>❌ Being replaced by AI<br/>❌ Wasting time/energy<br/>❌ Being sidelined<br/><br/>"]
+    
+    DF1["<br/>💼 LARS'S DRIVERS<br/><br/>WANTS<br/>✅ Happy & productive team<br/>✅ Smooth transition<br/>✅ Quality work<br/><br/>FEARS<br/>❌ Quality dropping<br/>❌ Being taken advantage<br/>❌ Team embarrassment<br/><br/>"]
+    
+    DF2["<br/>💻 FELIX'S DRIVERS<br/><br/>WANTS<br/>✅ Clear specifications<br/>✅ Logical thinking<br/>✅ Enlightened day<br/><br/>FEARS<br/>❌ Illogical designs<br/>❌ Vague specs<br/>❌ Forced UI work<br/><br/>"]
+    
+    %% Connections
+    BG0 --> PLATFORM
+    BG1 --> PLATFORM
+    BG2 --> PLATFORM
+    PLATFORM --> TG0
+    PLATFORM --> TG1
+    PLATFORM --> TG2
+    TG0 --> DF0
+    TG1 --> DF1
+    TG2 --> DF2
 
-⚠️ FEARS:                    ⚠️ FEARS:                    ⚠️ FEARS:
-• Being replaced by AI      • Quality dropping           • Illogical designs
-• Wasting time/energy       • Being taken advantage      • Vague specs
-• Being sidelined           • Embarrassment              • Forced UI work
+    %% Light Gray Styling with Dark Text
+    classDef businessGoal fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
+    classDef platform fill:#e5e7eb,color:#111827,stroke:#9ca3af,stroke-width:3px
+    classDef targetGroup fill:#f9fafb,color:#1f2937,stroke:#d1d5db,stroke-width:2px
+    classDef drivingForces fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
+    
+    class BG0,BG1,BG2 businessGoal
+    class PLATFORM platform
+    class TG0,TG1,TG2 targetGroup
+    class DF0,DF1,DF2 drivingForces
 ```
+
+## How to Read This Diagram
+
+### **System Overview (Center)**
+The central node represents **Whiteport Design Studio** - an end-to-end design methodology that transforms designers from overwhelmed task-doers into empowered strategic leaders.
+
+### **Business Goals (Left Branch)**
+Three strategic goals drive the project:
+- **🌟 WDS Vision**: Becoming the guiding light for designers worldwide
+- **📊 Core Objectives**: Measurable adoption targets (1,000 designers, 50 evangelists, 100 entrepreneurs, 100 developers)
+- **🚀 Community Growth**: Building engaged community and thought leadership
+
+### **Target User Groups (Right Branch)**
+Three prioritized personas with distinct needs:
+- **🎯 Stina the Strategist**: Primary target, designer seeking strategic leadership role
+- **💼 Lars the Leader**: Secondary target, entrepreneur needing quality design process
+- **💻 Felix the Full-Stack**: Tertiary target, developer wanting better specifications
+
+### **Usage Goals Legend**
+- **✅ Green Checkmarks**: Positive goals - what users want to achieve
+- **❌ Red X Marks**: Negative goals - what users want to avoid
+
+---
+
+## Key Insights
+
+### **Primary Development Focus**
+1. **Strategic Leadership Transformation** - Address Stina's core need to move from overwhelmed to empowered
+2. **AI Confidence Building** - Structured, hand-holding path to professional AI use
+3. **Business Value Validation** - Show Lars how WDS designers deliver measurable results
+4. **Better Specifications** - Prove to Felix that logical, complete specs reduce headaches
+5. **Community Engine** - Build the 50 hardcore evangelists who drive broader adoption
+
+### **Critical Success Factors**
+- **Emotional Transformation**: Burden → Calling (the battle cry in action)
+- **Hand-Holding Approach**: Clear steps, course modules, installation guidance
+- **Proof of Results**: Dog Week case study (5x faster, better quality)
+- **Free Access**: No cost barriers or subscriptions
+- **Complete Journey**: Idea → maintenance (not just fragments)
+
+### **Design Implications**
+- **Hero Section**: Address AI replacement fear immediately, position as leadership opportunity
+- **Course Structure**: Show clear path with module-by-module progression
+- **Social Proof**: Feature early evangelists, testimonials, case studies
+- **Multi-Audience**: Primarily Stina, but validate for Lars and acknowledge Felix
+- **BMad Foundation**: Explain proven 25-year methodology integration
+
+### **Emotional Transformation Goals**
+- **Designer Empowerment**: "I can be the strategic leader my team needs"
+- **AI as Co-Pilot**: "AI amplifies my expertise, doesn't replace it"
+- **Confidence Building**: "I have a structured path that works"
+- **Impact Making**: "I'm making real difference through grand adventures"
+- **Professional Pride**: "Design is my calling, not just a task"
 
 ---
 
@@ -340,6 +469,35 @@ This is the visual overview. For detailed documentation, see:
 - ✅ Community feedback (dev perspective helps refine)
 
 **The Trigger Map IS the Strategic Foundation**
+
+---
+
+## Development Phases
+
+### **First Deliverable: WDS Presentation Page**
+Focus on converting Stina from overwhelmed designer to empowered evangelist:
+- **Hero Section** - Hook with "guiding light," address AI fear
+- **Methodology Explanation** - Show structure, prove with Dog Week
+- **Benefits Section** - Make designer indispensable message
+- **Course Modules** - Present Modules 01-02 complete, more coming
+- **Installation Guide** - Clear 5-step process with hand-holding
+- **Social Proof** - Early testimonials and case study
+- **Call to Action** - Multiple paths (GitHub, course, community)
+
+### **Future Phases: Additional Content**
+- **Phase 2**: Complete course modules 03-17
+- **Phase 3**: Build evangelist case studies library
+- **Phase 4**: Create interactive demos and examples
+- **Phase 5**: Expand BMad Method integration documentation
+
+---
+
+## Related Documents
+
+- **[Product Brief](../1-project-brief/01-product-brief.md)** - Complete strategic foundation
+- **[Stina the Strategist](03-Stina-the-Strategist.md)** - Primary persona details (to be created)
+- **[Lars the Leader](04-Lars-the-Leader.md)** - Secondary persona details (to be created)
+- **[Felix the Full-Stack](05-Felix-the-Full-Stack.md)** - Tertiary persona details (to be created)
 
 ---
 
