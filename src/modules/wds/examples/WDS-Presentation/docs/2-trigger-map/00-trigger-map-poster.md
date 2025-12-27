@@ -16,7 +16,7 @@ flowchart LR
     %% Business Goals (Left)
     BG0["<br/>⭐ PRIMARY GOAL: 50 EVANGELISTS<br/><br/>THE ENGINE<br/>50 hardcore believers and advocates<br/>Completed course + built real project<br/>Actively sharing and teaching others<br/>Timeline: 12 months<br/><br/>"]
     BG1["<br/>🚀 WDS ADOPTION GOALS<br/><br/>1,000 designers using WDS<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/>250 active community members<br/>Timeline: 24 months<br/><br/>"]
-    BG2["<br/>💼 WHITEPORT BUSINESS GOALS<br/><br/>10 speaking engagements<br/>20 case studies published<br/>50 testimonials<br/>Client project opportunities<br/>Timeline: 24 months<br/><br/>"]
+    BG2["<br/>🌟 COMMUNITY OPPORTUNITIES<br/><br/>10 speaking engagements (members)<br/>20 case studies published (members)<br/>50 testimonials (members)<br/>Client project opportunities (members)<br/>Timeline: 24 months<br/><br/>"]
     
     %% Central Platform
     PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
@@ -77,10 +77,11 @@ The central node represents **Whiteport Design Studio** - an end-to-end design m
 - Timeline: 24 months
 - Focused on methodology spread
 
-**💼 Whiteport Business Goals**
-- Company-level objectives (speaking, case studies, client projects)
+**🌟 Community Opportunities**
+- Real-world opportunities created FOR community members
+- Members get speaking gigs, publish case studies, land client projects
 - Timeline: 24 months
-- **Important distinction:** WDS success drives these opportunities, not vice versa
+- **Key distinction:** These opportunities benefit the evangelists and designers, building their careers and reputation
 
 ### **Target User Groups (Right Branch)**
 Three prioritized personas with distinct needs:
@@ -152,23 +153,37 @@ This is the visual overview. For detailed documentation, see:
 
 ---
 
-### 💼 WHITEPORT BUSINESS GOALS (Company Revenue & Growth)
+### 🌟 COMMUNITY OPPORTUNITIES (Real-World Benefits for Members)
 
-**Note:** These are Whiteport company goals, NOT WDS methodology goals. WDS success creates these opportunities, not vice versa.
+**Note:** These are opportunities WDS creates FOR the community members - the evangelists and designers who use WDS. They build their careers, reputations, and businesses.
 
-**Objective 5: Thought Leadership & Validation**
-- **Statement:** Establish WDS/Whiteport as recognized leaders through speaking and case studies
-- **Metric:** Speaking engagements + published case studies from real projects + testimonials
-- **Target:** 10 speaking engagements, 20 case studies, 50 testimonials
+**Objective 5: Speaking & Thought Leadership**
+- **Statement:** Community members get speaking opportunities at conferences and events
+- **Metric:** WDS-trained designers invited to speak about their methodology and results
+- **Target:** 10 speaking engagements by community members
 - **Timeline:** 24 months
-- **Business Impact:** Creates consulting opportunities and client leads
+- **Benefit to Members:** Career advancement, thought leadership, professional recognition
 
-**Objective 6: Client Project Opportunities**
-- **Statement:** Generate paid client projects through WDS visibility and credibility
-- **Metric:** Qualified leads + signed client projects using WDS methodology
-- **Target:** TBD based on Whiteport capacity
+**Objective 6: Published Case Studies**
+- **Statement:** Community members publish case studies about their WDS projects
+- **Metric:** Real project case studies showcasing WDS methodology and results
+- **Target:** 20 published case studies by community members
 - **Timeline:** 24 months
-- **Business Impact:** Direct revenue for Whiteport agency
+- **Benefit to Members:** Portfolio building, credibility, attracting clients
+
+**Objective 7: Professional Testimonials**
+- **Statement:** Community members share testimonials about WDS impact on their work
+- **Metric:** Video or written testimonials from designers, entrepreneurs, and developers
+- **Target:** 50 testimonials from community
+- **Timeline:** 24 months
+- **Benefit to Members:** Recognition, contribution to movement, helping others
+
+**Objective 8: Client Project Opportunities**
+- **Statement:** WDS-trained designers land client projects because of their WDS expertise
+- **Metric:** Job offers, freelance gigs, or consulting projects specifically requesting WDS methodology
+- **Target:** Track and celebrate member success stories
+- **Timeline:** 24 months
+- **Benefit to Members:** Direct revenue, career growth, competitive advantage in market
 
 ---
 
@@ -242,7 +257,7 @@ flowchart LR
     %% Business Goals (Left)
     BG0["<br/>⭐ PRIMARY GOAL: 50 EVANGELISTS<br/><br/>THE ENGINE<br/>50 hardcore believers and advocates<br/>Completed course + built real project<br/>Actively sharing and teaching others<br/>Timeline: 12 months<br/><br/>"]
     BG1["<br/>🚀 WDS ADOPTION GOALS<br/><br/>1,000 designers using WDS<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/>250 active community members<br/>Timeline: 24 months<br/><br/>"]
-    BG2["<br/>💼 WHITEPORT BUSINESS GOALS<br/><br/>10 speaking engagements<br/>20 case studies published<br/>50 testimonials<br/>Client project opportunities<br/>Timeline: 24 months<br/><br/>"]
+    BG2["<br/>🌟 COMMUNITY OPPORTUNITIES<br/><br/>10 speaking engagements (members)<br/>20 case studies published (members)<br/>50 testimonials (members)<br/>Client project opportunities (members)<br/>Timeline: 24 months<br/><br/>"]
     
     %% Central Platform
     PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
@@ -303,10 +318,11 @@ The central node represents **Whiteport Design Studio** - an end-to-end design m
 - Timeline: 24 months
 - Focused on methodology spread
 
-**💼 Whiteport Business Goals**
-- Company-level objectives (speaking, case studies, client projects)
+**🌟 Community Opportunities**
+- Real-world opportunities created FOR community members
+- Members get speaking gigs, publish case studies, land client projects
 - Timeline: 24 months
-- **Important distinction:** WDS success drives these opportunities, not vice versa
+- **Key distinction:** These opportunities benefit the evangelists and designers, building their careers and reputation
 
 ### **Target User Groups (Right Branch)**
 Three prioritized personas with distinct needs:
@@ -337,11 +353,11 @@ Three prioritized personas with distinct needs:
 - Timeline: 24 months
 - Focus: Methodology spread and adoption
 
-**Whiteport Business (Priority #3):**
-- Company revenue goals (NOT WDS methodology goals)
-- Speaking, case studies, client projects
+**Community Opportunities (Priority #3):**
+- Real-world benefits FOR community members
+- Speaking gigs, case studies, testimonials, client projects
 - Timeline: 24 months
-- **Key distinction**: WDS success creates these opportunities, not vice versa
+- **Key benefit**: WDS-trained designers become sought-after, land better opportunities, build careers
 
 ### **Primary Development Focus**
 1. **Convert Stina into Evangelist** - She's the profile who becomes one of the 50
@@ -461,7 +477,7 @@ Three prioritized personas with distinct needs:
 5. Lars hires more WDS designers → creates demand
 6. Success stories inspire more Stinas → 50 evangelists emerge (12 months)
 7. **Evangelists spread WDS** → 1,000 designers adopt (24 months)
-8. **WDS success** → Whiteport opportunities emerge (speaking, clients, etc.)
+8. **WDS success** → Community members get opportunities (speaking, case studies, better clients)
 
 **Design Implication:** The page must start the flywheel by converting Stina into one of the 50 evangelists. Everything flows from this. Lars and Felix are supporting actors in Stina's hero journey.
 
@@ -540,16 +556,17 @@ Three prioritized personas with distinct needs:
 - ✅ 250 community (evangelists create engagement)
 - **Timeline: 24 months**
 
-**💼 TERTIARY: WDS Success Drives Whiteport Business → Achieves:**
-- ✅ 10 speaking engagements (credibility from WDS success)
-- ✅ 20 case studies (real projects from evangelist community)
-- ✅ 50 testimonials (happy evangelists and users)
-- ✅ Client opportunities (visibility and demand from WDS adoption)
+**🌟 TERTIARY: WDS Success Creates Opportunities for Community → Achieves:**
+- ✅ 10 speaking engagements (members invited to speak at conferences)
+- ✅ 20 case studies (members publish their WDS project success)
+- ✅ 50 testimonials (members share their transformation stories)
+- ✅ Client opportunities (members land projects because they're WDS-trained)
 - **Timeline: 24 months**
+- **Benefit: Career advancement and recognition for community members**
 
 **The Trigger Map IS the Strategic Foundation - And Prioritization Matters**
 
-The page must convert Stina → make her an evangelist → evangelists drive everything else.
+The page must convert Stina → make her an evangelist → evangelists drive adoption → adoption creates opportunities for all members.
 
 ---
 
