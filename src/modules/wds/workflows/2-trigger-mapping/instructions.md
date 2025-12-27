@@ -21,7 +21,7 @@ We'll work through 5 focused workshops:
 2. **Target Groups** - Who are your key users?
 3. **Driving Forces** - What motivates and concerns them?
 4. **Prioritization** - What matters most?
-5. **Feature Impact** - Which features serve top priorities?
+5. **Documentation** - Create comprehensive trigger map structure
 
 Each workshop builds on the previous. You can run them all together (60-90 min) or spread across sessions.
 
@@ -47,73 +47,70 @@ Ready to begin? 🎯</output>
   2. Target Groups
   3. Driving Forces
   4. Prioritization
-  5. Feature Impact</ask>
+  5. Documentation</ask>
   <action>Jump to selected workshop</action>
 </check>
 </step>
 
 <step n="2" goal="Run Workshop 1: Business Goals">
 <action>Load and execute: workshops/1-business-goals/instructions.md</action>
-<action>Store outputs: vision, objectives</action>
+<action>Store outputs: vision, objectives, prioritization</action>
 </step>
 
 <step n="3" goal="Run Workshop 2: Target Groups">
 <action>Load and execute: workshops/2-target-groups/instructions.md</action>
-<action>Store outputs: target_groups, personas</action>
+<action>Store outputs: target_groups, personas with details</action>
 </step>
 
 <step n="4" goal="Run Workshop 3: Driving Forces">
 <action>Load and execute: workshops/3-driving-forces/instructions.md</action>
-<action>Store outputs: driving_forces_positive, driving_forces_negative</action>
+<action>Store outputs: driving_forces_positive, driving_forces_negative for each persona</action>
 </step>
 
 <step n="5" goal="Run Workshop 4: Prioritization">
 <action>Load and execute: workshops/4-prioritization/instructions.md</action>
-<action>Store outputs: prioritized_groups, prioritized_drivers</action>
+<action>Store outputs: prioritized_groups, prioritized_drivers, battle_cry</action>
 </step>
 
-<step n="6" goal="Run Workshop 5: Feature Impact">
-<action>Load and execute: workshops/5-feature-impact/instructions.md</action>
-<action>Store outputs: feature_impact_analysis</action>
-</step>
+<step n="6" goal="Generate Trigger Map Documentation">
+<output>Excellent! Now I'll create your comprehensive Trigger Map documentation structure.
 
-<step n="7" goal="Compile Trigger Map Documents">
-<action>Load micro-instructions-mermaid-diagram.md for diagram formatting rules</action>
-<action>Generate 00-Trigger-Map-Poster.md from template with Mermaid diagram</action>
-<action>Follow micro instructions exactly:
-- Use light gray styling with dark text
-- Add padding (<br/>) to all nodes
-- Include emojis: ✅ for wants, ❌ for fears
-- Exactly 3 drivers per category
-- Match persona emojis in both TG and DF nodes
-- Apply professional styling classes</action>
-<action>Generate 01-Business-Goals.md (visions & objectives)</action>
-<action>Generate 02-Target-Groups.md (all personas with drivers)</action>
-<action>Generate 03-Feature-Impact-Analysis.md from template</action>
-<action>Save individual persona files as 04-[Name].md, 05-[Name].md, etc.</action>
-<action>Save all to {output_folder}/B-Trigger-Map/</action>
+This follows the WDS standard structure:
+- **00-trigger-map.md** - Navigation hub with diagram and summaries
+- **01-Business-Goals.md** - Detailed objectives and flywheel
+- **02-XX-Persona.md** - Individual detailed persona documents  
+- **0X-Key-Insights.md** - Strategic implications
 
-<output>✅ **Trigger Mapping complete!**
+Let me generate all documents now...</output>
 
-**Created:**
+<action>Load and execute: document-generation/instructions.md</action>
 
-- `B-Trigger-Map/00-Trigger-Map-Poster.md` - Visual overview with Mermaid diagram
-- `B-Trigger-Map/01-Business-Goals.md` - Visions & objectives
-- `B-Trigger-Map/02-Target-Groups.md` - All personas with drivers
-- `B-Trigger-Map/03-Feature-Impact-Analysis.md` - Prioritized features
-- `B-Trigger-Map/04-08-*.md` - Individual persona detail files
+<output>✅ **Trigger Map Documentation Complete!**
 
-**Key Insights:**
-{{summary_of_priorities}}
+**Created Structure:**
 
-You now have strategic clarity on:
+```
+2-trigger-map/
+├── 00-trigger-map.md          (Hub with Mermaid diagram & navigation)
+├── 01-Business-Goals.md        (Vision, objectives, flywheel)
+├── 02-[Primary Persona].md    (Detailed primary persona)
+├── 03-[Secondary Persona].md  (Detailed secondary persona)
+├── 04-[Tertiary Persona].md   (Detailed tertiary persona - if applicable)
+└── 05-Key-Insights.md         (Design implications & success factors)
+```
 
-- What success looks like (business goals)
-- Who to focus on (target groups)
-- What drives them (positive & negative forces)
-- Which features matter most (impact analysis)
+**Key Features:**
+- ✅ Professional Mermaid diagram with light gray styling
+- ✅ Gold highlighting for PRIMARY GOAL
+- ✅ On-page summaries in trigger map hub
+- ✅ Detailed persona profiles with driving forces
+- ✅ Strategic relationships and flywheel
+- ✅ Design implications and success criteria
+- ✅ Cross-linked navigation
 
-Ready for the next phase! 🚀</output>
+**Your Battle Cry:** {{battle_cry}}
+
+Ready for Phase 3: Platform Requirements or Phase 4: UX Design! 🚀</output>
 </step>
 
 </workflow>

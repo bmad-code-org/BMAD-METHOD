@@ -65,11 +65,11 @@ flowchart LR
 **Battle Cry:** "Shoulder the complexity, break it down using AI as your co-pilot. Not as a burden, but with excitement. Not as a task, but as a calling!"
 
 **The Flywheel:**
-1. ⭐ **Convert Stina into one of 50 Evangelists** (THE ENGINE - 12 months)
+1. ⭐ **Create awesome designers who become evangelists** (THE ENGINE - 12 months)
 2. 🚀 **Evangelists drive WDS adoption** (1,000 designers, 100 entrepreneurs, 100 developers, 250 community - 24 months)
 3. 🌟 **WDS success creates opportunities for community** (Speaking, case studies, better clients - 24 months)
 
-**Primary Target:** Stina the Strategist - overwhelmed designer becomes empowered strategic leader
+**Primary Target:** Stina the Strategist - overwhelmed designer becomes empowered strategic leader and evangelist
 
 ---
 
@@ -162,7 +162,7 @@ flowchart LR
 **[05-Key-Insights.md](05-Key-Insights.md)** - Design and development priorities
 
 **Primary Development Focus:**
-1. Convert Stina into Evangelist - She becomes one of the 50
+1. Create Awesome Designers Who Become Evangelists - Stina becomes one of the 50
 2. Strategic Leadership Transformation - From overwhelmed to empowered
 3. AI Confidence Building - Structured, hand-holding path
 4. Business Value Validation - Show Lars how WDS delivers results

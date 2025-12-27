@@ -58,7 +58,7 @@ Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/
 ### 4. Example Implementation
 
 ```mermaid
-PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
+PLATFORM["<br/>📱 SKILLSWAP<br/><br/>Peer Learning Platform<br/><br/>Connect people who want to learn<br/>with those who want to teach<br/>Exchange skills without money<br/>Build community through sharing<br/><br/>"]
 ```
 
 ---

@@ -203,9 +203,17 @@ Life gets easier
 
 ---
 
-## Conversion Strategy
+## Role in Flywheel: Creating Awesome Designers Who Become Evangelists
 
-### What Stina Needs to See on WDS Page
+Stina represents the designer who WDS empowers to become truly awesome - and awesome designers naturally become evangelists.
+
+**The Natural Evolution:**
+1. Stina discovers WDS and sees herself in the methodology
+2. Learns structured approach with hand-holding
+3. Builds real project using WDS - sees results
+4. Transforms from overwhelmed to empowered
+5. Naturally shares what worked with others
+6. Becomes one of the 50 evangelists - not because we asked, but because she's excited
 
 **1. Hero Section**
 - Immediate acknowledgment of AI replacement fear

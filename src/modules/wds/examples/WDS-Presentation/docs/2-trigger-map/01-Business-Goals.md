@@ -113,11 +113,12 @@
 
 ### How Trigger Map Connects to Objectives (Properly Prioritized):
 
-**⭐ PRIMARY: Converting Stina into Evangelist → Achieves:**
-- ✅ **50 evangelists** (THE ENGINE - she becomes one of them)
+**⭐ PRIMARY: Creating Awesome Designers Who Become Evangelists → Achieves:**
+- ✅ **50 evangelists** (THE ENGINE - Stina becomes one of them naturally)
 - ✅ Completes course + builds real project
-- ✅ Actively shares and teaches others
-- ✅ Creates testimonials and case studies from her success
+- ✅ Sees amazing results and transformation
+- ✅ Naturally shares and teaches others because it worked
+- ✅ Creates testimonials and case studies from genuine success
 - **Timeline: 12 months**
 - **This drives ALL other objectives**
 

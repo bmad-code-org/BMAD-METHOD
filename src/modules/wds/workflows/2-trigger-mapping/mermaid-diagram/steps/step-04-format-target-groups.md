@@ -71,11 +71,11 @@ TGX["<br/>EMOJI PERSONA NAME<br/>PRIORITY LEVEL<br/><br/>Profile trait 1<br/>Pro
 ### 5. Example Implementation
 
 ```mermaid
-TG0["<br/>🎯 STINA THE STRATEGIST<br/>PRIMARY TARGET<br/><br/>Designer - Psychology background<br/>Job hunting - Overwhelmed<br/>AI curious but lacks confidence<br/><br/>"]
+TG0["<br/>🎓 SARAH THE STUDENT<br/>PRIMARY TARGET<br/><br/>University student - Limited budget<br/>Wants to learn guitar<br/>Has painting skills to trade<br/><br/>"]
 
-TG1["<br/>💼 LARS THE LEADER<br/>SECONDARY TARGET<br/><br/>Entrepreneur - Employee #3<br/>Non-tech founder role<br/>Designer on maternity leave<br/><br/>"]
+TG1["<br/>💼 MARCUS THE MENTOR<br/>SECONDARY TARGET<br/><br/>Professional - Career changer<br/>Expert in coding<br/>Wants to learn business skills<br/><br/>"]
 
-TG2["<br/>💻 FELIX THE FULL-STACK<br/>TERTIARY TARGET<br/><br/>Developer - Software engineer<br/>Loves structure - Hates UI<br/>Respects design craft<br/><br/>"]
+TG2["<br/>🏠 EMMA THE ENTHUSIAST<br/>TERTIARY TARGET<br/><br/>Hobbyist - Retired teacher<br/>Wants to share life experience<br/>Eager to learn new things<br/><br/>"]
 ```
 
 ---

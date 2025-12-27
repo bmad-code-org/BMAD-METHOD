@@ -59,11 +59,11 @@ DFX["<br/>EMOJI PERSONA'S DRIVERS<br/><br/>WANTS<br/>✅ Positive driver 1<br/>�
 ### 4. Example Implementation
 
 ```mermaid
-DF0["<br/>🎯 STINA'S DRIVERS<br/><br/>WANTS<br/>✅ Be strategic expert<br/>✅ Make real impact<br/>✅ Use AI confidently<br/><br/>FEARS<br/>❌ Being replaced by AI<br/>❌ Wasting time/energy<br/>❌ Being sidelined<br/><br/>"]
+DF0["<br/>🎓 SARAH'S DRIVERS<br/><br/>WANTS<br/>✅ Learn new skills cheaply<br/>✅ Meet creative people<br/>✅ Build portfolio<br/><br/>FEARS<br/>❌ Wasting limited money<br/>❌ Unsafe meetings<br/>❌ Low quality teaching<br/><br/>"]
 
-DF1["<br/>💼 LARS'S DRIVERS<br/><br/>WANTS<br/>✅ Happy & productive team<br/>✅ Smooth transition<br/>✅ Quality work<br/><br/>FEARS<br/>❌ Quality dropping<br/>❌ Being taken advantage<br/>❌ Team embarrassment<br/><br/>"]
+DF1["<br/>💼 MARCUS'S DRIVERS<br/><br/>WANTS<br/>✅ Career transition support<br/>✅ Real-world practice<br/>✅ Flexible schedule<br/><br/>FEARS<br/>❌ Time commitment too high<br/>❌ Not finding right match<br/>❌ Awkward interactions<br/><br/>"]
 
-DF2["<br/>💻 FELIX'S DRIVERS<br/><br/>WANTS<br/>✅ Clear specifications<br/>✅ Logical thinking<br/>✅ Enlightened day<br/><br/>FEARS<br/>❌ Illogical designs<br/>❌ Vague specs<br/>❌ Forced UI work<br/><br/>"]
+DF2["<br/>🏠 EMMA'S DRIVERS<br/><br/>WANTS<br/>✅ Share life experience<br/>✅ Stay mentally active<br/>✅ Feel valued & useful<br/><br/>FEARS<br/>❌ Being patronized<br/>❌ Tech too complicated<br/>❌ Feeling isolated<br/><br/>"]
 ```
 
 ---

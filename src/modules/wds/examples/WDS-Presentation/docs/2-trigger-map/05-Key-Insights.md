@@ -32,7 +32,7 @@
 
 ## Primary Development Focus
 
-1. **Convert Stina into Evangelist** - She's the profile who becomes one of the 50
+1. **Create Awesome Designers Who Become Evangelists** - Stina is the profile who becomes one of the 50
 2. **Strategic Leadership Transformation** - Address Stina's core need to move from overwhelmed to empowered
 3. **AI Confidence Building** - Structured, hand-holding path to professional AI use
 4. **Business Value Validation** - Show Lars how WDS designers deliver measurable results
@@ -116,7 +116,7 @@
 ## Development Phases
 
 ### **First Deliverable: WDS Presentation Page**
-Focus on converting Stina from overwhelmed designer to empowered evangelist:
+Focus on empowering Stina from overwhelmed designer to awesome strategic leader who naturally becomes an evangelist:
 - **Hero Section** - Hook with "guiding light," address AI fear
 - **Methodology Explanation** - Show structure, prove with Dog Week
 - **Benefits Section** - Make designer indispensable message

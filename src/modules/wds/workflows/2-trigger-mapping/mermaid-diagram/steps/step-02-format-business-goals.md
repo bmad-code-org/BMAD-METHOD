@@ -25,12 +25,18 @@ BGX["<br/>EMOJI TITLE<br/><br/>Point 1<br/>Point 2<br/>Point 3<br/><br/>"]
 
 ---
 
-### 2. Choose Appropriate Emoji
+### 2. Choose Appropriate Emoji and Highlight PRIMARY GOAL
 
-**Common business goal emojis:**
-- 🌟 Vision
+**PRIMARY GOAL (BG0) - THE ENGINE:**
+- ⭐ Use star emoji for PRIMARY GOAL
+- Title format: `⭐ PRIMARY GOAL: [TITLE]`
+- Include "THE ENGINE" as subtitle
+- This will get gold highlighting in styling step
+
+**Secondary & Tertiary Goals:**
+- 🚀 Growth/Expansion/Adoption
+- 🌟 Community/Opportunities
 - 📊 Objectives/Metrics
-- 🚀 Growth/Expansion
 - 💰 Revenue/Business
 - 🤝 Partnerships/Community
 - 🎯 Goals/Targets
@@ -40,11 +46,11 @@ BGX["<br/>EMOJI TITLE<br/><br/>Point 1<br/>Point 2<br/>Point 3<br/><br/>"]
 ### 3. Example Implementation
 
 ```mermaid
-BG0["<br/>🌟 WDS VISION<br/><br/>Guiding light for designers worldwide<br/>Empowering designers in AI era<br/>Delivering exceptional value<br/>Making designers indispensable<br/><br/>"]
+BG0["<br/>⭐ PRIMARY GOAL: 50 BETA CHAMPIONS<br/><br/>THE ENGINE<br/>50 power users who love the product<br/>Active in community + gave feedback<br/>Naturally recommend to others<br/>Timeline: 6 months<br/><br/>"]
 
-BG1["<br/>📊 CORE OBJECTIVES<br/><br/>1,000 designers using WDS<br/>50 hardcore evangelists ⭐<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/><br/>"]
+BG1["<br/>🚀 USER GROWTH GOALS<br/><br/>5,000 active monthly users<br/>500 paying subscribers<br/>200 business accounts<br/>1,000 community members<br/>Timeline: 12 months<br/><br/>"]
 
-BG2["<br/>🚀 COMMUNITY GROWTH<br/><br/>250 active community members<br/>10 speaking engagements<br/>20 case studies<br/>50 testimonials<br/><br/>"]
+BG2["<br/>🌟 COMMUNITY VALUE<br/><br/>25 user success stories<br/>100 testimonials published<br/>10 community meetups<br/>User-generated content<br/>Timeline: 12 months<br/><br/>"]
 ```
 
 ---

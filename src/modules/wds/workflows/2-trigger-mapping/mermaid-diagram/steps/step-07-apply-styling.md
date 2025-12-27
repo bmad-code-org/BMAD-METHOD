@@ -21,6 +21,7 @@
 **Add these exact class definitions:**
 
 ```css
+classDef primaryGoal fill:#fef3c7,color:#78350f,stroke:#fbbf24,stroke-width:3px
 classDef businessGoal fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
 classDef platform fill:#e5e7eb,color:#111827,stroke:#9ca3af,stroke-width:3px
 classDef targetGroup fill:#f9fafb,color:#1f2937,stroke:#d1d5db,stroke-width:2px
@@ -29,32 +30,36 @@ classDef drivingForces fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2p
 
 **Rules:**
 - Use these EXACT colors - do not modify
+- PRIMARY GOAL (BG0) gets gold highlighting (#fef3c7) - THE ENGINE stands out
 - Business goals & driving forces use same light gray (#f3f4f6)
 - Platform uses medium gray (#e5e7eb) with 3px border
 - Target groups use near white (#f9fafb)
-- All text is dark gray (#1f2937 or #111827)
-- All borders are light gray (#d1d5db or #9ca3af)
+- All text is dark gray (#1f2937, #111827, or #78350f for primary)
+- All borders are light gray (#d1d5db, #9ca3af, or #fbbf24 for primary)
 
 ---
 
 ### 2. Color Specifications
 
 **Background fills:**
-- `#f3f4f6` - Light gray (business goals, driving forces)
+- `#fef3c7` - Light gold/yellow (PRIMARY GOAL only - BG0)
+- `#f3f4f6` - Light gray (other business goals, driving forces)
 - `#e5e7eb` - Medium gray (platform only)
 - `#f9fafb` - Near white (target groups)
 
 **Text colors:**
+- `#78350f` - Dark brown/gold (PRIMARY GOAL only)
 - `#1f2937` - Dark gray (most nodes)
 - `#111827` - Darker gray (platform only)
 
 **Border colors:**
+- `#fbbf24` - Gold border (PRIMARY GOAL only)
 - `#d1d5db` - Light gray border (most nodes)
 - `#9ca3af` - Medium gray border (platform only)
 
 **Border widths:**
 - `2px` - Standard (business goals, target groups, driving forces)
-- `3px` - Thick (platform only - makes it stand out)
+- `3px` - Thick (platform AND primary goal - makes them stand out)
 
 ---
 
@@ -67,11 +72,14 @@ class NodeID1,NodeID2,NodeID3 className
 
 **Implementation:**
 ```
-class BG0,BG1,BG2 businessGoal
+class BG0 primaryGoal
+class BG1,BG2 businessGoal
 class PLATFORM platform
 class TG0,TG1,TG2 targetGroup
 class DF0,DF1,DF2 drivingForces
 ```
+
+**Note:** BG0 gets special `primaryGoal` class for gold highlighting - THE ENGINE!
 
 **Rules:**
 - List all node IDs of same type on one line
