@@ -772,7 +772,7 @@ You have access to these WDS files:
 
 ### Core Documentation
 - `WDS-WORKFLOWS-GUIDE.md` - Overview of all workflows
-- `00-getting-started/00-about-wds.md` - WDS introduction
+- `getting-started/about-wds.md` - WDS introduction
 
 ### Agent Definitions
 - `agents/freyja-ux.agent.yaml` - UX Designer agent

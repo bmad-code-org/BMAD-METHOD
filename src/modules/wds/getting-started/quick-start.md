@@ -122,4 +122,4 @@ You created **why-based specifications** in 5 minutes:
 
 ---
 
-[← Back to Getting Started](installation.md)
+[← Back to Installation](installation.md) | [Next: Where to Go Next →](where-to-go-next.md)

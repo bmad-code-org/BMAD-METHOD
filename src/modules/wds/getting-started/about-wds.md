@@ -70,15 +70,17 @@ WDS is completely free and open-source:
 
 ---
 
-## Learn More
+## What's Next?
 
-**[Continue to About the Course →](00-about-the-course.md)**
+Now that you understand what WDS is, let's get it installed:
+
+**[Continue to Installation →](installation.md)**
 
 Or return to the overview:
 
-**[← Back to Getting Started Overview](00-getting-started-overview.md)**
+**[← Back to Getting Started Overview](getting-started-overview.md)**
 
 ---
 
-**Created by Mårten Angner and the Whiteport team**
+**Created by Mårten Angner and the Whiteport team**  
 **Free and open-source for designers everywhere**

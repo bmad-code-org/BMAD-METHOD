@@ -43,6 +43,7 @@ You should see:
 
 ## Next Steps
 
+- [About WDS](about-wds.md) - Understand what WDS is and why it exists
 - [Quick Start Guide](quick-start.md) - Your first 5 minutes
 - [Course](../course/00-course-overview.md) - Learn the concepts deeply
 

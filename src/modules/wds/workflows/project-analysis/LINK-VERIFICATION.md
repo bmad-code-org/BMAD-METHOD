@@ -16,7 +16,7 @@ User types one of:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ STEP 1: Quick Launcher                                      │
-│ getting-started/agents/wds-freya-ux.md                     │
+│ getting-started/agent-activation/wds-freya-ux.md           │
 │                                                              │
 │ Instructions:                                                │
 │ 1. Load: src/modules/wds/agents/freyja-ux.agent.yaml ✅    │
@@ -113,10 +113,10 @@ User types one of:
 
 ### Entry Points
 
-- [x] `getting-started/agents/wds-freya-ux.md` → `agents/freyja-ux.agent.yaml`
-- [x] `getting-started/agents/wds-freya-ux.md` → `workflows/project-analysis/instructions.md`
-- [x] `getting-started/agents/wds-saga-analyst.md` → `agents/saga-analyst.agent.yaml`
-- [x] `getting-started/agents/wds-idunn-pm.md` → `agents/idunn-pm.agent.yaml`
+- [x] `getting-started/agent-activation/wds-freya-ux.md` → `agents/freyja-ux.agent.yaml`
+- [x] `getting-started/agent-activation/wds-freya-ux.md` → `workflows/project-analysis/instructions.md`
+- [x] `getting-started/agent-activation/wds-saga-analyst.md` → `agents/saga-analyst.agent.yaml`
+- [x] `getting-started/agent-activation/wds-idunn-pm.md` → `agents/idunn-pm.agent.yaml`
 
 ### Agent Definitions
 

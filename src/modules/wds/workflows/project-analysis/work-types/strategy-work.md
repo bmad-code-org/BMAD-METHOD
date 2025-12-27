@@ -39,7 +39,7 @@ Let me hand over to Saga who can help you best with this..."
 
 **Then activate Saga** but skip project analysis:
 
-→ Load: `getting-started/agents/wds-saga-analyst.md`  
+→ Load: `getting-started/agent-activation/wds-saga-analyst.md`  
 → Saga shows: Full presentation ✅  
 → Saga skips: Project analysis (already shown)  
 → Saga continues: Directly to the specific work

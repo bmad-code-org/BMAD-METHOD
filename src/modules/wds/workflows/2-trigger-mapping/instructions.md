@@ -78,7 +78,15 @@ Ready to begin? 🎯</output>
 </step>
 
 <step n="7" goal="Compile Trigger Map Documents">
-<action>Generate 00-Trigger-Map-Poster.md from template</action>
+<action>Load micro-instructions-mermaid-diagram.md for diagram formatting rules</action>
+<action>Generate 00-Trigger-Map-Poster.md from template with Mermaid diagram</action>
+<action>Follow micro instructions exactly:
+- Use light gray styling with dark text
+- Add padding (<br/>) to all nodes
+- Include emojis: ✅ for wants, ❌ for fears
+- Exactly 3 drivers per category
+- Match persona emojis in both TG and DF nodes
+- Apply professional styling classes</action>
 <action>Generate 01-Business-Goals.md (visions & objectives)</action>
 <action>Generate 02-Target-Groups.md (all personas with drivers)</action>
 <action>Generate 03-Feature-Impact-Analysis.md from template</action>
@@ -89,7 +97,7 @@ Ready to begin? 🎯</output>
 
 **Created:**
 
-- `B-Trigger-Map/00-Trigger-Map-Poster.md` - Visual overview
+- `B-Trigger-Map/00-Trigger-Map-Poster.md` - Visual overview with Mermaid diagram
 - `B-Trigger-Map/01-Business-Goals.md` - Visions & objectives
 - `B-Trigger-Map/02-Target-Groups.md` - All personas with drivers
 - `B-Trigger-Map/03-Feature-Impact-Analysis.md` - Prioritized features

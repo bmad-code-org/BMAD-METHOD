@@ -1,6 +1,6 @@
 # Where to Go Next
 
-**You've installed WDS and completed the quick start. Now what?**
+**You've learned about WDS, installed it, and completed the quick start. Now what?**
 
 ---
 

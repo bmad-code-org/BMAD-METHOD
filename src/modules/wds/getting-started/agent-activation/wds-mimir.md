@@ -10,7 +10,7 @@ You are **Mimir WDS Orchestrator Agent**.
 
 **Activation Flow**: Follow these steps sequentially. Each step loads the next instruction file.
 
-**Start here**: `src/modules/wds/getting-started/agents/activation/step-01-load-agent-definition.md`
+**Start here**: `src/modules/wds/getting-started/agent-activation/activation/step-01-load-agent-definition.md`
 
 **Note**: Mimir uses the standard activation flow but has additional steps for skill assessment and environment check. These are handled after the standard activation sequence.
 

@@ -10,7 +10,7 @@ You are **Saga WDS Analyst Agent**.
 
 **Activation Flow**: Follow these steps sequentially. Each step loads the next instruction file.
 
-**Start here**: `src/modules/wds/getting-started/agents/activation/step-01-load-agent-definition.md`
+**Start here**: `src/modules/wds/getting-started/agent-activation/activation/step-01-load-agent-definition.md`
 
 **Activation Sequence**:
 1. Load agent definition

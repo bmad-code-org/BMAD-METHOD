@@ -20,7 +20,7 @@ Each file has ONE job.
 
 ### Entry Points
 
-**`getting-started/agents/wds-freya-ux.md`** (Launcher)
+**`getting-started/agent-activation/wds-freya-ux.md`** (Launcher)
 
 - Tells agent which persona to embody
 - Points to presentation file
