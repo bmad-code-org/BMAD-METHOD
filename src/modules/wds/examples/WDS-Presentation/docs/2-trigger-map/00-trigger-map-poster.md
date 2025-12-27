@@ -99,42 +99,60 @@ This is the visual overview. For detailed documentation, see:
 
 ## Business Objectives
 
-### Objective 1: Designer Adoption
+### ⭐ PRIMARY GOAL: Build Core Evangelist Community (THE ENGINE)
+- **Statement:** Build passionate core of WDS believers who advocate and spread the methodology
+- **Metric:** Active evangelists (completed course, built real project with WDS, actively sharing/teaching others, contributing feedback)
+- **Target:** 50 hardcore believers and evangelists
+- **Timeline:** 12 months
+- **Impact:** These 50 drive ALL other objectives - this is the key to expansion
+
+---
+
+### 🚀 WDS ADOPTION GOALS (Driven by Evangelists)
+
+**Objective 1: Designer Adoption**
 - **Statement:** Onboard 1,000 designers actively using WDS methodology
 - **Metric:** Completed Module 01 + cloned repository + started at least one project using WDS
 - **Target:** 1,000 designers
 - **Timeline:** 24 months from page launch
 
-### Objective 2: Entrepreneur Engagement
+**Objective 2: Entrepreneur Engagement**
 - **Statement:** 100 entrepreneurs embrace WDS for their product development
 - **Metric:** Entrepreneurs who hired designer using WDS OR completed WDS trigger mapping for their project
 - **Target:** 100 entrepreneurs
 - **Timeline:** 24 months from page launch
 
-### Objective 3: Developer Integration
+**Objective 3: Developer Integration**
 - **Statement:** 100 developers benefit from BMad Method integration
 - **Metric:** Developers who used BMM agents OR received WDS specifications for implementation
 - **Target:** 100 developers
 - **Timeline:** 24 months from page launch
 
-### Objective 4: Community Growth
+**Objective 4: Community Growth**
 - **Statement:** Build active WDS community
 - **Metric:** Discord members actively participating (asking questions, sharing work, giving feedback)
 - **Target:** 250 active community members
 - **Timeline:** 24 months
 
-### Objective 5: Thought Leadership & Validation
-- **Statement:** Establish WDS as recognized methodology through speaking and real-world case studies
+---
+
+### 💼 WHITEPORT BUSINESS GOALS (Company Revenue & Growth)
+
+**Note:** These are Whiteport company goals, NOT WDS methodology goals. WDS success creates these opportunities, not vice versa.
+
+**Objective 5: Thought Leadership & Validation**
+- **Statement:** Establish WDS/Whiteport as recognized leaders through speaking and case studies
 - **Metric:** Speaking engagements + published case studies from real projects + testimonials
 - **Target:** 10 speaking engagements, 20 case studies, 50 testimonials
 - **Timeline:** 24 months
+- **Business Impact:** Creates consulting opportunities and client leads
 
-### Objective 6: Build Core Evangelist Community ⭐
-- **Statement:** Build passionate core of WDS believers who advocate and spread the methodology
-- **Metric:** Active evangelists (completed course, built real project with WDS, actively sharing/teaching others, contributing feedback)
-- **Target:** 50 hardcore believers and evangelists
-- **Timeline:** 12 months
-- **Impact:** These 50 drive all other objectives
+**Objective 6: Client Project Opportunities**
+- **Statement:** Generate paid client projects through WDS visibility and credibility
+- **Metric:** Qualified leads + signed client projects using WDS methodology
+- **Target:** TBD based on Whiteport capacity
+- **Timeline:** 24 months
+- **Business Impact:** Direct revenue for Whiteport agency
 
 ---
 
