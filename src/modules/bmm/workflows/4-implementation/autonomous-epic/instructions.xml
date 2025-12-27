@@ -24,21 +24,29 @@
     <output>🤖 **Autonomous Epic Processing**
 
       This workflow will automatically:
-      1. Create each story just-in-time (using create-story)
-      2. Develop each story (using super-dev-story or dev-story)
-      3. **Verify completion** by checking ALL tasks are done (- [x])
-      4. Commit and push after each story (integrated in super-dev)
-      5. Generate epic completion report
+      1. Create and develop each story using story-pipeline
+      2. **Verify completion** by checking ALL tasks are done (- [x])
+      3. Commit and push after each story (integrated in story-pipeline)
+      4. Generate epic completion report
+
+      **story-pipeline includes:**
+      - Story creation from epic (just-in-time)
+      - Story validation (pre-dev gap analysis)
+      - ATDD test generation (RED phase)
+      - Implementation (GREEN phase)
+      - **Post-implementation validation** (catches false positives!)
+      - Code review (adversarial, finds 3-10 issues)
+      - Completion (commit + push)
 
       **Key Improvement:** Stories in "review" status with unchecked tasks
       WILL be processed - we check actual task completion, not just status!
 
       **Time Estimate:** Varies by epic size
-      - Small epic (3-5 stories): 3-6 hours
-      - Medium epic (6-10 stories): 6-12 hours
-      - Large epic (11+ stories): 12-24 hours
+      - Small epic (3-5 stories): 2-4 hours
+      - Medium epic (6-10 stories): 4-8 hours
+      - Large epic (11+ stories): 8-16 hours
 
-      **Token Usage:** ~100K-150K per story
+      **Token Usage:** ~25-30K per story (65% more efficient!)
     </output>
 
     <check if="{{epic_num}} provided">
@@ -99,17 +107,14 @@
 
     <ask>**Proceed with autonomous processing?**
 
-      [Y] Yes - Use super-dev-story (comprehensive validation + code review)
-      [D] Dev-story - Faster, less validation
+      [Y] Yes - Use story-pipeline (full lifecycle with post-validation)
       [n] No - Cancel
+
+      Note: story-pipeline is now the default, replacing super-dev-story with 65% token savings!
     </ask>
 
     <check if="user says Y">
-      <action>Set {{dev_workflow}} = "super-dev-story"</action>
-    </check>
-
-    <check if="user says D">
-      <action>Set {{dev_workflow}} = "dev-story"</action>
+      <action>Set {{use_story_pipeline}} = true</action>
     </check>
 
     <check if="user says n">
@@ -162,62 +167,27 @@
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       </output>
 
-      <!-- CREATE STORY IF NEEDED (only for backlog) -->
-      <check if="status == 'backlog'">
-        <output>📝 Creating story...</output>
+      <!-- PROCESS STORY WITH STORY-PIPELINE (handles both backlog creation AND development) -->
+      <check if="{{unchecked_count}} > 0 OR status == 'backlog'">
+        <output>💻 Processing story with story-pipeline ({{unchecked_count}} tasks remaining)...</output>
 
         <try>
-          <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/create-story/workflow.yaml">
-            <note>Create story just-in-time</note>
+          <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline/workflow.yaml">
+            <input name="story_id" value="{{current_story.key}}" />
+            <input name="epic_num" value="{{epic_num}}" />
+            <input name="story_num" value="{{current_story.num}}" />
+            <input name="mode" value="batch" />
+            <note>Full lifecycle: create (if backlog) → validate → ATDD → implement → post-validate → review → commit</note>
           </invoke-workflow>
 
-          <output>✅ Story created</output>
-        </try>
-
-        <catch>
-          <output>❌ Failed to create story: {{error}}</output>
-          <action>Add to failed_stories, continue to next</action>
-          <continue />
-        </catch>
-      </check>
-
-      <!-- DEVELOP STORY (for any story with unchecked tasks) -->
-      <check if="{{unchecked_count}} > 0">
-        <output>💻 Developing {{unchecked_count}} remaining tasks with {{dev_workflow}}...</output>
-
-        <try>
-          <check if="{{dev_workflow}} == 'super-dev-story'">
-            <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/super-dev-story/workflow.yaml">
-              <input name="story_file" value="{{current_story_file}}" />
-              <input name="auto_accept_gap_analysis" value="true" />
-              <note>Includes: dev + post-gap + review + push-all (auto-accepting gap analysis)</note>
-            </invoke-workflow>
-          </check>
-
-          <check if="{{dev_workflow}} == 'dev-story'">
-            <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
-              <input name="story_file" value="{{current_story_file}}" />
-              <input name="auto_accept_gap_analysis" value="true" />
-            </invoke-workflow>
-
-            <!-- Extract File List from story for targeted commit -->
-            <action>Read story file and extract "File List" section</action>
-            <action>Parse all file paths, include the story file itself</action>
-            <action>Store as {{story_files}} - space-separated list</action>
-
-            <!-- Push after dev-story (targeted to this story's files only) -->
-            <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/push-all/workflow.yaml">
-              <input name="target_files" value="{{story_files}}" />
-              <input name="story_key" value="{{current_story.key}}" />
-              <note>Only commit files from this story (parallel-agent safe)</note>
-            </invoke-workflow>
-          </check>
+          <!-- story-pipeline handles verification internally, just check final status -->
+          <output>✅ story-pipeline completed</output>
 
           <!-- VERIFY COMPLETION: Re-check for unchecked tasks -->
           <action>Re-read story file and count unchecked tasks</action>
 
           <check if="{{remaining_unchecked}} > 0">
-            <output>⚠️ Story still has {{remaining_unchecked}} unchecked tasks after development</output>
+            <output>⚠️ Story still has {{remaining_unchecked}} unchecked tasks after pipeline</output>
             <action>Log incomplete tasks for review</action>
             <action>Mark as partial success</action>
           </check>
@@ -232,7 +202,7 @@
         </try>
 
         <catch>
-          <output>❌ Story failed: {{error}}</output>
+          <output>❌ story-pipeline failed: {{error}}</output>
           <action>Add to failed_stories with error details</action>
           <action>Increment failure_count</action>
         </catch>

@@ -1,6 +1,7 @@
 name: autonomous-epic
-description: "Autonomous epic processing - creates and develops all stories in an epic with minimal human intervention"
+description: "Autonomous epic processing using story-pipeline - creates and develops all stories in an epic with minimal human intervention. Now 65% more token efficient!"
 author: "BMad"
+version: "2.0.0" # Upgraded to use story-pipeline instead of super-dev-story
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -21,13 +22,27 @@ project_context: "**/project-context.md"
 
 # Autonomous mode settings
 autonomous_settings:
-  use_super_dev: true # Use super-dev-story vs dev-story
-  auto_accept_gap_analysis: true # Auto-approve gap analysis refinements
+  use_story_pipeline: true # Use story-pipeline workflow (replaces super-dev-story)
+  pipeline_mode: "batch" # Run story-pipeline in batch mode (unattended)
   halt_on_error: false # Continue even if story fails
   max_retry_per_story: 2 # Retry failed stories
-  create_git_commits: true # Commit after each story
+  create_git_commits: true # Commit after each story (handled by story-pipeline)
   create_epic_branch: false # When false, stay on current branch (good for parallel epics)
   git_branch_prefix: "auto-epic-" # Branch name format: auto-epic-{epic_num} (only used if create_epic_branch=true)
+
+# story-pipeline benefits (vs super-dev-story)
+story_pipeline_features:
+  token_efficiency: "65% savings (25-30K vs 100-150K per story)"
+  includes:
+    - "Story creation from epic (just-in-time)"
+    - "Story validation (pre-dev gap analysis)"
+    - "ATDD test generation (RED phase)"
+    - "Implementation (GREEN phase)"
+    - "Post-implementation validation (catches false positives)"
+    - "Code review (adversarial, finds 3-10 issues)"
+    - "Completion (commit + push)"
+  quality_gates: "All super-dev-story gates PLUS post-validation"
+  checkpoint_resume: "Can resume from any step after failure"
 
 # TASK-BASED COMPLETION SETTINGS (NEW)
 # These settings ensure stories are truly complete, not just marked as such

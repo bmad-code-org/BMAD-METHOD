@@ -1,0 +1,235 @@
+name: story-pipeline
+description: "Automated story development pipeline with token-efficient step-file architecture. Replaces separate Claude calls with single-session orchestration."
+author: "BMad + digital-bridge"
+version: "2.0.0"
+
+# Critical variables from config
+config_source: "{project-root}/_bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+sprint_artifacts: "{config_source}:sprint_artifacts"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow paths
+installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline"
+steps_path: "{installed_path}/steps"
+templates_path: "{installed_path}/templates"
+checklists_path: "{installed_path}/checklists"
+
+# State management
+state_file: "{sprint_artifacts}/pipeline-state-{{story_id}}.yaml"
+audit_trail: "{sprint_artifacts}/audit-{{story_id}}-{{date}}.yaml"
+
+# Workflow modes
+modes:
+  interactive:
+    description: "Human-in-the-loop with menu navigation between steps"
+    checkpoint_on_failure: true
+    requires_approval: true
+    fresh_context_for_review: false # Role switch instead
+  batch:
+    description: "Unattended execution with YOLO mode"
+    checkpoint_on_failure: true
+    requires_approval: false
+    fresh_context_for_review: true # Checkpoint before code review
+    fail_fast: true
+
+# Agent role definitions (loaded once, switched as needed)
+agents:
+  sm:
+    name: "Scrum Master"
+    persona: "{project-root}/_bmad/bmm/agents/sm.md"
+    description: "Story creation, validation, sprint status"
+    used_in_steps: [2, 3, 7]
+  tea:
+    name: "Test Engineering Architect"
+    persona: "{project-root}/_bmad/bmm/agents/tea.md"
+    description: "ATDD test generation, red phase verification"
+    used_in_steps: [4]
+  dev:
+    name: "Developer"
+    persona: "{project-root}/_bmad/bmm/agents/dev.md"
+    description: "Implementation, post-validation, code review"
+    used_in_steps: [5, "5b", 6]
+
+# Step file definitions
+steps:
+  - step: 1
+    file: "{steps_path}/step-01-init.md"
+    name: "Initialize Pipeline"
+    description: "Load story context, detect mode, cache documents"
+    agent: null
+    quality_gate: false
+
+  - step: "1b"
+    file: "{steps_path}/step-01b-resume.md"
+    name: "Resume from Checkpoint"
+    description: "Resume pipeline from last completed step"
+    agent: null
+    quality_gate: false
+    conditional: true # Only if resuming
+
+  - step: 2
+    file: "{steps_path}/step-02-create-story.md"
+    name: "Create Story"
+    description: "Generate detailed story from epic with research"
+    agent: sm
+    quality_gate: true
+    mcp_tools: [exa]
+    checklist: "{checklists_path}/story-creation.md"
+
+  - step: 3
+    file: "{steps_path}/step-03-validate-story.md"
+    name: "Validate Story"
+    description: "Adversarial validation of story completeness"
+    agent: sm
+    quality_gate: true
+    checklist: "{checklists_path}/story-validation.md"
+
+  - step: 4
+    file: "{steps_path}/step-04-atdd.md"
+    name: "ATDD Test Generation"
+    description: "Generate failing acceptance tests (red phase)"
+    agent: tea
+    quality_gate: true
+    checklist: "{checklists_path}/atdd.md"
+
+  - step: 5
+    file: "{steps_path}/step-05-implement.md"
+    name: "Implement Story"
+    description: "Implement code to pass tests (green phase)"
+    agent: dev
+    quality_gate: true
+    checklist: "{checklists_path}/implementation.md"
+
+  - step: "5b"
+    file: "{steps_path}/step-05b-post-validation.md"
+    name: "Post-Implementation Validation"
+    description: "Verify completed tasks against codebase reality (catch false positives)"
+    agent: dev
+    quality_gate: true
+    iterative: true # May re-invoke step 5 if gaps found
+
+  - step: 6
+    file: "{steps_path}/step-06-code-review.md"
+    name: "Code Review"
+    description: "Adversarial code review finding 3-10 issues"
+    agent: dev
+    quality_gate: true
+    requires_fresh_context: true # In batch mode, checkpoint here
+    checklist: "{checklists_path}/code-review.md"
+
+  - step: 7
+    file: "{steps_path}/step-07-complete.md"
+    name: "Complete Story"
+    description: "Update sprint status, create git commit"
+    agent: sm
+    quality_gate: false
+
+  - step: 8
+    file: "{steps_path}/step-08-summary.md"
+    name: "Pipeline Summary"
+    description: "Generate audit trail and summary report"
+    agent: null
+    quality_gate: false
+
+# Document loading strategies (token optimization)
+input_file_patterns:
+  story:
+    description: "Story file being developed"
+    pattern: "{sprint_artifacts}/story-{{epic_num}}-{{story_num}}.md"
+    load_strategy: "FULL_LOAD"
+    cache: true # Keep in memory across steps
+
+  epics:
+    description: "Epic definitions with BDD scenarios"
+    whole: "{output_folder}/epic*.md"
+    sharded: "{output_folder}/epics/*.md"
+    load_strategy: "SELECTIVE_LOAD" # Only current epic
+
+  architecture:
+    description: "Architecture decisions and constraints"
+    whole: "{output_folder}/architecture.md"
+    sharded: "{output_folder}/architecture/*.md"
+    load_strategy: "INDEX_GUIDED" # Use index for section selection
+    sections_needed: ["tech_stack", "data_model", "api_patterns"]
+
+  prd:
+    description: "Product requirements"
+    whole: "{output_folder}/prd.md"
+    sharded: "{output_folder}/prd/*.md"
+    load_strategy: "SELECTIVE_LOAD" # Only relevant sections
+
+  project_context:
+    description: "Critical rules and patterns"
+    pattern: "**/project-context.md"
+    load_strategy: "FULL_LOAD"
+    cache: true
+
+# MCP tool extensions
+mcp_extensions:
+  exa:
+    description: "Web search for research during story creation"
+    used_in_steps: [2]
+  supabase:
+    description: "Database operations during implementation"
+    used_in_steps: [5]
+
+# Quality gates (must pass to proceed)
+quality_gates:
+  story_creation:
+    step: 2
+    criteria:
+      - "Story file created with proper frontmatter"
+      - "All acceptance criteria defined"
+      - "Technical context linked"
+
+  story_validation:
+    step: 3
+    criteria:
+      - "Story passes adversarial review"
+      - "No ambiguous requirements"
+      - "Implementation path clear"
+
+  atdd:
+    step: 4
+    criteria:
+      - "Tests exist for all acceptance criteria"
+      - "Tests fail (red phase verified)"
+      - "Test structure follows project patterns"
+
+  implementation:
+    step: 5
+    criteria:
+      - "All tests pass (green phase)"
+      - "Code follows project patterns"
+      - "No TypeScript errors"
+
+  post_validation:
+    step: "5b"
+    criteria:
+      - "All completed tasks verified against codebase"
+      - "Zero false positives remaining"
+      - "Files/functions/tests actually exist"
+      - "Tests actually pass (not just claimed)"
+
+  code_review:
+    step: 6
+    criteria:
+      - "3-10 specific issues identified"
+      - "All issues resolved or documented"
+      - "Security review complete"
+
+# Audit trail configuration
+audit:
+  enabled: true
+  output_file: "{audit_trail}"
+  include:
+    - timestamps
+    - step_durations
+    - quality_gate_results
+    - issues_found
+    - files_modified
+    - token_usage
+
+standalone: true

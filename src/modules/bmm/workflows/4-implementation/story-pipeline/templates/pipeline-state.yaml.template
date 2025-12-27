@@ -1,0 +1,144 @@
+# Pipeline State Template
+# Copy and populate for each story execution
+# Location: {sprint_artifacts}/pipeline-state-{story_id}.yaml
+
+---
+# Story identification
+story_id: "{{story_id}}"
+epic_num: {{epic_num}}
+story_num: {{story_num}}
+
+# Execution mode
+mode: "interactive"  # or "batch"
+
+# Progress tracking
+stepsCompleted: []
+lastStep: 0
+currentStep: 0
+status: "not_started"  # not_started, initializing, in_progress, completing, completed, failed
+
+# Timestamps
+started_at: null
+updated_at: null
+completed_at: null
+
+# Cached document context (loaded once, reused)
+cached_context:
+  project_context_loaded: false
+  project_context_path: null
+  epic_loaded: false
+  epic_path: null
+  architecture_sections: []
+  architecture_paths: []
+  story_file_exists: false
+  story_file_path: null
+
+# Step status tracking
+steps:
+  step-01-init:
+    status: pending
+    started_at: null
+    completed_at: null
+    duration: null
+    notes: null
+
+  step-02-create-story:
+    status: pending
+    started_at: null
+    completed_at: null
+    duration: null
+    agent: sm
+    output_file: null
+    notes: null
+
+  step-03-validate-story:
+    status: pending
+    started_at: null
+    completed_at: null
+    duration: null
+    agent: sm
+    issues_found: 0
+    issues_fixed: 0
+    quality_score: null
+    notes: null
+
+  step-04-atdd:
+    status: pending
+    started_at: null
+    completed_at: null
+    duration: null
+    agent: tea
+    tests_created: 0
+    test_files: []
+    factories_created: []
+    fixtures_created: []
+    notes: null
+
+  step-05-implement:
+    status: pending
+    started_at: null
+    completed_at: null
+    duration: null
+    agent: dev
+    files_modified: []
+    migrations_applied: []
+    tests_passing: null
+    lint_clean: null
+    build_success: null
+    notes: null
+
+  step-06-code-review:
+    status: pending
+    started_at: null
+    completed_at: null
+    duration: null
+    agent: dev
+    issues_found: 0
+    issues_fixed: 0
+    categories_reviewed: []
+    tests_passing: null
+    notes: null
+
+  step-07-complete:
+    status: pending
+    started_at: null
+    completed_at: null
+    duration: null
+    agent: sm
+    commit_hash: null
+    sprint_status_updated: false
+    notes: null
+
+  step-08-summary:
+    status: pending
+    started_at: null
+    completed_at: null
+    duration: null
+    audit_file: null
+    notes: null
+
+# Error tracking (if pipeline fails)
+errors: []
+# Example error entry:
+# - step: 5
+#   timestamp: "2025-01-15T12:00:00Z"
+#   error: "Tests failed after implementation"
+#   details: "3 tests failing in auth.test.ts"
+#   recoverable: true
+
+# Quality gates passed
+quality_gates:
+  story_creation: null
+  validation: null
+  atdd: null
+  implementation: null
+  code_review: null
+
+# Metrics (populated at end)
+metrics:
+  total_duration: null
+  token_estimate: null
+  files_modified_count: 0
+  tests_created_count: 0
+  issues_found_total: 0
+  issues_fixed_total: 0
