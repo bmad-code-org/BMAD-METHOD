@@ -184,21 +184,19 @@ flowchart LR
 
 ---
 
-**[06-Design-Implications.md](06-Design-Implications.md)** - UX requirements and content priorities
+**[06-Feature-Impact.md](06-Feature-Impact.md)** - Prioritized features for UX and development (Optional Design Brief)
 
-**Must Address (Critical for Conversion):**
-1. Fear of AI replacing designers → Show how WDS makes designers indispensable
-2. Lack of confidence with AI → Provide structured, hand-holding path
-3. Feeling overwhelmed → Position as strategic leader who shoulders complexity
-4. Wasting time on tools → Prove methodology with Dog Week case study
-5. Not being valued → Show path to becoming "go-to expert"
+**Top Priority Features (Must Have MVP):**
+1. BMad Method Integration (Score: 11) - All personas benefit from seamless design-to-dev
+2. Complete End-to-End Workflow (Score: 9) - Core differentiation from fragmented tools
+3. Why-Based Specifications (Score: 9) - Makes Stina indispensable, Felix happy
+4. Example Projects/Case Studies (Score: 8) - Proof that overcomes "wasting time" fear
+5. Testimonials & Social Proof (Score: 8) - Peer validation from designers and entrepreneurs
+6. Course Modules (Score: 6) - Hand-holding builds Stina's confidence
+7. Installation Documentation (Score: 5) - Removes barrier to entry
+8. WDS Agents (Score: 5) - The methodology in practice
 
-**Content Priorities by Section:**
-- **Hero:** Hook with "guiding light," address AI fear immediately
-- **Methodology:** Show structure, prove with Dog Week, explain hand-holding
-- **Benefits:** Make designer indispensable, AI as co-pilot, strategic leader
-- **Course/Installation:** Clear path, low barrier, prove worth time investment
-- **Social Proof:** Early evangelists, real case studies, designer testimonials
+**Key Insight:** Testimonials complement case studies - case studies prove methodology works, testimonials prove it's worth the effort through peer validation.
 
 ---
 

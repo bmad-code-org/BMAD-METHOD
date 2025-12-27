@@ -14,6 +14,7 @@
 - [ ] `03-[Secondary Persona].md` exists
 - [ ] `04-[Tertiary Persona].md` exists (if applicable)
 - [ ] `05-Key-Insights.md` exists
+- [ ] `06-Feature-Impact.md` exists (if Feature Impact workshop was completed)
 - [ ] All files use consistent naming pattern
 
 ---
@@ -83,6 +84,12 @@
 - [ ] Links to 01-Business-Goals.md
 - [ ] Links to all persona docs
 
+**06-Feature-Impact.md (if exists):**
+- [ ] Links back to 00-trigger-map.md
+- [ ] Links to 01-Business-Goals.md
+- [ ] Links to all persona docs
+- [ ] Links to 05-Key-Insights.md
+
 ---
 
 ### 6. Persona Document Completeness
@@ -143,7 +150,20 @@
 
 ---
 
-### 10. Priority Tier Consistency
+### 10. Feature Impact Document (06) Completeness (If Exists)
+
+- [ ] Scoring system clearly explained
+- [ ] Primary persona weighted higher (5/3/1 vs 3/1/0)
+- [ ] Feature table with scores for all personas
+- [ ] Must Have / Consider / Defer categories
+- [ ] Strategic rationale explains prioritization
+- [ ] Connection to business goals shown
+- [ ] Development phases aligned with flywheel
+- [ ] Each feature ties to specific persona drivers
+
+---
+
+### 11. Priority Tier Consistency
 
 **Verify throughout all documents:**
 
@@ -156,7 +176,7 @@
 
 ---
 
-### 11. Driving Forces Quality
+### 12. Driving Forces Quality
 
 **For each persona's 6 driving forces:**
 
@@ -168,7 +188,7 @@
 
 ---
 
-### 12. Formatting Check
+### 13. Formatting Check
 
 - [ ] Markdown renders correctly
 - [ ] Headers use proper hierarchy (# ## ###)
@@ -205,7 +225,8 @@ Once all checks pass, output:
 ├── 02-[Primary Name].md       ([X] lines) - Primary persona
 ├── 03-[Secondary Name].md     ([X] lines) - Secondary persona
 ├── 04-[Tertiary Name].md      ([X] lines) - Tertiary persona [if exists]
-└── 05-Key-Insights.md         ([X] lines) - Strategic implications
+├── 05-Key-Insights.md         ([X] lines) - Strategic implications
+└── 06-Feature-Impact.md       ([X] lines) - Feature prioritization [if workshop completed]
 ```
 
 **Quality Verified:**
