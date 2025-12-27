@@ -14,9 +14,9 @@
 %%{init: {'theme':'base', 'themeVariables': { 'fontFamily':'Inter, system-ui, sans-serif', 'fontSize':'14px'}}}%%
 flowchart LR
     %% Business Goals (Left)
-    BG0["<br/>🌟 WDS VISION<br/><br/>Guiding light for designers worldwide<br/>Empowering designers in AI era<br/>Delivering exceptional value<br/>Making designers indispensable<br/><br/>"]
-    BG1["<br/>📊 CORE OBJECTIVES<br/><br/>1,000 designers using WDS<br/>50 hardcore evangelists ⭐<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/><br/>"]
-    BG2["<br/>🚀 COMMUNITY GROWTH<br/><br/>250 active community members<br/>10 speaking engagements<br/>20 case studies<br/>50 testimonials<br/><br/>"]
+    BG0["<br/>⭐ PRIMARY GOAL: 50 EVANGELISTS<br/><br/>THE ENGINE<br/>50 hardcore believers and advocates<br/>Completed course + built real project<br/>Actively sharing and teaching others<br/>Timeline: 12 months<br/><br/>"]
+    BG1["<br/>🚀 WDS ADOPTION GOALS<br/><br/>1,000 designers using WDS<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/>250 active community members<br/>Timeline: 24 months<br/><br/>"]
+    BG2["<br/>💼 WHITEPORT BUSINESS GOALS<br/><br/>10 speaking engagements<br/>20 case studies published<br/>50 testimonials<br/>Client project opportunities<br/>Timeline: 24 months<br/><br/>"]
     
     %% Central Platform
     PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
@@ -44,13 +44,15 @@ flowchart LR
     TG1 --> DF1
     TG2 --> DF2
 
-    %% Light Gray Styling with Dark Text
+    %% Light Gray Styling with Dark Text + Gold Primary Goal
+    classDef primaryGoal fill:#fef3c7,color:#78350f,stroke:#fbbf24,stroke-width:3px
     classDef businessGoal fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
     classDef platform fill:#e5e7eb,color:#111827,stroke:#9ca3af,stroke-width:3px
     classDef targetGroup fill:#f9fafb,color:#1f2937,stroke:#d1d5db,stroke-width:2px
     classDef drivingForces fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
     
-    class BG0,BG1,BG2 businessGoal
+    class BG0 primaryGoal
+    class BG1,BG2 businessGoal
     class PLATFORM platform
     class TG0,TG1,TG2 targetGroup
     class DF0,DF1,DF2 drivingForces
@@ -61,21 +63,35 @@ flowchart LR
 ### **System Overview (Center)**
 The central node represents **Whiteport Design Studio** - an end-to-end design methodology that transforms designers from overwhelmed task-doers into empowered strategic leaders.
 
-### **Business Goals (Left Branch)**
-Three strategic goals drive the project:
-- **🌟 WDS Vision**: Becoming the guiding light for designers worldwide
-- **📊 Core Objectives**: Measurable adoption targets (1,000 designers, 50 evangelists, 100 entrepreneurs, 100 developers)
-- **🚀 Community Growth**: Building engaged community and thought leadership
+### **Business Goals (Left Branch) - Properly Prioritized**
+
+**⭐ PRIMARY GOAL: 50 Evangelists (THE ENGINE)**
+- The absolute top priority in yellow/gold highlighting
+- These 50 hardcore believers drive everything else
+- Timeline: 12 months
+- **This is the key to expansion**
+
+**🚀 WDS Adoption Goals**
+- Driven by the 50 evangelists
+- 1,000 designers, 100 entrepreneurs, 100 developers, 250 community
+- Timeline: 24 months
+- Focused on methodology spread
+
+**💼 Whiteport Business Goals**
+- Company-level objectives (speaking, case studies, client projects)
+- Timeline: 24 months
+- **Important distinction:** WDS success drives these opportunities, not vice versa
 
 ### **Target User Groups (Right Branch)**
 Three prioritized personas with distinct needs:
-- **🎯 Stina the Strategist**: Primary target, designer seeking strategic leadership role
-- **💼 Lars the Leader**: Secondary target, entrepreneur needing quality design process
-- **💻 Felix the Full-Stack**: Tertiary target, developer wanting better specifications
+- **🎯 Stina the Strategist**: Primary target, becomes evangelist
+- **💼 Lars the Leader**: Secondary target, validates business value
+- **💻 Felix the Full-Stack**: Tertiary target, benefits from better specs
 
 ### **Usage Goals Legend**
 - **✅ Green Checkmarks**: Positive goals - what users want to achieve
 - **❌ Red X Marks**: Negative goals - what users want to avoid
+- **⭐ Yellow/Gold Box**: PRIMARY GOAL - the engine that drives everything
 
 ---
 
@@ -224,9 +240,9 @@ This is the visual overview. For detailed documentation, see:
 %%{init: {'theme':'base', 'themeVariables': { 'fontFamily':'Inter, system-ui, sans-serif', 'fontSize':'14px'}}}%%
 flowchart LR
     %% Business Goals (Left)
-    BG0["<br/>🌟 WDS VISION<br/><br/>Guiding light for designers worldwide<br/>Empowering designers in AI era<br/>Delivering exceptional value<br/>Making designers indispensable<br/><br/>"]
-    BG1["<br/>📊 CORE OBJECTIVES<br/><br/>1,000 designers using WDS<br/>50 hardcore evangelists ⭐<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/><br/>"]
-    BG2["<br/>🚀 COMMUNITY GROWTH<br/><br/>250 active community members<br/>10 speaking engagements<br/>20 case studies<br/>50 testimonials<br/><br/>"]
+    BG0["<br/>⭐ PRIMARY GOAL: 50 EVANGELISTS<br/><br/>THE ENGINE<br/>50 hardcore believers and advocates<br/>Completed course + built real project<br/>Actively sharing and teaching others<br/>Timeline: 12 months<br/><br/>"]
+    BG1["<br/>🚀 WDS ADOPTION GOALS<br/><br/>1,000 designers using WDS<br/>100 entrepreneurs embracing<br/>100 developers benefiting<br/>250 active community members<br/>Timeline: 24 months<br/><br/>"]
+    BG2["<br/>💼 WHITEPORT BUSINESS GOALS<br/><br/>10 speaking engagements<br/>20 case studies published<br/>50 testimonials<br/>Client project opportunities<br/>Timeline: 24 months<br/><br/>"]
     
     %% Central Platform
     PLATFORM["<br/>🎨 WHITEPORT DESIGN STUDIO<br/><br/>End-to-End Design Methodology<br/><br/>Transform designers from overwhelmed<br/>task-doers into empowered strategic<br/>leaders who shoulder complexity<br/>as a calling, not a burden<br/><br/>"]
@@ -254,13 +270,15 @@ flowchart LR
     TG1 --> DF1
     TG2 --> DF2
 
-    %% Light Gray Styling with Dark Text
+    %% Light Gray Styling with Dark Text + Gold Primary Goal
+    classDef primaryGoal fill:#fef3c7,color:#78350f,stroke:#fbbf24,stroke-width:3px
     classDef businessGoal fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
     classDef platform fill:#e5e7eb,color:#111827,stroke:#9ca3af,stroke-width:3px
     classDef targetGroup fill:#f9fafb,color:#1f2937,stroke:#d1d5db,stroke-width:2px
     classDef drivingForces fill:#f3f4f6,color:#1f2937,stroke:#d1d5db,stroke-width:2px
     
-    class BG0,BG1,BG2 businessGoal
+    class BG0 primaryGoal
+    class BG1,BG2 businessGoal
     class PLATFORM platform
     class TG0,TG1,TG2 targetGroup
     class DF0,DF1,DF2 drivingForces
@@ -271,32 +289,66 @@ flowchart LR
 ### **System Overview (Center)**
 The central node represents **Whiteport Design Studio** - an end-to-end design methodology that transforms designers from overwhelmed task-doers into empowered strategic leaders.
 
-### **Business Goals (Left Branch)**
-Three strategic goals drive the project:
-- **🌟 WDS Vision**: Becoming the guiding light for designers worldwide
-- **📊 Core Objectives**: Measurable adoption targets (1,000 designers, 50 evangelists, 100 entrepreneurs, 100 developers)
-- **🚀 Community Growth**: Building engaged community and thought leadership
+### **Business Goals (Left Branch) - Properly Prioritized**
+
+**⭐ PRIMARY GOAL: 50 Evangelists (THE ENGINE)**
+- The absolute top priority in yellow/gold highlighting
+- These 50 hardcore believers drive everything else
+- Timeline: 12 months
+- **This is the key to expansion**
+
+**🚀 WDS Adoption Goals**
+- Driven by the 50 evangelists
+- 1,000 designers, 100 entrepreneurs, 100 developers, 250 community
+- Timeline: 24 months
+- Focused on methodology spread
+
+**💼 Whiteport Business Goals**
+- Company-level objectives (speaking, case studies, client projects)
+- Timeline: 24 months
+- **Important distinction:** WDS success drives these opportunities, not vice versa
 
 ### **Target User Groups (Right Branch)**
 Three prioritized personas with distinct needs:
-- **🎯 Stina the Strategist**: Primary target, designer seeking strategic leadership role
-- **💼 Lars the Leader**: Secondary target, entrepreneur needing quality design process
-- **💻 Felix the Full-Stack**: Tertiary target, developer wanting better specifications
+- **🎯 Stina the Strategist**: Primary target, becomes evangelist
+- **💼 Lars the Leader**: Secondary target, validates business value
+- **💻 Felix the Full-Stack**: Tertiary target, benefits from better specs
 
 ### **Usage Goals Legend**
 - **✅ Green Checkmarks**: Positive goals - what users want to achieve
 - **❌ Red X Marks**: Negative goals - what users want to avoid
+- **⭐ Yellow/Gold Box**: PRIMARY GOAL - the engine that drives everything
 
 ---
 
 ## Key Insights
 
+### **The Flywheel: 50 Evangelists Drive Everything**
+
+**THE ENGINE (Priority #1):**
+- 50 hardcore evangelists are THE PRIMARY GOAL
+- Timeline: 12 months
+- These believers complete the course, build real projects, actively share and teach
+- They create the flywheel that drives ALL other objectives
+
+**WDS Adoption (Priority #2):**
+- Driven BY the 50 evangelists spreading the word
+- 1,000 designers, 100 entrepreneurs, 100 developers, 250 community
+- Timeline: 24 months
+- Focus: Methodology spread and adoption
+
+**Whiteport Business (Priority #3):**
+- Company revenue goals (NOT WDS methodology goals)
+- Speaking, case studies, client projects
+- Timeline: 24 months
+- **Key distinction**: WDS success creates these opportunities, not vice versa
+
 ### **Primary Development Focus**
-1. **Strategic Leadership Transformation** - Address Stina's core need to move from overwhelmed to empowered
-2. **AI Confidence Building** - Structured, hand-holding path to professional AI use
-3. **Business Value Validation** - Show Lars how WDS designers deliver measurable results
-4. **Better Specifications** - Prove to Felix that logical, complete specs reduce headaches
-5. **Community Engine** - Build the 50 hardcore evangelists who drive broader adoption
+1. **Convert Stina into Evangelist** - She's the profile who becomes one of the 50
+2. **Strategic Leadership Transformation** - Address Stina's core need to move from overwhelmed to empowered
+3. **AI Confidence Building** - Structured, hand-holding path to professional AI use
+4. **Business Value Validation** - Show Lars how WDS designers deliver measurable results
+5. **Better Specifications** - Prove to Felix that logical, complete specs reduce headaches
 
 ### **Critical Success Factors**
 - **Emotional Transformation**: Burden → Calling (the battle cry in action)
@@ -401,15 +453,17 @@ Three prioritized personas with distinct needs:
                               (Loop closes)
 ```
 
-**The Flywheel:**
-1. Stina learns WDS → becomes strategic leader
-2. Stina delivers better specs → Felix's life improves
-3. Felix delivers quality → Lars's business succeeds
-4. Lars hires more WDS designers → creates demand
-5. Success stories inspire more Stinas → 50 evangelists emerge
-6. Evangelists spread WDS → 1,000 designers adopt
+**The Flywheel (Prioritized):**
+1. **STINA BECOMES EVANGELIST** ⭐ (THE PRIMARY GOAL)
+2. Stina learns WDS → becomes strategic leader
+3. Stina delivers better specs → Felix's life improves
+4. Felix delivers quality → Lars's business succeeds
+5. Lars hires more WDS designers → creates demand
+6. Success stories inspire more Stinas → 50 evangelists emerge (12 months)
+7. **Evangelists spread WDS** → 1,000 designers adopt (24 months)
+8. **WDS success** → Whiteport opportunities emerge (speaking, clients, etc.)
 
-**Design Implication:** The page must start the flywheel by converting Stina first. Lars and Felix are supporting actors in Stina's hero journey.
+**Design Implication:** The page must start the flywheel by converting Stina into one of the 50 evangelists. Everything flows from this. Lars and Felix are supporting actors in Stina's hero journey.
 
 ---
 
@@ -469,24 +523,33 @@ Three prioritized personas with distinct needs:
 
 ## Success Metrics Alignment
 
-### How Trigger Map Connects to Objectives:
+### How Trigger Map Connects to Objectives (Properly Prioritized):
 
-**Converting Stina → Achieves:**
-- ✅ 1,000 designers (she's the primary target)
-- ✅ 50 evangelists (she becomes one)
-- ✅ 250 community (she participates)
-- ✅ Testimonials/case studies (she shares success)
+**⭐ PRIMARY: Converting Stina into Evangelist → Achieves:**
+- ✅ **50 evangelists** (THE ENGINE - she becomes one of them)
+- ✅ Completes course + builds real project
+- ✅ Actively shares and teaches others
+- ✅ Creates testimonials and case studies from her success
+- **Timeline: 12 months**
+- **This drives ALL other objectives**
 
-**Validating for Lars → Achieves:**
-- ✅ 100 entrepreneurs (he sees business value)
-- ✅ Speaking engagements (he recommends methodology)
-- ✅ Case studies (his company becomes proof)
+**🚀 SECONDARY: Evangelists Drive WDS Adoption → Achieves:**
+- ✅ 1,000 designers (evangelists spread the word)
+- ✅ 100 entrepreneurs (evangelists demonstrate business value)
+- ✅ 100 developers (evangelists deliver better specs)
+- ✅ 250 community (evangelists create engagement)
+- **Timeline: 24 months**
 
-**Helping Felix → Achieves:**
-- ✅ 100 developers (word spreads about better specs)
-- ✅ Community feedback (dev perspective helps refine)
+**💼 TERTIARY: WDS Success Drives Whiteport Business → Achieves:**
+- ✅ 10 speaking engagements (credibility from WDS success)
+- ✅ 20 case studies (real projects from evangelist community)
+- ✅ 50 testimonials (happy evangelists and users)
+- ✅ Client opportunities (visibility and demand from WDS adoption)
+- **Timeline: 24 months**
 
-**The Trigger Map IS the Strategic Foundation**
+**The Trigger Map IS the Strategic Foundation - And Prioritization Matters**
+
+The page must convert Stina → make her an evangelist → evangelists drive everything else.
 
 ---
 
