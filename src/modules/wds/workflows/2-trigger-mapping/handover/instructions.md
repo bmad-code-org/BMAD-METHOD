@@ -9,7 +9,7 @@
 
 Let me prepare the comprehensive documentation and handover package for UX Design...</output>
 
-<action>Load and execute: steps/step-01-generate-all-docs.md</action>
+<action>Load and execute: steps/step-01-finalize-hub.md</action>
 </intro>
 
 </handover>
