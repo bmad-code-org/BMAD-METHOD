@@ -1,7 +1,7 @@
 name: autonomous-epic
-description: "Autonomous epic processing using story-pipeline - creates and develops all stories in an epic with minimal human intervention. Now 65% more token efficient!"
+description: "Autonomous epic processing using super-dev-pipeline - creates and develops all stories with anti-vibe-coding enforcement. Works for greenfield AND brownfield!"
 author: "BMad"
-version: "2.0.0" # Upgraded to use story-pipeline instead of super-dev-story
+version: "2.0.0" # Upgraded to use super-dev-pipeline with step-file architecture
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
