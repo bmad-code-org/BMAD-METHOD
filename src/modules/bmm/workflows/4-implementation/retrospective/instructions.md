@@ -1300,7 +1300,67 @@ Bob (Scrum Master): "See you all when prep work is done. Meeting adjourned!"
 
 </step>
 
-<step n="11" goal="Save Retrospective and Update Sprint Status">
+<step n="11" goal="Sync Epic-Linked Bugs/Features to Closed Status">
+<critical>Check bugs.yaml for bugs/features linked to this epic and close them</critical>
+
+<action>Load {bugs_yaml} if it exists</action>
+
+<check if="bugs.yaml exists">
+  <action>Search for entries with related_epic matching {{epic_number}}</action>
+
+  <action>For bugs section - find bugs with related_epic == {{epic_number}} AND status in ["fixed", "triaged", "routed"]:</action>
+  <check if="matching bugs found">
+    <action>For each matching bug:</action>
+    <action>- Move entry from "bugs" section to "closed_bugs" section</action>
+    <action>- Update status: → "closed"</action>
+    <action>- Set verified_by: "retrospective-workflow"</action>
+    <action>- Set verified_date: {date}</action>
+    <action>- Append to notes: "Auto-closed via epic retrospective. Epic {{epic_number}} completed on {date}."</action>
+  </check>
+
+  <action>For feature_requests section - find features with related_epic == {{epic_number}} AND status in ["implemented", "backlog", "in-progress"]:</action>
+  <check if="matching features found">
+    <action>For each matching feature:</action>
+    <action>- Move entry from "feature_requests" section to "implemented_features" section</action>
+    <action>- Update status: → "complete"</action>
+    <action>- Set completed_by: "retrospective-workflow"</action>
+    <action>- Set completed_date: {date}</action>
+    <action>- Append to notes: "Auto-closed via epic retrospective. Epic {{epic_number}} completed on {date}."</action>
+  </check>
+
+  <action>Update statistics section with new counts</action>
+  <action>Save updated bugs.yaml</action>
+
+  <check if="bugs/features were moved">
+    <action>Also update bugs.md:</action>
+    <action>- Remove [IMPLEMENTED] tag from closed items</action>
+    <action>- Move bug entries to "# Fixed Bugs" section if not already there</action>
+    <action>- Move feature entries to "# Implemented Features" section if not already there</action>
+    <action>- Add [CLOSED] or [COMPLETE] tag to indicate final status</action>
+    <action>Save updated bugs.md</action>
+  </check>
+
+  <output>
+Bug/Feature Closure:
+{{#if bugs_closed}}
+- Bugs closed for Epic {{epic_number}}: {{bugs_closed_list}}
+{{/if}}
+{{#if features_completed}}
+- Features completed for Epic {{epic_number}}: {{features_completed_list}}
+{{/if}}
+{{#if no_matches}}
+- No outstanding bugs/features linked to Epic {{epic_number}}
+{{/if}}
+  </output>
+</check>
+
+<check if="bugs.yaml does not exist">
+  <action>Skip bug tracking sync - no bugs.yaml file present</action>
+</check>
+
+</step>
+
+<step n="12" goal="Save Retrospective and Update Sprint Status">
 
 <action>Ensure retrospectives folder exists: {retrospectives_folder}</action>
 <action>Create folder if it doesn't exist</action>
@@ -1356,7 +1416,7 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
 
 </step>
 
-<step n="12" goal="Final Summary and Handoff">
+<step n="13" goal="Final Summary and Handoff">
 
 <output>
 **✅ Retrospective Complete, {user_name}!**

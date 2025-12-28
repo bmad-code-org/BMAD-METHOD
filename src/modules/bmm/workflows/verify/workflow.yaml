@@ -1,0 +1,22 @@
+name: verify
+description: "Verify and close implemented bugs/features - removes [IMPLEMENTED] tag, updates status to CLOSED/COMPLETE in both bugs.yaml and bugs.md"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/.bmad/bmm/workflows/verify"
+instructions: "{installed_path}/instructions.md"
+template: false
+
+# Input and output files
+variables:
+  bugs_md: "{output_folder}/bugs.md"
+  bugs_yaml: "{output_folder}/bugs.yaml"
+
+standalone: true

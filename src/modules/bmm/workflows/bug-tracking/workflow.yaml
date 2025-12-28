@@ -1,0 +1,32 @@
+name: bug-tracking
+description: "Triage user-reported bugs from bugs.md, generate structured metadata in bugs.yaml, and route to appropriate workflow"
+author: "BMad"
+
+# Critical variables from config
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+date: system-generated
+
+# Workflow components
+installed_path: "{project-root}/.bmad/bmm/workflows/bug-tracking"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
+template: false # This is an action workflow, not a template workflow
+
+# Input and output files
+variables:
+  bugs_input: "{output_folder}/bugs.md" # User-facing bug reports (informal)
+  bugs_output: "{output_folder}/bugs.yaml" # Agent-facing structured metadata
+  sprint_status: "{config_source}:dev_ephemeral_location/sprint-status.yaml" # For routing context
+  epics_file: "{output_folder}/epics.md" # For related story lookup
+  project_url: "http://localhost:5173" # Base URL for API calls (update for production)
+
+# Output configuration
+default_output_file: "{bugs_output}"
+
+# Documentation
+reference_implementation: "{installed_path}/reference-implementation.md" # Optional in-app reporting setup
+
+standalone: true

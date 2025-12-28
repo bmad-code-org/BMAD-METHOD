@@ -21,6 +21,9 @@ instructions: "{installed_path}/instructions.md"
 variables:
   sprint_status_file: "{implementation_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
   tracking_system: "file-system"
+  # Bug tracking integration (optional)
+  bugs_yaml: "{planning_artifacts}/bugs.yaml"
+  bugs_md: "{planning_artifacts}/bugs.md"
 
 # Smart input file references
 input_file_patterns:

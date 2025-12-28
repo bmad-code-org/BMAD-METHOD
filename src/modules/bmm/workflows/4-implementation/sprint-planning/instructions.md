@@ -48,6 +48,26 @@
     <note>After discovery, these content variables are available: {epics_content} (all epics loaded - uses FULL_LOAD strategy)</note>
   </step>
 
+<step n="1.5" goal="Load bugs.yaml for bug/feature tracking (optional)">
+<action>Check if {bugs_yaml} exists in {planning_artifacts}</action>
+<check if="bugs_yaml exists">
+  <action>Read bugs.yaml using grep to find all bug-NNN and feature-NNN entries</action>
+  <action>For each bug/feature, extract:
+    - ID (e.g., bug-001, feature-003)
+    - Title
+    - Status (triaged, routed, in-progress, fixed/implemented, verified, closed)
+    - Recommended workflow (direct-fix, tech-spec, correct-course, backlog)
+    - Related stories (sprint_stories field for features)
+  </action>
+  <action>Build bug/feature inventory for inclusion in sprint status</action>
+  <action>Track feature-to-story mappings (feature-001 → stories 7-1, 7-2, etc.)</action>
+</check>
+<check if="bugs_yaml does not exist">
+  <output>Note: No bugs.yaml found - bug tracking not enabled for this project.</output>
+  <action>Continue without bug integration</action>
+</check>
+</step>
+
 <step n="2" goal="Build sprint status structure">
 <action>For each epic found, create entries in this order:</action>
 
@@ -63,6 +83,17 @@ development_status:
   1-1-user-authentication: backlog
   1-2-account-management: backlog
   epic-1-retrospective: optional
+```
+
+<action>If bugs.yaml was loaded, add bug/feature sources header comment:</action>
+
+```yaml
+# STORY SOURCES:
+# ==============
+# - epics.md: Primary source ({story_count} stories)
+# - bugs.yaml: Feature-driven stories ({feature_story_count} stories from sprint_stories)
+#   - feature-001: 7-1, 7-2, 7-3 (from sprint_stories field)
+#   - feature-002: 3-7
 ```
 
 </step>
