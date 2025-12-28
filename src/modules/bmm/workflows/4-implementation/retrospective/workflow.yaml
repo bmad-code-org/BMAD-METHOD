@@ -4,12 +4,13 @@ description: "Run after epic completion to review overall success, extract lesso
 author: "BMad"
 
 config_source: "{project-root}/_bmad/bmm/config.yaml"
-output_folder: "{config_source}:output_folder"
+output_folder: "{config_source}:implementation_artifacts}"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
 user_skill_level: "{config_source}:user_skill_level"
 document_output_language: "{config_source}:document_output_language"
 date: system-generated
+planning_artifacts: "{config_source}:planning_artifacts"
 implementation_artifacts: "{config_source}:implementation_artifacts"
 
 installed_path: "{project-root}/_bmad/bmm/workflows/4-implementation/retrospective"
@@ -25,9 +26,9 @@ required_inputs:
 input_file_patterns:
   epics:
     description: "The completed epic for retrospective"
-    whole: "{output_folder}/*epic*.md"
-    sharded_index: "{output_folder}/*epic*/index.md"
-    sharded_single: "{output_folder}/*epic*/epic-{{epic_num}}.md"
+    whole: "{planning_artifacts}/*epic*.md"
+    sharded_index: "{planning_artifacts}/*epic*/index.md"
+    sharded_single: "{planning_artifacts}/*epic*/epic-{{epic_num}}.md"
     load_strategy: "SELECTIVE_LOAD"
   previous_retrospective:
     description: "Previous epic's retrospective (optional)"
@@ -35,21 +36,21 @@ input_file_patterns:
     load_strategy: "SELECTIVE_LOAD"
   architecture:
     description: "System architecture for context"
-    whole: "{output_folder}/*architecture*.md"
-    sharded: "{output_folder}/*architecture*/*.md"
+    whole: "{planning_artifacts}/*architecture*.md"
+    sharded: "{planning_artifacts}/*architecture*/*.md"
     load_strategy: "FULL_LOAD"
   prd:
     description: "Product requirements for context"
-    whole: "{output_folder}/*prd*.md"
-    sharded: "{output_folder}/*prd*/*.md"
+    whole: "{planning_artifacts}/*prd*.md"
+    sharded: "{planning_artifacts}/*prd*/*.md"
     load_strategy: "FULL_LOAD"
   document_project:
     description: "Brownfield project documentation (optional)"
-    sharded: "{output_folder}/*.md"
+    sharded: "{planning_artifacts}/*.md"
     load_strategy: "INDEX_GUIDED"
 
 # Required files
-sprint_status_file: "{implementation_artifacts}/sprint-status.yaml || {output_folder}/sprint-status.yaml"
+sprint_status_file: "{implementation_artifacts}/sprint-status.yaml"
 story_directory: "{implementation_artifacts}"
 retrospectives_folder: "{implementation_artifacts}"
 

@@ -1,6 +1,6 @@
 # Custom Content
 
-BMAD supports several categories of officially supported custom content that extend the platform's capabilities. Custom content can be created manually or with the recommended assistance of the BMad Builder (BoMB) Module. The BoMB Agent provides workflows and expertise to plan and build any custom content you can imagine.
+BMAD supports several categories of officially supported custom content that extend the platform's capabilities. Custom content can be created manually or with the recommended assistance of the BMad Builder (BoMB) Module. The BoMB Agents provides workflows and expertise to plan and build any custom content you can imagine.
 
 This flexibility transforms the platform beyond its current capabilities, enabling:
 
@@ -21,7 +21,7 @@ This flexibility transforms the platform beyond its current capabilities, enabli
   - [Custom Global Modules](#custom-global-modules)
   - [Custom Agents](#custom-agents)
     - [BMad Tiny Agents](#bmad-tiny-agents)
-    - [Simple vs Expert Agents](#simple-vs-expert-agents)
+    - [Simple and Expert Agents](#simple-and-expert-agents)
   - [Custom Workflows](#custom-workflows)
 
 ## Custom Stand Alone Modules
@@ -57,7 +57,7 @@ Similar to Custom Stand Alone Modules, but designed to add functionality that ap
 
 Examples include:
 
-- The current TTS (Text-to-Speech) functionality for Claude, which will be rebuilt as a global module
+- The current TTS (Text-to-Speech) functionality for Claude, which will soon be converted to a global module
 - The core module, which is always installed and provides all agents with party mode and advanced elicitation capabilities
 - Installation and update tools that work with any BMAD method configuration
 
@@ -81,7 +81,7 @@ Personal agents designed for highly specific needs that may not be suitable for 
 
 These are simple, standalone files that can be scoped to focus on specific data or paths when integrated into an information vault or repository.
 
-### Simple vs Expert Agents
+### Simple and Expert Agents
 
 The distinction between simple and expert agents lies in their structure:
 
@@ -89,7 +89,6 @@ The distinction between simple and expert agents lies in their structure:
 
 - Single file containing all prompts and configuration
 - Self-contained and straightforward
-- has metadata type: simple
 
 **Expert Agent:**
 

@@ -340,7 +340,7 @@ Show the generated project structure content and present choices:
 
 #### If 'C' (Continue):
 
-- Append the final content to `{output_folder}/architecture.md`
+- Append the final content to `{planning_artifacts}/architecture.md`
 - Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6]`
 - Load `./step-07-validation.md`
 

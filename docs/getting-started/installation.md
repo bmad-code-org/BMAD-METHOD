@@ -5,7 +5,7 @@ Get BMAD Method running in your project in under 2 minutes.
 ## Quick Install
 
 ```bash
-npx bmad-method@alpha install
+npx bmad-method install
 ```
 
 This interactive installer will:
@@ -16,19 +16,23 @@ This interactive installer will:
 
 ## Requirements
 
-- **Node.js** 18+ (for the installer)
+- **Node.js** 20+ (for the installer)
 - **Git** (recommended for version control)
-- An **AI-powered IDE** or access to Claude/ChatGPT/Gemini
+- An **AI-powered Agent and/or IDE** or access to Claude/ChatGPT/Gemini
 
 ## Module Options
 
 During installation, you'll choose which modules to install:
 
-| Module   | Description      | Best For                                 |
-| -------- | ---------------- | ---------------------------------------- |
-| **BMM**  | BMAD Method Core | Software development projects            |
-| **BMGD** | Game Development | Game projects with specialized workflows |
-| **BMB**  | Builder          | Creating custom agents and workflows     |
+| Module   | Description          | Best For                                              |
+| -------- | -------------------- | ----------------------------------------------------- |
+| **BMM**  | BMAD Method Core     | Software development projects                         |
+| **BMGD** | Game Development     | Game projects with specialized workflows              |
+| **CIS**  | Creative Intel Suite | Creativity Unlocking Suite, not software dev specific |
+| **BMB**  | Builder              | Creating custom agents and workflows                  |
+
+You will also be asked if you would like to install custom content (agents, workflows or modules) you have created with the BMB, or shared from others in the community.
+
 
 ## Post-Installation
 
@@ -39,38 +43,26 @@ your-project/
 ├── _bmad/              # BMAD configuration and agents
 │   ├── bmm/            # Method module (if installed)
 │   ├── bmgd/           # Game dev module (if installed)
-│   └── config.yaml     # Your project configuration
+│   ├── core/           # Always installed, includes party mode, advanced elicitation, and other core generic utils
+│   ├── {others}/       # etc...
+├── _bmad-output/       # BMAD default output folder - configurable during install
 ├── .claude/            # IDE-specific setup (varies by IDE)
-└── ... your code
+└── ... your code       # maybe nothing else yet if a fresh new folder
 ```
 
 ## Next Steps
 
 1. **Read the [Quick Start Guide](../modules/bmm/quick-start.md)** to build your first feature
-2. **Check your [IDE Guide](../ide-info/index.md)** for IDE-specific tips
-3. **Explore [Workflows](../modules/bmm/workflows-planning.md)** to understand the methodology
-
-## Alternative: Web Bundles
-
-Don't want to install? Use BMAD agents directly in:
-
-- **Claude Projects** - Upload the web bundle
-- **ChatGPT** - Use custom GPT bundles
-- **Gemini** - Import agent prompts
-
-See the [Web Bundles Guide](../web-bundles-gemini-gpt-guide.md) for details.
+2. **Explore [Workflows](../modules/bmm/workflows-planning.md)** to understand the methodology
 
 ## Troubleshooting
 
 ### Common Issues
 
 **"Command not found: npx"**
-: Install Node.js 18+ from [nodejs.org](https://nodejs.org)
+: Install Node.js 20+ from [nodejs.org](https://nodejs.org)
 
 **"Permission denied"**
 : Run with appropriate permissions or check your npm configuration
 
-**IDE not detected**
-: The installer will prompt you to select your IDE manually
-
-For more help, see [Troubleshooting](../modules/bmm/troubleshooting.md) or join our [Discord](https://discord.gg/bmad).
+For more help, join our [Discord](https://discord.gg/bmad).

@@ -37,21 +37,6 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `template_path` = `{installed_path}/ux-design-template.md`
 - `default_output_file` = `{planning_artifacts}/ux-design-specification.md`
 
-### Output Files
-
-- Color themes: `{output_folder}/ux-color-themes.html`
-- Design directions: `{output_folder}/ux-design-directions.html`
-
-### Input Document Discovery
-
-Discover context documents for UX context (Priority: Analysis folder first, then main folder, then sharded):
-
-- PRD: `{planning_artifacts}/*prd*.md` or `{output_folder}/*prd*.md` or `{output_folder}/*prd*/**/*.md`
-- Product brief: `{output_folder}/analysis/*brief*.md` or `{output_folder}/*brief*.md` or `{output_folder}/*brief*/**/*.md`
-- Epics: `{output_folder}/analysis/*epic*.md` or `{output_folder}/*epic*.md` or `{output_folder}/*epic*/**/*.md`
-- Research: `{output_folder}/analysis/research/*research*.md` or `{output_folder}/*research*.md` or `{output_folder}/*research*/**/*.md`
-- Brainstorming: `{output_folder}/analysis/brainstorming/*brainstorming*.md` or `{output_folder}/*brainstorming*.md`
-
 ## EXECUTION
 
 Load and execute `steps/step-01-init.md` to begin the UX design workflow.

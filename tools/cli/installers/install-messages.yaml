@@ -6,11 +6,13 @@
 startMessage: |
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  🎉🎉 Happy Holidays and New Year 🍾🍾
+  If you are looking for Version 4 of BMad Method, please note that you can
+  still install it by using the command `npx bmad-method@latest install`, until v6 reaches beta.
 
-  IMPORTANT Changes with Version Alpha.20 - PLEASE READ THIS if upgrading from earlier Alpha Versions:
+  IMPORTANT Changes with Version Alpha.22 - PLEASE READ THIS if upgrading from earlier Alpha Versions:
 
-  1. The BMad Core default output folder has changed from docs to `_bmad-output`. `docs` is meant for long-term artifacts, which you can always decide to move content to.
+  1. The BMad Core default output folder has changed from docs to `_bmad-output`. `docs`
+  is meant for long-term artifacts, which you can always decide to move content to.
 
   2. If utilizing the BMad Method Module (BMM) please be aware of the following important recent changes:
 
@@ -21,8 +23,8 @@ startMessage: |
   IT IS STRONGLY SUGGESTED to align with these folder conventions instead of dumping all to docs/ - if you are upgrading from a prior
   version where all output was going to docs or docs/sprint-artifacts, it is suggested to reset configs to these new values.
 
-  If you have anything in progress, you can move what was in sprint-artifacts to _bmad-output/implementation-artifacts, and if you had brainstorming
-  content, a PRD, UX or Architecture, you can move the content to _bmad-output/planning-artifacts.
+  If you have anything in progress, you can move what was in sprint-artifacts to _bmad-output/implementation-artifacts,
+  and if you had brainstorming content, a PRD, UX or Architecture, you can move the content to _bmad-output/planning-artifacts.
 
   Read the latest updates before continuing:
   https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md
@@ -35,8 +37,11 @@ endMessage: |
 
   ✨ BMAD IS READY TO USE!
 
-  ONE FINAL NOTE WITH VERSION Alpha.20: Phase 4 (Implementation) is still in the process of being migrated to the improved workflow progressive disclosure system.
-  Along with this, the full conversion to the new path locations for content being searched may possibly be incomplete. If you run a workflow that relies on finding input documents automatically, and you notice they are not being found / looking in the wrong location, either:
+  ONE FINAL NOTE WITH VERSION Alpha.20: Phase 4 (Implementation) is still in the process of
+  being migrated to the improved workflow progressive disclosure system.
+  Along with this, the full conversion to the new path locations for content being searched
+  may possibly be incomplete. If you run a workflow that relies on finding input documents
+  automatically, and you notice they are not being found / looking in the wrong location, either:
   1. Manually specify the correct input location when prompted
   2. Open an issue on GitHub so we can address the problem quickly if you think its a bug.
   3. Ensure your content is in the new locations for best results:
@@ -47,6 +52,7 @@ endMessage: |
   Thank you for helping test the early release version of the new BMad Core and BMad Method!
   Stable Beta coming soon - please read the full README.md and linked documentation to get started.
 
-  And again, here is the Change Log with all the details of recent updates: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md
+  And again, here is the Change Log with all the details of recent updates:
+  https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md
 
   ════════════════════════════════════════════════════════════════════════════════

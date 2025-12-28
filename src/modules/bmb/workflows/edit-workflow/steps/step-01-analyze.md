@@ -127,7 +127,7 @@ Based on what the user wants to edit:
 
 #### Compliance Analysis
 
-Load reference documentation as needed:
+Load reference documentation to understand what ideal workflow files sound be when doing the review:
 
 - `{project-root}/_bmad/bmb/docs/workflows/architecture.md`
 - `{project-root}/_bmad/bmb/docs/workflows/templates/step-template.md`
@@ -135,10 +135,9 @@ Load reference documentation as needed:
 
 Check against best practices:
 
-- Step file size and structure
-- Menu handling implementation
-- Frontmatter variable usage
-- Path reference consistency
+- Step file size and structure (each step file 80-250 lines)
+- Menu handling implementation (every menu item has a handler, and continue will only proceed after writes to output if applicable have completed)
+- Frontmatter variable usage - no unused variables in the specific step front matter, and all files referenced in the file are done through a variable in the front matter
 
 ### 5. Present Analysis Findings
 

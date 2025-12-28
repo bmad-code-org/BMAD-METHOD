@@ -16,7 +16,7 @@
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating user journey content
 - 💾 ONLY save when user chooses C (Continue)
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]` before loading next step
+- 📖 Update output file frontmatter, adding this step to the end of the list of stepsCompleted.
 - 🚫 FORBIDDEN to load next step until C is selected
 
 ## COLLABORATION MENUS (A/P/C):
@@ -203,7 +203,7 @@ Show the generated user journey content and present choices:
 #### If 'C' (Continue):
 
 - Append the final content to `{planning_artifacts}/ux-design-specification.md`
-- Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`
+- Update frontmatter: append step to end of stepsCompleted array
 - Load `./step-11-component-strategy.md`
 
 ## APPEND TO DOCUMENT:

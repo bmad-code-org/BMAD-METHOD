@@ -34,7 +34,7 @@
 </step>
 
 <step n="1" goal="Check for status file">
-<action>Search {output_folder}/ for file: bmm-workflow-status.yaml</action>
+<action>Search {planning_artifacts}/ for file: bmm-workflow-status.yaml</action>
 
 <check if="no status file found">
   <output>No workflow status found.</output>
@@ -343,11 +343,11 @@ Your choice:</ask>
   <!-- ============================================= -->
   <check if="action == complete_workflow">
     <action>Get {{workflow_id}} parameter (required)</action>
-    <action>Get {{output_file}} parameter (required - path to created file)</action>
+    <action>Get {{default_output_file}} parameter (required - path to created file)</action>
 
     <critical>ONLY write the file path as the status value - no other text, notes, or metadata</critical>
     <action>Update workflow status in YAML:</action>
-    - In workflow_status section, update: {{workflow_id}}: {{output_file}}
+    - In workflow_status section, update: {{workflow_id}}: {{default_output_file}}
 
     <action>Find {{workflow_id}} in loaded path YAML</action>
     <action>Determine next workflow from path sequence</action>
@@ -359,7 +359,7 @@ Your choice:</ask>
     <template-output>next_workflow = {{determined next workflow}}</template-output>
     <template-output>next_agent = {{determined next agent from path file}}</template-output>
     <template-output>completed_workflow = {{workflow_id}}</template-output>
-    <template-output>output_file = {{output_file}}</template-output>
+    <template-output>default_output_file = {{default_output_file}}</template-output>
 
   </check>
 

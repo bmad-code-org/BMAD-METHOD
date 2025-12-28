@@ -43,7 +43,7 @@ Load and analyze project files to identify technologies:
 
 **Architecture Document:**
 
-- Look for `{output_folder}/game-architecture.md` or `{output_folder}/architecture.md`
+- Look for `{output_folder}/game-architecture.md` or `{planning_artifacts}/architecture.md`
 - Extract engine choice with specific version (Unity, Unreal, Godot, custom)
 - Note architectural decisions that affect implementation
 

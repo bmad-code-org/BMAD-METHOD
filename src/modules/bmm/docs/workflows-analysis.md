@@ -19,7 +19,6 @@ Phase 1 Analysis consists of three categories of optional workflows:
 ### Discovery & Ideation (Optional)
 
 - **brainstorm-project** - Multi-track solution exploration for software projects
-- **brainstorm-game** - Game concept generation (coming soon)
 
 ### Research & Validation (Optional)
 
@@ -54,19 +53,10 @@ These workflows feed into Phase 2 (Planning) workflows, particularly the `prd` w
 
 **When to Use:**
 
-- Unclear technical approach with business objectives
-- Multiple solution paths need evaluation
-- Hidden assumptions need discovery
-- Innovation beyond obvious solutions
-
-**Key Outputs:**
-
-- Architecture proposals with trade-off analysis
-- Value framework (prioritized features)
-- Risk analysis (dependencies, challenges)
-- Strategic recommendation with rationale
-
-**Example:** "We need a customer dashboard" → Options: Monolith SSR (faster), Microservices SPA (scalable), Hybrid (balanced) with recommendation.
+- Very vague or seed kernal of an idea that needs exploration
+- Consider alternatives or enhancements to an idea
+- See your idea from different angles and viewpoints
+- No idea what you want to build, but want to find some inspiration
 
 ---
 
@@ -110,11 +100,6 @@ These workflows feed into Phase 2 (Planning) workflows, particularly the `prd` w
 - Aligning stakeholders before detailed planning
 - Transitioning from exploration to strategy
 - Need executive-level product documentation
-
-**Modes:**
-
-- **Interactive Mode** (Recommended): Step-by-step collaborative development with probing questions
-- **YOLO Mode**: AI generates complete draft from context, then iterative refinement
 
 **Key Outputs:**
 
@@ -179,32 +164,6 @@ Analysis outputs feed directly into Planning:
 
 Planning workflows automatically load these documents if they exist in the output folder.
 
----
-
-## Best Practices
-
-### 1. Don't Over-Invest in Analysis
-
-Analysis is optional. If requirements are clear, skip to Phase 2 (Planning).
-
-### 2. Iterate Between Workflows
-
-Common pattern: brainstorm → research (validate) → brief (synthesize)
-
-### 3. Document Assumptions
-
-Analysis surfaces and validates assumptions. Document them explicitly for planning to challenge.
-
-### 4. Keep It Strategic
-
-Focus on "what" and "why", not "how". Leave implementation for Planning and Solutioning.
-
-### 5. Involve Stakeholders
-
-Use analysis workflows to align stakeholders before committing to detailed planning.
-
----
-
 ## Common Patterns
 
 ### Greenfield Software (Full Analysis)
@@ -238,29 +197,3 @@ Use analysis workflows to align stakeholders before committing to detailed plann
 - [Phase 4: Implementation Workflows](./workflows-implementation.md)
 - [Scale Adaptive System](./scale-adaptive-system.md) - Understanding project complexity
 - [Agents Guide](./agents-guide.md) - Complete agent reference
-
----
-
-## Troubleshooting
-
-**Q: Do I need to run all analysis workflows?**
-A: No! Analysis is entirely optional. Use only workflows that help you think through your problem.
-
-**Q: Which workflow should I start with?**
-A: If unsure, start with `research` (market type) to validate viability, then move to `product-brief`.
-
-**Q: Can I skip straight to Planning?**
-A: Yes! If you know what you're building and why, skip Phase 1 entirely and start with Phase 2 (prd/tech-spec).
-
-**Q: How long should Analysis take?**
-A: Typically hours to 1-2 days. If taking longer, you may be over-analyzing. Move to Planning.
-
-**Q: What if I discover problems during Analysis?**
-A: That's the point! Analysis helps you fail fast and pivot before heavy planning investment.
-
-**Q: Should brownfield projects do Analysis?**
-A: Usually no. Start with `document-project` (Documentation prerequisite), then skip to Planning (Phase 2).
-
----
-
-_Phase 1 Analysis - Optional strategic thinking before commitment._

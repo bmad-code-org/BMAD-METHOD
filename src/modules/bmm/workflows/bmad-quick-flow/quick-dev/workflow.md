@@ -28,7 +28,7 @@ This uses **step-file architecture** for focused execution:
 Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 - `user_name`, `communication_language`, `user_skill_level`
-- `output_folder`, `sprint_artifacts`
+- `output_folder`, `planning_artifacts`,  `implementation_artifacts`
 - `date` as system-generated current datetime
 
 ### Paths

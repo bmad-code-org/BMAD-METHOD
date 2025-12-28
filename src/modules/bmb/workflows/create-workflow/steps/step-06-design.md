@@ -96,9 +96,9 @@ Read: {project-root}/_bmad/bmb/docs/workflows/templates/step-1b-template.md
 
 This shows the continuation step pattern for workflows that might take multiple sessions.
 
-Based on the approved plan, collaboratively design:
+Based on the approved plan, collaboratively design the info to answer the following for the build plan:
 
-- How many major steps does this workflow need? (Recommend 3-7)
+- How many major steps does this workflow need?
 - What is the goal of each step?
 - Which steps are optional vs required?
 - Should any steps repeat or loop?

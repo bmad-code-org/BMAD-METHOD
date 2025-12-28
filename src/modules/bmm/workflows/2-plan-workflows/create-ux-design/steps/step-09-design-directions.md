@@ -16,7 +16,7 @@
 - 🎯 Show your analysis before taking any action
 - ⚠️ Present A/P/C menu after generating design direction content
 - 💾 Generate HTML visualizer for design directions
-- 📖 Update frontmatter `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]` before loading next step
+- 📖 Update output file frontmatter, adding this step to the end of the list of stepsCompleted.
 - 🚫 FORBIDDEN to load next step until C is selected
 
 ## COLLABORATION MENUS (A/P/C):
@@ -65,7 +65,7 @@ Each mockup will show a complete vision for {{project_name}} with all our design
 Generate interactive visual exploration:
 "🎨 Design Direction Mockups Generated!
 
-I'm creating a comprehensive HTML design direction showcase at `{output_folder}/ux-design-directions.html`
+I'm creating a comprehensive HTML design direction showcase at `{planning_artifacts}/ux-design-directions.html`
 
 **What you'll see:**
 
@@ -185,7 +185,7 @@ Show the generated design direction content and present choices:
 #### If 'C' (Continue):
 
 - Append the final content to `{planning_artifacts}/ux-design-specification.md`
-- Update frontmatter: `stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9]`
+- Update frontmatter: append step to end of stepsCompleted array
 - Load `./step-10-user-journeys.md`
 
 ## APPEND TO DOCUMENT:

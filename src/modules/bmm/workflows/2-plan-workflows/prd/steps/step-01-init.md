@@ -97,18 +97,20 @@ Discover and load context documents using smart discovery. Documents can be in t
 - {product_knowledge}/**
 - docs/**
 
-Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files.
+Also - when searching - documents can be a single markdown file, or a folder with an index and multiple files. For Example, if searching for `*foo*.md` and not found, also search for a folder called *foo*/index.md (which indicates sharded content)
 
 Try to discover the following:
 - Product Brief (`*brief*.md`)
 - Research Documents (`/*research*.md`)
 - Project Documentation (generally multiple documents might be found for this in the `{product_knowledge}` or `docs` folder.)
+- Project Context (`**/project-context.md`)
 
 <critical>Confirm what you have found with the user, along with asking if the user wants to provide anything else. Only after this confirmation will you proceed to follow the loading rules</critical>
 
 **Loading Rules:**
 
 - Load ALL discovered files completely that the user confirmed or provided (no offset/limit)
+- If there is a project context, whatever is relevant should try to be biased in the remainder of this whole workflow process
 - For sharded folders, load ALL files to get complete picture, using the index first to potentially know the potential of each document
 - index.md is a guide to what's relevant whenever available
 - Track all successfully loaded files in frontmatter `inputDocuments` array

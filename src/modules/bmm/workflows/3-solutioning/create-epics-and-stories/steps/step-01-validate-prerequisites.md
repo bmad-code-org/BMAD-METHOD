@@ -94,7 +94,7 @@ Before proceeding, Ask the user if there are any other documents, or if what you
 
 ### 3. Extract Functional Requirements (FRs)
 
-From the PRD document (full or sharded), extract ALL functional requirements:
+From the PRD document (full or sharded), read then entire document and extract ALL functional requirements:
 
 **Extraction Method:**
 

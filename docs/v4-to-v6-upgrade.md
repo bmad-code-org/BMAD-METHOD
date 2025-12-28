@@ -8,42 +8,36 @@ BMad v6 represents a complete ground-up rewrite with significant architectural c
 
 ## Automatic V4 Detection
 
-When you run `npm run install:bmad` on a project with v4 installed, the installer automatically detects:
+When you run `npm run install:bmad` on a project, the installer automatically detects:
 
-- **Legacy folders**: Any folders starting with `_bmad`, `bmad` (lowercase), or `Bmad`
+- **Legacy folders**: Any folders starting with  `bmad-core` or `bmad-core`
 - **IDE command artifacts**: Legacy bmad folders in IDE configuration directories (`.claude/commands/`, `.cursor/commands/`, etc.)
 
 ### What Happens During Detection
 
-1. **Automatic Backup of v4 Modules**: All `_bmad-*` folders are moved to `v4-backup/` in your project root
+1. **Automatic Backup of v4 Modules**: All `.bmad-core` folders are moved to `v4-backup/` in your project root
    - If a backup already exists, a timestamp is added to avoid conflicts
-   - Example: `_bmad-core` → `v4-backup/_bmad-core`
+   - Example: `.bmad-core` → `v4-backup/_bmad-core`
    - Your project files and data are NOT affected
 
 2. **IDE Command Cleanup Recommended**: Legacy v4 IDE commands should be manually removed
-   - Located in IDE config folders: `.claude/commands/`, `.cursor/commands/`, etc.
-   - These old commands would still reference v4 folder structure if left in place
-   - The installer provides copy/paste terminal commands for your platform
-   - You can proceed without cleanup, but removing them prevents confusion with old v4 commands
-
----
+   - Located in IDE config folders, for example claude: `.claude/commands/BMad/agents`, `.claude/commands/BMad/tasks`, etc.
+   - NOTE: if the upgrade and install of v6 finished, the new commands will be under `.claude/commands/bmad/<module>/agents|workflows`
+   - Note 2: If you accidentally delete the wrong/new bmad commands - you can easily restore them by rerunning the installer, and choose quick update option, and all will be reapplied properly.
 
 ## Module Migration
 
 ### Deprecated Modules
 
-| v4 Module                     | v6 Status                                        |
-| ----------------------------- | ------------------------------------------------ |
-| `_bmad-2d-phaser-game-dev`    | Integrated into BMM                              |
-| `_bmad-2d-unity-game-dev`     | Integrated into BMM                              |
-| `_bmad-godot-game-dev`        | Integrated into BMM                              |
-| `_bmad-*-game-dev` (any)      | Integrated into BMM                              |
-| `_bmad-infrastructure-devops` | Deprecated - New core devops agent coming in BMM |
-| `_bmad-creative-writing`      | Not adapted - New module releasing soon          |
+| v4 Module                     | v6 Status                                      |
+| ----------------------------- | ---------------------------------------------- |
+| `_bmad-2d-phaser-game-dev`    | Integrated into new BMGD Module                |
+| `_bmad-2d-unity-game-dev`     | Integrated into new BMGD Module                |
+| `_bmad-godot-game-dev`        | Integrated into new BMGD Module                |
+| `_bmad-*-game-dev` (any)      | Integrated into new BMGD Module                |
+| `_bmad-infrastructure-devops` | Deprecated - New core devops agent coming soon |
+| `_bmad-creative-writing`      | Not adapted - New v6 module coming soon        |
 
-**Game Development**: All game development functionality has been consolidated and expanded within the BMM (BMad Method) module. Game-specific workflows now adapt to your game type and engine.
-
----
 
 ## Architecture Changes
 
@@ -64,12 +58,13 @@ your-project/
 ```
 your-project/
 └── _bmad/       # Single installation folder, default _bmad
+    └── _config/            # Your customizations
+    |  └── agents/      # Agent customization files
     ├── core/            # Real core framework (applies to all modules)
     ├── bmm/             # BMad Method (software/game dev)
     ├── bmb/             # BMad Builder (create agents/workflows)
     ├── cis/             # Creative Intelligence Suite
-    └── _config/            # Your customizations
-        └── agents/      # Agent customization files
+
 ```
 
 ### Key Concept Changes
@@ -77,34 +72,28 @@ your-project/
 - **v4 `_bmad-core`**: Was actually the BMad Method
 - **v6 `_bmad/core/`**: Is the real universal core framework
 - **v6 `_bmad/bmm/`**: Is the BMad Method module
-- **Module identification**: All modules now have a `config.yaml` file
-
----
+- **Module identification**: All modules now have a `config.yaml` file once installed at the root of the modules installed folder
 
 ## Project Progress Migration
 
-### If You've Completed Planning Phase (PRD/Architecture) with the BMad Method:
+### If You've Completed Some or all Planning Phases (Brief/PRD/UX/Architecture) with the BMad Method:
 
-After running the v6 installer:
+After running the v6 installer, if you kept the paths the same as the installation suggested, you will need to move a few files, or run the installer again. It is recommended to stick with these defaults as it will be easier to adapt if things change in the future.
 
-1. **Run `workflow-init`** workflow to set up the guided workflow system
-2. **Specify your project level** when prompted:
-   - If you followed v4's full workflow (PRD → Architecture → Stories), select **Level 3 or 4**
-   - This tells v6 you've already completed planning and solutioning phases
-3. **Document paths**: Keep your existing paths during installation
-   - Default PRD/Architecture location: `docs/`
-   - Default stories location: `docs/sprint-artifacts/`
-   - **Accept these defaults** if you're already using them in v4
+If you have any planning artifacts, put them in a folder called _bmad-output/planning-artifacts at the root of your project, ensuring that:
+PRD has PRD in the file name or folder name if sharded.
+Similar for 'brief', 'architecture', 'ux-design'.
 
-> **Important**: v6 workflows can handle both sharded and unsharded documents. You don't need to restructure your existing PRD or architecture files.
+If you have other long term docs that will not be as ephemeral as these project docs, you can put them in the /docs folder, ideally with a index.md file.
+
+HIGHLY RECOMMENDED NOTE: If you are only partway through planning, its highly recommended to restart and do the PRD, UX and ARCHITECTURE steps. You could even use your existing documents as inputs letting the agent know you want to redo them with the new workflows. These optimized v6 progressive discovery workflows that also will utilize web search at key moments, while offering better advanced elicitation and part mode in the IDE will produce superior results. And then once all are complete, an epics with stories is generated after the architecture step now - ensuring it uses input from all planing documents.
 
 ### If You're Mid-Development (Stories Created/Implemented)
 
 1. Complete the v6 installation as above
-2. Run `workflow-init` and specify Level 3 or 4
-3. When ready to continue development, run the **`sprint-planning`** workflow (Phase 4)
-
----
+2. Ensure you have a file called epics.md or epics/epic*.md - these need to be located under the _bmad-output/planning-artifacts folder.
+3. Run the scrum masters `sprint-planning` workflow to generate the implementation tracking plan in _bmad-output/implementation-artifacts.
+4. Inform the SM after the output is complete which epics and stories were completed already and should be parked properly in the file.
 
 ## Agent Customization Migration
 
@@ -131,13 +120,15 @@ persona:
     - Always upbeat and adventurous
 ```
 
+There is a lot more that is possible with agent customization, which is covered in detail in the [Agent Customization Guide](agent-customization-guide.md)
+
+CRITICAL NOTE: After you modify the customization file, you need to run the npx installer against your installed location, and choose the option to rebuild all agents, or just do a quick update again. This always builds agents fresh and applies customizations.
+
 **How it works:**
 
 - Base agent: `_bmad/bmm/agents/pm.md`
 - Customization: `_bmad/_config/agents/bmm-pm.customize.yaml`
-- Result: Agent uses your custom name and style, but updates don't overwrite your changes
-
----
+- Rebuild all agents -> Result: Agent uses your custom name and style
 
 ## Document Compatibility
 
@@ -151,77 +142,3 @@ persona:
 - ✅ Mixed approaches
 
 All workflow files are scanned automatically. No manual configuration needed.
-
----
-
-## Installation Steps
-
-### 1. Clone Repository
-
-```bash
-git clone https://github.com/bmad-code-org/BMAD-METHOD
-cd BMAD-METHOD
-npm install
-```
-
-### 2. Run Installer on Your v4 Project
-
-```bash
-npx bmad-method install
-```
-
-**Enter the full path to your v4 project** when prompted.
-
-### 3. Follow Interactive Prompts
-
-The installer will:
-
-1. Detect v4 installation and offer to backup `_bmad-*` folders
-2. Prompt for recommended cleanup (you can skip)
-3. Let you select modules (recommend: BMM for software and or game development)
-4. Configure core settings (name, language, etc.)
-5. Configure module-specific options
-6. Configure IDE integrations
-
-### 4. Accept Default Paths
-
-If you're using:
-
-- `docs/` for PRD and architecture
-- `docs/sprint-artifacts/` for story files
-
-**Accept these defaults** during installation.
-
-### 5. Initialize Workflow
-
-After installation:
-
-1. **Load the Analyst agent** - See your IDE-specific instructions in [docs/ide-info](./ide-info/) for how to activate agents:
-   - [Claude Code](./ide-info/claude-code.md)
-   - [Cursor](./ide-info/cursor.md)
-   - [VS Code/Windsurf](./ide-info/) - Check your IDE folder
-
-2. **Wait for the agent's menu** to appear
-
-3. **Tell the agent**: `*workflow-init` - v6 supports excellent natural language fuzzy matching, so you could also say "workflow init" or "please init the workflow"
-
-Since you are migrating an existing project from v4, it's most likely **Level 3 or 4** you will want to suggest when asked - if you've already completed PRD/architecture in v4.
-
----
-
-## Post-Migration Checklist
-
-- [ ] v4 folders backed up to `v4-backup/`
-- [ ] v6 installed to `_bmad/` folder
-- [ ] `workflow-init` run with correct project level selected
-- [ ] Agent customizations migrated to `_bmad/_config/agents/` if needed
-- [ ] IDE integration working (test by listing agents)
-- [ ] For active development: `sprint-planning` workflow executed
-
----
-
-## Getting Help
-
-- **Discord**: [Join the BMad Community](https://discord.gg/gk8jAdXWmj)
-- **Issues**: [GitHub Issue Tracker](https://github.com/bmad-code-org/BMAD-METHOD/issues)
-- **Docs**: Check `_bmad/docs/` in your installation for IDE-specific instructions

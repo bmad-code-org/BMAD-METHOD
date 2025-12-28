@@ -40,7 +40,7 @@ First, check if the project uses Git version control:
 
 ### 2. Load Project Context
 
-Check if `{project_context}` exists (`**/project-context.md`). If found, load it - this is foundational reference for ALL implementation decisions.
+Check if `{project_context}` exists (`**/project-context.md`). If found, load it as a foundational reference for ALL implementation decisions.
 
 ### 3. Parse User Input
 

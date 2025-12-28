@@ -142,11 +142,7 @@ function buildMenuXml(menuItems) {
       }
       // Handle legacy format menu items
       else if (item.trigger) {
-        // For legacy items, keep using cmd with *<trigger> format
         let trigger = item.trigger || '';
-        if (!trigger.startsWith('*')) {
-          trigger = '*' + trigger;
-        }
 
         const attrs = [`cmd="${trigger}"`];
 

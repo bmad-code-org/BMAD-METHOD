@@ -64,8 +64,8 @@ I will:
 
 Search patterns:
 
-- `{output_folder}/*ux*.md` (whole document)
-- `{output_folder}/*ux*/index.md` (sharded)
+- `{planning_artifacts}/*ux*.md` (whole document)
+- `{planning_artifacts}/*ux*/index.md` (sharded)
 - Look for UI-related terms in other documents
 
 ### 3. If UX Document Exists
