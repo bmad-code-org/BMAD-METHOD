@@ -2,6 +2,8 @@
 
 > Tertiary target - Benefits from better specs and logical design
 
+![Felix the Full-Stack](resources/felix-the-full-stack.png)
+
 **Priority:** TERTIARY 💻  
 **Role in Flywheel:** Benefits from WDS specs → Spreads word about better collaboration  
 **Created:** December 27, 2025
@@ -367,6 +369,14 @@ Some developers might get interested in WDS agents for simple UI tasks. For Feli
 - **[02-Stina-the-Strategist.md](02-Stina-the-Strategist.md)** - Primary persona
 - **[03-Lars-the-Leader.md](03-Lars-the-Leader.md)** - Secondary persona
 - **[05-Key-Insights.md](05-Key-Insights.md)** - Strategic implications
+
+---
+
+## Visual Representation - Image Generation Prompt
+
+**Prompt Used:**
+
+"Professional portrait of a 29-year-old male software developer with mixed British-South Asian heritage (Indian or Pakistani and UK), warm medium skin tone, short neat dark hair, wearing developer hoodie and t-shirt, sitting at dual-monitor setup with code visible on screens, focused and concentrated expression with slight smile of satisfaction, soft indirect lighting from monitors and desk lamp, shallow depth of field, modern tech office or home office background with coffee cup and tech accessories visible, photorealistic style, slightly cooler color temperature matching tech environment, 4K quality, environmental tech portrait"
 
 ---
 

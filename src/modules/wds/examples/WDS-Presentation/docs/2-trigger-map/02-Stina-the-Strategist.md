@@ -2,6 +2,8 @@
 
 > Primary target - The designer who becomes one of the 50 evangelists
 
+![Stina the Strategist](resources/stina-the-desginer.png)
+
 **Priority:** PRIMARY 🎯  
 **Role in Flywheel:** Becomes evangelist → Spreads WDS → Drives all adoption  
 **Created:** December 27, 2025
@@ -274,6 +276,14 @@ This is Stina's transformation: From overwhelmed task-doer to empowered strategi
 - **[03-Lars-the-Leader.md](03-Lars-the-Leader.md)** - Secondary persona
 - **[04-Felix-the-Full-Stack.md](04-Felix-the-Full-Stack.md)** - Tertiary persona
 - **[05-Key-Insights.md](05-Key-Insights.md)** - Strategic implications
+
+---
+
+## Visual Representation - Image Generation Prompt
+
+**Prompt Used:**
+
+"Professional headshot photograph of a 34-year-old Central European female designer with mixed heritage (Mediterranean and Nordic features), warm olive skin tone, shoulder-length wavy dark brown hair with natural texture, wearing distinctive round glasses, bohemian-chic style with layered clothing and artistic accessories, sitting at modern minimalist desk with laptop and design sketches, looking thoughtful and determined with creative energy, natural morning light from window, shallow depth of field focusing on face, contemporary creative studio office background with plants and whiteboard visible, photorealistic style, warm natural color palette, 4K quality, professional portrait photography"
 
 ---
 

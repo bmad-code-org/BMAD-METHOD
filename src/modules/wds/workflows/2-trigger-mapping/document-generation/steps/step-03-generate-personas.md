@@ -59,6 +59,28 @@ For EACH persona (Primary, Secondary, Tertiary), create a comprehensive document
 
 ---
 
+### 2a. Visual Representation
+
+```markdown
+## Visual Representation
+
+**Image Generation Prompt:**
+
+"[Detailed prompt for AI image generation - include age, gender, profession, setting, emotional state, visual style, technical details like lighting and composition]"
+
+**Example:** 
+"Professional headshot photograph of a 34-year-old Scandinavian female designer, shoulder-length blonde hair, sitting at modern desk with laptop, looking contemplative and slightly stressed, natural lighting, shallow depth of field, professional business casual attire, tech startup office background, photorealistic style, 4K quality"
+
+**Prompt Components:**
+- **Demographics:** Age, gender, ethnicity, appearance
+- **Professional Context:** Role, work environment, tools/props
+- **Emotional State:** Expression that matches their driving forces
+- **Visual Style:** Photography style, illustration, realistic/stylized
+- **Technical Details:** Lighting, composition, camera angle, quality
+```
+
+---
+
 ### 3. Background
 
 **For different persona types:**

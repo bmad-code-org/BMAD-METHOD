@@ -2,6 +2,8 @@
 
 > Secondary target - Validates WDS business value and creates demand
 
+![Lars the Leader](resources/lars-the-leader.png)
+
 **Priority:** SECONDARY 💼  
 **Role in Flywheel:** Validates business value → Hires WDS designers → Creates demand  
 **Created:** December 27, 2025
@@ -308,6 +310,14 @@ Lars doesn't need to learn WDS himself - he needs to trust that WDS-trained desi
 - **[02-Stina-the-Strategist.md](02-Stina-the-Strategist.md)** - Primary persona
 - **[04-Felix-the-Full-Stack.md](04-Felix-the-Full-Stack.md)** - Tertiary persona
 - **[05-Key-Insights.md](05-Key-Insights.md)** - Strategic implications
+
+---
+
+## Visual Representation - Image Generation Prompt
+
+**Prompt Used:**
+
+"Professional portrait of a 42-year-old Scandinavian male entrepreneur, short neat hair, slight beard, standing in modern office space with glass walls and sticky notes on whiteboard behind him, confident and engaged expression with friendly smile, natural office lighting, shallow depth of field, wearing business casual (button-down shirt, sleeves rolled up), contemporary startup office environment, photorealistic style, warm professional color palette, 4K quality, executive portrait photography"
 
 ---
 
