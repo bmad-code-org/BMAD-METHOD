@@ -44,8 +44,8 @@ const workflowPromptsConfig = {
     {
       name: 'prd',
       agent: 'bmd-custom-bmm-pm',
-      shortcut: 'PR',
-      description: '[PR] Create Product Requirements Document (PRD)',
+      shortcut: 'PD',
+      description: '[PD] Create Product Requirements Document (PRD)',
       prompt: '*prd',
     },
     {
@@ -90,7 +90,7 @@ const workflowPromptsConfig = {
 
     // ═══════════════════════════════════════════════════════════════════════
     // Phase 4 - Implementation: The "Keep Going" Cycle
-    // New chat → SM → create-story → New chat → DEV → dev-story → code-review
+    // SM → create-story → DEV → dev-story → code-review → (create-story | retrospective)
     // ═══════════════════════════════════════════════════════════════════════
     {
       name: 'create-story',
