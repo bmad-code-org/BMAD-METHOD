@@ -1,7 +1,3 @@
----
-last-redoc-date: 2025-11-05
----
-
 # Test Architect (TEA) Agent Guide
 
 ## Overview
@@ -259,17 +255,17 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 - 🔄 Phase 4: `*test-design` - Focus on regression hotspots and brownfield risks
 - 🔄 Phase 4: Story Review - May include `*nfr-assess` if not done earlier
 
-| Workflow Stage                     | Test Architect                                                               | Dev / Team                                                                          | Outputs                                                                |
-| ---------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **Documentation**: Prerequisite ➕ | -                                                                            | Analyst `*document-project` (if undocumented)                                       | Comprehensive project documentation                                    |
-| **Phase 1**: Discovery             | -                                                                            | Analyst/PM/Architect rerun planning workflows                                       | Updated planning artifacts in `{output_folder}`                        |
-| **Phase 2**: Planning              | Run ➕ `*trace` (baseline coverage)                                          | PM `*prd` (creates PRD with FRs/NFRs)                                               | PRD with FRs/NFRs, ➕ coverage baseline                                |
-| **Phase 3**: Solutioning           | Run `*framework`, `*ci` AFTER architecture and epic creation                 | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline               |
-| **Phase 4**: Sprint Start          | -                                                                            | SM `*sprint-planning`                                                               | Sprint status file with all epics and stories                          |
-| **Phase 4**: Epic Planning         | Run `*test-design` for THIS epic 🔄 (regression hotspots)                    | Review epic scope and brownfield risks                                              | `test-design-epic-N.md` with brownfield risk assessment and mitigation |
-| **Phase 4**: Story Dev             | (Optional) `*atdd` before dev, then `*automate` after                        | SM `*create-story`, DEV implements                                                  | Tests, story implementation                                            |
-| **Phase 4**: Story Review          | Apply `*test-review` (optional), re-run `*trace`, ➕ `*nfr-assess` if needed | Resolve gaps, update docs/tests                                                     | Quality report, refreshed coverage matrix, NFR report                  |
-| **Phase 4**: Release Gate          | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)            | Capture sign-offs, share release notes                                              | Quality audit, Gate YAML + release summary                             |
+| Workflow Stage                    | Test Architect                                                              | Dev / Team                                                                          | Outputs                                                                |
+| --------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Documentation**: Prerequisite ➕ | -                                                                           | Analyst `*document-project` (if undocumented)                                       | Comprehensive project documentation                                    |
+| **Phase 1**: Discovery            | -                                                                           | Analyst/PM/Architect rerun planning workflows                                       | Updated planning artifacts in `{output_folder}`                        |
+| **Phase 2**: Planning             | Run ➕ `*trace` (baseline coverage)                                          | PM `*prd` (creates PRD with FRs/NFRs)                                               | PRD with FRs/NFRs, ➕ coverage baseline                                 |
+| **Phase 3**: Solutioning          | Run `*framework`, `*ci` AFTER architecture and epic creation                | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline               |
+| **Phase 4**: Sprint Start         | -                                                                           | SM `*sprint-planning`                                                               | Sprint status file with all epics and stories                          |
+| **Phase 4**: Epic Planning        | Run `*test-design` for THIS epic 🔄 (regression hotspots)                    | Review epic scope and brownfield risks                                              | `test-design-epic-N.md` with brownfield risk assessment and mitigation |
+| **Phase 4**: Story Dev            | (Optional) `*atdd` before dev, then `*automate` after                       | SM `*create-story`, DEV implements                                                  | Tests, story implementation                                            |
+| **Phase 4**: Story Review         | Apply `*test-review` (optional), re-run `*trace`, ➕ `*nfr-assess` if needed | Resolve gaps, update docs/tests                                                     | Quality report, refreshed coverage matrix, NFR report                  |
+| **Phase 4**: Release Gate         | (Optional) `*test-review` for final audit, Run `*trace` (Phase 2)           | Capture sign-offs, share release notes                                              | Quality audit, Gate YAML + release summary                             |
 
 <details>
 <summary>Execution Notes</summary>
@@ -309,15 +305,15 @@ These cheat sheets map TEA workflows to the **BMad Method and Enterprise tracks*
 - 🔄 Phase 4: `*test-design` - Enterprise focus (compliance, security architecture alignment)
 - 📦 Release Gate - Archive artifacts and compliance evidence for audits
 
-| Workflow Stage             | Test Architect                                                           | Dev / Team                                                                          | Outputs                                                            |
-| -------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| **Phase 1**: Discovery     | -                                                                        | Analyst ➕ `*research`, `*product-brief`                                            | Domain research, compliance analysis, product brief                |
-| **Phase 2**: Planning      | Run ➕ `*nfr-assess`                                                     | PM `*prd` (creates PRD with FRs/NFRs), UX `*create-ux-design`                       | Enterprise PRD with FRs/NFRs, UX design, ➕ NFR documentation      |
-| **Phase 3**: Solutioning   | Run `*framework`, `*ci` AFTER architecture and epic creation             | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline           |
-| **Phase 4**: Sprint Start  | -                                                                        | SM `*sprint-planning`                                                               | Sprint plan with all epics                                         |
+| Workflow Stage             | Test Architect                                                          | Dev / Team                                                                          | Outputs                                                            |
+| -------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **Phase 1**: Discovery     | -                                                                       | Analyst ➕ `*research`, `*product-brief`                                             | Domain research, compliance analysis, product brief                |
+| **Phase 2**: Planning      | Run ➕ `*nfr-assess`                                                     | PM `*prd` (creates PRD with FRs/NFRs), UX `*create-ux-design`                       | Enterprise PRD with FRs/NFRs, UX design, ➕ NFR documentation       |
+| **Phase 3**: Solutioning   | Run `*framework`, `*ci` AFTER architecture and epic creation            | Architect `*architecture`, `*create-epics-and-stories`, `*implementation-readiness` | Architecture, epics/stories, test framework, CI pipeline           |
+| **Phase 4**: Sprint Start  | -                                                                       | SM `*sprint-planning`                                                               | Sprint plan with all epics                                         |
 | **Phase 4**: Epic Planning | Run `*test-design` for THIS epic 🔄 (compliance focus)                   | Review epic scope and compliance requirements                                       | `test-design-epic-N.md` with security/performance/compliance focus |
-| **Phase 4**: Story Dev     | (Optional) `*atdd`, `*automate`, `*test-review`, `*trace` per story      | SM `*create-story`, DEV implements                                                  | Tests, fixtures, quality reports, coverage matrices                |
-| **Phase 4**: Release Gate  | Final `*test-review` audit, Run `*trace` (Phase 2), 📦 archive artifacts | Capture sign-offs, 📦 compliance evidence                                           | Quality audit, updated assessments, gate YAML, 📦 audit trail      |
+| **Phase 4**: Story Dev     | (Optional) `*atdd`, `*automate`, `*test-review`, `*trace` per story     | SM `*create-story`, DEV implements                                                  | Tests, fixtures, quality reports, coverage matrices                |
+| **Phase 4**: Release Gate  | Final `*test-review` audit, Run `*trace` (Phase 2), 📦 archive artifacts | Capture sign-offs, 📦 compliance evidence                                            | Quality audit, updated assessments, gate YAML, 📦 audit trail       |
 
 <details>
 <summary>Execution Notes</summary>

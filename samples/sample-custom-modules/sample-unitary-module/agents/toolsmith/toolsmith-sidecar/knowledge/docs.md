@@ -25,10 +25,6 @@
 - @/docs/installers-bundlers/ - Tooling-specific documentation directory
 - @/tools/cli/README.md - CLI usage documentation (comprehensive)
 
-### IDE-Specific Documentation
-
-- @/docs/ide-info/ - IDE-specific setup guides (15+ files)
-
 ### Module Documentation
 
 Each module may have its own docs:
@@ -73,7 +69,6 @@ Follow Keep a Changelog format:
 When code changes, check these docs:
 
 - CLI changes → tools/cli/README.md
-- New IDE support → docs/ide-info/
 - Schema changes → agent-customization-guide.md
 - Bundle changes → web-bundles-gemini-gpt-guide.md
 - Installer changes → installers-bundlers/

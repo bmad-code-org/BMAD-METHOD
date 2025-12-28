@@ -22,26 +22,23 @@ Complete guides for the BMad Method Module (BMM) - AI-powered agile development 
 
 ## 📖 Core Concepts
 
-Understanding how BMM adapts to your needs:
+The BMad Method is meant to be adapted and customized to your specific needs. In this realm there is no one size fits all - your needs are unique, and BMad Method is meant to support this (and if it does not, can be further customized or extended with new modules).
 
-- **[Scale Adaptive System](./scale-adaptive-system.md)** - How BMM adapts to project size and complexity
-  - Three planning tracks (Quick Flow, BMad Method, Enterprise Method)
-  - Automatic track recommendation
-  - Documentation requirements per track
-  - Planning workflow routing
+First know there is the full BMad Method Process and then there is a Quick Flow for those quicker smaller efforts.
+
+- **[Full Adaptive BMad Method](#-workflow-guides)** - Full planning and scope support through extensive development and testing.
+  - Broken down into 4 phases, all of which are comprised of both required and optional phases
+    - Phases 1-3 are all about progressive idea development through planning and preparations to build your project.
+    - Phase 4 is the implementation cycle where you will Just In Time (JIT) produce the contextual stories needed for the dev agent based on the extensive planing completed
+    - All 4 phases have optional steps in them, depending on how rigorous you want to go with planning, research ideation, validation, testing and traceability.
+  - While there is a lot here, know that even this can be distilled down to a simple PRD, Epic and Story list and then jump into the dev cycle. But if that is all you want, you might be better off with the BMad Quick Flow described next
 
 - **[BMAD Quick Flow](./bmad-quick-flow.md)** - Fast-track development workflow
   - 3-step process: spec → dev → optional review
   - Perfect for bug fixes and small features
   - Rapid prototyping with production quality
-  - Hours to implementation, not days
-  - Barry (Quick Flow Solo Dev) agent owned
-
-- **[Quick Flow Solo Dev Agent](./quick-flow-solo-dev.md)** - Elite solo developer for rapid development
-  - Barry is an elite developer who thrives on autonomous execution
-  - Lives and breathes the BMAD Quick Flow workflow
-  - Takes projects from concept to deployment with ruthless efficiency
-  - No handoffs, no delays - just pure focused development
+  - Implementation in minutes, not days
+  - Has a specialized single agent that does all of this: **[Quick Flow Solo Dev Agent](./quick-flow-solo-dev.md)**
 
 ## 🤖 Agents and Collaboration
 
@@ -78,7 +75,6 @@ Essential reference materials:
 
 - **[Glossary](./glossary.md)** - Key terminology and concepts
 - **[FAQ](./faq.md)** - Frequently asked questions across all topics
-- **[Enterprise Agentic Development](./enterprise-agentic-development.md)** - Team collaboration strategies
 
 ## 🎯 Choose Your Path
 
@@ -86,18 +82,13 @@ Essential reference materials:
 
 **Build something new (greenfield)**
 → Start with [Quick Start Guide](./quick-start.md)
-→ Then review [Scale Adaptive System](./scale-adaptive-system.md) to understand tracks
 
 **Fix a bug or add small feature**
-→ Go to [BMAD Quick Flow](./bmad-quick-flow.md) for rapid development
-→ Or use [Quick Flow Solo Dev](./quick-flow-solo-dev.md) directly
+→ User the [Quick Flow Solo Dev](./quick-flow-solo-dev.md) directly with its dedicated stand alone [Quick Bmad Spec Flow](./quick-spec-flow.md) process
 
 **Work with existing codebase (brownfield)**
 → Read [Brownfield Development Guide](./brownfield-guide.md)
 → Pay special attention to documentation requirements for brownfield projects
-
-**Understand planning tracks and methodology**
-→ See [Scale Adaptive System](./scale-adaptive-system.md)
 
 ## 📋 Workflow Guides
 
@@ -127,35 +118,6 @@ Comprehensive documentation for all BMM workflows organized by phase:
 - **[Testing & QA Workflows](./test-architecture.md)** - Comprehensive quality assurance (1,420 lines)
   - Test strategy, automation, quality gates
   - TEA agent and test healing
-  - BMad-integrated vs standalone modes
-
-**Total: 34 workflows documented across all phases**
-
-### Advanced Workflow References
-
-For detailed technical documentation on specific complex workflows:
-
-- **[Document Project Workflow Reference](./workflow-document-project-reference.md)** - Technical deep-dive (445 lines)
-  - v1.2.0 context-safe architecture
-  - Scan levels, resumability, write-as-you-go
-  - Multi-part project detection
-  - Deep-dive mode for targeted analysis
-
-- **[Architecture Workflow Reference](./workflow-architecture-reference.md)** - Decision architecture guide (320 lines)
-  - Starter template intelligence
-  - Novel pattern design
-  - Implementation patterns for agent consistency
-  - Adaptive facilitation approach
-
-## 🏗️ Module Structure
-
-Understanding BMM components:
-
-- **[BMM Module README](../README.md)** - Overview of module structure
-  - Agent roster and roles
-  - Workflow organization
-  - Teams and collaboration
-  - Best practices
 
 ## 🌐 External Resources
 

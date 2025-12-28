@@ -81,7 +81,7 @@ Add your own workflows to the agent's menu:
 ```yaml
 menu:
   - trigger: my-workflow
-    workflow: '{project-root}/custom/my-workflow.yaml'
+    workflow: '{project-root}/my-custom/workflows/my-workflow.yaml'
     description: My custom workflow
   - trigger: deploy
     action: '#deploy-prompt'

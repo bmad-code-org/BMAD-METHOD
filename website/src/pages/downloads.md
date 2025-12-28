@@ -33,15 +33,6 @@ docs = requests.get("https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt")
 # Include in your system prompt or context
 ```
 
-## Source Bundles
-
-Download the complete source code for offline development or contribution.
-
-| Bundle                                              | Contents                                    |
-| --------------------------------------------------- | ------------------------------------------- |
-| **[bmad-sources.zip](/downloads/bmad-sources.zip)** | Complete `/src/` directory with all modules |
-| **[bmad-prompts.zip](/downloads/bmad-prompts.zip)** | Agent prompts and workflows from `/_bmad/`  |
-
 ## Installation Options
 
 ### NPM (Recommended)
@@ -49,12 +40,6 @@ Download the complete source code for offline development or contribution.
 ```bash
 npx bmad-method@alpha install
 ```
-
-### Manual Installation
-
-1. Download `bmad-prompts.zip`
-2. Extract to your project root
-3. Configure your IDE per the [IDE Guides](/docs/ide-info/)
 
 ## Version Information
 

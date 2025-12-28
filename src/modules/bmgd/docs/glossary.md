@@ -291,4 +291,3 @@ Phase 4 workflows inherit from BMM base and add BMGD-specific overrides.
 
 - **[Quick Start Guide](./quick-start.md)** - Get started with BMGD
 - **[Game Types Guide](./game-types-guide.md)** - Game genre reference
-- **[Troubleshooting](./troubleshooting.md)** - Common issues and solutions

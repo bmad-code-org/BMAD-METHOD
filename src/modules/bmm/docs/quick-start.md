@@ -43,10 +43,7 @@ The interactive installer will guide you through setup and create a `_bmad/` fol
 
 ### Step 1: Initialize Your Workflow
 
-1. **Load the Analyst agent** in your IDE - See your IDE-specific instructions in [docs/ide-info](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/docs/ide-info) for how to activate agents:
-   - [Claude Code](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/docs/ide-info/claude-code.md)
-   - [VS Code/Cursor/Windsurf](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/docs/ide-info) - Check your IDE folder
-   - Other IDEs also supported
+1. **Load the Analyst agent** in your IDE - Generally this is done by typing `/<workflow or agent name - allow autocomplete to find the right command>` - if you are unsure, you can just start with /bmad and see all that is available, sorted by agents and workflows.
 2. **Wait for the agent's menu** to appear
 3. **Tell the agent**: "Run workflow-init" or type "\*workflow-init" or select the menu item number
 
@@ -113,7 +110,7 @@ The next TRULY REQUIRED step is:
 
 When an agent tells you to run a workflow (like `prd`):
 
-1. **Start a new chat** with the specified agent (e.g., PM) - See [docs/ide-info](https://github.com/bmad-code-org/BMAD-METHOD/tree/main/docs/ide-info) for your IDE's specific instructions
+1. **Start a new chat** with the specified agent
 2. **Wait for the menu** to appear
 3. **Tell the agent** to run it using any of these formats:
    - Type the shorthand: `*prd`

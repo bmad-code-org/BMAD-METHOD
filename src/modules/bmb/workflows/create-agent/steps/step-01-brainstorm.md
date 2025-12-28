@@ -90,7 +90,7 @@ Wait for clear user response (yes/no or y/n).
 
 - Load brainstorming workflow: `{brainstormWorkflow}`
 - Pass context data: `{brainstormContext}`
-- Execute brainstorming session scoped specifically to brainstorming a new agent.
+- Execute brainstorming session scoped specifically utilizing the brainstormContext to guide the scope and outcome
 - Capture all brainstorming output for next step
 - Return to this step after brainstorming completes
 

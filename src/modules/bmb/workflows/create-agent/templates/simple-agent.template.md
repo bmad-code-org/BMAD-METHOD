@@ -18,7 +18,7 @@ agent:
     name: 'Persona Name'
     title: 'Agent Title'
     icon: 'emoji'
-    type: simple
+    module: stand-alone # or module name
 
   persona:
     role: |
@@ -26,17 +26,9 @@ agent:
 
     identity: |
       Background, experience, specializations in first-person (2-5 sentences)
-      {{#if custom_variable}}
-      Conditional identity text based on install_config
-      {{/if}}
 
     communication_style: |
-      {{#if style_choice == "professional"}}
-      Professional and systematic approach...
-      {{/if}}
-      {{#if style_choice == "casual"}}
-      Friendly and approachable tone...
-      {{/if}}
+      1-2 short sentence describe how the agent speaks and communicates
 
     principles:
       - Core belief or methodology
@@ -58,26 +50,18 @@ agent:
         3. Final step
         </process>
 
-    - id: another-action
+    - id: foo-bar
       content: |
         Another reusable prompt template
 
   menu:
-    - trigger: inline
-      action: 'Direct inline prompt text'
-      description: 'Execute inline action'
+    - trigger: FB or fuzzy match on foo-bar
+      action: '#foo-bar'
+      description: '[FB] Foo Bar inline action'
 
-    - multi: "[DF] Do Foo or start [CH] Chat with expert"
-      triggers:
-        - do-foo
-            - input: [DF] or fuzzy match on do foo
-            - action: '#main-action'
-            - data: what is being discussed or suggested with the command, along with custom party custom agents if specified
-            - type: action
-        - expert-chat:
-            - input: [CH] or fuzzy match validate agent
-            - action: agent responds as expert based on its persona to converse
-            - type: action
+    - trigger: IA or fuzzy match on main-action
+      action: '#main-action'
+      description: '[IA] Execute inline action'
 
   install_config:
     compile_time_only: true

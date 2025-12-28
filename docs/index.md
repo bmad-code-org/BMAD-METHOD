@@ -1,16 +1,12 @@
 # BMad Documentation Index
 
-Complete map of all BMad Method v6 documentation with recommended reading paths.
-
----
-
 ## 🎯 Getting Started (Start Here!)
 
 **New users:** Start with one of these based on your situation:
 
 | Your Situation         | Start Here                                         | Then Read                                                   |
 | ---------------------- | -------------------------------------------------- | ----------------------------------------------------------- |
-| **Brand new to BMad**  | [Quick Start Guide](./modules/bmm/quick-start)     | [BMM Workflows Guide](./modules/bmm/index#-workflow-guides) |
+| **Brand new to BMad**  | [Quick Start Guide](bmm/quick-start)               | [BMM Workflows Guide](./modules/bmm/index#-workflow-guides) |
 | **Upgrading from v4**  | [v4 to v6 Upgrade Guide](./v4-to-v6-upgrade.md)    | [Quick Start Guide](./modules/bmm/quick-start)              |
 | **Brownfield project** | [Brownfield Guide](./modules/bmm/brownfield-guide) | [Quick Start Guide](./modules/bmm/quick-start)              |
 
@@ -28,7 +24,7 @@ Complete map of all BMad Method v6 documentation with recommended reading paths.
 
 - **[v4 to v6 Upgrade Guide](./v4-to-v6-upgrade.md)** - Migration path for v4 users
 - **[Document Sharding Guide](./document-sharding-guide.md)** - Split large documents for 90%+ token savings
-- **[Bundle Distribution Setup](./BUNDLE_DISTRIBUTION_SETUP.md)** - Maintainer guide for bundle auto-publishing
+- **[Bundle Distribution Setup](./BUNDLE_DISTRIBUTION_SETUP.md)** - (temporarily non-functional) Maintainer guide for bundle auto-publishing
 
 ---
 
@@ -60,38 +56,6 @@ AI-powered creative thinking and brainstorming.
 
 - **[CIS Module README](./modules/cis/)** - Module overview and workflows
 
----
-
-## 🖥️ IDE-Specific Guides
-
-Instructions for loading agents and running workflows in your development environment.
-
-**Popular IDEs:**
-
-- [Claude Code](./ide-info/claude-code.md)
-- [Cursor](./ide-info/cursor.md)
-- [VS Code](./ide-info/windsurf.md)
-
-**Other Supported IDEs:**
-
-- [Augment](./ide-info/auggie.md)
-- [Cline](./ide-info/cline.md)
-- [Codex](./ide-info/codex.md)
-- [Crush](./ide-info/crush.md)
-- [Gemini](./ide-info/gemini.md)
-- [GitHub Copilot](./ide-info/github-copilot.md)
-- [IFlow](./ide-info/iflow.md)
-- [Kilo](./ide-info/kilo.md)
-- [OpenCode](./ide-info/opencode.md)
-- [Qwen](./ide-info/qwen.md)
-- [Roo](./ide-info/roo.md)
-- [Rovo Dev](./ide-info/rovo-dev.md)
-- [Trae](./ide-info/trae.md)
-
-**Key concept:** Every reference to "load an agent" or "activate an agent" in the main docs links to the [ide-info](./ide-info/) directory for IDE-specific instructions.
-
----
-
 ## 🔧 Advanced Topics
 
 ### Custom Agents, Workflow and Modules
@@ -109,7 +73,6 @@ Instructions for loading agents and running workflows in your development enviro
 2. [Quick Start Guide](./modules/bmm/quick-start) - Get hands-on
 3. [BMM Module README](./modules/bmm/) - Understand agents
 4. [BMM Workflows Guide](./modules/bmm/index#-workflow-guides) - Master the methodology
-5. [Your IDE guide](./ide-info/) - Optimize your workflow
 
 ### Path 2: Game Development Project
 
@@ -117,7 +80,6 @@ Instructions for loading agents and running workflows in your development enviro
 2. [Quick Start Guide](./modules/bmm/quick-start) - Get hands-on
 3. [BMM Module README](./modules/bmm/) - Game agents are included
 4. [BMGD Workflows Guide](./modules/bmgd/workflows-guide) - Game-specific workflows
-5. [Your IDE guide](./ide-info/) - Optimize your workflow
 
 ### Path 3: Upgrading from v4
 

@@ -2,15 +2,15 @@
 
 ## IMPORTANT NOTE
 
-The Web Bundling Feature is being rebuilt from the ground up, current bundles for v6 may be incomplete or missing functionality and are not optimized. This will be rectified very soon, with a more expansive guide.
+The Web Bundling Feature is being rebuilt from the ground up, current bundles found for v6 may be incomplete or missing functionality and are not optimized.
 
 ## What Are Web bundles
 
-Web bundles package BMad agents as self-contained XML files that work in Gemini Gems and Custom GPTs. Everything the agent needs - instructions, workflows, dependencies - is bundled into a single file.
+Web bundles package BMad agents as self-contained files that work in Gemini Gems and Custom GPTs. Everything the agent needs - instructions, workflows, dependencies - is bundled into a single file for easy upload.
 
 ## What Are Web Bundles?
 
-Web bundles are standalone XML files containing:
+Web bundles are standalone files containing:
 
 - Complete agent persona and instructions
 - All workflows and dependencies

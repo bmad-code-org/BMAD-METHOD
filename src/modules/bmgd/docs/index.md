@@ -50,7 +50,6 @@ Understanding how BMGD works:
 Essential reference materials:
 
 - **[Glossary](./glossary.md)** - Key game development terminology
-- **[Troubleshooting](./troubleshooting.md)** - Common issues and solutions
 
 ---
 
@@ -148,7 +147,6 @@ BMGD Documentation
 ├── quick-flow-guide.md     # Rapid prototyping and development
 ├── game-types-guide.md     # Game type templates
 ├── glossary.md             # Terminology
-└── troubleshooting.md      # Common issues
 ```
 
 ---
@@ -164,9 +162,6 @@ BMGD Documentation
 ### Related Documentation
 
 - **[BMM Documentation](../../bmm/docs/index.md)** - Core BMad Method documentation
-- **[IDE Guides](../../ide-info/)** - Configure your development environment
-
----
 
 ## Tips for Using This Documentation
 

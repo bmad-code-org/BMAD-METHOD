@@ -26,10 +26,8 @@ To create an installable custom module:
    - Create a folder with a short, abbreviated name (e.g., `cis` for Creative Intelligence Suite)
    - The folder name serves as the module code
 
-2. **Required Files**
-   - Include a `module.yaml` file in the root folder
-   - This file drives the installation process when used by the BMAD installer
-   - Reference existing modules or the BMad Builder for configuration examples
+2. **Required File**
+   - Include a `module.yaml` file in the root folder (this drives questions for the final generated config.yaml at install target)
 
 3. **Folder Organization**
    Follow these conventions for optimal compatibility:
@@ -56,8 +54,10 @@ For standalone content that isn't part of a cohesive module collection, follow t
 
 1. **Module Configuration**
    - Create a folder with a `module.yaml` file (similar to custom modules)
-   - Add the property `unitary: true` to the module.yaml
-   - The `unitary: true` property indicates this is a collection of potentially unrelated items that don't depend on each other
+   - Add the property `unitary: true` in the module.yaml
+     - The `unitary: true` property indicates this is a collection of potentially unrelated items that don't depend on each other
+   - Any content you add to this folder should still be nested under workflows and agents - but the key with stand alone content is they do not rely on each other.
+     - Agents do not reference other workflows even if stored in a unitary:true module. But unitary Agents can have their own workflows in their sidecar, or reference workflows as requirements from other modules - with a process known as workflow vendoring. Keep in mind, this will require that the workflow referenced from the other module would need to be available for the end user to install, so its recommended to only vendor workflows from the core module, or official bmm modules (See [Workflow Vendoring, Customization, and Inheritance](workflow-vendoring-customization-inheritance.md)).
 
 2. **Folder Structure**
    Organize content in specific named folders:

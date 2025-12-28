@@ -371,8 +371,6 @@ Checks:
 
 **Total time:** 1-3 hours (mostly implementation)
 
----
-
 ## Integration with Phase 4 Workflows
 
 Quick Spec Flow works seamlessly with all Phase 4 implementation workflows:
@@ -395,8 +393,6 @@ Quick Spec Flow works seamlessly with all Phase 4 implementation workflows:
 - ✅ Uses tech-spec.md as comprehensive context
 - ✅ Implements following detected conventions
 
----
-
 ## Comparison: Quick Spec vs Full BMM
 
 | Aspect                | Quick Flow Track             | BMad Method/Enterprise Tracks      |
@@ -411,7 +407,6 @@ Quick Spec Flow works seamlessly with all Phase 4 implementation workflows:
 | **Brownfield**        | Auto-analyzes and conforms   | Manual documentation required      |
 | **Conventions**       | Auto-detects and confirms    | Document in PRD/Architecture       |
 
----
 
 ## When to Graduate from Quick Flow to BMad Method
 
@@ -425,8 +420,6 @@ Start with Quick Flow, but switch to BMad Method when:
 - ❌ Compliance/regulatory requirements exist
 
 💡 **Tip:** You can always run `workflow-init` later to transition from Quick Flow to BMad Method!
-
----
 
 ## Quick Spec Flow - Key Benefits
 
@@ -465,8 +458,6 @@ Start with Quick Flow, but switch to BMad Method when:
 - No scope creep
 - Fast iteration
 
----
-
 ## Getting Started
 
 ### Prerequisites
@@ -478,12 +469,12 @@ Start with Quick Flow, but switch to BMad Method when:
 
 ```bash
 # For a quick bug fix or small change:
-# 1. Load PM agent
+# 1. Load Quick Dev Solo agent
 # 2. Say: "I want to [describe your change]"
-# 3. PM will ask if you want to run tech-spec
+# 3. Agent will ask if you want to run tech-spec
 # 4. Answer questions about your change
 # 5. Get tech-spec + story
-# 6. Load DEV agent and implement!
+# 6. Reload a fresh context with the solo agent and implement!
 
 # For a small feature with multiple stories:
 # Same as above, but get epic + 2-3 stories
@@ -492,14 +483,7 @@ Start with Quick Flow, but switch to BMad Method when:
 
 ### No workflow-init Required!
 
-Quick Spec Flow is **fully standalone**:
-
-- Detects if it's a single change or multi-story feature
-- Asks for greenfield vs brownfield
-- Works without status file tracking
-- Perfect for rapid prototyping
-
----
+Quick Spec Flow is **fully standalone**
 
 ## FAQ
 
