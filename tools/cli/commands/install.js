@@ -1,5 +1,6 @@
 const chalk = require('chalk');
 const path = require('node:path');
+const inquirer = require('inquirer');
 const { Installer } = require('../installers/lib/core/installer');
 const { UI } = require('../lib/ui');
 
@@ -65,18 +66,13 @@ module.exports = {
           console.log(chalk.dim('  • ElevenLabs AI (150+ premium voices)'));
           console.log(chalk.dim('  • Piper TTS (50+ free voices)\n'));
 
-          const readline = require('node:readline');
-          const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-          });
-
-          await new Promise((resolve) => {
-            rl.question(chalk.green('Press Enter to start AgentVibes installer...'), () => {
-              rl.close();
-              resolve();
-            });
-          });
+          await inquirer.prompt([
+            {
+              type: 'input',
+              name: 'continue',
+              message: chalk.green('Press Enter to start AgentVibes installer...'),
+            },
+          ]);
 
           console.log('');
 
