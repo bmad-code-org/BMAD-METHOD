@@ -2,7 +2,7 @@
 
 This guide explains how to create and install custom BMAD content including agents, workflows, and modules. Custom content extends BMAD's functionality with specialized tools and workflows that can be shared across projects or teams.
 
-For detailed information about the different types of custom content available, see [Custom Content](./custom-content.md).
+For detailed information about the different types of custom content available, see [Custom Content](modules/bmb-bmad-builder/custom-content.md).
 
 You can find example custom modules in the `samples/sample-custom-modules/` folder of the repository. Download either of the sample folders to try them out.
 

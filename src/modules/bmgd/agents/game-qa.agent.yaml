@@ -55,6 +55,6 @@ agent:
       description: "[TR] Review test quality and coverage"
 
     - trigger: AE or fuzzy match on advanced-elicitation
-      exec: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+      exec: "{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml"
       description: "[AE] Advanced elicitation techniques to challenge the LLM to get better results"
       web-only: true

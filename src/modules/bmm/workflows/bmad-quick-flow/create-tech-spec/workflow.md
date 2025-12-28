@@ -5,7 +5,7 @@ main_config: '{project-root}/_bmad/bmm/config.yaml'
 web_bundle: true
 
 # Checkpoint handler paths
-advanced_elicitation: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advanced_elicitation: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 party_mode_exec: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 quick_dev_workflow: '{project-root}/_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.md'
 ---

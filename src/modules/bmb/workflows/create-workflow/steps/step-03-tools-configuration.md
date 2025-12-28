@@ -16,7 +16,7 @@ workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 commonToolsCsv: '{project-root}/_bmad/bmb/docs/workflows/common-workflow-tools.csv'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 # Template References
 # No template needed - will append tools configuration directly to workflow plan

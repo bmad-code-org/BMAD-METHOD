@@ -12,7 +12,7 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/game-architecture.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
@@ -212,7 +212,7 @@ Based on the conversation, prepare the content:
 ### System Location Mapping
 
 | System | Location | Responsibility |
-|--------|----------|----------------|
+| ------ | -------- | -------------- |
 {{system_mapping_table}}
 
 ### Naming Conventions
@@ -222,7 +222,7 @@ Based on the conversation, prepare the content:
 
 #### Code Elements
 | Element | Convention | Example |
-|---------|------------|---------|
+| ------- | ---------- | ------- |
 {{code_naming_table}}
 
 #### Game Assets

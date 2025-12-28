@@ -10,15 +10,13 @@ BMad v6 represents a complete ground-up rewrite with significant architectural c
 
 When you run `npm run install:bmad` on a project, the installer automatically detects:
 
-- **Legacy folders**: Any folders starting with  `bmad-core` or `bmad-core`
+- **Legacy v4 installation folder**: `.bmad-method`
 - **IDE command artifacts**: Legacy bmad folders in IDE configuration directories (`.claude/commands/`, `.cursor/commands/`, etc.)
 
 ### What Happens During Detection
 
-1. **Automatic Backup of v4 Modules**: All `.bmad-core` folders are moved to `v4-backup/` in your project root
-   - If a backup already exists, a timestamp is added to avoid conflicts
-   - Example: `.bmad-core` → `v4-backup/_bmad-core`
-   - Your project files and data are NOT affected
+1. **Automatic Detection of v4 Modules**
+   1. Installer will suggest removal or backup of your .bmad-method folder. You can choose to exit the installer and handle this cleanup, or allow the install to continue. Technically you can have both v4 and v6 installed, but it is not recommended. All BMad content and modules will be installed under a .bmad folder, fully segregated.
 
 2. **IDE Command Cleanup Recommended**: Legacy v4 IDE commands should be manually removed
    - Located in IDE config folders, for example claude: `.claude/commands/BMad/agents`, `.claude/commands/BMad/tasks`, etc.
@@ -27,7 +25,7 @@ When you run `npm run install:bmad` on a project, the installer automatically de
 
 ## Module Migration
 
-### Deprecated Modules
+### Deprecated Modules from v4
 
 | v4 Module                     | v6 Status                                      |
 | ----------------------------- | ---------------------------------------------- |
@@ -38,6 +36,7 @@ When you run `npm run install:bmad` on a project, the installer automatically de
 | `_bmad-infrastructure-devops` | Deprecated - New core devops agent coming soon |
 | `_bmad-creative-writing`      | Not adapted - New v6 module coming soon        |
 
+Aside from .bmad-method - if you have any of these others installed also, again its recommended to remove them and use the V6 equivalents, but its also fine if you decide to keep both. But it is not recommended to use both on the same project long term.
 
 ## Architecture Changes
 
@@ -47,29 +46,30 @@ When you run `npm run install:bmad` on a project, the installer automatically de
 
 ```
 your-project/
-├── _bmad-core/           # Was actually the BMad Method
-├── _bmad-game-dev/       # Separate expansion packs
-├── _bmad-creative-writing/
-└── _bmad-infrastructure-devops/
+├── .bmad-method/         
+├── .bmad-game-dev/       
+├── .bmad-creative-writing/
+└── .bmad-infrastructure-devops/
 ```
 
 **v6 Unified Structure:**
 
 ```
 your-project/
-└── _bmad/       # Single installation folder, default _bmad
-    └── _config/            # Your customizations
-    |  └── agents/      # Agent customization files
+└── _bmad/               # Single installation folder is _bmad
+    └── _config/         # Your customizations
+    |  └── agents/       # Agent customization files
     ├── core/            # Real core framework (applies to all modules)
     ├── bmm/             # BMad Method (software/game dev)
     ├── bmb/             # BMad Builder (create agents/workflows)
     ├── cis/             # Creative Intelligence Suite
+├── _bmad_output         # Default bmad output folder (was doc folder in v4)
 
 ```
 
 ### Key Concept Changes
 
-- **v4 `_bmad-core`**: Was actually the BMad Method
+- **v4 `_bmad-core and _bmad-method`**: Was actually the BMad Method
 - **v6 `_bmad/core/`**: Is the real universal core framework
 - **v6 `_bmad/bmm/`**: Is the BMad Method module
 - **Module identification**: All modules now have a `config.yaml` file once installed at the root of the modules installed folder
@@ -120,7 +120,7 @@ persona:
     - Always upbeat and adventurous
 ```
 
-There is a lot more that is possible with agent customization, which is covered in detail in the [Agent Customization Guide](agent-customization-guide.md)
+There is a lot more that is possible with agent customization, which is covered in detail in the [Agent Customization Guide](bmad-customization/agent-customization-guide.md)
 
 CRITICAL NOTE: After you modify the customization file, you need to run the npx installer against your installed location, and choose the option to rebuild all agents, or just do a quick update again. This always builds agents fresh and applies customizations.
 

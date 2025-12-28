@@ -8,7 +8,7 @@ Complete reference for all BMGD workflows organized by development phase.
 
 BMGD workflows are organized into four phases:
 
-![BMGD Workflow Overview](./workflow-overview.jpg)
+![BMGD Workflow Overview](../../../../docs/modules/bmgd-bmad-game-dev/workflow-overview.jpg)
 
 ---
 
@@ -259,7 +259,7 @@ Checks current project status across all phases. Shows completed documents, curr
 
 ## Quick-Flow Workflows
 
-Fast-track workflows that skip full planning phases. See **[Quick-Flow Guide](./quick-flow-guide.md)** for detailed usage.
+Fast-track workflows that skip full planning phases. See **[Quick-Flow Guide](../../../../docs/modules/bmgd-bmad-game-dev/quick-flow-guide.md)** for detailed usage.
 
 ### Quick-Prototype
 
@@ -457,7 +457,7 @@ This means:
 
 ## Next Steps
 
-- **[Quick Start Guide](./quick-start.md)** - Get started with BMGD
-- **[Quick-Flow Guide](./quick-flow-guide.md)** - Rapid prototyping and development
-- **[Agents Guide](./agents-guide.md)** - Agent reference
-- **[Game Types Guide](./game-types-guide.md)** - Game type templates
+- **[Quick Start Guide](../../../../docs/modules/bmgd-bmad-game-dev/quick-start.md)** - Get started with BMGD
+- **[Quick-Flow Guide](../../../../docs/modules/bmgd-bmad-game-dev/quick-flow-guide.md)** - Rapid prototyping and development
+- **[Agents Guide](../../../../docs/modules/bmgd-bmad-game-dev/agents-guide.md)** - Agent reference
+- **[Game Types Guide](../../../../docs/modules/bmgd-bmad-game-dev/game-types-guide.md)** - Game type templates

@@ -2,7 +2,7 @@
 nextStepFile: '{installed_path}/steps/step-02-concept.md'
 continueFile: '{installed_path}/steps/step-01b-continue.md'
 modulePlanTemplate: '{installed_path}/templates/module-plan.template.md'
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 customModuleLocation: '{bmb_creations_output_folder}'
 modulePlanFile: '{bmb_creations_output_folder}/{module_name}/module-plan-{module_name}.md'

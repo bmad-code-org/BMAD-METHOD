@@ -96,7 +96,7 @@ menu:
     description: 'Validate document structure'
 
   - trigger: advanced-elicitation
-    exec: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+    exec: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
     description: 'Advanced elicitation techniques'
 ```
 
@@ -159,7 +159,7 @@ menu:
     ide-only: true # Only in IDE environments
 
   - trigger: advanced-elicitation
-    exec: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+    exec: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
     description: 'Advanced elicitation'
     web-only: true # Only in web bundles
 ```

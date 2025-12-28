@@ -21,7 +21,7 @@ instructions: "{installed_path}/instructions.md"
 quick_dev_workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-dev/workflow.yaml"
 quick_prototype_workflow: "{project-root}/_bmad/bmgd/workflows/bmgd-quick-flow/quick-prototype/workflow.yaml"
 party_mode_exec: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
-advanced_elicitation: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+advanced_elicitation: "{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml"
 
 standalone: true
 web_bundle: false

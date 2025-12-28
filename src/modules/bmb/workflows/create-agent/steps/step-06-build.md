@@ -17,7 +17,7 @@ simpleAgentTemplate: '{workflow_path}/templates/simple-agent.template.md'
 expertAgentTemplate: '{workflow_path}/templates/expert-agent.template.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 

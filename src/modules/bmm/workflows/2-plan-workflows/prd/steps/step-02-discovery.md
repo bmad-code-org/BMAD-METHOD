@@ -16,7 +16,7 @@ projectTypesCSV: '{workflow_path}/project-types.csv'
 domainComplexityCSV: '{workflow_path}/domain-complexity.csv'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 

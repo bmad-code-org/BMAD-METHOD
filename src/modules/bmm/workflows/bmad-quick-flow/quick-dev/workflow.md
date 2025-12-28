@@ -42,7 +42,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `create_tech_spec_workflow` = `{project-root}/_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml`
 - `workflow_init` = `{project-root}/_bmad/bmm/workflows/workflow-status/init/workflow.yaml`
 - `party_mode_exec` = `{project-root}/_bmad/core/workflows/party-mode/workflow.md`
-- `advanced_elicitation` = `{project-root}/_bmad/core/tasks/advanced-elicitation.xml`
+- `advanced_elicitation` = `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml`
 
 ---
 

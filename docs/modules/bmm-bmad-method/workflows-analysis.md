@@ -192,8 +192,8 @@ Planning workflows automatically load these documents if they exist in the outpu
 
 ## Related Documentation
 
-- [Phase 2: Planning Workflows](./workflows-planning.md) - Next phase
-- [Phase 3: Solutioning Workflows](./workflows-solutioning.md)
-- [Phase 4: Implementation Workflows](./workflows-implementation.md)
+- [Phase 2: Planning Workflows](../../../../docs/modules/bmm-bmad-method/workflows-planning.md) - Next phase
+- [Phase 3: Solutioning Workflows](../../../../docs/modules/bmm-bmad-method/workflows-solutioning.md)
+- [Phase 4: Implementation Workflows](../../../../docs/modules/bmm-bmad-method/workflows-implementation.md)
 - [Scale Adaptive System](./scale-adaptive-system.md) - Understanding project complexity
-- [Agents Guide](./agents-guide.md) - Complete agent reference
+- [Agents Guide](../../../../docs/modules/bmm-bmad-method/agents-guide.md) - Complete agent reference

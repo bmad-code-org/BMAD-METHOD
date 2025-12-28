@@ -31,7 +31,7 @@ This step will generate content and present choices for each decision category:
 
 ## PROTOCOL INTEGRATION:
 
-- When 'A' selected: Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml
+- When 'A' selected: Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml
 - When 'P' selected: Execute {project-root}/_bmad/core/workflows/party-mode/workflow.md
 - PROTOCOLS always return to display this step's A/P/C menu after the A or P have completed
 - User accepts/rejects protocol changes before proceeding
@@ -263,7 +263,7 @@ Show the generated decisions content and present choices:
 
 #### If 'A' (Advanced Elicitation):
 
-- Execute {project-root}/_bmad/core/tasks/advanced-elicitation.xml with specific decision categories
+- Execute {project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml with specific decision categories
 - Process enhanced insights about particular decisions
 - Ask user: "Accept these enhancements to the architectural decisions? (y/n)"
 - If yes: Update content, then return to A/P/C menu

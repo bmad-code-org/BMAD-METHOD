@@ -11,7 +11,7 @@ nextStepFile: '{workflow_path}/steps/step-04-apply-changes.md'
 agentFile: '{{agent_path}}'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Documentation References (load JIT if needed)

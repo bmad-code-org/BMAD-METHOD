@@ -12,7 +12,7 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Template References
@@ -157,7 +157,7 @@ Display: **Select an Option:** [A] Budget Optimization Strategies [P] Shopping P
 #### Menu Handling Logic:
 
 - HALT and AWAIT ANSWER
-- IF A: Execute `{project-root}/_bmad/core/tasks/advanced-elicitation.xml`
+- IF A: Execute `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml`
 - IF P: Execute `{project-root}/_bmad/core/workflows/party-mode/workflow.md`
 - IF C: Save content to nutrition-plan.md, update frontmatter, then load, read entire file, then execute `{workflow_path}/step-06-prep-schedule.md`
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#5-present-menu-options)

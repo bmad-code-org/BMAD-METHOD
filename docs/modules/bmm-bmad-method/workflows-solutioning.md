@@ -434,7 +434,7 @@ Architecture documents are living. Update them as you learn during implementatio
 
 **Key Difference:** Enterprise adds optional extended workflows AFTER architecture but BEFORE create-epics-and-stories. Everything else is identical to BMad Method.
 
-**Note:** TEA (Test Architect) operates across all phases and validates architecture testability but is not a Phase 3-specific workflow. See [Test Architecture Guide](./test-architecture.md) for TEA's full lifecycle integration.
+**Note:** TEA (Test Architect) operates across all phases and validates architecture testability but is not a Phase 3-specific workflow. See [Test Architecture Guide](../../../../docs/modules/bmm-bmad-method/test-architecture.md) for TEA's full lifecycle integration.
 
 ---
 
@@ -471,10 +471,10 @@ Architecture documents are living. Update them as you learn during implementatio
 
 ## Related Documentation
 
-- [Phase 2: Planning Workflows](./workflows-planning.md) - Previous phase
-- [Phase 4: Implementation Workflows](./workflows-implementation.md) - Next phase
+- [Phase 2: Planning Workflows](../../../../docs/modules/bmm-bmad-method/workflows-planning.md) - Previous phase
+- [Phase 4: Implementation Workflows](../../../../docs/modules/bmm-bmad-method/workflows-implementation.md) - Next phase
 - [Scale Adaptive System](./scale-adaptive-system.md) - Understanding tracks
-- [Agents Guide](./agents-guide.md) - Complete agent reference
+- [Agents Guide](../../../../docs/modules/bmm-bmad-method/agents-guide.md) - Complete agent reference
 
 ---
 

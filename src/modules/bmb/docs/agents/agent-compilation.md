@@ -94,30 +94,7 @@ You must fully embody this agent's persona...
 
 **DO NOT create** activation sections - compiler builds it from your critical_actions.
 
-### 3. Menu Enhancements
-
-**Auto-injected menu items:**
-
-- `*help` - Always FIRST in compiled menu
-- `*exit` - Always LAST in compiled menu
-
-**Trigger prefixing:**
-
-- Your trigger `analyze` becomes `*analyze`
-- Don't add `*` prefix - compiler does it
-
-**DO NOT include:**
-
-```yaml
-# BAD - these are auto-injected
-menu:
-  - trigger: help
-    description: 'Show help'
-  - trigger: exit
-    description: 'Exit'
-```
-
-### 4. Menu Handlers
+### 3. Menu Handlers
 
 Compiler detects which handlers you use and ONLY includes those:
 
@@ -141,7 +118,7 @@ Compiler detects which handlers you use and ONLY includes those:
 
 **DO NOT document** handler behavior - it's injected.
 
-### 5. Rules Section
+### 4. Rules Section
 
 **Auto-injected rules:**
 
@@ -161,10 +138,11 @@ Compiler detects which handlers you use and ONLY includes those:
 ```yaml
 agent:
   metadata:
+    id: '_bmad_/{module}/agents/foo/foo.agent.md
     name: 'Persona Name'
     title: 'Agent Title'
     icon: 'emoji'
-    type: 'simple|expert' # or module: "bmm"
+    module: "bmm"
 
   persona:
     role: '...'
@@ -173,9 +151,9 @@ agent:
     principles: [...]
 
   menu:
-    - trigger: your-action
+    - trigger: AB or fuzzy match on your-action
       action: '#prompt-id'
-      description: 'What it does'
+      description: '[AB] Your Action described menu item '
 ```
 
 ### Optional (based on type)

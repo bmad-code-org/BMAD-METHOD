@@ -13,7 +13,7 @@ workflowFile: '{workflow_path}/workflow.md'
 outputFile: '{output_folder}/nutrition-plan-{project_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Data References
@@ -167,7 +167,7 @@ Display: **Select an Option:** [A] Meal Variety Optimization [P] Chef & Dietitia
 #### Menu Handling Logic:
 
 - HALT and AWAIT ANSWER
-- IF A: Execute `{project-root}/_bmad/core/tasks/advanced-elicitation.xml`
+- IF A: Execute `{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml`
 - IF P: Execute `{project-root}/_bmad/core/workflows/party-mode/workflow.md` with a chef and dietitian expert also as part of the party
 - IF C: Save content to nutrition-plan.md, update frontmatter `stepsCompleted` to add 4 at the end of the array before loading next step, check cooking frequency:
   - IF cooking frequency > 2x/week: load, read entire file, then execute `{workflow_path}/step-05-shopping.md`

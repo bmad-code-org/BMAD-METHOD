@@ -1,7 +1,5 @@
 # Installation
 
-Get BMAD Method running in your project in under 2 minutes.
-
 ## Quick Install
 
 ```bash
@@ -10,9 +8,11 @@ npx bmad-method install
 
 This interactive installer will:
 
-1. Detect your IDE (Claude Code, Cursor, VS Code, etc.)
-2. Let you choose which modules to install
-3. Configure agents and workflows for your project
+1. Let you choose a location to install to
+2. Let you choose which Agentic LLM Tools you would like to use (Such as Claude Code, Cursor, Windsurf, etc...)
+3. Let you choose which official modules to install (BMad Method, Creative Intelligence suite, BMad Builder)
+4. Let you choose any custom local modules, workflows or agents to install
+5. Let you configure each module or quickly accept the default recommended settings for each selected model
 
 ## Requirements
 

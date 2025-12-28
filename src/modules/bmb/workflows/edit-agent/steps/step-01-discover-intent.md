@@ -10,7 +10,7 @@ thisStepFile: '{workflow_path}/steps/step-01-discover-intent.md'
 nextStepFile: '{workflow_path}/steps/step-02-analyze-agent.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+advancedElicitationTask: '{project-root}/_bmad/core/workflows/advanced-elicitation/workflow.xml'
 partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 

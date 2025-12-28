@@ -24,9 +24,8 @@ The completely revamped **BMAD V6 installer** now includes built-in support for 
 
 **📚 Learn More:**
 
-- [**Custom Content Overview**](./docs/custom-content.md) - Discover all supported content types
-- [**Installation Guide**](./docs/custom-content-installation.md) - Learn to create and install custom content
-- [**Detail Content Docs**](./src/modules/bmb/docs/index.md) - Reference details for agents, modules, workflows and the bmad builder
+- [**Custom Content Overview**](docs/modules/bmb-bmad-builder/custom-content.md) - Discover all supported content types
+- [**Installation Guide**](docs/modules/bmb-bmad-builder/custom-content-installation.md) - Learn to create and install custom content
 - [**2 Very simple Custom Modules of questionable quality**](./samples/sample-custom-modules/README.md) - if you want to download and try to install a custom shared module, get an idea of how to bundle and share your own, or create your own personal agents, workflows and modules.
 
 </div>
@@ -68,7 +67,7 @@ With **BMad Builder**, you can architect both simple agents and vastly complex d
 ## 📊 See It In Action
 
 <p align="center">
-  <img src="./src/modules/bmm/docs/images/workflow-method-greenfield.svg" alt="BMad Method Workflow" width="100%">
+  <img src="./docs/modules/bmm-bmad-method/images/workflow-method-greenfield.svg" alt="BMad Method Workflow" width="100%">
 </p>
 
 <p align="center">
@@ -81,10 +80,10 @@ With **BMad Builder**, you can architect both simple agents and vastly complex d
 
 ```bash
 # Install v6 Alpha (recommended)
-npx bmad-method@alpha install
+npx bmad-method install
 
 # Or stable v4 for production
-npx bmad-method install
+npx bmad-method@latest install
 ```
 
 ### 2. Initialize Your Project
@@ -101,8 +100,8 @@ This analyzes your project and recommends the right workflow track.
 
 BMad Method adapts to your needs with three intelligent tracks:
 
-| Track              | Use For                   | Planning                | Time to Start |
-| ------------------ | ------------------------- | ----------------------- | ------------- |
+| Track             | Use For                   | Planning                | Time to Start |
+| ----------------- | ------------------------- | ----------------------- | ------------- |
 | **⚡ Quick Flow**  | Bug fixes, small features | Tech spec only          | < 5 minutes   |
 | **📋 BMad Method** | Products, platforms       | PRD + Architecture + UX | < 15 minutes  |
 | **🏢 Enterprise**  | Compliance, scale         | Full governance suite   | < 30 minutes  |
@@ -124,35 +123,35 @@ Each phase has specialized workflows and agents working together to deliver exce
 
 **12 Specialized Agents** working in concert:
 
-| Development | Architecture   | Product       | Leadership     |
-| ----------- | -------------- | ------------- | -------------- |
-| Developer   | Architect      | PM            | Scrum Master   |
-| UX Designer | Test Architect | Analyst       | BMad Master    |
-| Tech Writer | Game Architect | Game Designer | Game Developer |
+| Development | Architecture   | Product     | Leadership   |
+| ----------- | -------------- | ----------- | ------------ |
+| Developer   | Architect      | PM          | Scrum Master |
+| UX Designer | Test Architect | Analyst     | BMad Master  |
+|             |                | Tech Writer |              |
 
-**Test Architect** integrates with `@seontechnologies/playwright-utils` for production-ready fixture-based utilities.
+**Test Architect** integrates with `@seontechnologies/playwright-utils` for production-ready web app fixture-based utilities.
 
 Each agent brings deep expertise and can be customized to match your team's style.
 
 ## 📦 What's Included
 
-### Core Modules
+### Official Modules
 
 - **BMad Method (BMM)** - Complete agile development framework
   - 12 specialized agents
   - 34 workflows across 4 phases
-  - Scale-adaptive planning
-  - [→ Documentation Hub](./src/modules/bmm/docs/index.md)
+  - Stand Along Quick Spec Flow for a streamlined simple implementation process
+  - [→ Documentation Hub](./docs/modules/bmm-bmad-method/index.md)
 
 - **BMad Builder (BMB)** - Create custom agents and workflows
   - Build anything from simple agents to complex modules
   - Create domain-specific solutions (legal, medical, finance, education)
-  - [→ Builder Guide](./src/modules/bmb/docs/index.md)
+  - [→ Builder Guide](./docs/modules/bmb-bmad-builder/index.md)
 
 - **Creative Intelligence Suite (CIS)** - Innovation & problem-solving
   - Brainstorming, design thinking, storytelling
   - 5 creative facilitation workflows
-  - [→ Creative Workflows](./src/modules/cis/docs/index.md)
+  - [→ Creative Workflows](./docs/modules/cis-creative-intelligence-suite/index.md)
 
 ### Key Features
 
@@ -166,14 +165,14 @@ Each agent brings deep expertise and can be customized to match your team's styl
 
 ### Quick Links
 
-- **[Quick Start Guide](./src/modules/bmm/docs/quick-start.md)** - 15-minute introduction
-- **[Complete BMM Documentation](./src/modules/bmm/docs/index.md)** - All guides and references
-- **[Agent Customization](./docs/agent-customization-guide.md)** - Personalize your agents
+- **[Quick Start Guide](./docs/modules/bmm-bmad-method/quick-start.md)** - 15-minute introduction
+- **[Complete BMM Documentation](./docs/modules/bmm-bmad-method/index.md)** - All guides and references
+- **[Agent Customization](docs/bmad-customization/agent-customization-guide.md)** - Personalize your agents
 - **[All Documentation](./docs/index.md)** - Complete documentation index
 
 ### For v4 Users
 
-- **[v4 Documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V4)**
+- **[v4 Documentation](https://github.com/bmad-code-org/BMAD-METHOD/tree/V4/docs)**
 - **[v4 to v6 Upgrade Guide](./docs/v4-to-v6-upgrade.md)**
 
 ## 💬 Community & Support
@@ -181,24 +180,12 @@ Each agent brings deep expertise and can be customized to match your team's styl
 - **[Discord Community](https://discord.gg/gk8jAdXWmj)** - Get help, share projects
 - **[GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)** - Report bugs, request features
 - **[YouTube Channel](https://www.youtube.com/@BMadCode)** - Video tutorials and demos
-- **[Web Bundles](https://bmad-code-org.github.io/bmad-bundles/)** - Pre-built agent bundles
+- **[Web Bundles](https://bmad-code-org.github.io/bmad-bundles/)** - Pre-built agent bundles (Currently not functioning, reworking soon)
 - **[Code of Conduct](.github/CODE_OF_CONDUCT.md)** - Community guidelines
 
 ## 🛠️ Development
 
-For contributors working on the BMad codebase:
-
-```bash
-# Run all quality checks
-npm test
-
-# Development commands
-npm run lint:fix      # Fix code style
-npm run format:fix    # Auto-format code
-npm run bundle        # Build web bundles
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for full development guidelines.
+If you would like to contribute, first check the [CONTRIBUTING.md](CONTRIBUTING.md) for full development guidelines.
 
 ## What's New in v6
 

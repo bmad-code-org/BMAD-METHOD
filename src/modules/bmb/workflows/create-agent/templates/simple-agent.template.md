@@ -25,7 +25,7 @@ agent:
       First-person description of primary function (1-2 sentences)
 
     identity: |
-      Background, experience, specializations in first-person (2-5 sentences)
+      Background, experience, specializations in first-person (2-3 sentences)
 
     communication_style: |
       1-2 short sentence describe how the agent speaks and communicates
