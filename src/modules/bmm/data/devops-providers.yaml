@@ -1,0 +1,151 @@
+# DevOps Provider Configuration
+# Central reference for provider-specific CLI commands
+# Supports GitHub and Azure DevOps as tracking systems
+
+providers:
+  github-issues:
+    description: "GitHub Issues and Pull Requests via gh CLI"
+    cli: "gh"
+    
+    # Branch operations (same across providers - use git directly)
+    branch:
+      create: "git checkout -b {{branch_name}}"
+      delete: "git branch -d {{branch_name}}"
+      switch: "git checkout {{branch_name}}"
+    
+    # Milestone/Sprint operations
+    milestone:
+      create: |
+        gh api repos/{owner}/{repo}/milestones -f title="{{milestone_title}}" -f description="{{milestone_description}}" -f due_on="{{due_date}}"
+      list: |
+        gh api repos/{owner}/{repo}/milestones --jq '.[].title'
+      get_number: |
+        gh api repos/{owner}/{repo}/milestones --jq '.[] | select(.title=="{{milestone_title}}") | .number'
+    
+    # Epic operations (using labels for epics in GitHub)
+    epic:
+      create: |
+        gh issue create --title "Epic {{epic_num}}: {{epic_title}}" --body "{{epic_description}}" --label "epic,{{project_key}}"
+      close: |
+        gh issue close {{epic_issue_number}}
+      list: |
+        gh issue list --label "epic" --state open
+    
+    # Issue/Work Item operations
+    issue:
+      create: |
+        gh issue create --title "{{story_key}}: {{title}}" --body "$(cat {{story_file}})" --label "story,sprint" --milestone "{{milestone_title}}"
+      create_no_milestone: |
+        gh issue create --title "{{story_key}}: {{title}}" --body "$(cat {{story_file}})" --label "story,sprint"
+      close: |
+        gh issue close {{issue_number}}
+      update: |
+        gh issue edit {{issue_number}} --body "{{body}}"
+      add_to_milestone: |
+        gh issue edit {{issue_number}} --milestone "{{milestone_title}}"
+      list: |
+        gh issue list --label "sprint" --state open
+    
+    # Pull Request operations
+    pr:
+      create: |
+        gh pr create --title "{{story_key}}: {{title}}" --body "{{body}}" --base main
+      create_with_closes: |
+        gh pr create --title "{{story_key}}: {{title}}" --body "{{body}}\n\nCloses #{{issue_number}}" --base main
+      comment: |
+        gh pr comment {{branch_name}} --body "{{comment_body}}"
+      merge: |
+        gh pr merge {{branch_name}} --squash --delete-branch
+      close: |
+        gh pr close {{branch_name}}
+      list: |
+        gh pr list --state open
+    
+    # Sprint status field mappings
+    status_fields:
+      tracking_system: "github-issues"
+      repo: "owner/repo-name"
+      tracking_ref: "issue_number"
+      milestone: "Sprint X"
+
+  azure-devops:
+    description: "Azure DevOps Work Items and Pull Requests via az CLI"
+    cli: "az"
+    
+    # Branch operations (same across providers - use git directly)
+    branch:
+      create: "git checkout -b {{branch_name}}"
+      delete: "git branch -d {{branch_name}}"
+      switch: "git checkout {{branch_name}}"
+    
+    # Iteration/Sprint operations
+    iteration:
+      create: |
+        az boards iteration project create --name "{{iteration_name}}" --path "\\{{project}}\\Iteration" --start-date "{{start_date}}" --finish-date "{{end_date}}" --org {{org_url}} --project {{project}}
+      list: |
+        az boards iteration project list --org {{org_url}} --project {{project}}
+      get_path: |
+        az boards iteration project list --org {{org_url}} --project {{project}} --query "[?name=='{{iteration_name}}'].path" -o tsv
+    
+    # Epic operations
+    epic:
+      create: |
+        az boards work-item create --title "Epic {{epic_num}}: {{epic_title}}" --type "Epic" --description "{{epic_description}}" --org {{org_url}} --project {{project}}
+      close: |
+        az boards work-item update --id {{epic_work_item_id}} --state Closed --org {{org_url}}
+      list: |
+        az boards query --wiql "SELECT [System.Id], [System.Title] FROM workitems WHERE [System.WorkItemType] = 'Epic' AND [System.State] <> 'Closed'" --org {{org_url}} --project {{project}}
+    
+    # Work Item operations
+    issue:
+      create: |
+        az boards work-item create --title "{{story_key}}: {{title}}" --type "User Story" --description "{{description}}" --iteration "{{iteration_path}}" --org {{org_url}} --project {{project}}
+      create_no_iteration: |
+        az boards work-item create --title "{{story_key}}: {{title}}" --type "User Story" --description "{{description}}" --org {{org_url}} --project {{project}}
+      close: |
+        az boards work-item update --id {{work_item_id}} --state Closed --org {{org_url}}
+      update: |
+        az boards work-item update --id {{work_item_id}} --description "{{description}}" --org {{org_url}}
+      add_to_iteration: |
+        az boards work-item update --id {{work_item_id}} --iteration "{{iteration_path}}" --org {{org_url}}
+      link_to_parent: |
+        az boards work-item relation add --id {{work_item_id}} --relation-type "System.LinkTypes.Hierarchy-Reverse" --target-id {{parent_id}} --org {{org_url}}
+      list: |
+        az boards query --wiql "SELECT [System.Id], [System.Title] FROM workitems WHERE [System.WorkItemType] = 'User Story' AND [System.State] = 'Active'" --org {{org_url}} --project {{project}}
+    
+    # Pull Request operations
+    pr:
+      create: |
+        az repos pr create --title "{{story_key}}: {{title}}" --description "{{description}}" --source-branch {{branch_name}} --target-branch main --org {{org_url}} --project {{project}}
+      create_with_work_item: |
+        az repos pr create --title "{{story_key}}: {{title}}" --description "{{description}}" --source-branch {{branch_name}} --target-branch main --work-items {{work_item_id}} --org {{org_url}} --project {{project}}
+      comment: |
+        az repos pr update --id {{pr_id}} --description "{{description}}" --org {{org_url}}
+      merge: |
+        az repos pr update --id {{pr_id}} --status completed --org {{org_url}}
+      close: |
+        az repos pr update --id {{pr_id}} --status abandoned --org {{org_url}}
+      list: |
+        az repos pr list --status active --org {{org_url}} --project {{project}}
+    
+    # Sprint status field mappings
+    status_fields:
+      tracking_system: "azure-devops"
+      org_url: "https://dev.azure.com/your-org"
+      project: "YourProjectName"
+      tracking_ref: "work_item_id"
+      iteration: "Sprint X"
+
+# Workflow behavior matrix reference:
+# | Workflow       | Step                | GitHub                              | Azure DevOps                                    |
+# |----------------|---------------------|-------------------------------------|-------------------------------------------------|
+# | sprint-planning| Create milestone    | gh api .../milestones               | az boards iteration project create              |
+# | sprint-planning| Create epic items   | gh issue create --label epic        | az boards work-item create --type Epic          |
+# | create-story   | Create tracking     | gh issue create --milestone         | az boards work-item create --iteration          |
+# | dev-story      | Create branch       | git checkout -b                     | git checkout -b                                 |
+# | dev-story      | Create PR           | gh pr create (with Closes #X)       | az repos pr create --work-items                 |
+# | code-review    | Post findings       | gh pr comment                       | az repos pr update                              |
+# | code-review    | Merge PR            | gh pr merge --squash                | az repos pr update --status completed           |
+# | code-review    | Close item          | gh issue close                      | az boards work-item update --state Closed       |
+# | correct-course | Add/update items    | gh issue create/edit                | az boards work-item create/update               |
+# | retrospective  | Create retro item   | gh issue create --label retro       | az boards work-item create --type Task          |

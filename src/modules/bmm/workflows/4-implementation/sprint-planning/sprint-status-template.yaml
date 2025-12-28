@@ -31,14 +31,47 @@
 # - Mark epic as 'in-progress' when starting work on its first story
 # - SM typically creates next story ONLY after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
+#
+# PROVIDER CONFIGURATION:
+# =======================
+# For GitHub Issues:
+#   tracking_system: github-issues
+#   repo: owner/repo-name
+#   milestone: "Sprint: ProjectName - Epic 1"  # Created by sprint-planning
+#
+# For Azure DevOps:
+#   tracking_system: azure-devops
+#   org_url: https://dev.azure.com/your-org
+#   project: YourProjectName
+#   iteration: "Sprint: ProjectName - Epic 1"  # Created by sprint-planning
+#
+# For File-System Only (no external tracking):
+#   tracking_system: file-system
+#
+# TRACKING REFERENCES:
+# ====================
+# Each story can have a tracking_ref field added automatically:
+#   1-1-user-authentication:
+#     status: ready-for-dev
+#     tracking_ref: 42  # GitHub issue number or Azure DevOps work item ID
+#
+# Epic tracking references:
+#   epic_issue_1: 40     # GitHub: epic issue number
+#   epic_work_item_1: 100  # Azure DevOps: epic work item ID
 
 # EXAMPLE STRUCTURE (your actual epics/stories will replace these):
 
 generated: 05-06-2-2025 21:30
 project: My Awesome Project
 project_key: jira-1234
-tracking_system: file-system
+tracking_system: github-issues
+repo: owner/repo-name
+milestone: "Sprint: My Awesome Project - Epic 1"
 story_location: "{story_location}"
+
+# Epic tracking references (auto-populated by sprint-planning)
+epic_issue_1: 40
+epic_issue_2: 41
 
 development_status:
   epic-1: backlog
@@ -53,3 +86,8 @@ development_status:
   2-2-chat-interface: backlog
   2-3-llm-integration: backlog
   epic-2-retrospective: optional
+
+# Story tracking references (auto-populated by create-story)
+tracking_refs:
+  1-1-user-authentication: 42
+  1-2-account-management: 43

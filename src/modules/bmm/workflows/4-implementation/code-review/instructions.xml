@@ -178,12 +178,95 @@
     </check>
     <action>Save story file</action>
 
-    <!-- Determine sprint tracking status -->
+    <!-- Determine sprint tracking status and provider -->
     <check if="{sprint_status} file exists">
       <action>Set {{current_sprint_status}} = "enabled"</action>
+      <action>Load {{sprint_status}} and extract tracking_system configuration</action>
+      <action>Set {{tracking_system}} from sprint-status.yaml (default: github-issues)</action>
     </check>
     <check if="{sprint_status} file does NOT exist">
       <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
+      <action>Set {{tracking_system}} = "none"</action>
+    </check>
+
+    <!-- Post review findings to PR (provider-aware) -->
+    <check if="{{tracking_system}} == 'github-issues'">
+      <action>Format review findings as markdown comment:
+        ## 🔍 Code Review Results
+        **Reviewer:** AI Code Reviewer
+        **Status:** {{new_status == 'done' ? 'Approved ✅' : 'Changes Requested 🔄'}}
+        
+        ### Findings Summary
+        - High: {{high_count}}
+        - Medium: {{medium_count}}
+        - Low: {{low_count}}
+        
+        ### AC Validation
+        {{ac_validation_results}}
+        
+        ### Issues Fixed
+        {{fixed_issues_summary}}
+      </action>
+      <action>Run: gh pr comment story/{{story_key}} --body "{{review_comment}}"</action>
+      <output>📝 Review findings posted to GitHub PR</output>
+    </check>
+
+    <check if="{{tracking_system}} == 'azure-devops'">
+      <action>Extract org_url and project from sprint-status.yaml</action>
+      <action>Extract pr_id from sprint-status.yaml or discover from branch</action>
+      <action>Format review findings as PR description update:
+        ## 🔍 Code Review Complete
+        **Reviewer:** AI Code Reviewer
+        **Status:** {{new_status == 'done' ? 'Approved ✅' : 'Changes Requested 🔄'}}
+        
+        ### Findings Summary
+        - High: {{high_count}}
+        - Medium: {{medium_count}}
+        - Low: {{low_count}}
+        
+        ### AC Validation
+        {{ac_validation_results}}
+        
+        ### Issues Fixed
+        {{fixed_issues_summary}}
+      </action>
+      <action>Run: az repos pr update --id {{pr_id}} --description "{{review_description}}" --org {{org_url}}</action>
+      <output>📝 Review findings posted to Azure DevOps PR</output>
+    </check>
+
+    <!-- Merge PR and close tracking item if approved (provider-aware) -->
+    <check if="{{new_status}} == 'done'">
+      <!-- GitHub merge and close -->
+      <check if="{{tracking_system}} == 'github-issues'">
+        <action>Run: gh pr merge story/{{story_key}} --squash --delete-branch</action>
+        <output>✅ GitHub PR merged with squash</output>
+        <action>Extract issue_number from sprint-status.yaml tracking_ref for this story</action>
+        <check if="issue_number exists">
+          <action>Run: gh issue close {{issue_number}}</action>
+          <output>✅ GitHub Issue #{{issue_number}} closed</output>
+        </check>
+        <action>Run: git checkout main</action>
+        <action>Run: git pull origin main</action>
+      </check>
+
+      <!-- Azure DevOps merge and close -->
+      <check if="{{tracking_system}} == 'azure-devops'">
+        <action>Extract org_url and project from sprint-status.yaml</action>
+        <action>Extract pr_id from sprint-status.yaml or discover from branch</action>
+        <action>Run: az repos pr update --id {{pr_id}} --status completed --org {{org_url}}</action>
+        <output>✅ Azure DevOps PR completed</output>
+        <action>Extract work_item_id from sprint-status.yaml tracking_ref for this story</action>
+        <check if="work_item_id exists">
+          <action>Run: az boards work-item update --id {{work_item_id}} --state Closed --org {{org_url}}</action>
+          <output>✅ Azure DevOps Work Item #{{work_item_id}} closed</output>
+        </check>
+        <action>Run: git checkout main</action>
+        <action>Run: git pull origin main</action>
+      </check>
+
+      <check if="{{tracking_system}} == 'none'">
+        <output>ℹ️ No tracking system configured - manual PR merge required</output>
+      </check>
     </check>
 
     <!-- Sync sprint-status.yaml when story status changes (only if sprint tracking enabled) -->

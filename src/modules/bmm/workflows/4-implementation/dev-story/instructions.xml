@@ -219,6 +219,18 @@
       <output>ℹ️ No sprint status file exists - story progress will be tracked in story file only</output>
       <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
     </check>
+
+    <!-- Create feature branch for story (provider-agnostic) -->
+    <check if="current status == 'ready-for-dev'">
+      <action>Check if already on story branch: git branch --show-current</action>
+      <check if="current branch != story/{{story_key}}">
+        <action>Run: git checkout -b story/{{story_key}}</action>
+        <output>🌿 Created feature branch: story/{{story_key}}</output>
+      </check>
+      <check if="current branch == story/{{story_key}}">
+        <output>🌿 Already on feature branch: story/{{story_key}}</output>
+      </check>
+    </check>
   </step>
 
   <step n="5" goal="Implement task following red-green-refactor cycle">
@@ -326,6 +338,60 @@
     <action>Confirm File List includes every changed file</action>
     <action>Execute enhanced definition-of-done validation</action>
     <action>Update the story Status to: "review"</action>
+
+    <!-- Create Pull Request (provider-aware) -->
+    <check if="{{sprint_status}} file exists">
+      <action>Load {{sprint_status}} and extract tracking_system configuration</action>
+      <action>Set {{tracking_system}} from sprint-status.yaml (default: github-issues)</action>
+    </check>
+    <check if="{{sprint_status}} file does NOT exist OR tracking_system not configured">
+      <action>Set {{tracking_system}} = "none"</action>
+    </check>
+
+    <!-- GitHub PR creation -->
+    <check if="{{tracking_system}} == 'github-issues'">
+      <action>Stage and commit all changes: git add -A && git commit -m "{{story_key}}: Implementation complete"</action>
+      <action>Push branch: git push -u origin story/{{story_key}}</action>
+      <action>Prepare PR body with story summary and AC validation results</action>
+      
+      <!-- Extract issue number for auto-close linking -->
+      <action>Extract issue_number from sprint-status.yaml tracking_ref for {{story_key}}</action>
+      <check if="issue_number exists">
+        <action>Append "Closes #{{issue_number}}" to PR body for auto-close on merge</action>
+        <action>Run: gh pr create --title "{{story_key}}: {{story_title}}" --body "{{pr_body}}\n\nCloses #{{issue_number}}" --base main</action>
+      </check>
+      <check if="issue_number does NOT exist">
+        <action>Run: gh pr create --title "{{story_key}}: {{story_title}}" --body "{{pr_body}}" --base main</action>
+      </check>
+      
+      <action>Capture PR URL from command output</action>
+      <output>🔀 GitHub PR created: {{pr_url}}</output>
+    </check>
+
+    <!-- Azure DevOps PR creation -->
+    <check if="{{tracking_system}} == 'azure-devops'">
+      <action>Extract org_url and project from sprint-status.yaml</action>
+      <action>Stage and commit all changes: git add -A && git commit -m "{{story_key}}: Implementation complete"</action>
+      <action>Push branch: git push -u origin story/{{story_key}}</action>
+      <action>Prepare PR description with story summary and AC validation results</action>
+      
+      <!-- Extract work item ID for linking -->
+      <action>Extract work_item_id from sprint-status.yaml tracking_ref for {{story_key}}</action>
+      <check if="work_item_id exists">
+        <action>Run: az repos pr create --title "{{story_key}}: {{story_title}}" --description "{{pr_description}}" --source-branch story/{{story_key}} --target-branch main --work-items {{work_item_id}} --org {{org_url}} --project {{project}}</action>
+        <output>🔀 Azure DevOps PR created and linked to Work Item #{{work_item_id}}</output>
+      </check>
+      <check if="work_item_id does NOT exist">
+        <action>Run: az repos pr create --title "{{story_key}}: {{story_title}}" --description "{{pr_description}}" --source-branch story/{{story_key}} --target-branch main --org {{org_url}} --project {{project}}</action>
+        <output>🔀 Azure DevOps PR created (no work item link)</output>
+      </check>
+      
+      <action>Capture PR ID from command output</action>
+    </check>
+
+    <check if="{{tracking_system}} == 'none'">
+      <output>ℹ️ No tracking system configured - PR creation skipped</output>
+    </check>
 
     <!-- Enhanced Definition of Done Validation -->
     <action>Validate definition-of-done checklist with essential requirements:

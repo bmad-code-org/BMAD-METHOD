@@ -341,4 +341,77 @@
     </output>
   </step>
 
+  <step n="7" goal="Create tracking item in external system">
+    <critical>Create issue/work item in the configured tracking system after story file is created</critical>
+
+    <!-- Check if tracking system is configured -->
+    <check if="sprint status file exists">
+      <action>Load {{sprint_status}} and extract tracking_system configuration</action>
+      <action>Set {{tracking_system}} from sprint-status.yaml (default: github-issues)</action>
+      <action>Extract milestone or iteration name if configured</action>
+      <action>Extract epic parent reference (epic_issue_{{epic_num}} or epic_work_item_{{epic_num}})</action>
+    </check>
+    <check if="sprint status file does NOT exist OR tracking_system not configured">
+      <action>Set {{tracking_system}} = "none"</action>
+      <output>ℹ️ No tracking system configured - skipping external issue creation</output>
+      <action>GOTO workflow end</action>
+    </check>
+
+    <!-- GitHub Issues Provider -->
+    <check if="{{tracking_system}} == 'github-issues'">
+      <action>Extract repo from sprint-status.yaml (format: owner/repo)</action>
+      <action>Extract milestone name from sprint-status.yaml (if configured)</action>
+      <action>Read story file content for issue body</action>
+      
+      <!-- Create issue with milestone if available -->
+      <check if="milestone is configured">
+        <action>Run: gh issue create --title "{{story_key}}: {{story_title}}" --body "$(cat {{story_file}})" --label "story,sprint" --milestone "{{milestone}}"</action>
+      </check>
+      <check if="milestone is NOT configured">
+        <action>Run: gh issue create --title "{{story_key}}: {{story_title}}" --body "$(cat {{story_file}})" --label "story,sprint"</action>
+      </check>
+      
+      <action>Capture issue number from command output</action>
+      <action>Update sprint-status.yaml with tracking_ref: {{issue_number}} for this story key</action>
+      
+      <!-- Link to parent epic issue if available -->
+      <check if="epic_issue_{{epic_num}} exists in sprint-status.yaml">
+        <action>Add comment linking to parent epic: gh issue comment {{issue_number}} --body "Part of Epic #{{epic_issue_number}}"</action>
+      </check>
+      
+      <output>✅ GitHub Issue created: #{{issue_number}} (linked to milestone: {{milestone}})</output>
+    </check>
+
+    <!-- Azure DevOps Provider -->
+    <check if="{{tracking_system}} == 'azure-devops'">
+      <action>Extract org_url and project from sprint-status.yaml</action>
+      <action>Extract iteration path from sprint-status.yaml (if configured)</action>
+      <action>Prepare description from story file (truncate if needed for Azure DevOps limits)</action>
+      
+      <!-- Create work item with iteration if available -->
+      <check if="iteration is configured">
+        <action>Run: az boards work-item create --title "{{story_key}}: {{story_title}}" --type "User Story" --description "{{story_description}}" --iteration "{{iteration_path}}" --org {{org_url}} --project {{project}}</action>
+      </check>
+      <check if="iteration is NOT configured">
+        <action>Run: az boards work-item create --title "{{story_key}}: {{story_title}}" --type "User Story" --description "{{story_description}}" --org {{org_url}} --project {{project}}</action>
+      </check>
+      
+      <action>Capture work_item_id from command output</action>
+      <action>Update sprint-status.yaml with tracking_ref: {{work_item_id}} for this story key</action>
+      
+      <!-- Link to parent epic work item if available -->
+      <check if="epic_work_item_{{epic_num}} exists in sprint-status.yaml">
+        <action>Run: az boards work-item relation add --id {{work_item_id}} --relation-type "System.LinkTypes.Hierarchy-Reverse" --target-id {{epic_work_item_id}} --org {{org_url}}</action>
+        <output>✅ Linked to parent Epic #{{epic_work_item_id}}</output>
+      </check>
+      
+      <output>✅ Azure DevOps Work Item created: #{{work_item_id}} (in iteration: {{iteration}})</output>
+    </check>
+
+    <!-- Unknown provider -->
+    <check if="{{tracking_system}} != 'github-issues' AND {{tracking_system}} != 'azure-devops' AND {{tracking_system}} != 'none'">
+      <output>⚠️ Unknown tracking system: {{tracking_system}} - skipping external issue creation</output>
+    </check>
+  </step>
+
 </workflow>

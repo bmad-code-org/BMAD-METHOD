@@ -143,6 +143,66 @@ development_status:
 <action>Ensure all items are ordered: epic, its stories, its retrospective, next epic...</action>
 </step>
 
+<step n="4.5" goal="Create milestone/iteration and epic items in external tracking system">
+<critical>Create sprint tracking artifacts in configured DevOps system</critical>
+
+<action>Check if tracking_system is configured in {status_file}</action>
+<action>Extract tracking_system value (default: file-system)</action>
+
+<check if="tracking_system == 'file-system' OR tracking_system not configured">
+  <output>ℹ️ Using file-system tracking only - no external DevOps integration</output>
+  <action>Skip external tracking creation</action>
+</check>
+
+<!-- GitHub Milestone and Epic Creation -->
+<check if="tracking_system == 'github-issues'">
+  <action>Extract repo from sprint-status.yaml (format: owner/repo)</action>
+  
+  <!-- Create Sprint Milestone -->
+  <action>Set milestone_title = "Sprint: {project_name} - Epic {{epic_num}}"</action>
+  <action>Set milestone_description = "Sprint milestone for {project_name} covering Epic {{epic_num}} stories"</action>
+  <action>Run: gh api repos/{repo}/milestones -f title="{{milestone_title}}" -f description="{{milestone_description}}"</action>
+  <action>Capture milestone number from response</action>
+  <action>Update {status_file} with milestone: {{milestone_title}}</action>
+  <output>✅ GitHub Milestone created: {{milestone_title}}</output>
+  
+  <!-- Create Epic Issues -->
+  <action>For each epic found in epic files:</action>
+  <action>Run: gh issue create --title "Epic {{epic_num}}: {{epic_title}}" --body "{{epic_description}}" --label "epic,{project_key}"</action>
+  <action>Capture epic issue number</action>
+  <action>Store epic_issue_{{epic_num}} = issue number in sprint-status.yaml</action>
+  <output>✅ GitHub Epic Issue created: #{{epic_issue_number}} - Epic {{epic_num}}: {{epic_title}}</output>
+</check>
+
+<!-- Azure DevOps Iteration and Epic Creation -->
+<check if="tracking_system == 'azure-devops'">
+  <action>Extract org_url and project from sprint-status.yaml</action>
+  
+  <!-- Create Sprint Iteration -->
+  <action>Set iteration_name = "Sprint: {project_name} - Epic {{epic_num}}"</action>
+  <action>Calculate start_date = today</action>
+  <action>Calculate end_date = today + 2 weeks (default sprint length)</action>
+  <action>Run: az boards iteration project create --name "{{iteration_name}}" --path "\\{{project}}\\Iteration" --start-date "{{start_date}}" --finish-date "{{end_date}}" --org {{org_url}} --project {{project}}</action>
+  <action>Capture iteration path from response</action>
+  <action>Update {status_file} with iteration: {{iteration_name}}</action>
+  <output>✅ Azure DevOps Iteration created: {{iteration_name}}</output>
+  
+  <!-- Create Epic Work Items -->
+  <action>For each epic found in epic files:</action>
+  <action>Run: az boards work-item create --title "Epic {{epic_num}}: {{epic_title}}" --type "Epic" --description "{{epic_description}}" --org {{org_url}} --project {{project}}</action>
+  <action>Capture work_item_id from response</action>
+  <action>Store epic_work_item_{{epic_num}} = work_item_id in sprint-status.yaml</action>
+  <output>✅ Azure DevOps Epic created: #{{work_item_id}} - Epic {{epic_num}}: {{epic_title}}</output>
+</check>
+
+<output>
+**External Tracking Setup Complete:**
+- Tracking System: {{tracking_system}}
+- Milestone/Iteration: {{milestone_or_iteration_name}}
+- Epic Items Created: {{epic_count}}
+</output>
+</step>
+
 <step n="5" goal="Validate and report">
 <action>Perform validation checks:</action>
 

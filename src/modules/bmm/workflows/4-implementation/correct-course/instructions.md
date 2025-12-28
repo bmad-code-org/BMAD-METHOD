@@ -186,6 +186,87 @@
 
 </step>
 
+<step n="5.5" goal="Sync changes to external tracking system">
+<critical>Update external tracking system with approved changes</critical>
+
+<action>Load {sprint_status} and extract tracking_system configuration</action>
+<action>Set {{tracking_system}} from sprint-status.yaml (default: file-system)</action>
+
+<check if="tracking_system == 'file-system' OR tracking_system not configured">
+  <output>ℹ️ Using file-system tracking only - no external DevOps sync needed</output>
+  <action>Skip external tracking updates</action>
+</check>
+
+<!-- GitHub Issues Sync -->
+<check if="tracking_system == 'github-issues'">
+  <action>Extract repo and milestone from sprint-status.yaml</action>
+  
+  <!-- For new stories added -->
+  <check if="new stories added in change proposal">
+    <action>For each new story:</action>
+    <action>Run: gh issue create --title "{{story_key}}: {{story_title}}" --body "{{story_description}}\n\n**Added via correct-course workflow**" --label "story,sprint,mid-sprint-add" --milestone "{{milestone}}"</action>
+    <action>Capture issue number and update sprint-status.yaml tracking_ref</action>
+    <output>✅ GitHub Issue created for new story: #{{issue_number}}</output>
+  </check>
+  
+  <!-- For modified stories -->
+  <check if="existing stories modified in change proposal">
+    <action>For each modified story:</action>
+    <action>Extract issue_number from sprint-status.yaml tracking_ref</action>
+    <action>Run: gh issue edit {{issue_number}} --body "{{updated_body}}\n\n**Modified via correct-course: {{change_reason}}**"</action>
+    <action>Run: gh issue comment {{issue_number}} --body "📝 **Story Updated via Correct-Course**\n\nChange Reason: {{change_reason}}\nModified Sections: {{modified_sections}}"</action>
+    <output>✅ GitHub Issue #{{issue_number}} updated</output>
+  </check>
+  
+  <!-- For removed/descoped stories -->
+  <check if="stories removed or descoped in change proposal">
+    <action>For each removed story:</action>
+    <action>Extract issue_number from sprint-status.yaml tracking_ref</action>
+    <action>Run: gh issue close {{issue_number}} --reason "not planned" --comment "Story descoped via correct-course workflow. Reason: {{descope_reason}}"</action>
+    <output>✅ GitHub Issue #{{issue_number}} closed (descoped)</output>
+  </check>
+</check>
+
+<!-- Azure DevOps Sync -->
+<check if="tracking_system == 'azure-devops'">
+  <action>Extract org_url, project, and iteration from sprint-status.yaml</action>
+  
+  <!-- For new stories added -->
+  <check if="new stories added in change proposal">
+    <action>For each new story:</action>
+    <action>Run: az boards work-item create --title "{{story_key}}: {{story_title}}" --type "User Story" --description "{{story_description}}\n\n**Added via correct-course workflow**" --iteration "{{iteration_path}}" --org {{org_url}} --project {{project}}</action>
+    <action>Capture work_item_id and update sprint-status.yaml tracking_ref</action>
+    <action>Add tag: az boards work-item update --id {{work_item_id}} --fields "System.Tags=mid-sprint-add" --org {{org_url}}</action>
+    <output>✅ Azure DevOps Work Item created for new story: #{{work_item_id}}</output>
+  </check>
+  
+  <!-- For modified stories -->
+  <check if="existing stories modified in change proposal">
+    <action>For each modified story:</action>
+    <action>Extract work_item_id from sprint-status.yaml tracking_ref</action>
+    <action>Run: az boards work-item update --id {{work_item_id}} --description "{{updated_description}}\n\n**Modified via correct-course: {{change_reason}}**" --org {{org_url}}</action>
+    <action>Add history comment via discussion field update</action>
+    <output>✅ Azure DevOps Work Item #{{work_item_id}} updated</output>
+  </check>
+  
+  <!-- For removed/descoped stories -->
+  <check if="stories removed or descoped in change proposal">
+    <action>For each removed story:</action>
+    <action>Extract work_item_id from sprint-status.yaml tracking_ref</action>
+    <action>Run: az boards work-item update --id {{work_item_id}} --state "Removed" --org {{org_url}}</action>
+    <action>Add reason to description</action>
+    <output>✅ Azure DevOps Work Item #{{work_item_id}} marked as Removed</output>
+  </check>
+</check>
+
+<output>
+**External Tracking Sync Complete:**
+- New items created: {{new_count}}
+- Items updated: {{updated_count}}
+- Items closed/removed: {{removed_count}}
+</output>
+</step>
+
 <step n="6" goal="Workflow Completion">
 <action>Summarize workflow execution:</action>
   - Issue addressed: {{change_trigger}}

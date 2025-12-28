@@ -1356,6 +1356,61 @@ Retrospective document was saved successfully, but {sprint_status_file} may need
 
 </step>
 
+<step n="11.5" goal="Create retrospective tracking item in external system">
+<critical>Create retrospective record in configured DevOps system</critical>
+
+<action>Load {sprint_status_file} and extract tracking_system configuration</action>
+<action>Set {{tracking_system}} from sprint-status.yaml (default: file-system)</action>
+
+<check if="tracking_system == 'file-system' OR tracking_system not configured">
+  <output>ℹ️ Using file-system tracking only - no external retrospective item created</output>
+  <action>Skip external tracking creation</action>
+</check>
+
+<!-- GitHub Retrospective Issue -->
+<check if="tracking_system == 'github-issues'">
+  <action>Extract repo and milestone from sprint-status.yaml</action>
+  <action>Prepare retrospective summary for issue body</action>
+  
+  <action>Run: gh issue create --title "Retrospective: Epic {{epic_number}} - {{epic_title}}" --body "{{retrospective_summary}}\n\n## Action Items\n{{action_items_list}}\n\n## Key Insights\n{{key_insights}}\n\n**Retro Date:** {date}\n**Document:** {retrospectives_folder}/epic-{{epic_number}}-retro-{date}.md" --label "retrospective,epic-{{epic_number}}" --milestone "{{milestone}}"</action>
+  <action>Capture issue number</action>
+  
+  <!-- Close epic issue if all stories done -->
+  <check if="all stories in epic {{epic_number}} are done">
+    <action>Extract epic_issue_{{epic_number}} from sprint-status.yaml</action>
+    <check if="epic issue exists">
+      <action>Run: gh issue close {{epic_issue_number}} --comment "🎉 Epic {{epic_number}} completed! See retrospective #{{retro_issue_number}}"</action>
+      <output>✅ Epic Issue #{{epic_issue_number}} closed</output>
+    </check>
+  </check>
+  
+  <output>✅ GitHub Retrospective Issue created: #{{retro_issue_number}}</output>
+</check>
+
+<!-- Azure DevOps Retrospective Work Item -->
+<check if="tracking_system == 'azure-devops'">
+  <action>Extract org_url, project, and iteration from sprint-status.yaml</action>
+  <action>Prepare retrospective summary for work item description</action>
+  
+  <action>Run: az boards work-item create --title "Retrospective: Epic {{epic_number}} - {{epic_title}}" --type "Task" --description "{{retrospective_summary}}\n\n## Action Items\n{{action_items_list}}\n\n## Key Insights\n{{key_insights}}\n\n**Retro Date:** {date}" --iteration "{{iteration_path}}" --org {{org_url}} --project {{project}}</action>
+  <action>Capture work_item_id</action>
+  <action>Add tag: az boards work-item update --id {{work_item_id}} --fields "System.Tags=retrospective" --org {{org_url}}</action>
+  
+  <!-- Link to epic and close if all stories done -->
+  <check if="all stories in epic {{epic_number}} are done">
+    <action>Extract epic_work_item_{{epic_number}} from sprint-status.yaml</action>
+    <check if="epic work item exists">
+      <action>Run: az boards work-item relation add --id {{work_item_id}} --relation-type "System.LinkTypes.Hierarchy-Reverse" --target-id {{epic_work_item_id}} --org {{org_url}}</action>
+      <action>Run: az boards work-item update --id {{epic_work_item_id}} --state "Closed" --org {{org_url}}</action>
+      <output>✅ Epic Work Item #{{epic_work_item_id}} closed</output>
+    </check>
+  </check>
+  
+  <output>✅ Azure DevOps Retrospective Work Item created: #{{work_item_id}}</output>
+</check>
+
+</step>
+
 <step n="12" goal="Final Summary and Handoff">
 
 <output>
