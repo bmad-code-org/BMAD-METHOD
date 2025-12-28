@@ -151,6 +151,9 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     // Skip CLAUDE.md creation - let user manage their own CLAUDE.md file
     // await this.createClaudeConfig(projectDir, modules);
 
+    // Install BMAD Guide skill to user's Claude skills directory
+    await this.installBmadGuideSkill();
+
     // Generate workflow commands from manifest (if it exists)
     const workflowGen = new WorkflowCommandGenerator(this.bmadFolderName);
     const { artifacts: workflowArtifacts } = await workflowGen.collectWorkflowArtifacts(bmadDir);
@@ -193,6 +196,39 @@ class ClaudeCodeSetup extends BaseIdeSetup {
   }
 
   // Method removed - CLAUDE.md file management left to user
+
+  /**
+   * Install BMAD Guide skill to user's Claude skills directory
+   * This skill helps Claude stay on track with BMAD methodology
+   */
+  async installBmadGuideSkill() {
+    const os = require('node:os');
+
+    // Source skill file in BMAD repository
+    const sourcePath = getSourcePath('resources', 'skills', 'bmad-guide.md');
+
+    // Target directory in user's home
+    const targetDir = path.join(os.homedir(), '.claude', 'skills');
+    const targetPath = path.join(targetDir, 'bmad-guide.md');
+
+    try {
+      // Check if source file exists
+      if (!(await fs.pathExists(sourcePath))) {
+        console.log(chalk.dim('  Skipping BMAD Guide skill (source not found)'));
+        return;
+      }
+
+      // Ensure skills directory exists
+      await this.ensureDir(targetDir);
+
+      // Copy skill file
+      await fs.copyFile(sourcePath, targetPath);
+      console.log(chalk.green('  ✓ Installed BMAD Guide skill to ~/.claude/skills/'));
+      console.log(chalk.dim('    Access with: /bmad-guide'));
+    } catch (error) {
+      console.log(chalk.yellow(`  ⚠ Warning: Could not install BMAD Guide skill: ${error.message}`));
+    }
+  }
 
   /**
    * Read and process file content
