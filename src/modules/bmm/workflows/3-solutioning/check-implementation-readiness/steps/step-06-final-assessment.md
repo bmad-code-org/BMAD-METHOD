@@ -114,6 +114,29 @@ The assessment found [number] issues requiring attention. Review the detailed re
 
 The implementation readiness workflow is now complete. The report contains all findings and recommendations for the user to consider.
 
+### 6. Update IDE Prompt Recommendations
+
+If the readiness status is **READY**, update `.vscode/settings.json` to prioritize the implementation cycle prompts:
+
+**Set these prompts to `true` (implementation cycle - "keep going" loop):**
+- `bmd-create-story`
+- `bmd-dev-story`
+- `bmd-code-review`
+- `bmd-retrospective`
+- `bmd-correct-course`
+
+**Set these prompts to `false` (setup phase - already completed):**
+- `bmd-workflow-init`
+- `bmd-brainstorm`
+- `bmd-prd`
+- `bmd-ux-design`
+- `bmd-create-architecture`
+- `bmd-epics-stories`
+- `bmd-implementation-readiness`
+- `bmd-sprint-planning`
+
+Update the `chat.promptFilesRecommendations` object in `.vscode/settings.json` with these values.
+
 ---
 
 ## 🚨 SYSTEM SUCCESS/FAILURE METRICS
