@@ -1,0 +1,367 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language}</critical>
+
+  <step n="1" goal="Find and load story file">
+    <check if="{{story_file}} is provided by user">
+      <action>Use {{story_file}} directly</action>
+      <action>Read COMPLETE story file</action>
+      <action>Extract story_key from filename or metadata</action>
+      <goto anchor="gap_analysis" />
+    </check>
+
+    <!-- Ask user for story to validate -->
+    <output>🔍 **Gap Analysis - Story Task Validation**
+
+      This workflow validates story tasks against your actual codebase.
+
+      **Use Cases:**
+      - Audit "done" stories to verify they match reality
+      - Validate story tasks before starting development
+      - Check if completed work was actually implemented
+
+      **Provide story to validate:**
+    </output>
+
+    <ask>Enter story file path, story key (e.g., "1-2-auth"), or status to scan (e.g., "done", "review", "in-progress"):</ask>
+
+    <check if="user provides file path">
+      <action>Use provided file path as {{story_file}}</action>
+      <action>Read COMPLETE story file</action>
+      <action>Extract story_key from filename</action>
+      <goto anchor="gap_analysis" />
+    </check>
+
+    <check if="user provides story key (e.g., 1-2-auth)">
+      <action>Search {story_dir} for file matching pattern {{story_key}}.md</action>
+      <action>Set {{story_file}} to found file path</action>
+      <action>Read COMPLETE story file</action>
+      <goto anchor="gap_analysis" />
+    </check>
+
+    <check if="user provides status (e.g., done, review, in-progress)">
+      <output>🔎 Scanning sprint-status.yaml for stories with status: {{user_input}}...</output>
+
+      <check if="{{sprint_status}} file exists">
+        <action>Load the FULL file: {{sprint_status}}</action>
+        <action>Parse development_status section</action>
+        <action>Find all stories where status equals {{user_input}}</action>
+
+        <check if="no stories found with that status">
+          <output>📋 No stories found with status: {{user_input}}
+
+            Available statuses: backlog, ready-for-dev, in-progress, review, done
+          </output>
+          <action>HALT</action>
+        </check>
+
+        <check if="multiple stories found">
+          <output>Found {{count}} stories with status {{user_input}}:
+
+            {{list_of_stories}}
+          </output>
+          <ask>Which story would you like to validate? [Enter story key or 'all']:</ask>
+
+          <check if="user says 'all'">
+            <action>Set {{batch_mode}} = true</action>
+            <action>Store list of all story keys to validate</action>
+            <action>Set {{story_file}} to first story in list</action>
+            <action>Read COMPLETE story file</action>
+            <goto anchor="gap_analysis" />
+          </check>
+
+          <check if="user provides specific story key">
+            <action>Set {{story_file}} to selected story path</action>
+            <action>Read COMPLETE story file</action>
+            <goto anchor="gap_analysis" />
+          </check>
+        </check>
+
+        <check if="single story found">
+          <action>Set {{story_file}} to found story path</action>
+          <action>Read COMPLETE story file</action>
+          <goto anchor="gap_analysis" />
+        </check>
+      </check>
+
+      <check if="{{sprint_status}} file does NOT exist">
+        <output>⚠️ No sprint-status.yaml found. Please provide direct story file path.</output>
+        <action>HALT</action>
+      </check>
+    </check>
+
+    <anchor id="gap_analysis" />
+  </step>
+
+  <step n="2" goal="Perform gap analysis">
+    <critical>🔍 CODEBASE REALITY CHECK - Validate tasks against actual code!</critical>
+
+    <output>📊 **Analyzing Story: {{story_key}}**
+
+      Scanning codebase to validate tasks...
+    </output>
+
+    <!-- Extract story context -->
+    <action>Parse story sections: Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Status</action>
+    <action>Extract all tasks and subtasks from story file</action>
+    <action>Identify technical areas mentioned in tasks (files, classes, functions, services, components)</action>
+
+    <!-- SCAN PHASE: Analyze actual codebase -->
+    <action>Determine scan targets from task descriptions:</action>
+    <action>- For "Create X" tasks: Check if X already exists</action>
+    <action>- For "Implement Y" tasks: Search for Y functionality</action>
+    <action>- For "Add Z" tasks: Verify Z is missing</action>
+    <action>- For test tasks: Check for existing test files</action>
+
+    <action>Use Glob to find relevant files matching patterns from tasks (e.g., **/*.ts, **/*.tsx, **/*.test.ts)</action>
+    <action>Use Grep to search for specific classes, functions, or components mentioned in tasks</action>
+    <action>Use Read to verify implementation details and functionality in key discovered files</action>
+
+    <!-- ANALYSIS PHASE: Compare tasks to reality -->
+    <action>Document scan results:</action>
+
+    **CODEBASE REALITY:**
+    <action>✅ What Exists:
+      - List verified files, classes, functions, services found
+      - Note implementation completeness (partial vs full)
+      - Identify code that tasks claim to create but already exists
+    </action>
+
+    <action>❌ What's Missing:
+      - List features mentioned in tasks but NOT found in codebase
+      - Identify claimed implementations that don't exist
+      - Note tasks marked complete but code missing
+    </action>
+
+    <!-- TASK VALIDATION PHASE -->
+    <action>For each task in the story, determine:</action>
+    <action>- ACCURATE: Task matches reality (code exists if task is checked, missing if unchecked)</action>
+    <action>- FALSE POSITIVE: Task checked [x] but code doesn't exist (BS detection!)</action>
+    <action>- FALSE NEGATIVE: Task unchecked [ ] but code already exists</action>
+    <action>- NEEDS UPDATE: Task description doesn't match current implementation</action>
+
+    <action>Generate validation report with:</action>
+    <action>- Tasks that are accurate</action>
+    <action>- Tasks that are false positives (marked done but not implemented) ⚠️</action>
+    <action>- Tasks that are false negatives (not marked but already exist)</action>
+    <action>- Recommended task updates</action>
+  </step>
+
+  <step n="3" goal="Present findings and recommendations">
+    <critical>📋 SHOW TRUTH - Compare story claims vs codebase reality</critical>
+
+    <output>
+      📊 **Gap Analysis Results: {{story_key}}**
+
+      **Story Status:** {{story_status}}
+
+      ---
+
+      **Codebase Scan Results:**
+
+      ✅ **What Actually Exists:**
+      {{list_of_existing_files_features_with_details}}
+
+      ❌ **What's Actually Missing:**
+      {{list_of_missing_elements_despite_claims}}
+
+      ---
+
+      **Task Validation:**
+
+      {{if_any_accurate_tasks}}
+      ✅ **Accurate Tasks** ({{count}}):
+      {{list_tasks_that_match_reality}}
+      {{endif}}
+
+      {{if_any_false_positives}}
+      ⚠️ **FALSE POSITIVES** ({{count}}) - Marked done but NOT implemented:
+      {{list_tasks_marked_complete_but_code_missing}}
+      **WARNING:** These tasks claim completion but code doesn't exist!
+      {{endif}}
+
+      {{if_any_false_negatives}}
+      ℹ️ **FALSE NEGATIVES** ({{count}}) - Not marked but ALREADY exist:
+      {{list_tasks_unchecked_but_code_exists}}
+      {{endif}}
+
+      {{if_any_needs_update}}
+      🔄 **NEEDS UPDATE** ({{count}}) - Task description doesn't match implementation:
+      {{list_tasks_needing_description_updates}}
+      {{endif}}
+
+      ---
+
+      📝 **Proposed Story Updates:**
+
+      {{if_false_positives_found}}
+      **CRITICAL - Uncheck false positives:**
+      {{list_tasks_to_uncheck_with_reasoning}}
+      {{endif}}
+
+      {{if_false_negatives_found}}
+      **Check completed work:**
+      {{list_tasks_to_check_with_verification}}
+      {{endif}}
+
+      {{if_task_updates_needed}}
+      **Update task descriptions:**
+      {{list_task_description_updates}}
+      {{endif}}
+
+      {{if_gap_analysis_section_missing}}
+      **Add Gap Analysis section** documenting findings
+      {{endif}}
+
+      ---
+
+      **Story Accuracy Score:** {{percentage_of_accurate_tasks}}% ({{accurate_count}}/{{total_count}})
+
+    </output>
+
+    <check if="story status is 'done' or 'review'">
+      <check if="false positives found">
+        <output>🚨 **WARNING:** This story is marked {{story_status}} but has FALSE POSITIVES!
+
+          {{count}} task(s) claim completion but code doesn't exist.
+          This story may have been prematurely marked complete.
+
+          **Recommendation:** Update story status to 'in-progress' and complete missing work.
+        </output>
+      </check>
+    </check>
+  </step>
+
+  <step n="4" goal="Get user decision">
+    <ask>**What would you like to do?**
+
+      Options:
+      [U] Update - Apply proposed changes to story file
+      [A] Audit Report - Save findings to report file without updating story
+      [N] No Changes - Just show me the findings
+      [R] Review Details - Show me more details about specific findings
+      [C] Continue to Next - Move to next story (batch mode only)
+      [Q] Quit - Exit gap analysis
+    </ask>
+
+    <!-- UPDATE OPTION -->
+    <check if="user chooses Update (U)">
+      <action>Update story file with proposed changes:</action>
+      <action>- Uncheck false positive tasks</action>
+      <action>- Check false negative tasks</action>
+      <action>- Update task descriptions as needed</action>
+      <action>- Add or update "Gap Analysis" section with findings</action>
+      <action>- Add Change Log entry: "Gap analysis performed - tasks validated against codebase ({{date}})"</action>
+
+      <check if="false positives found AND story status is done or review">
+        <ask>Story has false positives. Update status to 'in-progress'? [Y/n]:</ask>
+        <check if="user approves">
+          <action>Update story Status to 'in-progress'</action>
+          <check if="sprint_status file exists">
+            <action>Update sprint-status.yaml status for this story to 'in-progress'</action>
+          </check>
+        </check>
+      </check>
+
+      <output>✅ Story file updated with gap analysis findings.
+
+        - {{changes_count}} task(s) updated
+        - Gap Analysis section added/updated
+        - Accuracy score: {{accuracy_percentage}}%
+
+        **File:** {{story_file}}
+      </output>
+
+      <check if="batch_mode is true">
+        <ask>Continue to next story? [Y/n]:</ask>
+        <check if="user approves">
+          <action>Load next story from batch list</action>
+          <goto step="2">Analyze next story</goto>
+        </check>
+      </check>
+
+      <action>HALT - Gap analysis complete</action>
+    </check>
+
+    <!-- AUDIT REPORT OPTION -->
+    <check if="user chooses Audit Report (A)">
+      <action>Generate audit report file: {{story_dir}}/gap-analysis-report-{{story_key}}-{{date}}.md</action>
+      <action>Include full findings, accuracy scores, recommendations</action>
+      <output>📄 Audit report saved: {{report_file}}
+
+        This report can be shared with team for review.
+        Story file was NOT modified.
+      </output>
+
+      <check if="batch_mode is true">
+        <ask>Continue to next story? [Y/n]:</ask>
+        <check if="user approves">
+          <action>Load next story from batch list</action>
+          <goto step="2">Analyze next story</goto>
+        </check>
+      </check>
+
+      <action>HALT - Gap analysis complete</action>
+    </check>
+
+    <!-- NO CHANGES OPTION -->
+    <check if="user chooses No Changes (N)">
+      <output>ℹ️ Findings displayed only. No files modified.</output>
+      <action>HALT - Gap analysis complete</action>
+    </check>
+
+    <!-- REVIEW DETAILS OPTION -->
+    <check if="user chooses Review Details (R)">
+      <ask>Which findings would you like more details about? (specify task numbers, file names, or areas):</ask>
+      <action>Provide detailed analysis of requested areas using Read tool for deeper code inspection</action>
+      <action>After review, re-present the decision options</action>
+      <action>Continue based on user's subsequent choice</action>
+    </check>
+
+    <!-- CONTINUE TO NEXT (batch mode) -->
+    <check if="user chooses Continue (C) AND batch_mode is true">
+      <action>Load next story from batch list</action>
+      <goto step="2">Analyze next story</goto>
+    </check>
+
+    <check if="user chooses Continue (C) AND batch_mode is NOT true">
+      <output>⚠️ Not in batch mode. Only one story to validate.</output>
+      <action>HALT</action>
+    </check>
+
+    <!-- QUIT OPTION -->
+    <check if="user chooses Quit (Q)">
+      <output>👋 Gap analysis session ended.
+
+        {{if batch_mode}}Processed {{processed_count}}/{{total_count}} stories.{{endif}}
+      </output>
+      <action>HALT</action>
+    </check>
+  </step>
+
+  <step n="5" goal="Completion summary">
+    <output>✅ **Gap Analysis Complete, {user_name}!**
+
+      {{if_single_story}}
+      **Story Analyzed:** {{story_key}}
+      **Accuracy Score:** {{accuracy_percentage}}%
+      **Actions Taken:** {{actions_summary}}
+      {{endif}}
+
+      {{if_batch_mode}}
+      **Batch Analysis Summary:**
+      - Stories analyzed: {{processed_count}}
+      - Average accuracy: {{avg_accuracy}}%
+      - False positives found: {{total_false_positives}}
+      - Stories updated: {{updated_count}}
+      {{endif}}
+
+      **Next Steps:**
+      - Review updated stories
+      - Address any false positives found
+      - Run dev-story for stories needing work
+    </output>
+  </step>
+
+</workflow>

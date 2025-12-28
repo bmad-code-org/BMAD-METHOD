@@ -1,0 +1,39 @@
+# Development files
+.git
+.github
+.husky
+.vscode
+.claude
+.agentvibes
+.DS_Store
+*.log
+npm-debug.log*
+.env*
+
+# Test files
+test/
+coverage/
+*.test.js
+*.spec.js
+
+# Documentation (keep README.md)
+docs/
+website/
+*.pdf
+
+# Build artifacts
+dist/
+build/
+*.tgz
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Misc
+.editorconfig
+.prettierrc*
+.eslintrc*
+.markdownlint*

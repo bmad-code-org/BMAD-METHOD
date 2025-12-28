@@ -1,0 +1,267 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language}</critical>
+  <critical>🤖 AUTONOMOUS EPIC PROCESSING - Full automation of epic completion!</critical>
+  <critical>This workflow orchestrates create-story and super-dev-story for each story in an epic</critical>
+  <critical>TASK-BASED COMPLETION: A story is ONLY complete when it has ZERO unchecked tasks (- [ ])</critical>
+
+  <!-- AUTONOMOUS MODE INSTRUCTIONS - READ THESE CAREFULLY -->
+  <critical>⚡ AUTONOMOUS MODE: When auto_accept_gap_analysis=true in workflow.yaml, you MUST:
+    - NEVER ask the user to approve gap analysis refinements
+    - AUTOMATICALLY accept all gap analysis proposals
+    - PROCEED immediately without waiting for user input on gap analysis
+    - Only ask for user input at the START of the workflow (epic selection, Y/D/n choice)
+  </critical>
+  <critical>⚡ INVOKING SUB-WORKFLOWS: When you see invoke-workflow, you must:
+    1. Load the referenced workflow.yaml file
+    2. Load its instructions.xml file
+    3. Execute that workflow completely
+    4. Return to this workflow and continue
+  </critical>
+
+  <step n="1" goal="Initialize and validate epic">
+    <output>🤖 **Autonomous Epic Processing**
+
+      This workflow will automatically:
+      1. Create and develop each story using story-pipeline
+      2. **Verify completion** by checking ALL tasks are done (- [x])
+      3. Commit and push after each story (integrated in story-pipeline)
+      4. Generate epic completion report
+
+      **story-pipeline includes:**
+      - Story creation from epic (just-in-time)
+      - Story validation (pre-dev gap analysis)
+      - ATDD test generation (RED phase)
+      - Implementation (GREEN phase)
+      - **Post-implementation validation** (catches false positives!)
+      - Code review (adversarial, finds 3-10 issues)
+      - Completion (commit + push)
+
+      **Key Improvement:** Stories in "review" status with unchecked tasks
+      WILL be processed - we check actual task completion, not just status!
+
+      **Time Estimate:** Varies by epic size
+      - Small epic (3-5 stories): 2-4 hours
+      - Medium epic (6-10 stories): 4-8 hours
+      - Large epic (11+ stories): 8-16 hours
+
+      **Token Usage:** ~25-30K per story (65% more efficient!)
+    </output>
+
+    <check if="{{epic_num}} provided">
+      <action>Use provided epic number</action>
+      <goto anchor="validate_epic" />
+    </check>
+
+    <ask>Enter epic number to process (e.g., "2" or "epic-3"), or [q] to quit:</ask>
+
+    <check if="user provides epic number">
+      <action>Parse epic number from input</action>
+      <goto anchor="validate_epic" />
+    </check>
+
+    <check if="user says q">
+      <output>👋 Autonomous epic processing cancelled.</output>
+      <action>HALT</action>
+    </check>
+
+    <anchor id="validate_epic" />
+
+    <action>Load {{sprint_status}} file</action>
+    <action>Find epic-{{epic_num}} entry and all story entries for this epic</action>
+
+    <!-- TASK-BASED ANALYSIS: Scan actual story files for unchecked tasks -->
+    <action>For each story in epic:
+      1. Read the story file from {{story_dir}}/{{story_key}}.md
+      2. Count unchecked tasks: grep -c "^- \[ \]" or regex match "- \[ \]"
+      3. Count checked tasks: grep -c "^- \[x\]" or regex match "- \[x\]"
+      4. Categorize story:
+         - "truly_done": status=done AND unchecked_tasks=0
+         - "needs_work": unchecked_tasks > 0 (regardless of status)
+         - "backlog": status=backlog (file may not exist yet)
+    </action>
+
+    <output>
+      📊 **Epic {{epic_num}} Status (Task-Based Analysis)**
+
+      Total stories: {{total_story_count}}
+
+      **By Actual Task Completion:**
+      - ✅ Truly Done: {{truly_done_count}} (all tasks checked, will skip)
+      - 🔧 Needs Work: {{needs_work_count}} (has unchecked tasks)
+        {{list_needs_work_with_task_counts}}
+      - 📝 Backlog: {{backlog_count}} (will create + develop)
+
+      **By Status (for reference):**
+      - done: {{done_status_count}}
+      - review: {{review_status_count}}
+      - in-progress: {{inprogress_status_count}}
+      - ready-for-dev: {{ready_status_count}}
+      - backlog: {{backlog_status_count}}
+
+      **Work Remaining:** {{work_count}} stories with {{total_unchecked_tasks}} unchecked tasks
+      **Estimated Time:** {{estimated_hours}} hours
+      **Estimated Tokens:** ~{{estimated_tokens}}K
+    </output>
+
+    <ask>**Proceed with autonomous processing?**
+
+      [Y] Yes - Use story-pipeline (full lifecycle with post-validation)
+      [n] No - Cancel
+
+      Note: story-pipeline is now the default, replacing super-dev-story with 65% token savings!
+    </ask>
+
+    <check if="user says Y">
+      <action>Set {{use_story_pipeline}} = true</action>
+    </check>
+
+    <check if="user says n">
+      <output>❌ Cancelled</output>
+      <action>HALT</action>
+    </check>
+  </step>
+
+  <step n="2" goal="Initialize tracking (optionally create branch)">
+    <action>Get current branch name and store as {{current_branch}}</action>
+
+    <check if="{{create_epic_branch}} == true">
+      <action>Create new branch: auto-epic-{{epic_num}}</action>
+      <output>📝 Created branch: auto-epic-{{epic_num}}</output>
+    </check>
+
+    <check if="{{create_epic_branch}} == false">
+      <output>📝 Staying on current branch: {{current_branch}} (parallel epic mode)</output>
+    </check>
+
+    <action>Initialize progress tracking file:
+      - epic_num
+      - started timestamp
+      - total_stories
+      - completed_stories: []
+      - current_story: null
+      - status: running
+    </action>
+  </step>
+
+  <step n="3" goal="Process all stories in epic">
+    <critical>🔄 STORY LOOP - Create and develop each story until ALL tasks complete</critical>
+
+    <action>Build ordered list of stories needing work:
+      1. All stories with unchecked tasks (regardless of status)
+      2. All backlog stories
+      3. Sort by story number (ascending)
+    </action>
+    <action>Initialize counters: success=0, failure=0</action>
+
+    <!-- STORY LOOP -->
+    <loop foreach="{{stories_needing_work}}">
+      <action>Set {{current_story}}</action>
+      <action>Read story file and count unchecked tasks</action>
+
+      <output>
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        Story {{counter}}/{{work_count}}: {{current_story.key}}
+        Status: {{current_story.status}} | Unchecked Tasks: {{unchecked_count}}
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      </output>
+
+      <!-- PROCESS STORY WITH STORY-PIPELINE (handles both backlog creation AND development) -->
+      <check if="{{unchecked_count}} > 0 OR status == 'backlog'">
+        <output>💻 Processing story with story-pipeline ({{unchecked_count}} tasks remaining)...</output>
+
+        <try>
+          <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/story-pipeline/workflow.yaml">
+            <input name="story_id" value="{{current_story.key}}" />
+            <input name="epic_num" value="{{epic_num}}" />
+            <input name="story_num" value="{{current_story.num}}" />
+            <input name="mode" value="batch" />
+            <note>Full lifecycle: create (if backlog) → validate → ATDD → implement → post-validate → review → commit</note>
+          </invoke-workflow>
+
+          <!-- story-pipeline handles verification internally, just check final status -->
+          <output>✅ story-pipeline completed</output>
+
+          <!-- VERIFY COMPLETION: Re-check for unchecked tasks -->
+          <action>Re-read story file and count unchecked tasks</action>
+
+          <check if="{{remaining_unchecked}} > 0">
+            <output>⚠️ Story still has {{remaining_unchecked}} unchecked tasks after pipeline</output>
+            <action>Log incomplete tasks for review</action>
+            <action>Mark as partial success</action>
+          </check>
+
+          <check if="{{remaining_unchecked}} == 0">
+            <output>✅ Story complete - all tasks checked!</output>
+            <action>Update story status to "done" in sprint-status.yaml</action>
+          </check>
+
+          <action>Increment success_count</action>
+          <action>Update progress file</action>
+        </try>
+
+        <catch>
+          <output>❌ story-pipeline failed: {{error}}</output>
+          <action>Add to failed_stories with error details</action>
+          <action>Increment failure_count</action>
+        </catch>
+      </check>
+
+      <output>Progress: {{success_count}} ✅ | {{failure_count}} ❌ | {{remaining}} pending</output>
+    </loop>
+
+    <action>Update progress file status: complete</action>
+  </step>
+
+  <step n="4" goal="Epic completion and reporting">
+    <!-- Final verification: scan all stories for unchecked tasks -->
+    <action>Re-scan all epic stories for unchecked tasks</action>
+    <action>Calculate: total_remaining_tasks across all stories</action>
+
+    <output>
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      🎉 EPIC {{epic_num}} PROCESSING COMPLETE!
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      **Results:**
+      ✅ Stories processed: {{success_count}}/{{total_count}}
+      {{if_failures}}❌ Stories failed: {{failure_count}}{{endif}}
+
+      **Task Completion:**
+      - Total tasks in epic: {{total_tasks}}
+      - Completed: {{completed_tasks}} ✅
+      - Remaining: {{remaining_tasks}} ⏳
+
+      **Branch:** {{current_branch}}
+      **All changes committed**
+
+      {{if_all_tasks_complete}}
+      ✅ **All tasks complete! Epic {{epic_num}} marked done in sprint-status.yaml**
+      {{endif}}
+
+      {{if_tasks_remaining}}
+      ⚠️ **{{remaining_tasks}} tasks still unchecked - epic NOT marked complete**
+      Stories with remaining work:
+      {{list_incomplete_stories}}
+      {{endif}}
+
+      **Next Steps:**
+      1. Review the work on branch {{current_branch}}
+      2. Run human code review
+      3. Merge when approved
+
+      {{if_failures}}
+      **Failed Stories Need Attention:**
+      {{list_failed_stories}}
+      {{endif}}
+    </output>
+
+    <check if="{{remaining_tasks}} == 0 AND {{failure_count}} == 0">
+      <action>Update sprint-status: epic-{{epic_num}} = "done"</action>
+    </check>
+
+    <action>Remove progress file</action>
+  </step>
+
+</workflow>

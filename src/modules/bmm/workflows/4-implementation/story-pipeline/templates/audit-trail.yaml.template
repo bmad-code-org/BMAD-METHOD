@@ -1,0 +1,249 @@
+# Audit Trail Template
+# Generated at pipeline completion
+# Location: {sprint_artifacts}/audit-{story_id}-{date}.yaml
+# yamllint disable
+
+---
+audit_version: "1.0"
+pipeline_version: "story-pipeline-v2.0"
+
+# Story identification
+story_id: "{{story_id}}"
+epic_num: {{epic_num}}
+story_title: "{{story_title}}"
+
+# Execution summary
+execution:
+  started_at: "{{started_at}}"
+  completed_at: "{{completed_at}}"
+  total_duration: "{{duration}}"
+  mode: "{{mode}}"
+  status: "{{status}}"
+
+# Agent roles used
+agents:
+  sm:
+    name: "Scrum Master"
+    steps: [2, 3, 7]
+    total_time: null
+  tea:
+    name: "Test Engineering Architect"
+    steps: [4]
+    total_time: null
+  dev:
+    name: "Developer"
+    steps: [5, 6]
+    total_time: null
+
+# Step-by-step execution log
+steps:
+  - step: 1
+    name: "Initialize"
+    status: "{{status}}"
+    duration: "{{duration}}"
+    actions:
+      - "Loaded project context"
+      - "Loaded epic definition"
+      - "Cached architecture sections"
+
+  - step: 2
+    name: "Create Story"
+    status: "{{status}}"
+    duration: "{{duration}}"
+    agent: "sm"
+    research_queries:
+      - "{{query_1}}"
+      - "{{query_2}}"
+    output: "{{story_file_path}}"
+    acceptance_criteria_count: {{count}}
+
+  - step: 3
+    name: "Validate Story"
+    status: "{{status}}"
+    duration: "{{duration}}"
+    agent: "sm"
+    issues_found: {{count}}
+    issues_fixed: {{count}}
+    quality_score: {{score}}
+    validation_areas:
+      - "AC structure"
+      - "Testability"
+      - "Technical feasibility"
+      - "Edge cases"
+
+  - step: 4
+    name: "ATDD (Red Phase)"
+    status: "{{status}}"
+    duration: "{{duration}}"
+    agent: "tea"
+    tests_created: {{count}}
+    test_files:
+      - "{{path}}"
+    factories_created:
+      - "{{factory}}"
+    fixtures_created:
+      - "{{fixture}}"
+    data_testids_documented: {{count}}
+
+  - step: 5
+    name: "Implement (Green Phase)"
+    status: "{{status}}"
+    duration: "{{duration}}"
+    agent: "dev"
+    files_modified: {{count}}
+    migrations_applied:
+      - "{{migration}}"
+    test_results:
+      passed: {{count}}
+      failed: 0
+    lint_status: "clean"
+    build_status: "success"
+
+  - step: 6
+    name: "Code Review"
+    status: "{{status}}"
+    duration: "{{duration}}"
+    agent: "dev"
+    review_type: "adversarial"
+    issues_found: {{count}}
+    issues_fixed: {{count}}
+    categories_reviewed:
+      security:
+        issues: {{count}}
+        fixed: {{count}}
+      performance:
+        issues: {{count}}
+        fixed: {{count}}
+      error_handling:
+        issues: {{count}}
+        fixed: {{count}}
+      testing:
+        issues: {{count}}
+        fixed: {{count}}
+      code_quality:
+        issues: {{count}}
+        fixed: {{count}}
+      architecture:
+        issues: {{count}}
+        fixed: {{count}}
+
+  - step: 7
+    name: "Complete"
+    status: "{{status}}"
+    duration: "{{duration}}"
+    agent: "sm"
+    commit_hash: "{{hash}}"
+    commit_message: "feat(epic-{{epic_num}}): complete story {{story_id}}"
+    files_committed: {{count}}
+    sprint_status_updated: true
+
+  - step: 8
+    name: "Summary"
+    status: "{{status}}"
+    duration: "{{duration}}"
+    audit_file: "{{this_file}}"
+
+# Quality gates summary
+quality_gates:
+  story_creation:
+    passed: true
+    criteria:
+      - "Story file created"
+      - "All AC in BDD format"
+      - "Test scenarios defined"
+
+  validation:
+    passed: true
+    quality_score: {{score}}
+    criteria:
+      - "No ambiguous requirements"
+      - "All issues fixed"
+
+  atdd:
+    passed: true
+    criteria:
+      - "Tests for all AC"
+      - "Tests fail (red phase)"
+      - "data-testids documented"
+
+  implementation:
+    passed: true
+    criteria:
+      - "All tests pass"
+      - "Lint clean"
+      - "Build success"
+      - "RLS policies added"
+
+  code_review:
+    passed: true
+    issues_found: {{count}}
+    criteria:
+      - "Minimum 3 issues found"
+      - "All issues fixed"
+      - "All categories reviewed"
+
+# Artifacts produced
+artifacts:
+  story_file:
+    path: "{{path}}"
+    size: "{{size}}"
+
+  test_files:
+    - path: "{{path}}"
+      test_count: {{count}}
+
+  migrations:
+    - path: "{{path}}"
+      tables_affected: ["{{table}}"]
+
+  checklists:
+    atdd: "{{path}}"
+    review: "{{path}}"
+
+  commit:
+    hash: "{{hash}}"
+    branch: "{{branch}}"
+    pushed: false
+
+# Token efficiency comparison
+token_efficiency:
+  traditional_approach:
+    description: "6 separate claude -p calls"
+    estimated_tokens: 71000
+    breakdown:
+      - stage: "create-story"
+        tokens: 12000
+      - stage: "validate-story"
+        tokens: 11000
+      - stage: "atdd"
+        tokens: 12000
+      - stage: "implement"
+        tokens: 15000
+      - stage: "code-review"
+        tokens: 13000
+      - stage: "complete"
+        tokens: 8000
+
+  step_file_approach:
+    description: "Single session with step-file loading"
+    estimated_tokens: "{{actual}}"
+    savings_percentage: "{{percentage}}"
+    breakdown:
+      - step: "context_loading"
+        tokens: 5000
+        note: "Loaded once, cached"
+      - step: "step_files"
+        tokens: "{{tokens}}"
+        note: "~200 lines each"
+      - step: "execution"
+        tokens: "{{tokens}}"
+        note: "Actual work"
+
+# Notes and observations
+notes:
+  - "{{note_1}}"
+  - "{{note_2}}"
+
+# Generated by
+generated_by: "BMAD Story Pipeline v2.0"
+generated_at: "{{timestamp}}"

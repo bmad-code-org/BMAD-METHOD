@@ -50,6 +50,12 @@ your-project/
 └── ... your code       # maybe nothing else yet if a fresh new folder
 ```
 
+**For Claude Code users**, the installer also sets up:
+- **BMAD Guide skill** (`~/.claude/skills/bmad-guide.md`) - Helps Claude stay on track with BMAD methodology
+  - Access with `/bmad-guide` command
+  - Provides phase navigation, workflow selection, and process guidance
+  - Automatically prevents common mistakes like skipping phases or manual implementation
+
 ## Next Steps
 
 1. **Read the [Quick Start Guide](../modules/bmm/quick-start.md)** to build your first feature

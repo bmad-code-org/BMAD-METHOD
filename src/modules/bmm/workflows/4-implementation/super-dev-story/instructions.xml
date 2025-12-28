@@ -1,0 +1,299 @@
+<workflow>
+  <critical>The workflow execution engine is governed by: {project-root}/_bmad/core/tasks/workflow.xml</critical>
+  <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
+  <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
+  <critical>Generate all documents in {document_output_language}</critical>
+  <critical>🚀 SUPER-DEV MODE: Enhanced quality workflow with post-implementation validation and automated code review</critical>
+  <critical>This workflow orchestrates existing workflows with additional validation steps</critical>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEP 1: INVOKE STANDARD DEV-STORY WORKFLOW                      -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <step n="1" goal="Execute standard dev-story workflow">
+    <critical>🎯 RUN DEV-STORY - Complete all standard development steps</critical>
+    <note>This includes: story loading, pre-dev gap analysis, development, testing, and task completion</note>
+
+    <output>🚀 **Super-Dev-Story: Enhanced Quality Workflow**
+
+      Running standard dev-story workflow (Steps 1-8)...
+
+      This includes:
+      ✅ Story loading and validation
+      ✅ Pre-dev gap analysis
+      ✅ TDD implementation cycle
+      ✅ Comprehensive testing
+      ✅ Task completion validation
+
+      After dev-story completes, super-dev will add:
+      ✅ Post-dev gap analysis
+      ✅ Automated code review
+      ✅ Auto push-all
+    </output>
+
+    <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
+      <input name="story_file" value="{{story_file}}" />
+      <input name="auto_accept_gap_analysis" value="{{auto_accept_gap_analysis}}" />
+      <note>Pass through any user-provided story file path and auto-accept setting</note>
+    </invoke-workflow>
+
+    <check if="dev-story completed successfully">
+      <output>✅ Dev-story complete - all tasks implemented and tested
+
+        Proceeding to super-dev enhancements...
+      </output>
+    </check>
+
+    <check if="dev-story failed or halted">
+      <output>❌ Dev-story did not complete successfully
+
+        Cannot proceed with super-dev enhancements.
+        Fix issues and retry.
+      </output>
+      <action>HALT - dev-story must complete first</action>
+    </check>
+  </step>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEP 2: POST-DEV GAP ANALYSIS (Super-Dev Enhancement)           -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <step n="2" goal="Post-development gap analysis">
+    <critical>🔍 POST-DEV VALIDATION - Verify all work actually completed!</critical>
+    <note>This catches incomplete implementations that were prematurely marked done</note>
+
+    <output>
+      🔎 **Post-Development Gap Analysis**
+
+      All tasks marked complete. Verifying against codebase reality...
+    </output>
+
+    <!-- Re-scan codebase with fresh eyes -->
+    <action>Re-read story file to get requirements and tasks</action>
+    <action>Extract all tasks marked [x] complete</action>
+    <action>For each completed task, identify what should exist in codebase</action>
+
+    <!-- SCAN PHASE -->
+    <action>Use Glob to find files that should have been created</action>
+    <action>Use Grep to search for functions/classes that should exist</action>
+    <action>Use Read to verify implementation completeness (not just existence)</action>
+    <action>Run tests to verify claimed test coverage actually exists and passes</action>
+
+    <!-- ANALYSIS PHASE -->
+    <action>Compare claimed work vs actual implementation:</action>
+
+    **POST-DEV VERIFICATION:**
+    <action>✅ Verified Complete:
+      - List tasks where code fully exists and works
+      - Confirm tests exist and pass
+      - Verify implementation matches requirements
+    </action>
+
+    <action>❌ False Positives Detected:
+      - List tasks marked [x] but code missing or incomplete
+      - Identify claimed tests that don't exist or fail
+      - Note partial implementations marked as complete
+    </action>
+
+    <!-- DECISION PHASE -->
+    <check if="false positives found">
+      <output>
+        ⚠️ **Post-Dev Gaps Detected!**
+
+        **Tasks marked complete but implementation incomplete:**
+        {{list_false_positives_with_details}}
+
+        These issues must be addressed before story can be marked complete.
+      </output>
+
+      <action>Uncheck false positive tasks in story file</action>
+      <action>Add new tasks for missing work</action>
+      <action>Update Gap Analysis section with post-dev findings</action>
+
+      <output>🔄 Re-invoking dev-story to complete missing work...</output>
+
+      <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
+        <input name="story_file" value="{{story_file}}" />
+        <input name="auto_accept_gap_analysis" value="{{auto_accept_gap_analysis}}" />
+        <note>Resume with added tasks for missing work</note>
+      </invoke-workflow>
+
+      <output>✅ Missing work completed. Proceeding to code review...</output>
+    </check>
+
+    <check if="no gaps found">
+      <output>✅ **Post-Dev Validation Passed**
+
+        All tasks verified complete against codebase.
+        Proceeding to code review...
+      </output>
+      <action>Update Gap Analysis section with post-dev verification results</action>
+    </check>
+  </step>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEP 3: AUTOMATED CODE REVIEW (Super-Dev Enhancement)           -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <step n="3" goal="Automated code review">
+    <critical>👀 AUTO CODE REVIEW - Independent quality validation</critical>
+
+    <output>
+      🔍 **Running Automated Code Review**
+
+      Analyzing implementation for issues...
+    </output>
+
+    <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml">
+      <input name="story_file" value="{{story_file}}" />
+      <note>Run code review on completed story</note>
+    </invoke-workflow>
+
+    <action>Parse code review results from story file "Code Review" section</action>
+    <action>Extract issues by severity (Critical, High, Medium, Low)</action>
+    <action>Count total issues found</action>
+
+    <check if="critical or high severity issues found">
+      <output>🚨 **Code Review Found Issues Requiring Fixes**
+
+        Issues found: {{total_issue_count}}
+        - Critical: {{critical_count}}
+        - High: {{high_count}}
+        - Medium: {{medium_count}}
+        - Low: {{low_count}}
+
+        Adding review findings to story tasks and re-running dev-story...
+      </output>
+
+      <action>Add code review findings as tasks in story file</action>
+
+      <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
+        <input name="story_file" value="{{story_file}}" />
+        <input name="auto_accept_gap_analysis" value="{{auto_accept_gap_analysis}}" />
+        <note>Fix code review issues</note>
+      </invoke-workflow>
+
+      <output>✅ Code review issues resolved. Proceeding to push...</output>
+    </check>
+
+    <check if="only medium or low issues found">
+      <output>ℹ️ **Code Review Found Minor Issues**
+
+        - Medium: {{medium_count}}
+        - Low: {{low_count}}
+      </output>
+
+      <ask>Auto-fix these minor issues? [Y/n/skip]:</ask>
+
+      <check if="user approves Y">
+        <action>Add review findings as tasks</action>
+        <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/dev-story/workflow.yaml">
+          <input name="story_file" value="{{story_file}}" />
+          <input name="auto_accept_gap_analysis" value="{{auto_accept_gap_analysis}}" />
+        </invoke-workflow>
+      </check>
+
+      <check if="user says skip">
+        <action>Document issues in story file</action>
+        <output>ℹ️ Minor issues documented. Proceeding to push...</output>
+      </check>
+    </check>
+
+    <check if="no issues found">
+      <output>✅ **Code Review Passed**
+
+        No issues found. Implementation meets quality standards.
+        Proceeding to push...
+      </output>
+    </check>
+  </step>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEP 4: PUSH ALL CHANGES (Super-Dev Enhancement)                -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <step n="4" goal="Commit and push story changes">
+    <critical>📝 PUSH-ALL - Stage, commit, and push with safety validation</critical>
+    <critical>⚡ TARGETED COMMIT: Only commit files from THIS story's File List (safe for parallel agents)</critical>
+
+    <!-- Extract File List from story file -->
+    <action>Read story file and extract the "File List" section</action>
+    <action>Parse all file paths listed (relative to repo root)</action>
+    <action>Also include the story file itself in the list</action>
+    <action>Store as {{story_files}} - space-separated list of all files</action>
+
+    <output>📝 **Committing Story Changes**
+
+      Files from this story:
+      {{story_files}}
+
+      Running push-all with targeted file list (parallel-agent safe)...
+    </output>
+
+    <invoke-workflow path="{project-root}/_bmad/bmm/workflows/4-implementation/push-all/workflow.yaml">
+      <input name="target_files" value="{{story_files}}" />
+      <input name="story_key" value="{{story_key}}" />
+      <note>Only commit files changed by this story</note>
+    </invoke-workflow>
+
+    <check if="push-all succeeded">
+      <output>✅ Changes pushed to remote successfully</output>
+    </check>
+
+    <check if="push-all failed">
+      <output>⚠️ Push failed but story is complete locally
+
+        You can push manually when ready.
+      </output>
+    </check>
+  </step>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- STEP 5: COMPLETION                                              -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+
+  <step n="5" goal="Super-dev completion summary">
+    <output>🎉 **SUPER-DEV STORY COMPLETE, {user_name}!**
+
+      **Quality Gates Passed:**
+      ✅ Pre-dev gap analysis - Tasks validated before work
+      ✅ Development - All tasks completed with TDD
+      ✅ Post-dev gap analysis - Implementation verified
+      ✅ Code review - Quality and security validated
+      ✅ Pushed to remote - Changes backed up
+
+      **Story File:** {{story_file}}
+      **Status:** review (ready for human review)
+
+      ---
+
+      **What Super-Dev Validated:**
+      1. 🔍 Tasks matched codebase reality before starting
+      2. 💻 Implementation completed per requirements
+      3. ✅ No false positive completions (all work verified)
+      4. 👀 Code quality and security validated
+      5. 📝 Changes committed and pushed to remote
+
+      **Next Steps:**
+      - Review the completed story
+      - Verify business requirements met
+      - Merge when approved
+
+      **Note:** This story went through enhanced quality validation.
+      It should require minimal human review.
+    </output>
+
+    <action>Based on {user_skill_level}, ask if user needs explanations about implementation, decisions, or findings</action>
+
+    <check if="user asks for explanations">
+      <action>Provide clear, contextual explanations</action>
+    </check>
+
+    <output>💡 **Tip:** This story was developed with super-dev-story for enhanced quality.
+
+      For faster development, use standard `dev-story` workflow.
+      For maximum quality, continue using `super-dev-story`.
+    </output>
+  </step>
+
+</workflow>

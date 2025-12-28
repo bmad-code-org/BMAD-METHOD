@@ -75,10 +75,33 @@ development_status:
 - Check: `{story_location_absolute}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
 - If exists → upgrade status to at least `ready-for-dev`
 
+**Story file status sync (CRITICAL):**
+
+- If story file exists, read the `Status:` field from the story markdown header
+- Common status field patterns: `Status: done`, `Status: review`, `Status: in-progress`
+- If story file has a more advanced status than current sprint-status entry:
+  - Update sprint-status to match the story file status
+  - This ensures sprint-status stays in sync when stories are manually marked done
+
+**Status priority order** (lowest to highest):
+1. `backlog` (no story file)
+2. `ready-for-dev` (story file exists)
+3. `in-progress` (developer working)
+4. `review` (code review pending)
+5. `done` (story complete)
+
 **Preservation rule:**
 
 - If existing `{status_file}` exists and has more advanced status, preserve it
 - Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
+- Story file status is the **source of truth** - always sync from story file to sprint-status
+
+**Epic status auto-detection:**
+
+- After syncing all story statuses, calculate epic status:
+  - If ALL stories in epic are `done` → set epic to `done`
+  - If ANY story is `in-progress`, `review`, or `done` → set epic to `in-progress`
+  - Otherwise → keep epic as `backlog`
 
 **Status Flow Reference:**
 

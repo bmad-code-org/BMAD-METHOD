@@ -175,7 +175,8 @@
   </step>
 
   <step n="2" goal="Load and analyze core artifacts">
-    <critical>🔬 EXHAUSTIVE ARTIFACT ANALYSIS - This is where you prevent future developer fuckups!</critical>
+    <critical>📋 REQUIREMENTS ANALYSIS - Extract complete context for story planning</critical>
+    <note>🎯 Focus: Requirements, acceptance criteria, and dependencies. Gap analysis happens at dev-time.</note>
 
     <!-- Load all available content through discovery protocol -->
     <invoke-protocol
@@ -198,18 +199,17 @@
     all learnings that could impact current story implementation</action>
     </check>
 
-    <!-- Git intelligence for previous work patterns -->
+    <!-- Git intelligence for previous work patterns (context only, not gap analysis) -->
     <check
       if="previous story exists AND git repository detected">
       <action>Get last 5 commit titles to understand recent work patterns</action>
-      <action>Analyze 1-5 most recent commits for relevance to current story:
-        - Files created/modified
+      <action>Analyze 1-5 most recent commits for context:
         - Code patterns and conventions used
         - Library dependencies added/changed
         - Architecture decisions implemented
         - Testing approaches used
       </action>
-      <action>Extract actionable insights for current story implementation</action>
+      <note>This provides context for requirements, not codebase gap analysis (happens at dev-time)</note>
     </check>
   </step>
 
@@ -234,30 +234,9 @@
     <action>Identify any architectural decisions that override previous patterns</action>
   </step>
 
-  <step n="4" goal="Web research for latest technical specifics">
-    <critical>🌐 ENSURE LATEST TECH KNOWLEDGE - Prevent outdated implementations!</critical> **WEB INTELLIGENCE:** <action>Identify specific
-    technical areas that require latest version knowledge:</action>
-
-    <!-- Check for libraries/frameworks mentioned in architecture -->
-    <action>From architecture analysis, identify specific libraries, APIs, or
-    frameworks</action>
-    <action>For each critical technology, research latest stable version and key changes:
-      - Latest API documentation and breaking changes
-      - Security vulnerabilities or updates
-      - Performance improvements or deprecations
-      - Best practices for current version
-    </action>
-    **EXTERNAL CONTEXT INCLUSION:** <action>Include in story any critical latest information the developer needs:
-      - Specific library versions and why chosen
-      - API endpoints with parameters and authentication
-      - Recent security patches or considerations
-      - Performance optimization techniques
-      - Migration considerations if upgrading
-    </action>
-  </step>
-
-  <step n="5" goal="Create comprehensive story file">
-    <critical>📝 CREATE ULTIMATE STORY FILE - The developer's master implementation guide!</critical>
+  <step n="4" goal="Create story file with draft implementation tasks">
+    <critical>📝 CREATE STORY FILE - Requirements foundation with draft tasks for dev-time validation</critical>
+    <note>⚠️ Tasks generated here are DRAFT based on requirements analysis. They will be validated and refined against actual codebase at dev-time.</note>
 
     <action>Initialize from template.md:
     {default_output_file}</action>
@@ -267,7 +246,7 @@
     <template-output
       file="{default_output_file}">story_requirements</template-output>
 
-    <!-- Developer context section - MOST IMPORTANT PART -->
+    <!-- Developer context section -->
     <template-output file="{default_output_file}">
     developer_context_section</template-output> **DEV AGENT GUARDRAILS:** <template-output file="{default_output_file}">
     technical_requirements</template-output>
@@ -290,14 +269,15 @@
       <template-output file="{default_output_file}">git_intelligence_summary</template-output>
     </check>
 
-    <!-- Latest technical specifics -->
-    <check if="web research completed">
-      <template-output file="{default_output_file}">latest_tech_information</template-output>
-    </check>
-
     <!-- Project context reference -->
     <template-output
       file="{default_output_file}">project_context_reference</template-output>
+
+    <!-- DRAFT TASKS NOTATION -->
+    <action>Add clear notation to Tasks/Subtasks section:
+      "⚠️ DRAFT TASKS - Generated from requirements analysis.
+       Will be validated and refined against actual codebase when dev-story runs."
+    </action>
 
     <!-- Final status update -->
     <template-output file="{default_output_file}">
@@ -305,11 +285,10 @@
 
     <!-- CRITICAL: Set status to ready-for-dev -->
     <action>Set story Status to: "ready-for-dev"</action>
-    <action>Add completion note: "Ultimate
-    context engine analysis completed - comprehensive developer guide created"</action>
+    <action>Add completion note: "Story planning complete with requirements analysis and draft implementation tasks"</action>
   </step>
 
-  <step n="6" goal="Update sprint status and finalize">
+  <step n="5" goal="Update sprint status and finalize">
     <invoke-task>Validate against checklist at {installed_path}/checklist.md using _bmad/core/tasks/validate-workflow.xml</invoke-task>
     <action>Save story document unconditionally</action>
 
@@ -324,7 +303,7 @@
     </check>
 
     <action>Report completion</action>
-    <output>**🎯 ULTIMATE BMad Method STORY CONTEXT CREATED, {user_name}!**
+    <output>**🎯 BMad Method STORY CREATED, {user_name}!**
 
       **Story Details:**
       - Story ID: {{story_id}}
@@ -332,12 +311,18 @@
       - File: {{story_file}}
       - Status: ready-for-dev
 
-      **Next Steps:**
-      1. Review the comprehensive story in {{story_file}}
-      2. Run dev agents `dev-story` for optimized implementation
-      3. Run `code-review` when complete (auto-marks done)
+      **What Was Created:**
+      - ✅ Complete requirements analysis from epics/PRD/architecture
+      - ✅ Acceptance criteria and success metrics
+      - ✅ DRAFT implementation tasks (based on requirements)
+      - ✅ Developer context and architecture guardrails
 
-      **The developer now has everything needed for flawless implementation!**
+      **Next Steps:**
+      1. Review the story in {{story_file}}
+      2. Run `dev-story` - will perform gap analysis and refine tasks against actual codebase
+      3. Run `code-review` when implementation complete
+
+      **Note:** Tasks are DRAFT and will be validated against current codebase when dev-story runs.
     </output>
   </step>
 
