@@ -1,6 +1,14 @@
-# Deliverable 06: Component Library & Design Tokens
+# Deliverable: Component Library & Design Tokens
 
 **Extract reusable patterns - scale your design efficiently across the entire product**
+
+---
+
+## About WDS & the Design System
+
+**WDS (Whiteport Design Studio)** is an AI agent framework module within the BMAD Method that transforms how designers work. Instead of creating documentation that gets lost in translation, your design work becomes **powerful prompts** that guide AI agents and development teams with precision and intent.
+
+**The Design System** is where consistency becomes effortless. After specifying your initial pages, Freyja the UX Designer helps you identify reusable patterns and extract them into a structured component library. This becomes the foundation for rapid, consistent design and development.
 
 ---
 
@@ -13,9 +21,27 @@ The Design System documents all reusable components, patterns, and design tokens
 - Accessibility guidelines
 - Component usage rules
 
-**Created by:** Freyja the WDS UX Designer Agent (extraction from page specs)  
+**Created by:** Freyja the UX Designer (extraction from page specs)  
 **When:** Phase 6 - After initial page specifications are complete  
 **Format:** Structured component library documentation
+
+---
+
+## Why This Matters
+
+**Without a Design System:**
+- ❌ Every page/screen designed from scratch
+- ❌ Inconsistent UI across product
+- ❌ Developers reinvent components repeatedly
+- ❌ No single source of truth
+- ❌ Design debt accumulates fast
+
+**With a Design System:**
+- ✅ Rapid design and development
+- ✅ Consistent user experience
+- ✅ Easier maintenance and updates
+- ✅ Onboarding new designers/developers faster
+- ✅ Scalable design operations
 
 ---
 
@@ -56,9 +82,69 @@ For each component:
 
 ---
 
+## The Dialog with Your Design Partner: Freyja the UX Designer
+
+**The Process (2-3 hours):**
+
+Freyja the UX Designer helps you extract patterns from your page specs:
+
+```
+Freyja the UX Designer: "I've analyzed your page specifications. I found 8 button 
+                         variants across 5 pages. Let's standardize them."
+
+You: "Yes! Primary, secondary, and text buttons are intentional. 
+      The others are inconsistent."
+
+Freyja the UX Designer: "Perfect! I'll document those 3 as your button system. 
+                         What about colors?"
+
+You: "Brand blue #2563EB for primary actions, gray for secondary, 
+      red for destructive actions."
+
+Freyja the UX Designer: "Got it. I see you're using 3 different card components. 
+                         Are those variants of one pattern or separate components?"
+
+You: "They're all the same - just different content inside."
+
+Freyja the UX Designer: "Excellent - I'll document one card component with content slots..."
+```
+
+As you work together, Freyja the UX Designer creates:
+- ✅ Design token system
+- ✅ Component specifications
+- ✅ Usage guidelines
+- ✅ Accessibility standards
+- ✅ Pattern library
+
+Then you review together:
+
+```
+Freyja the UX Designer: "Here's your Design System. Does this cover your needs?"
+
+You: "Add a 'ghost button' variant for low-emphasis actions."
+
+Freyja the UX Designer: "Added COMP_BUTTON_GHOST to button variants. ✅ System is complete."
+```
+
+**Result:** Design System saved to `/docs/5-design-system/`
+
+---
+
 ## Example
 
 *(Example coming soon)*
+
+---
+
+## Agent Activation
+
+To start creating your Design System:
+
+```
+@freyja Let's extract a Design System from my page specifications.
+```
+
+Freyja the UX Designer will analyze your existing specs and guide the extraction process.
 
 ---
 
@@ -70,24 +156,13 @@ For each component:
 
 ---
 
-## Why This Matters
+## Getting Started with WDS
 
-Without a Design System:
-- Every page/screen designed from scratch
-- Inconsistent UI across product
-- Developers reinvent components repeatedly
-- No single source of truth
-- Design debt accumulates fast
+New to WDS? Install the complete AI agent framework to unlock all capabilities:
 
-With a Design System:
-- Rapid design and development
-- Consistent user experience
-- Easier maintenance and updates
-- Onboarding new designers/developers faster
-- Scalable design operations
+👉 **[Install WDS & Get Started](../../getting-started/getting-started-overview.md)**
 
 ---
 
 **Previous Deliverable:** [Page Specifications & Prototypes](page-specifications.md)  
 **Next Deliverable:** [Design Delivery PRD](design-delivery-prd.md)
-

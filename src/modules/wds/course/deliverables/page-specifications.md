@@ -1,6 +1,14 @@
-# Deliverable 05: Page Specifications & Prototypes
+# Deliverable: Page Specifications & Prototypes
 
 **Turn sketches into complete specs - capture WHAT it looks like AND WHY you designed it that way**
+
+---
+
+## About WDS & Page Specifications
+
+**WDS (Whiteport Design Studio)** is an AI agent framework module within the BMAD Method that transforms how designers work. Instead of creating documentation that gets lost in translation, your design work becomes **powerful prompts** that guide AI agents and development teams with precision and intent.
+
+**Page Specifications** are where your design thinking becomes implementation-ready. Instead of handing off a Figma file with vague annotations, you create detailed specs that capture content, structure, strategy, and rationale—specifications that developers AND AI agents can execute with precision.
 
 ---
 
@@ -13,9 +21,26 @@ Page Specifications are detailed documentation for each page/screen in your prod
 - Strategic rationale for design decisions
 - Interactive prototypes (optional)
 
-**Created by:** Freyja the WDS UX Designer Agent  
+**Created by:** Freyja the UX Designer  
 **When:** Phase 5 - After Platform PRD (or in parallel)  
 **Format:** Markdown specifications + sketches/prototypes
+
+---
+
+## Why This Matters
+
+**Without Detailed Specifications:**
+- ❌ Developers guess at your intent
+- ❌ Content gets "lorem ipsum" treatment
+- ❌ Design decisions lost in handoff
+- ❌ Endless "what did you mean?" meetings
+
+**With Page Specifications:**
+- ✅ Preserves design intent from concept to code
+- ✅ Developers understand the WHY, not just the WHAT
+- ✅ Content is strategic, not placeholder
+- ✅ Specifications become AI-ready super-prompts
+- ✅ Reduces implementation errors and rework
 
 ---
 
@@ -50,9 +75,68 @@ Page Specifications are detailed documentation for each page/screen in your prod
 
 ---
 
+## The Dialog with Your Design Partner: Freyja the UX Designer
+
+**The Process (iterative, per page):**
+
+Freyja the UX Designer helps you specify each page with precision:
+
+```
+Freyja the UX Designer: "I see you've uploaded a sketch. Let me analyze it... 
+                         This looks like a dashboard homepage. Is that right?"
+
+You: "Yes! It's the first thing users see after login."
+
+Freyja the UX Designer: "Perfect. What's the user's situation when they arrive here?"
+
+You: "They just logged in - they want to see their project status at a glance."
+
+Freyja the UX Designer: "Got it. I can see three sections in your sketch: 
+                         header navigation, project cards, and quick actions. 
+                         Let me identify the components..."
+
+You: "The project cards need to show status, deadline, and team members."
+
+Freyja the UX Designer: "Excellent detail! Let me document that with Object IDs..."
+```
+
+As you work together, Freyja the UX Designer creates:
+- ✅ Complete navigation structure
+- ✅ Page overview with context
+- ✅ Section breakdown with Object IDs
+- ✅ Content with language tags
+- ✅ Component specifications
+- ✅ Object Registry
+
+Then you review together:
+
+```
+Freyja the UX Designer: "Here's your page specification. Does this capture your vision?"
+
+You: "Add a filter dropdown to the quick actions section."
+
+Freyja the UX Designer: "Added COMP_FILTER_001 to quick actions. ✅ Spec is complete."
+```
+
+**Result:** Page specification saved to `/docs/4-scenarios/[page-name]/`
+
+---
+
 ## Example
 
 See the [WDS Presentation Project - Page Specification](../../examples/WDS-Presentation/docs/4-scenarios/1.1-wds-presentation/1.1-wds-presentation.md)
+
+---
+
+## Agent Activation
+
+To start creating Page Specifications:
+
+```
+@freyja I have a sketch for [Page Name] - let's create the specification.
+```
+
+Or simply upload a sketch image to any agent, and they'll recognize it and activate Freyja automatically.
 
 ---
 
@@ -68,23 +152,13 @@ See the [WDS Presentation Project - Page Specification](../../examples/WDS-Prese
 
 ---
 
-## Why This Matters
+## Getting Started with WDS
 
-Without Detailed Specifications:
-- Developers guess at your intent
-- Content gets "lorem ipsum" treatment
-- Design decisions lost in handoff
-- Endless "what did you mean?" meetings
+New to WDS? Install the complete AI agent framework to unlock all capabilities:
 
-With Page Specifications:
-- Preserves design intent from concept to code
-- Developers understand the WHY, not just the WHAT
-- Content is strategic, not placeholder
-- Specifications become AI-ready super-prompts
-- Reduces implementation errors and rework
+👉 **[Install WDS & Get Started](../../getting-started/getting-started-overview.md)**
 
 ---
 
 **Previous Deliverable:** [Platform PRD & Architecture](platform-prd.md)  
 **Next Deliverable:** [Component Library & Design Tokens](design-system.md)
-
