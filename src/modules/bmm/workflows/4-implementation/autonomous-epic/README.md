@@ -1,17 +1,17 @@
-# Autonomous Epic Processing
+# Autonomous Epic Processing v2.0
 
-**"Do Epic 4 for me" - Full automation of epic completion**
+**"Do Epic 4 for me" - Full automation of epic completion with anti-vibe-coding enforcement**
 
 ## What It Does
 
-Autonomous epic processing combines just-in-time planning with automated development:
+Autonomous epic processing combines just-in-time planning with disciplined automated development:
 
 ```
 /autonomous-epic 2
 
-→ Creates Story 2.1 → Develops with super-dev-story → Commits → Done ✅
-→ Creates Story 2.2 → Develops with super-dev-story → Commits → Done ✅
-→ Creates Story 2.3 → Develops with super-dev-story → Commits → Done ✅
+→ Creates Story 2.1 (if backlog) → super-dev-pipeline → Commits → Done ✅
+→ Develops Story 2.2 → super-dev-pipeline → Commits → Done ✅
+→ Develops Story 2.3 → super-dev-pipeline → Commits → Done ✅
 ...
 → Entire Epic 2 complete! 🎉
 ```
@@ -20,20 +20,20 @@ Autonomous epic processing combines just-in-time planning with automated develop
 
 ```
 ┌──────────────────────────────────────────────────┐
-│  Autonomous Epic Processor                        │
+│  Autonomous Epic Processor v2.0                   │
 │                                                   │
 │  For each story in epic (sequential):             │
 │  ┌─────────────────────────────────────────────┐ │
-│  │ 1. create-story (just-in-time planning)      │ │
+│  │ 1. create-story (if backlog)                 │ │
 │  │    ↓                                         │ │
-│  │ 2. super-dev-story (or dev-story)            │ │
-│  │    ├─ Pre-dev gap analysis                   │ │
-│  │    ├─ Development (TDD)                      │ │
-│  │    ├─ Post-dev gap analysis (super-dev only) │ │
-│  │    ├─ Code review (super-dev only)           │ │
-│  │    └─ Fix issues                             │ │
+│  │ 2. super-dev-pipeline (step-file discipline) │ │
+│  │    ├─ Pre-gap analysis (validate existing)   │ │
+│  │    ├─ Adaptive implementation (TDD/refactor) │ │
+│  │    ├─ Post-validation (catch false positives)│ │
+│  │    ├─ Code review (find 3-10 issues)         │ │
+│  │    └─ Complete (commit + push)               │ │
 │  │    ↓                                         │ │
-│  │ 3. Git commit                                │ │
+│  │ 3. Verify completion (task-based)            │ │
 │  │    ↓                                         │ │
 │  │ 4. Save progress                             │ │
 │  └─────────────────────────────────────────────┘ │
@@ -90,14 +90,21 @@ Enter epic number: 2
 
 ```yaml
 autonomous_settings:
-  use_super_dev: true              # Use super-dev-story (vs dev-story)
-  auto_accept_gap_analysis: true   # Auto-approve gap analysis
+  use_super_dev_pipeline: true     # Use super-dev-pipeline (step-file discipline)
+  pipeline_mode: "batch"           # Batch mode for autonomous execution
   halt_on_error: false             # Continue even if story fails
   max_retry_per_story: 2           # Retry failed stories
   create_git_commits: true         # Commit after each story
   git_branch_prefix: "auto-epic-"  # Branch: auto-epic-{epic_num}
 
-# Task-based completion verification (NEW)
+# super-dev-pipeline features
+super_dev_pipeline_features:
+  token_efficiency: "40-60K per story (vs 100-150K)"
+  works_for: "Both greenfield AND brownfield"
+  anti_vibe_coding: "Step-file architecture prevents deviation"
+  brownfield_support: "Validates existing code before implementation"
+
+# Task-based completion verification
 completion_verification:
   task_based_completion: true       # Check actual tasks, not just status
   process_review_with_unchecked: true  # Process "review" stories with unchecked tasks
@@ -142,22 +149,25 @@ epic-3:
     halt_on_error: true   # Stop on first failure
 ```
 
-## Time & Cost Estimates
+## Time & Cost Estimates (v2.0)
 
 ### Time per Story
 
 | Workflow | Avg Time per Story | Token Usage |
 |----------|-------------------|-------------|
-| **dev-story** | 20-40 minutes | 50K-100K |
-| **super-dev-story** | 25-50 minutes | 80K-150K |
+| **super-dev-pipeline** (default) | 20-45 minutes | 40K-60K |
+| story-pipeline (greenfield only) | 15-30 minutes | 25K-30K |
+| super-dev-story (legacy) | 25-50 minutes | 100K-150K |
 
-### Epic Estimates
+### Epic Estimates (using super-dev-pipeline)
 
-| Epic Size | Time (dev-story) | Time (super-dev) | Tokens |
-|-----------|-----------------|------------------|--------|
-| Small (3-5 stories) | 1-3 hours | 2-4 hours | 250K-750K |
-| Medium (6-10 stories) | 2-7 hours | 3-8 hours | 500K-1.5M |
-| Large (11-20 stories) | 4-13 hours | 5-17 hours | 1M-3M |
+| Epic Size | Time Estimate | Token Estimate |
+|-----------|--------------|----------------|
+| Small (3-5 stories) | 2-5 hours | 120K-300K |
+| Medium (6-10 stories) | 5-10 hours | 400K-600K |
+| Large (11-20 stories) | 10-20 hours | 880K-1.2M |
+
+**Savings vs v1.0:** ~50% token reduction, ~25% time reduction
 
 **Recommendation:** Run overnight for large epics
 
@@ -194,12 +204,14 @@ Status: backlog
 📝 Creating story 2-1-user-registration...
 ✅ Story created
 
-💻 Developing story using super-dev-story...
-  Pre-gap: ✅ 0 changes needed
-  Development: ✅ 8 tasks completed
-  Post-gap: ✅ All verified
-  Code review: ✅ No issues
-✅ Story complete (42 minutes, 95K tokens)
+💻 Developing story using super-dev-pipeline...
+  Init: ✅ Greenfield detected
+  Pre-gap: ✅ 2 tasks refined, 1 added
+  Implementation: ✅ 9 tasks completed (TDD)
+  Post-validation: ✅ All verified
+  Code review: ✅ 4 issues found and fixed
+  Complete: ✅ Committed + pushed
+✅ Story complete (38 minutes, 48K tokens)
 
 📝 Committed: a1b2c3d
 
