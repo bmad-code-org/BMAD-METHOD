@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "bmad-method",
-  "version": "6.0.0-alpha.21",
-  "description": "Breakthrough Method of Agile AI-driven Development",
+  "name": "@jschulte/bmad-method",
+  "version": "6.0.0-alpha.22",
+  "description": "Breakthrough Method of Agile AI-driven Development (Enhanced with story-pipeline)",
   "keywords": [
     "agile",
     "ai",
@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bmad-code-org/BMAD-METHOD.git"
+    "url": "git+https://github.com/jschulte/BMAD-METHOD.git"
   },
   "license": "MIT",
   "author": "Brian (BMad) Madison",
