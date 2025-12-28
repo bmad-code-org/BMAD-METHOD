@@ -126,14 +126,17 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     }
 
     // Generate workflow prompts from config (shared logic)
-    // Each prompt includes nextSteps guidance for the agent to suggest next workflows
+    // Each prompt includes handoffs to suggest next workflows after completion
     const promptGen = new WorkflowPromptGenerator();
-    const promptRecommendations = await promptGen.generatePromptFiles(promptsDir, options.selectedModules || []);
+    const { recommendations: promptRecommendations, suggestedHandoffs } = await promptGen.generatePromptFiles(
+      promptsDir,
+      options.selectedModules || [],
+    );
     const promptCount = Object.keys(promptRecommendations).length;
 
     // Configure VS Code settings using pre-collected config if available
     const config = options.preCollectedConfig || {};
-    await this.configureVsCodeSettings(projectDir, { ...options, ...config, promptRecommendations });
+    await this.configureVsCodeSettings(projectDir, { ...options, ...config, promptRecommendations, suggestedHandoffs });
 
     console.log(chalk.green(`✓ ${this.name} configured:`));
     console.log(chalk.dim(`  - ${agentCount} agents created`));
@@ -217,6 +220,11 @@ class GitHubCopilotSetup extends BaseIdeSetup {
     // Add prompt file recommendations for new chat starters
     if (options.promptRecommendations && Object.keys(options.promptRecommendations).length > 0) {
       bmadSettings['chat.promptFilesRecommendations'] = options.promptRecommendations;
+    }
+
+    // Add suggested handoffs for workflow transitions
+    if (options.suggestedHandoffs && Object.keys(options.suggestedHandoffs).length > 0) {
+      bmadSettings['chat.suggestedPromptFiles'] = options.suggestedHandoffs;
     }
 
     // Merge settings (existing take precedence)

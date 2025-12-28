@@ -7,6 +7,10 @@ const { workflowPromptsConfig } = require('./workflow-prompts-config');
  * Uses static configuration from workflow-prompts-config.js which mirrors
  * the workflows documented in quick-start.md
  *
+ * Generates two VS Code settings:
+ * - chat.promptFilesRecommendations: Shows prompts as new chat starters
+ * - chat.suggestedPromptFiles: Suggests next prompts after completing a workflow
+ *
  * The implementation-readiness and sprint-planning workflows update
  * VS Code settings to toggle which prompts are shown based on project phase.
  */
@@ -38,11 +42,12 @@ class WorkflowPromptGenerator {
    * Generate prompt files for an IDE
    * @param {string} promptsDir - Directory to write prompt files
    * @param {Array<string>} selectedModules - Modules to include
-   * @returns {Object} Map of prompt names to true for VS Code settings
+   * @returns {Object} Object containing recommendations and suggestedHandoffs for VS Code settings
    */
   async generatePromptFiles(promptsDir, selectedModules = []) {
     const prompts = this.getWorkflowPrompts(selectedModules);
     const recommendations = {};
+    const suggestedHandoffs = {};
 
     for (const prompt of prompts) {
       const promptContent = ['---', `agent: ${prompt.agent}`, `description: "${prompt.description}"`, '---', '', prompt.prompt, ''].join(
@@ -52,9 +57,14 @@ class WorkflowPromptGenerator {
       const promptFilePath = path.join(promptsDir, `bmd-${prompt.name}.prompt.md`);
       await fs.writeFile(promptFilePath, promptContent);
       recommendations[`bmd-${prompt.name}`] = true;
+
+      // Generate suggested handoffs for this prompt
+      if (prompt.handoffs && prompt.handoffs.length > 0) {
+        suggestedHandoffs[`bmd-${prompt.name}`] = prompt.handoffs.map((h) => `bmd-${h}`);
+      }
     }
 
-    return recommendations;
+    return { recommendations, suggestedHandoffs };
   }
 }
 

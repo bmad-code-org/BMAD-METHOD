@@ -4,6 +4,10 @@
  * This configuration defines the workflow prompts that appear as suggestions
  * when starting a new chat in VS Code (via chat.promptFilesRecommendations).
  *
+ * The `handoffs` array defines which prompts should be suggested after completing
+ * this workflow (via chat.suggestedPromptFiles). This creates a guided flow through
+ * the BMAD phases without requiring users to know the next step.
+ *
  * The implementation-readiness and sprint-planning workflows update the
  * VS Code settings to toggle which prompts are shown based on project phase.
  *
@@ -22,6 +26,7 @@ const workflowPromptsConfig = {
       shortcut: 'WI',
       description: '[WI] Initialize workflow and choose planning track',
       prompt: '*workflow-init',
+      handoffs: ['brainstorm', 'prd'], // Start analysis or jump to planning
     },
     {
       name: 'brainstorm',
@@ -29,6 +34,7 @@ const workflowPromptsConfig = {
       shortcut: 'BP',
       description: '[BP] Brainstorm project ideas and concepts',
       prompt: '*brainstorm-project',
+      handoffs: ['prd'], // After brainstorming, create PRD
     },
     {
       name: 'workflow-status',
@@ -36,6 +42,7 @@ const workflowPromptsConfig = {
       shortcut: 'WS',
       description: '[WS] Check current workflow status and next steps',
       prompt: '*workflow-status',
+      handoffs: [], // Status check - user decides next step
     },
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -47,6 +54,7 @@ const workflowPromptsConfig = {
       shortcut: 'PD',
       description: '[PD] Create Product Requirements Document (PRD)',
       prompt: '*prd',
+      handoffs: ['ux-design', 'create-architecture'], // After PRD: UX or Architecture
     },
     {
       name: 'ux-design',
@@ -54,6 +62,7 @@ const workflowPromptsConfig = {
       shortcut: 'UD',
       description: '[UD] Create UX Design specification',
       prompt: '*ux-design',
+      handoffs: ['create-architecture'], // After UX: Architecture
     },
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -65,6 +74,7 @@ const workflowPromptsConfig = {
       shortcut: 'CA',
       description: '[CA] Create system architecture document',
       prompt: '*create-architecture',
+      handoffs: ['epics-stories'], // After architecture: create epics/stories
     },
     {
       name: 'epics-stories',
@@ -72,6 +82,7 @@ const workflowPromptsConfig = {
       shortcut: 'ES',
       description: '[ES] Create Epics and User Stories from PRD',
       prompt: '*epics-stories',
+      handoffs: ['implementation-readiness'], // After stories: check readiness
     },
     {
       name: 'implementation-readiness',
@@ -79,6 +90,7 @@ const workflowPromptsConfig = {
       shortcut: 'IR',
       description: '[IR] Check implementation readiness across all docs',
       prompt: '*implementation-readiness',
+      handoffs: ['sprint-planning'], // After readiness: plan sprint
     },
     {
       name: 'sprint-planning',
@@ -86,6 +98,7 @@ const workflowPromptsConfig = {
       shortcut: 'SP',
       description: '[SP] Initialize sprint planning from epics',
       prompt: '*sprint-planning',
+      handoffs: ['create-story'], // After sprint planning: start stories
     },
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -98,6 +111,7 @@ const workflowPromptsConfig = {
       shortcut: 'CS',
       description: '[CS] Create developer-ready story from epic',
       prompt: '*create-story',
+      handoffs: ['dev-story'], // After story creation: implement it
     },
     {
       name: 'dev-story',
@@ -105,6 +119,7 @@ const workflowPromptsConfig = {
       shortcut: 'DS',
       description: '[DS] Implement the current story',
       prompt: '*dev-story',
+      handoffs: ['code-review'], // After implementation: review
     },
     {
       name: 'code-review',
@@ -112,6 +127,7 @@ const workflowPromptsConfig = {
       shortcut: 'CR',
       description: '[CR] Perform code review on implementation',
       prompt: '*code-review',
+      handoffs: ['create-story', 'retrospective'], // After review: next story or retro
     },
     {
       name: 'retrospective',
@@ -119,6 +135,7 @@ const workflowPromptsConfig = {
       shortcut: 'ER',
       description: '[ER] Run epic retrospective after completion',
       prompt: '*epic-retrospective',
+      handoffs: ['create-story', 'sprint-planning'], // After retro: more stories or new sprint
     },
     {
       name: 'correct-course',
@@ -126,6 +143,7 @@ const workflowPromptsConfig = {
       shortcut: 'CC',
       description: '[CC] Course correction when things go off track',
       prompt: '*correct-course',
+      handoffs: ['workflow-status'], // After correction: check status
     },
   ],
 
@@ -138,6 +156,7 @@ const workflowPromptsConfig = {
       shortcut: 'GI',
       description: '[GI] Implement game feature',
       prompt: '*game-implement',
+      handoffs: ['game-qa'], // After implementation: QA
     },
     {
       name: 'game-qa',
@@ -145,6 +164,7 @@ const workflowPromptsConfig = {
       shortcut: 'GQ',
       description: '[GQ] Test and QA game feature',
       prompt: '*game-qa',
+      handoffs: ['game-implement', 'game-sprint'], // After QA: next feature or sprint
     },
     // Planning & Design
     {
@@ -153,6 +173,7 @@ const workflowPromptsConfig = {
       shortcut: 'GD',
       description: '[GD] Design game mechanics and systems',
       prompt: '*game-design',
+      handoffs: ['game-architecture'], // After design: architecture
     },
     {
       name: 'game-architecture',
@@ -160,6 +181,7 @@ const workflowPromptsConfig = {
       shortcut: 'GA',
       description: '[GA] Create game technical architecture',
       prompt: '*game-architecture',
+      handoffs: ['game-sprint'], // After architecture: sprint planning
     },
     {
       name: 'game-sprint',
@@ -167,6 +189,7 @@ const workflowPromptsConfig = {
       shortcut: 'GS',
       description: '[GS] Plan game development sprint',
       prompt: '*game-sprint',
+      handoffs: ['game-implement'], // After sprint: implement
     },
   ],
 
@@ -178,6 +201,7 @@ const workflowPromptsConfig = {
       shortcut: 'LT',
       description: '[LT] List available tasks',
       prompt: '*list-tasks',
+      handoffs: [], // Informational - user decides
     },
     {
       name: 'list-workflows',
@@ -185,6 +209,7 @@ const workflowPromptsConfig = {
       shortcut: 'LW',
       description: '[LW] List available workflows',
       prompt: '*list-workflows',
+      handoffs: [], // Informational - user decides
     },
   ],
 };
