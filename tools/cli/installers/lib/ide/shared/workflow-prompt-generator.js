@@ -49,6 +49,9 @@ class WorkflowPromptGenerator {
     const recommendations = {};
     const suggestedHandoffs = {};
 
+    // Build set of available prompt names for handoff validation
+    const availablePromptNames = new Set(prompts.map((p) => p.name));
+
     for (const prompt of prompts) {
       const promptContent = ['---', `agent: ${prompt.agent}`, `description: "${prompt.description}"`, '---', '', prompt.prompt, ''].join(
         '\n',
@@ -58,9 +61,12 @@ class WorkflowPromptGenerator {
       await fs.writeFile(promptFilePath, promptContent);
       recommendations[`bmd-${prompt.name}`] = true;
 
-      // Generate suggested handoffs for this prompt
+      // Generate suggested handoffs for this prompt, filtering out invalid references
       if (prompt.handoffs && prompt.handoffs.length > 0) {
-        suggestedHandoffs[`bmd-${prompt.name}`] = prompt.handoffs.map((h) => `bmd-${h}`);
+        const validHandoffs = prompt.handoffs.filter((h) => availablePromptNames.has(h));
+        if (validHandoffs.length > 0) {
+          suggestedHandoffs[`bmd-${prompt.name}`] = validHandoffs.map((h) => `bmd-${h}`);
+        }
       }
     }
 
