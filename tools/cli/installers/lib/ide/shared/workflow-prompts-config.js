@@ -103,7 +103,8 @@ const workflowPromptsConfig = {
 
     // ═══════════════════════════════════════════════════════════════════════
     // Phase 4 - Implementation: The "Keep Going" Cycle
-    // SM → create-story → DEV → dev-story → code-review → (create-story | retrospective)
+    // New chat → SM → create-story → New chat → DEV → dev-story → code-review
+    // Each step should be a NEW CHAT to maximize context capacity
     // ═══════════════════════════════════════════════════════════════════════
     {
       name: 'create-story',
@@ -111,7 +112,7 @@ const workflowPromptsConfig = {
       shortcut: 'CS',
       description: '[CS] Create developer-ready story from epic',
       prompt: '*create-story',
-      handoffs: ['dev-story'], // After story creation: implement it
+      handoffs: [], // No handoff - user starts new chat with DEV agent
     },
     {
       name: 'dev-story',
@@ -119,7 +120,7 @@ const workflowPromptsConfig = {
       shortcut: 'DS',
       description: '[DS] Implement the current story',
       prompt: '*dev-story',
-      handoffs: ['code-review'], // After implementation: review
+      handoffs: ['code-review'], // Same agent, can stay in chat
     },
     {
       name: 'code-review',
@@ -127,7 +128,7 @@ const workflowPromptsConfig = {
       shortcut: 'CR',
       description: '[CR] Perform code review on implementation',
       prompt: '*code-review',
-      handoffs: ['create-story', 'retrospective'], // After review: next story or retro
+      handoffs: [], // No handoff - user starts new chat for next story
     },
     {
       name: 'retrospective',
