@@ -39,12 +39,12 @@ Does CONTENT vary by page context?
 ❌ Wrong: Features/hero-logic.feature.md
 **Content:**
 
-- Heading: "Welcome to Dog Week" (Home page)
-- Heading: "About Dog Week" (About page)
+- Heading: "Welcome to TaskFlow" (Home page)
+- Heading: "About TaskFlow" (About page)
 
 ✅ Right: Put in respective Page files
-Pages/01-home-page.md → "Welcome to Dog Week"
-Pages/02-about-page.md → "About Dog Week"
+Pages/01-home-page.md → "Welcome to TaskFlow"
+Pages/02-about-page.md → "About TaskFlow"
 ```
 
 ---

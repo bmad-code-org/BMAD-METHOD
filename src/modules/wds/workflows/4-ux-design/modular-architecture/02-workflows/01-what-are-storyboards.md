@@ -23,7 +23,7 @@ A **storyboard** is a visual sequence showing:
 - Easy to iterate
 - Focus on functionality, not polish
 
-**Example:** Dog Week `App-Main-Booking-States.jpg`
+**Example:** TaskFlow `task-status-states.jpg`
 
 - 6 frames showing walk states
 - Numbered sequentially

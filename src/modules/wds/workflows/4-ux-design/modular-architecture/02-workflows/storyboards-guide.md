@@ -58,7 +58,7 @@ Visual state references
 
 ## Examples
 
-### [Dog Week Calendar States](examples/calendar-states.md)
+### [TaskFlow Task States](examples/task-states.md)
 
 6-state walk booking storyboard
 

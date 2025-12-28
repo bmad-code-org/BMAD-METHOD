@@ -39,11 +39,11 @@ docs/
 
 ## 🌟 My Expertise
 
-**Phase 4: UX Design** - Creating scenarios, sketches, interactive prototypes, and detailed specifications  
+**Phase 4: UX Design** - Creating scenarios, sketches, interactive prototypes, and conceptual specifications  
 **Phase 5: Design System** - Building design tokens, component libraries, and style guides  
-**Phase 7: Testing** - Validating designs through usability testing and implementation review
-
-**I create interactive prototypes** you can actually click through and test before any code is written!
+**Phase 6: Design Deliverables** - Preparing handoff packages for development with all specifications and assets  
+**Phase 7: Testing** - Validating designs through usability testing and implementation review  
+**Phase 8: Ongoing Product Cycles** - Iterative improvements and feature evolution for existing products
 
 ---
 

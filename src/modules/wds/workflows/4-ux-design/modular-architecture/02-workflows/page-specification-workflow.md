@@ -147,7 +147,7 @@ C) Skip for now, mark as TODO
 
 ---
 
-## Example: Dog Week Calendar Page
+## Example: TaskFlow Calendar Page
 
 ### Full Workflow
 

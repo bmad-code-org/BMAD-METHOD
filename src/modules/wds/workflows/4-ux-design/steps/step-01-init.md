@@ -4,7 +4,44 @@
 
 ## YOUR TASK
 
-Initialize the UX Design workflow by welcoming the user and understanding what they want to design.
+Initialize the UX Design workflow by:
+1. Loading project structure metadata from project config
+2. Understanding folder organization requirements
+3. Welcoming the user and determining what to design
+
+---
+
+## CRITICAL: LOAD PROJECT STRUCTURE
+
+**Before greeting the user**, read the project config to understand project structure:
+
+<action>
+Read `{project_root}/config.yaml` (or `{project_root}/wds-workflow-status.yaml`) and extract:
+
+- `project.structure.type` (landing_page | simple_website | web_application)
+- `project.structure.scenarios` (single | multiple)
+- `project.structure.pages` (single | multiple)
+
+Store this in memory for the entire session.
+</action>
+
+**Folder Structure Rules Based on Project Type:**
+
+- **Landing Page** (`scenarios: single`, `pages: single`):
+  - Place pages directly in `4-scenarios/`
+  - Use page variants if needed: `1.1-start-page/`, `1.1-variant-a/`, `1.1-variant-b/`
+  
+- **Simple Website** (`scenarios: single`, `pages: multiple`):
+  - Place pages directly in `4-scenarios/`
+  - Number pages sequentially: `1.1-home/`, `1.2-about/`, `1.3-contact/`
+  
+- **Web Application** (`scenarios: multiple`, `pages: multiple`):
+  - Create scenario subfolders: `4-scenarios/1-onboarding/`, `4-scenarios/2-dashboard/`
+  - Number pages within each scenario: `1.1-signup/`, `1.2-verify-email/`, `2.1-dashboard/`
+
+<reminder>
+This structure was defined during workflow-init. Follow it exactly. Do not create unnecessary subfolders.
+</reminder>
 
 ---
 
@@ -51,8 +88,8 @@ Choice [1/2/3]:</ask>
 
 ### Choice 1: New Scenario
 
-- Proceed to Step 2 (Scenario Definition)
-- Load `steps/step-02-define-scenario.md`
+- Proceed to Step 2 (Scenario Structure Setup)
+- Load `steps/step-02-setup-scenario-structure.md`
 
 ### Choice 2: Continue Existing
 
@@ -72,7 +109,7 @@ Choice [1/2/3]:</ask>
 
 ## NEXT STEP
 
-After user selects [1] for new scenario, load `steps/step-02-define-scenario.md` to begin scenario definition.
+After user selects [1] for new scenario, load `steps/step-02-setup-scenario-structure.md` to begin scenario structure setup.
 
 If user selects [2], determine current state and load appropriate step.
 

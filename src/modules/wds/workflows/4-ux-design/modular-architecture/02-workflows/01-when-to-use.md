@@ -8,23 +8,23 @@
 
 ✅ **Components with 3+ states**
 
-- Example (Dog Week): Walk slots (WHITE, GRAY, ORANGE, BLUE, GREEN, RED)
+- Example (TaskFlow): Task status (TODO, IN_PROGRESS, BLOCKED, DONE, ARCHIVED)
 
 ✅ **Time-based transitions**
 
-- Example (Dog Week): Countdown timers, auto-state changes
+- Example (TaskFlow): Deadline reminders, auto-status updates
 
 ✅ **Multi-step user flows**
 
-- Example (Dog Week): Booking → Starting → Completing a walk
+- Example (TaskFlow): Creating → Assigning → Completing a task
 
 ✅ **Complex interactions between components**
 
-- Example (Dog Week): Calendar updates leaderboard and week view
+- Example (TaskFlow): Task completion updates dashboard and team notifications
 
 ✅ **State machines with branching paths**
 
-- Example (Dog Week): Success path vs error path vs timeout path
+- Example (TaskFlow): Happy path vs validation error vs timeout
 
 ---
 
@@ -48,7 +48,7 @@
 
 ### Need Storyboard:
 
-- **Dog Week:** Calendar booking (6 states, time-based)
+- **TaskFlow:** Task status board (5 states, time-based reminders)
 - **Future Project:** Search with autocomplete (5 states, real-time)
 - **Future Project:** Multi-step form (progress tracking)
 - **Future Project:** Payment flow (multiple steps, error handling)

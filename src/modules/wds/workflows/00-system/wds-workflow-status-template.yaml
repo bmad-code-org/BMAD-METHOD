@@ -20,6 +20,24 @@ project: "{{project_name}}"
 project_type: "{{project_type}}"
 workflow_path: "{{workflow_path_file}}"
 
+# Project structure (defines folder organization)
+project_structure:
+  type: "{{structure_type}}" # landing_page | simple_website | web_application
+  scenarios: "{{structure_scenarios}}" # single | multiple
+  pages: "{{structure_pages}}" # single | multiple
+  # This determines how scenarios and pages are organized in 4-scenarios/
+
+# Delivery configuration (what gets handed off)
+delivery:
+  format: "{{delivery_format}}" # prd | wordpress | figma | prototype | direct-code | other
+  target_platform: "{{target_platform}}" # wordpress | react | vue | html | custom
+  requires_prd: {{requires_prd}} # true | false
+  description: "{{delivery_description}}"
+  # Examples:
+  # - "WordPress page editor code with markup and content sections"
+  # - "Complete PRD for development team"
+  # - "Interactive Figma prototype"
+
 # Configuration
 config:
   folder_prefix: "{{folder_prefix}}" # letters or numbers

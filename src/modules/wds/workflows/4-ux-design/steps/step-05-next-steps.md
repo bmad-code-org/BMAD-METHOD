@@ -41,7 +41,7 @@ Choice [1/2/3/4/5]:</ask>
 ### Choice 1: Design Another Scenario
 
 <action>Return to Step 2 (Define Scenario)</action>
-<action>Load `steps/step-02-define-scenario.md`</action>
+<action>Load `steps/step-02-setup-scenario-structure.md`</action>
 
 ### Choice 2: Phase 5 (Design System)
 

@@ -6,6 +6,17 @@ project:
   description: "{{PROJECT_DESCRIPTION}}"
   wds_version: "6.0"
   created: "{{DATE}}"
+  
+  # Project Structure - defines folder organization
+  structure:
+    type: "{{STRUCTURE_TYPE}}" # "landing_page" | "simple_website" | "web_application"
+    scenarios: "{{STRUCTURE_SCENARIOS}}" # "single" | "multiple"
+    pages: "{{STRUCTURE_PAGES}}" # "single" | "multiple"
+    
+    # Folder organization pattern
+    # landing_page: 4-scenarios/1.1-page-name/
+    # simple_website: 4-scenarios/1.1-page/, 4-scenarios/1.2-page/
+    # web_application: 4-scenarios/1-scenario-name/1.1-page/, 4-scenarios/2-scenario-name/2.1-page/
 
 # Design System Configuration
 design_system:
