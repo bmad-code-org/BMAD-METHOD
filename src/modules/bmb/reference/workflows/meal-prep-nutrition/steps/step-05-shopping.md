@@ -31,6 +31,7 @@ Create a comprehensive, organized shopping list that supports the meal strategy 
 - 📖 CRITICAL: Cross-reference with existing pantry items
 - 🔄 CRITICAL: Organize by store section for efficient shopping
 - ✅ Include quantities based on serving sizes and meal frequency
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 - 🚫 DO NOT forget staples and seasonings
   Only proceed if:
 

@@ -30,6 +30,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `user_name`, `communication_language`, `user_skill_level`
 - `output_folder`, `planning_artifacts`,  `implementation_artifacts`
 - `date` as system-generated current datetime
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Paths
 

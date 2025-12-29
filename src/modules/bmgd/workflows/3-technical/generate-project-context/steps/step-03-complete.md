@@ -8,6 +8,7 @@
 - FOCUS on finalizing a lean, LLM-optimized project context
 - ENSURE all critical rules are captured and actionable
 - ABSOLUTELY NO TIME ESTIMATES
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

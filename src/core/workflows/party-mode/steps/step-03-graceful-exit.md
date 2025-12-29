@@ -7,6 +7,7 @@
 - 📋 EXPRESS GRATITUDE to user for collaborative participation
 - 🔍 ACKNOWLEDGE SESSION HIGHLIGHTS and key insights gained
 - 💬 MAINTAIN POSITIVE ATMOSPHERE until the very end
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

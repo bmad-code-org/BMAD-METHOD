@@ -33,6 +33,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on project-type specific requirements and technical considerations
 - 🎯 DATA-DRIVEN: Use CSV configuration to guide discovery
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

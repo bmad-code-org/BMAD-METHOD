@@ -145,7 +145,7 @@ After understanding the research topic and goals, identify the most appropriate 
 
 ### Research Type Routing
 
-<critical>Based on user selection, route to appropriate sub-workflow with the discovered topic using the following IF block sets of instructions.</critical>
+<critical>Based on user selection, route to appropriate sub-workflow with the discovered topic using the following IF block sets of instructions. YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`</critical>
 
 #### If Market Research:
 

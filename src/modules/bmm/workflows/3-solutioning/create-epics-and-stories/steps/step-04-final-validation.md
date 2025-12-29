@@ -32,6 +32,7 @@ To validate complete coverage of all requirements and ensure stories are ready f
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Process validation sequentially without skipping
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

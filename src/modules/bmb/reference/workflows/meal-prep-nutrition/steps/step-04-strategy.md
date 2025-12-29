@@ -36,6 +36,7 @@ Design a personalized meal strategy that meets nutritional needs, fits lifestyle
 - 🔄 CRITICAL: Ensure macro distribution meets calculated targets
 - ✅ Start with familiar foods, introduce variety gradually
 - 🚫 DO NOT create a plan that requires advanced cooking skills if user is beginner
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### 1. Meal Structure Framework
 

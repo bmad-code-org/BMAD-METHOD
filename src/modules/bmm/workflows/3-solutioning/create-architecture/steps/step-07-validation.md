@@ -11,6 +11,7 @@
 - 💬 FOCUS on validating architectural coherence and completeness
 - ✅ VALIDATE all requirements are covered by architectural decisions
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

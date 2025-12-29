@@ -33,6 +33,7 @@ To generate all epics with their stories based on the approved epics_list, follo
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Process epics sequentially
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

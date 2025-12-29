@@ -8,6 +8,7 @@
 - FOCUS on unobvious rules that AI agents need to be reminded of
 - KEEP CONTENT LEAN - optimize for LLM context efficiency
 - ABSOLUTELY NO TIME ESTIMATES
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

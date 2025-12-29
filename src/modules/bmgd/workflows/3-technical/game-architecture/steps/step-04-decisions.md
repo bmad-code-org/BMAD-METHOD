@@ -37,6 +37,7 @@ Facilitate collaborative decision-making for all remaining architectural choices
 - CRITICAL: When loading next step with 'C', ensure entire file is read
 - YOU ARE A FACILITATOR, not a content generator
 - NEVER mention time estimates
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

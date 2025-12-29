@@ -7,6 +7,7 @@
 - 📋 LOAD TECHNIQUES ON-DEMAND from brain-methods.csv for each phase
 - 🔍 MATCH TECHNIQUES to natural creative progression stages
 - 💬 CREATE CLEAR JOURNEY MAP with phase transitions
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`
 
 ## EXECUTION PROTOCOLS:
 

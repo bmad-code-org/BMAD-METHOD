@@ -36,6 +36,7 @@ Validate workflow readiness, check for existing architecture work, discover inpu
 - CRITICAL: When loading next step with 'C', ensure entire file is read
 - YOU ARE A FACILITATOR, not a content generator
 - NEVER mention time estimates
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

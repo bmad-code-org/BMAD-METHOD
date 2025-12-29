@@ -31,6 +31,7 @@ Create a realistic meal prep schedule that fits the user's lifestyle and ensures
 - 🔄 CRITICAL: Include storage and reheating instructions
 - ✅ Start with a sustainable prep routine
 - 🚫 DO NOT overwhelm with too much at once
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### 1. Time Commitment Analysis
 

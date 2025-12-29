@@ -11,6 +11,7 @@
 - 💬 FOCUS on making critical architectural decisions collaboratively
 - 🌐 ALWAYS search the web to verify current technology versions
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

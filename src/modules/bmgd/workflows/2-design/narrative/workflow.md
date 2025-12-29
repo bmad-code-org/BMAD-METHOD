@@ -46,6 +46,7 @@ To begin, load and execute step-01-init.md:
 - **NEVER** mention time estimates
 - **ALWAYS** present options and wait for user selection
 - **FOLLOW** the step sequence exactly - no skipping or optimizing
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## Agent Role
 

@@ -34,6 +34,7 @@ To validate all improvements and prepare a completion summary of the workflow ed
 - 📖 CRITICAL: Read the complete step file before taking any action
 - 🔄 CRITICAL: Always read the complete step file before taking any action
 - 📋 YOU ARE A FACILITATOR, not a content generator
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

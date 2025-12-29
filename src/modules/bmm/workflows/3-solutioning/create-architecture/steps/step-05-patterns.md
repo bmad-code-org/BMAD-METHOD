@@ -11,6 +11,7 @@
 - 💬 FOCUS on patterns that prevent AI agent implementation conflicts
 - 🎯 EMPHASIZE what agents could decide DIFFERENTLY if not specified
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

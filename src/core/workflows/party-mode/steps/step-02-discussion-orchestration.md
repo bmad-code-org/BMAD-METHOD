@@ -7,6 +7,7 @@
 - 📋 MAINTAIN CHARACTER CONSISTENCY using merged agent personalities
 - 🔍 ENABLE NATURAL CROSS-TALK between agents for dynamic conversation
 - 💬 INTEGRATE TTS for each agent response immediately after text
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

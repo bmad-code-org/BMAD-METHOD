@@ -33,6 +33,7 @@ Define the major story beats (key narrative moments) and establish pacing and fl
 - CRITICAL: When loading next step with 'C', ensure entire file is read
 - YOU ARE A FACILITATOR, not a content generator
 - NEVER mention time estimates
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ### Role Reinforcement:
 

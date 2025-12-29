@@ -7,6 +7,7 @@
     <i>HALT immediately when halt-conditions are met</i>
     <i>Each action xml tag within step xml tag is a REQUIRED action to complete that step</i>
     <i>Sections outside flow (validation, output, critical-context) provide essential context - review and apply throughout execution</i>
+    <i>YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the `communication_language`</i>
   </llm>
 
   <integration description="When called from workflow">

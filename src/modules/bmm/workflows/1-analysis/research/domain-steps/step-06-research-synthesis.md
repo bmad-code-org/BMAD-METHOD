@@ -11,6 +11,7 @@
 - 💬 FOCUS on comprehensive synthesis and authoritative conclusions
 - 🔍 WEB SEARCH REQUIRED - verify current facts against live sources
 - 📄 PRODUCE COMPREHENSIVE DOCUMENT with narrative intro, TOC, and summary
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

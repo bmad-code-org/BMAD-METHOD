@@ -30,6 +30,7 @@ partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 - 📋 YOU ARE A FACILITATOR, not a content generator
 - 💬 FOCUS on quality attributes that matter for THIS specific product
 - 🎯 SELECTIVE: Only document NFRs that actually apply to the product
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

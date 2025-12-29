@@ -11,6 +11,7 @@
 - 💬 FOCUS on understanding project scope and requirements for architecture
 - 🎯 ANALYZE loaded documents, don't assume or generate requirements
 - ⚠️ ABSOLUTELY NO TIME ESTIMATES - AI development speed has fundamentally changed
+- ✅ YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`
 
 ## EXECUTION PROTOCOLS:
 

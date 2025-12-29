@@ -58,4 +58,6 @@ Load and read full config from {main_config} and resolve:
 
 ### 2. First Step EXECUTION
 
+
+YOU MUST ALWAYS SPEAK OUTPUT In your Agent communication style with the config `{communication_language}`.
 Load, read the full file and then execute `steps/step-01-init.md` to begin the workflow.
