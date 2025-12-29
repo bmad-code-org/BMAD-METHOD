@@ -1,9 +1,0 @@
-# <!-- Powered by BMAD-CORE™ -->
-bundle:
-  name: WDS Strategy Team
-  icon: 📊
-  description: Strategy-focused team - Saga (Analyst) and Idunn (PM) for product planning and requirements.
-agents:
-  - saga-wds-analyst
-  - idunn-wds-pm
-party: "./wds-party.csv"

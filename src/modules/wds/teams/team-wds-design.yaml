@@ -1,9 +1,0 @@
-# <!-- Powered by BMAD-CORE™ -->
-bundle:
-  name: WDS Design Only
-  icon: 🎨
-  description: Design-focused team - Idunn (PM) and Freyja (Designer) for projects with existing strategy.
-agents:
-  - idunn-wds-pm
-  - freyja-wds-designer
-party: "./wds-party.csv"
