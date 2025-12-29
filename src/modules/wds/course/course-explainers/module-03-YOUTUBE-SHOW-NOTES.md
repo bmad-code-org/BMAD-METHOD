@@ -326,3 +326,4 @@ Start operating as a strategic professional.
 
 This module helps designers overcome their discomfort with the business side and operate as confident, strategic professionals! 💼✨
 
+

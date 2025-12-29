@@ -1,6 +1,6 @@
 # Deliverable: Service Agreement
 
-**Formalize stakeholder commitment with a clear contract**
+**Formalize stakeholder commitment with a clear contract - protecting the outcomes they care about**
 
 ---
 
@@ -8,17 +8,18 @@
 
 **WDS (Whiteport Design Studio)** is an AI agent framework module within the BMAD Method that transforms how designers work. Instead of creating documentation that gets lost in translation, your design work becomes **powerful prompts** that guide AI agents and development teams with precision and intent.
 
-**The Service Agreement** formalizes the commitment you secured with your Project Pitch. It protects both parties, defines clear scope, and establishes the foundation for a healthy working relationship.
+**The Service Agreement** formalizes the commitment you secured with your Project Pitch. It protects both parties, defines clear scope around the outcomes they told you they need, and establishes the foundation for a healthy working relationship where everyone's expectations are explicitly aligned.
 
 ---
 
 ## What Is This Deliverable?
 
 The Service Agreement is your formal contract that:
-- Defines scope of work (what's included, what's not)
-- Establishes clear deliverables and timeline
+- Defines scope of work around the outcomes they need (what's included, what's not)
+- Establishes clear deliverables that serve their desired results
 - Protects both parties with terms and conditions
 - Provides legal foundation for the project
+- Makes explicit what success looks like (their definition)
 
 **Created by:** Saga the Analyst  
 **When:** Phase 1 (Module 03) - After pitch is accepted, before work begins  
@@ -29,28 +30,30 @@ The Service Agreement is your formal contract that:
 ## Why This Matters
 
 **Without a formal agreement:**
-- ❌ Scope creep becomes unmanageable
-- ❌ Payment becomes contentious ("that's not what I meant")
+- ❌ Scope creep around "I thought you meant..." becomes unmanageable
+- ❌ Payment becomes contentious when outcomes aren't clear
 - ❌ No protection if client stops paying
 - ❌ Unclear who owns the final work
+- ❌ The outcomes they care about aren't explicitly protected
 
 **With a service agreement:**
-- ✅ Protected scope and budget
+- ✅ Protected scope tied to their desired outcomes
 - ✅ Clear payment terms
 - ✅ Legal recourse if needed
 - ✅ Professional credibility
 - ✅ Foundation for healthy client relationships
+- ✅ Both parties know exactly what success looks like
 
 ---
 
 ## What's Included
 
-- **Scope of Work:** What's included (and what's explicitly not)
-- **Deliverables:** Tangible outputs you'll produce (with links to examples)
+- **Scope of Work:** What's included (tied to outcomes they need) and what's explicitly not
+- **Deliverables:** Tangible outputs you'll produce that serve their desired results (with links to examples)
 - **Timeline:** Key milestones and completion dates
 - **Payment Terms:** Cost structure, payment schedule, late fees
-- **Change Management:** How scope changes are handled (change order process)
-- **Acceptance Criteria:** When work is considered complete
+- **Change Management:** How scope changes are handled (change order process) - protecting focus on agreed outcomes
+- **Acceptance Criteria:** When work is considered complete (based on their definition of success)
 - **Intellectual Property:** Who owns what (code, designs, content)
 - **Termination Clause:** How either party can exit the agreement
 - **Warranties & Limitations:** What you guarantee (and don't)
@@ -61,46 +64,52 @@ The Service Agreement is your formal contract that:
 
 **The Process (30-45 minutes):**
 
-Saga the Analyst helps you formalize the agreement:
+Saga the Analyst helps you formalize the agreement based on what they told you they need:
 
 ```
-Saga the Analyst: "Let's protect this project with a solid agreement. 
-                   What exactly is in scope?"
+Saga the Analyst: "Let's protect this project with a solid agreement that 
+                   serves the outcomes they care about. What exactly is in scope?"
 
-You: "Landing page redesign, mobile responsive, 5 pages total."
+You: "Landing page redesign, mobile responsive, 5 pages total. They need 
+      to reduce cart abandonment by making checkout clearer."
 
-Saga the Analyst: "Good. What's explicitly OUT of scope?"
+Saga the Analyst: "Good - scope tied to their desired outcome. What's explicitly 
+                   OUT of scope?"
 
-You: "No backend work, no e-commerce, no third-party integrations."
+You: "No backend work, no e-commerce functionality changes, no third-party 
+      integrations. We're focused only on the clarity improvements they need."
 
-Saga the Analyst: "Perfect - that clarity prevents scope creep. 
-                   Now, what are your deliverables?"
+Saga the Analyst: "Perfect - that clarity prevents scope creep and keeps focus 
+                   on the outcomes they told you matter. Now, what are your 
+                   deliverables?"
 
 You: "Page specifications, design system, WordPress-ready content, 
-      interactive prototype."
+      interactive prototype - all focused on checkout clarity."
 
-Saga the Analyst: "Great! What's your timeline and payment structure?"
+Saga the Analyst: "Excellent! What's your timeline and payment structure?"
 ```
 
 As you talk, Saga the Analyst creates:
-- ✅ Clear scope boundaries
-- ✅ Specific deliverables list
+- ✅ Clear scope boundaries (protecting their desired outcomes)
+- ✅ Specific deliverables list (tied to what they need)
 - ✅ Milestone timeline
 - ✅ Payment terms
-- ✅ Change order process
+- ✅ Change order process (protecting focus on agreed outcomes)
 - ✅ IP ownership terms
+- ✅ Acceptance criteria (based on their definition of success)
 
 Then you review together:
 
 ```
-Saga the Analyst: "Here's your Service Agreement. Does this protect you?"
+Saga the Analyst: "Here's your Service Agreement. Does this protect both 
+                   of you and keep focus on the outcomes they care about?"
 
-You: "Add a 50% deposit requirement before work starts."
+You: "Yes! But add a 50% deposit requirement before work starts."
 
 Saga the Analyst: "Added to payment terms. ✅ Agreement is ready."
 ```
 
-**Result:** Service Agreement ready for client signature
+**Result:** Service Agreement that protects both parties and keeps everyone focused on the outcomes that matter to them
 
 ---
 

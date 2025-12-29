@@ -1,19 +1,44 @@
 # Lesson 2: Creating Your Alignment Document
 
-**The 10 sections that ensure everyone understands and agrees**
+**The 10 sections that ensure everyone understands and agrees - AFTER you've done discovery**
 
 **Time:** 20 minutes
+
+---
+
+## Before You Create: The Discovery Phase
+
+**You are NOT ready to create an alignment document until you've completed discovery.**
+
+Remember:
+- **The carpenter measures twice** before cutting once
+- **The doctor diagnoses** before writing a prescription  
+- **You understand deeply** before creating your pitch
+
+**Have you:**
+- ✅ Had a discovery conversation with your stakeholder?
+- ✅ Asked questions until you found the real pain point?
+- ✅ Confirmed that pain point actually exists?
+- ✅ Taken notes on what success looks like for THEM?
+- ✅ Said "Let me think about this and come back"?
+
+**If NO to any of these:** Go back and complete discovery first. Don't guess what they need.
+
+**If YES:** Now you're ready to create a compelling alignment document based on real understanding.
 
 ---
 
 ## What is an Alignment Document?
 
 An alignment document (also called a "pitch") is a clear, brief document that:
-- Makes the case for why the project matters
-- Presents your idea in the best possible light
+- Reflects back what you learned in discovery
+- Makes the case for why the project matters (in their words)
+- Presents your solution based on understanding their needs
 - Gets stakeholder buy-in before starting detailed work
 - Can be read in 2-3 minutes
 - Allows for negotiation and iteration
+
+**Key principle:** You're not making this up or guessing. You're synthesizing what they told you they need into a clear, compelling document.
 
 ---
 
@@ -207,11 +232,13 @@ Work through these sections **in whatever order makes sense** for your thinking:
 ## Flexible Exploration
 
 **You can start anywhere:**
-- Start with something you've realized needs attention
-- Start with a solution you have in mind
-- Start with why it matters
+- Start with something you've realized needs attention (from discovery)
+- Start with a solution you have in mind (based on understanding their needs)
+- Start with why it matters (using what they told you)
 
-**Saga will guide you** through all sections in whatever order makes sense for your thinking.
+**Saga will guide you** through all sections in whatever order makes sense for your thinking. But everything should be grounded in what you learned during discovery.
+
+**If you realize you don't actually know something:** Don't guess. That's a signal you need to go back and ask more discovery questions. Saga will help you identify what's missing.
 
 ---
 
@@ -219,15 +246,17 @@ Work through these sections **in whatever order makes sense** for your thinking:
 
 **If you have existing communications or documents:**
 - Share emails, chats, or documents with stakeholders
+- Share notes from your discovery meeting
 - Saga will extract key information:
   - Realizations or observations mentioned
   - Requirements discussed
   - Concerns raised
+  - What success looks like for them
   - Context and background
   - Timeline or urgency
   - Budget or constraints
 
-**This helps inform** your alignment document sections.
+**This helps inform** your alignment document sections with real evidence from your conversations.
 
 ---
 
@@ -243,10 +272,14 @@ Work through these sections **in whatever order makes sense** for your thinking:
 
 ## Key Principles
 
+- **Discovery first** - Understand before you create the document
 - **Collaborative** - You and Saga build it together
+- **Grounded in their needs** - Based on what they told you matters
 - **Iterative** - You can refine and improve
 - **Clear** - Readable in 2-3 minutes
-- **Compelling** - Makes the case for the project
+- **Compelling** - Makes the case for the project using their language
+
+**Remember:** When you genuinely understand what they need and can clearly specify their desired outcomes, writing the pitch becomes 10x easier. You're not guessing or convincing - you're articulating back to them what they said they need with a clear path forward.
 
 ---
 

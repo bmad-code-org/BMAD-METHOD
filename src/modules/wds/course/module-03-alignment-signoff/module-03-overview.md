@@ -17,7 +17,10 @@ This module teaches you how to create alignment around your idea and secure form
 
 ## What You'll Learn
 
-- How to articulate your idea clearly (The Idea, Why, What, How, Budget, Commitment)
+- **The discovery discipline** - how to understand their outcomes before proposing solutions
+- **The two-meeting approach** - separate discovery from solution presentation
+- **Professional patience** - the carpenter measures twice, the doctor diagnoses first
+- How to ask discovery questions that reveal what success looks like for them
 - Creating a compelling alignment document that gets everyone on the same page
 - Negotiating and iterating until stakeholders accept
 - Generating appropriate signoff documents (external contracts or internal signoff)
@@ -32,6 +35,8 @@ This module teaches you how to create alignment around your idea and secure form
 **Time:** 10 minutes
 
 - Why alignment matters before starting work
+- **The discovery discipline**: Understanding before solving
+- **Professional patience**: The carpenter measures twice, the doctor diagnoses first
 - The 6 elements of alignment (Idea, Why, What, How, Budget, Commitment)
 - Different user scenarios (consultant, business owner, manager/employee)
 - When to skip alignment (doing it yourself)
@@ -40,6 +45,8 @@ This module teaches you how to create alignment around your idea and secure form
 
 **Time:** 20 minutes
 
+- **The discovery phase**: Ask questions until you find the real pain point
+- **Resist solving in the discovery meeting**: Take notes, confirm, then stop
 - The 10 sections of an alignment document
 - How to explore sections flexibly
 - Extracting information from existing communications
@@ -88,7 +95,14 @@ Step-by-step hands-on guide to creating your alignment document and securing sig
 
 ## Key Concepts
 
+**The Discovery Discipline:**
+- **Understand before you solve** - The carpenter measures twice, the doctor diagnoses first
+- **Separate discovery from solution** - Don't present solutions in the first meeting
+- **Ask until you find the pain point** - Keep digging deeper to understand the real issue
+- **Take notes, confirm understanding, then stop** - Come back with a thoughtful proposal
+
 **Alignment Document (Pitch):**
+- Created AFTER discovery phase
 - Makes the case for why the project matters
 - Gets stakeholders aligned on Idea, Why, What, How, Budget, Commitment
 - Readable in 2-3 minutes
@@ -104,7 +118,17 @@ Step-by-step hands-on guide to creating your alignment document and securing sig
 - Both include scope, investment, timeline, deliverables
 
 **The Flow:**
-1. Create alignment document → 2. Share & negotiate → 3. Get acceptance → 4. Generate signoff → 5. Proceed to Project Brief
+1. **Discovery meeting** - Listen: Ask questions, understand their goals and what's important for success
+2. **Stop & reflect** - "Let me think about this and come back with a thoughtful proposal"
+3. **Create alignment document** - Create: Build pitch based on what they told you
+4. **Presentation meeting** - Present: Share proposal showing you understood them
+5. **Iterate** - Negotiate: Adjust and refine together to find the perfect match
+6. **Get acceptance** - Accept: They say yes to the pitch
+7. **Generate signoff** - Contract: Create short, clear contract based on accepted pitch
+8. **Sign** - Both parties sign
+9. **Proceed to Project Brief** - Brief: Use pitch and contract as the backbone
+
+**Key:** Pitch and contract become the foundation for your project brief - not throwaway documents.
 
 ---
 
@@ -112,8 +136,11 @@ Step-by-step hands-on guide to creating your alignment document and securing sig
 
 By the end of this module, you will:
 
+- ✅ Understand the discipline of discovery before solution
+- ✅ Know how to ask questions that reveal what success looks like for them
+- ✅ Be able to separate discovery meetings from solution presentation
 - ✅ Understand when you need stakeholder alignment
-- ✅ Know how to create a compelling alignment document
+- ✅ Know how to create a compelling alignment document based on real understanding
 - ✅ Be able to negotiate and iterate until acceptance
 - ✅ Generate appropriate external contracts or internal signoff documents
 - ✅ Know when to skip this module and go straight to Project Brief
