@@ -53,8 +53,8 @@ This uses **step-file architecture** borrowed from story-pipeline:
 | Step | File | Agent | Purpose |
 |------|------|-------|---------|
 | 1 | step-01-init.md | - | Load story, detect greenfield vs brownfield |
-| 2 | step-02-pre-gap-analysis.md | DEV | Validate/refine tasks against codebase |
-| 3 | step-03-implement.md | DEV | Adaptive implementation (TDD or refactor) |
+| 2 | step-02-pre-gap-analysis.md | DEV | Validate tasks + **detect batchable patterns** |
+| 3 | step-03-implement.md | DEV | **Smart batching** + adaptive implementation |
 | 4 | step-04-post-validation.md | DEV | Verify completed tasks vs reality |
 | 5 | step-05-code-review.md | DEV | Find 3-10 specific issues |
 | 6 | step-06-complete.md | SM | Commit and push changes |
@@ -70,8 +70,86 @@ This uses **step-file architecture** borrowed from story-pipeline:
 
 ### What's ENHANCED:
 - ✅ Pre-gap analysis is MORE thorough (validates against existing code)
+- ✅ **Smart Batching** - detects and groups similar tasks automatically
 - ✅ Implementation is ADAPTIVE (TDD for new, refactor for existing)
 - ✅ Works for both greenfield and brownfield
+
+### What's NEW:
+- ⚡ **Pattern Detection** - automatically identifies batchable tasks
+- ⚡ **Intelligent Grouping** - groups similar tasks for batch execution
+- ⚡ **Time Optimization** - 50-70% faster for repetitive work
+- ⚡ **Safety Preserved** - validation gates enforce discipline
+
+---
+
+## SMART BATCHING FEATURE
+
+### What is Smart Batching?
+
+**Smart batching** is an intelligent optimization that groups similar, low-risk tasks for batch execution while maintaining full validation discipline.
+
+**NOT Vibe Coding:**
+- ✅ Pattern detection is systematic (not guesswork)
+- ✅ Batches are validated as a group (not skipped)
+- ✅ Failure triggers fallback to one-at-a-time
+- ✅ High-risk tasks always executed individually
+
+**When It Helps:**
+- Large stories with repetitive tasks (100+ tasks)
+- Package migration work (installing multiple packages)
+- Module refactoring (same pattern across files)
+- Code cleanup (delete old implementations)
+
+**Time Savings:**
+```
+Example: 100-task story
+- Without batching: 100 tasks × 2 min = 200 minutes (3.3 hours)
+- With batching: 6 batches × 10 min + 20 individual × 2 min = 100 minutes (1.7 hours)
+- Savings: 100 minutes (50% faster!)
+```
+
+### Batchable Pattern Types
+
+| Pattern | Example Tasks | Risk | Validation |
+|---------|--------------|------|------------|
+| **Package Install** | Add dependencies | LOW | Build succeeds |
+| **Module Registration** | Import modules | LOW | TypeScript compiles |
+| **Code Deletion** | Remove old code | LOW | Tests pass |
+| **Import Updates** | Update import paths | LOW | Build succeeds |
+| **Config Changes** | Update settings | LOW | App starts |
+
+### NON-Batchable (Individual Execution)
+
+| Pattern | Example Tasks | Risk | Why Individual |
+|---------|--------------|------|----------------|
+| **Business Logic** | Circuit breaker fallbacks | MEDIUM-HIGH | Logic varies per case |
+| **Security Code** | Auth/authorization | HIGH | Mistakes are critical |
+| **Data Migrations** | Schema changes | HIGH | Irreversible |
+| **API Integration** | External service calls | MEDIUM | Error handling varies |
+| **Novel Patterns** | First-time implementation | MEDIUM | Unproven approach |
+
+### How It Works
+
+**Step 2 (Pre-Gap Analysis):**
+1. Analyzes all tasks
+2. Detects repeating patterns
+3. Categorizes as batchable or individual
+4. Generates batching plan with time estimates
+5. Adds plan to story file
+
+**Step 3 (Implementation):**
+1. Loads batching plan
+2. Executes pattern batches first
+3. Validates each batch
+4. Fallback to individual if batch fails
+5. Executes individual tasks with full rigor
+
+**Safety Mechanisms:**
+- Pattern detection uses conservative rules (default to individual)
+- Each batch has explicit validation strategy
+- Failed batch triggers automatic fallback
+- High-risk tasks never batched
+- All validation gates still enforced
 
 ---
 

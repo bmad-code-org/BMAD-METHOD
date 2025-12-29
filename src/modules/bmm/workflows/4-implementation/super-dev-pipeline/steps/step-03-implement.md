@@ -74,14 +74,146 @@ Development breakdown:
 Starting implementation loop...
 ```
 
-### 2. Implementation Loop
+### 2. Load Smart Batching Plan
 
-**For EACH unchecked task:**
+Load batching plan from story file (created in Step 2):
+
+Extract:
+- Pattern batches (groups of similar tasks)
+- Individual tasks (require one-by-one execution)
+- Validation strategy per batch
+- Time estimates
+
+### 3. Implementation Strategy Selection
+
+**If smart batching plan exists:**
+```
+Smart Batching Enabled
+
+Execution Plan:
+- {batch_count} pattern batches (execute together)
+- {individual_count} individual tasks (execute separately)
+
+Proceeding with pattern-based execution...
+```
+
+**If no batching plan:**
+```
+Standard Execution (One-at-a-Time)
+
+All tasks will be executed individually with full rigor.
+```
+
+### 4. Pattern Batch Execution (NEW!)
+
+**For EACH pattern batch (if batching enabled):**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Batch {n}/{total_batches}: {pattern_name}
+Tasks in batch: {task_count}
+Type: {pattern_type}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**A. Display Batch Tasks:**
+```
+Executing together:
+1. {task_1}
+2. {task_2}
+3. {task_3}
+...
+
+Validation strategy: {validation_strategy}
+Estimated time: {estimated_minutes} minutes
+```
+
+**B. Execute All Tasks in Batch:**
+
+**Example: Package Installation Batch**
+```bash
+# Execute all package installations together
+npm pkg set dependencies.@company/shared-utils="^1.0.0"
+npm pkg set dependencies.@company/validation="^2.0.0"
+npm pkg set dependencies.@company/http-client="^1.5.0"
+npm pkg set dependencies.@company/database-client="^3.0.0"
+
+# Single install command
+npm install
+```
+
+**Example: Module Registration Batch**
+```typescript
+// Add all imports at once
+import { SharedUtilsModule } from '@company/shared-utils';
+import { ValidationModule } from '@company/validation';
+import { HttpClientModule } from '@company/http-client';
+import { DatabaseModule } from '@company/database-client';
+
+// Register all modules together
+@Module({
+  imports: [
+    SharedUtilsModule.forRoot(),
+    ValidationModule.forRoot(validationConfig),
+    HttpClientModule.forRoot(httpConfig),
+    DatabaseModule.forRoot(dbConfig),
+    // ... existing imports
+  ]
+})
+```
+
+**C. Validate Entire Batch:**
+
+Run validation strategy for this pattern:
+```bash
+# For package installs
+npm run build
+
+# For module registrations
+tsc --noEmit
+
+# For code deletions
+npm test -- --run && npm run lint
+```
+
+**D. If Validation Succeeds:**
+```
+✅ Batch Complete
+
+All {task_count} tasks in batch executed successfully!
+
+Marking all tasks complete:
+- [x] {task_1}
+- [x] {task_2}
+- [x] {task_3}
+...
+
+Time: {actual_time} minutes
+```
+
+**E. If Validation Fails:**
+```
+❌ Batch Validation Failed
+
+Error: {error_message}
+
+Falling back to one-at-a-time execution for this batch...
+```
+
+**Fallback to individual execution:**
+- Execute each task in the failed batch one-by-one
+- Identify which task caused the failure
+- Fix and continue
+
+### 5. Individual Task Execution
+
+**For EACH individual task (non-batchable):**
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Task {n}/{total}: {task_description}
 Type: {greenfield|brownfield}
+Reason: {why_not_batchable}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 

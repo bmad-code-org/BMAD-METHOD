@@ -1,7 +1,7 @@
 name: super-dev-pipeline
-description: "Step-file architecture for super-dev workflow - works for both greenfield and brownfield development with disciplined execution"
+description: "Step-file architecture with smart batching - works for both greenfield and brownfield development with disciplined execution and intelligent task grouping"
 author: "BMad"
-version: "1.0.0"
+version: "1.1.0" # Added smart batching feature
 
 # Critical variables from config
 config_source: "{project-root}/_bmad/bmm/config.yaml"
@@ -26,11 +26,57 @@ modes:
     description: "Human-in-the-loop with menu navigation between steps"
     checkpoint_on_failure: true
     requires_approval: true
+    smart_batching: true # User can approve batching plan
   batch:
     description: "Unattended execution for autonomous-epic"
     checkpoint_on_failure: true
     requires_approval: false
     fail_fast: true
+    smart_batching: true # Auto-enabled for efficiency
+
+# Smart batching configuration
+smart_batching:
+  enabled: true
+  detect_patterns: true
+  default_to_safe: true # When uncertain, execute individually
+  min_batch_size: 3 # Minimum tasks to form a batch
+  fallback_on_failure: true # Revert to individual if batch fails
+
+  # Batchable pattern definitions
+  batchable_patterns:
+    - pattern: "package_installation"
+      keywords: ["Add", "package.json", "npm install", "dependency"]
+      risk_level: "low"
+      validation: "npm install && npm run build"
+
+    - pattern: "module_registration"
+      keywords: ["Import", "Module", "app.module", "register"]
+      risk_level: "low"
+      validation: "tsc --noEmit"
+
+    - pattern: "code_deletion"
+      keywords: ["Delete", "Remove", "rm ", "unlink"]
+      risk_level: "low"
+      validation: "npm test && npm run build"
+
+    - pattern: "import_update"
+      keywords: ["Update import", "Change import", "import from"]
+      risk_level: "low"
+      validation: "npm run build"
+
+  # Non-batchable pattern definitions (always execute individually)
+  individual_patterns:
+    - pattern: "business_logic"
+      keywords: ["circuit breaker", "fallback", "caching for", "strategy"]
+      risk_level: "medium"
+
+    - pattern: "security"
+      keywords: ["auth", "permission", "security", "encrypt"]
+      risk_level: "high"
+
+    - pattern: "data_migration"
+      keywords: ["migration", "schema", "ALTER TABLE", "database"]
+      risk_level: "high"
 
 # Agent role definitions (loaded once, switched as needed)
 agents:
