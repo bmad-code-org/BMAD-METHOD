@@ -212,11 +212,24 @@
       <output>ℹ️ Story status updated (no sprint tracking configured)</output>
     </check>
 
+    <!-- Sync bug tracking when story is marked done -->
+    <check if="{{new_status}} == 'done'">
+      <invoke-task path="{project-root}/.bmad/core/tasks/sync-bug-tracking.xml">
+        <param name="story_key">{{story_key}}</param>
+        <param name="story_id">{{story_id}}</param>
+        <param name="bugs_yaml">{output_folder}/bugs.yaml</param>
+        <param name="bugs_md">{output_folder}/bugs.md</param>
+        <param name="sprint_status">{sprint_status}</param>
+        <param name="date">{date}</param>
+      </invoke-task>
+    </check>
+
     <output>**✅ Review Complete!**
 
       **Story Status:** {{new_status}}
       **Issues Fixed:** {{fixed_count}}
       **Action Items Created:** {{action_count}}
+      {{#if new_status == "done"}}**Bug/Feature Tracking:** Synced automatically{{/if}}
 
       {{#if new_status == "done"}}Code review complete!{{else}}Address the action items and continue development.{{/if}}
     </output>

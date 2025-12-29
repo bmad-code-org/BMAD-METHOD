@@ -82,72 +82,16 @@ Story is marked Done in file, but sprint-status.yaml may be out of sync.
 </step>
 
 <step n="3" goal="Sync related bugs/features in bug tracking">
-<critical>Check bugs.yaml for bugs/features linked to this story and update their status</critical>
+<critical>Invoke shared task to sync bugs.yaml and bugs.md for this completed story</critical>
 
-<action>Load {output_folder}/bugs.yaml if it exists</action>
-
-<check if="bugs.yaml exists">
-  <action>Search for entries matching this story using ALL THREE methods:</action>
-  <action>1. Check sprint-status.yaml comment for "# Source: bugs.yaml/feature-XXX" or "# Source: bugs.yaml/bug-XXX" on the story line - this is the MOST RELIABLE method</action>
-  <action>2. Check related_story field matching {story_id} or {story_key}</action>
-  <action>3. Check sprint_stories array containing entries starting with {story_key}</action>
-
-  <critical>PRIORITY: Use sprint-status comment source if present - it's explicit and unambiguous</critical>
-
-  <check if="matching bugs found in bugs section (via related_story)">
-    <action>For each matching bug:</action>
-    <action>- Update status: "triaged" or "routed" → "fixed"</action>
-    <action>- Set fixed_date: {date}</action>
-    <action>- Set assigned_to: "dev-agent"</action>
-    <action>- Append to notes: "Auto-closed via story-done workflow. Story {story_key} marked done on {date}."</action>
-  </check>
-
-  <check if="matching features found in feature_requests section">
-    <action>For each matching feature (via related_story OR sprint_stories):</action>
-
-    <critical>MULTI-STORY FEATURE CHECK: If feature has sprint_stories array with multiple entries:</critical>
-    <action>1. Extract all story keys from sprint_stories (format: "story-key: status")</action>
-    <action>2. Load sprint-status.yaml and check development_status for EACH story</action>
-    <action>3. Only proceed if ALL stories in sprint_stories have status "done" in sprint-status.yaml</action>
-    <action>4. If any story is NOT done, skip this feature and log: "Feature {feature_id} has incomplete stories: {incomplete_list}"</action>
-
-    <check if="ALL sprint_stories are done (or feature has single story that matches)">
-      <action>- Update status: "backlog" or "in-progress" → "implemented"</action>
-      <action>- Set implemented_date: {date}</action>
-      <action>- Update sprint_stories entries to reflect done status</action>
-      <action>- Append to notes: "Auto-closed via story-done workflow. Story {story_key} marked done on {date}."</action>
-    </check>
-  </check>
-
-  <action>Save updated bugs.yaml</action>
-
-  <check if="bugs/features were updated">
-    <action>Also update bugs.md:</action>
-    <action>- Move bug entries from "# Tracked Bugs" to "# Fixed Bugs" with [IMPLEMENTED] tag</action>
-    <action>- Move feature entries from "# Tracked Feature Requests" to "# Implemented Features" with [IMPLEMENTED] tag</action>
-    <action>Save updated bugs.md</action>
-  </check>
-
-  <output>
-Bug/Feature Sync:
-{{#if bugs_updated}}
-- Bugs marked fixed: {{bugs_updated_list}}
-{{/if}}
-{{#if features_updated}}
-- Features marked implemented: {{features_updated_list}}
-{{/if}}
-{{#if features_pending}}
-- Features with incomplete stories (not yet implemented): {{features_pending_list}}
-{{/if}}
-{{#if no_matches}}
-- No related bugs/features found for story {story_key}
-{{/if}}
-  </output>
-</check>
-
-<check if="bugs.yaml does not exist">
-  <action>Skip bug tracking sync - no bugs.yaml file present</action>
-</check>
+<invoke-task path="{project-root}/.bmad/core/tasks/sync-bug-tracking.xml">
+  <param name="story_key">{story_key}</param>
+  <param name="story_id">{story_id}</param>
+  <param name="bugs_yaml">{bugs_yaml}</param>
+  <param name="bugs_md">{bugs_md}</param>
+  <param name="sprint_status">{sprint_status}</param>
+  <param name="date">{date}</param>
+</invoke-task>
 
 </step>
 
